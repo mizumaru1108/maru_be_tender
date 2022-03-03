@@ -5285,9 +5285,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tmra-raise@workspace:.":
+"tmra@workspace:.":
   version: 0.0.0-use.local
-  resolution: "tmra-raise@workspace:."
+  resolution: "tmra@workspace:."
   dependencies:
     husky: ^7.0.4
     lerna: ^4.0.0
