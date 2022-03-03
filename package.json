@@ -1,0 +1,12 @@
+{
+  "name": "tmra",
+  "packageManager": "yarn@3.2.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "husky": "^7.0.4",
+    "lerna": "^4.0.0"
+  }
+}
