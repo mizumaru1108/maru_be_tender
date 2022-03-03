@@ -55,7 +55,7 @@ publish_raise_staging:
     - if: '$CI_COMMIT_BRANCH == "stack/staging" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
       changes:
         - "packages/raise/**/*"
-        - "kube/raise/**/*"
+        - "kube/tmra-raise/**/*"
 
 deploy_raise_staging:
   stage: deploy
