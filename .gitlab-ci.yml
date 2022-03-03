@@ -1,0 +1,138 @@
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+stages:
+  - build
+  - test
+  - publish
+  - deploy
+
+image: node:lts-slim
+
+# Cache modules in between jobs
+cache:
+  key: $CI_COMMIT_REF_SLUG
+  paths:
+    - $HOME/.npm/
+    - node_modules/
+    - .yarn/cache/
+    - .next/cache/
+
+publish_raise_staging:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - export APP_VERSION=`date +%Y.%m.%d`-${CI_COMMIT_BRANCH/stack\//}_${CI_COMMIT_SHORT_SHA}
+    - echo "export APP_VERSION=$APP_VERSION" > .env.staging
+    # see https://github.com/GoogleContainerTools/kaniko/issues/1227
+    # https://docs.gitlab.com/ee/ci/docker/using_kaniko.html
+    - mkdir -p /kaniko/.docker
+    # Requires AWS_REGION, AWS_ACCESS_KEY_ID, and AWS_SECRET_ACCESS_KEY in https://gitlab.com/lovia/lovia-billing/-/settings/ci_cd > Variables
+    # - echo "{\"credHelpers\":{\"${DOCKER_REGISTRY}\":\"ecr-login\"}, \"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - >-
+      /kaniko/executor
+      --cache=true --cache-repo="${CI_REGISTRY_IMAGE}"
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/packages/raise/Dockerfile"
+      --build-arg=APP_VERSION="${APP_VERSION}"
+      --destination "${CI_REGISTRY_IMAGE}/raise:${APP_VERSION}"
+      --destination "${CI_REGISTRY_IMAGE}/raise:staging"
+#      --destination "$DOCKER_REGISTRY/$APP_NAME:$CI_COMMIT_SHA"
+#      --destination "$DOCKER_REGISTRY/$APP_NAME:staging"
+  artifacts:
+    paths:
+    - .env.staging
+    expire_in: 1 week
+  # only:
+  #   - stack/staging
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stack/staging" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
+      changes:
+        - "packages/raise/**/*"
+        - "kube/raise/**/*"
+
+deploy_raise_staging:
+  stage: deploy
+  image:
+    name: dtzar/helm-kubectl:latest
+    entrypoint: ['']
+  script:
+    - source .env.staging
+    #  - kubectl config get-contexts
+    - kubectl config use-context tamrah/gitlab-kube-agents:main-prod-in
+    # - kubectl rollout restart -n tmra-staging deployment/tmra-raise
+    - helm upgrade --install -n tmra-staging tmra-raise kube/tmra-raise/ --values kube/tmra-raise/values.yaml --set "image.tag=${APP_VERSION},replicaCount=2"
+  environment:
+    name: staging
+    # url: https://raise-api-staging.tmra.io
+  # only:
+  #   - stack/staging
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stack/staging" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
+      changes:
+        - "packages/raise/**/*"
+        - "kube/tmra-raise/**/*"
+
+publish_raise_latest:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - export APP_VERSION=`date +%Y.%m.%d`-${CI_COMMIT_BRANCH/stack\//}_${CI_COMMIT_SHORT_SHA}
+    - echo "export APP_VERSION=$APP_VERSION" > .env.prod
+    # see https://github.com/GoogleContainerTools/kaniko/issues/1227
+    # https://docs.gitlab.com/ee/ci/docker/using_kaniko.html
+    - mkdir -p /kaniko/.docker
+    # Requires AWS_REGION, AWS_ACCESS_KEY_ID, and AWS_SECRET_ACCESS_KEY in https://gitlab.com/lovia/lovia-billing/-/settings/ci_cd > Variables
+    # - echo "{\"credHelpers\":{\"${DOCKER_REGISTRY}\":\"ecr-login\"}, \"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - >-
+      /kaniko/executor
+      --cache=true --cache-repo="${CI_REGISTRY_IMAGE}"
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/packages/raise/Dockerfile"
+      --build-arg=APP_VERSION="${APP_VERSION}"
+      --destination "${CI_REGISTRY_IMAGE}/tmra-raise:${APP_VERSION}"
+      --destination "${CI_REGISTRY_IMAGE}/tmra-raise:latest"
+#      --destination "$DOCKER_REGISTRY/$APP_NAME:$CI_COMMIT_SHA"
+#      --destination "$DOCKER_REGISTRY/$APP_NAME:staging"
+  artifacts:
+    paths:
+    - .env.prod
+    expire_in: 1 week
+  # only:
+  #   - stack/prod
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stack/prod" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
+      changes:
+        - "packages/raise/**/*"
+        - "kube/tmra-raise/**/*"
+
+deploy_raise_prod:
+  stage: deploy
+  image:
+    name: dtzar/helm-kubectl:latest
+    entrypoint: ['']
+  script:
+    - source .env.prod
+    #  - kubectl config get-contexts
+    - kubectl config use-context tamrah/gitlab-kube-agents:main-prod-in
+    # - kubectl rollout restart -n mandalika-staging deployment/mandalika-worker
+    - helm upgrade --install -n tmra-prod tmra-raise kube/tmra-raise/ --values kube/tmra-raise/values.yaml --set "image.tag=${APP_VERSION},replicaCount=2"
+  environment:
+    name: prod
+    # url: https://raise-api.tmra.io
+  # only:
+  #   - stack/prod
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stack/prod" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
+      changes:
+        - "packages/raise/**/*"
+        - "kube/tmra-raise/**/*"
