@@ -23,3 +23,21 @@ You will need to install the following extensions: (should be prompted automatic
 
 1. ZipFS
 2. Prettier
+
+## How to Trigger CI Deployment to staging or prod environment
+
+First, you **must** push your work to `main` branch first!
+
+Then choose, staging or prod?
+
+To trigger CI for `staging`:
+
+```bash
+git push origin main:stack/staging
+```
+
+To trigger CI for `prod`:
+
+```bash
+git push origin main:stack/prod
+```
