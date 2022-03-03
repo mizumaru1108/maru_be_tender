@@ -1,3 +1,9 @@
+## Set up Project
+
+```bash
+yarn
+```
+
 ## yarn PnP Editor SDK - VS Code
 
 You will get IDE errors in VS Code / Gitpod if you haven't yet set up Yarn PnP Editor SDK.
