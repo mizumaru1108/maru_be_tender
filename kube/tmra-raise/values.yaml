@@ -21,7 +21,7 @@ serviceAccount:
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: "tmra"
+  name: ""
   imagePullSecrets:
     - name: tmra-registry
 
@@ -45,7 +45,7 @@ service:
 ingress:
   enabled: true
   className: ""
-  annotations: {}
+  annotations:
     kubernetes.io/ingress.class: traefik
     cert-manager.io/cluster-issuer: letsencrypt-prod
   hosts:
