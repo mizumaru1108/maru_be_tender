@@ -1,9 +1,14 @@
 {
-  "name": "@minimal/material-kit-react",
+  "name": "@tmra/pwa",
   "author": "minimals.cc",
-  "version": "3.2.0",
+  "version": "3.0.0-minimal3.2.0",
   "description": "React Scripts & Typescript",
   "private": true,
+  "engines": {
+    "node": ">= 14.0.0",
+    "npm": "please-use-yarn",
+    "yarn": ">= 1.22.10"
+  },
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
