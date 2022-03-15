@@ -21,6 +21,17 @@ cache:
     - .yarn/cache/
     - .next/cache/
 
+.dev_rules:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stack/dev" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
+      changes:
+        - "packages/raise/**/*"
+        - "kube/tmra-raise/**/*"
+    # You can manually trigger the pipeline with BUILD_PACKAGE=raise
+    - if: '$CI_COMMIT_BRANCH == "stack/dev" && $BUILD_PACKAGE == "raise"'
+      when: manual
+      allow_failure: false
+
 publish_raise_dev:
   stage: build
   image:
@@ -43,18 +54,13 @@ publish_raise_dev:
       --build-arg=APP_VERSION="${APP_VERSION}"
       --destination "${CI_REGISTRY_IMAGE}/raise:${APP_VERSION}"
       --destination "${CI_REGISTRY_IMAGE}/raise:dev"
-#      --destination "$DOCKER_REGISTRY/$APP_NAME:$CI_COMMIT_SHA"
-#      --destination "$DOCKER_REGISTRY/$APP_NAME:staging"
+  #      --destination "$DOCKER_REGISTRY/$APP_NAME:$CI_COMMIT_SHA"
+  #      --destination "$DOCKER_REGISTRY/$APP_NAME:staging"
   artifacts:
     reports:
       dotenv: build.env
-  # only:
-  #   - stack/dev
   rules:
-    - if: '$CI_COMMIT_BRANCH == "stack/dev" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-      changes:
-        - "packages/raise/**/*"
-        - "kube/tmra-raise/**/*"
+    - !reference [.dev_rules, rules]
 
 deploy_raise_dev:
   stage: deploy
@@ -65,14 +71,7 @@ deploy_raise_dev:
     APP_ENV: dev
     BUILD_PACKAGE: raise
   rules:
-    - if: '$CI_COMMIT_BRANCH == "stack/dev" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-      changes:
-        - "packages/raise/**/*"
-        - "kube/tmra-raise/**/*"
-    # You can manually trigger the pipeline with BUILD_PACKAGE=raise
-    - if: '$CI_COMMIT_BRANCH == "stack/dev" && $BUILD_PACKAGE == "raise"'
-      when: manual
-      allow_failure: false
+    - !reference [.dev_rules, rules]
 
 # deploy_raise_dev:
 #   stage: deploy
@@ -117,8 +116,8 @@ publish_raise_staging:
       --build-arg=APP_VERSION="${APP_VERSION}"
       --destination "${CI_REGISTRY_IMAGE}/raise:${APP_VERSION}"
       --destination "${CI_REGISTRY_IMAGE}/raise:staging"
-#      --destination "$DOCKER_REGISTRY/$APP_NAME:$CI_COMMIT_SHA"
-#      --destination "$DOCKER_REGISTRY/$APP_NAME:staging"
+  #      --destination "$DOCKER_REGISTRY/$APP_NAME:$CI_COMMIT_SHA"
+  #      --destination "$DOCKER_REGISTRY/$APP_NAME:staging"
   artifacts:
     reports:
       dotenv: build.env
@@ -177,8 +176,8 @@ publish_raise_latest:
       --build-arg=APP_VERSION="${APP_VERSION}"
       --destination "${CI_REGISTRY_IMAGE}/tmra-raise:${APP_VERSION}"
       --destination "${CI_REGISTRY_IMAGE}/tmra-raise:latest"
-#      --destination "$DOCKER_REGISTRY/$APP_NAME:$CI_COMMIT_SHA"
-#      --destination "$DOCKER_REGISTRY/$APP_NAME:staging"
+  #      --destination "$DOCKER_REGISTRY/$APP_NAME:$CI_COMMIT_SHA"
+  #      --destination "$DOCKER_REGISTRY/$APP_NAME:staging"
   artifacts:
     reports:
       dotenv: build.env
@@ -193,7 +192,6 @@ publish_raise_latest:
     - if: '$CI_COMMIT_BRANCH == "stack/prod" && $BUILD_PACKAGE == "raise"'
       when: manual
       allow_failure: false
-
 # deploy_raise_prod:
 #   stage: deploy
 #   image:
