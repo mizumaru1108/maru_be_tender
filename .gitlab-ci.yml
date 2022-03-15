@@ -28,7 +28,7 @@ publish_raise_dev:
     entrypoint: [""]
   script:
     - export APP_VERSION=`date +%Y.%m.%d`-${CI_COMMIT_BRANCH/stack\//}_${CI_COMMIT_SHORT_SHA}
-    - echo "export APP_VERSION=$APP_VERSION" > build.env
+    - echo "APP_VERSION=$APP_VERSION" > build.env
     # see https://github.com/GoogleContainerTools/kaniko/issues/1227
     # https://docs.gitlab.com/ee/ci/docker/using_kaniko.html
     - mkdir -p /kaniko/.docker
@@ -76,7 +76,6 @@ deploy_raise_dev:
 #     name: dtzar/helm-kubectl:latest
 #     entrypoint: ['']
 #   script:
-#     - source .env.dev
 #     #  - kubectl config get-contexts
 #     - kubectl config use-context tamrah/tmra-devops:main-prod-in
 #     # - kubectl rollout restart -n tmra-staging deployment/tmra-raise
@@ -99,7 +98,7 @@ publish_raise_staging:
     entrypoint: [""]
   script:
     - export APP_VERSION=`date +%Y.%m.%d`-${CI_COMMIT_BRANCH/stack\//}_${CI_COMMIT_SHORT_SHA}
-    - echo "export APP_VERSION=$APP_VERSION" > build.env
+    - echo "APP_VERSION=$APP_VERSION" > build.env
     # see https://github.com/GoogleContainerTools/kaniko/issues/1227
     # https://docs.gitlab.com/ee/ci/docker/using_kaniko.html
     - mkdir -p /kaniko/.docker
@@ -133,7 +132,6 @@ publish_raise_staging:
 #     name: dtzar/helm-kubectl:latest
 #     entrypoint: ['']
 #   script:
-#     - source .env.staging
 #     #  - kubectl config get-contexts
 #     - kubectl config use-context tamrah/tmra-devops:main-prod-in
 #     # - kubectl rollout restart -n tmra-staging deployment/tmra-raise
@@ -156,7 +154,7 @@ publish_raise_latest:
     entrypoint: [""]
   script:
     - export APP_VERSION=`date +%Y.%m.%d`-${CI_COMMIT_BRANCH/stack\//}_${CI_COMMIT_SHORT_SHA}
-    - echo "export APP_VERSION=$APP_VERSION" > build.env
+    - echo "APP_VERSION=$APP_VERSION" > build.env
     # see https://github.com/GoogleContainerTools/kaniko/issues/1227
     # https://docs.gitlab.com/ee/ci/docker/using_kaniko.html
     - mkdir -p /kaniko/.docker
@@ -190,7 +188,6 @@ publish_raise_latest:
 #     name: dtzar/helm-kubectl:latest
 #     entrypoint: ['']
 #   script:
-#     - source .env.prod
 #     #  - kubectl config get-contexts
 #     - kubectl config use-context tamrah/tmra-devops:main-prod-in
 #     # - kubectl rollout restart -n mandalika-staging deployment/mandalika-worker
