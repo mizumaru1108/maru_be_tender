@@ -27,8 +27,8 @@ cache:
       changes:
         - "packages/raise/**/*"
         - "kube/tmra-raise/**/*"
-    # You can manually trigger the pipeline with BUILD_PACKAGE=raise
-    - if: '$CI_COMMIT_BRANCH == "stack/dev" && $BUILD_PACKAGE == "raise"'
+    # You can manually trigger the pipeline with BUILD_PACKAGE=tmra-raise
+    - if: '$CI_COMMIT_BRANCH == "stack/dev" && $BUILD_PACKAGE == "tmra-raise"'
 
 publish_raise_dev:
   stage: build
@@ -67,30 +67,18 @@ deploy_raise_dev:
   trigger: tamrah/tmra-devops
   variables:
     APP_ENV: dev
-    BUILD_PACKAGE: raise
+    BUILD_PACKAGE: tmra-raise
   rules:
     - !reference [.dev_rules, rules]
 
-# deploy_raise_dev:
-#   stage: deploy
-#   image:
-#     name: dtzar/helm-kubectl:latest
-#     entrypoint: ['']
-#   script:
-#     #  - kubectl config get-contexts
-#     - kubectl config use-context tamrah/tmra-devops:main-prod-in
-#     # - kubectl rollout restart -n tmra-staging deployment/tmra-raise
-#     - helm upgrade --install -n tmra-dev tmra-raise kube/tmra-raise/ --values kube/tmra-raise/values.yaml --set "image.tag=${APP_VERSION},replicaCount=2"
-#   environment:
-#     name: staging
-#     # url: https://raise-api-staging.tmra.io
-#   # only:
-#   #   - stack/staging
-#   rules:
-#     - if: '$CI_COMMIT_BRANCH == "stack/dev" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-#       changes:
-#         - "packages/raise/**/*"
-#         - "kube/tmra-raise/**/*"
+.staging_rules:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stack/staging" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
+      changes:
+        - "packages/raise/**/*"
+        - "kube/tmra-raise/**/*"
+    # You can manually trigger the pipeline with BUILD_PACKAGE=tmra-raise
+    - if: '$CI_COMMIT_BRANCH == "stack/staging" && $BUILD_PACKAGE == "tmra-raise"'
 
 publish_raise_staging:
   stage: build
@@ -119,36 +107,28 @@ publish_raise_staging:
   artifacts:
     reports:
       dotenv: build.env
-  # only:
-  #   - stack/staging
   rules:
-    - if: '$CI_COMMIT_BRANCH == "stack/staging" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
+    - !reference [.staging_rules, rules]
+
+deploy_raise_staging:
+  stage: deploy
+  needs:
+    - publish_raise_staging
+  trigger: tamrah/tmra-devops
+  variables:
+    APP_ENV: staging
+    BUILD_PACKAGE: tmra-raise
+  rules:
+    - !reference [.staging_rules, rules]
+
+.prod_rules:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stack/prod" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
       changes:
         - "packages/raise/**/*"
         - "kube/tmra-raise/**/*"
-    # You can manually trigger the pipeline with BUILD_PACKAGE=raise
-    - if: '$CI_COMMIT_BRANCH == "stack/staging" && $BUILD_PACKAGE == "raise"'
-
-# deploy_raise_staging:
-#   stage: deploy
-#   image:
-#     name: dtzar/helm-kubectl:latest
-#     entrypoint: ['']
-#   script:
-#     #  - kubectl config get-contexts
-#     - kubectl config use-context tamrah/tmra-devops:main-prod-in
-#     # - kubectl rollout restart -n tmra-staging deployment/tmra-raise
-#     - helm upgrade --install -n tmra-staging tmra-raise kube/tmra-raise/ --values kube/tmra-raise/values.yaml --set "image.tag=${APP_VERSION},replicaCount=2"
-#   environment:
-#     name: staging
-#     # url: https://raise-api-staging.tmra.io
-#   # only:
-#   #   - stack/staging
-#   rules:
-#     - if: '$CI_COMMIT_BRANCH == "stack/staging" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-#       changes:
-#         - "packages/raise/**/*"
-#         - "kube/tmra-raise/**/*"
+    # You can manually trigger the pipeline with BUILD_PACKAGE=tmra-raise
+    - if: '$CI_COMMIT_BRANCH == "stack/prod" && $BUILD_PACKAGE == "tmra-raise"'
 
 publish_raise_latest:
   stage: build
@@ -177,32 +157,16 @@ publish_raise_latest:
   artifacts:
     reports:
       dotenv: build.env
-  # only:
-  #   - stack/prod
   rules:
-    - if: '$CI_COMMIT_BRANCH == "stack/prod" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-      changes:
-        - "packages/raise/**/*"
-        - "kube/tmra-raise/**/*"
-    # You can manually trigger the pipeline with BUILD_PACKAGE=raise
-    - if: '$CI_COMMIT_BRANCH == "stack/prod" && $BUILD_PACKAGE == "raise"'
-# deploy_raise_prod:
-#   stage: deploy
-#   image:
-#     name: dtzar/helm-kubectl:latest
-#     entrypoint: ['']
-#   script:
-#     #  - kubectl config get-contexts
-#     - kubectl config use-context tamrah/tmra-devops:main-prod-in
-#     # - kubectl rollout restart -n mandalika-staging deployment/mandalika-worker
-#     - helm upgrade --install -n tmra-prod tmra-raise kube/tmra-raise/ --values kube/tmra-raise/values.yaml --set "image.tag=${APP_VERSION},replicaCount=2"
-#   environment:
-#     name: prod
-#     # url: https://raise-api.tmra.io
-#   # only:
-#   #   - stack/prod
-#   rules:
-#     - if: '$CI_COMMIT_BRANCH == "stack/prod" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-#       changes:
-#         - "packages/raise/**/*"
-#         - "kube/tmra-raise/**/*"
+    - !reference [.prod_rules, rules]
+
+deploy_raise_prod:
+  stage: deploy
+  needs:
+    - publish_raise_prod
+  trigger: tamrah/tmra-devops
+  variables:
+    APP_ENV: prod
+    BUILD_PACKAGE: tmra-raise
+  rules:
+    - !reference [.prod_rules, rules]
