@@ -65,81 +65,30 @@ export default function Router() {
     {
       path: 'dashboard',
       element: (
-        <AuthGuard>
           <DashboardLayout />
-        </AuthGuard>
       ),
       children: [
         { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
         { path: 'app', element: <GeneralApp /> },
-        { path: 'ecommerce', element: <GeneralEcommerce /> },
-        { path: 'analytics', element: <GeneralAnalytics /> },
-        { path: 'banking', element: <GeneralBanking /> },
-        { path: 'booking', element: <GeneralBooking /> },
-
-        {
-          path: 'e-commerce',
+        { path: 'fundraising', element: <GeneralEcommerce /> },
+        { 
+          path: 'hr', 
           children: [
-            { element: <Navigate to="/dashboard/e-commerce/shop" replace />, index: true },
-            { path: 'shop', element: <EcommerceShop /> },
-            { path: 'product/:name', element: <EcommerceProductDetails /> },
-            { path: 'list', element: <EcommerceProductList /> },
-            { path: 'product/new', element: <EcommerceProductCreate /> },
-            { path: 'product/:name/edit', element: <EcommerceProductCreate /> },
-            { path: 'checkout', element: <EcommerceCheckout /> },
-          ],
+            { element: <Navigate to="/dashboard/hr/home" replace />, index: true },
+            { path: 'home', element: <GeneralBanking /> },
+            {
+              path: 'employee',
+              children: [
+                { element: <Navigate to="/dashboard/hr/employee/list" replace />, index: true },
+                { path: 'list', element: <EcommerceShop /> },
+                { path: 'type', element: <EcommerceShop /> },
+                { path: 'dapartement', element: <EcommerceShop /> },
+                { path: 'designation', element: <EcommerceShop /> },
+                { path: 'branch', element: <EcommerceShop /> }
+              ]
+            }
+          ]
         },
-        {
-          path: 'user',
-          children: [
-            { element: <Navigate to="/dashboard/user/profile" replace />, index: true },
-            { path: 'profile', element: <UserProfile /> },
-            { path: 'cards', element: <UserCards /> },
-            { path: 'list', element: <UserList /> },
-            { path: 'new', element: <UserCreate /> },
-            { path: ':name/edit', element: <UserCreate /> },
-            { path: 'account', element: <UserAccount /> },
-          ],
-        },
-        {
-          path: 'invoice',
-          children: [
-            { element: <Navigate to="/dashboard/invoice/list" replace />, index: true },
-            { path: 'list', element: <InvoiceList /> },
-            { path: ':id', element: <InvoiceDetails /> },
-            { path: ':id/edit', element: <InvoiceEdit /> },
-            { path: 'new', element: <InvoiceCreate /> },
-          ],
-        },
-        {
-          path: 'blog',
-          children: [
-            { element: <Navigate to="/dashboard/blog/posts" replace />, index: true },
-            { path: 'posts', element: <BlogPosts /> },
-            { path: 'post/:title', element: <BlogPost /> },
-            { path: 'new', element: <BlogNewPost /> },
-          ],
-        },
-        {
-          path: 'mail',
-          children: [
-            { element: <Navigate to="/dashboard/mail/all" replace />, index: true },
-            { path: 'label/:customLabel', element: <Mail /> },
-            { path: 'label/:customLabel/:mailId', element: <Mail /> },
-            { path: ':systemLabel', element: <Mail /> },
-            { path: ':systemLabel/:mailId', element: <Mail /> },
-          ],
-        },
-        {
-          path: 'chat',
-          children: [
-            { element: <Chat />, index: true },
-            { path: 'new', element: <Chat /> },
-            { path: ':conversationKey', element: <Chat /> },
-          ],
-        },
-        { path: 'calendar', element: <Calendar /> },
-        { path: 'kanban', element: <Kanban /> },
       ],
     },
 
@@ -182,7 +131,6 @@ const VerifyCode = Loadable(lazy(() => import('../pages/auth/VerifyCode')));
 // GENERAL
 const GeneralApp = Loadable(lazy(() => import('../pages/dashboard/GeneralApp')));
 const GeneralEcommerce = Loadable(lazy(() => import('../pages/dashboard/GeneralEcommerce')));
-const GeneralAnalytics = Loadable(lazy(() => import('../pages/dashboard/GeneralAnalytics')));
 const GeneralBanking = Loadable(lazy(() => import('../pages/dashboard/GeneralBanking')));
 const GeneralBooking = Loadable(lazy(() => import('../pages/dashboard/GeneralBooking')));
 
