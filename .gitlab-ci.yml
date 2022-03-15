@@ -163,7 +163,7 @@ publish_raise_latest:
 deploy_raise_prod:
   stage: deploy
   needs:
-    - publish_raise_prod
+    - publish_raise_latest
   trigger: tamrah/tmra-devops
   variables:
     APP_ENV: prod
