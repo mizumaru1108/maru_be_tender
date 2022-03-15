@@ -69,6 +69,10 @@ deploy_raise_dev:
       changes:
         - "packages/raise/**/*"
         - "kube/tmra-raise/**/*"
+    # You can manually trigger the pipeline with BUILD_PACKAGE=raise
+    - if: '$CI_COMMIT_BRANCH == "stack/dev" && BUILD_PACKAGE=raise'
+      when: manual
+      allow_failure: false
 
 # deploy_raise_dev:
 #   stage: deploy
@@ -125,6 +129,10 @@ publish_raise_staging:
       changes:
         - "packages/raise/**/*"
         - "kube/tmra-raise/**/*"
+    # You can manually trigger the pipeline with BUILD_PACKAGE=raise
+    - if: '$CI_COMMIT_BRANCH == "stack/staging" && BUILD_PACKAGE=raise'
+      when: manual
+      allow_failure: false
 
 # deploy_raise_staging:
 #   stage: deploy
@@ -181,6 +189,10 @@ publish_raise_latest:
       changes:
         - "packages/raise/**/*"
         - "kube/tmra-raise/**/*"
+    # You can manually trigger the pipeline with BUILD_PACKAGE=raise
+    - if: '$CI_COMMIT_BRANCH == "stack/prod" && BUILD_PACKAGE=raise'
+      when: manual
+      allow_failure: false
 
 # deploy_raise_prod:
 #   stage: deploy
