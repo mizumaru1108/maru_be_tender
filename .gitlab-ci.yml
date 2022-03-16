@@ -50,8 +50,8 @@ publish_raise_dev:
       --context "${CI_PROJECT_DIR}"
       --dockerfile "${CI_PROJECT_DIR}/packages/raise/Dockerfile"
       --build-arg=APP_VERSION="${APP_VERSION}"
-      --destination "${CI_REGISTRY_IMAGE}/raise:${APP_VERSION}"
-      --destination "${CI_REGISTRY_IMAGE}/raise:dev"
+      --destination "${CI_REGISTRY_IMAGE}/tmra-raise:${APP_VERSION}"
+      --destination "${CI_REGISTRY_IMAGE}/tmra-raise:dev"
   #      --destination "$DOCKER_REGISTRY/$APP_NAME:$CI_COMMIT_SHA"
   #      --destination "$DOCKER_REGISTRY/$APP_NAME:staging"
   artifacts:
@@ -100,8 +100,8 @@ publish_raise_staging:
       --context "${CI_PROJECT_DIR}"
       --dockerfile "${CI_PROJECT_DIR}/packages/raise/Dockerfile"
       --build-arg=APP_VERSION="${APP_VERSION}"
-      --destination "${CI_REGISTRY_IMAGE}/raise:${APP_VERSION}"
-      --destination "${CI_REGISTRY_IMAGE}/raise:staging"
+      --destination "${CI_REGISTRY_IMAGE}/tmra-raise:${APP_VERSION}"
+      --destination "${CI_REGISTRY_IMAGE}/tmra-raise:staging"
   #      --destination "$DOCKER_REGISTRY/$APP_NAME:$CI_COMMIT_SHA"
   #      --destination "$DOCKER_REGISTRY/$APP_NAME:staging"
   artifacts:
