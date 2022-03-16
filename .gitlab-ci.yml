@@ -26,7 +26,6 @@ cache:
     - if: '$CI_COMMIT_BRANCH == "stack/dev" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
       changes:
         - "packages/raise/**/*"
-        - "kube/tmra-raise/**/*"
     # You can manually trigger the pipeline with BUILD_PACKAGE=tmra-raise
     - if: '$CI_COMMIT_BRANCH == "stack/dev" && $BUILD_PACKAGE == "tmra-raise"'
 
@@ -62,8 +61,6 @@ publish_raise_dev:
 
 deploy_raise_dev:
   stage: deploy
-  needs:
-    - publish_raise_dev
   trigger: tamrah/tmra-devops
   variables:
     APP_ENV: dev
@@ -76,7 +73,6 @@ deploy_raise_dev:
     - if: '$CI_COMMIT_BRANCH == "stack/staging" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
       changes:
         - "packages/raise/**/*"
-        - "kube/tmra-raise/**/*"
     # You can manually trigger the pipeline with BUILD_PACKAGE=tmra-raise
     - if: '$CI_COMMIT_BRANCH == "stack/staging" && $BUILD_PACKAGE == "tmra-raise"'
 
@@ -112,8 +108,6 @@ publish_raise_staging:
 
 deploy_raise_staging:
   stage: deploy
-  needs:
-    - publish_raise_staging
   trigger: tamrah/tmra-devops
   variables:
     APP_ENV: staging
@@ -126,7 +120,6 @@ deploy_raise_staging:
     - if: '$CI_COMMIT_BRANCH == "stack/prod" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
       changes:
         - "packages/raise/**/*"
-        - "kube/tmra-raise/**/*"
     # You can manually trigger the pipeline with BUILD_PACKAGE=tmra-raise
     - if: '$CI_COMMIT_BRANCH == "stack/prod" && $BUILD_PACKAGE == "tmra-raise"'
 
@@ -162,8 +155,6 @@ publish_raise_latest:
 
 deploy_raise_prod:
   stage: deploy
-  needs:
-    - publish_raise_latest
   trigger: tamrah/tmra-devops
   variables:
     APP_ENV: prod
