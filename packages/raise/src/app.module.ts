@@ -11,6 +11,12 @@ import { PaymentPaytabsModule } from './payment-paytabs/payment-paytabs.module';
 import { PaymentStripeModule } from './payment-stripe/payment-stripe.module';
 import { PaymentXenditModule } from './payment-xendit/payment-xendit.module';
 import { ProjectsModule } from './projects/projects.module';
+import { AccountsModule } from './accounts/accounts.module';
+import { OrgService } from './org/org.service';
+import { OrgController } from './org/org.controller';
+import { ContactsModule } from './contacts/contacts.module';
+import { CrmModule } from './crm/crm.module';
+import { HrModule } from './hr/hr.module';
 
 @Module({
   imports: [
@@ -26,8 +32,12 @@ import { ProjectsModule } from './projects/projects.module';
     PaymentHyperpayModule,
     GeoModule,
     ProjectsModule,
+    AccountsModule,
+    ContactsModule,
+    CrmModule,
+    HrModule,
   ],
-  controllers: [],
-  providers: [],
+  controllers: [OrgController],
+  providers: [OrgService],
 })
 export class AppModule {}
