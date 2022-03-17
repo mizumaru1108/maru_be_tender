@@ -17,6 +17,9 @@ import { OrgController } from './org/org.controller';
 import { ContactsModule } from './contacts/contacts.module';
 import { CrmModule } from './crm/crm.module';
 import { HrModule } from './hr/hr.module';
+import { FundraisingGiftModule } from './fundraising-gift/fundraising-gift.module';
+import { IntegrationsModule } from './yarn/integrations/integrations.module';
+import { IntegrationsController } from './integrations/integrations.controller';
 
 @Module({
   imports: [
@@ -36,8 +39,10 @@ import { HrModule } from './hr/hr.module';
     ContactsModule,
     CrmModule,
     HrModule,
+    FundraisingGiftModule,
+    IntegrationsModule,
   ],
-  controllers: [OrgController],
+  controllers: [OrgController, IntegrationsController],
   providers: [OrgService],
 })
 export class AppModule {}
