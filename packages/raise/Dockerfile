@@ -47,5 +47,5 @@ COPY --from=builder /home/node/.yarn/ ./.yarn/
 COPY --from=builder /home/node/packages/raise/dist/ ./packages/raise/dist/
 
 EXPOSE 3000
-# CMD ["node", "-r", "./.pnp.cjs", "packages/raise/dist/main.js"]
-CMD ["node", "packages/raise/dist/main.js"]
+CMD ["node", "-r", "./.pnp.cjs", "packages/raise/dist/main.js"]
+# CMD ["node", "packages/raise/dist/main.js"]

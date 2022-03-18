@@ -13,7 +13,10 @@ To set this up:
 yarn dlx @yarnpkg/sdks vscode
 ```
 
-Then in your IDE, open `app.module.ts`, press Ctrl+Shift+P, select "TypeScript: Select TypeScript Version..."
+Then in your IDE:
+
+1. It may show pop-up to ask permission for Workspace Version, choose Allow.
+2. Open any `*.ts` file, press Ctrl+Shift+P, select "TypeScript: Select TypeScript Version..." > "Use Workspace Version".
 
 Reference: https://yarnpkg.com/getting-started/editor-sdks#vscode
 
