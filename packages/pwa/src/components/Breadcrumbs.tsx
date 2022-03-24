@@ -20,9 +20,10 @@ type TLink = {
 export interface Props extends BreadcrumbsProps {
   links: TLink[];
   activeLast?: boolean;
+  customSeparator?: ReactElement | string;
 }
 
-export default function Breadcrumbs({ links, activeLast = false, ...other }: Props) {
+export default function Breadcrumbs({ links, activeLast = false, customSeparator, ...other }: Props) {
   const currentLink = links[links.length - 1].name;
 
   const listDefault = links.map((link) => <LinkItem key={link.name} link={link} />);
@@ -51,6 +52,7 @@ export default function Breadcrumbs({ links, activeLast = false, ...other }: Pro
   return (
     <MUIBreadcrumbs
       separator={
+        customSeparator ? customSeparator :
         <Box
           component="span"
           sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: 'text.disabled' }}

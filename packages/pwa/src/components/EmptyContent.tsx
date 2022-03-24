@@ -1,6 +1,7 @@
 // @mui
 import { styled } from '@mui/material/styles';
-import { Typography, Box, BoxProps } from '@mui/material';
+import { Typography, Box, BoxProps, Button } from '@mui/material';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 //
 import Image from './Image';
 
@@ -22,9 +23,10 @@ interface Props extends BoxProps {
   title: string;
   img?: string;
   description?: string;
+  actionButton?: React.ReactNode;
 }
 
-export default function EmptyContent({ title, description, img, ...other }: Props) {
+export default function EmptyContent({ title, description, img, actionButton, ...other }: Props) {
   return (
     <RootStyle {...other}>
       <Image
@@ -38,15 +40,17 @@ export default function EmptyContent({ title, description, img, ...other }: Prop
         sx={{ height: 240, mb: 3 }}
       />
 
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h4" gutterBottom>
         {title}
       </Typography>
 
       {description && (
-        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+        <Typography variant="body1" sx={{ color: 'text.secondary' }}>
           {description}
         </Typography>
       )}
+      {actionButton && actionButton}
+
     </RootStyle>
   );
 }

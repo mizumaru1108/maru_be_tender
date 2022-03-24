@@ -25,12 +25,11 @@ export default function TableSelectedActions({
       sx={{
         px: 2,
         top: 0,
-        right: 8,
         zIndex: 9,
         height: 58,
         borderRadius: 1,
         position: 'absolute',
-        width: 'calc(100% - 16px)',
+        width: '100%',
         bgcolor: 'primary.lighter',
         ...(dense && {
           pl: 1,

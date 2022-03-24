@@ -9,9 +9,10 @@ import MenuPopover from '../MenuPopover';
 
 type Props = {
   actions: React.ReactNode;
+  direction?: 'vertical' | 'horizontal';
 };
 
-export default function TableMoreMenu({ actions }: Props) {
+export default function TableMoreMenu({ actions, direction }: Props) {
   const [open, setOpen] = useState<HTMLElement | null>(null);
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -25,7 +26,7 @@ export default function TableMoreMenu({ actions }: Props) {
   return (
     <>
       <IconButton onClick={handleOpen}>
-        <Iconify icon={'eva:more-vertical-fill'} width={20} height={20} />
+        <Iconify icon={direction ? `eva:more-${direction}-fill` : 'eva:more-vertical-fill'} width={20} height={20} />
       </IconButton>
 
       <MenuPopover
