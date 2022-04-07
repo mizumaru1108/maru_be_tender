@@ -1,6 +1,7 @@
+import { useState } from 'react';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Checkbox, TableRow, TableCell, Typography, Stack, Link } from '@mui/material';
+import { Checkbox, TableRow, TableCell, Typography, Stack, Link, MenuItem } from '@mui/material';
 // utils
 import { fDate } from '../../../../utils/formatTime';
 import createAvatar from '../../../../utils/createAvatar';
@@ -8,8 +9,9 @@ import { fCurrency } from '../../../../utils/formatNumber';
 // @types
 import { Invoice } from '../../../../@types/invoice';
 // components
-import Avatar from '../../../../components/Avatar';
 import Label from '../../../../components/Label';
+import Avatar from '../../../../components/Avatar';
+import Iconify from '../../../../components/Iconify';
 import { TableMoreMenu } from '../../../../components/table';
 
 // ----------------------------------------------------------------------
@@ -19,13 +21,31 @@ type Props = {
   selected: boolean;
   onSelectRow: VoidFunction;
   onViewRow: VoidFunction;
-  actions?: React.ReactNode;
+  onEditRow: VoidFunction;
+  onDeleteRow: VoidFunction;
 };
 
-export default function InvoiceTableRow({ actions, row, selected, onSelectRow, onViewRow }: Props) {
+export default function InvoiceTableRow({
+  row,
+  selected,
+  onSelectRow,
+  onViewRow,
+  onEditRow,
+  onDeleteRow,
+}: Props) {
   const theme = useTheme();
 
   const { sent, invoiceNumber, createDate, dueDate, status, invoiceTo, totalPrice } = row;
+
+  const [openMenu, setOpenMenuActions] = useState<HTMLElement | null>(null);
+
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setOpenMenuActions(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setOpenMenuActions(null);
+  };
 
   return (
     <TableRow hover selected={selected}>
@@ -80,7 +100,45 @@ export default function InvoiceTableRow({ actions, row, selected, onSelectRow, o
       </TableCell>
 
       <TableCell align="right">
-        <TableMoreMenu actions={actions} />
+        <TableMoreMenu
+          open={openMenu}
+          onOpen={handleOpenMenu}
+          onClose={handleCloseMenu}
+          actions={
+            <>
+              <MenuItem
+                onClick={() => {
+                  onDeleteRow();
+                  handleCloseMenu();
+                }}
+                sx={{ color: 'error.main' }}
+              >
+                <Iconify icon={'eva:trash-2-outline'} />
+                Delete
+              </MenuItem>
+
+              <MenuItem
+                onClick={() => {
+                  onViewRow();
+                  handleCloseMenu();
+                }}
+              >
+                <Iconify icon={'eva:eye-fill'} />
+                View
+              </MenuItem>
+
+              <MenuItem
+                onClick={() => {
+                  onEditRow();
+                  handleCloseMenu();
+                }}
+              >
+                <Iconify icon={'eva:edit-fill'} />
+                Edit
+              </MenuItem>
+            </>
+          }
+        />
       </TableCell>
     </TableRow>
   );

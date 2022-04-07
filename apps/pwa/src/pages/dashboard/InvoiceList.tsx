@@ -14,7 +14,6 @@ import {
   Button,
   Tooltip,
   Divider,
-  MenuItem,
   TableBody,
   Container,
   IconButton,
@@ -39,9 +38,9 @@ import Iconify from '../../components/Iconify';
 import Scrollbar from '../../components/Scrollbar';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 import {
+  TableNoData,
   TableEmptyRows,
   TableHeadCustom,
-  TableSearchNotFound,
   TableSelectedActions,
 } from '../../components/table';
 // sections
@@ -148,7 +147,14 @@ export default function InvoiceList() {
     filterEndDate,
   });
 
-  const isNotFound = !dataFiltered.length;
+  const isNotFound =
+    (!dataFiltered.length && !!filterName) ||
+    (!dataFiltered.length && !!filterStatus) ||
+    (!dataFiltered.length && !!filterService) ||
+    (!dataFiltered.length && !!filterEndDate) ||
+    (!dataFiltered.length && !!filterStartDate);
+
+  const denseHeight = dense ? 56 : 76;
 
   const getLengthByStatus = (status: string) =>
     tableData.filter((item) => item.status === status).length;
@@ -353,37 +359,18 @@ export default function InvoiceList() {
                         selected={selected.includes(row.id)}
                         onSelectRow={() => onSelectRow(row.id)}
                         onViewRow={() => handleViewRow(row.id)}
-                        actions={
-                          <>
-                            <MenuItem
-                              onClick={() => handleDeleteRow(row.id)}
-                              sx={{ color: 'error.main' }}
-                            >
-                              <Iconify icon={'eva:trash-2-outline'} />
-                              Delete
-                            </MenuItem>
-
-                            <MenuItem onClick={() => handleViewRow(row.id)}>
-                              <Iconify icon={'eva:eye-fill'} />
-                              View
-                            </MenuItem>
-
-                            <MenuItem onClick={() => handleEditRow(row.id)}>
-                              <Iconify icon={'eva:edit-fill'} />
-                              Edit
-                            </MenuItem>
-                          </>
-                        }
+                        onEditRow={() => handleEditRow(row.id)}
+                        onDeleteRow={() => handleDeleteRow(row.id)}
                       />
                     ))}
 
                   <TableEmptyRows
-                    height={dense ? 56 : 76}
+                    height={denseHeight}
                     emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
                   />
-                </TableBody>
 
-                {isNotFound && <TableSearchNotFound />}
+                  <TableNoData isNotFound={isNotFound} />
+                </TableBody>
               </Table>
             </TableContainer>
           </Scrollbar>

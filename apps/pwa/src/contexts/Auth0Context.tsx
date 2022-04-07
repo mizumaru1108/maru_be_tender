@@ -2,6 +2,8 @@ import { createContext, ReactNode, useEffect, useReducer } from 'react';
 import { Auth0Client } from '@auth0/auth0-spa-js';
 // @types
 import { ActionMap, AuthState, AuthUser, Auth0ContextType } from '../@types/auth';
+// routes
+import { PATH_AUTH } from '../routes/paths';
 //
 import { AUTH0_API } from '../config';
 
@@ -119,6 +121,7 @@ function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = () => {
     auth0Client?.logout();
+    window.location.href = PATH_AUTH.login;
     dispatch({ type: Types.logout });
   };
 

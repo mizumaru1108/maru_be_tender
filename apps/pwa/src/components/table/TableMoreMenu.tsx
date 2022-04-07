@@ -1,4 +1,3 @@
-import { useState } from 'react';
 // @mui
 import { IconButton } from '@mui/material';
 //
@@ -9,30 +8,27 @@ import MenuPopover from '../MenuPopover';
 
 type Props = {
   actions: React.ReactNode;
+  open?: HTMLElement | null;
+  onClose?: VoidFunction;
+  onOpen?: (event: React.MouseEvent<HTMLElement>) => void;
   direction?: 'vertical' | 'horizontal';
 };
 
-export default function TableMoreMenu({ actions, direction }: Props) {
-  const [open, setOpen] = useState<HTMLElement | null>(null);
-
-  const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setOpen(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setOpen(null);
-  };
-
+export default function TableMoreMenu({ actions, open, onClose, onOpen, direction }: Props) {
   return (
     <>
-      <IconButton onClick={handleOpen}>
-        <Iconify icon={direction ? `eva:more-${direction}-fill` : 'eva:more-vertical-fill'} width={20} height={20} />
+      <IconButton onClick={onOpen}>
+        <Iconify
+          icon={direction ? `eva:more-${direction}-fill` : 'eva:more-vertical-fill'}
+          width={20}
+          height={20}
+        />
       </IconButton>
 
       <MenuPopover
         open={Boolean(open)}
         anchorEl={open}
-        onClose={handleClose}
+        onClose={onClose}
         anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         arrow="right-top"

@@ -1,6 +1,7 @@
+import { useState } from 'react';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Avatar, Checkbox, TableRow, TableCell, Typography } from '@mui/material';
+import { Avatar, Checkbox, TableRow, TableCell, Typography, MenuItem } from '@mui/material';
 // @types
 import { UserManager } from '../../../../@types/user';
 // components
@@ -13,14 +14,31 @@ import { TableMoreMenu } from '../../../../components/table';
 type Props = {
   row: UserManager;
   selected: boolean;
+  onEditRow: VoidFunction;
   onSelectRow: VoidFunction;
-  actions?: React.ReactNode;
+  onDeleteRow: VoidFunction;
 };
 
-export default function UserTableRow({ actions, row, selected, onSelectRow }: Props) {
+export default function UserTableRow({
+  row,
+  selected,
+  onEditRow,
+  onSelectRow,
+  onDeleteRow,
+}: Props) {
   const theme = useTheme();
 
   const { name, avatarUrl, company, role, isVerified, status } = row;
+
+  const [openMenu, setOpenMenuActions] = useState<HTMLElement | null>(null);
+
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setOpenMenuActions(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setOpenMenuActions(null);
+  };
 
   return (
     <TableRow hover selected={selected}>
@@ -64,7 +82,34 @@ export default function UserTableRow({ actions, row, selected, onSelectRow }: Pr
       </TableCell>
 
       <TableCell align="right">
-        <TableMoreMenu actions={actions} />
+        <TableMoreMenu
+          open={openMenu}
+          onOpen={handleOpenMenu}
+          onClose={handleCloseMenu}
+          actions={
+            <>
+              <MenuItem
+                onClick={() => {
+                  onDeleteRow();
+                  handleCloseMenu();
+                }}
+                sx={{ color: 'error.main' }}
+              >
+                <Iconify icon={'eva:trash-2-outline'} />
+                Delete
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  onEditRow();
+                  handleCloseMenu();
+                }}
+              >
+                <Iconify icon={'eva:edit-fill'} />
+                Edit
+              </MenuItem>
+            </>
+          }
+        />
       </TableCell>
     </TableRow>
   );

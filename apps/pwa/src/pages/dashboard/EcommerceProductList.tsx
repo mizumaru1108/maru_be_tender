@@ -1,6 +1,6 @@
 import { paramCase } from 'change-case';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 // @mui
 import {
   Box,
@@ -9,7 +9,6 @@ import {
   Button,
   Switch,
   Tooltip,
-  MenuItem,
   TableBody,
   Container,
   IconButton,
@@ -33,9 +32,10 @@ import Iconify from '../../components/Iconify';
 import Scrollbar from '../../components/Scrollbar';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 import {
+  TableNoData,
+  TableSkeleton,
   TableEmptyRows,
   TableHeadCustom,
-  TableSearchNotFound,
   TableSelectedActions,
 } from '../../components/table';
 // sections
@@ -84,7 +84,7 @@ export default function EcommerceProductList() {
 
   const dispatch = useDispatch();
 
-  const { products } = useSelector((state) => state.product);
+  const { products, isLoading } = useSelector((state) => state.product);
 
   const [tableData, setTableData] = useState<Product[]>([]);
 
@@ -127,7 +127,9 @@ export default function EcommerceProductList() {
     filterName,
   });
 
-  const isNotFound = !dataFiltered.length;
+  const denseHeight = dense ? 60 : 80;
+
+  const isNotFound = (!dataFiltered.length && !!filterName) || (!isLoading && !dataFiltered.length);
 
   return (
     <Page title="Ecommerce: Product List">
@@ -197,39 +199,30 @@ export default function EcommerceProductList() {
                 />
 
                 <TableBody>
-                  {dataFiltered
+                  {(isLoading ? [...Array(rowsPerPage)] : dataFiltered)
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => (
-                      <ProductTableRow
-                        key={row.id}
-                        row={row}
-                        selected={selected.includes(row.id)}
-                        onSelectRow={() => onSelectRow(row.id)}
-                        actions={
-                          <>
-                            <MenuItem
-                              onClick={() => handleDeleteRow(row.id)}
-                              sx={{ color: 'error.main' }}
-                            >
-                              <Iconify icon={'eva:trash-2-outline'} />
-                              Delete
-                            </MenuItem>
-                            <MenuItem onClick={() => handleEditRow(row.name)}>
-                              <Iconify icon={'eva:edit-fill'} />
-                              Edit
-                            </MenuItem>
-                          </>
-                        }
-                      />
-                    ))}
+                    .map((row, index) =>
+                      row ? (
+                        <ProductTableRow
+                          key={row.id}
+                          row={row}
+                          selected={selected.includes(row.id)}
+                          onSelectRow={() => onSelectRow(row.id)}
+                          onDeleteRow={() => handleDeleteRow(row.id)}
+                          onEditRow={() => handleEditRow(row.name)}
+                        />
+                      ) : (
+                        !isNotFound && <TableSkeleton key={index} sx={{ height: denseHeight }} />
+                      )
+                    )}
 
                   <TableEmptyRows
-                    height={dense ? 60 : 80}
+                    height={denseHeight}
                     emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
                   />
-                </TableBody>
 
-                {isNotFound && <TableSearchNotFound />}
+                  <TableNoData isNotFound={isNotFound} />
+                </TableBody>
               </Table>
             </TableContainer>
           </Scrollbar>

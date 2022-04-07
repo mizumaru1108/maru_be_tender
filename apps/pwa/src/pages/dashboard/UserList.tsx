@@ -12,7 +12,6 @@ import {
   Button,
   Tooltip,
   Divider,
-  MenuItem,
   TableBody,
   Container,
   IconButton,
@@ -36,9 +35,9 @@ import Iconify from '../../components/Iconify';
 import Scrollbar from '../../components/Scrollbar';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 import {
+  TableNoData,
   TableEmptyRows,
   TableHeadCustom,
-  TableSearchNotFound,
   TableSelectedActions,
 } from '../../components/table';
 // sections
@@ -137,7 +136,12 @@ export default function UserList() {
     filterStatus,
   });
 
-  const isNotFound = !dataFiltered.length;
+  const denseHeight = dense ? 52 : 72;
+
+  const isNotFound =
+    (!dataFiltered.length && !!filterName) ||
+    (!dataFiltered.length && !!filterRole) ||
+    (!dataFiltered.length && !!filterStatus);
 
   return (
     <Page title="User: List">
@@ -233,31 +237,18 @@ export default function UserList() {
                         row={row}
                         selected={selected.includes(row.id)}
                         onSelectRow={() => onSelectRow(row.id)}
-                        actions={
-                          <>
-                            <MenuItem
-                              onClick={() => handleDeleteRow(row.id)}
-                              sx={{ color: 'error.main' }}
-                            >
-                              <Iconify icon={'eva:trash-2-outline'} />
-                              Delete
-                            </MenuItem>
-                            <MenuItem onClick={() => handleEditRow(row.name)}>
-                              <Iconify icon={'eva:edit-fill'} />
-                              Edit
-                            </MenuItem>
-                          </>
-                        }
+                        onDeleteRow={() => handleDeleteRow(row.id)}
+                        onEditRow={() => handleEditRow(row.name)}
                       />
                     ))}
 
                   <TableEmptyRows
-                    height={dense ? 52 : 72}
+                    height={denseHeight}
                     emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
                   />
-                </TableBody>
 
-                {isNotFound && <TableSearchNotFound />}
+                  <TableNoData isNotFound={isNotFound} />
+                </TableBody>
               </Table>
             </TableContainer>
           </Scrollbar>

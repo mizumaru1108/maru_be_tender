@@ -1,6 +1,4 @@
-# Minimal_TypeScript_v3.2.0 - react-scripts_TS
-
-.
+# Minimal TypeScript v3.3.0 react-scripts_TS
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
