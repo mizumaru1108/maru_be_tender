@@ -2,43 +2,75 @@ import { ReactElement, forwardRef } from 'react';
 import { NavLink as RouterLink } from 'react-router-dom';
 // @mui
 import { Box, Link } from '@mui/material';
+// hooks
+import useLocales from '../../../hooks/useLocales';
+// guards
+import RoleBasedGuard from '../../../guards/RoleBasedGuard';
 // config
 import { ICON } from '../../../config';
 // type
 import { NavItemProps } from '../type';
 //
 import Iconify from '../../Iconify';
-import { ListItemStyle } from './style';
+import { ListItemStyle, ListItemStyleProps } from './style';
 import { isExternalLink } from '..';
 
 // ----------------------------------------------------------------------
 
+// HANDLE SHOW ITEM BY ROLE
+const ListItem = forwardRef<HTMLButtonElement & HTMLAnchorElement, ListItemStyleProps>(
+  (props, ref) => (
+    <RoleBasedGuard roles={props.roles}>
+      <ListItemStyle {...props} ref={ref}>
+        {props.children}
+      </ListItemStyle>
+    </RoleBasedGuard>
+  )
+);
+
 export const NavItemRoot = forwardRef<HTMLButtonElement & HTMLAnchorElement, NavItemProps>(
   ({ item, active, open, onMouseEnter, onMouseLeave }, ref) => {
-    const { title, path, icon, children } = item;
+    const { translate } = useLocales();
+
+    const { title, path, icon, children, disabled, roles } = item;
 
     if (children) {
       return (
-        <ListItemStyle
+        <ListItem
           ref={ref}
           open={open}
           activeRoot={active}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
+          disabled={disabled}
+          roles={roles}
         >
-          <NavItemContent icon={icon} title={title} children={children} />
-        </ListItemStyle>
+          <NavItemContent icon={icon} title={translate(title)} children={children} />
+        </ListItem>
       );
     }
 
     return isExternalLink(path) ? (
-      <ListItemStyle component={Link} href={path} target="_blank" rel="noopener">
-        <NavItemContent icon={icon} title={title} children={children} />
-      </ListItemStyle>
+      <ListItem
+        component={Link}
+        href={path}
+        target="_blank"
+        rel="noopener"
+        disabled={disabled}
+        roles={roles}
+      >
+        <NavItemContent icon={icon} title={translate(title)} children={children} />
+      </ListItem>
     ) : (
-      <ListItemStyle component={RouterLink} to={path} activeRoot={active}>
-        <NavItemContent icon={icon} title={title} children={children} />
-      </ListItemStyle>
+      <ListItem
+        component={RouterLink}
+        to={path}
+        activeRoot={active}
+        disabled={disabled}
+        roles={roles}
+      >
+        <NavItemContent icon={icon} title={translate(title)} children={children} />
+      </ListItem>
     );
   }
 );
@@ -47,11 +79,13 @@ export const NavItemRoot = forwardRef<HTMLButtonElement & HTMLAnchorElement, Nav
 
 export const NavItemSub = forwardRef<HTMLButtonElement & HTMLAnchorElement, NavItemProps>(
   ({ item, active, open, onMouseEnter, onMouseLeave }, ref) => {
-    const { title, path, icon, children } = item;
+    const { translate } = useLocales();
+
+    const { title, path, icon, children, disabled, roles } = item;
 
     if (children) {
       return (
-        <ListItemStyle
+        <ListItem
           ref={ref}
           subItem
           disableRipple
@@ -59,27 +93,39 @@ export const NavItemSub = forwardRef<HTMLButtonElement & HTMLAnchorElement, NavI
           activeSub={active}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
+          disabled={disabled}
+          roles={roles}
         >
-          <NavItemContent icon={icon} title={title} children={children} subItem />
-        </ListItemStyle>
+          <NavItemContent icon={icon} title={translate(title)} children={children} subItem />
+        </ListItem>
       );
     }
 
     return isExternalLink(path) ? (
-      <ListItemStyle
+      <ListItem
         subItem
         href={path}
         disableRipple
         rel="noopener"
         target="_blank"
         component={Link}
+        disabled={disabled}
+        roles={roles}
       >
-        <NavItemContent icon={icon} title={title} children={children} subItem />
-      </ListItemStyle>
+        <NavItemContent icon={icon} title={translate(title)} children={children} subItem />
+      </ListItem>
     ) : (
-      <ListItemStyle disableRipple component={RouterLink} to={path} activeSub={active} subItem>
-        <NavItemContent icon={icon} title={title} children={children} subItem />
-      </ListItemStyle>
+      <ListItem
+        disableRipple
+        component={RouterLink}
+        to={path}
+        activeSub={active}
+        subItem
+        disabled={disabled}
+        roles={roles}
+      >
+        <NavItemContent icon={icon} title={translate(title)} children={children} subItem />
+      </ListItem>
     );
   }
 );
@@ -94,6 +140,8 @@ type NavItemContentProps = {
 };
 
 function NavItemContent({ icon, title, children, subItem }: NavItemContentProps) {
+  const { translate } = useLocales();
+
   return (
     <>
       {icon && (
@@ -109,7 +157,9 @@ function NavItemContent({ icon, title, children, subItem }: NavItemContentProps)
           {icon}
         </Box>
       )}
-      {title}
+
+      {translate(title)}
+
       {children && (
         <Iconify
           icon={subItem ? 'eva:chevron-right-fill' : 'eva:chevron-down-fill'}

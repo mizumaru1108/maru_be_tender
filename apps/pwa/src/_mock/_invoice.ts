@@ -6,7 +6,7 @@ import { randomInArray, randomNumberRange } from './funcs';
 
 export const _invoices = [...Array(20)].map((_, index) => ({
   id: _mock.id(index),
-  invoiceNumber: `INV-${17048 + index}`,
+  invoiceNumber: `${17048 + index}`,
   taxes: 5,
   discount: 10,
   sent: randomNumberRange(1, 10),

@@ -44,14 +44,7 @@ export default function PricingPlanCard({ card, index }: Props) {
   return (
     <RootStyle>
       {index === 1 && (
-        <Label
-          color="info"
-          sx={{
-            top: 16,
-            right: 16,
-            position: 'absolute',
-          }}
-        >
+        <Label color="info" sx={{ top: 16, right: 16, position: 'absolute' }}>
           POPULAR
         </Label>
       )}
@@ -68,9 +61,11 @@ export default function PricingPlanCard({ card, index }: Props) {
         ) : (
           ''
         )}
+
         <Typography variant="h2" sx={{ mx: 1 }}>
           {price === 0 ? 'Free' : price}
         </Typography>
+
         {index === 1 || index === 2 ? (
           <Typography
             gutterBottom

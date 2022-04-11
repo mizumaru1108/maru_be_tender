@@ -42,6 +42,7 @@ export default function ShopProductCard({ product }: Props) {
             {status}
           </Label>
         )}
+
         <Image alt={name} src={cover} ratio="1/1" />
       </Box>
 

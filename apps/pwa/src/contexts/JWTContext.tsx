@@ -83,7 +83,7 @@ function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     const initialize = async () => {
       try {
-        const accessToken = window.localStorage.getItem('accessToken');
+        const accessToken = localStorage.getItem('accessToken');
 
         if (accessToken && isValidToken(accessToken)) {
           setSession(accessToken);
@@ -130,6 +130,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     const { accessToken, user } = response.data;
 
     setSession(accessToken);
+
     dispatch({
       type: Types.Login,
       payload: {
@@ -147,7 +148,8 @@ function AuthProvider({ children }: AuthProviderProps) {
     });
     const { accessToken, user } = response.data;
 
-    window.localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('accessToken', accessToken);
+
     dispatch({
       type: Types.Register,
       payload: {

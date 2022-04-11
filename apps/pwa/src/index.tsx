@@ -11,6 +11,7 @@ import 'simplebar/src/simplebar.css';
 import 'react-image-lightbox/style.css';
 
 // map
+import './utils/mapboxgl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 // editor

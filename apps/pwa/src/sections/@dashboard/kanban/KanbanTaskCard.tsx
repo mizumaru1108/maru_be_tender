@@ -20,7 +20,9 @@ type Props = {
 
 export default function KanbanTaskCard({ card, onDeleteTask, index }: Props) {
   const { name, attachments } = card;
+
   const [openDetails, setOpenDetails] = useState(false);
+
   const [completed, setCompleted] = useState(card.completed);
 
   const handleOpenDetails = () => {
@@ -71,6 +73,7 @@ export default function KanbanTaskCard({ card, onDeleteTask, index }: Props) {
                   }}
                 >
                   <Image
+                    alt={attachments[0]}
                     src={attachments[0]}
                     sx={{ position: 'absolute', top: 0, width: 1, height: 1 }}
                   />

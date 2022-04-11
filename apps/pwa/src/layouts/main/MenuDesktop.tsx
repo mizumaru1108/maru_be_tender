@@ -228,7 +228,7 @@ function MenuDesktopItem({
                                 hover: { scale: 1.02 },
                                 tap: { scale: 0.98 },
                               }}
-                              src="https://minimal-assets-api.vercel.app/assets/illustrations/illustration_dashboard.png"
+                              src="/assets/illustrations/illustration_dashboard.png"
                             />
                           </CardActionArea>
                         ) : (

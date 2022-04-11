@@ -67,13 +67,10 @@ export default function AccountGeneral() {
   });
 
   const {
-    watch,
     setValue,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-
-  console.log('values', watch());
 
   const onSubmit = async (data: FormValuesProps) => {
     try {

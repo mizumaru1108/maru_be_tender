@@ -39,7 +39,7 @@ export function NavListRoot({ list, isCollapse }: NavListRootProps) {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
               {(list.children || []).map((item) => (
-                <NavListSub key={item.title} list={item} />
+                <NavListSub key={item.title + item.path} list={item} />
               ))}
             </List>
           </Collapse>
@@ -74,7 +74,11 @@ function NavListSub({ list }: NavListSubProps) {
         <Collapse in={open} timeout="auto" unmountOnExit>
           <List component="div" disablePadding sx={{ pl: 3 }}>
             {(list.children || []).map((item) => (
-              <NavItemSub key={item.title} item={item} active={getActive(item.path, pathname)} />
+              <NavItemSub
+                key={item.title + item.path}
+                item={item}
+                active={getActive(item.path, pathname)}
+              />
             ))}
           </List>
         </Collapse>

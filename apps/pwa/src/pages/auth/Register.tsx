@@ -51,10 +51,10 @@ const SectionStyle = styled(Card)(({ theme }) => ({
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: 480,
   margin: 'auto',
-  display: 'flex',
   minHeight: '100vh',
-  flexDirection: 'column',
+  display: 'flex',
   justifyContent: 'center',
+  flexDirection: 'column',
   padding: theme.spacing(12, 0),
 }));
 
@@ -91,7 +91,7 @@ export default function Register() {
               visibleByDefault
               disabledEffect
               alt="register"
-              src="https://minimal-assets-api.vercel.app/assets/illustrations/illustration_register.png"
+              src="/assets/illustrations/illustration_register.png"
             />
           </SectionStyle>
         )}
@@ -111,7 +111,7 @@ export default function Register() {
                 <>
                   <Image
                     disabledEffect
-                    src={`https://minimal-assets-api.vercel.app/assets/icons/auth/ic_${method}.png`}
+                    src={`https://minimal-assets-api-dev.vercel.app/assets/icons/auth/ic_${method}.png`}
                     sx={{ width: 32, height: 32 }}
                   />
                 </>

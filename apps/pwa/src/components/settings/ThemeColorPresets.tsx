@@ -2,9 +2,9 @@ import { ReactNode, useMemo } from 'react';
 // @mui
 import { alpha, ThemeProvider, createTheme, useTheme } from '@mui/material/styles';
 // hooks
-import useSettings from '../hooks/useSettings';
+import useSettings from '../../hooks/useSettings';
 //
-import componentsOverride from '../theme/overrides';
+import componentsOverride from '../../theme/overrides';
 
 // ----------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ type Props = {
 
 export default function ThemeColorPresets({ children }: Props) {
   const defaultTheme = useTheme();
+
   const { setColor } = useSettings();
 
   const themeOptions = useMemo(
@@ -32,6 +33,7 @@ export default function ThemeColorPresets({ children }: Props) {
   );
 
   const theme = createTheme(themeOptions);
+
   theme.components = componentsOverride(theme);
 
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;

@@ -17,6 +17,7 @@ type Props = {
 
 export default function KanbanTaskCommentList({ comments }: Props) {
   const [openLightbox, setOpenLightbox] = useState(false);
+
   const [selectedImage, setSelectedImage] = useState<number>(0);
 
   const imagesLightbox = comments
@@ -45,6 +46,7 @@ export default function KanbanTaskCommentList({ comments }: Props) {
 
               {comment.messageType === 'image' ? (
                 <Image
+                  alt={comment.message}
                   src={comment.message}
                   onClick={() => handleOpenLightbox(comment.message)}
                   sx={{ mt: 2, borderRadius: 1 }}

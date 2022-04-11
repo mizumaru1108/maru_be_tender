@@ -62,7 +62,7 @@ export function NavListRoot({ list }: NavListRootProps) {
           }}
         >
           {(list.children || []).map((item) => (
-            <NavListSub key={item.title} list={item} />
+            <NavListSub key={item.title + item.path} list={item} />
           ))}
         </PaperStyle>
       </>
@@ -120,7 +120,7 @@ function NavListSub({ list }: NavListSubProps) {
           }}
         >
           {(list.children || []).map((item) => (
-            <NavListSub key={item.title} list={item} />
+            <NavListSub key={item.title + item.path} list={item} />
           ))}
         </PaperStyle>
       </>

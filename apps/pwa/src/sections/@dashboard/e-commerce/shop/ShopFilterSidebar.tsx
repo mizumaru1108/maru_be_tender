@@ -14,7 +14,7 @@ import {
   RadioGroup,
   FormControlLabel,
 } from '@mui/material';
-// @types
+// config
 import { NAVBAR } from '../../../../config';
 // components
 import Iconify from '../../../../components/Iconify';
@@ -31,9 +31,18 @@ export const SORT_BY_OPTIONS = [
   { value: 'priceAsc', label: 'Price: Low-High' },
 ];
 
-export const FILTER_GENDER_OPTIONS = ['Men', 'Women', 'Kids'];
+export const FILTER_GENDER_OPTIONS = [
+  { label: 'Men', value: 'Men' },
+  { label: 'Women', value: 'Women' },
+  { label: 'Kids', value: 'Kids' },
+];
 
-export const FILTER_CATEGORY_OPTIONS = ['All', 'Shose', 'Apparel', 'Accessories'];
+export const FILTER_CATEGORY_OPTIONS = [
+  { label: 'All', value: 'All' },
+  { label: 'Shose', value: 'Shose' },
+  { label: 'Apparel', value: 'Apparel' },
+  { label: 'Accessories', value: 'Accessories' },
+];
 
 export const FILTER_RATING_OPTIONS = ['up4Star', 'up3Star', 'up2Star', 'up1Star'];
 
@@ -134,11 +143,7 @@ export default function ShopFilterSidebar({ isOpen, onResetAll, onOpen, onClose 
 
             <Stack spacing={1}>
               <Typography variant="subtitle1">Price</Typography>
-              <RHFRadioGroup
-                name="priceRange"
-                options={FILTER_PRICE_OPTIONS.map((item) => item.value)}
-                getOptionLabel={FILTER_PRICE_OPTIONS.map((item) => item.label)}
-              />
+              <RHFRadioGroup name="priceRange" options={FILTER_PRICE_OPTIONS} />
             </Stack>
 
             <Stack spacing={1}>

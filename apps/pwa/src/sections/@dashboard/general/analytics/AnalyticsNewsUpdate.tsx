@@ -1,10 +1,17 @@
-import { Link as RouterLink } from 'react-router-dom';
 // @mui
-import { Box, Stack, Link, Card, Button, Divider, Typography, CardHeader } from '@mui/material';
+import {
+  Box,
+  Stack,
+  Link,
+  Card,
+  Button,
+  Divider,
+  Typography,
+  CardHeader,
+  CardProps,
+} from '@mui/material';
 // utils
 import { fToNow } from '../../../../utils/formatTime';
-// _mock_
-import { _analyticPost } from '../../../../_mock';
 // components
 import Image from '../../../../components/Image';
 import Iconify from '../../../../components/Iconify';
@@ -12,14 +19,28 @@ import Scrollbar from '../../../../components/Scrollbar';
 
 // ----------------------------------------------------------------------
 
-export default function AnalyticsNewsUpdate() {
+type ItemProps = {
+  id: string;
+  title: string;
+  description: string;
+  postedAt: number | Date;
+  image: string;
+};
+
+interface Props extends CardProps {
+  title?: string;
+  subheader?: string;
+  list: ItemProps[];
+}
+
+export default function AnalyticsNewsUpdate({ title, subheader, list, ...other }: Props) {
   return (
-    <Card>
-      <CardHeader title="News Update" />
+    <Card {...other}>
+      <CardHeader title={title} subheader={subheader} />
 
       <Scrollbar>
         <Stack spacing={3} sx={{ p: 3, pr: 0 }}>
-          {_analyticPost.map((news) => (
+          {list.map((news) => (
             <NewsItem key={news.id} news={news} />
           ))}
         </Stack>
@@ -29,10 +50,8 @@ export default function AnalyticsNewsUpdate() {
 
       <Box sx={{ p: 2, textAlign: 'right' }}>
         <Button
-          to="#"
           size="small"
           color="inherit"
-          component={RouterLink}
           endIcon={<Iconify icon={'eva:arrow-ios-forward-fill'} />}
         >
           View all
@@ -45,13 +64,7 @@ export default function AnalyticsNewsUpdate() {
 // ----------------------------------------------------------------------
 
 type NewsItemProps = {
-  news: {
-    id: string;
-    title: string;
-    description: string;
-    postedAt: number | Date;
-    image: string;
-  };
+  news: ItemProps;
 };
 
 function NewsItem({ news }: NewsItemProps) {
@@ -64,16 +77,17 @@ function NewsItem({ news }: NewsItemProps) {
         src={image}
         sx={{ width: 48, height: 48, borderRadius: 1.5, flexShrink: 0 }}
       />
+
       <Box sx={{ minWidth: 240 }}>
-        <Link component={RouterLink} to="#" color="inherit">
-          <Typography variant="subtitle2" noWrap>
-            {title}
-          </Typography>
+        <Link color="inherit" variant="subtitle2" noWrap>
+          {title}
         </Link>
+
         <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
           {description}
         </Typography>
       </Box>
+
       <Typography variant="caption" sx={{ pr: 3, flexShrink: 0, color: 'text.secondary' }}>
         {fToNow(postedAt)}
       </Typography>

@@ -1,4 +1,3 @@
-import isString from 'lodash/isString';
 // @mui
 import { LoadingButton } from '@mui/lab';
 import { alpha } from '@mui/material/styles';
@@ -33,7 +32,7 @@ export default function BlogNewPostPreview({
 }: Props) {
   const { title, content, description } = values;
 
-  const cover = isString(values.cover) ? values.cover : values.cover?.preview;
+  const cover = typeof values.cover === 'string' ? values.cover : values.cover?.preview;
 
   const hasContent = title || description || content || cover;
 

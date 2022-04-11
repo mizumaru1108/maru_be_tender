@@ -8,6 +8,9 @@ export type NavListProps = {
   path: string;
   icon?: ReactElement;
   info?: ReactElement;
+  caption?: string;
+  disabled?: boolean;
+  roles?: string[];
   children?: {
     title: string;
     path: string;

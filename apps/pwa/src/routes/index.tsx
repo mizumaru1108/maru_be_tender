@@ -1,6 +1,6 @@
 import { Suspense, lazy, ElementType } from 'react';
 import { Navigate, useRoutes, useLocation } from 'react-router-dom';
-// guards
+// hooks
 import useAuth from '../hooks/useAuth';
 // layouts
 import MainLayout from '../layouts/main';
@@ -57,6 +57,7 @@ export default function Router() {
         { path: 'login-unprotected', element: <Login /> },
         { path: 'register-unprotected', element: <Register /> },
         { path: 'reset-password', element: <ResetPassword /> },
+        { path: 'new-password', element: <NewPassword /> },
         { path: 'verify', element: <VerifyCode /> },
       ],
     },
@@ -102,7 +103,8 @@ export default function Router() {
         { path: 'pricing', element: <Pricing /> },
         { path: 'payment', element: <Payment /> },
         { path: '500', element: <Page500 /> },
-        { path: '404', element: <NotFound /> },
+        { path: '404', element: <Page404 /> },
+        { path: '403', element: <Page403 /> },
         { path: '*', element: <Navigate to="/404" replace /> },
       ],
     },
@@ -124,6 +126,7 @@ export default function Router() {
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));
 const Register = Loadable(lazy(() => import('../pages/auth/Register')));
 const ResetPassword = Loadable(lazy(() => import('../pages/auth/ResetPassword')));
+const NewPassword = Loadable(lazy(() => import('../pages/auth/NewPassword')));
 const VerifyCode = Loadable(lazy(() => import('../pages/auth/VerifyCode')));
 
 // DASHBOARD
@@ -173,6 +176,9 @@ const Mail = Loadable(lazy(() => import('../pages/dashboard/Mail')));
 const Calendar = Loadable(lazy(() => import('../pages/dashboard/Calendar')));
 const Kanban = Loadable(lazy(() => import('../pages/dashboard/Kanban')));
 
+// TEST RENDER PAGE BY ROLE
+const PermissionDenied = Loadable(lazy(() => import('../pages/dashboard/PermissionDenied')));
+
 // MAIN
 const HomePage = Loadable(lazy(() => import('../pages/Home')));
 const About = Loadable(lazy(() => import('../pages/About')));
@@ -183,4 +189,5 @@ const Maintenance = Loadable(lazy(() => import('../pages/Maintenance')));
 const Pricing = Loadable(lazy(() => import('../pages/Pricing')));
 const Payment = Loadable(lazy(() => import('../pages/Payment')));
 const Page500 = Loadable(lazy(() => import('../pages/Page500')));
-const NotFound = Loadable(lazy(() => import('../pages/Page404')));
+const Page403 = Loadable(lazy(() => import('../pages/Page403')));
+const Page404 = Loadable(lazy(() => import('../pages/Page404')));

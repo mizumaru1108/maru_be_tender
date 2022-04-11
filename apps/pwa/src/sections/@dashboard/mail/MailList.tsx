@@ -98,7 +98,7 @@ export default function MailList({ onOpenSidebar }: Props) {
       ) : (
         <EmptyContent
           title="There is no conversation"
-          img="https://minimal-assets-api.vercel.app/assets/illustrations/illustration_empty_mail.svg"
+          img="/assets/illustrations/illustration_empty_mail.svg"
           sx={{ flexGrow: 1, height: 'auto' }}
         />
       )}

@@ -28,7 +28,7 @@ function NavSectionHorizontal({ navConfig }: NavSectionProps) {
         {navConfig.map((group) => (
           <Stack key={group.subheader} direction="row" flexShrink={0}>
             {group.items.map((list) => (
-              <NavListRoot key={list.title} list={list} />
+              <NavListRoot key={list.title + list.path} list={list} />
             ))}
           </Stack>
         ))}

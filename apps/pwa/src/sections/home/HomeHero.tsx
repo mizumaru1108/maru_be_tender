@@ -72,15 +72,11 @@ export default function HomeHero() {
   return (
     <MotionContainer>
       <RootStyle>
-        <HeroOverlayStyle
-          alt="overlay"
-          src="https://minimal-assets-api.vercel.app/assets/overlay.svg"
-          variants={varFade().in}
-        />
+        <HeroOverlayStyle alt="overlay" src="/assets/overlay.svg" variants={varFade().in} />
 
         <HeroImgStyle
           alt="hero"
-          src="https://minimal-assets-api.vercel.app/assets/images/home/hero.png"
+          src="https://minimal-assets-api-dev.vercel.app/assets/images/home/hero.png"
           variants={varFade().inUp}
         />
 
@@ -109,7 +105,7 @@ export default function HomeHero() {
                   icon={
                     <Image
                       alt="sketch icon"
-                      src="https://minimal-assets-api.vercel.app/assets/images/home/ic_sketch_small.svg"
+                      src="https://minimal-assets-api-dev.vercel.app/assets/images/home/ic_sketch_small.svg"
                       sx={{ width: 20, height: 20, mr: 1 }}
                     />
                   }
@@ -132,7 +128,7 @@ export default function HomeHero() {
                   icon={
                     <Image
                       alt="sketch icon"
-                      src="https://minimal-assets-api.vercel.app/assets/images/home/ic_figma_small.svg"
+                      src="https://minimal-assets-api-dev.vercel.app/assets/images/home/ic_figma_small.svg"
                       sx={{ width: 20, height: 20, mr: 1 }}
                     />
                   }
@@ -179,7 +175,7 @@ export default function HomeHero() {
                   <m.img
                     key={resource}
                     variants={varFade().inRight}
-                    src={`https://minimal-assets-api.vercel.app/assets/images/home/${resource}.svg`}
+                    src={`https://minimal-assets-api-dev.vercel.app/assets/images/home/${resource}.svg`}
                   />
                 ))}
               </Stack>

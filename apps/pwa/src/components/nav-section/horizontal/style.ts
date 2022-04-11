@@ -9,13 +9,14 @@ import { NAVBAR } from '../../../config';
 
 type IProps = LinkProps & ButtonProps;
 
-interface ListItemStyleProps extends IProps {
+export interface ListItemStyleProps extends IProps {
   component?: ReactNode;
   to?: string;
   activeRoot?: boolean;
   activeSub?: boolean;
   subItem?: boolean;
   open?: boolean;
+  roles?: string[];
 }
 
 export const ListItemStyle = styled(Button, {

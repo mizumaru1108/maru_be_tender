@@ -2,7 +2,7 @@ import merge from 'lodash/merge';
 import ReactApexChart from 'react-apexcharts';
 // @mui
 import { alpha, styled } from '@mui/material/styles';
-import { Box, Card, Typography, Stack } from '@mui/material';
+import { Box, Card, Typography, Stack, CardProps } from '@mui/material';
 // utils
 import { fNumber, fPercent } from '../../../../utils/formatNumber';
 // components
@@ -25,13 +25,13 @@ const IconWrapperStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-type Props = {
+interface Props extends CardProps {
   title: string;
   total: number;
   percent: number;
   chartColor: string;
   chartData: number[];
-};
+}
 
 export default function EcommerceWidgetSummary({
   title,
@@ -39,6 +39,8 @@ export default function EcommerceWidgetSummary({
   total,
   chartColor,
   chartData,
+  sx,
+  ...other
 }: Props) {
   const chartOptions = merge(BaseOptionChart(), {
     colors: [chartColor],
@@ -57,7 +59,7 @@ export default function EcommerceWidgetSummary({
   });
 
   return (
-    <Card sx={{ display: 'flex', alignItems: 'center', p: 3 }}>
+    <Card sx={{ display: 'flex', alignItems: 'center', p: 3, ...sx }} {...other}>
       <Box sx={{ flexGrow: 1 }}>
         <Typography variant="subtitle2" paragraph>
           {title}

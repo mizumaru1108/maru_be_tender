@@ -160,7 +160,7 @@ export default function EcommerceProductList() {
           <ProductTableToolbar filterName={filterName} onFilterName={handleFilterName} />
 
           <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
+            <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
               {selected.length > 0 && (
                 <TableSelectedActions
                   dense={dense}

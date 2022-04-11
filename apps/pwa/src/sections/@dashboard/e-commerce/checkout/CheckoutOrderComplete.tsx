@@ -29,6 +29,7 @@ const DialogStyle = styled(DialogAnimate)(({ theme }) => ({
 
 export default function CheckoutOrderComplete({ open }: DialogProps) {
   const navigate = useNavigate();
+
   const dispatch = useDispatch();
 
   const handleResetStep = () => {

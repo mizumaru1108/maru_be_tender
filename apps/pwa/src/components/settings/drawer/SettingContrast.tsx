@@ -2,10 +2,10 @@
 import { styled } from '@mui/material/styles';
 import { Grid, RadioGroup, CardActionArea } from '@mui/material';
 // hooks
-import useSettings from '../../hooks/useSettings';
+import useSettings from '../../../hooks/useSettings';
 //
-import Iconify from '../Iconify';
-import { BoxMask } from '.';
+import Iconify from '../../Iconify';
+import BoxMask from './BoxMask';
 
 // ----------------------------------------------------------------------
 
@@ -21,20 +21,19 @@ const BoxStyle = styled(CardActionArea)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function SettingMode() {
-  const { themeMode, onChangeMode } = useSettings();
+export default function SettingContrast() {
+  const { themeContrast, onChangeContrast } = useSettings();
 
   return (
-    <RadioGroup name="themeMode" value={themeMode} onChange={onChangeMode}>
+    <RadioGroup name="themeContrast" value={themeContrast} onChange={onChangeContrast}>
       <Grid dir="ltr" container spacing={2.5}>
-        {['light', 'dark'].map((mode, index) => {
-          const isSelected = themeMode === mode;
+        {['default', 'bold'].map((contrast, index) => {
+          const isSelected = themeContrast === contrast;
 
           return (
-            <Grid key={mode} item xs={6}>
+            <Grid key={contrast} item xs={6}>
               <BoxStyle
                 sx={{
-                  bgcolor: mode === 'light' ? 'common.white' : 'grey.800',
                   ...(isSelected && {
                     color: 'primary.main',
                     boxShadow: (theme) => theme.customShadows.z20,
@@ -42,11 +41,11 @@ export default function SettingMode() {
                 }}
               >
                 <Iconify
-                  icon={index === 0 ? 'ph:sun-duotone' : 'ph:moon-duotone'}
+                  icon={index === 0 ? 'cil:contrast' : 'ion:contrast-outline'}
                   width={28}
                   height={28}
                 />
-                <BoxMask value={mode} />
+                <BoxMask value={contrast} />
               </BoxStyle>
             </Grid>
           );

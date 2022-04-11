@@ -13,7 +13,7 @@ type Props = {
   children: ReactNode;
 };
 
-export default function RtlLayout({ children }: Props) {
+export default function ThemeRtlLayout({ children }: Props) {
   const theme = useTheme();
 
   useEffect(() => {

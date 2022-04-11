@@ -1,12 +1,13 @@
 import * as Yup from 'yup';
+import { useNavigate } from 'react-router-dom';
 // form
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 // @mui
 import { Stack } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-// hooks
-import useIsMountedRef from '../../../hooks/useIsMountedRef';
+// routes
+import { PATH_AUTH } from '../../../routes/paths';
 // components
 import { FormProvider, RHFTextField } from '../../../components/hook-form';
 
@@ -16,13 +17,8 @@ type FormValuesProps = {
   email: string;
 };
 
-type Props = {
-  onSent: VoidFunction;
-  onGetEmail: (value: string) => void;
-};
-
-export default function ResetPasswordForm({ onSent, onGetEmail }: Props) {
-  const isMountedRef = useIsMountedRef();
+export default function ResetPasswordForm() {
+  const navigate = useNavigate();
 
   const ResetPasswordSchema = Yup.object().shape({
     email: Yup.string().email('Email must be a valid email address').required('Email is required'),
@@ -41,10 +37,10 @@ export default function ResetPasswordForm({ onSent, onGetEmail }: Props) {
   const onSubmit = async (data: FormValuesProps) => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      if (isMountedRef.current) {
-        onSent();
-        onGetEmail(data.email);
-      }
+
+      sessionStorage.setItem('email-recovery', data.email);
+
+      navigate(PATH_AUTH.newPassword);
     } catch (error) {
       console.error(error);
     }
@@ -62,7 +58,7 @@ export default function ResetPasswordForm({ onSent, onGetEmail }: Props) {
           variant="contained"
           loading={isSubmitting}
         >
-          Reset Password
+          Send Request
         </LoadingButton>
       </Stack>
     </FormProvider>

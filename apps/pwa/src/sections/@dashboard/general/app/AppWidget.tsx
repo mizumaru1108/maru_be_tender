@@ -2,14 +2,14 @@ import merge from 'lodash/merge';
 import ReactApexChart from 'react-apexcharts';
 // @mui
 import { useTheme, styled } from '@mui/material/styles';
-import { Card, Typography, Box } from '@mui/material';
+import { Card, Typography, Box, CardProps } from '@mui/material';
 // utils
 import { fNumber } from '../../../../utils/formatNumber';
-import { BaseOptionChart } from '../../../../components/chart';
-// components
+// theme
 import { ColorSchema } from '../../../../theme/palette';
 // components
 import Iconify from '../../../../components/Iconify';
+import { BaseOptionChart } from '../../../../components/chart';
 
 // ----------------------------------------------------------------------
 
@@ -32,15 +32,22 @@ const IconStyle = styled(Iconify)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-type Props = {
+interface Props extends CardProps {
   icon: string;
   title: string;
   total: number;
   chartData: number;
   color?: ColorSchema;
-};
+}
 
-export default function AppWidget({ title, total, icon, color = 'primary', chartData }: Props) {
+export default function AppWidget({
+  title,
+  total,
+  icon,
+  color = 'primary',
+  chartData,
+  ...other
+}: Props) {
   const theme = useTheme();
 
   const chartOptions = merge(BaseOptionChart(), {
@@ -68,6 +75,7 @@ export default function AppWidget({ title, total, icon, color = 'primary', chart
       sx={{
         bgcolor: theme.palette[color].darker,
       }}
+      {...other}
     >
       <ReactApexChart
         type="radialBar"

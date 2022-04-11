@@ -33,7 +33,7 @@ export default function InvoiceDetails() {
               name: 'Invoices',
               href: PATH_DASHBOARD.invoice.root,
             },
-            { name: invoice?.invoiceNumber || '' },
+            { name: `INV-${invoice?.invoiceNumber}` || '' },
           ]}
         />
 

@@ -51,6 +51,7 @@ export default function InvoiceNewEditForm({ isEdit, currentInvoice }: Props) {
 
   const defaultValues = useMemo(
     () => ({
+      invoiceNumber: currentInvoice?.invoiceNumber || '17099',
       createDate: currentInvoice?.createDate || null,
       dueDate: currentInvoice?.dueDate || null,
       taxes: currentInvoice?.taxes || '',

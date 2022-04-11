@@ -2,10 +2,10 @@ import merge from 'lodash/merge';
 import ReactApexChart from 'react-apexcharts';
 // @mui
 import { useTheme, styled } from '@mui/material/styles';
-import { Box, Card, Stack, Divider, CardHeader, Typography } from '@mui/material';
+import { Box, Card, Stack, Divider, CardHeader, Typography, CardProps } from '@mui/material';
 // hooks
 import useResponsive from '../../../../hooks/useResponsive';
-//
+// components
 import { BaseOptionChart } from '../../../../components/chart';
 
 // ----------------------------------------------------------------------
@@ -27,39 +27,34 @@ const RootStyle = styled(Card)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-const CHART_DATA = {
-  labels: [
-    'Category 1',
-    'Category 2',
-    'Category 3',
-    'Category 4',
-    'Category 5',
-    'Category 6',
-    'Category 7',
-    'Category 8',
-    'Category 9',
-  ],
-  data: [14, 23, 21, 17, 15, 10, 12, 17, 21],
-};
+interface Props extends CardProps {
+  title?: string;
+  subheader?: string;
+  chartColors: string[];
+  chartData: {
+    label: string;
+    value: number;
+  }[];
+}
 
-export default function BankingExpensesCategories() {
+export default function BankingExpensesCategories({
+  title,
+  subheader,
+  chartColors,
+  chartData,
+  ...other
+}: Props) {
   const theme = useTheme();
 
   const isDesktop = useResponsive('up', 'sm');
 
+  const chartLabels = chartData.map((i) => i.label);
+
+  const chartSeries = chartData.map((i) => i.value);
+
   const chartOptions = merge(BaseOptionChart(), {
-    labels: CHART_DATA.labels,
-    colors: [
-      theme.palette.primary.main,
-      theme.palette.info.darker,
-      theme.palette.chart.yellow[0],
-      theme.palette.chart.blue[0],
-      theme.palette.chart.red[0],
-      theme.palette.chart.violet[2],
-      theme.palette.chart.violet[0],
-      theme.palette.success.darker,
-      theme.palette.chart.green[0],
-    ],
+    labels: chartLabels,
+    colors: chartColors,
     stroke: {
       colors: [theme.palette.background.paper],
     },
@@ -85,13 +80,13 @@ export default function BankingExpensesCategories() {
   });
 
   return (
-    <RootStyle>
-      <CardHeader title="Expenses Categories" />
+    <RootStyle {...other}>
+      <CardHeader title={title} subheader={subheader} />
 
       <Box sx={{ my: 5 }} dir="ltr">
         <ReactApexChart
           type="polarArea"
-          series={CHART_DATA.data}
+          series={chartSeries}
           options={chartOptions}
           height={isDesktop ? 240 : 360}
         />

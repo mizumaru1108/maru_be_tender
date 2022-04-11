@@ -1,12 +1,9 @@
 import Slider from 'react-slick';
 import { m } from 'framer-motion';
 import { useState, useRef } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 // @mui
 import { alpha, useTheme, styled } from '@mui/material/styles';
-import { CardContent, Box, Card, Typography, Link } from '@mui/material';
-// _mock_
-import { _appFeatured } from '../../../../_mock';
+import { CardContent, Box, Card, Typography, Link, CardProps } from '@mui/material';
 // components
 import Image from '../../../../components/Image';
 import { MotionContainer, varFade } from '../../../../components/animate';
@@ -26,12 +23,23 @@ const OverlayStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function AppFeatured() {
+type ItemProps = {
+  id: string;
+  image: string;
+  title: string;
+  description: string;
+};
+
+interface Props extends CardProps {
+  list: ItemProps[];
+}
+
+export default function AppFeatured({ list, ...other }: Props) {
   const theme = useTheme();
+
   const carouselRef = useRef<Slider>(null);
-  const [currentIndex, setCurrentIndex] = useState(
-    theme.direction === 'rtl' ? _appFeatured.length - 1 : 0
-  );
+
+  const [currentIndex, setCurrentIndex] = useState(theme.direction === 'rtl' ? list.length - 1 : 0);
 
   const settings = {
     speed: 800,
@@ -59,9 +67,9 @@ export default function AppFeatured() {
   };
 
   return (
-    <Card>
+    <Card {...other}>
       <Slider ref={carouselRef} {...settings}>
-        {_appFeatured.map((app, index) => (
+        {list.map((app, index) => (
           <CarouselItem key={app.id} item={app} isActive={index === currentIndex} />
         ))}
       </Slider>
@@ -91,11 +99,7 @@ export default function AppFeatured() {
 // ----------------------------------------------------------------------
 
 type CarouselItemProps = {
-  item: {
-    image: string;
-    title: string;
-    description: string;
-  };
+  item: ItemProps;
   isActive?: boolean;
 };
 
@@ -122,20 +126,24 @@ function CarouselItem({ item, isActive }: CarouselItemProps) {
             Featured App
           </Typography>
         </m.div>
+
         <m.div variants={varFade().inRight}>
-          <Link component={RouterLink} to="#" color="inherit" underline="none">
+          <Link color="inherit" underline="none">
             <Typography variant="h5" gutterBottom noWrap>
               {title}
             </Typography>
           </Link>
         </m.div>
+
         <m.div variants={varFade().inRight}>
           <Typography variant="body2" noWrap>
             {description}
           </Typography>
         </m.div>
       </CardContent>
+
       <OverlayStyle />
+
       <Image alt={title} src={image} sx={{ height: { xs: 280, xl: 320 } }} />
     </Box>
   );

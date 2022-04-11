@@ -2,8 +2,8 @@ import { useState } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
 import { Button } from '@mui/material';
-// components
-import Iconify from '../Iconify';
+//
+import Iconify from '../../Iconify';
 
 // ----------------------------------------------------------------------
 

@@ -1,14 +1,8 @@
-// mapboxgl
-// Fix map on production
-import '../../utils/mapboxgl';
-
 import MapGL from 'react-map-gl';
 import { useState } from 'react';
 // @mui
 import { useTheme, styled } from '@mui/material/styles';
 import { Typography } from '@mui/material';
-// _mock
-import { _mapContact } from '../../_mock';
 // config
 import { MAPBOX_API } from '../../config';
 // components
@@ -41,10 +35,17 @@ type CountryData = {
   phoneNumber: string;
 };
 
-export default function ContactMap() {
+type Props = {
+  contacts: CountryData[];
+};
+
+export default function ContactMap({ contacts }: Props) {
   const theme = useTheme();
+
   const isLight = theme.palette.mode === 'light';
+
   const [tooltip, setTooltip] = useState<CountryData | null>(null);
+
   const [viewport, setViewport] = useState({
     latitude: 12,
     longitude: 42,
@@ -64,7 +65,7 @@ export default function ContactMap() {
         <MapControlScale />
         <MapControlNavigation />
 
-        {_mapContact.map((country) => (
+        {contacts.map((country) => (
           <MapControlMarker
             key={country.phoneNumber}
             latitude={country.latlng[0]}

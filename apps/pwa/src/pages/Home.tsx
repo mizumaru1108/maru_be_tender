@@ -17,10 +17,6 @@ import {
 
 // ----------------------------------------------------------------------
 
-const RootStyle = styled('div')(({ theme }) => ({
-  height: '100%',
-}));
-
 const ContentStyle = styled('div')(({ theme }) => ({
   overflow: 'hidden',
   position: 'relative',
@@ -32,26 +28,25 @@ const ContentStyle = styled('div')(({ theme }) => ({
 export default function HomePage() {
   return (
     <Page title="The starting point for your next project">
-      <RootStyle>
-        <HomeHero />
-        <ContentStyle>
-          <HomeMinimal />
+      <HomeHero />
 
-          <HomeHugePackElements />
+      <ContentStyle>
+        <HomeMinimal />
 
-          <HomeDarkMode />
+        <HomeHugePackElements />
 
-          <HomeColorPresets />
+        <HomeDarkMode />
 
-          <HomeCleanInterfaces />
+        <HomeColorPresets />
 
-          <HomePricingPlans />
+        <HomeCleanInterfaces />
 
-          <HomeLookingFor />
+        <HomePricingPlans />
 
-          <HomeAdvertisement />
-        </ContentStyle>
-      </RootStyle>
+        <HomeLookingFor />
+
+        <HomeAdvertisement />
+      </ContentStyle>
     </Page>
   );
 }

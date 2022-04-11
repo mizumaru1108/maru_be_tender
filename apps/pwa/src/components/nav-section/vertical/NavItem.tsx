@@ -1,22 +1,56 @@
+import { forwardRef } from 'react';
 import { NavLink as RouterLink } from 'react-router-dom';
 // @mui
-import { Box, Link, ListItemText } from '@mui/material';
+import { Box, Link, ListItemText, Typography, Tooltip } from '@mui/material';
+// hooks
+import useLocales from '../../../hooks/useLocales';
+// guards
+import RoleBasedGuard from '../../../guards/RoleBasedGuard';
 // type
 import { NavItemProps } from '../type';
 //
 import Iconify from '../../Iconify';
-import { ListItemStyle, ListItemTextStyle, ListItemIconStyle } from './style';
+import { ListItemStyle, ListItemTextStyle, ListItemIconStyle, ListItemStyleProps } from './style';
 import { isExternalLink } from '..';
 
 // ----------------------------------------------------------------------
 
+// HANDLE SHOW ITEM BY ROLE
+const ListItem = forwardRef<HTMLDivElement & HTMLAnchorElement, ListItemStyleProps>(
+  (props, ref) => (
+    <RoleBasedGuard roles={props.roles}>
+      <ListItemStyle {...props} ref={ref}>
+        {props.children}
+      </ListItemStyle>
+    </RoleBasedGuard>
+  )
+);
+
 export function NavItemRoot({ item, isCollapse, open = false, active, onOpen }: NavItemProps) {
-  const { title, path, icon, info, children } = item;
+  const { translate } = useLocales();
+
+  const { title, path, icon, info, children, disabled, caption, roles } = item;
 
   const renderContent = (
     <>
       {icon && <ListItemIconStyle>{icon}</ListItemIconStyle>}
-      <ListItemTextStyle disableTypography primary={title} isCollapse={isCollapse} />
+      <ListItemTextStyle
+        disableTypography
+        primary={translate(title)}
+        secondary={
+          <Tooltip title={translate(caption) || ''} arrow>
+            <Typography
+              noWrap
+              variant="caption"
+              component="div"
+              sx={{ textTransform: 'initial', color: 'text.secondary' }}
+            >
+              {translate(caption)}
+            </Typography>
+          </Tooltip>
+        }
+        isCollapse={isCollapse}
+      />
       {!isCollapse && (
         <>
           {info && info}
@@ -28,20 +62,33 @@ export function NavItemRoot({ item, isCollapse, open = false, active, onOpen }: 
 
   if (children) {
     return (
-      <ListItemStyle onClick={onOpen} activeRoot={active}>
+      <ListItem onClick={onOpen} activeRoot={active} disabled={disabled} roles={roles}>
         {renderContent}
-      </ListItemStyle>
+      </ListItem>
     );
   }
 
   return isExternalLink(path) ? (
-    <ListItemStyle component={Link} href={path} target="_blank" rel="noopener">
+    <ListItem
+      component={Link}
+      href={path}
+      target="_blank"
+      rel="noopener"
+      disabled={disabled}
+      roles={roles}
+    >
       {renderContent}
-    </ListItemStyle>
+    </ListItem>
   ) : (
-    <ListItemStyle component={RouterLink} to={path} activeRoot={active}>
+    <ListItem
+      component={RouterLink}
+      to={path}
+      activeRoot={active}
+      disabled={disabled}
+      roles={roles}
+    >
       {renderContent}
-    </ListItemStyle>
+    </ListItem>
   );
 }
 
@@ -50,12 +97,29 @@ export function NavItemRoot({ item, isCollapse, open = false, active, onOpen }: 
 type NavItemSubProps = Omit<NavItemProps, 'isCollapse'>;
 
 export function NavItemSub({ item, open = false, active = false, onOpen }: NavItemSubProps) {
-  const { title, path, info, children } = item;
+  const { translate } = useLocales();
+
+  const { title, path, info, children, disabled, caption, roles } = item;
 
   const renderContent = (
     <>
       <DotIcon active={active} />
-      <ListItemText disableTypography primary={title} />
+      <ListItemText
+        disableTypography
+        primary={translate(title)}
+        secondary={
+          <Tooltip title={translate(caption) || ''} arrow>
+            <Typography
+              noWrap
+              variant="caption"
+              component="div"
+              sx={{ textTransform: 'initial', color: 'text.secondary' }}
+            >
+              {translate(caption)}
+            </Typography>
+          </Tooltip>
+        }
+      />
       {info && info}
       {children && <ArrowIcon open={open} />}
     </>
@@ -63,20 +127,35 @@ export function NavItemSub({ item, open = false, active = false, onOpen }: NavIt
 
   if (children) {
     return (
-      <ListItemStyle onClick={onOpen} activeSub={active} subItem>
+      <ListItem onClick={onOpen} activeSub={active} subItem disabled={disabled} roles={roles}>
         {renderContent}
-      </ListItemStyle>
+      </ListItem>
     );
   }
 
   return isExternalLink(path) ? (
-    <ListItemStyle component={Link} href={path} target="_blank" rel="noopener" subItem>
+    <ListItem
+      component={Link}
+      href={path}
+      target="_blank"
+      rel="noopener"
+      subItem
+      disabled={disabled}
+      roles={roles}
+    >
       {renderContent}
-    </ListItemStyle>
+    </ListItem>
   ) : (
-    <ListItemStyle component={RouterLink} to={path} activeSub={active} subItem>
+    <ListItem
+      component={RouterLink}
+      to={path}
+      activeSub={active}
+      subItem
+      disabled={disabled}
+      roles={roles}
+    >
       {renderContent}
-    </ListItemStyle>
+    </ListItem>
   );
 }
 

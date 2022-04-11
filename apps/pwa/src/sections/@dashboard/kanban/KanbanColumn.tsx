@@ -44,6 +44,7 @@ export default function KanbanColumn({ column, index }: Props) {
 
   const handleDeleteTask = (cardId: string) => {
     dispatch(deleteTask({ cardId, columnId: id }));
+    enqueueSnackbar('Delete success!');
   };
 
   const handleUpdateColumn = async (newName: string) => {
@@ -60,6 +61,7 @@ export default function KanbanColumn({ column, index }: Props) {
   const handleDeleteColumn = async () => {
     try {
       dispatch(deleteColumn(id));
+      enqueueSnackbar('Delete success!');
     } catch (error) {
       console.error(error);
     }

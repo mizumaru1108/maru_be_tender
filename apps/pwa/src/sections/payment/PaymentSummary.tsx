@@ -28,6 +28,7 @@ export default function PaymentSummary() {
           <Typography variant="subtitle2" component="p" sx={{ color: 'text.secondary' }}>
             Subscription
           </Typography>
+
           <Label color="error" variant="filled">
             PREMIUM
           </Label>
