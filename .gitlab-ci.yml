@@ -142,7 +142,7 @@ sonarqube-check:
 # ------------------------------------- publish ------------------------------------------
 
 "publish tmra-raise to non-prod":
-  stage: build
+  stage: publish
   needs: ["prepare version", "build tmra-raise"]
   image:
     name: gcr.io/kaniko-project/executor:debug
@@ -177,7 +177,7 @@ sonarqube-check:
     - if: '$CI_COMMIT_BRANCH == "stack/staging" && $APP_NAMES =~ /\btmra-raise\b/'
 
 "publish tmra-raise to prod":
-  stage: build
+  stage: publish
   needs: ["prepare version", "build tmra-raise"]
   image:
     name: gcr.io/kaniko-project/executor:debug
