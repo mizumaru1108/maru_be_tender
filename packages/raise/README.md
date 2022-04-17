@@ -33,3 +33,14 @@ yarn test:e2e
 # test coverage
 yarn test:cov
 ```
+
+## Deploy
+
+Choose the target environment:
+
+```bash
+yarn push:dev
+yarn push:qc
+yarn push:staging
+yarn push:prod
+```
