@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CoreModule } from './core/core.module';
 import { EmailModule } from './email/email.module';
 import { FundraisingModule } from './fundraising/fundraising.module';
@@ -18,10 +18,18 @@ import { HrModule } from './hr/hr.module';
 import { FundraisingGiftModule } from './fundraising-gift/fundraising-gift.module';
 import { OrgsModule } from './orgs/orgs.module';
 import { IntegrationsModule } from './integrations/integrations.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_URL')!,
+      }),
+      inject: [ConfigService],
+    }),
     CoreModule,
     EmailModule,
     FundraisingModule,
