@@ -5,9 +5,9 @@
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 stages:
-  - pre-build
   - build
   - test
+  - pre-publish
   - publish
   - post-publish
   - deploy
@@ -71,42 +71,6 @@ sonarqube-check:
 
 # ------------------------------------- build ------------------------------------------
 
-# "prepare version other":
-#   stage: pre-build
-#   variables:
-#     APP_ENV: dev
-#   cache: []
-#   script:
-#     - export APP_VERSION=$(date +%Y.%m.%d)-${APP_ENV}_${CI_COMMIT_SHORT_SHA}
-#     - echo "APP_ENV=$APP_ENV APP_VERSION=$APP_VERSION"
-#     - echo "APP_ENV=$APP_ENV" > build.env
-#     - echo "APP_VERSION=$APP_VERSION" >> build.env
-#   artifacts:
-#     reports:
-#       dotenv: build.env
-#     expire_in: 1 week
-#   rules:
-#     - if: '($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event") && $CI_COMMIT_BRANCH != "stack/dev" && $CI_COMMIT_BRANCH != "stack/qc" && $CI_COMMIT_BRANCH != "stack/staging" && $CI_COMMIT_BRANCH != "stack/prod"'
-
-"prepare version":
-  stage: pre-build
-  cache: []
-  script:
-    - export APP_ENV=${CI_COMMIT_BRANCH/stack\//}
-    - export APP_VERSION=$(date +%Y.%m.%d)-${APP_ENV}_${CI_COMMIT_SHORT_SHA}
-    - echo "APP_ENV=$APP_ENV APP_VERSION=$APP_VERSION"
-    - echo "APP_ENV=$APP_ENV" > build.env
-    - echo "APP_VERSION=$APP_VERSION" >> build.env
-  artifacts:
-    reports:
-      dotenv: build.env
-    expire_in: 1 week
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "stack/dev"'
-    - if: '$CI_COMMIT_BRANCH == "stack/qc"'
-    - if: '$CI_COMMIT_BRANCH == "stack/staging"'
-    - if: '$CI_COMMIT_BRANCH == "stack/prod"'
-
 "build tmra-raise":
   stage: build
   needs: []
@@ -138,6 +102,46 @@ sonarqube-check:
         - "packages/raise/**/*"
     # You can manually trigger the pipeline with APP_NAMES=tmra-raise
     - if: '$APP_NAMES =~ /\btmra-raise\b/'
+
+# ------------------------------------- pre-publish ------------------------------------------
+
+# "prepare version other":
+#   stage: pre-publish
+#   needs: []
+#   variables:
+#     APP_ENV: dev
+#   cache: []
+#   script:
+#     - export APP_VERSION=$(date +%Y.%m.%d)-${APP_ENV}_${CI_COMMIT_SHORT_SHA}
+#     - echo "APP_ENV=$APP_ENV APP_VERSION=$APP_VERSION"
+#     - echo "APP_ENV=$APP_ENV" > build.env
+#     - echo "APP_VERSION=$APP_VERSION" >> build.env
+#   artifacts:
+#     reports:
+#       dotenv: build.env
+#     expire_in: 1 week
+#   rules:
+#     - if: '($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event") && $CI_COMMIT_BRANCH != "stack/dev" && $CI_COMMIT_BRANCH != "stack/qc" && $CI_COMMIT_BRANCH != "stack/staging" && $CI_COMMIT_BRANCH != "stack/prod"'
+
+"prepare version":
+  stage: pre-publish
+  needs: []
+  cache: []
+  script:
+    - export APP_ENV=${CI_COMMIT_BRANCH/stack\//}
+    - export APP_VERSION=$(date +%Y.%m.%d)-${APP_ENV}_${CI_COMMIT_SHORT_SHA}
+    - echo "APP_ENV=$APP_ENV APP_VERSION=$APP_VERSION"
+    - echo "APP_ENV=$APP_ENV" > build.env
+    - echo "APP_VERSION=$APP_VERSION" >> build.env
+  artifacts:
+    reports:
+      dotenv: build.env
+    expire_in: 1 week
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stack/dev"'
+    - if: '$CI_COMMIT_BRANCH == "stack/qc"'
+    - if: '$CI_COMMIT_BRANCH == "stack/staging"'
+    - if: '$CI_COMMIT_BRANCH == "stack/prod"'
 
 # ------------------------------------- publish ------------------------------------------
 
