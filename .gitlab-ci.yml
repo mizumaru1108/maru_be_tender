@@ -102,10 +102,10 @@ sonarqube-check:
       dotenv: build.env
     expire_in: 1 week
   rules:
-    - !reference [.dev_rules, rules]
-    - !reference [.qc_rules, rules]
-    - !reference [.staging_rules, rules]
-    - !reference [.prod_rules, rules]
+    - if: '$CI_COMMIT_BRANCH == "stack/dev"'
+    - if: '$CI_COMMIT_BRANCH == "stack/qc"'
+    - if: '$CI_COMMIT_BRANCH == "stack/staging"'
+    - if: '$CI_COMMIT_BRANCH == "stack/prod"'
 
 "build tmra-raise":
   stage: build
