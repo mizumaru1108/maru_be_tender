@@ -206,12 +206,13 @@ sonarqube-check:
 
 # ------------------------------------- trigger-deploy ------------------------------------------
 
-"trigger deploy tmra-raise to non-prod":
+"trigger deploy tmra-raise to dev":
   stage: deploy
   needs:
     ["prepare version", "build tmra-raise", "publish tmra-raise to non-prod"]
   variables:
     APP_NAME: tmra-raise
+    APP_ENV: dev
   image: node:lts
   script:
     - echo "Deploying '$APP_NAME' version '$APP_VERSION' to environment '$APP_ENV' ..."
@@ -235,6 +236,60 @@ sonarqube-check:
       changes:
         - "packages/raise/**/*"
     - if: '$CI_COMMIT_BRANCH == "stack/qc" && $APP_NAMES =~ /\btmra-raise\b/'
+    - if: '$CI_COMMIT_BRANCH == "stack/staging" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
+      changes:
+        - "packages/raise/**/*"
+    - if: '$CI_COMMIT_BRANCH == "stack/staging" && $APP_NAMES =~ /\btmra-raise\b/'
+
+"trigger deploy tmra-raise to qc":
+  stage: deploy
+  needs:
+    ["prepare version", "build tmra-raise", "publish tmra-raise to non-prod"]
+  variables:
+    APP_NAME: tmra-raise
+    APP_ENV: qc
+  image: node:lts
+  script:
+    - echo "Deploying '$APP_NAME' version '$APP_VERSION' to environment '$APP_ENV' ..."
+    - >-
+      curl --fail --request POST
+      --form token=$CI_JOB_TOKEN
+      --form ref=main
+      --form "variables[APP_NAMES]=$APP_NAME"
+      --form "variables[APP_ENV]=$APP_ENV"
+      --form "variables[APP_VERSION]=$APP_VERSION"
+      "https://gitlab.com/api/v4/projects/26870237/trigger/pipeline"
+  environment:
+    name: $APP_NAME-$APP_ENV
+    url: https://api-${APP_ENV}.tmra.io/v2/raise
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stack/qc" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
+      changes:
+        - "packages/raise/**/*"
+    - if: '$CI_COMMIT_BRANCH == "stack/qc" && $APP_NAMES =~ /\btmra-raise\b/'
+
+"trigger deploy tmra-raise to staging":
+  stage: deploy
+  needs:
+    ["prepare version", "build tmra-raise", "publish tmra-raise to non-prod"]
+  variables:
+    APP_NAME: tmra-raise
+    APP_ENV: staging
+  image: node:lts
+  script:
+    - echo "Deploying '$APP_NAME' version '$APP_VERSION' to environment '$APP_ENV' ..."
+    - >-
+      curl --fail --request POST
+      --form token=$CI_JOB_TOKEN
+      --form ref=main
+      --form "variables[APP_NAMES]=$APP_NAME"
+      --form "variables[APP_ENV]=$APP_ENV"
+      --form "variables[APP_VERSION]=$APP_VERSION"
+      "https://gitlab.com/api/v4/projects/26870237/trigger/pipeline"
+  environment:
+    name: $APP_NAME-$APP_ENV
+    url: https://api-${APP_ENV}.tmra.io/v2/raise
+  rules:
     - if: '$CI_COMMIT_BRANCH == "stack/staging" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
       changes:
         - "packages/raise/**/*"
