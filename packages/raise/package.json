@@ -30,7 +30,7 @@
     "@nestjs/config": "^2.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/mongoose": "^9.0.3",
-    "@nestjs/platform-express": "^8.0.0",
+    "@nestjs/platform-fastify": "^8.4.4",
     "@typegoose/typegoose": "^9.8.0",
     "mongodb": "^4.4.1",
     "mongoose": "^6.3.0",
