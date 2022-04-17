@@ -71,22 +71,22 @@ sonarqube-check:
 
 # ------------------------------------- build ------------------------------------------
 
-"prepare version other":
-  stage: pre-build
-  variables:
-    APP_ENV: dev
-  cache: []
-  script:
-    - export APP_VERSION=$(date +%Y.%m.%d)-${APP_ENV}_${CI_COMMIT_SHORT_SHA}
-    - echo "APP_ENV=$APP_ENV APP_VERSION=$APP_VERSION"
-    - echo "APP_ENV=$APP_ENV" > build.env
-    - echo "APP_VERSION=$APP_VERSION" >> build.env
-  artifacts:
-    reports:
-      dotenv: build.env
-    expire_in: 1 week
-  rules:
-    - if: '($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event") && $CI_COMMIT_BRANCH != "stack/dev" && $CI_COMMIT_BRANCH != "stack/qc" && $CI_COMMIT_BRANCH != "stack/staging" && $CI_COMMIT_BRANCH != "stack/prod"'
+# "prepare version other":
+#   stage: pre-build
+#   variables:
+#     APP_ENV: dev
+#   cache: []
+#   script:
+#     - export APP_VERSION=$(date +%Y.%m.%d)-${APP_ENV}_${CI_COMMIT_SHORT_SHA}
+#     - echo "APP_ENV=$APP_ENV APP_VERSION=$APP_VERSION"
+#     - echo "APP_ENV=$APP_ENV" > build.env
+#     - echo "APP_VERSION=$APP_VERSION" >> build.env
+#   artifacts:
+#     reports:
+#       dotenv: build.env
+#     expire_in: 1 week
+#   rules:
+#     - if: '($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event") && $CI_COMMIT_BRANCH != "stack/dev" && $CI_COMMIT_BRANCH != "stack/qc" && $CI_COMMIT_BRANCH != "stack/staging" && $CI_COMMIT_BRANCH != "stack/prod"'
 
 "prepare version":
   stage: pre-build
