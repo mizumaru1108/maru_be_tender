@@ -12,14 +12,12 @@ import { PaymentStripeModule } from './payment-stripe/payment-stripe.module';
 import { PaymentXenditModule } from './payment-xendit/payment-xendit.module';
 import { ProjectsModule } from './projects/projects.module';
 import { AccountsModule } from './accounts/accounts.module';
-import { OrgService } from './org/org.service';
-import { OrgController } from './org/org.controller';
 import { ContactsModule } from './contacts/contacts.module';
 import { CrmModule } from './crm/crm.module';
 import { HrModule } from './hr/hr.module';
 import { FundraisingGiftModule } from './fundraising-gift/fundraising-gift.module';
-import { IntegrationsModule } from './yarn/integrations/integrations.module';
-import { IntegrationsController } from './integrations/integrations.controller';
+import { OrgsModule } from './orgs/orgs.module';
+import { IntegrationsModule } from './integrations/integrations.module';
 
 @Module({
   imports: [
@@ -41,8 +39,9 @@ import { IntegrationsController } from './integrations/integrations.controller';
     HrModule,
     FundraisingGiftModule,
     IntegrationsModule,
+    OrgsModule,
   ],
-  controllers: [OrgController, IntegrationsController],
-  providers: [OrgService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
