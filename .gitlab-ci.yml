@@ -109,7 +109,7 @@ sonarqube-check:
 
 "build tmra-raise":
   stage: build
-  # needs: ['prepare version other']
+  needs: []
   script:
     # - cp src/configuration.${APP_ENV}.ts src/configuration.ts
     - cd packages/raise
