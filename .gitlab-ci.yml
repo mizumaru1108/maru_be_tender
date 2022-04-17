@@ -144,6 +144,7 @@ sonarqube-check:
 "publish tmra-raise to non-prod":
   stage: publish
   needs: ["prepare version", "build tmra-raise"]
+  cache: []
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
@@ -179,6 +180,7 @@ sonarqube-check:
 "publish tmra-raise to prod":
   stage: publish
   needs: ["prepare version", "build tmra-raise"]
+  cache: []
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
@@ -213,6 +215,7 @@ sonarqube-check:
   variables:
     APP_NAME: tmra-raise
     APP_ENV: dev
+  cache: []
   image: node:lts
   script:
     - echo "Deploying '$APP_NAME' version '$APP_VERSION' to environment '$APP_ENV' ..."
@@ -248,6 +251,7 @@ sonarqube-check:
   variables:
     APP_NAME: tmra-raise
     APP_ENV: qc
+  cache: []
   image: node:lts
   script:
     - echo "Deploying '$APP_NAME' version '$APP_VERSION' to environment '$APP_ENV' ..."
@@ -275,6 +279,7 @@ sonarqube-check:
   variables:
     APP_NAME: tmra-raise
     APP_ENV: staging
+  cache: []
   image: node:lts
   script:
     - echo "Deploying '$APP_NAME' version '$APP_VERSION' to environment '$APP_ENV' ..."
@@ -300,6 +305,8 @@ sonarqube-check:
   needs: ["prepare version", "build tmra-raise", "publish tmra-raise to prod"]
   variables:
     APP_NAME: tmra-raise
+    APP_ENV: prod
+  cache: []
   image: node:lts
   script:
     - echo "Deploying '$APP_NAME' version '$APP_VERSION' to environment '$APP_ENV' ..."
