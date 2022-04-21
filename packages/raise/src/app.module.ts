@@ -18,6 +18,7 @@ import { HrModule } from './hr/hr.module';
 import { FundraisingGiftModule } from './fundraising-gift/fundraising-gift.module';
 import { OrganizationModule } from './organization/organization.module';
 import { VendorModule } from './vendor/vendor.module';
+import { ReferralModule } from './referral/referral.module';
 import { IntegrationsModule } from './integrations/integrations.module';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -50,7 +51,8 @@ import { MongooseModule } from '@nestjs/mongoose';
     FundraisingGiftModule,
     IntegrationsModule,
     OrganizationModule,
-    VendorModule
+    VendorModule,
+    ReferralModule
   ],
   controllers: [],
   providers: [],
