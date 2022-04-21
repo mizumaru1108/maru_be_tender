@@ -1,8 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
-import { rootLogger } from '../../logger';
+import { rootLogger } from '../logger';
 
-@Controller('orgs/organization')
+@Controller('orgs/getListAll')
 export class OrganizationController {
   private logger = rootLogger.child({ logger: OrganizationController.name });
 

@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { rootLogger } from '../../logger';
+import { rootLogger } from '../logger';
 import {
   Organization,
   OrganizationDocument,
-} from '../schemas/organization.schema';
+} from './organization.schema';
 
 @Injectable()
 export class OrganizationService {

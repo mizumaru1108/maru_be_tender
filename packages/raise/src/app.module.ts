@@ -16,7 +16,8 @@ import { ContactsModule } from './contacts/contacts.module';
 import { CrmModule } from './crm/crm.module';
 import { HrModule } from './hr/hr.module';
 import { FundraisingGiftModule } from './fundraising-gift/fundraising-gift.module';
-import { OrgsModule } from './orgs/orgs.module';
+import { OrganizationModule } from './organization/organization.module';
+import { VendorModule } from './vendor/vendor.module';
 import { IntegrationsModule } from './integrations/integrations.module';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -48,7 +49,8 @@ import { MongooseModule } from '@nestjs/mongoose';
     HrModule,
     FundraisingGiftModule,
     IntegrationsModule,
-    OrgsModule,
+    OrganizationModule,
+    VendorModule
   ],
   controllers: [],
   providers: [],
