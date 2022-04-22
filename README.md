@@ -31,7 +31,19 @@ You will need to install the following extensions: (should be prompted automatic
 
 First, you **must** push your work to `main` branch first!
 
-Then choose, staging or prod?
+Then choose, dev or qc or staging or prod?
+
+To trigger CI for `dev`:
+
+```bash
+git push origin main:stack/dev
+```
+
+To trigger CI for `qc`:
+
+```bash
+git push origin main:stack/qc
+```
 
 To trigger CI for `staging`:
 
