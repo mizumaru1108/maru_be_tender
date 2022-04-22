@@ -9,6 +9,6 @@ export interface ResponseWrapper {
 @Injectable()
 export class CoreService {
   getHello(): ResponseWrapper {
-    return { success: true, status: 200, message: 'Hello World!' };
+    return { success: true, status: 200, message: 'Hi, Fat!' };
   }
 }
