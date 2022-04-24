@@ -21,6 +21,8 @@ import { VendorModule } from './vendor/vendor.module';
 import { ReferralModule } from './referral/referral.module';
 import { IntegrationsModule } from './integrations/integrations.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { DonorModule } from './donor/donor.module';
+import { CampaignModule } from './campaign/campaign.module';
 
 @Module({
   imports: [
@@ -52,7 +54,9 @@ import { MongooseModule } from '@nestjs/mongoose';
     IntegrationsModule,
     OrganizationModule,
     VendorModule,
-    ReferralModule
+    ReferralModule,
+    DonorModule,
+    CampaignModule,
   ],
   controllers: [],
   providers: [],

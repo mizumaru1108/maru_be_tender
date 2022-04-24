@@ -4,10 +4,7 @@ import { Module } from '@nestjs/common';
 import { OrganizationController } from './organization.controller';
 import { OrganizationService } from './organization.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import {
-  Organization,
-  OrganizationSchema,
-} from './organization.schema';
+import { Organization, OrganizationSchema } from './organization.schema';
 
 @Module({
   imports: [
@@ -18,7 +15,7 @@ import {
       },
     ]),
   ],
-  providers: [ OrganizationService],
-  controllers: [ OrganizationController],
+  providers: [OrganizationService],
+  controllers: [OrganizationController],
 })
 export class OrganizationModule {}

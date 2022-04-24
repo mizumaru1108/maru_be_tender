@@ -1,7 +1,9 @@
 import { Controller, Get, Post } from '@nestjs/common';
 import { ReferralService } from './referral.service';
 import { rootLogger } from '../logger';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('referral')
 @Controller('referral')
 export class ReferralController {
   private logger = rootLogger.child({ logger: ReferralController.name });
@@ -17,13 +19,13 @@ export class ReferralController {
 
   //referralGetSummary
   @Get('/getSummary')
-  async getSummary(){
-    return ({"message" : "Hello World !"})
+  async getSummary() {
+    return { message: 'Hello World !' };
   }
 
   //referralGetTopFiveByProjectByZone
   @Get('/getTopFiveByProjectByZone')
-  async getTopFiveByProjectByZone(){
-    return ({"message" : "Hello World !"})
+  async getTopFiveByProjectByZone() {
+    return { message: 'Hello World !' };
   }
 }

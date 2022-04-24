@@ -1,7 +1,9 @@
 import { Controller, Get, Post } from '@nestjs/common';
 import { VendorService } from './vendor.service';
 import { rootLogger } from '../logger';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('vendor')
 @Controller('vendor')
 export class VendorController {
   private logger = rootLogger.child({ logger: VendorController.name });
@@ -15,10 +17,10 @@ export class VendorController {
   }
 
   @Get(':vendorId/getChartData')
-  async getChartData(){
-    return ({
-        "a" : "100",
-        "b" : "200"
-    })
+  async getChartData() {
+    return {
+      a: '100',
+      b: '200',
+    };
   }
 }
