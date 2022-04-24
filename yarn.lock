@@ -4556,6 +4556,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nestjs/mapped-types@npm:1.0.1":
+  version: 1.0.1
+  resolution: "@nestjs/mapped-types@npm:1.0.1"
+  peerDependencies:
+    "@nestjs/common": ^7.0.8 || ^8.0.0
+    class-transformer: ^0.2.0 || ^0.3.0 || ^0.4.0 || ^0.5.0
+    class-validator: ^0.11.1 || ^0.12.0 || ^0.13.0
+    reflect-metadata: ^0.1.12
+  peerDependenciesMeta:
+    class-transformer:
+      optional: true
+    class-validator:
+      optional: true
+  checksum: ca8dae254f98e8550c92f264d90dee767f30598a5bbe40e80ea93cf622da5c67bd2bc8ef83828198919cc39c543421d4eb977d032ecbbb545863eaea9deb797c
+  languageName: node
+  linkType: hard
+
 "@nestjs/mongoose@npm:^9.0.3":
   version: 9.0.3
   resolution: "@nestjs/mongoose@npm:9.0.3"
@@ -4599,6 +4616,28 @@ __metadata:
   peerDependencies:
     typescript: ^3.4.5 || ^4.3.5
   checksum: ea86b4f2e04c02d668d49e54acc0c0455f752181ec3a81946dbcad210d4434de102ca4f67eda9455468d6b06d8209162f1ee800286e04476ed40148e48eaa21b
+  languageName: node
+  linkType: hard
+
+"@nestjs/swagger@npm:^5.2.1":
+  version: 5.2.1
+  resolution: "@nestjs/swagger@npm:5.2.1"
+  dependencies:
+    "@nestjs/mapped-types": 1.0.1
+    lodash: 4.17.21
+    path-to-regexp: 3.2.0
+  peerDependencies:
+    "@nestjs/common": ^8.0.0
+    "@nestjs/core": ^8.0.0
+    fastify-swagger: "*"
+    reflect-metadata: ^0.1.12
+    swagger-ui-express: "*"
+  peerDependenciesMeta:
+    fastify-swagger:
+      optional: true
+    swagger-ui-express:
+      optional: true
+  checksum: 70e204c6068a0aebcd5c3486599e83cfc34e6d1823a580e1d1ed60f80f01c50ed2be9765b76d171b28eaf3b1f7f237f388c1daf86041634a3289e84c7219af5d
   languageName: node
   linkType: hard
 
@@ -5586,6 +5625,7 @@ __metadata:
     "@nestjs/mongoose": ^9.0.3
     "@nestjs/platform-fastify": ^8.4.4
     "@nestjs/schematics": ^8.0.0
+    "@nestjs/swagger": ^5.2.1
     "@nestjs/testing": ^8.0.0
     "@typegoose/typegoose": ^9.8.0
     "@types/express": ^4.17.13
@@ -5594,9 +5634,11 @@ __metadata:
     "@types/supertest": ^2.0.11
     "@typescript-eslint/eslint-plugin": ^5.0.0
     "@typescript-eslint/parser": ^5.0.0
+    class-validator: ^0.13.2
     eslint: ^8.0.1
     eslint-config-prettier: ^8.3.0
     eslint-plugin-prettier: ^4.0.0
+    fastify-swagger: ^5.1.1
     jest: ^27.2.5
     mongodb: ^4.4.1
     mongoose: ^6.3.0
@@ -8462,6 +8504,16 @@ __metadata:
   version: 1.2.2
   resolution: "cjs-module-lexer@npm:1.2.2"
   checksum: 977f3f042bd4f08e368c890d91eecfbc4f91da0bc009a3c557bc4dfbf32022ad1141244ac1178d44de70fc9f3dea7add7cd9a658a34b9fae98a55d8f92331ce5
+  languageName: node
+  linkType: hard
+
+"class-validator@npm:^0.13.2":
+  version: 0.13.2
+  resolution: "class-validator@npm:0.13.2"
+  dependencies:
+    libphonenumber-js: ^1.9.43
+    validator: ^13.7.0
+  checksum: 0deb4c29faa18345f6989fd7eaaaa07b05caae5298603fcd6485531c6daad503e5d2b24cc1342e4fc88ae5ba0acffdc24d0fc333110ef3f21a667cd8a79e1258
   languageName: node
   linkType: hard
 
@@ -11376,7 +11428,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fastify-static@npm:^4.2.2":
+"fastify-static@npm:^4.0.0, fastify-static@npm:^4.2.2":
   version: 4.6.1
   resolution: "fastify-static@npm:4.6.1"
   dependencies:
@@ -11388,6 +11440,20 @@ __metadata:
     readable-stream: ^3.4.0
     send: ^0.17.1
   checksum: f2276167bac8176cd943a67b5a4f4dbd683c27e06313d8d53ed48f405cbfae3a1bb5b95bc3a7cf0ce1f553e5ea0a434f292be4edc9779f4380cf5bd7477eef42
+  languageName: node
+  linkType: hard
+
+"fastify-swagger@npm:^5.1.1":
+  version: 5.1.1
+  resolution: "fastify-swagger@npm:5.1.1"
+  dependencies:
+    fastify-plugin: ^3.0.0
+    fastify-static: ^4.0.0
+    js-yaml: ^4.0.0
+    json-schema-resolver: ^1.3.0
+    openapi-types: ^10.0.0
+    rfdc: ^1.3.0
+  checksum: 6ead1e803fed5a35c57981514d8222162d93013f8507f572ed4562775bf3b84905a1233407cbcde664b58fe47322d1548c12066d1c70f22d19cb8b2f015a0f44
   languageName: node
   linkType: hard
 
@@ -14336,7 +14402,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:^4.1.0":
+"js-yaml@npm:^4.0.0, js-yaml@npm:^4.1.0":
   version: 4.1.0
   resolution: "js-yaml@npm:4.1.0"
   dependencies:
@@ -14430,6 +14496,17 @@ __metadata:
   version: 2.3.1
   resolution: "json-parse-even-better-errors@npm:2.3.1"
   checksum: 798ed4cf3354a2d9ccd78e86d2169515a0097a5c133337807cdf7f1fc32e1391d207ccfc276518cc1d7d8d4db93288b8a50ba4293d212ad1336e52a8ec0a941f
+  languageName: node
+  linkType: hard
+
+"json-schema-resolver@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "json-schema-resolver@npm:1.3.0"
+  dependencies:
+    debug: ^4.1.1
+    rfdc: ^1.1.4
+    uri-js: ^4.2.2
+  checksum: 9fcbdbd78f440c52077ae7b7c43f455cbd0e554fb9c805497a2384d836730bfbdbe9140ba3b3ddef263efb0eaba3ebe12d0ba3bd9426c15e1c5d3d25afe2a222
   languageName: node
   linkType: hard
 
@@ -14735,6 +14812,13 @@ __metadata:
     semver: ^7.1.3
     ssri: ^8.0.1
   checksum: 5aa83352bb70bc9bb082107678d1e42f8f80ef1c354b37849a40fa0ab9c9e715aeba803811ee2f0da99605054aead41450e040b4d37cf543237594e1d1b97173
+  languageName: node
+  linkType: hard
+
+"libphonenumber-js@npm:^1.9.43":
+  version: 1.9.52
+  resolution: "libphonenumber-js@npm:1.9.52"
+  checksum: d7856fd674b14abdf13162553a7ffe1de634295ab9b4cf959e1b42737de58347a8f83c41f18e14803a033e9ab8a3e3affbbfd81fa2c456545331129908b89a30
   languageName: node
   linkType: hard
 
@@ -16752,6 +16836,13 @@ __metadata:
     is-docker: ^2.1.1
     is-wsl: ^2.2.0
   checksum: e9545bec64cdbf30a0c35c1bdc310344adf8428a117f7d8df3c0af0a0a24c513b304916a6d9b11db0190ff7225c2d578885080b761ed46a3d5f6f1eebb98b63c
+  languageName: node
+  linkType: hard
+
+"openapi-types@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "openapi-types@npm:10.0.0"
+  checksum: 8cc8b5bf40ea10b1f9c56fb05aada74bfe3d9e94e141464561a5c3cd0a933906e57d9bf4e059219ec8e63a97a69e0655d21c9dd3f4de1ff4f71672d10664cfc0
   languageName: node
   linkType: hard
 
@@ -19705,7 +19796,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rfdc@npm:^1.1.4, rfdc@npm:^1.2.0":
+"rfdc@npm:^1.1.4, rfdc@npm:^1.2.0, rfdc@npm:^1.3.0":
   version: 1.3.0
   resolution: "rfdc@npm:1.3.0"
   checksum: fb2ba8512e43519983b4c61bd3fa77c0f410eff6bae68b08614437bc3f35f91362215f7b4a73cbda6f67330b5746ce07db5dd9850ad3edc91271ad6deea0df32
@@ -22381,6 +22472,13 @@ __metadata:
   dependencies:
     builtins: ^1.0.3
   checksum: ce4c68207abfb22c05eedb09ff97adbcedc80304a235a0844f5344f1fd5086aa80e4dbec5684d6094e26e35065277b765c1caef68bcea66b9056761eddb22967
+  languageName: node
+  linkType: hard
+
+"validator@npm:^13.7.0":
+  version: 13.7.0
+  resolution: "validator@npm:13.7.0"
+  checksum: 2b83283de1222ca549a7ef57f46e8d49c6669213348db78b7045bce36a3b5843ff1e9f709ebf74574e06223461ee1f264f8cc9a26a0060a79a27de079d8286ef
   languageName: node
   linkType: hard
 
