@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-// import { OrgsService } from './orgs.service';
-// import { OrgsController } from './orgs.controller';
 import { CampaignController } from './campaign.controller';
 import { DonorService } from '../donor/donor.service';
 import { Donor, DonorSchema } from '../donor/donor.schema';
 import { MongooseModule } from '@nestjs/mongoose';
+import { Campaign, CampaignSchema } from './campaign.schema';
+import { CampaignService } from './campaign.service';
 
 @Module({
   imports: [
@@ -13,9 +13,13 @@ import { MongooseModule } from '@nestjs/mongoose';
         name: Donor.name,
         schema: DonorSchema,
       },
+      {
+        name: Campaign.name,
+        schema: CampaignSchema,
+      },
     ]),
   ],
-  providers: [DonorService],
+  providers: [DonorService, CampaignService],
   controllers: [CampaignController],
 })
 export class CampaignModule {}
