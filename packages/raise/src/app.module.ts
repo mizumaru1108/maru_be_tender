@@ -23,6 +23,7 @@ import { IntegrationsModule } from './integrations/integrations.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DonorModule } from './donor/donor.module';
 import { CampaignModule } from './campaign/campaign.module';
+import { TicketModule } from './ticket/ticket.module';
 
 @Module({
   imports: [
@@ -30,7 +31,7 @@ import { CampaignModule } from './campaign/campaign.module';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGODB_URL')!,
+        uri: configService.get<string>('MONGODB_URL'),
         loggerLevel: 'debug',
       }),
       inject: [ConfigService],
@@ -57,6 +58,7 @@ import { CampaignModule } from './campaign/campaign.module';
     ReferralModule,
     DonorModule,
     CampaignModule,
+    TicketModule,
   ],
   controllers: [],
   providers: [],
