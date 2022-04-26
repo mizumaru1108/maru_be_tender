@@ -9,6 +9,8 @@ export class Organization {
   name: string;
   @Prop()
   username: string;
+  @Prop()
+  contactEmail: string;
 }
 
 export const OrganizationSchema = SchemaFactory.createForClass(Organization);
