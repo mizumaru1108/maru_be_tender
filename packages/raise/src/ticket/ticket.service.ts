@@ -16,8 +16,6 @@ export class TicketService {
   async create(createTicketDto: CreateTicketDto): Promise<Ticket> {
     const createdTicket = new this.ticketModel(createTicketDto);
     createdTicket.ticketId = uuidv4();
-    createdTicket.title = createTicketDto.title;
-    createdTicket.description = createTicketDto.description;
     createdTicket.createdAt = moment().toISOString();
     createdTicket.updatedAt = moment().toISOString();
     return createdTicket.save();
