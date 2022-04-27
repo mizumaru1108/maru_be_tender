@@ -22,9 +22,7 @@ import {
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (config: ConfigService) => ({
-        transport: `smtps://${config.get('EMAIL_USER')}:${config.get(
-          'EMAIL_PASSWORD',
-        )}@${config.get('EMAIL_HOST')}`,
+        transport: config.get('MAILER_TRANSPORT_URL'),
         defaults: {
           from: 'hello@tmra.io',
         },
