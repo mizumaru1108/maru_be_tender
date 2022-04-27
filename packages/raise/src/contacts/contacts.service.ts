@@ -23,16 +23,11 @@ export class ContactsService {
     let txtMessage = 'Oops an error occurred, email failed to send';
     let success = false;
     let statusCode = 400;
-
     const organizationId = message.organizationId;
     if (organizationId) {
       this.logger.debug('find organization...');
-      const organizationData = await this.organizationModel.findOne(
-        {
-          id: organizationId,
-        },
-        {},
-      );
+      const filter = { _id: organizationId };
+      const organizationData = await this.organizationModel.findOne(filter, {});
       console.log(organizationData);
       if (organizationData) {
         const resp = await this.mailerService.sendMail({
@@ -45,6 +40,7 @@ export class ContactsService {
             email: message.email,
             help_message: message.help_message,
           },
+          attachments: message.files,
         });
         console.log(resp);
         success = true;

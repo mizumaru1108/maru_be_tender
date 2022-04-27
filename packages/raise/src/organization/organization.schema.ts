@@ -6,6 +6,8 @@ export type OrganizationDocument = Organization & Document;
 @Schema({ collection: 'organization' })
 export class Organization {
   @Prop()
+  id: string;
+  @Prop()
   name: string;
   @Prop()
   username: string;
