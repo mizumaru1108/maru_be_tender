@@ -19,8 +19,8 @@ export class ZakatService {
   async _getMetalPrice(carat: boolean, base: string, symbols?: string) {
     const params = new URLSearchParams();
     const metalAccessKey = this.configService.get('METAL_ACCESS_KEY');
-    const metalLatestUrl = this.configService.get('METAL_LATEST_API_URL');
-    const metalCaratUrl = this.configService.get('METAL_CARAT_API_URL');
+    const metalLatestUrl = `${this.configService.get('METAL_API_URL')}/latest`;
+    const metalCaratUrl = `${this.configService.get('METAL_API_URL')}/carat`;
     const metalAuthKey = this.configService.get('METAL_AUTH_KEY');
     params.append('access_key', metalAccessKey);
     params.append('base', base);
