@@ -24,6 +24,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { DonorModule } from './donor/donor.module';
 import { CampaignModule } from './campaign/campaign.module';
 import { TicketModule } from './ticket/ticket.module';
+import { ZakatModule } from './zakat/zakat.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { TicketModule } from './ticket/ticket.module';
     DonorModule,
     CampaignModule,
     TicketModule,
+    ZakatModule,
   ],
   controllers: [],
   providers: [],
