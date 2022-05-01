@@ -25,6 +25,11 @@ import { DonorModule } from './donor/donor.module';
 import { CampaignModule } from './campaign/campaign.module';
 import { TicketModule } from './ticket/ticket.module';
 import { ZakatModule } from './zakat/zakat.module';
+import { UsersModule } from './users/user.module';
+import { AuthModule } from './auth/auth.module';
+import { AuthzedService } from './authzed/authzed.service';
+import { AuthzedModule } from './authzed/authzed.module';
+
 
 @Module({
   imports: [
@@ -61,8 +66,11 @@ import { ZakatModule } from './zakat/zakat.module';
     CampaignModule,
     TicketModule,
     ZakatModule,
+    UsersModule,
+    AuthModule,
+    AuthzedModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [AuthzedService],
 })
 export class AppModule {}
