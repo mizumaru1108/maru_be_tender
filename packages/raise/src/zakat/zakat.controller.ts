@@ -19,7 +19,7 @@ export class ZakatController {
     @Query('base') base: string,
     @Query('symbols') symbols: string,
   ) {
-    this.logger.debug('getMetalPrice...');
+    this.logger.debug(`getMetalPrice base=${base} symbols=${symbols}...`);
     return await this.zakatService.getMetalPrice(base, symbols);
   }
 }

@@ -40,13 +40,14 @@ export class ZakatService {
       url: apiUrl,
     };
 
-    this.logger.debug(`fetching data metal prices from ${apiUrl}`);
+    this.logger.debug(
+      `fetching data metal prices from ${apiUrl} params=${params} ...`,
+    );
     const response = await axios(options);
 
     if (response['status'] == 200 && response['data']['success']) {
       const data = response['data'];
-      this.logger.debug('success...');
-      this.logger.debug(data);
+      this.logger.debug('success:', data);
       const metalType = symbols ?? '';
       const filter = {
         currency: base,
@@ -56,7 +57,7 @@ export class ZakatService {
       const res = await this.metalPriceModel.updateMany(filter, {
         isActive: false,
       });
-      this.logger.debug(res); // Number of documents matched
+      this.logger.debug('response:', res); // Number of documents matched
       // this.logger.debug(res.nModified);
       const createMetalPriceDto = new CreateMetalPriceDto();
       const createdMetalPrice = new this.metalPriceModel(createMetalPriceDto);
@@ -67,17 +68,20 @@ export class ZakatService {
       createdMetalPrice.unit = data['unit'];
       createdMetalPrice.createdDate = data['date'];
       createdMetalPrice.isActive = true;
-      createdMetalPrice.save();
-      this.logger.debug('metal price has been successfully created...');
+      const created = await createdMetalPrice.save();
+      this.logger.debug(
+        'metal price has been successfully created...',
+        created,
+      );
       return { status: true, data: createdMetalPrice };
     } else {
-      this.logger.debug('failed...');
+      this.logger.error('failed!');
       return { status: false, data: response['data']['error'] };
     }
   }
 
   async fetchingMetalPrice() {
-    this.logger.debug('get metal prices...');
+    this.logger.debug('fetch metal prices using Metal API...');
     // const paymentJson = JSON.parse(JSON.stringify(payment));
     const sarCaratResults = await this._getMetalPrice(true, 'SAR');
     const sarTroyResults = await this._getMetalPrice(false, 'SAR', 'XAU,XAG');
@@ -96,8 +100,7 @@ export class ZakatService {
   }
 
   async getMetalPrice(base: string, metalType: string) {
-    this.logger.debug('getMetalPrice...');
-    this.logger.debug(metalType);
+    this.logger.debug(`getMetalPrice base=${base} metalType=${metalType}...`);
     metalType = metalType ? metalType : '';
     return await this.metalPriceModel.findOne({
       currency: base,
