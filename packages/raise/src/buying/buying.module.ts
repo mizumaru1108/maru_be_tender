@@ -1,13 +1,10 @@
 import { Module } from '@nestjs/common';
 // import { OrgsService } from './orgs.service';
 // import { OrgsController } from './orgs.controller';
-import { VendorController } from './vendor.controller';
-import { VendorService } from './vendor.service';
+import { VendorController } from './vendor/vendor.controller';
+import { VendorService } from './vendor/vendor.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import {
-  Vendor,
-  VendorSchema,
-} from './vendor.schema';
+import { Vendor, VendorSchema } from './vendor/vendor.schema';
 
 @Module({
   imports: [
@@ -18,7 +15,7 @@ import {
       },
     ]),
   ],
-  providers: [ VendorService],
-  controllers: [ VendorController],
+  providers: [VendorService],
+  controllers: [VendorController],
 })
-export class VendorModule {}
+export class BuyingModule {}

@@ -17,7 +17,6 @@ import { CrmModule } from './crm/crm.module';
 import { HrModule } from './hr/hr.module';
 import { FundraisingGiftModule } from './fundraising-gift/fundraising-gift.module';
 import { OrganizationModule } from './organization/organization.module';
-import { VendorModule } from './vendor/vendor.module';
 import { ReferralModule } from './referral/referral.module';
 import { IntegrationsModule } from './integrations/integrations.module';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -29,7 +28,7 @@ import { UsersModule } from './users/user.module';
 import { AuthModule } from './auth/auth.module';
 import { AuthzedService } from './authzed/authzed.service';
 import { AuthzedModule } from './authzed/authzed.module';
-
+import { BuyingModule } from './buying/buying.module';
 
 @Module({
   imports: [
@@ -60,7 +59,6 @@ import { AuthzedModule } from './authzed/authzed.module';
     FundraisingGiftModule,
     IntegrationsModule,
     OrganizationModule,
-    VendorModule,
     ReferralModule,
     DonorModule,
     CampaignModule,
@@ -69,6 +67,7 @@ import { AuthzedModule } from './authzed/authzed.module';
     UsersModule,
     AuthModule,
     AuthzedModule,
+    BuyingModule,
   ],
   controllers: [],
   providers: [AuthzedService],

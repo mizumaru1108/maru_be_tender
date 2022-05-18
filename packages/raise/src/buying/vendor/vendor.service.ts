@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { rootLogger } from '../logger';
-import {
-  Vendor,
-  VendorDocument,
-} from './vendor.schema';
+import { rootLogger } from '../../logger';
+import { Vendor, VendorDocument } from './vendor.schema';
 
 @Injectable()
 export class VendorService {
