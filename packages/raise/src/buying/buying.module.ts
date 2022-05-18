@@ -4,7 +4,12 @@ import { Module } from '@nestjs/common';
 import { VendorController } from './vendor/vendor.controller';
 import { VendorService } from './vendor/vendor.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Vendor, VendorSchema } from './vendor/vendor.schema';
+import {
+  Vendor,
+  VendorChartData,
+  VendorChartDataSchema,
+  VendorSchema,
+} from './vendor/vendor.schema';
 
 @Module({
   imports: [
@@ -12,6 +17,10 @@ import { Vendor, VendorSchema } from './vendor/vendor.schema';
       {
         name: Vendor.name,
         schema: VendorSchema,
+      },
+      {
+        name: VendorChartData.name,
+        schema: VendorChartDataSchema,
       },
     ]),
   ],

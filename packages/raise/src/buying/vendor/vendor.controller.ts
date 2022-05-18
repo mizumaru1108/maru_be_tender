@@ -1,7 +1,7 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { VendorService } from './vendor.service';
 import { rootLogger } from '../../logger';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('vendor')
 @Controller('vendor')
@@ -16,8 +16,11 @@ export class VendorController {
     return await this.vendorService.findAll();
   }
 
+  @ApiOperation({ summary: 'Get Chart Data' })
   @Get(':vendorId/getChartData')
-  async getChartData() {
+  async getChartData(@Param('vendorId') vendorId: string) {
+    this.logger.debug(`Get Chart Data for vendor ${vendorId}`);
+    await this.vendorService.getChartData(vendorId);
     const Income = [
       {
         name: 'Monthly',
