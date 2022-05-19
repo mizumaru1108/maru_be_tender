@@ -8,6 +8,8 @@ export type CampaignVendorLogDocument = CampaignVendorLog & Document;
 @Schema({ collection: 'vendor' })
 export class Vendor {
   @Prop()
+  vendorId: string;
+  @Prop()
   name: string;
   @Prop()
   ownerUserId: string;

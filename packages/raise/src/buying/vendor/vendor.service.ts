@@ -33,6 +33,11 @@ export class VendorService {
     return await this.vendorModel.find({}, {}, { sort: { name: 1 } });
   }
 
+  async getVendor(vendorId: string) {
+    this.logger.debug('findOne...');
+    return await this.vendorModel.findOne({ vendorId: vendorId });
+  }
+
   async getSummary(vendorId: string) {
     this.logger.debug(`vendorId: ${vendorId}`);
     const totalCampaigns = await this.campaignVendorLogModel
