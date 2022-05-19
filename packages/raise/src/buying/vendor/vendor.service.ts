@@ -30,59 +30,80 @@ export class VendorService {
   }
 
   async getChartData(vendorId: string) {
-    const now = moment();
-
     this.logger.debug(`vendorId: ${vendorId}`);
-    this.logger.debug(`now: ${now.format('YYYY-MM-DD')}`);
 
     const vendorChartDataDto = new VendorChartDataDto()
-    const { vendorIncomeDailyData, vendorCampaignDailyData } = await this.getDailyChartData(now, vendorId);
-    const { vendorIncomeMonthlyData, vendorCampaignMonthlyData } = await this.getMonthlyChartData(now, vendorId);
+    const { vendorIncomeDailyData, vendorCampaignDailyData } = await this.getDailyChartData( vendorId);
+    const { vendorIncomeMonthlyData, vendorCampaignMonthlyData } = await this.getMonthlyChartData( vendorId);
 
     vendorChartDataDto.Campaign = [vendorCampaignMonthlyData, vendorCampaignDailyData];
     vendorChartDataDto.Income = [vendorIncomeMonthlyData, vendorIncomeDailyData];
 
+    // console.log(`Result: ${JSON.stringify(vendorChartDataDto, null, 1)}`)
+
+    return vendorChartDataDto;
     // return await this.vendorModel.find({}, {}, { sort: { name: 1 } });
   }
 
-  private async getMonthlyChartData(now: moment.Moment, vendorId: string) {
+  private async getMonthlyChartData(vendorId: string) {
+    const now = moment();
     const vendorIncomeMonthlyData = new ChartDataDto();
     const vendorCampaignMonthlyData = new ChartDataDto();
     const year = now.year();
-    const month = now.month();
-    this.logger.debug(`year: ${year}`);
-    this.logger.debug(`month: ${month}`);
+    const month = moment().month() + 1;
+
+    const monthsLabel = moment.monthsShort().slice(0, month);
+    vendorIncomeMonthlyData.name = 'Monthly';
+    vendorCampaignMonthlyData.name = 'Monthly';
+    vendorIncomeMonthlyData.categories = monthsLabel;
+    vendorCampaignMonthlyData.categories = monthsLabel;
 
     const result =  await this.vendorChartDataModel.aggregate([
       {
-        $match: { vendorId: vendorId }
+        $match: { vendorId: vendorId, year: year }
       },
       { $group: { _id: { month : "$month", year : "$year" },
           income: { $sum: '$income' },
           incomeCount: { $sum: '$incomeCount' },
           campaign: {$sum: '$campaign'},
-          campaignCount: { $sum: '$campaignCount' }
+          campaignCount: { $sum: '$campaignCount' },
+          currency: {$min: '$currency'}
         }}
     ]);
 
-    console.log('result: ', JSON.stringify(result, null, 1));
+    const vendorIncomeDailyDataSum = result.reduce((prev, cur) => prev + (cur.income ?? 0), 0);
+    const vendorIncomeCampaignDataSum = result.reduce((prev, cur) => prev + (cur.campaign ?? 0), 0);
+    const vendorIncomeDailyDataCur = result.length > 0 ? result[0].currency : 'SAR';
+    vendorIncomeMonthlyData.value = `${vendorIncomeDailyDataSum} ${vendorIncomeDailyDataCur}`;
+    vendorCampaignMonthlyData.value = `${vendorIncomeCampaignDataSum} ${vendorIncomeDailyDataCur}`;
 
+    const incomeData = new ChartDetailData();
+    const campaignData = new ChartDetailData();
+    incomeData.name = 'Income';
+    campaignData.name = 'Campaign';
+    incomeData.data=  monthsLabel.map((_, index) =>
+      result.find(r => r._id.month == index + 1)?.incomeCount ?? 0
+    );
+    campaignData.data=  monthsLabel.map((_, index) =>
+      result.find(r => r._id.month == index + 1)?.campaignCount ?? 0
+    );
+
+    vendorIncomeMonthlyData.data = [incomeData];
+    vendorCampaignMonthlyData.data = [campaignData];
     return { vendorIncomeMonthlyData, vendorCampaignMonthlyData };
   }
 
-  private async getDailyChartData(now: moment.Moment, vendorId: string) {
+  private async getDailyChartData( vendorId: string) {
     const vendorIncomeDailyData = new ChartDataDto();
     const vendorCampaignDailyData = new ChartDataDto();
 
-
     const last7days = [...Array(7)].map((_, index) =>
-      now
+      moment()
         .subtract(index + 1, 'd')
         .format('YYYY-MM-DD'),
     );
 
-
-    this.logger.debug(`last7days: ${last7days}`);
+    // this.logger.debug(`last7days: ${last7days}`);
     const vendorDailyDataDocList = await this.vendorChartDataModel
       .find({ vendorId: vendorId, date: { $in: last7days } })
       .sort({ date: 1 });
