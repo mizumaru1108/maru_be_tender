@@ -5,6 +5,8 @@ import { VendorController } from './vendor/vendor.controller';
 import { VendorService } from './vendor/vendor.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
+  CampaignVendorLog,
+  CampaignVendorLogSchema,
   Vendor,
   VendorChartData,
   VendorChartDataSchema,
@@ -21,6 +23,10 @@ import {
       {
         name: VendorChartData.name,
         schema: VendorChartDataSchema,
+      },
+      {
+        name: CampaignVendorLog.name,
+        schema: CampaignVendorLogSchema,
       },
     ]),
   ],

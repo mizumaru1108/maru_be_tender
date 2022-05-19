@@ -3,6 +3,7 @@ import { Document } from 'mongoose';
 
 export type VendorDocument = Vendor & Document;
 export type VendorChartDataDocument = VendorChartData & Document;
+export type CampaignVendorLogDocument = CampaignVendorLog & Document;
 
 @Schema({ collection: 'vendor' })
 export class Vendor {
@@ -10,6 +11,22 @@ export class Vendor {
   name: string;
   @Prop()
   ownerUserId: string;
+}
+
+@Schema({ collection: 'campaignVendorLog' })
+export class CampaignVendorLog {
+  @Prop()
+  campaignId: string;
+  @Prop()
+  vendorId: string;
+  @Prop()
+  status: string;
+  @Prop()
+  createdAt: string;
+  @Prop()
+  updatedAt: string;
+  @Prop()
+  campaignVendorLogId: string;
 }
 
 @Schema({ collection: 'vendorChartData' })
@@ -57,3 +74,5 @@ export class VendorChartData {
 export const VendorSchema = SchemaFactory.createForClass(Vendor);
 export const VendorChartDataSchema =
   SchemaFactory.createForClass(VendorChartData);
+export const CampaignVendorLogSchema =
+  SchemaFactory.createForClass(CampaignVendorLog);

@@ -16,6 +16,13 @@ export class VendorController {
     return await this.vendorService.findAll();
   }
 
+  @ApiOperation({ summary: 'Get Summary' })
+  @Get(':vendorId/summary')
+  async getSummary(@Param('vendorId') vendorId: string) {
+    this.logger.debug(`Get Summary for vendor ${vendorId}`);
+    return await this.vendorService.getSummary(vendorId);
+  }
+
   @ApiOperation({ summary: 'Get Chart Data' })
   @Get(':vendorId/getChartData')
   async getChartData(@Param('vendorId') vendorId: string) {
