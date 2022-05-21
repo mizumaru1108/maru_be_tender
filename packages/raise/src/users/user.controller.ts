@@ -23,7 +23,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   async getAllUsers() {
     const users = await this.usersService.getAllUsers();
-    return users
+    return users;
   }
 
   @Get(':id')
@@ -44,4 +44,25 @@ export class UsersController {
     const user = await this.usersService.updateUser(id, name, email);
     return user;
   }
+
+  @Patch('/updateUserProfile')
+  async updateUserProfile(
+    @Body('userId') userId: string,
+    @Body('imageUrl') imageUrl: string,
+  ) {
+    return await this.usersService.updateAvatar(userId, imageUrl);
+  }
+
+  // @Post('/changePassword')
+  // async request(
+  //   @Body('email') email: string,
+  //   @Body('currentPassword') currentPassword: string,
+  //   @Body('newPassword') newPassword: string,
+  // ) {
+  //   return await this.usersService.changePassword(
+  //     email,
+  //     currentPassword,
+  //     newPassword,
+  //   );
+  // }
 }

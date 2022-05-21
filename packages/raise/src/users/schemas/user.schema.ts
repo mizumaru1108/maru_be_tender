@@ -4,10 +4,10 @@ import { Document, ObjectId } from 'mongoose';
 export type UserDocument = User & Document;
 
 export interface IUser {
-  _id: ObjectId,
-  name: string,
-  email: string,
-  password: string
+  _id: ObjectId;
+  name: string;
+  email: string;
+  password: string;
 }
 
 @Schema()

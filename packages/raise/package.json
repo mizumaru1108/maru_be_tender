@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@authzed/authzed-node": "^0.5.0",
+    "@fusionauth/typescript-client": "^1.36.0",
     "@nestjs-modules/mailer": "^1.6.1",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^2.0.0",
