@@ -5,6 +5,10 @@ import { Model } from 'mongoose';
 import axios, { AxiosRequestConfig } from 'axios';
 import { rootLogger } from '../logger';
 import { CreateMetalPriceDto } from './dto';
+import {
+  DonationLogs,
+  DonationLogDocument,
+} from '../donor/schema/donation_log.schema';
 import { MetalPrice, MetalPriceDocument } from './metalPrice.schema';
 
 @Injectable()
@@ -13,6 +17,8 @@ export class ZakatService {
   constructor(
     @InjectModel(MetalPrice.name)
     private metalPriceModel: Model<MetalPriceDocument>,
+    @InjectModel(DonationLogs.name)
+    private donationLogModel: Model<DonationLogDocument>,
     private configService: ConfigService,
   ) {}
 
@@ -106,6 +112,14 @@ export class ZakatService {
       currency: base,
       isActive: true,
       metalType: metalType,
+    });
+  }
+
+  async getTransactionList(organizationId: string) {
+    this.logger.debug(`getTransactions organizationId=${organizationId}`);
+    return await this.donationLogModel.find({
+      _id: organizationId,
+      type: 'zakat',
     });
   }
 }

@@ -22,4 +22,10 @@ export class ZakatController {
     this.logger.debug(`getMetalPrice base=${base} symbols=${symbols}...`);
     return await this.zakatService.getMetalPrice(base, symbols);
   }
+
+  @Get('transactionList')
+  async getTransactionList(@Query('organizationId') organizationId: string) {
+    this.logger.debug('fetching zakat transactions...');
+    return await this.zakatService.getTransactionList(organizationId);
+  }
 }
