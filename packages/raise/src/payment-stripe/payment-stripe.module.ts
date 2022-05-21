@@ -3,10 +3,36 @@ import { PaymentStripeService } from './payment-stripe.service';
 import { PaymentStripeController } from './payment-stripe.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PaymentGateway, PaymentGatewaySchema } from './paymentGateway.schema';
+import {
+  Organization,
+  OrganizationSchema,
+} from 'src/organization/organization.schema';
+import { Campaign, CampaignSchema } from 'src/campaign/campaign.schema';
+import {
+  DonationLogs,
+  DonationLogSchema,
+} from 'src/donor/schema/donation_log.schema';
+import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
+      {
+        name: Campaign.name,
+        schema: CampaignSchema,
+      },
+      {
+        name: DonationLogs.name,
+        schema: DonationLogSchema,
+      },
+      {
+        name: Donor.name,
+        schema: DonorSchema,
+      },
+      {
+        name: Organization.name,
+        schema: OrganizationSchema,
+      },
       {
         name: PaymentGateway.name,
         schema: PaymentGatewaySchema,

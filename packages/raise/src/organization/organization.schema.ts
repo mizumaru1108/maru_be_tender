@@ -13,6 +13,8 @@ export class Organization {
   username: string;
   @Prop()
   contactEmail: string;
+  @Prop()
+  defaultCurrency: string;
 }
 
 export const OrganizationSchema = SchemaFactory.createForClass(Organization);

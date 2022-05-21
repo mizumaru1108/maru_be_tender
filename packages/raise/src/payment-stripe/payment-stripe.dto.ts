@@ -1,7 +1,10 @@
 export class PaymentRequestDto {
-  organizationId: string;
-  success_url: string;
-  cancel_url: string;
-  price: string;
-  quantity: string;
+  nonprofitUserId: string;
+  campaignId: string;
+  donorUserId: string;
+  donorRealmId: string;
+  nonprofitRealmId: string;
+  type: string;
+  amount: string;
+  paymentMethodType: string;
 }
