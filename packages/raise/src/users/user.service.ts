@@ -75,11 +75,11 @@ export class UsersService {
   async updateAvatar(userId: string, imageUrl: string) {
     console.log(imageUrl);
     const fusionauth = new FusionAuthClient(
-      this.configService.get('FUSION_ADMIN_KEY', ''),
-      this.configService.get('FUSION_AUTH_URL', ''),
-      this.configService.get('FUSION_AUTH_TENANT_ID', ''),
+      this.configService.get('FUSIONAUTH_ADMIN_KEY', ''),
+      this.configService.get('FUSIONAUTH_URL', ''),
+      this.configService.get('FUSIONAUTH_TENANT_ID', ''),
     );
-    console.log(this.configService.get('FUSION_AUTH_URL', ''));
+    console.log(this.configService.get('FUSIONAUTH_URL', ''));
     try {
       const patchUser = await fusionauth.patchUser(userId, {
         user: {
@@ -112,11 +112,11 @@ export class UsersService {
   ) {
     console.log(email);
     const fusionauth = new FusionAuthClient(
-      this.configService.get('FUSION_ADMIN_KEY', ''),
-      this.configService.get('FUSION_AUTH_URL', ''),
-      this.configService.get('FUSION_AUTH_TENANT_ID', ''),
+      this.configService.get('FUSIONAUTH_ADMIN_KEY', ''),
+      this.configService.get('FUSIONAUTH_URL', ''),
+      this.configService.get('FUSIONAUTH_TENANT_ID', ''),
     );
-    console.log(this.configService.get('FUSION_AUTH_URL', ''));
+    console.log(this.configService.get('FUSIONAUTH_URL', ''));
     try {
       const changePassword = await fusionauth.changePasswordByIdentity({
         applicationId: 'b5ee66f1-cc1c-4185-97a9-e562ce8e98f6',
