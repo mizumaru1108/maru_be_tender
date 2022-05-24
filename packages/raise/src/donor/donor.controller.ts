@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Patch } from '@nestjs/common';
 import { rootLogger } from '../logger';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DonorService } from './donor.service';
@@ -25,8 +25,14 @@ export class DonorController {
     return await this.donorService.submitPayment(donorPaymentSubmitDto);
   }
 
+  @Get(':donorId')
+  async getDonor(@Param('donorId') donorId: string) {
+    this.logger.debug('findOne...');
+    return await this.donorService.getDonor(donorId);
+  }
+
   @Patch(':donorId')
-  async updateOrganization(
+  async updateDonor(
     @Param('donorId') donorId: string,
     @Body() donorUpdateProfileDto: DonorUpdateProfileDto,
   ) {

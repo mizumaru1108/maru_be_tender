@@ -42,6 +42,23 @@ export class DonorService {
     return log.save();
   }
 
+  async getDonor(donorId: string) {
+    this.logger.debug('Get Donor...');
+    const donor = await this.donorModel.findOne({
+      _id: donorId,
+    });
+    if (!donor) {
+      return {
+        statusCode: 404,
+        message: 'Donor not found',
+      };
+    }
+    return {
+      statusCode: 200,
+      donor,
+    };
+  }
+
   async updateDonor(
     donorId: string,
     donorUpdateProfileDto: DonorUpdateProfileDto,
