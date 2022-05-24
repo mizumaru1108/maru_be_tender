@@ -1,8 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Param, Post, Patch } from '@nestjs/common';
 import { rootLogger } from '../logger';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DonorService } from './donor.service';
-import { DonorPaymentSubmitDto } from './dto';
+import { DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
 
 @ApiTags('donor')
 @Controller('donor')
@@ -23,5 +23,15 @@ export class DonorController {
       JSON.stringify(donorPaymentSubmitDto),
     );
     return await this.donorService.submitPayment(donorPaymentSubmitDto);
+  }
+
+  @Patch(':donorId')
+  async updateOrganization(
+    @Param('donorId') donorId: string,
+    @Body() donorUpdateProfileDto: DonorUpdateProfileDto,
+  ) {
+    this.logger.debug('update donor');
+    this.logger.debug(JSON.stringify(donorUpdateProfileDto));
+    return await this.donorService.updateDonor(donorId, donorUpdateProfileDto);
   }
 }

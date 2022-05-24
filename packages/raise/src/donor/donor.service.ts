@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { rootLogger } from '../logger';
 import { Donor, DonorDocument } from './schema/donor.schema';
 import { CampaignSetFavoriteDto } from '../campaign/dto';
-import { DonorPaymentSubmitDto } from './dto';
+import { DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
 import { DonationLog, DonationLogDocument } from './schema/donation-log.schema';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
@@ -40,5 +40,27 @@ export class DonorService {
     log.createdAt = moment().toISOString();
     log.updatedAt = moment().toISOString();
     return log.save();
+  }
+
+  async updateDonor(
+    donorId: string,
+    donorUpdateProfileDto: DonorUpdateProfileDto,
+  ) {
+    const donorUpdated = await this.donorModel.findOneAndUpdate(
+      { _id: donorId },
+      donorUpdateProfileDto,
+      { new: true },
+    );
+
+    if (!donorUpdated) {
+      return {
+        statusCode: 400,
+        message: 'Failed',
+      };
+    }
+    return {
+      statusCode: 200,
+      donor: donorUpdated,
+    };
   }
 }
