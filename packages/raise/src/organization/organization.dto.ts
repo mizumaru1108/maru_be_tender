@@ -8,4 +8,8 @@ export class OrganizationDto {
   state: string;
   city: string;
   zipCode: string;
+  instagram: string;
+  facebook: string;
+  twitter: string;
+  contactWhatsapp: string;
 }
