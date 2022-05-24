@@ -14,7 +14,23 @@ export class Organization {
   @Prop()
   contactEmail: string;
   @Prop()
+  contactPhone: string;
+  @Prop()
   defaultCurrency: string;
+  @Prop()
+  country: string;
+  @Prop()
+  state: string;
+  @Prop()
+  city: string;
+  @Prop()
+  address: string;
+  @Prop()
+  zipCode: string;
+  @Prop()
+  aboutHeading: string;
+  @Prop()
+  aboutBody: string;
 }
 
 export const OrganizationSchema = SchemaFactory.createForClass(Organization);

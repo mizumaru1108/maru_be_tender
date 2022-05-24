@@ -22,7 +22,7 @@ export class ZakatService {
     private configService: ConfigService,
   ) {}
 
-  async _getMetalPrice(carat: boolean, base: string, symbols?: string) {
+  async _getMetalPrice(carat: boolean, base: string, createdDate?: string) {
     const params = new URLSearchParams();
     const metalAccessKey = this.configService.get('METAL_ACCESS_KEY');
     const metalLatestUrl = `${this.configService.get('METAL_API_URL')}/latest`;
@@ -33,8 +33,8 @@ export class ZakatService {
     let apiUrl = metalLatestUrl;
     if (carat) {
       apiUrl = metalCaratUrl;
-    } else if (symbols) {
-      params.append('symbols', symbols);
+    } else {
+      params.append('symbols', 'XAU,XAG');
     }
 
     const options: AxiosRequestConfig<any> = {
@@ -54,7 +54,7 @@ export class ZakatService {
     if (response['status'] == 200 && response['data']['success']) {
       const data = response['data'];
       this.logger.debug('success:', data);
-      const metalType = symbols ?? '';
+      const metalType = carat ? '' : 'XAU,XAG';
       const filter = {
         currency: base,
         metalType: metalType,
@@ -72,14 +72,18 @@ export class ZakatService {
       createdMetalPrice.currency = base;
       createdMetalPrice.rates = data['rates'];
       createdMetalPrice.unit = data['unit'];
-      createdMetalPrice.createdDate = data['date'];
+      createdMetalPrice.createdDate = createdDate ?? data['date'];
       createdMetalPrice.isActive = true;
       const created = await createdMetalPrice.save();
       this.logger.debug(
         'metal price has been successfully created...',
         created,
       );
-      return { status: true, data: createdMetalPrice };
+      return {
+        status: true,
+        data: createdMetalPrice,
+        createdDate: data['date'],
+      };
     } else {
       this.logger.error('failed!');
       return { status: false, data: response['data']['error'] };
@@ -89,12 +93,13 @@ export class ZakatService {
   async fetchingMetalPrice() {
     this.logger.debug('fetch metal prices using Metal API...');
     // const paymentJson = JSON.parse(JSON.stringify(payment));
-    const sarCaratResults = await this._getMetalPrice(true, 'SAR');
-    const sarTroyResults = await this._getMetalPrice(false, 'SAR', 'XAU,XAG');
-    const gbpCaratResults = await this._getMetalPrice(true, 'GBP');
-    const gbpTroyResults = await this._getMetalPrice(false, 'GBP', 'XAU,XAG');
-    const usdCaratResults = await this._getMetalPrice(true, 'USD');
-    const usdTroyResults = await this._getMetalPrice(false, 'USD', 'XAU,XAG');
+    const sarTroyResults = await this._getMetalPrice(false, 'SAR');
+    const createdDate = sarTroyResults['createdDate'];
+    const sarCaratResults = await this._getMetalPrice(true, 'SAR', createdDate);
+    const gbpCaratResults = await this._getMetalPrice(true, 'GBP', createdDate);
+    const gbpTroyResults = await this._getMetalPrice(false, 'GBP');
+    const usdCaratResults = await this._getMetalPrice(true, 'USD', createdDate);
+    const usdTroyResults = await this._getMetalPrice(false, 'USD');
     return {
       sarCaratResults: sarCaratResults['data'],
       sarTroyResults: sarTroyResults['data'],
