@@ -9,7 +9,10 @@ import {
   DonationLogs,
   DonationLogDocument,
 } from '../donor/schema/donation_log.schema';
-import { MetalPrice, MetalPriceDocument } from './metalPrice.schema';
+import { MetalPrice, MetalPriceDocument } from './schemas/metalPrice.schema';
+import { Expense, ExpenseDocument } from './schemas/expense.schema';
+import { ExpenseDto } from './dto/expense.dto';
+import moment from 'moment';
 
 @Injectable()
 export class ZakatService {
@@ -19,6 +22,8 @@ export class ZakatService {
     private metalPriceModel: Model<MetalPriceDocument>,
     @InjectModel(DonationLogs.name)
     private donationLogModel: Model<DonationLogDocument>,
+    @InjectModel(Expense.name)
+    private expenseModel: Model<ExpenseDocument>,
     private configService: ConfigService,
   ) {}
 
@@ -126,5 +131,19 @@ export class ZakatService {
       _id: organizationId,
       type: 'zakat',
     });
+  }
+
+  async getExpenseList(organizationId: string) {
+    this.logger.debug(`getExpenseList organizationId=${organizationId}`);
+    return await this.expenseModel.find({
+      type: 'zakat',
+      campaign: { organizationId: organizationId },
+    });
+  }
+
+  async createExpense(expenseDto: ExpenseDto): Promise<Expense> {
+    const createdExpense = new this.expenseModel(expenseDto);
+    createdExpense.createdDate = moment().toISOString();
+    return createdExpense.save();
   }
 }
