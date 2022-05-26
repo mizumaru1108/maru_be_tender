@@ -5,9 +5,11 @@ import { CreateCampaignDto } from './dto';
 import { Campaign, CampaignDocument } from './campaign.schema';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
+import { rootLogger } from '../logger';
 
 @Injectable()
 export class CampaignService {
+  private logger = rootLogger.child({ logger: CampaignService.name });
   constructor(
     @InjectModel(Campaign.name)
     private campaignModel: Model<CampaignDocument>,
@@ -22,5 +24,14 @@ export class CampaignService {
     createdCampaign.isDeleted = 'N';
     createdCampaign.isPublished = 'Y';
     return createdCampaign.save();
+  }
+
+  async findAll(organizationId: string) {
+    this.logger.debug(`getCampaignList organizationId=${organizationId}`);
+    let filter = {};
+
+    const ObjectId = require('mongoose').Types.ObjectId;
+    if (organizationId) filter = { organizationId: ObjectId(organizationId) };
+    return await this.campaignModel.find(filter).exec();
   }
 }

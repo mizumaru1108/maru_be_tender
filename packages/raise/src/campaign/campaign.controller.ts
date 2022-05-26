@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Query, Post } from '@nestjs/common';
 import { rootLogger } from '../logger';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CampaignSetFavoriteDto, CreateCampaignDto } from './dto';
@@ -38,5 +38,12 @@ export class CampaignController {
       JSON.stringify(createCampaignDto),
     );
     return await this.campaignService.create(createCampaignDto);
+  }
+
+  @Get('getListAll')
+  async findAll(@Query('organizationId') organizationId: string) {
+    this.logger.debug('findAll...');
+    return await this.campaignService.findAll(organizationId);
+    // return { message: 'hello' };
   }
 }

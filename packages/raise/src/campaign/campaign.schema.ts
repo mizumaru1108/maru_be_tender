@@ -27,6 +27,9 @@ export class Campaign {
   isFinished: string;
 
   @Prop()
+  finishedDate: string;
+
+  @Prop()
   isMoney: string;
 
   @Prop()
@@ -57,13 +60,22 @@ export class Campaign {
   createdAt: string;
 
   @Prop()
+  createdBy: string;
+
+  @Prop()
   updatedAt: string;
+
+  @Prop()
+  updatedBy: string;
 
   @Prop()
   isDeleted: string;
 
   @Prop()
   isPublished: string;
+
+  @Prop()
+  images: Array<Object>;
 }
 
 export const CampaignSchema = SchemaFactory.createForClass(Campaign);

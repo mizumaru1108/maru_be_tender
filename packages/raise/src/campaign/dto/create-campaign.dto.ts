@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+class Image {
+  id: string;
+  url: string;
+}
+
 export class CreateCampaignDto {
   @ApiProperty()
   readonly organizationId: string;
@@ -42,4 +47,7 @@ export class CreateCampaignDto {
 
   @ApiProperty()
   readonly image3: string;
+
+  @ApiProperty()
+  readonly images: Array<Image>;
 }

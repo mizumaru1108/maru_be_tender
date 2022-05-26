@@ -136,8 +136,8 @@ export class ZakatService {
   async getExpenseList(organizationId: string) {
     this.logger.debug(`getExpenseList organizationId=${organizationId}`);
     return await this.expenseModel.find({
-      type: 'zakat',
-      campaign: { organizationId: organizationId },
+      // type: 'zakat',
+      createdBy: organizationId,
     });
   }
 
