@@ -29,9 +29,11 @@ import { AuthModule } from './auth/auth.module';
 import { AuthzedService } from './authzed/authzed.service';
 import { AuthzedModule } from './authzed/authzed.module';
 import { BuyingModule } from './buying/buying.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot(),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],

@@ -40,6 +40,7 @@
     "@nestjs/mongoose": "^9.0.3",
     "@nestjs/passport": "^8.2.1",
     "@nestjs/platform-fastify": "^8.4.4",
+    "@nestjs/schedule": "^2.0.1",
     "@nestjs/swagger": "^5.2.1",
     "@typegoose/typegoose": "^9.8.0",
     "@types/nodemailer": "^6.4.4",
