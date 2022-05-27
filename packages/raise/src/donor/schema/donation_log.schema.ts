@@ -3,16 +3,13 @@ import { Document } from 'mongoose';
 
 export type DonationLogDocument = DonationLogs & Document;
 
-@Schema({ collection: 'donation_log' }) // for zakat transaction (Tmra Fund)
+@Schema({ collection: 'donation_log' }) // for zakat transaction
 export class DonationLogs {
-  @Prop()
-  donationUserId: string;
+  // @Prop()
+  // donorId: string;
 
-  @Prop()
-  nonprofitRealmId: string;
-
-  @Prop()
-  donorRealmId: string;
+  // @Prop()
+  // nonprofitRealmId: string;
 
   @Prop()
   organizationId: string;
@@ -22,6 +19,9 @@ export class DonationLogs {
 
   @Prop()
   donorId: string;
+
+  @Prop()
+  donorName: string;
 
   @Prop()
   type: string;

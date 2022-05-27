@@ -2,7 +2,10 @@ import { Module } from '@nestjs/common';
 import { PaymentStripeService } from './payment-stripe.service';
 import { PaymentStripeController } from './payment-stripe.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { PaymentGateway, PaymentGatewaySchema } from './paymentGateway.schema';
+import {
+  PaymentGateway,
+  PaymentGatewaySchema,
+} from './schema/paymentGateway.schema';
 import {
   Organization,
   OrganizationSchema,
@@ -13,6 +16,7 @@ import {
   DonationLogSchema,
 } from 'src/donor/schema/donation_log.schema';
 import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
+import { PaymentData } from './schema/paymentData.schema';
 
 @Module({
   imports: [
@@ -32,6 +36,10 @@ import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
       {
         name: Organization.name,
         schema: OrganizationSchema,
+      },
+      {
+        name: PaymentData.name,
+        schema: PaymentGatewaySchema,
       },
       {
         name: PaymentGateway.name,

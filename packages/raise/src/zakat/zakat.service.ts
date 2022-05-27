@@ -9,10 +9,15 @@ import {
   DonationLogs,
   DonationLogDocument,
 } from '../donor/schema/donation_log.schema';
+import {
+  Organization,
+  OrganizationDocument,
+} from '../organization/organization.schema';
 import { MetalPrice, MetalPriceDocument } from './schemas/metalPrice.schema';
 import { Expense, ExpenseDocument } from './schemas/expense.schema';
 import { ExpenseDto } from './dto/expense.dto';
 import moment from 'moment';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class ZakatService {
@@ -24,6 +29,8 @@ export class ZakatService {
     private donationLogModel: Model<DonationLogDocument>,
     @InjectModel(Expense.name)
     private expenseModel: Model<ExpenseDocument>,
+    @InjectModel(Organization.name)
+    private organizationModel: Model<OrganizationDocument>,
     private configService: ConfigService,
   ) {}
 
@@ -95,6 +102,7 @@ export class ZakatService {
     }
   }
 
+  @Cron('0 0 0 * * 1,4')
   async fetchingMetalPrice() {
     this.logger.debug('fetch metal prices using Metal API...');
     // const paymentJson = JSON.parse(JSON.stringify(payment));
@@ -128,17 +136,39 @@ export class ZakatService {
   async getTransactionList(organizationId: string) {
     this.logger.debug(`getTransactions organizationId=${organizationId}`);
     return await this.donationLogModel.find({
-      _id: organizationId,
+      organizationId: organizationId,
       type: 'zakat',
     });
   }
 
   async getExpenseList(organizationId: string) {
     this.logger.debug(`getExpenseList organizationId=${organizationId}`);
-    return await this.expenseModel.find({
-      // type: 'zakat',
-      createdBy: organizationId,
+    const getOrganization = await this.organizationModel.findOne({
+      _id: organizationId,
     });
+    if (!getOrganization) {
+      const txtMessage = `request rejected organizationId not found`;
+      return {
+        statusCode: 514,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({
+          message: txtMessage,
+        }),
+      };
+    }
+
+    const objectList = this.expenseModel.aggregate([
+      { $match: { createdBy: organizationId } },
+      {
+        $addFields: {
+          organizationName: getOrganization.name,
+        },
+      },
+    ]);
+    console.log(objectList);
+    return objectList;
   }
 
   async createExpense(expenseDto: ExpenseDto): Promise<Expense> {
@@ -146,4 +176,9 @@ export class ZakatService {
     createdExpense.createdDate = moment().toISOString();
     return createdExpense.save();
   }
+
+  // @Cron('45 * * * * *')
+  // handleCron() {
+  //   this.logger.debug('Called when the current second is 45');
+  // }
 }

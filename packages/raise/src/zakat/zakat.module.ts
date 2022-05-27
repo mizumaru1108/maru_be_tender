@@ -8,6 +8,10 @@ import {
   DonationLogs,
   DonationLogSchema,
 } from 'src/donor/schema/donation_log.schema';
+import {
+  Organization,
+  OrganizationSchema,
+} from 'src/organization/organization.schema';
 import { Expense, ExpenseSchema } from './schemas/expense.schema';
 
 @Module({
@@ -24,6 +28,10 @@ import { Expense, ExpenseSchema } from './schemas/expense.schema';
       {
         name: MetalPrice.name,
         schema: MetalPriceSchema,
+      },
+      {
+        name: Organization.name,
+        schema: OrganizationSchema,
       },
     ]),
     ConfigModule,
