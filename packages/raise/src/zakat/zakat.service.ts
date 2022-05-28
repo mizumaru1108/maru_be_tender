@@ -133,6 +133,49 @@ export class ZakatService {
     });
   }
 
+  async getTransactionAll(organizationId: string) {
+    this.logger.debug(`getTransactions organizationId=${organizationId}`);
+    const getOrganization = await this.organizationModel.findOne({
+      _id: organizationId,
+    });
+    if (!getOrganization) {
+      const txtMessage = `request rejected organizationId not found`;
+      return {
+        statusCode: 514,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({
+          message: txtMessage,
+        }),
+      };
+    }
+
+    const expenseList = await this.expenseModel.aggregate([
+      { $match: { createdBy: organizationId } },
+      {
+        $addFields: {
+          organizationName: getOrganization.name,
+          createdAt: '$createdDate',
+        },
+      },
+    ]);
+    // console.log(expenseList);
+    const donationList = await this.donationLogModel.find({
+      organizationId: organizationId,
+      type: 'zakat',
+    });
+    // console.log(donationList);
+    let transactionAll: any = [];
+    transactionAll = transactionAll.concat(donationList);
+    transactionAll = transactionAll.concat(expenseList);
+    transactionAll.sort(
+      (x: DonationLogs, y: DonationLogs) =>
+        +new Date(x.createdAt) - +new Date(y.createdAt),
+    );
+    return transactionAll;
+  }
+
   async getTransactionList(organizationId: string) {
     this.logger.debug(`getTransactions organizationId=${organizationId}`);
     return await this.donationLogModel.find({
@@ -167,7 +210,7 @@ export class ZakatService {
         },
       },
     ]);
-    console.log(objectList);
+    // console.log(objectList);
     return objectList;
   }
 
