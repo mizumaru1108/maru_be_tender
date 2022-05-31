@@ -16,7 +16,7 @@ import {
   DonationLogSchema,
 } from 'src/donor/schema/donation_log.schema';
 import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
-import { PaymentData } from './schema/paymentData.schema';
+import { PaymentData, PaymentDataSchema } from './schema/paymentData.schema';
 
 @Module({
   imports: [
@@ -39,7 +39,7 @@ import { PaymentData } from './schema/paymentData.schema';
       },
       {
         name: PaymentData.name,
-        schema: PaymentGatewaySchema,
+        schema: PaymentDataSchema,
       },
       {
         name: PaymentGateway.name,

@@ -18,6 +18,8 @@ export class PaymentGateway {
   @Prop({ type: () => String })
   public apiKey?: string;
   @Prop({ type: () => String })
+  public serverKey?: string;
+  @Prop({ type: () => String })
   public createdAt?: string;
   @Prop({ type: () => String })
   public updatedAt?: string;
