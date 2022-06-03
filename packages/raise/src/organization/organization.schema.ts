@@ -32,6 +32,8 @@ export class Organization {
   @Prop()
   aboutBody: string;
   @Prop()
+  aboutPicture: string;
+  @Prop()
   instagram: string;
   @Prop()
   facebook: string;
@@ -39,6 +41,8 @@ export class Organization {
   twitter: string;
   @Prop()
   contactWhatsapp: string;
+  @Prop()
+  ownerUserId: string;
 }
 
 export const OrganizationSchema = SchemaFactory.createForClass(Organization);

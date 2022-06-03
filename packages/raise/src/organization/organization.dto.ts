@@ -4,6 +4,7 @@ export class OrganizationDto {
   contactPhone: string;
   aboutHeading: string;
   aboutBody: string;
+  aboutPicture: string;
   country: string;
   state: string;
   city: string;
