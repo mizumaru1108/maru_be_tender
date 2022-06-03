@@ -5,50 +5,31 @@ export type DonationLogDocument = DonationLogs & Document;
 
 @Schema({ collection: 'donation_log' }) // for zakat transaction
 export class DonationLogs {
-  // @Prop()
-  // donorId: string;
-
-  // @Prop()
-  // nonprofitRealmId: string;
-
-  @Prop()
-  organizationId: string;
-
-  @Prop()
-  campaignId: string;
-
-  @Prop()
-  donorId: string;
-
-  @Prop()
-  donorName: string;
-
-  @Prop()
-  type: string;
-
-  @Prop()
-  donationStatus: string;
-
-  @Prop()
-  paymentGatewayId: string;
-
-  @Prop()
-  amount: number;
-
-  @Prop()
-  currency: string;
-
-  @Prop()
-  transactionId: string;
-
-  @Prop()
-  ipAddress: string;
-
-  @Prop()
-  createdAt: string;
-
-  @Prop()
-  updatedAt: string;
+  @Prop({ type: () => String })
+  public _id?: string;
+  @Prop({ type: () => String })
+  public nonprofitRealmId?: string;
+  @Prop({ type: () => String })
+  public campaignId?: string;
+  @Prop({ type: () => String })
+  donorUserId?: string;
+  public type?: string;
+  @Prop({ type: () => String })
+  public donationStatus?: string;
+  @Prop({ type: () => String })
+  public paymentGatewayId?: string;
+  @Prop({ type: () => String })
+  public amount?: string;
+  @Prop({ type: () => String })
+  public currency?: string;
+  @Prop({ type: () => String })
+  public transactionId?: string;
+  @Prop({ type: () => String })
+  public createdAt: string;
+  @Prop({ type: () => String })
+  public updatedAt: string;
+  @Prop({ type: () => String })
+  public ipAddress?: string;
 }
 
 export const DonationLogSchema = SchemaFactory.createForClass(DonationLogs);

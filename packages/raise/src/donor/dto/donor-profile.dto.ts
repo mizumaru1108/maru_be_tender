@@ -2,6 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class DonorUpdateProfileDto {
   @ApiProperty()
+  readonly isAnonymous: boolean;
+
+  @ApiProperty()
   readonly about: string;
 
   @ApiProperty()

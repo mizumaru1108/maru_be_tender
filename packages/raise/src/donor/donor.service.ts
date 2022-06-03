@@ -59,6 +59,22 @@ export class DonorService {
     };
   }
 
+  async addDonor(donorAddProfileDto: DonorUpdateProfileDto) {
+    const newDonor = new this.donorModel(donorAddProfileDto);
+    newDonor.save();
+
+    if (!newDonor) {
+      return {
+        statusCode: 400,
+        message: 'Failed',
+      };
+    }
+    return {
+      statusCode: 200,
+      donor: newDonor,
+    };
+  }
+
   async updateDonor(
     donorId: string,
     donorUpdateProfileDto: DonorUpdateProfileDto,

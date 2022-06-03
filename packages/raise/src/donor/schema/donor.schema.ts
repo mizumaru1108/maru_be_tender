@@ -6,6 +6,9 @@ export type DonorDocument = Donor & Document;
 @Schema({ collection: 'donor' })
 export class Donor {
   @Prop()
+  isAnonymous: boolean;
+
+  @Prop()
   id: string;
 
   @Prop()

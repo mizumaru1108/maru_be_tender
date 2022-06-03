@@ -31,6 +31,13 @@ export class DonorController {
     return await this.donorService.getDonor(donorId);
   }
 
+  @Post('create')
+  async createDonor(@Body() donorProfileDto: DonorUpdateProfileDto) {
+    this.logger.debug('create donor');
+    this.logger.debug(JSON.stringify(donorProfileDto));
+    return await this.donorService.addDonor(donorProfileDto);
+  }
+
   @Patch(':donorId')
   async updateDonor(
     @Param('donorId') donorId: string,
