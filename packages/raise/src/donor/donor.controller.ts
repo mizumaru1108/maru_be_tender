@@ -31,11 +31,11 @@ export class DonorController {
     return await this.donorService.getDonor(donorId);
   }
 
-  @Post('create')
+  @Post('anonymous/create')
   async createDonor(@Body() donorProfileDto: DonorUpdateProfileDto) {
-    this.logger.debug('create donor');
+    this.logger.debug('create donor as anonymous user');
     this.logger.debug(JSON.stringify(donorProfileDto));
-    return await this.donorService.addDonor(donorProfileDto);
+    return await this.donorService.addAnonymousDonor(donorProfileDto);
   }
 
   @Patch(':donorId')

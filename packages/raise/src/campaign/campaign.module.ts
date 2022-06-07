@@ -9,22 +9,23 @@ import {
   DonationLog,
   DonationLogSchema,
 } from '../donor/schema/donation-log.schema';
+import { Anonymous, AnonymousSchema } from 'src/donor/schema/anonymous.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       {
+        name: Anonymous.name,
+        schema: AnonymousSchema,
+      },
+      {
         name: Donor.name,
         schema: DonorSchema,
       },
-    ]),
-    MongooseModule.forFeature([
       {
         name: Campaign.name,
         schema: CampaignSchema,
       },
-    ]),
-    MongooseModule.forFeature([
       {
         name: DonationLog.name,
         schema: DonationLogSchema,

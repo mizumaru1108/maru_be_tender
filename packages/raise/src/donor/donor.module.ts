@@ -5,16 +5,19 @@ import { MongooseModule } from '@nestjs/mongoose';
 // import { DonorController } from './donor.controller';
 import { DonationLog, DonationLogSchema } from './schema/donation-log.schema';
 import { DonorController } from './donor.controller';
+import { Anonymous, AnonymousSchema } from './schema/anonymous.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       {
+        name: Anonymous.name,
+        schema: AnonymousSchema,
+      },
+      {
         name: Donor.name,
         schema: DonorSchema,
       },
-    ]),
-    MongooseModule.forFeature([
       {
         name: DonationLog.name,
         schema: DonationLogSchema,

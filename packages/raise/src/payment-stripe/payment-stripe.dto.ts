@@ -1,7 +1,9 @@
+import { Types } from 'mongoose';
+
 export class PaymentRequestDto {
-  organizationId: string;
+  organizationId: Types.ObjectId;
   campaignId: string;
-  donorId: string;
+  donorId: Types.ObjectId;
   type: string;
   amount: string;
   paymentMethodType: string;

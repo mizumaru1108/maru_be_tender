@@ -8,6 +8,7 @@ import { DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
 import { DonationLog, DonationLogDocument } from './schema/donation-log.schema';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
+import { Anonymous, AnonymousDocument } from './schema/anonymous.schema';
 
 @Injectable()
 export class DonorService {
@@ -18,6 +19,8 @@ export class DonorService {
     private donorModel: Model<DonorDocument>,
     @InjectModel(DonationLog.name)
     private donationLogModel: Model<DonationLogDocument>,
+    @InjectModel(Anonymous.name)
+    private anonymousModel: Model<AnonymousDocument>,
   ) {}
 
   async setFavoriteCampaign(campaignSetFavoriteDto: CampaignSetFavoriteDto) {
@@ -59,8 +62,8 @@ export class DonorService {
     };
   }
 
-  async addDonor(donorAddProfileDto: DonorUpdateProfileDto) {
-    const newDonor = new this.donorModel(donorAddProfileDto);
+  async addAnonymousDonor(donorAddProfileDto: DonorUpdateProfileDto) {
+    const newDonor = new this.anonymousModel(donorAddProfileDto);
     newDonor.save();
 
     if (!newDonor) {

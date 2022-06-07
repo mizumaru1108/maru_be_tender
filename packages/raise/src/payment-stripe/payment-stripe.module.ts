@@ -17,10 +17,15 @@ import {
 } from 'src/donor/schema/donation_log.schema';
 import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
 import { PaymentData, PaymentDataSchema } from './schema/paymentData.schema';
+import { Anonymous, AnonymousSchema } from 'src/donor/schema/anonymous.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
+      {
+        name: Anonymous.name,
+        schema: AnonymousSchema,
+      },
       {
         name: Campaign.name,
         schema: CampaignSchema,

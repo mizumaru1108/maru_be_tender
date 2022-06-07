@@ -19,6 +19,10 @@ import {
 import { PaymentRequestDto } from './payment-stripe.dto';
 import { Donor, DonorDocument } from 'src/donor/schema/donor.schema';
 import { PaymentData, PaymentDataDocument } from './schema/paymentData.schema';
+import {
+  Anonymous,
+  AnonymousDocument,
+} from 'src/donor/schema/anonymous.schema';
 
 @Injectable()
 export class PaymentStripeService {
@@ -35,6 +39,8 @@ export class PaymentStripeService {
     private campaignModel: mongoose.Model<CampaignDocument>,
     @InjectModel(Donor.name)
     private donorModel: mongoose.Model<DonorDocument>,
+    @InjectModel(Anonymous.name)
+    private anonymousModel: mongoose.Model<AnonymousDocument>,
     @InjectModel(DonationLogs.name)
     private donationLogModel: mongoose.Model<DonationLogDocument>,
   ) {}
@@ -44,22 +50,23 @@ export class PaymentStripeService {
     let txtMessage = '';
     let stripeCallbackUrl = '';
     // let amount = '';
-    let donorId = '';
+    // let donorId = '';
+    let isAnonymous = false;
     let donor = null;
     let currency = payment.currency;
 
     const ObjectId = require('mongoose').Types.ObjectId;
     console.log(payment);
     if (
+      !payment.organizationId ||
+      !payment.campaignId ||
+      !payment.donorId ||
+      !ObjectId.isValid(payment.campaignId) ||
       !ObjectId.isValid(payment.organizationId) ||
-      // !mongoose.Types.ObjectId.isValid(payment.campaignId) ||
-      // !mongoose.isValidObjectId(payment.nonprofitUserId) ||
-      // !mongoose.isValidObjectId(payment.donorUserId) ||
-      // !mongoose.isValidObjectId(payment.donorRealmId) ||
-      // !mongoose.isValidObjectId(payment.nonprofitRealmId) ||
-      // !payment.paymentMethodType ||
-      !payment.type
-      // !payment.amount
+      !payment.success_url ||
+      !payment.cancel_url ||
+      !payment.price ||
+      !payment.quantity
     ) {
       txtMessage = 'Bad Request';
       return {
@@ -102,8 +109,9 @@ export class PaymentStripeService {
       console.log('debug', getCampaign);
     }
 
+    console.log('debug', payment.organizationId);
     const getSecretKey = await this.paymentGatewayModel.findOne(
-      { organizationId: payment.organizationId },
+      { organizationId: ObjectId(payment.organizationId) },
       { apiKey: 1, _id: 0 },
     );
 
@@ -130,16 +138,23 @@ export class PaymentStripeService {
       });
 
       if (!donor) {
-        txtMessage = 'user not found,  donation service is not available';
-        return {
-          statusCode: 516, //user not found
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-          },
-          body: JSON.stringify({
-            message: txtMessage,
-          }),
-        };
+        donor = await this.anonymousModel.findOne({
+          _id: payment.donorId,
+        });
+        if (!donor) {
+          txtMessage = 'user not found,  donation service is not available';
+          return {
+            statusCode: 516, //user not found
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+            },
+            body: JSON.stringify({
+              message: txtMessage,
+            }),
+          };
+        } else {
+          isAnonymous = true;
+        }
       }
     }
 
@@ -188,21 +203,20 @@ export class PaymentStripeService {
     let now: Date = new Date();
     const getDonationLog = await new this.donationLogModel({
       _id: objectIdDonation,
-      organizationId: payment.organizationId,
-      donorId: payment.donorId,
-      donorName: donor ? `${donor.firstName} ${donor.lastName}` : null,
+      nonprofitRealmId: ObjectId(payment.organizationId),
+      donorUserId: isAnonymous ? null : ObjectId(payment.donorId),
+      // donorName: donor ? `${donor.firstName} ${donor.lastName}` : null,
       // amount: payment.amount,
       amount: amount,
       createdAt: now.toISOString(),
       updatedAt: now.toISOString(),
       campaignId: payment.campaignId,
-      donorUserId: donorId,
       currency: currency,
       donationStatus: 'PENDING',
-      type: payment.type,
-      ipAddress: '',
-      paymentGatewayId: 'PAYSTRIPE',
-      transactionId: data['data']['id'],
+      // type: payment.type,
+      // ipAddress: '',
+      // paymentGatewayId: 'PAYSTRIPE',
+      // transactionId: data['data']['id'],
     }).save();
 
     if (!getDonationLog) {
