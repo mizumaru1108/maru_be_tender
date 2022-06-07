@@ -30,6 +30,7 @@ import { AuthzedService } from './authzed/authzed.service';
 import { AuthzedModule } from './authzed/authzed.module';
 import { BuyingModule } from './buying/buying.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     AuthModule,
     AuthzedModule,
     BuyingModule,
+    UploadModule,
   ],
   controllers: [],
   providers: [AuthzedService],
