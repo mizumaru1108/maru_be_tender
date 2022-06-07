@@ -31,7 +31,7 @@ export class DonorController {
     return await this.donorService.getDonor(donorId);
   }
 
-  @Post('anonymous/create')
+  @Post('anonymous')
   async createDonor(@Body() donorProfileDto: DonorUpdateProfileDto) {
     this.logger.debug('create donor as anonymous user');
     this.logger.debug(JSON.stringify(donorProfileDto));
