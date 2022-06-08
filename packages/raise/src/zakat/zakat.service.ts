@@ -238,12 +238,24 @@ export class ZakatService {
           as: 'user',
         },
       },
+      // {
+      //   $set: {
+      //     donorName: {
+      //       $concat: [
+      //         { $arrayElemAt: ['$user.firstname', 0] },
+      //         ' ',
+      //         { $arrayElemAt: ['$user.lastname', 0] },
+      //       ],
+      //     },
+      //   },
+      // },
       {
         $unwind: {
           path: '$user',
           preserveNullAndEmptyArrays: true,
         },
       },
+
       {
         $lookup: {
           from: 'anonymous',
@@ -258,12 +270,30 @@ export class ZakatService {
           preserveNullAndEmptyArrays: true,
         },
       },
-      // {
-      //   $addFields: {
-      //     donorName: getOrganization.name,
-      //     createdAt: '$createdDate',
-      //   },
-      // },
+      {
+        $addFields: {
+          donorName: {
+            $cond: {
+              if: { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              then: {
+                $concat: ['$anonymous.firstName', ' ', '$anonymous.lastName'],
+              },
+              else: {
+                $concat: ['$user.firstname', ' ', '$user.lastname'],
+              },
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          createdAt: { $first: '$createdAt' },
+          donationStatus: { $first: '$donationStatus' },
+          amount: { $first: '$amount' },
+          donorName: { $first: '$donorName' },
+        },
+      },
     ]);
   }
 

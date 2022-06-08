@@ -7,8 +7,8 @@ export type PaymentDataDocument = PaymentData & Document;
 export class PaymentData {
   @Prop({ type: () => Types.ObjectId })
   public _id?: Types.ObjectId;
-  @Prop({ type: () => String })
-  public donationId?: string;
+  @Prop({ type: () => Types.ObjectId })
+  public donationId?: Types.ObjectId;
   @Prop({ type: () => String })
   public merchantId?: string;
   @Prop({ type: () => String })
