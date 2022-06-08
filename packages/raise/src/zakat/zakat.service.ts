@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import axios, { AxiosRequestConfig } from 'axios';
 import { rootLogger } from '../logger';
 import { CreateMetalPriceDto } from './dto';
@@ -133,6 +133,43 @@ export class ZakatService {
     });
   }
 
+  async getSummary(organizationId: string) {
+    this.logger.debug(`getSummary organizationId=${organizationId}`);
+    const getOrganization = await this.organizationModel.findOne({
+      _id: organizationId,
+    });
+    if (!getOrganization) {
+      const txtMessage = `request rejected organizationId not found`;
+      return {
+        statusCode: 514,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({
+          message: txtMessage,
+        }),
+      };
+    }
+    const donationList = await this.donationLogModel.aggregate([
+      {
+        $match: {
+          nonprofitRealmId: new Types.ObjectId(organizationId),
+          campaignId: new Types.ObjectId('6299ed6a9f1ad428563563ed'),
+          donationStatus: 'SUCCESSFUL',
+        },
+      },
+      {
+        $group: {
+          _id: { nonprofitRealmId: '$nonprofitRealmId' },
+          total: { $sum: '$amount' },
+        },
+      },
+    ]);
+    console.log(donationList);
+    const totalReceive = donationList.length == 0 ? 0 : donationList[0].total;
+    return { total_receive: totalReceive };
+  }
+
   async getTransactionAll(organizationId: string) {
     this.logger.debug(`getTransactions organizationId=${organizationId}`);
     const getOrganization = await this.organizationModel.findOne({
@@ -151,24 +188,24 @@ export class ZakatService {
       };
     }
 
-    const expenseList = await this.expenseModel.aggregate([
-      { $match: { createdBy: organizationId } },
-      {
-        $addFields: {
-          organizationName: getOrganization.name,
-          createdAt: '$createdDate',
-        },
-      },
-    ]);
+    // const expenseList = await this.expenseModel.aggregate([
+    //   { $match: { createdBy: organizationId } },
+    //   {
+    //     $addFields: {
+    //       organizationName: getOrganization.name,
+    //       createdAt: '$createdDate',
+    //     },
+    //   },
+    // ]);
     // console.log(expenseList);
     const donationList = await this.donationLogModel.find({
-      organizationId: organizationId,
-      type: 'zakat',
+      nonprofitRealmId: new Types.ObjectId(organizationId),
+      campaignId: new Types.ObjectId('6299ed6a9f1ad428563563ed'),
     });
     // console.log(donationList);
     let transactionAll: any = [];
     transactionAll = transactionAll.concat(donationList);
-    transactionAll = transactionAll.concat(expenseList);
+    // transactionAll = transactionAll.concat(expenseList);
     transactionAll.sort(
       (x: DonationLogs, y: DonationLogs) =>
         +new Date(x.createdAt) - +new Date(y.createdAt),
@@ -178,10 +215,61 @@ export class ZakatService {
 
   async getTransactionList(organizationId: string) {
     this.logger.debug(`getTransactions organizationId=${organizationId}`);
-    return await this.donationLogModel.find({
-      organizationId: organizationId,
-      type: 'zakat',
-    });
+    // const list = await this.donationLogModel
+    //   .find({
+    //     nonprofitRealmId: new Types.ObjectId(organizationId),
+    //     campaignId: new Types.ObjectId('6299ed6a9f1ad428563563ed'),
+    //   })
+    //   .populate('donorUserId');
+    // console.log(list[0]?.donorUserId);
+    // return list;
+    return await this.donationLogModel.aggregate([
+      {
+        $match: {
+          nonprofitRealmId: new Types.ObjectId(organizationId),
+          campaignId: new Types.ObjectId('6299ed6a9f1ad428563563ed'),
+        },
+      },
+      {
+        $addFields: {
+          test: '$donorUserId.firstname',
+        },
+      },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'donorUserId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'anonymous',
+          localField: '_id',
+          foreignField: 'donationLogId',
+          as: 'anonymous',
+        },
+      },
+      {
+        $unwind: {
+          path: '$anonymous',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      // {
+      //   $addFields: {
+      //     donorName: getOrganization.name,
+      //     createdAt: '$createdDate',
+      //   },
+      // },
+    ]);
   }
 
   async getExpenseList(organizationId: string) {

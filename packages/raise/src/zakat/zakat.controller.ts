@@ -24,6 +24,12 @@ export class ZakatController {
     return await this.zakatService.getMetalPrice(base, symbols);
   }
 
+  @Get('getSummary')
+  async getSummary(@Query('organizationId') organizationId: string) {
+    this.logger.debug('fetching summary for zakat transaction...');
+    return await this.zakatService.getSummary(organizationId);
+  }
+
   @Get('transactionAll')
   async getTransactionAll(@Query('organizationId') organizationId: string) {
     this.logger.debug('fetching zakat transaction All...');

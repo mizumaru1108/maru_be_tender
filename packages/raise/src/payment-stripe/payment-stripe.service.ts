@@ -204,13 +204,13 @@ export class PaymentStripeService {
     const getDonationLog = await new this.donationLogModel({
       _id: objectIdDonation,
       nonprofitRealmId: ObjectId(payment.organizationId),
-      donorUserId: isAnonymous ? null : ObjectId(payment.donorId),
+      donorUserId: isAnonymous ? null : payment.donorId,
       // donorName: donor ? `${donor.firstName} ${donor.lastName}` : null,
       // amount: payment.amount,
-      amount: amount,
+      amount: Number(amount),
       createdAt: now.toISOString(),
       updatedAt: now.toISOString(),
-      campaignId: payment.campaignId,
+      campaignId: ObjectId(payment.campaignId),
       currency: currency,
       donationStatus: 'PENDING',
       // type: payment.type,
@@ -234,6 +234,14 @@ export class PaymentStripeService {
 
     //insert data to paymentData
     let objectIdPayment = new ObjectId();
+    if (isAnonymous) {
+      // donor.donorLogId = objectIdDonation;
+      // donor.save();
+      await this.anonymousModel.findOneAndUpdate(
+        { _id: payment.donorId },
+        { donationLogId: objectIdDonation },
+      );
+    }
     const insertPaymentData = await new this.paymentDataModel({
       _id: objectIdPayment,
       donationId: objectIdDonation,

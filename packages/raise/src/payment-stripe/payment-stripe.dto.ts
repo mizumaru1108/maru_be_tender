@@ -2,10 +2,10 @@ import { Types } from 'mongoose';
 
 export class PaymentRequestDto {
   organizationId: Types.ObjectId;
-  campaignId: string;
+  campaignId: Types.ObjectId;
   donorId: Types.ObjectId;
   type: string;
-  amount: string;
+  amount: number;
   paymentMethodType: string;
   currency: string;
   success_url: string;

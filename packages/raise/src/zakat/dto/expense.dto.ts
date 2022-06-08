@@ -3,7 +3,7 @@ export class ExpenseDto {
   readonly campaignId: string;
   readonly referenceId: string;
   readonly expenseDate: string;
-  readonly amount: string;
+  readonly amount: number;
   readonly createdDate: string;
   readonly createdBy: string;
 }

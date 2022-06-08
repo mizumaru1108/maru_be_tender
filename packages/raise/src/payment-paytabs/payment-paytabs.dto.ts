@@ -6,6 +6,6 @@ export class PaymentRequestDto {
   // donorRealmId: string;
   // nonprofitRealmId: string;
   type: string;
-  amount: string;
+  amount: number;
   currency: string;
 }

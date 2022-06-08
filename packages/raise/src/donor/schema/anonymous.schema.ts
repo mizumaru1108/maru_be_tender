@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type AnonymousDocument = Anonymous & Document;
 
@@ -11,8 +11,11 @@ export class Anonymous {
   @Prop()
   id: string;
 
+  @Prop({ type: Types.ObjectId })
+  public donationLogId: Types.ObjectId;
+
   @Prop()
-  donorLogId: string;
+  giftAid: boolean;
 
   @Prop()
   email: string;

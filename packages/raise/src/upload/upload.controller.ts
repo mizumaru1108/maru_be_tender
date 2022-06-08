@@ -6,10 +6,10 @@ import { UploadService } from './upload.service';
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
-  @Get()
-  getHello(): string {
-    return this.uploadService.getHello();
-  }
+  // @Get()
+  // getHello(): string {
+  //   return this.uploadService.getHello();
+  // }
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))

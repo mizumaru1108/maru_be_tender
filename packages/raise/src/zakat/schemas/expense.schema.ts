@@ -23,7 +23,7 @@ export class Expense {
   expenseDate: string;
 
   @Prop()
-  amount: string;
+  amount: number;
 
   @Prop()
   createdDate: string;
