@@ -1,17 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { rootLogger } from '../logger';
 import { FusionAuthClient } from '@fusionauth/typescript-client';
 import { ConfigService } from '@nestjs/config';
 import { OrganizationDto } from './organization.dto';
 import { Organization, OrganizationDocument } from './organization.schema';
+import {
+  DonationLogDocument,
+  DonationLogs,
+} from 'src/donor/schema/donation_log.schema';
+import { Donor, DonorDocument } from 'src/donor/schema/donor.schema';
 
 @Injectable()
 export class OrganizationService {
   private logger = rootLogger.child({ logger: OrganizationService.name });
 
   constructor(
+    @InjectModel(DonationLogs.name)
+    private donationLogModel: Model<DonationLogDocument>,
+    @InjectModel(Donor.name)
+    private donorModel: Model<DonorDocument>,
     @InjectModel(Organization.name)
     private organizationModel: Model<OrganizationDocument>,
     private configService: ConfigService,
@@ -85,5 +94,49 @@ export class OrganizationService {
       statusCode: 200,
       organization: orgUpdated,
     };
+  }
+  async getDonorList(organizationId: string) {
+    this.logger.debug(`getDonorList organizationId=${organizationId}`);
+    // const donorUserIds = await this.donationLogModel
+    //   .find({
+    //     nonprofitRealmId: new Types.ObjectId(organizationId),
+    //     donationStatus: 'PENDING',
+    //     donorUserId: { $ne: null },
+    //   })
+    //   .distinct('donorUserId');
+    // return await this.donorModel.find({ ownerUserId: { $in: donorUserIds } });
+    return await this.donationLogModel.aggregate([
+      {
+        $match: {
+          nonprofitRealmId: new Types.ObjectId(organizationId),
+          donationStatus: 'SUCCESSFUL',
+          donorUserId: { $ne: null },
+        },
+      },
+      {
+        $lookup: {
+          from: 'donor',
+          localField: 'donorUserId',
+          foreignField: 'ownerUserId',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+        },
+      },
+      {
+        $group: {
+          _id: '$donorUserId',
+          donorId: { $first: '$user._id' },
+          firstName: { $first: '$user.firstName' },
+          lastName: { $first: '$user.lastName' },
+          email: { $first: '$user.email' },
+          country: { $first: '$user.country' },
+          mobile: { $first: '$user.mobile' },
+        },
+      },
+    ]);
   }
 }

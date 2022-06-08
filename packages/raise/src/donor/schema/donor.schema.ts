@@ -12,6 +12,9 @@ export class Donor {
   id: string;
 
   @Prop()
+  ownerUserId: string;
+
+  @Prop()
   donorId: string;
 
   @Prop()

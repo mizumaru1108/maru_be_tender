@@ -9,6 +9,10 @@ import {
   DonationLog,
   DonationLogSchema,
 } from '../donor/schema/donation-log.schema';
+import {
+  DonationLogs,
+  DonationLogSchema as DonationLogsSchema,
+} from '../donor/schema/donation_log.schema';
 import { Anonymous, AnonymousSchema } from 'src/donor/schema/anonymous.schema';
 
 @Module({
@@ -29,6 +33,10 @@ import { Anonymous, AnonymousSchema } from 'src/donor/schema/anonymous.schema';
       {
         name: DonationLog.name,
         schema: DonationLogSchema,
+      },
+      {
+        name: DonationLogs.name,
+        schema: DonationLogsSchema,
       },
     ]),
   ],

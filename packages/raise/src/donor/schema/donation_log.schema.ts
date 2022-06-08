@@ -7,14 +7,15 @@ export type DonationLogDocument = DonationLogs & Document;
 export class DonationLogs {
   @Prop({ type: () => String })
   public _id?: string;
-  @Prop({ type: () => String })
+  @Prop({ type: () => String, ref: 'Organization' })
   public nonprofitRealmId?: string;
-  @Prop({ type: Types.ObjectId })
+  @Prop({ type: Types.ObjectId, ref: 'Campaign' })
   public campaignId?: Types.ObjectId;
-  // @Prop({ type: String, ref: 'User' })
-  // user?: string;
+  @Prop({ type: String, ref: 'Donor' })
+  donor?: string;
   @Prop({ type: String, ref: 'User' })
   donorUserId?: string;
+  @Prop({ type: () => String })
   public type?: string;
   @Prop({ type: () => String })
   public donationStatus?: string;

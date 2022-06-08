@@ -5,6 +5,10 @@ import { rootLogger } from '../logger';
 import { Donor, DonorDocument } from './schema/donor.schema';
 import { CampaignSetFavoriteDto } from '../campaign/dto';
 import { DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
+import {
+  DonationLogs,
+  DonationLogDocument as DonationLogsDocument,
+} from './schema/donation_log.schema';
 import { DonationLog, DonationLogDocument } from './schema/donation-log.schema';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
@@ -19,6 +23,8 @@ export class DonorService {
     private donorModel: Model<DonorDocument>,
     @InjectModel(DonationLog.name)
     private donationLogModel: Model<DonationLogDocument>,
+    @InjectModel(DonationLogs.name)
+    private donationLogsModel: Model<DonationLogsDocument>,
     @InjectModel(Anonymous.name)
     private anonymousModel: Model<AnonymousDocument>,
   ) {}
@@ -98,5 +104,54 @@ export class DonorService {
       statusCode: 200,
       donor: donorUpdated,
     };
+  }
+
+  async getDonationLogs(donorUserId: string) {
+    this.logger.debug('Get Donation logs...');
+    const donationLogList = await this.donationLogsModel.aggregate([
+      {
+        $match: { donorUserId: donorUserId },
+      },
+      {
+        $lookup: {
+          from: 'campaign',
+          localField: 'campaignId',
+          foreignField: '_id',
+          as: 'campaign',
+        },
+      },
+      {
+        $unwind: {
+          path: '$campaign',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'organization',
+          localField: 'nonprofitRealmId',
+          foreignField: '_id',
+          as: 'organization',
+        },
+      },
+      {
+        $unwind: {
+          path: '$organization',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          createdAt: { $first: '$createdAt' },
+          donationStatus: { $first: '$donationStatus' },
+          amount: { $first: '$amount' },
+          campaignName: { $first: '$campaign.campaignName' },
+          campaignType: { $first: '$campaign.campaignType' },
+          organizationName: { $first: '$organization.name' },
+        },
+      },
+    ]);
+    return donationLogList;
   }
 }

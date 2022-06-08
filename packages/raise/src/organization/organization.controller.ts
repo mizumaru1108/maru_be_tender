@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { rootLogger } from '../logger';
 import { ApiTags } from '@nestjs/swagger';
@@ -11,7 +11,7 @@ export class OrganizationController {
 
   constructor(private organizationService: OrganizationService) {}
 
-  @Get('/getListAll')
+  @Get('getListAll')
   async findAll() {
     this.logger.debug('findAll...');
     return await this.organizationService.findAll();
@@ -34,5 +34,11 @@ export class OrganizationController {
       organizationId,
       organizationDto,
     );
+  }
+
+  @Get('donors')
+  async getDonorList(@Query('organizationId') organizationId: string) {
+    this.logger.debug('fetching donor list...');
+    return await this.organizationService.getDonorList(organizationId);
   }
 }

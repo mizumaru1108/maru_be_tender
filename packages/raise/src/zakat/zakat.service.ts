@@ -231,11 +231,6 @@ export class ZakatService {
         },
       },
       {
-        $addFields: {
-          test: '$donorUserId.firstname',
-        },
-      },
-      {
         $lookup: {
           from: 'user',
           localField: 'donorUserId',
@@ -306,6 +301,23 @@ export class ZakatService {
     const createdExpense = new this.expenseModel(expenseDto);
     createdExpense.createdDate = moment().toISOString();
     return createdExpense.save();
+  }
+
+  async getDonorList(organizationId: string) {
+    this.logger.debug(`getDonorList organizationId=${organizationId}`);
+    return await this.donationLogModel.aggregate([
+      {
+        $match: {
+          nonprofitRealmId: new Types.ObjectId(organizationId),
+          donationStatus: 'SUCCESSFUL',
+        },
+      },
+      {
+        $group: {
+          _id: { donorUserId: '$donorUserId' },
+        },
+      },
+    ]);
   }
 
   // @Cron('45 * * * * *')
