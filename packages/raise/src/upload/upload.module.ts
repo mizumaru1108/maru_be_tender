@@ -6,8 +6,8 @@ import { MulterModule } from '@nestjs/platform-express';
 @Module({
   imports: [
     MulterModule.register({
-      dest: './uploads'
-    })
+      dest: '/tmp/tmra-raise-uploads',
+    }),
   ],
   controllers: [UploadController],
   providers: [UploadService],
