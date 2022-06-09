@@ -18,6 +18,7 @@ import {
 import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
 import { PaymentData, PaymentDataSchema } from './schema/paymentData.schema';
 import { Anonymous, AnonymousSchema } from 'src/donor/schema/anonymous.schema';
+import { User, UserSchema } from 'src/users/schemas/user.schema';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { Anonymous, AnonymousSchema } from 'src/donor/schema/anonymous.schema';
         name: PaymentGateway.name,
         schema: PaymentGatewaySchema,
       },
+      { name: User.name, schema: UserSchema },
     ]),
   ],
   providers: [PaymentStripeService],

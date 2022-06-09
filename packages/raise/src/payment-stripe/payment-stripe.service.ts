@@ -23,6 +23,7 @@ import {
   Anonymous,
   AnonymousDocument,
 } from 'src/donor/schema/anonymous.schema';
+import { User } from 'src/users/schemas/user.schema';
 
 @Injectable()
 export class PaymentStripeService {
@@ -43,6 +44,8 @@ export class PaymentStripeService {
     private anonymousModel: mongoose.Model<AnonymousDocument>,
     @InjectModel(DonationLogs.name)
     private donationLogModel: mongoose.Model<DonationLogDocument>,
+    @InjectModel('User')
+    private readonly userModel: mongoose.Model<User>,
   ) {}
 
   async stripeRequest(payment: PaymentRequestDto) {
@@ -133,27 +136,35 @@ export class PaymentStripeService {
     //let getUser = new UserModel();
     console.log(payment.donorId);
     if (payment.donorId) {
-      donor = await this.donorModel.findOne({
-        _id: payment.donorId,
-      });
-
-      if (!donor) {
-        donor = await this.anonymousModel.findOne({
+      // console.log('donorid');
+      // console.log(payment.donorId);
+      if (!ObjectId.isValid(payment.donorId)) {
+        donor = await this.userModel.findOne({
           _id: payment.donorId,
         });
+      } else {
+        donor = await this.donorModel.findOne({
+          _id: payment.donorId,
+        });
+
         if (!donor) {
-          txtMessage = 'user not found,  donation service is not available';
-          return {
-            statusCode: 516, //user not found
-            headers: {
-              'Access-Control-Allow-Origin': '*',
-            },
-            body: JSON.stringify({
-              message: txtMessage,
-            }),
-          };
-        } else {
-          isAnonymous = true;
+          donor = await this.anonymousModel.findOne({
+            _id: payment.donorId,
+          });
+          if (!donor) {
+            txtMessage = 'user not found,  donation service is not available';
+            return {
+              statusCode: 516, //user not found
+              headers: {
+                'Access-Control-Allow-Origin': '*',
+              },
+              body: JSON.stringify({
+                message: txtMessage,
+              }),
+            };
+          } else {
+            isAnonymous = true;
+          }
         }
       }
     }
@@ -234,6 +245,7 @@ export class PaymentStripeService {
 
     //insert data to paymentData
     let objectIdPayment = new ObjectId();
+    // this.logger.debug(isAnonymous.toString);
     if (isAnonymous) {
       // donor.donorLogId = objectIdDonation;
       // donor.save();
