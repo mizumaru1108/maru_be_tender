@@ -215,7 +215,7 @@ export class PaymentStripeService {
     const getDonationLog = await new this.donationLogModel({
       _id: objectIdDonation,
       nonprofitRealmId: ObjectId(payment.organizationId),
-      donorUserId: isAnonymous ? null : payment.donorId,
+      donorUserId: isAnonymous ? '' : payment.donorId,
       // donorName: donor ? `${donor.firstName} ${donor.lastName}` : null,
       // amount: payment.amount,
       amount: Number(amount),
