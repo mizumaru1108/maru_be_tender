@@ -32,6 +32,7 @@ import { BuyingModule } from './buying/buying.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { UploadModule } from './upload/upload.module';
 import { OperatorModule } from './operator/operator.module';
+import { ManagerModule } from './manager/manager.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { OperatorModule } from './operator/operator.module';
     OrganizationModule,
     ReferralModule,
     DonorModule,
+    ManagerModule,
     CampaignModule,
     OperatorModule,
     TicketModule,
