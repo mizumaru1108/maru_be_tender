@@ -109,7 +109,7 @@ export class OrganizationService {
       {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
-          donationStatus: 'SUCCESSFUL',
+          donationStatus: 'SUCCESS',
           donorUserId: { $ne: null },
         },
       },
