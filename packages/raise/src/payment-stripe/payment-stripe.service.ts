@@ -205,7 +205,8 @@ export class PaymentStripeService {
       };
     }
 
-    const amount = data['data']['amount_total'].toString().slice(0, 2);
+    const amountStr = data['data']['amount_total'].toString();
+    const amount = amountStr.substring(0, amountStr.length - 2);
 
     console.log('amount unit', amount);
 
