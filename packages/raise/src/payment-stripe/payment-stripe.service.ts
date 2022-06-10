@@ -23,7 +23,7 @@ import {
   Anonymous,
   AnonymousDocument,
 } from 'src/donor/schema/anonymous.schema';
-import { User } from 'src/users/schemas/user.schema';
+import { User, UserDocument } from 'src/users/schemas/user.schema';
 
 @Injectable()
 export class PaymentStripeService {
@@ -44,8 +44,8 @@ export class PaymentStripeService {
     private anonymousModel: mongoose.Model<AnonymousDocument>,
     @InjectModel(DonationLogs.name)
     private donationLogModel: mongoose.Model<DonationLogDocument>,
-    @InjectModel('User')
-    private readonly userModel: mongoose.Model<User>,
+    @InjectModel(User.name)
+    private readonly userModel: mongoose.Model<UserDocument>,
   ) {}
 
   async stripeRequest(payment: PaymentRequestDto) {
@@ -56,6 +56,7 @@ export class PaymentStripeService {
     // let donorId = '';
     let isAnonymous = false;
     let donor = null;
+    // let donorName = '';
     let currency = payment.currency;
 
     const ObjectId = require('mongoose').Types.ObjectId;
@@ -142,6 +143,7 @@ export class PaymentStripeService {
         donor = await this.userModel.findOne({
           _id: payment.donorId,
         });
+        // if (donor) donorName = `${donor.firstname} ${donor.lastname ?? ''}`;
       } else {
         donor = await this.donorModel.findOne({
           _id: payment.donorId,
@@ -166,6 +168,8 @@ export class PaymentStripeService {
             isAnonymous = true;
           }
         }
+
+        // if (donor) donorName = `${donor.firstName} ${donor.lastName ?? ''}`;
       }
     }
 
@@ -173,6 +177,8 @@ export class PaymentStripeService {
     const params = new URLSearchParams();
     if (donor) {
       params.append('customer_email', donor.email);
+      // params.append('customer', {'email': donor.email, name: donorName});
+      // params.append('customer_name', donorName);
     }
     params.append('success_url', payment.success_url);
     params.append('cancel_url', payment.cancel_url);

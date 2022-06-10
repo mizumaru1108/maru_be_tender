@@ -10,13 +10,19 @@ export interface IUser {
   password: string;
 }
 
-@Schema()
+@Schema({ collection: 'user' })
 export class User {
   @Prop({ type: String })
   _id: string;
 
   @Prop({ required: true })
   name: string;
+
+  @Prop({ required: true })
+  firstname: string;
+
+  @Prop({ required: true })
+  lastname: string;
 
   @Prop({ required: true })
   email: string;
