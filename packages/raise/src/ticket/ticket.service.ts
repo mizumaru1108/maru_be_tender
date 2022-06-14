@@ -22,16 +22,16 @@ export class TicketService {
   }
 
   async getListAll(){
-    data = [
-      {
-        "id": 123
-    },
-    {
-      "id": 124
-    },
-    {
-      "id": 125
-    }];
+    const data = [
+                {
+                  "id": 123
+              },
+              {
+                "id": 124
+              },
+              {
+                "id": 125
+              }];
 
     return data;
   }
