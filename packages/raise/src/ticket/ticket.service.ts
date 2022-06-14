@@ -5,9 +5,13 @@ import { CreateTicketDto } from './dto';
 import { Ticket, TicketDocument } from './ticket.schema';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
+import { rootLogger } from '../logger';
+
 
 @Injectable()
 export class TicketService {
+  private logger = rootLogger.child({ logger: TicketService.name });
+
   constructor(
     @InjectModel(Ticket.name)
     private ticketModel: Model<TicketDocument>,
@@ -22,16 +26,42 @@ export class TicketService {
   }
 
   async getListAll(){
-    const data = [
-                {
-                  "id": 123
-              },
-              {
-                "id": 124
-              },
-              {
-                "id": 125
-              }];
+    this.logger.debug('Get ticket list ...');
+    const data = await this.ticketModel.aggregate([
+      {
+        $lookup: {
+          from: 'ticketLog',
+          localField: 'ticketId',
+          foreignField: 'ticketId',
+          as: 'ticketLog'
+        }
+      },
+      {
+        $unwind: {
+          path: '$ticketLog',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          title: { $first: '$title' },
+          department: { $first: '$department' },
+          updatedAt: { $first: '$ticketLog.updatedAt' },
+          status: { $first: '$ticketLog.status' },
+        },
+      }
+    ]);
+    // const data = [
+    //             {
+    //               "id": 123
+    //           },
+    //           {
+    //             "id": 124
+    //           },
+    //           {
+    //             "id": 125
+    //           }];
 
     return data;
   }
