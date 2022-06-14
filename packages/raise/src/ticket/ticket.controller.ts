@@ -21,4 +21,12 @@ export class TicketController {
     this.logger.debug('create new ticket ', JSON.stringify(createTicketDto));
     return await this.ticketService.create(createTicketDto);
   }
+
+  @ApiOperation({ summary: 'Get All Ticket with its status' })
+  @Get('getListAll')
+  async getAllTickets() {
+    this.logger.debug(`Get all tickets`);
+    return await this.ticketService.getListAll();
+  }
+
 }

@@ -20,4 +20,19 @@ export class TicketService {
     createdTicket.updatedAt = moment().toISOString();
     return createdTicket.save();
   }
+
+  async getListAll(){
+    data = [
+      {
+        "id": 123
+    },
+    {
+      "id": 124
+    },
+    {
+      "id": 125
+    }];
+
+    return data;
+  }
 }
