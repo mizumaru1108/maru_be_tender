@@ -41,7 +41,7 @@ export class OperatorService {
       {
         $lookup: {
           from: 'project',
-          localField: 'projectOperatorMap.projectId',
+          localField: 'operatorMap.projectId',
           foreignField: 'projectId',
           as: 'project',
         },
