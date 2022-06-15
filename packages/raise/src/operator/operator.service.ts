@@ -3,7 +3,8 @@ import { rootLogger } from '../logger';
 import moment from 'moment';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { OperatorChartData, OperatorChartDataDocument } from './operator.schema';
+import { OperatorChartData, OperatorChartDataDocument } from './schema/operator-chart.schema';
+import { Operator, OperatorDocument } from './schema/operator.schema';
 import { isDocumentArray } from '@typegoose/typegoose';
 import { ChartDataDto, ChartDetailData } from './dto/chart-data.dto';
 import { OperatorChartDataDto } from './dto/operator-chart-data.dto';
@@ -15,7 +16,54 @@ export class OperatorService {
   constructor(
     @InjectModel(OperatorChartData.name)
     private operatorChartDataModel: Model<OperatorChartDataDocument>,
+    @InjectModel(Operator.name)
+    private operatorModel: Model<OperatorDocument>,
     ) {}
+
+  
+  async getListAll(){
+    this.logger.debug('Get list all operator with its project...');
+    const operatorList = await this.operatorModel.aggregate([
+      {
+        $lookup: {
+          from: 'projectOperatorMap',
+          localField: 'operatorId',
+          foreignField: 'operatorId',
+          as: 'operatorMap',
+        },
+      },
+      {
+        $unwind: {
+          path: '$operatorMap',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'project',
+          localField: 'projectOperatorMap.projectId',
+          foreignField: 'projectId',
+          as: 'project',
+        },
+      },
+      {
+        $unwind: {
+          path: '$project',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$name' },
+          projectName: { $first: '$project.name' },
+          createdAt: { $first: '$projet.createdAt' },
+        },
+      },
+    ]);
+    return operatorList;
+  }
+
 
   async getChartData(operatorId: string) {
     this.logger.debug(`operatorId: ${operatorId}`);

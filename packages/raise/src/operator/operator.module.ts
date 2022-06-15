@@ -2,7 +2,8 @@ import { Module } from '@nestjs/common';
 import { OperatorService } from './operator.service';
 import { OperatorController } from './operator.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { OperatorChartData, OperatorChartDataSchema } from './operator.schema';
+import { OperatorChartData, OperatorChartDataSchema } from './schema/operator-chart.schema';
+import { Operator, OperatorSchema } from './schema/operator.schema';
 
 @Module({
   imports: [
@@ -10,6 +11,10 @@ import { OperatorChartData, OperatorChartDataSchema } from './operator.schema';
       {
         name: OperatorChartData.name,
         schema: OperatorChartDataSchema,
+      },
+      {
+        name: Operator.name,
+        schema: OperatorSchema,
       },
     ]),
   ],

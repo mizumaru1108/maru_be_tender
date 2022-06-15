@@ -10,6 +10,14 @@ export class OperatorController {
 
   constructor(private operatorService: OperatorService) {}
 
+
+  @ApiOperation({ summary: 'Get List All Operator' })
+  @Get('getListAll')
+  async getListAll() {
+    this.logger.debug(`Get list all operator `);
+    return await this.operatorService.getListAll();
+  }
+
   @ApiOperation({ summary: 'Get Chart Data' })
   @Get(':operatorId/getChartData')
   async getChartData(@Param('operatorId') operatorId: string) {
