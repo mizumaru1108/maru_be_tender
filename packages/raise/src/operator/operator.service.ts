@@ -57,7 +57,7 @@ export class OperatorService {
           _id: '$_id',
           name: { $first: '$name' },
           projectName: { $first: '$project.name' },
-          createdAt: { $first: '$projet.createdAt' },
+          createdAt: { $first: '$project.createdAt' },
         },
       },
     ]);
