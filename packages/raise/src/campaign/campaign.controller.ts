@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Query, Post } from '@nestjs/common';
+import { Body, Controller, Get, Query, Post, Param } from '@nestjs/common';
 import { rootLogger } from '../logger';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CampaignSetFavoriteDto, CreateCampaignDto } from './dto';
@@ -45,5 +45,12 @@ export class CampaignController {
     this.logger.debug('findAll...');
     return await this.campaignService.findAll(organizationId);
     // return { message: 'hello' };
+  }
+
+  @ApiOperation({ summary: 'Get list all campaign by organizationID'})
+  @Get('organization/:organizationId/getListAll')
+  async getAllByOrganizationId(@Param('organizationId') organizationId: string){
+    this.logger.debug(`Get list all campaign by organization ID`);
+    return await this.campaignService.getAllByOrganizationId(organizationId);
   }
 }

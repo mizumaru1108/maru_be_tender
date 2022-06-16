@@ -34,4 +34,39 @@ export class CampaignService {
     if (organizationId) filter = { organizationId: ObjectId(organizationId) };
     return await this.campaignModel.find(filter).exec();
   }
+
+  async getAllByOrganizationId(organizationId: string){
+    // let filter = {};
+    // const ObjectId = require('mongoose').Types.ObjectId;
+    // if (organizationId) filter = { organizationId: ObjectId(organizationId) };
+    // return await this.campaignModel.find(filter).exec();
+
+    const campaignList = await this.campaignModel.aggregate([
+      {
+        $lookup: {
+          from: 'campaignVendorLog',
+          localField: '_id',
+          foreignField: 'campaignId',
+          as: 'campaignVendorLog',
+        },
+      },
+      {
+        $unwind: {
+          path: '$campaignVendorLog',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$campaignName' },
+          type: { $first: '$campaignType' },
+          updatedAt: { $first: '$updatedAt' },
+          status: { $first: '$campaignVendorLog.status' },
+          milestone: {$first: '$milestone'}
+        },
+      },
+    ]);
+    return campaignList;
+  }
 }
