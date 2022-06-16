@@ -43,6 +43,15 @@ export class CampaignService {
 
     const campaignList = await this.campaignModel.aggregate([
       {
+        $project: {
+            campaignName: 1,
+            campaignType: 1,
+            updatedAt: 1,
+            status: 1,
+            foo_count:{$size:"$milestone"},
+        }
+      },
+      {
         $lookup: {
           from: 'campaignVendorLog',
           localField: '_id',
@@ -53,7 +62,6 @@ export class CampaignService {
       {
         $unwind: {
           path: '$campaignVendorLog',
-          preserveNullAndEmptyArrays: true,
         },
       },
       {
@@ -63,7 +71,7 @@ export class CampaignService {
           type: { $first: '$campaignType' },
           updatedAt: { $first: '$updatedAt' },
           status: { $first: '$campaignVendorLog.status' },
-          milestone: {$first: '$milestone'}
+          milestone:  {$first: '$foo_count'}
         },
       },
     ]);
