@@ -26,39 +26,35 @@ export class OperatorService {
     const operatorList = await this.operatorModel.aggregate([
       {
         $lookup: {
-          from: 'projectOperatorMap',
+          from: 'operator',
           localField: 'operatorId',
-          foreignField: 'operatorId',
-          as: 'operatorMap',
+          foreignField: '_id',
+          as: 'op',
         },
       },
       {
         $unwind: {
-          path: '$operatorMap',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $lookup: {
-          from: 'project',
-          localField: 'operatorMap.projectId',
-          foreignField: 'projectId',
-          as: 'project',
-        },
-      },
-      {
-        $unwind: {
-          path: '$project',
+          path: '$op',
           preserveNullAndEmptyArrays: true,
         },
       },
       {
         $group: {
-          _id: '$_id',
-          name: { $first: '$name' },
-          projectName: { $first: '$project.name' },
-          createdAt: { $first: '$project.createdAt' },
+          _id:"$op._id", 
+          name: { $first: '$op.name' },
+          createdAt: { $first: '$op.createdAt' },
+          projectId: { $first: '$projectId' },
+          count:{$sum:1},
         },
+      },
+        {
+       $project: {
+           _id: 1,
+           name: 1,
+           createdAt: 1,
+           projectId: 1,
+           projectCount: "$count",
+           }
       },
     ]);
     return operatorList;
