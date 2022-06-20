@@ -11,7 +11,7 @@ export class ProjectsController {
 
   @ApiOperation({ summary: 'Get All Projects viewed by manager' })
   @Get('getListAll')
-  async getAllTickets() {
+  async getAllProjects() {
     this.logger.debug(`Get all projects`);
     return await this.projectsService.getListAll();
   }
