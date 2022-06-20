@@ -11,6 +11,10 @@ import {
 } from 'src/donor/schema/donation_log.schema';
 import { Organization, OrganizationSchema } from './organization.schema';
 import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
+import {
+  PaymentGateway,
+  PaymentGatewaySchema,
+} from 'src/payment-stripe/schema/paymentGateway.schema';
 
 @Module({
   imports: [
@@ -26,6 +30,10 @@ import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
       {
         name: Organization.name,
         schema: OrganizationSchema,
+      },
+      {
+        name: PaymentGateway.name,
+        schema: PaymentGatewaySchema,
       },
     ]),
     ConfigModule,

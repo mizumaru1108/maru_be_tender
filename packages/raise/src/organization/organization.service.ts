@@ -11,6 +11,10 @@ import {
   DonationLogs,
 } from 'src/donor/schema/donation_log.schema';
 import { Donor, DonorDocument } from 'src/donor/schema/donor.schema';
+import {
+  PaymentGateway,
+  PaymentGatewayDocument,
+} from 'src/payment-stripe/schema/paymentGateway.schema';
 
 @Injectable()
 export class OrganizationService {
@@ -23,6 +27,8 @@ export class OrganizationService {
     private donorModel: Model<DonorDocument>,
     @InjectModel(Organization.name)
     private organizationModel: Model<OrganizationDocument>,
+    @InjectModel(PaymentGateway.name)
+    private paymentGatewayModel: Model<PaymentGatewayDocument>,
     private configService: ConfigService,
   ) {}
 
@@ -95,6 +101,7 @@ export class OrganizationService {
       organization: orgUpdated,
     };
   }
+
   async getDonorList(organizationId: string) {
     this.logger.debug(`getDonorList organizationId=${organizationId}`);
     // const donorUserIds = await this.donationLogModel
@@ -138,5 +145,17 @@ export class OrganizationService {
         },
       },
     ]);
+  }
+
+  async getPaymentGatewayList(organizationId: string) {
+    this.logger.debug(`getPaymentGatewayList organizationId=${organizationId}`);
+    return await this.paymentGatewayModel.find(
+      {
+        organizationId: new Types.ObjectId(organizationId),
+        isDeleted: 'N',
+        isActive: 'Y',
+      },
+      'name defaultCurrency',
+    );
   }
 }
