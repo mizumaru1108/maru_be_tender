@@ -33,6 +33,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { UploadModule } from './upload/upload.module';
 import { OperatorModule } from './operator/operator.module';
 import { ManagerModule } from './manager/manager.module';
+import { WidgetsModule } from './widgets/widgets.module';
 
 @Module({
   imports: [
@@ -76,6 +77,7 @@ import { ManagerModule } from './manager/manager.module';
     AuthzedModule,
     BuyingModule,
     UploadModule,
+    WidgetsModule,
   ],
   controllers: [],
   providers: [AuthzedService],

@@ -43,6 +43,8 @@ export class Organization {
   contactWhatsapp: string;
   @Prop()
   ownerUserId: string;
+  @Prop()
+  favicon: string;
 }
 
 export const OrganizationSchema = SchemaFactory.createForClass(Organization);
