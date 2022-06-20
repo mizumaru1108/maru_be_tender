@@ -16,32 +16,68 @@ export class ProjectsService {
 
   async getListAll(){
     this.logger.debug('Get ticket list ...');
-    const data = await this.projectsModel.aggregate([
+    // const data = await this.projectsModel.aggregate([
+    //   {
+    //     $lookup: {
+    //       from: 'ticketLog',
+    //       localField: 'ticketId',
+    //       foreignField: 'ticketId',
+    //       as: 'ticketLog'
+    //     }
+    //   },
+    //   {
+    //     $unwind: {
+    //       path: '$ticketLog',
+    //       preserveNullAndEmptyArrays: true,
+    //     },
+    //   },
+    //   {
+    //     $group: {
+    //       _id: '$_id',
+    //       title: { $first: '$title' },
+    //       department: { $first: '$department' },
+    //       updatedAt: { $first: '$ticketLog.updatedAt' },
+    //       status: { $first: '$ticketLog.status' },
+    //     },
+    //   }
+    // ]);
+    const data = [
       {
-        $lookup: {
-          from: 'ticketLog',
-          localField: 'ticketId',
-          foreignField: 'ticketId',
-          as: 'ticketLog'
-        }
+        "id" : 1,
+        "name" : "project 1",
+        "updatedAt" : "2022-06-01 01:00:00",
+        "campaignCount" : 5,
+        "itemCount" : 2
       },
       {
-        $unwind: {
-          path: '$ticketLog',
-          preserveNullAndEmptyArrays: true,
-        },
+        "id" : 2,
+        "name" : "project 2",
+        "updatedAt" : "2022-06-01 01:00:00",
+        "campaignCount" : 5,
+        "itemCount" : 4
       },
       {
-        $group: {
-          _id: '$_id',
-          title: { $first: '$title' },
-          department: { $first: '$department' },
-          updatedAt: { $first: '$ticketLog.updatedAt' },
-          status: { $first: '$ticketLog.status' },
-        },
+        "id" : 3,
+        "name" : "project 3",
+        "updatedAt" : "2022-06-01 01:00:00",
+        "campaignCount" : 5,
+        "itemCount" : 6
+      },
+      {
+        "id" : 4,
+        "name" : "project 4",
+        "updatedAt" : "2022-06-01 01:00:00",
+        "campaignCount" : 5,
+        "itemCount" : 8
+      },
+      {
+        "id" : 5,
+        "name" : "project 5",
+        "updatedAt" : "2022-06-01 01:00:00",
+        "campaignCount" : 5,
+        "itemCount" : 10
       }
-    ]);
-
+  ];
     return data;
   }
 }
