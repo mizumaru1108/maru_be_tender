@@ -10,7 +10,7 @@ export class ProjectsController {
   constructor(private projectsService: ProjectsService) {}
 
   @ApiOperation({ summary: 'Get All Projects viewed by manager' })
-  @Get('getListAll')
+  @Get('manager/getListAll')
   async getAllProjects() {
     this.logger.debug(`Get all projects`);
     return await this.projectsService.getListAll();
