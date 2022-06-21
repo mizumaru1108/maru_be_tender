@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { CreateCampaignDto } from './dto';
 import { Campaign, CampaignDocument } from './campaign.schema';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import { rootLogger } from '../logger';
-import { ObjectAndRelation } from '@authzed/authzed-node/dist/src/v0';
+import * as mongoose from 'mongoose';
 
 @Injectable()
 export class CampaignService {
@@ -77,7 +77,17 @@ export class CampaignService {
   }
 
   async getAllByOperatorId(operatorId: string){
+
     const ObjectId = require('mongoose').Types.ObjectId;
+
+    if(!operatorId){
+      throw new NotFoundException(`OperatorId must be not null`);
+    }
+
+    if(!ObjectId.isValid(operatorId)){
+      throw new BadRequestException(`OperatorId is invalid ObjectId`);
+    }
+    
     const operatorList = await this.campaignModel.aggregate([
       {$match:{campaignName: {$exists: true},campaignType: {$exists: true},projectId : {$exists: true}}},
       {$lookup: {from: 'project',localField: 'projectId',foreignField: '_id',as: 'cp'}},
@@ -89,6 +99,8 @@ export class CampaignService {
       {$match : {operatorId: ObjectId(operatorId)}},
       {$sort: {_id: 1}}
     ]);
+
+    console.log(operatorList);
     return operatorList;
   }
 }
