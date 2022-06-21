@@ -1,4 +1,12 @@
-import { Query, Controller, Get, Post, Body } from '@nestjs/common';
+import {
+  Query,
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+} from '@nestjs/common';
 import { rootLogger } from '../logger';
 import { BasketDto } from './dto/basket.dto';
 import { WidgetsService } from './widgets.service';
@@ -18,5 +26,14 @@ export class WidgetsController {
   @Post('basket/create')
   async createBasket(@Body() basketDto: BasketDto) {
     return await this.widgetsService.createBasket(basketDto);
+  }
+
+  @Patch('basket/:basketId')
+  async updateBasket(
+    @Param('basketId') basketId: string,
+    @Body() basketDto: BasketDto,
+  ) {
+    this.logger.debug('update basket...');
+    return await this.widgetsService.updateBasket(basketId, basketDto);
   }
 }

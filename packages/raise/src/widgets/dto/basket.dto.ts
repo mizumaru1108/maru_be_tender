@@ -7,6 +7,8 @@ export class BasketDto {
   readonly donationType: string;
   readonly currency: string;
   readonly amount: number;
+  readonly unit: number;
+  readonly isDeleted: boolean;
   readonly createdAt: string;
   readonly updatedAt: string;
 }

@@ -39,11 +39,40 @@ export class WidgetsService {
       };
     }
 
-    const basketList = await this.basketModel.find({
-      donorId: new Types.ObjectId(donorId),
-      isDeleted: false,
-      isExpired: false,
-    });
+    const basketList = await this.basketModel.aggregate([
+      {
+        $match: {
+          donorId: new Types.ObjectId(donorId),
+          isDeleted: false,
+          isExpired: false,
+        },
+      },
+      {
+        $lookup: {
+          from: 'campaign',
+          localField: 'campaignId',
+          foreignField: '_id',
+          as: 'campaign',
+        },
+      },
+      {
+        $unwind: {
+          path: '$campaign',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          donationType: { $first: '$donationType' },
+          currency: { $first: '$currency' },
+          amount: { $first: '$amount' },
+          unit: { $first: '$unit' },
+          campaignName: { $first: '$campaign.campaignName' },
+          campaignImage: { $first: '$campaign.campaignImage' },
+        },
+      },
+    ]);
     return basketList;
   }
 
@@ -93,5 +122,36 @@ export class WidgetsService {
     // const dateIsAfter = moment(now).isAfter(moment(getCampaign.endDate));
     createdBasket.isExpired = false; // or getCampaign.isFinished ???
     return createdBasket.save();
+  }
+
+  async updateBasket(basketId: string, basketDto: BasketDto) {
+    const updates: {
+      isDeleted?: boolean;
+      currency?: string;
+      amount?: number;
+      unit?: number;
+    } = {};
+
+    if (basketDto.isDeleted) updates.isDeleted = basketDto.isDeleted;
+    if (basketDto.currency) updates.currency = basketDto.currency;
+    if (basketDto.amount) updates.amount = basketDto.amount;
+    if (basketDto.unit) updates.unit = basketDto.unit;
+
+    const basketUpdated = await this.basketModel.findOneAndUpdate(
+      { _id: basketId, isDeleted: false, isExpired: false },
+      basketDto,
+      { new: true },
+    );
+
+    if (!basketUpdated) {
+      return {
+        statusCode: 400,
+        message: 'Failed',
+      };
+    }
+    return {
+      statusCode: 200,
+      basket: basketUpdated,
+    };
   }
 }

@@ -26,6 +26,9 @@ export class Basket {
   amount: number;
 
   @Prop()
+  unit: number;
+
+  @Prop()
   currency: string;
 
   @Prop()
