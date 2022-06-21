@@ -53,4 +53,14 @@ export class CampaignController {
     this.logger.debug(`Get list all campaign by organization ID`);
     return await this.campaignService.getAllByOrganizationId(organizationId);
   }
+
+
+  @ApiOperation({ summary: 'Get list all campaign by operatorID'})
+  @Get('operator/:operatorId/getListAll')
+  async getAllByOperatorId(@Param('organizationId') organizationId: string){
+    this.logger.debug(`Get list all campaign by operator ID`);
+    return await this.campaignService.getAllByOperatorId(organizationId);
+  }
+
+
 }

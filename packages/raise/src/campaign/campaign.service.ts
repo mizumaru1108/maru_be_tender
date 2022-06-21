@@ -6,6 +6,7 @@ import { Campaign, CampaignDocument } from './campaign.schema';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import { rootLogger } from '../logger';
+import { ObjectAndRelation } from '@authzed/authzed-node/dist/src/v0';
 
 @Injectable()
 export class CampaignService {
@@ -36,12 +37,9 @@ export class CampaignService {
   }
 
   async getAllByOrganizationId(organizationId: string){
-    // let filter = {};
-    // const ObjectId = require('mongoose').Types.ObjectId;
-    // if (organizationId) filter = { organizationId: ObjectId(organizationId) };
-    // return await this.campaignModel.find(filter).exec();
-
+    const ObjectId = require('mongoose').Types.ObjectId;
     const campaignList = await this.campaignModel.aggregate([
+      {$match: {organizationId : ObjectId(organizationId)}},
       {
         $project: {
             campaignName: 1,
@@ -76,5 +74,21 @@ export class CampaignService {
       },
     ]);
     return campaignList;
+  }
+
+  async getAllByOperatorId(operatorId: string){
+    const ObjectId = require('mongoose').Types.ObjectId;
+    const operatorList = await this.campaignModel.aggregate([
+      {$match:{campaignName: {$exists: true},campaignType: {$exists: true},projectId : {$exists: true}}},
+      {$lookup: {from: 'project',localField: 'projectId',foreignField: '_id',as: 'cp'}},
+      {$unwind: {path: '$cp',preserveNullAndEmptyArrays: true}},
+      {$lookup: {from: 'projectOperatorMap', localField: 'projectId',foreignField: 'projectId',as: 'pj'}},
+      {$unwind: {path: '$pj', preserveNullAndEmptyArrays: true}},
+      {$addFields: { operatorId: '$pj.operatorId'}},
+      {$project: {_id: 1,campaignName: 1,createdAt: 1,milestone: 1,projectId: 1,operatorId: 1}},
+      {$match : {operatorId: ObjectId(operatorId)}},
+      {$sort: {_id: 1}}
+    ]);
+    return operatorList;
   }
 }
