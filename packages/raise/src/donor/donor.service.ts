@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { rootLogger } from '../logger';
 import { Donor, DonorDocument } from './schema/donor.schema';
+import { Volunteer, VolunteerDocument } from './schema/volunteer.schema';
 import { CampaignSetFavoriteDto } from '../campaign/dto';
 import { DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
 import {
@@ -21,6 +22,8 @@ export class DonorService {
   constructor(
     @InjectModel(Donor.name)
     private donorModel: Model<DonorDocument>,
+    @InjectModel(Volunteer.name)
+    private volunteerModel: Model<VolunteerDocument>,
     @InjectModel(DonationLog.name)
     private donationLogModel: Model<DonationLogDocument>,
     @InjectModel(DonationLogs.name)
@@ -65,6 +68,78 @@ export class DonorService {
     return {
       statusCode: 200,
       donor,
+    };
+  }
+
+  async getDonorListAll(organizationId: string) {
+    this.logger.debug('Get donor who participating in volunteer..');
+    const data = await this.volunteerModel.aggregate([
+     
+      {
+        $lookup: {
+          from: 'donor',
+          localField: 'donorId',
+          foreignField: 'ownerUserId',
+          as: 'a',
+         },
+      },
+      {
+        $unwind: {
+          path: '$a',
+        },
+      },
+        {
+        $lookup: {
+          from: 'volunteerTaskLog',
+          localField: '_id',
+          foreignField: 'volunteerId',
+          as: 'b',
+         },
+      },
+      {
+        $unwind: {
+          path: '$b',
+        },
+      },
+       {
+        $group: {
+          _id:"$a._id", 
+          firstName: { $first: '$a.firstName' },
+          lastName: { $first: '$a.lastName' },
+          dateJoin: { $first: '$createdAt' },
+          orgId : {$first: '$a.organizationId'},
+          status:{$first:'$b.status'},
+          lastUpdate: { $max: "$b.updatedAt" },
+        },
+      },
+       {
+       $project: {
+           _id: 1,
+           firstName: 1,
+           lastName: 1,
+           dateJoin: 1,
+           orgId: 1,
+           status:1,
+       }
+      },
+        {$match: {
+         orgId : (organizationId),
+     }},
+      {
+          $sort: {
+              _id: 1
+          }
+      } 
+    ]);
+    if (!data) {
+      return {
+        statusCode: 404,
+        message: 'Donor not found',
+      };
+    }
+    return {
+      statusCode: 200,
+      data,
     };
   }
 

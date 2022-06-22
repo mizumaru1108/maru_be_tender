@@ -45,6 +45,12 @@ export class DonorController {
     return await this.donorService.getDonor(donorId);
   }
 
+  @Get('organization/:organizationId/manager/getListAll')
+  async getDonorListAll(@Param('organizationId') organizationId: string) {
+    this.logger.debug('findOne...');
+    return await this.donorService.getDonorListAll(organizationId);
+  }
+
   @Post('anonymous/create')
   async createDonor(@Body() donorProfileDto: DonorUpdateProfileDto) {
     this.logger.debug('create donor as anonymous user');
