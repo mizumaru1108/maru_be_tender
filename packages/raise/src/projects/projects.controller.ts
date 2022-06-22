@@ -15,4 +15,12 @@ export class ProjectsController {
     this.logger.debug(`Get all projects`);
     return await this.projectsService.getListAll();
   }
+
+
+  @ApiOperation({ summary: 'Get All Projects viewed by operator' })
+  @Get('manager/operator/:operatorId/getListAll')
+  async getAllProjectsByOperatorId(@Param('operatorId') operatorId: string) {
+    this.logger.debug(`Get all projects`);
+    return await this.projectsService.getListAllByOperatorId(operatorId);
+  }
 }

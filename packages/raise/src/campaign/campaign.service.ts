@@ -95,12 +95,11 @@ export class CampaignService {
       {$lookup: {from: 'projectOperatorMap', localField: 'projectId',foreignField: 'projectId',as: 'pj'}},
       {$unwind: {path: '$pj', preserveNullAndEmptyArrays: true}},
       {$addFields: { operatorId: '$pj.operatorId'}},
-      {$project: {_id: 1,campaignName: 1,createdAt: 1,milestone: 1,projectId: 1,operatorId: 1}},
+      {$project: {_id: 1,campaignName: 1,createdAt: 1,milestone: {$size:"$milestone"},projectId: 1,operatorId: 1}},
       {$match : {operatorId: ObjectId(operatorId)}},
       {$sort: {_id: 1}}
     ]);
 
-    console.log(operatorList);
     return operatorList;
   }
 }
