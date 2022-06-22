@@ -9,6 +9,8 @@ export class DonationLogs {
   public _id?: string;
   @Prop({ type: () => String, ref: 'Organization' })
   public nonprofitRealmId?: string;
+  @Prop({ type: String, ref: 'Campaign' })
+  campaign?: string;
   @Prop({ type: Types.ObjectId, ref: 'Campaign' })
   public campaignId?: Types.ObjectId;
   @Prop({ type: String, ref: 'Donor' })

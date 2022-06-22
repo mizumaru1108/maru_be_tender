@@ -47,4 +47,10 @@ export class OrganizationController {
     this.logger.debug('fetching payment gateway list...');
     return await this.organizationService.getPaymentGatewayList(organizationId);
   }
+
+  @Get('insight')
+  async getInsightSummary(@Query('organizationId') organizationId: string) {
+    this.logger.debug('get insight summary...');
+    return await this.organizationService.getInsightSummary(organizationId);
+  }
 }

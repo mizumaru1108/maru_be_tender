@@ -15,12 +15,15 @@ import {
   PaymentGateway,
   PaymentGatewayDocument,
 } from 'src/payment-stripe/schema/paymentGateway.schema';
+import { Campaign, CampaignDocument } from 'src/campaign/campaign.schema';
 
 @Injectable()
 export class OrganizationService {
   private logger = rootLogger.child({ logger: OrganizationService.name });
 
   constructor(
+    @InjectModel(Campaign.name)
+    private campaignModel: Model<CampaignDocument>,
     @InjectModel(DonationLogs.name)
     private donationLogModel: Model<DonationLogDocument>,
     @InjectModel(Donor.name)
@@ -157,5 +160,134 @@ export class OrganizationService {
       },
       'name defaultCurrency',
     );
+  }
+
+  async getInsightSummary(organizationId: string) {
+    this.logger.debug(`getInsightSummary organizationId=${organizationId}`);
+    const getOrganization = await this.organizationModel.findOne({
+      _id: organizationId,
+    });
+    if (!getOrganization) {
+      const txtMessage = `request rejected organizationId not found`;
+      return {
+        statusCode: 514,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({
+          message: txtMessage,
+        }),
+      };
+    }
+
+    const totalProgram = await this.campaignModel
+      .where({ organizationId: new Types.ObjectId(organizationId) })
+      .count();
+
+    const totalDonor = await this.donorModel
+      .where({ organizationId: new Types.ObjectId(organizationId) })
+      .count();
+
+    const donationList = await this.donationLogModel.aggregate([
+      {
+        $match: {
+          nonprofitRealmId: new Types.ObjectId(organizationId),
+          donationStatus: 'SUCCESS',
+        },
+      },
+      {
+        $group: {
+          _id: { nonprofitRealmId: '$nonprofitRealmId' },
+          total: { $sum: '$amount' },
+        },
+      },
+    ]);
+
+    const totalDonation = donationList.length == 0 ? 0 : donationList[0].total;
+
+    const returningDonorAgg = await this.donationLogModel.aggregate([
+      {
+        $match: {
+          nonprofitRealmId: new Types.ObjectId(organizationId),
+          donationStatus: 'SUCCESS',
+          donorUserId: { $ne: null },
+        },
+      },
+      {
+        $lookup: {
+          from: 'donor',
+          localField: 'donorUserId',
+          foreignField: 'ownerUserId',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+        },
+      },
+      {
+        $group: {
+          _id: '$donorUserId',
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $match: {
+          count: { $gt: 1 },
+        },
+      },
+    ]);
+    // console.log(totalReturningDonor);
+
+    const mostPopularProgramsDiagram = await this.donationLogModel.aggregate([
+      {
+        $match: {
+          nonprofitRealmId: new Types.ObjectId(organizationId),
+          donationStatus: 'SUCCESS',
+          donorUserId: { $ne: null },
+        },
+      },
+      {
+        $lookup: {
+          from: 'campaign',
+          localField: 'campaignId',
+          foreignField: '_id',
+          as: 'campaign',
+        },
+      },
+      {
+        $unwind: {
+          path: '$campaign',
+        },
+      },
+      {
+        $addFields: {
+          name: {
+            $cond: {
+              if: { $eq: [{ $ifNull: ['$campaign.title', 0] }, 0] },
+              then: '$campaign.campaignName',
+              else: '$campaign.title',
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$campaign._id',
+          campaignName: { $first: '$name' },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+    console.log(mostPopularProgramsDiagram);
+
+    return {
+      total_donation: totalDonation,
+      total_program: totalProgram,
+      total_donor: totalDonor,
+      total_returning_donor: returningDonorAgg.length,
+      mostPopularProgramsDiagram: mostPopularProgramsDiagram,
+    };
   }
 }

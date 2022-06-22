@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type CampaignDocument = Campaign & Document;
 
@@ -8,7 +8,7 @@ export class Campaign {
   @Prop()
   campaignId: string;
 
-  @Prop()
+  @Prop({ type: Types.ObjectId })
   organizationId: string;
 
   @Prop()

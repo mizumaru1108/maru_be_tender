@@ -15,10 +15,15 @@ import {
   PaymentGateway,
   PaymentGatewaySchema,
 } from 'src/payment-stripe/schema/paymentGateway.schema';
+import { Campaign, CampaignSchema } from 'src/campaign/campaign.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
+      {
+        name: Campaign.name,
+        schema: CampaignSchema,
+      },
       {
         name: DonationLogs.name,
         schema: DonationLogSchema,
