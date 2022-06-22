@@ -16,6 +16,9 @@ export class Operator {
 
   @Prop({ type: () => String })
   public createdAt?: String;
+
+  @Prop({ type: () => String })
+  public ownerUserId?: String;
 }
 
 export const OperatorSchema =

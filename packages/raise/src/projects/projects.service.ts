@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Projects, ProjectsDocument } from './projects.schema';
 import { rootLogger } from '../logger';
+import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
 
 
 @Injectable()
@@ -12,6 +13,8 @@ export class ProjectsService {
   constructor(
     @InjectModel(Projects.name)
     private projectsModel: Model<ProjectsDocument>,
+    @InjectModel(Operator.name)
+    private operatorModel: Model<OperatorDocument>,
   ) {}
 
   async getListAll(){
@@ -43,8 +46,19 @@ export class ProjectsService {
   
   async getListAllByOperatorId(operatorId: string){
     const ObjectId = require('mongoose').Types.ObjectId;
-
     this.logger.debug('Get project list ...');
+
+    // let dataOperator = new this.operatorModel();
+
+    const dataOperator = await this.operatorModel.findOne({ ownerUserId: operatorId });
+    const realOpId = dataOperator?._id;
+
+    if(!realOpId){
+      throw new NotFoundException(`user not found`);
+    }
+
+   console.log('debug:',realOpId);
+
     const dataCampaign = await this.projectsModel.aggregate([
       {$lookup: {from: 'campaign',localField: '_id',foreignField: 'projectId', as: 'cp'}},
       {$unwind: {path: '$cp',preserveNullAndEmptyArrays: true}},
@@ -54,7 +68,7 @@ export class ProjectsService {
       {$unwind: {path: '$pom',preserveNullAndEmptyArrays: true}},
       {$group: {_id:"$_id",projectName:{$first:'$name'},createdAt:{$first: '$createdAt' },operatorId:{$first: '$pom.operatorId'},count:{$sum:1}}},
       {$project: {_id: 1, projectName: 1,createdAt: 1,operatorId:1,campaignCount: "$count"}},
-      {$match: {operatorId: ObjectId(operatorId)}},
+      {$match: {operatorId: ObjectId(realOpId)}},
       {$sort: {_id: 1}}
     ]);
 
@@ -67,7 +81,7 @@ export class ProjectsService {
       {$unwind: {path: '$pom',preserveNullAndEmptyArrays: true}},
       {$group: {_id:"$_id",projectName:{$first:'$name'},createdAt:{$first: '$createdAt' },operatorId:{$first: '$pom.operatorId'},count:{$sum:1}}},
       {$project: {_id: 1,operatorId:1,itemCount: "$count"}},
-      {$match: {operatorId: ObjectId(operatorId)}},
+      {$match: {operatorId: ObjectId(realOpId)}},
       {$sort: {_id: 1}}
     ]);
 
