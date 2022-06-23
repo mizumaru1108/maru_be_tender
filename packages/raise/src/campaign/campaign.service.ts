@@ -7,6 +7,8 @@ import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import { rootLogger } from '../logger';
 import * as mongoose from 'mongoose';
+import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
+
 
 @Injectable()
 export class CampaignService {
@@ -14,6 +16,8 @@ export class CampaignService {
   constructor(
     @InjectModel(Campaign.name)
     private campaignModel: Model<CampaignDocument>,
+    @InjectModel(Operator.name)
+    private operatorModel: Model<OperatorDocument>,
   ) {}
 
   async create(createCampaignDto: CreateCampaignDto): Promise<Campaign> {
@@ -79,12 +83,13 @@ export class CampaignService {
   async getAllByOperatorId(operatorId: string){
 
     const ObjectId = require('mongoose').Types.ObjectId;
-
-    if(!operatorId){
+    const dataOperator = await this.operatorModel.findOne({ ownerUserId: operatorId });
+    const realOpId = dataOperator?._id;
+    if(!realOpId){
       throw new NotFoundException(`OperatorId must be not null`);
     }
 
-    if(!ObjectId.isValid(operatorId)){
+    if(!ObjectId.isValid(realOpId)){
       throw new BadRequestException(`OperatorId is invalid ObjectId`);
     }
     
@@ -96,7 +101,7 @@ export class CampaignService {
       {$unwind: {path: '$pj', preserveNullAndEmptyArrays: true}},
       {$addFields: { operatorId: '$pj.operatorId'}},
       {$project: {_id: 1,campaignName: 1,createdAt: 1,milestone: {$size:"$milestone"},projectId: 1,operatorId: 1}},
-      {$match : {operatorId: ObjectId(operatorId)}},
+      {$match : {operatorId: ObjectId(realOpId)}},
       {$sort: {_id: 1}}
     ]);
 
