@@ -93,18 +93,20 @@ export class CampaignService {
       throw new BadRequestException(`OperatorId is invalid ObjectId`);
     }
     
-    const operatorList = await this.campaignModel.aggregate([
+    const campaignList = await this.campaignModel.aggregate([
       {$match:{campaignName: {$exists: true},campaignType: {$exists: true},projectId : {$exists: true}}},
       {$lookup: {from: 'project',localField: 'projectId',foreignField: '_id',as: 'cp'}},
       {$unwind: {path: '$cp',preserveNullAndEmptyArrays: true}},
       {$lookup: {from: 'projectOperatorMap', localField: 'projectId',foreignField: 'projectId',as: 'pj'}},
       {$unwind: {path: '$pj', preserveNullAndEmptyArrays: true}},
-      {$addFields: { operatorId: '$pj.operatorId'}},
-      {$project: {_id: 1,campaignName: 1,createdAt: 1,milestone: {$size:"$milestone"},projectId: 1,operatorId: 1}},
+      {$lookup: {from: 'campaignVendorLog',localField: '_id',foreignField: 'campaignId',as: 'cpv'}},
+      {$unwind: {path: '$cpv'}},
+      {$addFields: { operatorId: '$pj.operatorId', status: '$cpv.status', type: '$campaignType'}},
+      {$project: {_id: 1,campaignName: 1,status:1,type:1, createdAt: 1,milestone: {$size:"$milestone"},projectId: 1,operatorId: 1}},
       {$match : {operatorId: ObjectId(realOpId)}},
       {$sort: {_id: 1}}
     ]);
 
-    return operatorList;
+    return campaignList;
   }
 }

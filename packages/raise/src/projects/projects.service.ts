@@ -48,8 +48,6 @@ export class ProjectsService {
     const ObjectId = require('mongoose').Types.ObjectId;
     this.logger.debug('Get project list ...');
 
-    // let dataOperator = new this.operatorModel();
-
     const dataOperator = await this.operatorModel.findOne({ ownerUserId: operatorId });
     const realOpId = dataOperator?._id;
 
