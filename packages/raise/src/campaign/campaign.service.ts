@@ -144,6 +144,7 @@ export class CampaignService {
   }
 
   async getAllApprovedCampaign(organizationId: string, vendorId: string){
+    const ObjectId = require('mongoose').Types.ObjectId;
     const dataVendor = await this.vendorModel.findOne({ ownerUserId: vendorId });
     const realVdId = (dataVendor?._id).toString();
     if(!realVdId){
@@ -155,12 +156,13 @@ export class CampaignService {
       {$unwind: {path: '$cp',preserveNullAndEmptyArrays: true}},
       {$lookup: {from: 'vendor', localField: 'vendorId',foreignField: '_id',as: 'pj'}},
       {$unwind: {path: '$pj', preserveNullAndEmptyArrays: true}},
-      {$addFields: { _id:'$campaignId',status: '$status', type: '$cp.campaignType', campaignName: '$cp.campaignName'}},
-      {$project: {_id: 1,campaignName: 1,status:1,type:1,createdAt: 1, milestone: {$size:"$cp.milestone"},vendorId: 1}},
-      {$match : {vendorId: (realVdId),status: 'approved'}},
+       {$addFields: { _id:'$campaignId',status: '$status', type: '$cp.campaignType', campaignName: '$cp.campaignName', orgId: '$cp.organizationId'}},
+      {$project: {_id: 1,campaignName: 1,status:1,type:1,createdAt: 1, milestone: {$size:"$cp.milestone"},vendorId: 1,orgId:1}},
+      {$match : {vendorId: (realVdId),status: 'approved', orgId: ObjectId(organizationId)}},
+     
       {$sort: {_id: 1}}
     ]);
-
+   
     return campaignList;
   }
 
