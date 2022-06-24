@@ -62,5 +62,22 @@ export class CampaignController {
     return await this.campaignService.getAllByOperatorId(operatorId);
   }
 
+  @ApiOperation({ summary: 'Get list all new campaign created by all operator'})
+  @Get('organization/:organizationId/getListAllNew')
+  async getAllNewCampaign(@Param('organizationId') organizationId: string){
+    this.logger.debug(`Get list all new campaign created by all operator`);
+    return await this.campaignService.getAllNewCampaign(organizationId);
+  }
+
+
+  @ApiOperation({ summary: 'Get list all my campaign (vendor)'})
+  @Get('organization/:organizationId/vendor/:vendorId/getListApproved')
+  async getAllMyCampaignByVendor(
+    @Param('organizationId') organizationId: string,
+    @Param('vendorId') vendorId: string
+    ){
+    this.logger.debug(`Get list all my approved campaign`);
+    return await this.campaignService.getAllApprovedCampaign(organizationId, vendorId);
+  }
 
 }

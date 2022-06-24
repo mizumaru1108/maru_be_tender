@@ -8,6 +8,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { rootLogger } from '../logger';
 import * as mongoose from 'mongoose';
 import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
+import { 
+  CampaignVendorLog,
+   CampaignVendorLogDocument,
+  Vendor,
+   VendorDocument } from '../buying/vendor/vendor.schema';
 
 
 @Injectable()
@@ -18,6 +23,10 @@ export class CampaignService {
     private campaignModel: Model<CampaignDocument>,
     @InjectModel(Operator.name)
     private operatorModel: Model<OperatorDocument>,
+    @InjectModel(CampaignVendorLog.name)
+    private campaignVendorLogModel: Model<CampaignVendorLogDocument>,
+    @InjectModel(Vendor.name)
+    private vendorModel: Model<VendorDocument>,
   ) {}
 
   async create(createCampaignDto: CreateCampaignDto): Promise<Campaign> {
@@ -111,7 +120,6 @@ export class CampaignService {
   }
 
   async getAllNewCampaign(organizationId: string){
-    console.log('debug');
     const ObjectId = require('mongoose').Types.ObjectId;
    
     if(!organizationId){
@@ -124,7 +132,7 @@ export class CampaignService {
       {$match: {organizationId: ObjectId(organizationId), isFinished: {$exists: true}}},
       {$lookup: {from: 'campaignVendorLog',localField: '_id',foreignField: 'campaignId', as: 'cp'}},
          {$unwind: {path: '$cp',preserveNullAndEmptyArrays: true}},
-         {$group: {_id:"$_id",collectedAmount:{$first:'collectedAmount'},remainingAmount:{$first: 'remainingAmount' },
+         {$group: {_id:"$_id",collectedAmount:{$first:'$collectedAmount'},remainingAmount:{$first: '$remainingAmount' },
                    createdAt:{$first: '$createdAt'},title:{$first: '$campaignName'},condition:{$first: '$isFinished'},
                    status:{$first: '$cp.status'}}},
          {$project: {_id: 1,collectedAmount:1,remainingAmount:1,createdAt:1,title:1,condition:1,status:1}},
@@ -132,8 +140,28 @@ export class CampaignService {
          {$sort: {_id: 1}}
     ]);
 
-    console.log('debug', data);
     return data;
+  }
+
+  async getAllApprovedCampaign(organizationId: string, vendorId: string){
+    const dataVendor = await this.vendorModel.findOne({ ownerUserId: vendorId });
+    const realVdId = (dataVendor?._id).toString();
+    if(!realVdId){
+      throw new NotFoundException(`VendorId must be not null`);
+    }
+
+    const campaignList = await this.campaignVendorLogModel.aggregate([
+      {$lookup: {from: 'campaign',localField: 'campaignId',foreignField: '_id',as: 'cp'}},
+      {$unwind: {path: '$cp',preserveNullAndEmptyArrays: true}},
+      {$lookup: {from: 'vendor', localField: 'vendorId',foreignField: '_id',as: 'pj'}},
+      {$unwind: {path: '$pj', preserveNullAndEmptyArrays: true}},
+      {$addFields: { _id:'$campaignId',status: '$status', type: '$cp.campaignType', campaignName: '$cp.campaignName'}},
+      {$project: {_id: 1,campaignName: 1,status:1,type:1,createdAt: 1, milestone: {$size:"$cp.milestone"},vendorId: 1}},
+      {$match : {vendorId: (realVdId),status: 'approved'}},
+      {$sort: {_id: 1}}
+    ]);
+
+    return campaignList;
   }
 
 }

@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type VendorDocument = Vendor & Document;
 export type VendorChartDataDocument = VendorChartData & Document;
@@ -13,22 +13,54 @@ export class Vendor {
   name: string;
   @Prop()
   ownerUserId: string;
+
 }
 
 @Schema({ collection: 'campaignVendorLog' })
 export class CampaignVendorLog {
+  
+  @Prop({type: Types.ObjectId})
+  _id:  Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId })
+  organizationId: Types.ObjectId;
+
+  @Prop({})
+  ownerUserId: string;
+
   @Prop()
-  campaignId: string;
+  name: string;
+
   @Prop()
-  vendorId: string;
+  channels: string;
+
   @Prop()
-  status: string;
+  createdAt: Date;
+
   @Prop()
-  createdAt: string;
+  updatedAt: Date;
+
   @Prop()
-  updatedAt: string;
+  isDeleted: string;
+
   @Prop()
-  campaignVendorLogId: string;
+  isActive: string;
+
+  @Prop()
+  coverImage: string;
+
+  @Prop()
+  image1: string;
+
+  @Prop()
+  image2: string;
+
+  @Prop()
+  image3: string;
+
+  @Prop()
+  vendorAvatar: string;
+  
 }
 
 @Schema({ collection: 'vendorChartData' })
