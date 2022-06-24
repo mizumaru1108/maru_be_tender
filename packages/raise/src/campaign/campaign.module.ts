@@ -5,6 +5,7 @@ import { Donor, DonorSchema } from '../donor/schema/donor.schema';
 import { Volunteer, VolunteerSchema } from '../donor/schema/volunteer.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Campaign, CampaignSchema } from './campaign.schema';
+import { Vendor, VendorSchema } from './vendor.schema';
 import { CampaignService } from './campaign.service';
 import {
   DonationLog,
@@ -34,6 +35,10 @@ import {
       {
         name: Operator.name,
         schema: OperatorSchema,
+      },
+      {
+        name: Vendor.name,
+        schema: VendorSchema,
       },
       {
         name: Volunteer.name,

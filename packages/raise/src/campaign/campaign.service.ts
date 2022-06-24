@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { rootLogger } from '../logger';
 import * as mongoose from 'mongoose';
 import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
+import { Vendor, VendorDocument } from './vendor.schema';
 
 
 @Injectable()
@@ -18,6 +19,8 @@ export class CampaignService {
     private campaignModel: Model<CampaignDocument>,
     @InjectModel(Operator.name)
     private operatorModel: Model<OperatorDocument>,
+    @InjectModel(Vendor.name)
+    private vendorModel: Model<VendorDocument>,
   ) {}
 
   async create(createCampaignDto: CreateCampaignDto): Promise<Campaign> {
@@ -132,6 +135,33 @@ export class CampaignService {
     ]);
 
     return data;
+  }
+
+  async getAllApprovedCampaign(organizationId: string, vendorId: string){
+
+    const ObjectId = require('mongoose').Types.ObjectId;
+    const dataVendor = await this.vendorModel.findOne({ ownerUserId: vendorId });
+    const realVdId = dataVendor?._id;
+    if(!realVdId){
+      throw new NotFoundException(`VendorId must be not null`);
+    }
+
+    if(!ObjectId.isValid(realVdId)){
+      throw new BadRequestException(`VendorId is invalid ObjectId`);
+    }
+    
+    const campaignList = await this.campaignModel.aggregate([
+      {$lookup: {from: 'campaign',localField: 'campaignId',foreignField: '_id',as: 'cp'}},
+      {$unwind: {path: '$cp',preserveNullAndEmptyArrays: true}},
+      {$lookup: {from: 'vendor', localField: 'vendorId',foreignField: '_id',as: 'pj'}},
+      {$unwind: {path: '$pj', preserveNullAndEmptyArrays: true}},
+      {$addFields: { _id:'$campaignId',status: '$status', type: '$cp.campaignType', campaignName: '$cp.campaignName'}},
+      {$project: {_id: 1,campaignName: 1,status:1,type:1,createdAt: 1, milestone: {$size:"$cp.milestone"},vendorId: 1}},
+      {$match : {vendorId: (realVdId),status: 'approved'}},
+      {$sort: {_id: 1}}
+    ]);
+
+    return campaignList;
   }
 
 }

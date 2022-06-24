@@ -70,4 +70,14 @@ export class CampaignController {
   }
 
 
+  @ApiOperation({ summary: 'Get list all my campaign (vendor)'})
+  @Get('organization/:organizationId/vendor/:vendorId/getListAllApproved')
+  async getAllMyCampaignByVendor(
+    @Param('organizationId') organizationId: string,
+    @Param('vendorId') vendorId: string
+    ){
+    this.logger.debug(`Get list all new campaign created by all operator`);
+    return await this.campaignService.getAllApprovedCampaign(organizationId, vendorId);
+  }
+
 }
