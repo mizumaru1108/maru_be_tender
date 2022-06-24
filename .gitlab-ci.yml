@@ -239,14 +239,6 @@ sonarqube-check:
       changes:
         - "packages/raise/**/*"
     - if: '$CI_COMMIT_BRANCH == "stack/dev" && $APP_NAMES =~ /\btmra-raise\b/'
-    - if: '$CI_COMMIT_BRANCH == "stack/qc" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-      changes:
-        - "packages/raise/**/*"
-    - if: '$CI_COMMIT_BRANCH == "stack/qc" && $APP_NAMES =~ /\btmra-raise\b/'
-    - if: '$CI_COMMIT_BRANCH == "stack/staging" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-      changes:
-        - "packages/raise/**/*"
-    - if: '$CI_COMMIT_BRANCH == "stack/staging" && $APP_NAMES =~ /\btmra-raise\b/'
 
 "trigger deploy tmra-raise to qc":
   stage: deploy
