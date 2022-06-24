@@ -8,7 +8,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { rootLogger } from '../logger';
 import * as mongoose from 'mongoose';
 import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
-import { Vendor, VendorDocument } from './vendor.schema';
+import { 
+  CampaignVendorLog,
+   CampaignVendorLogDocument,
+  Vendor,
+   VendorDocument } from '../buying/vendor/vendor.schema';
 
 
 @Injectable()
@@ -19,6 +23,8 @@ export class CampaignService {
     private campaignModel: Model<CampaignDocument>,
     @InjectModel(Operator.name)
     private operatorModel: Model<OperatorDocument>,
+    @InjectModel(CampaignVendorLog.name)
+    private campaignVendorLogModel: Model<CampaignVendorLogDocument>,
     @InjectModel(Vendor.name)
     private vendorModel: Model<VendorDocument>,
   ) {}
@@ -138,19 +144,13 @@ export class CampaignService {
   }
 
   async getAllApprovedCampaign(organizationId: string, vendorId: string){
-
-    const ObjectId = require('mongoose').Types.ObjectId;
     const dataVendor = await this.vendorModel.findOne({ ownerUserId: vendorId });
-    const realVdId = dataVendor?._id;
+    const realVdId = (dataVendor?._id).toString();
     if(!realVdId){
       throw new NotFoundException(`VendorId must be not null`);
     }
 
-    if(!ObjectId.isValid(realVdId)){
-      throw new BadRequestException(`VendorId is invalid ObjectId`);
-    }
-    
-    const campaignList = await this.campaignModel.aggregate([
+    const campaignList = await this.campaignVendorLogModel.aggregate([
       {$lookup: {from: 'campaign',localField: 'campaignId',foreignField: '_id',as: 'cp'}},
       {$unwind: {path: '$cp',preserveNullAndEmptyArrays: true}},
       {$lookup: {from: 'vendor', localField: 'vendorId',foreignField: '_id',as: 'pj'}},
