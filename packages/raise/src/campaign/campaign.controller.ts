@@ -80,4 +80,18 @@ export class CampaignController {
     return await this.campaignService.getAllApprovedCampaign(organizationId, vendorId);
   }
 
+  @ApiOperation({ summary: 'Test upload' })
+  @ApiResponse({
+    status: 201,
+    description: 'The Campaign has been successfully created.',
+  })
+  @Post('upload')
+  async upload(@Body() createCampaignDto: CreateCampaignDto) {
+    this.logger.debug(
+      'create new campaign ',
+      JSON.stringify(createCampaignDto),
+    );
+    return await this.campaignService.upload(createCampaignDto);
+  }
+
 }

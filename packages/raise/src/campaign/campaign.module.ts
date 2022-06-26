@@ -21,6 +21,7 @@ import {
   Operator,
   OperatorSchema,
 } from '../operator/schema/operator.schema';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import {
         schema: DonationLogsSchema,
       },
     ]),
+    ConfigModule,
   ],
   providers: [DonorService, CampaignService],
   controllers: [CampaignController],

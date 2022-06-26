@@ -7,6 +7,8 @@ import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import { rootLogger } from '../logger';
 import * as mongoose from 'mongoose';
+import { ConfigService } from '@nestjs/config';
+import axios, { AxiosRequestConfig } from 'axios';
 import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
 import { 
   CampaignVendorLog,
@@ -27,6 +29,7 @@ export class CampaignService {
     private campaignVendorLogModel: Model<CampaignVendorLogDocument>,
     @InjectModel(Vendor.name)
     private vendorModel: Model<VendorDocument>,
+    private configService: ConfigService,
   ) {}
 
   async create(createCampaignDto: CreateCampaignDto): Promise<Campaign> {
@@ -37,6 +40,48 @@ export class CampaignService {
     createdCampaign.updatedAt = moment().toISOString();
     createdCampaign.isDeleted = 'N';
     createdCampaign.isPublished = 'Y';
+    return createdCampaign.save();
+  }
+
+  async upload(createCampaignDto: CreateCampaignDto): Promise<Campaign> {
+    const createdCampaign = new this.campaignModel(createCampaignDto);
+    createdCampaign.campaignId = uuidv4();
+    createdCampaign.isFinished = 'N';
+    createdCampaign.createdAt = moment().toISOString();
+    createdCampaign.updatedAt = moment().toISOString();
+    createdCampaign.isDeleted = 'N';
+    createdCampaign.isPublished = 'Y';
+    console.log('debug', createdCampaign);
+
+
+    const imageBase64 = createCampaignDto.coverImage.replace(/^data:.*,/, '');
+    const binary = Buffer.from(imageBase64, 'base64');
+    const appEnv = this.configService.get('APP_ENV');
+
+    const path = `tmra/${appEnv}/nonprofit-favicon/logo-${createCampaignDto.organizationId}.png`;
+    const urlMedia = `${this.configService.get('BUNNY_STORAGE_URL_MEDIA')}/${path}`;
+
+    const options: AxiosRequestConfig<any> = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/octet-stream',
+        AccessKey : `${this.configService.get('BUNNY_STORAGE_ACCESS_KEY_MEDIA')}`,
+        // get AccessKey() { return this.configService.get('BUNNY_STORAGE_ACCESS_KEY_MEDIA'); }
+      },
+      data: binary,
+      url: urlMedia,
+    };
+    const uploadBunny = await axios(options);
+    console.log(
+      'Uploaded %s (%d bytes) to Bunny: %s %s %s',
+      urlMedia,
+      binary.length,
+      uploadBunny.status,
+      uploadBunny.statusText,
+      JSON.stringify(uploadBunny.data, null, 2),
+    );
+
+    // return uploadBunny.status;
     return createdCampaign.save();
   }
 
