@@ -51,7 +51,6 @@ export class CampaignService {
     createdCampaign.updatedAt = moment().toISOString();
     createdCampaign.isDeleted = 'N';
     createdCampaign.isPublished = 'Y';
-    console.log('debug', createdCampaign);
 
 
     const imageBase64 = createCampaignDto.coverImage.replace(/^data:.*,/, '');
@@ -66,7 +65,6 @@ export class CampaignService {
       headers: {
         'Content-Type': 'application/octet-stream',
         AccessKey : `${this.configService.get('BUNNY_STORAGE_ACCESS_KEY_MEDIA')}`,
-        // get AccessKey() { return this.configService.get('BUNNY_STORAGE_ACCESS_KEY_MEDIA'); }
       },
       data: binary,
       url: urlMedia,
@@ -81,7 +79,6 @@ export class CampaignService {
       JSON.stringify(uploadBunny.data, null, 2),
     );
 
-    // return uploadBunny.status;
     return createdCampaign.save();
   }
 
@@ -209,6 +206,28 @@ export class CampaignService {
     ]);
    
     return campaignList;
+  }
+
+  async getObjectId(organizationId: string, operatorId: string){
+
+    const ObjectId = require('mongoose').Types.ObjectId;
+    const dataOperator = await this.operatorModel.findOne({ ownerUserId: operatorId });
+    const realOpId = dataOperator?._id;
+
+    if(!realOpId){
+      throw new NotFoundException(`OperatorId must be not null`);
+    }
+
+    if(!ObjectId.isValid(realOpId)){
+      throw new BadRequestException(`OperatorId is invalid ObjectId`);
+    }
+
+    const campaign = new this.campaignModel();
+    campaign.organizationId = ObjectId(organizationId);
+
+    const newCampaign = campaign.save();
+
+    return newCampaign;
   }
 
 }
