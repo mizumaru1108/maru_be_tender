@@ -76,6 +76,9 @@ export class Campaign {
 
   @Prop()
   images: Array<Object>;
+
+  @Prop()
+  milestone: Array<Object>;
 }
 
 export const CampaignSchema = SchemaFactory.createForClass(Campaign);

@@ -21,6 +21,10 @@ import {
   Operator,
   OperatorSchema,
 } from '../operator/schema/operator.schema';
+import {
+  User,
+  UserSchema,
+} from '../user/schema/user.schema';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -61,6 +65,10 @@ import { ConfigModule } from '@nestjs/config';
       {
         name: DonationLogs.name,
         schema: DonationLogsSchema,
+      },
+      {
+        name: User.name,
+        schema: UserSchema,
       },
     ]),
     ConfigModule,

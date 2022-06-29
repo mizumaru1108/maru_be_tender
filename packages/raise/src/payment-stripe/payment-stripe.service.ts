@@ -23,7 +23,7 @@ import {
   Anonymous,
   AnonymousDocument,
 } from 'src/donor/schema/anonymous.schema';
-import { User, UserDocument } from 'src/users/schemas/user.schema';
+import { User, UserDocument } from 'src/user/schema/user.schema';
 
 @Injectable()
 export class PaymentStripeService {

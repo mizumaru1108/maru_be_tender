@@ -12,25 +12,25 @@ import {
 
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { PermissionsGuard } from 'src/auth/permissions.guard';
-import { UsersService } from './user.service';
+import { UserService } from './user.service';
 
-@Controller('users')
-export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+@Controller('user')
+export class UserController {
+  constructor(private readonly userService: UserService) {}
 
   @Get()
   @SetMetadata('permission', ['user/list', 'read'])
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  async getAllUsers() {
-    const users = await this.usersService.getAllUsers();
-    return users;
+  async getAllUser() {
+    const user = await this.userService.getAllUser();
+    return user;
   }
 
   @Get(':id')
   @SetMetadata('permission', ['user/profile', 'read'])
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   getOneUser(@Param('id') userId: string) {
-    return this.usersService.getOneUser({ _id: userId });
+    return this.userService.getOneUser({ _id: userId });
   }
 
   @Patch(':id')
@@ -41,7 +41,7 @@ export class UsersController {
     @Body('name') name: string,
     @Body('email') email: string,
   ) {
-    const user = await this.usersService.updateUser(id, name, email);
+    const user = await this.userService.updateUser(id, name, email);
     return user;
   }
 
@@ -50,7 +50,7 @@ export class UsersController {
     @Body('userId') userId: string,
     @Body('imageUrl') imageUrl: string,
   ) {
-    return await this.usersService.updateAvatar(userId, imageUrl);
+    return await this.userService.updateAvatar(userId, imageUrl);
   }
 
   // @Post('/changePassword')

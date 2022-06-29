@@ -18,7 +18,7 @@ import {
 import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
 import { PaymentData, PaymentDataSchema } from './schema/paymentData.schema';
 import { Anonymous, AnonymousSchema } from 'src/donor/schema/anonymous.schema';
-import { User, UserSchema } from 'src/users/schemas/user.schema';
+import { User, UserSchema } from 'src/user/schema/user.schema';
 
 @Module({
   imports: [

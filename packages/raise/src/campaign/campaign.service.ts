@@ -10,6 +10,7 @@ import * as mongoose from 'mongoose';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
 import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
+import { User, UserDocument } from '../user/schema/user.schema';
 import { 
   CampaignVendorLog,
    CampaignVendorLogDocument,
@@ -29,6 +30,8 @@ export class CampaignService {
     private campaignVendorLogModel: Model<CampaignVendorLogDocument>,
     @InjectModel(Vendor.name)
     private vendorModel: Model<VendorDocument>,
+    @InjectModel(User.name)
+    private userModel: Model<UserDocument>,
     private configService: ConfigService,
   ) {}
 
@@ -127,7 +130,12 @@ export class CampaignService {
           milestone:  {$first: '$foo_count'}
         },
       },
-    ]);
+    ]).then(data => {
+      return data;
+    }).catch(err => {
+      return `DB error: ${err}`;
+    });
+
     return campaignList;
   }
 
@@ -208,22 +216,28 @@ export class CampaignService {
     return campaignList;
   }
 
-  async getObjectId(organizationId: string, operatorId: string){
+  async getObjectId(organizationId: string, userId: string){
 
     const ObjectId = require('mongoose').Types.ObjectId;
-    const dataOperator = await this.operatorModel.findOne({ ownerUserId: operatorId });
-    const realOpId = dataOperator?._id;
+    const dataUser = await this.userModel.findOne({ _id: userId });
+    const uid = dataUser?._id;
+    const utype  = dataUser?.type;
 
-    if(!realOpId){
-      throw new NotFoundException(`OperatorId must be not null`);
+    if(!uid){
+      throw new NotFoundException(`user not found`);
     }
 
-    if(!ObjectId.isValid(realOpId)){
-      throw new BadRequestException(`OperatorId is invalid ObjectId`);
+    if(utype){
+      if(!utype.match(/nonprofit|operator|superadmin/g)){
+        throw new BadRequestException(`User not allowed to generate ObjectId`);
+     }
     }
+
+   
 
     const campaign = new this.campaignModel();
     campaign.organizationId = ObjectId(organizationId);
+    campaign.milestone = [];
 
     const newCampaign = campaign.save();
 

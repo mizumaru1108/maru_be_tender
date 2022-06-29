@@ -4,10 +4,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { FusionAuthClient } from '@fusionauth/typescript-client';
 import { ConfigService } from '@nestjs/config';
 
-import { User, UserDocument } from './schemas/user.schema';
+import { User, UserDocument } from './schema/user.schema';
 
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor(
     @InjectModel('User') private readonly userModel: Model<User>,
     private configService: ConfigService,
@@ -19,10 +19,10 @@ export class UsersService {
     return result;
   }
 
-  async getAllUsers() {
-    const users = await this.userModel.find().exec();
+  async getAllUser() {
+    const user = await this.userModel.find().exec();
 
-    return users.map((user: UserDocument) => ({
+    return user.map((user: UserDocument) => ({
       _id: user._id,
       name: user.name,
       email: user.email,
