@@ -5,7 +5,7 @@ import useResponsive from '../hooks/useResponsive';
 // ----------------------------------------------------------------------
 
 export type CollapseDrawerContextProps = {
-  isCollapse?: boolean;
+  isCollapse: boolean;
   collapseClick: boolean;
   collapseHover: boolean;
   onToggleCollapse: VoidFunction;
@@ -14,11 +14,12 @@ export type CollapseDrawerContextProps = {
 };
 
 const initialState: CollapseDrawerContextProps = {
+  isCollapse: false,
   collapseClick: false,
   collapseHover: false,
   onToggleCollapse: () => {},
   onHoverEnter: () => {},
-  onHoverLeave: () => {}
+  onHoverLeave: () => {},
 };
 
 const CollapseDrawerContext = createContext(initialState);
@@ -32,14 +33,14 @@ function CollapseDrawerProvider({ children }: CollapseDrawerProviderProps) {
 
   const [collapse, setCollapse] = useState({
     click: false,
-    hover: false
+    hover: false,
   });
 
   useEffect(() => {
     if (!isDesktop) {
       setCollapse({
         click: false,
-        hover: false
+        hover: false,
       });
     }
   }, [isDesktop]);
@@ -66,7 +67,7 @@ function CollapseDrawerProvider({ children }: CollapseDrawerProviderProps) {
         collapseHover: collapse.hover,
         onToggleCollapse: handleToggleCollapse,
         onHoverEnter: handleHoverEnter,
-        onHoverLeave: handleHoverLeave
+        onHoverLeave: handleHoverLeave,
       }}
     >
       {children}

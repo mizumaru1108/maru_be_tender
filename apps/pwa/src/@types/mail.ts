@@ -1,5 +1,15 @@
 // ----------------------------------------------------------------------
 
+export type MailState = {
+  isLoading: boolean;
+  error: Error | string | null;
+  mails: {
+    byId: Record<string, Mail>;
+    allIds: string[];
+  };
+  labels: MailLabel[];
+};
+
 export type MailLabelId =
   | 'all'
   | 'inbox'

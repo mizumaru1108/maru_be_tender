@@ -1,8 +1,7 @@
-import { ReactNode } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Box, Link, Tooltip, Typography, Checkbox, LinkProps } from '@mui/material';
+import { Box, Tooltip, Typography, Checkbox } from '@mui/material';
 // redux
 import { useSelector } from '../../../redux/store';
 // hooks
@@ -38,22 +37,11 @@ const RootStyle = styled('div')(({ theme }) => ({
   },
 }));
 
-interface WrapStyleProps extends LinkProps {
-  component?: ReactNode;
-  to?: string;
-}
-
-const WrapStyle = styled(Link)<WrapStyleProps>(({ theme }) => ({
-  minWidth: 0,
-  display: 'flex',
-  padding: theme.spacing(2, 0),
-  transition: theme.transitions.create('padding'),
-}));
-
 // ----------------------------------------------------------------------
 
 const linkTo = (params: { systemLabel?: string; customLabel?: string }, mailId: string) => {
   const { systemLabel, customLabel } = params;
+
   const baseUrl = PATH_DASHBOARD.mail.root;
 
   if (systemLabel) {
@@ -82,6 +70,7 @@ export default function MailItem({
   ...other
 }: Props) {
   const params = useParams();
+
   const { labels } = useSelector((state) => state.mail);
 
   const isDesktop = useResponsive('up', 'md');
@@ -128,112 +117,126 @@ export default function MailItem({
         </Box>
       )}
 
-      <WrapStyle
-        color="inherit"
-        underline="none"
+      <Box
         component={RouterLink}
         to={linkTo(params, mail.id)}
-        sx={{ ...(isDense && { py: 1 }) }}
+        sx={{
+          color: 'inherit',
+          textDecoration: 'none',
+        }}
       >
-        <Avatar
-          alt={mail.from.name}
-          src={mail.from.avatar || ''}
-          color={createAvatar(mail.from.name).color}
-          sx={{ width: 32, height: 32 }}
-        >
-          {createAvatar(mail.from.name).name}
-        </Avatar>
-
         <Box
           sx={{
-            ml: 2,
+            py: 2,
             minWidth: 0,
-            alignItems: 'center',
-            display: { md: 'flex' },
+            display: 'flex',
+            transition: (theme) => theme.transitions.create('padding'),
+            ...(isDense && { py: 1 }),
           }}
         >
-          <Typography
-            variant="body2"
-            noWrap
-            sx={{
-              pr: 2,
-              minWidth: 200,
-              ...(!mail.isUnread && { fontWeight: 'fontWeightBold' }),
-            }}
+          <Avatar
+            alt={mail.from.name}
+            src={mail.from.avatar || ''}
+            color={createAvatar(mail.from.name).color}
+            sx={{ width: 32, height: 32 }}
           >
-            {mail.from.name}
-          </Typography>
+            {createAvatar(mail.from.name).name}
+          </Avatar>
 
-          <Typography
-            noWrap
-            variant="body2"
+          <Box
             sx={{
-              pr: 2,
+              ml: 2,
+              minWidth: 0,
+              alignItems: 'center',
+              display: { md: 'flex' },
             }}
           >
-            <Box component="span" sx={{ ...(!mail.isUnread && { fontWeight: 'fontWeightBold' }) }}>
-              {mail.subject}
-            </Box>
-            &nbsp;-&nbsp;
-            <Box
-              component="span"
+            <Typography
+              variant="body2"
+              noWrap
               sx={{
-                ...(!mail.isUnread && { color: 'text.secondary' }),
+                pr: 2,
+                minWidth: 200,
+                ...(!mail.isUnread && { fontWeight: 'fontWeightBold' }),
               }}
             >
-              {mail.message}
-            </Box>
-          </Typography>
+              {mail.from.name}
+            </Typography>
 
-          {isDesktop && (
-            <>
-              <Box sx={{ display: 'flex' }}>
-                {mail.labelIds.map((labelId) => {
-                  const label = labels.find((_label) => _label.id === labelId);
-                  if (!label) return null;
-                  return (
-                    <Label
-                      key={label.id}
-                      sx={{
-                        mx: 0.5,
-                        textTransform: 'capitalize',
-                        bgcolor: label.color,
-                        color: (theme) => theme.palette.getContrastText(label.color || ''),
-                      }}
-                    >
-                      {label.name}
-                    </Label>
-                  );
-                })}
+            <Typography
+              noWrap
+              variant="body2"
+              sx={{
+                pr: 2,
+              }}
+            >
+              <Box
+                component="span"
+                sx={{ ...(!mail.isUnread && { fontWeight: 'fontWeightBold' }) }}
+              >
+                {mail.subject}
               </Box>
+              &nbsp;-&nbsp;
+              <Box
+                component="span"
+                sx={{
+                  ...(!mail.isUnread && { color: 'text.secondary' }),
+                }}
+              >
+                {mail.message}
+              </Box>
+            </Typography>
 
-              {isAttached && (
-                <Iconify
-                  icon={'eva:link-fill'}
-                  sx={{
-                    mx: 2,
-                    width: 20,
-                    height: 20,
-                    flexShrink: 0,
-                  }}
-                />
-              )}
-            </>
-          )}
+            {isDesktop && (
+              <>
+                <Box sx={{ display: 'flex' }}>
+                  {mail.labelIds.map((labelId) => {
+                    const label = labels.find((_label) => _label.id === labelId);
+                    if (!label) return null;
+                    return (
+                      <Label
+                        key={label.id}
+                        sx={{
+                          mx: 0.5,
+                          textTransform: 'capitalize',
+                          bgcolor: label.color,
+                          color: (theme) => theme.palette.getContrastText(label.color || ''),
+                        }}
+                      >
+                        {label.name}
+                      </Label>
+                    );
+                  })}
+                </Box>
 
-          <Typography
-            variant="caption"
-            sx={{
-              flexShrink: 0,
-              minWidth: 120,
-              textAlign: 'right',
-              ...(!mail.isUnread && { fontWeight: 'fontWeightBold' }),
-            }}
-          >
-            {fDate(mail.createdAt)}
-          </Typography>
+                {isAttached && (
+                  <Iconify
+                    icon={'eva:link-fill'}
+                    sx={{
+                      mx: 2,
+                      width: 20,
+                      height: 20,
+                      flexShrink: 0,
+                    }}
+                  />
+                )}
+              </>
+            )}
+
+            <Typography
+              variant="caption"
+              sx={{
+                flexShrink: 0,
+                minWidth: 120,
+                textAlign: 'right',
+                ...(!mail.isUnread && { fontWeight: 'fontWeightBold' }),
+              }}
+            >
+              {fDate(mail.createdAt)}
+            </Typography>
+          </Box>
         </Box>
-      </WrapStyle>
+      </Box>
 
       <MailItemAction className="showActions" />
     </RootStyle>

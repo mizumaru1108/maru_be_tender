@@ -150,6 +150,9 @@ const EcommerceProductList = Loadable(
 const EcommerceProductCreate = Loadable(
   lazy(() => import('../pages/dashboard/EcommerceProductCreate'))
 );
+const EcommerceProductEdit = Loadable(
+  lazy(() => import('../pages/dashboard/EcommerceProductEdit'))
+);
 const EcommerceCheckout = Loadable(lazy(() => import('../pages/dashboard/EcommerceCheckout')));
 
 // INVOICE

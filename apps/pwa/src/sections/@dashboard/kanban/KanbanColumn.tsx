@@ -8,7 +8,7 @@ import { Paper, Stack, Button } from '@mui/material';
 import { RootState, useDispatch } from '../../../redux/store';
 import { deleteColumn, updateColumn, addTask, deleteTask } from '../../../redux/slices/kanban';
 // @types
-import { KanbanColumn as Column } from '../../../@types/kanban';
+import { KanbanColumn as Column, KanbanCard } from '../../../@types/kanban';
 // components
 import Iconify from '../../../components/Iconify';
 //
@@ -67,7 +67,7 @@ export default function KanbanColumn({ column, index }: Props) {
     }
   };
 
-  const handleAddTask = (task: any) => {
+  const handleAddTask = (task: KanbanCard) => {
     dispatch(addTask({ card: task, columnId: id }));
     handleCloseAddTask();
   };

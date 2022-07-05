@@ -1,5 +1,21 @@
 // ----------------------------------------------------------------------
 
+export type ChatState = {
+  isLoading: boolean;
+  error: Error | string | null;
+  contacts: {
+    byId: Record<string, Participant>;
+    allIds: string[];
+  };
+  conversations: {
+    byId: Record<string, Conversation>;
+    allIds: string[];
+  };
+  activeConversationId: null | string;
+  participants: Participant[];
+  recipients: Participant[];
+};
+
 export type Contact = {
   id: string;
   name: string;

@@ -3,30 +3,20 @@ import omit from 'lodash/omit';
 // utils
 import axios from '../../utils/axios';
 // @types
-import { KanbanCard, KanbanColumn } from '../../@types/kanban';
+import { KanbanState, KanbanCard, KanbanColumn } from '../../@types/kanban';
 //
 import { dispatch } from '../store';
 
 // ----------------------------------------------------------------------
 
-function objFromArray<Type extends Record<string, any>>(array: Type[], key: string = 'id') {
+function objFromArray<Type extends Record<string, any>>(array: Type[], key = 'id') {
   return array.reduce<Record<string, Type>>((accumulator, current) => {
     accumulator[current[key]] = current;
     return accumulator;
   }, {});
 }
 
-type InitialState = {
-  isLoading: boolean;
-  error: Error | string | null;
-  board: {
-    cards: Record<string, KanbanCard>;
-    columns: Record<string, KanbanColumn>;
-    columnOrder: string[];
-  };
-};
-
-const initialState: InitialState = {
+const initialState: KanbanState = {
   isLoading: false,
   error: null,
   board: {

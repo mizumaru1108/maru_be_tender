@@ -1,6 +1,6 @@
 import { m } from 'framer-motion';
-import { useState, useEffect, ReactNode } from 'react';
-import { NavLink as RouterLink, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { NavLink as RouterLink, useLocation, NavLinkProps } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
 import {
@@ -22,13 +22,15 @@ import { MenuProps, MenuItemProps } from './type';
 
 // ----------------------------------------------------------------------
 
-interface RouterLinkProps extends LinkProps {
-  component?: ReactNode;
+interface LinkStyleProps extends LinkProps {
+  component?: React.ForwardRefExoticComponent<
+    NavLinkProps & React.RefAttributes<HTMLAnchorElement>
+  >;
   to?: string;
   end?: boolean;
 }
 
-const LinkStyle = styled(Link)<RouterLinkProps>(({ theme }) => ({
+const LinkStyle = styled(Link)<LinkStyleProps>(({ theme }) => ({
   ...theme.typography.subtitle2,
   color: theme.palette.text.primary,
   marginRight: theme.spacing(5),
@@ -41,9 +43,16 @@ const LinkStyle = styled(Link)<RouterLinkProps>(({ theme }) => ({
   },
 }));
 
-const ListItemStyle = styled(ListItem)<RouterLinkProps>(({ theme }) => ({
+const SubLinkStyle = styled((props: LinkProps) => (
+  <ListItem sx={{ p: 0 }}>
+    <Link target="_blank" rel="noopener" {...props}>
+      {props.children}
+    </Link>
+  </ListItem>
+))(({ theme }) => ({
   ...theme.typography.body2,
-  padding: 0,
+  display: 'flex',
+  alignItems: 'center',
   marginTop: theme.spacing(3),
   color: theme.palette.text.secondary,
   transition: theme.transitions.create('color'),
@@ -56,6 +65,7 @@ const ListItemStyle = styled(ListItem)<RouterLinkProps>(({ theme }) => ({
 
 export default function MenuDesktop({ isOffset, isHome, navConfig }: MenuProps) {
   const { pathname } = useLocation();
+
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -92,30 +102,6 @@ export default function MenuDesktop({ isOffset, isHome, navConfig }: MenuProps) 
 
 // ----------------------------------------------------------------------
 
-export type IconBulletProps = {
-  type?: 'subheader' | 'item';
-};
-
-function IconBullet({ type = 'item' }: IconBulletProps) {
-  return (
-    <Box sx={{ width: 24, height: 16, display: 'flex', alignItems: 'center' }}>
-      <Box
-        component="span"
-        sx={{
-          ml: '2px',
-          width: 4,
-          height: 4,
-          borderRadius: '50%',
-          bgcolor: 'currentColor',
-          ...(type !== 'item' && { ml: 0, width: 8, height: 2, borderRadius: 2 }),
-        }}
-      />
-    </Box>
-  );
-}
-
-// ----------------------------------------------------------------------
-
 type MenuDesktopItemProps = {
   item: MenuItemProps;
   isOpen: boolean;
@@ -133,7 +119,11 @@ function MenuDesktopItem({
   onOpen,
   onClose,
 }: MenuDesktopItemProps) {
+  const { pathname } = useLocation();
+
   const { title, path, children } = item;
+
+  const isActive = (path: string) => pathname === path;
 
   if (children) {
     return (
@@ -198,16 +188,14 @@ function MenuDesktopItem({
                     </ListSubheader>
 
                     {items.map((item) => (
-                      <ListItemStyle
+                      <SubLinkStyle
                         key={item.title}
-                        to={item.path}
-                        component={RouterLink}
-                        underline="none"
+                        href={item.path}
                         sx={{
-                          '&.active': {
+                          ...(isActive(item.path) && {
                             color: 'text.primary',
                             typography: 'subtitle2',
-                          },
+                          }),
                         }}
                       >
                         {item.title === 'Dashboard' ? (
@@ -237,7 +225,7 @@ function MenuDesktopItem({
                             {item.title}
                           </>
                         )}
-                      </ListItemStyle>
+                      </SubLinkStyle>
                     ))}
                   </List>
                 </Grid>
@@ -280,5 +268,29 @@ function MenuDesktopItem({
     >
       {title}
     </LinkStyle>
+  );
+}
+
+// ----------------------------------------------------------------------
+
+export type IconBulletProps = {
+  type?: 'subheader' | 'item';
+};
+
+function IconBullet({ type = 'item' }: IconBulletProps) {
+  return (
+    <Box sx={{ width: 24, height: 16, display: 'flex', alignItems: 'center' }}>
+      <Box
+        component="span"
+        sx={{
+          ml: '2px',
+          width: 4,
+          height: 4,
+          borderRadius: '50%',
+          bgcolor: 'currentColor',
+          ...(type !== 'item' && { ml: 0, width: 8, height: 2, borderRadius: 2 }),
+        }}
+      />
+    </Box>
   );
 }

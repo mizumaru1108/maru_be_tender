@@ -46,6 +46,7 @@ export default function MainFooter() {
   return (
     <RootStyle>
       <Divider />
+
       <Container sx={{ pt: 10 }}>
         <Grid
           container
@@ -55,6 +56,7 @@ export default function MainFooter() {
           <Grid item xs={12} sx={{ mb: 3 }}>
             <Logo sx={{ mx: { xs: 'auto', md: 'inherit' } }} />
           </Grid>
+
           <Grid item xs={8} md={3}>
             <Typography variant="body2" sx={{ pr: { md: 5 } }}>
               The starting point for your next project with Minimal UI Kit, built on the newest
@@ -81,6 +83,7 @@ export default function MainFooter() {
                   <Typography component="p" variant="overline">
                     {list.headline}
                   </Typography>
+
                   {list.children.map((link) => (
                     <Link
                       to={link.href}

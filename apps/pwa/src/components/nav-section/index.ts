@@ -1,5 +1,7 @@
 import { matchPath } from 'react-router-dom';
 
+export * from './type';
+
 // ----------------------------------------------------------------------
 
 export { default as NavSectionVertical } from './vertical';

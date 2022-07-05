@@ -90,7 +90,7 @@ export default function HomeDarkMode() {
             <Box
               component={m.div}
               variants={varFade().inDown}
-              sx={{ top: 0, left: 0, position: 'absolute' }}
+              sx={{ top: 0, right: 0, position: 'absolute' }}
             >
               <Image
                 alt="dark mode"

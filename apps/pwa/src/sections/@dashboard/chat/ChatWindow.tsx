@@ -43,15 +43,21 @@ const conversationSelector = (state: RootState): Conversation => {
 
 export default function ChatWindow() {
   const dispatch = useDispatch();
+
   const navigate = useNavigate();
+
   const { pathname } = useLocation();
+
   const { conversationKey = '' } = useParams();
+
   const { contacts, recipients, participants, activeConversationId } = useSelector(
     (state) => state.chat
   );
+
   const conversation = useSelector((state) => conversationSelector(state));
 
   const mode = conversationKey ? 'DETAIL' : 'COMPOSE';
+
   const displayParticipants = participants.filter(
     (item) => item.id !== '8864c717-587d-472a-929a-8e5f298024da-0'
   );
@@ -115,7 +121,7 @@ export default function ChatWindow() {
           <ChatMessageInput
             conversationId={activeConversationId}
             onSend={handleSendMessage}
-            disabled={pathname === PATH_DASHBOARD.chat.new}
+            disabled={pathname === PATH_DASHBOARD.chat.root || pathname === PATH_DASHBOARD.chat.new}
           />
         </Stack>
 

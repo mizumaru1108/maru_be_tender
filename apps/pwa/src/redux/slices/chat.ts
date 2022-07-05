@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 // utils
 import axios from '../../utils/axios';
 // @types
-import { Conversation, Participant } from '../../@types/chat';
+import { ChatState } from '../../@types/chat';
 //
 import { dispatch } from '../store';
 
@@ -14,22 +14,6 @@ function objFromArray(array: any[], key = 'id') {
     return accumulator;
   }, {});
 }
-
-type ChatState = {
-  isLoading: boolean;
-  error: Error | string | null;
-  contacts: {
-    byId: Record<string, Participant>;
-    allIds: string[];
-  };
-  conversations: {
-    byId: Record<string, Conversation>;
-    allIds: string[];
-  };
-  activeConversationId: null | string;
-  participants: Participant[];
-  recipients: any[];
-};
 
 const initialState: ChatState = {
   isLoading: false,

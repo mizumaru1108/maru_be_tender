@@ -15,6 +15,7 @@ const RootStyle = styled('div')(({ theme }) => ({
 }));
 
 const ContentStyle = styled('div')(({ theme }) => ({
+  display: 'inline-block',
   maxWidth: 320,
   padding: theme.spacing(1.5),
   marginTop: theme.spacing(0.5),
@@ -40,13 +41,16 @@ export default function ChatMessageItem({ message, conversation, onOpenLightbox 
   const sender = conversation.participants.find(
     (participant) => participant.id === message.senderId
   );
+
   const senderDetails =
     message.senderId === '8864c717-587d-472a-929a-8e5f298024da-0'
       ? { type: 'me' }
       : { avatar: sender?.avatar, name: sender?.name };
 
   const isMe = senderDetails.type === 'me';
+
   const isImage = message.contentType === 'image';
+
   const firstName = senderDetails.name && senderDetails.name.split(' ')[0];
 
   return (
@@ -82,8 +86,13 @@ export default function ChatMessageItem({ message, conversation, onOpenLightbox 
 
           <ContentStyle
             sx={{
-              ...(isMe && { color: 'grey.800', bgcolor: 'primary.lighter' }),
-              ...(isImage && { p: 0 }),
+              ...(isMe && {
+                color: 'grey.800',
+                bgcolor: 'primary.lighter',
+              }),
+              ...(isImage && {
+                p: 0,
+              }),
             }}
           >
             {isImage ? (

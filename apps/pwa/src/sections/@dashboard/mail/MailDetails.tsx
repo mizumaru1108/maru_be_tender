@@ -32,8 +32,11 @@ const MarkdownStyle = styled('div')(({ theme }) => ({
 
 export default function MailDetails() {
   const { mailId = '' } = useParams();
+
   const dispatch = useDispatch();
+
   const mail = useSelector((state) => state.mail.mails.byId[mailId]);
+
   const isAttached = mail && mail.files.length > 0;
 
   useEffect(() => {

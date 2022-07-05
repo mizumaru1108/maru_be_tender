@@ -1,90 +1,88 @@
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 // @mui
-import { List, Collapse } from '@mui/material';
-// type
-import { NavListProps } from '../type';
+import { List, Collapse, Link } from '@mui/material';
 //
-import { NavItemRoot, NavItemSub } from './NavItem';
-import { getActive } from '..';
+import { NavListProps } from '../type';
+import NavItem from './NavItem';
+import { getActive, isExternalLink } from '..';
 
 // ----------------------------------------------------------------------
 
 type NavListRootProps = {
-  list: NavListProps;
-  isCollapse: boolean;
+  data: NavListProps;
+  depth: number;
+  hasChildren: boolean;
+  isCollapse?: boolean;
 };
 
-export function NavListRoot({ list, isCollapse }: NavListRootProps) {
+export default function NavList({
+  data,
+  depth,
+  hasChildren,
+  isCollapse = false,
+}: NavListRootProps) {
+  const navigate = useNavigate();
+
   const { pathname } = useLocation();
 
-  const active = getActive(list.path, pathname);
+  const active = getActive(data.path, pathname);
 
   const [open, setOpen] = useState(active);
 
-  const hasChildren = list.children;
+  const handleClickItem = () => {
+    if (!hasChildren) {
+      navigate(data.path);
+    }
+    setOpen(!open);
+  };
 
-  if (hasChildren) {
-    return (
-      <>
-        <NavItemRoot
-          item={list}
-          isCollapse={isCollapse}
-          active={active}
+  return (
+    <>
+      {isExternalLink(data.path) ? (
+        <Link href={data.path} target="_blank" rel="noopener" underline="none">
+          <NavItem item={data} depth={depth} open={open} active={active} isCollapse={isCollapse} />
+        </Link>
+      ) : (
+        <NavItem
+          item={data}
+          depth={depth}
           open={open}
-          onOpen={() => setOpen(!open)}
+          active={active}
+          isCollapse={isCollapse}
+          onClick={handleClickItem}
         />
+      )}
 
-        {!isCollapse && (
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              {(list.children || []).map((item) => (
-                <NavListSub key={item.title + item.path} list={item} />
-              ))}
-            </List>
-          </Collapse>
-        )}
-      </>
-    );
-  }
-
-  return <NavItemRoot item={list} active={active} isCollapse={isCollapse} />;
+      {!isCollapse && hasChildren && (
+        <Collapse in={open} unmountOnExit>
+          <List component="div" disablePadding>
+            <NavSubList data={data.children} depth={depth} />
+          </List>
+        </Collapse>
+      )}
+    </>
+  );
 }
 
 // ----------------------------------------------------------------------
 
 type NavListSubProps = {
-  list: NavListProps;
+  data: NavListProps[];
+  depth: number;
 };
 
-function NavListSub({ list }: NavListSubProps) {
-  const { pathname } = useLocation();
-
-  const active = getActive(list.path, pathname);
-
-  const [open, setOpen] = useState(active);
-
-  const hasChildren = list.children;
-
-  if (hasChildren) {
-    return (
-      <>
-        <NavItemSub item={list} onOpen={() => setOpen(!open)} open={open} active={active} />
-
-        <Collapse in={open} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding sx={{ pl: 3 }}>
-            {(list.children || []).map((item) => (
-              <NavItemSub
-                key={item.title + item.path}
-                item={item}
-                active={getActive(item.path, pathname)}
-              />
-            ))}
-          </List>
-        </Collapse>
-      </>
-    );
-  }
-
-  return <NavItemSub item={list} active={active} />;
+function NavSubList({ data, depth }: NavListSubProps) {
+  return (
+    <>
+      {data.map((list) => (
+        <NavList
+          key={list.title + list.path}
+          data={list}
+          depth={depth + 1}
+          hasChildren={!!list.children}
+        />
+      ))}
+    </>
+  );
 }

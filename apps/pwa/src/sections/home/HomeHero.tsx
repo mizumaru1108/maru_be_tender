@@ -134,7 +134,7 @@ export default function HomeHero() {
                   }
                   value={
                     <Link
-                      href="https://www.figma.com/file/x7earqGD0VGFjFdk5v2DgZ/%5BPreview%5D-Minimal-Web?node-id=866%3A55474"
+                      href="https://www.figma.com/file/sI9fbKHIqlikUtfYCPb9lj/%5BPreview%5D-Minimal-Web.03.07.22?node-id=0%3A10803"
                       target="_blank"
                       rel="noopener"
                       color="common.white"

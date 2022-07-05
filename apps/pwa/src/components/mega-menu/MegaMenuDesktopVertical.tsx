@@ -37,6 +37,7 @@ export default function MegaMenuDesktopVertical({ navConfig, ...other }: Props) 
 
 function MegaMenuItem({ parent }: { parent: MegaMenuItemProps }) {
   const { title, path, more, products, tags, children } = parent;
+
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => {
@@ -79,6 +80,7 @@ function MegaMenuItem({ parent }: { parent: MegaMenuItemProps }) {
                   <Typography variant="subtitle1" noWrap>
                     {list.subheader}
                   </Typography>
+
                   {list.items.map((link) => (
                     <Link
                       noWrap
@@ -112,11 +114,13 @@ function MegaMenuItem({ parent }: { parent: MegaMenuItemProps }) {
                 </Link>
 
                 <Divider />
+
                 <MegaMenuCarousel
                   products={products}
                   numberShow={6}
                   sx={{ '& .controlsArrows': { mt: 5 } }}
                 />
+
                 <Divider />
 
                 <MenuHotProducts tags={tags} />
@@ -159,6 +163,7 @@ function ParentItem({ path, title, open, hasSub, ...other }: ParentItemProps) {
       {...other}
     >
       {title}
+
       {hasSub && <Iconify icon={'eva:chevron-right-fill'} sx={{ ml: 1, width: 20, height: 20 }} />}
     </ListItem>
   );

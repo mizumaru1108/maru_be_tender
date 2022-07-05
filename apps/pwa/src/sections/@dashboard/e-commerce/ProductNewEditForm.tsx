@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
-import { useNavigate } from 'react-router-dom';
 import { useCallback, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 // form
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -23,6 +23,7 @@ import { PATH_DASHBOARD } from '../../../routes/paths';
 // @types
 import { Product } from '../../../@types/product';
 // components
+import { CustomFile } from '../../../components/upload';
 import {
   FormProvider,
   RHFSwitch,
@@ -71,13 +72,14 @@ const LabelStyle = styled(Typography)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-interface FormValuesProps extends Partial<Product> {
+interface FormValuesProps extends Omit<Product, 'images'> {
   taxes: boolean;
   inStock: boolean;
+  images: (CustomFile | string)[];
 }
 
 type Props = {
-  isEdit: boolean;
+  isEdit?: boolean;
   currentProduct?: Product;
 };
 
@@ -151,12 +153,12 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
   };
 
   const handleDrop = useCallback(
-    (acceptedFiles) => {
+    (acceptedFiles: File[]) => {
       const images = values.images || [];
 
       setValue('images', [
         ...images,
-        ...acceptedFiles.map((file: Blob | MediaSource) =>
+        ...acceptedFiles.map((file) =>
           Object.assign(file, {
             preview: URL.createObjectURL(file),
           })
@@ -171,7 +173,8 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
   };
 
   const handleRemove = (file: File | string) => {
-    const filteredItems = values.images?.filter((_file) => _file !== file);
+    const filteredItems = values.images && values.images?.filter((_file) => _file !== file);
+
     setValue('images', filteredItems);
   };
 
@@ -193,7 +196,6 @@ export default function ProductNewEditForm({ isEdit, currentProduct }: Props) {
                 <RHFUploadMultiFile
                   showPreview
                   name="images"
-                  accept="image/*"
                   maxSize={3145728}
                   onDrop={handleDrop}
                   onRemove={handleRemove}

@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 // utils
 import axios from '../../utils/axios';
 // @types
-import { Mail, MailLabel } from '../../@types/mail';
+import { MailState } from '../../@types/mail';
 //
 import { dispatch } from '../store';
 
@@ -15,16 +15,6 @@ function objFromArray(array: any[], key = 'id') {
     return accumulator;
   }, {});
 }
-
-type MailState = {
-  isLoading: boolean;
-  error: Error | string | null;
-  mails: {
-    byId: Record<string, Mail>;
-    allIds: string[];
-  };
-  labels: MailLabel[];
-};
 
 const initialState: MailState = {
   isLoading: false,

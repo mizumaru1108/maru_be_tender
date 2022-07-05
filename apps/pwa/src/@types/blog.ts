@@ -1,15 +1,4 @@
-export type NewPostFormValues = {
-  title: string;
-  description: string;
-  content: string;
-  cover: File | any;
-  tags: string[];
-  publish: boolean;
-  comments: boolean;
-  metaTitle: string;
-  metaDescription: string;
-  metaKeywords: string[];
-};
+// ----------------------------------------------------------------------
 
 export type PostComment = {
   id: string;

@@ -1,5 +1,5 @@
-import { useState, useEffect, ReactNode } from 'react';
-import { NavLink as RouterLink, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { NavLink as RouterLink, useLocation, NavLinkProps } from 'react-router-dom';
 // @mui
 import { alpha, styled } from '@mui/material/styles';
 import {
@@ -8,7 +8,6 @@ import {
   Link,
   Drawer,
   Collapse,
-  LinkProps,
   ListItemText,
   ListItemIcon,
   ListItemButton,
@@ -27,18 +26,18 @@ import { MenuProps, MenuItemProps } from './type';
 
 // ----------------------------------------------------------------------
 
-type StyleProps = LinkProps & ListItemButtonProps;
-
-interface ListItemStyleProps extends StyleProps {
-  component?: ReactNode;
+interface RouterLinkProps extends ListItemButtonProps {
+  component?: React.ForwardRefExoticComponent<
+    NavLinkProps & React.RefAttributes<HTMLAnchorElement>
+  >;
   to?: string;
   end?: boolean;
 }
 
-const ListItemStyle = styled(ListItemButton)<ListItemStyleProps>(({ theme }) => ({
+const ListItemStyle = styled(ListItemButton)<RouterLinkProps>(({ theme }) => ({
   ...theme.typography.body2,
-  height: NAVBAR.DASHBOARD_ITEM_ROOT_HEIGHT,
   textTransform: 'capitalize',
+  height: NAVBAR.DASHBOARD_ITEM_ROOT_HEIGHT,
   color: theme.palette.text.secondary,
 }));
 
@@ -126,7 +125,7 @@ function MenuMobileItem({ item, isOpen, onOpen }: MenuMobileItemProps) {
           />
         </ListItemStyle>
 
-        <Collapse in={isOpen} timeout="auto" unmountOnExit>
+        <Collapse in={isOpen} unmountOnExit>
           <Box sx={{ display: 'flex', flexDirection: 'column-reverse' }}>
             <NavSectionVertical
               navConfig={children}
@@ -150,10 +149,12 @@ function MenuMobileItem({ item, isOpen, onOpen }: MenuMobileItemProps) {
 
   if (title === 'Documentation') {
     return (
-      <ListItemStyle href={path} target="_blank" rel="noopener" component={Link}>
-        <ListItemIcon>{icon}</ListItemIcon>
-        <ListItemText disableTypography primary={title} />
-      </ListItemStyle>
+      <Link href={path} target="_blank" rel="noopener" underline="none">
+        <ListItemStyle>
+          <ListItemIcon>{icon}</ListItemIcon>
+          <ListItemText disableTypography primary={title} />
+        </ListItemStyle>
+      </Link>
     );
   }
 

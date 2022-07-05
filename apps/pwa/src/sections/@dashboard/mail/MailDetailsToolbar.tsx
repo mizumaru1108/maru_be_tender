@@ -34,6 +34,7 @@ type Props = {
 
 export default function MailDetailsToolbar({ mail, ...other }: Props) {
   const navigate = useNavigate();
+
   const { systemLabel, customLabel } = useParams();
 
   const isDesktop = useResponsive('up', 'sm');

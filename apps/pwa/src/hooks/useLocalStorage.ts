@@ -23,7 +23,7 @@ export default function useLocalStorage<ValueType>(key: string, defaultValue: Va
   }, [key, defaultValue]);
 
   const setValueInLocalStorage = (newValue: ValueType) => {
-    setValue((currentValue: any) => {
+    setValue((currentValue: ValueType) => {
       const result = typeof newValue === 'function' ? newValue(currentValue) : newValue;
 
       localStorage.setItem(key, JSON.stringify(result));

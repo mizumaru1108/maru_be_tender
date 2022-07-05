@@ -1,3 +1,15 @@
+// ----------------------------------------------------------------------
+
+export type KanbanState = {
+  isLoading: boolean;
+  error: Error | string | null;
+  board: {
+    cards: Record<string, KanbanCard>;
+    columns: Record<string, KanbanColumn>;
+    columnOrder: string[];
+  };
+};
+
 export type CardComment = {
   id: string;
   avatar: string;

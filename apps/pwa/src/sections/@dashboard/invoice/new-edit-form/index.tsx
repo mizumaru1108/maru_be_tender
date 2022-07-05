@@ -10,7 +10,7 @@ import { Card, Stack } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '../../../../routes/paths';
 // @types
-import { Invoice, InvoiceItem, InvoiceAddress } from '../../../../@types/invoice';
+import { Invoice, InvoiceAddress } from '../../../../@types/invoice';
 // mock
 import { _invoiceAddressFrom } from '../../../../_mock';
 // components
@@ -52,18 +52,18 @@ export default function InvoiceNewEditForm({ isEdit, currentInvoice }: Props) {
   const defaultValues = useMemo(
     () => ({
       invoiceNumber: currentInvoice?.invoiceNumber || '17099',
-      createDate: currentInvoice?.createDate || null,
+      createDate: currentInvoice?.createDate || new Date(),
       dueDate: currentInvoice?.dueDate || null,
-      taxes: currentInvoice?.taxes || '',
+      taxes: currentInvoice?.taxes || 0,
       status: currentInvoice?.status || 'draft',
-      discount: currentInvoice?.discount || '',
+      discount: currentInvoice?.discount || 0,
       invoiceFrom: currentInvoice?.invoiceFrom || _invoiceAddressFrom[0],
       invoiceTo: currentInvoice?.invoiceTo || null,
       items: currentInvoice?.items || [
-        { title: '', description: '', service: '', quantity: 0, price: 0, total: 0 },
+        { title: '', description: '', service: '', quantity: 1, price: 0, total: 0 },
       ],
+      totalPrice: currentInvoice?.totalPrice || 0,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentInvoice]
   );
 
@@ -81,6 +81,8 @@ export default function InvoiceNewEditForm({ isEdit, currentInvoice }: Props) {
 
   const values = watch();
 
+  console.log('values', values);
+
   useEffect(() => {
     if (isEdit && currentInvoice) {
       reset(defaultValues);
@@ -91,15 +93,7 @@ export default function InvoiceNewEditForm({ isEdit, currentInvoice }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEdit, currentInvoice]);
 
-  const newInvoice = {
-    ...values,
-    items: values.items.map((item: InvoiceItem) => ({
-      ...item,
-      total: item.quantity * item.price,
-    })),
-  };
-
-  const handleSaveAsDraft = async () => {
+  const handleSaveAsDraft = async (data: FormValuesProps) => {
     setLoadingSave(true);
 
     try {
@@ -107,13 +101,13 @@ export default function InvoiceNewEditForm({ isEdit, currentInvoice }: Props) {
       reset();
       setLoadingSave(true);
       navigate(PATH_DASHBOARD.invoice.list);
-      console.log(JSON.stringify(newInvoice, null, 2));
+      console.log(JSON.stringify(data, null, 2));
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleCreateAndSend = async () => {
+  const handleCreateAndSend = async (data: FormValuesProps) => {
     setLoadingSend(true);
 
     try {
@@ -121,7 +115,7 @@ export default function InvoiceNewEditForm({ isEdit, currentInvoice }: Props) {
       reset();
       setLoadingSend(false);
       navigate(PATH_DASHBOARD.invoice.list);
-      console.log(JSON.stringify(newInvoice, null, 2));
+      console.log(JSON.stringify(data, null, 2));
     } catch (error) {
       console.error(error);
     }
@@ -131,7 +125,9 @@ export default function InvoiceNewEditForm({ isEdit, currentInvoice }: Props) {
     <FormProvider methods={methods}>
       <Card>
         <InvoiceNewEditAddress />
+
         <InvoiceNewEditStatusDate />
+
         <InvoiceNewEditDetails />
       </Card>
 

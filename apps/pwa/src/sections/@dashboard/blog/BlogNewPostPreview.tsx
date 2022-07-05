@@ -2,19 +2,19 @@
 import { LoadingButton } from '@mui/lab';
 import { alpha } from '@mui/material/styles';
 import { Box, Button, Container, Typography, DialogActions } from '@mui/material';
-// @types
-import { NewPostFormValues } from '../../../@types/blog';
 // components
 import Image from '../../../components/Image';
 import Markdown from '../../../components/Markdown';
 import Scrollbar from '../../../components/Scrollbar';
 import EmptyContent from '../../../components/EmptyContent';
 import { DialogAnimate } from '../../../components/animate';
+//
+import { FormValuesProps } from './BlogNewPostForm';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  values: NewPostFormValues;
+  values: FormValuesProps;
   isOpen: boolean;
   isSubmitting: boolean;
   isValid: boolean;

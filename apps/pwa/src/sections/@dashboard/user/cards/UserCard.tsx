@@ -49,6 +49,7 @@ export default function UserCard({ user }: Props) {
             color: 'background.paper',
           }}
         />
+
         <Avatar
           alt={name}
           src={avatarUrl}

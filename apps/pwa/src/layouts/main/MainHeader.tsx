@@ -1,7 +1,7 @@
 import { useLocation } from 'react-router-dom';
 // @mui
 import { styled, useTheme } from '@mui/material/styles';
-import { Box, Button, AppBar, Toolbar, Container } from '@mui/material';
+import { Box, Button, AppBar, Toolbar, Container, Link } from '@mui/material';
 // hooks
 import useOffSetTop from '../../hooks/useOffSetTop';
 import useResponsive from '../../hooks/useResponsive';
@@ -76,9 +76,16 @@ export default function MainHeader() {
         >
           <Logo />
 
-          <Label color="info" sx={{ ml: 1 }}>
-            v3.4.0
-          </Label>
+          <Link
+            href="https://docs-minimals.vercel.app/changelog"
+            target="_blank"
+            rel="noopener"
+            underline="none"
+          >
+            <Label color="info" sx={{ ml: 1 }}>
+              v3.5.0
+            </Label>
+          </Link>
 
           <Box sx={{ flexGrow: 1 }} />
 

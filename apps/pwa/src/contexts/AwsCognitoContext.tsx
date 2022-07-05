@@ -154,7 +154,7 @@ function AuthProvider({ children }: AuthProviderProps) {
   // able to chain additional `.then()` logic. Additionally, we `.catch` the error and "enhance it" by providing
   // a message that our React components can use.
   const login = useCallback(
-    (email, password) =>
+    (email: string, password: string) =>
       new Promise((resolve, reject) => {
         const user = new CognitoUser({
           Username: email,

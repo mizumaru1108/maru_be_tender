@@ -19,7 +19,14 @@ export default function RHFTextField({ name, ...other }: Props) {
       name={name}
       control={control}
       render={({ field, fieldState: { error } }) => (
-        <TextField {...field} fullWidth error={!!error} helperText={error?.message} {...other} />
+        <TextField
+          {...field}
+          fullWidth
+          value={typeof field.value === 'number' && field.value === 0 ? '' : field.value}
+          error={!!error}
+          helperText={error?.message}
+          {...other}
+        />
       )}
     />
   );

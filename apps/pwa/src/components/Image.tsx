@@ -61,7 +61,7 @@ export default function Image({
     <Box
       component="span"
       sx={{
-        lineHeight: 0,
+        lineHeight: 1,
         display: 'block',
         overflow: 'hidden',
         '& .wrapper': { width: 1, height: 1, backgroundSize: 'cover !important' },

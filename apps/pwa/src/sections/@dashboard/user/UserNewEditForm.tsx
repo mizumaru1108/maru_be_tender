@@ -18,6 +18,7 @@ import { UserManager } from '../../../@types/user';
 import { countries } from '../../../_mock';
 // components
 import Label from '../../../components/Label';
+import { CustomFile } from '../../../components/upload';
 import {
   FormProvider,
   RHFSelect,
@@ -28,7 +29,9 @@ import {
 
 // ----------------------------------------------------------------------
 
-type FormValuesProps = UserManager;
+interface FormValuesProps extends Omit<UserManager, 'avatarUrl'> {
+  avatarUrl: CustomFile | string | null;
+}
 
 type Props = {
   isEdit: boolean;
@@ -111,7 +114,7 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
   };
 
   const handleDrop = useCallback(
-    (acceptedFiles) => {
+    (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
 
       if (file) {
@@ -143,7 +146,6 @@ export default function UserNewEditForm({ isEdit, currentUser }: Props) {
             <Box sx={{ mb: 5 }}>
               <RHFUploadAvatar
                 name="avatarUrl"
-                accept="image/*"
                 maxSize={3145728}
                 onDrop={handleDrop}
                 helperText={

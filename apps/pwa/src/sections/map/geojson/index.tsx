@@ -1,58 +1,30 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { range } from 'd3-array';
-import { scaleQuantile } from 'd3-scale';
-import MapGL, { Source, Layer, LayerProps } from 'react-map-gl';
-import { MapEvent, InteractiveMapProps } from 'react-map-gl/src/components/interactive-map';
+import { useState, useEffect, useMemo, useCallback, memo } from 'react';
+import Map, { Source, Layer, FillLayer, MapLayerMouseEvent } from 'react-map-gl';
 // @mui
 import { useTheme, alpha } from '@mui/material/styles';
 import { Box, Typography } from '@mui/material';
-//components
-import {
-  MapControlScale,
-  MapControlGeolocate,
-  MapControlNavigation,
-  MapControlFullscreen
-} from '../../../components/map';
+// components
+import { MapControl, MapBoxProps } from '../../../components/map';
 //
+import { updatePercentiles } from './utils';
 import ControlPanel from './ControlPanel';
 
 // ----------------------------------------------------------------------
 
-function updatePercentiles(featureCollection: { features: any[] }, accessor: any) {
-  const { features } = featureCollection;
-  const scale = scaleQuantile().domain(features.map(accessor)).range(range(9));
-  return {
-    type: 'FeatureCollection',
-    features: features.map((f) => {
-      const value = accessor(f);
-      const properties = {
-        ...f.properties,
-        value,
-        percentile: scale(value)
-      };
-      return { ...f, properties };
-    })
-  };
-}
-
-export default function MapGeojson({ ...other }: InteractiveMapProps) {
+function MapGeojson({ ...other }: MapBoxProps) {
   const theme = useTheme();
-  const [viewport, setViewport] = useState({
-    latitude: 40,
-    longitude: -100,
-    zoom: 3,
-    bearing: 0,
-    pitch: 0
-  });
+
   const [year, setYear] = useState(2010);
+
   const [allData, setAllData] = useState<any>(null);
+
   const [hoverInfo, setHoverInfo] = useState<{
     feature: any;
     x: number;
     y: number;
   } | null>(null);
 
-  const dataLayer: LayerProps = {
+  const dataLayer: FillLayer = {
     id: 'data',
     type: 'fill',
     paint: {
@@ -67,11 +39,11 @@ export default function MapGeojson({ ...other }: InteractiveMapProps) {
           [5, theme.palette.warning.main],
           [6, theme.palette.error.light],
           [7, theme.palette.error.light],
-          [8, theme.palette.primary.dark]
-        ]
+          [8, theme.palette.primary.dark],
+        ],
       },
-      'fill-opacity': 0.72
-    }
+      'fill-opacity': 0.72,
+    },
   };
 
   useEffect(() => {
@@ -79,47 +51,44 @@ export default function MapGeojson({ ...other }: InteractiveMapProps) {
       'https://raw.githubusercontent.com/uber/react-map-gl/master/examples/.data/us-income.geojson'
     )
       .then((resp) => resp.json())
-      .then((json) => setAllData(json));
+      .then((json) => setAllData(json))
+      .catch((err) => console.error('Could not load data', err));
   }, []);
 
-  const onHover = useCallback((event: MapEvent) => {
-    const { srcEvent } = event;
-    const hoveredFeature = event.features && event.features[0];
+  const onHover = useCallback((event: MapLayerMouseEvent) => {
+    const { features, point } = event;
+
+    const hoveredFeature = features && features[0];
 
     setHoverInfo(
       hoveredFeature
         ? {
             feature: hoveredFeature,
-            x: (srcEvent as MouseEvent).offsetX,
-            y: (srcEvent as MouseEvent).offsetY
+            x: point.x,
+            y: point.y,
           }
         : null
     );
   }, []);
 
   const data = useMemo(
-    () =>
-      allData &&
-      updatePercentiles(
-        allData,
-        (f: { properties: { income: Record<string, any> } }) => f.properties.income[year]
-      ),
+    () => allData && updatePercentiles(allData, (f) => f.properties?.income[year]),
     [allData, year]
   );
 
   return (
     <>
-      <MapGL
-        {...viewport}
-        onViewportChange={setViewport}
+      <Map
+        initialViewState={{
+          latitude: 40,
+          longitude: -100,
+          zoom: 3,
+        }}
         interactiveLayerIds={['data']}
-        onHover={onHover}
+        onMouseMove={onHover}
         {...other}
       >
-        <MapControlScale />
-        <MapControlNavigation />
-        <MapControlFullscreen />
-        <MapControlGeolocate />
+        <MapControl />
 
         <Source type="geojson" data={data}>
           <Layer {...dataLayer} />
@@ -134,26 +103,30 @@ export default function MapGeojson({ ...other }: InteractiveMapProps) {
               position: 'absolute',
               pointerEvents: 'none',
               color: 'common.white',
-              backgroundColor: alpha(theme.palette.grey[900], 0.8)
+              backgroundColor: alpha(theme.palette.grey[900], 0.8),
             }}
             style={{ left: hoverInfo.x, top: hoverInfo.y }}
           >
             <Typography component="div" variant="caption">
               <strong>State:</strong> {hoverInfo.feature.properties.name}
             </Typography>
+
             <Typography component="div" variant="caption">
               <strong> Median Household Income: </strong>
               {hoverInfo.feature.properties.value}
             </Typography>
+
             <Typography component="div" variant="caption">
               <strong>Percentile:</strong>
               {(hoverInfo.feature.properties.percentile / 8) * 100}
             </Typography>
           </Box>
         )}
-      </MapGL>
+      </Map>
 
       <ControlPanel year={year} onChange={(value: number) => setYear(value)} />
     </>
   );
 }
+
+export default memo(MapGeojson);

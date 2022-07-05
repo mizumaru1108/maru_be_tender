@@ -19,7 +19,14 @@ export default function Logo({ disabledLink = false, sx }: Props) {
   const PRIMARY_DARK = theme.palette.primary.dark;
 
   // OR
-  // const logo = '/logo/logo_single.svg';
+  // -------------------------------------------------------
+  // const logo = (
+  //   <Box
+  //     component="img"
+  //     src="/logo/logo_single.svg" => your path
+  //     sx={{ width: 40, height: 40, cursor: 'pointer', ...sx }}
+  //   />
+  // );
 
   const logo = (
     <Box sx={{ width: 40, height: 40, ...sx }}>
