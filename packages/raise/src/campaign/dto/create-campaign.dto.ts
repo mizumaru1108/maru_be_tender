@@ -5,6 +5,14 @@ class Image {
   url: string;
 }
 
+class Payload {
+  imageUrl: string;
+  imageName: string;
+  imagePrefix: string;
+  fullName: string;
+  imageExtension: string;
+  currentPhoto: string;
+}
 export class CreateCampaignDto {
   @ApiProperty()
   readonly organizationId: string;
@@ -50,4 +58,7 @@ export class CreateCampaignDto {
 
   @ApiProperty()
   readonly images: Array<Image>;
+
+  @ApiProperty()
+  readonly imagePayload: Array<Payload>;
 }

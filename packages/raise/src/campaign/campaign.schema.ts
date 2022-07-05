@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import * as mongoose from 'mongoose';
 
 export type CampaignDocument = Campaign & Document;
 
@@ -9,7 +10,7 @@ export class Campaign {
   campaignId: string;
 
   @Prop({ type: Types.ObjectId })
-  organizationId: string;
+  organizationId:  Types.ObjectId;
 
   @Prop()
   name: string;
@@ -38,11 +39,11 @@ export class Campaign {
   @Prop()
   currencyCode: string;
 
-  @Prop()
-  amountProgress: string;
+  @Prop({  type: () => mongoose.Types.Decimal128})
+  amountProgress?: mongoose.Types.Decimal128;
 
-  @Prop()
-  amountTarget: string;
+  @Prop({  type: () => mongoose.Types.Decimal128})
+  amountTarget?: mongoose.Types.Decimal128;
 
   @Prop()
   coverImage: string;

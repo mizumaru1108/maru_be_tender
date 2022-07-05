@@ -47,41 +47,79 @@ export class CampaignService {
   }
 
   async upload(createCampaignDto: CreateCampaignDto): Promise<Campaign> {
-    const createdCampaign = new this.campaignModel(createCampaignDto);
+    let createdCampaign = new this.campaignModel(createCampaignDto);
+    let Decimal128 = require('mongoose').Types.Decimal128;
     createdCampaign.campaignId = uuidv4();
+    createdCampaign.amountProgress = Decimal128("0");
+    createdCampaign.amountTarget = Decimal128("0");
     createdCampaign.isFinished = 'N';
     createdCampaign.createdAt = moment().toISOString();
     createdCampaign.updatedAt = moment().toISOString();
     createdCampaign.isDeleted = 'N';
     createdCampaign.isPublished = 'Y';
 
+    const appEnv      = this.configService.get('APP_ENV');
+    var slugify       = require('slugify');
+    let sanitizedName : string = ''; 
+    let path          : any = [];
+    let imageBase64   : string = '';
 
-    const imageBase64 = createCampaignDto.coverImage.replace(/^data:.*,/, '');
-    const binary = Buffer.from(imageBase64, 'base64');
-    const appEnv = this.configService.get('APP_ENV');
+    for(let i=0; i < createCampaignDto.imagePayload.length; i++){
+      sanitizedName = slugify(createCampaignDto.imagePayload[i].fullName,{lower: true, 
+        remove: /[*+~.()'"!:@]/g});
+      
+      
+      if(i==0){
+        console.log('imageName =',createCampaignDto.imagePayload[i].imageName);
+        console.log('imagePrefix =',createCampaignDto.imagePayload[i].imagePrefix);
+        console.log('fullName =',createCampaignDto.imagePayload[i].fullName);
+        console.log('imageExtension =',createCampaignDto.imagePayload[i].imageExtension);
+        path[i] = `tmra/${appEnv}/organization/${createCampaignDto.organizationId}`+
+                      `/coverImage/${sanitizedName}-${createCampaignDto.imagePayload[i].imageName}`+
+                      `${createCampaignDto.imagePayload[i].imageExtension}`;
+        console.log('path=', path[i]);
+        createdCampaign.coverImage = path[i];
+        
+      }else{
+        console.log('imageName =',createCampaignDto.imagePayload[i].imageName);
+        console.log('imagePrefix =',createCampaignDto.imagePayload[i].imagePrefix);
+        console.log('fullName =',createCampaignDto.imagePayload[i].fullName);
+        console.log('imageExtension =',createCampaignDto.imagePayload[i].imageExtension);
+        path[i] = `tmra/${appEnv}/organization/${createCampaignDto.organizationId}`+
+                      `/image/${sanitizedName}-${createCampaignDto.imagePayload[i].imageName}`+
+                      `${createCampaignDto.imagePayload[i].imageExtension}`;
+        console.log('path=', path[i]);
+        //set the number of maximum file uploaded = 4 (included coverImage)
+        if(i == 1) createdCampaign.image1 = path[i];
+        if(i == 2) createdCampaign.image2 = path[i];
+        if(i == 3) createdCampaign.image3 = path[i];
 
-    const path = `tmra/${appEnv}/nonprofit-favicon/logo-${createCampaignDto.organizationId}.png`;
-    const urlMedia = `${this.configService.get('BUNNY_STORAGE_URL_MEDIA')}/${path}`;
+      }
 
-    const options: AxiosRequestConfig<any> = {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/octet-stream',
-        AccessKey : `${this.configService.get('BUNNY_STORAGE_ACCESS_KEY_MEDIA')}`,
-      },
-      data: binary,
-      url: urlMedia,
-    };
-    const uploadBunny = await axios(options);
-    console.log(
-      'Uploaded %s (%d bytes) to Bunny: %s %s %s',
-      urlMedia,
-      binary.length,
-      uploadBunny.status,
-      uploadBunny.statusText,
-      JSON.stringify(uploadBunny.data, null, 2),
-    );
+      imageBase64 = createCampaignDto.imagePayload[i].imageUrl;
+      const binary = Buffer.from(imageBase64, 'base64');
+      const urlMedia = `${this.configService.get('BUNNY_STORAGE_URL_MEDIA')}/${path[i]}`;
 
+      const options: AxiosRequestConfig<any> = {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/octet-stream',
+          AccessKey : `${this.configService.get('BUNNY_STORAGE_ACCESS_KEY_MEDIA')}`,
+        },
+        data: binary,
+        url: urlMedia,
+      };
+      const uploadBunny = await axios(options);
+      console.log(
+        'Uploaded %s (%d bytes) to Bunny: %s %s %s',
+        urlMedia,
+        binary.length,
+        uploadBunny.status,
+        uploadBunny.statusText,
+        JSON.stringify(uploadBunny.data, null, 2),
+      );
+
+    }
     return createdCampaign.save();
   }
 
