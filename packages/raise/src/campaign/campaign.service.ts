@@ -48,15 +48,22 @@ export class CampaignService {
 
   async upload(createCampaignDto: CreateCampaignDto): Promise<Campaign> {
     let createdCampaign = new this.campaignModel(createCampaignDto);
-    let Decimal128 = require('mongoose').Types.Decimal128;
+    let decimal = require('mongoose').Types.Decimal128;
+    let ObjectId = require('mongoose').Types.ObjectId;
     createdCampaign.campaignId = uuidv4();
-    createdCampaign.amountProgress = Decimal128("0");
-    createdCampaign.amountTarget = Decimal128("0");
+    createdCampaign.amountProgress = decimal.fromString("0");
+    createdCampaign.amountTarget = decimal.fromString("0");
     createdCampaign.isFinished = 'N';
     createdCampaign.createdAt = moment().toISOString();
     createdCampaign.updatedAt = moment().toISOString();
     createdCampaign.isDeleted = 'N';
     createdCampaign.isPublished = 'Y';
+    createdCampaign.isMoney = 'Y';
+    createdCampaign.milestone = createCampaignDto.milestone;
+    createdCampaign.campaignName = createCampaignDto.name;
+    createdCampaign.campaignType = createCampaignDto.campaignType;
+    createdCampaign.organizationId = ObjectId(createCampaignDto.organizationId);
+    createdCampaign.projectId = ObjectId(createCampaignDto.projectId);
 
     const appEnv      = this.configService.get('APP_ENV');
     var slugify       = require('slugify');

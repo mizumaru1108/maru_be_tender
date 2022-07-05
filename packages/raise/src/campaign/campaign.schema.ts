@@ -12,11 +12,18 @@ export class Campaign {
   @Prop({ type: Types.ObjectId })
   organizationId:  Types.ObjectId;
 
+  //deprecated
   @Prop()
   name: string;
 
   @Prop()
-  projectId: string;
+  campaignName: string;
+
+  @Prop()
+  campaignType: string;
+
+  @Prop({ type: Types.ObjectId})
+  projectId: Types.ObjectId;
 
   @Prop()
   type: string;
@@ -39,11 +46,12 @@ export class Campaign {
   @Prop()
   currencyCode: string;
 
-  @Prop({  type: () => mongoose.Types.Decimal128})
-  amountProgress?: mongoose.Types.Decimal128;
+  // @Prop({type: mongoose.Types.Decimal128, default: new mongoose.Types.Decimal128('0')})
+  @Prop({type: mongoose.Schema.Types.Decimal128 , default: Types.Decimal128.fromString("0")})
+  amountProgress:  mongoose.Schema.Types.Decimal128;
 
-  @Prop({  type: () => mongoose.Types.Decimal128})
-  amountTarget?: mongoose.Types.Decimal128;
+  @Prop({type:  mongoose.Schema.Types.Decimal128, default: Types.Decimal128.fromString("0") })
+  amountTarget:  mongoose.Schema.Types.Decimal128;
 
   @Prop()
   coverImage: string;
