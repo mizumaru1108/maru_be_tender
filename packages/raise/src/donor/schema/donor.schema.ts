@@ -61,6 +61,9 @@ export class Donor {
 
   @Prop({ item: String, type: () => Array })
   public favoriteCampaignIds?: string[];
+
+  @Prop()
+  profilePic: string;
 }
 
 export const DonorSchema = SchemaFactory.createForClass(Donor);

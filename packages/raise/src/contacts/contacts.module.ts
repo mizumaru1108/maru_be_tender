@@ -9,7 +9,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import {
   Organization,
   OrganizationSchema,
-} from 'src/organization/organization.schema';
+} from 'src/organization/schema/organization.schema';
 
 @Module({
   imports: [

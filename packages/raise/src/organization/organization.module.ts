@@ -9,17 +9,22 @@ import {
   DonationLogs,
   DonationLogSchema,
 } from 'src/donor/schema/donation_log.schema';
-import { Organization, OrganizationSchema } from './organization.schema';
+import { Organization, OrganizationSchema } from './schema/organization.schema';
 import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
 import {
   PaymentGateway,
   PaymentGatewaySchema,
 } from 'src/payment-stripe/schema/paymentGateway.schema';
 import { Campaign, CampaignSchema } from 'src/campaign/campaign.schema';
+import { Appearance, AppearanceSchema } from './schema/appearance.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
+      {
+        name: Appearance.name,
+        schema: AppearanceSchema,
+      },
       {
         name: Campaign.name,
         schema: CampaignSchema,

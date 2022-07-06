@@ -11,7 +11,7 @@ import {
 import {
   Organization,
   OrganizationDocument,
-} from '../organization/organization.schema';
+} from '../organization/schema/organization.schema';
 import {
   DonationLogs,
   DonationLogDocument,

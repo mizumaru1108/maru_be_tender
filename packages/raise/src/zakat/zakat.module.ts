@@ -11,7 +11,7 @@ import {
 import {
   Organization,
   OrganizationSchema,
-} from 'src/organization/organization.schema';
+} from 'src/organization/schema/organization.schema';
 import { Expense, ExpenseSchema } from './schemas/expense.schema';
 
 @Module({

@@ -7,7 +7,7 @@ import { rootLogger } from '../logger';
 import {
   Organization,
   OrganizationDocument,
-} from 'src/organization/organization.schema';
+} from 'src/organization/schema/organization.schema';
 
 @Injectable()
 export class ContactsService {

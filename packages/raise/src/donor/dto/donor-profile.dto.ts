@@ -42,4 +42,7 @@ export class DonorUpdateProfileDto {
 
   @ApiProperty()
   readonly mobile: string;
+
+  @ApiProperty()
+  readonly profilePic: string;
 }

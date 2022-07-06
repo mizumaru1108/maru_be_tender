@@ -9,7 +9,7 @@ import {
 import {
   Organization,
   OrganizationSchema,
-} from 'src/organization/organization.schema';
+} from 'src/organization/schema/organization.schema';
 import { Campaign, CampaignSchema } from 'src/campaign/campaign.schema';
 import {
   DonationLogs,

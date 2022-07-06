@@ -4,8 +4,11 @@ import { Model, Types } from 'mongoose';
 import { rootLogger } from '../logger';
 import { FusionAuthClient } from '@fusionauth/typescript-client';
 import { ConfigService } from '@nestjs/config';
-import { OrganizationDto } from './organization.dto';
-import { Organization, OrganizationDocument } from './organization.schema';
+import { OrganizationDto } from './dto/organization.dto';
+import {
+  Organization,
+  OrganizationDocument,
+} from './schema/organization.schema';
 import {
   DonationLogDocument,
   DonationLogs,
@@ -16,12 +19,16 @@ import {
   PaymentGatewayDocument,
 } from 'src/payment-stripe/schema/paymentGateway.schema';
 import { Campaign, CampaignDocument } from 'src/campaign/campaign.schema';
+import { AppearancenDto } from './dto/appearance.dto';
+import { Appearance, AppearanceDocument } from './schema/appearance.schema';
 
 @Injectable()
 export class OrganizationService {
   private logger = rootLogger.child({ logger: OrganizationService.name });
 
   constructor(
+    @InjectModel(Appearance.name)
+    private appearanceModel: Model<AppearanceDocument>,
     @InjectModel(Campaign.name)
     private campaignModel: Model<CampaignDocument>,
     @InjectModel(DonationLogs.name)
@@ -102,6 +109,94 @@ export class OrganizationService {
     return {
       statusCode: 200,
       organization: orgUpdated,
+    };
+  }
+
+  async getAppearance(organizationId: string) {
+    this.logger.debug('Get Organization...');
+    const organization = await this.organizationModel.findOne({
+      _id: organizationId,
+    });
+    if (!organization) {
+      return {
+        statusCode: 404,
+        message: 'Organization not found',
+      };
+    }
+
+    const appearance = await this.appearanceModel.findOne({
+      ownerUserId: organization.ownerUserId,
+    });
+    if (!appearance) {
+      return {
+        statusCode: 404,
+        message: 'Appearance not found',
+      };
+    }
+    return {
+      statusCode: 200,
+      appearance,
+    };
+  }
+
+  async createAppearance(
+    organizationId: string,
+    appearanceDto: AppearancenDto,
+  ) {
+    this.logger.debug('Get Organization...');
+    const organization = await this.organizationModel.findOne({
+      _id: new Types.ObjectId(organizationId),
+    });
+    console.log(organizationId);
+    if (!organization) {
+      return {
+        statusCode: 404,
+        message: 'Organization not found',
+      };
+    }
+
+    appearanceDto.ownerUserId = organization.ownerUserId;
+    appearanceDto.ownerRealmId = organization.ownerRealmId;
+    const appearanceCreated = await this.appearanceModel.create(appearanceDto);
+    // const appearance = createdExpense.save();
+    return {
+      statusCode: 200,
+      appearance: appearanceCreated,
+    };
+  }
+
+  async updateAppearance(organizationId: string, appearance: AppearancenDto) {
+    this.logger.debug('Get Organization...');
+    const organization = await this.organizationModel.findOne({
+      _id: organizationId,
+    });
+    if (!organization) {
+      return {
+        statusCode: 404,
+        message: 'Organization not found',
+      };
+    }
+
+    const appearanceUpdated = await this.appearanceModel.findOneAndUpdate(
+      { ownerUserId: organization.ownerUserId },
+      appearance,
+      { new: true },
+    );
+
+    if (appearanceUpdated && appearance.favIcon) {
+      organization.favicon = appearance.favIcon;
+      organization.save();
+    }
+
+    if (!appearanceUpdated) {
+      return {
+        statusCode: 400,
+        message: 'Failed',
+      };
+    }
+    return {
+      statusCode: 200,
+      appearance: appearanceUpdated,
     };
   }
 
@@ -282,12 +377,69 @@ export class OrganizationService {
     ]);
     console.log(mostPopularProgramsDiagram);
 
+    const totalDonationPerProgram = await this.donationLogModel.aggregate([
+      {
+        $match: {
+          nonprofitRealmId: new Types.ObjectId(organizationId),
+          donationStatus: 'SUCCESS',
+          donorUserId: { $ne: null },
+        },
+      },
+      {
+        $lookup: {
+          from: 'campaign',
+          localField: 'campaignId',
+          foreignField: '_id',
+          as: 'campaign',
+        },
+      },
+      {
+        $unwind: {
+          path: '$campaign',
+        },
+      },
+      {
+        $addFields: {
+          name: {
+            $cond: {
+              if: { $eq: [{ $ifNull: ['$campaign.title', 0] }, 0] },
+              then: '$campaign.campaignName',
+              else: '$campaign.title',
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$campaign._id',
+          campaignName: { $first: '$name' },
+          total_donation: { $sum: '$amount' },
+        },
+      },
+    ]);
+
+    const campaignPerType = await this.campaignModel
+      .where({
+        organizationId: new Types.ObjectId(organizationId),
+      })
+      .select({
+        _id: 1,
+        title: 1,
+        campaignType: 1,
+        amountProgress: 1,
+        amountTarget: 1,
+      });
+    const donorList = await this.getDonorList(organizationId);
+
     return {
       total_donation: totalDonation,
       total_program: totalProgram,
       total_donor: totalDonor,
       total_returning_donor: returningDonorAgg.length,
-      mostPopularProgramsDiagram: mostPopularProgramsDiagram,
+      most_popular_programs: mostPopularProgramsDiagram,
+      total_donation_program: totalDonationPerProgram,
+      campaign_per_type: campaignPerType.slice(0, 5),
+      donor_list: donorList.slice(0, 5),
     };
   }
 }

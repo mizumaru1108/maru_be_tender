@@ -13,6 +13,8 @@ import {
 import { DonationLog, DonationLogDocument } from './schema/donation-log.schema';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
+import { FusionAuthClient } from '@fusionauth/typescript-client';
+import { ConfigService } from '@nestjs/config';
 import { Anonymous, AnonymousDocument } from './schema/anonymous.schema';
 
 @Injectable()
@@ -30,6 +32,7 @@ export class DonorService {
     private donationLogsModel: Model<DonationLogsDocument>,
     @InjectModel(Anonymous.name)
     private anonymousModel: Model<AnonymousDocument>,
+    private configService: ConfigService,
   ) {}
 
   async setFavoriteCampaign(campaignSetFavoriteDto: CampaignSetFavoriteDto) {
@@ -74,62 +77,63 @@ export class DonorService {
   async getDonorListAll(organizationId: string) {
     this.logger.debug('Get donor who participating in volunteer..');
     const data = await this.volunteerModel.aggregate([
-     
       {
         $lookup: {
           from: 'donor',
           localField: 'donorId',
           foreignField: 'ownerUserId',
           as: 'a',
-         },
+        },
       },
       {
         $unwind: {
           path: '$a',
         },
       },
-        {
+      {
         $lookup: {
           from: 'volunteerTaskLog',
           localField: '_id',
           foreignField: 'volunteerId',
           as: 'b',
-         },
+        },
       },
       {
         $unwind: {
           path: '$b',
         },
       },
-       {
+      {
         $group: {
-          _id:"$a._id", 
+          _id: '$a._id',
           firstName: { $first: '$a.firstName' },
           lastName: { $first: '$a.lastName' },
           dateJoin: { $first: '$createdAt' },
-          orgId : {$first: '$a.organizationId'},
-          status:{$first:'$b.status'},
-          lastUpdate: { $max: "$b.updatedAt" },
+          orgId: { $first: '$a.organizationId' },
+          status: { $first: '$b.status' },
+          lastUpdate: { $max: '$b.updatedAt' },
         },
       },
-       {
-       $project: {
-           _id: 1,
-           firstName: 1,
-           lastName: 1,
-           dateJoin: 1,
-           orgId: 1,
-           status:1,
-       }
-      },
-        {$match: {
-         orgId : (organizationId),
-     }},
       {
-          $sort: {
-              _id: 1
-          }
-      } 
+        $project: {
+          _id: 1,
+          firstName: 1,
+          lastName: 1,
+          dateJoin: 1,
+          orgId: 1,
+          status: 1,
+        },
+      },
+      {
+        $match: {
+          orgId: organizationId,
+        },
+      },
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
     ]);
     if (!data) {
       return {
@@ -159,6 +163,28 @@ export class DonorService {
     };
   }
 
+  async updateUserProfile(userId: string, imageUrl: string) {
+    const fusionauth = new FusionAuthClient(
+      this.configService.get('FUSIONAUTH_ADMIN_KEY', ''),
+      this.configService.get('FUSIONAUTH_URL', ''),
+      this.configService.get('FUSIONAUTH_TENANT_ID', ''),
+    );
+    console.log(this.configService.get('FUSIONAUTH_URL', ''));
+    try {
+      await fusionauth.patchUser(userId, {
+        user: {
+          imageUrl: imageUrl,
+        },
+      });
+      this.logger.debug('Successfully changed profile');
+    } catch (err) {
+      const errMessage = err.exception
+        ? err.exception
+        : `Sorry, we couldn't update your profile picture`;
+      this.logger.debug(errMessage);
+    }
+  }
+
   async updateDonor(
     donorId: string,
     donorUpdateProfileDto: DonorUpdateProfileDto,
@@ -174,6 +200,13 @@ export class DonorService {
         statusCode: 400,
         message: 'Failed',
       };
+    }
+
+    if (donorUpdated && donorUpdateProfileDto.profilePic) {
+      this.updateUserProfile(
+        donorUpdated.ownerUserId,
+        donorUpdateProfileDto.profilePic,
+      );
     }
     return {
       statusCode: 200,

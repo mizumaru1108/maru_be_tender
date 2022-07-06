@@ -11,6 +11,7 @@ import {
 } from './schema/donation_log.schema';
 import { DonorController } from './donor.controller';
 import { Anonymous, AnonymousSchema } from './schema/anonymous.schema';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { Anonymous, AnonymousSchema } from './schema/anonymous.schema';
         schema: DonationLogsSchema,
       },
     ]),
+    ConfigModule,
   ],
   providers: [DonorService],
   controllers: [DonorController],

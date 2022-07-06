@@ -12,7 +12,7 @@ import {
 import {
   Organization,
   OrganizationDocument,
-} from '../organization/organization.schema';
+} from '../organization/schema/organization.schema';
 import { MetalPrice, MetalPriceDocument } from './schemas/metalPrice.schema';
 import { Expense, ExpenseDocument } from './schemas/expense.schema';
 import { ExpenseDto } from './dto/expense.dto';

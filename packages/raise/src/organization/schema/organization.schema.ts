@@ -44,6 +44,8 @@ export class Organization {
   @Prop()
   ownerUserId: string;
   @Prop()
+  ownerRealmId: string;
+  @Prop()
   favicon: string;
 }
 
