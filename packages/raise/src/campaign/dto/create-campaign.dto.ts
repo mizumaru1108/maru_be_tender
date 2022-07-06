@@ -5,12 +5,35 @@ class Image {
   url: string;
 }
 
+class Payload {
+  imageUrl: string;
+  imageName: string;
+  imagePrefix: string;
+  fullName: string;
+  imageExtension: string;
+  currentPhoto: string;
+}
+
+class listMileStone {
+  name: string;
+  campaignId: string;
+  deadline: string;
+  createdAt: string;
+}
+
+
 export class CreateCampaignDto {
   @ApiProperty()
   readonly organizationId: string;
 
   @ApiProperty()
   readonly name: string;
+
+  @ApiProperty()
+  readonly campaignName: string;
+
+  @ApiProperty()
+  readonly campaignType: string;
 
   @ApiProperty()
   readonly projectId: string;
@@ -50,4 +73,10 @@ export class CreateCampaignDto {
 
   @ApiProperty()
   readonly images: Array<Image>;
+
+  @ApiProperty()
+  readonly imagePayload: Array<Payload>;
+
+  @ApiProperty()
+  readonly milestone: Array<listMileStone>;
 }
