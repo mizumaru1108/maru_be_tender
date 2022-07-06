@@ -31,14 +31,7 @@ export class CampaignController {
     status: 201,
     description: 'The Campaign has been successfully created.',
   })
-  @Post('create')
-  async create(@Body() createCampaignDto: CreateCampaignDto) {
-    this.logger.debug(
-      'create new campaign ',
-      JSON.stringify(createCampaignDto),
-    );
-    return await this.campaignService.create(createCampaignDto);
-  }
+
 
   @Get('getListAll')
   async findAll(@Query('organizationId') organizationId: string) {
@@ -84,13 +77,13 @@ export class CampaignController {
     status: 201,
     description: 'The Campaign has been successfully created.',
   })
-  @Post('upload')
-  async upload(@Body() createCampaignDto: CreateCampaignDto) {
+  @Post('create')
+  async create(@Body() createCampaignDto: CreateCampaignDto) {
     this.logger.debug(
       'create new campaign ',
       JSON.stringify(createCampaignDto),
     );
-    return await this.campaignService.upload(createCampaignDto);
+    return await this.campaignService.create(createCampaignDto);
   }
 
   @ApiOperation({ summary: 'create new campaign objectId' })

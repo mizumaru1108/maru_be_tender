@@ -35,29 +35,29 @@ export class CampaignService {
     private configService: ConfigService,
   ) {}
 
-  async create(createCampaignDto: CreateCampaignDto): Promise<Campaign> {
-    const createdCampaign = new this.campaignModel(createCampaignDto);
-    createdCampaign.campaignId = uuidv4();
-    createdCampaign.isFinished = 'N';
-    createdCampaign.createdAt = moment().toISOString();
-    createdCampaign.updatedAt = moment().toISOString();
-    createdCampaign.isDeleted = 'N';
-    createdCampaign.isPublished = 'Y';
-    return createdCampaign.save();
-  }
 
-  async upload(createCampaignDto: CreateCampaignDto): Promise<Campaign> {
+  async create(createCampaignDto: CreateCampaignDto): Promise<Campaign> {
     let createdCampaign = new this.campaignModel(createCampaignDto);
+    let createdCampaignVendorLog = new this.campaignVendorLogModel(createCampaignDto);
     let decimal = require('mongoose').Types.Decimal128;
     let ObjectId = require('mongoose').Types.ObjectId;
+    const appEnv      = this.configService.get('APP_ENV');
+    var slugify       = require('slugify');
+    let sanitizedName : string = ''; 
+    let path          : any = [];
+    let imageBase64   : string = '';
+    
+
+
+    createdCampaign._id = ObjectId();
     createdCampaign.campaignId = uuidv4();
     createdCampaign.amountProgress = decimal.fromString("0");
     createdCampaign.amountTarget = decimal.fromString("0");
     createdCampaign.isFinished = 'N';
-    createdCampaign.createdAt = moment().toISOString();
-    createdCampaign.updatedAt = moment().toISOString();
+    createdCampaign.createdAt =  moment().toISOString(); 
+    createdCampaign.updatedAt =  moment().toISOString(); 
     createdCampaign.isDeleted = 'N';
-    createdCampaign.isPublished = 'Y';
+    createdCampaign.isPublished = 'N';
     createdCampaign.isMoney = 'Y';
     createdCampaign.milestone = createCampaignDto.milestone;
     createdCampaign.campaignName = createCampaignDto.name;
@@ -65,11 +65,7 @@ export class CampaignService {
     createdCampaign.organizationId = ObjectId(createCampaignDto.organizationId);
     createdCampaign.projectId = ObjectId(createCampaignDto.projectId);
 
-    const appEnv      = this.configService.get('APP_ENV');
-    var slugify       = require('slugify');
-    let sanitizedName : string = ''; 
-    let path          : any = [];
-    let imageBase64   : string = '';
+ 
 
     for(let i=0; i < createCampaignDto.imagePayload.length; i++){
       sanitizedName = slugify(createCampaignDto.imagePayload[i].fullName,{lower: true, 
@@ -96,6 +92,7 @@ export class CampaignService {
                       `/image/${sanitizedName}-${createCampaignDto.imagePayload[i].imageName}`+
                       `${createCampaignDto.imagePayload[i].imageExtension}`;
         console.log('path=', path[i]);
+
         //set the number of maximum file uploaded = 4 (included coverImage)
         if(i == 1) createdCampaign.image1 = path[i];
         if(i == 2) createdCampaign.image2 = path[i];
@@ -127,7 +124,23 @@ export class CampaignService {
       );
 
     }
-    return createdCampaign.save();
+
+    //insert into Campaign
+    const dataCampaign =  await createdCampaign.save();
+
+
+    //insert into Campaign Vendor Log
+    if(dataCampaign){
+        createdCampaignVendorLog._id = new ObjectId();
+        createdCampaignVendorLog.campaignId = dataCampaign._id;
+        createdCampaignVendorLog.status = 'new';
+        createdCampaignVendorLog.vendorId = '';
+        createdCampaignVendorLog.createdAt = moment().toISOString();
+        createdCampaignVendorLog.updatedAt = moment().toISOString();
+        createdCampaignVendorLog.save();
+    }
+
+    return dataCampaign;
   }
 
   async findAll(organizationId: string) {

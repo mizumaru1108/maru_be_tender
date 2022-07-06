@@ -6,6 +6,9 @@ export type CampaignDocument = Campaign & Document;
 
 @Schema({ collection: 'campaign' })
 export class Campaign {
+  @Prop({ type: Types.ObjectId })
+  _id:  Types.ObjectId;
+
   @Prop()
   campaignId: string;
 
@@ -46,7 +49,6 @@ export class Campaign {
   @Prop()
   currencyCode: string;
 
-  // @Prop({type: mongoose.Types.Decimal128, default: new mongoose.Types.Decimal128('0')})
   @Prop({type: mongoose.Schema.Types.Decimal128 , default: Types.Decimal128.fromString("0")})
   amountProgress:  mongoose.Schema.Types.Decimal128;
 
@@ -65,13 +67,13 @@ export class Campaign {
   @Prop()
   image3: string;
 
-  @Prop()
+  @Prop({type: mongoose.Schema.Types.Date, default:  mongoose.Schema.Types.Date})
   createdAt: string;
 
   @Prop()
   createdBy: string;
 
-  @Prop()
+  @Prop({type: mongoose.Schema.Types.Date, default:  mongoose.Schema.Types.Date})
   updatedAt: string;
 
   @Prop()
