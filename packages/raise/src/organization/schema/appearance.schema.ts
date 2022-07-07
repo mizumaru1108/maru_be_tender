@@ -20,9 +20,17 @@ export class Appearance {
   @Prop()
   detailStory1: string;
   @Prop()
+  detailStory2: string;
+  @Prop()
+  detailStory3: string;
+  @Prop()
   videoUrl: string;
   @Prop()
   whySupportUs1: string;
+  @Prop()
+  whySupportUs2: string;
+  @Prop()
+  whySupportUs3: string;
   @Prop()
   mainImageUrl: string;
   @Prop()
@@ -30,7 +38,23 @@ export class Appearance {
   @Prop()
   eventImagesUrl1: string;
   @Prop()
+  eventImagesUrl2: string;
+  @Prop()
+  eventImagesUrl3: string;
+  @Prop()
   favIcon: string;
+  @Prop()
+  themesColor: string;
+  @Prop()
+  usePallete: boolean;
+  @Prop()
+  logo: string;
+  @Prop()
+  headerAndFooter: string;
+  @Prop()
+  accent: string;
+  @Prop()
+  lButton: string;
 }
 
 export const AppearanceSchema = SchemaFactory.createForClass(Appearance);
