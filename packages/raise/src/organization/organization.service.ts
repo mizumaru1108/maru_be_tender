@@ -439,7 +439,7 @@ export class OrganizationService {
       most_popular_programs: mostPopularProgramsDiagram,
       total_donation_program: totalDonationPerProgram,
       campaign_per_type: campaignPerType.slice(0, 5),
-      donor_list: donorList.slice(0, 5),
+      donor_list: donorList,
     };
   }
 }

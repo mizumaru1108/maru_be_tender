@@ -13,4 +13,6 @@ export class OrganizationDto {
   facebook: string;
   twitter: string;
   contactWhatsapp: string;
+  latitude: string;
+  longitude: string;
 }

@@ -47,6 +47,10 @@ export class Organization {
   ownerRealmId: string;
   @Prop()
   favicon: string;
+  @Prop()
+  latitude: string;
+  @Prop()
+  longitude: string;
 }
 
 export const OrganizationSchema = SchemaFactory.createForClass(Organization);
