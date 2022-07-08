@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { rootLogger } from '../logger';
 import * as mongoose from 'mongoose';
 import { ConfigService } from '@nestjs/config';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig , AxiosError } from 'axios';
 import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
 import { User, UserDocument } from '../user/schema/user.schema';
 import { 
@@ -113,15 +113,43 @@ export class CampaignService {
         data: binary,
         url: urlMedia,
       };
-      const uploadBunny = await axios(options);
-      console.log(
-        'Uploaded %s (%d bytes) to Bunny: %s %s %s',
-        urlMedia,
-        binary.length,
-        uploadBunny.status,
-        uploadBunny.statusText,
-        JSON.stringify(uploadBunny.data, null, 2),
-      );
+
+      //const uploadBunny = await axios(options);
+      
+      axios(options)
+      .then((response) => {
+
+        console.log(
+          'Uploaded %s (%d bytes) to Bunny: %s %s %s',
+          urlMedia,
+          binary.length,
+          response.status,
+          response.statusText,
+          JSON.stringify(response.data, null, 2),
+        );
+
+      })
+      .catch(function (error) {
+        // const err = error as AxiosError;
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error', error.message);
+        }
+        console.log(error.config);
+      });
+
+      
 
     }
 
