@@ -28,6 +28,9 @@ export class CreateCampaignDto {
 
   @ApiProperty()
   readonly name: string;
+  
+  @ApiProperty()
+  readonly userId: string;
 
   @ApiProperty()
   readonly campaignName: string;

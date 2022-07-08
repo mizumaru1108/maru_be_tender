@@ -91,13 +91,10 @@ export class CampaignController {
     status: 201,
     description: 'The New Campaign has been successfully created.',
   })
-  @Get('organization/:organizationId/user/:userId/getNewObjectId')
-  async getNewCampaignObjectId(
-    @Param('organizationId') organizationId: string,
-    @Param('userId') userId: string
-  ) {
+  @Post('getNewObjectId')
+  async getNewCampaignObjectId(@Body() createCampaignDto: CreateCampaignDto) {
     this.logger.debug('get ObjectId ');
-    return await this.campaignService.getObjectId(organizationId, userId);
+    return await this.campaignService.getObjectId(createCampaignDto);
   }
 
 }

@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import * as mongoose from 'mongoose';
+import { now } from 'moment';
 
 export type CampaignDocument = Campaign & Document;
 
@@ -67,13 +68,13 @@ export class Campaign {
   @Prop()
   image3: string;
 
-  @Prop({type: mongoose.Schema.Types.Date, default:  mongoose.Schema.Types.Date})
+  @Prop({type: mongoose.Schema.Types.Date, default: mongoose.Schema.Types.Date})
   createdAt: string;
 
   @Prop()
   createdBy: string;
 
-  @Prop({type: mongoose.Schema.Types.Date, default:  mongoose.Schema.Types.Date})
+  @Prop({type: mongoose.Schema.Types.Date, default: mongoose.Schema.Types.Date})
   updatedAt: string;
 
   @Prop()

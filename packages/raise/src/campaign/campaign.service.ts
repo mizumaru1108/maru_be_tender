@@ -302,10 +302,10 @@ export class CampaignService {
     return campaignList;
   }
 
-  async getObjectId(organizationId: string, userId: string){
+  async getObjectId (createCampaignDto: CreateCampaignDto){
 
     const ObjectId = require('mongoose').Types.ObjectId;
-    const dataUser = await this.userModel.findOne({ _id: userId });
+    const dataUser = await this.userModel.findOne({ _id: createCampaignDto.userId });
     const uid = dataUser?._id;
     const utype  = dataUser?.type;
 
@@ -319,15 +319,9 @@ export class CampaignService {
      }
     }
 
-   
+    const newObjectId = ObjectId(); 
 
-    const campaign = new this.campaignModel();
-    campaign.organizationId = ObjectId(organizationId);
-    campaign.milestone = [];
-
-    const newCampaign = campaign.save();
-
-    return newCampaign;
+    return JSON.stringify(newObjectId);
   }
 
 }
