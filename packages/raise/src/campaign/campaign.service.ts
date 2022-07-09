@@ -46,10 +46,12 @@ export class CampaignService {
     let sanitizedName : string = ''; 
     let path          : any = [];
     let imageBase64   : string = '';
-    
+    let campaignId    = ObjectId(); 
+    let random        = Math.random().toString().substr(2, 4);
+    let folderType    : string = '';
+   
 
-
-    createdCampaign._id = ObjectId();
+    createdCampaign._id = campaignId;
     createdCampaign.campaignId = uuidv4();
     createdCampaign.amountProgress = decimal.fromString("0");
     createdCampaign.amountTarget = decimal.fromString("0");
@@ -72,36 +74,20 @@ export class CampaignService {
         remove: /[*+~.()'"!:@]/g});
       
       
-      if(i==0){
-        console.log('imageName =',createCampaignDto.imagePayload[i].imageName);
-        console.log('imagePrefix =',createCampaignDto.imagePayload[i].imagePrefix);
-        console.log('fullName =',createCampaignDto.imagePayload[i].fullName);
-        console.log('imageExtension =',createCampaignDto.imagePayload[i].imageExtension);
+      if(i==0) {folderType = 'coverImage';} else{folderType = 'image';}
+
         path[i] = `tmra/${appEnv}/organization/${createCampaignDto.organizationId}`+
-                      `/coverImage/${sanitizedName}-${createCampaignDto.imagePayload[i].imageName}`+
+                      `/${folderType}/${sanitizedName}-${campaignId}-${random}`+
                       `${createCampaignDto.imagePayload[i].imageExtension}`;
-        console.log('path=', path[i]);
-        createdCampaign.coverImage = path[i];
-        
-      }else{
-        console.log('imageName =',createCampaignDto.imagePayload[i].imageName);
-        console.log('imagePrefix =',createCampaignDto.imagePayload[i].imagePrefix);
-        console.log('fullName =',createCampaignDto.imagePayload[i].fullName);
-        console.log('imageExtension =',createCampaignDto.imagePayload[i].imageExtension);
-        path[i] = `tmra/${appEnv}/organization/${createCampaignDto.organizationId}`+
-                      `/image/${sanitizedName}-${createCampaignDto.imagePayload[i].imageName}`+
-                      `${createCampaignDto.imagePayload[i].imageExtension}`;
-        console.log('path=', path[i]);
 
-        //set the number of maximum file uploaded = 4 (included coverImage)
-        if(i == 1) createdCampaign.image1 = path[i];
-        if(i == 2) createdCampaign.image2 = path[i];
-        if(i == 3) createdCampaign.image3 = path[i];
 
-      }
+      //set the number of maximum file uploaded = 4 (included coverImage)
+      if(i == 0) createdCampaign.coverImage = path[i];
+      if(i == 1) createdCampaign.image1 = path[i];
+      if(i == 2) createdCampaign.image2 = path[i];
+      if(i == 3) createdCampaign.image3 = path[i];
 
-      imageBase64 = createCampaignDto.imagePayload[i].imageUrl;
-      const binary = Buffer.from(imageBase64, 'base64');
+      const binary = Buffer.from(createCampaignDto.imagePayload[i].imageUrl, 'base64');
       const urlMedia = `${this.configService.get('BUNNY_STORAGE_URL_MEDIA')}/${path[i]}`;
 
       const options: AxiosRequestConfig<any> = {
@@ -114,7 +100,6 @@ export class CampaignService {
         url: urlMedia,
       };
 
-      //const uploadBunny = await axios(options);
       
       axios(options)
       .then((response) => {
