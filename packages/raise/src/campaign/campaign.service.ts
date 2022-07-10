@@ -123,6 +123,8 @@ export class CampaignService {
           console.log(error.response.data);
           console.log(error.response.status);
           console.log(error.response.headers);
+
+          return "FAILED UPLOAD TO BUNNY  (RESPONSE)";
         } else if (error.request) {
           // The request was made but no response was received
           // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
@@ -134,6 +136,8 @@ export class CampaignService {
 
         }
         console.log(error.config);
+
+        return "FAILED UPLOAD TO BUNNY";
       });
 
       
