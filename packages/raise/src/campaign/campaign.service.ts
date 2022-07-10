@@ -47,7 +47,7 @@ export class CampaignService {
     let path          : any = [];
     let imageBase64   : string = '';
     let campaignId    = ObjectId(); 
-    let random        = Math.random().toString().substr(2, 4);
+    
     let folderType    : string = '';
    
 
@@ -62,7 +62,7 @@ export class CampaignService {
     createdCampaign.isPublished = 'N';
     createdCampaign.isMoney = 'Y';
     createdCampaign.milestone = createCampaignDto.milestone;
-    createdCampaign.campaignName = createCampaignDto.name;
+    createdCampaign.campaignName = createCampaignDto.campaignName;
     createdCampaign.campaignType = createCampaignDto.campaignType;
     createdCampaign.organizationId = ObjectId(createCampaignDto.organizationId);
     createdCampaign.projectId = ObjectId(createCampaignDto.projectId);
@@ -73,7 +73,7 @@ export class CampaignService {
       sanitizedName = slugify(createCampaignDto.imagePayload[i].fullName,{lower: true, 
         remove: /[*+~.()'"!:@]/g});
       
-      
+      let random        = Math.random().toString().substr(2, 4);
       if(i==0) {folderType = 'coverImage';} else{folderType = 'image';}
 
         path[i] = `tmra/${appEnv}/organization/${createCampaignDto.organizationId}`+
@@ -253,13 +253,13 @@ export class CampaignService {
 
     
     const data = await this.campaignModel.aggregate([
-      {$match: {organizationId: ObjectId('61b4794cfe52d41f557f1acc'), isFinished: {$exists: true}}},
+      {$match: {organizationId: ObjectId(organizationId), isFinished: {$exists: true}}},
       {$lookup: {from: 'campaignVendorLog',localField: '_id',foreignField: 'campaignId', as: 'cp'}},
          {$unwind: {path: '$cp',preserveNullAndEmptyArrays: true}},
-         {$group: {_id:"$_id",coverImage:{$first: "$coverImage"},collectedAmount:{$first:'$collectedAmount'},remainingAmount:{$first: '$remainingAmount' },
+         {$group: {_id:"$_id",coverImage:{$first: "$coverImage"},description:{$first:"$description"},collectedAmount:{$first:'$collectedAmount'},remainingAmount:{$first: '$remainingAmount' },
                    createdAt:{$first: '$createdAt'},title:{$first: '$campaignName'},condition:{$first: '$isFinished'},
                    status:{$first: '$cp.status'}}},
-         {$project: {_id: 1,coverImage:1,collectedAmount:1,remainingAmount:1,createdAt:1,title:1,condition:1,status:1}},
+         {$project: {_id: 1,coverImage:1, description:1,collectedAmount:1,remainingAmount:1,createdAt:1,title:1,condition:1,status:1}},
          {$match: {status: 'new'}},
          {$sort: {_id: -1}}
     ]);
