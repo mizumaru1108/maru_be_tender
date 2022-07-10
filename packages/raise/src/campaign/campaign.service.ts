@@ -174,6 +174,7 @@ export class CampaignService {
             campaignName: 1,
             campaignType: 1,
             updatedAt: 1,
+            createdAt: 1,
             status: 1,
             foo_count:{$size:"$milestone"},
         }
@@ -197,10 +198,12 @@ export class CampaignService {
           name: { $first: '$campaignName' },
           type: { $first: '$campaignType' },
           updatedAt: { $first: '$updatedAt' },
+          createdAt: { $first: '$createdAt' },
           status: { $first: '$campaignVendorLog.status' },
           milestone:  {$first: '$foo_count'}
         },
       },
+      {$sort: {_id: -1, creaatedAt:1}},
     ]).then(data => {
       return data;
     }).catch(err => {
