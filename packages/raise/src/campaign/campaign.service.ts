@@ -253,15 +253,15 @@ export class CampaignService {
 
     
     const data = await this.campaignModel.aggregate([
-      {$match: {organizationId: ObjectId(organizationId), isFinished: {$exists: true}}},
+      {$match: {organizationId: ObjectId('61b4794cfe52d41f557f1acc'), isFinished: {$exists: true}}},
       {$lookup: {from: 'campaignVendorLog',localField: '_id',foreignField: 'campaignId', as: 'cp'}},
          {$unwind: {path: '$cp',preserveNullAndEmptyArrays: true}},
-         {$group: {_id:"$_id",collectedAmount:{$first:'$collectedAmount'},remainingAmount:{$first: '$remainingAmount' },
+         {$group: {_id:"$_id",coverImage:{$first: "$coverImage"},collectedAmount:{$first:'$collectedAmount'},remainingAmount:{$first: '$remainingAmount' },
                    createdAt:{$first: '$createdAt'},title:{$first: '$campaignName'},condition:{$first: '$isFinished'},
                    status:{$first: '$cp.status'}}},
-         {$project: {_id: 1,collectedAmount:1,remainingAmount:1,createdAt:1,title:1,condition:1,status:1}},
+         {$project: {_id: 1,coverImage:1,collectedAmount:1,remainingAmount:1,createdAt:1,title:1,condition:1,status:1}},
          {$match: {status: 'new'}},
-         {$sort: {_id: 1}}
+         {$sort: {_id: -1}}
     ]);
 
     return data;
