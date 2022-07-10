@@ -62,6 +62,7 @@ export class CampaignService {
     createdCampaign.isPublished = 'N';
     createdCampaign.isMoney = 'Y';
     createdCampaign.milestone = createCampaignDto.milestone;
+    createdCampaign.description = createCampaignDto.description;
     createdCampaign.campaignName = createCampaignDto.campaignName;
     createdCampaign.campaignType = createCampaignDto.campaignType;
     createdCampaign.organizationId = ObjectId(createCampaignDto.organizationId);
