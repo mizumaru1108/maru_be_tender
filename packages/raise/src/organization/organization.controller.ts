@@ -12,6 +12,7 @@ import { rootLogger } from '../logger';
 import { ApiTags } from '@nestjs/swagger';
 import { OrganizationDto } from './dto/organization.dto';
 import { AppearancenDto } from './dto/appearance.dto';
+import { NotificationSettingsDto } from './dto/notification_settings.dto';
 
 @ApiTags('orgs')
 @Controller('orgs')
@@ -91,5 +92,35 @@ export class OrganizationController {
   async getInsightSummary(@Query('organizationId') organizationId: string) {
     this.logger.debug('get insight summary...');
     return await this.organizationService.getInsightSummary(organizationId);
+  }
+
+  @Get('notification-settings/:organizationId')
+  async getNotificationSettings(
+    @Param('organizationId') organizationId: string,
+  ) {
+    this.logger.debug('get notification settings...');
+    return await this.organizationService.getNotifSettings(organizationId);
+  }
+
+  @Post('notification-settings')
+  async createNotificationSettings(
+    @Body() notifSettingsDto: NotificationSettingsDto,
+  ) {
+    this.logger.debug('get notification settings...');
+    return await this.organizationService.createNotificationSettings(
+      notifSettingsDto,
+    );
+  }
+
+  @Patch('notification-settings/:organizationId')
+  async updateNotificationSettings(
+    @Param('organizationId') organizationId: string,
+    @Body() notifSettingsDto: NotificationSettingsDto,
+  ) {
+    this.logger.debug('get notification settings...');
+    return await this.organizationService.updateNotifSettings(
+      organizationId,
+      notifSettingsDto,
+    );
   }
 }

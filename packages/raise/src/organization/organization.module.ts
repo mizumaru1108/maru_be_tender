@@ -17,6 +17,10 @@ import {
 } from 'src/payment-stripe/schema/paymentGateway.schema';
 import { Campaign, CampaignSchema } from 'src/campaign/campaign.schema';
 import { Appearance, AppearanceSchema } from './schema/appearance.schema';
+import {
+  NotificationSettings,
+  NotificationSettingsSchema,
+} from './schema/notification_settings.schema';
 
 @Module({
   imports: [
@@ -36,6 +40,10 @@ import { Appearance, AppearanceSchema } from './schema/appearance.schema';
       {
         name: Donor.name,
         schema: DonorSchema,
+      },
+      {
+        name: NotificationSettings.name,
+        schema: NotificationSettingsSchema,
       },
       {
         name: Organization.name,

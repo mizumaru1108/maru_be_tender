@@ -21,6 +21,11 @@ import {
 import { Campaign, CampaignDocument } from 'src/campaign/campaign.schema';
 import { AppearancenDto } from './dto/appearance.dto';
 import { Appearance, AppearanceDocument } from './schema/appearance.schema';
+import {
+  NotificationSettings,
+  NotificationSettingsDocument,
+} from './schema/notification_settings.schema';
+import { NotificationSettingsDto } from './dto/notification_settings.dto';
 
 @Injectable()
 export class OrganizationService {
@@ -35,6 +40,8 @@ export class OrganizationService {
     private donationLogModel: Model<DonationLogDocument>,
     @InjectModel(Donor.name)
     private donorModel: Model<DonorDocument>,
+    @InjectModel(NotificationSettings.name)
+    private notifSettingsModel: Model<NotificationSettingsDocument>,
     @InjectModel(Organization.name)
     private organizationModel: Model<OrganizationDocument>,
     @InjectModel(PaymentGateway.name)
@@ -440,6 +447,86 @@ export class OrganizationService {
       total_donation_program: totalDonationPerProgram,
       campaign_per_type: campaignPerType.slice(0, 5),
       donor_list: donorList,
+    };
+  }
+
+  async createNotificationSettings(notifSettingsDto: NotificationSettingsDto) {
+    this.logger.debug('Get Organization...');
+    const organization = await this.organizationModel.findOne({
+      _id: new Types.ObjectId(notifSettingsDto.organizationId),
+    });
+    if (!organization) {
+      return {
+        statusCode: 404,
+        message: 'Organization not found',
+      };
+    }
+
+    const notifCreated = await this.notifSettingsModel.create(notifSettingsDto);
+    return {
+      statusCode: 200,
+      notificationSettings: notifCreated,
+    };
+  }
+
+  async updateNotifSettings(
+    organizationId: string,
+    notifSettingsDto: NotificationSettingsDto,
+  ) {
+    this.logger.debug('Get Organization...');
+    const organization = await this.organizationModel.findOne({
+      _id: organizationId,
+    });
+    if (!organization) {
+      return {
+        statusCode: 404,
+        message: 'Organization not found',
+      };
+    }
+
+    const notifSettingsUpdated = await this.notifSettingsModel.findOneAndUpdate(
+      { organizationId: organizationId },
+      notifSettingsDto,
+      { new: true },
+    );
+
+    if (!notifSettingsUpdated) {
+      return {
+        statusCode: 400,
+        message: 'Failed',
+      };
+    }
+    return {
+      statusCode: 200,
+      notificationSettings: notifSettingsUpdated,
+    };
+  }
+
+  async getNotifSettings(organizationId: string) {
+    this.logger.debug('Get Organization...');
+    const organization = await this.organizationModel.findOne({
+      _id: organizationId,
+    });
+    if (!organization) {
+      return {
+        statusCode: 404,
+        message: 'Organization not found',
+      };
+    }
+
+    const notifSettings = await this.notifSettingsModel.findOne({
+      organizationId: organizationId,
+    });
+
+    if (!notifSettings) {
+      return {
+        statusCode: 400,
+        message: 'Failed',
+      };
+    }
+    return {
+      statusCode: 200,
+      notificationSettings: notifSettings,
     };
   }
 }
