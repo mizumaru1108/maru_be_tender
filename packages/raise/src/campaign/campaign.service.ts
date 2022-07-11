@@ -45,7 +45,7 @@ export class CampaignService {
     var slugify       = require('slugify');
     let sanitizedName : string = ''; 
     let path          : any = [];
-    let imageBase64   : string = '';
+    let flag          : string = 'Y';
     let campaignId    = ObjectId(); 
     
     let folderType    : string = '';
@@ -117,6 +117,8 @@ export class CampaignService {
       })
       .catch(function (error) {
         // const err = error as AxiosError;
+        
+        return { status: false, data: error };
         if (error.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
@@ -130,6 +132,8 @@ export class CampaignService {
           // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
           // http.ClientRequest in node.js
           console.log(error.request);
+
+          return "FAILED UPLOAD TO BUNNY  (REQUEST)";
         } else {
           // Something happened in setting up the request that triggered an Error
           console.log('Error', error.message);
