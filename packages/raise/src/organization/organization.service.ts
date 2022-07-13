@@ -5,6 +5,7 @@ import { rootLogger } from '../logger';
 import { FusionAuthClient } from '@fusionauth/typescript-client';
 import { ConfigService } from '@nestjs/config';
 import { OrganizationDto } from './dto/organization.dto';
+import moment from 'moment';
 import {
   Organization,
   OrganizationDocument,
@@ -26,6 +27,10 @@ import {
   NotificationSettingsDocument,
 } from './schema/notification_settings.schema';
 import { NotificationSettingsDto } from './dto/notification_settings.dto';
+import {
+  Notifications,
+  NotificationsDocument,
+} from './schema/notifications.schema';
 
 @Injectable()
 export class OrganizationService {
@@ -40,6 +45,8 @@ export class OrganizationService {
     private donationLogModel: Model<DonationLogDocument>,
     @InjectModel(Donor.name)
     private donorModel: Model<DonorDocument>,
+    @InjectModel(Notifications.name)
+    private notificationsModel: Model<NotificationsDocument>,
     @InjectModel(NotificationSettings.name)
     private notifSettingsModel: Model<NotificationSettingsDocument>,
     @InjectModel(Organization.name)
@@ -247,6 +254,7 @@ export class OrganizationService {
           email: { $first: '$user.email' },
           country: { $first: '$user.country' },
           mobile: { $first: '$user.mobile' },
+          totalAmount: { $sum: '$amount' },
         },
       },
     ]);
@@ -485,7 +493,7 @@ export class OrganizationService {
     }
 
     const notifSettingsUpdated = await this.notifSettingsModel.findOneAndUpdate(
-      { organizationId: organizationId },
+      { organizationId: new Types.ObjectId(organizationId) },
       notifSettingsDto,
       { new: true },
     );
@@ -515,7 +523,7 @@ export class OrganizationService {
     }
 
     const notifSettings = await this.notifSettingsModel.findOne({
-      organizationId: organizationId,
+      organizationId: new Types.ObjectId(organizationId),
     });
 
     if (!notifSettings) {
@@ -528,5 +536,53 @@ export class OrganizationService {
       statusCode: 200,
       notificationSettings: notifSettings,
     };
+  }
+
+  async getNotificationList(organizationId: string, type: string) {
+    this.logger.debug(`getNotificationList organizationId=${organizationId}`);
+    // this.notificationsModel.create({
+    //   organizationId: new Types.ObjectId(organizationId),
+    //   type: 'activity',
+    //   createdAt: moment().toISOString(),
+    //   title: 'New Campaign 2',
+    //   body: 'New Campaign 2 has been added successfully',
+    //   icon: 'new',
+    //   markAsRead: false,
+    // });
+    // this.notificationsModel.create({
+    //   organizationId: new Types.ObjectId(organizationId),
+    //   type: 'activity',
+    //   createdAt: moment().toISOString(),
+    //   title: 'New Campaign 2',
+    //   body: 'New Campaign 2 has been updated successfully',
+    //   icon: 'edit',
+    //   markAsRead: false,
+    // });
+    // this.notificationsModel.create({
+    //   organizationId: new Types.ObjectId(organizationId),
+    //   type: 'general',
+    //   createdAt: moment().toISOString(),
+    //   title: 'New Message From Donor',
+    //   body: 'Hello ....',
+    //   icon: 'message',
+    //   markAsRead: false,
+    // });
+
+    var filterData = {};
+    console.log(type);
+    if (type) {
+      filterData = {
+        organizationId: new Types.ObjectId(organizationId),
+        markAsread: false,
+        type: type,
+      };
+    } else {
+      filterData = {
+        organizationId: new Types.ObjectId(organizationId),
+        markAsread: false,
+      };
+    }
+    console.log(filterData);
+    return await this.notificationsModel.find(filterData);
   }
 }

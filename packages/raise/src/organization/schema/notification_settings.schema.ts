@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type NotificationSettingsDocument = NotificationSettings & Document;
 
@@ -8,7 +8,7 @@ export class NotificationSettings {
   @Prop()
   id: string;
   @Prop()
-  organizationId: string;
+  organizationId: Types.ObjectId;
   @Prop()
   showNotif: boolean;
   @Prop()

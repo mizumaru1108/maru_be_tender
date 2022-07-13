@@ -123,4 +123,16 @@ export class OrganizationController {
       notifSettingsDto,
     );
   }
+
+  @Get('notifications')
+  async getNotificationList(
+    @Query('organizationId') organizationId: string,
+    @Query('type') type: string,
+  ) {
+    this.logger.debug('fetching notification list...');
+    return await this.organizationService.getNotificationList(
+      organizationId,
+      type,
+    );
+  }
 }

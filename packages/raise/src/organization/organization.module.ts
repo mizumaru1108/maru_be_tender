@@ -21,6 +21,10 @@ import {
   NotificationSettings,
   NotificationSettingsSchema,
 } from './schema/notification_settings.schema';
+import {
+  Notifications,
+  NotificationsSchema,
+} from './schema/notifications.schema';
 
 @Module({
   imports: [
@@ -40,6 +44,10 @@ import {
       {
         name: Donor.name,
         schema: DonorSchema,
+      },
+      {
+        name: Notifications.name,
+        schema: NotificationsSchema,
       },
       {
         name: NotificationSettings.name,
