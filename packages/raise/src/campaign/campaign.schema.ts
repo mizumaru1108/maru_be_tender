@@ -53,13 +53,13 @@ export class Campaign {
     type: mongoose.Schema.Types.Decimal128,
     default: Types.Decimal128.fromString('0'),
   })
-  amountProgress: mongoose.Types.Decimal128;
+  amountProgress: Types.Decimal128;
 
   @Prop({
     type: mongoose.Schema.Types.Decimal128,
     default: Types.Decimal128.fromString('0'),
   })
-  amountTarget: mongoose.Types.Decimal128;
+  amountTarget: Types.Decimal128;
 
   @Prop()
   coverImage: string;
@@ -75,7 +75,7 @@ export class Campaign {
 
   @Prop({
     type: mongoose.Schema.Types.Date,
-    default: mongoose.Schema.Types.Date,
+    // default: mongoose.Schema.Types.Date,
   })
   createdAt: string;
 
@@ -84,7 +84,7 @@ export class Campaign {
 
   @Prop({
     type: mongoose.Schema.Types.Date,
-    default: mongoose.Schema.Types.Date,
+    // default: mongoose.Schema.Types.Date,
   })
   updatedAt: string;
 
