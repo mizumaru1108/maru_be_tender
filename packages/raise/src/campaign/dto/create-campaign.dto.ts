@@ -46,6 +46,7 @@ export const CreateCampaignDto = z.object({
   images: z.array(ImagePayload),
   milestone: z.array(CampaignMilestone).optional(),
 });
+export type CreateCampaignDto = z.infer<typeof CreateCampaignDto>;
 
 /* export class CreateCampaignDtoX {
   @ApiProperty()
@@ -109,4 +110,3 @@ export const CreateCampaignDto = z.object({
   readonly milestone: Array<listMileStone>;
 }
  */
-export type CreateCampaignDto = z.infer<typeof CreateCampaignDto>;
