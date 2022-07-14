@@ -31,6 +31,8 @@ import {
   Notifications,
   NotificationsDocument,
 } from './schema/notifications.schema';
+import { FaqDto } from './dto/faq.dto';
+import { Faq, FaqDocument } from './schema/faq.schema';
 
 @Injectable()
 export class OrganizationService {
@@ -45,6 +47,8 @@ export class OrganizationService {
     private donationLogModel: Model<DonationLogDocument>,
     @InjectModel(Donor.name)
     private donorModel: Model<DonorDocument>,
+    @InjectModel(Faq.name)
+    private faqModel: Model<FaqDocument>,
     @InjectModel(Notifications.name)
     private notificationsModel: Model<NotificationsDocument>,
     @InjectModel(NotificationSettings.name)
@@ -584,5 +588,50 @@ export class OrganizationService {
     }
     console.log(filterData);
     return await this.notificationsModel.find(filterData);
+  }
+
+  async getFaqList(organizationId: string) {
+    this.logger.debug(`getFaqList organizationId=${organizationId}`);
+    return await this.notificationsModel.find({
+      organizationId: new Types.ObjectId(organizationId),
+    });
+  }
+
+  async createFaq(faqDto: FaqDto) {
+    this.logger.debug('Get Organization...');
+    const organization = await this.organizationModel.findOne({
+      _id: new Types.ObjectId(faqDto.organizationId),
+    });
+    if (!organization) {
+      return {
+        statusCode: 404,
+        message: 'Organization not found',
+      };
+    }
+
+    const faqCreated = await this.faqModel.create(faqDto);
+    return {
+      statusCode: 200,
+      faq: faqCreated,
+    };
+  }
+
+  async updateFaq(faqId: string, faqDto: FaqDto) {
+    const faqUpdated = await this.faqModel.findOneAndUpdate(
+      { _id: faqId },
+      faqDto,
+      { new: true },
+    );
+
+    if (!faqUpdated) {
+      return {
+        statusCode: 400,
+        message: 'Failed',
+      };
+    }
+    return {
+      statusCode: 200,
+      faq: faqUpdated,
+    };
   }
 }

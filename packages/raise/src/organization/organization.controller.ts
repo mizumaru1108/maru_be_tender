@@ -13,6 +13,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { OrganizationDto } from './dto/organization.dto';
 import { AppearancenDto } from './dto/appearance.dto';
 import { NotificationSettingsDto } from './dto/notification_settings.dto';
+import { FaqDto } from './dto/faq.dto';
 
 @ApiTags('orgs')
 @Controller('orgs')
@@ -134,5 +135,23 @@ export class OrganizationController {
       organizationId,
       type,
     );
+  }
+
+  @Get('faq')
+  async getFaqList(@Query('organizationId') organizationId: string) {
+    this.logger.debug('fetching faq list...');
+    return await this.organizationService.getFaqList(organizationId);
+  }
+
+  @Post('faq')
+  async createFaq(@Body() faqDto: FaqDto) {
+    this.logger.debug('create fqa...');
+    return await this.organizationService.createFaq(faqDto);
+  }
+
+  @Post('faq/:faqId')
+  async updateFaq(@Param('faqId') faqId: string, @Body() faqDto: FaqDto) {
+    this.logger.debug('update fqa...');
+    return await this.organizationService.updateFaq(faqId, faqDto);
   }
 }

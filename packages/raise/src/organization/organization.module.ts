@@ -25,6 +25,7 @@ import {
   Notifications,
   NotificationsSchema,
 } from './schema/notifications.schema';
+import { Faq, FaqSchema } from './schema/faq.schema';
 
 @Module({
   imports: [
@@ -44,6 +45,10 @@ import {
       {
         name: Donor.name,
         schema: DonorSchema,
+      },
+      {
+        name: Faq.name,
+        schema: FaqSchema,
       },
       {
         name: Notifications.name,
