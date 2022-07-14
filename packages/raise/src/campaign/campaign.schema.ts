@@ -6,13 +6,13 @@ export type CampaignDocument = Campaign & Document;
 
 @Schema({ collection: 'campaign' })
 export class Campaign {
-  @Prop({ type: Types.ObjectId })
+  @Prop({ type: mongoose.Schema.Types.ObjectId })
   _id: Types.ObjectId;
 
   @Prop()
   campaignId: string;
 
-  @Prop({ type: Types.ObjectId })
+  @Prop({ type: mongoose.Schema.Types.ObjectId })
   organizationId: Types.ObjectId;
 
   //deprecated
@@ -25,8 +25,8 @@ export class Campaign {
   @Prop()
   campaignType: string;
 
-  @Prop({ type: Types.ObjectId })
-  projectId: Types.ObjectId;
+  @Prop({ type: mongoose.Schema.Types.ObjectId })
+  projectId?: Types.ObjectId;
 
   @Prop()
   type: string;
@@ -101,7 +101,7 @@ export class Campaign {
   images: Array<Object>;
 
   @Prop()
-  milestone: Array<Object>;
+  milestone?: Array<Object>;
 }
 
 export const CampaignSchema = SchemaFactory.createForClass(Campaign);

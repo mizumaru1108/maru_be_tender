@@ -26,10 +26,10 @@ export class CampaignController {
     return await this.donorService.setFavoriteCampaign(campaignSetFavoriteDto);
   }
 
-  @ApiOperation({ summary: 'Create Campaign' })
+  @ApiOperation({ summary: 'Get list all campaign' })
   @ApiResponse({
-    status: 201,
-    description: 'The Campaign has been successfully created.',
+    status: 200,
+    description: 'List all campaigns by organization ID.',
   })
   @Get('getListAll')
   async findAll(@Query('organizationId') organizationId: string) {
@@ -37,7 +37,7 @@ export class CampaignController {
     return await this.campaignService.findAll(organizationId);
   }
 
-  @ApiOperation({ summary: 'Get list all campaign by organizationID' })
+  @ApiOperation({ summary: 'List all campaigns by organization ID' })
   @Get('organization/:organizationId/getListAll')
   async getAllByOrganizationId(
     @Param('organizationId') organizationId: string,
@@ -75,7 +75,7 @@ export class CampaignController {
     );
   }
 
-  @ApiOperation({ summary: 'Test upload' })
+  @ApiOperation({ summary: 'Create campaign' })
   @ApiResponse({
     status: 201,
     description: 'The Campaign has been successfully created.',

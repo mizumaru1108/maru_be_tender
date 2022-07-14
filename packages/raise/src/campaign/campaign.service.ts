@@ -23,6 +23,7 @@ import {
   VendorDocument,
 } from '../buying/vendor/vendor.schema';
 import slugify from 'slugify';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class CampaignService {
@@ -46,7 +47,23 @@ export class CampaignService {
    * @param createCampaignDto
    * @returns
    */
-  async create(createCampaignDto: CreateCampaignDto): Promise<Campaign> {
+  async create(rawCreateCampaignDto: CreateCampaignDto): Promise<Campaign> {
+    let createCampaignDto: CreateCampaignDto;
+    try {
+      createCampaignDto = CreateCampaignDto.parse(rawCreateCampaignDto);
+    } catch (err) {
+      console.error(`Invalid Create Campaign Input:`, err);
+      throw new BadRequestException(
+        {
+          statusCode: 400,
+          message: `Invalid Create Campaign Input`,
+          error: 'Bad Request',
+          data: err.format(),
+        },
+        `Invalid Create Campaign Input`,
+      );
+    }
+
     const createdCampaign = new this.campaignModel(createCampaignDto);
     const createdCampaignVendorLog = new this.campaignVendorLogModel(
       createCampaignDto,
@@ -59,12 +76,11 @@ export class CampaignService {
     let folderType: string = '';
 
     createdCampaign._id = campaignId;
-    createdCampaign.campaignId = uuidv4();
     createdCampaign.amountProgress = Types.Decimal128.fromString('0');
     createdCampaign.amountTarget = Types.Decimal128.fromString('0');
     createdCampaign.isFinished = 'N';
-    createdCampaign.createdAt = moment().toISOString();
-    createdCampaign.updatedAt = moment().toISOString();
+    createdCampaign.createdAt = dayjs().toISOString();
+    createdCampaign.updatedAt = dayjs().toISOString();
     createdCampaign.isDeleted = 'N';
     createdCampaign.isPublished = 'N';
     createdCampaign.isMoney = 'Y';
@@ -75,28 +91,28 @@ export class CampaignService {
     createdCampaign.organizationId = new Types.ObjectId(
       createCampaignDto.organizationId,
     );
-    createdCampaign.projectId = new Types.ObjectId(createCampaignDto.projectId);
+    createdCampaign.projectId = createCampaignDto.projectId
+      ? new Types.ObjectId(createCampaignDto.projectId)
+      : undefined;
 
-    for (let i = 0; i < createCampaignDto.imagePayload.length; i++) {
-      const sanitizedName = slugify(
-        createCampaignDto.imagePayload[i].fullName,
-        {
-          lower: true,
-          remove: /[*+~.()'"!:@]/g,
-        },
-      );
+    for (let i = 0; i < createCampaignDto.images.length; i++) {
+      const sanitizedName = slugify(createCampaignDto.images[i].fullName, {
+        lower: true,
+        remove: /[*+~.()'"!:@]/g,
+      });
 
       let random = Math.random().toString().substr(2, 4);
+      // folder type is the same because any campaign image can be "Set as Cover"
       if (i == 0) {
-        folderType = 'coverImage';
+        folderType = 'campaign-photo';
       } else {
-        folderType = 'image';
+        folderType = 'campaign-photo';
       }
 
       path[i] =
         `tmra/${appEnv}/organization/${createCampaignDto.organizationId}` +
         `/${folderType}/${sanitizedName}-${campaignId}-${random}` +
-        `${createCampaignDto.imagePayload[i].imageExtension}`;
+        `${createCampaignDto.images[i].imageExtension}`;
 
       //set the number of maximum file uploaded = 4 (included coverImage)
       if (i == 0) createdCampaign.coverImage = path[i];
@@ -104,10 +120,20 @@ export class CampaignService {
       if (i == 2) createdCampaign.image2 = path[i];
       if (i == 3) createdCampaign.image3 = path[i];
 
+      const base64Data = createCampaignDto.images[i].base64Data;
       const binary = Buffer.from(
-        createCampaignDto.imagePayload[i].imageUrl,
+        createCampaignDto.images[i].base64Data,
         'base64',
       );
+      if (!binary) {
+        const trimmedString = 56;
+        base64Data.length > 40
+          ? base64Data.substring(0, 40 - 3) + '...'
+          : base64Data.substring(0, length);
+        throw new BadRequestException(
+          `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
+        );
+      }
       const urlMedia = `${this.configService.get('BUNNY_STORAGE_URL_MEDIA')}/${
         path[i]
       }`;
@@ -141,8 +167,7 @@ export class CampaignService {
         // const err = error as AxiosError;
         // return { status: false, data: error };
         throw new InternalServerErrorException(
-          error,
-          `Error uploading image file to Bunny ${urlMedia} (${binary.length} bytes) while creating campaign: ${createCampaignDto.campaignName}`,
+          `Error uploading image file to Bunny ${urlMedia} (${binary.length} bytes) while creating campaign: ${createCampaignDto.campaignName} - ${error}`,
         );
         // if (error.response) {
         //   // The request was made and the server responded with a status code
