@@ -13,7 +13,7 @@ export class CampaignController {
   constructor(
     private donorService: DonorService,
     private campaignService: CampaignService,
-  ) { }
+  ) {}
 
   @ApiOperation({ summary: 'Set Favorite' })
   @ApiResponse({
@@ -31,8 +31,6 @@ export class CampaignController {
     status: 201,
     description: 'The Campaign has been successfully created.',
   })
-
-
   @Get('getListAll')
   async findAll(@Query('organizationId') organizationId: string) {
     this.logger.debug('findAll...');
@@ -41,11 +39,12 @@ export class CampaignController {
 
   @ApiOperation({ summary: 'Get list all campaign by organizationID' })
   @Get('organization/:organizationId/getListAll')
-  async getAllByOrganizationId(@Param('organizationId') organizationId: string) {
+  async getAllByOrganizationId(
+    @Param('organizationId') organizationId: string,
+  ) {
     this.logger.debug(`Get list all campaign by organization ID`);
     return await this.campaignService.getAllByOrganizationId(organizationId);
   }
-
 
   @ApiOperation({ summary: 'Get list all campaign by operatorID' })
   @Get('operator/:operatorId/getListAll')
@@ -54,22 +53,26 @@ export class CampaignController {
     return await this.campaignService.getAllByOperatorId(operatorId);
   }
 
-  @ApiOperation({ summary: 'Get list all new campaign created by all operator' })
+  @ApiOperation({
+    summary: 'Get list all new campaign created by all operator',
+  })
   @Get('organization/:organizationId/getListAllNew')
   async getAllNewCampaign(@Param('organizationId') organizationId: string) {
     this.logger.debug(`Get list all new campaign created by all operator`);
     return await this.campaignService.getAllNewCampaign(organizationId);
   }
 
-
   @ApiOperation({ summary: 'Get list all my campaign (vendor)' })
   @Get('organization/:organizationId/vendor/:vendorId/getListApproved')
   async getAllMyCampaignByVendor(
     @Param('organizationId') organizationId: string,
-    @Param('vendorId') vendorId: string
+    @Param('vendorId') vendorId: string,
   ) {
     this.logger.debug(`Get list all my approved campaign`);
-    return await this.campaignService.getAllApprovedCampaign(organizationId, vendorId);
+    return await this.campaignService.getAllApprovedCampaign(
+      organizationId,
+      vendorId,
+    );
   }
 
   @ApiOperation({ summary: 'Test upload' })
@@ -96,5 +99,4 @@ export class CampaignController {
     this.logger.debug('get ObjectId ');
     return await this.campaignService.getObjectId(createCampaignDto);
   }
-
 }

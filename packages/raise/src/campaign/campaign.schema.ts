@@ -1,20 +1,19 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
 import * as mongoose from 'mongoose';
-import { now } from 'moment';
+import { Document, Types } from 'mongoose';
 
 export type CampaignDocument = Campaign & Document;
 
 @Schema({ collection: 'campaign' })
 export class Campaign {
   @Prop({ type: Types.ObjectId })
-  _id:  Types.ObjectId;
+  _id: Types.ObjectId;
 
   @Prop()
   campaignId: string;
 
   @Prop({ type: Types.ObjectId })
-  organizationId:  Types.ObjectId;
+  organizationId: Types.ObjectId;
 
   //deprecated
   @Prop()
@@ -26,7 +25,7 @@ export class Campaign {
   @Prop()
   campaignType: string;
 
-  @Prop({ type: Types.ObjectId})
+  @Prop({ type: Types.ObjectId })
   projectId: Types.ObjectId;
 
   @Prop()
@@ -50,11 +49,17 @@ export class Campaign {
   @Prop()
   currencyCode: string;
 
-  @Prop({type: mongoose.Schema.Types.Decimal128 , default: Types.Decimal128.fromString("0")})
-  amountProgress:  mongoose.Schema.Types.Decimal128;
+  @Prop({
+    type: mongoose.Schema.Types.Decimal128,
+    default: Types.Decimal128.fromString('0'),
+  })
+  amountProgress: mongoose.Types.Decimal128;
 
-  @Prop({type:  mongoose.Schema.Types.Decimal128, default: Types.Decimal128.fromString("0") })
-  amountTarget:  mongoose.Schema.Types.Decimal128;
+  @Prop({
+    type: mongoose.Schema.Types.Decimal128,
+    default: Types.Decimal128.fromString('0'),
+  })
+  amountTarget: mongoose.Types.Decimal128;
 
   @Prop()
   coverImage: string;
@@ -68,13 +73,19 @@ export class Campaign {
   @Prop()
   image3: string;
 
-  @Prop({type: mongoose.Schema.Types.Date, default: mongoose.Schema.Types.Date})
+  @Prop({
+    type: mongoose.Schema.Types.Date,
+    default: mongoose.Schema.Types.Date,
+  })
   createdAt: string;
 
   @Prop()
   createdBy: string;
 
-  @Prop({type: mongoose.Schema.Types.Date, default: mongoose.Schema.Types.Date})
+  @Prop({
+    type: mongoose.Schema.Types.Date,
+    default: mongoose.Schema.Types.Date,
+  })
   updatedAt: string;
 
   @Prop()
