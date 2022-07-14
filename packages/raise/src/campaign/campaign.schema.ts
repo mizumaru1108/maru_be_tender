@@ -44,7 +44,7 @@ export class Campaign {
   isMoney: string;
 
   @Prop()
-  methods: string;
+  methods: string[];
 
   @Prop()
   currencyCode: string;

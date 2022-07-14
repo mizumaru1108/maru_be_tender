@@ -64,20 +64,24 @@ export class CampaignService {
       );
     }
 
-    const createdCampaign = new this.campaignModel(createCampaignDto);
+    const campaignId = new Types.ObjectId();
+    const createdCampaign = new this.campaignModel({
+      _id: campaignId,
+      methods: createCampaignDto.methods,
+      amountProgress: Types.Decimal128.fromString(
+        createCampaignDto.amountProgress,
+      ),
+      amountTarget: Types.Decimal128.fromString(createCampaignDto.amountTarget),
+    });
     const createdCampaignVendorLog = new this.campaignVendorLogModel(
       createCampaignDto,
     );
     const appEnv = this.configService.get('APP_ENV');
     const path: string[] = [];
-    const flag: string = 'Y';
-    const campaignId = new Types.ObjectId();
+    // const flag: string = 'Y';
 
     let folderType: string = '';
 
-    createdCampaign._id = campaignId;
-    createdCampaign.amountProgress = Types.Decimal128.fromString('0');
-    createdCampaign.amountTarget = Types.Decimal128.fromString('0');
     createdCampaign.isFinished = 'N';
     createdCampaign.createdAt = dayjs().toISOString();
     createdCampaign.updatedAt = dayjs().toISOString();
@@ -203,8 +207,8 @@ export class CampaignService {
       createdCampaignVendorLog.campaignId = dataCampaign._id;
       createdCampaignVendorLog.status = 'new';
       createdCampaignVendorLog.vendorId = '';
-      createdCampaignVendorLog.createdAt = moment().toISOString();
-      createdCampaignVendorLog.updatedAt = moment().toISOString();
+      createdCampaignVendorLog.createdAt = dayjs().toISOString();
+      createdCampaignVendorLog.updatedAt = dayjs().toISOString();
       createdCampaignVendorLog.save();
     }
 

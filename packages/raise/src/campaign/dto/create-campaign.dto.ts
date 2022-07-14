@@ -11,7 +11,7 @@ export const ImagePayload = z.object({
   imageName: z.string().optional(),
   imagePrefix: z.string().optional(),
   fullName: z.string(),
-  imageExtension: z.string().optional(),
+  imageExtension: z.string().regex(/^[.][^.]+/, "Must start with '.'"),
   currentPhoto: z.string().optional(),
 });
 export type ImagePayload = z.infer<typeof ImagePayload>;
