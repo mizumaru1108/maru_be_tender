@@ -3,7 +3,8 @@
   "packageManager": "yarn@3.2.1",
   "private": true,
   "workspaces": [
-    "packages/*"
+    "apps/*",
+    "libs/*"
   ],
   "devDependencies": {
     "eslint": "^8.10.0",

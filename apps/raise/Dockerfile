@@ -15,11 +15,11 @@
 # COPY package*.json /home/node/
 # COPY yarn.lock /home/node/
 # COPY .yarn/ /home/node/.yarn/
-# COPY packages/ /home/node/packages/
+# COPY apps/ /home/node/apps/
 
 # RUN yarn --immutable
 
-# WORKDIR /home/node/packages/raise
+# WORKDIR /home/node/apps/raise
 # # RUN yarn --immutable
 # RUN yarn build
 
@@ -51,16 +51,16 @@ COPY yarn.lock ./
 # COPY --from=builder /app/node_modules/ ./node_modules/
 # package.json ONLY from all other packages, yarn monorepo needs them to ensure immutability
 # BUT will still need depended packages' dist/
-COPY packages/pwa/package.json ./packages/pwa/
-# COPY packages/notion-api/dist/ ./packages/notion-api/dist/
+COPY apps/pwa/package.json ./apps/pwa/
+# COPY apps/notion-api/dist/ ./apps/notion-api/dist/
 # This package
-COPY packages/raise/package.json ./packages/raise/
-# COPY packages/raise/node_modules/ ./packages/raise/node_modules/
-# COPY packages/raise/tsconfig.json ./packages/raise/
-# COPY packages/raise/nest-cli.json ./packages/raise/
-COPY packages/raise/dist/ ./packages/raise/dist/
+COPY apps/raise/package.json ./apps/raise/
+# COPY apps/raise/node_modules/ ./apps/raise/node_modules/
+# COPY apps/raise/tsconfig.json ./apps/raise/
+# COPY apps/raise/nest-cli.json ./apps/raise/
+COPY apps/raise/dist/ ./apps/raise/dist/
 
 USER node
-WORKDIR /app/packages/raise
+WORKDIR /app/apps/raise
 EXPOSE 3000
 CMD ["yarn", "start:prod"]

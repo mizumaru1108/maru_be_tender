@@ -3,7 +3,7 @@
   "lerna": "4.0.0",
   "npmClient": "yarn",
   "useWorkspaces": true,
-  "packages": ["packages/*"],
+  "packages": ["apps/*", "libs/*"],
   "command": {
     "publish": {
       "conventionalCommits": true

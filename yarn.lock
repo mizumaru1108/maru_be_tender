@@ -5974,9 +5974,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tmra/pwa@workspace:packages/pwa":
+"@tmra/pwa@workspace:apps/pwa":
   version: 0.0.0-use.local
-  resolution: "@tmra/pwa@workspace:packages/pwa"
+  resolution: "@tmra/pwa@workspace:apps/pwa"
   dependencies:
     "@auth0/auth0-spa-js": ^1.20.0
     "@babel/core": ^7.17.5
@@ -6094,9 +6094,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@tmra/raise@workspace:packages/raise":
+"@tmra/raise@workspace:apps/raise":
   version: 0.0.0-use.local
-  resolution: "@tmra/raise@workspace:packages/raise"
+  resolution: "@tmra/raise@workspace:apps/raise"
   dependencies:
     "@authzed/authzed-node": ^0.5.0
     "@fastify/static": ^6.4.0
