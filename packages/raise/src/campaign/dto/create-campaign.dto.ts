@@ -18,9 +18,8 @@ export type ImagePayload = z.infer<typeof ImagePayload>;
 
 export const CampaignMilestone = z.object({
   name: z.string(),
-  campaignId: z.string(),
+  detail: z.string(),
   deadline: z.string(),
-  createdAt: z.string(),
 });
 export type CampaignMilestone = z.infer<typeof CampaignMilestone>;
 

@@ -8,7 +8,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateCampaignDto } from './dto';
 import { Campaign, CampaignDocument } from './campaign.schema';
-import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import { rootLogger } from '../logger';
 import { Types } from 'mongoose';
@@ -49,6 +48,7 @@ export class CampaignService {
    */
   async create(rawCreateCampaignDto: CreateCampaignDto): Promise<Campaign> {
     let createCampaignDto: CreateCampaignDto;
+    let decimal = require('mongoose').Types.Decimal128;
     try {
       createCampaignDto = CreateCampaignDto.parse(rawCreateCampaignDto);
     } catch (err) {
@@ -88,6 +88,8 @@ export class CampaignService {
     createdCampaign.isDeleted = 'N';
     createdCampaign.isPublished = 'N';
     createdCampaign.isMoney = 'Y';
+    createdCampaign.amountProgress = decimal.fromString("0");
+    createdCampaign.amountTarget = decimal.fromString("0");
     createdCampaign.milestone = createCampaignDto.milestone;
     createdCampaign.description = createCampaignDto.description;
     createdCampaign.campaignName = createCampaignDto.campaignName;
