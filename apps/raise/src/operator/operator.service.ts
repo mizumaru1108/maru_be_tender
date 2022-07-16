@@ -42,6 +42,11 @@ export class OperatorService {
         $group: {
           _id:"$_id", 
           name: { $first: '$name' },
+          coverImage: { $first: '$coverImage' },
+          image1: { $first: '$image1' },
+          image2: { $first: '$image2' },
+          image3: { $first: '$image3' },
+          description: { $first: '$description' },
           createdAt: { $first: '$createdAt' },
           projectId: { $first: '$op.projectId' },
           count:{$sum:1},
@@ -51,6 +56,11 @@ export class OperatorService {
        $project: {
            _id: 1,
            name: 1,
+           coverImage: 1,
+           image1: 1,
+           image2: 1,
+           image3: 1,
+           description: 1,
            createdAt: 1,
            projectId: 1,
            projectCount: "$count",
@@ -58,7 +68,7 @@ export class OperatorService {
       },
       {
           $sort: {
-              name: 1
+              _id: 1
           }
       }
     ]);
