@@ -15,9 +15,8 @@ export class Campaign {
   @Prop({ type: mongoose.Schema.Types.ObjectId })
   organizationId: Types.ObjectId;
 
-  //deprecated
   @Prop()
-  name: string;
+  creatorUserId: string;
 
   @Prop()
   campaignName: string;

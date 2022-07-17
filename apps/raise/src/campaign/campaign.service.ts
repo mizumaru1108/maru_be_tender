@@ -94,6 +94,7 @@ export class CampaignService {
     createdCampaign.description = createCampaignDto.description;
     createdCampaign.campaignName = createCampaignDto.campaignName;
     createdCampaign.campaignType = createCampaignDto.campaignType;
+    createdCampaign.creatorUserId = createCampaignDto.userId;
     createdCampaign.organizationId = new Types.ObjectId(
       createCampaignDto.organizationId,
     );
@@ -170,33 +171,9 @@ export class CampaignService {
           JSON.stringify(response.data, null, 2),
         );
       } catch (error) {
-        // const err = error as AxiosError;
-        // return { status: false, data: error };
         throw new InternalServerErrorException(
           `Error uploading image file to Bunny ${urlMedia} (${binary.length} bytes) while creating campaign: ${createCampaignDto.campaignName} - ${error}`,
         );
-        // if (error.response) {
-        //   // The request was made and the server responded with a status code
-        //   // that falls out of the range of 2xx
-        //   console.log(error.response.data);
-        //   console.log(error.response.status);
-        //   console.log(error.response.headers);
-
-        //   return 'FAILED UPLOAD TO BUNNY  (RESPONSE)';
-        // } else if (error.request) {
-        //   // The request was made but no response was received
-        //   // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        //   // http.ClientRequest in node.js
-        //   console.log(error.request);
-
-        //   return 'FAILED UPLOAD TO BUNNY  (REQUEST)';
-        // } else {
-        //   // Something happened in setting up the request that triggered an Error
-        //   console.log('Error', error.message);
-        // }
-        // console.log(error.config);
-
-        // return 'FAILED UPLOAD TO BUNNY';
       }
     }
 
@@ -554,6 +531,7 @@ export class CampaignService {
           endDate: 1,
           orgId: 1,
           status: 1,
+          milestone: 1,
           numMiles: { $size: '$milestone' },
           projectId: 1,
         },
