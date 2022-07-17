@@ -62,6 +62,18 @@ export class CampaignController {
     return await this.campaignService.getAllNewCampaign(organizationId);
   }
 
+  @ApiOperation({
+    summary: 'Get Detail of Unapproval Campaign Info Created by Manager by CampaignId ',
+  })
+  @Get('organization/:organizationId/unapproval/:campaignId')
+  async getNewCampaignById(
+    @Param('organizationId') organizationId: string,
+    @Param('campaignId') campaignId: string) {
+    this.logger.debug(`Get Detail of Unapproval Campaign Info Created by Manager by CampaignId`);
+    return await this.campaignService.getUnapprovalCampaignById(organizationId, campaignId);
+  }
+
+
   @ApiOperation({ summary: 'Get list all my campaign (vendor)' })
   @Get('organization/:organizationId/vendor/:vendorId/getListApproved')
   async getAllMyCampaignByVendor(

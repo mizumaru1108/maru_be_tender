@@ -88,8 +88,8 @@ export class CampaignService {
     createdCampaign.isDeleted = 'N';
     createdCampaign.isPublished = 'N';
     createdCampaign.isMoney = 'Y';
-    createdCampaign.amountProgress = decimal.fromString("0");
-    createdCampaign.amountTarget = decimal.fromString("0");
+    createdCampaign.amountProgress = decimal.fromString('0');
+    createdCampaign.amountTarget = decimal.fromString('0');
     createdCampaign.milestone = createCampaignDto.milestone;
     createdCampaign.description = createCampaignDto.description;
     createdCampaign.campaignName = createCampaignDto.campaignName;
@@ -493,5 +493,85 @@ export class CampaignService {
     const newObjectId = new Types.ObjectId();
 
     return JSON.stringify(newObjectId);
+  }
+
+  async getUnapprovalCampaignById(organizationId: string, campaignId: string) {
+    const ObjectId = require('mongoose').Types.ObjectId;
+
+    if (!organizationId) {
+      throw new NotFoundException(`Organization not found`);
+    }
+
+    if (!campaignId) {
+      throw new NotFoundException(`Campaign not found`);
+    }
+
+    const getCampaignDetail = await this.campaignModel.aggregate([
+      {
+        $lookup: {
+          from: 'campaignVendorLog',
+          localField: '_id',
+          foreignField: 'campaignId',
+          as: 'a',
+        },
+      },
+      {
+        $unwind: {
+          path: '$a',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $group: {
+          _id: '$a._id',
+          title: { $first: '$campaignName' },
+          income: { $first: '$amountProgress' },
+          type: { $first: '$campaignType' },
+          coverImage: { $first: '$coverImage' },
+          image1: { $first: '$image1' },
+          image2: { $first: '$image2' },
+          image3: { $first: '$image3' },
+          images: { $first: '$images' },
+          starttDate: { $first: '$startDate' },
+          endDate: { $first: '$endDate' },
+          orgId: { $first: '$organizationId' },
+          milestone: { $first: '$milestone' },
+          status: { $first: '$a.status' },
+          projectId: { $first: '$projectId' },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          income: 1,
+          coverImage: 1,
+          image1: 1,
+          image2: 1,
+          image3: 1,
+          images: 1,
+          starttDate: 1,
+          endDate: 1,
+          orgId: 1,
+          status: 1,
+          numMiles: { $size: '$milestone' },
+          projectId: 1,
+        },
+      },
+      {
+        $match: {
+          status: 'new',
+          orgId: ObjectId(organizationId),
+          _id: ObjectId(campaignId),
+        },
+      },
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
+    ]);
+
+    return getCampaignDetail;
   }
 }
