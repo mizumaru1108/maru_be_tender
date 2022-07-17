@@ -473,6 +473,7 @@ export class CampaignService {
   }
 
   async getUnapprovalCampaignById(organizationId: string, campaignId: string) {
+    let getCampaignDetail: any[] = [];
     const ObjectId = require('mongoose').Types.ObjectId;
 
     if (!organizationId) {
@@ -483,72 +484,80 @@ export class CampaignService {
       throw new NotFoundException(`Campaign not found`);
     }
 
-    const getCampaignDetail = await this.campaignModel.aggregate([
-      {
-        $lookup: {
-          from: 'campaignVendorLog',
-          localField: '_id',
-          foreignField: 'campaignId',
-          as: 'a',
+    try {
+      getCampaignDetail = await this.campaignModel.aggregate([
+        {
+          $lookup: {
+            from: 'campaignVendorLog',
+            localField: '_id',
+            foreignField: 'campaignId',
+            as: 'a',
+          },
         },
-      },
-      {
-        $unwind: {
-          path: '$a',
-          preserveNullAndEmptyArrays: true,
+        {
+          $unwind: {
+            path: '$a',
+            preserveNullAndEmptyArrays: true,
+          },
         },
-      },
-      {
-        $group: {
-          _id: '$a._id',
-          title: { $first: '$campaignName' },
-          income: { $first: '$amountProgress' },
-          type: { $first: '$campaignType' },
-          coverImage: { $first: '$coverImage' },
-          image1: { $first: '$image1' },
-          image2: { $first: '$image2' },
-          image3: { $first: '$image3' },
-          images: { $first: '$images' },
-          starttDate: { $first: '$startDate' },
-          endDate: { $first: '$endDate' },
-          orgId: { $first: '$organizationId' },
-          milestone: { $first: '$milestone' },
-          status: { $first: '$a.status' },
-          projectId: { $first: '$projectId' },
+        {
+          $group: {
+            _id: '$_id',
+            title: { $first: '$campaignName' },
+            income: { $first: '$amountProgress' },
+            type: { $first: '$campaignType' },
+            coverImage: { $first: '$coverImage' },
+            image1: { $first: '$image1' },
+            image2: { $first: '$image2' },
+            image3: { $first: '$image3' },
+            images: { $first: '$images' },
+            starttDate: { $first: '$startDate' },
+            endDate: { $first: '$endDate' },
+            orgId: { $first: '$organizationId' },
+            milestone: { $first: '$milestone' },
+            status: { $first: '$a.status' },
+            projectId: { $first: '$projectId' },
+          },
         },
-      },
-      {
-        $project: {
-          _id: 1,
-          title: 1,
-          income: 1,
-          coverImage: 1,
-          image1: 1,
-          image2: 1,
-          image3: 1,
-          images: 1,
-          starttDate: 1,
-          endDate: 1,
-          orgId: 1,
-          status: 1,
-          milestone: 1,
-          numMiles: { $size: '$milestone' },
-          projectId: 1,
+        {
+          $project: {
+            _id: 1,
+            title: 1,
+            income: 1,
+            coverImage: 1,
+            image1: 1,
+            image2: 1,
+            image3: 1,
+            images: 1,
+            starttDate: 1,
+            endDate: 1,
+            orgId: 1,
+            status: 1,
+            milestone: 1,
+            numMiles: { $size: '$milestone' },
+            projectId: 1,
+          },
         },
-      },
-      {
-        $match: {
-          status: 'new',
-          orgId: ObjectId(organizationId),
-          _id: ObjectId(campaignId),
+        {
+          $match: {
+            status: 'new',
+            orgId: ObjectId(organizationId),
+            _id: ObjectId(campaignId),
+          },
         },
-      },
-      {
-        $sort: {
-          _id: 1,
+        {
+          $sort: {
+            _id: 1,
+          },
         },
-      },
-    ]);
+      ]);
+
+      this.logger.debug(
+        `getData unapproval campaign=${JSON.stringify(getCampaignDetail)}`,
+      );
+    } catch (error) {
+      throw new InternalServerErrorException(`Error get Data - ${error}`);
+    }
 
     return getCampaignDetail;
   }
