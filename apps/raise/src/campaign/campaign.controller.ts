@@ -63,16 +63,22 @@ export class CampaignController {
   }
 
   @ApiOperation({
-    summary: 'Get Detail of Unapproval Campaign Info Created by Manager by CampaignId ',
+    summary:
+      'Get Detail of Unapproval Campaign Info Created by Manager by CampaignId ',
   })
   @Get('organization/:organizationId/unapproval/:campaignId')
   async getNewCampaignById(
     @Param('organizationId') organizationId: string,
-    @Param('campaignId') campaignId: string) {
-    this.logger.debug(`Get Detail of Unapproval Campaign Info Created by Manager by CampaignId`);
-    return await this.campaignService.getUnapprovalCampaignById(organizationId, campaignId);
+    @Param('campaignId') campaignId: string,
+  ) {
+    this.logger.debug(
+      `Get Detail of Unapproval Campaign Info Created by Manager by CampaignId`,
+    );
+    return await this.campaignService.getUnapprovalCampaignById(
+      organizationId,
+      campaignId,
+    );
   }
-
 
   @ApiOperation({ summary: 'Get list all my campaign (vendor)' })
   @Get('organization/:organizationId/vendor/:vendorId/getListApproved')
@@ -99,6 +105,20 @@ export class CampaignController {
       JSON.stringify(createCampaignDto),
     );
     return await this.campaignService.create(createCampaignDto);
+  }
+
+  @ApiOperation({ summary: 'Vendor submit amd apply for campaign' })
+  @ApiResponse({
+    status: 201,
+    description: 'The Campaign has been successfully applied by Vendor.',
+  })
+  @Post('vendor/apply')
+  async vendorApply(@Body() createCampaignDto: CreateCampaignDto) {
+    this.logger.debug(
+      'apply to unapproved new campaign ',
+      JSON.stringify(createCampaignDto),
+    );
+    return await this.campaignService.vendorApply(createCampaignDto);
   }
 
   @ApiOperation({ summary: 'create new campaign objectId' })

@@ -74,7 +74,6 @@ export class Campaign {
 
   @Prop({
     type: mongoose.Schema.Types.Date,
-    // default: mongoose.Schema.Types.Date,
   })
   createdAt: string;
 
@@ -83,7 +82,6 @@ export class Campaign {
 
   @Prop({
     type: mongoose.Schema.Types.Date,
-    // default: mongoose.Schema.Types.Date,
   })
   updatedAt: string;
 

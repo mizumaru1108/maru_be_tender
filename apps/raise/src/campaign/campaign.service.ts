@@ -78,7 +78,6 @@ export class CampaignService {
     );
     const appEnv = this.configService.get('APP_ENV');
     const path: string[] = [];
-    // const flag: string = 'Y';
 
     let folderType: string = '';
 
@@ -327,6 +326,12 @@ export class CampaignService {
     ]);
 
     return campaignList;
+  }
+
+  async vendorApply(vendorApplyDto: CreateCampaignDto): Promise<Campaign> {
+    let vendorData: any = new Vendor();
+
+    return vendorData;
   }
 
   async getAllNewCampaign(organizationId: string) {

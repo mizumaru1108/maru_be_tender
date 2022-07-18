@@ -10,7 +10,7 @@ import { PaymentPaypalModule } from './payment-paypal/payment-paypal.module';
 import { PaymentPaytabsModule } from './payment-paytabs/payment-paytabs.module';
 import { PaymentStripeModule } from './payment-stripe/payment-stripe.module';
 import { PaymentXenditModule } from './payment-xendit/payment-xendit.module';
-import { ProjectsModule } from './projects/projects.module';
+import { ProjectModule } from './project/project.module';
 import { AccountsModule } from './accounts/accounts.module';
 import { ContactsModule } from './contacts/contacts.module';
 import { CrmModule } from './crm/crm.module';
@@ -57,7 +57,7 @@ import { WidgetsModule } from './widgets/widgets.module';
     PaymentStripeModule,
     PaymentHyperpayModule,
     GeoModule,
-    ProjectsModule,
+    ProjectModule,
     AccountsModule,
     ContactsModule,
     CrmModule,
