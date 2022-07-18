@@ -5,8 +5,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import {
   Project,
   ProjectSchema,
-  ProjectVendorLog,
-  ProjectVendorLogDocument,
+  ProjectOperatorLog,
+  ProjectOperatorLogSchema,
 } from './project.schema';
 import { Operator, OperatorSchema } from '../operator/schema/operator.schema';
 import { ConfigModule } from '@nestjs/config';
@@ -22,10 +22,10 @@ import { ConfigModule } from '@nestjs/config';
         name: Operator.name,
         schema: OperatorSchema,
       },
-      // {
-      //   name: ProjectVendorLog.name,
-      //   schema: ProjectSchema,
-      // },
+      {
+        name: ProjectOperatorLog.name,
+        schema: ProjectOperatorLogSchema,
+      },
     ]),
     ConfigModule,
   ],

@@ -2,46 +2,46 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { Document, Types } from 'mongoose';
 
-export type ProjectDocument = Project & Document;
-export type ProjectOperatorLogDocument = ProjectOperatorLog & Document;
+export type ItemDocument = Item & Document;
+// export type ProjectVendorLogDocument = ProjectVendorLog & Document;
 
-@Schema({ collection: 'projectOperatorLog' })
-export class ProjectOperatorLog {
-  @Prop({ type: Types.ObjectId })
-  _id: Types.ObjectId;
+// @Schema({ collection: 'projectVendorLog' })
+// export class ProjectVendorLog {
+//   @Prop({ type: Types.ObjectId })
+//   _id: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId })
-  projectId: Types.ObjectId;
+//   @Prop({ type: Types.ObjectId })
+//   projectId: Types.ObjectId;
 
-  @Prop()
-  operatorId: string;
+//   @Prop({ type: Types.ObjectId })
+//   operatorId: Types.ObjectId;
 
-  @Prop({
-    type: mongoose.Schema.Types.Date,
-    default: mongoose.Schema.Types.Date,
-  })
-  createdAt: string;
+//   @Prop({
+//     type: mongoose.Schema.Types.Date,
+//     default: mongoose.Schema.Types.Date,
+//   })
+//   createdAt: string;
 
-  @Prop({
-    type: mongoose.Schema.Types.Date,
-    default: mongoose.Schema.Types.Date,
-  })
-  updatedAt: string;
+//   @Prop({
+//     type: mongoose.Schema.Types.Date,
+//     default: mongoose.Schema.Types.Date,
+//   })
+//   updatedAt: string;
 
-  @Prop()
-  status: string;
-}
+//   @Prop()
+//   status: string;
+// }
 
-@Schema({ collection: 'project' })
-export class Project {
+@Schema({ collection: 'item' })
+export class Item {
   @Prop({ type: Types.ObjectId })
   public _id?: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId })
   public organizationId?: Types.ObjectId;
 
-  @Prop({ type: () => String, ref: 'projectOperatorLog' })
-  public operatorId?: string;
+  // @Prop({ type: () => String, ref: 'projectOperatorLog' })
+  // public operatorId?: string;
 
   @Prop({ type: () => String })
   public name?: string;
@@ -107,6 +107,4 @@ export class Project {
   public projectAvatar?: String;
 }
 
-export const ProjectSchema = SchemaFactory.createForClass(Project);
-export const ProjectOperatorLogSchema =
-  SchemaFactory.createForClass(ProjectOperatorLog);
+export const ItemSchema = SchemaFactory.createForClass(Item);

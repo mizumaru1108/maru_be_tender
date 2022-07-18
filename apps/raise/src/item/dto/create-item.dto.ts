@@ -23,14 +23,14 @@ export type ImagePayload = z.infer<typeof ImagePayload>;
 // });
 // export type CampaignMilestone = z.infer<typeof CampaignMilestone>;
 
-export const CreateProjectDto = z.object({
+export const CreateItemDto = z.object({
   organizationId: z.string().min(1),
   name: z.string(),
   userId: z.string(),
   // projectId: z.string().optional(),
   // type: z.string(),
   description: z.string(),
-  address: z.string(),
+  // isMoney: z.string(),
   // methods: z.array(z.string()),
   location: z.string(),
   diameterSize: z.string(),
@@ -43,4 +43,4 @@ export const CreateProjectDto = z.object({
   images: z.array(ImagePayload),
   hasFemaleSection: z.string(),
 });
-export type CreateProjectDto = z.infer<typeof CreateProjectDto>;
+export type CreateItemDto = z.infer<typeof CreateItemDto>;

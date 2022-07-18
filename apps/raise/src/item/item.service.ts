@@ -6,14 +6,9 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { CreateProjectDto } from './dto';
+import { CreateItemDto } from './dto';
 import { ConfigService } from '@nestjs/config';
-import {
-  Project,
-  ProjectDocument,
-  ProjectOperatorLog,
-  ProjectOperatorLogDocument,
-} from './project.schema';
+import { Item, ItemDocument } from './item.schema';
 import { rootLogger } from '../logger';
 import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
 import axios, { AxiosRequestConfig } from 'axios';
@@ -21,76 +16,69 @@ import dayjs from 'dayjs';
 import slugify from 'slugify';
 
 @Injectable()
-export class ProjectService {
-  private logger = rootLogger.child({ logger: ProjectService.name });
+export class ItemService {
+  private logger = rootLogger.child({ logger: ItemService.name });
 
   constructor(
-    @InjectModel(Project.name)
-    private projectModel: Model<ProjectDocument>,
+    @InjectModel(Item.name)
+    private itemModel: Model<ItemDocument>,
     @InjectModel(Operator.name)
     private operatorModel: Model<OperatorDocument>,
-    @InjectModel(ProjectOperatorLog.name)
-    private projectOperatorLogModel: Model<ProjectOperatorLogDocument>,
     private configService: ConfigService,
   ) {}
 
-  async create(rawCreateProjectDto: CreateProjectDto): Promise<Project> {
-    let createProjectDto: CreateProjectDto;
+  async create(rawCreateItemDto: CreateItemDto): Promise<Item> {
+    let createItemDto: CreateItemDto;
     let decimal = require('mongoose').Types.Decimal128;
     try {
-      createProjectDto = CreateProjectDto.parse(rawCreateProjectDto);
+      createItemDto = CreateItemDto.parse(rawCreateItemDto);
     } catch (err) {
-      console.error(`Invalid Create Project Input:`, err);
+      console.error(`Invalid Create Campaign Input:`, err);
       throw new BadRequestException(
         {
           statusCode: 400,
-          message: `Invalid Create Project Input`,
+          message: `Invalid Create Campaign Input`,
           error: 'Bad Request',
           data: err.format(),
         },
-        `Invalid Create Project Input`,
+        `Invalid Create Campaign Input`,
       );
     }
 
-    const projectId = new Types.ObjectId();
-    const createdProject = new this.projectModel({
-      _id: projectId,
-      name: createProjectDto.name,
-      location: createProjectDto.location,
+    const itemId = new Types.ObjectId();
+    const createdItem = new this.itemModel({
+      _id: itemId,
+      name: createItemDto.name,
+      location: createItemDto.location,
     });
-    const createdProjectOperatorLog = new this.projectOperatorLogModel(
-      createProjectDto,
-    );
+    // const createdProjectVendorLog = new this.projectModel(createProjectDto);
     const appEnv = this.configService.get('APP_ENV');
     const path: string[] = [];
 
     let folderType: string = '';
 
-    createdProject.hasAc = 'N';
-    createdProject.hasClassroom = createProjectDto.hasAc;
-    createdProject.hasParking = createProjectDto.hasParking;
-    createdProject.hasGreenSpace = createProjectDto.hasGreenSpace;
-    createdProject.hasFemaleSection = createProjectDto.hasFemaleSection;
-    createdProject.toiletSize = createProjectDto.toiletSize;
-    createdProject.diameterSize = createProjectDto.diameterSize;
-    createdProject.prayerSize = createProjectDto.prayerSize;
-    createdProject.address = createProjectDto.address;
-    createdProject.createdAt = dayjs().toISOString();
-    createdProject.updatedAt = dayjs().toISOString();
-    createdProject.isDeleted = 'N';
-    createdProject.isPublished = 'N';
-    createdProject.description = createProjectDto.description;
+    createdItem.hasAc = 'N';
+    createdItem.hasClassroom = createItemDto.hasAc;
+    createdItem.hasParking = createItemDto.hasParking;
+    createdItem.hasGreenSpace = createItemDto.hasGreenSpace;
+    createdItem.hasFemaleSection = createItemDto.hasFemaleSection;
+    createdItem.toiletSize = createItemDto.toiletSize;
+    createdItem.createdAt = dayjs().toISOString();
+    createdItem.updatedAt = dayjs().toISOString();
+    createdItem.isDeleted = 'N';
+    createdItem.isPublished = 'N';
+    createdItem.description = createItemDto.description;
 
-    createdProject.organizationId = new Types.ObjectId(
-      createProjectDto.organizationId,
+    createdItem.organizationId = new Types.ObjectId(
+      createItemDto.organizationId,
     );
 
     // createdProject.projectId = createProjectDto.projectId
     // ? new Types.ObjectId(createProjectDto.projectId)
     // : undefined;
 
-    for (let i = 0; i < createProjectDto.images.length; i++) {
-      const sanitizedName = slugify(createProjectDto.images[i].fullName, {
+    for (let i = 0; i < createItemDto.images.length; i++) {
+      const sanitizedName = slugify(createItemDto.images[i].fullName, {
         lower: true,
         remove: /[*+~.()'"!:@]/g,
       });
@@ -104,21 +92,18 @@ export class ProjectService {
       }
 
       path[i] =
-        `tmra/${appEnv}/organization/${createProjectDto.organizationId}` +
-        `/${folderType}/${sanitizedName}-${projectId}-${random}` +
-        `${createProjectDto.images[i].imageExtension}`;
+        `tmra/${appEnv}/organization/${createItemDto.organizationId}` +
+        `/${folderType}/${sanitizedName}-${itemId}-${random}` +
+        `${createItemDto.images[i].imageExtension}`;
 
       //set the number of maximum file uploaded = 4 (included coverImage)
-      if (i == 0) createdProject.coverImage = path[i];
-      if (i == 1) createdProject.image1 = path[i];
-      if (i == 2) createdProject.image2 = path[i];
-      if (i == 3) createdProject.image3 = path[i];
+      if (i == 0) createdItem.coverImage = path[i];
+      if (i == 1) createdItem.image1 = path[i];
+      if (i == 2) createdItem.image2 = path[i];
+      if (i == 3) createdItem.image3 = path[i];
 
-      const base64Data = createProjectDto.images[i].base64Data;
-      const binary = Buffer.from(
-        createProjectDto.images[i].base64Data,
-        'base64',
-      );
+      const base64Data = createItemDto.images[i].base64Data;
+      const binary = Buffer.from(createItemDto.images[i].base64Data, 'base64');
       if (!binary) {
         const trimmedString = 56;
         base64Data.length > 40
@@ -159,31 +144,31 @@ export class ProjectService {
         );
       } catch (error) {
         throw new InternalServerErrorException(
-          `Error uploading image file to Bunny ${urlMedia} (${binary.length} bytes) while creating campaign: ${createProjectDto.name} - ${error}`,
+          `Error uploading image file to Bunny ${urlMedia} (${binary.length} bytes) while creating campaign: ${createItemDto.name} - ${error}`,
         );
       }
     }
 
-    //insert into Project
-    const dataProject = await createdProject.save();
+    //insert into item
+    const dataItem = await createdItem.save();
 
-    //insert into Project Vendor Log
-    if (dataProject) {
-      createdProjectOperatorLog._id = new Types.ObjectId();
-      createdProjectOperatorLog.projectId = dataProject._id;
-      createdProjectOperatorLog.status = 'new';
-      createdProjectOperatorLog.operatorId = '';
-      createdProjectOperatorLog.createdAt = dayjs().toISOString();
-      createdProjectOperatorLog.updatedAt = dayjs().toISOString();
-      createdProjectOperatorLog.save();
-    }
+    //insert into Campaign Vendor Log
+    // if (dataProject) {
+    //   createdProjectVendorLog._id = new Types.ObjectId();
+    //   createdProjectVendorLog.campaignId = dataProject._id;
+    //   createdProjectVendorLog.status = 'new';
+    //   createdProjectVendorLog.vendorId = '';
+    //   createdProjectVendorLog.createdAt = dayjs().toISOString();
+    //   createdProjectVendorLog.updatedAt = dayjs().toISOString();
+    //   createdProjectVendorLog.save();
+    // }
 
-    return dataProject;
+    return dataItem;
   }
 
   async getListAll() {
     this.logger.debug('Get project list ...');
-    const dataProject = await this.projectModel.aggregate([
+    const dataProject = await this.itemModel.aggregate([
       {
         $lookup: {
           from: 'campaign',
@@ -221,7 +206,7 @@ export class ProjectService {
       { $sort: { _id: 1 } },
     ]);
 
-    const dataItem = await this.projectModel.aggregate([
+    const dataItem = await this.itemModel.aggregate([
       {
         $lookup: {
           from: 'item',
@@ -273,7 +258,7 @@ export class ProjectService {
 
     console.log('debug:', realOpId);
 
-    const dataProject = await this.projectModel.aggregate([
+    const dataProject = await this.itemModel.aggregate([
       {
         $lookup: {
           from: 'campaign',
@@ -323,7 +308,7 @@ export class ProjectService {
       { $sort: { _id: 1 } },
     ]);
 
-    const dataItem = await this.projectModel.aggregate([
+    const dataItem = await this.itemModel.aggregate([
       {
         $lookup: {
           from: 'item',
