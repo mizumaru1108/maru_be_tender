@@ -33,15 +33,15 @@ export class ItemService {
     try {
       createItemDto = CreateItemDto.parse(rawCreateItemDto);
     } catch (err) {
-      console.error(`Invalid Create Campaign Input:`, err);
+      console.error(`Invalid Create Item Input:`, err);
       throw new BadRequestException(
         {
           statusCode: 400,
-          message: `Invalid Create Campaign Input`,
+          message: `Invalid Create Item Input`,
           error: 'Bad Request',
           data: err.format(),
         },
-        `Invalid Create Campaign Input`,
+        `Invalid Create Item Input`,
       );
     }
 
@@ -49,7 +49,6 @@ export class ItemService {
     const createdItem = new this.itemModel({
       _id: itemId,
       name: createItemDto.name,
-      location: createItemDto.location,
     });
     // const createdProjectVendorLog = new this.projectModel(createProjectDto);
     const appEnv = this.configService.get('APP_ENV');
@@ -57,12 +56,11 @@ export class ItemService {
 
     let folderType: string = '';
 
-    createdItem.hasAc = 'N';
-    createdItem.hasClassroom = createItemDto.hasAc;
-    createdItem.hasParking = createItemDto.hasParking;
-    createdItem.hasGreenSpace = createItemDto.hasGreenSpace;
-    createdItem.hasFemaleSection = createItemDto.hasFemaleSection;
-    createdItem.toiletSize = createItemDto.toiletSize;
+    createdItem.category = createItemDto.category;
+    createdItem.projectId = createItemDto.projectId;
+    createdItem.defaultPrice = createItemDto.defaultPrice;
+    createdItem.currency = 'SAR';
+    createdItem.totalNeed = createItemDto.totalNeed;
     createdItem.createdAt = dayjs().toISOString();
     createdItem.updatedAt = dayjs().toISOString();
     createdItem.isDeleted = 'N';
@@ -86,9 +84,9 @@ export class ItemService {
       let random = Math.random().toString().substr(2, 4);
       // folder type is the same because any campaign image can be "Set as Cover"
       if (i == 0) {
-        folderType = 'project-photo';
+        folderType = 'item-photo';
       } else {
-        folderType = 'project-photo';
+        folderType = 'item-photo';
       }
 
       path[i] =

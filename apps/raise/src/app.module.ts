@@ -22,6 +22,7 @@ import { IntegrationsModule } from './integrations/integrations.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DonorModule } from './donor/donor.module';
 import { CampaignModule } from './campaign/campaign.module';
+import { ItemModule } from './item/item.module';
 import { TicketModule } from './ticket/ticket.module';
 import { ZakatModule } from './zakat/zakat.module';
 import { UsersModule } from './user/user.module';
@@ -58,6 +59,7 @@ import { WidgetsModule } from './widgets/widgets.module';
     PaymentHyperpayModule,
     GeoModule,
     ProjectModule,
+    ItemModule,
     AccountsModule,
     ContactsModule,
     CrmModule,

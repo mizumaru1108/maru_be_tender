@@ -40,8 +40,8 @@ export class Item {
   @Prop({ type: Types.ObjectId })
   public organizationId?: Types.ObjectId;
 
-  // @Prop({ type: () => String, ref: 'projectOperatorLog' })
-  // public operatorId?: string;
+  @Prop()
+  public category?: string;
 
   @Prop({ type: () => String })
   public name?: string;
@@ -53,7 +53,7 @@ export class Item {
   public updatedAt?: String;
 
   @Prop({ type: () => String })
-  public address?: String;
+  public defaultPrice?: String;
 
   @Prop({ type: () => String })
   public coverImage?: String;
@@ -74,28 +74,28 @@ export class Item {
   public location?: String;
 
   @Prop({ type: () => String })
-  public diameterSize?: String;
+  public currency?: String;
 
   @Prop({ type: () => String })
-  public prayerSize?: String;
+  public totalNeed?: String;
 
   @Prop({ type: () => String })
-  public toiletSize?: String;
+  public projectId?: String;
 
-  @Prop({ type: () => String })
-  public hasAc?: String;
+  // @Prop({ type: () => String })
+  // public hasAc?: String;
 
-  @Prop({ type: () => String })
-  public hasClassroom?: String;
+  // @Prop({ type: () => String })
+  // public hasClassroom?: String;
 
-  @Prop({ type: () => String })
-  public hasParking?: String;
+  // @Prop({ type: () => String })
+  // public hasParking?: String;
 
-  @Prop({ type: () => String })
-  public hasGreenSpace?: String;
+  // @Prop({ type: () => String })
+  // public hasGreenSpace?: String;
 
-  @Prop({ type: () => String })
-  public hasFemaleSection?: String;
+  // @Prop({ type: () => String })
+  // public hasFemaleSection?: String;
 
   @Prop({ type: () => String })
   public isDeleted?: String;

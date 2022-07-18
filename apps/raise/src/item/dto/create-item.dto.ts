@@ -16,31 +16,15 @@ export const ImagePayload = z.object({
 });
 export type ImagePayload = z.infer<typeof ImagePayload>;
 
-// export const CampaignMilestone = z.object({
-//   name: z.string(),
-//   detail: z.string(),
-//   deadline: z.string(),
-// });
-// export type CampaignMilestone = z.infer<typeof CampaignMilestone>;
-
 export const CreateItemDto = z.object({
-  organizationId: z.string().min(1),
+  organizationId: z.string(),
+  category: z.string(),
+  defaultPrice: z.string(),
   name: z.string(),
   userId: z.string(),
-  // projectId: z.string().optional(),
-  // type: z.string(),
+  projectId: z.string().optional(),
+  totalNeed: z.string(),
   description: z.string(),
-  // isMoney: z.string(),
-  // methods: z.array(z.string()),
-  location: z.string(),
-  diameterSize: z.string(),
-  prayerSize: z.string(),
-  toiletSize: z.string(),
-  hasAc: z.string(),
-  hasClassroom: z.string(),
-  hasParking: z.string(),
-  hasGreenSpace: z.string(),
   images: z.array(ImagePayload),
-  hasFemaleSection: z.string(),
 });
 export type CreateItemDto = z.infer<typeof CreateItemDto>;

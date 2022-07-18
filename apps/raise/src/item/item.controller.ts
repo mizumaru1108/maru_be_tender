@@ -31,7 +31,7 @@ export class ItemController {
   })
   @Post('create')
   async create(@Body() createItemDto: CreateItemDto) {
-    this.logger.debug('create new project ', JSON.stringify(createItemDto));
+    this.logger.debug('create new item ', JSON.stringify(createItemDto));
     return await this.itemService.create(createItemDto);
   }
 }

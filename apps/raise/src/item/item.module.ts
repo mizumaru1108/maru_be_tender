@@ -23,4 +23,4 @@ import { ConfigModule } from '@nestjs/config';
   providers: [ItemService],
   controllers: [ItemController],
 })
-export class ProjectModule {}
+export class ItemModule {}
