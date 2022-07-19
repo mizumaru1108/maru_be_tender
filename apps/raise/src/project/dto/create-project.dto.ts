@@ -16,12 +16,12 @@ export const ImagePayload = z.object({
 });
 export type ImagePayload = z.infer<typeof ImagePayload>;
 
-// export const CampaignMilestone = z.object({
-//   name: z.string(),
-//   detail: z.string(),
-//   deadline: z.string(),
-// });
-// export type CampaignMilestone = z.infer<typeof CampaignMilestone>;
+export const NearByPlaces = z.object({
+  placeType: z.string(),
+  name: z.string(),
+  distance: z.number(),
+});
+export type NearByPlaces = z.infer<typeof NearByPlaces>;
 
 export const CreateProjectDto = z.object({
   organizationId: z.string().min(1),
@@ -31,7 +31,7 @@ export const CreateProjectDto = z.object({
   // type: z.string(),
   description: z.string(),
   address: z.string(),
-  // methods: z.array(z.string()),
+  nearByPlaces: z.array(NearByPlaces),
   location: z.string(),
   diameterSize: z.string(),
   prayerSize: z.string(),

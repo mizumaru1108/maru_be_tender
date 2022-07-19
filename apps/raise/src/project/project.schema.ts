@@ -105,6 +105,9 @@ export class Project {
 
   @Prop({ type: () => String })
   public projectAvatar?: String;
+
+  @Prop({ type: () => Array })
+  public nearByPlaces?: Array<Object>;
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);

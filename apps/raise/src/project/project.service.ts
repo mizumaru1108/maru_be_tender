@@ -80,6 +80,7 @@ export class ProjectService {
     createdProject.isDeleted = 'N';
     createdProject.isPublished = 'N';
     createdProject.description = createProjectDto.description;
+    createdProject.nearByPlaces = createProjectDto.nearByPlaces;
 
     createdProject.organizationId = new Types.ObjectId(
       createProjectDto.organizationId,
@@ -194,19 +195,11 @@ export class ProjectService {
       },
       { $unwind: { path: '$cp', preserveNullAndEmptyArrays: true } },
       {
-        $lookup: {
-          from: 'item',
-          localField: 'projectId',
-          foreignField: '_id',
-          as: 'item',
-        },
-      },
-      { $unwind: { path: '$item', preserveNullAndEmptyArrays: true } },
-      {
         $group: {
           _id: '$_id',
           projectName: { $first: '$name' },
           createdAt: { $first: '$createdAt' },
+          campaignId: { $first: '$cp._id' },
           count: { $sum: 1 },
         },
       },
@@ -216,9 +209,10 @@ export class ProjectService {
           projectName: 1,
           createdAt: 1,
           campaignCount: '$count',
+          campaignId: 1,
         },
       },
-      { $sort: { _id: 1 } },
+      { $sort: { _id: -1 } },
     ]);
 
     const dataItem = await this.projectModel.aggregate([
@@ -232,24 +226,22 @@ export class ProjectService {
       },
       { $unwind: { path: '$cp', preserveNullAndEmptyArrays: true } },
       {
-        $lookup: {
-          from: 'item',
-          localField: 'projectId',
-          foreignField: '_id',
-          as: 'item',
-        },
-      },
-      { $unwind: { path: '$item', preserveNullAndEmptyArrays: true } },
-      {
         $group: {
           _id: '$_id',
           projectName: { $first: '$name' },
           createdAt: { $first: '$createdAt' },
+          itemId: { $first: '$cp._id' },
           count: { $sum: 1 },
         },
       },
-      { $project: { _id: 1, itemCount: '$count' } },
-      { $sort: { _id: 1 } },
+      {
+        $project: {
+          _id: 1,
+          itemCount: '$count',
+          itemId: 1,
+        },
+      },
+      { $sort: { _id: -1 } },
     ]);
 
     const data = dataProject.map((item, i) =>
