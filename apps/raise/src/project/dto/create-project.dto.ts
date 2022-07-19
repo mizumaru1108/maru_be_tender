@@ -19,7 +19,7 @@ export type ImagePayload = z.infer<typeof ImagePayload>;
 export const NearByPlaces = z.object({
   placeType: z.string(),
   name: z.string(),
-  distance: z.number(),
+  distance: z.string(),
 });
 export type NearByPlaces = z.infer<typeof NearByPlaces>;
 
