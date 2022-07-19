@@ -165,7 +165,7 @@ export class ItemService {
   }
 
   async getListAll() {
-    this.logger.debug('Get project list ...');
+    this.logger.debug('Get item list ...');
     const dataProject = await this.itemModel.aggregate([
       {
         $lookup: {
@@ -177,18 +177,12 @@ export class ItemService {
       },
       { $unwind: { path: '$cp', preserveNullAndEmptyArrays: true } },
       {
-        $lookup: {
-          from: 'item',
-          localField: 'projectId',
-          foreignField: '_id',
-          as: 'item',
-        },
-      },
-      { $unwind: { path: '$item', preserveNullAndEmptyArrays: true } },
-      {
         $group: {
           _id: '$_id',
-          projectName: { $first: '$name' },
+          itemName: { $first: '$name' },
+          itemFee: { $first: '$defaultPrice' },
+          totalNeed: { $first: '$totalNeed' },
+          category: { $first: '$category' },
           createdAt: { $first: '$createdAt' },
           count: { $sum: 1 },
         },
@@ -196,18 +190,21 @@ export class ItemService {
       {
         $project: {
           _id: 1,
-          projectName: 1,
+          itemName: 1,
+          itemFee: 1,
+          totalNeed: 1,
+          category: 1,
           createdAt: 1,
           campaignCount: '$count',
         },
       },
-      { $sort: { _id: 1 } },
+      { $sort: { _id: -1 } },
     ]);
 
     const dataItem = await this.itemModel.aggregate([
       {
         $lookup: {
-          from: 'item',
+          from: 'project',
           localField: '_id',
           foreignField: 'projectId',
           as: 'cp',
@@ -215,24 +212,15 @@ export class ItemService {
       },
       { $unwind: { path: '$cp', preserveNullAndEmptyArrays: true } },
       {
-        $lookup: {
-          from: 'item',
-          localField: 'projectId',
-          foreignField: '_id',
-          as: 'item',
-        },
-      },
-      { $unwind: { path: '$item', preserveNullAndEmptyArrays: true } },
-      {
         $group: {
           _id: '$_id',
-          projectName: { $first: '$name' },
+          itemName: { $first: '$name' },
           createdAt: { $first: '$createdAt' },
           count: { $sum: 1 },
         },
       },
       { $project: { _id: 1, itemCount: '$count' } },
-      { $sort: { _id: 1 } },
+      { $sort: { _id: -1 } },
     ]);
 
     const data = dataProject.map((item, i) =>
