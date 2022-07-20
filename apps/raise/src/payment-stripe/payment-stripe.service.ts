@@ -84,6 +84,19 @@ export class PaymentStripeService {
       };
     }
 
+    if (!['GBP', 'SAR'].includes(currency)) {
+      txtMessage = 'Bad Request';
+      return {
+        statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({
+          message: 'Currency must be GBP or SAR',
+        }),
+      };
+    }
+
     const getOrganization = await this.organizationModel.findOne({
       _id: payment.organizationId,
     });
@@ -103,15 +116,41 @@ export class PaymentStripeService {
       currency = getOrganization['defaultCurrency'];
     }
     console.log('debug', payment.campaignId);
-    if (payment.campaignId) {
-      const getCampaign = await this.campaignModel
-        .find({
-          _id: payment.campaignId,
-        })
-        .exec();
+    // if (payment.campaignId) {
+    const getCampaign = await this.campaignModel
+      .findOne({
+        _id: payment.campaignId,
+      })
+      .exec();
 
-      console.log('debug', getCampaign);
+    console.log('debug', getCampaign);
+    let dataAmount = parseFloat(payment.quantity); // let's assume it will be multiple by 1 (price)
+    if (!getCampaign) {
+      txtMessage = `request rejected campaignId not found`;
+      return {
+        statusCode: 514,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({
+          message: txtMessage,
+        }),
+      };
+    } else if (
+      parseFloat(getCampaign.amountProgress.toString()) + dataAmount >
+      parseFloat(getCampaign.amountTarget.toString())
+    ) {
+      return {
+        statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({
+          message: `Ammount is larger than the limit of the target ${getCampaign.amountTarget}`,
+        }),
+      };
     }
+    // }
 
     console.log('debug', payment.organizationId);
     const getSecretKey = await this.paymentGatewayModel.findOne(
