@@ -22,7 +22,11 @@ export async function initTracing() {
     process.env.OTEL_TRACE_CONSOLE_ENABLED === 'true' ||
     process.env.OTEL_TRACE_CONSOLE_ENABLED === '1';
   // For troubleshooting, set the log level to DiagLogLevel.DEBUG
-  diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);
+  const logLevel =
+    process.env.OTEL_LOG_LEVEL === 'DEBUG'
+      ? DiagLogLevel.DEBUG
+      : DiagLogLevel.INFO;
+  diag.setLogger(new DiagConsoleLogger(), logLevel);
   if (traceEnabled || traceConsoleEnabled) {
     console.info(`OpenTelemetry Tracing enabled`);
     // const provider = new NodeTracerProvider({
