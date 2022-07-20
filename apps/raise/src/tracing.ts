@@ -4,10 +4,14 @@ import { Resource } from '@opentelemetry/resources';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 import {
-  BasicTracerProvider,
   ConsoleSpanExporter,
   SimpleSpanProcessor,
 } from '@opentelemetry/sdk-trace-base';
+import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
+import { registerInstrumentations } from '@opentelemetry/instrumentation';
+const {
+  NestInstrumentation,
+} = require('@opentelemetry/instrumentation-nestjs-core');
 
 export async function initTracing() {
   if (
@@ -21,7 +25,7 @@ export async function initTracing() {
       url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
     });
 
-    const provider = new BasicTracerProvider({
+    const provider = new NodeTracerProvider({
       resource: new Resource({
         [SemanticResourceAttributes.SERVICE_NAME]: 'tmra-raise',
         [SemanticResourceAttributes.DEPLOYMENT_ENVIRONMENT]:
@@ -30,13 +34,24 @@ export async function initTracing() {
       }),
     });
     // export spans to console (useful for debugging)
-    provider.addSpanProcessor(
-      new SimpleSpanProcessor(new ConsoleSpanExporter()),
-    );
-    // export spans to opentelemetry collector
+    if (
+      process.env.OTEL_TRACE_CONSOLE_ENABLED === 'true' ||
+      process.env.OTEL_TRACE_CONSOLE_ENABLED === '1'
+    ) {
+      provider.addSpanProcessor(
+        new SimpleSpanProcessor(new ConsoleSpanExporter()),
+      );
+    }
+    // export spans to OpenTelemetry collector
     provider.addSpanProcessor(new SimpleSpanProcessor(exporter));
 
+    // Initialize the provider
     provider.register();
+    // register and load instrumentation and old plugins - old plugins will be loaded automatically as previously
+    // but instrumentations needs to be added
+    registerInstrumentations({
+      instrumentations: [new NestInstrumentation()],
+    });
     const sdk = new NodeSDK({
       traceExporter: exporter,
       instrumentations: [getNodeAutoInstrumentations()],

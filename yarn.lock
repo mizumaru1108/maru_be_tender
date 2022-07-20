@@ -7517,7 +7517,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@opentelemetry/sdk-trace-node@npm:1.4.0":
+"@opentelemetry/sdk-trace-node@npm:1.4.0, @opentelemetry/sdk-trace-node@npm:^1.4.0":
   version: 1.4.0
   resolution: "@opentelemetry/sdk-trace-node@npm:1.4.0"
   dependencies:
@@ -8489,9 +8489,11 @@ __metadata:
     "@opentelemetry/auto-instrumentations-node": ^0.31.0
     "@opentelemetry/exporter-trace-otlp-http": ^0.30.0
     "@opentelemetry/instrumentation": ^0.30.0
+    "@opentelemetry/instrumentation-nestjs-core": ^0.30.0
     "@opentelemetry/resources": ^1.4.0
     "@opentelemetry/sdk-node": ^0.30.0
     "@opentelemetry/sdk-trace-base": ^1.4.0
+    "@opentelemetry/sdk-trace-node": ^1.4.0
     "@opentelemetry/semantic-conventions": ^1.4.0
     "@typegoose/typegoose": ^9.8.0
     "@types/express": ^4.17.13
