@@ -67,6 +67,7 @@ export async function initTracing() {
     if (process.env.OTEL_EXPORTER_JAEGER_ENDPOINT) {
       jaegerExporter = new JaegerExporter({
         endpoint: process.env.OTEL_EXPORTER_JAEGER_ENDPOINT,
+        port: 6832,
       });
       console.info(
         `Jaeger trace endpoint: ${process.env.OTEL_EXPORTER_JAEGER_ENDPOINT}`,
