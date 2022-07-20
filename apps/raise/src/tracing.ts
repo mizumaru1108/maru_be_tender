@@ -4,6 +4,7 @@ import { Resource } from '@opentelemetry/resources';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 import {
+  BatchSpanProcessor,
   ConsoleSpanExporter,
   SimpleSpanProcessor,
   SpanProcessor,
@@ -13,6 +14,7 @@ import { diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api';
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
 import { FastifyInstrumentation } from '@opentelemetry/instrumentation-fastify';
 import { AsyncLocalStorageContextManager } from '@opentelemetry/context-async-hooks';
+import { JaegerExporter } from '@opentelemetry/exporter-jaeger';
 
 export async function initTracing() {
   const traceEnabled =
@@ -46,7 +48,7 @@ export async function initTracing() {
       // provider.addSpanProcessor(
       //   new SimpleSpanProcessor(new ConsoleSpanExporter()),
       // );
-      spanProcessor = new SimpleSpanProcessor(new ConsoleSpanExporter());
+      spanProcessor = new BatchSpanProcessor(new ConsoleSpanExporter());
     }
     // export spans to OpenTelemetry collector
     let otlpExporter: OTLPTraceExporter | undefined = undefined;
@@ -58,7 +60,19 @@ export async function initTracing() {
         `OTLP trace endpoint: ${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}`,
       );
       // provider.addSpanProcessor(new SimpleSpanProcessor(otlpExporter));
-      spanProcessor = new SimpleSpanProcessor(otlpExporter);
+      spanProcessor = new BatchSpanProcessor(otlpExporter);
+    }
+    // export spans to OpenTelemetry collector
+    let jaegerExporter: JaegerExporter | undefined = undefined;
+    if (process.env.OTEL_EXPORTER_JAEGER_ENDPOINT) {
+      jaegerExporter = new JaegerExporter({
+        endpoint: process.env.OTEL_EXPORTER_JAEGER_ENDPOINT,
+      });
+      console.info(
+        `Jaeger trace endpoint: ${process.env.OTEL_EXPORTER_JAEGER_ENDPOINT}`,
+      );
+      // provider.addSpanProcessor(new SimpleSpanProcessor(otlpExporter));
+      spanProcessor = new BatchSpanProcessor(jaegerExporter);
     }
 
     // Initialize the provider
