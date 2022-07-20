@@ -1,7 +1,7 @@
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { Resource } from '@opentelemetry/resources';
-import opentelemetry from '@opentelemetry/sdk-node';
+import { NodeSDK } from '@opentelemetry/sdk-node';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 import {
   BasicTracerProvider,
@@ -37,7 +37,7 @@ export async function initTracing() {
     provider.addSpanProcessor(new SimpleSpanProcessor(exporter));
 
     provider.register();
-    const sdk = new opentelemetry.NodeSDK({
+    const sdk = new NodeSDK({
       traceExporter: exporter,
       instrumentations: [getNodeAutoInstrumentations()],
     });
