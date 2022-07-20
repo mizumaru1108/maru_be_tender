@@ -214,7 +214,11 @@ export class DonorService {
     };
   }
 
-  async getDonationLogs(donorUserId: string) {
+  async getDonationLogs(
+    donorUserId: string,
+    sortDate: string = 'desc',
+    sortStatus: string = 'asc',
+  ) {
     this.logger.debug('Get Donation logs...');
     const donationLogList = await this.donationLogsModel.aggregate([
       {
@@ -257,6 +261,13 @@ export class DonorService {
           campaignName: { $first: '$campaign.campaignName' },
           campaignType: { $first: '$campaign.campaignType' },
           organizationName: { $first: '$organization.name' },
+        },
+      },
+      {
+        $sort: {
+          // _id: 1,
+          createdAt: sortDate == 'asc' ? 1 : -1,
+          donationStatus: sortStatus == 'asc' ? 1 : -1,
         },
       },
     ]);
