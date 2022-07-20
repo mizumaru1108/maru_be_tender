@@ -24,6 +24,9 @@ export async function initTracing() {
     const provider = new BasicTracerProvider({
       resource: new Resource({
         [SemanticResourceAttributes.SERVICE_NAME]: 'tmra-raise',
+        [SemanticResourceAttributes.DEPLOYMENT_ENVIRONMENT]:
+          process.env.APP_ENV,
+        [SemanticResourceAttributes.SERVICE_VERSION]: process.env.APP_VERSION,
       }),
     });
     // export spans to console (useful for debugging)
