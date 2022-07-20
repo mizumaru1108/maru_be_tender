@@ -6,8 +6,11 @@ import {
 } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
+import { initTracing } from './tracing';
 
 async function bootstrap() {
+  await initTracing();
+
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ logger: true }),
@@ -17,8 +20,8 @@ async function bootstrap() {
 
   if (config.get<string>('APP_ENV') === 'dev') {
     const config = new DocumentBuilder()
-      .setTitle('TMRA Raise')
-      .setDescription('TMRA Raise API')
+      .setTitle('Tmra Raise')
+      .setDescription('Tmra Raise API')
       .setVersion('1.0')
       .build();
     const document = SwaggerModule.createDocument(app, config);
