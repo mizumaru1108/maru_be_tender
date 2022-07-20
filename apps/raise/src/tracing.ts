@@ -62,7 +62,7 @@ export async function initTracing() {
       // provider.addSpanProcessor(new SimpleSpanProcessor(otlpExporter));
       spanProcessor = new BatchSpanProcessor(otlpExporter);
     }
-    // export spans to OpenTelemetry collector
+    // export spans to Jaeger collector
     let jaegerExporter: JaegerExporter | undefined = undefined;
     if (process.env.OTEL_EXPORTER_JAEGER_ENDPOINT) {
       jaegerExporter = new JaegerExporter({
@@ -84,7 +84,7 @@ export async function initTracing() {
     //   instrumentations: [new NestInstrumentation()],
     //   tracerProvider: provider,
     // });
-    if (otlpExporter || consoleExporter) {
+    if (jaegerExporter || otlpExporter || consoleExporter) {
       const sdk = new NodeSDK({
         resource: new Resource({
           [SemanticResourceAttributes.SERVICE_NAME]: 'tmra-raise',
