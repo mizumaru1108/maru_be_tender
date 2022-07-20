@@ -1,12 +1,22 @@
-import { Body, Controller, Get, Query, Post, Param } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Query,
+  Post,
+  Param,
+  UseInterceptors,
+} from '@nestjs/common';
 import { rootLogger } from '../logger';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CampaignSetFavoriteDto, CreateCampaignDto } from './dto';
 import { DonorService } from '../donor/donor.service';
 import { CampaignService } from './campaign.service';
+import { TraceInterceptor } from 'src/trace.interceptor';
 
 @ApiTags('campaign')
 @Controller('campaign')
+@UseInterceptors(TraceInterceptor)
 export class CampaignController {
   private logger = rootLogger.child({ logger: CampaignController.name });
 

@@ -1,8 +1,10 @@
-import { Controller, Body, Post } from '@nestjs/common';
+import { Controller, Body, Post, UseInterceptors } from '@nestjs/common';
+import { TraceInterceptor } from 'src/trace.interceptor';
 import { PaymentRequestDto } from './payment-stripe.dto';
 import { PaymentStripeService } from './payment-stripe.service';
 
 @Controller('stripe')
+@UseInterceptors(TraceInterceptor)
 export class PaymentStripeController {
   constructor(private readonly paymentStripeService: PaymentStripeService) {}
 

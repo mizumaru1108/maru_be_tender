@@ -35,9 +35,32 @@ import { UploadModule } from './upload/upload.module';
 import { OperatorModule } from './operator/operator.module';
 import { ManagerModule } from './manager/manager.module';
 import { WidgetsModule } from './widgets/widgets.module';
+// import { OpenTelemetryModule } from 'nestjs-otel';
+// import { OpenTelemetryModule } from '@metinseylan/nestjs-opentelemetry';
+
+// const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
+//   metrics: {
+//     hostMetrics: false, // Includes Host Metrics
+//     defaultMetrics: false, // Includes Default Metrics
+//     apiMetrics: {
+//       enable: false, // Includes api metrics
+//       timeBuckets: [], // You can change the default time buckets
+//       defaultAttributes: {
+//         // You can set default labels for api metrics
+//         // custom: 'label',
+//       },
+//       ignoreRoutes: ['/favicon.ico'], // You can ignore specific routes (See https://docs.nestjs.com/middleware#excluding-routes for options)
+//       ignoreUndefinedRoutes: false, //Records metrics for all URLs, even undefined ones
+//     },
+//   },
+// });
 
 @Module({
   imports: [
+    // OpenTelemetryModuleConfig,
+    // OpenTelemetryModule.forRoot({
+    //   applicationName: 'tmra-raise',
+    // }),
     ScheduleModule.forRoot(),
     ConfigModule.forRoot(),
     MongooseModule.forRootAsync({
