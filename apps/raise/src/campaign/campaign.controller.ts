@@ -88,14 +88,27 @@ export class CampaignController {
     );
   }
 
-  @ApiOperation({ summary: 'Get list all my campaign (vendor)' })
+  @ApiOperation({ summary: 'Get list all my approved campaign (vendor)' })
   @Get('organization/:organizationId/vendor/:vendorId/getListApproved')
-  async getAllMyCampaignByVendor(
+  async getApprovedMyCampaignByVendor(
     @Param('organizationId') organizationId: string,
     @Param('vendorId') vendorId: string,
   ) {
-    this.logger.debug(`Get list all my approved campaign`);
+    this.logger.debug(`Get list all my approved  campaign`);
     return await this.campaignService.getAllApprovedCampaign(
+      organizationId,
+      vendorId,
+    );
+  }
+
+  @ApiOperation({ summary: 'Get list all my pending campaign (vendor)' })
+  @Get('organization/:organizationId/vendor/:vendorId/getListPending')
+  async getPendingMyCampaignByVendor(
+    @Param('organizationId') organizationId: string,
+    @Param('vendorId') vendorId: string,
+  ) {
+    this.logger.debug(`Get list all my pending campaign`);
+    return await this.campaignService.getAllPendingCampaign(
       organizationId,
       vendorId,
     );
