@@ -16,6 +16,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { FusionAuthClient } from '@fusionauth/typescript-client';
 import { ConfigService } from '@nestjs/config';
 import { Anonymous, AnonymousDocument } from './schema/anonymous.schema';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class DonorService {
@@ -58,10 +59,17 @@ export class DonorService {
   }
 
   async getDonor(donorId: string) {
-    this.logger.debug('Get Donor...');
-    const donor = await this.donorModel.findOne({
-      _id: donorId,
-    });
+    this.logger.debug(`Get Donor ${donorId.length}...`);
+    let donor = null;
+    if (!Types.ObjectId.isValid(donorId)) {
+      donor = await this.donorModel.findOne({
+        ownerUserId: donorId,
+      });
+    } else {
+      donor = await this.donorModel.findOne({
+        _id: donorId,
+      });
+    }
     if (!donor) {
       return {
         statusCode: 404,
