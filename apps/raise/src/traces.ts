@@ -1,5 +1,6 @@
+import dotenv from 'dotenv';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { Resource } from '@opentelemetry/resources';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
@@ -14,23 +15,27 @@ import { diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api';
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
 import { FastifyInstrumentation } from '@opentelemetry/instrumentation-fastify';
 import { AsyncLocalStorageContextManager } from '@opentelemetry/context-async-hooks';
-import { JaegerExporter } from '@opentelemetry/exporter-jaeger';
 
-export async function initTracing() {
-  const traceEnabled =
-    process.env.OTEL_TRACE_ENABLED === 'true' ||
-    process.env.OTEL_TRACE_ENABLED === '1';
-  const traceConsoleEnabled =
-    process.env.OTEL_TRACE_CONSOLE_ENABLED === 'true' ||
-    process.env.OTEL_TRACE_CONSOLE_ENABLED === '1';
+// we start very early before NestJS, so this is needed
+dotenv.config();
+
+export async function initTraces() {
+  const tracesEnabled =
+    process.env.OTEL_TRACES_ENABLED === 'true' ||
+    process.env.OTEL_TRACES_ENABLED === '1';
+  const tracesConsoleEnabled =
+    process.env.OTEL_TRACES_CONSOLE_ENABLED === 'true' ||
+    process.env.OTEL_TRACES_CONSOLE_ENABLED === '1';
   // For troubleshooting, set the log level to DiagLogLevel.DEBUG
-  const logLevel =
-    process.env.OTEL_LOG_LEVEL === 'DEBUG'
-      ? DiagLogLevel.DEBUG
-      : DiagLogLevel.INFO;
+  const logLevel = process.env.OTEL_LOG_LEVEL
+    ? DiagLogLevel[
+        process.env.OTEL_LOG_LEVEL.toUpperCase() as keyof typeof DiagLogLevel
+      ]
+    : DiagLogLevel.INFO;
   diag.setLogger(new DiagConsoleLogger(), logLevel);
-  if (traceEnabled || traceConsoleEnabled) {
-    console.info(`OpenTelemetry Tracing enabled`);
+  if (tracesEnabled) {
+    console.info(`OpenTelemetry Traces enabled`);
+    let spanProcessor: SpanProcessor | undefined = undefined;
     // const provider = new NodeTracerProvider({
     //   resource: new Resource({
     //     [SemanticResourceAttributes.SERVICE_NAME]: 'tmra-raise',
@@ -39,41 +44,25 @@ export async function initTracing() {
     //     [SemanticResourceAttributes.SERVICE_VERSION]: process.env.APP_VERSION,
     //   }),
     // });
-    // export spans to console (useful for debugging)
-    let spanProcessor: SpanProcessor | undefined = undefined;
-    let consoleExporter: ConsoleSpanExporter | undefined = undefined;
-    if (traceConsoleEnabled) {
-      consoleExporter = new ConsoleSpanExporter();
-      console.info('Console span processor enabled');
-      // provider.addSpanProcessor(
-      //   new SimpleSpanProcessor(new ConsoleSpanExporter()),
-      // );
-      spanProcessor = new BatchSpanProcessor(new ConsoleSpanExporter());
-    }
+
     // export spans to OpenTelemetry collector
-    let otlpExporter: OTLPTraceExporter | undefined = undefined;
+    // let otlpExporter: OTLPTraceExporter | undefined = undefined;
     if (process.env.OTEL_EXPORTER_OTLP_ENDPOINT) {
-      otlpExporter = new OTLPTraceExporter({
+      const otlpExporter = new OTLPTraceExporter({
         url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
       });
       console.info(
-        `OTLP trace endpoint: ${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}`,
+        `OpenTelemetry Traces > OTLP Exporter > OTLP traces endpoint: ${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}`,
       );
-      // provider.addSpanProcessor(new SimpleSpanProcessor(otlpExporter));
       spanProcessor = new BatchSpanProcessor(otlpExporter);
-    }
-    // export spans to Jaeger collector
-    let jaegerExporter: JaegerExporter | undefined = undefined;
-    if (process.env.OTEL_EXPORTER_JAEGER_ENDPOINT) {
-      jaegerExporter = new JaegerExporter({
-        endpoint: process.env.OTEL_EXPORTER_JAEGER_ENDPOINT,
-        port: 6832,
-      });
-      console.info(
-        `Jaeger trace endpoint: ${process.env.OTEL_EXPORTER_JAEGER_ENDPOINT}`,
-      );
-      // provider.addSpanProcessor(new SimpleSpanProcessor(otlpExporter));
-      spanProcessor = new BatchSpanProcessor(jaegerExporter);
+      // provider.addSpanProcessor(spanProcessor);
+    } else if (tracesConsoleEnabled) {
+      // export spans to console (useful for debugging)
+      // let consoleExporter: ConsoleSpanExporter | undefined = undefined;
+      const consoleExporter = new ConsoleSpanExporter();
+      console.info('OpenTelemetry Traces > Console span processor enabled');
+      spanProcessor = new SimpleSpanProcessor(consoleExporter);
+      // provider.addSpanProcessor(spanProcessor);
     }
 
     // Initialize the provider
@@ -84,7 +73,7 @@ export async function initTracing() {
     //   instrumentations: [new NestInstrumentation()],
     //   tracerProvider: provider,
     // });
-    if (jaegerExporter || otlpExporter || consoleExporter) {
+    if (spanProcessor) {
       const sdk = new NodeSDK({
         resource: new Resource({
           [SemanticResourceAttributes.SERVICE_NAME]: 'tmra-raise',
@@ -100,29 +89,31 @@ export async function initTracing() {
           // Fastify instrumentation expects HTTP layer to be instrumented
           new HttpInstrumentation(),
           new FastifyInstrumentation(),
-          // new NestInstrumentation(),
+          new NestInstrumentation(),
         ],
       });
 
       try {
         await sdk.start();
-        console.info('Tracing initialized');
+        console.info('OpenTelemetry Traces initialized');
       } catch (error) {
-        console.error('Error initializing tracing', error);
+        console.error('Error initializing OpenTelemetry Traces', error);
       }
 
       process.on('SIGTERM', async () => {
         try {
           sdk.shutdown();
-          console.info('Tracing terminated');
+          console.info('OpenTelemetry Traces terminated');
         } catch (error) {
-          console.error('Error terminating tracing', error);
+          console.error('Error terminating OpenTelemetry Traces', error);
         } finally {
           process.exit(0);
         }
       });
     }
   } else {
-    console.info('OpenTelemetry Tracing disabled');
+    console.info('OpenTelemetry Traces disabled');
   }
 }
+
+initTraces();

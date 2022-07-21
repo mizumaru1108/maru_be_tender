@@ -1,4 +1,4 @@
-import { initTracing } from './tracing';
+import './traces'; // MUST be the first one! because of instrumentations
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import {
@@ -9,8 +9,6 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
-  await initTracing();
-
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ logger: true }),

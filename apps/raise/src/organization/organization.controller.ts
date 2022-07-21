@@ -15,11 +15,9 @@ import { OrganizationDto } from './dto/organization.dto';
 import { AppearancenDto } from './dto/appearance.dto';
 import { NotificationSettingsDto } from './dto/notification_settings.dto';
 import { FaqDto } from './dto/faq.dto';
-import { TraceInterceptor } from 'src/trace.interceptor';
 
 @ApiTags('orgs')
 @Controller('orgs')
-@UseInterceptors(TraceInterceptor)
 export class OrganizationController {
   private logger = rootLogger.child({ logger: OrganizationController.name });
 
