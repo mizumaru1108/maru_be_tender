@@ -507,14 +507,17 @@ export class CampaignService {
       {
         $match: {
           vendorId: realVdId,
-          status: 'pending',
+          status: 'pending new',
           orgId: ObjectId(organizationId),
         },
       },
 
-      { $sort: { _id: 1 } },
+      { $sort: { _id: -1 } },
     ]);
 
+    this.logger.debug(
+      `list of my pending campaign=${JSON.stringify(campaignList)}`,
+    );
     return campaignList;
   }
 
