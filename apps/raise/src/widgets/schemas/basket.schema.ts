@@ -38,10 +38,10 @@ export class Basket {
   isExpired: boolean;
 
   @Prop()
-  createdAt: string;
+  createdAt: Date;
 
   @Prop()
-  updatedAt: string;
+  updatedAt: Date;
 }
 
 export const BasketSchema = SchemaFactory.createForClass(Basket);

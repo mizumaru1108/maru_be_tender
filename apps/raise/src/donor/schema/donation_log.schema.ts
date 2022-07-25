@@ -29,10 +29,10 @@ export class DonationLogs {
   public currency?: string;
   @Prop({ type: () => String })
   public transactionId?: string;
-  @Prop({ type: () => String })
-  public createdAt: string;
-  @Prop({ type: () => String })
-  public updatedAt: string;
+  @Prop({ type: () => Date })
+  public createdAt: Date;
+  @Prop({ type: () => Date })
+  public updatedAt: Date;
   @Prop({ type: () => String })
   public ipAddress?: string;
 }

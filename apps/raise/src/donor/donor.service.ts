@@ -59,7 +59,7 @@ export class DonorService {
   }
 
   async getDonor(donorId: string) {
-    this.logger.debug(`Get Donor ${donorId.length}...`);
+    this.logger.debug(`Get Donor ${donorId}...`);
     let donor = null;
     if (!Types.ObjectId.isValid(donorId)) {
       donor = await this.donorModel.findOne({
@@ -197,11 +197,22 @@ export class DonorService {
     donorId: string,
     donorUpdateProfileDto: DonorUpdateProfileDto,
   ) {
-    const donorUpdated = await this.donorModel.findOneAndUpdate(
-      { _id: donorId },
-      donorUpdateProfileDto,
-      { new: true },
-    );
+    this.logger.debug(`Get Donor ${donorId}...`);
+    this.logger.debug(Types.ObjectId.isValid(donorId));
+    let donorUpdated = null;
+    if (Types.ObjectId.isValid(donorId)) {
+      donorUpdated = await this.donorModel.findOneAndUpdate(
+        { _id: donorId },
+        donorUpdateProfileDto,
+        { new: true },
+      );
+    } else {
+      donorUpdated = await this.donorModel.findOneAndUpdate(
+        { ownerUserId: donorId },
+        donorUpdateProfileDto,
+        { new: true },
+      );
+    }
 
     if (!donorUpdated) {
       return {

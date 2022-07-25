@@ -329,7 +329,8 @@ export class ZakatService {
 
   async createExpense(expenseDto: ExpenseDto): Promise<Expense> {
     const createdExpense = new this.expenseModel(expenseDto);
-    createdExpense.createdDate = moment().toISOString();
+    let now: Date = new Date();
+    createdExpense.createdDate = now;
     return createdExpense.save();
   }
 

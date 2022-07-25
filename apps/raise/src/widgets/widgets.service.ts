@@ -112,7 +112,7 @@ export class WidgetsService {
     }
 
     const createdBasket = new this.basketModel(basketDto);
-    const now = moment().toISOString();
+    let now: Date = new Date();
     createdBasket.createdAt = now;
     createdBasket.updatedAt = now;
     createdBasket.donorId = new Types.ObjectId(basketDto.donorId);

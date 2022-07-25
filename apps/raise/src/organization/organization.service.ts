@@ -294,8 +294,38 @@ export class OrganizationService {
       };
     }
 
+    const getDateQuery = (filterBy: string) => {
+      const date = new Date();
+      const tomorrow = new Date(date.getDate() + 1);
+  
+      switch(filterBy) {
+          case 'year':
+              return {
+                  $exists: true,
+                  $lt: date,
+              };
+          case 'quarter': 
+              return {
+                  $exists: true,
+                  $gte: date,
+                  $lt: tomorrow
+              };
+          case 'month':
+              return {
+                  $exists: true,
+                  $gte: tomorrow
+              };
+          default:
+              const sevenDaysAgo: Date = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)  
+              console.log(date.toISOString());
+              console.log(sevenDaysAgo.toISOString());
+              return {
+                  $gte: sevenDaysAgo
+              };
+      };
+  };
     const totalProgram = await this.campaignModel
-      .where({ organizationId: new Types.ObjectId(organizationId) })
+      .where({ organizationId: new Types.ObjectId(organizationId), createdAt: getDateQuery('week') })
       .count();
 
     const totalDonor = await this.donorModel
