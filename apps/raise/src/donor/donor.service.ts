@@ -235,10 +235,25 @@ export class DonorService {
 
   async getDonationLogs(
     donorUserId: string,
-    sortDate: string = 'desc',
-    sortStatus: string = 'asc',
+    sortDate: string,
+    sortStatus: string,
   ) {
     this.logger.debug('Get Donation logs...');
+    let sortData = {};
+    if (sortDate) {
+      sortData = {
+        createdAt: sortDate == 'asc' ? 1 : -1,
+      };
+    } else if (sortStatus) {
+      sortData = {
+        donationStatus: sortStatus == 'asc' ? 1 : -1,
+        createdAt: -1,
+      };
+    } else {
+      sortData = {
+        createdAt: -1,
+      };
+    }
     const donationLogList = await this.donationLogsModel.aggregate([
       {
         $match: { donorUserId: donorUserId },
@@ -283,11 +298,7 @@ export class DonorService {
         },
       },
       {
-        $sort: {
-          // _id: 1,
-          createdAt: sortDate == 'asc' ? 1 : -1,
-          donationStatus: sortStatus == 'asc' ? 1 : -1,
-        },
+        $sort: sortData,
       },
     ]);
     return donationLogList;

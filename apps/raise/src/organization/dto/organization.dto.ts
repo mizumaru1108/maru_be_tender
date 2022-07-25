@@ -5,6 +5,7 @@ export class OrganizationDto {
   aboutHeading: string;
   aboutBody: string;
   aboutPicture: string;
+  isoPhoneCode: string;
   country: string;
   state: string;
   city: string;

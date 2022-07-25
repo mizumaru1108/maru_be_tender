@@ -18,6 +18,8 @@ export class Organization {
   @Prop()
   defaultCurrency: string;
   @Prop()
+  isoPhoneCode: string;
+  @Prop()
   country: string;
   @Prop()
   state: string;

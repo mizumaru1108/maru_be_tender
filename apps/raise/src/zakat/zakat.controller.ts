@@ -31,15 +31,27 @@ export class ZakatController {
   }
 
   @Get('transactionAll')
-  async getTransactionAll(@Query('organizationId') organizationId: string) {
+  async getTransactionAll(
+    @Query('organizationId') organizationId: string,
+    @Query('sortStatus') sortStatus: string,
+  ) {
     this.logger.debug('fetching zakat transaction All...');
-    return await this.zakatService.getTransactionAll(organizationId);
+    return await this.zakatService.getTransactionAll(
+      organizationId,
+      sortStatus,
+    );
   }
 
   @Get('transactionList')
-  async getTransactionList(@Query('organizationId') organizationId: string) {
+  async getTransactionList(
+    @Query('organizationId') organizationId: string,
+    @Query('sortStatus') sortStatus: string,
+  ) {
     this.logger.debug('fetching receive donation transaction...');
-    return await this.zakatService.getTransactionList(organizationId);
+    return await this.zakatService.getTransactionList(
+      organizationId,
+      sortStatus,
+    );
   }
 
   @Get('expense/list')

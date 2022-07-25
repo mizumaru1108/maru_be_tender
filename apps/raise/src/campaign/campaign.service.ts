@@ -193,13 +193,33 @@ export class CampaignService {
     return dataCampaign;
   }
 
-  async findAll(organizationId: string) {
+  async findAll(
+    organizationId: string,
+    publishedSort: string,
+    finishedSort: string,
+  ) {
     this.logger.debug(`getCampaignList organizationId=${organizationId}`);
+    let sortData = {};
+    if (publishedSort) {
+      sortData = {
+        isPublished: publishedSort == 'asc' ? 1 : -1,
+      };
+    } else if (finishedSort) {
+      sortData = {
+        isFinished: finishedSort == 'asc' ? 1 : -1,
+        createdAt: -1,
+      };
+    } else {
+      sortData = {
+        createdAt: -1,
+      };
+    }
+
     let filter = {};
 
     const ObjectId = require('mongoose').Types.ObjectId;
     if (organizationId) filter = { organizationId: ObjectId(organizationId) };
-    return await this.campaignModel.find(filter).exec();
+    return await this.campaignModel.find(filter).sort(sortData).exec();
   }
 
   async getAllByOrganizationId(organizationId: string) {

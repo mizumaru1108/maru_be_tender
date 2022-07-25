@@ -40,9 +40,17 @@ export class CampaignController {
     description: 'List all campaigns by organization ID.',
   })
   @Get('getListAll')
-  async findAll(@Query('organizationId') organizationId: string) {
+  async findAll(
+    @Query('organizationId') organizationId: string,
+    @Query('sortPublished') sortPublished: string,
+    @Query('sortFinished') sortFinished: string,
+  ) {
     this.logger.debug('findAll...');
-    return await this.campaignService.findAll(organizationId);
+    return await this.campaignService.findAll(
+      organizationId,
+      sortPublished,
+      sortFinished,
+    );
   }
 
   @ApiOperation({ summary: 'List all campaigns by organization ID' })

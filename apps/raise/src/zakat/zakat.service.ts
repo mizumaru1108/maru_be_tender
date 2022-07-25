@@ -170,7 +170,7 @@ export class ZakatService {
     return { total_receive: totalReceive };
   }
 
-  async getTransactionAll(organizationId: string) {
+  async getTransactionAll(organizationId: string, status: string) {
     this.logger.debug(`getTransactions organizationId=${organizationId}`);
     const getOrganization = await this.organizationModel.findOne({
       _id: organizationId,
@@ -213,7 +213,7 @@ export class ZakatService {
     return transactionAll;
   }
 
-  async getTransactionList(organizationId: string) {
+  async getTransactionList(organizationId: string, sortStatus: string) {
     this.logger.debug(`getTransactions organizationId=${organizationId}`);
     // const list = await this.donationLogModel
     //   .find({
@@ -223,6 +223,17 @@ export class ZakatService {
     //   .populate('donorUserId');
     // console.log(list[0]?.donorUserId);
     // return list;
+    let sortData = {};
+    if (sortStatus) {
+      sortData = {
+        donationStatus: sortStatus == 'asc' ? 1 : -1,
+        createdAt: -1,
+      };
+    } else {
+      sortData = {
+        createdAt: -1,
+      };
+    }
     return await this.donationLogModel.aggregate([
       {
         $match: {
@@ -293,6 +304,9 @@ export class ZakatService {
           amount: { $first: '$amount' },
           donorName: { $first: '$donorName' },
         },
+      },
+      {
+        $sort: sortData,
       },
     ]);
   }
