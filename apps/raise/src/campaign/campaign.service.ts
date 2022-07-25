@@ -253,76 +253,124 @@ export class CampaignService {
     return campaignList;
   }
 
-  async getAllByOperatorId(operatorId: string) {
+  async getAllByOperatorId(organizationId: string, operatorId: string) {
     const ObjectId = require('mongoose').Types.ObjectId;
-    const dataOperator = await this.operatorModel.findOne({
-      ownerUserId: operatorId,
-    });
-    const realOpId = dataOperator?._id;
-    if (!realOpId) {
+    // const dataOperator = await this.operatorModel.findOne({
+    //   ownerUserId: operatorId,
+    // });
+    // const realOpId = dataOperator?._id;
+    if (!operatorId) {
       throw new NotFoundException(`OperatorId must be not null`);
     }
 
-    if (!ObjectId.isValid(realOpId)) {
-      throw new BadRequestException(`OperatorId is invalid ObjectId`);
+    if (!organizationId) {
+      throw new NotFoundException(`OrganizationId must be not null`);
     }
+
+    // if (!ObjectId.isValid(realOpId)) {
+    //   throw new BadRequestException(`OperatorId is invalid ObjectId`);
+    // }
+
+    // const campaignList = await this.campaignModel.aggregate([
+    //   {
+    //     $match: {
+    //       campaignName: { $exists: true },
+    //       campaignType: { $exists: true },
+    //       projectId: { $exists: true },
+    //     },
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: 'project',
+    //       localField: 'projectId',
+    //       foreignField: '_id',
+    //       as: 'cp',
+    //     },
+    //   },
+    //   { $unwind: { path: '$cp', preserveNullAndEmptyArrays: true } },
+    //   {
+    //     $lookup: {
+    //       from: 'projectOperatorMap',
+    //       localField: 'projectId',
+    //       foreignField: 'projectId',
+    //       as: 'pj',
+    //     },
+    //   },
+    //   { $unwind: { path: '$pj', preserveNullAndEmptyArrays: true } },
+    //   {
+    //     $lookup: {
+    //       from: 'campaignVendorLog',
+    //       localField: '_id',
+    //       foreignField: 'campaignId',
+    //       as: 'cpv',
+    //     },
+    //   },
+    //   { $unwind: { path: '$cpv' } },
+    //   {
+    //     $addFields: {
+    //       operatorId: '$pj.operatorId',
+    //       status: '$cpv.status',
+    //       type: '$campaignType',
+    //     },
+    //   },
+    //   {
+    //     $project: {
+    //       _id: 1,
+    //       campaignName: 1,
+    //       status: 1,
+    //       type: 1,
+    //       createdAt: 1,
+    //       milestone: { $size: '$milestone' },
+    //       projectId: 1,
+    //       operatorId: 1,
+    //     },
+    //   },
+    //   { $match: { operatorId: ObjectId(realOpId) } },
+    //   { $sort: { _id: 1 } },
+    // ]);
 
     const campaignList = await this.campaignModel.aggregate([
       {
         $match: {
-          campaignName: { $exists: true },
-          campaignType: { $exists: true },
-          projectId: { $exists: true },
+          organizationId: ObjectId(organizationId),
+          creatorUserId: operatorId,
         },
       },
       {
-        $lookup: {
-          from: 'project',
-          localField: 'projectId',
-          foreignField: '_id',
-          as: 'cp',
+        $project: {
+          campaignName: 1,
+          campaignType: 1,
+          updatedAt: 1,
+          createdAt: 1,
+          status: 1,
+          foo_count: { $size: '$milestone' },
         },
       },
-      { $unwind: { path: '$cp', preserveNullAndEmptyArrays: true } },
-      {
-        $lookup: {
-          from: 'projectOperatorMap',
-          localField: 'projectId',
-          foreignField: 'projectId',
-          as: 'pj',
-        },
-      },
-      { $unwind: { path: '$pj', preserveNullAndEmptyArrays: true } },
       {
         $lookup: {
           from: 'campaignVendorLog',
           localField: '_id',
           foreignField: 'campaignId',
-          as: 'cpv',
-        },
-      },
-      { $unwind: { path: '$cpv' } },
-      {
-        $addFields: {
-          operatorId: '$pj.operatorId',
-          status: '$cpv.status',
-          type: '$campaignType',
+          as: 'campaignVendorLog',
         },
       },
       {
-        $project: {
-          _id: 1,
-          campaignName: 1,
-          status: 1,
-          type: 1,
-          createdAt: 1,
-          milestone: { $size: '$milestone' },
-          projectId: 1,
-          operatorId: 1,
+        $unwind: {
+          path: '$campaignVendorLog',
         },
       },
-      { $match: { operatorId: ObjectId(realOpId) } },
-      { $sort: { _id: 1 } },
+      {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$campaignName' },
+          type: { $first: '$campaignType' },
+          updatedAt: { $first: '$updatedAt' },
+          createdAt: { $first: '$createdAt' },
+          status: { $first: '$campaignVendorLog.status' },
+          milestone: { $first: '$foo_count' },
+        },
+      },
+      { $sort: { _id: -1, creaatedAt: 1 } },
     ]);
 
     return campaignList;
@@ -507,14 +555,17 @@ export class CampaignService {
       {
         $match: {
           vendorId: realVdId,
-          status: 'pending',
+          status: 'pending new',
           orgId: ObjectId(organizationId),
         },
       },
 
-      { $sort: { _id: 1 } },
+      { $sort: { _id: -1 } },
     ]);
 
+    this.logger.debug(
+      `list of my pending campaign=${JSON.stringify(campaignList)}`,
+    );
     return campaignList;
   }
 

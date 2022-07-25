@@ -55,10 +55,16 @@ export class CampaignController {
   }
 
   @ApiOperation({ summary: 'Get list all campaign by operatorID' })
-  @Get('operator/:operatorId/getListAll')
-  async getAllByOperatorId(@Param('operatorId') operatorId: string) {
+  @Get('organization/:organizationId/operator/:operatorId/getListAll')
+  async getAllByOperatorId(
+    @Param('organizationId') organizationId: string,
+    @Param('operatorId') operatorId: string,
+  ) {
     this.logger.debug(`Get list all campaign by operator ID`);
-    return await this.campaignService.getAllByOperatorId(operatorId);
+    return await this.campaignService.getAllByOperatorId(
+      organizationId,
+      operatorId,
+    );
   }
 
   @ApiOperation({
