@@ -46,6 +46,16 @@ export class ContactsService {
         success = true;
         statusCode = 200;
         txtMessage = 'Your email has been sent';
+
+        await this.mailerService.sendMail({
+          // to: organizationData['contactEmail'],
+          to: message.email, // organizationData['contactEmail'],
+          subject: 'Thanks for letting us know',
+          template: 'donor',
+          context: {
+            name: message.name,
+          },
+        });
       }
     }
 
