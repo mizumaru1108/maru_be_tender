@@ -10,6 +10,10 @@ import {
   Organization,
   OrganizationSchema,
 } from 'src/organization/schema/organization.schema';
+import {
+  Notifications,
+  NotificationsSchema,
+} from 'src/organization/schema/notifications.schema';
 
 @Module({
   imports: [
@@ -17,6 +21,10 @@ import {
       {
         name: Organization.name,
         schema: OrganizationSchema,
+      },
+      {
+        name: Notifications.name,
+        schema: NotificationsSchema,
       },
     ]),
     MailerModule.forRootAsync({

@@ -4,10 +4,15 @@ import { Model } from 'mongoose';
 import { MailerService } from '@nestjs-modules/mailer';
 import { MessageDto } from './message.dto';
 import { rootLogger } from '../logger';
+import { Types } from 'mongoose';
 import {
   Organization,
   OrganizationDocument,
 } from 'src/organization/schema/organization.schema';
+import {
+  Notifications,
+  NotificationsDocument,
+} from 'src/organization/schema/notifications.schema';
 
 @Injectable()
 export class ContactsService {
@@ -17,6 +22,8 @@ export class ContactsService {
     @InjectModel(Organization.name)
     private organizationModel: Model<OrganizationDocument>,
     private mailerService: MailerService,
+    @InjectModel(Notifications.name)
+    private notificationsModel: Model<NotificationsDocument>,
   ) {}
 
   async sendMail(message: MessageDto) {
@@ -55,6 +62,16 @@ export class ContactsService {
           context: {
             name: message.name,
           },
+        });
+
+        this.notificationsModel.create({
+          organizationId: new Types.ObjectId(organizationId),
+          type: 'general',
+          createdAt: new Date(),
+          title: 'Donor has sent you an Email!',
+          body: `Please check your inbox...`,
+          icon: 'message',
+          markAsRead: false,
         });
       }
     }
