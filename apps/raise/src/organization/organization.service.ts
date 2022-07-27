@@ -33,6 +33,8 @@ import {
 } from './schema/notifications.schema';
 import { FaqDto } from './dto/faq.dto';
 import { Faq, FaqDocument } from './schema/faq.schema';
+import { PaymentGateWayDto } from 'src/payment-stripe/dto/paymentGateway.dto';
+import { NotificationDto } from './dto/notification.dto';
 
 @Injectable()
 export class OrganizationService {
@@ -247,15 +249,94 @@ export class OrganizationService {
       {
         $unwind: {
           path: '$user',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
+        $lookup: {
+          from: 'anonymous',
+          localField: '_id',
+          foreignField: 'donationLogId',
+          as: 'user_anonymous',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user_anonymous',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: {
+          // donorName: {
+          //   $cond: [
+          //     { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+          //     {
+          //       $cond: {
+          //         if: {
+          //           $eq: [{ $ifNull: ['$user_anonymous.lastName', 0] }, 0],
+          //         },
+          //         then: '$user_anonymous.firstName',
+          //         else: {
+          //           $concat: [
+          //             '$user_anonymous.firstName',
+          //             ' ',
+          //             '$user_anonymous.lastName',
+          //           ],
+          //         },
+          //       },
+          //     },
+          //     {
+          //       $cond: {
+          //         if: {
+          //           $eq: [{ $ifNull: ['$user.lastName', 0] }, 0],
+          //         },
+          //         then: '$user.firstName',
+          //         else: {
+          //           $concat: ['$user.firstName', ' ', '$user.lastName'],
+          //         },
+          //       },
+          //     },
+          //   ],
+          // },
+          userId: {
+            $cond: [
+              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              '$user_anonymous._id',
+              '$user._id',
+            ],
+          },
+          firstName: {
+            $cond: [
+              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              '$user_anonymous.firstName',
+              '$user.firstName',
+            ],
+          },
+          lastName: {
+            $cond: [
+              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              '$user_anonymous.lastName',
+              '$user.lastName',
+            ],
+          },
+          email: {
+            $cond: [
+              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              '$user_anonymous.email',
+              '$user.email',
+            ],
+          },
         },
       },
       {
         $group: {
-          _id: '$donorUserId',
+          _id: '$userId',
           donorId: { $first: '$user._id' },
-          firstName: { $first: '$user.firstName' },
-          lastName: { $first: '$user.lastName' },
-          email: { $first: '$user.email' },
+          firstName: { $first: '$firstName' },
+          lastName: { $first: '$lastName' },
+          email: { $first: '$email' },
           country: { $first: '$user.country' },
           mobile: { $first: '$user.mobile' },
           totalAmount: { $sum: '$amount' },
@@ -274,6 +355,49 @@ export class OrganizationService {
       },
       'name defaultCurrency',
     );
+  }
+
+  async addNewPaymentGateWay(
+    organizationId: string,
+    paymentGatewayDto: PaymentGateWayDto,
+  ) {
+    this.logger.debug('Get Organization...');
+    const organization = await this.organizationModel.findOne({
+      _id: new Types.ObjectId(organizationId),
+    });
+    if (!organization) {
+      return {
+        statusCode: 404,
+        message: 'Organization not found',
+      };
+    }
+
+    paymentGatewayDto.name = paymentGatewayDto.name.toUpperCase();
+    const paymentGateway = await this.paymentGatewayModel.findOne({
+      organizationId: new Types.ObjectId(organizationId),
+      name: paymentGatewayDto.name,
+    });
+
+    if (paymentGateway) {
+      return {
+        statusCode: 400,
+        message: 'Name is already exist',
+      };
+    }
+
+    const paymentGatewayCreated = new this.paymentGatewayModel(
+      paymentGatewayDto,
+    );
+    let now: Date = new Date();
+    paymentGatewayDto.createdAt = now;
+    paymentGatewayDto.updatedAt = now;
+    paymentGatewayDto.organizationId = new Types.ObjectId(organizationId);
+    paymentGatewayCreated.save();
+
+    return {
+      statusCode: 200,
+      paymentGateway: paymentGatewayCreated,
+    };
   }
 
   async getInsightSummary(organizationId: string) {
@@ -297,39 +421,47 @@ export class OrganizationService {
     const getDateQuery = (filterBy: string) => {
       const date = new Date();
       const tomorrow = new Date(date.getDate() + 1);
-  
-      switch(filterBy) {
-          case 'year':
-              return {
-                  $exists: true,
-                  $lt: date,
-              };
-          case 'quarter': 
-              return {
-                  $exists: true,
-                  $gte: date,
-                  $lt: tomorrow
-              };
-          case 'month':
-              return {
-                  $exists: true,
-                  $gte: tomorrow
-              };
-          default:
-              const sevenDaysAgo: Date = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)  
-              console.log(date.toISOString());
-              console.log(sevenDaysAgo.toISOString());
-              return {
-                  $gte: sevenDaysAgo
-              };
-      };
-  };
+
+      switch (filterBy) {
+        case 'year':
+          return {
+            $exists: true,
+            $lt: date,
+          };
+        case 'quarter':
+          return {
+            $exists: true,
+            $gte: date,
+            $lt: tomorrow,
+          };
+        case 'month':
+          return {
+            $exists: true,
+            $gte: tomorrow,
+          };
+        default:
+          const sevenDaysAgo: Date = new Date(
+            Date.now() - 7 * 24 * 60 * 60 * 1000,
+          );
+          console.log(date.toISOString());
+          console.log(sevenDaysAgo.toISOString());
+          return {
+            $gte: sevenDaysAgo,
+          };
+      }
+    };
     const totalProgram = await this.campaignModel
-      .where({ organizationId: new Types.ObjectId(organizationId), createdAt: getDateQuery('week') })
+      .where({
+        organizationId: new Types.ObjectId(organizationId),
+        createdAt: getDateQuery('week'),
+      })
       .count();
 
     const totalDonor = await this.donorModel
-      .where({ organizationId: new Types.ObjectId(organizationId) })
+      .where({
+        organizationId: new Types.ObjectId(organizationId),
+        createdAt: getDateQuery('week'),
+      })
       .count();
 
     const donationList = await this.donationLogModel.aggregate([
@@ -337,6 +469,7 @@ export class OrganizationService {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
           donationStatus: 'SUCCESS',
+          createdAt: getDateQuery('week'),
         },
       },
       {
@@ -355,6 +488,7 @@ export class OrganizationService {
           nonprofitRealmId: new Types.ObjectId(organizationId),
           donationStatus: 'SUCCESS',
           donorUserId: { $ne: null },
+          createdAt: getDateQuery('week'),
         },
       },
       {
@@ -390,6 +524,7 @@ export class OrganizationService {
           nonprofitRealmId: new Types.ObjectId(organizationId),
           donationStatus: 'SUCCESS',
           donorUserId: { $ne: null },
+          createdAt: getDateQuery('week'),
         },
       },
       {
@@ -432,6 +567,7 @@ export class OrganizationService {
           nonprofitRealmId: new Types.ObjectId(organizationId),
           donationStatus: 'SUCCESS',
           donorUserId: { $ne: null },
+          createdAt: getDateQuery('week'),
         },
       },
       {
@@ -470,6 +606,7 @@ export class OrganizationService {
     const campaignPerType = await this.campaignModel
       .where({
         organizationId: new Types.ObjectId(organizationId),
+        createdAt: getDateQuery('week'),
       })
       .select({
         _id: 1,
@@ -478,7 +615,41 @@ export class OrganizationService {
         amountProgress: 1,
         amountTarget: 1,
       });
-    const donorList = await this.getDonorList(organizationId);
+    const donorList = await this.donationLogModel.aggregate([
+      {
+        $match: {
+          nonprofitRealmId: new Types.ObjectId(organizationId),
+          donationStatus: 'SUCCESS',
+          donorUserId: { $ne: null },
+          createdAt: getDateQuery('week'),
+        },
+      },
+      {
+        $lookup: {
+          from: 'donor',
+          localField: 'donorUserId',
+          foreignField: 'ownerUserId',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+        },
+      },
+      {
+        $group: {
+          _id: '$donorUserId',
+          donorId: { $first: '$user._id' },
+          firstName: { $first: '$user.firstName' },
+          lastName: { $first: '$user.lastName' },
+          email: { $first: '$user.email' },
+          country: { $first: '$user.country' },
+          mobile: { $first: '$user.mobile' },
+          totalAmount: { $sum: '$amount' },
+        },
+      },
+    ]);
 
     return {
       total_donation: totalDonation,
@@ -662,6 +833,34 @@ export class OrganizationService {
     return {
       statusCode: 200,
       faq: faqUpdated,
+    };
+  }
+
+  async addNotification(
+    organizationId: string,
+    notificationDto: NotificationDto,
+  ) {
+    this.logger.debug(`Get Organization ${organizationId}...`);
+    const organization = await this.organizationModel.findOne({
+      _id: new Types.ObjectId(organizationId),
+    });
+    if (!organization) {
+      return {
+        statusCode: 404,
+        message: 'Organization not found',
+      };
+    }
+
+    const notifCreated = await this.notificationsModel.create(notificationDto);
+    let now: Date = new Date();
+    notifCreated.organizationId = new Types.ObjectId(organizationId);
+    notifCreated.createdAt = now;
+    notifCreated.updatedAt = now;
+    notifCreated.markAsRead = false;
+    notifCreated.save();
+    return {
+      statusCode: 200,
+      notification: notifCreated,
     };
   }
 }

@@ -12,7 +12,9 @@ export class Notifications {
   @Prop()
   type: string;
   @Prop()
-  createdAt: string;
+  createdAt: Date;
+  @Prop()
+  updatedAt: Date;
   @Prop()
   title: string;
   @Prop()
