@@ -19,6 +19,10 @@ import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
 import { PaymentData, PaymentDataSchema } from './schema/paymentData.schema';
 import { Anonymous, AnonymousSchema } from 'src/donor/schema/anonymous.schema';
 import { User, UserSchema } from 'src/user/schema/user.schema';
+import {
+  Notifications,
+  NotificationsSchema,
+} from 'src/organization/schema/notifications.schema';
 
 @Module({
   imports: [
@@ -38,6 +42,10 @@ import { User, UserSchema } from 'src/user/schema/user.schema';
       {
         name: Donor.name,
         schema: DonorSchema,
+      },
+      {
+        name: Notifications.name,
+        schema: NotificationsSchema,
       },
       {
         name: Organization.name,

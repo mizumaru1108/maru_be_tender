@@ -22,6 +22,9 @@ export class Campaign {
   campaignName: string;
 
   @Prop()
+  title: string;
+
+  @Prop()
   campaignType: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId })

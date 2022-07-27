@@ -25,6 +25,10 @@ import {
 } from 'src/donor/schema/anonymous.schema';
 import { User, UserDocument } from 'src/user/schema/user.schema';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
+import {
+  Notifications,
+  NotificationsDocument,
+} from 'src/organization/schema/notifications.schema';
 
 @Injectable()
 export class PaymentStripeService {
@@ -45,6 +49,8 @@ export class PaymentStripeService {
     private anonymousModel: mongoose.Model<AnonymousDocument>,
     @InjectModel(DonationLogs.name)
     private donationLogModel: mongoose.Model<DonationLogDocument>,
+    @InjectModel(Notifications.name)
+    private notificationsModel: mongoose.Model<NotificationsDocument>,
     @InjectModel(User.name)
     private readonly userModel: mongoose.Model<UserDocument>,
   ) {}
@@ -532,7 +538,7 @@ export class PaymentStripeService {
       //get current amountProgress in campaign
       const getCampaign = await this.campaignModel.findOne(
         { _id: getDonationLog.campaignId },
-        { _id: 0, amountProgress: 1, amountTarget: 2 },
+        { _id: 0, amountProgress: 1, amountTarget: 2, title: 3 },
       );
 
       if (!getCampaign) {
@@ -580,6 +586,16 @@ export class PaymentStripeService {
               isFinished: 'Y',
             },
           );
+
+          this.notificationsModel.create({
+            organizationId: new ObjectId(organizationId),
+            type: 'general',
+            createdAt: new Date(),
+            title: 'Campaign is completed',
+            body: `Alhamdulillah, amount target of the campaign ${getCampaign.title} is completed...`,
+            icon: 'info',
+            markAsRead: false,
+          });
         }
       }
 
