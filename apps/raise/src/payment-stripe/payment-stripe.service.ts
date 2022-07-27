@@ -78,6 +78,7 @@ export class PaymentStripeService {
         !payment.success_url ||
         !payment.cancel_url ||
         !payment.price ||
+        !payment.amount ||
         !payment.quantity
       ) {
         txtMessage = 'Bad Request';
@@ -133,7 +134,7 @@ export class PaymentStripeService {
         .exec();
 
       console.log('debug', getCampaign);
-      let dataAmount = parseFloat(payment.quantity); // let's assume it will be multiple by 1 (price)
+      let dataAmount = payment.amount * parseFloat(payment.quantity); // let's assume it will be multiple by 1 (price)
       if (!getCampaign) {
         txtMessage = `request rejected campaignId not found`;
         return {
@@ -155,7 +156,7 @@ export class PaymentStripeService {
             'Access-Control-Allow-Origin': '*',
           },
           body: JSON.stringify({
-            message: `Ammount is larger than the limit of the target ${getCampaign.amountTarget}`,
+            message: `Amount is larger than the limit of the target ${getCampaign.amountTarget}`,
           }),
         };
       }
@@ -531,7 +532,7 @@ export class PaymentStripeService {
       //get current amountProgress in campaign
       const getCampaign = await this.campaignModel.findOne(
         { _id: getDonationLog.campaignId },
-        { _id: 0, amountProgress: 1 },
+        { _id: 0, amountProgress: 1, amountTarget: 2 },
       );
 
       if (!getCampaign) {
@@ -543,17 +544,44 @@ export class PaymentStripeService {
         };
       }
 
-      //update  amountProgress with current donation amount
-      const amountStr = data.data['amount_total'].toString();
-      const lastAmount = (
-        Number(getCampaign.amountProgress) +
-        Number(amountStr.substring(0, amountStr.length - 2))
-      ).toString();
+      if (paymentStatus == 'SUCCESS') {
+        //update  amountProgress with current donation amount
+        const amountStr = data.data['amount_total'].toString();
+        const lastAmount = (
+          Number(getCampaign.amountProgress) +
+          Number(amountStr.substring(0, amountStr.length - 2))
+        ).toString();
 
-      const updateCampaign = await this.campaignModel.updateOne(
-        { _id: getDonationLog.campaignId },
-        { amountProgress: Number(lastAmount), updatedAt: myDate.toISOString() },
-      );
+        const updateCampaign = await this.campaignModel.updateOne(
+          { _id: getDonationLog.campaignId },
+          {
+            amountProgress: Number(lastAmount),
+            updatedAt: myDate.toISOString(),
+          },
+        );
+
+        // console.log(getCampaign.amountTarget);
+        // console.log(Number(getCampaign.amountTarget));
+        // console.log(Number(lastAmount));
+        if (!updateCampaign) {
+          return {
+            statusCode: 516,
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+            },
+            body: JSON.stringify({
+              message: 'failed update campaign data',
+            }),
+          };
+        } else if (Number(getCampaign.amountTarget) == Number(lastAmount)) {
+          await this.campaignModel.updateOne(
+            { _id: getDonationLog.campaignId },
+            {
+              isFinished: 'Y',
+            },
+          );
+        }
+      }
 
       const updatePaymentData = await this.paymentDataModel.updateOne(
         { orderId: data.data['payment_intent'] },
@@ -565,7 +593,7 @@ export class PaymentStripeService {
         },
       );
 
-      if (!updateCampaign || !updatePaymentData) {
+      if (!updatePaymentData) {
         return {
           statusCode: 516,
           headers: {
