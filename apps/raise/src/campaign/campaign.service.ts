@@ -195,6 +195,7 @@ export class CampaignService {
 
   async findAll(
     organizationId: string,
+    isFinished: string,
     publishedSort: string,
     finishedSort: string,
   ) {
@@ -218,7 +219,16 @@ export class CampaignService {
     let filter = {};
 
     const ObjectId = require('mongoose').Types.ObjectId;
-    if (organizationId) filter = { organizationId: ObjectId(organizationId) };
+    if (organizationId && organizationId) {
+      filter = {
+        isFinished: isFinished,
+        organizationId: ObjectId(organizationId),
+      };
+    } else if (isFinished) {
+      filter = { isFinished: isFinished };
+    } else if (organizationId) {
+      filter = { organizationId: ObjectId(organizationId) };
+    }
     return await this.campaignModel.find(filter).sort(sortData).exec();
   }
 

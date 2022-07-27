@@ -42,12 +42,14 @@ export class CampaignController {
   @Get('getListAll')
   async findAll(
     @Query('organizationId') organizationId: string,
+    @Query('isFinished') isFinished: string,
     @Query('sortPublished') sortPublished: string,
     @Query('sortFinished') sortFinished: string,
   ) {
     this.logger.debug('findAll...');
     return await this.campaignService.findAll(
       organizationId,
+      isFinished,
       sortPublished,
       sortFinished,
     );
