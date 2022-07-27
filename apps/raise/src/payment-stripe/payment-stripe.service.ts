@@ -81,6 +81,7 @@ export class PaymentStripeService {
         !payment.quantity
       ) {
         txtMessage = 'Bad Request';
+        // console.log('test');
         return {
           statusCode: 400,
           headers: {
@@ -358,6 +359,232 @@ export class PaymentStripeService {
         },
         stripeResponse: data['data'],
         message: txtMessage,
+      };
+    } catch (err) {
+      // When we catch an error, we want to show that an error occurred
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+        message: err.message,
+      });
+      throw err;
+    } finally {
+      // Every span must be ended or it will not be exported
+      span.end();
+    }
+  }
+
+  async stripeCallback(sessionId: String, organizationId: String) {
+    const tracer = trace.getTracer('tmra-raise');
+    const span = tracer.startSpan('stripe-request', {
+      attributes: { 'stripe.ammount': '-' },
+    });
+    try {
+      // Do some work here
+
+      this.logger.debug('stripeCallback...');
+      let txtMessage = '';
+      //check authorization header
+
+      //check validity of JWT
+
+      //get detail of donors by userId
+      //get detail of campaign by campaignId
+      //get detail of organization by organizationId
+
+      //insert data to donationLog
+      //we can use pattern from favicon function
+
+      // console.debug('event=', event );
+      // console.debug('queryStringParameters=', paymentCallbackDto);
+      console.debug('session_id=', sessionId);
+      console.debug('organizationId=', organizationId);
+
+      if (!sessionId || !organizationId) {
+        txtMessage = 'session_id and organizationId is required';
+        return {
+          statusCode: 400, // bad request
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+          },
+          body: JSON.stringify({
+            message: txtMessage,
+          }),
+        };
+      }
+
+      console.debug('organizationId=', organizationId);
+
+      const ObjectId = require('mongoose').Types.ObjectId;
+      const getSecretKey = await this.paymentGatewayModel.findOne(
+        { organizationId: ObjectId(organizationId) },
+        { apiKey: 1, _id: 0 },
+      );
+
+      if (!getSecretKey) {
+        txtMessage = 'organization can not use Stripe Payment Gateway';
+        console.log('here');
+        return {
+          statusCode: 404, //resource not found
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+          },
+          body: JSON.stringify({
+            message: txtMessage,
+          }),
+        };
+      }
+
+      /** Get detail of transaction based on checkout session id */
+      // let id = '';
+      // id = sessionId;
+      const options: AxiosRequestConfig<any> = {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${getSecretKey.apiKey}`,
+        },
+        url: 'https://api.stripe.com/v1/checkout/sessions/' + sessionId,
+      };
+
+      const data = await axios(options);
+      console.log(`GET checkout/sessions/${sessionId}`, data);
+      if (!data) {
+        return {
+          statusCode: 504,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+          },
+          body: JSON.stringify({
+            message: 'Gateway Timeout or Stripe API down',
+          }),
+        };
+      }
+
+      //update Payment data (contains callback data)
+      const myDate = new Date();
+      //custom map
+      let paymentStatus = '';
+      paymentStatus = 'FAILED';
+      if (data['data']['payment_status'] == 'paid') {
+        paymentStatus = 'SUCCESS';
+      }
+
+      console.log('paymentIntentInfo=', data['data']['payment_intent']);
+      const paymentIntent = data['data']['payment_intent'];
+      const orderId = data['data']['payment_intent'];
+      //get donation log id
+      const paymentData = await this.paymentDataModel.findOne({
+        orderId: orderId,
+      });
+      if (!paymentData) {
+        return {
+          statusCode: 404,
+          body: JSON.stringify({
+            message: 'Payment data not found',
+          }),
+        };
+      }
+
+      console.log(`paymentData=`, paymentData);
+      console.log('donationId=', paymentData.donationId);
+
+      //update payment status in donation_log
+      let donationId = paymentData.donationId; //new mongoose.Types.ObjectId(paymentData.donationId);
+
+      console.log(
+        'valid object Id ?',
+        ObjectId.isValid(paymentData.donationId),
+      );
+      const updateDonationLog = await this.donationLogModel.updateOne(
+        { _id: donationId },
+        { donationStatus: paymentStatus },
+      );
+
+      console.log(`updateDonationLog=`, updateDonationLog);
+      if (!paymentData || !updateDonationLog) {
+        return {
+          statusCode: 520,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+          },
+          body: JSON.stringify({
+            message: 'incorrect orderId',
+          }),
+        };
+      }
+
+      //get campaign Id
+      const getDonationLog = await this.donationLogModel.findOne(
+        { _id: paymentData.donationId },
+        { _id: 0, campaignId: 1 },
+      );
+
+      if (!getDonationLog) {
+        return {
+          statusCode: 404,
+          body: JSON.stringify({
+            message: 'Donation log not found',
+          }),
+        };
+      }
+
+      console.log(`getDonationLog`, getDonationLog);
+      //get current amountProgress in campaign
+      const getCampaign = await this.campaignModel.findOne(
+        { _id: getDonationLog.campaignId },
+        { _id: 0, amountProgress: 1 },
+      );
+
+      if (!getCampaign) {
+        return {
+          statusCode: 404,
+          body: JSON.stringify({
+            message: 'Campaign not found',
+          }),
+        };
+      }
+
+      //update  amountProgress with current donation amount
+      const amountStr = data.data['amount_total'].toString();
+      const lastAmount = (
+        Number(getCampaign.amountProgress) +
+        Number(amountStr.substring(0, amountStr.length - 2))
+      ).toString();
+
+      const updateCampaign = await this.campaignModel.updateOne(
+        { _id: getDonationLog.campaignId },
+        { amountProgress: Number(lastAmount), updatedAt: myDate.toISOString() },
+      );
+
+      const updatePaymentData = await this.paymentDataModel.updateOne(
+        { orderId: data.data['payment_intent'] },
+        {
+          paymentStatus: paymentStatus,
+          responseMessage: data.data['payment_status'],
+          transactionTime: myDate.toISOString(), //stripe have their own transactionTime
+          cardType: 'card',
+        },
+      );
+
+      if (!updateCampaign || !updatePaymentData) {
+        return {
+          statusCode: 516,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+          },
+          body: JSON.stringify({
+            message: 'failed inserting transaction data',
+          }),
+        };
+      }
+
+      return {
+        statusCode: 200,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({
+          message: 'successful receive callback from stripe',
+        }),
       };
     } catch (err) {
       // When we catch an error, we want to show that an error occurred
