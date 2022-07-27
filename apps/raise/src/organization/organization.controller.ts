@@ -15,6 +15,8 @@ import { OrganizationDto } from './dto/organization.dto';
 import { AppearancenDto } from './dto/appearance.dto';
 import { NotificationSettingsDto } from './dto/notification_settings.dto';
 import { FaqDto } from './dto/faq.dto';
+import { PaymentGateWayDto } from 'src/payment-stripe/dto/paymentGateway.dto';
+import { NotificationDto } from './dto/notification.dto';
 
 @ApiTags('orgs')
 @Controller('orgs')
@@ -84,10 +86,22 @@ export class OrganizationController {
     return await this.organizationService.getDonorList(organizationId);
   }
 
-  @Get('paymentGatewayList')
-  async getPaymentGatewayList(@Query('organizationId') organizationId: string) {
+  @Get(':organizationId/paymentGateway')
+  async getPaymentGatewayList(@Param('organizationId') organizationId: string) {
     this.logger.debug('fetching payment gateway list...');
     return await this.organizationService.getPaymentGatewayList(organizationId);
+  }
+
+  @Post(':organizationId/paymentGateway')
+  async addPaymentGateway(
+    @Param('organizationId') organizationId: string,
+    @Body() paymentGatewayDto: PaymentGateWayDto,
+  ) {
+    this.logger.debug('add new payment gateway...');
+    return await this.organizationService.addNewPaymentGateWay(
+      organizationId,
+      paymentGatewayDto,
+    );
   }
 
   @Get('insight')
@@ -135,6 +149,18 @@ export class OrganizationController {
     return await this.organizationService.getNotificationList(
       organizationId,
       type,
+    );
+  }
+
+  @Post(':organizationId/notifications/add')
+  async addNotification(
+    @Param('organizationId') organizationId: string,
+    @Body('notification') notificationDto: NotificationDto,
+  ) {
+    this.logger.debug('create new notification...');
+    return await this.organizationService.addNotification(
+      organizationId,
+      notificationDto,
     );
   }
 

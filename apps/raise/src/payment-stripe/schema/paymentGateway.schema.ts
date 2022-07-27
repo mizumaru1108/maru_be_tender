@@ -7,8 +7,8 @@ export type PaymentGatewayDocument = PaymentGateway & Document;
 export class PaymentGateway {
   @Prop({ type: () => Types.ObjectId })
   public _id?: Types.ObjectId;
-  @Prop({ type: () => String })
-  public organizationId?: string;
+  @Prop({ type: () => Types.ObjectId })
+  public organizationId?: Types.ObjectId;
   @Prop({ type: () => String })
   public name?: string;
   @Prop({ type: () => String })
