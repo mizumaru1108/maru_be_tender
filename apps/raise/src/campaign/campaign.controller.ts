@@ -12,6 +12,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CampaignSetFavoriteDto, CreateCampaignDto } from './dto';
 import { DonorService } from '../donor/donor.service';
 import { CampaignService } from './campaign.service';
+import { CampaignVendorLog } from 'src/buying/vendor/vendor.schema';
 
 @ApiTags('campaign')
 @Controller('campaign')
@@ -150,7 +151,7 @@ export class CampaignController {
     description: 'The Campaign has been successfully applied by Vendor.',
   })
   @Post('vendor/apply')
-  async vendorApply(@Body() createCampaignDto: CreateCampaignDto) {
+  async vendorApply(@Body() createCampaignDto: CampaignVendorLog) {
     this.logger.debug(
       'apply to unapproved new campaign ',
       JSON.stringify(createCampaignDto),

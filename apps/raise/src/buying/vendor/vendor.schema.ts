@@ -14,30 +14,31 @@ export class Vendor {
   name: string;
   @Prop()
   ownerUserId: string;
-
 }
 
 @Schema({ collection: 'campaignVendorLog' })
 export class CampaignVendorLog {
-  
-  @Prop({type: Types.ObjectId})
-  _id:  Types.ObjectId;
+  @Prop({ type: mongoose.Schema.Types.ObjectId })
+  public _id?: mongoose.Schema.Types.ObjectId;
 
-  @Prop({type: Types.ObjectId})
-  campaignId:  Types.ObjectId;
+  @Prop({ type: mongoose.Schema.Types.ObjectId })
+  public campaignId?: mongoose.Schema.Types.ObjectId;
 
-  @Prop({ type: mongoose.Schema.Types.Mixed })
-  vendorId: string;
+  @Prop({ type: String })
+  public vendorId: string;
 
-  @Prop({type: mongoose.Schema.Types.Date, default:  mongoose.Schema.Types.Date})
-  createdAt: string;
+  @Prop({
+    type: mongoose.Schema.Types.Date,
+  })
+  public createdAt: string;
 
-  @Prop({type: mongoose.Schema.Types.Date, default:  mongoose.Schema.Types.Date})
-  updatedAt: string;
+  @Prop({
+    type: mongoose.Schema.Types.Date,
+  })
+  public updatedAt: string;
 
-  @Prop()
-  status: string;
-  
+  @Prop({ type: String })
+  public status: string;
 }
 
 @Schema({ collection: 'vendorChartData' })

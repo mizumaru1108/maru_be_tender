@@ -406,10 +406,53 @@ export class CampaignService {
     return campaignList;
   }
 
-  async vendorApply(vendorApplyDto: CreateCampaignDto): Promise<Campaign> {
+  async vendorApply(vendorApplyDto: CampaignVendorLog) {
     let vendorData: any = new Vendor();
+    let data: any;
+    const ObjectId = require('mongoose').Types.ObjectId;
 
-    return vendorData;
+    this.logger.debug(`userId=${vendorApplyDto.vendorId}`);
+
+    let dataVendor = await this.vendorModel.findOne({
+      _id: vendorApplyDto.vendorId,
+    });
+
+    this.logger.debug(`_id=${dataVendor?._id}`);
+
+    if (!dataVendor) {
+      throw new NotFoundException(`Vendor not found`);
+    }
+
+    // if (!vendorApplyDto.organizationId) {
+    //   throw new NotFoundException(`Organization not found`);
+    // }
+
+    if (!vendorApplyDto.campaignId) {
+      throw new NotFoundException(`Campaign not found`);
+    }
+
+    this.logger.debug(`campaignId=${vendorApplyDto?.campaignId}`);
+    try {
+      data = await this.campaignVendorLogModel.findOneAndUpdate(
+        {
+          campaignId: new ObjectId(vendorApplyDto?.campaignId),
+          status: 'something',
+          vendorId: '',
+        },
+        {
+          vendorId: dataVendor?._id,
+          status: 'pending new',
+          campaignId: new ObjectId(vendorApplyDto?.campaignId),
+          createdAt: dayjs().toISOString(),
+          updatedAt: dayjs().toISOString(),
+        },
+        { upsert: true, overwrite: false, rawResult: true },
+      );
+    } catch (error) {
+      throw new InternalServerErrorException(`Error get Data - ${error}`);
+    }
+
+    return data;
   }
 
   async getAllNewCampaign(organizationId: string) {

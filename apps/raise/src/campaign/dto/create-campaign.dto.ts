@@ -25,7 +25,7 @@ export type CampaignMilestone = z.infer<typeof CampaignMilestone>;
 
 export const CreateCampaignDto = z.object({
   organizationId: z.string().min(1),
-  // name: z.string(),
+  campaignId: z.string(),
   userId: z.string(),
   campaignName: z.string().min(1),
   campaignType: z.string(),
@@ -46,66 +46,3 @@ export const CreateCampaignDto = z.object({
   milestone: z.array(CampaignMilestone).optional(),
 });
 export type CreateCampaignDto = z.infer<typeof CreateCampaignDto>;
-
-/* export class CreateCampaignDtoX {
-  @ApiProperty()
-  readonly organizationId: string;
-
-  @ApiProperty()
-  readonly name: string;
-
-  @ApiProperty()
-  readonly userId: string;
-
-  @ApiProperty()
-  readonly campaignName: string;
-
-  @ApiProperty()
-  readonly campaignType: string;
-
-  @ApiProperty()
-  readonly projectId: string;
-
-  @ApiProperty()
-  readonly type: string;
-
-  @ApiProperty()
-  readonly description: string;
-
-  @ApiProperty()
-  readonly isMoney: string;
-
-  @ApiProperty()
-  readonly methods: string;
-
-  @ApiProperty()
-  readonly currencyCode: string;
-
-  @ApiProperty()
-  readonly amountProgress: string;
-
-  @ApiProperty()
-  readonly amountTarget: string;
-
-  @ApiProperty()
-  readonly coverImage: string;
-
-  @ApiProperty()
-  readonly image1: string;
-
-  @ApiProperty()
-  readonly image2: string;
-
-  @ApiProperty()
-  readonly image3: string;
-
-  @ApiProperty()
-  readonly images: Array<Image>;
-
-  @ApiProperty()
-  readonly imagePayload: Array<Payload>;
-
-  @ApiProperty()
-  readonly milestone: Array<listMileStone>;
-}
- */
