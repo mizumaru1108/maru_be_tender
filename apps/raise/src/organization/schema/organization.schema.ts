@@ -53,6 +53,8 @@ export class Organization {
   latitude: string;
   @Prop()
   longitude: string;
+  @Prop({ type: JSON })
+  currencyOptions: object;
 }
 
 export const OrganizationSchema = SchemaFactory.createForClass(Organization);

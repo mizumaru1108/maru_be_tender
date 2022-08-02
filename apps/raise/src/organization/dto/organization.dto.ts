@@ -16,4 +16,5 @@ export class OrganizationDto {
   contactWhatsapp: string;
   latitude: string;
   longitude: string;
+  currencyOptions: object;
 }
