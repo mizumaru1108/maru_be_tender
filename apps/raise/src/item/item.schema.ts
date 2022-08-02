@@ -34,7 +34,7 @@ export type ItemDocument = Item & Document;
 
 @Schema({ collection: 'item' })
 export class Item {
-  @Prop({ type: Types.ObjectId })
+  @Prop({ type: mongoose.Schema.Types.ObjectId })
   public _id?: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId })

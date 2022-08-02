@@ -34,7 +34,7 @@ export class ProjectOperatorLog {
 
 @Schema({ collection: 'project' })
 export class Project {
-  @Prop({ type: Types.ObjectId })
+  @Prop({ type: mongoose.Schema.Types.ObjectId })
   public _id?: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId })

@@ -362,4 +362,18 @@ export class ProjectService {
     );
     return data;
   }
+
+  async setDeletedFlag(projectIds: string[]) {
+    this.logger.debug(
+      `setting ${projectIds.length} deleted flag to ${projectIds}`,
+    );
+    const updatedProject = await this.projectModel.updateMany(
+      { _id: { $in: projectIds } },
+      { $set: { isDeleted: 'Y' } },
+    );
+    this.logger.debug(
+      `${updatedProject.matchedCount} match, ${updatedProject.modifiedCount} data updated`,
+    );
+    return updatedProject;
+  }
 }

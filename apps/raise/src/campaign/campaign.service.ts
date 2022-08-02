@@ -754,4 +754,18 @@ export class CampaignService {
 
     return getCampaignDetail;
   }
+
+  async setDeletedFlag(campaignId: string[]) {
+    this.logger.debug(
+      `setting ${campaignId.length} deleted flag to ${campaignId}`,
+    );
+    const updatedCampaign = await this.campaignModel.updateMany(
+      { _id: { $in: campaignId } },
+      { $set: { isDeleted: 'Y' } },
+    );
+    this.logger.debug(
+      `${updatedCampaign.matchedCount} match, ${updatedCampaign.modifiedCount} data updated`,
+    );
+    return updatedCampaign;
+  }
 }

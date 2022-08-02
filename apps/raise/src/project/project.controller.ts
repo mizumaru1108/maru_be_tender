@@ -3,6 +3,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { rootLogger } from '../logger';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto';
+import { ProjectSetDeletedFlagDto } from './dto/project-set-flag-deleted';
 
 @ApiTags('project')
 @Controller('project')
@@ -33,5 +34,15 @@ export class ProjectController {
   async create(@Body() createProjectDto: CreateProjectDto) {
     this.logger.debug('create new project ', JSON.stringify(createProjectDto));
     return await this.projectService.create(createProjectDto);
+  }
+
+  @ApiOperation({ summary: 'set flag to delete campaign' })
+  @ApiResponse({
+    status: 201,
+    description: 'The New Campaign has been successfully flagged as deleted.',
+  })
+  @Post('setDeletedFlagBatch')
+  async setDeletedFlag(@Body() request: ProjectSetDeletedFlagDto) {
+    await this.projectService.setDeletedFlag(request.projectIds);
   }
 }
