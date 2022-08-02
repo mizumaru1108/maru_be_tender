@@ -24,7 +24,7 @@ export class CampaignController {
   constructor(
     private donorService: DonorService,
     private campaignService: CampaignService,
-  ) {}
+  ) { }
 
   @ApiOperation({ summary: 'Set Favorite' })
   @ApiResponse({
