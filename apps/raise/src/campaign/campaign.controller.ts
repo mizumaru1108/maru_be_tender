@@ -6,6 +6,7 @@ import {
   Post,
   Param,
   UseInterceptors,
+  Put,
 } from '@nestjs/common';
 import { rootLogger } from '../logger';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -13,6 +14,7 @@ import { CampaignSetFavoriteDto, CreateCampaignDto } from './dto';
 import { DonorService } from '../donor/donor.service';
 import { CampaignService } from './campaign.service';
 import { CampaignVendorLog } from 'src/buying/vendor/vendor.schema';
+import { CampaignSetDeletedFlagDto } from './dto/capaign-set-flag-deleted';
 
 @ApiTags('campaign')
 @Controller('campaign')
@@ -33,6 +35,16 @@ export class CampaignController {
   async setFavorite(@Body() campaignSetFavoriteDto: CampaignSetFavoriteDto) {
     this.logger.debug('set favorite ', JSON.stringify(campaignSetFavoriteDto));
     return await this.donorService.setFavoriteCampaign(campaignSetFavoriteDto);
+  }
+
+  @ApiOperation({ summary: 'set flag to delete campaign' })
+  @ApiResponse({
+    status: 201,
+    description: 'The New Campaign has been successfully flagged as deleted.',
+  })
+  @Post('setDeletedFlagBatch')
+  async setDeletedFlag(@Body() request: CampaignSetDeletedFlagDto) {
+    await this.campaignService.setDeletedFlag(request.campaignIds);
   }
 
   @ApiOperation({ summary: 'Get list all campaign' })

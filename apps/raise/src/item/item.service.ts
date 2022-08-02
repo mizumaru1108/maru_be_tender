@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  HttpStatus,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -340,5 +341,17 @@ export class ItemService {
       Object.assign({}, item, dataItem[i]),
     );
     return data;
+  }
+
+  async setDeletedFlag(itemIds: string[]) {
+    this.logger.debug(`setting ${itemIds.length} deleted flag to ${itemIds}`);
+    const updatedItems = await this.itemModel.updateMany(
+      { _id: { $in: itemIds } },
+      { $set: { isDeleted: 'Y' } },
+    );
+    this.logger.debug(
+      `${updatedItems.matchedCount} match, ${updatedItems.modifiedCount} data updated`,
+    );
+    return updatedItems;
   }
 }
