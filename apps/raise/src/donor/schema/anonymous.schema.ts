@@ -58,6 +58,9 @@ export class Anonymous {
 
   @Prop()
   mobile: string;
+
+  @Prop()
+  createdAt: Date;
 }
 
 export const AnonymousSchema = SchemaFactory.createForClass(Anonymous);

@@ -328,6 +328,13 @@ export class OrganizationService {
               '$user.email',
             ],
           },
+          createdAt: {
+            $cond: [
+              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              '$user_anonymous.createdAt',
+              '$user.createdAt',
+            ],
+          },
         },
       },
       {
@@ -340,6 +347,7 @@ export class OrganizationService {
           country: { $first: '$user.country' },
           mobile: { $first: '$user.mobile' },
           totalAmount: { $sum: '$amount' },
+          createdAt: { $first: '$createdAt' },
         },
       },
     ]);

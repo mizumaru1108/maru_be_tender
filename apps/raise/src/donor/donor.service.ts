@@ -157,6 +157,7 @@ export class DonorService {
 
   async addAnonymousDonor(donorAddProfileDto: DonorUpdateProfileDto) {
     const newDonor = new this.anonymousModel(donorAddProfileDto);
+    newDonor.createdAt = new Date();
     newDonor.save();
 
     if (!newDonor) {
