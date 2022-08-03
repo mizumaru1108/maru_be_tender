@@ -325,6 +325,13 @@ export class ZakatService {
               },
             },
           },
+          email: {
+            $cond: [
+              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              '$anonymous.email',
+              '$user.email',
+            ],
+          },
         },
       },
       {
@@ -334,6 +341,7 @@ export class ZakatService {
           donationStatus: { $first: '$donationStatus' },
           amount: { $first: '$amount' },
           donorName: { $first: '$donorName' },
+          email: { $first: '$email' },
         },
       },
       {
@@ -611,6 +619,7 @@ export class ZakatService {
 
       const amountStr = data['data']['amount_total'].toString();
       const amount = amountStr.substring(0, amountStr.length - 2);
+      const extraAmount = paymentDto.extraAmount ? paymentDto.extraAmount : 0;
 
       console.log('amount unit', amount);
 
@@ -624,6 +633,7 @@ export class ZakatService {
         // donorName: donor ? `${donor.firstName} ${donor.lastName}` : null,
         // amount: payment.amount,
         amount: Number(amount),
+        extraAmount: Number(extraAmount),
         createdAt: now,
         updatedAt: now,
         campaignId: ObjectId(paymentDto.campaignId),
