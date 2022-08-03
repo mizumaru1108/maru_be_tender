@@ -201,23 +201,36 @@ export class ZakatService {
     return { total_receive: totalReceive };
   }
 
-  async getTransactionAll(organizationId: string, status: string) {
+  async getTransactionAll(organizationId: string, sortStatus: string) {
     this.logger.debug(`getTransactions organizationId=${organizationId}`);
-    const getOrganization = await this.organizationModel.findOne({
-      _id: organizationId,
-    });
-    if (!getOrganization) {
-      const txtMessage = `request rejected organizationId not found`;
-      return {
-        statusCode: 514,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
-        body: JSON.stringify({
-          message: txtMessage,
-        }),
+
+    let sortData = {};
+    if (sortStatus) {
+      sortData = {
+        donationStatus: sortStatus == 'asc' ? 1 : -1,
+        createdAt: -1,
+      };
+    } else {
+      sortData = {
+        createdAt: -1,
       };
     }
+
+    // const getOrganization = await this.organizationModel.findOne({
+    //   _id: organizationId,
+    // });
+    // if (!getOrganization) {
+    //   const txtMessage = `request rejected organizationId not found`;
+    //   return {
+    //     statusCode: 514,
+    //     headers: {
+    //       'Access-Control-Allow-Origin': '*',
+    //     },
+    //     body: JSON.stringify({
+    //       message: txtMessage,
+    //     }),
+    //   };
+    // }
 
     // const expenseList = await this.expenseModel.aggregate([
     //   { $match: { createdBy: organizationId } },
@@ -229,19 +242,102 @@ export class ZakatService {
     //   },
     // ]);
     // console.log(expenseList);
-    const donationList = await this.donationLogModel.find({
-      nonprofitRealmId: new Types.ObjectId(organizationId),
-      campaignId: new Types.ObjectId('6299ed6a9f1ad428563563ed'),
-    });
-    // console.log(donationList);
-    let transactionAll: any = [];
-    transactionAll = transactionAll.concat(donationList);
-    // transactionAll = transactionAll.concat(expenseList);
-    transactionAll.sort(
-      (x: DonationLogs, y: DonationLogs) =>
-        +new Date(x.createdAt) - +new Date(y.createdAt),
-    );
-    return transactionAll;
+    // const donationList = await this.donationLogModel.find({
+    //   nonprofitRealmId: new Types.ObjectId(organizationId),
+    //   campaignId: new Types.ObjectId('6299ed6a9f1ad428563563ed'),
+    // });
+    // // console.log(donationList);
+    // let transactionAll: any = [];
+    // transactionAll = transactionAll.concat(donationList);
+    // // transactionAll = transactionAll.concat(expenseList);
+    // transactionAll.sort(
+    //   (x: DonationLogs, y: DonationLogs) =>
+    //     +new Date(x.createdAt) - +new Date(y.createdAt),
+    // );
+    // return transactionAll;
+    return await this.donationLogModel.aggregate([
+      {
+        $match: {
+          nonprofitRealmId: new Types.ObjectId(organizationId),
+          campaignId: new Types.ObjectId('6299ed6a9f1ad428563563ed'),
+        },
+      },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'donorUserId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      // {
+      //   $set: {
+      //     donorName: {
+      //       $concat: [
+      //         { $arrayElemAt: ['$user.firstname', 0] },
+      //         ' ',
+      //         { $arrayElemAt: ['$user.lastname', 0] },
+      //       ],
+      //     },
+      //   },
+      // },
+      {
+        $unwind: {
+          path: '$user',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
+        $lookup: {
+          from: 'anonymous',
+          localField: '_id',
+          foreignField: 'donationLogId',
+          as: 'anonymous',
+        },
+      },
+      {
+        $unwind: {
+          path: '$anonymous',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: {
+          donorName: {
+            $cond: {
+              if: { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              then: {
+                $concat: ['$anonymous.firstName', ' ', '$anonymous.lastName'],
+              },
+              else: {
+                $concat: ['$user.firstname', ' ', '$user.lastname'],
+              },
+            },
+          },
+          email: {
+            $cond: [
+              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              '$anonymous.email',
+              '$user.email',
+            ],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          createdAt: { $first: '$createdAt' },
+          donationStatus: { $first: '$donationStatus' },
+          amount: { $first: '$amount' },
+          donorName: { $first: '$donorName' },
+          email: { $first: '$email' },
+        },
+      },
+      {
+        $sort: sortData,
+      },
+    ]);
   }
 
   async getTransactionList(organizationId: string, sortStatus: string) {
