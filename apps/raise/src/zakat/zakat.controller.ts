@@ -1,4 +1,5 @@
 import { Query, Controller, Get, Post, Body } from '@nestjs/common';
+import { PaymentRequestDto } from 'src/payment-stripe/payment-stripe.dto';
 import { rootLogger } from '../logger';
 import { ExpenseDto } from './dto/expense.dto';
 import { ZakatService } from './zakat.service';
@@ -63,5 +64,10 @@ export class ZakatController {
   @Post('expense/create')
   async createExpense(@Body() expenseDto: ExpenseDto) {
     return await this.zakatService.createExpense(expenseDto);
+  }
+
+  @Post('donate')
+  async createDonate(@Body() paymentDto: PaymentRequestDto) {
+    return await this.zakatService.createDonate(paymentDto);
   }
 }
