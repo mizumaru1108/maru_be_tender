@@ -13,5 +13,6 @@ export class PaymentRequestDto {
   cancel_url: string;
   price: string;
   quantity: string;
+  extraAmount: number;
   zakatLogs: Array<ZakatLogDto>;
 }
