@@ -7,6 +7,7 @@ import {
   Param,
   UseInterceptors,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { rootLogger } from '../logger';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -15,6 +16,11 @@ import { DonorService } from '../donor/donor.service';
 import { CampaignService } from './campaign.service';
 import { CampaignVendorLog } from 'src/buying/vendor/vendor.schema';
 import { CampaignSetDeletedFlagDto } from './dto/capaign-set-flag-deleted';
+import { JwtAuthGuard } from '../auth/jwt.guard';
+import { PermissionsGuard } from '../auth/permissions.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { RoleEnum } from '../user/enums/role-enum';
 
 @ApiTags('campaign')
 @Controller('campaign')
@@ -24,7 +30,7 @@ export class CampaignController {
   constructor(
     private donorService: DonorService,
     private campaignService: CampaignService,
-  ) { }
+  ) {}
 
   @ApiOperation({ summary: 'Set Favorite' })
   @ApiResponse({
@@ -42,6 +48,8 @@ export class CampaignController {
     status: 201,
     description: 'The New Campaign has been successfully flagged as deleted.',
   })
+  @Roles(RoleEnum.DONOR)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('setDeletedFlagBatch')
   async setDeletedFlag(@Body() request: CampaignSetDeletedFlagDto) {
     await this.campaignService.setDeletedFlag(request.campaignIds);

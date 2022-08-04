@@ -1,41 +1,108 @@
-import { Injectable, HttpException } from '@nestjs/common';
+import FusionAuthClient, {
+  LoginResponse,
+  ValidateResponse,
+} from '@fusionauth/typescript-client';
+import ClientResponse from '@fusionauth/typescript-client/build/src/ClientResponse';
+import {
+  Injectable,
+  HttpException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
 import { UserService } from 'src/user/user.service';
+import { LoginRequestDto } from './dtos/login-request.dto';
+import { LoginResponseDto } from './dtos/login-response.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UserService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
-  async loginUser(email: string, password: string) {
-    let isValid = false;
+  async useFusionAuth() {
+    return new FusionAuthClient(
+      this.configService.get('FUSIONAUTH_CLIENT_KEY', ''),
+      this.configService.get('FUSIONAUTH_URL', ''),
+      this.configService.get('FUSIONAUTH_TENANT_ID', ''),
+    );
+  }
 
-    const user = await this.usersService.getOneUser({ email });
-
-    if (user && user.password === password) isValid = true;
-
-    if (!isValid) {
-      throw new HttpException('Invalid login details', 401);
-    }
-
-    return {
-      user: {
-        id: user?.id,
-        name: user?.name,
-        email: user?.email,
-      },
-      accessToken: this.generateToken(user)
+  async loginUser(loginRequest: LoginRequestDto) {
+    loginRequest.applicationId = this.configService.get<string>(
+      'FUSIONAUTH_APP_ID',
+      '',
+    );
+    try {
+      const fusionauth = new FusionAuthClient(
+        this.configService.get('FUSIONAUTH_CLIENT_KEY', ''),
+        this.configService.get('FUSIONAUTH_URL', ''),
+        this.configService.get('FUSIONAUTH_TENANT_ID', ''),
+      );
+      const result: ClientResponse<LoginResponse> = await fusionauth.login(
+        loginRequest,
+      );
+      // console.log(result);
+      const validToken = await fusionauth.validateJWT(result.response.token!);
+      // const test = await fusionauth.retrieveUserUsingJWT(
+      //   result.response.token!,
+      // );
+      // console.log(test);
+      if (!validToken) {
+        throw new HttpException('Invalid Signature!', 401);
+      }
+      const user = await this.usersService.getOneUser({
+        email: result.response.user!.email,
+      });
+      // console.log(user);
+      const response: LoginResponseDto = {
+        user: {
+          email: user.email,
+          type: user.type,
+        },
+        accessToken: this.jwtService.sign(user),
+      };
+      return response;
+    } catch (error) {
+      if (error.statusCode < 500) {
+        throw new UnauthorizedException('Invalid credentials!');
+      } else {
+        throw new Error('Something went wrong!');
+      }
     }
   }
+  // async loginUser(email: string, password: string) {
+  //   let isValid = false;
+
+  //   const user = await this.usersService.getOneUser({ email });
+
+  //   if (user && user.password === password) isValid = true;
+
+  //   if (!isValid) {
+  //     throw new HttpException('Invalid login details', 401);
+  //   }
+
+  //   return {
+  //     user: {
+  //       id: user?.id,
+  //       name: user?.name,
+  //       email: user?.email,
+  //     },
+  //     accessToken: this.generateToken(user)
+  //   }
+  // }
 
   async registerUser(name: string, email: string, password: string) {
     const user = await this.usersService.getOneUser({ email });
 
     if (user) {
-      throw new HttpException('A user account with that email already exists', 409);
+      throw new HttpException(
+        'A user account with that email already exists',
+        409,
+      );
     }
 
     try {
@@ -47,18 +114,18 @@ export class AuthService {
           name: newUser?.name,
           email: newUser?.email,
         },
-        accessToken: this.generateToken(newUser)
-      }
+        accessToken: this.generateToken(newUser),
+      };
     } catch (error) {
-      throw new HttpException('An error occured while registering user', 500)
+      throw new HttpException('An error occured while registering user', 500);
     }
   }
 
   generateToken(user: any) {
     return {
       accessToken: this.jwtService.sign({
-        sub: user.id
-      })
-    }
+        sub: user.id,
+      }),
+    };
   }
 }

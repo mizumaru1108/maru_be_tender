@@ -7,18 +7,20 @@ import { UsersModule } from '../user/user.module';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthzedModule } from 'src/authzed/authzed.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     UsersModule,
     AuthzedModule,
     PassportModule,
+    ConfigModule,
     JwtModule.register({
       secret: 'JWT_SECRET',
-      signOptions: { expiresIn: '10000s' }
-    })
+      signOptions: { expiresIn: '10000s' },
+    }),
   ],
   providers: [AuthService, JwtStrategy],
-  controllers: [AuthController]
+  controllers: [AuthController],
 })
 export class AuthModule {}

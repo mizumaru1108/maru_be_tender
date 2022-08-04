@@ -36,6 +36,7 @@ export class UserService {
       name?: string;
       email?: string;
       password?: string;
+      type?: string;
     } | null = {} as any;
 
     try {
@@ -56,6 +57,7 @@ export class UserService {
       name: user?.name,
       email: user?.email,
       password: user?.password,
+      type: user?.type,
     };
   }
 
