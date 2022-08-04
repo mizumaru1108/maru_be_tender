@@ -25,6 +25,8 @@ export class DonationLogs {
   public paymentGatewayId?: string;
   @Prop({ type: () => Number })
   public amount?: number;
+  @Prop({ type: () => Number })
+  public extraAmount?: number;
   @Prop({ type: () => String })
   public currency?: string;
   @Prop({ type: () => String })

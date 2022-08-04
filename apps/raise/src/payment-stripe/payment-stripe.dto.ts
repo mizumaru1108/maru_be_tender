@@ -1,4 +1,5 @@
 import { Types } from 'mongoose';
+import { ZakatLogDto } from 'src/zakat/dto/zakat_log.dto';
 
 export class PaymentRequestDto {
   organizationId: Types.ObjectId;
@@ -12,4 +13,6 @@ export class PaymentRequestDto {
   cancel_url: string;
   price: string;
   quantity: string;
+  extraAmount: number;
+  zakatLogs: Array<ZakatLogDto>;
 }
