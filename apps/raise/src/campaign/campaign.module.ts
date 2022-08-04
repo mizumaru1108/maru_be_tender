@@ -73,7 +73,7 @@ import { ConfigModule } from '@nestjs/config';
     ]),
     ConfigModule,
   ],
-  providers: [DonorService, CampaignService],
+  providers: [CampaignService,DonorService],
   controllers: [CampaignController],
 })
 export class CampaignModule {}
