@@ -367,6 +367,6 @@ export class DonorService {
       }
     ]);
     
-    return  {totalDonation,totalFundDonation, program:campaignLogs};
+    return  {totalDonation,totalFundDonation, programFund:campaignLogs};
   }
 }
