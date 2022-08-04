@@ -60,10 +60,13 @@ export class AuthService {
       // console.log(user);
       const response: LoginResponseDto = {
         user: {
+          id: user.id,
           email: user.email,
           type: user.type,
         },
-        accessToken: this.jwtService.sign(user),
+        accessToken: this.jwtService.sign({
+          id: user.id,
+        }),
       };
       return response;
     } catch (error) {

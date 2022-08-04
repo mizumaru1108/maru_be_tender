@@ -49,7 +49,7 @@ export class CampaignController {
     description: 'The New Campaign has been successfully flagged as deleted.',
   })
   @Roles(RoleEnum.DONOR)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('setDeletedFlagBatch')
   async setDeletedFlag(@Body() request: CampaignSetDeletedFlagDto) {
     await this.campaignService.setDeletedFlag(request.campaignIds);
