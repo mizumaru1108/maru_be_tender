@@ -1,9 +1,10 @@
-import { Controller, Body, Get, Param, Post, Query } from '@nestjs/common';
+import { Controller, Body, Get, Param, Post, Query, Put } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { rootLogger } from '../logger';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto';
 import { ProjectSetDeletedFlagDto } from './dto/project-set-flag-deleted';
+import { UpdateProjectDto } from './dto/update-project.dto';
 
 @ApiTags('project')
 @Controller('project')
@@ -44,5 +45,16 @@ export class ProjectController {
   @Post('setDeletedFlagBatch')
   async setDeletedFlag(@Body() request: ProjectSetDeletedFlagDto) {
     await this.projectService.setDeletedFlag(request.projectIds);
+  }
+
+  @ApiOperation({ summary: 'update project' })
+  @Put('update/:projectId')
+  async updateProject(
+    @Param('projectId') projectId: string,
+    @Body() updateRequest: UpdateProjectDto,
+  ) {
+    this.logger.debug('payload', JSON.stringify(updateRequest));
+    this.logger.debug(`update project ${projectId}`);
+    return await this.projectService.updateProject(projectId, updateRequest);
   }
 }

@@ -23,6 +23,7 @@ import { User, UserDocument } from '../user/schema/user.schema';
 import { Campaign, CampaignDocument } from './campaign.schema';
 import { CreateCampaignDto } from './dto';
 import { UpdateCampaignDto } from './dto/update-campaign-dto';
+import { z } from 'zod';
 
 @Injectable()
 export class CampaignService {
@@ -197,19 +198,34 @@ export class CampaignService {
     campaignId: string,
     rawUpdateCampaignDto: UpdateCampaignDto,
   ) {
-    // const campaign = await this.campaignModel.findById(campaignId);
-    // update campaign
-    const validatedDto = UpdateCampaignDto.parse(rawUpdateCampaignDto); // validate with zod
-    console.log(validatedDto);
-    // const updateCampaignData = Campaign.mapFromUpdateDto(validatedDto);
-    // // udpate the campaign with data from updateCampaignData
-    // const updatedCampaign = await this.campaignModel.findByIdAndUpdate(
-    //   campaignId,
-    //   updateCampaignData,
-    //   { new: true },
-    // );
-    // console.log(updatedCampaign);
-    // return updatedCampaign;
+    let validatedDto: UpdateCampaignDto;
+    try {
+      validatedDto = UpdateCampaignDto.parse(rawUpdateCampaignDto); // validate with zod
+      // console.log(validatedDto);
+      const updateCampaignData = Campaign.mapFromUpdateDto(validatedDto); // map the data to Campaign model
+      // udpate the campaign with data from updateCampaignData
+      const updatedCampaign = await this.campaignModel.findByIdAndUpdate(
+        campaignId,
+        updateCampaignData,
+        { new: true },
+      );
+      return updatedCampaign;
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        throw new BadRequestException(
+          {
+            statusCode: 400,
+            message: `Invalid Update Campaign Input`,
+            data: err.issues,
+          },
+          `Invalid Update Campaign Input`,
+        );
+      } else {
+        throw new InternalServerErrorException(
+          `Error updating campaign ${campaignId}`,
+        );
+      }
+    }
   }
 
   async findAll(

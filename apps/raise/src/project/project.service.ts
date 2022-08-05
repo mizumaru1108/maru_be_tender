@@ -19,6 +19,8 @@ import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
 import axios, { AxiosRequestConfig } from 'axios';
 import dayjs from 'dayjs';
 import slugify from 'slugify';
+import { UpdateProjectDto } from './dto/update-project.dto';
+import { z } from 'zod';
 
 @Injectable()
 export class ProjectService {
@@ -180,6 +182,37 @@ export class ProjectService {
     }
 
     return dataProject;
+  }
+
+  async updateProject(projectId: string, rawDto: UpdateProjectDto) {
+    let validatedDto: UpdateProjectDto;
+    try {
+      validatedDto = UpdateProjectDto.parse(rawDto); // validate with zod
+      // console.log(validatedDto);
+      const updateCampaignData = Project.mapFromUpdateDto(validatedDto); // map the data to Campaign model
+      // udpate the campaign with data from updateCampaignData
+      const updatedCampaign = await this.projectModel.findByIdAndUpdate(
+        projectId,
+        updateCampaignData,
+        { new: true },
+      );
+      return updatedCampaign;
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        throw new BadRequestException(
+          {
+            statusCode: 400,
+            message: `Invalid Update Project Input`,
+            data: err.issues,
+          },
+          `Invalid Update Project Input`,
+        );
+      } else {
+        throw new InternalServerErrorException(
+          `Error updating project ${projectId}`,
+        );
+      }
+    }
   }
 
   async getListAll() {

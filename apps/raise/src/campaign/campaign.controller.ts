@@ -181,13 +181,11 @@ export class CampaignController {
     @Param('campaignId') campaignId: string,
     @Body() updateCampaignRequest: UpdateCampaignDto,
   ) {
-    // this.logger.debug(`get ObjectId ${JSON.stringify(campaignId)}`);
     this.logger.debug('payload', JSON.stringify(updateCampaignRequest));
     console.log('updateCampaignRequest', updateCampaignRequest);
     return await this.campaignService.updateCampaign(
       campaignId,
       updateCampaignRequest,
     );
-    // return await this.campaignService.getObjectId(updateCampaignRequest);
   }
 }

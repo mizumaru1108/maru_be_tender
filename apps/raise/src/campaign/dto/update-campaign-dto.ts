@@ -1,22 +1,13 @@
 import { z } from 'zod';
 
-import { CampaignMilestone, ImagePayload } from './create-campaign.dto';
+import { CreateCampaignDto } from './create-campaign.dto';
 
-export const UpdateCampaignDto = z.object({
-  organizationId: z.string().min(1).optional(),
-  campaignId: z.string().optional(),
-  userId: z.string().optional(),
-  campaignName: z.string().min(1).optional(),
-  campaignType: z.string().optional(),
-  projectId: z.string().optional(),
-  description: z.string().optional(),
-  isMoney: z.string().optional(),
-  methods: z.array(z.string()).optional(),
-  currencyCode: z.string().optional(),
-  amountProgress: z.string().optional(),
-  amountTarget: z.string().optional(),
-  // images: z.array(ImagePayload).optional(),
-  // milestone: z.array(CampaignMilestone).optional(),
-  isPublished: z.string().optional(),
+/**
+ * partial means using all of the create campaigndto fields but use it as optional,
+ * strict means it will only accept from the defined fields, and will not accept any other fields.
+ */
+export const UpdateCampaignDto = CreateCampaignDto.partial().strict().extend({
+  isPublished: z.string().optional(), // extend it becouse it is not in the create campaign dto
 });
+
 export type UpdateCampaignDto = z.infer<typeof UpdateCampaignDto>;

@@ -15,6 +15,8 @@ import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
 import axios, { AxiosRequestConfig } from 'axios';
 import dayjs from 'dayjs';
 import slugify from 'slugify';
+import { UpdateItemDto } from './dto/update-item.dto';
+import { z } from 'zod';
 
 @Injectable()
 export class ItemService {
@@ -353,5 +355,36 @@ export class ItemService {
       `${updatedItems.matchedCount} match, ${updatedItems.modifiedCount} data updated`,
     );
     return updatedItems;
+  }
+
+  async updateItem(itemId: string, rawDto: UpdateItemDto) {
+    let validatedDto: UpdateItemDto;
+    try {
+      validatedDto = UpdateItemDto.parse(rawDto); // validate with zod
+      // console.log(validatedDto);
+      const updateItemData = Item.mapFromUpdateDto(validatedDto); // map the data to Campaign model
+      // udpate the campaign with data from updateItemData
+      const updatedItem = await this.itemModel.findByIdAndUpdate(
+        itemId,
+        updateItemData,
+        { new: true },
+      );
+      return updatedItem;
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        throw new BadRequestException(
+          {
+            statusCode: 400,
+            message: `Invalid Update Project Input`,
+            data: err.issues,
+          },
+          `Invalid Update Project Input`,
+        );
+      } else {
+        throw new InternalServerErrorException(
+          `Error updating project ${itemId}`,
+        );
+      }
+    }
   }
 }
