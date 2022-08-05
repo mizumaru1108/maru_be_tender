@@ -35,6 +35,10 @@ import { FaqDto } from './dto/faq.dto';
 import { Faq, FaqDocument } from './schema/faq.schema';
 import { PaymentGateWayDto } from 'src/payment-stripe/dto/paymentGateway.dto';
 import { NotificationDto } from './dto/notification.dto';
+import { AppearanceNavigation, AppearanceNavigationDocument } from './schema/nonprofit_appearance_navigation.schema';
+import { AppearancePage, AppearancePageDocument } from './schema/nonprofit_appearance_page.schema';
+import { NonProfitAppearancePageDto } from './dto/nonprofit_appearance_page.dto';
+import { NonProfitAppearanceNavigationDto, NonProfitAppearanceNavigationAboutUsDto, NonProfitAppearanceNavigationBlogDto } from './dto/nonprofit_appearance_navigation.dto';
 
 @Injectable()
 export class OrganizationService {
@@ -60,7 +64,11 @@ export class OrganizationService {
     @InjectModel(PaymentGateway.name)
     private paymentGatewayModel: Model<PaymentGatewayDocument>,
     private configService: ConfigService,
-  ) {}
+    @InjectModel(AppearanceNavigation.name)
+    private appearanceNavigationModel: Model<AppearanceNavigationDocument>,
+    @InjectModel(AppearancePage.name)
+    private appearancePageModel: Model<AppearancePageDocument>
+  ) { }
 
   async findAll() {
     this.logger.debug('findAll...');
@@ -871,4 +879,89 @@ export class OrganizationService {
       notification: notifCreated,
     };
   }
+
+  /** Nonprofit_appearance_navigation */
+  async createLandingPage(organizationId: string, nonProfitAppearanceNavigationDto: NonProfitAppearanceNavigationDto) {
+    this.logger.debug(`Get Organization ${organizationId}...`);
+    const organization = await this.organizationModel.findOne({
+      _id: new Types.ObjectId(organizationId),
+    });
+    if (!organization) {
+      return {
+        statusCode: 404,
+        message: 'Organization not found',
+      };
+    }
+    this.logger.debug('Create Landingpage Organization...');
+    const appearanceCreateLandingPage = await this.appearanceNavigationModel.create(nonProfitAppearanceNavigationDto);
+    return {
+      statusCode: 200,
+      appearance: appearanceCreateLandingPage,
+    };
+
+  }
+
+  async createAboutUs(organizationId: string, nonProfitAppearanceNavigationAboutUsDto: NonProfitAppearanceNavigationAboutUsDto) {
+    this.logger.debug(`Get Organization ${organizationId}...`);
+    const organization = await this.organizationModel.findOne({
+      _id: new Types.ObjectId(organizationId),
+    });
+
+    if (!organization) {
+      return {
+        statusCode: 404,
+        message: 'Organization not found',
+      };
+    }
+
+    this.logger.debug('Create AboutUs Organization...');
+    const appearanceCreateAboutUs = await this.appearanceNavigationModel.create(nonProfitAppearanceNavigationAboutUsDto);
+    return {
+      statusCode: 200,
+      appearanceaboutus: appearanceCreateAboutUs,
+    };
+  }
+
+  async createBlog(organizationId: string, nonProfitAppearanceNavigationBlogDto: NonProfitAppearanceNavigationBlogDto) {
+    this.logger.debug(`Get Organization ${organizationId}...`);
+    const organization = await this.organizationModel.findOne({
+      _id: new Types.ObjectId(organizationId),
+    });
+    if (!organization) {
+      return {
+        statusCode: 404,
+        message: 'Organization not found',
+      };
+    }
+    this.logger.debug('Create createBlog Organization...');
+    const appearanceCreateBlog = await this.appearanceNavigationModel.create(nonProfitAppearanceNavigationBlogDto);
+    return {
+      statusCode: 200,
+      appearanceblog: appearanceCreateBlog,
+    };
+  }
+  /** ------------------------------- */
+
+  /** Nonprofit_appearance_navigation */
+  async createContactUs(organizationId: string, nonProfitAppearancePageDto: NonProfitAppearancePageDto) {
+    this.logger.debug(`Get Organization ${organizationId}...`);
+    const organization = await this.organizationModel.findOne({
+      _id: new Types.ObjectId(organizationId),
+    });
+
+    if (!organization) {
+      return {
+        statusCode: 404,
+        message: 'Organization not found',
+      };
+    }
+    this.logger.debug('Create ContactUs Organization...');
+    const appearanceCreateContactUs = await this.appearanceNavigationModel.create(nonProfitAppearancePageDto);
+    return {
+      statusCode: 200,
+      appearancecontactus: appearanceCreateContactUs,
+    };
+  }
+  /** ------------------------------- */
+
 }

@@ -27,6 +27,9 @@ import {
 } from './schema/notifications.schema';
 import { Faq, FaqSchema } from './schema/faq.schema';
 
+import { AppearanceNavigation, AppearanceNavigationSchema } from './schema/nonprofit_appearance_navigation.schema';
+import { AppearancePage, AppearancePageSchema } from './schema/nonprofit_appearance_page.schema';
+
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -66,10 +69,18 @@ import { Faq, FaqSchema } from './schema/faq.schema';
         name: PaymentGateway.name,
         schema: PaymentGatewaySchema,
       },
+      {
+        name: AppearanceNavigation.name,
+        schema: AppearanceNavigationSchema,
+      },
+      {
+        name: AppearancePage.name,
+        schema: AppearancePageSchema,
+      },
     ]),
     ConfigModule,
   ],
   providers: [OrganizationService],
   controllers: [OrganizationController],
 })
-export class OrganizationModule {}
+export class OrganizationModule { }

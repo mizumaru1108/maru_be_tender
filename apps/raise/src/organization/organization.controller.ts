@@ -17,13 +17,15 @@ import { NotificationSettingsDto } from './dto/notification_settings.dto';
 import { FaqDto } from './dto/faq.dto';
 import { PaymentGateWayDto } from 'src/payment-stripe/dto/paymentGateway.dto';
 import { NotificationDto } from './dto/notification.dto';
+import { NonProfitAppearancePageDto } from './dto/nonprofit_appearance_page.dto';
+import { NonProfitAppearanceNavigationAboutUsDto, NonProfitAppearanceNavigationBlogDto, NonProfitAppearanceNavigationDto } from './dto/nonprofit_appearance_navigation.dto';
 
 @ApiTags('orgs')
 @Controller('orgs')
 export class OrganizationController {
   private logger = rootLogger.child({ logger: OrganizationController.name });
 
-  constructor(private organizationService: OrganizationService) {}
+  constructor(private organizationService: OrganizationService) { }
 
   @Get('getListAll')
   async findAll() {
@@ -180,5 +182,21 @@ export class OrganizationController {
   async updateFaq(@Param('faqId') faqId: string, @Body() faqDto: FaqDto) {
     this.logger.debug('update fqa...');
     return await this.organizationService.updateFaq(faqId, faqDto);
+  }
+  @Post(':organizationId/landingPage')
+  async createLandingPage(@Param('organizationId') organizationId: string, @Body() nonProfitAppearanceNavigationDto: NonProfitAppearanceNavigationDto) {
+    return await this.organizationService.createLandingPage(organizationId, nonProfitAppearanceNavigationDto);
+  }
+  @Post(':organizationId/aboutUs')
+  async createAboutUs(@Param('organizationId') organizationId: string, @Body() nonProfitAppearanceNavigationAboutUsDto: NonProfitAppearanceNavigationAboutUsDto) {
+    return this.organizationService.createAboutUs(organizationId, nonProfitAppearanceNavigationAboutUsDto);
+  }
+  @Post(':organizationId/blog')
+  async createBlog(@Param('organizationId') organizationId: string, @Body() nonProfitAppearanceNavigationBlogDto: NonProfitAppearanceNavigationBlogDto) {
+    return this.organizationService.createBlog(organizationId, nonProfitAppearanceNavigationBlogDto);
+  }
+  @Post(':organizationId/contactUs')
+  async createContactUs(@Param('organizationId') organizationId: string, @Body() nonProfitAppearancePageDto: NonProfitAppearancePageDto) {
+    return this.organizationService.createContactUs(organizationId, nonProfitAppearancePageDto);
   }
 }
