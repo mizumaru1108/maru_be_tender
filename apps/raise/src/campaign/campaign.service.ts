@@ -1,28 +1,28 @@
 import {
   BadRequestException,
   Injectable,
-  NotFoundException,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { CreateCampaignDto } from './dto';
-import { Campaign, CampaignDocument } from './campaign.schema';
-import { v4 as uuidv4 } from 'uuid';
-import { rootLogger } from '../logger';
-import { Types } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
-import axios, { AxiosRequestConfig, AxiosError } from 'axios';
-import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
-import { User, UserDocument } from '../user/schema/user.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import axios, { AxiosRequestConfig } from 'axios';
+import dayjs from 'dayjs';
+import { Model, Types } from 'mongoose';
+import slugify from 'slugify';
+
 import {
   CampaignVendorLog,
   CampaignVendorLogDocument,
   Vendor,
   VendorDocument,
 } from '../buying/vendor/vendor.schema';
-import slugify from 'slugify';
-import dayjs from 'dayjs';
+import { rootLogger } from '../logger';
+import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
+import { User, UserDocument } from '../user/schema/user.schema';
+import { Campaign, CampaignDocument } from './campaign.schema';
+import { CreateCampaignDto } from './dto';
+import { UpdateCampaignDto } from './dto/update-campaign-dto';
 
 @Injectable()
 export class CampaignService {
@@ -191,6 +191,25 @@ export class CampaignService {
     }
 
     return dataCampaign;
+  }
+
+  async updateCampaign(
+    campaignId: string,
+    rawUpdateCampaignDto: UpdateCampaignDto,
+  ) {
+    // const campaign = await this.campaignModel.findById(campaignId);
+    // update campaign
+    const validatedDto = UpdateCampaignDto.parse(rawUpdateCampaignDto); // validate with zod
+    console.log(validatedDto);
+    // const updateCampaignData = Campaign.mapFromUpdateDto(validatedDto);
+    // // udpate the campaign with data from updateCampaignData
+    // const updatedCampaign = await this.campaignModel.findByIdAndUpdate(
+    //   campaignId,
+    //   updateCampaignData,
+    //   { new: true },
+    // );
+    // console.log(updatedCampaign);
+    // return updatedCampaign;
   }
 
   async findAll(

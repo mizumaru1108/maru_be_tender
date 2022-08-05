@@ -1,26 +1,13 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Query,
-  Post,
-  Param,
-  UseInterceptors,
-  Put,
-  UseGuards,
-} from '@nestjs/common';
-import { rootLogger } from '../logger';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CampaignSetFavoriteDto, CreateCampaignDto } from './dto';
-import { DonorService } from '../donor/donor.service';
-import { CampaignService } from './campaign.service';
 import { CampaignVendorLog } from 'src/buying/vendor/vendor.schema';
+
+import { DonorService } from '../donor/donor.service';
+import { rootLogger } from '../logger';
+import { CampaignService } from './campaign.service';
+import { CampaignSetFavoriteDto, CreateCampaignDto } from './dto';
 import { CampaignSetDeletedFlagDto } from './dto/capaign-set-flag-deleted';
-import { JwtAuthGuard } from '../auth/jwt.guard';
-import { PermissionsGuard } from '../auth/permissions.guard';
-import { RolesGuard } from '../auth/roles.guard';
-import { Roles } from '../auth/roles.decorator';
-import { RoleEnum } from '../user/enums/role-enum';
+import { UpdateCampaignDto } from './dto/update-campaign-dto';
 
 @ApiTags('campaign')
 @Controller('campaign')
@@ -48,8 +35,6 @@ export class CampaignController {
     status: 201,
     description: 'The New Campaign has been successfully flagged as deleted.',
   })
-  @Roles(RoleEnum.DONOR)
-  @UseGuards(JwtAuthGuard)
   @Post('setDeletedFlagBatch')
   async setDeletedFlag(@Body() request: CampaignSetDeletedFlagDto) {
     await this.campaignService.setDeletedFlag(request.campaignIds);
@@ -188,5 +173,21 @@ export class CampaignController {
   async getNewCampaignObjectId(@Body() createCampaignDto: CreateCampaignDto) {
     this.logger.debug('get ObjectId ');
     return await this.campaignService.getObjectId(createCampaignDto);
+  }
+
+  @ApiOperation({ summary: 'update campaign' })
+  @Put('update/:campaignId')
+  async updateCampaign(
+    @Param('campaignId') campaignId: string,
+    @Body() updateCampaignRequest: UpdateCampaignDto,
+  ) {
+    // this.logger.debug(`get ObjectId ${JSON.stringify(campaignId)}`);
+    this.logger.debug('payload', JSON.stringify(updateCampaignRequest));
+    console.log('updateCampaignRequest', updateCampaignRequest);
+    return await this.campaignService.updateCampaign(
+      campaignId,
+      updateCampaignRequest,
+    );
+    // return await this.campaignService.getObjectId(updateCampaignRequest);
   }
 }
