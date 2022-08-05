@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import dayjs from 'dayjs';
 import * as mongoose from 'mongoose';
 import { Document, Types } from 'mongoose';
+import { UpdateProjectDto } from './dto/update-project.dto';
 
 export type ProjectDocument = Project & Document;
 export type ProjectOperatorLogDocument = ProjectOperatorLog & Document;
@@ -108,6 +110,28 @@ export class Project {
 
   @Prop({ type: () => Array })
   public nearByPlaces?: Array<Object>;
+
+  static mapFromUpdateDto(dto: UpdateProjectDto): Project {
+    const project = new Project();
+    if (dto.organizationId) {
+      project.organizationId = new Types.ObjectId(dto.organizationId);
+    }
+    dto.name && (project.name = dto.name);
+    dto.description && (project.description = dto.description);
+    dto.address && (project.address = dto.address);
+    // nearByPlaces: z.array(NearByPlaces), !TODO: later implementations.
+    dto.location && (project.location = dto.location);
+    dto.diameterSize && (project.diameterSize = dto.diameterSize);
+    dto.prayerSize && (project.prayerSize = dto.prayerSize);
+    dto.toiletSize && (project.toiletSize = dto.toiletSize);
+    dto.hasAc && (project.hasAc = dto.hasAc);
+    dto.hasClassroom && (project.hasClassroom = dto.hasClassroom);
+    dto.hasParking && (project.hasParking = dto.hasParking);
+    dto.hasGreenSpace && (project.hasGreenSpace = dto.hasGreenSpace);
+    dto.hasFemaleSection && (project.hasFemaleSection = dto.hasFemaleSection);
+    project.updatedAt = dayjs().toISOString();
+    return project;
+  }
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);
