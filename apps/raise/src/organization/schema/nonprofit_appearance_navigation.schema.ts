@@ -20,7 +20,7 @@ export class AppearanceNavigation {
 
   /** Company Value Array of Object */
   @Prop()
-  companyMission: string;
+  mission: string[];
   /** ------------------------------ */
 
   @Prop()
@@ -36,24 +36,24 @@ export class AppearanceNavigation {
 
   /** Caompany Value Array of Object {whyUs:"",iconForMission:""} */
   @Prop()
-  whyUs: string;
+  whyUs: string[];
   /** ------------------------------ */
 
   /** Caompany Value Array of Object */
   @Prop()
-  linkCampaign: string;
+  linkCampaign: string[];
   /** ------------------------------ */
 
   @Prop()
-  vision: string;
-  @Prop()
-  mission: string;
+  vision: string[];
+  // @Prop()
+  // mission: string;
   @Prop()
   linkedYoutube: string;
 
   /** Caompany Value Array of Object */
   @Prop()
-  companyValues: string;
+  companyValues: string[];
   /** ------------------------------ */
 
   @Prop()
@@ -61,7 +61,7 @@ export class AppearanceNavigation {
 
   /** Caompany Value Array of Object */
   @Prop()
-  teamMemberAddUser: string;
+  teamMemberAddUser: string[];
   /** ------------------------------ */
 
   @Prop()
@@ -71,11 +71,21 @@ export class AppearanceNavigation {
 
   /** News Setting Page Blog {news:"",photo:"",desc:"",date:""} */
   @Prop()
-  news: string;
+  news: string[];
   /** ------------------------------ */
 
   @Prop()
   page: string;
+
+  @Prop()
+  organizationId: string;
+
+  @Prop()
+  createdAt: string;
+
+  @Prop()
+  updatedAt: string;
+
 }
 
 export const AppearanceNavigationSchema = SchemaFactory.createForClass(AppearanceNavigation);

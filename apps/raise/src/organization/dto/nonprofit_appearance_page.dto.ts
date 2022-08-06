@@ -25,7 +25,16 @@ export class NonProfitAppearancePageDto {
   /**--------------- */
 
   @IsArray()
+  @ArrayNotEmpty()
   /**Array Of Object {question:"",answer:""} */
-  faq: string[];
+  readonly faq: string[];
   /**--------------- */
+  @IsString()
+  organizationId: string;
+
+  @IsString()
+  createdAt: string;
+
+  @IsString()
+  updatedAt: string;
 }

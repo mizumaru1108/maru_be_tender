@@ -15,12 +15,20 @@ export class AppearancePage {
   contactUsCsEmail: string;
   /**Array Of Object */
   @Prop()
-  disclaimer: string;
+  disclaimer: string[];
   /**--------------- */
   /**Array Of Object {question:"",answer:""} */
   @Prop()
-  faq: string;
+  faq: string[];
   /**--------------- */
+  @Prop()
+  organizationId: string;
+
+  @Prop()
+  createdAt: string;
+
+  @Prop()
+  updatedAt: string;
 }
 
 export const AppearancePageSchema = SchemaFactory.createForClass(AppearancePage);

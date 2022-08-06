@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { ArrayNotEmpty, IsArray, IsEmail, IsString } from "class-validator";
+import { ArrayNotEmpty, IsArray, IsEmail, IsEnum, IsString } from "class-validator";
+import { PageNavigation } from "../enums";
 
 export class NonProfitAppearanceNavigationDto {
 
@@ -7,57 +8,69 @@ export class NonProfitAppearanceNavigationDto {
 
   @ApiProperty()
   @IsString()
-  ownerUserId: string;
+  readonly ownerUserId: string;
   @ApiProperty()
   @IsString()
-  ownerRealmId: string;
+  readonly ownerRealmId: string;
   @ApiProperty()
   @IsString()
-  titleThumbnail: string;
+  readonly titleThumbnail: string;
   @ApiProperty()
   @IsString()
-  photoThumbnail: string;
+  readonly photoThumbnail: string;
   @ApiProperty()
   @IsString()
-  descriptionThumbnail: string;
+  readonly descriptionThumbnail: string;
 
   @ApiProperty()
   @IsArray()
+  @ArrayNotEmpty()
   /** Company Value Array of Object */
-  mission: string[];
+  readonly mission: string[];
   /** ------------------------------ */
   @ApiProperty()
   @IsString()
-  iconForMission: string;
+  readonly iconForMission: string;
 
   @ApiProperty()
   @IsString()
-  titleActivities: string;
+  readonly titleActivities: string;
   @ApiProperty()
   @IsString()
-  photoOfActivity: string;
+  readonly photoOfActivity: string;
   @ApiProperty()
   @IsString()
-  descriptionActivity: string;
+  readonly descriptionActivity: string;
   @ApiProperty()
   @IsString()
-  detailDescriptionActivity: string;
+  readonly detailDescriptionActivity: string;
 
   @ApiProperty()
   @IsArray()
+  @ArrayNotEmpty()
   /** Caompany Value Array of Object {whyUs:"",iconForMission:""} */
-  whyUs: string[];
+  readonly whyUs: string[];
   /** ------------------------------ */
 
   /** Caompany Value Array of Object */
   @ApiProperty()
   @IsArray()
-  linkCampaign: string[];
+  @ArrayNotEmpty()
+  readonly linkCampaign: string[];
   /** ------------------------------ */
 
   @ApiProperty()
   @IsString()
-  page: string;
+  page: string = 'LANDINGPAGE';
+
+  @IsString()
+  organizationId: string;
+
+  @IsString()
+  createdAt: string;
+
+  @IsString()
+  updatedAt: string;
 }
 
 export class NonProfitAppearanceNavigationAboutUsDto {
@@ -111,7 +124,16 @@ export class NonProfitAppearanceNavigationAboutUsDto {
 
   @ApiProperty()
   @IsString()
-  page: string;
+  page: string = 'ABOUTUS';
+
+  @IsString()
+  organizationId: string;
+
+  @IsString()
+  createdAt: string;
+
+  @IsString()
+  updatedAt: string;
 }
 export class NonProfitAppearanceNavigationBlogDto {
 
@@ -146,5 +168,14 @@ export class NonProfitAppearanceNavigationBlogDto {
 
   @ApiProperty()
   @IsString()
-  page: string;
+  page: string = 'BLOG';
+
+  @IsString()
+  organizationId: string;
+
+  @IsString()
+  createdAt: string;
+
+  @IsString()
+  updatedAt: string;
 }

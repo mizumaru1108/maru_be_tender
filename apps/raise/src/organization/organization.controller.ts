@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
   UseInterceptors,
 } from '@nestjs/common';
@@ -19,6 +20,7 @@ import { PaymentGateWayDto } from 'src/payment-stripe/dto/paymentGateway.dto';
 import { NotificationDto } from './dto/notification.dto';
 import { NonProfitAppearancePageDto } from './dto/nonprofit_appearance_page.dto';
 import { NonProfitAppearanceNavigationAboutUsDto, NonProfitAppearanceNavigationBlogDto, NonProfitAppearanceNavigationDto } from './dto/nonprofit_appearance_navigation.dto';
+import { query } from 'express';
 
 @ApiTags('orgs')
 @Controller('orgs')
@@ -183,6 +185,7 @@ export class OrganizationController {
     this.logger.debug('update fqa...');
     return await this.organizationService.updateFaq(faqId, faqDto);
   }
+
   @Post(':organizationId/landingPage')
   async createLandingPage(@Param('organizationId') organizationId: string, @Body() nonProfitAppearanceNavigationDto: NonProfitAppearanceNavigationDto) {
     return await this.organizationService.createLandingPage(organizationId, nonProfitAppearanceNavigationDto);
@@ -198,5 +201,38 @@ export class OrganizationController {
   @Post(':organizationId/contactUs')
   async createContactUs(@Param('organizationId') organizationId: string, @Body() nonProfitAppearancePageDto: NonProfitAppearancePageDto) {
     return this.organizationService.createContactUs(organizationId, nonProfitAppearancePageDto);
+  }
+
+  @Put(':organizationId/landingPage')
+  async editLandingPage(@Param('organizationId') organizationId: string, @Body() nonProfitAppearanceNavigationDto: NonProfitAppearanceNavigationDto) {
+    return await this.organizationService.editLandingPage(organizationId, nonProfitAppearanceNavigationDto);
+  }
+  @Put(':organizationId/aboutUs')
+  async editAboutUs(@Param('organizationId') organizationId: string, @Body() nonProfitAppearanceNavigationAboutUsDto: NonProfitAppearanceNavigationAboutUsDto) {
+    return this.organizationService.editAboutUs(organizationId, nonProfitAppearanceNavigationAboutUsDto);
+  }
+  @Put(':organizationId/blog')
+  async editBlog(@Param('organizationId') organizationId: string, @Body() nonProfitAppearanceNavigationBlogDto: NonProfitAppearanceNavigationBlogDto) {
+    return this.organizationService.editBlog(organizationId, nonProfitAppearanceNavigationBlogDto);
+  }
+  @Put(':organizationId/contactUs')
+  async editContactUs(@Param('organizationId') organizationId: string, @Body() nonProfitAppearancePageDto: NonProfitAppearancePageDto) {
+    return this.organizationService.editContactUs(organizationId, nonProfitAppearancePageDto);
+  }
+  @Get(':organizationId/landingPage')
+  async getLandingPage(@Param('organizationId') organizationId: string, @Query() page: string) {
+    return await this.organizationService.getLandingPage(organizationId, page);
+  }
+  @Get(':organizationId/aboutUs')
+  async getAboutUs(@Param('organizationId') organizationId: string, @Query() page: string) {
+    return this.organizationService.getAboutUs(organizationId, page);
+  }
+  @Get(':organizationId/blog')
+  async getBlog(@Param('organizationId') organizationId: string, @Query() page: string) {
+    return this.organizationService.getBlog(organizationId, page);
+  }
+  @Get(':organizationId/contactUs')
+  async getContactUs(@Param('organizationId') organizationId: string) {
+    return this.organizationService.getContactUs(organizationId);
   }
 }
