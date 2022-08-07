@@ -7,20 +7,22 @@ export type AppearancePageDocument = AppearancePage & Document;
 export class AppearancePage {
   @Prop()
   id: string;
+
   @Prop()
   ownerUserId: string;
+
   @Prop()
   ownerRealmId: string;
+
   @Prop()
   contactUsCsEmail: string;
-  /**Array Of Object */
+
   @Prop()
   disclaimer: string[];
-  /**--------------- */
-  /**Array Of Object {question:"",answer:""} */
+
   @Prop()
   faq: string[];
-  /**--------------- */
+
   @Prop()
   organizationId: string;
 

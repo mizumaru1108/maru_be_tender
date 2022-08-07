@@ -37,8 +37,11 @@ import { PaymentGateWayDto } from 'src/payment-stripe/dto/paymentGateway.dto';
 import { NotificationDto } from './dto/notification.dto';
 import { AppearanceNavigation, AppearanceNavigationDocument } from './schema/nonprofit_appearance_navigation.schema';
 import { AppearancePage, AppearancePageDocument } from './schema/nonprofit_appearance_page.schema';
-import { NonProfitAppearancePageDto } from './dto/nonprofit_appearance_page.dto';
-import { NonProfitAppearanceNavigationDto, NonProfitAppearanceNavigationAboutUsDto, NonProfitAppearanceNavigationBlogDto } from './dto/nonprofit_appearance_navigation.dto';
+import { NonProfitAppearancePageDto, EditNonProfitAppearancePageDto } from './dto/nonprofit_appearance_page.dto';
+import {
+  NonProfitAppearanceNavigationDto, NonProfitAppearanceNavigationAboutUsDto, NonProfitAppearanceNavigationBlogDto,
+  EditNonProfitAppearanceNavigationAboutUsDto, EditNonProfitAppearanceNavigationBlogDto, EditNonProfitAppearanceNavigationDto
+} from './dto/nonprofit_appearance_navigation.dto';
 
 @Injectable()
 export class OrganizationService {
@@ -883,20 +886,20 @@ export class OrganizationService {
   /** Nonprofit_appearance_navigation */
   async createLandingPage(organizationId: string, nonProfitAppearanceNavigationDto: NonProfitAppearanceNavigationDto) {
     this.logger.debug(`Get Organization ${organizationId}...`);
-    const organization = await this.organizationModel.findOne({
-      _id: new Types.ObjectId(organizationId),
-    });
-    if (!organization) {
+    const getOrgsId = await this.getOrganization(organizationId);
+    if (getOrgsId.statusCode === 404) {
       return {
         statusCode: 404,
-        message: 'Organization not found ' + `${organizationId}`,
+        message: 'Organization not found',
       };
     }
+
     this.logger.debug('Create Landingpage Organization...');
     nonProfitAppearanceNavigationDto.organizationId = organizationId;
     nonProfitAppearanceNavigationDto.page = 'LANDINGPAGE';
     let now: Date = new Date();
     nonProfitAppearanceNavigationDto.createdAt = now.toISOString();
+    nonProfitAppearanceNavigationDto.updatedAt = now.toISOString();
     const appearanceCreateLandingPage = await this.appearanceNavigationModel.create(nonProfitAppearanceNavigationDto);
     return {
       statusCode: 200,
@@ -907,11 +910,8 @@ export class OrganizationService {
 
   async createAboutUs(organizationId: string, nonProfitAppearanceNavigationAboutUsDto: NonProfitAppearanceNavigationAboutUsDto) {
     this.logger.debug(`Get Organization ${organizationId}...`);
-    const organization = await this.organizationModel.findOne({
-      _id: new Types.ObjectId(organizationId),
-    });
-
-    if (!organization) {
+    const getOrgsId = await this.getOrganization(organizationId);
+    if (getOrgsId.statusCode === 404) {
       return {
         statusCode: 404,
         message: 'Organization not found',
@@ -923,6 +923,7 @@ export class OrganizationService {
     nonProfitAppearanceNavigationAboutUsDto.page = 'ABOUTUS';
     let now: Date = new Date();
     nonProfitAppearanceNavigationAboutUsDto.createdAt = now.toISOString();
+    nonProfitAppearanceNavigationAboutUsDto.updatedAt = now.toISOString();
     const appearanceCreateAboutUs = await this.appearanceNavigationModel.create(nonProfitAppearanceNavigationAboutUsDto);
     return {
       statusCode: 200,
@@ -932,10 +933,8 @@ export class OrganizationService {
 
   async createBlog(organizationId: string, nonProfitAppearanceNavigationBlogDto: NonProfitAppearanceNavigationBlogDto) {
     this.logger.debug(`Get Organization ${organizationId}...`);
-    const organization = await this.organizationModel.findOne({
-      _id: new Types.ObjectId(organizationId),
-    });
-    if (!organization) {
+    const getOrgsId = await this.getOrganization(organizationId);
+    if (getOrgsId.statusCode === 404) {
       return {
         statusCode: 404,
         message: 'Organization not found',
@@ -946,18 +945,17 @@ export class OrganizationService {
     nonProfitAppearanceNavigationBlogDto.page = 'BLOG';
     let now: Date = new Date();
     nonProfitAppearanceNavigationBlogDto.createdAt = now.toISOString();
+    nonProfitAppearanceNavigationBlogDto.updatedAt = now.toISOString();
     const appearanceCreateBlog = await this.appearanceNavigationModel.create(nonProfitAppearanceNavigationBlogDto);
     return {
       statusCode: 200,
       appearanceblog: appearanceCreateBlog,
     };
   }
-  async editLandingPage(organizationId: string, nonProfitAppearanceNavigationDto: NonProfitAppearanceNavigationDto) {
+  async editLandingPage(organizationId: string, editNonProfitAppearanceNavigationDto: EditNonProfitAppearanceNavigationDto) {
     this.logger.debug(`Get Organization ${organizationId}...`);
-    const organization = await this.organizationModel.findOne({
-      _id: organizationId,
-    });
-    if (!organization) {
+    const getOrgsId = await this.getOrganization(organizationId);
+    if (getOrgsId.statusCode === 404) {
       return {
         statusCode: 404,
         message: 'Organization not found',
@@ -965,14 +963,22 @@ export class OrganizationService {
     }
 
     let now: Date = new Date();
-    nonProfitAppearanceNavigationDto.organizationId = organizationId;
-    nonProfitAppearanceNavigationDto.updatedAt = now.toISOString();
+    editNonProfitAppearanceNavigationDto.organizationId = organizationId;
+    editNonProfitAppearanceNavigationDto.updatedAt = now.toISOString();
 
+    this.logger.debug('Edit Landingpage Organization...');
     const landingPageUpdated = await this.appearanceNavigationModel.findOneAndUpdate(
-      { organizationId: new Types.ObjectId(organizationId), page: "landingpage" },
-      nonProfitAppearanceNavigationDto,
+      { organizationId: organizationId, page: 'LANDINGPAGE' },
+      editNonProfitAppearanceNavigationDto,
       { new: true },
     );
+
+    if (!landingPageUpdated) {
+      return {
+        statusCode: 400,
+        message: 'Failed',
+      };
+    }
 
     return {
       statusCode: 200,
@@ -980,70 +986,88 @@ export class OrganizationService {
     };
   }
 
-  async editAboutUs(organizationId: string, nonProfitAppearanceNavigationAboutUsDto: NonProfitAppearanceNavigationAboutUsDto) {
+  async editAboutUs(organizationId: string, editNonProfitAppearanceNavigationAboutUsDto: EditNonProfitAppearanceNavigationAboutUsDto) {
     this.logger.debug(`Get Organization ${organizationId}...`);
-    const organization = await this.organizationModel.findOne({
-      _id: new Types.ObjectId(organizationId),
-    });
-
-    if (!organization) {
+    const getOrgsId = await this.getOrganization(organizationId);
+    if (getOrgsId.statusCode === 404) {
       return {
         statusCode: 404,
         message: 'Organization not found',
       };
     }
 
-    this.logger.debug('Create AboutUs Organization...');
-    const appearanceCreateAboutUs = await this.appearanceNavigationModel.create(nonProfitAppearanceNavigationAboutUsDto);
+    this.logger.debug('Edit AboutUs Organization...');
+    let now: Date = new Date();
+    editNonProfitAppearanceNavigationAboutUsDto.updatedAt = now.toISOString();
+    const abouUsPageUpdated = await this.appearanceNavigationModel.findOneAndUpdate(
+      { organizationId: organizationId, page: 'ABOUTUS' },
+      editNonProfitAppearanceNavigationAboutUsDto,
+      { new: true },
+    );
+
+    if (!abouUsPageUpdated) {
+      return {
+        statusCode: 400,
+        message: 'Failed',
+      };
+    }
+
     return {
       statusCode: 200,
-      appearanceaboutus: appearanceCreateAboutUs,
+      notification: abouUsPageUpdated,
     };
   }
 
-  async editBlog(organizationId: string, nonProfitAppearanceNavigationBlogDto: NonProfitAppearanceNavigationBlogDto) {
+  async editBlog(organizationId: string, editNonProfitAppearanceNavigationBlogDto: EditNonProfitAppearanceNavigationBlogDto) {
     this.logger.debug(`Get Organization ${organizationId}...`);
-    const organization = await this.organizationModel.findOne({
-      _id: new Types.ObjectId(organizationId),
-    });
-    if (!organization) {
+    const getOrgsId = await this.getOrganization(organizationId);
+    if (getOrgsId.statusCode === 404) {
       return {
         statusCode: 404,
         message: 'Organization not found',
       };
     }
-    this.logger.debug('Edit createBlog Organization...');
-    const appearanceCreateBlog = await this.appearanceNavigationModel.create(nonProfitAppearanceNavigationBlogDto);
+    this.logger.debug('Edit AboutUs Organization...');
+    let now: Date = new Date();
+    editNonProfitAppearanceNavigationBlogDto.updatedAt = now.toISOString();
+    const blogUpdated = await this.appearanceNavigationModel.findOneAndUpdate(
+      { organizationId: organizationId, page: 'BLOG' },
+      editNonProfitAppearanceNavigationBlogDto,
+      { new: true },
+    );
+
+    if (!blogUpdated) {
+      return {
+        statusCode: 400,
+        message: 'Failed',
+      };
+    }
+
     return {
       statusCode: 200,
-      appearanceblog: appearanceCreateBlog,
+      notification: blogUpdated,
     };
   }
 
-  async getLandingPage(organizationId: string, page: string) {
+  async getLandingPage(organizationId: string) {
     this.logger.debug(`Get Organization ${organizationId}...`);
-    const organization = await this.organizationModel.findById(organizationId); // findById({ organizationId });
-    // const organization = await this.organizationModel.findOne({
-    //   _id: new Types.ObjectId(organizationId)
-    // }, {})
-
-    if (!organization) {
+    const getOrgsId = await this.getOrganization(organizationId);
+    if (getOrgsId.statusCode === 404) {
       return {
         statusCode: 404,
         message: 'Organization not found',
       };
     }
     this.logger.debug('Get Landingpage Organization...');
-    return organization;
+    return await this.appearanceNavigationModel.find({
+      organizationId: new Types.ObjectId(organizationId), page: 'LANDINGPAGE'
+    });
   }
 
-  async getAboutUs(organizationId: string, page: string) {
+  async getAboutUs(organizationId: string) {
     this.logger.debug(`Get Organization ${organizationId}...`);
-    const organization = await this.organizationModel.findOne({
-      _id: new Types.ObjectId(organizationId),
-    });
-
-    if (!organization) {
+    const getOrgsId = await this.getOrganization(organizationId);
+    if (getOrgsId.statusCode === 404) {
       return {
         statusCode: 404,
         message: 'Organization not found',
@@ -1051,33 +1075,32 @@ export class OrganizationService {
     }
 
     this.logger.debug('Get AboutUs Organization...');
-    return organization;
+    return await this.appearanceNavigationModel.find({
+      organizationId: new Types.ObjectId(organizationId), page: 'ABOUTUS'
+    });
   }
 
-  async getBlog(organizationId: string, page: string) {
+  async getBlog(organizationId: string) {
     this.logger.debug(`Get Organization ${organizationId}...`);
-    const organization = await this.organizationModel.findOne({
-      _id: new Types.ObjectId(organizationId),
-    });
-    if (!organization) {
+    const getOrgsId = await this.getOrganization(organizationId);
+    if (getOrgsId.statusCode === 404) {
       return {
         statusCode: 404,
         message: 'Organization not found',
       };
     }
     this.logger.debug('Create createBlog Organization...');
-    return organization;
+    return await this.appearanceNavigationModel.find({
+      organizationId: new Types.ObjectId(organizationId), page: 'BLOG'
+    });
   }
   /** ------------------------------- */
 
   /** Nonprofit_appearance_navigation */
   async createContactUs(organizationId: string, nonProfitAppearancePageDto: NonProfitAppearancePageDto) {
     this.logger.debug(`Get Organization ${organizationId}...`);
-    const organization = await this.organizationModel.findOne({
-      _id: new Types.ObjectId(organizationId),
-    });
-
-    if (!organization) {
+    const getOrgsId = await this.getOrganization(organizationId);
+    if (getOrgsId.statusCode === 404) {
       return {
         statusCode: 404,
         message: 'Organization not found',
@@ -1087,6 +1110,7 @@ export class OrganizationService {
     nonProfitAppearancePageDto.organizationId = organizationId;
     let now: Date = new Date();
     nonProfitAppearancePageDto.createdAt = now.toISOString();
+    nonProfitAppearancePageDto.updatedAt = now.toISOString();
     this.logger.debug('Create ContactUs Organization...');
     const appearanceCreateContactUs = await this.appearancePageModel.create(nonProfitAppearancePageDto);
     return {
@@ -1095,13 +1119,10 @@ export class OrganizationService {
     };
   }
 
-  async editContactUs(organizationId: string, nonProfitAppearancePageDto: NonProfitAppearancePageDto) {
+  async editContactUs(organizationId: string, editNonProfitAppearancePageDto: EditNonProfitAppearancePageDto) {
     this.logger.debug(`Get Organization ${organizationId}...`);
-    const organization = await this.organizationModel.findOne({
-      _id: new Types.ObjectId(organizationId),
-    });
-
-    if (!organization) {
+    const getOrgsId = await this.getOrganization(organizationId);
+    if (getOrgsId.statusCode === 404) {
       return {
         statusCode: 404,
         message: 'Organization not found',
@@ -1110,32 +1131,36 @@ export class OrganizationService {
 
     this.logger.debug('Edit ContactUs Organization...');
     let now: Date = new Date();
-    nonProfitAppearancePageDto.updatedAt = now.toISOString();
-    const appearanceEditContactUs = await this.appearanceNavigationModel.findOneAndUpdate({ organizationId: organizationId }, nonProfitAppearancePageDto);
+    editNonProfitAppearancePageDto.updatedAt = now.toISOString();
+    const appearanceEditContactUs = await this.appearancePageModel.findOneAndUpdate(
+      { organizationId }, editNonProfitAppearancePageDto);
+
+    if (!appearanceEditContactUs) {
+      return {
+        statusCode: 400,
+        message: 'Failed',
+      };
+    }
+
     return {
       statusCode: 200,
       appearancecontactus: appearanceEditContactUs,
     };
   }
 
-
   async getContactUs(organizationId: string) {
     this.logger.debug(`Get Organization ${organizationId}...`);
-    const organization = await this.organizationModel.findById({
-      _id: new Types.ObjectId(organizationId),
+    const getOrgsId = await this.getOrganization(organizationId);
+    if (getOrgsId.statusCode === 404) {
+      return {
+        statusCode: 404,
+        message: 'Organization not found',
+      };
+    }
+    this.logger.debug('Get ContactUs Organization...');
+    return await this.appearancePageModel.find({
+      organizationId: new Types.ObjectId(organizationId)
     });
-    // const organization = await this.organizationModel.findOne({
-    //   _id: new Types.ObjectId(organizationId),
-    // });
-
-    // if (!organization) {
-    //   return {
-    //     statusCode: 404,
-    //     message: 'Organization not found',
-    //   };
-    // }
-    this.logger.debug('Create ContactUs Organization...');
-    return organization;
   }
   /** ------------------------------- */
 
