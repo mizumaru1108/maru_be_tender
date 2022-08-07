@@ -156,7 +156,7 @@ export class CampaignController {
     description: 'The Campaign has been successfully applied by Vendor.',
   })
   @Post('vendor/apply')
-  async vendorApply(@Body() createCampaignDto: CampaignVendorLog) {
+  async vendorApply(@Body() createCampaignDto: CreateCampaignDto) {
     this.logger.debug(
       'apply to unapproved new campaign ',
       JSON.stringify(createCampaignDto),

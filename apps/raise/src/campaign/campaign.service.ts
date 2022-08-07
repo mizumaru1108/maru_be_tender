@@ -441,15 +441,15 @@ export class CampaignService {
     return campaignList;
   }
 
-  async vendorApply(vendorApplyDto: CampaignVendorLog) {
+  async vendorApply(createCampaignDto: CreateCampaignDto) {
     let vendorData: any = new Vendor();
     let data: any;
     const ObjectId = require('mongoose').Types.ObjectId;
 
-    this.logger.debug(`userId=${vendorApplyDto.vendorId}`);
+    this.logger.debug(`userId=${createCampaignDto.userId}`);
 
     let dataVendor = await this.vendorModel.findOne({
-      _id: vendorApplyDto.vendorId,
+      ownerUserId: createCampaignDto.userId,
     });
 
     this.logger.debug(`_id=${dataVendor?._id}`);
@@ -462,22 +462,22 @@ export class CampaignService {
     //   throw new NotFoundException(`Organization not found`);
     // }
 
-    if (!vendorApplyDto.campaignId) {
+    if (!createCampaignDto.campaignId) {
       throw new NotFoundException(`Campaign not found`);
     }
 
-    this.logger.debug(`campaignId=${vendorApplyDto?.campaignId}`);
+    this.logger.debug(`campaignId=${createCampaignDto?.campaignId}`);
     try {
       data = await this.campaignVendorLogModel.findOneAndUpdate(
         {
-          campaignId: new ObjectId(vendorApplyDto?.campaignId),
+          campaignId: new ObjectId(createCampaignDto?.campaignId),
           status: 'something',
           vendorId: '',
         },
         {
           vendorId: dataVendor?._id,
           status: 'pending new',
-          campaignId: new ObjectId(vendorApplyDto?.campaignId),
+          campaignId: new ObjectId(createCampaignDto?.campaignId),
           createdAt: dayjs().toISOString(),
           updatedAt: dayjs().toISOString(),
         },
