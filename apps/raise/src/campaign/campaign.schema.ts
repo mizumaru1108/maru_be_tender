@@ -136,6 +136,45 @@ export class Campaign {
     // dto.milestone && (campaign.milestone = dto.milestone);
     return campaign;
   }
+
+  static compare(currentData: Campaign, request: UpdateCampaignDto): Campaign {
+    request.campaignId && (currentData.campaignId = request.campaignId);
+    if (request.organizationId) {
+      currentData.organizationId = new Types.ObjectId(request.organizationId);
+    }
+    // request.creatorUserId &&
+    //   (currentData.creatorUserId = request.creatorUserId);
+    request.campaignName && (currentData.campaignName = request.campaignName);
+    request.campaignType && (currentData.campaignType = request.campaignType);
+    if (request.projectId) {
+      currentData.projectId = new Types.ObjectId(request.projectId);
+    }
+    // request.type && (currentData.type = request.type);
+    request.description && (currentData.description = request.description);
+    request.isMoney && (currentData.isMoney = request.isMoney);
+    request.methods && (currentData.methods = request.methods);
+    request.currencyCode && (currentData.currencyCode = request.currencyCode);
+    if (request.amountProgress) {
+      currentData.amountProgress = Types.Decimal128.fromString(
+        request.amountProgress,
+      );
+    }
+    if (request.amountTarget) {
+      currentData.amountTarget = Types.Decimal128.fromString(
+        request.amountTarget,
+      );
+    }
+    // request.coverImage && (currentData.coverImage = request.coverImage);
+    // request.image1 && (currentData.image1 = request.image1);
+    // request.image2 && (currentData.image2 = request.image2);
+    // request.image3 && (currentData.image3 = request.image3);
+    currentData.updatedAt = dayjs().toISOString();
+    request.isPublished && (currentData.isPublished = request.isPublished);
+    request.images && (currentData.images = request.images);
+    request.milestone && (currentData.milestone = request.milestone);
+
+    return currentData;
+  }
 }
 
 export const CampaignSchema = SchemaFactory.createForClass(Campaign);

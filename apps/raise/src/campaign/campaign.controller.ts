@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -197,16 +199,23 @@ export class CampaignController {
   }
 
   @ApiOperation({ summary: 'update campaign' })
-  @Put('update/:campaignId')
+  @Patch('update/:campaignId')
   async updateCampaign(
     @Param('campaignId') campaignId: string,
     @Body() updateCampaignRequest: UpdateCampaignDto,
   ) {
     this.logger.debug('payload', JSON.stringify(updateCampaignRequest));
-    console.log('updateCampaignRequest', updateCampaignRequest);
+    // console.log('updateCampaignRequest', updateCampaignRequest);
     return await this.campaignService.updateCampaign(
       campaignId,
       updateCampaignRequest,
     );
+  }
+
+  @ApiOperation({ summary: 'try delete image' })
+  @Delete('delete/:campaignId')
+  async deleteImage(@Param('campaignId') campaignId: string) {
+    // console.log('campaignId', campaignId);
+    return await this.campaignService.testDeleteImage(campaignId);
   }
 }
