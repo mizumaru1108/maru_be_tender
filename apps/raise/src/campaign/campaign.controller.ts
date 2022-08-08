@@ -1,9 +1,23 @@
-import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CampaignVendorLog } from 'src/buying/vendor/vendor.schema';
+import { JwtAuthGuard } from '../auth/jwt.guard';
+import { Roles } from '../auth/roles.decorator';
+import { RolesGuard } from '../auth/roles.guard';
 
 import { DonorService } from '../donor/donor.service';
 import { rootLogger } from '../logger';
+import { RoleEnum } from '../user/enums/role-enum';
 import { CampaignService } from './campaign.service';
 import { CampaignSetFavoriteDto, CreateCampaignDto } from './dto';
 import { CampaignSetDeletedFlagDto } from './dto/capaign-set-flag-deleted';
@@ -38,6 +52,13 @@ export class CampaignController {
   @Post('setDeletedFlagBatch')
   async setDeletedFlag(@Body() request: CampaignSetDeletedFlagDto) {
     await this.campaignService.setDeletedFlag(request.campaignIds);
+  }
+
+  @Post('test')
+  @Roles(RoleEnum.SUPERADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async test(@Req() request: any) {
+    console.log('request', request.user);
   }
 
   @ApiOperation({ summary: 'Get list all campaign' })

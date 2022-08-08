@@ -35,6 +35,7 @@ import { UploadModule } from './upload/upload.module';
 import { OperatorModule } from './operator/operator.module';
 import { ManagerModule } from './manager/manager.module';
 import { WidgetsModule } from './widgets/widgets.module';
+import { SharedModule } from './shared/shared.module';
 // import { OpenTelemetryModule } from 'nestjs-otel';
 // import { OpenTelemetryModule } from '@metinseylan/nestjs-opentelemetry';
 
@@ -103,6 +104,7 @@ import { WidgetsModule } from './widgets/widgets.module';
     BuyingModule,
     UploadModule,
     WidgetsModule,
+    SharedModule,
   ],
   controllers: [],
   providers: [AuthzedService],

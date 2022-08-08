@@ -45,9 +45,14 @@ export class AuthService {
         loginRequest,
       );
 
-      console.log('response', result);
-
-      return result;
+      const response = {
+        user: {
+          id: result.response.user!.id,
+          email: result.response.user!.email,
+        },
+        accessToken: result.response.token!,
+      };
+      return response;
     } catch (error) {
       if (error.statusCode < 500) {
         throw new UnauthorizedException('Invalid credentials!');
