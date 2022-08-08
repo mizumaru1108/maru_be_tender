@@ -1,6 +1,17 @@
-import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CampaignVendorLog } from 'src/buying/vendor/vendor.schema';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 
 import { DonorService } from '../donor/donor.service';
 import { rootLogger } from '../logger';
@@ -38,6 +49,12 @@ export class CampaignController {
   @Post('setDeletedFlagBatch')
   async setDeletedFlag(@Body() request: CampaignSetDeletedFlagDto) {
     await this.campaignService.setDeletedFlag(request.campaignIds);
+  }
+
+  @Post('test')
+  @UseGuards(JwtAuthGuard)
+  async test(@Req() request: any) {
+    console.log('request', request.user);
   }
 
   @ApiOperation({ summary: 'Get list all campaign' })
