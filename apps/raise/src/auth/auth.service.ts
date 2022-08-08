@@ -13,7 +13,6 @@ import { JwtService } from '@nestjs/jwt';
 
 import { UserService } from 'src/user/user.service';
 import { LoginRequestDto } from './dtos/login-request.dto';
-import { LoginResponseDto } from './dtos/login-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -45,31 +44,10 @@ export class AuthService {
       const result: ClientResponse<LoginResponse> = await fusionauth.login(
         loginRequest,
       );
-      // console.log(result);
-      // const validToken = await fusionauth.validateJWT(result.response.token!);
-      // const test = await fusionauth.retrieveUserUsingJWT(
-      //   result.response.token!,
-      // );
-      // console.log(test);
-      // if (!validToken) {
-      //   throw new HttpException('Invalid Signature!', 401);
-      // }
-      // const user = await this.usersService.getOneUser({
-      //   email: result.response.user!.email,
-      // });
-      // console.log(user);
-      // const response: LoginResponseDto = {
-      //   user: {
-      //     id: user.id,
-      //     email: user.email,
-      //     type: user.type,
-      //   },
-      //   accessToken: this.jwtService.sign(result),
-      // };
-      console.log(result);
 
-      // return response;
-      return this.jwtService.sign(result);
+      console.log('response', result);
+
+      return result;
     } catch (error) {
       if (error.statusCode < 500) {
         throw new UnauthorizedException('Invalid credentials!');
@@ -78,26 +56,6 @@ export class AuthService {
       }
     }
   }
-  // async loginUser(email: string, password: string) {
-  //   let isValid = false;
-
-  //   const user = await this.usersService.getOneUser({ email });
-
-  //   if (user && user.password === password) isValid = true;
-
-  //   if (!isValid) {
-  //     throw new HttpException('Invalid login details', 401);
-  //   }
-
-  //   return {
-  //     user: {
-  //       id: user?.id,
-  //       name: user?.name,
-  //       email: user?.email,
-  //     },
-  //     accessToken: this.generateToken(user)
-  //   }
-  // }
 
   async registerUser(name: string, email: string, password: string) {
     const user = await this.usersService.getOneUser({ email });
