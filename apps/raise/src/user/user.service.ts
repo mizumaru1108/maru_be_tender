@@ -30,7 +30,7 @@ export class UserService {
   }
 
   async getOneUser(identifier: { email?: string; _id?: string }) {
-    console.log('id', identifier);
+    // console.log('id', identifier);
     let user: {
       _id?: string;
       name?: string;
