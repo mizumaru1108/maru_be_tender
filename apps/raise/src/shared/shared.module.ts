@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { BunnyModule } from '../../lib/bunny/bunny.module';
-import { FusionAuthModule } from '../../lib/fusionauth/fusion-auth.module';
+import { BunnyModule } from '../bunny/bunny.module';
+import { FusionAuthModule } from '../fusionauth/fusion-auth.module';
 
 @Module({
   imports: [FusionAuthModule, BunnyModule],

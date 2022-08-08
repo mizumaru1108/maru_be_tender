@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
-import { FusionAuthService } from '../../lib/fusionauth/services/fusion-auth.service';
+import { FusionAuthService } from '../fusionauth/services/fusion-auth.service';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 
 @Injectable()

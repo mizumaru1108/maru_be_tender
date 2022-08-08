@@ -80,6 +80,7 @@ sonarqube-check:
     - cd apps/raise
     - yarn --immutable
     - yarn build
+    - ls -F dist/
   artifacts:
     paths:
       - package.json
