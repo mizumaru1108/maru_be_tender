@@ -1,9 +1,8 @@
-import FusionAuthClient from '@fusionauth/typescript-client';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
-import { generateRandomNumberString } from '../../../commons/utils/generate-random-string';
-import { sanitizeString } from '../../../commons/utils/sanitize-string';
+import { generateRandomNumberString } from '../../commons/utils/generate-random-string';
+import { sanitizeString } from '../../commons/utils/sanitize-string';
 
 @Injectable()
 export class BunnyService {
@@ -25,29 +24,16 @@ export class BunnyService {
 
     path =
       `tmra/${appEnv}/organization/${organizationId}` +
-      `/${folderType}/${sanitizedName}-${campaignId}-${random}.${extension}`;
+      `/${folderType}/${sanitizedName}-${campaignId}-${random}${extension}`;
 
     return path;
   }
 
-  async downloadImage(path: string) {
-    const urlMedia = `${this.configService.get(
-      'BUNNY_STORAGE_URL_MEDIA',
-    )}/${path}`;
-
-    const options: AxiosRequestConfig<any> = {
-      method: 'GET',
-      headers: {
-        Accept: '*/*',
-        AccessKey: `${this.configService.get(
-          'BUNNY_STORAGE_ACCESS_KEY_MEDIA',
-        )}`,
-      },
-      url: urlMedia,
-    };
-  }
-
-  async uploadImage(path: string, binary: Buffer, serviceName: string) {
+  async uploadImage(
+    path: string,
+    binary: Buffer,
+    serviceName: string,
+  ): Promise<boolean> {
     const urlMedia = `${this.configService.get(
       'BUNNY_STORAGE_URL_MEDIA',
     )}/${path}`;
@@ -77,6 +63,7 @@ export class BunnyService {
         response.statusText,
         JSON.stringify(response.data, null, 2),
       );
+      return true;
     } catch (error) {
       throw new InternalServerErrorException(
         `Error uploading image file to Bunny ${urlMedia} (${binary.length} bytes) while creating ${serviceName}`,
@@ -85,8 +72,14 @@ export class BunnyService {
   }
 
   async deleteImage(path: string) {
-    const urlMedia = `${this.configService.get('BUNNY_CDN_URL_MEDIA')}/${path}`;
-    console.log('urlMedia', urlMedia);
+    const urlMedia = `${this.configService.get(
+      'BUNNY_STORAGE_URL_MEDIA',
+    )}/${path}`;
+    console.info(
+      `Deleting ${this.configService.get(
+        'BUNNY_CDN_URL_MEDIA',
+      )}/${path} from storage ...`,
+    );
 
     const options: AxiosRequestConfig<any> = {
       method: 'DELETE',
@@ -100,7 +93,15 @@ export class BunnyService {
 
     try {
       const response = await axios(options);
-      return response;
+      if (response.data.HttpCode === 200) {
+        console.info(
+          'Deleted %s from Bunny: %s %s %s',
+          urlMedia,
+          response.status,
+          response.statusText,
+          JSON.stringify(response.data, null, 2),
+        );
+      }
     } catch (error) {
       throw new InternalServerErrorException(`Error deleting image!`);
     }

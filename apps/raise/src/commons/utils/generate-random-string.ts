@@ -1,6 +1,3 @@
-// let random = Math.random().toString().substr(2, 4);
-//
-
 export const generateRandomNumberString = (length: number): string => {
   let result = '';
   const characters = '0123456789';

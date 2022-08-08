@@ -11,6 +11,8 @@ import dayjs from 'dayjs';
 import { Model, Types } from 'mongoose';
 import slugify from 'slugify';
 
+import { z } from 'zod';
+import { BunnyService } from '../bunny/services/bunny.service';
 import {
   CampaignVendorLog,
   CampaignVendorLogDocument,
@@ -23,12 +25,6 @@ import { User, UserDocument } from '../user/schema/user.schema';
 import { Campaign, CampaignDocument } from './campaign.schema';
 import { CreateCampaignDto } from './dto';
 import { UpdateCampaignDto } from './dto/update-campaign-dto';
-import { z } from 'zod';
-import { validate } from 'class-validator';
-import { generateRandomNumberString } from '../../commons/utils/generate-random-string';
-import { sanitizeString } from '../../commons/utils/sanitize-string';
-import { BunnyService } from '../../lib/bunny/services/bunny.service';
-
 @Injectable()
 export class CampaignService {
   private logger = rootLogger.child({ logger: CampaignService.name });
@@ -203,11 +199,12 @@ export class CampaignService {
     campaignId: string,
     rawUpdateCampaignDto: UpdateCampaignDto,
   ) {
-    let validatedDto: UpdateCampaignDto;
     const currentCampaignData = await this.campaignModel.findById(campaignId);
     if (!currentCampaignData) {
       throw new NotFoundException(`Campaign with id ${campaignId} not found`);
     }
+
+    let validatedDto: UpdateCampaignDto;
     try {
       validatedDto = UpdateCampaignDto.parse(rawUpdateCampaignDto); // validate with zod
     } catch (err) {
@@ -223,63 +220,96 @@ export class CampaignService {
         );
       }
     }
+
     if (validatedDto!) {
-      // console.log('masuk');
       const updateCampaignData = Campaign.compare(
         new this.campaignModel(currentCampaignData),
         validatedDto!,
       );
 
-      /* if there's new campaign cover image */
+      /**
+       * maximum file uploaded = 4 (included coverImage)
+       * images [0] = coverImage
+       * images [1] = image1
+       * images [2] = image2
+       * images [3] = image3
+       */
+      //!TODO: refactor for better performance
+      /* if there's new campaign images */
       if (
-        updateCampaignData.coverImage &&
-        validatedDto!.images!.length > 0 &&
-        validatedDto!.images![0]
+        validatedDto &&
+        validatedDto.images &&
+        validatedDto.images.length > 0
       ) {
-        // const deletedImage = await this.bunnyService.deleteImage(
-        //   updateCampaignData.coverImage,
-        // );
-        //!TODO: delete existing coverImage
-        const path = await this.bunnyService.generatePath(
-          updateCampaignData.organizationId.toString(),
-          'campaign-photo',
-          validatedDto!.images![0].fullName!,
-          campaignId!,
-          validatedDto!.images![0].imageExtension!,
-        );
-        const base64Data = validatedDto!.images![0].base64Data;
-        const binary = Buffer.from(
-          validatedDto!.images![0].base64Data,
-          'base64',
-        );
-        if (!binary) {
-          const trimmedString = 56;
-          base64Data.length > 40
-            ? base64Data.substring(0, 40 - 3) + '...'
-            : base64Data.substring(0, length);
-          throw new BadRequestException(
-            `Image Cover Image is not a valid base64 data: ${trimmedString}`,
-          );
+        for (let i = 0; i < validatedDto.images.length; i++) {
+          /* if image data on current index not empty */
+          if (validatedDto.images[i]) {
+            const path = await this.bunnyService.generatePath(
+              updateCampaignData.organizationId.toString(),
+              'campaign-photo',
+              validatedDto.images[i].fullName,
+              campaignId,
+              validatedDto.images[i].imageExtension,
+            );
+            const base64Data = validatedDto.images[i].base64Data;
+            const binary = Buffer.from(
+              validatedDto.images[i].base64Data,
+              'base64',
+            );
+            if (!binary) {
+              const trimmedString = 56;
+              base64Data.length > 40
+                ? base64Data.substring(0, 40 - 3) + '...'
+                : base64Data.substring(0, length);
+              throw new BadRequestException(
+                `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
+              );
+            }
+            const imageUpload = await this.bunnyService.uploadImage(
+              path,
+              binary,
+              updateCampaignData.campaignName,
+            );
+
+            /* if current campaign has old image, and the upload process has been done */
+            if (updateCampaignData.coverImage && i === 0 && imageUpload) {
+              console.info('Deleting old campaign cover image...');
+              await this.bunnyService.deleteImage(
+                updateCampaignData.coverImage,
+              );
+              updateCampaignData.coverImage = path;
+            }
+
+            if (updateCampaignData.image1 && i === 1 && imageUpload) {
+              console.info('Deleting old campaign image1...');
+              await this.bunnyService.deleteImage(updateCampaignData.image1);
+              updateCampaignData.image1 = path;
+            }
+
+            if (updateCampaignData.image2 && i === 2 && imageUpload) {
+              console.info('Deleting old campaign image2...');
+              await this.bunnyService.deleteImage(updateCampaignData.image2);
+              updateCampaignData.image2 = path;
+            }
+
+            if (updateCampaignData.image3 && i === 3 && imageUpload) {
+              console.info('Deleting old campaign image3...');
+              await this.bunnyService.deleteImage(updateCampaignData.image3);
+              updateCampaignData.image3 = path;
+            }
+          }
         }
-        const uploadedImage = await this.bunnyService.uploadImage(
-          path,
-          binary,
-          updateCampaignData.campaignName,
-        );
-        console.log(uploadedImage);
-        updateCampaignData.coverImage = path;
       }
 
+      updateCampaignData.images = [];
       updateCampaignData.updatedAt = dayjs().toISOString();
-      // save to db
-      // parse updateCampaign as campaigndocument / model then save it
-      console.log('after re fill', updateCampaignData);
+      // console.log('after re fill', updateCampaignData);
       const updatedCampaign = await this.campaignModel.findByIdAndUpdate(
         campaignId,
         updateCampaignData,
         { new: true },
       );
-      console.log(updatedCampaign);
+      // console.log(updatedCampaign);
       return updatedCampaign;
     }
   }
@@ -323,19 +353,17 @@ export class CampaignService {
     return await this.campaignModel.find(filter).sort(sortData).exec();
   }
 
-  async testDeleteImage(campaignId: string) {
-    const campaign = await this.campaignModel.findById(campaignId);
-    if (!campaign) {
-      throw new NotFoundException(`Campaign with id ${campaignId} not found`);
-    }
-    // console.log(campaign);
-    if (campaign.coverImage) {
-      // console.log(campaign.coverImage);
-      const deletedImage = await this.bunnyService.deleteImage(
-        campaign.coverImage,
-      );
-    }
-  }
+  // async testDeleteImage(campaignId: string) {
+  //   const campaign = await this.campaignModel.findById(campaignId);
+  //   if (!campaign) {
+  //     throw new NotFoundException(`Campaign with id ${campaignId} not found`);
+  //   }
+  //   // console.log(campaign);
+  //   if (campaign.image1) {
+  //     // console.log(campaign.coverImage);
+  //     const deletedImage = await this.bunnyService.deleteImage(campaign.image1);
+  //   }
+  // }
 
   async getAllByOrganizationId(organizationId: string) {
     const ObjectId = require('mongoose').Types.ObjectId;

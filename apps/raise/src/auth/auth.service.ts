@@ -24,14 +24,6 @@ export class AuthService {
     private fusionAuthService: FusionAuthService,
   ) {}
 
-  // async useFusionAuth() {
-  //   return new FusionAuthClient(
-  //     this.configService.get('FUSIONAUTH_CLIENT_KEY', ''),
-  //     this.configService.get('FUSIONAUTH_URL', ''),
-  //     this.configService.get('FUSIONAUTH_TENANT_ID', ''),
-  //   );
-  // }
-
   async loginUser(loginRequest: LoginRequestDto) {
     loginRequest.applicationId = this.configService.get<string>(
       'FUSIONAUTH_APP_ID',

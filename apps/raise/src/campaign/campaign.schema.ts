@@ -105,51 +105,16 @@ export class Campaign {
   @Prop()
   milestone?: Array<Object>;
 
-  static mapFromUpdateDto(dto: UpdateCampaignDto): Campaign {
-    const campaign = new Campaign();
-    dto.campaignId && (campaign.campaignId = dto.campaignId);
-    dto.organizationId &&
-      (campaign.organizationId = new Types.ObjectId(dto.organizationId));
-    // dto.creatorUserId && (campaign.creatorUserId = dto.creatorUserId);
-    dto.campaignName && (campaign.campaignName = dto.campaignName);
-    dto.campaignType && (campaign.campaignType = dto.campaignType);
-    dto.projectId && (campaign.projectId = new Types.ObjectId(dto.projectId));
-    // dto.type && (campaign.type = dto.type);
-    dto.description && (campaign.description = dto.description);
-    dto.isMoney && (campaign.isMoney = dto.isMoney);
-    dto.methods && (campaign.methods = dto.methods);
-    dto.currencyCode && (campaign.currencyCode = dto.currencyCode);
-    // dto.amountProgress && (campaign.amountProgress = dto.amountProgress);
-    if (dto.amountProgress) {
-      campaign.amountProgress = Types.Decimal128.fromString(dto.amountProgress);
-    }
-    if (dto.amountTarget) {
-      campaign.amountTarget = Types.Decimal128.fromString(dto.amountTarget);
-    }
-    // dto.coverImage && (campaign.coverImage = dto.coverImage);
-    // dto.image1 && (campaign.image1 = dto.image1);
-    // dto.image2 && (campaign.image2 = dto.image2);
-    // dto.image3 && (campaign.image3 = dto.image3);
-    campaign.updatedAt = dayjs().toISOString();
-    dto.isPublished && (campaign.isPublished = dto.isPublished);
-    // dto.images && (campaign.images = dto.images);
-    // dto.milestone && (campaign.milestone = dto.milestone);
-    return campaign;
-  }
-
   static compare(currentData: Campaign, request: UpdateCampaignDto): Campaign {
     request.campaignId && (currentData.campaignId = request.campaignId);
     if (request.organizationId) {
       currentData.organizationId = new Types.ObjectId(request.organizationId);
     }
-    // request.creatorUserId &&
-    //   (currentData.creatorUserId = request.creatorUserId);
     request.campaignName && (currentData.campaignName = request.campaignName);
     request.campaignType && (currentData.campaignType = request.campaignType);
     if (request.projectId) {
       currentData.projectId = new Types.ObjectId(request.projectId);
     }
-    // request.type && (currentData.type = request.type);
     request.description && (currentData.description = request.description);
     request.isMoney && (currentData.isMoney = request.isMoney);
     request.methods && (currentData.methods = request.methods);
@@ -164,10 +129,6 @@ export class Campaign {
         request.amountTarget,
       );
     }
-    // request.coverImage && (currentData.coverImage = request.coverImage);
-    // request.image1 && (currentData.image1 = request.image1);
-    // request.image2 && (currentData.image2 = request.image2);
-    // request.image3 && (currentData.image3 = request.image3);
     currentData.updatedAt = dayjs().toISOString();
     request.isPublished && (currentData.isPublished = request.isPublished);
     request.images && (currentData.images = request.images);

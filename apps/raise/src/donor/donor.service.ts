@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { rootLogger } from '../logger';
@@ -18,7 +22,10 @@ import { ConfigService } from '@nestjs/config';
 import { Anonymous, AnonymousDocument } from './schema/anonymous.schema';
 import { Types } from 'mongoose';
 import { ApiOperation } from '@nestjs/swagger';
-import { CampaignVendorLog, CampaignVendorLogDocument } from '../buying/vendor/vendor.schema';
+import {
+  CampaignVendorLog,
+  CampaignVendorLogDocument,
+} from '../buying/vendor/vendor.schema';
 import { CampaignService } from '../campaign/campaign.service';
 import { Campaign, CampaignDocument } from '../campaign/campaign.schema';
 
@@ -187,7 +194,7 @@ export class DonorService {
       this.configService.get('FUSIONAUTH_URL', ''),
       this.configService.get('FUSIONAUTH_TENANT_ID', ''),
     );
-    console.log(this.configService.get('FUSIONAUTH_URL', ''));
+    // console.log(this.configService.get('FUSIONAUTH_URL', ''));
     try {
       await fusionauth.patchUser(userId, {
         user: {
@@ -315,59 +322,57 @@ export class DonorService {
   }
 
   @ApiOperation({ summary: 'Get Total donationbyId' })
-  async getTotalDonation(
-    donorUserId: string,
-    ){
-      this.logger.debug('Get Donation logs...');
-      const donationId = await this.donorModel.findOne({ownerUserId: donorUserId,});
+  async getTotalDonation(donorUserId: string) {
+    this.logger.debug('Get Donation logs...');
+    const donationId = await this.donorModel.findOne({
+      ownerUserId: donorUserId,
+    });
     if (!donationId) {
       throw new NotFoundException(`donorUserId must be valid`);
     }
-      const totalDonation = await this.donationLogsModel.aggregate([
-     {
-        $match: { donationStatus: "SUCCESS", donorUserId}
+    const totalDonation = await this.donationLogsModel.aggregate([
+      {
+        $match: { donationStatus: 'SUCCESS', donorUserId },
       },
       {
         $group: {
           _id: '$donorUserId',
           totalPersonDonation: {
             $sum: {
-              $toDouble:"$amount"
-            }
+              $toDouble: '$amount',
+            },
           },
-          personDonation:{
+          personDonation: {
             $first: {
-              $toDouble:"$amount"
-            }
-          }
+              $toDouble: '$amount',
+            },
+          },
         },
       },
-    ]);     
+    ]);
 
     const totalFundDonation = await this.donationLogsModel.aggregate([
       {
-        $match: {donationStatus: "SUCCESS"}
+        $match: { donationStatus: 'SUCCESS' },
       },
       {
         $group: {
-           _id: '$donationStatus',
-          amountTotalDonation: { $sum: "$amount" }
+          _id: '$donationStatus',
+          amountTotalDonation: { $sum: '$amount' },
         },
       },
     ]);
 
     const campaignLogs = await this.campaignModel.aggregate([
-      {$match: { isPublished: 'Y' }},
+      { $match: { isPublished: 'Y' } },
       {
-        $group:{
+        $group: {
           _id: 'isPublished',
-          totalProgram: {$sum :
-          '$amountTarget'
-          }
-        }
-      }
+          totalProgram: { $sum: '$amountTarget' },
+        },
+      },
     ]);
-    
-    return  {totalDonation,totalFundDonation, programFund:campaignLogs}; 
+
+    return { totalDonation, totalFundDonation, programFund: campaignLogs };
   }
 }
