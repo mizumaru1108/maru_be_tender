@@ -12,7 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
 import { UserService } from 'src/user/user.service';
-import { FusionAuthService } from '../../lib/fusionauth/services/fusion-auth.service';
+import { FusionAuthService } from '../fusionauth/services/fusion-auth.service';
 import { LoginRequestDto } from './dtos/login-request.dto';
 
 @Injectable()
