@@ -81,7 +81,7 @@ sonarqube-check:
     - yarn --immutable
     - yarn build
     # - ls -F dist/
-    - '[ -f "dist/main.js" ] || { ls -F dist/; echo "Error: Build was invalid. apps/raise/dist/main.js must exist after build!"; exit 1; }'
+    - '[ -f "dist/main.js" ] || { ls -F dist/; echo "Error: Build was invalid. apps/raise/dist/main.js must exist after build! Hint: Make sure you only use src/ folder."; exit 1; }'
   artifacts:
     paths:
       - package.json
