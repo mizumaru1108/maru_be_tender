@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
 import { UserService } from 'src/user/user.service';
+import { FusionAuthService } from '../../lib/fusionauth/services/fusion-auth.service';
 import { LoginRequestDto } from './dtos/login-request.dto';
 
 @Injectable()
@@ -20,15 +21,16 @@ export class AuthService {
     private usersService: UserService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private fusionAuthService: FusionAuthService,
   ) {}
 
-  async useFusionAuth() {
-    return new FusionAuthClient(
-      this.configService.get('FUSIONAUTH_CLIENT_KEY', ''),
-      this.configService.get('FUSIONAUTH_URL', ''),
-      this.configService.get('FUSIONAUTH_TENANT_ID', ''),
-    );
-  }
+  // async useFusionAuth() {
+  //   return new FusionAuthClient(
+  //     this.configService.get('FUSIONAUTH_CLIENT_KEY', ''),
+  //     this.configService.get('FUSIONAUTH_URL', ''),
+  //     this.configService.get('FUSIONAUTH_TENANT_ID', ''),
+  //   );
+  // }
 
   async loginUser(loginRequest: LoginRequestDto) {
     loginRequest.applicationId = this.configService.get<string>(
@@ -36,11 +38,7 @@ export class AuthService {
       '',
     );
     try {
-      const fusionauth = new FusionAuthClient(
-        this.configService.get('FUSIONAUTH_CLIENT_KEY', ''),
-        this.configService.get('FUSIONAUTH_URL', ''),
-        this.configService.get('FUSIONAUTH_TENANT_ID', ''),
-      );
+      const fusionauth = await this.fusionAuthService.useFusionAuthClient();
       const result: ClientResponse<LoginResponse> = await fusionauth.login(
         loginRequest,
       );

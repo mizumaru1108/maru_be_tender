@@ -31,7 +31,6 @@ import { AuthzedService } from './authzed/authzed.service';
 import { AuthzedModule } from './authzed/authzed.module';
 import { BuyingModule } from './buying/buying.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { UploadModule } from './upload/upload.module';
 import { OperatorModule } from './operator/operator.module';
 import { ManagerModule } from './manager/manager.module';
 import { WidgetsModule } from './widgets/widgets.module';
@@ -102,7 +101,6 @@ import { SharedModule } from './shared/shared.module';
     AuthModule,
     AuthzedModule,
     BuyingModule,
-    UploadModule,
     WidgetsModule,
     SharedModule,
   ],
