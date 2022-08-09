@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  ForbiddenException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { UserService } from '../user/user.service';
@@ -32,7 +37,12 @@ export class RolesGuard implements CanActivate {
     if (!type) {
       return true;
     }
-    // const user = request.user;
-    return type.findIndex((value) => value == currentUser.type) > -1;
+    if (type.findIndex((value) => value == currentUser.type) > -1) {
+      return true;
+    } else {
+      throw new ForbiddenException(
+        "You don't have the required permissions to access this route",
+      );
+    }
   }
 }

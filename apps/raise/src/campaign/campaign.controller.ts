@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -14,10 +16,12 @@ import { CampaignVendorLog } from 'src/buying/vendor/vendor.schema';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
+import { CurrentUser } from '../commons/decorators/current-user.decorator';
 
 import { DonorService } from '../donor/donor.service';
 import { rootLogger } from '../logger';
 import { RoleEnum } from '../user/enums/role-enum';
+import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { CampaignService } from './campaign.service';
 import { CampaignSetFavoriteDto, CreateCampaignDto } from './dto';
 import { CampaignSetDeletedFlagDto } from './dto/capaign-set-flag-deleted';
@@ -55,10 +59,10 @@ export class CampaignController {
   }
 
   @Post('test')
-  @Roles(RoleEnum.SUPERADMIN)
+  @Roles(RoleEnum.DONOR)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  async test(@Req() request: any) {
-    console.log('request', request.user);
+  async test(@CurrentUser() user: ICurrentUser) {
+    return user;
   }
 
   @ApiOperation({ summary: 'Get list all campaign' })
@@ -197,13 +201,12 @@ export class CampaignController {
   }
 
   @ApiOperation({ summary: 'update campaign' })
-  @Put('update/:campaignId')
+  @Patch('update/:campaignId')
   async updateCampaign(
     @Param('campaignId') campaignId: string,
     @Body() updateCampaignRequest: UpdateCampaignDto,
   ) {
     this.logger.debug('payload', JSON.stringify(updateCampaignRequest));
-    console.log('updateCampaignRequest', updateCampaignRequest);
     return await this.campaignService.updateCampaign(
       campaignId,
       updateCampaignRequest,
