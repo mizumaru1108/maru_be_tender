@@ -1,4 +1,4 @@
-import { Controller, Body, Get, Param, Post, Query, Put } from '@nestjs/common';
+import { Controller, Body, Get, Param, Post, Patch } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { rootLogger } from '../logger';
 import { ProjectService } from './project.service';
@@ -39,20 +39,20 @@ export class ProjectController {
 
   @ApiOperation({ summary: 'set flag to delete campaign' })
   @ApiResponse({
-    status: 201,
-    description: 'The New Campaign has been successfully flagged as deleted.',
+    status: 200,
   })
   @Post('setDeletedFlagBatch')
   async setDeletedFlag(@Body() request: ProjectSetDeletedFlagDto) {
-    await this.projectService.setDeletedFlag(request.projectIds);
+    return await this.projectService.setDeletedFlag(request.projectIds);
   }
 
   @ApiOperation({ summary: 'update project' })
-  @Put('update/:projectId')
+  @Patch('update/:projectId')
   async updateProject(
     @Param('projectId') projectId: string,
     @Body() updateRequest: UpdateProjectDto,
   ) {
+    console.log('a');
     this.logger.debug('payload', JSON.stringify(updateRequest));
     this.logger.debug(`update project ${projectId}`);
     return await this.projectService.updateProject(projectId, updateRequest);

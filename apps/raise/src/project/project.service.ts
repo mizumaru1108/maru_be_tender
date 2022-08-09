@@ -21,6 +21,7 @@ import dayjs from 'dayjs';
 import slugify from 'slugify';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { z } from 'zod';
+import { BunnyService } from '../bunny/services/bunny.service';
 
 @Injectable()
 export class ProjectService {
@@ -34,6 +35,7 @@ export class ProjectService {
     @InjectModel(ProjectOperatorLog.name)
     private projectOperatorLogModel: Model<ProjectOperatorLogDocument>,
     private configService: ConfigService,
+    private bunnyService: BunnyService,
   ) {}
 
   async create(rawCreateProjectDto: CreateProjectDto): Promise<Project> {
@@ -82,7 +84,9 @@ export class ProjectService {
     createdProject.isDeleted = 'N';
     createdProject.isPublished = 'N';
     createdProject.description = createProjectDto.description;
-    createdProject.nearByPlaces = createProjectDto.nearByPlaces;
+    if (createProjectDto.nearByPlaces) {
+      createdProject.nearByPlaces = createProjectDto.nearByPlaces;
+    }
 
     createdProject.organizationId = new Types.ObjectId(
       createProjectDto.organizationId,
@@ -116,6 +120,7 @@ export class ProjectService {
       if (i == 1) createdProject.image1 = path[i];
       if (i == 2) createdProject.image2 = path[i];
       if (i == 3) createdProject.image3 = path[i];
+      if (i == 4) createdProject.projectAvatar = path[i];
 
       const base64Data = createProjectDto.images[i].base64Data;
       const binary = Buffer.from(
@@ -185,32 +190,120 @@ export class ProjectService {
   }
 
   async updateProject(projectId: string, rawDto: UpdateProjectDto) {
-    let validatedDto: UpdateProjectDto;
-    try {
-      validatedDto = UpdateProjectDto.parse(rawDto); // validate with zod
-      // console.log(validatedDto);
-      const updateCampaignData = Project.mapFromUpdateDto(validatedDto); // map the data to Campaign model
-      // udpate the campaign with data from updateCampaignData
-      const updatedCampaign = await this.projectModel.findByIdAndUpdate(
-        projectId,
-        updateCampaignData,
-        { new: true },
-      );
-      return updatedCampaign;
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        throw new BadRequestException(
-          {
-            statusCode: 400,
-            message: `Invalid Update Project Input`,
-            data: err.issues,
-          },
-          `Invalid Update Project Input`,
+    {
+      const currentProjectData = await this.projectModel.findById(projectId);
+      if (!currentProjectData) {
+        throw new NotFoundException(`Campaign with id ${projectId} not found`);
+      }
+
+      let validatedDto: UpdateProjectDto;
+      try {
+        validatedDto = UpdateProjectDto.parse(rawDto); // validate with zod
+      } catch (err) {
+        if (err instanceof z.ZodError) {
+          console.log(err);
+          throw new BadRequestException(
+            {
+              statusCode: 400,
+              message: `Invalid Update Project Input`,
+              data: err.issues,
+            },
+            `Invalid Update Project Input`,
+          );
+        }
+      }
+
+      if (validatedDto!) {
+        const updateProjectData = Project.compare(
+          currentProjectData,
+          validatedDto!,
         );
-      } else {
-        throw new InternalServerErrorException(
-          `Error updating project ${projectId}`,
-        );
+
+        /**
+         * maximum file uploaded = 4 (included coverImage and projectAvatar)
+         * images [0] = coverImage
+         * images [1] = image1
+         * images [2] = image2
+         * images [3] = image3
+         * images [4] = projectAvatar
+         */
+        //!TODO: refactor for better performance
+        /* if there's new campaign images */
+        if (
+          updateProjectData &&
+          validatedDto &&
+          validatedDto.images &&
+          validatedDto.images.length > 0
+        ) {
+          for (let i = 0; i < validatedDto.images.length; i++) {
+            /* if image data on current index not empty */
+            if (validatedDto.images[i] && updateProjectData) {
+              const path = await this.bunnyService.generatePath(
+                updateProjectData.organizationId.toString(),
+                'project-photo',
+                validatedDto.images[i].fullName,
+                projectId,
+                validatedDto.images[i].imageExtension,
+              );
+              const base64Data = validatedDto.images[i].base64Data;
+              const binary = Buffer.from(
+                validatedDto.images[i].base64Data,
+                'base64',
+              );
+              if (!binary) {
+                const trimmedString = 56;
+                base64Data.length > 40
+                  ? base64Data.substring(0, 40 - 3) + '...'
+                  : base64Data.substring(0, length);
+                throw new BadRequestException(
+                  `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
+                );
+              }
+              const imageUpload = await this.bunnyService.uploadImage(
+                path,
+                binary,
+                updateProjectData.name,
+              );
+
+              /* if current campaign has old image, and the upload process has been done */
+              if (updateProjectData.coverImage && i === 0 && imageUpload) {
+                console.info('Deleting old project cover image...');
+                await this.bunnyService.deleteImage(
+                  updateProjectData.coverImage,
+                );
+                updateProjectData.coverImage = path;
+              }
+
+              if (updateProjectData.image1 && i === 1 && imageUpload) {
+                console.info('Deleting old project image1...');
+                await this.bunnyService.deleteImage(updateProjectData.image1);
+                updateProjectData.image1 = path;
+              }
+
+              if (updateProjectData.image2 && i === 2 && imageUpload) {
+                console.info('Deleting old project image2...');
+                await this.bunnyService.deleteImage(updateProjectData.image2);
+                updateProjectData.image2 = path;
+              }
+
+              if (updateProjectData.image3 && i === 3 && imageUpload) {
+                console.info('Deleting old project image3...');
+                await this.bunnyService.deleteImage(updateProjectData.image3);
+                updateProjectData.image3 = path;
+              }
+
+              if (updateProjectData.projectAvatar && i === 4 && imageUpload) {
+                console.info('Deleting old project avatar ...');
+                await this.bunnyService.deleteImage(
+                  updateProjectData.projectAvatar,
+                );
+                updateProjectData.projectAvatar = path;
+              }
+            }
+          }
+        }
+
+        return await updateProjectData.save();
       }
     }
   }
@@ -396,17 +489,20 @@ export class ProjectService {
     return data;
   }
 
-  async setDeletedFlag(projectIds: string[]) {
+  async setDeletedFlag(projectIds: string[]): Promise<any> {
     this.logger.debug(
       `setting ${projectIds.length} deleted flag to ${projectIds}`,
     );
     const updatedProject = await this.projectModel.updateMany(
       { _id: { $in: projectIds } },
-      { $set: { isDeleted: 'Y' } },
+      { $set: { isDeleted: 'N' } },
     );
     this.logger.debug(
       `${updatedProject.matchedCount} match, ${updatedProject.modifiedCount} data updated`,
     );
-    return updatedProject;
+    return {
+      statusCode: 200,
+      message: `${updatedProject.matchedCount} match, ${updatedProject.modifiedCount} data updated`,
+    };
   }
 }

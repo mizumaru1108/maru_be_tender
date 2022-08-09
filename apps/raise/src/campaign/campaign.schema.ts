@@ -82,7 +82,9 @@ export class Campaign {
   })
   createdAt: string;
 
-  @Prop()
+  @Prop({
+    type: mongoose.Schema.Types.Date,
+  })
   createdBy: string;
 
   @Prop({
@@ -99,13 +101,15 @@ export class Campaign {
   @Prop()
   isPublished: string;
 
-  @Prop()
   images: Array<Object>;
 
   @Prop()
   milestone?: Array<Object>;
 
-  static compare(currentData: Campaign, request: UpdateCampaignDto): Campaign {
+  static compare(
+    currentData: CampaignDocument,
+    request: UpdateCampaignDto,
+  ): CampaignDocument {
     request.campaignId && (currentData.campaignId = request.campaignId);
     if (request.organizationId) {
       currentData.organizationId = new Types.ObjectId(request.organizationId);
@@ -133,7 +137,6 @@ export class Campaign {
     request.isPublished && (currentData.isPublished = request.isPublished);
     request.images && (currentData.images = request.images);
     request.milestone && (currentData.milestone = request.milestone);
-
     return currentData;
   }
 }
