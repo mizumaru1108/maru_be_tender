@@ -223,7 +223,7 @@ export class CampaignService {
 
     if (validatedDto!) {
       const updateCampaignData = Campaign.compare(
-        new this.campaignModel(currentCampaignData),
+        currentCampaignData,
         validatedDto!,
       );
 
@@ -237,6 +237,7 @@ export class CampaignService {
       //!TODO: refactor for better performance
       /* if there's new campaign images */
       if (
+        updateCampaignData &&
         validatedDto &&
         validatedDto.images &&
         validatedDto.images.length > 0
@@ -301,16 +302,7 @@ export class CampaignService {
         }
       }
 
-      updateCampaignData.images = [];
-      updateCampaignData.updatedAt = dayjs().toISOString();
-      // console.log('after re fill', updateCampaignData);
-      const updatedCampaign = await this.campaignModel.findByIdAndUpdate(
-        campaignId,
-        updateCampaignData,
-        { new: true },
-      );
-      // console.log(updatedCampaign);
-      return updatedCampaign;
+      return await updateCampaignData.save();
     }
   }
 
@@ -352,18 +344,6 @@ export class CampaignService {
     }
     return await this.campaignModel.find(filter).sort(sortData).exec();
   }
-
-  // async testDeleteImage(campaignId: string) {
-  //   const campaign = await this.campaignModel.findById(campaignId);
-  //   if (!campaign) {
-  //     throw new NotFoundException(`Campaign with id ${campaignId} not found`);
-  //   }
-  //   // console.log(campaign);
-  //   if (campaign.image1) {
-  //     // console.log(campaign.coverImage);
-  //     const deletedImage = await this.bunnyService.deleteImage(campaign.image1);
-  //   }
-  // }
 
   async getAllByOrganizationId(organizationId: string) {
     const ObjectId = require('mongoose').Types.ObjectId;
@@ -899,6 +879,11 @@ export class CampaignService {
     this.logger.debug(
       `${updatedCampaign.matchedCount} match, ${updatedCampaign.modifiedCount} data updated`,
     );
-    return updatedCampaign;
+    return {
+      success: true,
+      status: 200,
+      message: `${updatedCampaign.matchedCount} match, ${updatedCampaign.modifiedCount} data updated`,
+      data: `${updatedCampaign.matchedCount} match, ${updatedCampaign.modifiedCount} data updated`,
+    };
   }
 }
