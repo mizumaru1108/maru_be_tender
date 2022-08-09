@@ -29,6 +29,11 @@ import {
   Notifications,
   NotificationsDocument,
 } from 'src/organization/schema/notifications.schema';
+import {
+  NotificationSettings,
+  NotificationSettingsDocument,
+} from 'src/organization/schema/notification_settings.schema';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class PaymentStripeService {
@@ -51,8 +56,11 @@ export class PaymentStripeService {
     private donationLogModel: mongoose.Model<DonationLogDocument>,
     @InjectModel(Notifications.name)
     private notificationsModel: mongoose.Model<NotificationsDocument>,
+    @InjectModel(NotificationSettings.name)
+    private notifSettingsModel: mongoose.Model<NotificationSettingsDocument>,
     @InjectModel(User.name)
     private readonly userModel: mongoose.Model<UserDocument>,
+    private readonly emailService: EmailService,
   ) {}
 
   async stripeRequest(payment: PaymentRequestDto) {
@@ -420,8 +428,10 @@ export class PaymentStripeService {
       }
 
       console.debug('organizationId=', organizationId);
-
       const ObjectId = require('mongoose').Types.ObjectId;
+      const getOrganization = await this.organizationModel.findOne({
+        _id: ObjectId(organizationId),
+      });
       const getSecretKey = await this.paymentGatewayModel.findOne(
         { organizationId: ObjectId(organizationId) },
         { apiKey: 1, _id: 0 },
@@ -522,7 +532,7 @@ export class PaymentStripeService {
       //get campaign Id
       const getDonationLog = await this.donationLogModel.findOne(
         { _id: paymentData.donationId },
-        { _id: 0, campaignId: 1 },
+        { _id: 0, campaignId: 1, currency: 2, amount: 3 },
       );
 
       if (!getDonationLog) {
@@ -557,6 +567,31 @@ export class PaymentStripeService {
           Number(getCampaign.amountProgress) +
           Number(amountStr.substring(0, amountStr.length - 2))
         ).toString();
+
+        const notifSettings = await this.notifSettingsModel.findOne({
+          organizationId: ObjectId(organizationId),
+        });
+
+        if (getOrganization && notifSettings) {
+          this.logger.debug(`notification settings ${notifSettings.id}`);
+          if (notifSettings.newDonation) {
+            const subject = `New Donation For ${getCampaign.title}`;
+            const emailData = {
+              donor: 'Donor',
+              title: getCampaign.title,
+              currency: getDonationLog.currency,
+              amount: getDonationLog.amount,
+            };
+            this.emailService.sendMail(
+              getOrganization.contactEmail,
+              subject,
+              'org/new_donation',
+              emailData,
+            );
+          }
+        } else {
+          this.logger.debug(`notification settings not found`);
+        }
 
         const updateCampaign = await this.campaignModel.updateOne(
           { _id: getDonationLog.campaignId },
@@ -596,6 +631,25 @@ export class PaymentStripeService {
             icon: 'info',
             markAsRead: false,
           });
+
+          if (getOrganization && notifSettings) {
+            this.logger.debug(`notification settings ${notifSettings.id}`);
+            if (notifSettings.completeDonation) {
+              const subject = 'Complete Donation';
+              const emailData = {
+                campaignId: getCampaign.id,
+                campaignName: getCampaign.title,
+              };
+              this.emailService.sendMail(
+                getOrganization.contactEmail,
+                subject,
+                'org/donation_complete',
+                emailData,
+              );
+            }
+          } else {
+            this.logger.debug(`notification settings not found`);
+          }
         }
       }
 

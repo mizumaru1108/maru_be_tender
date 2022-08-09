@@ -764,9 +764,9 @@ export class ZakatService {
             donationLogId: objectIdDonation,
             type: zakatLogs.type,
             currency: zakatLogs.currency,
-            total_amount: Number(zakatLogs.total_amount),
+            totalAmount: Number(zakatLogs.totalAmount),
             unit: zakatLogs.unit,
-            number_of_units: zakatLogs.number_of_units,
+            numberOfUnits: zakatLogs.numberOfUnits,
             details: details,
             createdAt: now,
           }).save();

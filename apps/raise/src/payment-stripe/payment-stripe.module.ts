@@ -23,6 +23,12 @@ import {
   Notifications,
   NotificationsSchema,
 } from 'src/organization/schema/notifications.schema';
+import {
+  NotificationSettings,
+  NotificationSettingsSchema,
+} from 'src/organization/schema/notification_settings.schema';
+import { EmailService } from 'src/email/email.service';
+import { EmailModule } from 'src/email/email.module';
 
 @Module({
   imports: [
@@ -48,6 +54,10 @@ import {
         schema: NotificationsSchema,
       },
       {
+        name: NotificationSettings.name,
+        schema: NotificationSettingsSchema,
+      },
+      {
         name: Organization.name,
         schema: OrganizationSchema,
       },
@@ -61,6 +71,7 @@ import {
       },
       { name: User.name, schema: UserSchema },
     ]),
+    EmailModule,
   ],
   providers: [PaymentStripeService],
   controllers: [PaymentStripeController],
