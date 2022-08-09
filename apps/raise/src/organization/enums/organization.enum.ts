@@ -1,6 +1,11 @@
 
 export enum PageNavigation {
-  LANDINGPAGE = 'landingpage',
+  LANDINGPAGE = 'LANDINGPAGE',
   ABOUTUS = 'aboutus',
   BLOG = 'blog'
+}
+
+export enum IsActive {
+  Y = 'Y',
+  N = 'N',
 }

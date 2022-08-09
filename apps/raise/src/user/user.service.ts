@@ -11,7 +11,7 @@ export class UserService {
   constructor(
     @InjectModel('User') private readonly userModel: Model<User>,
     private configService: ConfigService,
-  ) {}
+  ) { }
 
   async createUser(name: string, email: string, password: string) {
     const newUser = new this.userModel({ name, email, password });
@@ -144,4 +144,9 @@ export class UserService {
       };
     }
   }
+
+  // async resetPassword(email: string) {
+
+  // }
+
 }

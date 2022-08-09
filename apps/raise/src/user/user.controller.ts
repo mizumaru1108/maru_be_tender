@@ -21,7 +21,7 @@ import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Post('test-superadmin')
   @Roles(RoleEnum.SUPERADMIN)
@@ -125,4 +125,10 @@ export class UserController {
   //     newPassword,
   //   );
   // }
+
+  // @Post('/resetPassword')
+  // async resetPassword(@Body('email') email: string) {
+  //   return this.userService.resetPassword(email);
+  // }
+
 }

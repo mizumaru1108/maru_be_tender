@@ -7,7 +7,7 @@ export type AppearanceNavigationDocument = AppearanceNavigation & Document;
 export class AppearanceNavigation {
 
   @Prop()
-  id: string;
+  id?: string;
 
   @Prop()
   ownerUserId?: string;
@@ -65,6 +65,7 @@ export class AppearanceNavigation {
 
   @Prop()
   recentNewsTitle?: string;
+
   @Prop()
   date?: string;
 
@@ -76,6 +77,12 @@ export class AppearanceNavigation {
 
   @Prop()
   organizationId?: string;
+
+  @Prop()
+  isDeleted: string;
+
+  @Prop()
+  isActive: string;
 
   @Prop()
   createdAt?: string;

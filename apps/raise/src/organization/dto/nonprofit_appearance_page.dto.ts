@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { ArrayNotEmpty, IsArray, IsEmail, IsString } from "class-validator";
+import { ArrayNotEmpty, IsArray, IsEmail, IsEnum, IsString } from "class-validator";
+import { IsActive } from "../enums";
 
 
 
@@ -61,6 +62,14 @@ export class EditNonProfitAppearancePageDto {
   @IsArray()
   @ArrayNotEmpty()
   readonly faq: string[];
+
+  @ApiProperty()
+  @IsEnum(() => IsActive)
+  isDeleted: IsActive;
+
+  @ApiProperty()
+  @IsEnum(() => IsActive)
+  isActive: IsActive;
 
   @IsString()
   updatedAt: string;
