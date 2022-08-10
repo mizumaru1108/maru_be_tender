@@ -12,11 +12,15 @@ import {
 import { DonorController } from './donor.controller';
 import { Anonymous, AnonymousSchema } from './schema/anonymous.schema';
 import { ConfigModule } from '@nestjs/config';
-import { CampaignVendorLogSchema, CampaignVendorLog } from '../buying/vendor/vendor.schema';
+import {
+  CampaignVendorLogSchema,
+  CampaignVendorLog,
+} from '../buying/vendor/vendor.schema';
 import { Campaign, CampaignSchema } from '../campaign/campaign.schema';
+import { UsersModule } from '../user/user.module';
 
 @Module({
-  imports: [ 
+  imports: [
     MongooseModule.forFeature([
       {
         name: Anonymous.name,
@@ -47,7 +51,8 @@ import { Campaign, CampaignSchema } from '../campaign/campaign.schema';
         schema: CampaignSchema,
       },
     ]),
-    ConfigModule
+    ConfigModule,
+    UsersModule,
   ],
   providers: [DonorService],
   controllers: [DonorController],

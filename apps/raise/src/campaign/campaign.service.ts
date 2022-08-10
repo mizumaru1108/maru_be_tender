@@ -244,7 +244,11 @@ export class CampaignService {
       ) {
         for (let i = 0; i < validatedDto.images.length; i++) {
           /* if image data on current index not empty */
-          if (validatedDto.images[i]) {
+          if (
+            updateCampaignData &&
+            validatedDto.images[i] &&
+            validatedDto.images[i].base64Data
+          ) {
             const path = await this.bunnyService.generatePath(
               updateCampaignData.organizationId.toString(),
               'campaign-photo',
@@ -273,29 +277,37 @@ export class CampaignService {
             );
 
             /* if current campaign has old image, and the upload process has been done */
-            if (updateCampaignData.coverImage && i === 0 && imageUpload) {
-              console.info('Deleting old campaign cover image...');
-              await this.bunnyService.deleteImage(
-                updateCampaignData.coverImage,
-              );
+            if (i === 0 && imageUpload) {
+              if (updateCampaignData.coverImage) {
+                console.info('Deleting old campaign cover image...');
+                await this.bunnyService.deleteImage(
+                  updateCampaignData.coverImage,
+                );
+              }
               updateCampaignData.coverImage = path;
             }
 
-            if (updateCampaignData.image1 && i === 1 && imageUpload) {
-              console.info('Deleting old campaign image1...');
-              await this.bunnyService.deleteImage(updateCampaignData.image1);
+            if (i === 1 && imageUpload) {
+              if (updateCampaignData.image1) {
+                console.info('Deleting old campaign image1...');
+                await this.bunnyService.deleteImage(updateCampaignData.image1);
+              }
               updateCampaignData.image1 = path;
             }
 
-            if (updateCampaignData.image2 && i === 2 && imageUpload) {
-              console.info('Deleting old campaign image2...');
-              await this.bunnyService.deleteImage(updateCampaignData.image2);
+            if (i === 2 && imageUpload) {
+              if (updateCampaignData.image2) {
+                console.info('Deleting old campaign image2...');
+                await this.bunnyService.deleteImage(updateCampaignData.image2);
+              }
               updateCampaignData.image2 = path;
             }
 
-            if (updateCampaignData.image3 && i === 3 && imageUpload) {
-              console.info('Deleting old campaign image3...');
-              await this.bunnyService.deleteImage(updateCampaignData.image3);
+            if (i === 3 && imageUpload) {
+              if (updateCampaignData.image3) {
+                console.info('Deleting old campaign image2...');
+                await this.bunnyService.deleteImage(updateCampaignData.image3);
+              }
               updateCampaignData.image3 = path;
             }
           }

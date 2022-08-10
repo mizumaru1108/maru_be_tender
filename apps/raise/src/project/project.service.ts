@@ -190,121 +190,133 @@ export class ProjectService {
   }
 
   async updateProject(projectId: string, rawDto: UpdateProjectDto) {
-    {
-      const currentProjectData = await this.projectModel.findById(projectId);
-      if (!currentProjectData) {
-        throw new NotFoundException(`Campaign with id ${projectId} not found`);
-      }
+    const currentProjectData = await this.projectModel.findById(projectId);
+    if (!currentProjectData) {
+      throw new NotFoundException(`Campaign with id ${projectId} not found`);
+    }
 
-      let validatedDto: UpdateProjectDto;
-      try {
-        validatedDto = UpdateProjectDto.parse(rawDto); // validate with zod
-      } catch (err) {
-        if (err instanceof z.ZodError) {
-          console.log(err);
-          throw new BadRequestException(
-            {
-              statusCode: 400,
-              message: `Invalid Update Project Input`,
-              data: err.issues,
-            },
-            `Invalid Update Project Input`,
-          );
-        }
-      }
-
-      if (validatedDto!) {
-        const updateProjectData = Project.compare(
-          currentProjectData,
-          validatedDto!,
+    let validatedDto: UpdateProjectDto;
+    try {
+      validatedDto = UpdateProjectDto.parse(rawDto); // validate with zod
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        console.log(err);
+        throw new BadRequestException(
+          {
+            statusCode: 400,
+            message: `Invalid Update Project Input`,
+            data: err.issues,
+          },
+          `Invalid Update Project Input`,
         );
+      }
+    }
 
-        /**
-         * maximum file uploaded = 4 (included coverImage and projectAvatar)
-         * images [0] = coverImage
-         * images [1] = image1
-         * images [2] = image2
-         * images [3] = image3
-         * images [4] = projectAvatar
-         */
-        //!TODO: refactor for better performance
-        /* if there's new campaign images */
-        if (
-          updateProjectData &&
-          validatedDto &&
-          validatedDto.images &&
-          validatedDto.images.length > 0
-        ) {
-          for (let i = 0; i < validatedDto.images.length; i++) {
-            /* if image data on current index not empty */
-            if (validatedDto.images[i] && updateProjectData) {
-              const path = await this.bunnyService.generatePath(
-                updateProjectData.organizationId.toString(),
-                'project-photo',
-                validatedDto.images[i].fullName,
-                projectId,
-                validatedDto.images[i].imageExtension,
-              );
-              const base64Data = validatedDto.images[i].base64Data;
-              const binary = Buffer.from(
-                validatedDto.images[i].base64Data,
-                'base64',
-              );
-              if (!binary) {
-                const trimmedString = 56;
-                base64Data.length > 40
-                  ? base64Data.substring(0, 40 - 3) + '...'
-                  : base64Data.substring(0, length);
-                throw new BadRequestException(
-                  `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
-                );
-              }
-              const imageUpload = await this.bunnyService.uploadImage(
-                path,
-                binary,
-                updateProjectData.name,
-              );
+    if (validatedDto!) {
+      const updateProjectData = Project.compare(
+        currentProjectData,
+        validatedDto!,
+      );
 
-              /* if current campaign has old image, and the upload process has been done */
-              if (updateProjectData.coverImage && i === 0 && imageUpload) {
+      /**
+       * maximum file uploaded = 4 (included coverImage and projectAvatar)
+       * images [0] = coverImage
+       * images [1] = image1
+       * images [2] = image2
+       * images [3] = image3
+       * images [4] = projectAvatar
+       */
+      //!TODO: refactor for better performance
+      /* if there's new campaign images */
+      if (
+        updateProjectData &&
+        validatedDto &&
+        validatedDto.images &&
+        validatedDto.images.length > 0
+      ) {
+        for (let i = 0; i < validatedDto.images.length; i++) {
+          /* if image data on current index not empty */
+          if (
+            updateProjectData &&
+            validatedDto.images[i] &&
+            validatedDto.images[i].base64Data
+          ) {
+            const path = await this.bunnyService.generatePath(
+              updateProjectData.organizationId.toString(),
+              'project-photo',
+              validatedDto.images[i].fullName,
+              projectId,
+              validatedDto.images[i].imageExtension,
+            );
+            const base64Data = validatedDto.images[i].base64Data;
+            const binary = Buffer.from(
+              validatedDto.images[i].base64Data,
+              'base64',
+            );
+            if (!binary) {
+              const trimmedString = 56;
+              base64Data.length > 40
+                ? base64Data.substring(0, 40 - 3) + '...'
+                : base64Data.substring(0, length);
+              throw new BadRequestException(
+                `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
+              );
+            }
+            const imageUpload = await this.bunnyService.uploadImage(
+              path,
+              binary,
+              updateProjectData.name,
+            );
+
+            /* if current campaign has old image, and the upload process has been done */
+            if (i === 0 && imageUpload) {
+              if (updateProjectData.coverImage) {
                 console.info('Deleting old project cover image...');
                 await this.bunnyService.deleteImage(
                   updateProjectData.coverImage,
                 );
-                updateProjectData.coverImage = path;
               }
+              updateProjectData.coverImage = path;
+            }
 
-              if (updateProjectData.image1 && i === 1 && imageUpload) {
+            if (i === 1 && imageUpload) {
+              if (updateProjectData.image1) {
                 console.info('Deleting old project image1...');
                 await this.bunnyService.deleteImage(updateProjectData.image1);
-                updateProjectData.image1 = path;
               }
+              updateProjectData.image1 = path;
+            }
 
-              if (updateProjectData.image2 && i === 2 && imageUpload) {
+            if (i === 2 && imageUpload) {
+              if (updateProjectData.image2) {
                 console.info('Deleting old project image2...');
                 await this.bunnyService.deleteImage(updateProjectData.image2);
-                updateProjectData.image2 = path;
               }
+              updateProjectData.image2 = path;
+            }
 
-              if (updateProjectData.image3 && i === 3 && imageUpload) {
-                console.info('Deleting old project image3...');
+            if (i === 3 && imageUpload) {
+              if (updateProjectData.image3) {
+                console.info('Deleting old project image2...');
                 await this.bunnyService.deleteImage(updateProjectData.image3);
-                updateProjectData.image3 = path;
               }
+              updateProjectData.image3 = path;
+            }
 
-              if (updateProjectData.projectAvatar && i === 4 && imageUpload) {
+            if (i === 4 && imageUpload) {
+              if (updateProjectData.projectAvatar) {
                 console.info('Deleting old project avatar ...');
                 await this.bunnyService.deleteImage(
                   updateProjectData.projectAvatar,
                 );
-                updateProjectData.projectAvatar = path;
               }
+              updateProjectData.projectAvatar = path;
             }
           }
         }
-
-        return await updateProjectData.save();
       }
+
+      return await updateProjectData.save();
     }
   }
 
