@@ -356,7 +356,10 @@ export class ItemService {
     this.logger.debug(
       `${updatedItems.matchedCount} match, ${updatedItems.modifiedCount} data updated`,
     );
-    return updatedItems;
+    return {
+      statusCode: 200,
+      message: `${updatedItems.matchedCount} match, ${updatedItems.modifiedCount} data updated`,
+    };
   }
 
   async updateItem(itemId: string, rawDto: UpdateItemDto) {
