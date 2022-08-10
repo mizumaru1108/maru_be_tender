@@ -29,6 +29,41 @@ export class BunnyService {
     return path;
   }
 
+  async checkIfImageExists(path: string): Promise<boolean> {
+    const urlMedia = `${this.configService.get(
+      'BUNNY_STORAGE_URL_MEDIA',
+    )}/${path}`;
+
+    console.info(
+      `Checking if image exists at ${this.configService.get(
+        'BUNNY_STORAGE_URL_MEDIA',
+      )}/${path}`,
+    );
+
+    const options: AxiosRequestConfig<any> = {
+      method: 'GET',
+      headers: {
+        Accept: '*/*',
+        AccessKey: `${this.configService.get(
+          'BUNNY_STORAGE_ACCESS_KEY_MEDIA',
+        )}`,
+      },
+      url: urlMedia,
+    };
+
+    try {
+      const response = await axios(options);
+      console.info('Check Result: %s %s', response.status, response.statusText);
+      return true;
+    } catch (error) {
+      console.info(
+        'Check Result: %s',
+        JSON.stringify(error.response.data, null, 2),
+      );
+      return false;
+    }
+  }
+
   async uploadImage(
     path: string,
     binary: Buffer,

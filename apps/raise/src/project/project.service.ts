@@ -271,45 +271,77 @@ export class ProjectService {
             /* if current campaign has old image, and the upload process has been done */
             if (i === 0 && imageUpload) {
               if (updateProjectData.coverImage) {
-                console.info('Deleting old project cover image...');
-                await this.bunnyService.deleteImage(
+                console.info(
+                  'Old cover image seems to be exist in the old record',
+                );
+                const isExist = await this.bunnyService.checkIfImageExists(
                   updateProjectData.coverImage,
                 );
+                if (isExist) {
+                  await this.bunnyService.deleteImage(
+                    updateProjectData.coverImage,
+                  );
+                }
               }
+              console.info('Cover image has been replaced');
               updateProjectData.coverImage = path;
             }
 
             if (i === 1 && imageUpload) {
               if (updateProjectData.image1) {
-                console.info('Deleting old project image1...');
-                await this.bunnyService.deleteImage(updateProjectData.image1);
+                console.info('Old image 1 seems to be exist in the old record');
+                const isExist = await this.bunnyService.checkIfImageExists(
+                  updateProjectData.image1,
+                );
+                if (isExist) {
+                  await this.bunnyService.deleteImage(updateProjectData.image1);
+                }
               }
+              console.info('Image 1 has been replaced');
               updateProjectData.image1 = path;
             }
 
             if (i === 2 && imageUpload) {
               if (updateProjectData.image2) {
-                console.info('Deleting old project image2...');
-                await this.bunnyService.deleteImage(updateProjectData.image2);
+                console.info('Old image 2 seems to be exist in the old record');
+                const isExist = await this.bunnyService.checkIfImageExists(
+                  updateProjectData.image2,
+                );
+                if (isExist) {
+                  await this.bunnyService.deleteImage(updateProjectData.image2);
+                }
               }
+              console.info('Image 2 has been replaced');
               updateProjectData.image2 = path;
             }
 
             if (i === 3 && imageUpload) {
               if (updateProjectData.image3) {
-                console.info('Deleting old project image2...');
-                await this.bunnyService.deleteImage(updateProjectData.image3);
+                console.info('Old image 3 seems to be exist in the old record');
+                const isExist = await this.bunnyService.checkIfImageExists(
+                  updateProjectData.image3,
+                );
+                if (isExist) {
+                  await this.bunnyService.deleteImage(updateProjectData.image3);
+                }
               }
+              console.info('Image 3 has been replaced');
               updateProjectData.image3 = path;
             }
 
             if (i === 4 && imageUpload) {
               if (updateProjectData.projectAvatar) {
                 console.info('Deleting old project avatar ...');
-                await this.bunnyService.deleteImage(
+                const isExist = await this.bunnyService.checkIfImageExists(
                   updateProjectData.projectAvatar,
                 );
+                if (isExist) {
+                  await this.bunnyService.deleteImage(
+                    updateProjectData.projectAvatar,
+                  );
+                }
               }
+              console.info('Project avatar has been replaced');
               updateProjectData.projectAvatar = path;
             }
           }
