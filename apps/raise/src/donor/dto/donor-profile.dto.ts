@@ -49,4 +49,7 @@ export class DonorUpdateProfileDto {
 
   @ApiProperty()
   readonly isEmailChecklist: boolean;
+
+  @ApiProperty()
+  readonly anonymous: boolean;
 }
