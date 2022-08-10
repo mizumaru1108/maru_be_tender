@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class DonorUpdateProfileDto {
+
   @ApiProperty()
   readonly isAnonymous: boolean;
 
@@ -45,4 +46,7 @@ export class DonorUpdateProfileDto {
 
   @ApiProperty()
   readonly profilePic: string;
+
+  @ApiProperty()
+  readonly isEmailChecklist: boolean;
 }
