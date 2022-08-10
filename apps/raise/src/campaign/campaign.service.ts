@@ -892,10 +892,8 @@ export class CampaignService {
       `${updatedCampaign.matchedCount} match, ${updatedCampaign.modifiedCount} data updated`,
     );
     return {
-      success: true,
-      status: 200,
+      statusCode: 200,
       message: `${updatedCampaign.matchedCount} match, ${updatedCampaign.modifiedCount} data updated`,
-      data: `${updatedCampaign.matchedCount} match, ${updatedCampaign.modifiedCount} data updated`,
     };
   }
 }
