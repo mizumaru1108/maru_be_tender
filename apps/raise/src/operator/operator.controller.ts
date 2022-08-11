@@ -22,6 +22,15 @@ export class OperatorController {
     return await this.operatorService.getListAll();
   }
 
+  @ApiOperation({ summary: 'Get operator details' })
+  @Get('/:operatorId/detail')
+  @Roles(RoleEnum.SUPERADMIN)
+  @UseGuards(JwtAuthGuard)
+  async getOperatorDetail(@Param('operatorId') operatorId: string) {
+    this.logger.debug(`Get operator details for id ${operatorId}`);
+    return await this.operatorService.getOperatorDetail(operatorId);
+  }
+
   @ApiOperation({ summary: 'Get Chart Data' })
   @Get(':operatorId/getChartData')
   async getChartData(@Param('operatorId') operatorId: string) {
