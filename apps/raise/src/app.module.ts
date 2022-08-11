@@ -37,6 +37,7 @@ import { ManagerModule } from './manager/manager.module';
 import { WidgetsModule } from './widgets/widgets.module';
 // import { OpenTelemetryModule } from 'nestjs-otel';
 // import { OpenTelemetryModule } from '@metinseylan/nestjs-opentelemetry';
+import { DonorInfoModule } from './donor-info/donor-info.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -103,6 +104,7 @@ import { WidgetsModule } from './widgets/widgets.module';
     BuyingModule,
     UploadModule,
     WidgetsModule,
+    DonorInfoModule,
   ],
   controllers: [],
   providers: [AuthzedService],
