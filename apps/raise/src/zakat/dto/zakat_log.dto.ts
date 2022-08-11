@@ -4,7 +4,7 @@ class ZakatLogDetails {
   readonly name: string;
   readonly unit: string;
   readonly carat: number;
-  readonly number_of_units: number;
+  readonly numberOfUnits: number;
   readonly amount: number;
   readonly currency: string;
 }
@@ -14,9 +14,9 @@ export class ZakatLogDto {
   readonly donationLogId: Types.ObjectId;
   readonly type: string;
   readonly currency: string;
-  readonly total_amount: number;
+  readonly totalAmount: number;
   readonly unit: string;
-  readonly number_of_units: number;
+  readonly numberOfUnits: number;
   readonly details: Array<ZakatLogDetails>;
   readonly createdAt: Date;
 }

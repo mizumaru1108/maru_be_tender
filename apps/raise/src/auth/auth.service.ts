@@ -12,8 +12,8 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
 import { UserService } from 'src/user/user.service';
+import { FusionAuthService } from '../fusionauth/services/fusion-auth.service';
 import { LoginRequestDto } from './dtos/login-request.dto';
-import { LoginResponseDto } from './dtos/login-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -21,15 +21,8 @@ export class AuthService {
     private usersService: UserService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private fusionAuthService: FusionAuthService,
   ) {}
-
-  async useFusionAuth() {
-    return new FusionAuthClient(
-      this.configService.get('FUSIONAUTH_CLIENT_KEY', ''),
-      this.configService.get('FUSIONAUTH_URL', ''),
-      this.configService.get('FUSIONAUTH_TENANT_ID', ''),
-    );
-  }
 
   async loginUser(loginRequest: LoginRequestDto) {
     loginRequest.applicationId = this.configService.get<string>(
@@ -37,39 +30,19 @@ export class AuthService {
       '',
     );
     try {
-      const fusionauth = new FusionAuthClient(
-        this.configService.get('FUSIONAUTH_CLIENT_KEY', ''),
-        this.configService.get('FUSIONAUTH_URL', ''),
-        this.configService.get('FUSIONAUTH_TENANT_ID', ''),
-      );
+      const fusionauth = await this.fusionAuthService.useFusionAuthClient();
       const result: ClientResponse<LoginResponse> = await fusionauth.login(
         loginRequest,
       );
-      // console.log(result);
-      // const validToken = await fusionauth.validateJWT(result.response.token!);
-      // const test = await fusionauth.retrieveUserUsingJWT(
-      //   result.response.token!,
-      // );
-      // console.log(test);
-      // if (!validToken) {
-      //   throw new HttpException('Invalid Signature!', 401);
-      // }
-      // const user = await this.usersService.getOneUser({
-      //   email: result.response.user!.email,
-      // });
-      // console.log(user);
-      // const response: LoginResponseDto = {
-      //   user: {
-      //     id: user.id,
-      //     email: user.email,
-      //     type: user.type,
-      //   },
-      //   accessToken: this.jwtService.sign(result),
-      // };
-      console.log(result);
 
-      // return response;
-      return this.jwtService.sign(result);
+      const response = {
+        user: {
+          id: result.response.user!.id,
+          email: result.response.user!.email,
+        },
+        accessToken: result.response.token!,
+      };
+      return response;
     } catch (error) {
       if (error.statusCode < 500) {
         throw new UnauthorizedException('Invalid credentials!');
@@ -78,26 +51,6 @@ export class AuthService {
       }
     }
   }
-  // async loginUser(email: string, password: string) {
-  //   let isValid = false;
-
-  //   const user = await this.usersService.getOneUser({ email });
-
-  //   if (user && user.password === password) isValid = true;
-
-  //   if (!isValid) {
-  //     throw new HttpException('Invalid login details', 401);
-  //   }
-
-  //   return {
-  //     user: {
-  //       id: user?.id,
-  //       name: user?.name,
-  //       email: user?.email,
-  //     },
-  //     accessToken: this.generateToken(user)
-  //   }
-  // }
 
   async registerUser(name: string, email: string, password: string) {
     const user = await this.usersService.getOneUser({ email });

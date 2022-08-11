@@ -1,4 +1,13 @@
-import { Controller, Body, Get, Param, Post, Query, Put } from '@nestjs/common';
+import {
+  Controller,
+  Body,
+  Get,
+  Param,
+  Post,
+  Query,
+  Put,
+  Patch,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { rootLogger } from '../logger';
 import { ItemService } from './item.service';
@@ -48,7 +57,7 @@ export class ItemController {
   }
 
   @ApiOperation({ summary: 'update project' })
-  @Put('update/:itemId')
+  @Patch('update/:itemId')
   async updateProject(
     @Param('itemId') itemId: string,
     @Body() updateRequest: UpdateItemDto,

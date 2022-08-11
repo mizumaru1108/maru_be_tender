@@ -6,7 +6,7 @@ export type AppearancePageDocument = AppearancePage & Document;
 @Schema({ collection: 'nonprofitAppearancePage' })
 export class AppearancePage {
   @Prop()
-  id: string;
+  id?: string;
 
   @Prop()
   ownerUserId: string;
@@ -25,6 +25,12 @@ export class AppearancePage {
 
   @Prop()
   organizationId: string;
+
+  @Prop()
+  isDeleted: string;
+
+  @Prop()
+  isActive: string;
 
   @Prop()
   createdAt: string;

@@ -39,98 +39,102 @@ export class Project {
   @Prop({ type: mongoose.Schema.Types.ObjectId })
   public _id?: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId })
-  public organizationId?: Types.ObjectId;
+  @Prop({ required: true, type: Types.ObjectId, ref: 'organization' })
+  public organizationId: Types.ObjectId;
 
   @Prop({ type: () => String, ref: 'projectOperatorLog' })
   public operatorId?: string;
 
-  @Prop({ type: () => String })
-  public name?: string;
+  @Prop({ required: true })
+  public name: string;
 
-  @Prop({ type: () => String })
-  public createdAt?: String;
+  @Prop()
+  public address?: string;
 
-  @Prop({ type: () => String })
-  public updatedAt?: String;
+  @Prop()
+  public description?: string;
 
-  @Prop({ type: () => String })
-  public address?: String;
+  @Prop()
+  public location?: string;
 
-  @Prop({ type: () => String })
-  public coverImage?: String;
+  @Prop()
+  public diameterSize?: string;
 
-  @Prop({ type: () => String })
-  public image1?: String;
+  @Prop()
+  public prayerSize?: string;
 
-  @Prop({ type: () => String })
-  public image2?: String;
+  @Prop()
+  public toiletSize?: string;
 
-  @Prop({ type: () => String })
-  public image3?: String;
+  @Prop()
+  public hasAc?: string;
 
-  @Prop({ type: () => String })
-  public description?: String;
+  @Prop()
+  public hasClassroom?: string;
 
-  @Prop({ type: () => String })
-  public location?: String;
+  @Prop()
+  public hasParking?: string;
 
-  @Prop({ type: () => String })
-  public diameterSize?: String;
+  @Prop()
+  public hasGreenSpace?: string;
 
-  @Prop({ type: () => String })
-  public prayerSize?: String;
+  @Prop()
+  public hasFemaleSection?: string;
 
-  @Prop({ type: () => String })
-  public toiletSize?: String;
+  @Prop()
+  public isDeleted?: string;
 
-  @Prop({ type: () => String })
-  public hasAc?: String;
+  @Prop()
+  public isPublished?: string;
 
-  @Prop({ type: () => String })
-  public hasClassroom?: String;
+  @Prop()
+  public coverImage?: string;
 
-  @Prop({ type: () => String })
-  public hasParking?: String;
+  @Prop()
+  public image1?: string;
 
-  @Prop({ type: () => String })
-  public hasGreenSpace?: String;
+  @Prop()
+  public image2?: string;
 
-  @Prop({ type: () => String })
-  public hasFemaleSection?: String;
+  @Prop()
+  public image3?: string;
 
-  @Prop({ type: () => String })
-  public isDeleted?: String;
+  @Prop()
+  public projectAvatar?: string;
 
-  @Prop({ type: () => String })
-  public isPublished?: String;
-
-  @Prop({ type: () => String })
-  public projectAvatar?: String;
-
-  @Prop({ type: () => Array })
+  @Prop({ default: [] })
   public nearByPlaces?: Array<Object>;
 
-  static mapFromUpdateDto(dto: UpdateProjectDto): Project {
-    const project = new Project();
-    if (dto.organizationId) {
-      project.organizationId = new Types.ObjectId(dto.organizationId);
+  @Prop()
+  public createdAt?: string;
+
+  @Prop()
+  public updatedAt?: string;
+
+  static compare(
+    currentData: ProjectDocument,
+    request: UpdateProjectDto,
+  ): ProjectDocument {
+    if (request.organizationId) {
+      currentData.organizationId = new Types.ObjectId(request.organizationId);
     }
-    dto.name && (project.name = dto.name);
-    dto.description && (project.description = dto.description);
-    dto.address && (project.address = dto.address);
-    // nearByPlaces: z.array(NearByPlaces), !TODO: later implementations.
-    dto.location && (project.location = dto.location);
-    dto.diameterSize && (project.diameterSize = dto.diameterSize);
-    dto.prayerSize && (project.prayerSize = dto.prayerSize);
-    dto.toiletSize && (project.toiletSize = dto.toiletSize);
-    dto.hasAc && (project.hasAc = dto.hasAc);
-    dto.hasClassroom && (project.hasClassroom = dto.hasClassroom);
-    dto.hasParking && (project.hasParking = dto.hasParking);
-    dto.hasGreenSpace && (project.hasGreenSpace = dto.hasGreenSpace);
-    dto.hasFemaleSection && (project.hasFemaleSection = dto.hasFemaleSection);
-    project.updatedAt = dayjs().toISOString();
-    return project;
+    request.name && (currentData.name = request.name);
+    request.description && (currentData.description = request.description);
+    request.address && (currentData.address = request.address);
+    request.nearByPlaces && (currentData.nearByPlaces = request.nearByPlaces);
+    request.location && (currentData.location = request.location);
+    request.diameterSize && (currentData.diameterSize = request.diameterSize);
+    request.prayerSize && (currentData.prayerSize = request.prayerSize);
+    request.toiletSize && (currentData.toiletSize = request.toiletSize);
+    request.hasAc && (currentData.hasAc = request.hasAc);
+    request.hasClassroom && (currentData.hasClassroom = request.hasClassroom);
+    request.hasParking && (currentData.hasParking = request.hasParking);
+    request.hasGreenSpace &&
+      (currentData.hasGreenSpace = request.hasGreenSpace);
+    request.hasFemaleSection &&
+      (currentData.hasFemaleSection = request.hasFemaleSection);
+    currentData.updatedAt = dayjs().toISOString();
+    return currentData;
   }
 }
 

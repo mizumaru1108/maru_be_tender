@@ -61,6 +61,12 @@ export class Anonymous {
 
   @Prop()
   createdAt: Date;
+
+  @Prop()
+  isEmailChecklist: boolean;
+
+  @Prop()
+  anonymous: boolean;
 }
 
 export const AnonymousSchema = SchemaFactory.createForClass(Anonymous);

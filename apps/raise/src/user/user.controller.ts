@@ -1,22 +1,82 @@
 import {
-  Controller,
-  Post,
   Body,
+  Controller,
   Get,
   Param,
   Patch,
+  Post,
+  SetMetadata,
   // Delete,
   UseGuards,
-  SetMetadata,
 } from '@nestjs/common';
 
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { PermissionsGuard } from 'src/auth/permissions.guard';
+import { Roles } from '../auth/roles.decorator';
+import { RolesGuard } from '../auth/roles.guard';
+import { CurrentUser } from '../commons/decorators/current-user.decorator';
+import { RoleEnum } from './enums/role-enum';
+import { ICurrentUser } from './interfaces/current-user.interface';
 import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
+
+  @Post('test-superadmin')
+  @Roles(RoleEnum.SUPERADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async testSuperAdmin(@CurrentUser() user: ICurrentUser) {
+    return {
+      statusCode: 200,
+      user,
+      message: 'This endpoint is for super admin only',
+    };
+  }
+
+  @Post('test-vendor')
+  @Roles(RoleEnum.VENDOR)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async testVendor(@CurrentUser() user: ICurrentUser) {
+    return {
+      statusCode: 200,
+      user,
+      message: 'This endpoint is for vendor only',
+    };
+  }
+
+  @Post('test-operator')
+  @Roles(RoleEnum.OPERATOR)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async testOperator(@CurrentUser() user: ICurrentUser) {
+    return {
+      statusCode: 200,
+      user,
+      message: 'This endpoint is for operator only',
+    };
+  }
+
+  @Post('test-nonprofit')
+  @Roles(RoleEnum.NONPROFIT)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async testNonProfit(@CurrentUser() user: ICurrentUser) {
+    return {
+      statusCode: 200,
+      user,
+      message: 'This endpoint is for non-profit only',
+    };
+  }
+
+  @Post('test-donor')
+  @Roles(RoleEnum.DONOR)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async testDonor(@CurrentUser() user: ICurrentUser) {
+    return {
+      statusCode: 200,
+      user,
+      message: 'This endpoint is for donors only',
+    };
+  }
 
   @Get()
   @SetMetadata('permission', ['user/list', 'read'])
@@ -65,4 +125,10 @@ export class UserController {
   //     newPassword,
   //   );
   // }
+
+  // @Post('/resetPassword')
+  // async resetPassword(@Body('email') email: string) {
+  //   return this.userService.resetPassword(email);
+  // }
+
 }

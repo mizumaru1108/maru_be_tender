@@ -1,9 +1,20 @@
-import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CampaignVendorLog } from 'src/buying/vendor/vendor.schema';
+import { JwtAuthGuard } from '../auth/jwt.guard';
+import { Roles } from '../auth/roles.decorator';
 
 import { DonorService } from '../donor/donor.service';
 import { rootLogger } from '../logger';
+import { RoleEnum } from '../user/enums/role-enum';
 import { CampaignService } from './campaign.service';
 import { CampaignSetFavoriteDto, CreateCampaignDto } from './dto';
 import { CampaignSetDeletedFlagDto } from './dto/capaign-set-flag-deleted';
@@ -141,6 +152,8 @@ export class CampaignController {
     status: 201,
     description: 'The Campaign has been successfully created.',
   })
+  @Roles(RoleEnum.OPERATOR)
+  @UseGuards(JwtAuthGuard)
   @Post('create')
   async create(@Body() createCampaignDto: CreateCampaignDto) {
     this.logger.debug(
@@ -176,13 +189,14 @@ export class CampaignController {
   }
 
   @ApiOperation({ summary: 'update campaign' })
-  @Put('update/:campaignId')
+  @Roles(RoleEnum.OPERATOR)
+  @UseGuards(JwtAuthGuard)
+  @Patch('update/:campaignId')
   async updateCampaign(
     @Param('campaignId') campaignId: string,
     @Body() updateCampaignRequest: UpdateCampaignDto,
   ) {
     this.logger.debug('payload', JSON.stringify(updateCampaignRequest));
-    console.log('updateCampaignRequest', updateCampaignRequest);
     return await this.campaignService.updateCampaign(
       campaignId,
       updateCampaignRequest,

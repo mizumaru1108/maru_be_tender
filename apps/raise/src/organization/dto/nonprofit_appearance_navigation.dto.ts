@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ArrayNotEmpty, IsArray, IsEmail, IsEnum, IsNotEmpty, IsString } from "class-validator";
-import { PageNavigation } from "../enums";
+import { PageNavigation, IsActive } from "../enums";
 
 export class NonProfitAppearanceNavigationDto {
 
@@ -65,6 +65,14 @@ export class NonProfitAppearanceNavigationDto {
   @ApiProperty()
   @IsString()
   page: string = 'LANDINGPAGE';
+
+  @ApiProperty()
+  @IsEnum(() => IsActive)
+  isDeleted: IsActive;
+
+  @ApiProperty()
+  @IsEnum(() => IsActive)
+  isActive: IsActive;
 
   @IsString()
   createdAt: string;
@@ -133,6 +141,14 @@ export class EditNonProfitAppearanceNavigationDto {
   @ArrayNotEmpty()
   readonly linkCampaign: string[];
 
+  @ApiProperty()
+  @IsEnum(() => IsActive)
+  isDeleted: IsActive;
+
+  @ApiProperty()
+  @IsEnum(() => IsActive)
+  isActive: IsActive;
+
   @IsString()
   updatedAt: string;
 }
@@ -194,6 +210,14 @@ export class NonProfitAppearanceNavigationAboutUsDto {
   @IsString()
   page: string = 'ABOUTUS';
 
+  @ApiProperty()
+  @IsEnum(() => IsActive)
+  isDeleted: IsActive;
+
+  @ApiProperty()
+  @IsEnum(() => IsActive)
+  isActive: IsActive;
+
   @IsString()
   createdAt: string;
 
@@ -251,6 +275,14 @@ export class EditNonProfitAppearanceNavigationAboutUsDto {
   iconForValues: string;
 
   @ApiProperty()
+  @IsEnum(() => IsActive)
+  isDeleted: IsActive;
+
+  @ApiProperty()
+  @IsEnum(() => IsActive)
+  isActive: IsActive;
+
+  @ApiProperty()
   @IsArray()
   teamMemberAddUser: string[];
 
@@ -300,6 +332,14 @@ export class NonProfitAppearanceNavigationBlogDto {
   @IsString()
   page: string = 'BLOG';
 
+  @ApiProperty()
+  @IsEnum(() => IsActive)
+  isDeleted: IsActive;
+
+  @ApiProperty()
+  @IsEnum(() => IsActive)
+  isActive: IsActive;
+
   @IsString()
   createdAt: string;
 
@@ -340,6 +380,14 @@ export class EditNonProfitAppearanceNavigationBlogDto {
   @ApiProperty()
   @IsString()
   date: string;
+
+  @ApiProperty()
+  @IsEnum(() => IsActive)
+  isDeleted: IsActive;
+
+  @ApiProperty()
+  @IsEnum(() => IsActive)
+  isActive: IsActive;
 
   @ApiProperty()
   @IsArray()

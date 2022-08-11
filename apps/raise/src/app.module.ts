@@ -31,13 +31,12 @@ import { AuthzedService } from './authzed/authzed.service';
 import { AuthzedModule } from './authzed/authzed.module';
 import { BuyingModule } from './buying/buying.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { UploadModule } from './upload/upload.module';
 import { OperatorModule } from './operator/operator.module';
 import { ManagerModule } from './manager/manager.module';
 import { WidgetsModule } from './widgets/widgets.module';
+import { SharedModule } from './shared/shared.module';
 // import { OpenTelemetryModule } from 'nestjs-otel';
 // import { OpenTelemetryModule } from '@metinseylan/nestjs-opentelemetry';
-import { DonorInfoModule } from './donor-info/donor-info.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -102,11 +101,10 @@ import { DonorInfoModule } from './donor-info/donor-info.module';
     AuthModule,
     AuthzedModule,
     BuyingModule,
-    UploadModule,
     WidgetsModule,
-    DonorInfoModule,
+    SharedModule,
   ],
   controllers: [],
   providers: [AuthzedService],
 })
-export class AppModule {}
+export class AppModule { }
