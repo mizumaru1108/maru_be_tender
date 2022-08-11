@@ -49,25 +49,7 @@ export class Project {
   public name: string;
 
   @Prop()
-  public createdAt?: string;
-
-  @Prop()
-  public updatedAt?: string;
-
-  @Prop()
   public address?: string;
-
-  @Prop()
-  public coverImage?: string;
-
-  @Prop()
-  public image1?: string;
-
-  @Prop()
-  public image2?: string;
-
-  @Prop()
-  public image3?: string;
 
   @Prop()
   public description?: string;
@@ -106,10 +88,28 @@ export class Project {
   public isPublished?: string;
 
   @Prop()
+  public coverImage?: string;
+
+  @Prop()
+  public image1?: string;
+
+  @Prop()
+  public image2?: string;
+
+  @Prop()
+  public image3?: string;
+
+  @Prop()
   public projectAvatar?: string;
 
   @Prop({ default: [] })
   public nearByPlaces?: Array<Object>;
+
+  @Prop()
+  public createdAt?: string;
+
+  @Prop()
+  public updatedAt?: string;
 
   static compare(
     currentData: ProjectDocument,

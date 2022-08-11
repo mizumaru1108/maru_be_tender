@@ -1,6 +1,9 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/jwt.guard';
+import { Roles } from '../auth/roles.decorator';
 import { rootLogger } from '../logger';
+import { RoleEnum } from '../user/enums/role-enum';
 import { OperatorService } from './operator.service';
 
 @ApiTags('operator')
@@ -10,9 +13,10 @@ export class OperatorController {
 
   constructor(private operatorService: OperatorService) {}
 
-
   @ApiOperation({ summary: 'Get List All Operator' })
   @Get('getListAll')
+  @Roles(RoleEnum.SUPERADMIN)
+  @UseGuards(JwtAuthGuard)
   async getListAll() {
     this.logger.debug(`Get list all operator `);
     return await this.operatorService.getListAll();

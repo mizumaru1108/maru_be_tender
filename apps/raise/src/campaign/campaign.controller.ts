@@ -6,11 +6,15 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/jwt.guard';
+import { Roles } from '../auth/roles.decorator';
 
 import { DonorService } from '../donor/donor.service';
 import { rootLogger } from '../logger';
+import { RoleEnum } from '../user/enums/role-enum';
 import { CampaignService } from './campaign.service';
 import { CampaignSetFavoriteDto, CreateCampaignDto } from './dto';
 import { CampaignSetDeletedFlagDto } from './dto/capaign-set-flag-deleted';
@@ -148,6 +152,8 @@ export class CampaignController {
     status: 201,
     description: 'The Campaign has been successfully created.',
   })
+  @Roles(RoleEnum.OPERATOR)
+  @UseGuards(JwtAuthGuard)
   @Post('create')
   async create(@Body() createCampaignDto: CreateCampaignDto) {
     this.logger.debug(
@@ -183,6 +189,8 @@ export class CampaignController {
   }
 
   @ApiOperation({ summary: 'update campaign' })
+  @Roles(RoleEnum.OPERATOR)
+  @UseGuards(JwtAuthGuard)
   @Patch('update/:campaignId')
   async updateCampaign(
     @Param('campaignId') campaignId: string,

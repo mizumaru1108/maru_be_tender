@@ -1,10 +1,23 @@
-import { Controller, Body, Get, Param, Post, Patch } from '@nestjs/common';
+import {
+  Controller,
+  Body,
+  Get,
+  Param,
+  Post,
+  Patch,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { rootLogger } from '../logger';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto';
 import { ProjectSetDeletedFlagDto } from './dto/project-set-flag-deleted';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { JwtAuthGuard } from '../auth/jwt.guard';
+import { RoleEnum } from '../user/enums/role-enum';
+import { Roles } from '../auth/roles.decorator';
+import { CurrentUser } from '../commons/decorators/current-user.decorator';
+import { ICurrentUser } from '../user/interfaces/current-user.interface';
 
 @ApiTags('project')
 @Controller('project')
@@ -31,10 +44,15 @@ export class ProjectController {
     status: 201,
     description: 'The Project has been successfully created.',
   })
+  @Roles(RoleEnum.OPERATOR)
+  @UseGuards(JwtAuthGuard)
   @Post('create')
-  async create(@Body() createProjectDto: CreateProjectDto) {
+  async create(
+    @CurrentUser() currentUser: ICurrentUser,
+    @Body() createProjectDto: CreateProjectDto,
+  ) {
     this.logger.debug('create new project ', JSON.stringify(createProjectDto));
-    return await this.projectService.create(createProjectDto);
+    return await this.projectService.create(createProjectDto, currentUser.id);
   }
 
   @ApiOperation({ summary: 'set flag to delete campaign' })

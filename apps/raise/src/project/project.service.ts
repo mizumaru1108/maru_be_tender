@@ -38,7 +38,10 @@ export class ProjectService {
     private bunnyService: BunnyService,
   ) {}
 
-  async create(rawCreateProjectDto: CreateProjectDto): Promise<Project> {
+  async create(
+    rawCreateProjectDto: CreateProjectDto,
+    operatorId: string,
+  ): Promise<Project> {
     let createProjectDto: CreateProjectDto;
     let decimal = require('mongoose').Types.Decimal128;
     try {
@@ -61,6 +64,7 @@ export class ProjectService {
       _id: projectId,
       name: createProjectDto.name,
       location: createProjectDto.location,
+      operatorId,
     });
     const createdProjectOperatorLog = new this.projectOperatorLogModel(
       createProjectDto,

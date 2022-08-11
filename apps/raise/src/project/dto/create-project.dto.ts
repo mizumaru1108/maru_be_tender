@@ -11,9 +11,6 @@ export type NearByPlaces = z.infer<typeof NearByPlaces>;
 export const CreateProjectDto = z.object({
   organizationId: z.string().min(1),
   name: z.string(),
-  userId: z.string(),
-  // projectId: z.string().optional(),
-  // type: z.string(),
   description: z.string(),
   address: z.string(),
   nearByPlaces: z.array(NearByPlaces),
