@@ -50,7 +50,7 @@ export class DonorService {
     private campaignVendorLogDocument: Model<CampaignVendorLogDocument>,
     @InjectModel(Campaign.name)
     private campaignModel: Model<CampaignDocument>,
-  ) {}
+  ) { }
 
   async setFavoriteCampaign(campaignSetFavoriteDto: CampaignSetFavoriteDto) {
     const filter = { donorId: campaignSetFavoriteDto.donorId };
@@ -322,7 +322,8 @@ export class DonorService {
   }
 
   @ApiOperation({ summary: 'Get Total donationbyId' })
-  async getTotalDonation(donorUserId: string) {
+  async getTotalDonation(donorUserId: string, currencyCode: string) {
+    let currency = currencyCode ?? 'USD';
     this.logger.debug('Get Donation logs...');
     const donationId = await this.donorModel.findOne({
       ownerUserId: donorUserId,
@@ -330,9 +331,10 @@ export class DonorService {
     if (!donationId) {
       throw new NotFoundException(`donorUserId must be valid`);
     }
+
     const totalDonation = await this.donationLogsModel.aggregate([
       {
-        $match: { donationStatus: 'SUCCESS', donorUserId },
+        $match: { donationStatus: 'success', donorUserId, currencyCode: currency },
       },
       {
         $group: {
@@ -347,28 +349,35 @@ export class DonorService {
               $toDouble: '$amount',
             },
           },
+          currencyCode: {
+            $first: '$currency'
+          }
         },
       },
     ]);
 
     const totalFundDonation = await this.donationLogsModel.aggregate([
       {
-        $match: { donationStatus: 'SUCCESS' },
+        $match: { donationStatus: 'success', currencyCode: currency },
       },
       {
         $group: {
           _id: '$donationStatus',
           amountTotalDonation: { $sum: '$amount' },
+          currencyCode: {
+            $first: '$currency'
+          }
         },
       },
     ]);
 
     const campaignLogs = await this.campaignModel.aggregate([
-      { $match: { isPublished: 'Y' } },
+      { $match: { isPublished: 'Y', currencyCode: currency } },
       {
         $group: {
           _id: 'isPublished',
           totalProgram: { $sum: '$amountTarget' },
+          currencyCode: { $first: '$currencyCode' }
         },
       },
     ]);

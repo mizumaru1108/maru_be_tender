@@ -23,7 +23,7 @@ import { Roles } from '../auth/roles.decorator';
 export class DonorController {
   private logger = rootLogger.child({ logger: DonorController.name });
 
-  constructor(private donorService: DonorService) {}
+  constructor(private donorService: DonorService) { }
 
   @ApiOperation({ summary: 'Create Donor Payment' })
   @ApiResponse({
@@ -69,9 +69,9 @@ export class DonorController {
 
   @ApiOperation({ summary: 'Create Donor Payment' })
   @Get('totalDonation/:donorId')
-  async getTotalDonation(@Param('donorId') donorId: string) {
+  async getTotalDonation(@Param('donorId') donorId: string, @Query('currencyCode') currency: string) {
     this.logger.debug('get TotalDonation');
-    return await this.donorService.getTotalDonation(donorId);
+    return await this.donorService.getTotalDonation(donorId, currency);
   }
 
   @Post('anonymous/create')
