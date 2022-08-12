@@ -6,6 +6,7 @@ import {
   Post,
   Patch,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { rootLogger } from '../logger';
@@ -19,6 +20,7 @@ import { Roles } from '../auth/roles.decorator';
 import { CurrentUser } from '../commons/decorators/current-user.decorator';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { RolesGuard } from '../auth/roles.guard';
+import { ProjectFilterRequest } from './dto/project-filter.request';
 
 @ApiTags('project')
 @Controller('project')
@@ -33,6 +35,15 @@ export class ProjectController {
   async getAllProjects() {
     this.logger.debug(`Get all projects`);
     return await this.projectService.getListAll();
+  }
+
+  @ApiOperation({ summary: 'Get All Projects viewed by manager' })
+  @Roles(RoleEnum.SUPERADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('manager/getProjectList')
+  async getProjectList(@Query() projectFilter: ProjectFilterRequest) {
+    this.logger.debug(`Get all projects`);
+    return await this.projectService.getProjectList(projectFilter);
   }
 
   @ApiOperation({ summary: 'Get All Projects viewed by operator' })
