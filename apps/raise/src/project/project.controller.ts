@@ -75,7 +75,6 @@ export class ProjectController {
     @Param('projectId') projectId: string,
     @Body() updateRequest: UpdateProjectDto,
   ) {
-    console.log('a');
     this.logger.debug('payload', JSON.stringify(updateRequest));
     this.logger.debug(`update project ${projectId}`);
     return await this.projectService.updateProject(projectId, updateRequest);

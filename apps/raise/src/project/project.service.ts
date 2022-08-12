@@ -196,7 +196,7 @@ export class ProjectService {
   async updateProject(projectId: string, rawDto: UpdateProjectDto) {
     const currentProjectData = await this.projectModel.findById(projectId);
     if (!currentProjectData) {
-      throw new NotFoundException(`Campaign with id ${projectId} not found`);
+      throw new NotFoundException(`Project with id ${projectId} not found`);
     }
 
     let validatedDto: UpdateProjectDto;
