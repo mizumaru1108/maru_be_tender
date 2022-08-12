@@ -18,6 +18,7 @@ import { RoleEnum } from '../user/enums/role-enum';
 import { Roles } from '../auth/roles.decorator';
 import { CurrentUser } from '../commons/decorators/current-user.decorator';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
+import { RolesGuard } from '../auth/roles.guard';
 
 @ApiTags('project')
 @Controller('project')
@@ -26,6 +27,8 @@ export class ProjectController {
   constructor(private projectService: ProjectService) {}
 
   @ApiOperation({ summary: 'Get All Projects viewed by manager' })
+  @Roles(RoleEnum.SUPERADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('manager/getListAll')
   async getAllProjects() {
     this.logger.debug(`Get all projects`);
@@ -65,6 +68,8 @@ export class ProjectController {
   }
 
   @ApiOperation({ summary: 'update project' })
+  @Roles(RoleEnum.SUPERADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch('update/:projectId')
   async updateProject(
     @Param('projectId') projectId: string,
