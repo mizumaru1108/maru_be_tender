@@ -107,4 +107,4 @@ import { SharedModule } from './shared/shared.module';
   controllers: [],
   providers: [AuthzedService],
 })
-export class AppModule { }
+export class AppModule {}
