@@ -17,6 +17,7 @@ export const CreateProjectDto = z.object({
   location: z.string(),
   diameterSize: z.string(),
   prayerSize: z.string(),
+  toiletNumber: z.string(),
   toiletSize: z.string(),
   hasAc: z.string(),
   hasClassroom: z.string(),

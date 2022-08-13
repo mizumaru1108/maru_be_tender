@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { FilterQuery, Model, Types } from 'mongoose';
 import { CreateProjectDto } from './dto';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -22,6 +22,7 @@ import slugify from 'slugify';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { z } from 'zod';
 import { BunnyService } from '../bunny/services/bunny.service';
+import { ProjectFilterRequest } from './dto/project-filter.request';
 
 @Injectable()
 export class ProjectService {
@@ -196,7 +197,7 @@ export class ProjectService {
   async updateProject(projectId: string, rawDto: UpdateProjectDto) {
     const currentProjectData = await this.projectModel.findById(projectId);
     if (!currentProjectData) {
-      throw new NotFoundException(`Campaign with id ${projectId} not found`);
+      throw new NotFoundException(`Project with id ${projectId} not found`);
     }
 
     let validatedDto: UpdateProjectDto;
@@ -354,6 +355,74 @@ export class ProjectService {
 
       return await updateProjectData.save();
     }
+  }
+
+  async applyFilter(
+    filter: ProjectFilterRequest,
+  ): Promise<FilterQuery<ProjectDocument>> {
+    const filterQuery: FilterQuery<ProjectDocument> = {};
+    const {
+      diameterSize,
+      toiletSize,
+      prayerMinCapacity,
+      prayerMaxCapacity,
+      hasAc,
+      hasClassroom,
+      hasGreenSpace,
+      hasFemaleSection,
+    } = filter;
+
+    if (diameterSize) {
+      // apply filter for diameter size greater than or equal to diameter size defined
+      filterQuery.diameterSize = { $gte: diameterSize };
+    }
+
+    if (toiletSize) {
+      // apply filter for toilet size greater than or equal to toilet size defined
+      filterQuery.toiletSize = { $gte: toiletSize };
+    }
+
+    if (prayerMinCapacity && !prayerMaxCapacity) {
+      // apply filter for prayer min capacity greater than or equal to prayer min capacity defined
+      filterQuery.prayerSize = { $gte: prayerMinCapacity };
+    }
+
+    if (prayerMaxCapacity && !prayerMinCapacity) {
+      // apply filter for prayer max capacity less than or equal to prayer max capacity defined
+      filterQuery.prayerSize = { $lte: prayerMaxCapacity };
+    }
+
+    if (prayerMinCapacity && prayerMaxCapacity) {
+      // apply filter for prayer between min and max capacity defined
+      filterQuery.prayerSize = {
+        $gte: prayerMinCapacity,
+        $lte: prayerMaxCapacity,
+      };
+    }
+
+    if (hasAc) {
+      filterQuery.hasAc = hasAc;
+    }
+
+    if (hasClassroom) {
+      filterQuery.hasClassroom = hasClassroom;
+    }
+
+    if (hasGreenSpace) {
+      filterQuery.hasGreenSpace = hasGreenSpace;
+    }
+
+    if (hasFemaleSection) {
+      filterQuery.hasFemaleSection = hasFemaleSection;
+    }
+
+    return filterQuery;
+  }
+
+  async getProjectList(filterRequest: ProjectFilterRequest) {
+    const filterQuery = await this.applyFilter(filterRequest);
+    const projectList = await this.projectModel.find({ filterQuery });
+    return projectList;
   }
 
   async getListAll() {
