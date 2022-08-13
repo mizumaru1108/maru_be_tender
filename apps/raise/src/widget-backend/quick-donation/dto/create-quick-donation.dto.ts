@@ -40,7 +40,7 @@ export const CreateQuickDonationDto = z.object({
     donationType: z.enum(["Just", "Gift"]),
     giftDetail: GiftDetails,
     paymentDetail: PaymentDetails,
-    donationDate: z.date()
+    donationDate: z.date().safeParse(new Date())
 })
 
 export type CreateQuickDonationDto = z.infer<typeof CreateQuickDonationDto>;
