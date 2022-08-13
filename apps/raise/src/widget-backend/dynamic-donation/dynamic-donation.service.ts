@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateDynamicDonationDto } from './dto/create-dynamic-donation.dto';
+import { UpdateDynamicDonationDto } from './dto/update-dynamic-donation.dto';
 
 @Injectable()
 export class DynamicDonationService {
@@ -15,7 +16,7 @@ export class DynamicDonationService {
     return `This action returns a #${id} dynamicDonation`;
   }
 
-  update(id: number, updateDynamicDonationDto: CreateDynamicDonationDto) {
+  update(id: number, updateDynamicDonationDto: UpdateDynamicDonationDto) {
     return `This action updates a #${id} dynamicDonation`;
   }
 

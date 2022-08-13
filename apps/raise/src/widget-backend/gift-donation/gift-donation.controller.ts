@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { GiftDonationService } from './gift-donation.service';
 import { CreateGiftDonationDto } from './dto/create-gift-donation.dto';
+import { UpdateGiftDonationDto } from './dto/update-gift-donation.dto';
 
 @Controller('gift-donation')
 export class GiftDonationController {
@@ -22,7 +23,7 @@ export class GiftDonationController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateGiftDonationDto: CreateGiftDonationDto) {
+  update(@Param('id') id: string, @Body() updateGiftDonationDto: UpdateGiftDonationDto) {
     return this.giftDonationService.update(+id, updateGiftDonationDto);
   }
 
