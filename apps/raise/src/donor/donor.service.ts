@@ -334,7 +334,7 @@ export class DonorService {
 
     const totalDonation = await this.donationLogsModel.aggregate([
       {
-        $match: { donationStatus: 'success', donorUserId, currencyCode: currency },
+        $match: { donationStatus: 'SUCCESS', donorUserId, currencyCode: currency },
       },
       {
         $group: {
@@ -358,7 +358,7 @@ export class DonorService {
 
     const totalFundDonation = await this.donationLogsModel.aggregate([
       {
-        $match: { donationStatus: 'success', currencyCode: currency },
+        $match: { donationStatus: 'SUCCESS', currencyCode: currency },
       },
       {
         $group: {
