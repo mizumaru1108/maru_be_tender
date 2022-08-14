@@ -10,6 +10,7 @@ import {
 } from './project.schema';
 import { Operator, OperatorSchema } from '../operator/schema/operator.schema';
 import { ConfigModule } from '@nestjs/config';
+import { UsersModule } from '../user/user.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ConfigModule } from '@nestjs/config';
         schema: ProjectOperatorLogSchema,
       },
     ]),
+    UsersModule,
     ConfigModule,
   ],
   providers: [ProjectService],

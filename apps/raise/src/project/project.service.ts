@@ -362,7 +362,8 @@ export class ProjectService {
   ): Promise<FilterQuery<ProjectDocument>> {
     const filterQuery: FilterQuery<ProjectDocument> = {};
     const {
-      diameterSize,
+      minDiameterSize,
+      maxDiameterSize,
       toiletSize,
       prayerMinCapacity,
       prayerMaxCapacity,
@@ -372,9 +373,14 @@ export class ProjectService {
       hasFemaleSection,
     } = filter;
 
-    if (diameterSize) {
+    if (maxDiameterSize) {
+      // apply filter for diameter size less than or equal to diameter size defined
+      filterQuery.diameterSize = { $lte: maxDiameterSize };
+    }
+
+    if (minDiameterSize) {
       // apply filter for diameter size greater than or equal to diameter size defined
-      filterQuery.diameterSize = { $gte: diameterSize };
+      filterQuery.diameterSize = { $gte: minDiameterSize };
     }
 
     if (toiletSize) {
@@ -382,22 +388,14 @@ export class ProjectService {
       filterQuery.toiletSize = { $gte: toiletSize };
     }
 
-    if (prayerMinCapacity && !prayerMaxCapacity) {
+    if (prayerMinCapacity) {
       // apply filter for prayer min capacity greater than or equal to prayer min capacity defined
       filterQuery.prayerSize = { $gte: prayerMinCapacity };
     }
 
-    if (prayerMaxCapacity && !prayerMinCapacity) {
+    if (prayerMaxCapacity) {
       // apply filter for prayer max capacity less than or equal to prayer max capacity defined
       filterQuery.prayerSize = { $lte: prayerMaxCapacity };
-    }
-
-    if (prayerMinCapacity && prayerMaxCapacity) {
-      // apply filter for prayer between min and max capacity defined
-      filterQuery.prayerSize = {
-        $gte: prayerMinCapacity,
-        $lte: prayerMaxCapacity,
-      };
     }
 
     if (hasAc) {
@@ -421,7 +419,15 @@ export class ProjectService {
 
   async getProjectList(filterRequest: ProjectFilterRequest) {
     const filterQuery = await this.applyFilter(filterRequest);
-    const projectList = await this.projectModel.find({ filterQuery });
+    console.log(filterQuery);
+    // find all projects that match the filter query
+    // await this.botModel.aggregate<BotGroupTableName>([
+    //   {
+    //     $match: {
+    //       ...filterQuery,
+    //     },
+    //   },
+    const projectList = await this.projectModel.find(filterQuery);
     return projectList;
   }
 

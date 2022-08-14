@@ -6,7 +6,12 @@ export class ProjectFilterRequest {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  diameterSize?: string;
+  maxDiameterSize?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  minDiameterSize?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
