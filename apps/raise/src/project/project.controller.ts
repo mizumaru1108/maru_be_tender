@@ -7,6 +7,7 @@ import {
   Patch,
   UseGuards,
   Query,
+  Req,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { rootLogger } from '../logger';
@@ -16,11 +17,11 @@ import { ProjectSetDeletedFlagDto } from './dto/project-set-flag-deleted';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { RoleEnum } from '../user/enums/role-enum';
-import { Roles } from '../auth/roles.decorator';
 import { CurrentUser } from '../commons/decorators/current-user.decorator';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
-import { RolesGuard } from '../auth/roles.guard';
 import { ProjectFilterRequest } from './dto/project-filter.request';
+import { ClusterRoles } from '../auth/cluster-roles.decorator';
+import { ClusterRolesGuard } from '../auth/cluster-roles.guard';
 
 @ApiTags('project')
 @Controller('project')
@@ -29,8 +30,8 @@ export class ProjectController {
   constructor(private projectService: ProjectService) {}
 
   @ApiOperation({ summary: 'Get All Projects viewed by manager' })
-  @Roles(RoleEnum.SUPERADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ClusterRoles(RoleEnum.SUPERADMIN)
+  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
   @Get('manager/getListAll')
   async getAllProjects() {
     this.logger.debug(`Get all projects`);
@@ -38,10 +39,14 @@ export class ProjectController {
   }
 
   @ApiOperation({ summary: 'Get All Projects viewed by manager' })
-  @Roles(RoleEnum.SUPERADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ClusterRoles(RoleEnum.SUPERADMIN)
+  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
   @Get('manager/getProjectList')
-  async getProjectList(@Query() projectFilter: ProjectFilterRequest) {
+  async getProjectList(
+    @Req() request: any,
+    @Query() projectFilter: ProjectFilterRequest,
+  ) {
+    console.log(request);
     this.logger.debug(`Get all projects`);
     return await this.projectService.getProjectList(projectFilter);
   }
@@ -58,8 +63,8 @@ export class ProjectController {
     status: 201,
     description: 'The Project has been successfully created.',
   })
-  @Roles(RoleEnum.OPERATOR)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ClusterRoles(RoleEnum.OPERATOR)
+  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
   @Post('create')
   async create(
     @CurrentUser() currentUser: ICurrentUser,
@@ -79,8 +84,8 @@ export class ProjectController {
   }
 
   @ApiOperation({ summary: 'update project' })
-  @Roles(RoleEnum.SUPERADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ClusterRoles(RoleEnum.SUPERADMIN)
+  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
   @Patch('update/:projectId')
   async updateProject(
     @Param('projectId') projectId: string,
