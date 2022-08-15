@@ -23,7 +23,7 @@ import { ClusterRoles } from '../auth/cluster-roles.decorator';
 export class DonorController {
   private logger = rootLogger.child({ logger: DonorController.name });
 
-  constructor(private donorService: DonorService) {}
+  constructor(private donorService: DonorService) { }
 
   @ApiOperation({ summary: 'Create Donor Payment' })
   @ApiResponse({
@@ -93,4 +93,15 @@ export class DonorController {
     this.logger.debug(JSON.stringify(donorUpdateProfileDto));
     return await this.donorService.updateDonor(donorId, donorUpdateProfileDto);
   }
+
+  @ApiOperation({ summary: 'Get Donation Donor Summary Dashboard' })
+  @Get('totalDonationDonor/:donorId')
+  async getTotalDonationDonor(
+    @Param('donorId') donorId: string,
+    @Query('currencyCode') currency: string,
+  ) {
+    this.logger.debug('get TotalDonationDonor');
+    return await this.donorService.getTotalDonationDonor(donorId, currency);
+  }
+
 }

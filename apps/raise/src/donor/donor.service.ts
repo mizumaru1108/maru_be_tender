@@ -334,7 +334,7 @@ export class DonorService {
 
     const totalDonation = await this.donationLogsModel.aggregate([
       {
-        $match: { donationStatus: 'success', donorUserId, currencyCode: currency },
+        $match: { donationStatus: 'SUCCESS', donorUserId, currencyCode: currency },
       },
       {
         $group: {
@@ -358,7 +358,7 @@ export class DonorService {
 
     const totalFundDonation = await this.donationLogsModel.aggregate([
       {
-        $match: { donationStatus: 'success', currencyCode: currency },
+        $match: { donationStatus: 'SUCCESS', currencyCode: currency },
       },
       {
         $group: {
@@ -383,5 +383,260 @@ export class DonorService {
     ]);
 
     return { totalDonation, totalFundDonation, programFund: campaignLogs };
+  }
+
+  async getTotalDonationDonor(donorId: string, currency: string) {
+    this.logger.debug(`getTotalDonorSummary donorId=${donorId}`);
+    const getDonor = await this.donorModel.findOne({
+      _id: donorId,
+    });
+    if (!getDonor) {
+      const txtMessage = `request rejected donorId not found`;
+      return {
+        statusCode: 514,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({
+          message: txtMessage,
+        }),
+      };
+    }
+
+    const getDateQuery = (filterBy: string) => {
+      const date = new Date();
+      const tomorrow = new Date(date.getDate() + 1);
+
+      switch (filterBy) {
+        case 'year':
+          return {
+            $exists: true,
+            $lt: date,
+          };
+        case 'month':
+          return {
+            $exists: true,
+            $gte: tomorrow,
+          };
+        default:
+          const sevenDaysAgo: Date = new Date(
+            Date.now() - 7 * 24 * 60 * 60 * 1000,
+          );
+          return {
+            $gte: sevenDaysAgo,
+          };
+      }
+    };
+    const totalProgram = await this.campaignModel
+      .where({
+        organizationId: new Types.ObjectId(donorId),
+        createdAt: getDateQuery('week'),
+      })
+      .count();
+
+    const totalDonor = await this.donorModel
+      .where({
+        donorId: new Types.ObjectId(donorId),
+        createdAt: getDateQuery('week'),
+      })
+      .count();
+
+    const donationList = await this.donationLogModel.aggregate([
+      {
+        $match: {
+          donorId: new Types.ObjectId(donorId),
+          donationStatus: 'SUCCESS',
+          createdAt: getDateQuery('week'),
+        },
+      },
+      {
+        $group: {
+          _id: { donorId: '$donorId' },
+          total: { $sum: '$amount' },
+        },
+      },
+    ]);
+
+    const totalDonation = donationList.length == 0 ? 0 : donationList[0].total;
+
+    const returningDonorAgg = await this.donationLogModel.aggregate([
+      {
+        $match: {
+          donorId: new Types.ObjectId(donorId),
+          donationStatus: 'SUCCESS',
+          donorUserId: { $ne: null },
+          createdAt: getDateQuery('week'),
+        },
+      },
+      {
+        $lookup: {
+          from: 'donor',
+          localField: 'donorUserId',
+          foreignField: 'ownerUserId',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+        },
+      },
+      {
+        $group: {
+          _id: '$donorUserId',
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $match: {
+          count: { $gt: 1 },
+        },
+      },
+    ]);
+    // console.log(totalReturningDonor);
+
+    const mostPopularProgramsDiagram = await this.donationLogModel.aggregate([
+      {
+        $match: {
+          donorId: new Types.ObjectId(donorId),
+          donationStatus: 'SUCCESS',
+          donorUserId: { $ne: null },
+          createdAt: getDateQuery('week'),
+        },
+      },
+      {
+        $lookup: {
+          from: 'campaign',
+          localField: 'campaignId',
+          foreignField: '_id',
+          as: 'campaign',
+        },
+      },
+      {
+        $unwind: {
+          path: '$campaign',
+        },
+      },
+      {
+        $addFields: {
+          name: {
+            $cond: {
+              if: { $eq: [{ $ifNull: ['$campaign.title', 0] }, 0] },
+              then: '$campaign.campaignName',
+              else: '$campaign.title',
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$campaign._id',
+          campaignName: { $first: '$name' },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+    console.log(mostPopularProgramsDiagram);
+
+    const totalDonationPerProgram = await this.donationLogModel.aggregate([
+      {
+        $match: {
+          donorId: new Types.ObjectId(donorId),
+          donationStatus: 'SUCCESS',
+          donorUserId: { $ne: null },
+          createdAt: getDateQuery('week'),
+        },
+      },
+      {
+        $lookup: {
+          from: 'campaign',
+          localField: 'campaignId',
+          foreignField: '_id',
+          as: 'campaign',
+        },
+      },
+      {
+        $unwind: {
+          path: '$campaign',
+        },
+      },
+      {
+        $addFields: {
+          name: {
+            $cond: {
+              if: { $eq: [{ $ifNull: ['$campaign.title', 0] }, 0] },
+              then: '$campaign.campaignName',
+              else: '$campaign.title',
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$campaign._id',
+          campaignName: { $first: '$name' },
+          total_donation: { $sum: '$amount' },
+        },
+      },
+    ]);
+
+    const campaignPerType = await this.campaignModel
+      .where({
+        donorId: new Types.ObjectId(donorId),
+        createdAt: getDateQuery('week'),
+      })
+      .select({
+        _id: 1,
+        title: 1,
+        campaignType: 1,
+        amountProgress: 1,
+        amountTarget: 1,
+      });
+    const donorList = await this.donationLogModel.aggregate([
+      {
+        $match: {
+          donorId: new Types.ObjectId(donorId),
+          donationStatus: 'SUCCESS',
+          donorUserId: { $ne: null },
+          createdAt: getDateQuery('week'),
+        },
+      },
+      {
+        $lookup: {
+          from: 'donor',
+          localField: 'donorUserId',
+          foreignField: 'ownerUserId',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+        },
+      },
+      {
+        $group: {
+          _id: '$donorUserId',
+          donorId: { $first: '$user._id' },
+          firstName: { $first: '$user.firstName' },
+          lastName: { $first: '$user.lastName' },
+          email: { $first: '$user.email' },
+          country: { $first: '$user.country' },
+          mobile: { $first: '$user.mobile' },
+          totalAmount: { $sum: '$amount' },
+        },
+      },
+    ]);
+
+    return {
+      total_donation: totalDonation,
+      total_program: totalProgram,
+      total_donor: totalDonor,
+      total_returning_donor: returningDonorAgg.length,
+      most_popular_programs: mostPopularProgramsDiagram,
+      total_donation_program: totalDonationPerProgram,
+      campaign_per_type: campaignPerType.slice(0, 5),
+      donor_list: donorList,
+    };
   }
 }

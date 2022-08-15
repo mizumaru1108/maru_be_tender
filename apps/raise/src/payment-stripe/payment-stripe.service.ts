@@ -61,7 +61,7 @@ export class PaymentStripeService {
     @InjectModel(User.name)
     private readonly userModel: mongoose.Model<UserDocument>,
     private readonly emailService: EmailService,
-  ) {}
+  ) { }
 
   async stripeRequest(payment: PaymentRequestDto) {
     const tracer = trace.getTracer('tmra-raise');
@@ -486,7 +486,7 @@ export class PaymentStripeService {
       }
 
       console.log('paymentIntentInfo=', data['data']['payment_intent']);
-      const paymentIntent = data['data']['payment_intent'];
+      //const paymentIntent = data['data']['payment_intent'];
       const orderId = data['data']['payment_intent'];
       //get donation log id
       const paymentData = await this.paymentDataModel.findOne({
@@ -560,6 +560,19 @@ export class PaymentStripeService {
         };
       }
 
+      // Get Donor Data
+      const donor = await this.userModel.findOne(
+        { _id: donationId, }, { _id: 0, firstName: 1, lastName: 2, email: 3 });
+
+      // Get Anonymous Data
+      let anonymousData;
+      if (!donor) {
+        anonymousData = await this.anonymousModel.findOne(
+          { _id: donationId },
+          { _id: 0, isEmailChecklist: 1, anonymous: 2, email: 3, firstName: 4, lastName: 5 },
+        );
+      }
+
       if (paymentStatus == 'SUCCESS') {
         //update  amountProgress with current donation amount
         const amountStr = data.data['amount_total'].toString();
@@ -574,10 +587,12 @@ export class PaymentStripeService {
 
         if (getOrganization && notifSettings) {
           this.logger.debug(`notification settings ${notifSettings.id}`);
+          const subject = `New Donation For ${getCampaign.title}`;
+          const donorName = donor ? `${donor.firstname} ${donor.lastname}` : anonymousData ? anonymousData.anonymous ? 'anonymous' : `${anonymousData.firstName} ${anonymousData.lastName}` : 'anonymous';
           if (notifSettings.newDonation) {
-            const subject = `New Donation For ${getCampaign.title}`;
             const emailData = {
-              donor: 'Donor',
+              // donor: 'Donor',
+              donor: donorName,
               title: getCampaign.title,
               currency: getDonationLog.currency,
               amount: getDonationLog.amount,
@@ -588,6 +603,30 @@ export class PaymentStripeService {
               'org/new_donation',
               emailData,
             );
+            const emailDonor = {
+              donor: donorName,
+              title: getCampaign.title,
+              currency: getDonationLog.currency,
+              amount: getDonationLog.amount,
+            };
+            if (donor) {
+              this.emailService.sendMail(
+                donor.email,
+                subject,
+                'org/new_donation',
+                emailDonor
+              )
+            }
+            if (anonymousData) {
+              if (anonymousData.isEmailChecklist || !anonymousData.anonymous) {
+                this.emailService.sendMail(
+                  anonymousData.email,
+                  subject,
+                  'org/new_donation',
+                  emailDonor
+                )
+              }
+            }
           }
         } else {
           this.logger.debug(`notification settings not found`);
