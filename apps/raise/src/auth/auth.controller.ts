@@ -12,14 +12,6 @@ export class AuthController {
     return await this.authService.loginUser(loginRequest);
   }
 
-  // @Post('login')
-  // async login(
-  //   @Body('email') email: string,
-  //   @Body('password') password: string,
-  // ) {
-  //   return await this.authService.loginUser(email, password);
-  // }
-
   @Post('register')
   async register(
     @Body('name') name: string,

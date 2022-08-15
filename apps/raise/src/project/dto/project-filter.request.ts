@@ -38,7 +38,7 @@ export class ProjectFilterRequest {
   @IsEnum(BooleanString)
   hasClassroom?: BooleanString;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ enum: BooleanString })
   @IsOptional()
   @IsEnum(BooleanString)
   hasGreenSpace?: BooleanString;
@@ -47,4 +47,19 @@ export class ProjectFilterRequest {
   @IsOptional()
   @IsEnum(BooleanString)
   hasFemaleSection?: BooleanString;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsEnum(BooleanString)
+  hasParking?: BooleanString;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsEnum(BooleanString)
+  isDeleted?: BooleanString;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsEnum(BooleanString)
+  isPublished?: BooleanString;
 }

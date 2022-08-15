@@ -23,6 +23,11 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 import { z } from 'zod';
 import { BunnyService } from '../bunny/services/bunny.service';
 import { ProjectFilterRequest } from './dto/project-filter.request';
+import { BooleanString } from '../commons/enums/boolean-string.enum';
+import {
+  isBooleanStringN,
+  isBooleanStringY,
+} from '../commons/utils/is-boolean-string';
 
 @Injectable()
 export class ProjectService {
@@ -371,47 +376,164 @@ export class ProjectService {
       hasClassroom,
       hasGreenSpace,
       hasFemaleSection,
+      hasParking,
+      isDeleted,
+      isPublished,
     } = filter;
 
+    // !TODO: waiting for fix solution(change the diamterSize prop to number type)
     if (maxDiameterSize) {
       // apply filter for diameter size less than or equal to diameter size defined
       filterQuery.diameterSize = { $lte: maxDiameterSize };
     }
 
+    // !TODO: waiting for fix solution(change the diamterSize prop to number type)
     if (minDiameterSize) {
       // apply filter for diameter size greater than or equal to diameter size defined
       filterQuery.diameterSize = { $gte: minDiameterSize };
+      // filterQuery.diameterSize = {
+      //   $match: {
+      //     $expr: { $gt: [{ $toInt: '$diameterSize' }, minDiameterSize] },
+      //   },
+      // };
     }
 
+    // !TODO: waiting for fix solution(change the diamterSize prop to number type)
     if (toiletSize) {
       // apply filter for toilet size greater than or equal to toilet size defined
       filterQuery.toiletSize = { $gte: toiletSize };
     }
 
+    // !TODO: waiting for fix solution(change the diamterSize prop to number type)
     if (prayerMinCapacity) {
       // apply filter for prayer min capacity greater than or equal to prayer min capacity defined
       filterQuery.prayerSize = { $gte: prayerMinCapacity };
     }
 
+    // !TODO: waiting for fix solution(change the diamterSize prop to number type)
     if (prayerMaxCapacity) {
       // apply filter for prayer max capacity less than or equal to prayer max capacity defined
       filterQuery.prayerSize = { $lte: prayerMaxCapacity };
     }
 
     if (hasAc) {
-      filterQuery.hasAc = hasAc;
+      const isY = await isBooleanStringY(hasAc);
+      if (isY) {
+        filterQuery.hasAc = { $regex: 'y', $options: 'i' };
+      } else {
+        const isN = await isBooleanStringN(hasAc);
+        if (!isN) {
+          throw new BadRequestException(
+            'hasAc value is not valid Boolean String!',
+          );
+        }
+        filterQuery.hasAc = { $regex: 'n', $options: 'i' };
+      }
     }
 
     if (hasClassroom) {
-      filterQuery.hasClassroom = hasClassroom;
+      const isY = await isBooleanStringY(hasClassroom);
+      if (isY) {
+        filterQuery.hasClassroom = { $regex: 'y', $options: 'i' };
+      } else {
+        const isN = await isBooleanStringN(hasClassroom);
+        if (!isN) {
+          throw new BadRequestException(
+            'hasClassroom value is not valid Boolean String!',
+          );
+        }
+        filterQuery.hasClassroom = { $regex: 'n', $options: 'i' };
+      }
+    }
+
+    if (hasClassroom) {
+      const isY = await isBooleanStringY(hasClassroom);
+      if (isY) {
+        filterQuery.hasClassroom = { $regex: 'y', $options: 'i' };
+      } else {
+        const isN = await isBooleanStringN(hasClassroom);
+        if (!isN) {
+          throw new BadRequestException(
+            'hasClassroom value is not valid Boolean String!',
+          );
+        }
+        filterQuery.hasClassroom = { $regex: 'n', $options: 'i' };
+      }
     }
 
     if (hasGreenSpace) {
-      filterQuery.hasGreenSpace = hasGreenSpace;
+      const isY = await isBooleanStringY(hasGreenSpace);
+      if (isY) {
+        filterQuery.hasGreenSpace = { $regex: 'y', $options: 'i' };
+      } else {
+        const isN = await isBooleanStringN(hasGreenSpace);
+        if (!isN) {
+          throw new BadRequestException(
+            'hasGreenSpace value is not valid Boolean String!',
+          );
+        }
+        filterQuery.hasGreenSpace = { $regex: 'n', $options: 'i' };
+      }
     }
 
     if (hasFemaleSection) {
-      filterQuery.hasFemaleSection = hasFemaleSection;
+      const isY = await isBooleanStringY(hasFemaleSection);
+      if (isY) {
+        filterQuery.hasFemaleSection = { $regex: 'y', $options: 'i' };
+      } else {
+        const isN = await isBooleanStringN(hasFemaleSection);
+        if (!isN) {
+          throw new BadRequestException(
+            'hasFemaleSection value must be valid Boolean String!',
+          );
+        }
+        filterQuery.hasFemaleSection = { $regex: 'n', $options: 'i' };
+      }
+    }
+
+    if (hasParking) {
+      const isY = await isBooleanStringY(hasParking);
+      if (isY) {
+        filterQuery.hasParking = { $regex: 'y', $options: 'i' };
+      } else {
+        const isN = await isBooleanStringN(hasParking);
+        if (!isN) {
+          throw new BadRequestException(
+            'hasParking value must be valid Boolean String!',
+          );
+        }
+        filterQuery.hasParking = { $regex: 'n', $options: 'i' };
+      }
+    }
+
+    if (isPublished) {
+      const isY = await isBooleanStringY(isPublished);
+      if (isY) {
+        filterQuery.isPublished = { $regex: 'y', $options: 'i' };
+      } else {
+        const isN = await isBooleanStringN(isPublished);
+        if (!isN) {
+          throw new BadRequestException(
+            'isPublished value must be valid Boolean String!',
+          );
+        }
+        filterQuery.isPublished = { $regex: 'n', $options: 'i' };
+      }
+    }
+
+    if (isDeleted) {
+      const isY = await isBooleanStringY(isDeleted);
+      if (isY) {
+        filterQuery.isDeleted = { $regex: 'y', $options: 'i' };
+      } else {
+        const isN = await isBooleanStringN(isDeleted);
+        if (!isN) {
+          throw new BadRequestException(
+            'isDeleted value must be valid Boolean String!',
+          );
+        }
+        filterQuery.isDeleted = { $regex: 'n', $options: 'i' };
+      }
     }
 
     return filterQuery;
@@ -419,15 +541,94 @@ export class ProjectService {
 
   async getProjectList(filterRequest: ProjectFilterRequest) {
     const filterQuery = await this.applyFilter(filterRequest);
-    console.log(filterQuery);
-    // find all projects that match the filter query
-    // await this.botModel.aggregate<BotGroupTableName>([
-    //   {
-    //     $match: {
-    //       ...filterQuery,
-    //     },
-    //   },
-    const projectList = await this.projectModel.find(filterQuery);
+    const projectList = await this.projectModel.aggregate([
+      {
+        $match: filterQuery,
+      },
+      {
+        $lookup: {
+          from: 'campaign',
+          localField: '_id',
+          foreignField: 'projectId',
+          as: 'campaignDatas',
+        },
+      },
+      {
+        $unwind: { path: '$campaignDatas', preserveNullAndEmptyArrays: true },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          organizationId: { $first: '$organizationId' },
+          projectName: { $first: '$name' },
+          address: { $first: '$address' },
+          description: { $first: '$description' },
+          location: { $first: '$location' },
+          prayerSize: { $first: '$prayerSize' },
+          diameterSize: { $first: '$diameterSize' },
+          toiletSize: { $first: '$toiletSize' },
+          hasAc: { $first: '$hasAc' },
+          hasClassroom: { $first: '$hasClassroom' },
+          hasGreenSpace: { $first: '$hasGreenSpace' },
+          hasParking: { $first: '$hasParking' },
+          hasFemaleSection: { $first: '$hasFemaleSection' },
+          updatedAt: { $first: '$updatedAt' },
+          createdAt: { $first: '$createdAt' },
+          ipAddress: { $first: '$ipAddress' },
+          coverImage: { $first: '$coverImage' },
+          image1: { $first: '$image1' },
+          image2: { $first: '$image2' },
+          image3: { $first: '$image3' },
+          projectAvatar: { $first: '$projectAvatar' },
+          isDeleted: { $first: '$isDeleted' },
+          isPublished: { $first: '$isPublished' },
+          nearByPlaces: { $first: '$nearByPlaces' },
+          campaignCount: { $sum: 1 },
+        },
+      },
+      {
+        $lookup: {
+          from: 'item',
+          localField: '_id',
+          foreignField: 'projectId',
+          as: 'itemDatas',
+        },
+      },
+      {
+        $unwind: { path: '$itemDatas', preserveNullAndEmptyArrays: true },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          organizationId: { $first: '$organizationId' },
+          projectName: { $first: '$projectName' },
+          address: { $first: '$address' },
+          description: { $first: '$description' },
+          location: { $first: '$location' },
+          prayerSize: { $first: '$prayerSize' },
+          diameterSize: { $first: '$diameterSize' },
+          toiletSize: { $first: '$toiletSize' },
+          hasAc: { $first: '$hasAc' },
+          hasClassroom: { $first: '$hasClassroom' },
+          hasGreenSpace: { $first: '$hasGreenSpace' },
+          hasParking: { $first: '$hasParking' },
+          hasFemaleSection: { $first: '$hasFemaleSection' },
+          updatedAt: { $first: '$updatedAt' },
+          createdAt: { $first: '$createdAt' },
+          ipAddress: { $first: '$ipAddress' },
+          coverImage: { $first: '$coverImage' },
+          image1: { $first: '$image1' },
+          image2: { $first: '$image2' },
+          image3: { $first: '$image3' },
+          projectAvatar: { $first: '$projectAvatar' },
+          isDeleted: { $first: '$isDeleted' },
+          isPublished: { $first: '$isPublished' },
+          nearByPlaces: { $first: '$nearByPlaces' },
+          campaignCount: { $first: '$campaignCount' },
+          itemCount: { $sum: 1 },
+        },
+      },
+    ]);
     return projectList;
   }
 

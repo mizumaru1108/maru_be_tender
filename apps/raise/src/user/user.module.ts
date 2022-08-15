@@ -6,10 +6,8 @@ import { UserSchema } from './schema/user.schema';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 
-import { AuthzedModule } from 'src/authzed/authzed.module';
 @Module({
   imports: [
-    AuthzedModule,
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     ConfigModule,
   ],
