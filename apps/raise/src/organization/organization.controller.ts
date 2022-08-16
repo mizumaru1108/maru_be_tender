@@ -18,10 +18,17 @@ import { NotificationSettingsDto } from './dto/notification_settings.dto';
 import { FaqDto } from './dto/faq.dto';
 import { PaymentGateWayDto } from 'src/payment-stripe/dto/paymentGateway.dto';
 import { NotificationDto } from './dto/notification.dto';
-import { NonProfitAppearancePageDto, EditNonProfitAppearancePageDto } from './dto/nonprofit_appearance_page.dto';
 import {
-  NonProfitAppearanceNavigationAboutUsDto, NonProfitAppearanceNavigationBlogDto, NonProfitAppearanceNavigationDto
-  , EditNonProfitAppearanceNavigationAboutUsDto, EditNonProfitAppearanceNavigationBlogDto, EditNonProfitAppearanceNavigationDto
+  NonProfitAppearancePageDto,
+  EditNonProfitAppearancePageDto,
+} from './dto/nonprofit_appearance_page.dto';
+import {
+  NonProfitAppearanceNavigationAboutUsDto,
+  NonProfitAppearanceNavigationBlogDto,
+  NonProfitAppearanceNavigationDto,
+  EditNonProfitAppearanceNavigationAboutUsDto,
+  EditNonProfitAppearanceNavigationBlogDto,
+  EditNonProfitAppearanceNavigationDto,
 } from './dto/nonprofit_appearance_navigation.dto';
 import { query } from 'express';
 
@@ -30,7 +37,7 @@ import { query } from 'express';
 export class OrganizationController {
   private logger = rootLogger.child({ logger: OrganizationController.name });
 
-  constructor(private organizationService: OrganizationService) { }
+  constructor(private organizationService: OrganizationService) {}
 
   @Get('getListAll')
   async findAll() {
@@ -112,9 +119,15 @@ export class OrganizationController {
   }
 
   @Get('insight')
-  async getInsightSummary(@Query('organizationId') organizationId: string) {
+  async getInsightSummary(
+    @Query('organizationId') organizationId: string,
+    @Query('period') period: string,
+  ) {
     this.logger.debug('get insight summary...');
-    return await this.organizationService.getInsightSummary(organizationId);
+    return await this.organizationService.getInsightSummary(
+      organizationId,
+      period,
+    );
   }
 
   @Get('notification-settings/:organizationId')
@@ -190,48 +203,110 @@ export class OrganizationController {
   }
 
   @Post(':organizationId/landingPage')
-  async createLandingPage(@Param('organizationId') organizationId: string, @Body() nonProfitAppearanceNavigationDto: NonProfitAppearanceNavigationDto) {
-    return await this.organizationService.createLandingPage(organizationId, nonProfitAppearanceNavigationDto);
+  async createLandingPage(
+    @Param('organizationId') organizationId: string,
+    @Body() nonProfitAppearanceNavigationDto: NonProfitAppearanceNavigationDto,
+  ) {
+    return await this.organizationService.createLandingPage(
+      organizationId,
+      nonProfitAppearanceNavigationDto,
+    );
   }
   @Post(':organizationId/aboutUs')
-  async createAboutUs(@Param('organizationId') organizationId: string, @Body() nonProfitAppearanceNavigationAboutUsDto: NonProfitAppearanceNavigationAboutUsDto) {
-    return this.organizationService.createAboutUs(organizationId, nonProfitAppearanceNavigationAboutUsDto);
+  async createAboutUs(
+    @Param('organizationId') organizationId: string,
+    @Body()
+    nonProfitAppearanceNavigationAboutUsDto: NonProfitAppearanceNavigationAboutUsDto,
+  ) {
+    return this.organizationService.createAboutUs(
+      organizationId,
+      nonProfitAppearanceNavigationAboutUsDto,
+    );
   }
   @Post(':organizationId/blog')
-  async createBlog(@Param('organizationId') organizationId: string, @Body() nonProfitAppearanceNavigationBlogDto: NonProfitAppearanceNavigationBlogDto) {
-    return this.organizationService.createBlog(organizationId, nonProfitAppearanceNavigationBlogDto);
+  async createBlog(
+    @Param('organizationId') organizationId: string,
+    @Body()
+    nonProfitAppearanceNavigationBlogDto: NonProfitAppearanceNavigationBlogDto,
+  ) {
+    return this.organizationService.createBlog(
+      organizationId,
+      nonProfitAppearanceNavigationBlogDto,
+    );
   }
   @Post(':organizationId/contactUs')
-  async createContactUs(@Param('organizationId') organizationId: string, @Body() nonProfitAppearancePageDto: NonProfitAppearancePageDto) {
-    return this.organizationService.createContactUs(organizationId, nonProfitAppearancePageDto);
+  async createContactUs(
+    @Param('organizationId') organizationId: string,
+    @Body() nonProfitAppearancePageDto: NonProfitAppearancePageDto,
+  ) {
+    return this.organizationService.createContactUs(
+      organizationId,
+      nonProfitAppearancePageDto,
+    );
   }
 
   @Put(':organizationId/landingPage')
-  async editLandingPage(@Param('organizationId') organizationId: string, @Body() editNonProfitAppearanceNavigationDto: EditNonProfitAppearanceNavigationDto) {
-    return await this.organizationService.editLandingPage(organizationId, editNonProfitAppearanceNavigationDto);
+  async editLandingPage(
+    @Param('organizationId') organizationId: string,
+    @Body()
+    editNonProfitAppearanceNavigationDto: EditNonProfitAppearanceNavigationDto,
+  ) {
+    return await this.organizationService.editLandingPage(
+      organizationId,
+      editNonProfitAppearanceNavigationDto,
+    );
   }
   @Put(':organizationId/aboutUs')
-  async editAboutUs(@Param('organizationId') organizationId: string, @Body() editNonProfitAppearanceNavigationAboutUsDto: EditNonProfitAppearanceNavigationAboutUsDto) {
-    return this.organizationService.editAboutUs(organizationId, editNonProfitAppearanceNavigationAboutUsDto);
+  async editAboutUs(
+    @Param('organizationId') organizationId: string,
+    @Body()
+    editNonProfitAppearanceNavigationAboutUsDto: EditNonProfitAppearanceNavigationAboutUsDto,
+  ) {
+    return this.organizationService.editAboutUs(
+      organizationId,
+      editNonProfitAppearanceNavigationAboutUsDto,
+    );
   }
   @Put(':organizationId/blog')
-  async editBlog(@Param('organizationId') organizationId: string, @Body() editNonProfitAppearanceNavigationBlogDto: EditNonProfitAppearanceNavigationBlogDto) {
-    return this.organizationService.editBlog(organizationId, editNonProfitAppearanceNavigationBlogDto);
+  async editBlog(
+    @Param('organizationId') organizationId: string,
+    @Body()
+    editNonProfitAppearanceNavigationBlogDto: EditNonProfitAppearanceNavigationBlogDto,
+  ) {
+    return this.organizationService.editBlog(
+      organizationId,
+      editNonProfitAppearanceNavigationBlogDto,
+    );
   }
   @Put(':organizationId/contactUs')
-  async editContactUs(@Param('organizationId') organizationId: string, @Body() editNonProfitAppearancePageDto: EditNonProfitAppearancePageDto) {
-    return this.organizationService.editContactUs(organizationId, editNonProfitAppearancePageDto);
+  async editContactUs(
+    @Param('organizationId') organizationId: string,
+    @Body() editNonProfitAppearancePageDto: EditNonProfitAppearancePageDto,
+  ) {
+    return this.organizationService.editContactUs(
+      organizationId,
+      editNonProfitAppearancePageDto,
+    );
   }
   @Get(':organizationId/landingPage')
-  async getLandingPage(@Param('organizationId') organizationId: string, @Query() page: string) {
+  async getLandingPage(
+    @Param('organizationId') organizationId: string,
+    @Query() page: string,
+  ) {
     return await this.organizationService.getLandingPage(organizationId);
   }
   @Get(':organizationId/aboutUs')
-  async getAboutUs(@Param('organizationId') organizationId: string, @Query() page: string) {
+  async getAboutUs(
+    @Param('organizationId') organizationId: string,
+    @Query() page: string,
+  ) {
     return this.organizationService.getAboutUs(organizationId);
   }
   @Get(':organizationId/blog')
-  async getBlog(@Param('organizationId') organizationId: string, @Query() page: string) {
+  async getBlog(
+    @Param('organizationId') organizationId: string,
+    @Query() page: string,
+  ) {
     return this.organizationService.getBlog(organizationId);
   }
   @Get(':organizationId/contactUs')

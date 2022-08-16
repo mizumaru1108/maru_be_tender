@@ -27,8 +27,15 @@ import {
 } from './schema/notifications.schema';
 import { Faq, FaqSchema } from './schema/faq.schema';
 
-import { AppearanceNavigation, AppearanceNavigationSchema } from './schema/nonprofit_appearance_navigation.schema';
-import { AppearancePage, AppearancePageSchema } from './schema/nonprofit_appearance_page.schema';
+import {
+  AppearanceNavigation,
+  AppearanceNavigationSchema,
+} from './schema/nonprofit_appearance_navigation.schema';
+import {
+  AppearancePage,
+  AppearancePageSchema,
+} from './schema/nonprofit_appearance_page.schema';
+import { EmailModule } from 'src/email/email.module';
 
 @Module({
   imports: [
@@ -79,8 +86,9 @@ import { AppearancePage, AppearancePageSchema } from './schema/nonprofit_appeara
       },
     ]),
     ConfigModule,
+    EmailModule,
   ],
   providers: [OrganizationService],
   controllers: [OrganizationController],
 })
-export class OrganizationModule { }
+export class OrganizationModule {}

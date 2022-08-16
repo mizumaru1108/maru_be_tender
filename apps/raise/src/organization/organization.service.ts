@@ -5,7 +5,6 @@ import { rootLogger } from '../logger';
 import { FusionAuthClient } from '@fusionauth/typescript-client';
 import { ConfigService } from '@nestjs/config';
 import { OrganizationDto } from './dto/organization.dto';
-import moment from 'moment';
 import {
   Organization,
   OrganizationDocument,
@@ -35,13 +34,27 @@ import { FaqDto } from './dto/faq.dto';
 import { Faq, FaqDocument } from './schema/faq.schema';
 import { PaymentGateWayDto } from 'src/payment-stripe/dto/paymentGateway.dto';
 import { NotificationDto } from './dto/notification.dto';
-import { AppearanceNavigation, AppearanceNavigationDocument } from './schema/nonprofit_appearance_navigation.schema';
-import { AppearancePage, AppearancePageDocument } from './schema/nonprofit_appearance_page.schema';
-import { NonProfitAppearancePageDto, EditNonProfitAppearancePageDto } from './dto/nonprofit_appearance_page.dto';
 import {
-  NonProfitAppearanceNavigationDto, NonProfitAppearanceNavigationAboutUsDto, NonProfitAppearanceNavigationBlogDto,
-  EditNonProfitAppearanceNavigationAboutUsDto, EditNonProfitAppearanceNavigationBlogDto, EditNonProfitAppearanceNavigationDto
+  AppearanceNavigation,
+  AppearanceNavigationDocument,
+} from './schema/nonprofit_appearance_navigation.schema';
+import {
+  AppearancePage,
+  AppearancePageDocument,
+} from './schema/nonprofit_appearance_page.schema';
+import {
+  NonProfitAppearancePageDto,
+  EditNonProfitAppearancePageDto,
+} from './dto/nonprofit_appearance_page.dto';
+import {
+  NonProfitAppearanceNavigationDto,
+  NonProfitAppearanceNavigationAboutUsDto,
+  NonProfitAppearanceNavigationBlogDto,
+  EditNonProfitAppearanceNavigationAboutUsDto,
+  EditNonProfitAppearanceNavigationBlogDto,
+  EditNonProfitAppearanceNavigationDto,
 } from './dto/nonprofit_appearance_navigation.dto';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class OrganizationService {
@@ -70,8 +83,9 @@ export class OrganizationService {
     @InjectModel(AppearanceNavigation.name)
     private appearanceNavigationModel: Model<AppearanceNavigationDocument>,
     @InjectModel(AppearancePage.name)
-    private appearancePageModel: Model<AppearancePageDocument>
-  ) { }
+    private appearancePageModel: Model<AppearancePageDocument>,
+    private readonly emailService: EmailService,
+  ) {}
 
   async findAll() {
     this.logger.debug('findAll...');
@@ -137,6 +151,14 @@ export class OrganizationService {
         message: 'Failed',
       };
     }
+
+    const emailData = { name: orgUpdated.name };
+    this.emailService.sendMail(
+      orgUpdated.contactEmail,
+      'Giving Sadaqah Updates',
+      'account_update',
+      emailData,
+    );
     return {
       statusCode: 200,
       organization: orgUpdated,
@@ -186,10 +208,18 @@ export class OrganizationService {
       };
     }
 
+    const appearance = await this.appearanceModel.find({
+      organizationId: organization._id,
+    });
+    if (appearance) {
+      return {
+        statusCode: 400,
+        message: 'Appearance is already exist.',
+      };
+    }
     appearanceDto.ownerUserId = organization.ownerUserId;
     appearanceDto.ownerRealmId = organization.ownerRealmId;
     const appearanceCreated = await this.appearanceModel.create(appearanceDto);
-    // const appearance = createdExpense.save();
     return {
       statusCode: 200,
       appearance: appearanceCreated,
@@ -419,11 +449,12 @@ export class OrganizationService {
     };
   }
 
-  async getInsightSummary(organizationId: string) {
+  async getInsightSummary(organizationId: string, period: string) {
     this.logger.debug(`getInsightSummary organizationId=${organizationId}`);
     const getOrganization = await this.organizationModel.findOne({
       _id: organizationId,
     });
+    if (!period) period = '7days';
     if (!getOrganization) {
       const txtMessage = `request rejected organizationId not found`;
       return {
@@ -438,32 +469,67 @@ export class OrganizationService {
     }
 
     const getDateQuery = (filterBy: string) => {
-      const date = new Date();
-      const tomorrow = new Date(date.getDate() + 1);
+      const today = new Date();
+      // const tomorrow = new Date(today.getDate() + 1);
 
       switch (filterBy) {
         case 'year':
+          const thisYear = new Date();
+          thisYear.setDate(1);
+          thisYear.setMonth(1);
           return {
             $exists: true,
-            $lt: date,
+            $gte: thisYear,
           };
-        case 'quarter':
+        case '12months':
+          const twelveMonthsAgo: Date = new Date(
+            Date.now() - 7 * 24 * 60 * 60 * 1000,
+          );
           return {
             $exists: true,
-            $gte: date,
-            $lt: tomorrow,
+            $gte: twelveMonthsAgo,
           };
-        case 'month':
+        case '90days':
+          const ninetyDaysAgo: Date = new Date(
+            Date.now() - 90 * 24 * 60 * 60 * 1000,
+          );
           return {
             $exists: true,
-            $gte: tomorrow,
+            $gte: ninetyDaysAgo,
+          };
+        case '30days':
+          const thirtyDaysAgo: Date = new Date(
+            Date.now() - 30 * 24 * 60 * 60 * 1000,
+          );
+          return {
+            $exists: true,
+            $gte: thirtyDaysAgo,
+          };
+        case '28days':
+          const twentyEightDaysAgo: Date = new Date(
+            Date.now() - 28 * 24 * 60 * 60 * 1000,
+          );
+          return {
+            $exists: true,
+            $gte: twentyEightDaysAgo,
+          };
+        case 'yesterday':
+          const yesterday: Date = new Date(
+            Date.now() - 1 * 24 * 60 * 60 * 1000,
+          );
+          return {
+            $exists: true,
+            $gte: yesterday,
+          };
+        case 'today':
+          return {
+            $exists: true,
+            $gte: today,
           };
         default:
           const sevenDaysAgo: Date = new Date(
             Date.now() - 7 * 24 * 60 * 60 * 1000,
           );
-          console.log(date.toISOString());
-          console.log(sevenDaysAgo.toISOString());
           return {
             $gte: sevenDaysAgo,
           };
@@ -472,14 +538,14 @@ export class OrganizationService {
     const totalProgram = await this.campaignModel
       .where({
         organizationId: new Types.ObjectId(organizationId),
-        createdAt: getDateQuery('week'),
+        createdAt: getDateQuery(period),
       })
       .count();
 
     const totalDonor = await this.donorModel
       .where({
         organizationId: new Types.ObjectId(organizationId),
-        createdAt: getDateQuery('week'),
+        createdAt: getDateQuery(period),
       })
       .count();
 
@@ -488,7 +554,7 @@ export class OrganizationService {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
           donationStatus: 'SUCCESS',
-          createdAt: getDateQuery('week'),
+          createdAt: getDateQuery(period),
         },
       },
       {
@@ -507,7 +573,7 @@ export class OrganizationService {
           nonprofitRealmId: new Types.ObjectId(organizationId),
           donationStatus: 'SUCCESS',
           donorUserId: { $ne: null },
-          createdAt: getDateQuery('week'),
+          createdAt: getDateQuery(period),
         },
       },
       {
@@ -543,7 +609,7 @@ export class OrganizationService {
           nonprofitRealmId: new Types.ObjectId(organizationId),
           donationStatus: 'SUCCESS',
           donorUserId: { $ne: null },
-          createdAt: getDateQuery('week'),
+          createdAt: getDateQuery(period),
         },
       },
       {
@@ -586,7 +652,7 @@ export class OrganizationService {
           nonprofitRealmId: new Types.ObjectId(organizationId),
           donationStatus: 'SUCCESS',
           donorUserId: { $ne: null },
-          createdAt: getDateQuery('week'),
+          createdAt: getDateQuery(period),
         },
       },
       {
@@ -613,11 +679,35 @@ export class OrganizationService {
           },
         },
       },
+      // {
+      //   $group: {
+      //     _id: '$campaign._id',
+      //     campaignName: { $first: '$name' },
+      //     total_donation: { $sum: '$amount' },
+      //   },
+      // },
+
       {
         $group: {
-          _id: '$campaign._id',
+          // _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+          _id: '$_id',
+          // created: {
+          //   $first: {
+          //     dateToString: { format: '%Y-%m-%d', date: '$createdAt' },
+          //   },
+          // },
+          createdAt: { $first: '$createdAt' },
           campaignName: { $first: '$name' },
           total_donation: { $sum: '$amount' },
+        },
+      },
+      {
+        $project: {
+          campaignName: 1,
+          total_donation: 1,
+          created: {
+            $dateToString: { format: '%Y-%m-%d', date: '$createdAt' },
+          },
         },
       },
     ]);
@@ -625,7 +715,7 @@ export class OrganizationService {
     const campaignPerType = await this.campaignModel
       .where({
         organizationId: new Types.ObjectId(organizationId),
-        createdAt: getDateQuery('week'),
+        createdAt: getDateQuery(period),
       })
       .select({
         _id: 1,
@@ -640,7 +730,7 @@ export class OrganizationService {
           nonprofitRealmId: new Types.ObjectId(organizationId),
           donationStatus: 'SUCCESS',
           donorUserId: { $ne: null },
-          createdAt: getDateQuery('week'),
+          createdAt: getDateQuery(period),
         },
       },
       {
@@ -670,13 +760,49 @@ export class OrganizationService {
       },
     ]);
 
+    const chartData: any = {};
+    for (let i = 0; i < totalDonationPerProgram.length; i++) {
+      const campaignData = totalDonationPerProgram[i];
+      const year = campaignData['created'].substring(0, 4);
+      if (!chartData[year]) {
+        chartData[year] = {
+          [campaignData['campaignName']]: [campaignData['total_donation']],
+        };
+      } else if (!chartData[year][campaignData['campaignName']]) {
+        chartData[year][campaignData['campaignName']] = [
+          campaignData['total_donation'],
+        ];
+      } else {
+        chartData[year][campaignData['campaignName']].push(
+          campaignData['total_donation'],
+        );
+      }
+    }
+
+    const periodList: object[] = [];
+    for (const dt in chartData) {
+      const dataList: object[] = [];
+      for (const dt2 in chartData[dt]) {
+        console.log(dt2);
+        console.log(chartData[dt][dt2]);
+        let dataEl: any = {};
+        dataEl[dt2] = chartData[dt][dt2];
+        dataList.push(dataEl);
+      }
+      periodList.push({
+        period: dt,
+        data: dataList,
+      });
+    }
+
+    console.log(periodList);
     return {
       total_donation: totalDonation,
       total_program: totalProgram,
       total_donor: totalDonor,
       total_returning_donor: returningDonorAgg.length,
       most_popular_programs: mostPopularProgramsDiagram,
-      total_donation_program: totalDonationPerProgram,
+      total_donation_program: periodList,
       campaign_per_type: campaignPerType.slice(0, 5),
       donor_list: donorList,
     };
@@ -691,6 +817,16 @@ export class OrganizationService {
       return {
         statusCode: 404,
         message: 'Organization not found',
+      };
+    }
+
+    const notifSettings = await this.notifSettingsModel.find({
+      organizationId: organization._id,
+    });
+    if (notifSettings) {
+      return {
+        statusCode: 400,
+        message: 'Notification Settings is already exist.',
       };
     }
 
@@ -884,7 +1020,10 @@ export class OrganizationService {
   }
 
   /** Nonprofit_appearance_navigation */
-  async createLandingPage(organizationId: string, nonProfitAppearanceNavigationDto: NonProfitAppearanceNavigationDto) {
+  async createLandingPage(
+    organizationId: string,
+    nonProfitAppearanceNavigationDto: NonProfitAppearanceNavigationDto,
+  ) {
     this.logger.debug(`Get Organization ${organizationId}...`);
     const getOrgsId = await this.getOrganization(organizationId);
     if (getOrgsId.statusCode === 404) {
@@ -900,15 +1039,20 @@ export class OrganizationService {
     let now: Date = new Date();
     nonProfitAppearanceNavigationDto.createdAt = now.toISOString();
     nonProfitAppearanceNavigationDto.updatedAt = now.toISOString();
-    const appearanceCreateLandingPage = await this.appearanceNavigationModel.create(nonProfitAppearanceNavigationDto);
+    const appearanceCreateLandingPage =
+      await this.appearanceNavigationModel.create(
+        nonProfitAppearanceNavigationDto,
+      );
     return {
       statusCode: 200,
       appearancelandingpage: appearanceCreateLandingPage,
     };
-
   }
 
-  async createAboutUs(organizationId: string, nonProfitAppearanceNavigationAboutUsDto: NonProfitAppearanceNavigationAboutUsDto) {
+  async createAboutUs(
+    organizationId: string,
+    nonProfitAppearanceNavigationAboutUsDto: NonProfitAppearanceNavigationAboutUsDto,
+  ) {
     this.logger.debug(`Get Organization ${organizationId}...`);
     const getOrgsId = await this.getOrganization(organizationId);
     if (getOrgsId.statusCode === 404) {
@@ -924,14 +1068,19 @@ export class OrganizationService {
     let now: Date = new Date();
     nonProfitAppearanceNavigationAboutUsDto.createdAt = now.toISOString();
     nonProfitAppearanceNavigationAboutUsDto.updatedAt = now.toISOString();
-    const appearanceCreateAboutUs = await this.appearanceNavigationModel.create(nonProfitAppearanceNavigationAboutUsDto);
+    const appearanceCreateAboutUs = await this.appearanceNavigationModel.create(
+      nonProfitAppearanceNavigationAboutUsDto,
+    );
     return {
       statusCode: 200,
       appearanceaboutus: appearanceCreateAboutUs,
     };
   }
 
-  async createBlog(organizationId: string, nonProfitAppearanceNavigationBlogDto: NonProfitAppearanceNavigationBlogDto) {
+  async createBlog(
+    organizationId: string,
+    nonProfitAppearanceNavigationBlogDto: NonProfitAppearanceNavigationBlogDto,
+  ) {
     this.logger.debug(`Get Organization ${organizationId}...`);
     const getOrgsId = await this.getOrganization(organizationId);
     if (getOrgsId.statusCode === 404) {
@@ -946,13 +1095,18 @@ export class OrganizationService {
     let now: Date = new Date();
     nonProfitAppearanceNavigationBlogDto.createdAt = now.toISOString();
     nonProfitAppearanceNavigationBlogDto.updatedAt = now.toISOString();
-    const appearanceCreateBlog = await this.appearanceNavigationModel.create(nonProfitAppearanceNavigationBlogDto);
+    const appearanceCreateBlog = await this.appearanceNavigationModel.create(
+      nonProfitAppearanceNavigationBlogDto,
+    );
     return {
       statusCode: 200,
       appearanceblog: appearanceCreateBlog,
     };
   }
-  async editLandingPage(organizationId: string, editNonProfitAppearanceNavigationDto: EditNonProfitAppearanceNavigationDto) {
+  async editLandingPage(
+    organizationId: string,
+    editNonProfitAppearanceNavigationDto: EditNonProfitAppearanceNavigationDto,
+  ) {
     this.logger.debug(`Get Organization ${organizationId}...`);
     const getOrgsId = await this.getOrganization(organizationId);
     if (getOrgsId.statusCode === 404) {
@@ -967,11 +1121,12 @@ export class OrganizationService {
     editNonProfitAppearanceNavigationDto.updatedAt = now.toISOString();
 
     this.logger.debug('Edit Landingpage Organization...');
-    const landingPageUpdated = await this.appearanceNavigationModel.findOneAndUpdate(
-      { organizationId: organizationId, page: 'LANDINGPAGE' },
-      editNonProfitAppearanceNavigationDto,
-      { new: true },
-    );
+    const landingPageUpdated =
+      await this.appearanceNavigationModel.findOneAndUpdate(
+        { organizationId: organizationId, page: 'LANDINGPAGE' },
+        editNonProfitAppearanceNavigationDto,
+        { new: true },
+      );
 
     if (!landingPageUpdated) {
       return {
@@ -986,7 +1141,10 @@ export class OrganizationService {
     };
   }
 
-  async editAboutUs(organizationId: string, editNonProfitAppearanceNavigationAboutUsDto: EditNonProfitAppearanceNavigationAboutUsDto) {
+  async editAboutUs(
+    organizationId: string,
+    editNonProfitAppearanceNavigationAboutUsDto: EditNonProfitAppearanceNavigationAboutUsDto,
+  ) {
     this.logger.debug(`Get Organization ${organizationId}...`);
     const getOrgsId = await this.getOrganization(organizationId);
     if (getOrgsId.statusCode === 404) {
@@ -999,11 +1157,12 @@ export class OrganizationService {
     this.logger.debug('Edit AboutUs Organization...');
     let now: Date = new Date();
     editNonProfitAppearanceNavigationAboutUsDto.updatedAt = now.toISOString();
-    const abouUsPageUpdated = await this.appearanceNavigationModel.findOneAndUpdate(
-      { organizationId: organizationId, page: 'ABOUTUS' },
-      editNonProfitAppearanceNavigationAboutUsDto,
-      { new: true },
-    );
+    const abouUsPageUpdated =
+      await this.appearanceNavigationModel.findOneAndUpdate(
+        { organizationId: organizationId, page: 'ABOUTUS' },
+        editNonProfitAppearanceNavigationAboutUsDto,
+        { new: true },
+      );
 
     if (!abouUsPageUpdated) {
       return {
@@ -1018,7 +1177,10 @@ export class OrganizationService {
     };
   }
 
-  async editBlog(organizationId: string, editNonProfitAppearanceNavigationBlogDto: EditNonProfitAppearanceNavigationBlogDto) {
+  async editBlog(
+    organizationId: string,
+    editNonProfitAppearanceNavigationBlogDto: EditNonProfitAppearanceNavigationBlogDto,
+  ) {
     this.logger.debug(`Get Organization ${organizationId}...`);
     const getOrgsId = await this.getOrganization(organizationId);
     if (getOrgsId.statusCode === 404) {
@@ -1060,7 +1222,8 @@ export class OrganizationService {
     }
     this.logger.debug('Get Landingpage Organization...');
     return await this.appearanceNavigationModel.find({
-      organizationId: new Types.ObjectId(organizationId), page: 'LANDINGPAGE'
+      organizationId: new Types.ObjectId(organizationId),
+      page: 'LANDINGPAGE',
     });
   }
 
@@ -1076,7 +1239,8 @@ export class OrganizationService {
 
     this.logger.debug('Get AboutUs Organization...');
     return await this.appearanceNavigationModel.find({
-      organizationId: new Types.ObjectId(organizationId), page: 'ABOUTUS'
+      organizationId: new Types.ObjectId(organizationId),
+      page: 'ABOUTUS',
     });
   }
 
@@ -1091,13 +1255,17 @@ export class OrganizationService {
     }
     this.logger.debug('Create createBlog Organization...');
     return await this.appearanceNavigationModel.find({
-      organizationId: new Types.ObjectId(organizationId), page: 'BLOG'
+      organizationId: new Types.ObjectId(organizationId),
+      page: 'BLOG',
     });
   }
   /** ------------------------------- */
 
   /** Nonprofit_appearance_navigation */
-  async createContactUs(organizationId: string, nonProfitAppearancePageDto: NonProfitAppearancePageDto) {
+  async createContactUs(
+    organizationId: string,
+    nonProfitAppearancePageDto: NonProfitAppearancePageDto,
+  ) {
     this.logger.debug(`Get Organization ${organizationId}...`);
     const getOrgsId = await this.getOrganization(organizationId);
     if (getOrgsId.statusCode === 404) {
@@ -1112,14 +1280,19 @@ export class OrganizationService {
     nonProfitAppearancePageDto.createdAt = now.toISOString();
     nonProfitAppearancePageDto.updatedAt = now.toISOString();
     this.logger.debug('Create ContactUs Organization...');
-    const appearanceCreateContactUs = await this.appearancePageModel.create(nonProfitAppearancePageDto);
+    const appearanceCreateContactUs = await this.appearancePageModel.create(
+      nonProfitAppearancePageDto,
+    );
     return {
       statusCode: 200,
       appearancecontactus: appearanceCreateContactUs,
     };
   }
 
-  async editContactUs(organizationId: string, editNonProfitAppearancePageDto: EditNonProfitAppearancePageDto) {
+  async editContactUs(
+    organizationId: string,
+    editNonProfitAppearancePageDto: EditNonProfitAppearancePageDto,
+  ) {
     this.logger.debug(`Get Organization ${organizationId}...`);
     const getOrgsId = await this.getOrganization(organizationId);
     if (getOrgsId.statusCode === 404) {
@@ -1132,8 +1305,11 @@ export class OrganizationService {
     this.logger.debug('Edit ContactUs Organization...');
     let now: Date = new Date();
     editNonProfitAppearancePageDto.updatedAt = now.toISOString();
-    const appearanceEditContactUs = await this.appearancePageModel.findOneAndUpdate(
-      { organizationId }, editNonProfitAppearancePageDto);
+    const appearanceEditContactUs =
+      await this.appearancePageModel.findOneAndUpdate(
+        { organizationId },
+        editNonProfitAppearancePageDto,
+      );
 
     if (!appearanceEditContactUs) {
       return {
@@ -1159,9 +1335,8 @@ export class OrganizationService {
     }
     this.logger.debug('Get ContactUs Organization...');
     return await this.appearancePageModel.find({
-      organizationId: new Types.ObjectId(organizationId)
+      organizationId: new Types.ObjectId(organizationId),
     });
   }
   /** ------------------------------- */
-
 }
