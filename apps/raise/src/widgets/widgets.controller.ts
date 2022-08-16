@@ -37,10 +37,10 @@ export class WidgetsController {
     return await this.widgetsService.updateBasket(basketId, basketDto);
   }
 
-  // @Post('basketProject/create')
-  // async createBasketProject(@Body() basketProjectDto: BasketProjectDto) {
-  //   return await this.widgetsService.createProjectBasket(basketProjectDto);
-  // }
+  @Post('basketProject/create')
+  async createBasketProject(@Body() basketProjectDto: BasketProjectDto) {
+    return await this.widgetsService.createProjectBasket(basketProjectDto);
+  }
 
   // @Patch('basketProject/:basketId')
   // async updateProjectBasket(
