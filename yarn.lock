@@ -7276,6 +7276,7 @@ __metadata:
     "@typegoose/typegoose": ^9.8.0
     "@types/express": ^4.17.13
     "@types/jest": 27.4.1
+    "@types/mongoose-aggregate-paginate-v2": ^1.0.5
     "@types/multer": ^1.4.7
     "@types/node": ^18.0.0
     "@types/nodemailer": ^6.4.4
@@ -8046,6 +8047,15 @@ __metadata:
     "@types/bson": "*"
     "@types/node": "*"
   checksum: e5397ada2ed728997f7c3f5424e8c28f682a635488be967c9c18a5de27b1641cf28bb42bc12026ac6d475c457a880e27097e13c8120350ba13219f4ccc030656
+  languageName: node
+  linkType: hard
+
+"@types/mongoose-aggregate-paginate-v2@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "@types/mongoose-aggregate-paginate-v2@npm:1.0.5"
+  dependencies:
+    mongoose: ^6.3.0
+  checksum: 149199acf2f8c651a58e19c6cfa580e03d3dd062c8a1997d269ba1942c45fb8254cf17e38f8423948e11f64306c97a1f00168b6ac3eb9fbda4fd37a470128812
   languageName: node
   linkType: hard
 
