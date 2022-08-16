@@ -14,9 +14,9 @@ import { DonorService } from './donor.service';
 import { DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
 import { CampaignService } from '../campaign/campaign.service';
 import { JwtAuthGuard } from '../auth/jwt.guard';
-import { RolesGuard } from '../auth/roles.guard';
+import { ClusterRolesGuard } from '../auth/cluster-roles.guard';
 import { RoleEnum } from '../user/enums/role-enum';
-import { Roles } from '../auth/roles.decorator';
+import { ClusterRoles } from '../auth/cluster-roles.decorator';
 
 @ApiTags('donor')
 @Controller('donor')
@@ -60,8 +60,8 @@ export class DonorController {
   }
 
   @Get('organization/:organizationId/manager/getListAll')
-  @Roles(RoleEnum.SUPERADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ClusterRoles(RoleEnum.SUPERADMIN)
+  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
   async getDonorListAll(@Param('organizationId') organizationId: string) {
     this.logger.debug('findOne...');
     return await this.donorService.getDonorListAll(organizationId);
@@ -69,7 +69,10 @@ export class DonorController {
 
   @ApiOperation({ summary: 'Create Donor Payment' })
   @Get('totalDonation/:donorId')
-  async getTotalDonation(@Param('donorId') donorId: string, @Query('currencyCode') currency: string) {
+  async getTotalDonation(
+    @Param('donorId') donorId: string,
+    @Query('currencyCode') currency: string,
+  ) {
     this.logger.debug('get TotalDonation');
     return await this.donorService.getTotalDonation(donorId, currency);
   }
@@ -90,4 +93,15 @@ export class DonorController {
     this.logger.debug(JSON.stringify(donorUpdateProfileDto));
     return await this.donorService.updateDonor(donorId, donorUpdateProfileDto);
   }
+
+  @ApiOperation({ summary: 'Get Donation Donor Summary Dashboard' })
+  @Get('totalDonationDonor/:donorId')
+  async getTotalDonationDonor(
+    @Param('donorId') donorId: string,
+    @Query('currencyCode') currency: string,
+  ) {
+    this.logger.debug('get TotalDonationDonor');
+    return await this.donorService.getTotalDonationDonor(donorId, currency);
+  }
+
 }

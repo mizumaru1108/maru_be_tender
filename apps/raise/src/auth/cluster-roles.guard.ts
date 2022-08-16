@@ -10,15 +10,17 @@ import { UserService } from '../user/user.service';
 
 /**
  * RolesGuard
- * Used to check if the user has the required roles to access a route.
+ * Used to check if the user has the required FusionAuth (cluster)-level roles to access a route.
  */
 @Injectable()
-export class RolesGuard implements CanActivate {
+export class ClusterRolesGuard implements CanActivate {
   /**
    * RolesGuard constructor.
    * @param reflector The reflector service.
    */
-  constructor(private reflector: Reflector, private userService: UserService) {}
+  constructor(
+    private reflector: Reflector /*, private userService: UserService*/,
+  ) {}
 
   /**
    * Set the roles for the route.
@@ -26,12 +28,13 @@ export class RolesGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     let currentUser: ICurrentUser = request.user;
-    const tmpUser = await this.userService.getOneUser({
-      _id: currentUser.id,
-      email: currentUser.email,
-    });
-    if (!tmpUser) throw new Error('Error fetching roles');
-    currentUser.type = tmpUser.type!;
+
+    // FIXME: Hendy's note:
+    // FusionAuth (cluster)-level roles are read directly from the JWT,
+    // and does not hit the database at all, so no need to depend on UserService.
+    // For organization-level roles, they're determined via Authzed,
+    // which also in the initial authorization do not require database access,
+    // but API call to Authzed instead.
     request.user = currentUser;
     const type = this.reflector.get<string[]>('type', context.getHandler());
     if (!type) {

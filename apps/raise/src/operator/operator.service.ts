@@ -11,6 +11,7 @@ import { Operator, OperatorDocument } from './schema/operator.schema';
 import { isDocumentArray } from '@typegoose/typegoose';
 import { ChartDataDto, ChartDetailData } from './dto/chart-data.dto';
 import { OperatorChartDataDto } from './dto/operator-chart-data.dto';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class OperatorService {
@@ -24,7 +25,9 @@ export class OperatorService {
   ) {}
 
   async getOperatorDetail(operatorId: string) {
-    const operator = await this.operatorModel.findById(operatorId);
+    const operator = await this.operatorModel.findById(
+      new Types.ObjectId(operatorId),
+    );
     if (!operator) {
       throw new NotFoundException('Operator not found');
     }

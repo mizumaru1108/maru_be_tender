@@ -12,8 +12,8 @@ import {
 
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { PermissionsGuard } from 'src/auth/permissions.guard';
-import { Roles } from '../auth/roles.decorator';
-import { RolesGuard } from '../auth/roles.guard';
+import { ClusterRoles } from '../auth/cluster-roles.decorator';
+import { ClusterRolesGuard } from '../auth/cluster-roles.guard';
 import { CurrentUser } from '../commons/decorators/current-user.decorator';
 import { RoleEnum } from './enums/role-enum';
 import { ICurrentUser } from './interfaces/current-user.interface';
@@ -21,11 +21,11 @@ import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
   @Post('test-superadmin')
-  @Roles(RoleEnum.SUPERADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ClusterRoles(RoleEnum.SUPERADMIN)
+  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
   async testSuperAdmin(@CurrentUser() user: ICurrentUser) {
     return {
       statusCode: 200,
@@ -34,9 +34,20 @@ export class UserController {
     };
   }
 
+  @Post('test-cluster-admin')
+  @ClusterRoles(RoleEnum.CLUSTERADMIN)
+  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
+  async testClusterAdmin(@CurrentUser() user: ICurrentUser) {
+    return {
+      statusCode: 200,
+      user,
+      message: 'This endpoint is for cluster admin only',
+    };
+  }
+
   @Post('test-vendor')
-  @Roles(RoleEnum.VENDOR)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ClusterRoles(RoleEnum.VENDOR)
+  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
   async testVendor(@CurrentUser() user: ICurrentUser) {
     return {
       statusCode: 200,
@@ -46,8 +57,8 @@ export class UserController {
   }
 
   @Post('test-operator')
-  @Roles(RoleEnum.OPERATOR)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ClusterRoles(RoleEnum.OPERATOR)
+  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
   async testOperator(@CurrentUser() user: ICurrentUser) {
     return {
       statusCode: 200,
@@ -57,8 +68,8 @@ export class UserController {
   }
 
   @Post('test-nonprofit')
-  @Roles(RoleEnum.NONPROFIT)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ClusterRoles(RoleEnum.NONPROFIT)
+  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
   async testNonProfit(@CurrentUser() user: ICurrentUser) {
     return {
       statusCode: 200,
@@ -68,8 +79,8 @@ export class UserController {
   }
 
   @Post('test-donor')
-  @Roles(RoleEnum.DONOR)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ClusterRoles(RoleEnum.DONOR)
+  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
   async testDonor(@CurrentUser() user: ICurrentUser) {
     return {
       statusCode: 200,
@@ -130,5 +141,4 @@ export class UserController {
   // async resetPassword(@Body('email') email: string) {
   //   return this.userService.resetPassword(email);
   // }
-
 }

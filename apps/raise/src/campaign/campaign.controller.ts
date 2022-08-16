@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt.guard';
-import { Roles } from '../auth/roles.decorator';
+import { ClusterRoles } from '../auth/cluster-roles.decorator';
 
 import { DonorService } from '../donor/donor.service';
 import { rootLogger } from '../logger';
@@ -152,7 +152,7 @@ export class CampaignController {
     status: 201,
     description: 'The Campaign has been successfully created.',
   })
-  @Roles(RoleEnum.OPERATOR)
+  @ClusterRoles(RoleEnum.OPERATOR)
   @UseGuards(JwtAuthGuard)
   @Post('create')
   async create(@Body() createCampaignDto: CreateCampaignDto) {
@@ -189,7 +189,7 @@ export class CampaignController {
   }
 
   @ApiOperation({ summary: 'update campaign' })
-  @Roles(RoleEnum.OPERATOR)
+  @ClusterRoles(RoleEnum.OPERATOR)
   @UseGuards(JwtAuthGuard)
   @Patch('update/:campaignId')
   async updateCampaign(

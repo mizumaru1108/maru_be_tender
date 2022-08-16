@@ -1,7 +1,7 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt.guard';
-import { Roles } from '../auth/roles.decorator';
+import { ClusterRoles } from '../auth/cluster-roles.decorator';
 import { rootLogger } from '../logger';
 import { RoleEnum } from '../user/enums/role-enum';
 import { OperatorService } from './operator.service';
@@ -15,7 +15,7 @@ export class OperatorController {
 
   @ApiOperation({ summary: 'Get List All Operator' })
   @Get('getListAll')
-  @Roles(RoleEnum.SUPERADMIN)
+  @ClusterRoles(RoleEnum.SUPERADMIN)
   @UseGuards(JwtAuthGuard)
   async getListAll() {
     this.logger.debug(`Get list all operator `);
@@ -24,7 +24,7 @@ export class OperatorController {
 
   @ApiOperation({ summary: 'Get operator details' })
   @Get('/:operatorId/detail')
-  @Roles(RoleEnum.SUPERADMIN)
+  @ClusterRoles(RoleEnum.SUPERADMIN)
   @UseGuards(JwtAuthGuard)
   async getOperatorDetail(@Param('operatorId') operatorId: string) {
     this.logger.debug(`Get operator details for id ${operatorId}`);

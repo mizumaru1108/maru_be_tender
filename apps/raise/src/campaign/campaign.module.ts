@@ -1,17 +1,14 @@
 import { Module } from '@nestjs/common';
-import { CampaignController } from './campaign.controller';
-import { DonorService } from '../donor/donor.service';
-import { Donor, DonorSchema } from '../donor/schema/donor.schema';
-import { Volunteer, VolunteerSchema } from '../donor/schema/volunteer.schema';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Campaign, CampaignSchema } from './campaign.schema';
+import { Anonymous, AnonymousSchema } from 'src/donor/schema/anonymous.schema';
 import {
   CampaignVendorLog,
   CampaignVendorLogSchema,
   Vendor,
   VendorSchema,
 } from '../buying/vendor/vendor.schema';
-import { CampaignService } from './campaign.service';
+import { DonorService } from '../donor/donor.service';
 import {
   DonationLog,
   DonationLogSchema,
@@ -20,11 +17,13 @@ import {
   DonationLogs,
   DonationLogSchema as DonationLogsSchema,
 } from '../donor/schema/donation_log.schema';
-import { Anonymous, AnonymousSchema } from 'src/donor/schema/anonymous.schema';
+import { Donor, DonorSchema } from '../donor/schema/donor.schema';
+import { Volunteer, VolunteerSchema } from '../donor/schema/volunteer.schema';
 import { Operator, OperatorSchema } from '../operator/schema/operator.schema';
 import { User, UserSchema } from '../user/schema/user.schema';
-import { ConfigModule } from '@nestjs/config';
-import { UsersModule } from '../user/user.module';
+import { CampaignController } from './campaign.controller';
+import { Campaign, CampaignSchema } from './campaign.schema';
+import { CampaignService } from './campaign.service';
 
 @Module({
   imports: [
@@ -71,7 +70,6 @@ import { UsersModule } from '../user/user.module';
       },
     ]),
     ConfigModule,
-    UsersModule,
   ],
   providers: [CampaignService, DonorService],
   controllers: [CampaignController],
