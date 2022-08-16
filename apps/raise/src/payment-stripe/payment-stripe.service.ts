@@ -148,7 +148,7 @@ export class PaymentStripeService {
         .exec();
 
       console.log('debug', getCampaign);
-      let dataAmount = payment.amount * parseFloat(payment.quantity); // let's assume it will be multiple by 1 (price)
+      // let dataAmount = payment.amount * parseFloat(payment.quantity); // let's assume it will be multiple by 1 (price)
       if (!getCampaign) {
         txtMessage = `request rejected campaignId not found`;
         return {
@@ -161,9 +161,11 @@ export class PaymentStripeService {
           }),
         };
       } else if (
-        parseFloat(getCampaign.amountProgress.toString()) + dataAmount >
+        parseFloat(getCampaign.amountProgress.toString()) + payment.amount >
         parseFloat(getCampaign.amountTarget.toString())
       ) {
+        console.log(getCampaign.amountProgress.toString());
+        console.log(payment.amount.toString());
         return {
           statusCode: 400,
           headers: {
