@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { rootLogger } from '../logger';
 import moment from 'moment';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   OperatorChartData,
@@ -12,6 +12,8 @@ import { isDocumentArray } from '@typegoose/typegoose';
 import { ChartDataDto, ChartDetailData } from './dto/chart-data.dto';
 import { OperatorChartDataDto } from './dto/operator-chart-data.dto';
 import { Types } from 'mongoose';
+import { OperatorFilterRequest } from './dto/operator-filter-request';
+import { OperatorSortByEnum } from './enums/operator-sort-by.enum';
 
 @Injectable()
 export class OperatorService {
@@ -24,6 +26,17 @@ export class OperatorService {
     private operatorModel: Model<OperatorDocument>,
   ) {}
 
+  async applyOperatorFilter(
+    filter: OperatorFilterRequest,
+  ): Promise<FilterQuery<OperatorDocument>> {
+    const filterQuery: FilterQuery<OperatorDocument> = {};
+    const { name } = filter;
+    if (name) {
+      filterQuery.name = { $regex: name, $options: 'i' };
+    }
+    return filterQuery;
+  }
+
   async getOperatorDetail(operatorId: string) {
     const operator = await this.operatorModel.findById(
       new Types.ObjectId(operatorId),
@@ -34,9 +47,27 @@ export class OperatorService {
     return operator;
   }
 
-  async getListAll() {
+  async countOperator(filter: OperatorFilterRequest): Promise<number> {
+    const filterQuery = await this.applyOperatorFilter(filter);
+    return await this.operatorModel.countDocuments(filterQuery);
+  }
+
+  async getListAll(filter: OperatorFilterRequest) {
+    const filterQuery = await this.applyOperatorFilter(filter);
+    const { limit = 10, page = 1 } = filter;
+    const offset = (page - 1) * limit;
+    let sort = {};
+    if (filter.sortBy === OperatorSortByEnum.NEWEST) {
+      sort = { createdAt: -1 };
+    } else if (filter.sortBy === OperatorSortByEnum.OLDEST) {
+      sort = { createdAt: 1 };
+    } else if (filter.sortBy === OperatorSortByEnum.TRANDING) {
+    }
     this.logger.debug('Get list all operator with its project...');
     const operatorList = await this.operatorModel.aggregate([
+      {
+        $match: filterQuery,
+      },
       {
         $lookup: {
           from: 'projectOperatorMap',

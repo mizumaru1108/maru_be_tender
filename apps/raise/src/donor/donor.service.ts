@@ -25,9 +25,13 @@ import { ApiOperation } from '@nestjs/swagger';
 import {
   CampaignVendorLog,
   CampaignVendorLogDocument,
+  Vendor,
+  VendorDocument,
 } from '../buying/vendor/vendor.schema';
 import { CampaignService } from '../campaign/campaign.service';
 import { Campaign, CampaignDocument } from '../campaign/campaign.schema';
+import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
+import { z } from 'zod';
 
 @Injectable()
 export class DonorService {
@@ -45,12 +49,41 @@ export class DonorService {
     @InjectModel(Anonymous.name)
     private anonymousModel: Model<AnonymousDocument>,
     private configService: ConfigService,
-    // private organizationService: OrganizationService,
     @InjectModel(CampaignVendorLog.name)
     private campaignVendorLogDocument: Model<CampaignVendorLogDocument>,
     @InjectModel(Campaign.name)
     private campaignModel: Model<CampaignDocument>,
-  ) { }
+    @InjectModel(Vendor.name)
+    private vendorModel: Model<VendorDocument>,
+  ) {}
+
+  async applyVendor(userId: string, rawDto: DonorApplyVendorDto) {
+    let validatedDto: DonorApplyVendorDto;
+    try {
+      validatedDto = DonorApplyVendorDto.parse(rawDto); // validate with zod
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        console.log(err);
+        throw new BadRequestException(
+          {
+            statusCode: 400,
+            message: `Invalid Create Vendor Input`,
+            data: err.issues,
+          },
+          `Invalid Create Vendor Input`,
+        );
+      }
+    }
+
+    if (validatedDto!) {
+      // create new vendorDocument
+      const newVendor = new this.vendorModel();
+      newVendor.ownerUserId = userId;
+      newVendor.vendorId = validatedDto.vendorId;
+
+      console.log(newVendor);
+    }
+  }
 
   async setFavoriteCampaign(campaignSetFavoriteDto: CampaignSetFavoriteDto) {
     const filter = { donorId: campaignSetFavoriteDto.donorId };
@@ -334,7 +367,11 @@ export class DonorService {
 
     const totalDonation = await this.donationLogsModel.aggregate([
       {
-        $match: { donationStatus: 'SUCCESS', donorUserId, currencyCode: currency },
+        $match: {
+          donationStatus: 'SUCCESS',
+          donorUserId,
+          currencyCode: currency,
+        },
       },
       {
         $group: {
@@ -350,8 +387,8 @@ export class DonorService {
             },
           },
           currencyCode: {
-            $first: '$currency'
-          }
+            $first: '$currency',
+          },
         },
       },
     ]);
@@ -365,8 +402,8 @@ export class DonorService {
           _id: '$donationStatus',
           amountTotalDonation: { $sum: '$amount' },
           currencyCode: {
-            $first: '$currency'
-          }
+            $first: '$currency',
+          },
         },
       },
     ]);
@@ -377,7 +414,7 @@ export class DonorService {
         $group: {
           _id: 'isPublished',
           totalProgram: { $sum: '$amountTarget' },
-          currencyCode: { $first: '$currencyCode' }
+          currencyCode: { $first: '$currencyCode' },
         },
       },
     ]);

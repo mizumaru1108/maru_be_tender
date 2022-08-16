@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-
+var aggregatePaginate = require('mongoose-aggregate-paginate-v2');
 export type OperatorDocument = Operator & Document;
 
 @Schema({ collection: 'operator' })
@@ -21,5 +21,5 @@ export class Operator {
   public ownerUserId?: String;
 }
 
-export const OperatorSchema =
-  SchemaFactory.createForClass(Operator);
+export const OperatorSchema = SchemaFactory.createForClass(Operator);
+OperatorSchema.plugin(aggregatePaginate);

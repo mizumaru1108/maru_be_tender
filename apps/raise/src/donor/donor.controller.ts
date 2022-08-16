@@ -17,13 +17,30 @@ import { JwtAuthGuard } from '../auth/jwt.guard';
 import { ClusterRolesGuard } from '../auth/cluster-roles.guard';
 import { RoleEnum } from '../user/enums/role-enum';
 import { ClusterRoles } from '../auth/cluster-roles.decorator';
+import { CurrentUser } from '../commons/decorators/current-user.decorator';
+import { ICurrentUser } from '../user/interfaces/current-user.interface';
+import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
 
 @ApiTags('donor')
 @Controller('donor')
 export class DonorController {
   private logger = rootLogger.child({ logger: DonorController.name });
 
-  constructor(private donorService: DonorService) { }
+  constructor(private donorService: DonorService) {}
+
+  @ApiOperation({ summary: 'Apply to become Vendor' })
+  @UseGuards(JwtAuthGuard)
+  @Post('/apply-vendor')
+  async applyVendor(
+    @CurrentUser() currentUser: ICurrentUser,
+    @Body() applyVendorRequest: DonorApplyVendorDto,
+  ) {
+    this.logger.debug('apply to become vendor');
+    return await this.donorService.applyVendor(
+      currentUser.id,
+      applyVendorRequest,
+    );
+  }
 
   @ApiOperation({ summary: 'Create Donor Payment' })
   @ApiResponse({
@@ -60,8 +77,7 @@ export class DonorController {
   }
 
   @Get('organization/:organizationId/manager/getListAll')
-  @ClusterRoles(RoleEnum.SUPERADMIN)
-  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
+  @UseGuards(JwtAuthGuard)
   async getDonorListAll(@Param('organizationId') organizationId: string) {
     this.logger.debug('findOne...');
     return await this.donorService.getDonorListAll(organizationId);
@@ -103,5 +119,4 @@ export class DonorController {
     this.logger.debug('get TotalDonationDonor');
     return await this.donorService.getTotalDonationDonor(donorId, currency);
   }
-
 }

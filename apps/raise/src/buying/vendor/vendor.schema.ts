@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import * as mongoose from 'mongoose';
+import { DonorApplyVendorDto } from '../../donor/dto/donor-apply-vendor.dto';
 
 export type VendorDocument = Vendor & Document;
 export type VendorChartDataDocument = VendorChartData & Document;
@@ -8,12 +9,83 @@ export type CampaignVendorLogDocument = CampaignVendorLog & Document;
 
 @Schema({ collection: 'vendor' })
 export class Vendor {
+  /**
+   * Vendor Id
+   */
   @Prop()
   vendorId: string;
-  @Prop()
-  name: string;
+
+  /**
+   * The user id of the vendor
+   */
   @Prop()
   ownerUserId: string;
+
+  /**
+   * Vendor Name
+   */
+  @Prop()
+  name: string;
+
+  /**
+   * idk what it is, but it's available in the current mongo db.
+   */
+  @Prop()
+  channels: string;
+
+  /**
+   * Soft delete flag
+   */
+  @Prop()
+  isDeleted: string;
+
+  /**
+   * Maybe it's a state where, the donnor already accepted to become a vendor.
+   * Y, it's a vendor.
+   * N, it's not a vendor yet (donnor type that pending to become a vendor).
+   */
+  @Prop({ default: 'N' })
+  isActive: string;
+
+  /**
+   * Vendor Cover Image, it's available in the current mongo db.
+   */
+  @Prop()
+  coverImage: string;
+
+  /**
+   * Image 1, it's available in the current mongo db.
+   */
+  @Prop()
+  image1: string;
+
+  /**
+   * Image 2, it's available in the current mongo db.
+   */
+  @Prop()
+  image2: string;
+
+  /**
+   * Image 3, it's available in the current mongo db.
+   */
+  @Prop()
+  image3: string;
+
+  /**
+   * Vendor Avatar, it's available in the current mongo db.
+   */
+  @Prop()
+  vendorAvatar: string;
+
+  @Prop({
+    type: mongoose.Schema.Types.Date,
+  })
+  createdAt: string;
+
+  @Prop({
+    type: mongoose.Schema.Types.Date,
+  })
+  updatedAt: string;
 }
 
 @Schema({ collection: 'campaignVendorLog' })

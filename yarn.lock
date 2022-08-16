@@ -7285,6 +7285,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.30.3
     "@typescript-eslint/parser": ^5.30.3
     axios: ^0.27.2
+    class-transformer: ^0.5.1
     class-validator: ^0.13.2
     dayjs: ^1.11.3
     dotenv: ^16.0.1
@@ -7299,6 +7300,8 @@ __metadata:
     moment: ^2.29.3
     mongodb: ^4.4.1
     mongoose: ^6.3.0
+    mongoose-aggregate-paginate-v2: ^1.0.6
+    mongoose-paginate-v2: ^1.7.0
     nodemailer: ^6.7.3
     passport: ^0.5.2
     passport-jwt: ^4.0.0
@@ -10549,6 +10552,13 @@ __metadata:
   version: 1.2.2
   resolution: "cjs-module-lexer@npm:1.2.2"
   checksum: 977f3f042bd4f08e368c890d91eecfbc4f91da0bc009a3c557bc4dfbf32022ad1141244ac1178d44de70fc9f3dea7add7cd9a658a34b9fae98a55d8f92331ce5
+  languageName: node
+  linkType: hard
+
+"class-transformer@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "class-transformer@npm:0.5.1"
+  checksum: f191c8b4cc4239990f5efdd790cabdd852c243ed66248e39f6616a349c910c6eed2d9fd1fbf7ee6ea89f69b4f1d0b493b27347fe0cd0ae26b47c3745a805b6d3
   languageName: node
   linkType: hard
 
@@ -19292,6 +19302,20 @@ __metadata:
     saslprep:
       optional: true
   checksum: 97ff4ebe3fde7b3b5b133d8f7a2e4d6e372c44f8223a6d40b13bb3a705bbbb48ed50958a0fc6b3a33161605723479fced8e0eb83cf7fd5271f7530e6e2d67a2d
+  languageName: node
+  linkType: hard
+
+"mongoose-aggregate-paginate-v2@npm:^1.0.6":
+  version: 1.0.42
+  resolution: "mongoose-aggregate-paginate-v2@npm:1.0.42"
+  checksum: b99e53f7bdcc46a8ca9857e959aa95f116e26981213292e1b3c27acb097e236bd26e079d1a3fa0342723c9613a4274e74e2fbbd96bdaf90bea551745edd74f49
+  languageName: node
+  linkType: hard
+
+"mongoose-paginate-v2@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "mongoose-paginate-v2@npm:1.7.0"
+  checksum: 7a968c1cf7de8d802032f6cd8e67b5b23466b13727e64f45eebc4c810c2087ebe61c9ddf3ec5f131200e54cf2a35ea4811ce0a8b3320186414d6823abb25a837
   languageName: node
   linkType: hard
 

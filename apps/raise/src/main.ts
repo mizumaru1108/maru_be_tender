@@ -7,6 +7,7 @@ import {
 } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -14,6 +15,13 @@ async function bootstrap() {
     new FastifyAdapter({ logger: true }),
   );
   const config = app.get<ConfigService>(ConfigService);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  );
+
   console.log(config.get<string>('APP_ENV'));
 
   if (config.get<string>('APP_ENV') === 'dev') {

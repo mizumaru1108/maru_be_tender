@@ -8,6 +8,8 @@ import { ConfigModule } from '@nestjs/config';
 import {
   CampaignVendorLog,
   CampaignVendorLogSchema,
+  Vendor,
+  VendorSchema,
 } from '../buying/vendor/vendor.schema';
 import { Campaign, CampaignSchema } from '../campaign/campaign.schema';
 import { DonorController } from './donor.controller';
@@ -48,6 +50,10 @@ import {
       {
         name: Campaign.name,
         schema: CampaignSchema,
+      },
+      {
+        name: Vendor.name,
+        schema: VendorSchema,
       },
     ]),
     ConfigModule,
