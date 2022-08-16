@@ -55,6 +55,10 @@ export class Organization {
   longitude: string;
   @Prop({ type: JSON })
   currencyOptions: object;
+  @Prop()
+  defaultLanguage: string;
+  @Prop()
+  campaignLanguage: string;
 }
 
 export const OrganizationSchema = SchemaFactory.createForClass(Organization);
