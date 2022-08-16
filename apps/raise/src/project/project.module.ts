@@ -31,5 +31,6 @@ import { ProjectService } from './project.service';
   ],
   providers: [ProjectService],
   controllers: [ProjectController],
+  exports: [ProjectService],
 })
-export class ProjectModule {}
+export class ProjectModule { }
