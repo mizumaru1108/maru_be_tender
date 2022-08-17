@@ -664,7 +664,10 @@ export class CampaignService {
     return campaignList;
   }
 
-  async getAllPendingCampaign(organizationId: string, vendorId: string) {
+  async getAllPendingCampaignByVendorId(
+    organizationId: string,
+    vendorId: string,
+  ) {
     const ObjectId = require('mongoose').Types.ObjectId;
     const dataVendor = await this.vendorModel.findOne({
       ownerUserId: vendorId,
@@ -717,6 +720,83 @@ export class CampaignService {
       {
         $match: {
           vendorId: realVdId,
+          status: 'pending new',
+          orgId: ObjectId(organizationId),
+        },
+      },
+
+      { $sort: { _id: -1 } },
+    ]);
+
+    this.logger.debug(
+      `list of my pending campaign=${JSON.stringify(campaignList)}`,
+    );
+    return campaignList;
+  }
+
+  async getAllPendingCampaignByOperatorId(
+    organizationId: string,
+    operatorId: string,
+  ) {
+    const ObjectId = require('mongoose').Types.ObjectId;
+    const dataOp = await this.vendorModel.findOne({
+      ownerUserId: operatorId,
+    });
+    const realOpId = (dataOp?._id).toString();
+    if (!realOpId) {
+      throw new NotFoundException(`VendorId must be not null`);
+    }
+
+    const campaignList = await this.campaignVendorLogModel.aggregate([
+      {
+        $addFields: {
+          newId: { $toObjectId: '$vendorId' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'campaign',
+          localField: 'campaignId',
+          foreignField: '_id',
+          as: 'cp',
+        },
+      },
+      { $unwind: { path: '$cp', preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: 'vendor',
+          localField: 'newId',
+          foreignField: '_id',
+          as: 'pj',
+        },
+      },
+      { $unwind: { path: '$pj', preserveNullAndEmptyArrays: true } },
+      {
+        $addFields: {
+          _id: '$campaignId',
+          status: '$status',
+          ownerId: '$pj.ownerUserId',
+          type: '$cp.campaignType',
+          campaignName: '$cp.campaignName',
+          orgId: '$cp.organizationId',
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          campaignName: 1,
+          status: 1,
+          type: 1,
+          createdAt: 1,
+          ownerId: 1,
+          milestone: { $size: '$cp.milestone' },
+          vendorId: 1,
+          orgId: 1,
+        },
+      },
+      {
+        $match: {
+          vendorId: realOpId,
           status: 'pending new',
           orgId: ObjectId(organizationId),
         },
