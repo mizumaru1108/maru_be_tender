@@ -255,8 +255,8 @@ export class ProjectService {
               updateProjectData.organizationId.toString(),
               'project-photo',
               validatedDto.images[i].fullName,
-              projectId,
               validatedDto.images[i].imageExtension,
+              projectId,
             );
             const base64Data = validatedDto.images[i].base64Data;
             const binary = Buffer.from(

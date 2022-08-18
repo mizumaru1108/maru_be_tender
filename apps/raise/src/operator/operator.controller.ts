@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Query, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Query,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { ClusterRoles } from '../auth/cluster-roles.decorator';
@@ -6,6 +14,9 @@ import { rootLogger } from '../logger';
 import { RoleEnum } from '../user/enums/role-enum';
 import { OperatorService } from './operator.service';
 import { OperatorFilterRequest } from './dto/operator-filter-request';
+import { paginationHelper } from '../commons/helpers/pagination-helper';
+import { PaginatedResponse } from '../commons/dtos/paginated-response.dto';
+import { OperatorDocument } from './schema/operator.schema';
 
 @ApiTags('operator')
 @Controller('operator')
@@ -17,9 +28,26 @@ export class OperatorController {
   @ApiOperation({ summary: 'Get List All Operator' })
   @Get('getListAll')
   @UseGuards(JwtAuthGuard)
-  async getListAll(@Query() filterRequest: OperatorFilterRequest) {
+  async getListAll(
+    @Query() filterRequest: OperatorFilterRequest,
+  ): Promise<PaginatedResponse<OperatorDocument[]>> {
     this.logger.debug(`Get list all operator `);
-    return await this.operatorService.getListAll(filterRequest);
+    const operatorList = await this.operatorService.getListAll(filterRequest);
+    const response = paginationHelper(
+      operatorList.docs,
+      operatorList.totalDocs,
+      operatorList.limit,
+      operatorList.page,
+      operatorList.totalPages,
+      operatorList.pagingCounter,
+      operatorList.hasPrevPage,
+      operatorList.hasNextPage,
+      operatorList.prevPage,
+      operatorList.nextPage,
+      HttpStatus.OK,
+      'Successfully get list all operator',
+    );
+    return response;
   }
 
   @ApiOperation({ summary: 'Get operator details' })

@@ -12,8 +12,8 @@ export class BunnyService {
     organizationId: string,
     folderType: string,
     imageFullName: string,
-    campaignId: string,
     extension: string,
+    spesificId?: string,
   ): Promise<string> {
     const appEnv = this.configService.get('APP_ENV');
     let path: string;
@@ -22,10 +22,15 @@ export class BunnyService {
 
     let random = generateRandomNumberString(4);
 
-    path =
-      `tmra/${appEnv}/organization/${organizationId}` +
-      `/${folderType}/${sanitizedName}-${campaignId}-${random}${extension}`;
-
+    if (spesificId) {
+      path =
+        `tmra/${appEnv}/organization/${organizationId}` +
+        `/${folderType}/${sanitizedName}-${spesificId}-${random}${extension}`;
+    } else {
+      path =
+        `tmra/${appEnv}/organization/${organizationId}` +
+        `/${folderType}/${sanitizedName}-${random}${extension}`;
+    }
     return path;
   }
 

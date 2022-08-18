@@ -32,12 +32,14 @@ import { CampaignService } from '../campaign/campaign.service';
 import { Campaign, CampaignDocument } from '../campaign/campaign.schema';
 import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
 import { z } from 'zod';
+import { BunnyService } from '../bunny/services/bunny.service';
 
 @Injectable()
 export class DonorService {
   private logger = rootLogger.child({ logger: DonorService.name });
 
   constructor(
+    private bunnyService: BunnyService,
     @InjectModel(Donor.name)
     private donorModel: Model<DonorDocument>,
     @InjectModel(Volunteer.name)
@@ -57,10 +59,17 @@ export class DonorService {
     private vendorModel: Model<VendorDocument>,
   ) {}
 
-  async applyVendor(userId: string, rawDto: DonorApplyVendorDto) {
+  /* apply to become vendor from donor */
+  // !Should we implements db transaction? when image upload failed, we should rollback the db transaction,
+  // !i can do the db transaction, but how to revoke the image upload?
+  async applyVendor(
+    userId: string,
+    rawDto: DonorApplyVendorDto,
+  ): Promise<Vendor> {
+    // validate with zod
     let validatedDto: DonorApplyVendorDto;
     try {
-      validatedDto = DonorApplyVendorDto.parse(rawDto); // validate with zod
+      validatedDto = DonorApplyVendorDto.parse(rawDto);
     } catch (err) {
       if (err instanceof z.ZodError) {
         console.log(err);
@@ -75,14 +84,55 @@ export class DonorService {
       }
     }
 
-    if (validatedDto!) {
-      // create new vendorDocument
-      const newVendor = new this.vendorModel();
-      newVendor.ownerUserId = userId;
-      newVendor.vendorId = validatedDto.vendorId;
+    const newVendor = new this.vendorModel();
+    // isDeleted, isActive is "N" by default so no need to set it, also _id and timestamps (createdAt, updatedAt) are automatically set by mongoose
+    newVendor.vendorId = validatedDto!.vendorId;
+    newVendor.ownerUserId = userId;
+    newVendor.name = validatedDto!.name;
+    newVendor.channels = validatedDto!.channels;
+    newVendor.vendorId = validatedDto!.vendorId;
 
-      console.log(newVendor);
+    if (validatedDto!.images && validatedDto!.images.length > 0) {
+      let folderType: string = '';
+      for (let i = 0; i < validatedDto!.images.length; i++) {
+        if (i === 0) folderType = 'coverImage';
+        if (i === 1 || i === 2 || i === 3) folderType = 'image';
+        if (i === 4) folderType = 'avatar';
+        const path = await this.bunnyService.generatePath(
+          validatedDto!.organizationId.toString(),
+          folderType,
+          validatedDto!.images[i].fullName,
+          validatedDto!.images[i].imageExtension,
+        );
+        const base64Data = validatedDto!.images[i].base64Data;
+        const binary = Buffer.from(
+          validatedDto!.images[i].base64Data,
+          'base64',
+        );
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+        const imageUpload = await this.bunnyService.uploadImage(
+          path,
+          binary,
+          validatedDto!.name,
+        );
+
+        if (i === 0 && imageUpload) newVendor.coverImage = path;
+        if (i === 1 && imageUpload) newVendor.image1 = path;
+        if (i === 2 && imageUpload) newVendor.image2 = path;
+        if (i === 3 && imageUpload) newVendor.image3 = path;
+        if (i === 4 && imageUpload) newVendor.vendorAvatar = path;
+      }
     }
+    // return vendorDocument as Vendor
+    return await newVendor.save();
   }
 
   async setFavoriteCampaign(campaignSetFavoriteDto: CampaignSetFavoriteDto) {

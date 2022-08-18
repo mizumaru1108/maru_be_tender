@@ -253,8 +253,8 @@ export class CampaignService {
               updateCampaignData.organizationId.toString(),
               'campaign-photo',
               validatedDto.images[i].fullName,
-              campaignId,
               validatedDto.images[i].imageExtension,
+              campaignId,
             );
             const base64Data = validatedDto.images[i].base64Data;
             const binary = Buffer.from(

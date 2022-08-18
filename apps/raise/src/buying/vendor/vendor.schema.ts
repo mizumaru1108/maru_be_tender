@@ -1,18 +1,22 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
 import * as mongoose from 'mongoose';
-import { DonorApplyVendorDto } from '../../donor/dto/donor-apply-vendor.dto';
+import { Document } from 'mongoose';
 
 export type VendorDocument = Vendor & Document;
 export type VendorChartDataDocument = VendorChartData & Document;
 export type CampaignVendorLogDocument = CampaignVendorLog & Document;
 
-@Schema({ collection: 'vendor' })
+@Schema({
+  timestamps: true, // automatically adds createdAt and updatedAt fields with type date
+  collection: 'vendor',
+})
 export class Vendor {
+  public readonly _id: mongoose.Types.ObjectId;
+
   /**
    * Vendor Id
    */
-  @Prop()
+  @Prop({ default: '' })
   vendorId: string;
 
   /**
@@ -28,7 +32,7 @@ export class Vendor {
   name: string;
 
   /**
-   * idk what it is, but it's available in the current mongo db.
+   * Sumber informasi tentang lelang
    */
   @Prop()
   channels: string;
@@ -36,7 +40,7 @@ export class Vendor {
   /**
    * Soft delete flag
    */
-  @Prop()
+  @Prop({ default: 'N' })
   isDeleted: string;
 
   /**
@@ -48,44 +52,40 @@ export class Vendor {
   isActive: string;
 
   /**
-   * Vendor Cover Image, it's available in the current mongo db.
+   *  Cover Image
    */
   @Prop()
   coverImage: string;
 
   /**
-   * Image 1, it's available in the current mongo db.
+   * Image 1
    */
   @Prop()
   image1: string;
 
   /**
-   * Image 2, it's available in the current mongo db.
+   * Image 2
    */
   @Prop()
   image2: string;
 
   /**
-   * Image 3, it's available in the current mongo db.
+   * Image 3
    */
   @Prop()
   image3: string;
 
   /**
-   * Vendor Avatar, it's available in the current mongo db.
+   * Vendor Avatar
    */
   @Prop()
   vendorAvatar: string;
 
-  @Prop({
-    type: mongoose.Schema.Types.Date,
-  })
-  createdAt: string;
+  /* actualy it's created automatically, but i defined here to use the prop latter, (ex: vendorData.createdAt) */
+  readonly createdAt?: Date;
 
-  @Prop({
-    type: mongoose.Schema.Types.Date,
-  })
-  updatedAt: string;
+  /* actualy it's created automatically, but i defined here to use the prop latter, (ex: vendorData.updatedAt) */
+  readonly updatedAt?: Date;
 }
 
 @Schema({ collection: 'campaignVendorLog' })

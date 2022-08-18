@@ -2,23 +2,24 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
   Param,
-  Post,
   Patch,
+  Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { rootLogger } from '../logger';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
+import { JwtAuthGuard } from '../auth/jwt.guard';
+import { Vendor } from '../buying/vendor/vendor.schema';
+import { CurrentUser } from '../commons/decorators/current-user.decorator';
+import { BaseResponse } from '../commons/dtos/base-response';
+import { baseResponseHelper } from '../commons/helpers/base-response-helper';
+import { rootLogger } from '../logger';
+import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { DonorService } from './donor.service';
 import { DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
-import { CampaignService } from '../campaign/campaign.service';
-import { JwtAuthGuard } from '../auth/jwt.guard';
-import { ClusterRolesGuard } from '../auth/cluster-roles.guard';
-import { RoleEnum } from '../user/enums/role-enum';
-import { ClusterRoles } from '../auth/cluster-roles.decorator';
-import { CurrentUser } from '../commons/decorators/current-user.decorator';
-import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
 
 @ApiTags('donor')
@@ -28,18 +29,29 @@ export class DonorController {
 
   constructor(private donorService: DonorService) {}
 
-  @ApiOperation({ summary: 'Apply to become Vendor' })
+  /**
+   * Endpoint for donor to apply as vendor.
+   * @param applyVendorRequest
+   * @returns {Promise<Response<BaseResponse<Vendor>>>}
+   */
+  @ApiOperation({ summary: 'Apply to become vendor from donor.' })
   @UseGuards(JwtAuthGuard)
   @Post('/apply-vendor')
   async applyVendor(
-    @CurrentUser() currentUser: ICurrentUser,
     @Body() applyVendorRequest: DonorApplyVendorDto,
-  ) {
+    @CurrentUser() currentUser: ICurrentUser,
+  ): Promise<BaseResponse<Vendor>> {
     this.logger.debug('apply to become vendor');
-    return await this.donorService.applyVendor(
+    const createdVendor = await this.donorService.applyVendor(
       currentUser.id,
       applyVendorRequest,
     );
+    const response = baseResponseHelper(
+      HttpStatus.CREATED,
+      'Donor applied to become vendor',
+      createdVendor,
+    );
+    return response;
   }
 
   @ApiOperation({ summary: 'Create Donor Payment' })

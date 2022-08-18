@@ -59,11 +59,6 @@ export class OperatorService {
     return operator;
   }
 
-  async countOperator(filter: OperatorFilterRequest): Promise<number> {
-    const filterQuery = await this.applyOperatorFilter(filter);
-    return await this.operatorModel.countDocuments(filterQuery);
-  }
-
   async getListAll(
     filter: OperatorFilterRequest,
   ): Promise<AggregatePaginateResult<OperatorDocument>> {
