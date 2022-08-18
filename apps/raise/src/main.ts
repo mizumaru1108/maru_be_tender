@@ -13,6 +13,7 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter({ logger: true }),
   );
+  app.enableCors();
   const config = app.get<ConfigService>(ConfigService);
   console.log(config.get<string>('APP_ENV'));
 
