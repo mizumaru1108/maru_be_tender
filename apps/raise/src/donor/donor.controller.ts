@@ -48,7 +48,7 @@ export class DonorController {
     );
     const response = baseResponseHelper(
       HttpStatus.CREATED,
-      'Donor applied to become vendor',
+      'Donor successfully applied to become vendor',
       createdVendor,
     );
     return response;
