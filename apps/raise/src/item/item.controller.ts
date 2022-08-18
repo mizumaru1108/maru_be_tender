@@ -1,19 +1,21 @@
 import {
-  Controller,
   Body,
+  Controller,
   Get,
+  HttpStatus,
   Param,
-  Post,
-  Query,
-  Put,
   Patch,
+  Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { BaseResponse } from '../commons/dtos/base-response';
+import { baseResponseHelper } from '../commons/helpers/base-response-helper';
 import { rootLogger } from '../logger';
-import { ItemService } from './item.service';
 import { CreateItemDto } from './dto';
 import { ItemSetDeletedFlagDto } from './dto/item-set-flag-deleted';
 import { UpdateItemDto } from './dto/update-item.dto';
+import { Item } from './item.schema';
+import { ItemService } from './item.service';
 
 @ApiTags('item')
 @Controller('item')
@@ -52,8 +54,18 @@ export class ItemController {
     description: 'The New Campaign has been successfully flagged as deleted.',
   })
   @Post('setDeletedFlagBatch')
-  async setDeletedFlag(@Body() request: ItemSetDeletedFlagDto) {
-    await this.itemService.setDeletedFlag(request.itemIds);
+  async setDeletedFlag(
+    @Body() request: ItemSetDeletedFlagDto,
+  ): Promise<BaseResponse<string>> {
+    const affectedDeleteStatus = await this.itemService.setDeletedFlag(
+      request.itemIds,
+    );
+    const response = baseResponseHelper(
+      HttpStatus.OK,
+      'The Item has been successfully flagged as deleted.',
+      affectedDeleteStatus,
+    );
+    return response;
   }
 
   @ApiOperation({ summary: 'update project' })
@@ -61,9 +73,18 @@ export class ItemController {
   async updateProject(
     @Param('itemId') itemId: string,
     @Body() updateRequest: UpdateItemDto,
-  ) {
+  ): Promise<BaseResponse<Item>> {
     this.logger.debug('payload', JSON.stringify(updateRequest));
     this.logger.debug(`update project ${itemId}`);
-    return await this.itemService.updateItem(itemId, updateRequest);
+    const updatedItem = await this.itemService.updateItem(
+      itemId,
+      updateRequest,
+    );
+    const response = baseResponseHelper(
+      HttpStatus.OK,
+      'Item updated',
+      updatedItem,
+    );
+    return response;
   }
 }

@@ -1,27 +1,30 @@
 import {
-  Controller,
   Body,
+  Controller,
   Get,
+  HttpStatus,
   Param,
-  Post,
   Patch,
-  UseGuards,
+  Post,
   Query,
-  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { rootLogger } from '../logger';
-import { ProjectService } from './project.service';
-import { CreateProjectDto } from './dto';
-import { ProjectSetDeletedFlagDto } from './dto/project-set-flag-deleted';
-import { UpdateProjectDto } from './dto/update-project.dto';
-import { JwtAuthGuard } from '../auth/jwt.guard';
-import { RoleEnum } from '../user/enums/role-enum';
-import { CurrentUser } from '../commons/decorators/current-user.decorator';
-import { ICurrentUser } from '../user/interfaces/current-user.interface';
-import { ProjectFilterRequest } from './dto/project-filter.request';
 import { ClusterRoles } from '../auth/cluster-roles.decorator';
 import { ClusterRolesGuard } from '../auth/cluster-roles.guard';
+import { JwtAuthGuard } from '../auth/jwt.guard';
+import { CurrentUser } from '../commons/decorators/current-user.decorator';
+import { BaseResponse } from '../commons/dtos/base-response';
+import { baseResponseHelper } from '../commons/helpers/base-response-helper';
+import { rootLogger } from '../logger';
+import { RoleEnum } from '../user/enums/role-enum';
+import { ICurrentUser } from '../user/interfaces/current-user.interface';
+import { CreateProjectDto } from './dto';
+import { ProjectFilterRequest } from './dto/project-filter.request';
+import { ProjectSetDeletedFlagDto } from './dto/project-set-flag-deleted';
+import { UpdateProjectDto } from './dto/update-project.dto';
+import { Project } from './project.schema';
+import { ProjectService } from './project.service';
 
 @ApiTags('project')
 @Controller('project')
@@ -74,8 +77,18 @@ export class ProjectController {
     status: 200,
   })
   @Post('setDeletedFlagBatch')
-  async setDeletedFlag(@Body() request: ProjectSetDeletedFlagDto) {
-    return await this.projectService.setDeletedFlag(request.projectIds);
+  async setDeletedFlag(
+    @Body() request: ProjectSetDeletedFlagDto,
+  ): Promise<BaseResponse<string>> {
+    const affectedDeleteStatus = await this.projectService.setDeletedFlag(
+      request.projectIds,
+    );
+    const response = baseResponseHelper(
+      HttpStatus.OK,
+      'Projects has successfully changed to the deleted state',
+      affectedDeleteStatus,
+    );
+    return response;
   }
 
   @ApiOperation({ summary: 'update project' })
@@ -85,9 +98,18 @@ export class ProjectController {
   async updateProject(
     @Param('projectId') projectId: string,
     @Body() updateRequest: UpdateProjectDto,
-  ) {
+  ): Promise<BaseResponse<Project>> {
     this.logger.debug('payload', JSON.stringify(updateRequest));
     this.logger.debug(`update project ${projectId}`);
-    return await this.projectService.updateProject(projectId, updateRequest);
+    const updatedProject = await this.projectService.updateProject(
+      projectId,
+      updateRequest,
+    );
+    const response = baseResponseHelper(
+      HttpStatus.OK,
+      'Project updated successfully',
+      updatedProject,
+    );
+    return response;
   }
 }

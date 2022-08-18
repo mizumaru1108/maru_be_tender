@@ -198,7 +198,7 @@ export class CampaignService {
   async updateCampaign(
     campaignId: string,
     rawUpdateCampaignDto: UpdateCampaignDto,
-  ) {
+  ): Promise<Campaign> {
     const currentCampaignData = await this.campaignModel.findById(campaignId);
     if (!currentCampaignData) {
       throw new NotFoundException(`Campaign with id ${campaignId} not found`);
@@ -221,133 +221,125 @@ export class CampaignService {
       }
     }
 
-    if (validatedDto!) {
-      const updateCampaignData = Campaign.compare(
-        currentCampaignData,
-        validatedDto!,
-      );
+    const updateCampaignData = Campaign.compare(
+      currentCampaignData,
+      validatedDto!,
+    );
 
-      /**
-       * maximum file uploaded = 4 (included coverImage)
-       * images [0] = coverImage
-       * images [1] = image1
-       * images [2] = image2
-       * images [3] = image3
-       */
-      //!TODO: refactor for better performance
-      /* if there's new campaign images */
-      if (
-        updateCampaignData &&
-        validatedDto &&
-        validatedDto.images &&
-        validatedDto.images.length > 0
-      ) {
-        for (let i = 0; i < validatedDto.images.length; i++) {
-          /* if image data on current index not empty */
-          if (
-            updateCampaignData &&
-            validatedDto.images[i] &&
-            validatedDto.images[i].base64Data
-          ) {
-            const path = await this.bunnyService.generatePath(
-              updateCampaignData.organizationId.toString(),
-              'campaign-photo',
-              validatedDto.images[i].fullName,
-              validatedDto.images[i].imageExtension,
-              campaignId,
+    /**
+     * maximum file uploaded = 4 (included coverImage)
+     * images [0] = coverImage
+     * images [1] = image1
+     * images [2] = image2
+     * images [3] = image3
+     */
+    //!TODO: refactor for better performance
+    /* if there's new campaign images */
+    if (
+      updateCampaignData &&
+      validatedDto! &&
+      validatedDto!.images! &&
+      validatedDto!.images!.length > 0
+    ) {
+      for (let i = 0; i < validatedDto!.images!.length; i++) {
+        /* if image data on current index not empty */
+        if (
+          updateCampaignData &&
+          validatedDto!.images[i]! &&
+          validatedDto!.images[i]!.base64Data!
+        ) {
+          const path = await this.bunnyService.generatePath(
+            updateCampaignData.organizationId.toString(),
+            'campaign-photo',
+            validatedDto!.images[i]!.fullName!,
+            validatedDto!.images[i]!.imageExtension!,
+            campaignId,
+          );
+          const base64Data = validatedDto!.images[i].base64Data!;
+          const binary = Buffer.from(
+            validatedDto!.images[i]!.base64Data!,
+            'base64',
+          );
+          if (!binary) {
+            const trimmedString = 56;
+            base64Data.length > 40
+              ? base64Data.substring(0, 40 - 3) + '...'
+              : base64Data.substring(0, length);
+            throw new BadRequestException(
+              `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
             );
-            const base64Data = validatedDto.images[i].base64Data;
-            const binary = Buffer.from(
-              validatedDto.images[i].base64Data,
-              'base64',
-            );
-            if (!binary) {
-              const trimmedString = 56;
-              base64Data.length > 40
-                ? base64Data.substring(0, 40 - 3) + '...'
-                : base64Data.substring(0, length);
-              throw new BadRequestException(
-                `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
+          }
+          const imageUpload = await this.bunnyService.uploadImage(
+            path,
+            binary,
+            updateCampaignData.campaignName,
+          );
+
+          /* if current campaign has old image, and the upload process has been done */
+          if (i === 0 && imageUpload) {
+            if (updateCampaignData.coverImage) {
+              console.info(
+                'Old cover image seems to be exist in the old record',
               );
-            }
-            const imageUpload = await this.bunnyService.uploadImage(
-              path,
-              binary,
-              updateCampaignData.campaignName,
-            );
-
-            /* if current campaign has old image, and the upload process has been done */
-            if (i === 0 && imageUpload) {
-              if (updateCampaignData.coverImage) {
-                console.info(
-                  'Old cover image seems to be exist in the old record',
-                );
-                const isExist = await this.bunnyService.checkIfImageExists(
+              const isExist = await this.bunnyService.checkIfImageExists(
+                updateCampaignData.coverImage,
+              );
+              if (isExist) {
+                await this.bunnyService.deleteImage(
                   updateCampaignData.coverImage,
                 );
-                if (isExist) {
-                  await this.bunnyService.deleteImage(
-                    updateCampaignData.coverImage,
-                  );
-                }
               }
-              console.info('Cover image has been replaced');
-              updateCampaignData.coverImage = path;
             }
+            console.info('Cover image has been replaced');
+            updateCampaignData.coverImage = path;
+          }
 
-            if (i === 1 && imageUpload) {
-              if (updateCampaignData.image1) {
-                console.info('Old image 1 seems to be exist in the old record');
-                const isExist = await this.bunnyService.checkIfImageExists(
-                  updateCampaignData.image1,
-                );
-                if (isExist) {
-                  await this.bunnyService.deleteImage(
-                    updateCampaignData.image1,
-                  );
-                }
+          if (i === 1 && imageUpload) {
+            if (updateCampaignData.image1) {
+              console.info('Old image 1 seems to be exist in the old record');
+              const isExist = await this.bunnyService.checkIfImageExists(
+                updateCampaignData.image1,
+              );
+              if (isExist) {
+                await this.bunnyService.deleteImage(updateCampaignData.image1);
               }
-              console.info('Image 1 has been replaced');
-              updateCampaignData.image1 = path;
             }
+            console.info('Image 1 has been replaced');
+            updateCampaignData.image1 = path;
+          }
 
-            if (i === 2 && imageUpload) {
-              if (updateCampaignData.image2) {
-                console.info('Old image 2 seems to be exist in the old record');
-                const isExist = await this.bunnyService.checkIfImageExists(
-                  updateCampaignData.image2,
-                );
-                if (isExist) {
-                  await this.bunnyService.deleteImage(
-                    updateCampaignData.image2,
-                  );
-                }
+          if (i === 2 && imageUpload) {
+            if (updateCampaignData.image2) {
+              console.info('Old image 2 seems to be exist in the old record');
+              const isExist = await this.bunnyService.checkIfImageExists(
+                updateCampaignData.image2,
+              );
+              if (isExist) {
+                await this.bunnyService.deleteImage(updateCampaignData.image2);
               }
-              console.info('Image 2 has been replaced');
-              updateCampaignData.image2 = path;
             }
+            console.info('Image 2 has been replaced');
+            updateCampaignData.image2 = path;
+          }
 
-            if (i === 3 && imageUpload) {
-              if (updateCampaignData.image3) {
-                console.info('Old image 3 seems to be exist in the old record');
-                const isExist = await this.bunnyService.checkIfImageExists(
-                  updateCampaignData.image3,
-                );
-                if (isExist) {
-                  await this.bunnyService.deleteImage(
-                    updateCampaignData.image3,
-                  );
-                }
+          if (i === 3 && imageUpload) {
+            if (updateCampaignData.image3) {
+              console.info('Old image 3 seems to be exist in the old record');
+              const isExist = await this.bunnyService.checkIfImageExists(
+                updateCampaignData.image3,
+              );
+              if (isExist) {
+                await this.bunnyService.deleteImage(updateCampaignData.image3);
               }
-              console.info('Image 3 has been replaced');
-              updateCampaignData.image3 = path;
             }
+            console.info('Image 3 has been replaced');
+            updateCampaignData.image3 = path;
           }
         }
       }
-
-      return await updateCampaignData.save();
     }
+
+    return await updateCampaignData.save();
   }
 
   async findAll(
@@ -924,7 +916,7 @@ export class CampaignService {
     return getCampaignDetail;
   }
 
-  async setDeletedFlag(campaignId: string[]) {
+  async setDeletedFlag(campaignId: string[]): Promise<string> {
     this.logger.debug(
       `setting ${campaignId.length} deleted flag to ${campaignId}`,
     );
@@ -935,9 +927,6 @@ export class CampaignService {
     this.logger.debug(
       `${updatedCampaign.matchedCount} match, ${updatedCampaign.modifiedCount} data updated`,
     );
-    return {
-      statusCode: 200,
-      message: `${updatedCampaign.matchedCount} match, ${updatedCampaign.modifiedCount} data updated`,
-    };
+    return `${updatedCampaign.matchedCount} match, ${updatedCampaign.modifiedCount} data updated`;
   }
 }

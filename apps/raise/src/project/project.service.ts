@@ -222,144 +222,142 @@ export class ProjectService {
       }
     }
 
-    if (validatedDto!) {
-      const updateProjectData = Project.compare(
-        currentProjectData,
-        validatedDto!,
-      );
+    const updateProjectData = Project.compare(
+      currentProjectData,
+      validatedDto!,
+    );
 
-      /**
-       * maximum file uploaded = 4 (included coverImage and projectAvatar)
-       * images [0] = coverImage
-       * images [1] = image1
-       * images [2] = image2
-       * images [3] = image3
-       * images [4] = projectAvatar
-       */
-      //!TODO: refactor for better performance
-      /* if there's new campaign images */
-      if (
-        updateProjectData &&
-        validatedDto &&
-        validatedDto.images &&
-        validatedDto.images.length > 0
-      ) {
-        for (let i = 0; i < validatedDto.images.length; i++) {
-          /* if image data on current index not empty */
-          if (
-            updateProjectData &&
-            validatedDto.images[i] &&
-            validatedDto.images[i].base64Data
-          ) {
-            const path = await this.bunnyService.generatePath(
-              updateProjectData.organizationId.toString(),
-              'project-photo',
-              validatedDto.images[i].fullName,
-              validatedDto.images[i].imageExtension,
-              projectId,
+    /**
+     * maximum file uploaded = 4 (included coverImage and projectAvatar)
+     * images [0] = coverImage
+     * images [1] = image1
+     * images [2] = image2
+     * images [3] = image3
+     * images [4] = projectAvatar
+     */
+    //!TODO: refactor for better performance
+    /* if there's new campaign images */
+    if (
+      updateProjectData &&
+      validatedDto! &&
+      validatedDto!.images! &&
+      validatedDto!.images!.length > 0
+    ) {
+      for (let i = 0; i < validatedDto!.images!.length; i++) {
+        /* if image data on current index not empty */
+        if (
+          updateProjectData &&
+          validatedDto!.images[i]! &&
+          validatedDto!.images[i]!.base64Data!
+        ) {
+          const path = await this.bunnyService.generatePath(
+            updateProjectData.organizationId.toString(),
+            'project-photo',
+            validatedDto!.images[i]!.fullName!,
+            validatedDto!.images[i]!.imageExtension!,
+            projectId,
+          );
+          const base64Data = validatedDto!.images[i]!.base64Data!;
+          const binary = Buffer.from(
+            validatedDto!.images[i]!.base64Data!,
+            'base64',
+          );
+          if (!binary) {
+            const trimmedString = 56;
+            base64Data.length > 40
+              ? base64Data.substring(0, 40 - 3) + '...'
+              : base64Data.substring(0, length);
+            throw new BadRequestException(
+              `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
             );
-            const base64Data = validatedDto.images[i].base64Data;
-            const binary = Buffer.from(
-              validatedDto.images[i].base64Data,
-              'base64',
-            );
-            if (!binary) {
-              const trimmedString = 56;
-              base64Data.length > 40
-                ? base64Data.substring(0, 40 - 3) + '...'
-                : base64Data.substring(0, length);
-              throw new BadRequestException(
-                `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
+          }
+          const imageUpload = await this.bunnyService.uploadImage(
+            path,
+            binary,
+            updateProjectData.name,
+          );
+
+          /* if current campaign has old image, and the upload process has been done */
+          if (i === 0 && imageUpload) {
+            if (updateProjectData.coverImage) {
+              console.info(
+                'Old cover image seems to be exist in the old record',
               );
-            }
-            const imageUpload = await this.bunnyService.uploadImage(
-              path,
-              binary,
-              updateProjectData.name,
-            );
-
-            /* if current campaign has old image, and the upload process has been done */
-            if (i === 0 && imageUpload) {
-              if (updateProjectData.coverImage) {
-                console.info(
-                  'Old cover image seems to be exist in the old record',
-                );
-                const isExist = await this.bunnyService.checkIfImageExists(
+              const isExist = await this.bunnyService.checkIfImageExists(
+                updateProjectData.coverImage,
+              );
+              if (isExist) {
+                await this.bunnyService.deleteImage(
                   updateProjectData.coverImage,
                 );
-                if (isExist) {
-                  await this.bunnyService.deleteImage(
-                    updateProjectData.coverImage,
-                  );
-                }
               }
-              console.info('Cover image has been replaced');
-              updateProjectData.coverImage = path;
             }
+            console.info('Cover image has been replaced');
+            updateProjectData.coverImage = path;
+          }
 
-            if (i === 1 && imageUpload) {
-              if (updateProjectData.image1) {
-                console.info('Old image 1 seems to be exist in the old record');
-                const isExist = await this.bunnyService.checkIfImageExists(
-                  updateProjectData.image1,
-                );
-                if (isExist) {
-                  await this.bunnyService.deleteImage(updateProjectData.image1);
-                }
+          if (i === 1 && imageUpload) {
+            if (updateProjectData.image1) {
+              console.info('Old image 1 seems to be exist in the old record');
+              const isExist = await this.bunnyService.checkIfImageExists(
+                updateProjectData.image1,
+              );
+              if (isExist) {
+                await this.bunnyService.deleteImage(updateProjectData.image1);
               }
-              console.info('Image 1 has been replaced');
-              updateProjectData.image1 = path;
             }
+            console.info('Image 1 has been replaced');
+            updateProjectData.image1 = path;
+          }
 
-            if (i === 2 && imageUpload) {
-              if (updateProjectData.image2) {
-                console.info('Old image 2 seems to be exist in the old record');
-                const isExist = await this.bunnyService.checkIfImageExists(
-                  updateProjectData.image2,
-                );
-                if (isExist) {
-                  await this.bunnyService.deleteImage(updateProjectData.image2);
-                }
+          if (i === 2 && imageUpload) {
+            if (updateProjectData.image2) {
+              console.info('Old image 2 seems to be exist in the old record');
+              const isExist = await this.bunnyService.checkIfImageExists(
+                updateProjectData.image2,
+              );
+              if (isExist) {
+                await this.bunnyService.deleteImage(updateProjectData.image2);
               }
-              console.info('Image 2 has been replaced');
-              updateProjectData.image2 = path;
             }
+            console.info('Image 2 has been replaced');
+            updateProjectData.image2 = path;
+          }
 
-            if (i === 3 && imageUpload) {
-              if (updateProjectData.image3) {
-                console.info('Old image 3 seems to be exist in the old record');
-                const isExist = await this.bunnyService.checkIfImageExists(
-                  updateProjectData.image3,
-                );
-                if (isExist) {
-                  await this.bunnyService.deleteImage(updateProjectData.image3);
-                }
+          if (i === 3 && imageUpload) {
+            if (updateProjectData.image3) {
+              console.info('Old image 3 seems to be exist in the old record');
+              const isExist = await this.bunnyService.checkIfImageExists(
+                updateProjectData.image3,
+              );
+              if (isExist) {
+                await this.bunnyService.deleteImage(updateProjectData.image3);
               }
-              console.info('Image 3 has been replaced');
-              updateProjectData.image3 = path;
             }
+            console.info('Image 3 has been replaced');
+            updateProjectData.image3 = path;
+          }
 
-            if (i === 4 && imageUpload) {
-              if (updateProjectData.projectAvatar) {
-                console.info('Deleting old project avatar ...');
-                const isExist = await this.bunnyService.checkIfImageExists(
+          if (i === 4 && imageUpload) {
+            if (updateProjectData.projectAvatar) {
+              console.info('Deleting old project avatar ...');
+              const isExist = await this.bunnyService.checkIfImageExists(
+                updateProjectData.projectAvatar,
+              );
+              if (isExist) {
+                await this.bunnyService.deleteImage(
                   updateProjectData.projectAvatar,
                 );
-                if (isExist) {
-                  await this.bunnyService.deleteImage(
-                    updateProjectData.projectAvatar,
-                  );
-                }
               }
-              console.info('Project avatar has been replaced');
-              updateProjectData.projectAvatar = path;
             }
+            console.info('Project avatar has been replaced');
+            updateProjectData.projectAvatar = path;
           }
         }
       }
-
-      return await updateProjectData.save();
     }
+
+    return await updateProjectData.save();
   }
 
   async applyFilter(
@@ -769,7 +767,7 @@ export class ProjectService {
     return data;
   }
 
-  async setDeletedFlag(projectIds: string[]): Promise<any> {
+  async setDeletedFlag(projectIds: string[]): Promise<string> {
     this.logger.debug(
       `setting ${projectIds.length} deleted flag to ${projectIds}`,
     );
@@ -780,9 +778,6 @@ export class ProjectService {
     this.logger.debug(
       `${updatedProject.matchedCount} match, ${updatedProject.modifiedCount} data updated`,
     );
-    return {
-      statusCode: 200,
-      message: `${updatedProject.matchedCount} match, ${updatedProject.modifiedCount} data updated`,
-    };
+    return `${updatedProject.matchedCount} match, ${updatedProject.modifiedCount} data updated`;
   }
 }

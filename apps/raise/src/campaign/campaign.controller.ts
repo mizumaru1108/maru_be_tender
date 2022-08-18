@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -19,6 +20,9 @@ import { CampaignService } from './campaign.service';
 import { CampaignSetFavoriteDto, CreateCampaignDto } from './dto';
 import { CampaignSetDeletedFlagDto } from './dto/capaign-set-flag-deleted';
 import { UpdateCampaignDto } from './dto/update-campaign-dto';
+import { baseResponseHelper } from '../commons/helpers/base-response-helper';
+import { BaseResponse } from '../commons/dtos/base-response';
+import { Campaign } from './campaign.schema';
 
 @ApiTags('campaign')
 @Controller('campaign')
@@ -47,8 +51,18 @@ export class CampaignController {
     description: 'The New Campaign has been successfully flagged as deleted.',
   })
   @Post('setDeletedFlagBatch')
-  async setDeletedFlag(@Body() request: CampaignSetDeletedFlagDto) {
-    await this.campaignService.setDeletedFlag(request.campaignIds);
+  async setDeletedFlag(
+    @Body() request: CampaignSetDeletedFlagDto,
+  ): Promise<BaseResponse<string>> {
+    const affectedDeleteStatus = await this.campaignService.setDeletedFlag(
+      request.campaignIds,
+    );
+    const response = baseResponseHelper(
+      HttpStatus.OK,
+      'Campaigns deleted',
+      affectedDeleteStatus,
+    );
+    return response;
   }
 
   @ApiOperation({ summary: 'Get list all campaign' })
@@ -208,11 +222,17 @@ export class CampaignController {
   async updateCampaign(
     @Param('campaignId') campaignId: string,
     @Body() updateCampaignRequest: UpdateCampaignDto,
-  ) {
+  ): Promise<BaseResponse<Campaign>> {
     this.logger.debug('payload', JSON.stringify(updateCampaignRequest));
-    return await this.campaignService.updateCampaign(
+    const updatedCampaign = await this.campaignService.updateCampaign(
       campaignId,
       updateCampaignRequest,
     );
+    const response = baseResponseHelper(
+      HttpStatus.OK,
+      'Campaign updated',
+      updatedCampaign,
+    );
+    return response;
   }
 }
