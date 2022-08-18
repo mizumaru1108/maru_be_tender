@@ -37,7 +37,7 @@ import { query } from 'express';
 export class OrganizationController {
   private logger = rootLogger.child({ logger: OrganizationController.name });
 
-  constructor(private organizationService: OrganizationService) {}
+  constructor(private organizationService: OrganizationService) { }
 
   @Get('getListAll')
   async findAll() {
@@ -312,5 +312,13 @@ export class OrganizationController {
   @Get(':organizationId/contactUs')
   async getContactUs(@Param('organizationId') organizationId: string) {
     return this.organizationService.getContactUs(organizationId);
+  }
+  @Get('donor/:organizationId/:donorId')
+  async getInsightSummaryDonorId(
+    @Param('organisationId') organizationId: string,
+    @Param('donorId') donorId: string,
+    @Query('period') period: string,
+  ) {
+    return this.organizationService.getInsightSummaryDonorId(organizationId, donorId, period);
   }
 }
