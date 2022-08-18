@@ -34,6 +34,17 @@ export class UserController {
     };
   }
 
+  @Post('test-cluster-admin')
+  @ClusterRoles(RoleEnum.CLUSTERADMIN)
+  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
+  async testClusterAdmin(@CurrentUser() user: ICurrentUser) {
+    return {
+      statusCode: 200,
+      user,
+      message: 'This endpoint is for cluster admin only',
+    };
+  }
+
   @Post('test-vendor')
   @ClusterRoles(RoleEnum.VENDOR)
   @UseGuards(JwtAuthGuard, ClusterRolesGuard)

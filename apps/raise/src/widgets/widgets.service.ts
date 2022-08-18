@@ -7,6 +7,7 @@ import { Basket, BasketDocument } from './schemas/basket.schema';
 import { BasketDto, BasketProjectDto } from './dto';
 import { Donor, DonorDocument } from 'src/donor/schema/donor.schema';
 import { Campaign, CampaignDocument } from 'src/campaign/campaign.schema';
+import { ProjectService } from '../project/project.service';
 
 @Injectable()
 export class WidgetsService {
@@ -18,6 +19,7 @@ export class WidgetsService {
     private campaignModel: Model<CampaignDocument>,
     @InjectModel(Donor.name)
     private donorModel: Model<DonorDocument>,
+    private projectServices: ProjectService,
   ) { }
 
   async getBasketList(donorId: string) {
@@ -162,82 +164,88 @@ export class WidgetsService {
   /**
    * Basket Cart Project 
    */
-  // async createProjectBasket(basketProjectDto: BasketProjectDto) {
-  //   const getDonor = await this.donorModel.findOne({
-  //     _id: basketProjectDto.donorId,
-  //   });
+  async createProjectBasket(basketProjectDto: BasketProjectDto) {
+    const getDonor = await this.donorModel.findOne({
+      _id: basketProjectDto.donorId,
+    });
 
-  //   if (!getDonor) {
-  //     const txtMessage = `request rejected donorId not found`;
-  //     return {
-  //       statusCode: 514,
-  //       headers: {
-  //         'Access-Control-Allow-Origin': '*',
-  //       },
-  //       body: JSON.stringify({
-  //         message: txtMessage,
-  //       }),
-  //     };
-  //   }
+    const getProject = await this.projectServices.getListAll();
 
-  //   const getCampaign = await this.campaignModel.findOne({
-  //     _id: basketProjectDto.campaignId,
-  //   });
 
-  //   if (!getCampaign) {
-  //     const txtMessage = `request rejected campaign not found`;
-  //     return {
-  //       statusCode: 514,
-  //       headers: {
-  //         'Access-Control-Allow-Origin': '*',
-  //       },
-  //       body: JSON.stringify({
-  //         message: txtMessage,
-  //       }),
-  //     };
-  //   }
+    // const getProject = await this.campaignModel.findOne({
+    //   _id: basketProjectDto.campaignId,
+    // });
 
-  //   const createdBasket = new this.basketModel(basketProjectDto);
-  //   let now: Date = new Date();
-  //   createdBasket.createdAt = now;
-  //   createdBasket.updatedAt = now;
-  //   createdBasket.donorId = new Types.ObjectId(basketProjectDto.donorId);
-  //   createdBasket.campaignId = new Types.ObjectId(basketProjectDto.campaignId);
-  //   createdBasket.isDeleted = false;
-  //   createdBasket.isExpired = false;
-  //   return createdBasket.save();
-  // }
+    if (!getProject) {
+      const txtMessage = `request rejected project not found`;
+      return {
+        statusCode: 514,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({
+          message: txtMessage,
+        }),
+      };
+    }
 
-  // async updateProjectBasket(basketId: string, basketProjectDto: BasketProjectDto) {
-  //   const updates: {
-  //     isDeleted?: boolean;
-  //     currency?: string;
-  //     amount?: number;
-  //     unit?: number;
-  //   } = {};
+    const updates: {
+      isDeleted?: boolean;
+      currency?: string;
+      amount?: number;
+      unit?: number;
+      donorId?: Types.ObjectId;
+    } = {};
 
-  //   if (basketProjectDto.isDeleted) updates.isDeleted = basketProjectDto.isDeleted;
-  //   if (basketProjectDto.currency) updates.currency = basketProjectDto.currency;
-  //   if (basketProjectDto.amount) updates.amount = basketProjectDto.amount;
-  //   if (basketProjectDto.unit) updates.unit = basketProjectDto.unit;
+    if (basketProjectDto.isDeleted) updates.isDeleted = basketProjectDto.isDeleted;
+    if (basketProjectDto.currency) updates.currency = basketProjectDto.currency;
+    if (basketProjectDto.amount) updates.amount = basketProjectDto.amount;
+    if (basketProjectDto.unit) updates.unit = basketProjectDto.unit;
+    if (basketProjectDto.donorId) updates.donorId = basketProjectDto.donorId;
 
-  //   const basketUpdated = await this.basketModel.findOneAndUpdate(
-  //     { _id: basketId, isDeleted: false, isExpired: false },
-  //     basketProjectDto,
-  //     { new: true },
-  //   );
+    const createdBasket = new this.basketModel(basketProjectDto);
+    let now: Date = new Date();
+    createdBasket.createdAt = now;
+    createdBasket.updatedAt = now;
+    createdBasket.donorId = new Types.ObjectId(basketProjectDto.donorId);
+    createdBasket.campaignId = new Types.ObjectId(basketProjectDto.campaignId);
+    createdBasket.isDeleted = false;
+    createdBasket.isExpired = false;
+    return createdBasket.save();
+  }
 
-  //   if (!basketUpdated) {
-  //     return {
-  //       statusCode: 400,
-  //       message: 'Failed',
-  //     };
-  //   }
-  //   return {
-  //     statusCode: 200,
-  //     basket: basketUpdated,
-  //   };
-  // }
+  async updateProjectBasket(basketId: string, basketProjectDto: BasketProjectDto) {
+    const updates: {
+      isDeleted?: boolean;
+      currency?: string;
+      amount?: number;
+      unit?: number;
+      donorId?: Types.ObjectId;
+    } = {};
+
+    if (basketProjectDto.isDeleted) updates.isDeleted = basketProjectDto.isDeleted;
+    if (basketProjectDto.currency) updates.currency = basketProjectDto.currency;
+    if (basketProjectDto.amount) updates.amount = basketProjectDto.amount;
+    if (basketProjectDto.unit) updates.unit = basketProjectDto.unit;
+    if (basketProjectDto.donorId) updates.donorId = basketProjectDto.donorId;
+
+    const basketUpdated = await this.basketModel.findOneAndUpdate(
+      { _id: basketId, isDeleted: false, isExpired: false },
+      basketProjectDto,
+      { new: true },
+    );
+
+    if (!basketUpdated) {
+      return {
+        statusCode: 400,
+        message: 'Failed',
+      };
+    }
+    return {
+      statusCode: 200,
+      basket: basketUpdated,
+    };
+  }
 
   // async getBasketProjectList(donorId: string) {
   //   this.logger.debug(`getBasketList donorId=${donorId}`);

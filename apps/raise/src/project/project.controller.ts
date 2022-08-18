@@ -7,6 +7,7 @@ import {
   Patch,
   UseGuards,
   Query,
+  Req,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { rootLogger } from '../logger';
@@ -16,11 +17,11 @@ import { ProjectSetDeletedFlagDto } from './dto/project-set-flag-deleted';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { RoleEnum } from '../user/enums/role-enum';
-import { ClusterRoles } from '../auth/cluster-roles.decorator';
 import { CurrentUser } from '../commons/decorators/current-user.decorator';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
-import { ClusterRolesGuard } from '../auth/cluster-roles.guard';
 import { ProjectFilterRequest } from './dto/project-filter.request';
+import { ClusterRoles } from '../auth/cluster-roles.decorator';
+import { ClusterRolesGuard } from '../auth/cluster-roles.guard';
 
 @ApiTags('project')
 @Controller('project')
@@ -28,18 +29,17 @@ export class ProjectController {
   private logger = rootLogger.child({ logger: ProjectController.name });
   constructor(private projectService: ProjectService) {}
 
-  @ApiOperation({ summary: 'Get All Projects viewed by manager' })
-  @ClusterRoles(RoleEnum.SUPERADMIN)
-  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
-  @Get('manager/getListAll')
-  async getAllProjects() {
-    this.logger.debug(`Get all projects`);
-    return await this.projectService.getListAll();
-  }
+  // @ApiOperation({ summary: 'Get All Projects viewed by manager' })
+  // @ClusterRoles(RoleEnum.SUPERADMIN)
+  // @UseGuards(JwtAuthGuard, ClusterRolesGuard)
+  // @Get('manager/getListAll')
+  // async getAllProjects() {
+  //   this.logger.debug(`Get all projects`);
+  //   return await this.projectService.getListAll();
+  // }
 
   @ApiOperation({ summary: 'Get All Projects viewed by manager' })
-  @ClusterRoles(RoleEnum.SUPERADMIN)
-  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('manager/getProjectList')
   async getProjectList(@Query() projectFilter: ProjectFilterRequest) {
     this.logger.debug(`Get all projects`);
@@ -59,7 +59,7 @@ export class ProjectController {
     description: 'The Project has been successfully created.',
   })
   @ClusterRoles(RoleEnum.OPERATOR)
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
   @Post('create')
   async create(
     @CurrentUser() currentUser: ICurrentUser,

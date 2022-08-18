@@ -136,14 +136,27 @@ export class CampaignController {
 
   @ApiOperation({ summary: 'Get list all my pending campaign (vendor)' })
   @Get('organization/:organizationId/vendor/:vendorId/getListPending')
-  async getPendingMyCampaignByVendor(
+  async getPendingMyCampaignByVendorId(
     @Param('organizationId') organizationId: string,
     @Param('vendorId') vendorId: string,
   ) {
     this.logger.debug(`Get list all my pending campaign`);
-    return await this.campaignService.getAllPendingCampaign(
+    return await this.campaignService.getAllPendingCampaignByVendorId(
       organizationId,
       vendorId,
+    );
+  }
+
+  @ApiOperation({ summary: 'Get list all my pending campaign (Operator)' })
+  @Get('organization/:organizationId/operator/:operatorId/getListPending')
+  async getPendingMyCampaignByOperatorId(
+    @Param('organizationId') organizationId: string,
+    @Param('operatorId') operatorId: string,
+  ) {
+    this.logger.debug(`Get list all my pending campaign`);
+    return await this.campaignService.getAllPendingCampaignByOperatorId(
+      organizationId,
+      operatorId,
     );
   }
 

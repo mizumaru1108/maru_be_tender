@@ -27,8 +27,6 @@ import { TicketModule } from './ticket/ticket.module';
 import { ZakatModule } from './zakat/zakat.module';
 import { UsersModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-import { AuthzedService } from './authzed/authzed.service';
-import { AuthzedModule } from './authzed/authzed.module';
 import { BuyingModule } from './buying/buying.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { OperatorModule } from './operator/operator.module';
@@ -100,13 +98,11 @@ import { WidgetBackendModule } from './widget-backend/widget-backend.module';
     ZakatModule,
     UsersModule,
     AuthModule,
-    AuthzedModule,
     BuyingModule,
     WidgetsModule,
     SharedModule,
     WidgetBackendModule,
   ],
   controllers: [],
-  providers: [AuthzedService],
 })
 export class AppModule {}

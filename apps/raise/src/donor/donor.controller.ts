@@ -2,21 +2,25 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
   Param,
-  Post,
   Patch,
+  Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { rootLogger } from '../logger';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
+import { JwtAuthGuard } from '../auth/jwt.guard';
+import { Vendor } from '../buying/vendor/vendor.schema';
+import { CurrentUser } from '../commons/decorators/current-user.decorator';
+import { BaseResponse } from '../commons/dtos/base-response';
+import { baseResponseHelper } from '../commons/helpers/base-response-helper';
+import { rootLogger } from '../logger';
+import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { DonorService } from './donor.service';
 import { DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
-import { CampaignService } from '../campaign/campaign.service';
-import { JwtAuthGuard } from '../auth/jwt.guard';
-import { ClusterRolesGuard } from '../auth/cluster-roles.guard';
-import { RoleEnum } from '../user/enums/role-enum';
-import { ClusterRoles } from '../auth/cluster-roles.decorator';
+import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
 
 @ApiTags('donor')
 @Controller('donor')
@@ -24,6 +28,31 @@ export class DonorController {
   private logger = rootLogger.child({ logger: DonorController.name });
 
   constructor(private donorService: DonorService) {}
+
+  /**
+   * Endpoint for donor to apply as vendor.
+   * @param applyVendorRequest
+   * @returns {Promise<Response<BaseResponse<Vendor>>>}
+   */
+  @ApiOperation({ summary: 'Apply to become vendor from donor.' })
+  @UseGuards(JwtAuthGuard)
+  @Post('/apply-vendor')
+  async applyVendor(
+    @Body() applyVendorRequest: DonorApplyVendorDto,
+    @CurrentUser() currentUser: ICurrentUser,
+  ): Promise<BaseResponse<Vendor>> {
+    this.logger.debug('apply to become vendor');
+    const createdVendor = await this.donorService.applyVendor(
+      currentUser.id,
+      applyVendorRequest,
+    );
+    const response = baseResponseHelper(
+      HttpStatus.CREATED,
+      'Donor applied to become vendor',
+      createdVendor,
+    );
+    return response;
+  }
 
   @ApiOperation({ summary: 'Create Donor Payment' })
   @ApiResponse({
@@ -60,8 +89,7 @@ export class DonorController {
   }
 
   @Get('organization/:organizationId/manager/getListAll')
-  @ClusterRoles(RoleEnum.SUPERADMIN)
-  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
+  @UseGuards(JwtAuthGuard)
   async getDonorListAll(@Param('organizationId') organizationId: string) {
     this.logger.debug('findOne...');
     return await this.donorService.getDonorListAll(organizationId);
@@ -92,5 +120,15 @@ export class DonorController {
     this.logger.debug('update donor');
     this.logger.debug(JSON.stringify(donorUpdateProfileDto));
     return await this.donorService.updateDonor(donorId, donorUpdateProfileDto);
+  }
+
+  @ApiOperation({ summary: 'Get Donation Donor Summary Dashboard' })
+  @Get('totalDonationDonor/:donorId')
+  async getTotalDonationDonor(
+    @Param('donorId') donorId: string,
+    @Query('currencyCode') currency: string,
+  ) {
+    this.logger.debug('get TotalDonationDonor');
+    return await this.donorService.getTotalDonationDonor(donorId, currency);
   }
 }

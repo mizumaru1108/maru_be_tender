@@ -1,17 +1,27 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { rootLogger } from '../logger';
-import moment from 'moment';
-import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { isDocumentArray } from '@typegoose/typegoose';
+import moment from 'moment';
+import {
+  AggregatePaginateModel,
+  AggregatePaginateResult,
+  FilterQuery,
+  Model,
+  PaginateModel,
+  PaginateOptions,
+  Types,
+} from 'mongoose';
+import { rootLogger } from '../logger';
+import { ChartDataDto, ChartDetailData } from './dto/chart-data.dto';
+import { GetAllOperatorResponse } from './dto/get-all-operator.response';
+import { OperatorChartDataDto } from './dto/operator-chart-data.dto';
+import { OperatorFilterRequest } from './dto/operator-filter-request';
+import { OperatorSortByEnum } from './enums/operator-sort-by.enum';
 import {
   OperatorChartData,
   OperatorChartDataDocument,
 } from './schema/operator-chart.schema';
 import { Operator, OperatorDocument } from './schema/operator.schema';
-import { isDocumentArray } from '@typegoose/typegoose';
-import { ChartDataDto, ChartDetailData } from './dto/chart-data.dto';
-import { OperatorChartDataDto } from './dto/operator-chart-data.dto';
-import { Types } from 'mongoose';
 
 @Injectable()
 export class OperatorService {
@@ -22,7 +32,22 @@ export class OperatorService {
     private operatorChartDataModel: Model<OperatorChartDataDocument>,
     @InjectModel(Operator.name)
     private operatorModel: Model<OperatorDocument>,
+    @InjectModel(Operator.name)
+    private opreatorPaginateModel: PaginateModel<OperatorDocument>,
+    @InjectModel(Operator.name)
+    private operatorAggregateModel: AggregatePaginateModel<OperatorDocument>,
   ) {}
+
+  async applyOperatorFilter(
+    filter: OperatorFilterRequest,
+  ): Promise<FilterQuery<OperatorDocument>> {
+    const filterQuery: FilterQuery<OperatorDocument> = {};
+    const { name } = filter;
+    if (name) {
+      filterQuery.name = { $regex: name, $options: 'i' };
+    }
+    return filterQuery;
+  }
 
   async getOperatorDetail(operatorId: string) {
     const operator = await this.operatorModel.findById(
@@ -34,9 +59,80 @@ export class OperatorService {
     return operator;
   }
 
-  async getListAll() {
+  async getListAll(
+    filter: OperatorFilterRequest,
+  ): Promise<AggregatePaginateResult<OperatorDocument>> {
+    const filterQuery = await this.applyOperatorFilter(filter);
+    const { limit = 10, page = 1 } = filter;
+    let sort = {};
+    if (filter.sortBy === OperatorSortByEnum.NEWEST) {
+      sort = { createdAt: -1 };
+    } else if (filter.sortBy === OperatorSortByEnum.OLDEST) {
+      sort = { createdAt: 1 };
+    } else if (filter.sortBy === OperatorSortByEnum.TRANDING) {
+      sort = { projectCount: -1 };
+    } else {
+      sort = { _id: -1 };
+    }
     this.logger.debug('Get list all operator with its project...');
-    const operatorList = await this.operatorModel.aggregate([
+    // const operatorList = await this.operatorModel.aggregate([
+    //   {
+    //     $match: filterQuery,
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: 'projectOperatorMap',
+    //       localField: '_id',
+    //       foreignField: 'operatorId',
+    //       as: 'op',
+    //     },
+    //   },
+    //   {
+    //     $unwind: {
+    //       path: '$op',
+    //       preserveNullAndEmptyArrays: true,
+    //     },
+    //   },
+    //   {
+    //     $group: {
+    //       _id: '$_id',
+    //       name: { $first: '$name' },
+    //       coverImage: { $first: '$coverImage' },
+    //       image1: { $first: '$image1' },
+    //       image2: { $first: '$image2' },
+    //       image3: { $first: '$image3' },
+    //       description: { $first: '$description' },
+    //       createdAt: { $first: '$createdAt' },
+    //       projectId: { $first: '$op.projectId' },
+    //       count: { $sum: 1 },
+    //     },
+    //   },
+    //   {
+    //     $project: {
+    //       _id: 1,
+    //       name: 1,
+    //       coverImage: 1,
+    //       image1: 1,
+    //       image2: 1,
+    //       image3: 1,
+    //       description: 1,
+    //       createdAt: 1,
+    //       projectId: 1,
+    //       projectCount: '$count',
+    //     },
+    //   },
+    //   {
+    //     $sort: {
+    //       _id: 1,
+    //     },
+    //   },
+    // ]);
+    // return operatorList;
+
+    var operatorAggregation = this.operatorModel.aggregate([
+      {
+        $match: filterQuery,
+      },
       {
         $lookup: {
           from: 'projectOperatorMap',
@@ -80,11 +176,17 @@ export class OperatorService {
         },
       },
       {
-        $sort: {
-          _id: 1,
-        },
+        $sort: sort,
       },
     ]);
+    const operatorList = await this.operatorAggregateModel.aggregatePaginate(
+      operatorAggregation,
+      {
+        page: page,
+        limit: limit,
+      },
+    );
+
     return operatorList;
   }
 

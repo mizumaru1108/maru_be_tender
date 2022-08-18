@@ -1,4 +1,5 @@
 export enum RoleEnum {
+  CLUSTERADMIN = 'cluster_admin',
   SUPERADMIN = 'superadmin',
   OPERATOR = 'operator',
   VENDOR = 'vendor',

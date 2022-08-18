@@ -1,4 +1,3 @@
-import FusionAuthClient from '@fusionauth/typescript-client';
 import {
   BadRequestException,
   CanActivate,
@@ -6,7 +5,6 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { FusionAuthService } from '../fusionauth/services/fusion-auth.service';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
@@ -37,7 +35,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
       const user: ICurrentUser = {
         id: validToken.response.jwt!.sub!,
         email: validToken.response.jwt!.email!,
+        type: validToken.response.jwt!.roles! ?? [],
       };
+      // console.log(user);
       request.user = user;
     } catch (e) {
       console.log(e);

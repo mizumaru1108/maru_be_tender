@@ -17,4 +17,6 @@ export class OrganizationDto {
   latitude: string;
   longitude: string;
   currencyOptions: object;
+  defaultLanguage: string;
+  campaignLanguage: string;
 }

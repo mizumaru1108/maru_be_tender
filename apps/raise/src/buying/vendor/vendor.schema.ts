@@ -1,19 +1,91 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
 import * as mongoose from 'mongoose';
+import { Document } from 'mongoose';
 
 export type VendorDocument = Vendor & Document;
 export type VendorChartDataDocument = VendorChartData & Document;
 export type CampaignVendorLogDocument = CampaignVendorLog & Document;
 
-@Schema({ collection: 'vendor' })
+@Schema({
+  timestamps: true, // automatically adds createdAt and updatedAt fields with type date
+  collection: 'vendor',
+})
 export class Vendor {
-  @Prop()
+  public readonly _id: mongoose.Types.ObjectId;
+
+  /**
+   * Vendor Id
+   */
+  @Prop({ default: '' })
   vendorId: string;
-  @Prop()
-  name: string;
+
+  /**
+   * The user id of the vendor
+   */
   @Prop()
   ownerUserId: string;
+
+  /**
+   * Vendor Name
+   */
+  @Prop()
+  name: string;
+
+  /**
+   * Sumber informasi tentang lelang
+   */
+  @Prop()
+  channels: string;
+
+  /**
+   * Soft delete flag
+   */
+  @Prop({ default: 'N' })
+  isDeleted: string;
+
+  /**
+   * Maybe it's a state where, the donnor already accepted to become a vendor.
+   * Y, it's a vendor.
+   * N, it's not a vendor yet (donnor type that pending to become a vendor).
+   */
+  @Prop({ default: 'N' })
+  isActive: string;
+
+  /**
+   *  Cover Image
+   */
+  @Prop()
+  coverImage: string;
+
+  /**
+   * Image 1
+   */
+  @Prop()
+  image1: string;
+
+  /**
+   * Image 2
+   */
+  @Prop()
+  image2: string;
+
+  /**
+   * Image 3
+   */
+  @Prop()
+  image3: string;
+
+  /**
+   * Vendor Avatar
+   */
+  @Prop()
+  vendorAvatar: string;
+
+  /* actualy it's created automatically, but i defined here to use the prop latter, (ex: vendorData.createdAt) */
+  readonly createdAt?: Date;
+
+  /* actualy it's created automatically, but i defined here to use the prop latter, (ex: vendorData.updatedAt) */
+  readonly updatedAt?: Date;
 }
 
 @Schema({ collection: 'campaignVendorLog' })

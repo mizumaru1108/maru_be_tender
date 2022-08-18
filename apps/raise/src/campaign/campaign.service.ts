@@ -253,8 +253,8 @@ export class CampaignService {
               updateCampaignData.organizationId.toString(),
               'campaign-photo',
               validatedDto.images[i].fullName,
-              campaignId,
               validatedDto.images[i].imageExtension,
+              campaignId,
             );
             const base64Data = validatedDto.images[i].base64Data;
             const binary = Buffer.from(
@@ -442,10 +442,7 @@ export class CampaignService {
 
   async getAllByOperatorId(organizationId: string, operatorId: string) {
     const ObjectId = require('mongoose').Types.ObjectId;
-    // const dataOperator = await this.operatorModel.findOne({
-    //   ownerUserId: operatorId,
-    // });
-    // const realOpId = dataOperator?._id;
+
     if (!operatorId) {
       throw new NotFoundException(`OperatorId must be not null`);
     }
@@ -454,73 +451,12 @@ export class CampaignService {
       throw new NotFoundException(`OrganizationId must be not null`);
     }
 
-    // if (!ObjectId.isValid(realOpId)) {
-    //   throw new BadRequestException(`OperatorId is invalid ObjectId`);
-    // }
-
-    // const campaignList = await this.campaignModel.aggregate([
-    //   {
-    //     $match: {
-    //       campaignName: { $exists: true },
-    //       campaignType: { $exists: true },
-    //       projectId: { $exists: true },
-    //     },
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: 'project',
-    //       localField: 'projectId',
-    //       foreignField: '_id',
-    //       as: 'cp',
-    //     },
-    //   },
-    //   { $unwind: { path: '$cp', preserveNullAndEmptyArrays: true } },
-    //   {
-    //     $lookup: {
-    //       from: 'projectOperatorMap',
-    //       localField: 'projectId',
-    //       foreignField: 'projectId',
-    //       as: 'pj',
-    //     },
-    //   },
-    //   { $unwind: { path: '$pj', preserveNullAndEmptyArrays: true } },
-    //   {
-    //     $lookup: {
-    //       from: 'campaignVendorLog',
-    //       localField: '_id',
-    //       foreignField: 'campaignId',
-    //       as: 'cpv',
-    //     },
-    //   },
-    //   { $unwind: { path: '$cpv' } },
-    //   {
-    //     $addFields: {
-    //       operatorId: '$pj.operatorId',
-    //       status: '$cpv.status',
-    //       type: '$campaignType',
-    //     },
-    //   },
-    //   {
-    //     $project: {
-    //       _id: 1,
-    //       campaignName: 1,
-    //       status: 1,
-    //       type: 1,
-    //       createdAt: 1,
-    //       milestone: { $size: '$milestone' },
-    //       projectId: 1,
-    //       operatorId: 1,
-    //     },
-    //   },
-    //   { $match: { operatorId: ObjectId(realOpId) } },
-    //   { $sort: { _id: 1 } },
-    // ]);
-
     const campaignList = await this.campaignModel.aggregate([
       {
         $match: {
           organizationId: ObjectId(organizationId),
           creatorUserId: operatorId,
+          isDeleted: { $regex: 'n', $options: 'i' }, // hide deleted campaign
         },
       },
       {
@@ -579,10 +515,6 @@ export class CampaignService {
     if (!dataVendor) {
       throw new NotFoundException(`Vendor not found`);
     }
-
-    // if (!vendorApplyDto.organizationId) {
-    //   throw new NotFoundException(`Organization not found`);
-    // }
 
     if (!createCampaignDto.campaignId) {
       throw new NotFoundException(`Campaign not found`);
@@ -732,7 +664,10 @@ export class CampaignService {
     return campaignList;
   }
 
-  async getAllPendingCampaign(organizationId: string, vendorId: string) {
+  async getAllPendingCampaignByVendorId(
+    organizationId: string,
+    vendorId: string,
+  ) {
     const ObjectId = require('mongoose').Types.ObjectId;
     const dataVendor = await this.vendorModel.findOne({
       ownerUserId: vendorId,
@@ -785,6 +720,83 @@ export class CampaignService {
       {
         $match: {
           vendorId: realVdId,
+          status: 'pending new',
+          orgId: ObjectId(organizationId),
+        },
+      },
+
+      { $sort: { _id: -1 } },
+    ]);
+
+    this.logger.debug(
+      `list of my pending campaign=${JSON.stringify(campaignList)}`,
+    );
+    return campaignList;
+  }
+
+  async getAllPendingCampaignByOperatorId(
+    organizationId: string,
+    operatorId: string,
+  ) {
+    const ObjectId = require('mongoose').Types.ObjectId;
+    const dataOp = await this.vendorModel.findOne({
+      ownerUserId: operatorId,
+    });
+    const realOpId = (dataOp?._id).toString();
+    if (!realOpId) {
+      throw new NotFoundException(`VendorId must be not null`);
+    }
+
+    const campaignList = await this.campaignVendorLogModel.aggregate([
+      {
+        $addFields: {
+          newId: { $toObjectId: '$vendorId' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'campaign',
+          localField: 'campaignId',
+          foreignField: '_id',
+          as: 'cp',
+        },
+      },
+      { $unwind: { path: '$cp', preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: 'vendor',
+          localField: 'newId',
+          foreignField: '_id',
+          as: 'pj',
+        },
+      },
+      { $unwind: { path: '$pj', preserveNullAndEmptyArrays: true } },
+      {
+        $addFields: {
+          _id: '$campaignId',
+          status: '$status',
+          ownerId: '$pj.ownerUserId',
+          type: '$cp.campaignType',
+          campaignName: '$cp.campaignName',
+          orgId: '$cp.organizationId',
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          campaignName: 1,
+          status: 1,
+          type: 1,
+          createdAt: 1,
+          ownerId: 1,
+          milestone: { $size: '$cp.milestone' },
+          vendorId: 1,
+          orgId: 1,
+        },
+      },
+      {
+        $match: {
+          vendorId: realOpId,
           status: 'pending new',
           orgId: ObjectId(organizationId),
         },

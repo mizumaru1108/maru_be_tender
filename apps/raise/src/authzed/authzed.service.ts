@@ -41,10 +41,8 @@ export class AuthzedService {
       this.client.checkPermission(checkPermissionRequest, callback);
     } catch (error) {
       result = false;
-      console.log("WHATTT", error);
+      console.log('WHATTT', error);
     }
-
-
     return result;
   }
 }

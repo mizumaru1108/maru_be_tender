@@ -414,8 +414,8 @@ export class ItemService {
               updateItemData.organizationId.toString(),
               'item-photo',
               validatedDto.images[i].fullName,
-              itemId,
               validatedDto.images[i].imageExtension,
+              itemId,
             );
             const base64Data = validatedDto.images[i].base64Data;
             const binary = Buffer.from(

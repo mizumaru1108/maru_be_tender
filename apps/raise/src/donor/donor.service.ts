@@ -25,15 +25,21 @@ import { ApiOperation } from '@nestjs/swagger';
 import {
   CampaignVendorLog,
   CampaignVendorLogDocument,
+  Vendor,
+  VendorDocument,
 } from '../buying/vendor/vendor.schema';
 import { CampaignService } from '../campaign/campaign.service';
 import { Campaign, CampaignDocument } from '../campaign/campaign.schema';
+import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
+import { z } from 'zod';
+import { BunnyService } from '../bunny/services/bunny.service';
 
 @Injectable()
 export class DonorService {
   private logger = rootLogger.child({ logger: DonorService.name });
 
   constructor(
+    private bunnyService: BunnyService,
     @InjectModel(Donor.name)
     private donorModel: Model<DonorDocument>,
     @InjectModel(Volunteer.name)
@@ -45,12 +51,89 @@ export class DonorService {
     @InjectModel(Anonymous.name)
     private anonymousModel: Model<AnonymousDocument>,
     private configService: ConfigService,
-    // private organizationService: OrganizationService,
     @InjectModel(CampaignVendorLog.name)
     private campaignVendorLogDocument: Model<CampaignVendorLogDocument>,
     @InjectModel(Campaign.name)
     private campaignModel: Model<CampaignDocument>,
-  ) { }
+    @InjectModel(Vendor.name)
+    private vendorModel: Model<VendorDocument>,
+  ) {}
+
+  /* apply to become vendor from donor */
+  // !Should we implements db transaction? when image upload failed, we should rollback the db transaction,
+  // !i can do the db transaction, but how to revoke the image upload?
+  async applyVendor(
+    userId: string,
+    rawDto: DonorApplyVendorDto,
+  ): Promise<Vendor> {
+    // validate with zod
+    let validatedDto: DonorApplyVendorDto;
+    try {
+      validatedDto = DonorApplyVendorDto.parse(rawDto);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        console.log(err);
+        throw new BadRequestException(
+          {
+            statusCode: 400,
+            message: `Invalid Create Vendor Input`,
+            data: err.issues,
+          },
+          `Invalid Create Vendor Input`,
+        );
+      }
+    }
+
+    const newVendor = new this.vendorModel();
+    // isDeleted, isActive is "N" by default so no need to set it, also _id and timestamps (createdAt, updatedAt) are automatically set by mongoose
+    newVendor.vendorId = validatedDto!.vendorId;
+    newVendor.ownerUserId = userId;
+    newVendor.name = validatedDto!.name;
+    newVendor.channels = validatedDto!.channels;
+    newVendor.vendorId = validatedDto!.vendorId;
+
+    if (validatedDto!.images && validatedDto!.images.length > 0) {
+      let folderType: string = '';
+      for (let i = 0; i < validatedDto!.images.length; i++) {
+        if (i === 0) folderType = 'coverImage';
+        if (i === 1 || i === 2 || i === 3) folderType = 'image';
+        if (i === 4) folderType = 'avatar';
+        const path = await this.bunnyService.generatePath(
+          validatedDto!.organizationId.toString(),
+          folderType,
+          validatedDto!.images[i].fullName,
+          validatedDto!.images[i].imageExtension,
+        );
+        const base64Data = validatedDto!.images[i].base64Data;
+        const binary = Buffer.from(
+          validatedDto!.images[i].base64Data,
+          'base64',
+        );
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+        const imageUpload = await this.bunnyService.uploadImage(
+          path,
+          binary,
+          validatedDto!.name,
+        );
+
+        if (i === 0 && imageUpload) newVendor.coverImage = path;
+        if (i === 1 && imageUpload) newVendor.image1 = path;
+        if (i === 2 && imageUpload) newVendor.image2 = path;
+        if (i === 3 && imageUpload) newVendor.image3 = path;
+        if (i === 4 && imageUpload) newVendor.vendorAvatar = path;
+      }
+    }
+    // return vendorDocument as Vendor
+    return await newVendor.save();
+  }
 
   async setFavoriteCampaign(campaignSetFavoriteDto: CampaignSetFavoriteDto) {
     const filter = { donorId: campaignSetFavoriteDto.donorId };
@@ -334,7 +417,11 @@ export class DonorService {
 
     const totalDonation = await this.donationLogsModel.aggregate([
       {
-        $match: { donationStatus: 'success', donorUserId, currencyCode: currency },
+        $match: {
+          donationStatus: 'SUCCESS',
+          donorUserId,
+          currencyCode: currency,
+        },
       },
       {
         $group: {
@@ -350,23 +437,23 @@ export class DonorService {
             },
           },
           currencyCode: {
-            $first: '$currency'
-          }
+            $first: '$currency',
+          },
         },
       },
     ]);
 
     const totalFundDonation = await this.donationLogsModel.aggregate([
       {
-        $match: { donationStatus: 'success', currencyCode: currency },
+        $match: { donationStatus: 'SUCCESS', currencyCode: currency },
       },
       {
         $group: {
           _id: '$donationStatus',
           amountTotalDonation: { $sum: '$amount' },
           currencyCode: {
-            $first: '$currency'
-          }
+            $first: '$currency',
+          },
         },
       },
     ]);
@@ -377,11 +464,266 @@ export class DonorService {
         $group: {
           _id: 'isPublished',
           totalProgram: { $sum: '$amountTarget' },
-          currencyCode: { $first: '$currencyCode' }
+          currencyCode: { $first: '$currencyCode' },
         },
       },
     ]);
 
     return { totalDonation, totalFundDonation, programFund: campaignLogs };
+  }
+
+  async getTotalDonationDonor(donorId: string, currency: string) {
+    this.logger.debug(`getTotalDonorSummary donorId=${donorId}`);
+    const getDonor = await this.donorModel.findOne({
+      _id: donorId,
+    });
+    if (!getDonor) {
+      const txtMessage = `request rejected donorId not found`;
+      return {
+        statusCode: 514,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({
+          message: txtMessage,
+        }),
+      };
+    }
+
+    const getDateQuery = (filterBy: string) => {
+      const date = new Date();
+      const tomorrow = new Date(date.getDate() + 1);
+
+      switch (filterBy) {
+        case 'year':
+          return {
+            $exists: true,
+            $lt: date,
+          };
+        case 'month':
+          return {
+            $exists: true,
+            $gte: tomorrow,
+          };
+        default:
+          const sevenDaysAgo: Date = new Date(
+            Date.now() - 7 * 24 * 60 * 60 * 1000,
+          );
+          return {
+            $gte: sevenDaysAgo,
+          };
+      }
+    };
+    const totalProgram = await this.campaignModel
+      .where({
+        organizationId: new Types.ObjectId(donorId),
+        createdAt: getDateQuery('week'),
+      })
+      .count();
+
+    const totalDonor = await this.donorModel
+      .where({
+        donorId: new Types.ObjectId(donorId),
+        createdAt: getDateQuery('week'),
+      })
+      .count();
+
+    const donationList = await this.donationLogModel.aggregate([
+      {
+        $match: {
+          donorId: new Types.ObjectId(donorId),
+          donationStatus: 'SUCCESS',
+          createdAt: getDateQuery('week'),
+        },
+      },
+      {
+        $group: {
+          _id: { donorId: '$donorId' },
+          total: { $sum: '$amount' },
+        },
+      },
+    ]);
+
+    const totalDonation = donationList.length == 0 ? 0 : donationList[0].total;
+
+    const returningDonorAgg = await this.donationLogModel.aggregate([
+      {
+        $match: {
+          donorId: new Types.ObjectId(donorId),
+          donationStatus: 'SUCCESS',
+          donorUserId: { $ne: null },
+          createdAt: getDateQuery('week'),
+        },
+      },
+      {
+        $lookup: {
+          from: 'donor',
+          localField: 'donorUserId',
+          foreignField: 'ownerUserId',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+        },
+      },
+      {
+        $group: {
+          _id: '$donorUserId',
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $match: {
+          count: { $gt: 1 },
+        },
+      },
+    ]);
+    // console.log(totalReturningDonor);
+
+    const mostPopularProgramsDiagram = await this.donationLogModel.aggregate([
+      {
+        $match: {
+          donorId: new Types.ObjectId(donorId),
+          donationStatus: 'SUCCESS',
+          donorUserId: { $ne: null },
+          createdAt: getDateQuery('week'),
+        },
+      },
+      {
+        $lookup: {
+          from: 'campaign',
+          localField: 'campaignId',
+          foreignField: '_id',
+          as: 'campaign',
+        },
+      },
+      {
+        $unwind: {
+          path: '$campaign',
+        },
+      },
+      {
+        $addFields: {
+          name: {
+            $cond: {
+              if: { $eq: [{ $ifNull: ['$campaign.title', 0] }, 0] },
+              then: '$campaign.campaignName',
+              else: '$campaign.title',
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$campaign._id',
+          campaignName: { $first: '$name' },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+    console.log(mostPopularProgramsDiagram);
+
+    const totalDonationPerProgram = await this.donationLogModel.aggregate([
+      {
+        $match: {
+          donorId: new Types.ObjectId(donorId),
+          donationStatus: 'SUCCESS',
+          donorUserId: { $ne: null },
+          createdAt: getDateQuery('week'),
+        },
+      },
+      {
+        $lookup: {
+          from: 'campaign',
+          localField: 'campaignId',
+          foreignField: '_id',
+          as: 'campaign',
+        },
+      },
+      {
+        $unwind: {
+          path: '$campaign',
+        },
+      },
+      {
+        $addFields: {
+          name: {
+            $cond: {
+              if: { $eq: [{ $ifNull: ['$campaign.title', 0] }, 0] },
+              then: '$campaign.campaignName',
+              else: '$campaign.title',
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$campaign._id',
+          campaignName: { $first: '$name' },
+          total_donation: { $sum: '$amount' },
+        },
+      },
+    ]);
+
+    const campaignPerType = await this.campaignModel
+      .where({
+        donorId: new Types.ObjectId(donorId),
+        createdAt: getDateQuery('week'),
+      })
+      .select({
+        _id: 1,
+        title: 1,
+        campaignType: 1,
+        amountProgress: 1,
+        amountTarget: 1,
+      });
+    const donorList = await this.donationLogModel.aggregate([
+      {
+        $match: {
+          donorId: new Types.ObjectId(donorId),
+          donationStatus: 'SUCCESS',
+          donorUserId: { $ne: null },
+          createdAt: getDateQuery('week'),
+        },
+      },
+      {
+        $lookup: {
+          from: 'donor',
+          localField: 'donorUserId',
+          foreignField: 'ownerUserId',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+        },
+      },
+      {
+        $group: {
+          _id: '$donorUserId',
+          donorId: { $first: '$user._id' },
+          firstName: { $first: '$user.firstName' },
+          lastName: { $first: '$user.lastName' },
+          email: { $first: '$user.email' },
+          country: { $first: '$user.country' },
+          mobile: { $first: '$user.mobile' },
+          totalAmount: { $sum: '$amount' },
+        },
+      },
+    ]);
+
+    return {
+      total_donation: totalDonation,
+      total_program: totalProgram,
+      total_donor: totalDonor,
+      total_returning_donor: returningDonorAgg.length,
+      most_popular_programs: mostPopularProgramsDiagram,
+      total_donation_program: totalDonationPerProgram,
+      campaign_per_type: campaignPerType.slice(0, 5),
+      donor_list: donorList,
+    };
   }
 }
