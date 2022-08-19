@@ -559,7 +559,14 @@ export class ProjectService {
           _id: '$_id',
           projectName: { $first: '$name' },
           updatedAt: { $first: '$updatedAt' },
+          target: { $sum: '$campaignDatas.amountTarget' },
+          collected: { $sum: '$campaignDatas.amountProgress' },
           campaignCount: { $sum: 1 },
+        },
+      },
+      {
+        $addFields: {
+          remainings: { $subtract: ['$target', '$collected'] },
         },
       },
       {
@@ -578,6 +585,9 @@ export class ProjectService {
           _id: '$_id',
           projectName: { $first: '$projectName' },
           updatedAt: { $first: '$updatedAt' },
+          target: { $first: '$target' },
+          collected: { $first: '$collected' },
+          remainings: { $first: '$remainings' },
           campaignCount: { $first: '$campaignCount' },
           itemCount: { $sum: 1 },
         },
@@ -586,73 +596,73 @@ export class ProjectService {
     return projectList;
   }
 
-  async getListAll() {
-    this.logger.debug('Get project list ...');
-    const dataProject = await this.projectModel.aggregate([
-      {
-        $lookup: {
-          from: 'campaign',
-          localField: '_id',
-          foreignField: 'projectId',
-          as: 'cp',
-        },
-      },
-      { $unwind: { path: '$cp', preserveNullAndEmptyArrays: true } },
-      {
-        $group: {
-          _id: '$_id',
-          projectName: { $first: '$name' },
-          createdAt: { $first: '$createdAt' },
-          campaignId: { $first: '$cp._id' },
-          count: { $sum: 1 },
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          projectName: 1,
-          createdAt: 1,
-          campaignCount: '$count',
-          campaignId: 1,
-        },
-      },
-      { $sort: { _id: -1 } },
-    ]);
+  // async getListAll() {
+  //   this.logger.debug('Get project list ...');
+  //   const dataProject = await this.projectModel.aggregate([
+  //     {
+  //       $lookup: {
+  //         from: 'campaign',
+  //         localField: '_id',
+  //         foreignField: 'projectId',
+  //         as: 'cp',
+  //       },
+  //     },
+  //     { $unwind: { path: '$cp', preserveNullAndEmptyArrays: true } },
+  //     {
+  //       $group: {
+  //         _id: '$_id',
+  //         projectName: { $first: '$name' },
+  //         createdAt: { $first: '$createdAt' },
+  //         campaignId: { $first: '$cp._id' },
+  //         count: { $sum: 1 },
+  //       },
+  //     },
+  //     {
+  //       $project: {
+  //         _id: 1,
+  //         projectName: 1,
+  //         createdAt: 1,
+  //         campaignCount: '$count',
+  //         campaignId: 1,
+  //       },
+  //     },
+  //     { $sort: { _id: -1 } },
+  //   ]);
 
-    const dataItem = await this.projectModel.aggregate([
-      {
-        $lookup: {
-          from: 'item',
-          localField: '_id',
-          foreignField: 'projectId',
-          as: 'cp',
-        },
-      },
-      { $unwind: { path: '$cp', preserveNullAndEmptyArrays: true } },
-      {
-        $group: {
-          _id: '$_id',
-          projectName: { $first: '$name' },
-          createdAt: { $first: '$createdAt' },
-          itemId: { $first: '$cp._id' },
-          count: { $sum: 1 },
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          itemCount: '$count',
-          itemId: 1,
-        },
-      },
-      { $sort: { _id: -1 } },
-    ]);
+  //   const dataItem = await this.projectModel.aggregate([
+  //     {
+  //       $lookup: {
+  //         from: 'item',
+  //         localField: '_id',
+  //         foreignField: 'projectId',
+  //         as: 'cp',
+  //       },
+  //     },
+  //     { $unwind: { path: '$cp', preserveNullAndEmptyArrays: true } },
+  //     {
+  //       $group: {
+  //         _id: '$_id',
+  //         projectName: { $first: '$name' },
+  //         createdAt: { $first: '$createdAt' },
+  //         itemId: { $first: '$cp._id' },
+  //         count: { $sum: 1 },
+  //       },
+  //     },
+  //     {
+  //       $project: {
+  //         _id: 1,
+  //         itemCount: '$count',
+  //         itemId: 1,
+  //       },
+  //     },
+  //     { $sort: { _id: -1 } },
+  //   ]);
 
-    const data = dataProject.map((item, i) =>
-      Object.assign({}, item, dataItem[i]),
-    );
-    return data;
-  }
+  //   const data = dataProject.map((item, i) =>
+  //     Object.assign({}, item, dataItem[i]),
+  //   );
+  //   return data;
+  // }
 
   async getListAllByOperatorId(operatorId: string) {
     const ObjectId = require('mongoose').Types.ObjectId;
