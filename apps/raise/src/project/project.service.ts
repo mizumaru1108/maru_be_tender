@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, Types } from 'mongoose';
+import { FilterQuery, Model, PipelineStage, Types } from 'mongoose';
 import { CreateProjectDto } from './dto';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -28,6 +28,71 @@ import {
   isBooleanStringN,
   isBooleanStringY,
 } from '../commons/utils/is-boolean-string';
+
+/**
+ * basicly project all value from project schema, but parse diameter,prayer, and toilet value to int
+ */
+const defaultProjectPipelineParseInt: PipelineStage[] = [
+  {
+    $project: {
+      _id: 1,
+      organizationId: 1,
+      name: 1,
+      address: 1,
+      description: 1,
+      location: 1,
+      diameterSize: { $toInt: '$diameterSize' },
+      prayerSize: { $toInt: '$prayerSize' },
+      toiletSize: { $toInt: '$toiletSize' },
+      hasAc: 1,
+      hasClassroom: 1,
+      hasParking: 1,
+      hasGreenSpace: 1,
+      hasFemaleSection: 1,
+      createdAt: 1,
+      updatedAt: 1,
+      ipAddress: 1,
+      isDeleted: 1,
+      isPublished: 1,
+      projectId: 1,
+      coverImage: 1,
+      image1: 1,
+      image2: 1,
+      image3: 1,
+      projectAvatar: 1,
+      nearByPlaces: 1,
+    },
+  },
+];
+
+const baseProjectGrouping = {
+  _id: '$_id',
+  organizationId: { $first: '$organizationId' },
+  name: { $first: '$name' },
+  address: { $first: '$address' },
+  description: { $first: '$description' },
+  location: { $first: '$location' },
+  diameterSize: { $first: '$diameterSize' },
+  prayerSize: { $first: '$prayerSize' },
+  toiletSize: { $first: '$toiletSize' },
+  hasAc: { $first: '$hasAc' },
+  hasClassroom: { $first: '$hasClassroom' },
+  hasParking: { $first: '$hasParking' },
+  hasGreenSpace: { $first: '$hasGreenSpace' },
+  hasFemaleSection: { $first: '$hasFemaleSection' },
+  createdAt: { $first: '$createdAt' },
+  updatedAt: { $first: '$updatedAt' },
+  ipAddress: { $first: '$ipAddress' },
+  isDeleted: { $first: '$isDeleted' },
+  isPublished: { $first: '$isPublished' },
+  projectId: { $first: '$projectId' },
+  coverImage: { $first: '$coverImage' },
+  image1: { $first: '$image1' },
+  image2: { $first: '$image2' },
+  image3: { $first: '$image3' },
+  projectAvatar: { $first: '$projectAvatar' },
+  nearByPlaces: { $first: '$nearByPlaces' },
+};
 
 @Injectable()
 export class ProjectService {
@@ -379,38 +444,23 @@ export class ProjectService {
       isPublished,
     } = filter;
 
-    // !TODO: waiting for fix solution(change the diamterSize prop to number type)
     if (maxDiameterSize) {
-      // apply filter for diameter size less than or equal to diameter size defined
       filterQuery.diameterSize = { $lte: maxDiameterSize };
     }
 
-    // !TODO: waiting for fix solution(change the diamterSize prop to number type)
     if (minDiameterSize) {
-      // apply filter for diameter size greater than or equal to diameter size defined
       filterQuery.diameterSize = { $gte: minDiameterSize };
-      // filterQuery.diameterSize = {
-      //   $match: {
-      //     $expr: { $gt: [{ $toInt: '$diameterSize' }, minDiameterSize] },
-      //   },
-      // };
     }
 
-    // !TODO: waiting for fix solution(change the diamterSize prop to number type)
     if (toiletSize) {
-      // apply filter for toilet size greater than or equal to toilet size defined
       filterQuery.toiletSize = { $gte: toiletSize };
     }
 
-    // !TODO: waiting for fix solution(change the diamterSize prop to number type)
     if (prayerMinCapacity) {
-      // apply filter for prayer min capacity greater than or equal to prayer min capacity defined
       filterQuery.prayerSize = { $gte: prayerMinCapacity };
     }
 
-    // !TODO: waiting for fix solution(change the diamterSize prop to number type)
     if (prayerMaxCapacity) {
-      // apply filter for prayer max capacity less than or equal to prayer max capacity defined
       filterQuery.prayerSize = { $lte: prayerMaxCapacity };
     }
 
@@ -540,12 +590,9 @@ export class ProjectService {
   async getProjectList(filterRequest: ProjectFilterRequest) {
     const filterQuery = await this.applyFilter(filterRequest);
     const projectList = await this.projectModel.aggregate([
+      ...defaultProjectPipelineParseInt,
       {
         $match: filterQuery,
-        // decimal case
-        // $match: {
-        //   _id: new Types.ObjectId('625845e0be7f3c733e6433db'),
-        // },
       },
       {
         $lookup: {
@@ -560,30 +607,13 @@ export class ProjectService {
       },
       {
         $group: {
-          _id: '$_id',
-          projectName: { $first: '$name' },
-          updatedAt: { $first: '$updatedAt' },
-          // raw decimal (will output as string, not a number)
+          // _id: '$_id',
+          // projectName: { $first: '$name' },
+          // updatedAt: { $first: '$updatedAt' },
+          ...baseProjectGrouping,
+          // raw decimal (will output as string, not a number) first error case
           // (target: $numberDecimal: xxx.xxx) not (target: xxx.xxx)
-          // target: { $sum: '$campaignDatas.amountTarget' },
-          // collected: { $sum: '$campaignDatas.amountProgress' },
-
-          // solve
-          // parse to double problem: (no number behind comma)
-          // target: { $sum: { $toDouble: '$campaignDatas.amountTarget' } },
-          // collected: { $sum: { $toDouble: '$campaignDatas.amountProgress' } },
-
-          // solve, to show comma parse to double add $trunc
-          // test on project 6 real data .28, in this logic it is .27
-          // target: {
-          //   $sum: { $trunc: [{ $toDouble: '$campaignDatas.amountTarget' }, 2] },
-          // },
-          // collected: {
-          //   $sum: {
-          //     $trunc: [{ $toDouble: '$campaignDatas.amountProgress' }, 2],
-          //   },
-          // },
-
+          // so we parse it to double first so it will output as number, then add trunc to limit number after comma
           // final, now it is .28
           target: {
             $sum: { $toDouble: { $trunc: ['$campaignDatas.amountTarget', 2] } },
@@ -599,7 +629,6 @@ export class ProjectService {
       },
       {
         $addFields: {
-          // remainings: { $toDouble: { $subtract: ['$target', '$collected'] } },
           remainings: {
             $trunc: [
               {
@@ -626,9 +655,10 @@ export class ProjectService {
       },
       {
         $group: {
-          _id: '$_id',
-          projectName: { $first: '$projectName' },
-          updatedAt: { $first: '$updatedAt' },
+          // _id: '$_id',
+          // projectName: { $first: '$projectName' },
+          // updatedAt: { $first: '$updatedAt' },
+          ...baseProjectGrouping,
           target: { $first: '$target' },
           collected: { $first: '$collected' },
           remainings: { $first: '$remainings' },
@@ -636,14 +666,6 @@ export class ProjectService {
           itemCount: { $sum: 1 },
         },
       },
-      // parse the response from
-      // {
-      //   $addFields: {
-      //     target: { $toDouble: '$target' },
-      //     collected: { $toDouble: '$collected' },
-      //     remainings: { $toDouble: '$remainings' },
-      //   },
-      // },
     ]);
     return projectList;
   }

@@ -1,32 +1,38 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { BooleanString } from '../../commons/enums/boolean-string.enum';
 
 export class ProjectFilterRequest {
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
-  maxDiameterSize?: string;
+  @IsNumber()
+  @Type(() => Number)
+  maxDiameterSize?: number;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
-  minDiameterSize?: string;
+  @IsNumber()
+  @Type(() => Number)
+  minDiameterSize?: number;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
-  toiletSize?: string;
+  @IsNumber()
+  @Type(() => Number)
+  toiletSize?: number;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
-  prayerMinCapacity?: string;
+  @IsNumber()
+  @Type(() => Number)
+  prayerMinCapacity?: number;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
-  prayerMaxCapacity?: string;
+  @IsNumber()
+  @Type(() => Number)
+  prayerMaxCapacity?: number;
 
   @ApiPropertyOptional()
   @IsOptional()

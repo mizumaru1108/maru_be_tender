@@ -157,6 +157,7 @@ export class OperatorService {
           image3: { $first: '$image3' },
           description: { $first: '$description' },
           createdAt: { $first: '$createdAt' },
+          updatedAt: { $first: '$updatedAt' },
           projectId: { $first: '$op.projectId' },
           count: { $sum: 1 },
         },
