@@ -169,25 +169,25 @@ export class WidgetsService {
       _id: basketProjectDto.donorId,
     });
 
-    const getProject = await this.projectServices.getListAll();
+    //const getProject = await this.projectServices.getListAll();
 
 
     // const getProject = await this.campaignModel.findOne({
     //   _id: basketProjectDto.campaignId,
     // });
 
-    if (!getProject) {
-      const txtMessage = `request rejected project not found`;
-      return {
-        statusCode: 514,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
-        body: JSON.stringify({
-          message: txtMessage,
-        }),
-      };
-    }
+    // if (!getProject) {
+    //   const txtMessage = `request rejected project not found`;
+    //   return {
+    //     statusCode: 514,
+    //     headers: {
+    //       'Access-Control-Allow-Origin': '*',
+    //     },
+    //     body: JSON.stringify({
+    //       message: txtMessage,
+    //     }),
+    //   };
+    // }
 
     const updates: {
       isDeleted?: boolean;
