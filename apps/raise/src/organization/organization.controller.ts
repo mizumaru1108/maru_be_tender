@@ -315,10 +315,10 @@ export class OrganizationController {
   }
   @Get('donor/:organizationId/:donorId')
   async getInsightSummaryDonorId(
-    @Param('organisationId') organizationId: string,
+    @Param('organizationId') organizationId: string,
     @Param('donorId') donorId: string,
     @Query('period') period: string,
-  ) {
+  ) {   
     return this.organizationService.getInsightSummaryDonorId(organizationId, donorId, period);
   }
 }

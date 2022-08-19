@@ -1343,7 +1343,7 @@ export class OrganizationService {
   /**
    * Get 
    */
-  async getInsightSummaryDonorId(organizationId: string, period: string, donorId: string) {
+  async getInsightSummaryDonorId(organizationId: string,  donorId: string, period: string,) {
     this.logger.debug(`getInsightSummary organizationId=${organizationId}`);
     const getOrganization = await this.getOrganization(organizationId);
     if (getOrganization.statusCode === 404) {
@@ -1354,10 +1354,9 @@ export class OrganizationService {
     }
     this.logger.debug(`getInsightSummary donorId=${donorId}`);
     const getDonorId = await this.donorModel.findOne({
-      _id: donorId,
+      ownerUserId: donorId,
     });
-    console.log('orgs ID => ', getOrganization);
-
+   
     if (!period) period = '7days';
 
     if (!getDonorId) {
@@ -1393,14 +1392,6 @@ export class OrganizationService {
         //     $exists: true,
         //     $gte: twelveMonthsAgo,
         //   };
-        // case '90days':
-        //   const ninetyDaysAgo: Date = new Date(
-        //     Date.now() - 90 * 24 * 60 * 60 * 1000,
-        //   );
-        //   return {
-        //     $exists: true,
-        //     $gte: ninetyDaysAgo,
-        //   };
         case '30days':
           const thirtyDaysAgo: Date = new Date(
             Date.now() - 30 * 24 * 60 * 60 * 1000,
@@ -1409,27 +1400,20 @@ export class OrganizationService {
             $exists: true,
             $gte: thirtyDaysAgo,
           };
-        case '28days':
-          const twentyEightDaysAgo: Date = new Date(
-            Date.now() - 28 * 24 * 60 * 60 * 1000,
-          );
-          return {
-            $exists: true,
-            $gte: twentyEightDaysAgo,
-          };
-        case 'yesterday':
-          const yesterday: Date = new Date(
-            Date.now() - 1 * 24 * 60 * 60 * 1000,
-          );
-          return {
-            $exists: true,
-            $gte: yesterday,
-          };
-        case 'today':
-          return {
-            $exists: true,
-            $gte: today,
-          };
+        
+        // case 'yesterday':
+        //   const yesterday: Date = new Date(
+        //     Date.now() - 1 * 24 * 60 * 60 * 1000,
+        //   );
+        //   return {
+        //     $exists: true,
+        //     $gte: yesterday,
+        //   };
+        // case 'today':
+        //   return {
+        //     $exists: true,
+        //     $gte: today,
+        //   };
         default:
           const sevenDaysAgo: Date = new Date(
             Date.now() - 7 * 24 * 60 * 60 * 1000,
@@ -1440,16 +1424,59 @@ export class OrganizationService {
       }
     };
 
-    const totalProgram = await this.campaignModel
-      .where({
-        organizationId: new Types.ObjectId(organizationId),
-        createdAt: getDateQuery(period),
-      })
-      .count();
+    // const totalProgram = await this.campaignModel
+    //   .where({
+    //     organizationId: new Types.ObjectId(organizationId),
+        
+    //     createdAt: getDateQuery(period),
+    //   })
+    //   .count();
+
+    const totalProgram = await this.campaignModel.aggregate([
+      {$match:{organizationId: organizationId }},
+      // {$lookup:{
+      //   from: 'campaign',
+      //   localField: 'organizationId',
+      //   foreignField: 'organizationId',
+      //   as:'campaign'
+      // }},
+      {$lookup:{
+        from:'donationLog',
+        localField: 'organizationId',
+        foreignField: 'organizationId',
+        as:'a'
+      }},
+      {
+        $unwind: {
+          path: '$a',
+        },
+      },
+      {$lookup:{
+        from:'donor',
+        localField: 'organizationId',
+        foreignField: 'organizationId',
+        as:'b'
+      }},
+      {
+        $unwind: {
+          path: '$b',
+        },
+      },
+      
+    ]);
+    console.log('Total Program', totalProgram);
+    
+      // .where({
+      //   organizationId: new Types.ObjectId(organizationId),
+        
+      //   createdAt: getDateQuery(period),
+      // })
+      // .count();
 
     const totalDonor = await this.donorModel
       .where({
         organizationId: new Types.ObjectId(organizationId),
+        ownerUserId: donorId,
         createdAt: getDateQuery(period),
       })
       .count();
@@ -1458,6 +1485,7 @@ export class OrganizationService {
       {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
+          ownerUserId: donorId,
           donationStatus: 'SUCCESS',
           createdAt: getDateQuery(period),
         },
@@ -1478,7 +1506,8 @@ export class OrganizationService {
           nonprofitRealmId: new Types.ObjectId(organizationId),
           donationStatus: 'SUCCESS',
           // donorUserId: { $ne: null },
-          donorUserId: donorId,
+          //donorUserId: donorId,
+          donorRealmId: donorId,
           createdAt: getDateQuery(period),
         },
       },
@@ -1513,7 +1542,8 @@ export class OrganizationService {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
           donationStatus: 'SUCCESS',
-          donorUserId: { $ne: null },
+          // donorUserId: { $ne: null },
+          donorUserId: donorId,
           createdAt: getDateQuery(period),
         },
       },
@@ -1549,14 +1579,15 @@ export class OrganizationService {
         },
       },
     ]);
-    console.log(mostPopularProgramsDiagram);
+   // console.log(mostPopularProgramsDiagram);
 
     const totalDonationPerProgram = await this.donationLogModel.aggregate([
       {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
           donationStatus: 'SUCCESS',
-          donorUserId: { $ne: null },
+          // donorUserId: { $ne: null },
+          donorUserId: donorId,
           createdAt: getDateQuery(period),
         },
       },
