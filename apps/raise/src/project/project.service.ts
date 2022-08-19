@@ -542,6 +542,10 @@ export class ProjectService {
     const projectList = await this.projectModel.aggregate([
       {
         $match: filterQuery,
+        // decimal case
+        // $match: {
+        //   _id: new Types.ObjectId('625845e0be7f3c733e6433db'),
+        // },
       },
       {
         $lookup: {
@@ -552,21 +556,61 @@ export class ProjectService {
         },
       },
       {
-        $unwind: { path: '$campaignDatas', preserveNullAndEmptyArrays: true },
+        $unwind: { path: '$campaignDatas', preserveNullAndEmptyArrays: false },
       },
       {
         $group: {
           _id: '$_id',
           projectName: { $first: '$name' },
           updatedAt: { $first: '$updatedAt' },
-          target: { $sum: '$campaignDatas.amountTarget' },
-          collected: { $sum: '$campaignDatas.amountProgress' },
+          // raw decimal (will output as string, not a number)
+          // (target: $numberDecimal: xxx.xxx) not (target: xxx.xxx)
+          // target: { $sum: '$campaignDatas.amountTarget' },
+          // collected: { $sum: '$campaignDatas.amountProgress' },
+
+          // solve
+          // parse to double problem: (no number behind comma)
+          // target: { $sum: { $toDouble: '$campaignDatas.amountTarget' } },
+          // collected: { $sum: { $toDouble: '$campaignDatas.amountProgress' } },
+
+          // solve, to show comma parse to double add $trunc
+          // test on project 6 real data .28, in this logic it is .27
+          // target: {
+          //   $sum: { $trunc: [{ $toDouble: '$campaignDatas.amountTarget' }, 2] },
+          // },
+          // collected: {
+          //   $sum: {
+          //     $trunc: [{ $toDouble: '$campaignDatas.amountProgress' }, 2],
+          //   },
+          // },
+
+          // final, now it is .28
+          target: {
+            $sum: { $toDouble: { $trunc: ['$campaignDatas.amountTarget', 2] } },
+          },
+          collected: {
+            $sum: {
+              $toDouble: { $trunc: ['$campaignDatas.amountProgress', 2] },
+            },
+          },
+
           campaignCount: { $sum: 1 },
         },
       },
       {
         $addFields: {
-          remainings: { $subtract: ['$target', '$collected'] },
+          // remainings: { $toDouble: { $subtract: ['$target', '$collected'] } },
+          remainings: {
+            $trunc: [
+              {
+                $subtract: [
+                  { $toDouble: { $trunc: ['$target', 2] } },
+                  { $toDouble: { $trunc: ['$collected', 2] } },
+                ],
+              },
+              2,
+            ],
+          },
         },
       },
       {
@@ -578,7 +622,7 @@ export class ProjectService {
         },
       },
       {
-        $unwind: { path: '$itemDatas', preserveNullAndEmptyArrays: true },
+        $unwind: { path: '$itemDatas', preserveNullAndEmptyArrays: false },
       },
       {
         $group: {
@@ -592,6 +636,14 @@ export class ProjectService {
           itemCount: { $sum: 1 },
         },
       },
+      // parse the response from
+      // {
+      //   $addFields: {
+      //     target: { $toDouble: '$target' },
+      //     collected: { $toDouble: '$collected' },
+      //     remainings: { $toDouble: '$remainings' },
+      //   },
+      // },
     ]);
     return projectList;
   }
