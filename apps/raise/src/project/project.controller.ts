@@ -32,14 +32,12 @@ export class ProjectController {
   private logger = rootLogger.child({ logger: ProjectController.name });
   constructor(private projectService: ProjectService) {}
 
-  // @ApiOperation({ summary: 'Get All Projects viewed by manager' })
-  // @ClusterRoles(RoleEnum.SUPERADMIN)
-  // @UseGuards(JwtAuthGuard, ClusterRolesGuard)
-  // @Get('manager/getListAll')
-  // async getAllProjects() {
-  //   this.logger.debug(`Get all projects`);
-  //   return await this.projectService.getListAll();
-  // }
+  @ApiOperation({ summary: 'Get All Projects viewed by manager' })
+  @Get('manager/getListAll')
+  async getAllProjects() {
+    this.logger.debug(`Get all projects`);
+    return await this.projectService.getListAll();
+  }
 
   @ApiOperation({ summary: 'Get All Projects viewed by manager' })
   @UseGuards(JwtAuthGuard)

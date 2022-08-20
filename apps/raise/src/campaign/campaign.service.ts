@@ -826,6 +826,24 @@ export class CampaignService {
     return JSON.stringify(newObjectId);
   }
 
+  // async getCampaignDetailById(campaignId: String) {
+  //   const ObjectId = require('mongoose').Types.ObjectId;
+
+  //   if (!campaignId) {
+  //     throw new NotFoundException(`user not found`);
+  //   }
+
+  //   if (utype) {
+  //     if (!utype.match(/nonprofit|operator|superadmin/g)) {
+  //       throw new BadRequestException(`User not allowed to generate ObjectId`);
+  //     }
+  //   }
+
+  //   const newObjectId = new Types.ObjectId();
+
+  //   return JSON.stringify(newObjectId);
+  // }
+
   async getUnapprovalCampaignById(organizationId: string, campaignId: string) {
     let getCampaignDetail: any[] = [];
     const ObjectId = require('mongoose').Types.ObjectId;
