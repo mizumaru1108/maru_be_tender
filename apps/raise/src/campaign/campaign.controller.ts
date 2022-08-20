@@ -179,8 +179,8 @@ export class CampaignController {
     status: 201,
     description: 'The Campaign has been successfully created.',
   })
-  @ClusterRoles(RoleEnum.OPERATOR)
-  @UseGuards(JwtAuthGuard)
+  // @ClusterRoles(RoleEnum.OPERATOR)
+  // @UseGuards(JwtAuthGuard)
   @Post('create')
   async create(@Body() createCampaignDto: CreateCampaignDto) {
     this.logger.debug(
