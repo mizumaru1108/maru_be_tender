@@ -30,7 +30,7 @@ import {
   EditNonProfitAppearanceNavigationBlogDto,
   EditNonProfitAppearanceNavigationDto,
 } from './dto/nonprofit_appearance_navigation.dto';
-import { query } from 'express';
+import { FilterDonorDashboardDto } from './dto';
 
 @ApiTags('orgs')
 @Controller('orgs')
@@ -318,7 +318,9 @@ export class OrganizationController {
     @Param('organizationId') organizationId: string,
     @Param('donorId') donorId: string,
     @Query('period') period: string,
-  ) {   
-    return this.organizationService.getInsightSummaryDonorId(organizationId, donorId, period);
+    @Query() filter: FilterDonorDashboardDto,
+
+  ) {
+    return this.organizationService.getInsightSummaryDonorId(organizationId, donorId, period, filter);
   }
 }
