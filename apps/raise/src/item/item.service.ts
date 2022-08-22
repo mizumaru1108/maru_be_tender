@@ -17,7 +17,7 @@ import dayjs from 'dayjs';
 import slugify from 'slugify';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { z } from 'zod';
-import { BunnyService } from '../bunny/services/bunny.service';
+import { BunnyService } from '../libs/bunny/services/bunny.service';
 
 @Injectable()
 export class ItemService {

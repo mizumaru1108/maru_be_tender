@@ -1,8 +1,8 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
-import { generateRandomNumberString } from '../../commons/utils/generate-random-string';
-import { sanitizeString } from '../../commons/utils/sanitize-string';
+import { generateRandomNumberString } from '../../../commons/utils/generate-random-string';
+import { sanitizeString } from '../../../commons/utils/sanitize-string';
 
 @Injectable()
 export class BunnyService {

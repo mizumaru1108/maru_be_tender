@@ -33,7 +33,7 @@ import {
   NotificationSettings,
   NotificationSettingsDocument,
 } from 'src/organization/schema/notification_settings.schema';
-import { EmailService } from '../email/email.service';
+import { EmailService } from '../libs/email/email.service';
 @Injectable()
 export class PaymentStripeService {
   private logger = rootLogger.child({ logger: PaymentStripeService.name });

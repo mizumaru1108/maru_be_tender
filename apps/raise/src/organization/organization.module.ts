@@ -35,7 +35,7 @@ import {
   AppearancePage,
   AppearancePageSchema,
 } from './schema/nonprofit_appearance_page.schema';
-import { EmailModule } from 'src/email/email.module';
+import { EmailModule } from 'src/libs/email/email.module';
 
 @Module({
   imports: [

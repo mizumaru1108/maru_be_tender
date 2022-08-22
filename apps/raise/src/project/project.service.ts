@@ -21,7 +21,7 @@ import dayjs from 'dayjs';
 import slugify from 'slugify';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { z } from 'zod';
-import { BunnyService } from '../bunny/services/bunny.service';
+import { BunnyService } from '../libs/bunny/services/bunny.service';
 import { ProjectFilterRequest } from './dto/project-filter.request';
 import { BooleanString } from '../commons/enums/boolean-string.enum';
 import {

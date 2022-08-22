@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { FusionAuthService } from '../fusionauth/services/fusion-auth.service';
+import { FusionAuthService } from '../libs/fusionauth/services/fusion-auth.service';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 
 @Injectable()

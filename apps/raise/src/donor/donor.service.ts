@@ -32,7 +32,7 @@ import { CampaignService } from '../campaign/campaign.service';
 import { Campaign, CampaignDocument } from '../campaign/campaign.schema';
 import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
 import { z } from 'zod';
-import { BunnyService } from '../bunny/services/bunny.service';
+import { BunnyService } from '../libs/bunny/services/bunny.service';
 
 @Injectable()
 export class DonorService {

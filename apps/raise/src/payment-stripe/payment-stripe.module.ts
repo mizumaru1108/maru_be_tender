@@ -27,8 +27,8 @@ import {
   NotificationSettings,
   NotificationSettingsSchema,
 } from 'src/organization/schema/notification_settings.schema';
-import { EmailService } from 'src/email/email.service';
-import { EmailModule } from 'src/email/email.module';
+import { EmailService } from 'src/libs/email/email.service';
+import { EmailModule } from 'src/libs/email/email.module';
 
 @Module({
   imports: [

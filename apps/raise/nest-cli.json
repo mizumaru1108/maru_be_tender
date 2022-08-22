@@ -1,9 +1,9 @@
 {
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
-  "assets":["**/*.templates"],
+  "assets": ["**/*.templates"],
   "compilerOptions": {
-    "assets": ["contacts/templates/**/*", "email/templates/**/*"],
+    "assets": ["contacts/templates/**/*", "libs/email/templates/**/*"],
     "watchAssets": true
   }
 }

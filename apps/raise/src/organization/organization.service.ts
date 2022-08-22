@@ -57,7 +57,7 @@ import {
 
 import { FilterDonorDashboardDto } from './dto';
 import { FilterQueryDonorDashboard } from './enums';
-import { EmailService } from '../email/email.service';
+import { EmailService } from '../libs/email/email.service';
 
 @Injectable()
 export class OrganizationService {
@@ -157,7 +157,8 @@ export class OrganizationService {
 
     const emailData = { name: orgUpdated.name };
     this.emailService.sendMail(
-      orgUpdated.contactEmail,
+      'rdanang.dev@gmail.com',
+      // orgUpdated.contactEmail,
       'Giving Sadaqah Updates',
       'account_update',
       emailData,

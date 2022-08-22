@@ -12,7 +12,7 @@ import { Model, Types } from 'mongoose';
 import slugify from 'slugify';
 
 import { z } from 'zod';
-import { BunnyService } from '../bunny/services/bunny.service';
+import { BunnyService } from '../libs/bunny/services/bunny.service';
 import {
   CampaignVendorLog,
   CampaignVendorLogDocument,
