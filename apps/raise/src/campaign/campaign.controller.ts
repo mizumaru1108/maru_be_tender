@@ -227,7 +227,7 @@ export class CampaignController {
   // }
 
   @ApiOperation({ summary: 'update campaign' })
-  @ClusterRoles(RoleEnum.OPERATOR)
+  // @ClusterRoles(RoleEnum.OPERATOR)
   @UseGuards(JwtAuthGuard)
   @Patch('update/:campaignId')
   async updateCampaign(

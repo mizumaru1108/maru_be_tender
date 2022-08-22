@@ -33,7 +33,7 @@ import {
   NotificationSettings,
   NotificationSettingsDocument,
 } from 'src/organization/schema/notification_settings.schema';
-import { EmailService } from 'src/email/email.service';
+import { EmailService } from '../email/email.service';
 @Injectable()
 export class PaymentStripeService {
   private logger = rootLogger.child({ logger: PaymentStripeService.name });
@@ -618,6 +618,7 @@ export class PaymentStripeService {
               subject,
               'org/new_donation',
               emailData,
+              'hello@tmra.io', // optional, you can delete it, when new identity is provided, we can use other identity ex: ommar.net
             );
             const emailDonor = {
               donor: donorName,
@@ -631,6 +632,7 @@ export class PaymentStripeService {
                 subject,
                 'org/new_donation',
                 emailDonor,
+                'hello@tmra.io', // optional, you can delete it, when new identity is provided, we can use other identity ex: ommar.net
               );
             }
             if (anonymousData) {
@@ -640,6 +642,7 @@ export class PaymentStripeService {
                   subject,
                   'org/new_donation',
                   emailDonor,
+                  'hello@tmra.io', // optional, you can delete it, when new identity is provided, we can use other identity ex: ommar.net
                 );
               }
             }
@@ -700,6 +703,7 @@ export class PaymentStripeService {
                 subject,
                 'org/donation_complete',
                 emailData,
+                'hello@tmra.io', // optional, you can delete it, when new identity is provided, we can use other identity ex: ommar.net
               );
             }
           } else {

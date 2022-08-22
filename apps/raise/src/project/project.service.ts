@@ -607,14 +607,10 @@ export class ProjectService {
       },
       {
         $group: {
-          // _id: '$_id',
-          // projectName: { $first: '$name' },
-          // updatedAt: { $first: '$updatedAt' },
           ...baseProjectGrouping,
           // raw decimal (will output as string, not a number) first error case
           // (target: $numberDecimal: xxx.xxx) not (target: xxx.xxx)
-          // so we parse it to double first so it will output as number, then add trunc to limit number after comma
-          // final, now it is .28
+          // solve with parse to double and trunc, decimal after comma to 2 digits
           target: {
             $sum: { $toDouble: { $trunc: ['$campaignDatas.amountTarget', 2] } },
           },
@@ -655,9 +651,6 @@ export class ProjectService {
       },
       {
         $group: {
-          // _id: '$_id',
-          // projectName: { $first: '$projectName' },
-          // updatedAt: { $first: '$updatedAt' },
           ...baseProjectGrouping,
           target: { $first: '$target' },
           collected: { $first: '$collected' },
@@ -845,7 +838,7 @@ export class ProjectService {
       { $sort: { _id: 1 } },
     ]);
 
-    const data = dataProject.map((item, i) =>
+    const data: any = dataProject.map((item, i) =>
       Object.assign({}, item, dataItem[i]),
     );
     return data;

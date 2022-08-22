@@ -39,7 +39,8 @@ export class ContactsService {
       if (organizationData) {
         const resp = await this.mailerService.sendMail({
           // to: organizationData['contactEmail'],
-          to: 'hello.givingsadaqah@mailinator.com', // organizationData['contactEmail'],
+          // to: 'hello.givingsadaqah@mailinator.com', // organizationData['contactEmail'],
+          to: message.email, // organizationData['contactEmail'],
           subject: 'Donor has sent you an Email',
           template: 'email',
           context: {

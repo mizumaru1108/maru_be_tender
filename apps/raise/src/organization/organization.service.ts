@@ -54,9 +54,10 @@ import {
   EditNonProfitAppearanceNavigationBlogDto,
   EditNonProfitAppearanceNavigationDto,
 } from './dto/nonprofit_appearance_navigation.dto';
-import { EmailService } from 'src/email/email.service';
+
 import { FilterDonorDashboardDto } from './dto';
 import { FilterQueryDonorDashboard } from './enums';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class OrganizationService {
@@ -87,7 +88,7 @@ export class OrganizationService {
     @InjectModel(AppearancePage.name)
     private appearancePageModel: Model<AppearancePageDocument>,
     private readonly emailService: EmailService,
-  ) { }
+  ) {}
 
   async findAll() {
     this.logger.debug('findAll...');
@@ -160,6 +161,7 @@ export class OrganizationService {
       'Giving Sadaqah Updates',
       'account_update',
       emailData,
+      'hello@tmra.io', // optional, you can delete it, when new identity is provided, we can use other identity ex: ommar.net
     );
     return {
       statusCode: 200,
@@ -1345,7 +1347,12 @@ export class OrganizationService {
   /**
    * Get Data Donor Dashboard
    */
-  async getInsightSummaryDonorId(organizationId: string, donorId: string, period: string, filter: FilterDonorDashboardDto) {
+  async getInsightSummaryDonorId(
+    organizationId: string,
+    donorId: string,
+    period: string,
+    filter: FilterDonorDashboardDto,
+  ) {
     this.logger.debug(`getInsightSummary organizationId=${organizationId}`);
     const getOrganization = await this.getOrganization(organizationId);
     if (getOrganization.statusCode === 404) {
@@ -1400,7 +1407,6 @@ export class OrganizationService {
             $gte: thirtyDaysAgo,
           };
 
-
         default:
           const sevenDaysAgo: Date = new Date(
             Date.now() - 7 * 24 * 60 * 60 * 1000,
@@ -1412,21 +1418,26 @@ export class OrganizationService {
     };
 
     const filterCampaigns = {
-      campaignId: filter.campaignId ? filter.campaignId : '6299ed6a9f1ad428563563ed',
+      campaignId: filter.campaignId
+        ? filter.campaignId
+        : '6299ed6a9f1ad428563563ed',
       donationStatus: 'SUCCESS',
       donorUserId: donorId,
       currency: filter.currency ? filter.currency : 'GBP',
-      nonprofitRealmId: filter.nonprofitRealmId ? filter.nonprofitRealmId : '62414373cf00cca3a830814a',
-    }
+      nonprofitRealmId: filter.nonprofitRealmId
+        ? filter.nonprofitRealmId
+        : '62414373cf00cca3a830814a',
+    };
 
-    const totalZakatCampaigns = await this.donationLogModel.find(
-      {
+    const totalZakatCampaigns = await this.donationLogModel
+      .find({
         campaignId: new Types.ObjectId(filterCampaigns.campaignId),
         donationStatus: filterCampaigns.donationStatus,
         donorUserId: filterCampaigns.donorUserId,
         currency: filterCampaigns.currency,
-        nonprofitRealmId: new Types.ObjectId(filterCampaigns.nonprofitRealmId)
-      }).count();
+        nonprofitRealmId: new Types.ObjectId(filterCampaigns.nonprofitRealmId),
+      })
+      .count();
 
     // const listZakatCampaigns = await this.donationLogModel.aggregate([
     //   {
@@ -1512,14 +1523,15 @@ export class OrganizationService {
 
     // console.log('list Zakat Campaign', listZakatCampaigns, 'list Campaign', listCampaigns);
 
-    const totalCampaigns = await this.donationLogModel.find(
-      {
+    const totalCampaigns = await this.donationLogModel
+      .find({
         campaignId: { $ne: new Types.ObjectId(filterCampaigns.campaignId) },
         donationStatus: filterCampaigns.donationStatus,
         donorUserId: filterCampaigns.donorUserId,
         currency: filterCampaigns.currency,
-        nonprofitRealmId: new Types.ObjectId(filterCampaigns.nonprofitRealmId)
-      }).count();
+        nonprofitRealmId: new Types.ObjectId(filterCampaigns.nonprofitRealmId),
+      })
+      .count();
 
     const amountCampaigns = await this.donationLogModel.aggregate([
       {
@@ -1528,7 +1540,7 @@ export class OrganizationService {
           donationStatus: 'SUCCESS',
           donorUserId: donorId,
           currency: filterCampaigns.currency,
-          nonprofitRealmId: new Types.ObjectId(organizationId)
+          nonprofitRealmId: new Types.ObjectId(organizationId),
         },
       },
       {
@@ -1536,7 +1548,7 @@ export class OrganizationService {
           // _id: '$campaignId',
           _id: '$donorUserId',
           amountOfCampaigns: { $sum: '$amount' },
-          currency: { $first: '$currency' }
+          currency: { $first: '$currency' },
         },
       },
     ]);
@@ -1548,7 +1560,7 @@ export class OrganizationService {
           donationStatus: 'SUCCESS',
           donorUserId: donorId,
           currency: filterCampaigns.currency,
-          nonprofitRealmId: new Types.ObjectId(organizationId)
+          nonprofitRealmId: new Types.ObjectId(organizationId),
         },
       },
       {
@@ -1556,12 +1568,10 @@ export class OrganizationService {
           // _id: '$campaignId',
           _id: '$donorUserId',
           amountOfZakat: { $sum: '$amount' },
-          currency: { $first: '$currency' }
+          currency: { $first: '$currency' },
         },
       },
     ]);
-
-
 
     const totalDonationPerProgram = await this.donationLogModel.aggregate([
       {
@@ -1673,7 +1683,6 @@ export class OrganizationService {
       },
     ]);
 
-
     const chartData: any = {};
     for (let i = 0; i < totalDonationPerProgram.length; i++) {
       const campaignData = totalDonationPerProgram[i];
@@ -1740,7 +1749,11 @@ export class OrganizationService {
     }
 
     return {
-      total_donation: totalZakatCampaigns || totalCampaigns ? ((totalZakatCampaigns ? totalZakatCampaigns : 0) + (totalCampaigns ? totalCampaigns : 0)) : 0,
+      total_donation:
+        totalZakatCampaigns || totalCampaigns
+          ? (totalZakatCampaigns ? totalZakatCampaigns : 0) +
+            (totalCampaigns ? totalCampaigns : 0)
+          : 0,
       campaigns: totalCampaigns ? totalCampaigns : 0,
       amount_ofcampaigns: amountCampaigns ? amountCampaigns : 0,
       zakat: totalZakatCampaigns ? totalZakatCampaigns : 0,
@@ -1751,5 +1764,4 @@ export class OrganizationService {
       // donor_list: donorList,
     };
   }
-
 }
