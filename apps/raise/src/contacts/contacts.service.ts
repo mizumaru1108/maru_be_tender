@@ -13,6 +13,7 @@ import {
   Notifications,
   NotificationsDocument,
 } from 'src/organization/schema/notifications.schema';
+import { EmailService } from '../libs/email/email.service';
 
 @Injectable()
 export class ContactsService {
@@ -21,7 +22,8 @@ export class ContactsService {
   constructor(
     @InjectModel(Organization.name)
     private organizationModel: Model<OrganizationDocument>,
-    private mailerService: MailerService,
+    // private mailerService: MailerService,
+    private emailService: EmailService,
     @InjectModel(Notifications.name)
     private notificationsModel: Model<NotificationsDocument>,
   ) {}
@@ -37,33 +39,54 @@ export class ContactsService {
       const organizationData = await this.organizationModel.findOne(filter, {});
       console.log(organizationData);
       if (organizationData) {
-        const resp = await this.mailerService.sendMail({
-          // to: organizationData['contactEmail'],
-          // to: 'hello.givingsadaqah@mailinator.com', // organizationData['contactEmail'],
-          to: message.email, // organizationData['contactEmail'],
-          subject: 'Donor has sent you an Email',
-          template: 'email',
-          context: {
+        // const resp = await this.mailerService.sendMail({
+        //   // to: organizationData['contactEmail'],
+        //   // to: 'hello.givingsadaqah@mailinator.com', // organizationData['contactEmail'],
+        //   to: message.email, // organizationData['contactEmail'],
+        //   subject: 'Donor has sent you an Email',
+        //   template: 'email',
+        //   context: {
+        //     name: message.name,
+        //     email: message.email,
+        //     help_message: message.help_message,
+        //   },
+        //   attachments: message.files,
+        // });
+        // console.log(resp);
+        // success = true;
+        // statusCode = 200;
+        // txtMessage = 'Your email has been sent';
+
+        // await this.mailerService.sendMail({
+        //   // to: organizationData['contactEmail'],
+        //   to: message.email, // organizationData['contactEmail'],
+        //   subject: 'Thanks for letting us know',
+        //   template: 'donor',
+        //   context: {
+        //     name: message.name,
+        //   },
+        // });
+        await this.emailService.sendMailWAttachment(
+          message.email,
+          'Donor has sent you an Email',
+          'email',
+          {
             name: message.name,
             email: message.email,
             help_message: message.help_message,
           },
-          attachments: message.files,
-        });
-        console.log(resp);
-        success = true;
-        statusCode = 200;
-        txtMessage = 'Your email has been sent';
+          message.files,
+          'hello@tmra.io',
+        );
 
-        await this.mailerService.sendMail({
-          // to: organizationData['contactEmail'],
-          to: message.email, // organizationData['contactEmail'],
-          subject: 'Thanks for letting us know',
-          template: 'donor',
-          context: {
+        await this.emailService.sendMail(
+          message.email,
+          'Thanks for letting us know',
+          'donor',
+          {
             name: message.name,
           },
-        });
+        );
 
         this.notificationsModel.create({
           organizationId: new Types.ObjectId(organizationId),

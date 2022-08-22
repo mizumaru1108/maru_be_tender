@@ -157,8 +157,7 @@ export class OrganizationService {
 
     const emailData = { name: orgUpdated.name };
     this.emailService.sendMail(
-      'rdanang.dev@gmail.com',
-      // orgUpdated.contactEmail,
+      orgUpdated.contactEmail,
       'Giving Sadaqah Updates',
       'account_update',
       emailData,

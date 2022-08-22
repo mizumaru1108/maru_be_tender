@@ -27,24 +27,6 @@ import {
         schema: NotificationsSchema,
       },
     ]),
-    MailerModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (config: ConfigService) => ({
-        transport: config.get<string>('MAILER_TRANSPORT_URL')!,
-        defaults: {
-          from: 'hello@tmra.io',
-        },
-        template: {
-          dir: join(__dirname, './templates'),
-          adapter: new HandlebarsAdapter(),
-          options: {
-            strict: true,
-          },
-        },
-      }),
-      inject: [ConfigService],
-    }),
-    ConfigModule.forRoot(),
   ],
   providers: [ContactsService],
   controllers: [ContactsController],

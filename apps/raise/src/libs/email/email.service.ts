@@ -50,4 +50,50 @@ export class EmailService {
       data: data,
     };
   }
+
+  /**
+   * SendMail Services,
+   * used to send email to user with attachment,
+   * @param to email address of the user
+   * @param subject subject of the email
+   * @param template hbs template of the email
+   * @param data data to be passed to the template
+   * @param attachment attachment to be sent with the email (array of objects)
+   * @param from sender address of the email, (default: "hello@tamra.io")
+   */
+  async sendMailWAttachment(
+    to: string,
+    subject: string,
+    template: string,
+    data: {},
+    attachment: any, // array of objects
+    from?: string,
+  ) {
+    let txtMessage = 'Oops an error occurred, email failed to send';
+    let success = false;
+    let statusCode = 400;
+    if (subject && template && data) {
+      const resp = await this.mailerService.sendMail({
+        // to: organizationData['contactEmail'],
+        to: to,
+        subject: subject,
+        template: template,
+        context: data,
+        attachments: attachment,
+        from: from ? from : 'hello@tmra.io',
+      });
+      console.log(resp);
+      success = true;
+      statusCode = 200;
+      txtMessage = 'Your email has been sent';
+    }
+    this.logger.debug(txtMessage);
+
+    return {
+      success: success,
+      status: statusCode,
+      message: txtMessage,
+      data: data,
+    };
+  }
 }

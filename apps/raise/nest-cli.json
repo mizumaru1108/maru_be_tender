@@ -3,7 +3,7 @@
   "sourceRoot": "src",
   "assets": ["**/*.templates"],
   "compilerOptions": {
-    "assets": ["contacts/templates/**/*", "libs/email/templates/**/*"],
+    "assets": ["libs/email/templates/**/*"],
     "watchAssets": true
   }
 }

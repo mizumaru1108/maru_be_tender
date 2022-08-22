@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CoreModule } from './core/core.module';
-import { EmailModule } from './libs/email/email.module';
 import { FundraisingModule } from './fundraising/fundraising.module';
 import { GeoModule } from './geo/geo.module';
 import { PaymentAmazonpsModule } from './payment-amazonps/payment-amazonps.module';
@@ -71,7 +70,6 @@ import { WidgetBackendModule } from './widget-backend/widget-backend.module';
       inject: [ConfigService],
     }),
     CoreModule,
-    EmailModule,
     FundraisingModule,
     PaymentXenditModule,
     PaymentPaypalModule,

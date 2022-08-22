@@ -86,7 +86,7 @@ import { EmailModule } from 'src/libs/email/email.module';
       },
     ]),
     ConfigModule,
-    EmailModule,
+    // EmailModule,
   ],
   providers: [OrganizationService],
   controllers: [OrganizationController],

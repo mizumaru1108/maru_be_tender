@@ -71,7 +71,7 @@ import { EmailModule } from 'src/libs/email/email.module';
       },
       { name: User.name, schema: UserSchema },
     ]),
-    EmailModule,
+    // EmailModule,
   ],
   providers: [PaymentStripeService],
   controllers: [PaymentStripeController],
