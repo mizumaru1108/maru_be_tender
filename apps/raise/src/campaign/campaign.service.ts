@@ -743,7 +743,7 @@ export class CampaignService {
       throw new NotFoundException(`OperatorId not found`);
     }
 
-    const campaignList = await this.campaignVendorLogModel.aggregate([
+    let data = await this.campaignVendorLogModel.aggregate([
       {
         $lookup: {
           from: 'campaign',
@@ -786,10 +786,33 @@ export class CampaignService {
       { $sort: { _id: -1 } },
     ]);
 
-    this.logger.debug(
-      `list of my pending campaign=${JSON.stringify(campaignList)}`,
-    );
-    return campaignList;
+    //get history of vendor campaign completion
+    let buff = [];
+    //let data = [];
+    for (let i = 0; i < data.length; i++) {
+      let num = await this.campaignVendorLogModel.aggregate([
+        { $match: { creatorUserId: data[i]['creatorId'], isFinished: 'N' } },
+        { $group: { _id: null, count: { $count: {} } } },
+      ]);
+
+      this.logger.debug(num);
+      buff[i] = {
+        _id: data[i]['_id'],
+        status: data[i]['status'],
+        createdAt: data[i]['createdAt'],
+        creatorId: data[i]['creatorId'],
+        type: data[i]['type'],
+        campaignName: data[i]['campaignName'],
+        orgId: data[i]['orgId'],
+        milestone: data[i]['milestone'],
+        totalCamp: num,
+      };
+    }
+    data = buff;
+
+    //TO DO : Update campaign collection, add new field ownerUserId
+
+    return data;
   }
 
   async getObjectId(createCampaignDto: CreateCampaignDto) {
