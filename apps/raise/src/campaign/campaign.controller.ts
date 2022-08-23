@@ -152,7 +152,7 @@ export class CampaignController {
   }
 
   /**
-   * Story (Operator > Campaign Vendro Request)
+   * Story (Operator > Campaign Vendor Request)
    * Ref: https://www.notion.so/hendyirawan/Operator-Campaign-Vendor-Request-d33e785f1bf54b2da37e8d71c2eef984
    * Data Displayed by Frontend (response)
    * Vendor Name, Total Campaigns Done Before.
