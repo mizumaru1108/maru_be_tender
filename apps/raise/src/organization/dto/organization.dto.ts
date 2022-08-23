@@ -1,4 +1,5 @@
 export class OrganizationDto {
+  organizationEmail: string;
   name: string;
   address: string;
   contactPhone: string;

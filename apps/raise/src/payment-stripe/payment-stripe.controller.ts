@@ -1,4 +1,5 @@
 import { Controller, Body, Get, Post, Query } from '@nestjs/common';
+import { PaymentRequestCartDto } from './dto';
 import { PaymentRequestDto } from './payment-stripe.dto';
 import { PaymentStripeService } from './payment-stripe.service';
 
@@ -17,6 +18,21 @@ export class PaymentStripeController {
     @Query('organizationId') organizationId: string,
   ) {
     return await this.paymentStripeService.stripeCallback(
+      session_id,
+      organizationId,
+    );
+  }
+  @Post('/requestCart')
+  async requestCart(@Body() payment: PaymentRequestCartDto) {
+    return await this.paymentStripeService.stripeRequestBasket(payment);
+  }
+
+  @Get('/callbackCart/success')
+  async callbackCart(
+    @Query('session_id') session_id: string,
+    @Query('organizationId') organizationId: string,
+  ) {
+    return await this.paymentStripeService.stripeCallbackBasket(
       session_id,
       organizationId,
     );
