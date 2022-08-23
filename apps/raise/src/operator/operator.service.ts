@@ -75,60 +75,6 @@ export class OperatorService {
       sort = { _id: -1 };
     }
     this.logger.debug('Get list all operator with its project...');
-    // const operatorList = await this.operatorModel.aggregate([
-    //   {
-    //     $match: filterQuery,
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: 'projectOperatorMap',
-    //       localField: '_id',
-    //       foreignField: 'operatorId',
-    //       as: 'op',
-    //     },
-    //   },
-    //   {
-    //     $unwind: {
-    //       path: '$op',
-    //       preserveNullAndEmptyArrays: true,
-    //     },
-    //   },
-    //   {
-    //     $group: {
-    //       _id: '$_id',
-    //       name: { $first: '$name' },
-    //       coverImage: { $first: '$coverImage' },
-    //       image1: { $first: '$image1' },
-    //       image2: { $first: '$image2' },
-    //       image3: { $first: '$image3' },
-    //       description: { $first: '$description' },
-    //       createdAt: { $first: '$createdAt' },
-    //       projectId: { $first: '$op.projectId' },
-    //       count: { $sum: 1 },
-    //     },
-    //   },
-    //   {
-    //     $project: {
-    //       _id: 1,
-    //       name: 1,
-    //       coverImage: 1,
-    //       image1: 1,
-    //       image2: 1,
-    //       image3: 1,
-    //       description: 1,
-    //       createdAt: 1,
-    //       projectId: 1,
-    //       projectCount: '$count',
-    //     },
-    //   },
-    //   {
-    //     $sort: {
-    //       _id: 1,
-    //     },
-    //   },
-    // ]);
-    // return operatorList;
-
     var operatorAggregation = this.operatorModel.aggregate([
       {
         $match: filterQuery,
@@ -187,7 +133,6 @@ export class OperatorService {
         limit: limit,
       },
     );
-
     return operatorList;
   }
 

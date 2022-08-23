@@ -8,7 +8,12 @@ import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import axios, { AxiosRequestConfig } from 'axios';
 import dayjs from 'dayjs';
-import { Model, Types } from 'mongoose';
+import {
+  AggregatePaginateModel,
+  AggregatePaginateResult,
+  Model,
+  Types,
+} from 'mongoose';
 import slugify from 'slugify';
 
 import { z } from 'zod';
@@ -25,12 +30,15 @@ import { User, UserDocument } from '../user/schema/user.schema';
 import { Campaign, CampaignDocument } from './campaign.schema';
 import { CreateCampaignDto } from './dto';
 import { UpdateCampaignDto } from './dto/update-campaign-dto';
+import { GetAllMypendingCampaignFromVendorIdRequest } from './dto/get-all-my-pending-campaign-from-vendor-id.request';
 @Injectable()
 export class CampaignService {
   private logger = rootLogger.child({ logger: CampaignService.name });
   constructor(
     @InjectModel(Campaign.name)
     private campaignModel: Model<CampaignDocument>,
+    @InjectModel(Campaign.name)
+    private campaignAggregatePaginateModel: AggregatePaginateModel<CampaignDocument>,
     @InjectModel(Operator.name)
     private operatorModel: Model<OperatorDocument>,
     @InjectModel(CampaignVendorLog.name)
@@ -723,6 +731,88 @@ export class CampaignService {
     this.logger.debug(
       `list of my pending campaign=${JSON.stringify(campaignList)}`,
     );
+    return campaignList;
+  }
+
+  async getAllMyPendingCampaignByOrganizationId(
+    request: GetAllMypendingCampaignFromVendorIdRequest,
+  ): Promise<AggregatePaginateResult<CampaignDocument>> {
+    const { limit = 10, page = 1 } = request;
+    const ObjectId = require('mongoose').Types.ObjectId;
+    const aggregateQuerry = this.campaignModel.aggregate([
+      {
+        $lookup: {
+          from: 'campaignVendorLog',
+          localField: '_id',
+          foreignField: 'campaignId',
+          as: 'campaignDatasInVendorLog',
+        },
+      },
+      {
+        $unwind: {
+          path: '$campaignDatasInVendorLog',
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $addFields: {
+          isDone: {
+            $eq: [
+              { $toDouble: { $trunc: ['$amountProgress', 2] } },
+              { $toDouble: { $trunc: ['$amountTarget', 2] } },
+            ],
+          },
+        },
+      },
+      {
+        $match: {
+          amountProgress: { $nin: ['', null, 0] },
+          amountTarget: { $nin: ['', null, 0] },
+          isDone: true,
+          organizationId: ObjectId(request.organizationId),
+          'campaignDatasInVendorLog.status': 'pending',
+        },
+      },
+      {
+        $addFields: {
+          'campaignDatasInVendorLog.vendorId': {
+            $toObjectId: '$campaignDatasInVendorLog.vendorId',
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'vendor',
+          localField: 'campaignDatasInVendorLog.vendorId',
+          foreignField: '_id',
+          as: 'vendorDatas',
+        },
+      },
+      {
+        $unwind: {
+          path: '$vendorDatas',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          campaignId: { $first: '$campaignDatasInVendorLog.campaignId' },
+          vendorId: { $first: '$campaignDatasInVendorLog.vendorId' },
+          vendorName: { $first: '$vendorDatas.name' },
+          campaignType: { $first: '$campaignType' },
+          campaignDone: { $sum: 1 },
+        },
+      },
+    ]);
+    const campaignList =
+      await this.campaignAggregatePaginateModel.aggregatePaginate(
+        aggregateQuerry,
+        {
+          page,
+          limit,
+        },
+      );
     return campaignList;
   }
 

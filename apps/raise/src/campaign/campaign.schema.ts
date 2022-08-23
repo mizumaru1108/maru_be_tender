@@ -3,6 +3,8 @@ import dayjs from 'dayjs';
 import * as mongoose from 'mongoose';
 import { Document, Types } from 'mongoose';
 import { UpdateCampaignDto } from './dto/update-campaign-dto';
+import paginate from 'mongoose-paginate-v2';
+import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
 export type CampaignDocument = Campaign & Document;
 
@@ -141,4 +143,6 @@ export class Campaign {
   }
 }
 
-export const CampaignSchema = SchemaFactory.createForClass(Campaign);
+export const CampaignSchema = SchemaFactory.createForClass(Campaign)
+  .plugin(paginate)
+  .plugin(aggregatePaginate);

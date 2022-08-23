@@ -22,7 +22,10 @@ import { CampaignSetDeletedFlagDto } from './dto/capaign-set-flag-deleted';
 import { UpdateCampaignDto } from './dto/update-campaign-dto';
 import { baseResponseHelper } from '../commons/helpers/base-response-helper';
 import { BaseResponse } from '../commons/dtos/base-response';
-import { Campaign } from './campaign.schema';
+import { Campaign, CampaignDocument } from './campaign.schema';
+import { GetAllMypendingCampaignFromVendorIdRequest } from './dto/get-all-my-pending-campaign-from-vendor-id.request';
+import { paginationHelper } from '../commons/helpers/pagination-helper';
+import { PaginatedResponse } from '../commons/dtos/paginated-response.dto';
 
 @ApiTags('campaign')
 @Controller('campaign')
@@ -148,6 +151,40 @@ export class CampaignController {
     );
   }
 
+  /**
+   * Story (Operator > Campaign Vendro Request)
+   * Ref: https://www.notion.so/hendyirawan/Operator-Campaign-Vendor-Request-d33e785f1bf54b2da37e8d71c2eef984
+   * Data Displayed by Frontend (response)
+   * Vendor Name, Total Campaigns Done Before.
+   */
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get list all my pending campaign (vendor)' })
+  @Get('mycampaign-getpendinglist-from-organizationId')
+  async getAllMyPendingCampaignByOrganizationId(
+    @Query() request: GetAllMypendingCampaignFromVendorIdRequest,
+  ): Promise<PaginatedResponse<CampaignDocument[]>> {
+    this.logger.debug(`Get list all my pending campaign`);
+    const campaignList =
+      await this.campaignService.getAllMyPendingCampaignByOrganizationId(
+        request,
+      );
+    const response = paginationHelper(
+      campaignList.docs,
+      campaignList.totalDocs,
+      campaignList.limit,
+      campaignList.page,
+      campaignList.totalPages,
+      campaignList.pagingCounter,
+      campaignList.hasPrevPage,
+      campaignList.hasNextPage,
+      campaignList.prevPage,
+      campaignList.nextPage,
+      HttpStatus.OK,
+      'Successfully get list all campaign',
+    );
+    return response;
+  }
+
   @ApiOperation({ summary: 'Get list all my pending campaign (vendor)' })
   @Get('organization/:organizationId/vendor/:vendorId/getListPending')
   async getPendingMyCampaignByVendorId(
@@ -179,8 +216,7 @@ export class CampaignController {
     status: 201,
     description: 'The Campaign has been successfully created.',
   })
-  // @ClusterRoles(RoleEnum.OPERATOR)
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('create')
   async create(@Body() createCampaignDto: CreateCampaignDto) {
     this.logger.debug(
