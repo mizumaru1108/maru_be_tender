@@ -61,7 +61,7 @@ export class PaymentStripeService {
     @InjectModel(User.name)
     private readonly userModel: mongoose.Model<UserDocument>,
     private readonly emailService: EmailService,
-  ) {}
+  ) { }
 
   async stripeRequest(payment: PaymentRequestDto) {
     const tracer = trace.getTracer('tmra-raise');
@@ -602,10 +602,10 @@ export class PaymentStripeService {
           const donorName = donor
             ? `${donor.firstname} ${donor.lastname}`
             : anonymousData
-            ? anonymousData.anonymous
-              ? 'anonymous'
-              : `${anonymousData.firstName} ${anonymousData.lastName}`
-            : 'anonymous';
+              ? anonymousData.anonymous
+                ? 'anonymous'
+                : `${anonymousData.firstName} ${anonymousData.lastName}`
+              : 'anonymous';
           if (notifSettings.newDonation) {
             const emailData = {
               // donor: 'Donor',
@@ -660,9 +660,6 @@ export class PaymentStripeService {
           },
         );
 
-        // console.log(getCampaign.amountTarget);
-        // console.log(Number(getCampaign.amountTarget));
-        // console.log(Number(lastAmount));
         if (!updateCampaign) {
           return {
             statusCode: 516,
@@ -767,16 +764,11 @@ export class PaymentStripeService {
 
       this.logger.debug('stripeRequest...');
       let txtMessage = '';
-      //let stripeCallbackUrl = '';
-      // let amount = '';
-      // let donorId = '';
       let isAnonymous = false;
       let donor = null;
-      // let donorName = '';
       let currency = payment.currency;
 
       const ObjectId = require('mongoose').Types.ObjectId;
-      console.log(payment);
       if (
         !payment.organizationId ||
         // !payment.campaignId ||
@@ -834,21 +826,22 @@ export class PaymentStripeService {
       } else if (!currency) {
         currency = getOrganization['defaultCurrency'];
       }
-      
+
       const dataBasket = JSON.stringify(payment.data_basket);
       const campaigns = JSON.parse(dataBasket);
-      const campaignIds:any[]=[];
+      const campaignIds: any[] = [];
+      const totalAmounts: any[] = [];
       for (let i = 0; i < campaigns.length; i++) {
-        const element = campaigns[i].campaignId;
-        campaignIds.push(element);
+        campaignIds.push(campaigns[i].campaignId);
+        totalAmounts.push(campaigns[i].amount);
       }
-      
+
       const getCampaign = await this.campaignModel
         .find({
-          _id: {$in:campaignIds}
-        }).exec();//        .exec();
+          _id: { $in: campaignIds }
+        }).exec();
 
-      console.log('debug', getCampaign);
+
       // let dataAmount = payment.amount * parseFloat(payment.quantity); // let's assume it will be multiple by 1 (price)
       if (!getCampaign) {
         txtMessage = `request rejected campaignId not found`;
@@ -861,26 +854,24 @@ export class PaymentStripeService {
             message: txtMessage,
           }),
         };
-      } else if (
-        !getCampaign
-        // parseFloat(getCampaign.amountProgress.toString()) + payment.amount >
-        // parseFloat(getCampaign.amountTarget.toString())
-      ) {
-        // console.log(getCampaign.amountProgress.toString());
-        // console.log(payment.amount.toString());
-        return {
-          statusCode: 400,
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-          },
-          body: JSON.stringify({
-            message: `Amount is larger than the limit of the target `//${getCampaign.amountTarget}`,
-          }),
-        };
-      }
-      // }
+      };
 
-      console.log('debug', payment.organizationId);
+
+      getCampaign.map((e, i) => {
+        if ((parseFloat(e.amountProgress.toString() + totalAmounts[i])) > parseFloat(e.amountTarget.toString())) {
+          return {
+            statusCode: 400,
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+            },
+            body: JSON.stringify({
+              message: `Amount is larger than the limit the target of campaign ${e.campaignName} `,
+            }),
+          };
+        }
+
+      })
+
       const getSecretKey = await this.paymentGatewayModel.findOne(
         { organizationId: ObjectId(payment.organizationId) },
         { apiKey: 1, _id: 0 },
@@ -900,12 +891,7 @@ export class PaymentStripeService {
         };
       }
 
-      console.log(getSecretKey['apiKey']);
-      //let getUser = new UserModel();
-      console.log(payment.donorId);
       if (payment.donorId) {
-        // console.log('donorid');
-        // console.log(payment.donorId);
         if (!ObjectId.isValid(payment.donorId)) {
           donor = await this.userModel.findOne({
             _id: payment.donorId,
@@ -935,14 +921,12 @@ export class PaymentStripeService {
               isAnonymous = true;
             }
           }
-
           span.setAttribute('donor.firstName', donor?.firstName ?? '');
-
           // if (donor) donorName = `${donor.firstName} ${donor.lastName ?? ''}`;
         }
       }
 
-      // const paymentJson = JSON.parse(JSON.stringify(payment));
+      const qty = totalAmounts.reduce((ac, obj) => { return ac + obj; }, 0)
       const params = new URLSearchParams();
       if (donor) {
         params.append('customer_email', donor.email);
@@ -951,11 +935,12 @@ export class PaymentStripeService {
       }
       params.append('success_url', payment.success_url);
       params.append('cancel_url', payment.cancel_url);
-      // params.append('line_items[0][price]', payment.price);
-      // params.append('line_items[0][quantity]', payment.quantity);
+      params.append('line_items[0][price]', payment.price);
+      // params.append('line_items[0][basket]', dataBasket);
+      // params.append('line_items[0]', dataBasket);
+      params.append('line_items[0][quantity]', qty);
       params.append('mode', 'payment');
       params.append('submit_type', 'donate'); //will enable button with label "donate"
-      console.log(params);
       const options: AxiosRequestConfig<any> = {
         method: 'POST',
         headers: {
@@ -967,7 +952,8 @@ export class PaymentStripeService {
       };
 
       const data = await axios(options);
-      console.log(data);
+      //console.log('data===', data, 'Params', params, 'qty===>', qty);
+      //console.log(data);
       if (!data) {
         return {
           statusCode: 504,
@@ -983,7 +969,7 @@ export class PaymentStripeService {
       const amountStr = data['data']['amount_total'].toString();
       const amount = amountStr.substring(0, amountStr.length - 2);
 
-      console.log('amount unit', amount);
+      //console.log('amount unit', amount);
 
       //insert data to donation_log
       let objectIdDonation = new ObjectId();
@@ -995,10 +981,10 @@ export class PaymentStripeService {
         amount: Number(amount),
         createdAt: now,
         updatedAt: now,
-       // campaignId: ObjectId(payment.campaignId),
+        // campaignId: ObjectId(payment.campaignId),
         currency: currency,
         donationStatus: 'PENDING',
-        }).save();
+      }).save();
 
       if (!getDonationLog) {
         txtMessage = 'donation failed to save in mongodb';
@@ -1035,7 +1021,7 @@ export class PaymentStripeService {
         paymentDescription: '',
         expiryMonth: '',
         expiryYear: '',
-        responseStatus: '',
+        responseStatus: dataBasket, //send data list Campaign
         responseCode: '',
         responseMessage: '',
         cvvResult: '',
@@ -1044,7 +1030,7 @@ export class PaymentStripeService {
         paymentStatus: 'OPEN',
       }).save();
 
-      console.log(insertPaymentData);
+      // console.log(insertPaymentData);
 
       if (!insertPaymentData) {
         txtMessage = 'payment data failed to save in mongodb';
@@ -1059,8 +1045,8 @@ export class PaymentStripeService {
         };
       }
 
-      console.log('debug', data);
-      console.log('debug', data['data']['id']);
+      // console.log('debug', data);
+      // console.log('debug', data['data']['id']);
       //stripeCallbackUrl = data['data']['url'];
       txtMessage = `stripe request has been sent`;
 
@@ -1091,11 +1077,10 @@ export class PaymentStripeService {
     });
     try {
       // Do some work here
-
       this.logger.debug('stripeCallback...');
       let txtMessage = '';
-      console.debug('session_id=', sessionId);
-      console.debug('organizationId=', organizationId);
+      //console.debug('session_id=', sessionId);
+      //console.debug('organizationId=', organizationId);
 
       if (!sessionId || !organizationId) {
         txtMessage = 'session_id and organizationId is required';
@@ -1110,11 +1095,24 @@ export class PaymentStripeService {
         };
       }
 
-      console.debug('organizationId=', organizationId);
+      //console.debug('organizationId=', organizationId);
       const ObjectId = require('mongoose').Types.ObjectId;
       const getOrganization = await this.organizationModel.findOne({
         _id: ObjectId(organizationId),
       });
+      if (!getOrganization) {
+        txtMessage = `request rejected organizationId not found`;
+        return {
+          statusCode: 514,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+          },
+          body: JSON.stringify({
+            message: txtMessage,
+          }),
+        };
+      }
+
       const getSecretKey = await this.paymentGatewayModel.findOne(
         { organizationId: ObjectId(organizationId) },
         { apiKey: 1, _id: 0 },
@@ -1184,14 +1182,8 @@ export class PaymentStripeService {
         };
       }
 
-     
       //update payment status in donation_log
       let donationId = paymentData.donationId; //new mongoose.Types.ObjectId(paymentData.donationId);
-
-      console.log(
-        'valid object Id ?',
-        ObjectId.isValid(paymentData.donationId),
-      );
       const updateDonationLog = await this.donationLogModel.updateOne(
         { _id: donationId },
         { donationStatus: paymentStatus },
@@ -1225,22 +1217,6 @@ export class PaymentStripeService {
         };
       }
 
-      console.log(`getDonationLog`, getDonationLog);
-      //get current amountProgress in campaign
-      const getCampaign = await this.campaignModel.findOne(
-        { _id: getDonationLog.campaignId },
-        { _id: 0, amountProgress: 1, amountTarget: 2, title: 3 },
-      );
-
-      if (!getCampaign) {
-        return {
-          statusCode: 404,
-          body: JSON.stringify({
-            message: 'Campaign not found',
-          }),
-        };
-      }
-
       // Get Donor Data
       const donor = await this.userModel.findOne(
         { _id: donationId },
@@ -1262,161 +1238,190 @@ export class PaymentStripeService {
           },
         );
       }
+      const getDataBasket = await this.paymentDataModel.findOne({
+        orderId: data.data['payment_intent']
+      }, {
+        responseStatus: 1,
+      })
 
-      if (paymentStatus == 'SUCCESS') {
-        //update  amountProgress with current donation amount
-        const amountStr = data.data['amount_total'].toString();
-        const lastAmount = (
-          Number(getCampaign.amountProgress) +
-          Number(amountStr.substring(0, amountStr.length - 2))
-        ).toString();
+      console.log('get data Basket', getDataBasket);
+      const campaignId: any[] = [];
+      const totalAmount: any[] = [];
+      if(!!getDataBasket && getDataBasket.responseStatus){
+      const campaigns =  JSON.parse(getDataBasket.responseStatus);
+        for (let i = 0; i < campaigns.length; i++) {
+          campaignId.push(campaigns[i].campaignId);
+          totalAmount.push(campaigns[i].amount);
+            if (paymentStatus == 'SUCCESS') {
 
-        const notifSettings = await this.notifSettingsModel.findOne({
-          organizationId: ObjectId(organizationId),
-        });
+          const getCampaign = await this.campaignModel.findOne(
+            { _id: campaignId },
+            { _id: 0, amountProgress: 1, amountTarget: 1, title: 1 },
+          )
 
-        if (getOrganization && notifSettings) {
-          this.logger.debug(`notification settings ${notifSettings.id}`);
-          const subject = `New Donation For ${getCampaign.title}`;
-          const donorName = donor
-            ? `${donor.firstname} ${donor.lastname}`
-            : anonymousData
-              ? anonymousData.anonymous
-                ? 'anonymous'
-                : `${anonymousData.firstName} ${anonymousData.lastName}`
-              : 'anonymous';
-          if (notifSettings.newDonation) {
-            const emailData = {
-              // donor: 'Donor',
-              donor: donorName,
-              title: getCampaign.title,
-              currency: getDonationLog.currency,
-              amount: getDonationLog.amount,
+          if (!getCampaign) {
+            return {
+              statusCode: 404,
+              body: JSON.stringify({
+                message: 'Campaign not found',// => 
+              }),
             };
-            this.emailService.sendMail(
-              getOrganization.contactEmail,
-              subject,
-              'org/new_donation',
-              emailData,
-            );
-            const emailDonor = {
-              donor: donorName,
-              title: getCampaign.title,
-              currency: getDonationLog.currency,
-              amount: getDonationLog.amount,
-            };
-            if (donor) {
+          }
+          const notifSettings = await this.notifSettingsModel.findOne({
+            organizationId: ObjectId(organizationId),
+          });
+
+          const lastAmount = (
+            Number(getCampaign.amountProgress) +
+            Number(totalAmount))
+            .toString();
+
+          if (getOrganization && notifSettings && getCampaign) {
+            this.logger.debug(`notification settings ${notifSettings.id}`);
+            const subject = `New Donation For ${getCampaign.title}`;
+            const donorName = donor
+              ? `${donor.firstname} ${donor.lastname}`
+              : anonymousData
+                ? anonymousData.anonymous
+                  ? 'anonymous'
+                  : `${anonymousData.firstName} ${anonymousData.lastName}`
+                : 'anonymous';
+            if (notifSettings.newDonation) {
+              const emailData = {
+                // donor: 'Donor',
+                donor: donorName,
+                title: getCampaign.title,
+                currency: getDonationLog.currency,
+                amount: getDonationLog.amount,
+              };
               this.emailService.sendMail(
-                donor.email,
+                getOrganization.contactEmail,
                 subject,
                 'org/new_donation',
-                emailDonor,
+                emailData,
               );
-            }
-            if (anonymousData) {
-              if (anonymousData.isEmailChecklist || !anonymousData.anonymous) {
+              const emailDonor = {
+                donor: donorName,
+                title: getCampaign.title,
+                currency: getDonationLog.currency,
+                amount: getDonationLog.amount,
+              };
+              if (donor) {
                 this.emailService.sendMail(
-                  anonymousData.email,
+                  donor.email,
                   subject,
                   'org/new_donation',
                   emailDonor,
                 );
               }
-            }
-          }
-        } else {
-          this.logger.debug(`notification settings not found`);
-        }
-
-        const updateCampaign = await this.campaignModel.updateOne(
-          { _id: getDonationLog.campaignId },
-          {
-            amountProgress: Number(lastAmount),
-            updatedAt: myDate.toISOString(),
-          },
-        );
-
-        if (!updateCampaign) {
-          return {
-            statusCode: 516,
-            headers: {
-              'Access-Control-Allow-Origin': '*',
-            },
-            body: JSON.stringify({
-              message: 'failed update campaign data',
-            }),
-          };
-        } else if (Number(getCampaign.amountTarget) == Number(lastAmount)) {
-          await this.campaignModel.updateOne(
-            { _id: getDonationLog.campaignId },
-            {
-              isFinished: 'Y',
-            },
-          );
-
-          this.notificationsModel.create({
-            organizationId: new ObjectId(organizationId),
-            type: 'general',
-            createdAt: new Date(),
-            title: 'Campaign is completed',
-            body: `Alhamdulillah, amount target of the campaign ${getCampaign.title} is completed...`,
-            icon: 'info',
-            markAsRead: false,
-          });
-
-          if (getOrganization && notifSettings) {
-            this.logger.debug(`notification settings ${notifSettings.id}`);
-            if (notifSettings.completeDonation) {
-              const subject = 'Complete Donation';
-              const emailData = {
-                campaignId: getCampaign.id,
-                campaignName: getCampaign.title,
-              };
-              this.emailService.sendMail(
-                getOrganization.contactEmail,
-                subject,
-                'org/donation_complete',
-                emailData,
-              );
+              if (anonymousData) {
+                if (anonymousData.isEmailChecklist || !anonymousData.anonymous) {
+                  this.emailService.sendMail(
+                    anonymousData.email,
+                    subject,
+                    'org/new_donation',
+                    emailDonor,
+                  );
+                }
+              }
             }
           } else {
             this.logger.debug(`notification settings not found`);
           }
+
+          const updateCampaign = await this.campaignModel.updateOne(
+            { _id: getDonationLog.campaignId },
+            {
+              amountProgress: Number(lastAmount),
+              updatedAt: myDate.toISOString(),
+            },
+          );
+
+          if (!updateCampaign) {
+            return {
+              statusCode: 516,
+              headers: {
+                'Access-Control-Allow-Origin': '*',
+              },
+              body: JSON.stringify({
+                message: 'failed update campaign data',
+              }),
+            };
+          } else if (Number(getCampaign.amountTarget) == Number(lastAmount)) {
+            await this.campaignModel.updateOne(
+              { _id: getDonationLog.campaignId },
+              {
+                isFinished: 'Y',
+              },
+            );
+
+            this.notificationsModel.create({
+              organizationId: new ObjectId(organizationId),
+              type: 'general',
+              createdAt: new Date(),
+              title: 'Campaign is completed',
+              body: `Alhamdulillah, amount target of the campaign ${getCampaign.title} is completed...`,
+              icon: 'info',
+              markAsRead: false,
+            });
+
+            if (getOrganization && notifSettings) {
+              this.logger.debug(`notification settings ${notifSettings.id}`);
+              if (notifSettings.completeDonation) {
+                const subject = 'Complete Donation';
+                const emailData = {
+                  campaignId: getCampaign.id,
+                  campaignName: getCampaign.title,
+                };
+                this.emailService.sendMail(
+                  getOrganization.contactEmail,
+                  subject,
+                  'org/donation_complete',
+                  emailData,
+                );
+              }
+            } else {
+              this.logger.debug(`notification settings not found`);
+            }
+
+            const updatePaymentData = await this.paymentDataModel.updateOne(
+              { orderId: data.data['payment_intent'] },
+              {
+                paymentStatus: paymentStatus,
+                responseMessage: data.data['payment_status'],
+                transactionTime: myDate.toISOString(), //stripe have their own transactionTime
+                cardType: 'card',
+              },
+            );
+      
+            if (!updatePaymentData) {
+              return {
+                statusCode: 516,
+                headers: {
+                  'Access-Control-Allow-Origin': '*',
+                },
+                body: JSON.stringify({
+                  message: 'failed inserting transaction data',
+                }),
+              };
+            }
+          }
+          
         }
-      }
-
-      const updatePaymentData = await this.paymentDataModel.updateOne(
-        { orderId: data.data['payment_intent'] },
-        {
-          paymentStatus: paymentStatus,
-          responseMessage: data.data['payment_status'],
-          transactionTime: myDate.toISOString(), //stripe have their own transactionTime
-          cardType: 'card',
-        },
-      );
-
-      if (!updatePaymentData) {
         return {
-          statusCode: 516,
+          statusCode: 200,
           headers: {
             'Access-Control-Allow-Origin': '*',
           },
           body: JSON.stringify({
-            message: 'failed inserting transaction data',
+            message: 'successful receive callback from stripe',
           }),
         };
+        }
       }
 
-      return {
-        statusCode: 200,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
-        body: JSON.stringify({
-          message: 'successful receive callback from stripe',
-        }),
-      };
-    } catch (err) {
+    }
+    catch (err) {
       // When we catch an error, we want to show that an error occurred
       span.setStatus({
         code: SpanStatusCode.ERROR,

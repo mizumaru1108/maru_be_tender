@@ -9,6 +9,8 @@ export class PaymentRequestCartDto {
   success_url: string;
   cancel_url: string;
   extraAmount: number;
+  totalAmaount: number;
+  price: string;
   @IsArray()
   data_basket: string[];
 }
