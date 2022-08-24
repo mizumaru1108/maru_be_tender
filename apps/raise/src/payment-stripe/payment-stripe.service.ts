@@ -660,9 +660,6 @@ export class PaymentStripeService {
           },
         );
 
-        // console.log(getCampaign.amountTarget);
-        // console.log(Number(getCampaign.amountTarget));
-        // console.log(Number(lastAmount));
         if (!updateCampaign) {
           return {
             statusCode: 516,
@@ -1187,11 +1184,6 @@ export class PaymentStripeService {
 
       //update payment status in donation_log
       let donationId = paymentData.donationId; //new mongoose.Types.ObjectId(paymentData.donationId);
-
-      // #console.log(
-      //   'valid object Id ?',
-      //   ObjectId.isValid(paymentData.donationId),
-      // );
       const updateDonationLog = await this.donationLogModel.updateOne(
         { _id: donationId },
         { donationStatus: paymentStatus },
@@ -1225,27 +1217,6 @@ export class PaymentStripeService {
         };
       }
 
-      //get current amountProgress in campaign
-      // const getCampaign = await this.campaignModel.find(
-      //   { _id: {$in: []}},
-      //   { _id: 0, amountProgress: 1, amountTarget: 2, title: 3 },
-      //   );
-
-      // // console.log('Campaign IDs=>', getCampaign);
-      // // const getCampaign = await this.campaignModel.findOne(
-      // //   { _id: getDonationLog.campaignId },
-      // //   { _id: 0, amountProgress: 1, amountTarget: 2, title: 3 },
-      // // );
-
-      // if (!getCampaign) {
-      //   return {
-      //     statusCode: 404,
-      //     body: JSON.stringify({
-      //       message: 'Campaign not found',
-      //     }),
-      //   };
-      // }
-
       // Get Donor Data
       const donor = await this.userModel.findOne(
         { _id: donationId },
@@ -1267,338 +1238,188 @@ export class PaymentStripeService {
           },
         );
       }
-
-      // if (paymentStatus == 'SUCCESS') {
-      //   //Update Campigns
-      //   //update  amountProgress with current donation amount
-      //   const amountStr = data.data['amount_total'].toString();
-      //   // const lastAmount = (
-      //   //   Number(getCampaign.amountProgress) +
-      //   //   Number(amountStr.substring(0, amountStr.length - 2))
-      //   // ).toString();
-      //   // const notifSettings = await this.notifSettingsModel.findOne({
-      //   //   organizationId: ObjectId(organizationId),
-      //   // });
-      //   // if (getOrganization && notifSettings) {
-      //   //   this.logger.debug(`notification settings ${notifSettings.id}`);
-      //   //   const subject = `New Donation For ${getCampaign.title}`;
-      //   //   const donorName = donor
-      //   //     ? `${donor.firstname} ${donor.lastname}`
-      //   //     : anonymousData
-      //   //       ? anonymousData.anonymous
-      //   //         ? 'anonymous'
-      //   //         : `${anonymousData.firstName} ${anonymousData.lastName}`
-      //   //       : 'anonymous';
-      //   //   if (notifSettings.newDonation) {
-      //   //     const emailData = {
-      //   //       // donor: 'Donor',
-      //   //       donor: donorName,
-      //   //       title: getCampaign.title,
-      //   //       currency: getDonationLog.currency,
-      //   //       amount: getDonationLog.amount,
-      //   //     };
-      //   //     this.emailService.sendMail(
-      //   //       getOrganization.contactEmail,
-      //   //       subject,
-      //   //       'org/new_donation',
-      //   //       emailData,
-      //   //     );
-      //   //     const emailDonor = {
-      //   //       donor: donorName,
-      //   //       title: getCampaign.title,
-      //   //       currency: getDonationLog.currency,
-      //   //       amount: getDonationLog.amount,
-      //   //     };
-      //   //     if (donor) {
-      //   //       this.emailService.sendMail(
-      //   //         donor.email,
-      //   //         subject,
-      //   //         'org/new_donation',
-      //   //         emailDonor,
-      //   //       );
-      //   //     }
-      //   //     if (anonymousData) {
-      //   //       if (anonymousData.isEmailChecklist || !anonymousData.anonymous) {
-      //   //         this.emailService.sendMail(
-      //   //           anonymousData.email,
-      //   //           subject,
-      //   //           'org/new_donation',
-      //   //           emailDonor,
-      //   //         );
-      //   //       }
-      //   //     }
-      //   //   }
-      //   // } else {
-      //   //   this.logger.debug(`notification settings not found`);
-      //   // }
-      //   // const updateCampaign = await this.campaignModel.updateOne(
-      //   //   { _id: getDonationLog.campaignId },
-      //   //   {
-      //   //     amountProgress: Number(lastAmount),
-      //   //     updatedAt: myDate.toISOString(),
-      //   //   },
-      //   // );
-      //   // if (!updateCampaign) {
-      //   //   return {
-      //   //     statusCode: 516,
-      //   //     headers: {
-      //   //       'Access-Control-Allow-Origin': '*',
-      //   //     },
-      //   //     body: JSON.stringify({
-      //   //       message: 'failed update campaign data',
-      //   //     }),
-      //   //   };
-      //   // } else if (Number(getCampaign.amountTarget) == Number(lastAmount)) {
-      //   //   await this.campaignModel.updateOne(
-      //   //     { _id: getDonationLog.campaignId },
-      //   //     {
-      //   //       isFinished: 'Y',
-      //   //     },
-      //   //   );
-      //   //   this.notificationsModel.create({
-      //   //     organizationId: new ObjectId(organizationId),
-      //   //     type: 'general',
-      //   //     createdAt: new Date(),
-      //   //     title: 'Campaign is completed',
-      //   //     body: `Alhamdulillah, amount target of the campaign ${getCampaign.title} is completed...`,
-      //   //     icon: 'info',
-      //   //     markAsRead: false,
-      //   //   });
-      //   //   if (getOrganization && notifSettings) {
-      //   //     this.logger.debug(`notification settings ${notifSettings.id}`);
-      //   //     if (notifSettings.completeDonation) {
-      //   //       const subject = 'Complete Donation';
-      //   //       const emailData = {
-      //   //         campaignId: getCampaign.id,
-      //   //         campaignName: getCampaign.title,
-      //   //       };
-      //   //       this.emailService.sendMail(
-      //   //         getOrganization.contactEmail,
-      //   //         subject,
-      //   //         'org/donation_complete',
-      //   //         emailData,
-      //   //       );
-      //   //     }
-      //   //   } else {
-      //   //     this.logger.debug(`notification settings not found`);
-      //   //   }
-      //   // }
-      // }
-
       const getDataBasket = await this.paymentDataModel.findOne({
         orderId: data.data['payment_intent']
       }, {
         responseStatus: 1,
       })
 
-      // let getBasketCampaign;
-      // if (getDataBasket) {
-      //   const data = JSON.stringify(getDataBasket.responseStatus);
-      //   getBasketCampaign = JSON.parse(data);
-      // }
-
-
       console.log('get data Basket', getDataBasket);
+      const campaignId: any[] = [];
+      const totalAmount: any[] = [];
+      if(!!getDataBasket && getDataBasket.responseStatus){
+      const campaigns =  JSON.parse(getDataBasket.responseStatus);
+        for (let i = 0; i < campaigns.length; i++) {
+          campaignId.push(campaigns[i].campaignId);
+          totalAmount.push(campaigns[i].amount);
+            if (paymentStatus == 'SUCCESS') {
 
-      const dataBasket = JSON.stringify(getDataBasket?.responseStatus);
-      const campaigns = JSON.parse(dataBasket);
-      const campaignIds: any[] = [];
-      const totalAmounts: any[] = [];
-      for (let i = 0; i < campaigns.length; i++) {
-        campaignIds.push(campaigns[i].campaignId);
-        totalAmounts.push(campaigns[i].amount);
+          const getCampaign = await this.campaignModel.findOne(
+            { _id: campaignId },
+            { _id: 0, amountProgress: 1, amountTarget: 1, title: 1 },
+          )
+
+          if (!getCampaign) {
+            return {
+              statusCode: 404,
+              body: JSON.stringify({
+                message: 'Campaign not found',// => 
+              }),
+            };
+          }
+          const notifSettings = await this.notifSettingsModel.findOne({
+            organizationId: ObjectId(organizationId),
+          });
+
+          const lastAmount = (
+            Number(getCampaign.amountProgress) +
+            Number(totalAmount))
+            .toString();
+
+          if (getOrganization && notifSettings && getCampaign) {
+            this.logger.debug(`notification settings ${notifSettings.id}`);
+            const subject = `New Donation For ${getCampaign.title}`;
+            const donorName = donor
+              ? `${donor.firstname} ${donor.lastname}`
+              : anonymousData
+                ? anonymousData.anonymous
+                  ? 'anonymous'
+                  : `${anonymousData.firstName} ${anonymousData.lastName}`
+                : 'anonymous';
+            if (notifSettings.newDonation) {
+              const emailData = {
+                // donor: 'Donor',
+                donor: donorName,
+                title: getCampaign.title,
+                currency: getDonationLog.currency,
+                amount: getDonationLog.amount,
+              };
+              this.emailService.sendMail(
+                getOrganization.contactEmail,
+                subject,
+                'org/new_donation',
+                emailData,
+              );
+              const emailDonor = {
+                donor: donorName,
+                title: getCampaign.title,
+                currency: getDonationLog.currency,
+                amount: getDonationLog.amount,
+              };
+              if (donor) {
+                this.emailService.sendMail(
+                  donor.email,
+                  subject,
+                  'org/new_donation',
+                  emailDonor,
+                );
+              }
+              if (anonymousData) {
+                if (anonymousData.isEmailChecklist || !anonymousData.anonymous) {
+                  this.emailService.sendMail(
+                    anonymousData.email,
+                    subject,
+                    'org/new_donation',
+                    emailDonor,
+                  );
+                }
+              }
+            }
+          } else {
+            this.logger.debug(`notification settings not found`);
+          }
+
+          const updateCampaign = await this.campaignModel.updateOne(
+            { _id: getDonationLog.campaignId },
+            {
+              amountProgress: Number(lastAmount),
+              updatedAt: myDate.toISOString(),
+            },
+          );
+
+          if (!updateCampaign) {
+            return {
+              statusCode: 516,
+              headers: {
+                'Access-Control-Allow-Origin': '*',
+              },
+              body: JSON.stringify({
+                message: 'failed update campaign data',
+              }),
+            };
+          } else if (Number(getCampaign.amountTarget) == Number(lastAmount)) {
+            await this.campaignModel.updateOne(
+              { _id: getDonationLog.campaignId },
+              {
+                isFinished: 'Y',
+              },
+            );
+
+            this.notificationsModel.create({
+              organizationId: new ObjectId(organizationId),
+              type: 'general',
+              createdAt: new Date(),
+              title: 'Campaign is completed',
+              body: `Alhamdulillah, amount target of the campaign ${getCampaign.title} is completed...`,
+              icon: 'info',
+              markAsRead: false,
+            });
+
+            if (getOrganization && notifSettings) {
+              this.logger.debug(`notification settings ${notifSettings.id}`);
+              if (notifSettings.completeDonation) {
+                const subject = 'Complete Donation';
+                const emailData = {
+                  campaignId: getCampaign.id,
+                  campaignName: getCampaign.title,
+                };
+                this.emailService.sendMail(
+                  getOrganization.contactEmail,
+                  subject,
+                  'org/donation_complete',
+                  emailData,
+                );
+              }
+            } else {
+              this.logger.debug(`notification settings not found`);
+            }
+
+            const updatePaymentData = await this.paymentDataModel.updateOne(
+              { orderId: data.data['payment_intent'] },
+              {
+                paymentStatus: paymentStatus,
+                responseMessage: data.data['payment_status'],
+                transactionTime: myDate.toISOString(), //stripe have their own transactionTime
+                cardType: 'card',
+              },
+            );
+      
+            if (!updatePaymentData) {
+              return {
+                statusCode: 516,
+                headers: {
+                  'Access-Control-Allow-Origin': '*',
+                },
+                body: JSON.stringify({
+                  message: 'failed inserting transaction data',
+                }),
+              };
+            }
+          }
+          
+        }
+        return {
+          statusCode: 200,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+          },
+          body: JSON.stringify({
+            message: 'successful receive callback from stripe',
+          }),
+        };
+        }
       }
 
-      const getCampaign = await this.campaignModel
-        .find({
-          _id: { $in: campaignIds }
-        }).exec();
-      console.log('get Campaign', campaignIds, '======', getCampaign);
-
-      // console.log('get Basket', getBasketCampaign);
-      // const campaignIds = getBasketCampaign.map( e => e.campaignId );
-
-
-
-      // const campaignIds: any[] = [];
-      // const totalAmounts: any[] = [];
-
-
-
-
-      // for (let i = 0; i < getBasketCampaign.length; i++) {
-      //   if (paymentStatus == 'SUCCESS') {
-
-      //     const getCampaign = await this.campaignModel.find(
-      //       { _id: getBasketCampaign.campaignId },
-      //       { _id: 0, amountProgress: 1, amountTarget: 1, title: 1 },
-      //     )
-
-      //     console.log('Check Campaign', getBasketCampaign.campaignId);
-      //     console.log('Check Campaign', getBasketCampaign);
-
-
-      //     if (!getCampaign) {
-      //       return {
-      //         statusCode: 404,
-      //         body: JSON.stringify({
-      //           message: 'Campaign not found',// => 
-      //         }),
-      //       };
-      //     }
-      //     const notifSettings = await this.notifSettingsModel.findOne({
-      //       organizationId: ObjectId(organizationId),
-      //     });
-
-      //     const lastAmount = (
-      //       Number(getCampaign.amountProgress) +
-      //       Number(getBasketCampaign[i].amount))
-      //       .toString();
-
-      //     if (getOrganization && notifSettings && getCampaign) {
-      //       this.logger.debug(`notification settings ${notifSettings.id}`);
-      //       const subject = `New Donation For ${getCampaign.title}`;
-      //       const donorName = donor
-      //         ? `${donor.firstname} ${donor.lastname}`
-      //         : anonymousData
-      //           ? anonymousData.anonymous
-      //             ? 'anonymous'
-      //             : `${anonymousData.firstName} ${anonymousData.lastName}`
-      //           : 'anonymous';
-      //       if (notifSettings.newDonation) {
-      //         const emailData = {
-      //           // donor: 'Donor',
-      //           donor: donorName,
-      //           title: getCampaign.title,
-      //           currency: getDonationLog.currency,
-      //           amount: getDonationLog.amount,
-      //         };
-      //         this.emailService.sendMail(
-      //           getOrganization.contactEmail,
-      //           subject,
-      //           'org/new_donation',
-      //           emailData,
-      //         );
-      //         const emailDonor = {
-      //           donor: donorName,
-      //           title: getCampaign.title,
-      //           currency: getDonationLog.currency,
-      //           amount: getDonationLog.amount,
-      //         };
-      //         if (donor) {
-      //           this.emailService.sendMail(
-      //             donor.email,
-      //             subject,
-      //             'org/new_donation',
-      //             emailDonor,
-      //           );
-      //         }
-      //         if (anonymousData) {
-      //           if (anonymousData.isEmailChecklist || !anonymousData.anonymous) {
-      //             this.emailService.sendMail(
-      //               anonymousData.email,
-      //               subject,
-      //               'org/new_donation',
-      //               emailDonor,
-      //             );
-      //           }
-      //         }
-      //       }
-      //     } else {
-      //       this.logger.debug(`notification settings not found`);
-      //     }
-
-      //     const updateCampaign = await this.campaignModel.updateOne(
-      //       { _id: getDonationLog.campaignId },
-      //       {
-      //         amountProgress: Number(lastAmount),
-      //         updatedAt: myDate.toISOString(),
-      //       },
-      //     );
-
-      //     if (!updateCampaign) {
-      //       return {
-      //         statusCode: 516,
-      //         headers: {
-      //           'Access-Control-Allow-Origin': '*',
-      //         },
-      //         body: JSON.stringify({
-      //           message: 'failed update campaign data',
-      //         }),
-      //       };
-      //     } else if (Number(getCampaign.amountTarget) == Number(lastAmount)) {
-      //       await this.campaignModel.updateOne(
-      //         { _id: getDonationLog.campaignId },
-      //         {
-      //           isFinished: 'Y',
-      //         },
-      //       );
-
-      //       this.notificationsModel.create({
-      //         organizationId: new ObjectId(organizationId),
-      //         type: 'general',
-      //         createdAt: new Date(),
-      //         title: 'Campaign is completed',
-      //         body: `Alhamdulillah, amount target of the campaign ${getCampaign.title} is completed...`,
-      //         icon: 'info',
-      //         markAsRead: false,
-      //       });
-
-      //       if (getOrganization && notifSettings) {
-      //         this.logger.debug(`notification settings ${notifSettings.id}`);
-      //         if (notifSettings.completeDonation) {
-      //           const subject = 'Complete Donation';
-      //           const emailData = {
-      //             campaignId: getCampaign.id,
-      //             campaignName: getCampaign.title,
-      //           };
-      //           this.emailService.sendMail(
-      //             getOrganization.contactEmail,
-      //             subject,
-      //             'org/donation_complete',
-      //             emailData,
-      //           );
-      //         }
-      //       } else {
-      //         this.logger.debug(`notification settings not found`);
-      //       }
-      //     }
-      //   }
-      //   // campaignIds.push(getBasketCampaign[i].campaignId);
-      //   // totalAmounts.push(getBasketCampaign[i].amount);
-      // }
-
-      //     const updatePaymentData = await this.paymentDataModel.updateOne(
-      //       { orderId: data.data['payment_intent'] },
-      //       {
-      //         paymentStatus: paymentStatus,
-      //         responseMessage: data.data['payment_status'],
-      //         transactionTime: myDate.toISOString(), //stripe have their own transactionTime
-      //         cardType: 'card',
-      //       },
-      //     );
-
-      //     if (!updatePaymentData) {
-      //       return {
-      //         statusCode: 516,
-      //         headers: {
-      //           'Access-Control-Allow-Origin': '*',
-      //         },
-      //         body: JSON.stringify({
-      //           message: 'failed inserting transaction data',
-      //         }),
-      //       };
-      //     }
-
-      //     return {
-      //       statusCode: 200,
-      //       headers: {
-      //         'Access-Control-Allow-Origin': '*',
-      //       },
-      //       body: JSON.stringify({
-      //         message: 'successful receive callback from stripe',
-      //       }),
-      //     };
     }
     catch (err) {
       // When we catch an error, we want to show that an error occurred
