@@ -35,6 +35,7 @@ import { SharedModule } from './shared/shared.module';
 // import { OpenTelemetryModule } from 'nestjs-otel';
 // import { OpenTelemetryModule } from '@metinseylan/nestjs-opentelemetry';
 import { WidgetBackendModule } from './widget-backend/widget-backend.module';
+import { CommentsModule } from './comments/comments.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -100,6 +101,7 @@ import { WidgetBackendModule } from './widget-backend/widget-backend.module';
     WidgetsModule,
     SharedModule,
     WidgetBackendModule,
+    CommentsModule,
   ],
   controllers: [],
 })

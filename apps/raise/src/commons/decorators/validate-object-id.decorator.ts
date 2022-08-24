@@ -1,15 +1,15 @@
 import { BadRequestException } from '@nestjs/common';
 import { Transform } from 'class-transformer';
-import { isValidObjectId, Types } from 'mongoose';
+import { isValidObjectId } from 'mongoose';
 
 export const ValidateObjectId = () =>
-  Transform(({ value }) => {
+  Transform(({ key, value }) => {
     if (!value) {
-      throw new BadRequestException('Invalid id');
+      throw new BadRequestException(`${key} cant be empty!`);
     }
     const isValid = isValidObjectId(value);
     if (!isValid) {
-      throw new BadRequestException('Invalid ObjectId');
+      throw new BadRequestException(`${key} is an invalid ObjectId!`);
     }
     return value;
   });

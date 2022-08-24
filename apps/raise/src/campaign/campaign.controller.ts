@@ -61,9 +61,9 @@ export class CampaignController {
       request.campaignIds,
     );
     const response = baseResponseHelper(
+      affectedDeleteStatus,
       HttpStatus.OK,
       'Campaigns deleted',
-      affectedDeleteStatus,
     );
     return response;
   }
@@ -276,9 +276,9 @@ export class CampaignController {
       updateCampaignRequest,
     );
     const response = baseResponseHelper(
+      updatedCampaign,
       HttpStatus.OK,
       'Campaign updated',
-      updatedCampaign,
     );
     return response;
   }

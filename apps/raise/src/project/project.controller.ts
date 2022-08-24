@@ -82,9 +82,9 @@ export class ProjectController {
       request.projectIds,
     );
     const response = baseResponseHelper(
+      affectedDeleteStatus,
       HttpStatus.OK,
       'Projects has successfully changed to the deleted state',
-      affectedDeleteStatus,
     );
     return response;
   }
@@ -104,9 +104,9 @@ export class ProjectController {
       updateRequest,
     );
     const response = baseResponseHelper(
+      updatedProject,
       HttpStatus.OK,
       'Project updated successfully',
-      updatedProject,
     );
     return response;
   }

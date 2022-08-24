@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { BaseBooleanString } from '../../commons/enums/base-boolean-string.enum';
 import { BooleanString } from '../../commons/enums/boolean-string.enum';
 
 export class ProjectFilterRequest {
@@ -36,36 +37,36 @@ export class ProjectFilterRequest {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsEnum(BooleanString)
-  hasAc?: BooleanString;
+  @IsEnum(BooleanString || BaseBooleanString)
+  hasAc?: BooleanString | BaseBooleanString;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsEnum(BooleanString)
+  @IsEnum(BooleanString || BaseBooleanString)
   hasClassroom?: BooleanString;
 
-  @ApiPropertyOptional({ enum: BooleanString })
+  @ApiPropertyOptional()
   @IsOptional()
-  @IsEnum(BooleanString)
+  @IsEnum(BooleanString || BaseBooleanString)
   hasGreenSpace?: BooleanString;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsEnum(BooleanString)
-  hasFemaleSection?: BooleanString;
+  @IsEnum(BooleanString || BaseBooleanString)
+  hasFemaleSection?: BooleanString | BaseBooleanString;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsEnum(BooleanString)
-  hasParking?: BooleanString;
+  @IsEnum(BooleanString || BaseBooleanString)
+  hasParking?: BooleanString | BaseBooleanString;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsEnum(BooleanString)
-  isDeleted?: BooleanString;
+  @IsEnum(BooleanString || BaseBooleanString)
+  isDeleted?: BooleanString | BaseBooleanString;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsEnum(BooleanString)
-  isPublished?: BooleanString;
+  @IsEnum(BooleanString || BaseBooleanString)
+  isPublished?: BooleanString | BaseBooleanString;
 }

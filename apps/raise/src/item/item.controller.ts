@@ -61,9 +61,9 @@ export class ItemController {
       request.itemIds,
     );
     const response = baseResponseHelper(
-      HttpStatus.OK,
-      'The Item has been successfully flagged as deleted.',
       affectedDeleteStatus,
+      HttpStatus.CREATED,
+      'The Item has been successfully flagged as deleted.',
     );
     return response;
   }
@@ -81,9 +81,9 @@ export class ItemController {
       updateRequest,
     );
     const response = baseResponseHelper(
+      updatedItem,
       HttpStatus.OK,
       'Item updated',
-      updatedItem,
     );
     return response;
   }
