@@ -40,7 +40,6 @@ export class AuthService {
     const result = await this.fusionAuthService.fusionAuthRegister(
       registerRequest,
     );
-    console.log(result);
     const registeredUser = await this.usersService.registerFromFusion({
       _id: result.user.id,
       firstname: result.user.firstName,
@@ -71,7 +70,8 @@ export class AuthService {
 
     //!TODO: create hbs template for email
     const isSend = await this.emailService.sendMailWTemplate(
-      'rdanang.dev@gmail.com', // change to your email to test, ex: rdanang.dev@gmail.com, default value is registeredUser.email
+      // 'rdanang.dev@gmail.com', // change to your email to test, ex: rdanang.dev@gmail.com, default value is registeredUser.email
+      registeredUser.email, // change to your email to test, ex: rdanang.dev@gmail.com, default value is registeredUser.email
       `Welcome to ${orgName}!`,
       'user/valiate-email',
       {

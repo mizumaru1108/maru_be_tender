@@ -2,6 +2,7 @@ import { Controller, Post, Body, HttpStatus } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { BaseResponse } from '../commons/dtos/base-response';
 import { baseResponseHelper } from '../commons/helpers/base-response-helper';
+import { User } from '../user/schema/user.schema';
 
 import { AuthService } from './auth.service';
 import { LoginRequestDto } from './dtos/login-request.dto';
@@ -35,8 +36,17 @@ export class AuthController {
     description: 'User has been registered successfully!',
   })
   @Post('fusion/register')
-  async fusionRegister(@Body() registerRequest: RegisterRequestDto) {
-    return await this.authService.fusionRegister(registerRequest);
+  async fusionRegister(
+    @Body() registerRequest: RegisterRequestDto,
+  ): Promise<BaseResponse<User>> {
+    const registeredUser = await this.authService.fusionRegister(
+      registerRequest,
+    );
+    return baseResponseHelper(
+      registeredUser,
+      HttpStatus.CREATED,
+      'Login Success!',
+    );
   }
 
   @Post('register')
