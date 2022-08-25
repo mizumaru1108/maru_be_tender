@@ -3,7 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
 import { generateRandomNumberString } from '../../../commons/utils/generate-random-string';
 import { sanitizeString } from '../../../commons/utils/sanitize-string';
-
+/**
+ * Nest Bunny Module
+ * @author RDanang (Iyoy!)
+ */
 @Injectable()
 export class BunnyService {
   constructor(private configService: ConfigService) {}

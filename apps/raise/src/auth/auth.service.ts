@@ -1,55 +1,58 @@
-import FusionAuthClient, {
-  LoginResponse,
-  ValidateResponse,
-} from '@fusionauth/typescript-client';
-import ClientResponse from '@fusionauth/typescript-client/build/src/ClientResponse';
-import {
-  Injectable,
-  HttpException,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { HttpException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { UserService } from 'src/user/user.service';
+import { EmailService } from '../libs/email/email.service';
 import { FusionAuthService } from '../libs/fusionauth/services/fusion-auth.service';
+import { User } from '../user/schema/user.schema';
 import { LoginRequestDto } from './dtos/login-request.dto';
+import { RegisterRequestDto } from './dtos/register-request.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UserService,
-    private jwtService: JwtService,
-    private configService: ConfigService,
-    private fusionAuthService: FusionAuthService,
+    private readonly usersService: UserService,
+    private readonly emailService: EmailService,
+    private readonly fusionAuthService: FusionAuthService,
+    private readonly jwtService: JwtService,
   ) {}
 
-  async loginUser(loginRequest: LoginRequestDto) {
-    loginRequest.applicationId = this.configService.get<string>(
-      'FUSIONAUTH_APP_ID',
-      '',
+  async fusionLogin(loginRequest: LoginRequestDto) {
+    const loginResponse = await this.fusionAuthService.fusionAuthLogin(
+      loginRequest,
     );
-    try {
-      const fusionauth = await this.fusionAuthService.useFusionAuthClient();
-      const result: ClientResponse<LoginResponse> = await fusionauth.login(
-        loginRequest,
-      );
+    const response = {
+      user: {
+        id: loginResponse.response.user!.id!,
+        email: loginResponse.response.user!.email!,
+      },
+      accessToken: loginResponse.response.token!,
+    };
+    return response;
+  }
 
-      const response = {
-        user: {
-          id: result.response.user!.id,
-          email: result.response.user!.email,
-        },
-        accessToken: result.response.token!,
-      };
-      return response;
-    } catch (error) {
-      if (error.statusCode < 500) {
-        throw new UnauthorizedException('Invalid credentials!');
-      } else {
-        throw new Error('Something went wrong!');
-      }
-    }
+  async fusionRegister(registerRequest: RegisterRequestDto): Promise<User> {
+    const result = await this.fusionAuthService.fusionAuthRegister(
+      registerRequest,
+    );
+    const registeredUser = await this.usersService.registerFromFusion({
+      _id: result.response.user!.id!,
+      firstname: result.response.user!.firstName!,
+      lastname: result.response.user!.lastName!,
+      email: result.response.user!.email!,
+    });
+
+    //!TODO: create hbs template for email
+    await this.emailService.sendMail(
+      registeredUser.email,
+      'Welcome to Tamra Group!',
+      'Welcome to Tamra Group!',
+      {
+        fullName: registeredUser.firstname + ' ' + registeredUser.lastname,
+        email: registeredUser.email,
+      },
+    );
+    return registeredUser;
   }
 
   async registerUser(name: string, email: string, password: string) {

@@ -1,15 +1,42 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, HttpStatus } from '@nestjs/common';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { BaseResponse } from '../commons/dtos/base-response';
+import { baseResponseHelper } from '../commons/helpers/base-response-helper';
 
 import { AuthService } from './auth.service';
 import { LoginRequestDto } from './dtos/login-request.dto';
+import { LoginResponseDto } from './dtos/login-response.dto';
+import { RegisterRequestDto } from './dtos/register-request.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @ApiOperation({ summary: 'Login with fusion auth' })
+  @ApiResponse({
+    status: 201,
+    description: 'Login Success!',
+  })
   @Post('fusion/login')
-  async login(@Body() loginRequest: LoginRequestDto) {
-    return await this.authService.loginUser(loginRequest);
+  async fusionLogin(
+    @Body() loginRequest: LoginRequestDto,
+  ): Promise<BaseResponse<LoginResponseDto>> {
+    const loginResponse = await this.authService.fusionLogin(loginRequest);
+    return baseResponseHelper(
+      loginResponse,
+      HttpStatus.CREATED,
+      'Login Success!',
+    );
+  }
+
+  @ApiOperation({ summary: 'Register user with fusion auth' })
+  @ApiResponse({
+    status: 201,
+    description: 'User has been registered successfully!',
+  })
+  @Post('fusion/register')
+  async fusionRegister(@Body() registerRequest: RegisterRequestDto) {
+    return await this.authService.fusionRegister(registerRequest);
   }
 
   @Post('register')

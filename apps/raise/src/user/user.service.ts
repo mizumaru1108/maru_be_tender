@@ -5,14 +5,27 @@ import { FusionAuthClient } from '@fusionauth/typescript-client';
 import { ConfigService } from '@nestjs/config';
 
 import { User, UserDocument } from './schema/user.schema';
+import { RegisterFromFusionAuthDto } from './dtos/register-from-fusion-auth.dto';
+import { RoleEnum } from './enums/role-enum';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel('User') private readonly userModel: Model<User>,
     private configService: ConfigService,
-  ) { }
+  ) {}
 
+  async registerFromFusion(request: RegisterFromFusionAuthDto): Promise<User> {
+    const newUser = new this.userModel({
+      _id: request._id,
+      firstname: request.firstname,
+      email: request.email,
+      lastname: request.lastname,
+      type: RoleEnum.DONOR,
+    });
+    const result = await newUser.save();
+    return result;
+  }
   async createUser(name: string, email: string, password: string) {
     const newUser = new this.userModel({ name, email, password });
     const result = await newUser.save();
@@ -148,5 +161,4 @@ export class UserService {
   // async resetPassword(email: string) {
 
   // }
-
 }
