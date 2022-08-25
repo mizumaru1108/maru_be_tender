@@ -401,16 +401,12 @@ export class PaymentStripeService {
       this.logger.debug('stripeCallback...');
       let txtMessage = '';
       //check authorization header
-
       //check validity of JWT
-
       //get detail of donors by userId
       //get detail of campaign by campaignId
       //get detail of organization by organizationId
-
       //insert data to donationLog
       //we can use pattern from favicon function
-
       // console.debug('event=', event );
       // console.debug('queryStringParameters=', paymentCallbackDto);
       console.debug('session_id=', sessionId);
@@ -506,8 +502,10 @@ export class PaymentStripeService {
       console.log(`paymentData=`, paymentData);
       console.log('donationId=', paymentData.donationId);
 
+      const isZakat = orderId.paymentDescription == 'ZAKAT'? true : false; 
+
       //update payment status in donation_log
-      let donationId = paymentData.donationId; //new mongoose.Types.ObjectId(paymentData.donationId);
+      let donationId = isZakat? new mongoose.Types.ObjectId(orderId.responseMessage) : paymentData.donationId; //new mongoose.Types.ObjectId(paymentData.donationId);
 
       console.log(
         'valid object Id ?',
@@ -533,7 +531,7 @@ export class PaymentStripeService {
 
       //get campaign Id
       const getDonationLog = await this.donationLogModel.findOne(
-        { _id: paymentData.donationId },
+        { _id: isZakat? new mongoose.Types.ObjectId(orderId.responseMessage) : paymentData.donationId },
         { _id: 0, campaignId: 1, currency: 2, amount: 3 },
       );
 
@@ -619,8 +617,9 @@ export class PaymentStripeService {
               subject,
               'org/new_donation',
               emailData,
-              'hello@tmra.io', // optional, you can delete it, when new identity is provided, we can use other identity ex: ommar.net
-            );
+            //  'hello@tmra.io', // optional, you can delete it, when new identity is provided, we can use other identity ex: ommar.net
+              getOrganization.contactEmail
+              );
             const emailDonor = {
               donor: donorName,
               title: getCampaign.title,
@@ -633,7 +632,8 @@ export class PaymentStripeService {
                 subject,
                 'org/new_donation',
                 emailDonor,
-                'hello@tmra.io', // optional, you can delete it, when new identity is provided, we can use other identity ex: ommar.net
+                getOrganization.contactEmail
+                //'hello@tmra.io', // optional, you can delete it, when new identity is provided, we can use other identity ex: ommar.net
               );
             }
             if (anonymousData) {
@@ -643,7 +643,8 @@ export class PaymentStripeService {
                   subject,
                   'org/new_donation',
                   emailDonor,
-                  'hello@tmra.io', // optional, you can delete it, when new identity is provided, we can use other identity ex: ommar.net
+                  getOrganization.contactEmail
+                  //'hello@tmra.io', // optional, you can delete it, when new identity is provided, we can use other identity ex: ommar.net
                 );
               }
             }

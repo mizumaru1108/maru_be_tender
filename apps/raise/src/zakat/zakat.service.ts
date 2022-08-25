@@ -518,7 +518,7 @@ export class ZakatService {
       // let donorName = '';
       let currency = paymentDto.currency;
 
-      console.log(paymentDto);
+      //console.log(paymentDto);
       if (
         !paymentDto.organizationId ||
         !paymentDto.campaignId ||
@@ -583,7 +583,7 @@ export class ZakatService {
         })
         .exec();
 
-      console.log('debug', getCampaign);
+      //console.log('debug', getCampaign);
       let dataAmount = paymentDto.amount * parseFloat(paymentDto.quantity); // let's assume it will be multiple by 1 (price)
       if (!getCampaign) {
         txtMessage = `request rejected campaignId not found`;
@@ -613,7 +613,7 @@ export class ZakatService {
       // }
 
       const ObjectId = require('mongoose').Types.ObjectId;
-      console.log('debug', paymentDto.organizationId);
+      //console.log('debug', paymentDto.organizationId);
       const getSecretKey = await this.paymentGatewayModel.findOne(
         { organizationId: ObjectId(paymentDto.organizationId) },
         { apiKey: 1, _id: 0 },
@@ -635,7 +635,7 @@ export class ZakatService {
 
       console.log(getSecretKey['apiKey']);
       //let getUser = new UserModel();
-      console.log(paymentDto.donorId);
+      //console.log(paymentDto.donorId);
       if (paymentDto.donorId) {
         // console.log('donorid');
         // console.log(payment.donorId);
@@ -717,7 +717,7 @@ export class ZakatService {
       const amount = amountStr.substring(0, amountStr.length - 2);
       const extraAmount = paymentDto.extraAmount ? paymentDto.extraAmount : 0;
 
-      console.log('amount unit', amount);
+      //console.log('amount unit', amount);
 
       //insert data to donation_log
       let objectIdDonation = new Types.ObjectId();
@@ -784,6 +784,9 @@ export class ZakatService {
           { donationLogId: objectIdDonation },
         );
       }
+
+      console.log('Get Log =>',getDonationLog);
+      
       const insertPaymentData = await new this.paymentDataModel({
         _id: objectIdPayment,
         donationId: objectIdDonation,
@@ -792,19 +795,19 @@ export class ZakatService {
         orderId: data.data['payment_intent'], //payment_intent ID
         cardType: '',
         cardScheme: '',
-        paymentDescription: '',
+        paymentDescription: 'ZAKAT',
         expiryMonth: '',
         expiryYear: '',
         responseStatus: '',
         responseCode: '',
-        responseMessage: '',
+        responseMessage: getDonationLog._id,
         cvvResult: '',
         avsResult: '',
         transactionTime: '',
         paymentStatus: 'OPEN',
       }).save();
 
-      console.log(insertPaymentData);
+      //console.log(insertPaymentData);
 
       if (!insertPaymentData) {
         txtMessage = 'payment data failed to save in mongodb';
