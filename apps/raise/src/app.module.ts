@@ -6,7 +6,6 @@ import { GeoModule } from './geo/geo.module';
 import { PaymentAmazonpsModule } from './payment-amazonps/payment-amazonps.module';
 import { PaymentHyperpayModule } from './payment-hyperpay/payment-hyperpay.module';
 import { PaymentPaypalModule } from './payment-paypal/payment-paypal.module';
-import { PaymentPaytabsModule } from './payment-paytabs/payment-paytabs.module';
 import { PaymentStripeModule } from './payment-stripe/payment-stripe.module';
 import { PaymentXenditModule } from './payment-xendit/payment-xendit.module';
 import { ProjectModule } from './project/project.module';
@@ -74,7 +73,6 @@ import { CommentsModule } from './comments/comments.module';
     FundraisingModule,
     PaymentXenditModule,
     PaymentPaypalModule,
-    PaymentPaytabsModule,
     PaymentAmazonpsModule,
     PaymentStripeModule,
     PaymentHyperpayModule,

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PaymentPaytabsService } from './payment-paytabs.service';
 import { PaymentPaytabsController } from './payment-paytabs.controller';
@@ -15,7 +15,9 @@ import {
   PaymentGatewaySchema,
 } from 'src/payment-stripe/schema/paymentGateway.schema';
 import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
+import { ConfigModule } from '@nestjs/config';
 
+@Global()
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -36,6 +38,7 @@ import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
         schema: PaymentGatewaySchema,
       },
     ]),
+    ConfigModule,
   ],
   providers: [PaymentPaytabsService],
   controllers: [PaymentPaytabsController],
