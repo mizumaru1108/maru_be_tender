@@ -37,7 +37,7 @@ export class ContactsService {
       this.logger.debug('find organization...');
       const filter = { _id: organizationId };
       const organizationData = await this.organizationModel.findOne(filter, {});
-      console.log(organizationData);
+      //console.log(organizationData);
       if (organizationData) {
         // const resp = await this.mailerService.sendMail({
         //   // to: organizationData['contactEmail'],
@@ -66,8 +66,9 @@ export class ContactsService {
         //     name: message.name,
         //   },
         // });
-        await this.emailService.sendMailWAttachment(
-          message.email,
+        await this.emailService.sendMailWAttachment( 
+          organizationData.contactEmail,
+          //message.email,
           'Donor has sent you an Email',
           'email',
           {
@@ -76,18 +77,34 @@ export class ContactsService {
             help_message: message.help_message,
           },
           message.files,
-          'hello@tmra.io',
+          organizationData.contactEmail,
         );
 
-        await this.emailService.sendMail(
+        // await this.emailService.sendMail(
+        //   message.email,
+        //   'Thanks for letting us know',
+        //   'donor',
+        //   {
+        //     name: message.name,
+        //   },
+        // );
+
+
+        await this.emailService.sendMailWAttachment( 
           message.email,
           'Thanks for letting us know',
           'donor',
           {
             name: message.name,
+            email: message.email,
+            help_message: message.help_message,
           },
+          message.files,
+          organizationData.contactEmail
+          // 'hello@tmra.io',
         );
 
+        
         this.notificationsModel.create({
           organizationId: new Types.ObjectId(organizationId),
           type: 'general',
@@ -97,6 +114,10 @@ export class ContactsService {
           icon: 'message',
           markAsRead: false,
         });
+        
+        success = true;
+        statusCode = 200;
+        txtMessage = 'Your email has been sent';
       }
     }
 
