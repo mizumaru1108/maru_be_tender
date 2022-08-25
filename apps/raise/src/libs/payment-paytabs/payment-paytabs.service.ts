@@ -5,7 +5,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import {
   DonationLogs,
   DonationLogDocument,
-} from '../donor/schema/donation_log.schema';
+} from '../../donor/schema/donation_log.schema';
 import { PaymentRequestDto } from './payment-paytabs.dto';
 import {
   PaymentData,
@@ -16,6 +16,8 @@ import {
   PaymentGatewayDocument,
 } from 'src/payment-stripe/schema/paymentGateway.schema';
 import { Donor, DonorDocument } from 'src/donor/schema/donor.schema';
+import { PaytabsPaymentRequestPayloadModel } from './models/paytabs-payment-request-payload.model';
+import { PaytabsCreateTransactionResponse } from './dtos/response/paytabs-create-transaction-response';
 
 @Injectable()
 export class PaymentPaytabsService {
@@ -29,6 +31,35 @@ export class PaymentPaytabsService {
     @InjectModel(PaymentGateway.name)
     private paymentGatewayModel: mongoose.Model<PaymentGatewayDocument>,
   ) {}
+
+  async createTransaction(
+    paytabsPaymentRequest: PaytabsPaymentRequestPayloadModel,
+    serverKey: string,
+  ): Promise<PaytabsCreateTransactionResponse> {
+    console.log('paytabsPaymentRequest', paytabsPaymentRequest);
+    const options: AxiosRequestConfig<any> = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: serverKey ?? '',
+      },
+      data: paytabsPaymentRequest,
+      url: 'https://secure.paytabs.sa/payment/request',
+    };
+    console.debug(`POST ${options.url} using request.body=`, options.data);
+
+    try {
+      const data = await axios(options);
+      // console.log('data', data);
+      return data.data;
+    } catch (err) {
+      console.error(
+        `POST ${options.url} throws error ${err.response.status}: `,
+        err.response.data,
+      );
+      throw new Error(err.response.data.message);
+    }
+  }
 
   async paytabsRequest(paymentDto: PaymentRequestDto) {
     const ObjectId = require('mongoose').Types.ObjectId;
