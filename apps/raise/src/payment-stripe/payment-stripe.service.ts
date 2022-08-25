@@ -499,13 +499,14 @@ export class PaymentStripeService {
         };
       }
 
-      console.log(`paymentData=`, paymentData);
-      console.log('donationId=', paymentData.donationId);
+      // console.log(`paymentData=`, paymentData);
+      // console.log('donationId=', paymentData.donationId);
+      // console.log('order id=>', new ObjectId(orderId.responseMessage));
 
       const isZakat = orderId.paymentDescription == 'ZAKAT'? true : false; 
 
       //update payment status in donation_log
-      let donationId = isZakat? new mongoose.Types.ObjectId(orderId.responseMessage) : paymentData.donationId; //new mongoose.Types.ObjectId(paymentData.donationId);
+      let donationId = isZakat? new ObjectId(orderId.responseMessage) : paymentData.donationId; //new mongoose.Types.ObjectId(paymentData.donationId);
 
       console.log(
         'valid object Id ?',
@@ -531,7 +532,7 @@ export class PaymentStripeService {
 
       //get campaign Id
       const getDonationLog = await this.donationLogModel.findOne(
-        { _id: isZakat? new mongoose.Types.ObjectId(orderId.responseMessage) : paymentData.donationId },
+        { _id: isZakat? new ObjectId(orderId.responseMessage) : paymentData.donationId },
         { _id: 0, campaignId: 1, currency: 2, amount: 3 },
       );
 
