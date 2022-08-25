@@ -822,8 +822,8 @@ export class ZakatService {
         };
       }
 
-      console.log('debug', data);
-      console.log('debug', data['data']['id']);
+      // console.log('debug', data);
+      // console.log('debug', data['data']['id']);
       stripeCallbackUrl = data['data']['url'];
       txtMessage = `stripe request has been sent`;
 
