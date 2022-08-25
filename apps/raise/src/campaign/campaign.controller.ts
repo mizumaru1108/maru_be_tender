@@ -251,16 +251,16 @@ export class CampaignController {
     return await this.campaignService.getObjectId(createCampaignDto);
   }
 
-  // @ApiOperation({ summary: 'get a campaign detail by campaignId' })
-  // @ApiResponse({
-  //   status: 200,
-  //   description: 'get a campaign detail by campaignId',
-  // })
-  // @Post('detail/:campaignId')
-  // async getCampaignDetailById( @Param('campaignId') campaignId: string) {
-  //   this.logger.debug('get ObjectId ');
-  //   return await this.campaignService.getCampaignDetailById(campaignId);
-  // }
+  @ApiOperation({ summary: 'get a campaign detail by campaignId' })
+  @ApiResponse({
+    status: 200,
+    description: 'get a campaign detail by campaignId',
+  })
+  @Get('detail/:campaignId')
+  async getCampaignDetailById(@Param('campaignId') campaignId: string) {
+    this.logger.debug('get ObjectId ');
+    return await this.campaignService.getCampaignDetailById(campaignId);
+  }
 
   @ApiOperation({ summary: 'update campaign' })
   // @ClusterRoles(RoleEnum.OPERATOR)

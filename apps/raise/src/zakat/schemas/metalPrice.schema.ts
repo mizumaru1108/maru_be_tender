@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export type MetalPriceDocument = MetalPrice & Document;
 
-@Schema({ collection: 'metal_price' })
+@Schema({ collection: 'metalPrice' })
 export class MetalPrice {
   @Prop()
   id: string;

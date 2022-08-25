@@ -31,6 +31,8 @@ import { Campaign, CampaignDocument } from './campaign.schema';
 import { CreateCampaignDto } from './dto';
 import { UpdateCampaignDto } from './dto/update-campaign-dto';
 import { GetAllMypendingCampaignFromVendorIdRequest } from './dto/get-all-my-pending-campaign-from-vendor-id.request';
+import { catchError } from 'rxjs';
+import { ObjectId } from 'mongodb';
 @Injectable()
 export class CampaignService {
   private logger = rootLogger.child({ logger: CampaignService.name });
@@ -928,23 +930,24 @@ export class CampaignService {
     return JSON.stringify(newObjectId);
   }
 
-  // async getCampaignDetailById(campaignId: String) {
-  //   const ObjectId = require('mongoose').Types.ObjectId;
+  async getCampaignDetailById(campaignId: String) {
+    let data: any = [];
+    const ObjectId = require('mongoose').Types.ObjectId;
 
-  //   if (!campaignId) {
-  //     throw new NotFoundException(`user not found`);
-  //   }
+    if (!campaignId) {
+      throw new NotFoundException(`user not found`);
+    }
 
-  //   if (utype) {
-  //     if (!utype.match(/nonprofit|operator|superadmin/g)) {
-  //       throw new BadRequestException(`User not allowed to generate ObjectId`);
-  //     }
-  //   }
+    try {
+      data = await this.campaignModel.findOne({
+        _id: ObjectId(campaignId),
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(`Error get Data - ${error}`);
+    }
 
-  //   const newObjectId = new Types.ObjectId();
-
-  //   return JSON.stringify(newObjectId);
-  // }
+    return data;
+  }
 
   async getUnapprovalCampaignById(organizationId: string, campaignId: string) {
     let getCampaignDetail: any[] = [];
