@@ -7,6 +7,7 @@ import FusionAuthClient, {
 } from '@fusionauth/typescript-client';
 import ClientResponse from '@fusionauth/typescript-client/build/src/ClientResponse';
 import {
+  BadRequestException,
   HttpException,
   Injectable,
   UnauthorizedException,
@@ -65,11 +66,13 @@ export class FusionAuthService {
   /**
    * spending much time, turns out i typo on FUSIONAUTH to FUSINAUTH, also have to
    * and have to add /api/user/registration
-   * !NOT WORKING T_T, idk why, response 400
+   * !NOT WORKING T_T, response 400
+   * Ref: https://github.com/FusionAuth/fusionauth-typescript-client/issues/10
    * {"statusCode":400,"exception":{"fieldErrors":{"applicationId":[{"code":"[couldNotConvert]applicationId",
    * "message":"Invalid applicationId [user]. This must be a valid UUID String (e.g. 25a872da-bb44-4af8-a43d-e7bcb5351ebc)."}]
    * ,"userId":[{"code":"[couldNotConvert]userId","message":"Invalid userId [api]. This must be a valid UUID String
    * (e.g. 25a872da-bb44-4af8-a43d-e7bcb5351ebc)."}]}}}
+   * !TODO: fix it when i have time
    */
   // async fusionAuthRegister(
   //   registerRequest: RegisterRequestDto,
@@ -115,9 +118,7 @@ export class FusionAuthService {
   /**
    * Works fine with post T_T
    */
-  async fusionAuthRegister(
-    registerRequest: RegisterRequestDto,
-  ): Promise<ClientResponse<RegistrationResponse>> {
+  async fusionAuthRegister(registerRequest: RegisterRequestDto) {
     const baseUrl = this.configService.get<string>('FUSIONAUTH_URL', '');
     const registerUrl = baseUrl + '/api/user/registration/';
     const user: IFusionAuthUser = {
@@ -153,10 +154,21 @@ export class FusionAuthService {
 
     try {
       const data = await axios(options);
-      return data.data as ClientResponse<RegistrationResponse>;
+      return data.data;
     } catch (error) {
-      console.log(error);
-      throw new HttpException(error.message, error.statusCode);
+      // console.log(error);
+      // throw new HttpException(error.message, error.statusCode);
+      if (error.response.status < 500) {
+        throw new BadRequestException(
+          `Registration Failed, either user is exist or something else!, more details: ${
+            error.response.data.fieldErrors
+              ? JSON.stringify(error.response.data.fieldErrors)
+              : JSON.stringify(error.response.data)
+          }`,
+        );
+      } else {
+        throw new Error('Something went wrong!');
+      }
     }
   }
 }

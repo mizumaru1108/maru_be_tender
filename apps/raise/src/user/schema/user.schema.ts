@@ -1,21 +1,19 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, ObjectId } from 'mongoose';
+import { Document } from 'mongoose';
+import { RoleEnum } from '../enums/role-enum';
 
 export type UserDocument = User & Document;
-
-export interface IUser {
-  _id: ObjectId;
-  name: string;
-  email: string;
-  password: string;
-}
 
 @Schema({ collection: 'user' })
 export class User {
   @Prop({ type: String })
   _id: string;
 
-  @Prop({ required: true })
+  /**
+   * it's not event used at all
+   * name: $exist: true, not result anything
+   */
+  @Prop({ required: false })
   name: string;
 
   @Prop({ required: true })
@@ -27,11 +25,11 @@ export class User {
   @Prop({ required: true })
   email: string;
 
-  @Prop({ required: true })
+  @Prop()
   password: string;
 
-  @Prop({ required: true })
-  type: string;
+  @Prop({ enum: RoleEnum, default: RoleEnum.DONOR })
+  type: RoleEnum;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

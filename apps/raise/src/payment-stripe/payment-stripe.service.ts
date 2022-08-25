@@ -61,7 +61,7 @@ export class PaymentStripeService {
     @InjectModel(User.name)
     private readonly userModel: mongoose.Model<UserDocument>,
     private readonly emailService: EmailService,
-  ) { }
+  ) {}
 
   async stripeRequest(payment: PaymentRequestDto) {
     const tracer = trace.getTracer('tmra-raise');
@@ -503,10 +503,12 @@ export class PaymentStripeService {
       // console.log('donationId=', paymentData.donationId);
       // console.log('order id=>', new ObjectId(orderId.responseMessage));
 
-      const isZakat = orderId.paymentDescription == 'ZAKAT'? true : false; 
+      const isZakat = orderId.paymentDescription == 'ZAKAT' ? true : false;
 
       //update payment status in donation_log
-      let donationId = isZakat? new ObjectId(orderId.responseMessage) : paymentData.donationId; //new mongoose.Types.ObjectId(paymentData.donationId);
+      let donationId = isZakat
+        ? new ObjectId(orderId.responseMessage)
+        : paymentData.donationId; //new mongoose.Types.ObjectId(paymentData.donationId);
 
       console.log(
         'valid object Id ?',
@@ -532,7 +534,11 @@ export class PaymentStripeService {
 
       //get campaign Id
       const getDonationLog = await this.donationLogModel.findOne(
-        { _id: isZakat? new ObjectId(orderId.responseMessage) : paymentData.donationId },
+        {
+          _id: isZakat
+            ? new ObjectId(orderId.responseMessage)
+            : paymentData.donationId,
+        },
         { _id: 0, campaignId: 1, currency: 2, amount: 3 },
       );
 
@@ -601,10 +607,10 @@ export class PaymentStripeService {
           const donorName = donor
             ? `${donor.firstname} ${donor.lastname}`
             : anonymousData
-              ? anonymousData.anonymous
-                ? 'anonymous'
-                : `${anonymousData.firstName} ${anonymousData.lastName}`
-              : 'anonymous';
+            ? anonymousData.anonymous
+              ? 'anonymous'
+              : `${anonymousData.firstName} ${anonymousData.lastName}`
+            : 'anonymous';
           if (notifSettings.newDonation) {
             const emailData = {
               // donor: 'Donor',
@@ -613,14 +619,14 @@ export class PaymentStripeService {
               currency: getDonationLog.currency,
               amount: getDonationLog.amount,
             };
-            this.emailService.sendMail(
+            this.emailService.sendMailWTemplate(
               getOrganization.contactEmail,
               subject,
               'org/new_donation',
               emailData,
-            //  'hello@tmra.io', // optional, you can delete it, when new identity is provided, we can use other identity ex: ommar.net
-              getOrganization.contactEmail
-              );
+              //  'hello@tmra.io', // optional, you can delete it, when new identity is provided, we can use other identity ex: ommar.net
+              getOrganization.contactEmail,
+            );
             const emailDonor = {
               donor: donorName,
               title: getCampaign.title,
@@ -628,23 +634,23 @@ export class PaymentStripeService {
               amount: getDonationLog.amount,
             };
             if (donor) {
-              this.emailService.sendMail(
+              this.emailService.sendMailWTemplate(
                 donor.email,
                 subject,
                 'org/new_donation',
                 emailDonor,
-                getOrganization.contactEmail
+                getOrganization.contactEmail,
                 //'hello@tmra.io', // optional, you can delete it, when new identity is provided, we can use other identity ex: ommar.net
               );
             }
             if (anonymousData) {
               if (anonymousData.isEmailChecklist || !anonymousData.anonymous) {
-                this.emailService.sendMail(
+                this.emailService.sendMailWTemplate(
                   anonymousData.email,
                   subject,
                   'org/new_donation',
                   emailDonor,
-                  getOrganization.contactEmail
+                  getOrganization.contactEmail,
                   //'hello@tmra.io', // optional, you can delete it, when new identity is provided, we can use other identity ex: ommar.net
                 );
               }
@@ -698,7 +704,7 @@ export class PaymentStripeService {
                 campaignId: getCampaign.id,
                 campaignName: getCampaign.title,
               };
-              this.emailService.sendMail(
+              this.emailService.sendMailWTemplate(
                 getOrganization.contactEmail,
                 subject,
                 'org/donation_complete',
@@ -840,9 +846,9 @@ export class PaymentStripeService {
 
       const getCampaign = await this.campaignModel
         .find({
-          _id: { $in: campaignIds }
-        }).exec();
-
+          _id: { $in: campaignIds },
+        })
+        .exec();
 
       // let dataAmount = payment.amount * parseFloat(payment.quantity); // let's assume it will be multiple by 1 (price)
       if (!getCampaign) {
@@ -856,11 +862,13 @@ export class PaymentStripeService {
             message: txtMessage,
           }),
         };
-      };
-
+      }
 
       getCampaign.map((e, i) => {
-        if ((parseFloat(e.amountProgress.toString() + totalAmounts[i])) > parseFloat(e.amountTarget.toString())) {
+        if (
+          parseFloat(e.amountProgress.toString() + totalAmounts[i]) >
+          parseFloat(e.amountTarget.toString())
+        ) {
           return {
             statusCode: 400,
             headers: {
@@ -871,8 +879,7 @@ export class PaymentStripeService {
             }),
           };
         }
-
-      })
+      });
 
       const getSecretKey = await this.paymentGatewayModel.findOne(
         { organizationId: ObjectId(payment.organizationId) },
@@ -928,7 +935,9 @@ export class PaymentStripeService {
         }
       }
 
-      const qty = totalAmounts.reduce((ac, obj) => { return ac + obj; }, 0)
+      const qty = totalAmounts.reduce((ac, obj) => {
+        return ac + obj;
+      }, 0);
       const params = new URLSearchParams();
       if (donor) {
         params.append('customer_email', donor.email);
@@ -1240,190 +1249,191 @@ export class PaymentStripeService {
           },
         );
       }
-      const getDataBasket = await this.paymentDataModel.findOne({
-        orderId: data.data['payment_intent']
-      }, {
-        responseStatus: 1,
-      })
+      const getDataBasket = await this.paymentDataModel.findOne(
+        {
+          orderId: data.data['payment_intent'],
+        },
+        {
+          responseStatus: 1,
+        },
+      );
 
       console.log('get data Basket', getDataBasket);
       const campaignId: any[] = [];
       const totalAmount: any[] = [];
-      if(!!getDataBasket && getDataBasket.responseStatus){
-      const campaigns =  JSON.parse(getDataBasket.responseStatus);
+      if (!!getDataBasket && getDataBasket.responseStatus) {
+        const campaigns = JSON.parse(getDataBasket.responseStatus);
         for (let i = 0; i < campaigns.length; i++) {
           campaignId.push(campaigns[i].campaignId);
           totalAmount.push(campaigns[i].amount);
-            if (paymentStatus == 'SUCCESS') {
+          if (paymentStatus == 'SUCCESS') {
+            const getCampaign = await this.campaignModel.findOne(
+              { _id: campaignId },
+              { _id: 0, amountProgress: 1, amountTarget: 1, title: 1 },
+            );
 
-          const getCampaign = await this.campaignModel.findOne(
-            { _id: campaignId },
-            { _id: 0, amountProgress: 1, amountTarget: 1, title: 1 },
-          )
+            if (!getCampaign) {
+              return {
+                statusCode: 404,
+                body: JSON.stringify({
+                  message: 'Campaign not found', // =>
+                }),
+              };
+            }
+            const notifSettings = await this.notifSettingsModel.findOne({
+              organizationId: ObjectId(organizationId),
+            });
 
-          if (!getCampaign) {
-            return {
-              statusCode: 404,
-              body: JSON.stringify({
-                message: 'Campaign not found',// => 
-              }),
-            };
-          }
-          const notifSettings = await this.notifSettingsModel.findOne({
-            organizationId: ObjectId(organizationId),
-          });
+            const lastAmount = (
+              Number(getCampaign.amountProgress) + Number(totalAmount)
+            ).toString();
 
-          const lastAmount = (
-            Number(getCampaign.amountProgress) +
-            Number(totalAmount))
-            .toString();
-
-          if (getOrganization && notifSettings && getCampaign) {
-            this.logger.debug(`notification settings ${notifSettings.id}`);
-            const subject = `New Donation For ${getCampaign.title}`;
-            const donorName = donor
-              ? `${donor.firstname} ${donor.lastname}`
-              : anonymousData
+            if (getOrganization && notifSettings && getCampaign) {
+              this.logger.debug(`notification settings ${notifSettings.id}`);
+              const subject = `New Donation For ${getCampaign.title}`;
+              const donorName = donor
+                ? `${donor.firstname} ${donor.lastname}`
+                : anonymousData
                 ? anonymousData.anonymous
                   ? 'anonymous'
                   : `${anonymousData.firstName} ${anonymousData.lastName}`
                 : 'anonymous';
-            if (notifSettings.newDonation) {
-              const emailData = {
-                // donor: 'Donor',
-                donor: donorName,
-                title: getCampaign.title,
-                currency: getDonationLog.currency,
-                amount: getDonationLog.amount,
-              };
-              this.emailService.sendMail(
-                getOrganization.contactEmail,
-                subject,
-                'org/new_donation',
-                emailData,
-              );
-              const emailDonor = {
-                donor: donorName,
-                title: getCampaign.title,
-                currency: getDonationLog.currency,
-                amount: getDonationLog.amount,
-              };
-              if (donor) {
-                this.emailService.sendMail(
-                  donor.email,
+              if (notifSettings.newDonation) {
+                const emailData = {
+                  // donor: 'Donor',
+                  donor: donorName,
+                  title: getCampaign.title,
+                  currency: getDonationLog.currency,
+                  amount: getDonationLog.amount,
+                };
+                this.emailService.sendMailWTemplate(
+                  getOrganization.contactEmail,
                   subject,
                   'org/new_donation',
-                  emailDonor,
+                  emailData,
                 );
-              }
-              if (anonymousData) {
-                if (anonymousData.isEmailChecklist || !anonymousData.anonymous) {
-                  this.emailService.sendMail(
-                    anonymousData.email,
+                const emailDonor = {
+                  donor: donorName,
+                  title: getCampaign.title,
+                  currency: getDonationLog.currency,
+                  amount: getDonationLog.amount,
+                };
+                if (donor) {
+                  this.emailService.sendMailWTemplate(
+                    donor.email,
                     subject,
                     'org/new_donation',
                     emailDonor,
                   );
                 }
-              }
-            }
-          } else {
-            this.logger.debug(`notification settings not found`);
-          }
-
-          const updateCampaign = await this.campaignModel.updateOne(
-            { _id: getDonationLog.campaignId },
-            {
-              amountProgress: Number(lastAmount),
-              updatedAt: myDate.toISOString(),
-            },
-          );
-
-          if (!updateCampaign) {
-            return {
-              statusCode: 516,
-              headers: {
-                'Access-Control-Allow-Origin': '*',
-              },
-              body: JSON.stringify({
-                message: 'failed update campaign data',
-              }),
-            };
-          } else if (Number(getCampaign.amountTarget) == Number(lastAmount)) {
-            await this.campaignModel.updateOne(
-              { _id: getDonationLog.campaignId },
-              {
-                isFinished: 'Y',
-              },
-            );
-
-            this.notificationsModel.create({
-              organizationId: new ObjectId(organizationId),
-              type: 'general',
-              createdAt: new Date(),
-              title: 'Campaign is completed',
-              body: `Alhamdulillah, amount target of the campaign ${getCampaign.title} is completed...`,
-              icon: 'info',
-              markAsRead: false,
-            });
-
-            if (getOrganization && notifSettings) {
-              this.logger.debug(`notification settings ${notifSettings.id}`);
-              if (notifSettings.completeDonation) {
-                const subject = 'Complete Donation';
-                const emailData = {
-                  campaignId: getCampaign.id,
-                  campaignName: getCampaign.title,
-                };
-                this.emailService.sendMail(
-                  getOrganization.contactEmail,
-                  subject,
-                  'org/donation_complete',
-                  emailData,
-                );
+                if (anonymousData) {
+                  if (
+                    anonymousData.isEmailChecklist ||
+                    !anonymousData.anonymous
+                  ) {
+                    this.emailService.sendMailWTemplate(
+                      anonymousData.email,
+                      subject,
+                      'org/new_donation',
+                      emailDonor,
+                    );
+                  }
+                }
               }
             } else {
               this.logger.debug(`notification settings not found`);
             }
 
-            const updatePaymentData = await this.paymentDataModel.updateOne(
-              { orderId: data.data['payment_intent'] },
+            const updateCampaign = await this.campaignModel.updateOne(
+              { _id: getDonationLog.campaignId },
               {
-                paymentStatus: paymentStatus,
-                responseMessage: data.data['payment_status'],
-                transactionTime: myDate.toISOString(), //stripe have their own transactionTime
-                cardType: 'card',
+                amountProgress: Number(lastAmount),
+                updatedAt: myDate.toISOString(),
               },
             );
-      
-            if (!updatePaymentData) {
+
+            if (!updateCampaign) {
               return {
                 statusCode: 516,
                 headers: {
                   'Access-Control-Allow-Origin': '*',
                 },
                 body: JSON.stringify({
-                  message: 'failed inserting transaction data',
+                  message: 'failed update campaign data',
                 }),
               };
+            } else if (Number(getCampaign.amountTarget) == Number(lastAmount)) {
+              await this.campaignModel.updateOne(
+                { _id: getDonationLog.campaignId },
+                {
+                  isFinished: 'Y',
+                },
+              );
+
+              this.notificationsModel.create({
+                organizationId: new ObjectId(organizationId),
+                type: 'general',
+                createdAt: new Date(),
+                title: 'Campaign is completed',
+                body: `Alhamdulillah, amount target of the campaign ${getCampaign.title} is completed...`,
+                icon: 'info',
+                markAsRead: false,
+              });
+
+              if (getOrganization && notifSettings) {
+                this.logger.debug(`notification settings ${notifSettings.id}`);
+                if (notifSettings.completeDonation) {
+                  const subject = 'Complete Donation';
+                  const emailData = {
+                    campaignId: getCampaign.id,
+                    campaignName: getCampaign.title,
+                  };
+                  this.emailService.sendMailWTemplate(
+                    getOrganization.contactEmail,
+                    subject,
+                    'org/donation_complete',
+                    emailData,
+                  );
+                }
+              } else {
+                this.logger.debug(`notification settings not found`);
+              }
+
+              const updatePaymentData = await this.paymentDataModel.updateOne(
+                { orderId: data.data['payment_intent'] },
+                {
+                  paymentStatus: paymentStatus,
+                  responseMessage: data.data['payment_status'],
+                  transactionTime: myDate.toISOString(), //stripe have their own transactionTime
+                  cardType: 'card',
+                },
+              );
+
+              if (!updatePaymentData) {
+                return {
+                  statusCode: 516,
+                  headers: {
+                    'Access-Control-Allow-Origin': '*',
+                  },
+                  body: JSON.stringify({
+                    message: 'failed inserting transaction data',
+                  }),
+                };
+              }
             }
           }
-          
-        }
-        return {
-          statusCode: 200,
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-          },
-          body: JSON.stringify({
-            message: 'successful receive callback from stripe',
-          }),
-        };
+          return {
+            statusCode: 200,
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+            },
+            body: JSON.stringify({
+              message: 'successful receive callback from stripe',
+            }),
+          };
         }
       }
-
-    }
-    catch (err) {
+    } catch (err) {
       // When we catch an error, we want to show that an error occurred
       span.setStatus({
         code: SpanStatusCode.ERROR,
@@ -1435,5 +1445,4 @@ export class PaymentStripeService {
       span.end();
     }
   }
-
 }

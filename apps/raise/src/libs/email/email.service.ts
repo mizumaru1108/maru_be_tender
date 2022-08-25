@@ -16,20 +16,18 @@ export class EmailService {
    * @param template hbs template of the email
    * @param data data to be passed to the template
    * @param from sender address of the email, (default: "hello@tamra.io")
+   * @returns {Promise<boolean>} returns true if email is sent successfully
    */
-  async sendMail(
+  async sendMailWTemplate(
     to: string,
     subject: string,
     template: string,
     data: {},
     from?: string,
-  ) {
-    let txtMessage = 'Oops an error occurred, email failed to send';
-    let success = false;
-    let statusCode = 400;
-    if (subject && template && data) {
+  ): Promise<boolean> {
+    this.logger.debug(`Sending email to ${to}`);
+    try {
       const resp = await this.mailerService.sendMail({
-        // to: organizationData['contactEmail'],
         to: to,
         subject: subject,
         template: template,
@@ -37,18 +35,11 @@ export class EmailService {
         from: from ? from : 'hello@tmra.io',
       });
       console.log(resp);
-      success = true;
-      statusCode = 200;
-      txtMessage = 'Your email has been sent';
+    } catch (error) {
+      this.logger.error(error);
+      return false;
     }
-    this.logger.debug(txtMessage);
-
-    return {
-      success: success,
-      status: statusCode,
-      message: txtMessage,
-      data: data,
-    };
+    return true;
   }
 
   /**
@@ -60,6 +51,7 @@ export class EmailService {
    * @param data data to be passed to the template
    * @param attachment attachment to be sent with the email (array of objects)
    * @param from sender address of the email, (default: "hello@tamra.io")
+   * @returns {Promise<boolean>} returns true if email is sent successfully
    */
   async sendMailWAttachment(
     to: string,
@@ -68,13 +60,10 @@ export class EmailService {
     data: {},
     attachment: any, // array of objects
     from?: string,
-  ) {
-    let txtMessage = 'Oops an error occurred, email failed to send';
-    let success = false;
-    let statusCode = 400;
-    if (subject && template && data) {
+  ): Promise<boolean> {
+    this.logger.debug(`Sending email to ${to}`);
+    try {
       const resp = await this.mailerService.sendMail({
-        // to: organizationData['contactEmail'],
         to: to,
         subject: subject,
         template: template,
@@ -83,17 +72,10 @@ export class EmailService {
         from: from ? from : 'hello@tmra.io',
       });
       console.log(resp);
-      success = true;
-      statusCode = 200;
-      txtMessage = 'Your email has been sent';
+    } catch (error) {
+      this.logger.error(error);
+      return false;
     }
-    this.logger.debug(txtMessage);
-
-    return {
-      success: success,
-      status: statusCode,
-      message: txtMessage,
-      data: data,
-    };
+    return true;
   }
 }

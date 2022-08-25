@@ -156,7 +156,7 @@ export class OrganizationService {
     }
 
     const emailData = { name: orgUpdated.name };
-    this.emailService.sendMail(
+    await this.emailService.sendMailWTemplate(
       orgUpdated.contactEmail,
       'Giving Sadaqah Updates',
       'account_update',

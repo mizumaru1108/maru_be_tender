@@ -1,4 +1,9 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { UserService } from 'src/user/user.service';
@@ -35,23 +40,51 @@ export class AuthService {
     const result = await this.fusionAuthService.fusionAuthRegister(
       registerRequest,
     );
+    console.log(result);
     const registeredUser = await this.usersService.registerFromFusion({
-      _id: result.response.user!.id!,
-      firstname: result.response.user!.firstName!,
-      lastname: result.response.user!.lastName!,
-      email: result.response.user!.email!,
+      _id: result.user.id,
+      firstname: result.user.firstName,
+      lastname: result.user.lastName,
+      email: result.user.email,
     });
 
+    const gsOrgId = '62414373cf00cca3a830814a';
+    const omarOrgId = '61b4794cfe52d41f557f1acc';
+
+    //!TODO: change banner url, maybe implements with .env letter
+    const gsBannerImageUrl =
+      'https://media.tmra.io/tmra/production/giving-sadaqah-62414373cf00cca3a830814a-DVed.png';
+    const omarBannerImageUrl =
+      'https://media.tmra.io/tmra/production/giving-sadaqah-62414373cf00cca3a830814a-DVed.png';
+
+    let banner: string;
+    let orgName: string;
+    if (registerRequest.organizationId === gsOrgId) {
+      banner = gsBannerImageUrl;
+      orgName = 'Giving Sadaqah';
+    } else if (registerRequest.organizationId === omarOrgId) {
+      banner = omarBannerImageUrl;
+      orgName = 'Omar';
+    } else {
+      throw new BadRequestException("Organization doesn't exist");
+    }
+
     //!TODO: create hbs template for email
-    await this.emailService.sendMail(
-      registeredUser.email,
-      'Welcome to Tamra Group!',
-      'Welcome to Tamra Group!',
+    const isSend = await this.emailService.sendMailWTemplate(
+      'rdanang.dev@gmail.com', // change to your email to test, ex: rdanang.dev@gmail.com, default value is registeredUser.email
+      `Welcome to ${orgName}!`,
+      'user/valiate-email',
       {
         fullName: registeredUser.firstname + ' ' + registeredUser.lastname,
         email: registeredUser.email,
+        banner,
+        orgName,
       },
+      'hello@tmra.io', // we can make it dynamic when new aws ses identity available
     );
+    if (!isSend) {
+      throw new BadRequestException('An error occured while sending email');
+    }
     return registeredUser;
   }
 
