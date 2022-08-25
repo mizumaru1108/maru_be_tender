@@ -1,4 +1,10 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Post,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -31,6 +37,13 @@ export class PaymentPaytabsController {
 
   @Post('testing-webhook')
   async testingWebhook(@Body() payment: PaymentRequestDto) {
+    console.log('masuk webhook');
+    console.log('webhook payload', payment);
+  }
+
+  @Get('testing-webhook')
+  async tetingCallback(@Body() payment: PaymentRequestDto) {
+    console.log('masuk callback');
     console.log('webhook payload', payment);
   }
 
@@ -54,7 +67,9 @@ export class PaymentPaytabsController {
       cart_description: 'testing',
       cart_id: 'testing',
       callback:
-        'https://0pnncvgvzj.execute-api.ap-south-1.amazonaws.com/dev/v1/paytabs/callback',
+        'https://57fa-2001-448a-2082-ffd1-f572-e85f-7e69-4de8.ap.ngrok.io/paytabs/testing-webhook',
+      return:
+        'https://57fa-2001-448a-2082-ffd1-f572-e85f-7e69-4de8.ap.ngrok.io/paytabs/testing-webhook',
       tran_type: PaytabsTranType.SALE,
       tran_class: PaytabsTranClass.ECOM,
       framed: true,

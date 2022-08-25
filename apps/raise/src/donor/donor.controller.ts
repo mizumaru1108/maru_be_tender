@@ -21,6 +21,7 @@ import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { DonorService } from './donor.service';
 import { DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
 import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
+import { DonorDonateItemDto } from './dto/donor-donate-item.dto';
 
 @ApiTags('donor')
 @Controller('donor')
@@ -66,6 +67,16 @@ export class DonorController {
       JSON.stringify(donorPaymentSubmitDto),
     );
     return await this.donorService.submitPayment(donorPaymentSubmitDto);
+  }
+
+  @ApiOperation({ summary: 'Create Donor Payment' })
+  @ApiResponse({
+    status: 201,
+    description: 'The Donor payment has been successfully created.',
+  })
+  @Post('/donate-item')
+  async donateItem(@Body() request: DonorDonateItemDto) {
+    console.log(request);
   }
 
   @Get('getDonationLogs')

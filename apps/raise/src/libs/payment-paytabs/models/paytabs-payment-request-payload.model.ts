@@ -45,6 +45,11 @@ export class PaytabsPaymentRequestPayloadModel {
   public callback: string;
 
   /**
+   * Callback via post
+   */
+  public return: string;
+
+  /**
    * Transaction Type
    */
   public tran_type: PaytabsTranType;
@@ -92,6 +97,7 @@ export class PaytabsPaymentRequestPayloadModel {
     cart_description: string,
     cart_id: string,
     callback: string,
+    returns: string,
     tran_type: PaytabsTranType,
     tran_class: PaytabsTranClass,
     framed: boolean,
@@ -105,6 +111,7 @@ export class PaytabsPaymentRequestPayloadModel {
     this.cart_description = cart_description;
     this.cart_id = cart_id;
     this.callback = callback;
+    this.return = returns;
     this.tran_type = tran_type;
     this.tran_class = tran_class;
     this.framed = framed;

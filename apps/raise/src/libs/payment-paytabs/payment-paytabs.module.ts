@@ -15,6 +15,7 @@ import {
   PaymentGatewaySchema,
 } from 'src/payment-stripe/schema/paymentGateway.schema';
 import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
+import { ConfigModule } from '@nestjs/config';
 
 @Global()
 @Module({
@@ -37,6 +38,7 @@ import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
         schema: PaymentGatewaySchema,
       },
     ]),
+    ConfigModule,
   ],
   providers: [PaymentPaytabsService],
   controllers: [PaymentPaytabsController],

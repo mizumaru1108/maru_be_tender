@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import axios, { AxiosRequestConfig } from 'axios';
@@ -18,6 +18,7 @@ import {
 import { Donor, DonorDocument } from 'src/donor/schema/donor.schema';
 import { PaytabsPaymentRequestPayloadModel } from './models/paytabs-payment-request-payload.model';
 import { PaytabsCreateTransactionResponse } from './dtos/response/paytabs-create-transaction-response';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PaymentPaytabsService {
@@ -30,18 +31,30 @@ export class PaymentPaytabsService {
     private paymentDataModel: mongoose.Model<PaymentDataDocument>,
     @InjectModel(PaymentGateway.name)
     private paymentGatewayModel: mongoose.Model<PaymentGatewayDocument>,
+    private configService: ConfigService,
   ) {}
 
   async createTransaction(
     paytabsPaymentRequest: PaytabsPaymentRequestPayloadModel,
-    serverKey: string,
+    serverKey?: string,
   ): Promise<PaytabsCreateTransactionResponse> {
     console.log('paytabsPaymentRequest', paytabsPaymentRequest);
+    let auth: string = '';
+    const keyFromEnv = this.configService.get<string>('PAYTABS_SERVER_KEY');
+
+    if (keyFromEnv) {
+      auth = keyFromEnv;
+    } else if (!keyFromEnv && serverKey) {
+      auth = serverKey;
+    } else {
+      throw new BadRequestException('Wrong Authorization Key');
+    }
+
     const options: AxiosRequestConfig<any> = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: serverKey ?? '',
+        Authorization: auth,
       },
       data: paytabsPaymentRequest,
       url: 'https://secure.paytabs.sa/payment/request',
