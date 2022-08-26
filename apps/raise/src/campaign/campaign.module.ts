@@ -7,7 +7,7 @@ import {
   Vendor,
   VendorSchema,
 } from '../buying/vendor/vendor.schema';
-import { DonorService } from '../donor/donor.service';
+import { DonorModule } from '../donor/donor.module';
 import {
   DonationLog,
   DonationLogSchema,
@@ -68,8 +68,9 @@ import { CampaignService } from './campaign.service';
         schema: UserSchema,
       },
     ]),
+    DonorModule,
   ],
-  providers: [CampaignService, DonorService],
+  providers: [CampaignService],
   controllers: [CampaignController],
 })
 export class CampaignModule {}

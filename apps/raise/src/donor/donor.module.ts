@@ -22,6 +22,7 @@ import {
   PaymentGateway,
   PaymentGatewaySchema,
 } from 'src/payment-stripe/schema/paymentGateway.schema';
+import { PaymentStripeModule } from '../payment-stripe/payment-stripe.module';
 
 @Module({
   imports: [
@@ -58,13 +59,14 @@ import {
         name: Vendor.name,
         schema: VendorSchema,
       },
-      // {
-      //   name: PaymentGateway.name,
-      //   schema: PaymentGatewaySchema,
-      // },
+      {
+        name: PaymentGateway.name,
+        schema: PaymentGatewaySchema,
+      },
     ]),
   ],
   providers: [DonorService],
+  exports: [DonorService],
   controllers: [DonorController],
 })
 export class DonorModule {}

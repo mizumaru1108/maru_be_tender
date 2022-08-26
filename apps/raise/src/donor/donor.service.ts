@@ -63,9 +63,9 @@ export class DonorService {
     private campaignModel: Model<CampaignDocument>,
     @InjectModel(Vendor.name)
     private vendorModel: Model<VendorDocument>,
-  ) // @InjectModel(PaymentGateway.name)
-  // private paymentGatewayModel: Model<PaymentGatewayDocument>,
-  {}
+    @InjectModel(PaymentGateway.name)
+    private paymentGatewayModel: Model<PaymentGatewayDocument>,
+  ) {}
 
   /* apply to become vendor from donor */
   // !Should we implements db transaction? when image upload failed, we should rollback the db transaction,
