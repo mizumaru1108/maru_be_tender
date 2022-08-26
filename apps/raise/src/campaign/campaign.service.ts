@@ -861,13 +861,14 @@ export class CampaignService {
       { $unwind: { path: '$cq', preserveNullAndEmptyArrays: true } },
       {
         $addFields: {
-          _id: '$campaignId',
+          _id: '$_id',
           status: '$status',
           creatorId: '$cp.creatorUserId',
           type: '$cp.campaignType',
           campaignName: '$cp.campaignName',
           vendorName: '$cq.name',
           orgId: '$cp.organizationId',
+          campaignId: '$campaignId',
         },
       },
       {
@@ -882,6 +883,7 @@ export class CampaignService {
           vendorName: 1,
           milestone: { $size: '$cp.milestone' },
           orgId: 1,
+          campaignId: 1,
         },
       },
       {
@@ -897,7 +899,6 @@ export class CampaignService {
 
     //get history of vendor campaign completion
     let buff = [];
-    //let data = [];
     for (let i = 0; i < data.length; i++) {
       let num = await this.campaignVendorLogModel.aggregate([
         { $match: { creatorUserId: data[i]['creatorId'], isFinished: 'N' } },
@@ -915,6 +916,7 @@ export class CampaignService {
         vendorName: data[i]['vendorName'],
         orgId: data[i]['orgId'],
         milestone: data[i]['milestone'],
+        campaignId: data[i]['campaignId'],
         totalCamp: num.length,
       };
     }
