@@ -518,7 +518,6 @@ export class ZakatService {
       // let donorName = '';
       let currency = paymentDto.currency;
 
-      //console.log(paymentDto);
       if (
         !paymentDto.organizationId ||
         !paymentDto.campaignId ||
@@ -575,7 +574,7 @@ export class ZakatService {
       } else if (!currency) {
         currency = getOrganization['defaultCurrency'];
       }
-      console.log('debug', paymentDto.campaignId);
+      //console.log('debug', paymentDto.campaignId);
       // if (payment.campaignId) {
       const getCampaign = await this.campaignModel
         .findOne({
@@ -633,9 +632,9 @@ export class ZakatService {
         };
       }
 
+
       console.log(getSecretKey['apiKey']);
       //let getUser = new UserModel();
-      //console.log(paymentDto.donorId);
       if (paymentDto.donorId) {
         // console.log('donorid');
         // console.log(payment.donorId);
@@ -648,11 +647,12 @@ export class ZakatService {
           donor = await this.donorModel.findOne({
             _id: paymentDto.donorId,
           });
-
+          
           if (!donor) {
             donor = await this.anonymousModel.findOne({
               _id: paymentDto.donorId,
             });
+
             if (!donor) {
               txtMessage = 'user not found,  donation service is not available';
               return {
@@ -674,10 +674,11 @@ export class ZakatService {
           // if (donor) donorName = `${donor.firstName} ${donor.lastName ?? ''}`;
         }
       }
-
+      
       // const paymentJson = JSON.parse(JSON.stringify(payment));
       const params = new URLSearchParams();
-      if (donor) {
+      if (donor&&donor.email) {
+        //const donorEmail = donor.email ? donor.email : 'anonymous@email.com';
         params.append('customer_email', donor.email);
         // params.append('customer', {'email': donor.email, name: donorName});
         // params.append('customer_name', donorName);
@@ -700,7 +701,6 @@ export class ZakatService {
       };
 
       const data = await axios(options);
-      console.log(data);
       if (!data) {
         return {
           statusCode: 504,
@@ -713,19 +713,24 @@ export class ZakatService {
         };
       }
 
+
       const amountStr = data['data']['amount_total'].toString();
       const amount = amountStr.substring(0, amountStr.length - 2);
       const extraAmount = paymentDto.extraAmount ? paymentDto.extraAmount : 0;
 
-      //console.log('amount unit', amount);
+      const ownerUserId = await this.userModel.findOne({
+        _id: paymentDto.donorId,
+      },{ownerUserId: 1});
 
+      console.log('OwnerUserId', ownerUserId);
+      
       //insert data to donation_log
       let objectIdDonation = new Types.ObjectId();
       let now: Date = new Date();
       const getDonationLog = await new this.donationLogModel({
         _id: objectIdDonation,
         nonprofitRealmId: ObjectId(paymentDto.organizationId),
-        donorUserId: isAnonymous ? '' : paymentDto.donorId,
+        donorUserId: isAnonymous ? '' : ownerUserId , //paymentDto.donorId,
         // donorName: donor ? `${donor.firstName} ${donor.lastName}` : null,
         // amount: payment.amount,
         amount: Number(amount),
@@ -800,7 +805,7 @@ export class ZakatService {
         expiryYear: '',
         responseStatus: '',
         responseCode: '',
-        responseMessage: getDonationLog._id,
+        responseMessage: '',
         cvvResult: '',
         avsResult: '',
         transactionTime: '',

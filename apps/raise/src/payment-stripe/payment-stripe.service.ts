@@ -483,7 +483,7 @@ export class PaymentStripeService {
         paymentStatus = 'SUCCESS';
       }
 
-      console.log('paymentIntentInfo=', data['data']['payment_intent']);
+      //console.log('paymentIntentInfo=', data['data']['payment_intent']);
       //const paymentIntent = data['data']['payment_intent'];
       const orderId = data['data']['payment_intent'];
       //get donation log id
@@ -503,41 +503,25 @@ export class PaymentStripeService {
       // console.log('donationId=', paymentData.donationId);
       // console.log('order id=>', new ObjectId(orderId.responseMessage));
 
-      const isZakat = orderId.paymentDescription == 'ZAKAT' ? true : false;
+      //const isZakat = orderId.paymentDescription == 'ZAKAT' ? true : false;
 
       //update payment status in donation_log
-      let donationId = isZakat
-        ? new ObjectId(orderId.responseMessage)
-        : paymentData.donationId; //new mongoose.Types.ObjectId(paymentData.donationId);
+      let donationId = paymentData.donationId;
+      // let donationId = isZakat
+      //   ? new ObjectId(orderId.responseMessage)
+      //   : paymentData.donationId; //new mongoose.Types.ObjectId(paymentData.donationId);
 
       console.log(
         'valid object Id ?',
         ObjectId.isValid(paymentData.donationId),
       );
-      const updateDonationLog = await this.donationLogModel.updateOne(
-        { _id: donationId },
-        { donationStatus: paymentStatus },
-      );
 
-      console.log(`updateDonationLog=`, updateDonationLog);
-      if (!paymentData || !updateDonationLog) {
-        return {
-          statusCode: 520,
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-          },
-          body: JSON.stringify({
-            message: 'incorrect orderId',
-          }),
-        };
-      }
-
-      //get campaign Id
-      const getDonationLog = await this.donationLogModel.findOne(
+      //console.log('Compare++',donationId, '====', paymentData.donationId);
+      
+       //get campaign Id
+       const getDonationLog = await this.donationLogModel.findOne(
         {
-          _id: isZakat
-            ? new ObjectId(orderId.responseMessage)
-            : paymentData.donationId,
+          _id: donationId
         },
         { _id: 0, campaignId: 1, currency: 2, amount: 3 },
       );
@@ -573,6 +557,8 @@ export class PaymentStripeService {
         { _id: 0, firstName: 1, lastName: 2, email: 3 },
       );
 
+      console.log('DONOR= ',donor);
+      
       // Get Anonymous Data
       let anonymousData;
       if (!donor) {
@@ -589,7 +575,27 @@ export class PaymentStripeService {
         );
       }
 
+      let now: Date = new Date();
       if (paymentStatus == 'SUCCESS') {
+
+        const updateDonationLog = await this.donationLogModel.updateOne(
+          { _id: donationId },
+          { donationStatus: paymentStatus , updatedAt: now},
+        );
+  
+        console.log(`updateDonationLog=`, updateDonationLog);
+        if (!paymentData || !updateDonationLog) {
+          return {
+            statusCode: 520,
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+            },
+            body: JSON.stringify({
+              message: 'incorrect orderId',
+            }),
+          };
+        }
+
         //update  amountProgress with current donation amount
         const amountStr = data.data['amount_total'].toString();
         const lastAmount = (
