@@ -1,14 +1,12 @@
 import {
+  Body,
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
   HttpStatus,
+  Param,
+  Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt.guard';
@@ -22,7 +20,6 @@ import { CommentsService } from './comments.service';
 import { AdminCommentFilterRequest } from './dto/admin-comment-filter-request.dto';
 import { CommentFilterRequest } from './dto/comment-filter-request.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Comment, CommentDocument } from './schema/comment.schema';
 
 @Controller('comments')

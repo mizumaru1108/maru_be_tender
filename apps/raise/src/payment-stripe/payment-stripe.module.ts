@@ -1,24 +1,12 @@
 import { Module } from '@nestjs/common';
-import { PaymentStripeService } from './payment-stripe.service';
-import { PaymentStripeController } from './payment-stripe.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import {
-  PaymentGateway,
-  PaymentGatewaySchema,
-} from './schema/paymentGateway.schema';
-import {
-  Organization,
-  OrganizationSchema,
-} from 'src/organization/schema/organization.schema';
 import { Campaign, CampaignSchema } from 'src/campaign/campaign.schema';
+import { Anonymous, AnonymousSchema } from 'src/donor/schema/anonymous.schema';
 import {
   DonationLogs,
   DonationLogSchema,
 } from 'src/donor/schema/donation_log.schema';
 import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
-import { PaymentData, PaymentDataSchema } from './schema/paymentData.schema';
-import { Anonymous, AnonymousSchema } from 'src/donor/schema/anonymous.schema';
-import { User, UserSchema } from 'src/user/schema/user.schema';
 import {
   Notifications,
   NotificationsSchema,
@@ -27,8 +15,18 @@ import {
   NotificationSettings,
   NotificationSettingsSchema,
 } from 'src/organization/schema/notification_settings.schema';
-import { EmailService } from 'src/libs/email/email.service';
-import { EmailModule } from 'src/libs/email/email.module';
+import {
+  Organization,
+  OrganizationSchema,
+} from 'src/organization/schema/organization.schema';
+import { User, UserSchema } from 'src/user/schema/user.schema';
+import { PaymentStripeController } from './payment-stripe.controller';
+import { PaymentStripeService } from './payment-stripe.service';
+import { PaymentData, PaymentDataSchema } from './schema/paymentData.schema';
+import {
+  PaymentGateway,
+  PaymentGatewaySchema,
+} from './schema/paymentGateway.schema';
 
 @Module({
   imports: [
@@ -71,9 +69,9 @@ import { EmailModule } from 'src/libs/email/email.module';
       },
       { name: User.name, schema: UserSchema },
     ]),
-    // EmailModule,
   ],
-  providers: [PaymentStripeService],
   controllers: [PaymentStripeController],
+  providers: [PaymentStripeService],
+  exports: [PaymentStripeService],
 })
 export class PaymentStripeModule {}

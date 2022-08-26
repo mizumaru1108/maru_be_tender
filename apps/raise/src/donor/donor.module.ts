@@ -4,7 +4,6 @@ import { DonorService } from './donor.service';
 import { Donor, DonorSchema } from './schema/donor.schema';
 import { Volunteer, VolunteerSchema } from './schema/volunteer.schema';
 // import { DonorController } from './donor.controller';
-import { ConfigModule } from '@nestjs/config';
 import {
   CampaignVendorLog,
   CampaignVendorLogSchema,
@@ -19,6 +18,10 @@ import {
   DonationLogs,
   DonationLogSchema as DonationLogsSchema,
 } from './schema/donation_log.schema';
+import {
+  PaymentGateway,
+  PaymentGatewaySchema,
+} from 'src/payment-stripe/schema/paymentGateway.schema';
 
 @Module({
   imports: [
@@ -55,8 +58,11 @@ import {
         name: Vendor.name,
         schema: VendorSchema,
       },
+      // {
+      //   name: PaymentGateway.name,
+      //   schema: PaymentGatewaySchema,
+      // },
     ]),
-    ConfigModule,
   ],
   providers: [DonorService],
   controllers: [DonorController],

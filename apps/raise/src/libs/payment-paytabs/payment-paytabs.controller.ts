@@ -67,9 +67,9 @@ export class PaymentPaytabsController {
       cart_description: 'testing',
       cart_id: 'testing',
       callback:
-        'https://57fa-2001-448a-2082-ffd1-f572-e85f-7e69-4de8.ap.ngrok.io/paytabs/testing-webhook',
+        'https://b585-2001-448a-2082-43c8-4923-634d-7f55-6d7d.ap.ngrok.io/paytabs/testing-webhook',
       return:
-        'https://57fa-2001-448a-2082-ffd1-f572-e85f-7e69-4de8.ap.ngrok.io/paytabs/testing-webhook',
+        'https://b585-2001-448a-2082-43c8-4923-634d-7f55-6d7d.ap.ngrok.io/paytabs/testing-webhook',
       tran_type: PaytabsTranType.SALE,
       tran_class: PaytabsTranClass.ECOM,
       framed: true,

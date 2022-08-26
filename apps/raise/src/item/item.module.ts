@@ -4,7 +4,6 @@ import { ItemController } from './item.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Item, ItemSchema } from './item.schema';
 import { Operator, OperatorSchema } from '../operator/schema/operator.schema';
-import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -18,7 +17,6 @@ import { ConfigModule } from '@nestjs/config';
         schema: OperatorSchema,
       },
     ]),
-    ConfigModule,
   ],
   providers: [ItemService],
   controllers: [ItemController],

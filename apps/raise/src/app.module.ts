@@ -60,7 +60,9 @@ import { CommentsModule } from './comments/comments.module';
     //   applicationName: 'tmra-raise',
     // }),
     ScheduleModule.forRoot(),
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

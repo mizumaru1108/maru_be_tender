@@ -74,9 +74,14 @@ export class DonorController {
     status: 201,
     description: 'The Donor payment has been successfully created.',
   })
+  @UseGuards(JwtAuthGuard)
   @Post('/donate-item')
-  async donateItem(@Body() request: DonorDonateItemDto) {
-    console.log(request);
+  async donateItem(
+    @CurrentUser() user: ICurrentUser,
+    @Body() request: DonorDonateItemDto,
+  ) {
+    const response = await this.donorService.donateSingleItem(user, request);
+    console.log(response);
   }
 
   @Get('getDonationLogs')

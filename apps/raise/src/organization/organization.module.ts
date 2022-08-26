@@ -1,31 +1,30 @@
 import { Module } from '@nestjs/common';
 // import { OrgsService } from './orgs.service';
 // import { OrgsController } from './orgs.controller';
-import { ConfigModule } from '@nestjs/config';
-import { OrganizationController } from './organization.controller';
-import { OrganizationService } from './organization.service';
 import { MongooseModule } from '@nestjs/mongoose';
+import { Campaign, CampaignSchema } from 'src/campaign/campaign.schema';
 import {
   DonationLogs,
   DonationLogSchema,
 } from 'src/donor/schema/donation_log.schema';
-import { Organization, OrganizationSchema } from './schema/organization.schema';
 import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
 import {
   PaymentGateway,
   PaymentGatewaySchema,
 } from 'src/payment-stripe/schema/paymentGateway.schema';
-import { Campaign, CampaignSchema } from 'src/campaign/campaign.schema';
+import { OrganizationController } from './organization.controller';
+import { OrganizationService } from './organization.service';
 import { Appearance, AppearanceSchema } from './schema/appearance.schema';
-import {
-  NotificationSettings,
-  NotificationSettingsSchema,
-} from './schema/notification_settings.schema';
+import { Faq, FaqSchema } from './schema/faq.schema';
 import {
   Notifications,
   NotificationsSchema,
 } from './schema/notifications.schema';
-import { Faq, FaqSchema } from './schema/faq.schema';
+import {
+  NotificationSettings,
+  NotificationSettingsSchema,
+} from './schema/notification_settings.schema';
+import { Organization, OrganizationSchema } from './schema/organization.schema';
 
 import {
   AppearanceNavigation,
@@ -35,7 +34,6 @@ import {
   AppearancePage,
   AppearancePageSchema,
 } from './schema/nonprofit_appearance_page.schema';
-import { EmailModule } from 'src/libs/email/email.module';
 
 @Module({
   imports: [
@@ -85,8 +83,6 @@ import { EmailModule } from 'src/libs/email/email.module';
         schema: AppearancePageSchema,
       },
     ]),
-    ConfigModule,
-    // EmailModule,
   ],
   providers: [OrganizationService],
   controllers: [OrganizationController],

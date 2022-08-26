@@ -3,7 +3,6 @@ import { ZakatService } from './zakat.service';
 import { ZakatController } from './zakat.controller';
 import { MetalPrice, MetalPriceSchema } from './schemas/metalPrice.schema';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule } from '@nestjs/config';
 import {
   DonationLogs,
   DonationLogSchema,
@@ -72,7 +71,6 @@ import { ZakatLog, ZakatLogSchema } from './schemas/zakat_log.schema';
         schema: ZakatLogSchema,
       },
     ]),
-    ConfigModule,
   ],
   providers: [ZakatService],
   controllers: [ZakatController],

@@ -10,9 +10,8 @@ export class DonorDonateItemDto {
   organizationId: string;
 
   @ApiProperty()
-  @IsArray()
-  @IsString({ each: true })
-  @IsNotEmpty({ each: true })
-  @ValidateObjectId({ each: true })
-  itemId: string[];
+  @IsString()
+  @IsNotEmpty()
+  @ValidateObjectId()
+  itemId: string;
 }

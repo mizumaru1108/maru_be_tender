@@ -25,7 +25,6 @@ import { join } from 'path';
       }),
       inject: [ConfigService],
     }),
-    ConfigModule.forRoot(),
   ],
   providers: [EmailService],
   controllers: [EmailController],

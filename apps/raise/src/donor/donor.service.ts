@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { rootLogger } from '../logger';
 import { Donor, DonorDocument } from './schema/donor.schema';
 import { Volunteer, VolunteerDocument } from './schema/volunteer.schema';
@@ -33,6 +33,12 @@ import { Campaign, CampaignDocument } from '../campaign/campaign.schema';
 import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
 import { z } from 'zod';
 import { BunnyService } from '../libs/bunny/services/bunny.service';
+import { DonorDonateItemDto } from './dto/donor-donate-item.dto';
+import { ICurrentUser } from '../user/interfaces/current-user.interface';
+import {
+  PaymentGateway,
+  PaymentGatewayDocument,
+} from 'src/payment-stripe/schema/paymentGateway.schema';
 
 @Injectable()
 export class DonorService {
@@ -40,6 +46,7 @@ export class DonorService {
 
   constructor(
     private bunnyService: BunnyService,
+    private configService: ConfigService,
     @InjectModel(Donor.name)
     private donorModel: Model<DonorDocument>,
     @InjectModel(Volunteer.name)
@@ -50,14 +57,15 @@ export class DonorService {
     private donationLogsModel: Model<DonationLogsDocument>,
     @InjectModel(Anonymous.name)
     private anonymousModel: Model<AnonymousDocument>,
-    private configService: ConfigService,
     @InjectModel(CampaignVendorLog.name)
     private campaignVendorLogDocument: Model<CampaignVendorLogDocument>,
     @InjectModel(Campaign.name)
     private campaignModel: Model<CampaignDocument>,
     @InjectModel(Vendor.name)
     private vendorModel: Model<VendorDocument>,
-  ) {}
+  ) // @InjectModel(PaymentGateway.name)
+  // private paymentGatewayModel: Model<PaymentGatewayDocument>,
+  {}
 
   /* apply to become vendor from donor */
   // !Should we implements db transaction? when image upload failed, we should rollback the db transaction,
@@ -155,6 +163,10 @@ export class DonorService {
     log.createdAt = moment().toISOString();
     log.updatedAt = moment().toISOString();
     return log.save();
+  }
+
+  async donateSingleItem(user: ICurrentUser, request: DonorDonateItemDto) {
+    console.log(user, request);
   }
 
   async getDonor(donorId: string) {

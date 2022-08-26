@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Operator, OperatorSchema } from '../operator/schema/operator.schema';
 import { ProjectController } from './project.controller';
@@ -27,10 +26,9 @@ import { ProjectService } from './project.service';
         schema: ProjectOperatorLogSchema,
       },
     ]),
-    ConfigModule,
   ],
   providers: [ProjectService],
   controllers: [ProjectController],
   exports: [ProjectService],
 })
-export class ProjectModule { }
+export class ProjectModule {}

@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Anonymous, AnonymousSchema } from 'src/donor/schema/anonymous.schema';
 import {
@@ -69,7 +68,6 @@ import { CampaignService } from './campaign.service';
         schema: UserSchema,
       },
     ]),
-    ConfigModule,
   ],
   providers: [CampaignService, DonorService],
   controllers: [CampaignController],
