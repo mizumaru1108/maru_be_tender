@@ -823,7 +823,7 @@ export class CampaignService {
     operatorId: string,
   ) {
     const ObjectId = require('mongoose').Types.ObjectId;
-    // this.logger.debug(`testttt!`);
+    this.logger.debug(`testttt!`);
     const dataOp = await this.operatorModel.findOne({
       ownerUserId: operatorId,
     });
@@ -912,9 +912,10 @@ export class CampaignService {
         creatorId: data[i]['creatorId'],
         type: data[i]['type'],
         campaignName: data[i]['campaignName'],
+        vendorName: data[i]['vendorName'],
         orgId: data[i]['orgId'],
         milestone: data[i]['milestone'],
-        totalCamp: num,
+        totalCamp: num.length,
       };
     }
     data = buff;
