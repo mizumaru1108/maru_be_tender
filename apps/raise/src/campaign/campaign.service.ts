@@ -837,6 +837,11 @@ export class CampaignService {
 
     let data = await this.campaignVendorLogModel.aggregate([
       {
+        $addFields: {
+          newId: { $toObjectId: '$vendorId' },
+        },
+      },
+      {
         $lookup: {
           from: 'campaign',
           localField: 'campaignId',
@@ -846,12 +851,22 @@ export class CampaignService {
       },
       { $unwind: { path: '$cp', preserveNullAndEmptyArrays: true } },
       {
+        $lookup: {
+          from: 'vendor',
+          localField: 'newId',
+          foreignField: '_id',
+          as: 'cq',
+        },
+      },
+      { $unwind: { path: '$cq', preserveNullAndEmptyArrays: true } },
+      {
         $addFields: {
           _id: '$campaignId',
           status: '$status',
           creatorId: '$cp.creatorUserId',
           type: '$cp.campaignType',
           campaignName: '$cp.campaignName',
+          vendorName: '$cq.name',
           orgId: '$cp.organizationId',
         },
       },
@@ -863,6 +878,8 @@ export class CampaignService {
           type: 1,
           createdAt: 1,
           creatorId: 1,
+          vendorId: 1,
+          vendorName: 1,
           milestone: { $size: '$cp.milestone' },
           orgId: 1,
         },

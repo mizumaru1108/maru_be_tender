@@ -99,6 +99,9 @@ export class CampaignVendorLog {
   @Prop({ type: String })
   public vendorId: string;
 
+  @Prop({ type: String })
+  public vendorName: string;
+
   @Prop({
     type: mongoose.Schema.Types.Date,
   })
