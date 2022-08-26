@@ -240,6 +240,20 @@ export class CampaignController {
     return await this.campaignService.vendorApply(createCampaignDto);
   }
 
+  @ApiOperation({ summary: 'Operator response for vendor request' })
+  @ApiResponse({
+    status: 201,
+    description: 'Operator response vendor request !',
+  })
+  @Post('operator/response')
+  async operatorResponse(@Body() createCampaignDto: CreateCampaignDto) {
+    this.logger.debug(
+      'apply to unapproved new campaign ',
+      JSON.stringify(createCampaignDto),
+    );
+    return await this.campaignService.operatorResponse(createCampaignDto);
+  }
+
   @ApiOperation({ summary: 'create new campaign objectId' })
   @ApiResponse({
     status: 201,

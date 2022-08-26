@@ -546,6 +546,51 @@ export class CampaignService {
     return data;
   }
 
+  async operatorResponse(createCampaignDto: CreateCampaignDto) {
+    let vendorData: any = new Vendor();
+    let data: any;
+    const ObjectId = require('mongoose').Types.ObjectId;
+
+    this.logger.debug(`userId=${createCampaignDto.userId}`);
+
+    let dataVendor = await this.vendorModel.findOne({
+      ownerUserId: createCampaignDto.userId,
+    });
+
+    this.logger.debug(`_id=${dataVendor?._id}`);
+
+    if (!dataVendor) {
+      throw new NotFoundException(`Vendor not found`);
+    }
+
+    if (!createCampaignDto.campaignId) {
+      throw new NotFoundException(`Campaign not found`);
+    }
+
+    this.logger.debug(`campaignId=${createCampaignDto?.campaignId}`);
+    try {
+      data = await this.campaignVendorLogModel.findOneAndUpdate(
+        {
+          campaignId: new ObjectId(createCampaignDto?.campaignId),
+          status: 'something',
+          vendorId: '',
+        },
+        {
+          vendorId: dataVendor?._id,
+          status: 'pending new',
+          campaignId: new ObjectId(createCampaignDto?.campaignId),
+          createdAt: dayjs().toISOString(),
+          updatedAt: dayjs().toISOString(),
+        },
+        { upsert: true, overwrite: false, rawResult: true },
+      );
+    } catch (error) {
+      throw new InternalServerErrorException(`Error get Data - ${error}`);
+    }
+
+    return data;
+  }
+
   async getAllNewCampaign(organizationId: string) {
     const ObjectId = require('mongoose').Types.ObjectId;
 
