@@ -20,7 +20,11 @@ import { DonorService } from '../donor/donor.service';
 import { rootLogger } from '../logger';
 import { Campaign, CampaignDocument } from './campaign.schema';
 import { CampaignService } from './campaign.service';
-import { CampaignSetFavoriteDto, CreateCampaignDto } from './dto';
+import {
+  CampaignSetFavoriteDto,
+  CreateCampaignDto,
+  ApproveCampaignDto,
+} from './dto';
 import { CampaignSetDeletedFlagDto } from './dto/capaign-set-flag-deleted';
 import { GetAllMypendingCampaignFromVendorIdRequest } from './dto/get-all-my-pending-campaign-from-vendor-id.request';
 import { UpdateCampaignDto } from './dto/update-campaign-dto';
@@ -197,14 +201,14 @@ export class CampaignController {
   }
 
   @ApiOperation({ summary: 'Get list all my pending campaign (Operator)' })
-  @Get('organization/:organizationId/operator/:operatorId/getListPending')
+  @Get(':campaignId/operator/:operatorId/getListPending')
   async getPendingMyCampaignByOperatorId(
-    @Param('organizationId') organizationId: string,
+    @Param('campaignId') campaignId: string,
     @Param('operatorId') operatorId: string,
   ) {
     this.logger.debug(`Get list all my pending campaign`);
     return await this.campaignService.getAllPendingCampaignByOperatorId(
-      organizationId,
+      campaignId,
       operatorId,
     );
   }
@@ -243,13 +247,13 @@ export class CampaignController {
     status: 201,
     description: 'Operator response vendor request !',
   })
-  @Post('operator/response')
-  async operatorResponse(@Body() createCampaignDto: CreateCampaignDto) {
+  @Post('operator/approve')
+  async operatorResponse(@Body() approveCampaignDto: ApproveCampaignDto) {
     this.logger.debug(
       'apply to unapproved new campaign ',
-      JSON.stringify(createCampaignDto),
+      JSON.stringify(approveCampaignDto),
     );
-    return await this.campaignService.operatorResponse(createCampaignDto);
+    return await this.campaignService.operatorResponse(approveCampaignDto);
   }
 
   @ApiOperation({ summary: 'create new campaign objectId' })
