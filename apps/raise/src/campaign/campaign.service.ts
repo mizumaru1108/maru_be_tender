@@ -547,7 +547,7 @@ export class CampaignService {
     return data;
   }
 
-  async operatorResponse(approveCampaignDto: ApproveCampaignDto) {
+  async operatorApprove(approveCampaignDto: ApproveCampaignDto) {
     // let vendorData: any = new Vendor();
     let data: any;
     const ObjectId = require('mongoose').Types.ObjectId;
@@ -560,7 +560,12 @@ export class CampaignService {
 
     // this.logger.debug(`_id=${dataVendor?._id}`);
 
-    if (!approveCampaignDto.requestId || !approveCampaignDto.status) {
+    if (
+      !approveCampaignDto.campaignId ||
+      !approveCampaignDto.status ||
+      (approveCampaignDto.status != 'approved' &&
+        approveCampaignDto.status != 'rejected')
+    ) {
       throw new NotFoundException(`Reject campaign approval process`);
     }
 
@@ -570,20 +575,35 @@ export class CampaignService {
 
     // this.logger.debug(`campaignId=${createCampaignDto?.campaignId}`);
     try {
+      //STEP 1: update initial campaign , change "new" to "approved"
       data = await this.campaignVendorLogModel.findOneAndUpdate(
         {
-          _id: new ObjectId(approveCampaignDto.requestId),
-          status: 'pending new',
-          // vendorId: '',
+          campaignId: new ObjectId(approveCampaignDto.campaignId),
+          status: 'new',
         },
         {
-          // vendorId: dataVendor?._id,
+          vendorId: approveCampaignDto.vendorId,
           status: 'approved',
-          // campaignId: new ObjectId(createCampaignDto?.campaignId),
-          createdAt: dayjs().toISOString(),
+          // createdAt: dayjs().toISOString(),
           updatedAt: dayjs().toISOString(),
         },
-        { upsert: true, overwrite: false, rawResult: true },
+        { upsert: false, overwrite: false, rawResult: true },
+      );
+
+      //STEP 2: update the rest of campaign set flag, change status
+      //from "pending new" to "processed"
+
+      data = await this.campaignVendorLogModel.updateMany(
+        {
+          campaignId: new ObjectId(approveCampaignDto.campaignId),
+          status: 'pending new',
+        },
+        {
+          $set: { status: 'processed', updatedAt: dayjs().toISOString() },
+        },
+        {
+          upsert: false,
+        },
       );
     } catch (error) {
       throw new InternalServerErrorException(`Error get Data - ${error}`);

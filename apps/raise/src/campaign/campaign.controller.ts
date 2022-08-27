@@ -253,7 +253,7 @@ export class CampaignController {
       'apply to unapproved new campaign ',
       JSON.stringify(approveCampaignDto),
     );
-    return await this.campaignService.operatorResponse(approveCampaignDto);
+    return await this.campaignService.operatorApprove(approveCampaignDto);
   }
 
   @ApiOperation({ summary: 'create new campaign objectId' })

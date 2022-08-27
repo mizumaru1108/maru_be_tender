@@ -1,6 +1,6 @@
 export class ApproveCampaignDto {
   campaignId: string;
   requestId: string;
-  organizationId: string;
+  vendorId: string;
   status: string;
 }
