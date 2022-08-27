@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsEmpty, IsNotEmpty, IsString } from 'class-validator';
 import { ValidateObjectId } from '../../commons/decorators/validate-object-id.decorator';
 
 export class RegisterRequestDto {
@@ -29,4 +29,16 @@ export class RegisterRequestDto {
   @IsNotEmpty()
   @ValidateObjectId()
   organizationId: string;
+  
+  @ApiProperty()
+  country?: string;
+  
+  @ApiProperty()
+  state?: string;
+  
+  @ApiProperty()
+  address?: string;
+  
+  @ApiProperty()
+  mobile?: string;
 }

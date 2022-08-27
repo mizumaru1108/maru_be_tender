@@ -7,12 +7,14 @@ import { ConfigService } from '@nestjs/config';
 import { User, UserDocument } from './schema/user.schema';
 import { RegisterFromFusionAuthDto } from './dtos/register-from-fusion-auth.dto';
 import { RoleEnum } from './enums/role-enum';
+import { Donor } from 'src/donor/schema/donor.schema';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel('User') private readonly userModel: Model<User>,
     private configService: ConfigService,
+    @InjectModel('Donor') private readonly donorModel: Model<Donor>,
   ) {}
 
   async registerFromFusion(request: RegisterFromFusionAuthDto): Promise<User> {
@@ -23,7 +25,21 @@ export class UserService {
       lastname: request.lastname,
       type: RoleEnum.DONOR,
     });
+
+    const donor = new this.donorModel({
+      ownerUserId: request._id,
+      firstname: request.firstname,
+      email: request.email,
+      lastname: request.lastname,
+      mobile: request.mobile,
+      country: request.country,
+      state: request.state,
+      address: request.address,
+    });
+
+    await donor.save();
     const result = await newUser.save();
+
     return result;
   }
   async createUser(name: string, email: string, password: string) {

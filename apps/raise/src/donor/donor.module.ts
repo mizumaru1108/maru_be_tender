@@ -22,7 +22,6 @@ import {
   PaymentGateway,
   PaymentGatewaySchema,
 } from 'src/payment-stripe/schema/paymentGateway.schema';
-import { PaymentStripeModule } from '../payment-stripe/payment-stripe.module';
 
 @Module({
   imports: [
