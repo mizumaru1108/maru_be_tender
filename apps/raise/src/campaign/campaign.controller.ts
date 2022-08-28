@@ -100,6 +100,13 @@ export class CampaignController {
     return await this.campaignService.getAllByOrganizationId(organizationId);
   }
 
+  @ApiOperation({ summary: 'List all campaigns displayed in public page' })
+  @Get('organization/:organizationId/getAllPublished')
+  async getAllPublished(@Param('organizationId') organizationId: string) {
+    this.logger.debug(`List all campaigns displayed in public page`);
+    return await this.campaignService.getAllPublished(organizationId);
+  }
+
   @ApiOperation({ summary: 'Get list all campaign by operatorID' })
   @Get('organization/:organizationId/operator/:operatorId/getListAll')
   async getAllByOperatorId(
