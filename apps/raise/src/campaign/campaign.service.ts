@@ -395,7 +395,11 @@ export class CampaignService {
   async getAllPublished(organizationId: string) {
     const ObjectId = require('mongoose').Types.ObjectId;
     const data = await this.campaignModel.aggregate([
-      { $match: { organizationId: ObjectId(organizationId) } },
+      { $match: { 
+          organizationId: ObjectId(organizationId),
+          isPublished : 'Y',
+          isDeleted : 'N',
+         } },
       {
         $project: {
           amountProgress: 1,
