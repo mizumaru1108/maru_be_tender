@@ -395,11 +395,19 @@ export class CampaignService {
   async getAllPublished(organizationId: string) {
     const ObjectId = require('mongoose').Types.ObjectId;
     const data = await this.campaignModel.aggregate([
-      { $match: { 
+      {
+        $match: {
           organizationId: ObjectId(organizationId),
-          isPublished : 'Y',
-          isDeleted : 'N',
-         } },
+          isPublished: 'Y',
+          isDeleted: 'N',
+        },
+      },
+      {
+        $addFields: {
+          amountProgress: { $toDouble: '$amountProgress' },
+          amountTarget: { $toDouble: '$amountTarget' },
+        },
+      },
       {
         $project: {
           amountProgress: 1,
