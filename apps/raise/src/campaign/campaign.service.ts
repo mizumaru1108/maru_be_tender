@@ -1028,6 +1028,7 @@ export class CampaignService {
         type: data[i]['type'],
         campaignName: data[i]['campaignName'],
         vendorName: data[i]['vendorName'],
+        vendorId: data[i]['vendorId'],
         orgId: data[i]['orgId'],
         milestone: data[i]['milestone'],
         campaignId: data[i]['campaignId'],
