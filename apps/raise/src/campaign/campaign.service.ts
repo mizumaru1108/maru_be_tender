@@ -392,6 +392,42 @@ export class CampaignService {
     return await this.campaignModel.find(filter).sort(sortData).exec();
   }
 
+  async getAllPublished(organizationId: string) {
+    const ObjectId = require('mongoose').Types.ObjectId;
+    const data = await this.campaignModel.aggregate([
+      { $match: { organizationId: ObjectId(organizationId) } },
+      {
+        $project: {
+          amountProgress: 1,
+          amountTarget: 1,
+          coverImage: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          description: 1,
+          organizationId: 1,
+          campaignName: 1,
+          currencyCode: 1,
+          _id: 1,
+        },
+      },
+    ]);
+
+    return data;
+    // amountProgress: 10190
+    // amountTarget: 10000
+    // campaignId: "623f734390b646395a782988"
+    // coverImage: "https://tmra-media-shared.b-cdn.net/tmra/staging/organization/61b4794cfe52d41f557f1acc/coverImage/coverImage-campaign%20(5).jpg"
+    // createdAt: "Sat Mar 26 2022 18:35:48 GMT+0000 (Coordinated Universal Time)"
+    // currencyCode: "SAR"
+    // description: "1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus"
+    // endDate: "-"
+    // organizationId: "61b4794cfe52d41f557f1acc"
+    // title: "Campaign1"
+    // updatedAt: "2022-03-26T05:37:57.479Z"
+    // url: "#"
+    // _id: "623f734390b646395a782988"
+  }
+
   async getAllByOrganizationId(organizationId: string) {
     const ObjectId = require('mongoose').Types.ObjectId;
     const campaignList = await this.campaignModel
@@ -431,7 +467,7 @@ export class CampaignService {
             milestone: { $first: '$foo_count' },
           },
         },
-        { $sort: { _id: -1, creaatedAt: 1 } },
+        { $sort: { _id: -1, createdAt: 1 } },
       ])
       .then((data) => {
         return data;
