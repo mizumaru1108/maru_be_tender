@@ -141,4 +141,10 @@ export class UserController {
   // async resetPassword(@Body('email') email: string) {
   //   return this.userService.resetPassword(email);
   // }
+
+  @Post('/verifyEmailAuthZed/:verfUserId')
+  async verifyEmailAuthZed(@Param('userId') verfUserId:string){
+    return await this.userService.verifyEmailAuthZed(verfUserId);
+  }
+
 }

@@ -174,7 +174,7 @@ export class UserService {
     }
   }
 
-  // async resetPassword(email: string) {
+  async verifyEmailAuthZed(verfUserId:string){
 
-  // }
+  }
 }
