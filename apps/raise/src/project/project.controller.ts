@@ -60,7 +60,7 @@ export class ProjectController {
     description: 'The Project has been successfully created.',
   })
   // @ClusterRoles(RoleEnum.OPERATOR)
-  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('create')
   async create(
     @CurrentUser() currentUser: ICurrentUser,
