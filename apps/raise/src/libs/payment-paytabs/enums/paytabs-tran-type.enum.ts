@@ -5,25 +5,25 @@ export enum PaytabsTranType {
   /**
    * Purchase Transaction
    */
-  SALE = 'sale',
+  SALE = 'Sale',
 
   /**
    * Transaction in auth and capture mode
    */
-  AUTH = 'auth',
+  AUTH = 'Auth',
 
   /**
    * Capturing authorized transaction
    */
-  CAPTURE = 'capture',
+  CAPTURE = 'Capture',
 
   /**
    * Voiding authorized transaction
    */
-  VOID = 'void',
+  VOID = 'Void',
 
   /**
    * Refund Transaction of fully captured transaction
    */
-  REFUND = 'refund',
+  REFUND = 'Refund',
 }

@@ -17,7 +17,7 @@ import {
 } from 'src/payment-stripe/schema/paymentGateway.schema';
 import { Donor, DonorDocument } from 'src/donor/schema/donor.schema';
 import { PaytabsPaymentRequestPayloadModel } from './models/paytabs-payment-request-payload.model';
-import { PaytabsCreateTransactionResponse } from './dtos/response/paytabs-create-transaction-response';
+import { PaytabsCreateTransactionResponse } from './dtos/response/paytabs-create-transaction-response.dto';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()

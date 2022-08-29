@@ -22,7 +22,11 @@ import {
   PaymentGateway,
   PaymentGatewaySchema,
 } from 'src/payment-stripe/schema/paymentGateway.schema';
-import { PaymentStripeModule } from '../payment-stripe/payment-stripe.module';
+import { Item, ItemSchema } from '../item/item.schema';
+import {
+  PaymentData,
+  PaymentDataSchema,
+} from '../payment-stripe/schema/paymentData.schema';
 
 @Module({
   imports: [
@@ -62,6 +66,14 @@ import { PaymentStripeModule } from '../payment-stripe/payment-stripe.module';
       {
         name: PaymentGateway.name,
         schema: PaymentGatewaySchema,
+      },
+      {
+        name: Item.name,
+        schema: ItemSchema,
+      },
+      {
+        name: PaymentData.name,
+        schema: PaymentDataSchema,
       },
     ]),
   ],

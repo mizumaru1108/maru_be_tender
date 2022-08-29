@@ -16,11 +16,13 @@ import { Vendor } from '../buying/vendor/vendor.schema';
 import { CurrentUser } from '../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../commons/dtos/base-response';
 import { baseResponseHelper } from '../commons/helpers/base-response-helper';
+import { PaytabsIpnWebhookResponsePayload } from '../libs/payment-paytabs/dtos/response/paytabs-ipn-webhook-response-payload.dto';
 import { rootLogger } from '../logger';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { DonorService } from './donor.service';
 import { DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
 import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
+import { DonorDonateItemResponse } from './dto/donor-donate-item-response';
 import { DonorDonateItemDto } from './dto/donor-donate-item.dto';
 
 @ApiTags('donor')
@@ -79,9 +81,29 @@ export class DonorController {
   async donateItem(
     @CurrentUser() user: ICurrentUser,
     @Body() request: DonorDonateItemDto,
-  ) {
+  ): Promise<BaseResponse<DonorDonateItemResponse>> {
     const response = await this.donorService.donateSingleItem(user, request);
-    console.log(response);
+    return baseResponseHelper(
+      response,
+      HttpStatus.CREATED,
+      'Donor has successfully donated to the item',
+    );
+  }
+
+  @ApiOperation({ summary: 'Create Donor Payment' })
+  @ApiResponse({
+    status: 201,
+    description: 'The Donor payment has been successfully created.',
+  })
+  @Post('/donate-item/callback')
+  async donateItemCallback(@Body() request: PaytabsIpnWebhookResponsePayload) {
+    this.logger.debug(
+      `webook paytabs from trans code: ${request.tran_ref}`,
+      JSON.stringify(request),
+    );
+    // !TODO: validate signature from Paytabs (valid from paytabs or not)
+    await this.donorService.donateSingleItemCallback(request);
+    // return await this.donorService.donateItemCallback(request);
   }
 
   @Get('getDonationLogs')

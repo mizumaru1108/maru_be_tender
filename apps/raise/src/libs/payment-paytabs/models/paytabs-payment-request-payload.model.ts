@@ -1,5 +1,3 @@
-// The main details needed in the request payload are:
-
 import { PaytabsCurrencyEnum } from '../enums/paytabs-currency-enum';
 import { PaytabsTranClass } from '../enums/paytabs-tran-class.enum';
 import { PaytabsTranType } from '../enums/paytabs-tran-type.enum';
@@ -47,7 +45,7 @@ export class PaytabsPaymentRequestPayloadModel {
   /**
    * Callback via post
    */
-  public return: string;
+  public return?: string;
 
   /**
    * Transaction Type
@@ -56,6 +54,10 @@ export class PaytabsPaymentRequestPayloadModel {
 
   /**
    * Transaction Class
+   * What is the "tran_class"?
+   * The tran_class is responsible to identify the class of a transaction such as ECommerce,
+   * Recurring, etc. The tran_class is one of the required parameters that you need to enter
+   * while using some of the API endpoints requests.
    */
   public tran_class: PaytabsTranClass;
 
@@ -65,16 +67,16 @@ export class PaytabsPaymentRequestPayloadModel {
    * the following parameter must be passed in the request payload.
    * https://support.paytabs.com/en/support/solutions/articles/60000709777-hosted-payment-page
    */
-  public framed: boolean;
+  public framed?: boolean;
 
   /**
-   * Payment Page Language (actually optional, for some reason i make it required)
+   * Payment Page Language(optional)
    * The payment page can support either English (default) or Arabic language.
    * So to create a payment page in the Arabic language you will need to pass
    * the following parameter in your payload.
    * https://support.paytabs.com/en/support/solutions/articles/60000709777-hosted-payment-page
    */
-  public hide_shipping: boolean;
+  public hide_shipping?: boolean;
 
   /**
    * Payment Page Language

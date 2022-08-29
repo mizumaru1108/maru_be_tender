@@ -1,19 +1,16 @@
 /**
- * Paytabs customer details model
- * Refrences:
- * https://support.paytabs.com/en/support/solutions/articles/60000709778-managed-form
+ * Paytabs shipping details model
  * @example
  * customer_details: {
- *     name: "Aliaa AHmed",
- *     email: "aliaa@paytabs.com",
- *     phone: "01000002801",
- *     street1: "st1 near st2",
- *     city: "Cairo",
- *     state: "Cairo",
- *     country: "EG",
- *     zip: "12345",
- *     ip: "196.219.200.200"
- * },
+ *   name: 'wajih last1';
+ *   email: 'wajih2@domain.com';
+ *   phone: '971555555555';
+ *   street1: 'street2';
+ *   city: 'dubai';
+ *   state: 'DU';
+ *   country: 'AE';
+ *   ip: '92.98.175.176';
+ * };
  */
 export class PaytabsCustomerDetailsModel {
   public name: string;

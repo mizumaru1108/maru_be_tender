@@ -36,13 +36,13 @@ export class PaymentPaytabsController {
 
   @Post('testing-webhook')
   async testingWebhook(@Body() payment: PaymentRequestDto) {
-    console.log('masuk webhook');
+    console.log('masuk webhook post');
     console.log('webhook payload', payment);
   }
 
   @Get('testing-webhook')
   async tetingCallback(@Body() payment: PaymentRequestDto) {
-    console.log('masuk callback');
+    console.log('masuk callback get');
     console.log('webhook payload', payment);
   }
 
@@ -65,10 +65,8 @@ export class PaymentPaytabsController {
       cart_currency: PaytabsCurrencyEnum.SAR,
       cart_description: 'testing',
       cart_id: 'testing',
-      callback:
-        'https://b585-2001-448a-2082-43c8-4923-634d-7f55-6d7d.ap.ngrok.io/paytabs/testing-webhook', //get
-      return:
-        'https://b585-2001-448a-2082-43c8-4923-634d-7f55-6d7d.ap.ngrok.io/paytabs/testing-webhook', //post
+      callback: `https://70d9-2001-448a-2082-43c8-4923-634d-7f55-6d7d.ap.ngrok.io/paytabs/testing-webhook`,
+      // return: `https://384b-2001-448a-2082-43c8-4923-634d-7f55-6d7d.ap.ngrok.io/paytabs/testing-webhook`,
       tran_type: PaytabsTranType.SALE,
       tran_class: PaytabsTranClass.ECOM,
       framed: true,

@@ -1,3 +1,5 @@
+import { PaytabsResponseStatus } from '../enums/paytabs-response-status.enum';
+
 /**
  *  Paytabs payment result model
  *  ref: https://support.paytabs.com/en/support/solutions/articles/60000709778-managed-form
@@ -15,7 +17,7 @@ export class PaytabsPaymentResultModel {
   /**
    * make all properties optional for now, refactor implements after we get the result from paytabs
    */
-  public response_status?: string;
+  public response_status?: PaytabsResponseStatus;
   public response_code?: string;
   public response_message?: string;
   public cvv_result?: string;
@@ -23,7 +25,7 @@ export class PaytabsPaymentResultModel {
   public transaction_time?: string;
 
   constructor(
-    response_status?: string,
+    response_status?: PaytabsResponseStatus,
     response_code?: string,
     response_message?: string,
     cvv_result?: string,

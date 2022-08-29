@@ -1,44 +1,54 @@
+import { FusionAuthClient } from '@fusionauth/typescript-client';
 import {
   BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
-import { rootLogger } from '../logger';
-import { Donor, DonorDocument } from './schema/donor.schema';
-import { Volunteer, VolunteerDocument } from './schema/volunteer.schema';
-import { CampaignSetFavoriteDto } from '../campaign/dto';
-import { DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
-import {
-  DonationLogs,
-  DonationLogDocument as DonationLogsDocument,
-} from './schema/donation_log.schema';
-import { DonationLog, DonationLogDocument } from './schema/donation-log.schema';
-import moment from 'moment';
-import { v4 as uuidv4 } from 'uuid';
-import { FusionAuthClient } from '@fusionauth/typescript-client';
 import { ConfigService } from '@nestjs/config';
-import { Anonymous, AnonymousDocument } from './schema/anonymous.schema';
-import { Types } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 import { ApiOperation } from '@nestjs/swagger';
+import moment from 'moment';
+import { Model, Types } from 'mongoose';
+import {
+  PaymentGateway,
+  PaymentGatewayDocument,
+} from 'src/payment-stripe/schema/paymentGateway.schema';
+import { v4 as uuidv4 } from 'uuid';
+import { z } from 'zod';
 import {
   CampaignVendorLog,
   CampaignVendorLogDocument,
   Vendor,
   VendorDocument,
 } from '../buying/vendor/vendor.schema';
-import { CampaignService } from '../campaign/campaign.service';
 import { Campaign, CampaignDocument } from '../campaign/campaign.schema';
-import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
-import { z } from 'zod';
+import { CampaignSetFavoriteDto } from '../campaign/dto';
+import { Item, ItemDocument } from '../item/item.schema';
 import { BunnyService } from '../libs/bunny/services/bunny.service';
-import { DonorDonateItemDto } from './dto/donor-donate-item.dto';
-import { ICurrentUser } from '../user/interfaces/current-user.interface';
+import { PaytabsIpnWebhookResponsePayload } from '../libs/payment-paytabs/dtos/response/paytabs-ipn-webhook-response-payload.dto';
+import { PaytabsCurrencyEnum } from '../libs/payment-paytabs/enums/paytabs-currency-enum';
+import { PaytabsTranClass } from '../libs/payment-paytabs/enums/paytabs-tran-class.enum';
+import { PaytabsTranType } from '../libs/payment-paytabs/enums/paytabs-tran-type.enum';
+import { PaytabsPaymentRequestPayloadModel } from '../libs/payment-paytabs/models/paytabs-payment-request-payload.model';
+import { PaymentPaytabsService } from '../libs/payment-paytabs/payment-paytabs.service';
+import { rootLogger } from '../logger';
 import {
-  PaymentGateway,
-  PaymentGatewayDocument,
-} from 'src/payment-stripe/schema/paymentGateway.schema';
+  PaymentData,
+  PaymentDataDocument,
+} from '../payment-stripe/schema/paymentData.schema';
+import { ICurrentUser } from '../user/interfaces/current-user.interface';
+import { DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
+import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
+import { DonorDonateItemResponse } from './dto/donor-donate-item-response';
+import { DonorDonateItemDto } from './dto/donor-donate-item.dto';
+import { Anonymous, AnonymousDocument } from './schema/anonymous.schema';
+import { DonationLog, DonationLogDocument } from './schema/donation-log.schema';
+import {
+  DonationLogDocument as DonationLogsDocument,
+  DonationLogs,
+} from './schema/donation_log.schema';
+import { Donor, DonorDocument } from './schema/donor.schema';
+import { Volunteer, VolunteerDocument } from './schema/volunteer.schema';
 
 @Injectable()
 export class DonorService {
@@ -65,6 +75,11 @@ export class DonorService {
     private vendorModel: Model<VendorDocument>,
     @InjectModel(PaymentGateway.name)
     private paymentGatewayModel: Model<PaymentGatewayDocument>,
+    @InjectModel(Item.name)
+    private itemModel: Model<ItemDocument>,
+    @InjectModel(PaymentData.name)
+    private paymentDataModel: Model<PaymentDataDocument>,
+    private paytabsService: PaymentPaytabsService, // no need to import in donor module (modular utils)
   ) {}
 
   /* apply to become vendor from donor */
@@ -165,8 +180,157 @@ export class DonorService {
     return log.save();
   }
 
-  async donateSingleItem(user: ICurrentUser, request: DonorDonateItemDto) {
-    console.log(user, request);
+  async donateSingleItem(
+    user: ICurrentUser,
+    request: DonorDonateItemDto,
+  ): Promise<DonorDonateItemResponse> {
+    const pgData = await this.paymentGatewayModel.findOne({
+      organizationId: new Types.ObjectId(request.organizationId),
+    });
+
+    if (pgData?.name !== 'PAYTABS' || !pgData) {
+      throw new BadRequestException(
+        `This organization is not allowed to use payment gateway`,
+      );
+    }
+
+    const donorData = await this.donorModel.findOne({
+      ownerUserId: user.id,
+      organizationId: new Types.ObjectId(request.organizationId),
+    });
+
+    const item = await this.itemModel.findOne({
+      _id: new Types.ObjectId(request.itemId),
+    });
+    if (!item) {
+      throw new BadRequestException(`Item not found`);
+    }
+
+    let campaignId: string = '';
+    let projectId: string = '';
+
+    if (request.campaignId) {
+      campaignId = request.campaignId;
+    }
+
+    if (request.projectId) {
+      projectId = request.projectId;
+    }
+    if (item.projectId) {
+      projectId = item.projectId;
+    }
+
+    const paytabsPayload: PaytabsPaymentRequestPayloadModel = {
+      profile_id: pgData.profileId!,
+      cart_amount: parseFloat(item.defaultPrice!) * request.qty,
+      cart_currency: pgData.defaultCurrency! as PaytabsCurrencyEnum,
+      cart_description: `donate for ${item.name!}`,
+      cart_id: item.id,
+      tran_type: PaytabsTranType.SALE,
+      tran_class: PaytabsTranClass.ECOM,
+      callback: `https://70d9-2001-448a-2082-43c8-4923-634d-7f55-6d7d.ap.ngrok.io/donate-item/callback`,
+      framed: true,
+      hide_shipping: true,
+      customer_details: {
+        name: donorData?.firstName + ' ' + donorData?.lastName || '',
+        email: donorData?.email || '',
+        phone: donorData?.mobile || '',
+        street1: donorData?.address || '',
+        city: donorData?.city || '',
+        state: donorData?.state || '',
+        country: donorData?.country || '',
+        zip: donorData?.zipcode || '',
+      },
+    };
+
+    const paytabsResponse = await this.paytabsService.createTransaction(
+      paytabsPayload,
+      pgData.serverKey!,
+    );
+
+    if (!paytabsResponse) {
+      throw new BadRequestException(`Paytabs payment failed!`);
+    }
+
+    let objectIdDonation = new Types.ObjectId();
+    let now: Date = new Date();
+
+    /* Save to donation log */
+    const donationLog = await new this.donationLogModel({
+      _id: objectIdDonation,
+      organizationId: request.organizationId,
+      donorId: donorData?.ownerUserId || '',
+      donorName: donorData?.firstName + ' ' + donorData?.lastName || '',
+      amount: parseFloat(item.defaultPrice!) * request.qty,
+      createdAt: now,
+      updatedAt: now,
+      projectId,
+      campaignId,
+      donorUserId: donorData?.ownerUserId || '',
+      currency: pgData.defaultCurrency! as PaytabsCurrencyEnum,
+      donationStatus: 'PENDING',
+      type: 'item',
+      paymentGatewayId: 'PAYTABS',
+      transactionId: paytabsResponse.tran_ref,
+      // ipAddress: paytabsResponse.
+    }).save();
+
+    if (!donationLog) {
+      throw new Error('Donation log not saved correctly!');
+    }
+
+    /* Save to payment data */
+    const insertPaymentData = await new this.paymentDataModel({
+      _id: new Types.ObjectId(),
+      donationId: objectIdDonation,
+      merchantId: pgData.profileId,
+      payerId: '',
+      orderId: paytabsResponse.tran_ref,
+      cardType: '',
+      cardScheme: '',
+      paymentDescription: '',
+      expiryMonth: '',
+      expiryYear: '',
+      responseStatus: '',
+      responseCode: '',
+      responseMessage: '',
+      cvvResult: '',
+      avsResult: '',
+      transactionTime: '',
+      paymentStatus: 'PENDING',
+    }).save();
+
+    if (!insertPaymentData) {
+      throw new Error('Payment data not saved correctly!');
+    }
+
+    const response: DonorDonateItemResponse = {
+      donationLogResponse: donationLog,
+      paymentDataResponse: insertPaymentData,
+      paytabsResponse,
+    };
+    return response;
+  }
+
+  async donateSingleItemCallback(request: PaytabsIpnWebhookResponsePayload) {
+    const donationLog = await this.donationLogModel.findOne({
+      transactionId: request.tran_ref,
+    });
+    if (!donationLog) {
+      throw new BadRequestException(`Donation log not found`);
+    }
+    const paymentData = await this.paymentDataModel.findOne({
+      donationId: donationLog.id,
+    });
+    if (!paymentData) {
+      throw new BadRequestException(`Payment data not found`);
+    }
+    const pgData = await this.paymentGatewayModel.findOne({
+      organizationId: donationLog.organizationId,
+    });
+    if (!pgData) {
+      throw new BadRequestException(`Payment gateway not found`);
+    }
   }
 
   async getDonor(donorId: string) {

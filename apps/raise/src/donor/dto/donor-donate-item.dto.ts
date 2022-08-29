@@ -1,6 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 import { ValidateObjectId } from '../../commons/decorators/validate-object-id.decorator';
+import { PaytabsCurrencyEnum } from '../../libs/payment-paytabs/enums/paytabs-currency-enum';
 
 export class DonorDonateItemDto {
   @ApiProperty()
@@ -14,4 +23,24 @@ export class DonorDonateItemDto {
   @IsNotEmpty()
   @ValidateObjectId()
   itemId: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @ValidateObjectId()
+  projectId: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @ValidateObjectId()
+  campaignId: string;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(1)
+  qty: number;
 }
