@@ -40,8 +40,7 @@ RUN addgroup --gid 1001 --system nodejs
 RUN adduser --system nestjs --uid 1001 --ingroup nodejs
 
 # Root
-# pnp only:
-# COPY .pnp.* ./
+COPY .pnp.* ./
 COPY .yarnrc.yml ./
 COPY package.json ./
 COPY .yarn/ ./.yarn/
@@ -49,9 +48,7 @@ COPY yarn.lock ./
 
 # COPY postman/schemas/ ./postman/schemas/
 
-# node-linker only:
-COPY node_modules/ ./node_modules/
-
+# COPY --from=builder /app/node_modules/ ./node_modules/
 # package.json ONLY from all other packages, yarn monorepo needs them to ensure immutability
 # BUT will still need depended packages' dist/
 COPY apps/pwa/package.json ./apps/pwa/
