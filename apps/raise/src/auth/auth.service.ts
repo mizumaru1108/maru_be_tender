@@ -40,6 +40,10 @@ export class AuthService {
       firstname: result.user.firstName,
       lastname: result.user.lastName,
       email: result.user.email,
+      country: result.user.country,
+      state: result.user.state,
+      address: result.user.address,
+      mobile: result.user.mobile,
     });
 
     const gsOrgId = '62414373cf00cca3a830814a';

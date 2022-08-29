@@ -30,9 +30,10 @@ import { User, UserDocument } from '../user/schema/user.schema';
 import { Campaign, CampaignDocument } from './campaign.schema';
 import { CreateCampaignDto } from './dto';
 import { UpdateCampaignDto } from './dto/update-campaign-dto';
+import { ApproveCampaignDto } from './dto/approve-campaign.dto';
 import { GetAllMypendingCampaignFromVendorIdRequest } from './dto/get-all-my-pending-campaign-from-vendor-id.request';
-import { catchError } from 'rxjs';
-import { ObjectId } from 'mongodb';
+// import { catchError } from 'rxjs';
+// import { ObjectId } from 'mongodb';
 @Injectable()
 export class CampaignService {
   private logger = rootLogger.child({ logger: CampaignService.name });
@@ -391,6 +392,54 @@ export class CampaignService {
     return await this.campaignModel.find(filter).sort(sortData).exec();
   }
 
+  async getAllPublished(organizationId: string) {
+    const ObjectId = require('mongoose').Types.ObjectId;
+    const data = await this.campaignModel.aggregate([
+      {
+        $match: {
+          organizationId: ObjectId(organizationId),
+          isPublished: 'Y',
+          isDeleted: 'N',
+        },
+      },
+      {
+        $addFields: {
+          amountProgress: { $toDouble: '$amountProgress' },
+          amountTarget: { $toDouble: '$amountTarget' },
+        },
+      },
+      {
+        $project: {
+          amountProgress: 1,
+          amountTarget: 1,
+          coverImage: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          description: 1,
+          organizationId: 1,
+          campaignName: 1,
+          currencyCode: 1,
+          _id: 1,
+        },
+      },
+    ]);
+
+    return data;
+    // amountProgress: 10190
+    // amountTarget: 10000
+    // campaignId: "623f734390b646395a782988"
+    // coverImage: "https://tmra-media-shared.b-cdn.net/tmra/staging/organization/61b4794cfe52d41f557f1acc/coverImage/coverImage-campaign%20(5).jpg"
+    // createdAt: "Sat Mar 26 2022 18:35:48 GMT+0000 (Coordinated Universal Time)"
+    // currencyCode: "SAR"
+    // description: "1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus"
+    // endDate: "-"
+    // organizationId: "61b4794cfe52d41f557f1acc"
+    // title: "Campaign1"
+    // updatedAt: "2022-03-26T05:37:57.479Z"
+    // url: "#"
+    // _id: "623f734390b646395a782988"
+  }
+
   async getAllByOrganizationId(organizationId: string) {
     const ObjectId = require('mongoose').Types.ObjectId;
     const campaignList = await this.campaignModel
@@ -430,7 +479,7 @@ export class CampaignService {
             milestone: { $first: '$foo_count' },
           },
         },
-        { $sort: { _id: -1, creaatedAt: 1 } },
+        { $sort: { _id: -1, createdAt: 1 } },
       ])
       .then((data) => {
         return data;
@@ -546,43 +595,63 @@ export class CampaignService {
     return data;
   }
 
-  async operatorResponse(createCampaignDto: CreateCampaignDto) {
-    let vendorData: any = new Vendor();
+  async operatorApprove(approveCampaignDto: ApproveCampaignDto) {
+    // let vendorData: any = new Vendor();
     let data: any;
     const ObjectId = require('mongoose').Types.ObjectId;
 
-    this.logger.debug(`userId=${createCampaignDto.userId}`);
+    // this.logger.debug(`userId=${createCampaignDto.userId}`);
 
-    let dataVendor = await this.vendorModel.findOne({
-      ownerUserId: createCampaignDto.userId,
-    });
+    // let dataVendor = await this.vendorModel.findOne({
+    //   ownerUserId: createCampaignDto.userId,
+    // });
 
-    this.logger.debug(`_id=${dataVendor?._id}`);
+    // this.logger.debug(`_id=${dataVendor?._id}`);
 
-    if (!dataVendor) {
-      throw new NotFoundException(`Vendor not found`);
+    if (
+      !approveCampaignDto.campaignId ||
+      !approveCampaignDto.status ||
+      (approveCampaignDto.status != 'approved' &&
+        approveCampaignDto.status != 'rejected')
+    ) {
+      throw new NotFoundException(`Reject campaign approval process`);
     }
 
-    if (!createCampaignDto.campaignId) {
-      throw new NotFoundException(`Campaign not found`);
-    }
+    // if (!createCampaignDto.campaignId) {
+    //   throw new NotFoundException(`Campaign not found`);
+    // }
 
-    this.logger.debug(`campaignId=${createCampaignDto?.campaignId}`);
+    // this.logger.debug(`campaignId=${createCampaignDto?.campaignId}`);
     try {
+      //STEP 1: update initial campaign , change "new" to "approved"
       data = await this.campaignVendorLogModel.findOneAndUpdate(
         {
-          campaignId: new ObjectId(createCampaignDto?.campaignId),
-          status: 'something',
-          vendorId: '',
+          campaignId: new ObjectId(approveCampaignDto.campaignId),
+          status: 'new',
         },
         {
-          vendorId: dataVendor?._id,
-          status: 'pending new',
-          campaignId: new ObjectId(createCampaignDto?.campaignId),
-          createdAt: dayjs().toISOString(),
+          vendorId: approveCampaignDto.vendorId,
+          status: 'approved',
+          // createdAt: dayjs().toISOString(),
           updatedAt: dayjs().toISOString(),
         },
-        { upsert: true, overwrite: false, rawResult: true },
+        { upsert: false, overwrite: false, rawResult: true },
+      );
+
+      //STEP 2: update the rest of campaign set flag, change status
+      //from "pending new" to "processed"
+
+      data = await this.campaignVendorLogModel.updateMany(
+        {
+          campaignId: new ObjectId(approveCampaignDto.campaignId),
+          status: 'pending new',
+        },
+        {
+          $set: { status: 'processed', updatedAt: dayjs().toISOString() },
+        },
+        {
+          upsert: false,
+        },
       );
     } catch (error) {
       throw new InternalServerErrorException(`Error get Data - ${error}`);
@@ -864,11 +933,10 @@ export class CampaignService {
   }
 
   async getAllPendingCampaignByOperatorId(
-    organizationId: string,
+    campaignId: string,
     operatorId: string,
   ) {
     const ObjectId = require('mongoose').Types.ObjectId;
-    this.logger.debug(`testttt!`);
     const dataOp = await this.operatorModel.findOne({
       ownerUserId: operatorId,
     });
@@ -935,7 +1003,8 @@ export class CampaignService {
         $match: {
           creatorId: realOpId,
           status: 'pending new',
-          orgId: ObjectId(organizationId),
+          orgId: ObjectId('61b4794cfe52d41f557f1acc'),
+          campaignId: ObjectId(campaignId),
         },
       },
 
@@ -959,6 +1028,7 @@ export class CampaignService {
         type: data[i]['type'],
         campaignName: data[i]['campaignName'],
         vendorName: data[i]['vendorName'],
+        vendorId: data[i]['vendorId'],
         orgId: data[i]['orgId'],
         milestone: data[i]['milestone'],
         campaignId: data[i]['campaignId'],

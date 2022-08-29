@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsEnum } from 'class-validator';
+import { IsString, IsNotEmpty, IsEnum, IsEmpty } from 'class-validator';
 
 export class RegisterFromFusionAuthDto {
   @ApiProperty()
@@ -21,4 +21,17 @@ export class RegisterFromFusionAuthDto {
   @IsString()
   @IsNotEmpty()
   email: string;
+
+  @ApiProperty()
+  country?: string;
+  
+  @ApiProperty()
+  state?: string;
+  
+  @ApiProperty()
+  address?: string;
+  
+  @ApiProperty()
+  mobile?: string;
+
 }

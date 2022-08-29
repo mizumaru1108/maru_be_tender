@@ -35,7 +35,7 @@ import HeaderBreadcrumbs from '../../../components/HeaderBreadcrumbs';
 import {
   TableEmptyRows,
   TableHeadCustom,
-  TableSearchNotFound,
+  TableNoData,
   TableSelectedActions,
 } from '../../../components/table';
 // sections
@@ -230,21 +230,8 @@ export default function EcommerceProductList() {
                                 row={row}
                                 selected={selected.includes(row.id)}
                                 onSelectRow={() => onSelectRow(row.id)}
-                                actions={
-                                <>
-                                    <MenuItem
-                                    onClick={() => handleDeleteRow(row.id)}
-                                    sx={{ color: 'error.main' }}
-                                    >
-                                    <Iconify icon={'eva:trash-2-outline'} />
-                                    Delete
-                                    </MenuItem>
-                                    <MenuItem onClick={() => handleEditRow(row.name)}>
-                                    <Iconify icon={'eva:edit-fill'} />
-                                    Edit
-                                    </MenuItem>
-                                </>
-                                }
+                                onEditRow={() => handleEditRow(row.name)}
+                                onDeleteRow={() => handleDeleteRow(row.id)}
                             />
                             ))}
 
@@ -254,7 +241,7 @@ export default function EcommerceProductList() {
                         />
                         </TableBody>
 
-                        {isNotFound && <TableSearchNotFound />}
+                        {isNotFound && <TableNoData isNotFound={isNotFound} />}
                     </Table>
                     </TableContainer>
                 </Scrollbar>
