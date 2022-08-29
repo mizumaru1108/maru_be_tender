@@ -38,6 +38,9 @@ export class DonationLog {
   amount: number;
 
   @Prop()
+  purchaseQty?: number;
+
+  @Prop()
   currency: string;
 
   @Prop()

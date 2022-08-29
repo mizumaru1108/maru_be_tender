@@ -27,6 +27,7 @@ import {
   PaymentData,
   PaymentDataSchema,
 } from '../payment-stripe/schema/paymentData.schema';
+import { Project, ProjectSchema } from '../project/project.schema';
 
 @Module({
   imports: [
@@ -74,6 +75,10 @@ import {
       {
         name: PaymentData.name,
         schema: PaymentDataSchema,
+      },
+      {
+        name: Project.name,
+        schema: ProjectSchema,
       },
     ]),
   ],

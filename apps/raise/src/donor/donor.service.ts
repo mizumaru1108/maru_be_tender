@@ -27,6 +27,7 @@ import { Item, ItemDocument } from '../item/item.schema';
 import { BunnyService } from '../libs/bunny/services/bunny.service';
 import { PaytabsIpnWebhookResponsePayload } from '../libs/payment-paytabs/dtos/response/paytabs-ipn-webhook-response-payload.dto';
 import { PaytabsCurrencyEnum } from '../libs/payment-paytabs/enums/paytabs-currency-enum';
+import { PaytabsResponseStatus } from '../libs/payment-paytabs/enums/paytabs-response-status.enum';
 import { PaytabsTranClass } from '../libs/payment-paytabs/enums/paytabs-tran-class.enum';
 import { PaytabsTranType } from '../libs/payment-paytabs/enums/paytabs-tran-type.enum';
 import { PaytabsPaymentRequestPayloadModel } from '../libs/payment-paytabs/models/paytabs-payment-request-payload.model';
@@ -36,11 +37,14 @@ import {
   PaymentData,
   PaymentDataDocument,
 } from '../payment-stripe/schema/paymentData.schema';
+import { Project, ProjectDocument } from '../project/project.schema';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
 import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
 import { DonorDonateItemResponse } from './dto/donor-donate-item-response';
 import { DonorDonateItemDto } from './dto/donor-donate-item.dto';
+import { DonationStatus } from './enum/donation-status.enum';
+import { DonationType } from './enum/donation-type.enum';
 import { Anonymous, AnonymousDocument } from './schema/anonymous.schema';
 import { DonationLog, DonationLogDocument } from './schema/donation-log.schema';
 import {
@@ -55,8 +59,9 @@ export class DonorService {
   private logger = rootLogger.child({ logger: DonorService.name });
 
   constructor(
-    private bunnyService: BunnyService,
-    private configService: ConfigService,
+    private bunnyService: BunnyService, // no need to import in donor module (modular utils)
+    private paytabsService: PaymentPaytabsService, // no need to import in donor module (modular utils)
+    private configService: ConfigService, // no need to import in donor module (modular utils)
     @InjectModel(Donor.name)
     private donorModel: Model<DonorDocument>,
     @InjectModel(Volunteer.name)
@@ -79,7 +84,8 @@ export class DonorService {
     private itemModel: Model<ItemDocument>,
     @InjectModel(PaymentData.name)
     private paymentDataModel: Model<PaymentDataDocument>,
-    private paytabsService: PaymentPaytabsService, // no need to import in donor module (modular utils)
+    @InjectModel(Project.name)
+    private projectModel: Model<ProjectDocument>,
   ) {}
 
   /* apply to become vendor from donor */
@@ -206,18 +212,10 @@ export class DonorService {
       throw new BadRequestException(`Item not found`);
     }
 
-    let campaignId: string = '';
-    let projectId: string = '';
+    let projectId: Types.ObjectId| string = ""; 
 
-    if (request.campaignId) {
-      campaignId = request.campaignId;
-    }
-
-    if (request.projectId) {
-      projectId = request.projectId;
-    }
     if (item.projectId) {
-      projectId = item.projectId;
+      projectId = new Types.ObjectId(item.projectId);
     }
 
     const paytabsPayload: PaytabsPaymentRequestPayloadModel = {
@@ -225,10 +223,11 @@ export class DonorService {
       cart_amount: parseFloat(item.defaultPrice!) * request.qty,
       cart_currency: pgData.defaultCurrency! as PaytabsCurrencyEnum,
       cart_description: `donate for ${item.name!}`,
-      cart_id: item.id,
+      cart_id: item._id.toString(),
       tran_type: PaytabsTranType.SALE,
       tran_class: PaytabsTranClass.ECOM,
-      callback: `https://70d9-2001-448a-2082-43c8-4923-634d-7f55-6d7d.ap.ngrok.io/donate-item/callback`,
+      // !TODO: change the harcoded value with env variable later on
+      callback: `https://api-staging.tmra.io/v2/raise/donor/donate-item/callback`,
       framed: true,
       hide_shipping: true,
       customer_details: {
@@ -253,25 +252,26 @@ export class DonorService {
     }
 
     let objectIdDonation = new Types.ObjectId();
-    let now: Date = new Date();
+    let now = moment().toISOString();
 
     /* Save to donation log */
     const donationLog = await new this.donationLogModel({
       _id: objectIdDonation,
-      organizationId: request.organizationId,
+      organizationId: new Types.ObjectId(request.organizationId),
       donorId: donorData?.ownerUserId || '',
       donorName: donorData?.firstName + ' ' + donorData?.lastName || '',
       amount: parseFloat(item.defaultPrice!) * request.qty,
       createdAt: now,
       updatedAt: now,
-      projectId,
-      campaignId,
+      projectId: projectId ? projectId as Types.ObjectId : '',
+      campaignId: "",
       donorUserId: donorData?.ownerUserId || '',
       currency: pgData.defaultCurrency! as PaytabsCurrencyEnum,
       donationStatus: 'PENDING',
       type: 'item',
       paymentGatewayId: 'PAYTABS',
       transactionId: paytabsResponse.tran_ref,
+      purchaseQty: request.qty,
       // ipAddress: paytabsResponse.
     }).save();
 
@@ -319,19 +319,93 @@ export class DonorService {
     if (!donationLog) {
       throw new BadRequestException(`Donation log not found`);
     }
+    
+    let status: DonationStatus = DonationStatus.pending;
+    switch(request.payment_result.response_status){
+      case PaytabsResponseStatus.A:
+        status = DonationStatus.success;
+        break;
+      case PaytabsResponseStatus.D:
+        status = DonationStatus.declined;
+        break;
+      case PaytabsResponseStatus.E:
+        status = DonationStatus.error;
+        break;
+      case PaytabsResponseStatus.H:
+        status = DonationStatus.hold;
+        break;
+      case PaytabsResponseStatus.P:
+        status = DonationStatus.pending;
+        break;
+      case PaytabsResponseStatus.V:
+        status = DonationStatus.voided;
+        break;    
+    }
+    console.log("payment status",status);
+    
+    donationLog.donationStatus = status;
+    donationLog.ipAddress = request.customer_details?.ip || '';
+    donationLog.updatedAt = moment().toISOString();
+
+    console.log("updating donation log");
+    const updateDonationLog = await donationLog.save();
+    if(!updateDonationLog){
+      throw new Error('Donation log not updated correctly!');
+    }
+    
     const paymentData = await this.paymentDataModel.findOne({
-      donationId: donationLog.id,
+      orderId: request.tran_ref,
     });
     if (!paymentData) {
       throw new BadRequestException(`Payment data not found`);
     }
-    const pgData = await this.paymentGatewayModel.findOne({
-      organizationId: donationLog.organizationId,
-    });
-    if (!pgData) {
-      throw new BadRequestException(`Payment gateway not found`);
+    paymentData.cardType = request.payment_info?.card_type || '';
+    paymentData.cardScheme = request.payment_info?.card_scheme || '';
+    paymentData.paymentDescription = request.payment_info?.payment_description || '';
+    paymentData.expiryMonth = Number(request.payment_info?.expiryMonth) || undefined;
+    paymentData.expiryYear = Number(request.payment_info?.expiryYear) || undefined;
+    paymentData.responseStatus = request.payment_result?.response_status || '';
+    paymentData.responseCode = request.payment_result?.response_code || '';
+    paymentData.responseMessage = request.payment_result?.response_message || '';
+    paymentData.cvvResult = request.payment_result?.cvv_result || '';
+    paymentData.avsResult = request.payment_result?.avs_result || '';
+    paymentData.transactionTime = request.payment_result?.transaction_time || '';
+    paymentData.paymentStatus = request.payment_result?.response_message || '';
+    console.log("updating payment data");
+    const updatePaymentData = await paymentData.save();
+    if(!updatePaymentData){
+      throw new Error('Payment data not updated correctly!');
     }
+
+    const item = await this.itemModel.findOne({      
+      _id: new Types.ObjectId(request.cart_id),
+    });
+    if (!item) {
+      throw new BadRequestException(`Item not found`);
+    }
+    if(request.payment_result.response_status === PaytabsResponseStatus.A){
+      if(item && item.totalNeed && Number(item.totalNeed) > 0 && donationLog && donationLog.purchaseQty){
+        let updatedQty = Number(item.totalNeed) - donationLog.purchaseQty;
+        item.totalNeed = updatedQty.toString();
+      }
+    }
+    item.updatedAt = moment().toISOString();
+    console.log("updating item stock");
+    const updateItem = await item.save();    
+    if(!updateItem){
+      throw new Error('Item not updated correctly!');
+    }
+
+    // update target of project (?)
+    // const project = await this.projectModel.findOne({
+    //   _id: new Types.ObjectId(item.projectId),
+    // });
+    // if (!project) {
+    //   throw new BadRequestException(`Project not found`);
+    // }
+    // project.updatedAt = moment().toISOString();    
   }
+
 
   async getDonor(donorId: string) {
     this.logger.debug(`Get Donor ${donorId}...`);

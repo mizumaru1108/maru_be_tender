@@ -38,7 +38,7 @@ export class PaymentPaytabsService {
     paytabsPaymentRequest: PaytabsPaymentRequestPayloadModel,
     serverKey?: string,
   ): Promise<PaytabsCreateTransactionResponse> {
-    console.log('paytabsPaymentRequest', paytabsPaymentRequest);
+    // console.log('paytabsPaymentRequest', paytabsPaymentRequest);
     let auth: string = '';
     const keyFromEnv = this.configService.get<string>('PAYTABS_SERVER_KEY');
 
@@ -85,8 +85,7 @@ export class PaymentPaytabsService {
     let donor = null;
 
     if (!paymentGateway) {
-      txtMessage = 'organization can not use Paytabs Payment Gateway';
-      console.log('here');
+      txtMessage = 'organization can not use Paytabs Payment Gateway';      
       return {
         statusCode: 404, //resource not found
         headers: {
@@ -97,7 +96,7 @@ export class PaymentPaytabsService {
         }),
       };
     }
-    console.log(paymentDto.donorId);
+    
     if (paymentDto.donorId) {
       donor = await this.donorModel.findOne({
         _id: paymentDto.donorId,

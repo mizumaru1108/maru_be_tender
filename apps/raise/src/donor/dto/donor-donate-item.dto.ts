@@ -25,20 +25,6 @@ export class DonorDonateItemDto {
   itemId: string;
 
   @ApiProperty()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  @ValidateObjectId()
-  projectId: string;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  @ValidateObjectId()
-  campaignId: string;
-
-  @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
   @Min(1)

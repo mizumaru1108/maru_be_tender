@@ -99,11 +99,12 @@ export class DonorController {
   async donateItemCallback(@Body() request: PaytabsIpnWebhookResponsePayload) {
     this.logger.debug(
       `webook paytabs from trans code: ${request.tran_ref}`,
+    );
+    this.logger.debug(
       JSON.stringify(request),
     );
     // !TODO: validate signature from Paytabs (valid from paytabs or not)
     await this.donorService.donateSingleItemCallback(request);
-    // return await this.donorService.donateItemCallback(request);
   }
 
   @Get('getDonationLogs')
