@@ -730,6 +730,39 @@ export class ProjectService {
     return data;
   }
 
+  async getAllProjectPublished(organizationId: string) {
+    this.logger.debug('Get project list ...');
+    const ObjectId = require('mongoose').Types.ObjectId;
+
+    const dataProject = await this.projectModel.aggregate([
+      { $match: { organizationId: ObjectId(organizationId) } },
+      {
+        $project: {
+          projectId: '$_id',
+          collectedAmount: '$amountProgress',
+          remainingAmount: '$amountTarget',
+          coverImage: 1,
+          image1: 1,
+          image2: 1,
+          image3: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          title: 1,
+          diameterSize: 1,
+          hasAc: 1,
+          hasClassroom: 1,
+          hasFemaleSection: 1,
+          hasGreenSpace: 1,
+          hasParking: 1,
+          prayerSize: 1,
+          toiletSize: 1,
+        },
+      },
+    ]);
+
+    return dataProject;
+  }
+
   async getListAllByOperatorId(operatorId: string) {
     const ObjectId = require('mongoose').Types.ObjectId;
     this.logger.debug('Get project list ...');

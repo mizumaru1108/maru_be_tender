@@ -39,6 +39,15 @@ export class ProjectController {
     return await this.projectService.getListAll();
   }
 
+  @ApiOperation({ summary: 'Get All Projects viewed by donor' })
+  @Get('donor/organization/:organizationId/getAllPublished')
+  async getAllProjectsForDonors(
+    @Param('organizationId') organizationId: string,
+  ) {
+    this.logger.debug(`Get all projects`);
+    return await this.projectService.getAllProjectPublished(organizationId);
+  }
+
   @ApiOperation({ summary: 'Get All Projects viewed by manager' })
   @UseGuards(JwtAuthGuard)
   @Get('manager/getProjectList')
