@@ -550,6 +550,21 @@ export class CampaignService {
     return campaignList;
   }
 
+  async getAllCampaignDonorOnOperatorDashboard(organizationId: string) {
+    const ObjectId = require('mongoose').Types.ObjectId;
+    const campaignList = await this.campaignModel.aggregate([
+      {
+        $match: {
+          organizationId: ObjectId(organizationId),
+          isDeleted: { $regex: 'n', $options: 'i' }, // hide deleted campaign
+        },
+        // how to lookup ?, donationLog.campaignId type is string instead of ObjectId
+      },
+    ]);
+
+    return campaignList;
+  }
+
   async vendorApply(createCampaignDto: CreateCampaignDto) {
     let vendorData: any = new Vendor();
     let data: any;

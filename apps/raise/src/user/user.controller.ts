@@ -1,4 +1,8 @@
 import {
+  ObjectReference,
+  SubjectReference,
+} from '@authzed/authzed-node/dist/src/v1';
+import {
   Body,
   Controller,
   Get,
@@ -14,14 +18,19 @@ import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { PermissionsGuard } from 'src/auth/permissions.guard';
 import { ClusterRoles } from '../auth/cluster-roles.decorator';
 import { ClusterRolesGuard } from '../auth/cluster-roles.guard';
+import { Permissions } from '../auth/permissions.decorator';
 import { CurrentUser } from '../commons/decorators/current-user.decorator';
+import { AuthzedService } from '../libs/authzed/authzed.service';
 import { RoleEnum } from './enums/role-enum';
 import { ICurrentUser } from './interfaces/current-user.interface';
 import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly authzedService: AuthzedService,
+  ) {}
 
   @Post('test-superadmin')
   @ClusterRoles(RoleEnum.SUPERADMIN)
@@ -97,16 +106,24 @@ export class UserController {
     return user;
   }
 
-  @Get(':id')
-  @SetMetadata('permission', ['user/profile', 'read'])
+  @Permissions('permission_management')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Get('authzed-tests/:safdsadf/:organizationId')
+  async authzedTesting(@CurrentUser() user: ICurrentUser, @Body() body: any) {
+    console.log('body', body);
+    console.log('user', user);
+  }
+
+  @Get(':id')
+  // @SetMetadata('permission', ['user/profile', 'read'])
+  @UseGuards(JwtAuthGuard)
   getOneUser(@Param('id') userId: string) {
     return this.userService.getOneUser({ _id: userId });
   }
 
   @Patch(':id')
-  @SetMetadata('permission', ['user/update', 'write'])
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  // @SetMetadata('permission', ['user/update', 'write'])
+  @UseGuards(JwtAuthGuard)
   async updateUser(
     @Param('id') id: string,
     @Body('name') name: string,
@@ -143,8 +160,7 @@ export class UserController {
   // }
 
   @Post('/verifyEmailAuthZed/:verfUserId')
-  async verifyEmailAuthZed(@Param('userId') verfUserId:string){
+  async verifyEmailAuthZed(@Param('userId') verfUserId: string) {
     return await this.userService.verifyEmailAuthZed(verfUserId);
   }
-
 }

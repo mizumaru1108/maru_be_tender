@@ -91,6 +91,51 @@ export class CampaignController {
     );
   }
 
+  /**
+   * Story (Operator > Campaign Vendor Request)
+   * Ref: https://www.notion.so/hendyirawan/Operator-Campaign-Vendor-Request-d33e785f1bf54b2da37e8d71c2eef984
+   * Data Displayed by Frontend (response)
+   * Vendor Name, Total Campaigns Done Before.
+   */
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get list all my pending campaign (vendor)' })
+  @Get('mycampaign-getpendinglist-from-organizationId')
+  async getAllMyPendingCampaignByOrganizationId(
+    @Query() request: GetAllMypendingCampaignFromVendorIdRequest,
+  ): Promise<PaginatedResponse<CampaignDocument[]>> {
+    this.logger.debug(`Get list all my pending campaign`);
+    const campaignList =
+      await this.campaignService.getAllMyPendingCampaignByOrganizationId(
+        request,
+      );
+    const response = paginationHelper(
+      campaignList.docs,
+      campaignList.totalDocs,
+      campaignList.limit,
+      campaignList.page,
+      campaignList.totalPages,
+      campaignList.pagingCounter,
+      campaignList.hasPrevPage,
+      campaignList.hasNextPage,
+      campaignList.prevPage,
+      campaignList.nextPage,
+      HttpStatus.OK,
+      'Successfully get list all campaign',
+    );
+    return response;
+  }
+
+  @ApiOperation({ summary: 'List all campaigns by organization ID' })
+  @Get('organization/:organizationId/campaign-donor-list')
+  async getAllCampaignDonorOnOperatorDashboard(
+    @Param('organizationId') organizationId: string,
+  ) {
+    this.logger.debug(`Get list all donor on campaign by organization ID`);
+    return await this.campaignService.getAllCampaignDonorOnOperatorDashboard(
+      organizationId,
+    );
+  }
+
   @ApiOperation({ summary: 'List all campaigns by organization ID' })
   @Get('organization/:organizationId/getListAll')
   async getAllByOrganizationId(
@@ -158,40 +203,6 @@ export class CampaignController {
       organizationId,
       vendorId,
     );
-  }
-
-  /**
-   * Story (Operator > Campaign Vendor Request)
-   * Ref: https://www.notion.so/hendyirawan/Operator-Campaign-Vendor-Request-d33e785f1bf54b2da37e8d71c2eef984
-   * Data Displayed by Frontend (response)
-   * Vendor Name, Total Campaigns Done Before.
-   */
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Get list all my pending campaign (vendor)' })
-  @Get('mycampaign-getpendinglist-from-organizationId')
-  async getAllMyPendingCampaignByOrganizationId(
-    @Query() request: GetAllMypendingCampaignFromVendorIdRequest,
-  ): Promise<PaginatedResponse<CampaignDocument[]>> {
-    this.logger.debug(`Get list all my pending campaign`);
-    const campaignList =
-      await this.campaignService.getAllMyPendingCampaignByOrganizationId(
-        request,
-      );
-    const response = paginationHelper(
-      campaignList.docs,
-      campaignList.totalDocs,
-      campaignList.limit,
-      campaignList.page,
-      campaignList.totalPages,
-      campaignList.pagingCounter,
-      campaignList.hasPrevPage,
-      campaignList.hasNextPage,
-      campaignList.prevPage,
-      campaignList.nextPage,
-      HttpStatus.OK,
-      'Successfully get list all campaign',
-    );
-    return response;
   }
 
   @ApiOperation({ summary: 'Get list all my pending campaign (vendor)' })
