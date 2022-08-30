@@ -8,8 +8,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/jwt.guard';
-import { ClusterRoles } from '../auth/cluster-roles.decorator';
 import { rootLogger } from '../logger';
 import { RoleEnum } from '../user/enums/role-enum';
 import { OperatorService } from './operator.service';
@@ -17,6 +15,7 @@ import { OperatorFilterRequest } from './dto/operator-filter-request';
 import { paginationHelper } from '../commons/helpers/pagination-helper';
 import { PaginatedResponse } from '../commons/dtos/paginated-response.dto';
 import { OperatorDocument } from './schema/operator.schema';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 
 @ApiTags('operator')
 @Controller('operator')
@@ -52,7 +51,6 @@ export class OperatorController {
 
   @ApiOperation({ summary: 'Get operator details' })
   @Get('/:operatorId/detail')
-  @ClusterRoles(RoleEnum.SUPERADMIN)
   @UseGuards(JwtAuthGuard)
   async getOperatorDetail(@Param('operatorId') operatorId: string) {
     this.logger.debug(`Get operator details for id ${operatorId}`);

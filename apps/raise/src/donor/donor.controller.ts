@@ -10,7 +10,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { Vendor } from '../buying/vendor/vendor.schema';
 import { CurrentUser } from '../commons/decorators/current-user.decorator';
@@ -97,12 +96,8 @@ export class DonorController {
   })
   @Post('/donate-item/callback')
   async donateItemCallback(@Body() request: PaytabsIpnWebhookResponsePayload) {
-    this.logger.debug(
-      `webook paytabs from trans code: ${request.tran_ref}`,
-    );
-    this.logger.debug(
-      JSON.stringify(request),
-    );
+    this.logger.debug(`webook paytabs from trans code: ${request.tran_ref}`);
+    this.logger.debug(JSON.stringify(request));
     // !TODO: validate signature from Paytabs (valid from paytabs or not)
     await this.donorService.donateSingleItemCallback(request);
   }

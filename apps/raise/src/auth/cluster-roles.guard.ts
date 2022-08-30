@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
-import { UserService } from '../user/user.service';
 
 /**
  * RolesGuard

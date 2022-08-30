@@ -78,17 +78,13 @@ export class AuthzedService {
     //   optionalRelation: '',
     // };
 
-    // response example
-    // UNSPECIFIED = 0,
-    // NO_PERMISSION = 1,
-    // HAS_PERMISSION = 2
-
     const checkPermissionRequest = v1.CheckPermissionRequest.create({
       resource,
       subject,
       permission,
     });
 
+    // response UNSPECIFIED = 0, NO_PERMISSION = 1, HAS_PERMISSION = 2
     const result = new Promise<CheckPermissionResponse>((resolve, reject) => {
       this.client.checkPermission(
         checkPermissionRequest,

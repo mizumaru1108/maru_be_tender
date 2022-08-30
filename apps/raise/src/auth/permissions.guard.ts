@@ -72,23 +72,14 @@ export class PermissionsGuard implements CanActivate {
       throw new BadRequestException('No permissions defined!');
     }
 
-    //get organizationId from request.body
     const request = context.switchToHttp().getRequest();
 
-    // if request is POST, organizationId is in body
-    // else organizationId is in params
-    console.log('request.body', request.body);
-    console.log('request.params', request.params);
-    console.log(request.method);
-    let organizationId: string = '';
-    if (request.method === 'POST') {
-      organizationId = request.body.organizationId;
-    } else {
-      organizationId = request.params.organizationId;
-    }
-    console.log('organizationId', organizationId);
+    // get organizationid from header
+    const organizationId = request.headers['tmra-organizationid'];
     if (organizationId === '' || organizationId === undefined) {
-      throw new BadRequestException('No organizationId defined!');
+      throw new BadRequestException(
+        'No organizationId defined!, please add "tmra-organizationid" to header!',
+      );
     }
 
     //get userId from request.user
@@ -118,10 +109,8 @@ export class PermissionsGuard implements CanActivate {
 
     if (
       !isAllowed ||
-      isAllowed.permissionship ===
-        CheckPermissionResponse_Permissionship.NO_PERMISSION ||
-      isAllowed.permissionship ===
-        CheckPermissionResponse_Permissionship.UNSPECIFIED
+      isAllowed.permissionship !==
+        CheckPermissionResponse_Permissionship.HAS_PERMISSION
     ) {
       throw new ForbiddenException(
         'You are not authorized to perform this action!',

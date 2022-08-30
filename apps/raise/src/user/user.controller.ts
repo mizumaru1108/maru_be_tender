@@ -1,8 +1,4 @@
 import {
-  ObjectReference,
-  SubjectReference,
-} from '@authzed/authzed-node/dist/src/v1';
-import {
   Body,
   Controller,
   Get,
@@ -13,15 +9,13 @@ import {
   // Delete,
   UseGuards,
 } from '@nestjs/common';
-
-import { JwtAuthGuard } from 'src/auth/jwt.guard';
-import { PermissionsGuard } from 'src/auth/permissions.guard';
-import { ClusterRoles } from '../auth/cluster-roles.decorator';
-import { ClusterRolesGuard } from '../auth/cluster-roles.guard';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 import { Permissions } from '../auth/permissions.decorator';
+import { PermissionsGuard } from '../auth/permissions.guard';
 import { CurrentUser } from '../commons/decorators/current-user.decorator';
 import { AuthzedService } from '../libs/authzed/authzed.service';
-import { RoleEnum } from './enums/role-enum';
+import { Permission } from '../libs/authzed/enums/permission.enum';
+
 import { ICurrentUser } from './interfaces/current-user.interface';
 import { UserService } from './user.service';
 
@@ -33,8 +27,7 @@ export class UserController {
   ) {}
 
   @Post('test-superadmin')
-  @ClusterRoles(RoleEnum.SUPERADMIN)
-  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
+  @UseGuards(JwtAuthGuard)
   async testSuperAdmin(@CurrentUser() user: ICurrentUser) {
     return {
       statusCode: 200,
@@ -44,8 +37,7 @@ export class UserController {
   }
 
   @Post('test-cluster-admin')
-  @ClusterRoles(RoleEnum.CLUSTERADMIN)
-  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
+  @UseGuards(JwtAuthGuard)
   async testClusterAdmin(@CurrentUser() user: ICurrentUser) {
     return {
       statusCode: 200,
@@ -55,8 +47,7 @@ export class UserController {
   }
 
   @Post('test-vendor')
-  @ClusterRoles(RoleEnum.VENDOR)
-  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
+  @UseGuards(JwtAuthGuard)
   async testVendor(@CurrentUser() user: ICurrentUser) {
     return {
       statusCode: 200,
@@ -66,8 +57,7 @@ export class UserController {
   }
 
   @Post('test-operator')
-  @ClusterRoles(RoleEnum.OPERATOR)
-  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
+  @UseGuards(JwtAuthGuard)
   async testOperator(@CurrentUser() user: ICurrentUser) {
     return {
       statusCode: 200,
@@ -77,8 +67,7 @@ export class UserController {
   }
 
   @Post('test-nonprofit')
-  @ClusterRoles(RoleEnum.NONPROFIT)
-  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
+  @UseGuards(JwtAuthGuard)
   async testNonProfit(@CurrentUser() user: ICurrentUser) {
     return {
       statusCode: 200,
@@ -88,8 +77,7 @@ export class UserController {
   }
 
   @Post('test-donor')
-  @ClusterRoles(RoleEnum.DONOR)
-  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
+  @UseGuards(JwtAuthGuard)
   async testDonor(@CurrentUser() user: ICurrentUser) {
     return {
       statusCode: 200,
@@ -106,23 +94,21 @@ export class UserController {
     return user;
   }
 
-  @Permissions('permission_management')
+  @Permissions(Permission.PM)
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Get('authzed-tests/:safdsadf/:organizationId')
+  @Get('authzed-tests')
   async authzedTesting(@CurrentUser() user: ICurrentUser, @Body() body: any) {
     console.log('body', body);
     console.log('user', user);
   }
 
   @Get(':id')
-  // @SetMetadata('permission', ['user/profile', 'read'])
   @UseGuards(JwtAuthGuard)
   getOneUser(@Param('id') userId: string) {
     return this.userService.getOneUser({ _id: userId });
   }
 
   @Patch(':id')
-  // @SetMetadata('permission', ['user/update', 'write'])
   @UseGuards(JwtAuthGuard)
   async updateUser(
     @Param('id') id: string,
