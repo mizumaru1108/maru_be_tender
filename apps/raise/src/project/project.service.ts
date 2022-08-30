@@ -731,23 +731,30 @@ export class ProjectService {
   }
 
   async getAllProjectPublished(organizationId: string) {
-    this.logger.debug('Get project list ...');
     const ObjectId = require('mongoose').Types.ObjectId;
+    let data: any = {};
 
     const dataProject = await this.projectModel.aggregate([
       { $match: { organizationId: ObjectId(organizationId) } },
       {
+        $addFields: {
+          collectedAmount: { $toString: '$amountProgress' },
+          remainingAmount: { $toString: '$amountTarget' },
+          title: '$name',
+        },
+      },
+      {
         $project: {
           projectId: '$_id',
-          collectedAmount: '$amountProgress',
-          remainingAmount: '$amountTarget',
+          collectedAmount: 1,
+          remainingAmount: 1,
+          title: 1,
           coverImage: 1,
           image1: 1,
           image2: 1,
           image3: 1,
           createdAt: 1,
           updatedAt: 1,
-          title: 1,
           diameterSize: 1,
           hasAc: 1,
           hasClassroom: 1,
@@ -760,7 +767,8 @@ export class ProjectService {
       },
     ]);
 
-    return dataProject;
+    data.project = dataProject;
+    return data;
   }
 
   async getListAllByOperatorId(operatorId: string) {
