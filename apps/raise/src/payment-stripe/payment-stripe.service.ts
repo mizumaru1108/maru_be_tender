@@ -483,8 +483,8 @@ export class PaymentStripeService {
         paymentStatus = 'SUCCESS';
       }
 
-      //console.log('paymentIntentInfo=', data['data']['payment_intent']);
-      //const paymentIntent = data['data']['payment_intent'];
+      console.log('paymentIntentInfo=', data['data']['payment_intent']);
+      // const paymentIntent = data['data']['payment_intent'];
       const orderId = data['data']['payment_intent'];
       //get donation log id
       const paymentData = await this.paymentDataModel.findOne({
@@ -523,7 +523,9 @@ export class PaymentStripeService {
         {
           _id: donationId
         },
-        { _id: 0, campaignId: 1, currency: 2, amount: 3 },
+        {
+          _id: 0, campaignId: 1, currency: 1, amount: 1, donorUserId: 1
+        },
       );
 
       if (!getDonationLog) {
@@ -551,9 +553,11 @@ export class PaymentStripeService {
         };
       }
 
+      //console.log('Get donorId', donationId);
+
       // Get Donor Data
       const donor = await this.userModel.findOne(
-        { _id: donationId },
+        { _id: getDonationLog.donorUserId },
         {
           _id: 0,
           firstName: 1,
@@ -562,7 +566,7 @@ export class PaymentStripeService {
         },
       );
 
-      console.log('DONOR=>', donor);
+      //console.log('DONOR=>', donor);
 
       // Get Anonymous Data
       let anonymousData;
@@ -579,6 +583,9 @@ export class PaymentStripeService {
           },
         );
       }
+
+      console.log('Anonymous Data', anonymousData);
+
 
       let now: Date = new Date();
       if (paymentStatus == 'SUCCESS') {
@@ -647,6 +654,7 @@ export class PaymentStripeService {
               currency: getDonationLog.currency,
               amount: getDonationLog.amount,
             };
+
             if (donor) {
               this.emailService.sendMailWTemplate(
                 donor.email,
