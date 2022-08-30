@@ -63,7 +63,7 @@ export class ZakatService {
     private configService: ConfigService,
     @InjectModel(ZakatLog.name)
     private readonly zakatLogModel: Model<ZakatLogDocument>,
-  ) {}
+  ) { }
 
   async _getMetalPrice(carat: boolean, base: string, createdDate?: string) {
     const params = new URLSearchParams();
@@ -559,7 +559,7 @@ export class ZakatService {
       const getOrganization = await this.organizationModel.findOne({
         _id: paymentDto.organizationId,
       });
-      console.log('currency', getOrganization?.defaultCurrency);
+      console.log('currency', getOrganization?.defaultCurrency, 'payment DTO=>', paymentDto);
       if (!getOrganization) {
         txtMessage = `request rejected organizationId not found`;
         return {
@@ -647,7 +647,7 @@ export class ZakatService {
           donor = await this.donorModel.findOne({
             _id: paymentDto.donorId,
           });
-          
+
           if (!donor) {
             donor = await this.anonymousModel.findOne({
               _id: paymentDto.donorId,
@@ -674,10 +674,10 @@ export class ZakatService {
           // if (donor) donorName = `${donor.firstName} ${donor.lastName ?? ''}`;
         }
       }
-      
+
       // const paymentJson = JSON.parse(JSON.stringify(payment));
       const params = new URLSearchParams();
-      if (donor&&donor.email) {
+      if (donor && donor.email) {
         //const donorEmail = donor.email ? donor.email : 'anonymous@email.com';
         params.append('customer_email', donor.email);
         // params.append('customer', {'email': donor.email, name: donorName});
@@ -720,17 +720,17 @@ export class ZakatService {
 
       const ownerUserId = await this.userModel.findOne({
         _id: paymentDto.donorId,
-      },{ownerUserId: 1});
+      }, { ownerUserId: 1 });
 
-      console.log('OwnerUserId', ownerUserId);
-      
+      console.log('OwnerUserId=>', ownerUserId);
+
       //insert data to donation_log
       let objectIdDonation = new Types.ObjectId();
       let now: Date = new Date();
       const getDonationLog = await new this.donationLogModel({
         _id: objectIdDonation,
         nonprofitRealmId: ObjectId(paymentDto.organizationId),
-        donorUserId: isAnonymous ? '' : ownerUserId , //paymentDto.donorId,
+        donorUserId: isAnonymous ? '' : ownerUserId, //paymentDto.donorId,
         // donorName: donor ? `${donor.firstName} ${donor.lastName}` : null,
         // amount: payment.amount,
         amount: Number(amount),
@@ -790,8 +790,6 @@ export class ZakatService {
         );
       }
 
-      console.log('Get Log =>',getDonationLog);
-      
       const insertPaymentData = await new this.paymentDataModel({
         _id: objectIdPayment,
         donationId: objectIdDonation,

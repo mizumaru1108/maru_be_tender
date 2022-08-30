@@ -61,7 +61,7 @@ export class PaymentStripeService {
     @InjectModel(User.name)
     private readonly userModel: mongoose.Model<UserDocument>,
     private readonly emailService: EmailService,
-  ) {}
+  ) { }
 
   async stripeRequest(payment: PaymentRequestDto) {
     const tracer = trace.getTracer('tmra-raise');
@@ -82,7 +82,7 @@ export class PaymentStripeService {
       let currency = payment.currency;
 
       const ObjectId = require('mongoose').Types.ObjectId;
-      console.log(payment);
+      console.log('Log Stripe Reg=>', payment);
       if (
         !payment.organizationId ||
         !payment.campaignId ||
@@ -139,7 +139,7 @@ export class PaymentStripeService {
       } else if (!currency) {
         currency = getOrganization['defaultCurrency'];
       }
-      console.log('debug', payment.campaignId);
+      // console.log('debug', payment.campaignId);
       // if (payment.campaignId) {
       const getCampaign = await this.campaignModel
         .findOne({
@@ -147,7 +147,7 @@ export class PaymentStripeService {
         })
         .exec();
 
-      console.log('debug', getCampaign);
+      //console.log('debug', getCampaign);
       // let dataAmount = payment.amount * parseFloat(payment.quantity); // let's assume it will be multiple by 1 (price)
       if (!getCampaign) {
         txtMessage = `request rejected campaignId not found`;
@@ -164,8 +164,8 @@ export class PaymentStripeService {
         parseFloat(getCampaign.amountProgress.toString()) + payment.amount >
         parseFloat(getCampaign.amountTarget.toString())
       ) {
-        console.log(getCampaign.amountProgress.toString());
-        console.log(payment.amount.toString());
+        //console.log(getCampaign.amountProgress.toString());
+        //console.log(payment.amount.toString());
         return {
           statusCode: 400,
           headers: {
@@ -178,7 +178,7 @@ export class PaymentStripeService {
       }
       // }
 
-      console.log('debug', payment.organizationId);
+      //console.log('debug', payment.organizationId);
       const getSecretKey = await this.paymentGatewayModel.findOne(
         { organizationId: ObjectId(payment.organizationId) },
         { apiKey: 1, _id: 0 },
@@ -198,9 +198,9 @@ export class PaymentStripeService {
         };
       }
 
-      console.log(getSecretKey['apiKey']);
+      //console.log(getSecretKey['apiKey']);
       //let getUser = new UserModel();
-      console.log(payment.donorId);
+      //console.log(payment.donorId);
       if (payment.donorId) {
         // console.log('donorid');
         // console.log(payment.donorId);
@@ -281,7 +281,7 @@ export class PaymentStripeService {
       const amountStr = data['data']['amount_total'].toString();
       const amount = amountStr.substring(0, amountStr.length - 2);
 
-      console.log('amount unit', amount);
+      //console.log('amount unit', amount);
 
       //insert data to donation_log
       let objectIdDonation = new ObjectId();
@@ -348,7 +348,7 @@ export class PaymentStripeService {
         paymentStatus: 'OPEN',
       }).save();
 
-      console.log(insertPaymentData);
+      //console.log(insertPaymentData);
 
       if (!insertPaymentData) {
         txtMessage = 'payment data failed to save in mongodb';
@@ -363,8 +363,8 @@ export class PaymentStripeService {
         };
       }
 
-      console.log('debug', data);
-      console.log('debug', data['data']['id']);
+      //console.log('debug', data);
+      //console.log('debug', data['data']['id']);
       stripeCallbackUrl = data['data']['url'];
       txtMessage = `stripe request has been sent`;
 
@@ -425,7 +425,7 @@ export class PaymentStripeService {
         };
       }
 
-      console.debug('organizationId=', organizationId);
+      //console.debug('organizationId=', organizationId);
       const ObjectId = require('mongoose').Types.ObjectId;
       const getOrganization = await this.organizationModel.findOne({
         _id: ObjectId(organizationId),
@@ -511,15 +511,15 @@ export class PaymentStripeService {
       //   ? new ObjectId(orderId.responseMessage)
       //   : paymentData.donationId; //new mongoose.Types.ObjectId(paymentData.donationId);
 
-      console.log(
-        'valid object Id ?',
-        ObjectId.isValid(paymentData.donationId),
-      );
+      // console.log(
+      //   'valid object Id ?',
+      //   ObjectId.isValid(paymentData.donationId),
+      // );
 
       //console.log('Compare++',donationId, '====', paymentData.donationId);
-      
-       //get campaign Id
-       const getDonationLog = await this.donationLogModel.findOne(
+
+      //get campaign Id
+      const getDonationLog = await this.donationLogModel.findOne(
         {
           _id: donationId
         },
@@ -554,11 +554,16 @@ export class PaymentStripeService {
       // Get Donor Data
       const donor = await this.userModel.findOne(
         { _id: donationId },
-        { _id: 0, firstName: 1, lastName: 2, email: 3 },
+        {
+          _id: 0,
+          firstName: 1,
+          lastName: 2,
+          email: 3
+        },
       );
 
-      console.log('DONOR= ',donor);
-      
+      console.log('DONOR=>', donor);
+
       // Get Anonymous Data
       let anonymousData;
       if (!donor) {
@@ -580,10 +585,10 @@ export class PaymentStripeService {
 
         const updateDonationLog = await this.donationLogModel.updateOne(
           { _id: donationId },
-          { donationStatus: paymentStatus , updatedAt: now},
+          { donationStatus: paymentStatus, updatedAt: now },
         );
-  
-        console.log(`updateDonationLog=`, updateDonationLog);
+
+        //console.log(`updateDonationLog=`, updateDonationLog);
         if (!paymentData || !updateDonationLog) {
           return {
             statusCode: 520,
@@ -607,16 +612,19 @@ export class PaymentStripeService {
           organizationId: ObjectId(organizationId),
         });
 
+        console.log('orgs & Log Notif=>', notifSettings, '=>', getOrganization);
+
+
         if (getOrganization && notifSettings) {
           this.logger.debug(`notification settings ${notifSettings.id}`);
           const subject = `New Donation For ${getCampaign.title}`;
           const donorName = donor
             ? `${donor.firstname} ${donor.lastname}`
             : anonymousData
-            ? anonymousData.anonymous
-              ? 'anonymous'
-              : `${anonymousData.firstName} ${anonymousData.lastName}`
-            : 'anonymous';
+              ? anonymousData.anonymous
+                ? 'anonymous'
+                : `${anonymousData.firstName} ${anonymousData.lastName}`
+              : 'anonymous';
           if (notifSettings.newDonation) {
             const emailData = {
               // donor: 'Donor',
@@ -825,7 +833,7 @@ export class PaymentStripeService {
       const getOrganization = await this.organizationModel.findOne({
         _id: payment.organizationId,
       });
-      console.log('currency', getOrganization?.defaultCurrency);
+      //console.log('currency', getOrganization?.defaultCurrency);
       if (!getOrganization) {
         txtMessage = `request rejected organizationId not found`;
         return {
@@ -1300,10 +1308,10 @@ export class PaymentStripeService {
               const donorName = donor
                 ? `${donor.firstname} ${donor.lastname}`
                 : anonymousData
-                ? anonymousData.anonymous
-                  ? 'anonymous'
-                  : `${anonymousData.firstName} ${anonymousData.lastName}`
-                : 'anonymous';
+                  ? anonymousData.anonymous
+                    ? 'anonymous'
+                    : `${anonymousData.firstName} ${anonymousData.lastName}`
+                  : 'anonymous';
               if (notifSettings.newDonation) {
                 const emailData = {
                   // donor: 'Donor',
