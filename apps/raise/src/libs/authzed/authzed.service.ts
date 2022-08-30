@@ -58,13 +58,13 @@ export class AuthzedService {
    * @param refrenceId organizationId
    * @param subjectId userId
    * @param relationship relationship to create (manager/operator/vendor)
-   * @returns Promise<CheckPermissionResponse> 0(UNSPECIFIED), 1(NOPERMISSION), 2(HASPERMISSION)
+   * @returns {Promise<v1.Relationship>} Relationship created
    */
   async createRelationship(
     refrenceId: string,
     subjectId: string,
     relationship: AuthzedRelationship,
-  ) {
+  ): Promise<v1.Relationship> {
     const refrence: ObjectReference = {
       objectType: 'tmra_staging/organization',
       objectId: `${refrenceId}`,
