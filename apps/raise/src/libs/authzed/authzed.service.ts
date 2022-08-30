@@ -4,8 +4,10 @@ import { ConfigService } from '@nestjs/config';
 import {
   CheckPermissionResponse,
   ObjectReference,
+  RelationshipUpdate,
   SubjectReference,
 } from '@authzed/authzed-node/dist/src/v1';
+import { AuthzedRelationship } from './enums/relationship.enum';
 
 @Injectable()
 export class AuthzedService {
@@ -52,7 +54,62 @@ export class AuthzedService {
   }
 
   /**
-   * Checking permission
+   * Create Relationship Between Resource and Subject
+   * @param refrenceId organizationId
+   * @param subjectId userId
+   * @param relationship relationship to create (manager/operator/vendor)
+   * @returns Promise<CheckPermissionResponse> 0(UNSPECIFIED), 1(NOPERMISSION), 2(HASPERMISSION)
+   */
+  async createRelationship(
+    refrenceId: string,
+    subjectId: string,
+    relationship: AuthzedRelationship,
+  ) {
+    const refrence: ObjectReference = {
+      objectType: 'tmra_staging/organization',
+      objectId: `${refrenceId}`,
+    };
+
+    const subject: SubjectReference = {
+      object: {
+        objectType: 'tmra_staging/user',
+        objectId: `${subjectId}`,
+      },
+      optionalRelation: '',
+    };
+
+    const relationshipUpdate: RelationshipUpdate[] = [
+      {
+        operation: 2, // touch, as it says on library TOUCH will upsert the relationship, and will not error if it already exists.
+        relationship: {
+          resource: refrence,
+          subject: subject,
+          relation: relationship as string,
+        },
+      },
+    ];
+
+    const relationshipRequest: v1.WriteRelationshipsRequest = {
+      optionalPreconditions: [],
+      updates: relationshipUpdate,
+    };
+
+    // apply line above with async await / promise (reject and resolve)
+    const result = new Promise<v1.Relationship>((resolve, reject) => {
+      this.client.writeRelationships(
+        relationshipRequest,
+        (err: any, response: any) => {
+          if (err) reject(err);
+          resolve(response);
+        },
+      );
+    });
+    console.log(result);
+    return result;
+  }
+
+  /**
+   * Checking permissions
    * @param resource in this case organization
    * @param subject in this case userId
    * @param permission permission to check
@@ -63,21 +120,6 @@ export class AuthzedService {
     subject: SubjectReference,
     permission: string,
   ): Promise<CheckPermissionResponse> {
-    // ObjectReference Example
-    // const refrence: ObjectReference = {
-    //   objectType: 'tmra_staging/organization',
-    //   objectId: '61b4794cfe52d41f557f1acc',
-    // };
-
-    // SubjectReference Example
-    // const subject: SubjectReference = {
-    //   object: {
-    //     objectType: 'tmra_staging/user',
-    //     objectId: '213efb96-d2ae-4124-9dc8-79f33227b434',
-    //   },
-    //   optionalRelation: '',
-    // };
-
     const checkPermissionRequest = v1.CheckPermissionRequest.create({
       resource,
       subject,
