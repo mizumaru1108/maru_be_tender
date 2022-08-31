@@ -131,18 +131,33 @@ export class CampaignController {
    * Story Campaign Donor on Operator Dashboard
    * Ref: https://www.notion.so/hendyirawan/Campaign-Donor-on-Operator-Dashboard-307544af9290495c85964371e72810c1
    */
-  @ApiOperation({ summary: 'List all campaigns by organization ID' })
-  @Get('organization/:organizationId/:campaignid/donor-list')
+  @ApiOperation({ summary: 'Get list all donor on spesific campaign' })
+  @Get('organization/:organizationId/:campaignId/donor-list')
   async getCampaignDonorListOnOperatorDashboard(
     @Param() param: CampaignDonorOnOperatorDasboardParam,
     @Query() filter: CampaignDonorOnOperatorDasboardFilter,
-  ) {
-    this.logger.debug(`Get list all donor on campaign by organization ID`);
-    const result =
+  ): Promise<PaginatedResponse<CampaignDocument[]>> {
+    this.logger.debug(`Get list all donor on spesific campaign`);
+    const donateList =
       await this.campaignService.getCampaignDonorListOnOperatorDashboard(
         param,
         filter,
       );
+    const response = paginationHelper(
+      donateList.docs,
+      donateList.totalDocs,
+      donateList.limit,
+      donateList.page,
+      donateList.totalPages,
+      donateList.pagingCounter,
+      donateList.hasPrevPage,
+      donateList.hasNextPage,
+      donateList.prevPage,
+      donateList.nextPage,
+      HttpStatus.OK,
+      `Successfully get list of donor on camapaign ${param.campaignId}`,
+    );
+    return response;
   }
 
   @ApiOperation({ summary: 'List all campaigns by organization ID' })

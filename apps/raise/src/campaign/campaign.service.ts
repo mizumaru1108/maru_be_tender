@@ -543,6 +543,7 @@ export class CampaignService {
     param: CampaignDonorOnOperatorDasboardParam,
     filter: CampaignDonorOnOperatorDasboardFilter,
   ) {
+    const { page = 1, limit = 10 } = filter;
     const ObjectId = require('mongoose').Types.ObjectId;
     const aggregationQuery = this.campaignModel.aggregate([
       {
@@ -554,13 +555,13 @@ export class CampaignService {
       },
       {
         $addFields: {
-          parsedCampaignId: { $toString: '$_id' }, // type of campaignId is a string on foreign table so we need to convert it
+          campaignIdToString: { $toString: '$_id' }, // type of campaignId is a string on foreign table so we need to convert it
         },
       },
       {
         $lookup: {
           from: 'donationLog',
-          localField: 'parsedCampaignId',
+          localField: 'campaignIdToString',
           foreignField: 'campaignId',
           as: 'donateLog',
         },
@@ -575,7 +576,7 @@ export class CampaignService {
       {
         $lookup: {
           from: 'user',
-          localField: 'donateLog.userId',
+          localField: 'donateLog.donorId',
           foreignField: '_id',
           as: 'donationLog',
         },
@@ -591,7 +592,7 @@ export class CampaignService {
       {
         $addFields: {
           amount: {
-            $trunch: [{ $toDouble: '$donationLog.donation.amount' }, 2], // convert amount to double and round it to 2 decimal
+            $trunc: [{ $toDouble: '$donationLog.donation.amount' }, 2], // convert amount to double and round it to 2 decimal
           },
         },
       },
@@ -604,10 +605,21 @@ export class CampaignService {
           email: { $first: '$donationLog.email' }, // user email.
           donation: { $push: '$donationLog.donation' }, // all donations data of user on this campaign (success only)
           totalDonation: { $sum: '$amount' }, // total donation of user on this campaign.
-          donationCount: { $sum: 1 }, // donation count of user on this campaign.
+          donationCount: { $sum: 1 }, // donation count of user on this  campaign.
         },
       },
     ]);
+
+    const donateList =
+      await this.campaignAggregatePaginateModel.aggregatePaginate(
+        aggregationQuery,
+        {
+          page,
+          limit,
+        },
+      );
+
+    return donateList;
   }
 
   async vendorApply(createCampaignDto: CreateCampaignDto) {
