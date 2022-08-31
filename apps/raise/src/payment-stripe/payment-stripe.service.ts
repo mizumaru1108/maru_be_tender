@@ -108,7 +108,7 @@ export class PaymentStripeService {
         };
       }
 
-      if (!['GBP', 'SAR'].includes(currency)) {
+      if (!['GBP', 'SAR', 'USD'].includes(currency)) {
         txtMessage = 'Bad Request';
         return {
           statusCode: 400,
@@ -499,32 +499,13 @@ export class PaymentStripeService {
         };
       }
 
-      // console.log(`paymentData=`, paymentData);
-      // console.log('donationId=', paymentData.donationId);
-      // console.log('order id=>', new ObjectId(orderId.responseMessage));
-
-      //const isZakat = orderId.paymentDescription == 'ZAKAT' ? true : false;
-
-      //update payment status in donation_log
       let donationId = paymentData.donationId;
-      // let donationId = isZakat
-      //   ? new ObjectId(orderId.responseMessage)
-      //   : paymentData.donationId; //new mongoose.Types.ObjectId(paymentData.donationId);
-
-      // console.log(
-      //   'valid object Id ?',
-      //   ObjectId.isValid(paymentData.donationId),
-      // );
-
-      //console.log('Compare++',donationId, '====', paymentData.donationId);
-
-      //get campaign Id
       const getDonationLog = await this.donationLogModel.findOne(
         {
           _id: donationId
         },
         {
-          _id: 0, campaignId: 1, currency: 1, amount: 1, donorUserId: 1
+          _id: 1, campaignId: 1, currency: 1, amount: 1, donorUserId: 1
         },
       );
 
@@ -553,7 +534,7 @@ export class PaymentStripeService {
         };
       }
 
-      //console.log('Get donorId', donationId);
+      console.log('Get donorId', donationId);
 
       // Get Donor Data
       const donor = await this.userModel.findOne(
@@ -566,13 +547,14 @@ export class PaymentStripeService {
         },
       );
 
-      //console.log('DONOR=>', donor);
+      console.log('DONOR=>', donor);
 
       // Get Anonymous Data
       let anonymousData;
       if (!donor) {
         anonymousData = await this.anonymousModel.findOne(
-          { _id: donationId },
+          // { _id: new ObjectId(donationId) },
+          { donationLogId: getDonationLog._id },
           {
             _id: 0,
             isEmailChecklist: 1,
@@ -619,7 +601,7 @@ export class PaymentStripeService {
           organizationId: ObjectId(organizationId),
         });
 
-        console.log('orgs & Log Notif=>', notifSettings, '=>', getOrganization);
+        // console.log('orgs & Log Notif=>', notifSettings, '=>', getOrganization);
 
 
         if (getOrganization && notifSettings) {
@@ -825,7 +807,7 @@ export class PaymentStripeService {
         };
       }
 
-      if (!['GBP', 'SAR'].includes(currency)) {
+      if (!['GBP', 'SAR', 'USD'].includes(currency)) {
         txtMessage = 'Bad Request';
         return {
           statusCode: 400,
