@@ -25,6 +25,8 @@ import {
   CreateCampaignDto,
   ApproveCampaignDto,
 } from './dto';
+import { CampaignDonorOnOperatorDasboardFilter } from './dto/campaign-donor-on-operator-dashboard-filter.dto';
+import { CampaignDonorOnOperatorDasboardParam } from './dto/campaign-donor-on-operator-dashboard-param.dto';
 import { CampaignSetDeletedFlagDto } from './dto/capaign-set-flag-deleted';
 import { GetAllMypendingCampaignFromVendorIdRequest } from './dto/get-all-my-pending-campaign-from-vendor-id.request';
 import { UpdateCampaignDto } from './dto/update-campaign-dto';
@@ -125,15 +127,22 @@ export class CampaignController {
     return response;
   }
 
+  /**
+   * Story Campaign Donor on Operator Dashboard
+   * Ref: https://www.notion.so/hendyirawan/Campaign-Donor-on-Operator-Dashboard-307544af9290495c85964371e72810c1
+   */
   @ApiOperation({ summary: 'List all campaigns by organization ID' })
-  @Get('organization/:organizationId/campaign-donor-list')
-  async getAllCampaignDonorOnOperatorDashboard(
-    @Param('organizationId') organizationId: string,
+  @Get('organization/:organizationId/:campaignid/donor-list')
+  async getCampaignDonorListOnOperatorDashboard(
+    @Param() param: CampaignDonorOnOperatorDasboardParam,
+    @Query() filter: CampaignDonorOnOperatorDasboardFilter,
   ) {
     this.logger.debug(`Get list all donor on campaign by organization ID`);
-    return await this.campaignService.getAllCampaignDonorOnOperatorDashboard(
-      organizationId,
-    );
+    const result =
+      await this.campaignService.getCampaignDonorListOnOperatorDashboard(
+        param,
+        filter,
+      );
   }
 
   @ApiOperation({ summary: 'List all campaigns by organization ID' })

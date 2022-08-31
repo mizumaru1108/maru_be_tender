@@ -32,6 +32,8 @@ import { CreateCampaignDto } from './dto';
 import { UpdateCampaignDto } from './dto/update-campaign-dto';
 import { ApproveCampaignDto } from './dto/approve-campaign.dto';
 import { GetAllMypendingCampaignFromVendorIdRequest } from './dto/get-all-my-pending-campaign-from-vendor-id.request';
+import { CampaignDonorOnOperatorDasboardParam } from './dto/campaign-donor-on-operator-dashboard-param.dto';
+import { CampaignDonorOnOperatorDasboardFilter } from './dto/campaign-donor-on-operator-dashboard-filter.dto';
 // import { catchError } from 'rxjs';
 // import { ObjectId } from 'mongodb';
 @Injectable()
@@ -550,19 +552,75 @@ export class CampaignService {
     return campaignList;
   }
 
-  async getAllCampaignDonorOnOperatorDashboard(organizationId: string) {
+  async getCampaignDonorListOnOperatorDashboard(
+    param: CampaignDonorOnOperatorDasboardParam,
+    filter: CampaignDonorOnOperatorDasboardFilter,
+  ) {
     const ObjectId = require('mongoose').Types.ObjectId;
-    const campaignList = await this.campaignModel.aggregate([
+    const aggregationQuery = this.campaignModel.aggregate([
       {
         $match: {
-          organizationId: ObjectId(organizationId),
-          isDeleted: { $regex: 'n', $options: 'i' }, // hide deleted campaign
+          _id: ObjectId(param.campaignId), // get spesific campaign
+          organizationId: ObjectId(param.organizationId), // on spesific organization
+          isDeleted: { $regex: 'n', $options: 'i' }, // and hide deleted campaign
         },
-        // how to lookup ?, donationLog.campaignId type is string instead of ObjectId
+      },
+      {
+        $addFields: {
+          parsedCampaignId: { $toString: '$_id' }, // type of campaignId is a string on foreign table so we need to convert it
+        },
+      },
+      {
+        $lookup: {
+          from: 'donationLog',
+          localField: 'parsedCampaignId',
+          foreignField: 'campaignId',
+          as: 'donateLog',
+        },
+      },
+      { $unwind: { path: '$donateLog', preserveNullAndEmptyArrays: true } },
+      {
+        $match: {
+          'donateLog.type': 'campaign', // find donate log that is campaign type
+          'donateLog.donationStatus': 'success', // and status equal to success
+        },
+      },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'donateLog.userId',
+          foreignField: '_id',
+          as: 'donationLog',
+        },
+      },
+      { $unwind: { path: '$donationLog', preserveNullAndEmptyArrays: true } },
+      {
+        $addFields: { 'donationLog.donation': '$donateLog' }, // put the log of donation inside the user data (donationLog)
+      },
+      {
+        $group: { _id: '$_id', donationLog: { $push: '$donationLog' } }, // show only donationLog (user and it's donation, not containing campaign data).
+      },
+      { $unwind: { path: '$donationLog', preserveNullAndEmptyArrays: true } }, // unwind donationLog to show each user, and the donation
+      {
+        $addFields: {
+          amount: {
+            $trunch: [{ $toDouble: '$donationLog.donation.amount' }, 2], // convert amount to double and round it to 2 decimal
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$donationLog._id', // group by userId
+          firstname: { $first: '$donationLog.firstname' }, // user firstname.
+          lastname: { $first: '$donationLog.lastname' }, // user lastname.
+          type: { $first: '$donationLog.type' }, // user type (Role).
+          email: { $first: '$donationLog.email' }, // user email.
+          donation: { $push: '$donationLog.donation' }, // all donations data of user on this campaign (success only)
+          totalDonation: { $sum: '$amount' }, // total donation of user on this campaign.
+          donationCount: { $sum: 1 }, // donation count of user on this campaign.
+        },
       },
     ]);
-
-    return campaignList;
   }
 
   async vendorApply(createCampaignDto: CreateCampaignDto) {
