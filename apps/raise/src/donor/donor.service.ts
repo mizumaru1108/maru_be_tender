@@ -212,7 +212,7 @@ export class DonorService {
       throw new BadRequestException(`Item not found`);
     }
 
-    let projectId: Types.ObjectId| string = ""; 
+    let projectId: Types.ObjectId | string = '';
 
     if (item.projectId) {
       projectId = new Types.ObjectId(item.projectId);
@@ -263,8 +263,8 @@ export class DonorService {
       amount: parseFloat(item.defaultPrice!) * request.qty,
       createdAt: now,
       updatedAt: now,
-      projectId: projectId ? projectId as Types.ObjectId : '',
-      campaignId: "",
+      projectId: projectId ? (projectId as Types.ObjectId) : '',
+      campaignId: '',
       donorUserId: donorData?.ownerUserId || '',
       currency: pgData.defaultCurrency! as PaytabsCurrencyEnum,
       donationStatus: 'PENDING',
@@ -319,9 +319,9 @@ export class DonorService {
     if (!donationLog) {
       throw new BadRequestException(`Donation log not found`);
     }
-    
+
     let status: DonationStatus = DonationStatus.pending;
-    switch(request.payment_result.response_status){
+    switch (request.payment_result.response_status) {
       case PaytabsResponseStatus.A:
         status = DonationStatus.success;
         break;
@@ -339,20 +339,20 @@ export class DonorService {
         break;
       case PaytabsResponseStatus.V:
         status = DonationStatus.voided;
-        break;    
+        break;
     }
-    console.log("payment status",status);
-    
+    console.log('payment status', status);
+
     donationLog.donationStatus = status;
     donationLog.ipAddress = request.customer_details?.ip || '';
     donationLog.updatedAt = moment().toISOString();
 
-    console.log("updating donation log");
+    console.log('updating donation log');
     const updateDonationLog = await donationLog.save();
-    if(!updateDonationLog){
+    if (!updateDonationLog) {
       throw new Error('Donation log not updated correctly!');
     }
-    
+
     const paymentData = await this.paymentDataModel.findOne({
       orderId: request.tran_ref,
     });
@@ -361,38 +361,49 @@ export class DonorService {
     }
     paymentData.cardType = request.payment_info?.card_type || '';
     paymentData.cardScheme = request.payment_info?.card_scheme || '';
-    paymentData.paymentDescription = request.payment_info?.payment_description || '';
-    paymentData.expiryMonth = Number(request.payment_info?.expiryMonth) || undefined;
-    paymentData.expiryYear = Number(request.payment_info?.expiryYear) || undefined;
+    paymentData.paymentDescription =
+      request.payment_info?.payment_description || '';
+    paymentData.expiryMonth =
+      Number(request.payment_info?.expiryMonth) || undefined;
+    paymentData.expiryYear =
+      Number(request.payment_info?.expiryYear) || undefined;
     paymentData.responseStatus = request.payment_result?.response_status || '';
     paymentData.responseCode = request.payment_result?.response_code || '';
-    paymentData.responseMessage = request.payment_result?.response_message || '';
+    paymentData.responseMessage =
+      request.payment_result?.response_message || '';
     paymentData.cvvResult = request.payment_result?.cvv_result || '';
     paymentData.avsResult = request.payment_result?.avs_result || '';
-    paymentData.transactionTime = request.payment_result?.transaction_time || '';
+    paymentData.transactionTime =
+      request.payment_result?.transaction_time || '';
     paymentData.paymentStatus = request.payment_result?.response_message || '';
-    console.log("updating payment data");
+    console.log('updating payment data');
     const updatePaymentData = await paymentData.save();
-    if(!updatePaymentData){
+    if (!updatePaymentData) {
       throw new Error('Payment data not updated correctly!');
     }
 
-    const item = await this.itemModel.findOne({      
+    const item = await this.itemModel.findOne({
       _id: new Types.ObjectId(request.cart_id),
     });
     if (!item) {
       throw new BadRequestException(`Item not found`);
     }
-    if(request.payment_result.response_status === PaytabsResponseStatus.A){
-      if(item && item.totalNeed && Number(item.totalNeed) > 0 && donationLog && donationLog.purchaseQty){
+    if (request.payment_result.response_status === PaytabsResponseStatus.A) {
+      if (
+        item &&
+        item.totalNeed &&
+        Number(item.totalNeed) > 0 &&
+        donationLog &&
+        donationLog.purchaseQty
+      ) {
         let updatedQty = Number(item.totalNeed) - donationLog.purchaseQty;
         item.totalNeed = updatedQty.toString();
       }
     }
     item.updatedAt = moment().toISOString();
-    console.log("updating item stock");
-    const updateItem = await item.save();    
-    if(!updateItem){
+    console.log('updating item stock');
+    const updateItem = await item.save();
+    if (!updateItem) {
       throw new Error('Item not updated correctly!');
     }
 
@@ -403,9 +414,8 @@ export class DonorService {
     // if (!project) {
     //   throw new BadRequestException(`Project not found`);
     // }
-    // project.updatedAt = moment().toISOString();    
+    // project.updatedAt = moment().toISOString();
   }
-
 
   async getDonor(donorId: string) {
     this.logger.debug(`Get Donor ${donorId}...`);
@@ -720,6 +730,38 @@ export class DonorService {
     ]);
 
     return { totalDonation, totalFundDonation, programFund: campaignLogs };
+  }
+
+  async getHistoryAllSuccess(donorId: string) {
+    const ObjectId = require('mongoose').Types.ObjectId;
+    let data: any = {};
+
+    const dataDonor = await this.donorModel.findOne({
+      ownerUserId: donorId,
+    });
+
+    this.logger.debug('debug donor name', dataDonor);
+
+    const getData = await this.donationLogModel.aggregate([
+      {
+        $addFields: {
+          donationLogId: '$_id',
+          date: '$createdAt',
+        },
+      },
+      {
+        $match: {
+          donationStatus: 'success',
+          donorId: donorId,
+        },
+      },
+      { $sort: { _id: -1 } },
+    ]);
+
+    data.activities = getData;
+    data.activities.name = dataDonor?.firstName;
+
+    return data;
   }
 
   async getTotalDonationDonor(donorId: string, currency: string) {

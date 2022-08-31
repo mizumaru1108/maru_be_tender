@@ -70,6 +70,17 @@ export class DonorController {
     return await this.donorService.submitPayment(donorPaymentSubmitDto);
   }
 
+  @ApiOperation({ summary: 'Get list of success donation history by donorId' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of donation history sucessfully retrieved',
+  })
+  @Get(':donorId/history/getAllSuccess')
+  async getAllSuccessDonation(@Param('donorId') donorId: string) {
+    this.logger.debug('get success donation history ');
+    return await this.donorService.getHistoryAllSuccess(donorId);
+  }
+
   @ApiOperation({ summary: 'Create Donor Payment' })
   @ApiResponse({
     status: 201,
