@@ -38,14 +38,18 @@ export class PaymentStripeController {
     );
   }
 
+  @Post('/reqPayStripe')
+  async reqPayStripe(@Body() payment: PaymentRequestDto) {
+    return await this.paymentStripeService.reqPayStripe(payment);
+  }
+
+
   @Post('/payStripeWebHook')
-  async payStripWebHoo(
+  async payStripWebHook(
     @Body() payLoad: any,
     @Req() req: any
   ) {
-    const sig = req.headers['stripe-signature'];
-    console.log('Masuk WebHook', sig);
-    console.log('payload', payLoad);
+    return await this.paymentStripeService.payStripWebHook(payLoad);
   }
 
 }

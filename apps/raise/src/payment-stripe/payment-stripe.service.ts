@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import axios, { AxiosRequestConfig } from 'axios';
@@ -62,6 +62,7 @@ export class PaymentStripeService {
     private readonly userModel: mongoose.Model<UserDocument>,
     private readonly emailService: EmailService,
   ) { }
+
 
   async stripeRequest(payment: PaymentRequestDto) {
     const tracer = trace.getTracer('tmra-raise');
@@ -602,8 +603,6 @@ export class PaymentStripeService {
         });
 
         // console.log('orgs & Log Notif=>', notifSettings, '=>', getOrganization);
-
-
         if (getOrganization && notifSettings) {
           this.logger.debug(`notification settings ${notifSettings.id}`);
           const subject = `New Donation For ${getCampaign.title}`;
@@ -1447,6 +1446,429 @@ export class PaymentStripeService {
     } finally {
       // Every span must be ended or it will not be exported
       span.end();
+    }
+  }
+
+  async reqPayStripe(payment: PaymentRequestDto) {
+    const tracer = trace.getTracer('tmra-raise');
+    const span = tracer.startSpan('stripe-request', {
+      attributes: { 'donor.firstName': '-' },
+    });
+    try {
+      // Do some work here
+      this.logger.debug('payStripeRequest...');
+      let txtMessage = '';
+      let stripeCallbackUrl = '';
+      let isAnonymous = false;
+      let donor = null;
+      let currency = payment.currency;
+
+      const ObjectId = require('mongoose').Types.ObjectId;
+      // console.log('Log Stripe Reg=>', payment);
+      if (
+        !payment.organizationId ||
+        !payment.campaignId ||
+        !payment.donorId ||
+        !ObjectId.isValid(payment.campaignId) ||
+        !ObjectId.isValid(payment.organizationId) ||
+        !payment.success_url ||
+        !payment.cancel_url ||
+        !payment.price ||
+        // !payment.amount
+        !payment.quantity
+      ) {
+        throw new HttpException(`Bad Request`, HttpStatus.BAD_REQUEST);
+      }
+
+      if (!['GBP', 'SAR', 'USD'].includes(currency)) {
+        throw new HttpException(
+          `request rejected organizationId not found`,
+          HttpStatus.BAD_REQUEST);
+      }
+
+      const getOrganization = await this.organizationModel.findOne({
+        _id: payment.organizationId,
+      });
+      console.log('currency', getOrganization?.defaultCurrency);
+      if (!getOrganization) {
+        throw new HttpException(
+          `request rejected organizationId not found`,
+          HttpStatus.NOT_FOUND);
+      } else if (!currency) {
+        currency = getOrganization['defaultCurrency'];
+      }
+
+      const getCampaign = await this.campaignModel
+        .findOne({
+          _id: payment.campaignId,
+        })
+        .exec();
+
+      if (!getCampaign) {
+        throw new HttpException(
+          `request rejected campaignId not found`,
+          HttpStatus.NOT_FOUND);
+      } else if (
+        parseFloat(getCampaign.amountProgress.toString()) + payment.amount >
+        parseFloat(getCampaign.amountTarget.toString())
+      ) {
+        throw new HttpException(
+          `Amount is larger than the limit of the target ${getCampaign.amountTarget}`,
+          HttpStatus.BAD_REQUEST);
+      }
+
+      //console.log('debug', payment.organizationId);
+      const getSecretKey = await this.paymentGatewayModel.findOne(
+        { organizationId: ObjectId(payment.organizationId) },
+        { apiKey: 1, _id: 0 },
+      );
+
+      if (!getSecretKey) {
+        throw new NotFoundException(`organization can not use Stripe Payment Gateway`);
+      }
+
+      if (payment.donorId) {
+        if (!ObjectId.isValid(payment.donorId)) {
+          donor = await this.userModel.findOne({
+            _id: payment.donorId,
+          });
+        } else {
+          donor = await this.donorModel.findOne({
+            _id: payment.donorId,
+          });
+
+          if (!donor) {
+            donor = await this.anonymousModel.findOne({
+              _id: payment.donorId,
+            });
+            if (!donor) {
+              throw new NotFoundException(`user not found,  donation service is not available`);
+            } else { isAnonymous = true; }
+          }
+          span.setAttribute('donor.firstName', donor?.firstName ?? '');
+        }
+      }
+
+      const params = new URLSearchParams();
+      if (donor) {
+        params.append('customer_email', donor.email);
+      }
+      params.append('success_url', payment.success_url);
+      params.append('cancel_url', payment.cancel_url);
+      params.append('line_items[0][price]', payment.price);
+      params.append('line_items[0][quantity]', payment.quantity);
+      params.append('mode', 'payment');
+      params.append('submit_type', 'donate'); //will enable button with label "donate"
+      console.log(params);
+      const options: AxiosRequestConfig<any> = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: 'Bearer ' + getSecretKey['apiKey'] + '',
+        },
+        params,
+        url: 'https://api.stripe.com/v1/checkout/sessions',
+      };
+
+      const data = await axios(options);
+      // console.log('Log Data =>', data);
+      // console.log('Log Id ==>', data['data']['id']);
+      // console.log('Log Currency =>', data['data']['currency']);
+      // console.log('Log Expired =>', data['data']['expires_at']);
+      // console.log('Log Data payIntent =>', data['data']['payment_intent']);
+      if (!data) {
+        throw new HttpException('Gateway Timeout or Stripe API down', HttpStatus.GATEWAY_TIMEOUT);
+      }
+
+      const amountStr = data['data']['amount_total'].toString();
+      const amount = amountStr.substring(0, amountStr.length - 2);
+
+      const cerrencyPayment = data['data']['currency'];
+      switch (cerrencyPayment) {
+        case 'usd':
+          currency = 'USD'
+          break;
+        case 'sar':
+          currency = 'SAR'
+          break;
+        default:
+          currency = 'GBP'
+          break;
+      }
+
+      //insert data to donation_log
+      let objectIdDonation = new ObjectId();
+      let now: Date = new Date();
+      const getDonationLog = await new this.donationLogModel({
+        _id: objectIdDonation,
+        nonprofitRealmId: ObjectId(payment.organizationId),
+        donorUserId: isAnonymous ? '' : payment.donorId,
+        amount: Number(amount),
+        transactionId: data['data']['payment_intent'],
+        createdAt: now,
+        updatedAt: now,
+        campaignId: ObjectId(payment.campaignId),
+        currency: currency,
+        donationStatus: 'PENDING',
+      }).save();
+
+      if (!getDonationLog) {
+        throw new BadRequestException(`donation failed to save in mongodb`);
+      }
+
+      //insert data to paymentData
+      let objectIdPayment = new ObjectId();
+      if (isAnonymous) {
+        await this.anonymousModel.findOneAndUpdate(
+          { _id: payment.donorId },
+          { donationLogId: objectIdDonation },
+        );
+      }
+      const insertPaymentData = await new this.paymentDataModel({
+        _id: objectIdPayment,
+        donationId: objectIdDonation,
+        merchantId: '',
+        payerId: '',
+        orderId: data.data['payment_intent'], //payment_intent ID
+        cardType: '',
+        cardScheme: '',
+        paymentDescription: '',
+        expiryMonth: '',
+        expiryYear: '',
+        responseStatus: '',
+        responseCode: '',
+        responseMessage: '',
+        cvvResult: '',
+        avsResult: '',
+        transactionTime: '',
+        paymentStatus: 'OPEN',
+      }).save();
+
+
+      if (!insertPaymentData) {
+        throw new BadRequestException(`payment data failed to save in mongodb`);
+      }
+
+      stripeCallbackUrl = data['data']['url'];
+      txtMessage = `stripe request has been sent`;
+
+      return {
+        statusCode: 200,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+        stripeResponse: data['data'],
+        message: txtMessage,
+      };
+    } catch (err) {
+      // When we catch an error, we want to show that an error occurred
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+        message: err.message,
+      });
+      throw err;
+    } finally {
+      // Every span must be ended or it will not be exported
+      span.end();
+    }
+  }
+
+  async payStripWebHook(payLoad: any) {
+    const payment_status = payLoad.data.object.payment_status;
+    const transactionId = payLoad.data.object.payment_intent;
+    const status = payLoad.data.object.status;
+    let now: Date = new Date();
+    if (payment_status == 'paid') {
+      const getDonationLog = await this.donationLogModel.findOne(
+        { transactionId: transactionId },
+        { _id: 1, campaignId: 1, currency: 1, amount: 1, donorUserId: 1, nonprofitRealmId: 1 },
+      );
+      if (!getDonationLog) {
+        throw new HttpException(
+          `Donation Log not found`,
+          HttpStatus.NOT_FOUND);
+      }
+
+      const { _id, campaignId, donorUserId, nonprofitRealmId } = getDonationLog;
+
+      const getCampaign = await this.campaignModel.findOne(
+        { _id: campaignId },
+        { _id: 0, amountProgress: 1, amountTarget: 1, title: 1 },
+      );
+      if (!getCampaign) {
+        throw new HttpException(
+          `Campaign not found`,
+          HttpStatus.NOT_FOUND);
+      }
+
+      const donor = await this.userModel.findOne(
+        { _id: donorUserId }
+      );
+      // Get Anonymous Data
+      let anonymousData;
+      if (!donor) {
+        anonymousData = await this.anonymousModel.findOne(
+          { donationLogId: _id },
+          {
+            _id: 0,
+            isEmailChecklist: 1,
+            anonymous: 1,
+            email: 1,
+            firstName: 1,
+            lastName: 1,
+          },
+        );
+      }
+
+      const updateDonationLog = await this.donationLogModel.updateOne(
+        { _id: _id },
+        { donationStatus: 'SUCCESS', updatedAt: now },
+      );
+      if (!updateDonationLog) {
+        throw new BadRequestException(`donation failed to save in mongodb`);
+      }
+
+      //update  amountProgress with current donation amount
+      const amountStr = payLoad.data.object.amount_total.toString();
+      console.log('Amount', amountStr);
+
+      const lastAmount = (
+        Number(getCampaign.amountProgress) +
+        Number(amountStr.substring(0, amountStr.length - 2))
+      ).toString();
+
+      const notifSettings = await this.notifSettingsModel.findOne({
+        organizationId: nonprofitRealmId,
+      });
+      const getOrganization = await this.organizationModel.findOne({
+        _id: nonprofitRealmId,
+      });
+
+      if (getOrganization && notifSettings) {
+        this.logger.debug(`notification settings ${notifSettings.id}`);
+        const subject = `New Donation For ${getCampaign.title}`;
+        const donorName = donor
+          ? `${donor.firstname} ${donor.lastname}`
+          : anonymousData
+            ? anonymousData.anonymous
+              ? 'anonymous'
+              : `${anonymousData.firstName} ${anonymousData.lastName}`
+            : 'anonymous';
+        if (notifSettings.newDonation) {
+          const emailData = {
+            // donor: 'Donor',
+            donor: donorName,
+            title: getCampaign.title,
+            currency: getDonationLog.currency,
+            amount: getDonationLog.amount,
+          };
+          this.emailService.sendMailWTemplate(
+            getOrganization.contactEmail,
+            subject,
+            'org/new_donation',
+            emailData,
+            //  'hello@tmra.io', // optional, you can delete it, when new identity is provided, we can use other identity ex: ommar.net
+            getOrganization.contactEmail,
+          );
+          const emailDonor = {
+            donor: donorName,
+            title: getCampaign.title,
+            currency: getDonationLog.currency,
+            amount: getDonationLog.amount,
+          };
+
+          if (donor) {
+            this.emailService.sendMailWTemplate(
+              donor.email,
+              subject,
+              'org/new_donation',
+              emailDonor,
+              getOrganization.contactEmail,
+              //'hello@tmra.io', // optional, you can delete it, when new identity is provided, we can use other identity ex: ommar.net
+            );
+          }
+          if (anonymousData) {
+            if (anonymousData.isEmailChecklist || !anonymousData.anonymous) {
+              this.emailService.sendMailWTemplate(
+                anonymousData.email,
+                subject,
+                'org/new_donation',
+                emailDonor,
+                getOrganization.contactEmail,
+                //'hello@tmra.io', // optional, you can delete it, when new identity is provided, we can use other identity ex: ommar.net
+              );
+            }
+          }
+        }
+      } else {
+        this.logger.debug(`notification settings not found`);
+      }
+
+      const updateCampaign = await this.campaignModel.updateOne(
+        { _id: getDonationLog.campaignId },
+        {
+          amountProgress: Number(lastAmount),
+          updatedAt: now,
+        },
+      );
+
+      if (!updateCampaign) {
+        throw new BadRequestException(`update campaign failed to save in mongodb`);
+      } else if (Number(getCampaign.amountTarget) == Number(lastAmount)) {
+        await this.campaignModel.updateOne(
+          { _id: campaignId },
+          {
+            isFinished: 'Y',
+          },
+        );
+
+        this.notificationsModel.create({
+          organizationId: nonprofitRealmId,
+          type: 'general',
+          createdAt: new Date(),
+          title: 'Campaign is completed',
+          body: `Alhamdulillah, amount target of the campaign ${getCampaign.title} is completed...`,
+          icon: 'info',
+          markAsRead: false,
+        });
+
+        if (getOrganization && notifSettings) {
+          this.logger.debug(`notification settings ${notifSettings.id}`);
+          if (notifSettings.completeDonation) {
+            const subject = 'Complete Donation';
+            const emailData = {
+              campaignId: getCampaign.id,
+              campaignName: getCampaign.title,
+            };
+            this.emailService.sendMailWTemplate(
+              getOrganization.contactEmail,
+              subject,
+              'org/donation_complete',
+              emailData,
+              'hello@tmra.io', // optional, you can delete it, when new identity is provided, we can use other identity ex: ommar.net
+            );
+          }
+        } else {
+          this.logger.debug(`notification settings not found`);
+        }
+      }
+    }
+
+    if (status == 'expired') {
+      const updateDonationLog = await this.donationLogModel.updateOne(
+        { transactionId: transactionId },
+        { donationStatus: 'FAILED', updatedAt: now },
+      );
+      if (!updateDonationLog) {
+        throw new BadRequestException(`donation failed to save in mongodb`);
+      }
+      return {
+        statusCode: 200,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+        message: 'donation pay expired',
+      };
     }
   }
 }
