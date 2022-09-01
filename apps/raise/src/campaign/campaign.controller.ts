@@ -131,6 +131,7 @@ export class CampaignController {
    * Story Campaign Donor on Operator Dashboard
    * Ref: https://www.notion.so/hendyirawan/Campaign-Donor-on-Operator-Dashboard-307544af9290495c85964371e72810c1
    */
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get list all donor on spesific campaign' })
   @Get('organization/:organizationId/:campaignId/donor-list')
   async getCampaignDonorListOnOperatorDashboard(

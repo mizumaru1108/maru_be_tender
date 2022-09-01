@@ -9,12 +9,26 @@ export class CampaignDonorOnOperatorDasboardFilter extends BaseFilterRequest {
   @IsNotEmpty()
   @IsNumber()
   @Type(() => Number)
-  donationCount: number;
+  minDonationCount: number;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsNotEmpty()
   @IsNumber()
   @Type(() => Number)
-  totalDonation: number;
+  maxDonationCount: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsNumber()
+  @Type(() => Number)
+  minTotalDonation: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsNumber()
+  @Type(() => Number)
+  maxTotalDonation: number;
 }

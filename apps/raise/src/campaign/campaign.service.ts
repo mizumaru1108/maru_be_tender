@@ -11,6 +11,7 @@ import dayjs from 'dayjs';
 import {
   AggregatePaginateModel,
   AggregatePaginateResult,
+  FilterQuery,
   Model,
   Types,
 } from 'mongoose';
@@ -34,6 +35,7 @@ import { ApproveCampaignDto } from './dto/approve-campaign.dto';
 import { GetAllMypendingCampaignFromVendorIdRequest } from './dto/get-all-my-pending-campaign-from-vendor-id.request';
 import { CampaignDonorOnOperatorDasboardParam } from './dto/campaign-donor-on-operator-dashboard-param.dto';
 import { CampaignDonorOnOperatorDasboardFilter } from './dto/campaign-donor-on-operator-dashboard-filter.dto';
+import { PaginatedResponse } from '../commons/dtos/paginated-response.dto';
 // import { catchError } from 'rxjs';
 // import { ObjectId } from 'mongodb';
 @Injectable()
@@ -542,8 +544,38 @@ export class CampaignService {
   async getCampaignDonorListOnOperatorDashboard(
     param: CampaignDonorOnOperatorDasboardParam,
     filter: CampaignDonorOnOperatorDasboardFilter,
-  ) {
-    const { page = 1, limit = 10 } = filter;
+  ): Promise<AggregatePaginateResult<CampaignDocument>> {
+    const {
+      page = 1,
+      limit = 10,
+      minDonationCount,
+      maxDonationCount,
+      minTotalDonation,
+      maxTotalDonation,
+    } = filter;
+
+    let query: FilterQuery<any> = {};
+    if (
+      maxDonationCount < minDonationCount ||
+      maxTotalDonation < minTotalDonation
+    ) {
+      throw new BadRequestException(
+        'Max filter value must be greater than min filter value',
+      );
+    }
+    if (minDonationCount) {
+      query.donationCount = { $gte: minDonationCount };
+    }
+    if (maxDonationCount) {
+      query.donationCount = { $lte: maxDonationCount };
+    }
+    if (minTotalDonation) {
+      query.totalDonation = { $gte: minTotalDonation };
+    }
+    if (maxTotalDonation) {
+      query.totalDonation = { $lte: maxTotalDonation };
+    }
+
     const ObjectId = require('mongoose').Types.ObjectId;
     const aggregationQuery = this.campaignModel.aggregate([
       {
@@ -606,6 +638,11 @@ export class CampaignService {
           donation: { $push: '$donationLog.donation' }, // all donations data of user on this campaign (success only)
           totalDonation: { $sum: '$amount' }, // total donation of user on this campaign.
           donationCount: { $sum: 1 }, // donation count of user on this  campaign.
+        },
+      },
+      {
+        $match: {
+          ...query, // filter by donation count and total donation
         },
       },
     ]);
