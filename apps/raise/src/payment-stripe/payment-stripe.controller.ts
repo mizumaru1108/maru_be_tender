@@ -1,11 +1,11 @@
-import { Controller, Body, Get, Post, Query } from '@nestjs/common';
+import { Controller, Body, Get, Post, Query, Req } from '@nestjs/common';
 import { PaymentRequestCartDto } from './dto';
 import { PaymentRequestDto } from './payment-stripe.dto';
 import { PaymentStripeService } from './payment-stripe.service';
 
 @Controller('stripe')
 export class PaymentStripeController {
-  constructor(private readonly paymentStripeService: PaymentStripeService) {}
+  constructor(private readonly paymentStripeService: PaymentStripeService) { }
 
   @Post('/request')
   async request(@Body() payment: PaymentRequestDto) {
@@ -37,4 +37,15 @@ export class PaymentStripeController {
       organizationId,
     );
   }
+
+  @Post('/payStripeWebHook')
+  async payStripWebHoo(
+    @Body() payLoad: any,
+    @Req() req: any
+  ) {
+    const sig = req.headers['stripe-signature'];
+    console.log('Masuk WebHook', sig);
+    console.log('payload', payLoad);
+  }
+
 }

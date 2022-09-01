@@ -2,6 +2,8 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { DonationType } from '../enum/donation-type.enum';
 import { DonationStatus } from '../enum/donation-status.enum';
+import paginate from 'mongoose-paginate-v2';
+import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
 export type DonationLogDocument = DonationLog & Document;
 
@@ -56,4 +58,6 @@ export class DonationLog {
   updatedAt: string;
 }
 
-export const DonationLogSchema = SchemaFactory.createForClass(DonationLog);
+export const DonationLogSchema = SchemaFactory.createForClass(DonationLog)
+  .plugin(paginate)
+  .plugin(aggregatePaginate);
