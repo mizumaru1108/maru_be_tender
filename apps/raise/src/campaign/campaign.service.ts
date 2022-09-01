@@ -781,6 +781,7 @@ export class CampaignService {
         $match: {
           organizationId: ObjectId(organizationId),
           isFinished: { $exists: true },
+          isDeleted: { $regex: 'n', $options: 'i' }, // hide deleted campaign
         },
       },
       {
