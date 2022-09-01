@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt.guard';
+import { ValidateObjectId } from '../commons/decorators/validate-object-id.decorator';
 
 import { BaseResponse } from '../commons/dtos/base-response';
 import { PaginatedResponse } from '../commons/dtos/paginated-response.dto';
@@ -29,6 +30,8 @@ import { CampaignDonorOnOperatorDasboardFilter } from './dto/campaign-donor-on-o
 import { CampaignDonorOnOperatorDasboardParam } from './dto/campaign-donor-on-operator-dashboard-param.dto';
 import { CampaignSetDeletedFlagDto } from './dto/capaign-set-flag-deleted';
 import { GetAllMypendingCampaignFromVendorIdRequest } from './dto/get-all-my-pending-campaign-from-vendor-id.request';
+import { GetAllNewCampaignFilter } from './dto/get-all-new-campaign-filter.dto';
+import { GetAllNewCampaignParams } from './dto/get-all-new-campaign-params.dto';
 import { UpdateCampaignDto } from './dto/update-campaign-dto';
 
 @ApiTags('campaign')
@@ -197,6 +200,43 @@ export class CampaignController {
   async getAllNewCampaign(@Param('organizationId') organizationId: string) {
     this.logger.debug(`Get list all new campaign created by all operator`);
     return await this.campaignService.getAllNewCampaign(organizationId);
+  }
+
+  /**
+   * Simply refactor from getListAllNew (apply pagination and filter)
+   */
+  @ApiOperation({
+    summary: 'Successfully get list of new campaign on organization',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Get list of new campaign on organization.',
+  })
+  @Get('organization/:organizationId/getListAllNewPaginated')
+  async getAllNewCampaignPaginated(
+    @Param() params: GetAllNewCampaignParams,
+    @Query() filter: GetAllNewCampaignFilter,
+  ): Promise<PaginatedResponse<CampaignDocument[]>> {
+    this.logger.debug(`Get list all new campaign created by all operator`);
+    const newCampaigns = await this.campaignService.getAllNewCampaignPaginated(
+      params.organizationId,
+      filter,
+    );
+    const response = paginationHelper(
+      newCampaigns.docs,
+      newCampaigns.totalDocs,
+      newCampaigns.limit,
+      newCampaigns.page,
+      newCampaigns.totalPages,
+      newCampaigns.pagingCounter,
+      newCampaigns.hasPrevPage,
+      newCampaigns.hasNextPage,
+      newCampaigns.prevPage,
+      newCampaigns.nextPage,
+      HttpStatus.OK,
+      `Successfully get list of new campaign on organization ${params.organizationId}`,
+    );
+    return response;
   }
 
   @ApiOperation({

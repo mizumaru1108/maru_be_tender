@@ -13,6 +13,7 @@ import {
   AggregatePaginateResult,
   FilterQuery,
   Model,
+  SortOrder,
   Types,
 } from 'mongoose';
 import slugify from 'slugify';
@@ -36,6 +37,8 @@ import { GetAllMypendingCampaignFromVendorIdRequest } from './dto/get-all-my-pen
 import { CampaignDonorOnOperatorDasboardParam } from './dto/campaign-donor-on-operator-dashboard-param.dto';
 import { CampaignDonorOnOperatorDasboardFilter } from './dto/campaign-donor-on-operator-dashboard-filter.dto';
 import { PaginatedResponse } from '../commons/dtos/paginated-response.dto';
+import { GetAllNewCampaignFilter } from './dto/get-all-new-campaign-filter.dto';
+import { CampaignSortByEnum } from './enums/campaign-sortby-enum';
 // import { catchError } from 'rxjs';
 // import { ObjectId } from 'mongodb';
 @Injectable()
@@ -824,6 +827,118 @@ export class CampaignService {
     ]);
 
     return data;
+  }
+
+  async getAllNewCampaignPaginated(
+    organizationId: string,
+    filter: GetAllNewCampaignFilter,
+  ) {
+    const { page, limit, isFinished, type, sortBy } = filter;
+    const query: FilterQuery<CampaignDocument> = {};
+    if (isFinished) {
+      query.isFinished = { $regex: isFinished, $options: 'i' };
+    }
+    if (type) {
+      query.campaignType = { $regex: type, $options: 'i' };
+    }
+    // default type of sort in mongodb
+    let sort: { [key: string]: SortOrder } = {};
+    if (sortBy) {
+      if (sortBy === CampaignSortByEnum.NEWEST) {
+        sort = { createdAt: -1 };
+      }
+      if (sortBy === CampaignSortByEnum.OLDEST) {
+        sort = { createdAt: 1 };
+      }
+      if (sortBy === CampaignSortByEnum.TRANDING) {
+        // TODO: filter sort by tranding
+        sort = { createdAt: -1 }; // replace with tanding later on
+      }
+    } else {
+      sort = { createdAt: -1 };
+    }
+
+    const aggregateQuerry = this.campaignModel.aggregate([
+      {
+        $match: {
+          organizationId: new Types.ObjectId(organizationId),
+          isFinished: { $exists: true }, // has isFinished field
+          isDeleted: { $regex: 'n', $options: 'i' }, // hide deleted campaign
+          ...query,
+        },
+      },
+      {
+        $lookup: {
+          from: 'campaignVendorLog',
+          localField: '_id',
+          foreignField: 'campaignId',
+          as: 'campaignLog',
+        },
+      },
+      { $unwind: { path: '$campaignLog', preserveNullAndEmptyArrays: true } },
+      // add this field(fix the amount of collected,targeted, and remaining amount, it was null before)
+      {
+        $addFields: {
+          collectedAmount: {
+            $toDouble: { $trunc: ['$amountProgress', 2] },
+          },
+          targetedAmount: {
+            $toDouble: { $trunc: ['$amountTarget', 2] },
+          },
+          remainingAmount: {
+            $toDouble: {
+              $subtract: [
+                { $toDouble: { $trunc: ['$amountTarget', 2] } },
+                { $toDouble: { $trunc: ['$amountProgress', 2] } },
+              ],
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          title: { $first: '$campaignName' },
+          type: { $first: '$campaignType' },
+          condition: { $first: '$isFinished' },
+          status: { $first: '$campaignLog.status' },
+          description: { $first: '$description' },
+          collectedAmount: { $first: '$collectedAmount' },
+          targetedAmount: { $first: '$targetedAmount' },
+          remainingAmount: { $first: '$remainingAmount' },
+          coverImage: { $first: '$coverImage' },
+          createdAt: { $first: '$createdAt' },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          type: 1,
+          condition: 1,
+          status: 1,
+          description: 1,
+          collectedAmount: 1,
+          targetedAmount: 1,
+          remainingAmount: 1,
+          coverImage: 1,
+          createdAt: 1,
+        },
+      },
+      { $match: { status: 'new' } },
+    ]);
+
+    const campaignList =
+      await this.campaignAggregatePaginateModel.aggregatePaginate(
+        aggregateQuerry,
+        {
+          page,
+          limit,
+          sort,
+        },
+      );
+
+    return campaignList;
   }
 
   async getAllApprovedCampaign(organizationId: string, vendorId: string) {
