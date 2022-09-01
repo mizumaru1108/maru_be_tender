@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { AggregatePaginateModel, AggregatePaginateResult, Model, Types } from 'mongoose';
 import { rootLogger } from '../logger';
 import { FusionAuthClient } from '@fusionauth/typescript-client';
 import { ConfigService } from '@nestjs/config';
@@ -55,7 +55,7 @@ import {
   EditNonProfitAppearanceNavigationDto,
 } from './dto/nonprofit_appearance_navigation.dto';
 
-import { FilterDonorDashboardDto } from './dto';
+import { DonorsFilterDto, FilterDonorDashboardDto } from './dto';
 import { FilterQueryDonorDashboard } from './enums';
 import { EmailService } from '../libs/email/email.service';
 
@@ -88,7 +88,9 @@ export class OrganizationService {
     @InjectModel(AppearancePage.name)
     private appearancePageModel: Model<AppearancePageDocument>,
     private readonly emailService: EmailService,
-  ) {}
+    @InjectModel(DonationLogs.name)
+    private campaignAggregatePaginateModel: AggregatePaginateModel<DonationLogDocument>,
+  ) { }
 
   async findAll() {
     this.logger.debug('findAll...');
@@ -396,6 +398,154 @@ export class OrganizationService {
         },
       },
     ]);
+  }
+  async getDonorsList(filter: DonorsFilterDto)
+    : Promise<AggregatePaginateResult<DonationLogDocument>> {
+    this.logger.debug(`getDonorsList organizationId=${filter}`);
+    const { limit = 10, page = 1 } = filter;
+
+    let sortData = {};
+    sortData = {
+      donorId: filter.donor == 'asc' ? 1 : -1
+    };
+    if (filter.donorName) {
+      sortData = {
+        firstName: filter.donorName == 'asc' ? 1 : -1,
+        lastName: filter.donorName == 'asc' ? 1 : -1
+      };
+    }
+    if (filter.email) {
+      sortData = {
+        email: filter.email == 'asc' ? 1 : -1
+      };
+    }
+    if (filter.country) {
+      sortData = {
+        country: filter.country == 'asc' ? 1 : -1
+      };
+    }
+    if (filter.phoneNumber) {
+      sortData = {
+        mobile: filter.phoneNumber == 'asc' ? 1 : -1
+      };
+    }
+    if (filter.amount) {
+      sortData = {
+        totalAmount: filter.amount == 'asc' ? 1 : -1
+      };
+    }
+    if (filter.transactionDate) {
+      sortData = {
+        createdAt: filter.transactionDate == 'asc' ? 1 : -1
+      };
+    }
+    if (filter.email) {
+      sortData = {
+        email: filter.email == 'asc' ? 1 : -1
+      };
+    }
+
+    const aggregateQuerry = this.donationLogModel.aggregate([
+      {
+        $match: {
+          nonprofitRealmId: new Types.ObjectId(filter.organizationId),
+          donationStatus: 'SUCCESS',
+          donorUserId: { $ne: null },
+        },
+      },
+      {
+        $lookup: {
+          from: 'donor',
+          localField: 'donorUserId',
+          foreignField: 'ownerUserId',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
+        $lookup: {
+          from: 'anonymous',
+          localField: '_id',
+          foreignField: 'donationLogId',
+          as: 'user_anonymous',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user_anonymous',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: {
+          userId: {
+            $cond: [
+              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              '$user_anonymous._id',
+              '$user._id',
+            ],
+          },
+          firstName: {
+            $cond: [
+              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              '$user_anonymous.firstName',
+              '$user.firstName',
+            ],
+          },
+          lastName: {
+            $cond: [
+              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              '$user_anonymous.lastName',
+              '$user.lastName',
+            ],
+          },
+          email: {
+            $cond: [
+              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              '$user_anonymous.email',
+              '$user.email',
+            ],
+          },
+          createdAt: {
+            $cond: [
+              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              '$user_anonymous.createdAt',
+              '$user.createdAt',
+            ],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$userId',
+          donorId: { $first: '$user._id' },
+          firstName: { $first: '$firstName' },
+          lastName: { $first: '$lastName' },
+          email: { $first: '$email' },
+          country: { $first: '$user.country' },
+          mobile: { $first: '$user.mobile' },
+          totalAmount: { $sum: '$amount' },
+          createdAt: { $first: '$createdAt' },
+        },
+      },
+    ]);
+
+    const donorList =
+      await this.campaignAggregatePaginateModel.aggregatePaginate(
+        aggregateQuerry,
+        {
+          page,
+          limit,
+          sort: sortData
+        },
+      );
+    return donorList;
   }
 
   async getPaymentGatewayList(organizationId: string) {
@@ -1752,7 +1902,7 @@ export class OrganizationService {
       total_donation:
         totalZakatCampaigns || totalCampaigns
           ? (totalZakatCampaigns ? totalZakatCampaigns : 0) +
-            (totalCampaigns ? totalCampaigns : 0)
+          (totalCampaigns ? totalCampaigns : 0)
           : 0,
       campaigns: totalCampaigns ? totalCampaigns : 0,
       amount_ofcampaigns: amountCampaigns ? amountCampaigns : 0,

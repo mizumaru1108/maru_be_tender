@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -30,7 +31,11 @@ import {
   EditNonProfitAppearanceNavigationBlogDto,
   EditNonProfitAppearanceNavigationDto,
 } from './dto/nonprofit_appearance_navigation.dto';
-import { FilterDonorDashboardDto } from './dto';
+import { DonorsFilterDto, FilterDonorDashboardDto } from './dto';
+import { PaginatedResponse } from 'src/commons/dtos/paginated-response.dto';
+import { paginationHelper } from 'src/commons/helpers/pagination-helper';
+import { DonationLogDocument } from 'src/donor/schema/donation-log.schema';
+import { DonationLogDocument as DonationLogsDocument } from 'src/donor/schema/donation_log.schema';
 
 @ApiTags('orgs')
 @Controller('orgs')
@@ -98,6 +103,31 @@ export class OrganizationController {
   async getDonorList(@Query('organizationId') organizationId: string) {
     this.logger.debug('fetching donor list...');
     return await this.organizationService.getDonorList(organizationId);
+  }
+  @Get('donor')
+  async getDonorsList(@Query() filter: DonorsFilterDto,)
+    : Promise<PaginatedResponse<DonationLogsDocument[]>> {
+    this.logger.debug('fetching donors list...');
+
+    const donorsList =
+      await this.organizationService.getDonorsList(
+        filter
+      )
+    const response = paginationHelper(
+      donorsList.docs,
+      donorsList.totalDocs,
+      donorsList.limit,
+      donorsList.page,
+      donorsList.totalPages,
+      donorsList.pagingCounter,
+      donorsList.hasPrevPage,
+      donorsList.hasNextPage,
+      donorsList.prevPage,
+      donorsList.nextPage,
+      HttpStatus.OK,
+      'Successfully get list all donors',
+    );
+    return response;
   }
 
   @Get(':organizationId/paymentGateway')
