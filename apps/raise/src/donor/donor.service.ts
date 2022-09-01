@@ -736,17 +736,53 @@ export class DonorService {
     const ObjectId = require('mongoose').Types.ObjectId;
     let data: any = {};
 
-    const dataDonor = await this.donorModel.findOne({
-      ownerUserId: donorId,
-    });
+    // const dataDonor = await this.donorModel.findOne({
+    //   ownerUserId: donorId,
+    // });
 
-    this.logger.debug('debug donor name', dataDonor);
+    // this.logger.debug('debug donor name', dataDonor);
 
     const getData = await this.donationLogModel.aggregate([
       {
+        $lookup: {
+          from: 'donor',
+          localField: 'donorId',
+          foreignField: 'ownerUserId',
+          as: 'a',
+        },
+      },
+      { $unwind: { path: '$a', preserveNullAndEmptyArrays: true } },
+      {
         $addFields: {
-          donationLogId: '$_id',
+          name: '$a.firstName',
+          email: '$a.email',
           date: '$createdAt',
+        },
+      },
+      {
+        $match: { email: { $exists: true } },
+      },
+      {
+        $project: {
+          _id: 1,
+          organizationId: 1,
+          projectId: 1,
+          campaignId: 1,
+          donorId: 1,
+          itemId: 1,
+          type: 1,
+          donationStatus: 1,
+          paymentGatewayId: 1,
+          amount: 1,
+          currency: 1,
+          transactionId: 1,
+          ipAddress: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          donationLogId: 1,
+          date: 1,
+          name: 1,
+          email: 1,
         },
       },
       {
@@ -759,7 +795,6 @@ export class DonorService {
     ]);
 
     data.activities = getData;
-    data.activities.name = dataDonor?.firstName;
 
     return data;
   }
