@@ -1516,9 +1516,6 @@ export class OrganizationService {
       ownerUserId: donorId,
     });
 
-    // if (!period) period = '7days';
-    // console.log('filter=>', filter);
-
     if (!filter.priode) filter.priode = FilterQueryDonorDashboard.DAYS;
 
     if (!getDonorId) {
@@ -1588,90 +1585,6 @@ export class OrganizationService {
         nonprofitRealmId: new Types.ObjectId(filterCampaigns.nonprofitRealmId),
       })
       .count();
-
-    // const listZakatCampaigns = await this.donationLogModel.aggregate([
-    //   {
-    //     $match: {
-    //       campaignId: new Types.ObjectId(filterCampaigns.campaignId),
-    //       donationStatus: filterCampaigns.donationStatus,
-    //       donorUserId: filterCampaigns.donorUserId,
-    //       currency: filterCampaigns.currency,
-    //       nonprofitRealmId: new Types.ObjectId(filterCampaigns.nonprofitRealmId),
-    //       createdAt: getDateQuery(period),
-    //     }
-    //   },
-    //   {
-    //     $group: {
-    //       _id: '$campaignId',
-    //       amountOfZakatCampaigns: { $sum: '$amount' },
-    //     }
-    //   }
-    // ]);
-
-    // const listCampaigns = await this.donationLogModel.aggregate([
-    //   {
-    //     $match: {
-    //       campaignId: { $ne: new Types.ObjectId(filterCampaigns.campaignId) },
-    //       donationStatus: filterCampaigns.donationStatus,
-    //       donorUserId: filterCampaigns.donorUserId,
-    //       currency: filterCampaigns.currency,
-    //       nonprofitRealmId: new Types.ObjectId(filterCampaigns.nonprofitRealmId),
-    //       createdAt: getDateQuery(period),
-    //     }
-    //   },
-    //   {
-    //     $group: {
-    //       _id: '$campaignId',
-    //       amountOfZakatCampaigns: { $sum: '$amount' },
-    //       currency: { $first: '$currency' }
-    //     }
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: 'campaign',
-    //       localField: 'campaignId',
-    //       foreignField: '_id',
-    //       as: 'campaign',
-    //     },
-    //   },
-    //   {
-    //     $unwind: {
-    //       path: '$campaign',
-    //     },
-    //   },
-    //   {
-    //     $addFields: {
-    //       name: {
-    //         $cond: {
-    //           if: { $eq: [{ $ifNull: ['$campaign.title', 0] }, 0] },
-    //           then: '$campaign.campaignName',
-    //           else: '$campaign.title',
-    //         },
-    //       },
-    //     },
-    //   },
-
-    //   {
-    //     $group: {
-    //       _id: '$_id',
-    //       createdAt: { $first: '$createdAt' },
-    //       campaignName: { $first: '$name' },
-    //       total_donation: { $sum: '$amount' },
-    //     },
-    //   },
-    //   {
-    //     $project: {
-    //       campaignName: 1,
-    //       total_donation: 1,
-    //       created: {
-    //         $dateToString: { format: '%Y-%m-%d', date: '$createdAt' },
-    //       },
-    //     },
-    //   },
-
-    // ]);
-
-    // console.log('list Zakat Campaign', listZakatCampaigns, 'list Campaign', listCampaigns);
 
     const totalCampaigns = await this.donationLogModel
       .find({

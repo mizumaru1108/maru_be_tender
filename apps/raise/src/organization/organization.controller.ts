@@ -104,6 +104,7 @@ export class OrganizationController {
     this.logger.debug('fetching donor list...');
     return await this.organizationService.getDonorList(organizationId);
   }
+
   @Get('donor')
   async getDonorsList(@Query() filter: DonorsFilterDto,)
     : Promise<PaginatedResponse<DonationLogsDocument[]>> {

@@ -10,6 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { PaginatedResponse } from 'src/commons/dtos/paginated-response.dto';
+import { paginationHelper } from 'src/commons/helpers/pagination-helper';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { Vendor } from '../buying/vendor/vendor.schema';
 import { CurrentUser } from '../commons/decorators/current-user.decorator';
@@ -19,17 +21,18 @@ import { PaytabsIpnWebhookResponsePayload } from '../libs/payment-paytabs/dtos/r
 import { rootLogger } from '../logger';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { DonorService } from './donor.service';
-import { DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
+import { DonorLitsTrxDto, DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
 import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
 import { DonorDonateItemResponse } from './dto/donor-donate-item-response';
 import { DonorDonateItemDto } from './dto/donor-donate-item.dto';
+import { DonationLogDocument as DonationLogsDocument } from './schema/donation_log.schema';
 
 @ApiTags('donor')
 @Controller('donor')
 export class DonorController {
   private logger = rootLogger.child({ logger: DonorController.name });
 
-  constructor(private donorService: DonorService) {}
+  constructor(private donorService: DonorService) { }
 
   /**
    * Endpoint for donor to apply as vendor.
@@ -176,4 +179,34 @@ export class DonorController {
     this.logger.debug('get TotalDonationDonor');
     return await this.donorService.getTotalDonationDonor(donorId, currency);
   }
+
+  @Get('donorTransaction')
+  async getTrxDonorList(
+    @Query() filter: DonorLitsTrxDto
+    // ): Promise<PaginatedResponse<DonationLogDocument[]>> {
+  ): Promise<PaginatedResponse<DonationLogsDocument[]>> {
+    this.logger.debug('get All Donor Transaction')
+    //return await this.donorService.getTrxDonorList(filter);
+
+    const donorsList =
+      await this.donorService.getTrxDonorList(filter);
+
+    const response = paginationHelper(
+      donorsList.docs,
+      donorsList.totalDocs,
+      donorsList.limit,
+      donorsList.page,
+      donorsList.totalPages,
+      donorsList.pagingCounter,
+      donorsList.hasPrevPage,
+      donorsList.hasNextPage,
+      donorsList.prevPage,
+      donorsList.nextPage,
+      HttpStatus.OK,
+      'Successfully get list all donor transactions',
+    );
+    return response;
+
+  }
+
 }
