@@ -15,23 +15,28 @@ const DropZoneStyle = styled('div')(({ theme }) => ({
   outline: 'none',
   overflow: 'hidden',
   position: 'relative',
-  padding: theme.spacing(5, 1),
+  padding: theme.spacing(0, 1),
   borderRadius: theme.shape.borderRadius,
   transition: theme.transitions.create('padding'),
   backgroundColor: theme.palette.background.neutral,
-  border: `1px dashed ${theme.palette.grey[500_32]}`,
+  border: `3px dashed ${theme.palette.grey[500_32]}`,
   '&:hover': { opacity: 0.72, cursor: 'pointer' },
 }));
 
 // ----------------------------------------------------------------------
+
+interface Props extends UploadProps {
+  placeholder?: string;
+}
 
 export default function UploadSingleFile({
   error = false,
   file,
   helperText,
   sx,
+  placeholder,
   ...other
-}: UploadProps) {
+}: Props) {
   const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = useDropzone({
     multiple: false,
     ...other,
@@ -55,7 +60,7 @@ export default function UploadSingleFile({
       >
         <input {...getInputProps()} />
 
-        <BlockContent />
+        <BlockContent placeholder={placeholder} />
 
         {file && (
           <Image
@@ -74,7 +79,6 @@ export default function UploadSingleFile({
       </DropZoneStyle>
 
       {fileRejections.length > 0 && <RejectionFiles fileRejections={fileRejections} />}
-
       {helperText && helperText}
     </Box>
   );

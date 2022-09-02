@@ -35,6 +35,7 @@ const Loadable = (Component: ElementType) => (props: any) => {
 
 export default function Router() {
   return useRoutes([
+    // Auth Routes
     {
       path: 'auth',
       children: [

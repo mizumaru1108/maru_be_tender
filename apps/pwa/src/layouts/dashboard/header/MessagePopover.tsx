@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 // utils
 import { fToNow } from '../../../utils/formatTime';
-// import {ReactComponent as NotificationBar} from '../../../assets/dashboard-header/notification-bar.svg'
+// import {ReactComponent as MessageBar} from '../../../assets/dashboard-header/message-bar.svg'
 // _mock_
 import { _notifications } from '../../../_mock';
 // components
@@ -30,7 +30,7 @@ import SvgIconStyle from 'components/SvgIconStyle';
 
 // ----------------------------------------------------------------------
 
-export default function NotificationsPopover() {
+export default function MessagePopover() {
   // const [notifications, setNotifications] = useState(_notifications);
 
   // const totalUnRead = notifications.filter((item) => item.isUnRead === true).length;
@@ -61,19 +61,14 @@ export default function NotificationsPopover() {
         sx={{ width: 40, height: 40 }}
       >
         <SvgIconStyle
-          src={`/assets/icons/dashboard-header/notification-bar.svg`}
+          src={`/assets/icons/dashboard-header/message-bar.svg`}
           sx={{ width: 25, height: 25 }}
         />
       </IconButtonAnimate>
-      {/* <IconButtonAnimate
-        color={open ? 'primary' : 'default'}
-        onClick={handleOpen}
-        sx={{ width: 40, height: 40 }}
-      >
-        <Badge badgeContent={totalUnRead} color="error">
+
+      {/* <Badge badgeContent={totalUnRead} color="error">
           <Iconify icon="eva:bell-fill" width={20} height={20} />
-        </Badge>
-      </IconButtonAnimate> */}
+        </Badge> */}
 
       {/* <MenuPopover
         open={Boolean(open)}

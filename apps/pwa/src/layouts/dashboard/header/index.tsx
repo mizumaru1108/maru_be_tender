@@ -18,6 +18,7 @@ import AccountPopover from './AccountPopover';
 import LanguagePopover from './LanguagePopover';
 // import ContactsPopover from './ContactsPopover';
 import NotificationsPopover from './NotificationsPopover';
+import MessagePopover from './MessagePopover';
 
 // ----------------------------------------------------------------------
 
@@ -31,7 +32,7 @@ const RootStyle = styled(AppBar, {
   shouldForwardProp: (prop) =>
     prop !== 'isCollapse' && prop !== 'isOffset' && prop !== 'verticalLayout',
 })<RootStyleProps>(({ isCollapse, isOffset, verticalLayout, theme }) => ({
-  ...cssStyles(theme).bgBlur(),
+  // ...cssStyles(theme).bgBlur(),
   boxShadow: 'none',
   height: HEADER.MOBILE_HEIGHT,
   zIndex: theme.zIndex.appBar + 1,
@@ -40,18 +41,18 @@ const RootStyle = styled(AppBar, {
   }),
   [theme.breakpoints.up('lg')]: {
     height: HEADER.DASHBOARD_DESKTOP_HEIGHT,
-    width: `calc(100% - ${NAVBAR.DASHBOARD_WIDTH + 1}px)`,
+    width: `calc(100% - ${NAVBAR.DASHBOARD_WIDTH}px)`,
     ...(isCollapse && {
       width: `calc(100% - ${NAVBAR.DASHBOARD_COLLAPSE_WIDTH}px)`,
     }),
     ...(isOffset && {
       height: HEADER.DASHBOARD_DESKTOP_OFFSET_HEIGHT,
     }),
-    ...(verticalLayout && {
-      width: '100%',
-      height: HEADER.DASHBOARD_DESKTOP_OFFSET_HEIGHT,
-      backgroundColor: theme.palette.background.default,
-    }),
+    backgroundColor: theme.palette.background.paper,
+    // ...(verticalLayout && {
+    //   width: '100%',
+    //   height: HEADER.DASHBOARD_DESKTOP_OFFSET_HEIGHT,
+    // }),
   },
 }));
 
@@ -92,10 +93,11 @@ export default function DashboardHeader({
         <Box sx={{ flexGrow: 1 }} />
 
         <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
-          <LanguagePopover />
-          <NotificationsPopover />
-          {/* <ContactsPopover /> */}
           <AccountPopover />
+          <MessagePopover />
+          <NotificationsPopover />
+          <LanguagePopover />
+          {/* <ContactsPopover /> */}
         </Stack>
       </Toolbar>
     </RootStyle>

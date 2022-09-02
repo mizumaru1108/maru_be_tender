@@ -28,13 +28,12 @@ export const ListItemStyle = styled(ListItemButton, {
   paddingLeft: theme.spacing(2),
   paddingRight: theme.spacing(1.5),
   marginBottom: theme.spacing(0.5),
-  color: theme.palette.text.secondary,
+  color: '#fff',
   borderRadius: theme.shape.borderRadius,
   height: NAVBAR.DASHBOARD_ITEM_ROOT_HEIGHT,
   // Active item
   ...(active && {
-    color: theme.palette.primary.main,
-    backgroundColor: alpha(theme.palette.primary.main, theme.palette.action.selectedOpacity),
+    backgroundColor: '#93A3B0',
   }),
   // Active item
   ...(active &&

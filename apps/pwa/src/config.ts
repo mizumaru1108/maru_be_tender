@@ -67,7 +67,7 @@ export const ICON = {
 
 export const defaultSettings: SettingsValueProps = {
   themeMode: 'light',
-  themeDirection: 'ltr',
+  themeDirection: 'rtl',
   themeContrast: 'default',
   themeLayout: 'horizontal',
   themeColorPresets: 'default',
@@ -111,4 +111,4 @@ export const allLangs = [
   },
 ];
 
-export const defaultLang = allLangs[0]; // English
+export const defaultLang = allLangs[4]; // Arabic

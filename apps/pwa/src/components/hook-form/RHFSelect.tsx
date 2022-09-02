@@ -7,7 +7,7 @@ import { TextField, TextFieldProps } from '@mui/material';
 
 type IProps = {
   name: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 };
 
 type Props = IProps & TextFieldProps;
@@ -22,6 +22,7 @@ export default function RHFSelect({ name, children, ...other }: Props) {
       render={({ field, fieldState: { error } }) => (
         <TextField
           {...field}
+          InputLabelProps={{ shrink: true }}
           select
           fullWidth
           SelectProps={{ native: true }}

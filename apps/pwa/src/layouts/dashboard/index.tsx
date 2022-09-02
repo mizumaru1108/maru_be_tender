@@ -44,7 +44,7 @@ const MainStyle = styled('main', {
 // ----------------------------------------------------------------------
 
 export default function DashboardLayout() {
-  const { collapseClick, isCollapse } = useCollapseDrawer();
+  const { isCollapse } = useCollapseDrawer();
 
   const { themeLayout } = useSettings();
 
@@ -96,9 +96,9 @@ export default function DashboardLayout() {
 
       <NavbarVertical isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
 
-      <MainStyle collapseClick={collapseClick}>
+      {/* <MainStyle collapseClick={collapseClick}>
         <Outlet />
-      </MainStyle>
+      </MainStyle> */}
     </Box>
   );
 }

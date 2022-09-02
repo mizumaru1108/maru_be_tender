@@ -56,6 +56,7 @@ const ar = {
   other_cases: `حالات اخرى`,
   item_by_roles: `عنصر حسب الأدوار`,
   only_admin_can_see_this_item: `يمكن للمسؤول فقط رؤية هذا العنصر`,
+  main: 'الرئيسية',
 };
 
 export default ar;

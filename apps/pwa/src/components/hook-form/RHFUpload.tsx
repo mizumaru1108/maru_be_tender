@@ -15,6 +15,7 @@ import {
 
 interface Props extends Omit<UploadProps, 'file'> {
   name: string;
+  placeholder?: string;
 }
 
 export function RHFUploadAvatar({ name, ...other }: Props) {
@@ -49,7 +50,7 @@ export function RHFUploadAvatar({ name, ...other }: Props) {
 
 // ----------------------------------------------------------------------
 
-export function RHFUploadSingleFile({ name, ...other }: Props) {
+export function RHFUploadSingleFile({ name, placeholder, ...other }: Props) {
   const { control } = useFormContext();
 
   return (
@@ -62,6 +63,7 @@ export function RHFUploadSingleFile({ name, ...other }: Props) {
         return (
           <UploadSingleFile
             accept={{ 'image/*': [] }}
+            placeholder={placeholder ?? ''}
             file={field.value}
             error={checkError}
             helperText={

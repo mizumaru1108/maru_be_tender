@@ -46,7 +46,7 @@ function MapClusters({ ...other }: MapBoxProps) {
           longitude: -103.59,
           zoom: 3,
         }}
-        interactiveLayerIds={[clusterLayer.id]}
+        interactiveLayerIds={[clusterLayer.id || '']}
         onClick={onClick}
         ref={mapRef}
         {...other}

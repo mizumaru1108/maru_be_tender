@@ -12,48 +12,48 @@ const getIcon = (name: string) => (
 );
 
 const ICONS = {
-  dashboard: getIcon('ic_home'),
-  fundraising: getIcon('ic_heart'),
-  hr: getIcon('ic_people'),
-  volounteer: getIcon('ic_glove'),
-  box: getIcon('ic_box'),
-  building: getIcon('ic_building'),
-  setting: getIcon('ic_settings')
+  main: getIcon('main'),
+  project_fund_request: getIcon('request-for-project'),
+  draft_project_requests: getIcon('draft-request'),
+  previous_project_requests: getIcon('previous-request'),
+  messages: getIcon('message-bar'),
+  support: getIcon('contact-us'),
 };
 
-const navConfig = [
+const navConfig = {
   // GENERAL
   // ----------------------------------------------------------------------
-  {
-    subheader: '',
-    items: [
-      { title: 'home', path: PATH_DASHBOARD.general.app, icon: ICONS.dashboard },
-      { title: 'fundraising', path: PATH_DASHBOARD.fundraising, icon: ICONS.fundraising },
-      {
-        title: 'human resources', 
-        path: PATH_DASHBOARD.hr.root, 
-        icon: ICONS.hr,
-        children: [
-          { title: 'hr dashboard', path: PATH_DASHBOARD.hr.home },
-          { 
-            title: 'employee', 
-            path: PATH_DASHBOARD.hr.employee.list,
-            children: [
-              { title: 'employe list', path: PATH_DASHBOARD.hr.employee.list },
-              { title: 'employe type', path: PATH_DASHBOARD.hr.employee.type },
-              { title: 'dapartement', path: PATH_DASHBOARD.hr.employee.dapartement },
-              { title: 'designation', path: PATH_DASHBOARD.hr.employee.designation },
-              { title: 'branch', path: PATH_DASHBOARD.hr.employee.branch }
-            ] 
-          },
-        ]
-      },
-      { title: 'volounteer', path: PATH_DASHBOARD.general.ecommerce, icon: ICONS.volounteer },
-      { title: 'grant application', path: PATH_DASHBOARD.general.ecommerce, icon: ICONS.box },
-      { title: 'organization', path: PATH_DASHBOARD.general.ecommerce, icon: ICONS.building },
-      { title: 'setting', path: PATH_DASHBOARD.general.ecommerce, icon: ICONS.setting },
-    ],
-  },
-];
+  admin: [
+    {
+      subheader: '',
+      items: [
+        {
+          title: 'main',
+          path: PATH_DASHBOARD.general.app,
+          icon: ICONS.main,
+        },
+        {
+          title: 'طلب دعم مشروع',
+          path: PATH_DASHBOARD.fundraising,
+          icon: ICONS.project_fund_request,
+        },
+        {
+          title: 'طلبات دعم مسودة',
+          path: PATH_DASHBOARD.hr.root,
+          icon: ICONS.draft_project_requests,
+        },
+        {
+          title: 'طلبات دعم سابقة',
+          path: PATH_DASHBOARD.general.ecommerce,
+          icon: ICONS.previous_project_requests,
+        },
+        { title: 'الرسائل', path: PATH_DASHBOARD.general.ecommerce, icon: ICONS.messages },
+        { title: 'نواصل مع الدعم', path: PATH_DASHBOARD.general.ecommerce, icon: ICONS.support },
+      ],
+    },
+  ],
+  client: [],
+  common: [],
+};
 
 export default navConfig;

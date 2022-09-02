@@ -41,11 +41,7 @@ import Page from 'components/Page';
 import Iconify from 'components/Iconify';
 import Scrollbar from 'components/Scrollbar';
 import HeaderBreadcrumbs from 'components/HeaderBreadcrumbs';
-import {
-  TableEmptyRows,
-  TableHeadCustom,
-  TableSelectedActions,
-} from 'components/table';
+import { TableEmptyRows, TableHeadCustom, TableSelectedActions } from 'components/table';
 import Toast from 'components/toast';
 import ModalDialog from 'components/modal-dialog';
 import { RHFTextField, FormProvider } from 'components/hook-form';

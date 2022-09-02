@@ -163,109 +163,104 @@ export default function EcommerceProductList() {
             </Button>
           }
         />
-        {
-            products.length == 0 ? 
-            (
-              <EmptyContent
-                  title="You haven't created an Employee yet"
-                  description="You do not have a list of Employee at this time. Come on, make a list Employee now!"
-                  img={EmployeeListEmpty}
-                  actionButton={
-                    <Button to="#" sx={{ mt: 4 }} variant="contained" component={RouterLink}>
-                      Add Employee
-                    </Button>
-                  }
+        {products.length == 0 ? (
+          <EmptyContent
+            title="You haven't created an Employee yet"
+            description="You do not have a list of Employee at this time. Come on, make a list Employee now!"
+            img={EmployeeListEmpty}
+            actionButton={
+              <Button to="#" sx={{ mt: 4 }} variant="contained" component={RouterLink}>
+                Add Employee
+              </Button>
+            }
+          />
+        ) : (
+          <Card>
+            <ProductTableToolbar filterName={filterName} onFilterName={handleFilterName} />
+
+            <Scrollbar>
+              <TableContainer sx={{ minWidth: 800 }}>
+                {selected.length > 0 && (
+                  <TableSelectedActions
+                    dense={dense}
+                    numSelected={selected.length}
+                    rowCount={tableData.length}
+                    onSelectAllRows={(checked) =>
+                      onSelectAllRows(
+                        checked,
+                        tableData.map((row) => row.id)
+                      )
+                    }
+                    actions={
+                      <Tooltip title="Delete">
+                        <IconButton color="primary" onClick={() => handleDeleteRows(selected)}>
+                          <Iconify icon={'eva:trash-2-outline'} />
+                        </IconButton>
+                      </Tooltip>
+                    }
+                  />
+                )}
+
+                <Table size={dense ? 'small' : 'medium'}>
+                  <TableHeadCustom
+                    order={order}
+                    orderBy={orderBy}
+                    headLabel={TABLE_HEAD}
+                    rowCount={tableData.length}
+                    numSelected={selected.length}
+                    onSort={onSort}
+                    onSelectAllRows={(checked) =>
+                      onSelectAllRows(
+                        checked,
+                        tableData.map((row) => row.id)
+                      )
+                    }
+                  />
+
+                  <TableBody>
+                    {dataFiltered
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map((row) => (
+                        <ProductTableRow
+                          key={row.id}
+                          row={row}
+                          selected={selected.includes(row.id)}
+                          onSelectRow={() => onSelectRow(row.id)}
+                          onEditRow={() => handleEditRow(row.name)}
+                          onDeleteRow={() => handleDeleteRow(row.id)}
+                        />
+                      ))}
+
+                    <TableEmptyRows
+                      height={dense ? 60 : 80}
+                      emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
+                    />
+                  </TableBody>
+
+                  {isNotFound && <TableNoData isNotFound={isNotFound} />}
+                </Table>
+              </TableContainer>
+            </Scrollbar>
+
+            <Box sx={{ position: 'relative' }}>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                count={dataFiltered.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={onChangePage}
+                onRowsPerPageChange={onChangeRowsPerPage}
               />
-            )
-            :
-            (
-              <Card>
-                <ProductTableToolbar filterName={filterName} onFilterName={handleFilterName} />
 
-                <Scrollbar>
-                    <TableContainer sx={{ minWidth: 800 }}>
-                    {selected.length > 0 && (
-                        <TableSelectedActions
-                        dense={dense}
-                        numSelected={selected.length}
-                        rowCount={tableData.length}
-                        onSelectAllRows={(checked) =>
-                            onSelectAllRows(
-                            checked,
-                            tableData.map((row) => row.id)
-                            )
-                        }
-                        actions={
-                            <Tooltip title="Delete">
-                            <IconButton color="primary" onClick={() => handleDeleteRows(selected)}>
-                                <Iconify icon={'eva:trash-2-outline'} />
-                            </IconButton>
-                            </Tooltip>
-                        }
-                        />
-                    )}
-
-                    <Table size={dense ? 'small' : 'medium'}>
-                        <TableHeadCustom
-                        order={order}
-                        orderBy={orderBy}
-                        headLabel={TABLE_HEAD}
-                        rowCount={tableData.length}
-                        numSelected={selected.length}
-                        onSort={onSort}
-                        onSelectAllRows={(checked) =>
-                            onSelectAllRows(
-                            checked,
-                            tableData.map((row) => row.id)
-                            )
-                        }
-                        />
-
-                        <TableBody>
-                        {dataFiltered
-                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            .map((row) => (
-                            <ProductTableRow
-                                key={row.id}
-                                row={row}
-                                selected={selected.includes(row.id)}
-                                onSelectRow={() => onSelectRow(row.id)}
-                                onEditRow={() => handleEditRow(row.name)}
-                                onDeleteRow={() => handleDeleteRow(row.id)}
-                            />
-                            ))}
-
-                        <TableEmptyRows
-                            height={dense ? 60 : 80}
-                            emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
-                        />
-                        </TableBody>
-
-                        {isNotFound && <TableNoData isNotFound={isNotFound} />}
-                    </Table>
-                    </TableContainer>
-                </Scrollbar>
-
-                <Box sx={{ position: 'relative' }}>
-                    <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
-                    component="div"
-                    count={dataFiltered.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={onChangePage}
-                    onRowsPerPageChange={onChangeRowsPerPage}
-                    />
-
-                    <FormControlLabel
-                    control={<Switch checked={dense} onChange={onChangeDense} />}
-                    label="Dense"
-                    sx={{ px: 3, py: 1.5, top: 0, position: { md: 'absolute' } }}
-                    />
-                </Box>
-              </Card>
-            )
-        }
+              <FormControlLabel
+                control={<Switch checked={dense} onChange={onChangeDense} />}
+                label="Dense"
+                sx={{ px: 3, py: 1.5, top: 0, position: { md: 'absolute' } }}
+              />
+            </Box>
+          </Card>
+        )}
       </Container>
     </Page>
   );

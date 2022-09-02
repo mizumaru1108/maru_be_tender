@@ -11,7 +11,7 @@ type IProps = {
 
 type Props = IProps & TextFieldProps;
 
-export default function RHFTextField({ name, ...other }: Props) {
+export default function RHFDatePicker({ name, ...other }: Props) {
   const { control } = useFormContext();
 
   return (
@@ -21,9 +21,10 @@ export default function RHFTextField({ name, ...other }: Props) {
       render={({ field, fieldState: { error } }) => (
         <TextField
           {...field}
-          InputLabelProps={{ shrink: true }}
+          type="date"
           fullWidth
-          value={typeof field.value === 'number' && field.value === 0 ? '' : field.value}
+          InputLabelProps={{ shrink: true }}
+          SelectProps={{ native: true }}
           error={!!error}
           helperText={error?.message}
           {...other}

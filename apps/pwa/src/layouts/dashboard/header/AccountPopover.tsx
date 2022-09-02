@@ -4,6 +4,9 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // @mui
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import Paper from '@mui/material/Paper';
+
 // routes
 import { PATH_DASHBOARD, PATH_AUTH } from '../../../routes/paths';
 // hooks
@@ -13,6 +16,8 @@ import useIsMountedRef from '../../../hooks/useIsMountedRef';
 import MyAvatar from '../../../components/MyAvatar';
 import MenuPopover from '../../../components/MenuPopover';
 import { IconButtonAnimate } from '../../../components/animate';
+import SvgIconStyle from 'components/SvgIconStyle';
+// import {ReactComponent as AccountBar} from 'assets/icons/dashboard-header/account-bar.svg'
 
 // ----------------------------------------------------------------------
 
@@ -65,73 +70,53 @@ export default function AccountPopover() {
       enqueueSnackbar('Unable to logout!', { variant: 'error' });
     }
   };
-
+  const Item = styled(Paper)(({ theme }) => ({
+    backgroundColor: '#fff',
+    ...theme.typography.body2,
+    textAlign: 'right',
+    color: '#0E8478',
+    fontFamily: 'Cairo',
+    fontStyle: 'Bold',
+    fontSize: '15px',
+  }));
   return (
     <>
-      <IconButtonAnimate
-        onClick={handleOpen}
+      <Box
         sx={{
-          p: 0,
-          ...(open && {
-            '&:before': {
-              zIndex: 1,
-              content: "''",
-              width: '100%',
-              height: '100%',
+          alignItems: 'center',
+          display: 'flex',
+          p: '16px',
+          width: '336px',
+          height: '72px',
+          backgroundColor: 'background.default',
+          borderRadius: 1,
+        }}
+      >
+        <Stack direction="row" spacing={2}>
+          <Box
+            sx={{
               borderRadius: '50%',
-              position: 'absolute',
-              bgcolor: (theme) => alpha(theme.palette.grey[900], 0.8),
-            },
-          }),
-        }}
-      >
-        <MyAvatar />
-      </IconButtonAnimate>
-
-      <MenuPopover
-        open={Boolean(open)}
-        anchorEl={open}
-        onClose={handleClose}
-        sx={{
-          p: 0,
-          mt: 1.5,
-          ml: 0.75,
-          '& .MuiMenuItem-root': {
-            typography: 'body2',
-            borderRadius: 0.75,
-          },
-        }}
-      >
-        <Box sx={{ my: 1.5, px: 2.5 }}>
-          <Typography variant="subtitle2" noWrap>
-            {user?.displayName}
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {user?.email}
-          </Typography>
-        </Box>
-
-        <Divider sx={{ borderStyle: 'dashed' }} />
-
-        <Stack sx={{ p: 1 }}>
-          {MENU_OPTIONS.map((option) => (
-            <MenuItem
-              key={option.label}
-              to={option.linkTo}
-              component={RouterLink}
-              onClick={handleClose}
-            >
-              {option.label}
-            </MenuItem>
-          ))}
+              borderStyle: 'solid',
+              width: '56px',
+              height: '56px',
+              backgroundColor: 'background.paper',
+              textAlign: 'center',
+              padding: 1,
+            }}
+          >
+            <SvgIconStyle
+              src={`/assets/icons/dashboard-header/account-bar.svg`}
+              sx={{ width: 1, height: 1 }}
+            />
+          </Box>
+          <Stack alignItems="start">
+            <Item sx={{ mt: '5px', color: 'text.secondary' }}>
+              جمعية الدعوة والإرشاد وتوعية الجاليات
+            </Item>
+            <Item sx={{ color: '#93A3B0' }}>حساب شريك</Item>
+          </Stack>
         </Stack>
-
-        <Divider sx={{ borderStyle: 'dashed' }} />
-
-        <MenuItem onClick={handleLogout} sx={{ m: 1 }}>
-          Logout
-        </MenuItem>
-      </MenuPopover>
+      </Box>
     </>
   );
 }

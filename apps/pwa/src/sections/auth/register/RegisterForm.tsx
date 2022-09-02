@@ -4,7 +4,19 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Stack, IconButton, InputAdornment, Alert } from '@mui/material';
+import {
+  Stack,
+  IconButton,
+  InputAdornment,
+  Alert,
+  Step,
+  StepLabel,
+  Typography,
+  Stepper,
+  Box,
+  alpha,
+  Button,
+} from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // hooks
 import useAuth from '../../../hooks/useAuth';
@@ -12,7 +24,11 @@ import useIsMountedRef from '../../../hooks/useIsMountedRef';
 // components
 import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField } from '../../../components/hook-form';
-
+import MainForm from './MainForm';
+import ConnectingInfoForm from './ConnectingInfoForm';
+import LicenseInfoForm from './LicenseInfoForm';
+import AdministrativeInfoForm from './AdministrativeInfoForm';
+import BankingInfoForm from './BankingInfoForm';
 // ----------------------------------------------------------------------
 
 type FormValuesProps = {
@@ -28,6 +44,7 @@ export default function RegisterForm() {
 
   const isMountedRef = useIsMountedRef();
 
+  const [step, setStep] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
 
   const RegisterSchema = Yup.object().shape({
@@ -69,42 +86,38 @@ export default function RegisterForm() {
   };
 
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={3}>
-        {!!errors.afterSubmit && <Alert severity="error">{errors.afterSubmit.message}</Alert>}
-
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-          <RHFTextField name="firstName" label="First name" />
-          <RHFTextField name="lastName" label="Last name" />
-        </Stack>
-
-        <RHFTextField name="email" label="Email address" />
-
-        <RHFTextField
-          name="password"
-          label="Password"
-          type={showPassword ? 'text' : 'password'}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton edge="end" onClick={() => setShowPassword(!showPassword)}>
-                  <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-
-        <LoadingButton
-          fullWidth
-          size="large"
-          type="submit"
-          variant="contained"
-          loading={isSubmitting}
-        >
-          Register
-        </LoadingButton>
-      </Stack>
-    </FormProvider>
+    <>
+      <Box
+        sx={{
+          width: '100%',
+          backgroundColor: alpha('#919EAB', 0.16),
+          padding: 3,
+          borderTopLeftRadius: 15,
+          borderBottomLeftRadius: 15,
+          mb: 5,
+        }}
+      >
+        <Stepper activeStep={step}>
+          {[
+            'المعلومات الرئيسية',
+            'معلومات الاتصال',
+            'معلومات الترخيص',
+            'بيانات الإدارية',
+            'معلومات البنكية',
+          ].map((label, index) => (
+            <Step key={index}>
+              <StepLabel>
+                <Typography sx={{ fontFamily: 'Cairo', fontStyle: 'Bold' }}>{label}</Typography>
+              </StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+      </Box>
+      {step === 0 && <MainForm setStep={setStep} />}
+      {step === 1 && <ConnectingInfoForm setStep={setStep} />}
+      {step === 2 && <LicenseInfoForm setStep={setStep} />}
+      {step === 3 && <AdministrativeInfoForm setStep={setStep} />}
+      {step === 4 && <BankingInfoForm setStep={setStep} />}
+    </>
   );
 }
