@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { AggregatePaginateModel, AggregatePaginateResult, Model, Types } from 'mongoose';
 import { rootLogger } from '../logger';
@@ -1178,13 +1178,25 @@ export class OrganizationService {
     organizationId: string,
     nonProfitAppearanceNavigationDto: NonProfitAppearanceNavigationDto,
   ) {
-    this.logger.debug(`Get Organization ${organizationId}...`);
+    this.logger.debug(`Get Organization. ${organizationId}...`);
     const getOrgsId = await this.getOrganization(organizationId);
     if (getOrgsId.statusCode === 404) {
       return {
         statusCode: 404,
         message: 'Organization not found',
       };
+    }
+
+    const LandingpageData = await this.appearanceNavigationModel.findOne({
+      organizationId: organizationId,
+      page: "LANDINGPAGE"
+    });
+
+    if (LandingpageData) {
+      throw new HttpException(
+        'Organization landing page already exists',
+        409,
+      );
     }
 
     this.logger.debug('Create Landingpage Organization...');
@@ -1216,6 +1228,18 @@ export class OrganizationService {
       };
     }
 
+    const aboutUsData = await this.appearanceNavigationModel.findOne({
+      organizationId: organizationId,
+      page: "ABOUTUS"
+    });
+
+    if (aboutUsData) {
+      throw new HttpException(
+        'Organization AboutUs page already exists',
+        409,
+      );
+    }
+
     this.logger.debug('Create AboutUs Organization...');
     nonProfitAppearanceNavigationAboutUsDto.organizationId = organizationId;
     nonProfitAppearanceNavigationAboutUsDto.page = 'ABOUTUS';
@@ -1243,6 +1267,19 @@ export class OrganizationService {
         message: 'Organization not found',
       };
     }
+
+    const blogData = await this.appearanceNavigationModel.findOne({
+      organizationId: organizationId,
+      page: "BLOG"
+    });
+
+    if (blogData) {
+      throw new HttpException(
+        'Organization Blog page already exists',
+        409,
+      );
+    }
+
     this.logger.debug('Create createBlog Organization...');
     nonProfitAppearanceNavigationBlogDto.organizationId = organizationId;
     nonProfitAppearanceNavigationBlogDto.page = 'BLOG';
