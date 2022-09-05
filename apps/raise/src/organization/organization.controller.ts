@@ -29,8 +29,9 @@ import {
   NonProfitAppearanceNavigationDto,
   EditNonProfitAppearanceNavigationAboutUsDto,
   EditNonProfitAppearanceNavigationBlogDto,
-  EditNonProfitAppearanceNavigationDto,
+  // EditNonProfitAppearanceNavigationDto,
   EditNonProfApperNavDto,
+  EditNonProfApperNavAboutUsDto,
 } from './dto/nonprofit_appearance_navigation.dto';
 import { DonorsFilterDto, FilterDonorDashboardDto } from './dto';
 import { PaginatedResponse } from 'src/commons/dtos/paginated-response.dto';
@@ -240,11 +241,11 @@ export class OrganizationController {
   @Post(':organizationId/landingPage')
   async createLandingPage(
     @Param('organizationId') organizationId: string,
-    @Body() nonProfitAppearanceNavigationDto: NonProfitAppearanceNavigationDto,
+    @Body() nonProfitAppearanceNavigationDto: NonProfitAppearanceNavigationDto
   ) {
     return await this.organizationService.createLandingPage(
       organizationId,
-      nonProfitAppearanceNavigationDto,
+      nonProfitAppearanceNavigationDto
     );
   }
   @Post(':organizationId/aboutUs')
@@ -295,7 +296,7 @@ export class OrganizationController {
     const response = baseResponseHelper(
       editLandingPage,
       HttpStatus.OK,
-      'Campaign updated',
+      'LandingPage updated',
     );
     return response;
 
@@ -304,12 +305,18 @@ export class OrganizationController {
   async editAboutUs(
     @Param('organizationId') organizationId: string,
     @Body()
-    editNonProfitAppearanceNavigationAboutUsDto: EditNonProfitAppearanceNavigationAboutUsDto,
-  ) {
-    return this.organizationService.editAboutUs(
+    EditNonProfApperNavAboutUsDto: EditNonProfApperNavAboutUsDto,
+  ): Promise<BaseResponse<AppearanceNavigation>> {
+    const editAboutUs = await this.organizationService.editAboutUs(
       organizationId,
-      editNonProfitAppearanceNavigationAboutUsDto,
+      EditNonProfApperNavAboutUsDto,
     );
+    const response = baseResponseHelper(
+      editAboutUs,
+      HttpStatus.OK,
+      'LandingPage updated',
+    );
+    return response;
   }
   @Put(':organizationId/blog')
   async editBlog(
