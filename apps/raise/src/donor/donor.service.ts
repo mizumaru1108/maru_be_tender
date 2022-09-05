@@ -529,8 +529,8 @@ export class DonorService {
         createdDonationDetails,
         createdPaymentData: insertPaymentData,
       };
-      console.log('response', response);
-      // await session.commitTransaction(); // apply changes to database if no error occured.
+
+      await session.commitTransaction(); // apply changes to database if no error occured.
       return response;
     } catch (error) {
       await session.abortTransaction(); // rollback changes if error occured.
@@ -557,7 +557,7 @@ export class DonorService {
     mongoSession: ClientSession,
   ): Promise<DonorDonationTypeMapResult | null> {
     const item = await this.itemModel
-      .findOne({ itemId: new Types.ObjectId(itemId) })
+      .findOne({ _id: new Types.ObjectId(itemId) })
       .session(mongoSession);
     if (!item) {
       return null;
@@ -583,13 +583,13 @@ export class DonorService {
   }
 
   async mapDonateTypeCampaign(
-    campaignIds: string,
+    campaignId: string,
     donationAmount: number,
     donationLogId: Types.ObjectId,
     mongoSession: ClientSession,
   ): Promise<DonorDonationTypeMapResult | null> {
     const campaign = await this.campaignModel
-      .findOne({ campaignId: new Types.ObjectId(campaignIds) })
+      .findOne({ _id: new Types.ObjectId(campaignId) })
       .session(mongoSession);
     if (!campaign) {
       return null;
@@ -615,13 +615,13 @@ export class DonorService {
   }
 
   async mapDonateTypeProject(
-    projectIds: string,
+    projectId: string,
     donationAmount: number,
     donationLogId: Types.ObjectId,
     mongoSession: ClientSession,
   ): Promise<DonorDonationTypeMapResult | null> {
     const project = await this.projectModel
-      .findOne({ projectId: new Types.ObjectId(projectIds) })
+      .findOne({ _id: new Types.ObjectId(projectId) })
       .session(mongoSession);
     if (!project) {
       return null;
