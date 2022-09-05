@@ -3,7 +3,7 @@ import { Document, Types } from 'mongoose';
 
 export type ZakatLogDocument = ZakatLog & Document;
 
-@Schema({ collection: 'zakat_log' })
+@Schema({ collection: 'zakatLog' })
 export class ZakatLog {
   @Prop()
   id: string;
