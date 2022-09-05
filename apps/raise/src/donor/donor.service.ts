@@ -1277,9 +1277,5 @@ export class DonorService {
         },
       );
     return donorList;
-
   }
-
-
-
 }

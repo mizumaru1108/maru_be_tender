@@ -1313,19 +1313,19 @@ export class OrganizationService {
     const missionPath: any = [];
     /** Create Path Url ForImage mission */
     if (
-      editNonProfitAppearanceNavigationDto &&
-      editNonProfitAppearanceNavigationDto.mission
+      editNonProfitAppearanceNavigationDto! &&
+      editNonProfitAppearanceNavigationDto.mission!
     ) {
-      const dataMission = JSON.stringify(editNonProfitAppearanceNavigationDto.mission);
+      const dataMission = JSON.stringify(editNonProfitAppearanceNavigationDto.mission!);
       const mission = JSON.parse(dataMission);
       for (let i = 0; i < mission.length; i++) {
-        console.log('Icon Mission', editNonProfitAppearanceNavigationDto.mission, 'Lengt Json', mission.length);
+        console.log('Icon Mission', editNonProfitAppearanceNavigationDto.mission!, 'Lengt Json', mission.length);
         const path = await this.bunnyService.generatePath(
           editNonProfitAppearanceNavigationDto.organizationId!,
           'landingpage-mission',
-          mission[i].fullName,
-          mission[i].imageExtension,
-          editNonProfitAppearanceNavigationDto.organizationId,
+          mission[i].fullName!,
+          mission[i].imageExtension!,
+          editNonProfitAppearanceNavigationDto.organizationId!,
         );
         const base64Data = mission[i].iconMission;
         const binary = Buffer.from(
@@ -1348,50 +1348,50 @@ export class OrganizationService {
           editNonProfitAppearanceNavigationDto.organizationId!,
         );
 
-        missionPath.push({
-          mission: mission[i].mission, iconMission: path
-        })
+
 
         if (imageUpload) {
-          if (mission[i].mission.iconMission) {
+          if (mission[i].mission.iconMission!) {
             console.info(
               'Old Mission image seems to be exist in the old record',
             );
             const isExist = await this.bunnyService.checkIfImageExists(
-              mission[i].mission.iconMission,
+              mission[i].mission.iconMission!,
             );
             if (isExist) {
               await this.bunnyService.deleteImage(
-                mission[i].mission.iconMission,
+                mission[i].mission.iconMission!,
               );
             }
           }
           console.info('Mission image has been replaced');
-          mission[i].mission.iconMission = path;
+          missionPath.push({
+            mission: mission[i].mission!, iconMission: path
+          })
         }
       }
-
     }
+
     const whyUsPath: any = [];
     /** Create Path Url ForImage why Us */
     if (
       editNonProfitAppearanceNavigationDto &&
-      editNonProfitAppearanceNavigationDto.whyUs
+      editNonProfitAppearanceNavigationDto.whyUs!
     ) {
-      const whyUsMission = JSON.stringify(editNonProfitAppearanceNavigationDto.whyUs);
+      const whyUsMission = JSON.stringify(editNonProfitAppearanceNavigationDto.whyUs!);
       const whyUs = JSON.parse(whyUsMission);
       for (let i = 0; i < whyUs.length; i++) {
-        console.log('Icon Why US', editNonProfitAppearanceNavigationDto.whyUs, 'Length Json', whyUs.length);
+        console.log('Icon Why US', editNonProfitAppearanceNavigationDto.whyUs!, 'Length Json', whyUs.length);
         const path = await this.bunnyService.generatePath(
           editNonProfitAppearanceNavigationDto.organizationId!,
           'landingpage-whyus',
-          whyUs[i].fullName,
-          whyUs[i].imageExtension,
-          editNonProfitAppearanceNavigationDto.organizationId,
+          whyUs[i].fullName!,
+          whyUs[i].imageExtension!,
+          editNonProfitAppearanceNavigationDto.organizationId!,
         );
-        const base64Data = whyUs[i].iconWhyUs;
+        const base64Data = whyUs[i].whyUsIcon;
         const binary = Buffer.from(
-          whyUs[i]!.iconWhyUs!,
+          whyUs[i]!.whyUsIcon!,
           'base64',
         );
         if (!binary) {
@@ -1411,33 +1411,29 @@ export class OrganizationService {
         );
 
         whyUsPath.push({
-          whyUs: whyUs[i].whyUs, iconForMission: path
+          whyUs: whyUs[i].whyUs!, whyUsIcon: path
         })
 
         if (imageUpload) {
-          if (whyUs[i].whyUs.iconWhyUs) {
+          if (whyUs[i].whyUs.whyUsIcon!) {
             console.info(
               'Old WhyUs image seems to be exist in the old record',
             );
             const isExist = await this.bunnyService.checkIfImageExists(
-              whyUs[i].whyUs.iconWhyUs,
+              whyUs[i].whyUs.whyUsIcon!,
             );
             if (isExist) {
               await this.bunnyService.deleteImage(
-                whyUs[i].whyUs.iconWhyUs,
+                whyUs[i].whyUs.whyUsIcon!,
               );
             }
           }
           console.info('WhyUs image has been replaced');
-          whyUs[i].whyUs.iconWhyUs = path;
+          // whyUs[i].whyUs.iconWhyUs = path;
         }
       }
 
     }
-
-    console.log('Path Missiion', missionPath);
-    console.log('Path WhyUs', whyUsPath);
-
 
     let now: Date = new Date();
     editNonProfitAppearanceNavigationDto.organizationId = organizationId;
