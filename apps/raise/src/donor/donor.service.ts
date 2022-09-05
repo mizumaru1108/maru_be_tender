@@ -1,6 +1,7 @@
 import { FusionAuthClient } from '@fusionauth/typescript-client';
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -8,7 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { ApiOperation } from '@nestjs/swagger';
 import moment from 'moment';
-import { Model, Types } from 'mongoose';
+import { ClientSession, Model, Types, Connection } from 'mongoose';
 import {
   PaymentGateway,
   PaymentGatewayDocument,
@@ -23,15 +24,16 @@ import {
 } from '../buying/vendor/vendor.schema';
 import { Campaign, CampaignDocument } from '../campaign/campaign.schema';
 import { CampaignSetFavoriteDto } from '../campaign/dto';
+import { IPaymentGatewayItems } from '../commons/interfaces/payment-gateway-items.interface';
 import { Item, ItemDocument } from '../item/item.schema';
 import { BunnyService } from '../libs/bunny/services/bunny.service';
-import { PaytabsIpnWebhookResponsePayload } from '../libs/payment-paytabs/dtos/response/paytabs-ipn-webhook-response-payload.dto';
-import { PaytabsCurrencyEnum } from '../libs/payment-paytabs/enums/paytabs-currency-enum';
-import { PaytabsResponseStatus } from '../libs/payment-paytabs/enums/paytabs-response-status.enum';
-import { PaytabsTranClass } from '../libs/payment-paytabs/enums/paytabs-tran-class.enum';
-import { PaytabsTranType } from '../libs/payment-paytabs/enums/paytabs-tran-type.enum';
-import { PaytabsPaymentRequestPayloadModel } from '../libs/payment-paytabs/models/paytabs-payment-request-payload.model';
-import { PaymentPaytabsService } from '../libs/payment-paytabs/payment-paytabs.service';
+import { PaytabsIpnWebhookResponsePayload } from '../libs/paytabs/dtos/response/paytabs-ipn-webhook-response-payload.dto';
+import { PaytabsCurrencyEnum } from '../libs/paytabs/enums/paytabs-currency-enum';
+import { PaytabsResponseStatus } from '../libs/paytabs/enums/paytabs-response-status.enum';
+import { PaytabsTranClass } from '../libs/paytabs/enums/paytabs-tran-class.enum';
+import { PaytabsTranType } from '../libs/paytabs/enums/paytabs-tran-type.enum';
+import { PaytabsPaymentRequestPayloadModel } from '../libs/paytabs/models/paytabs-payment-request-payload.model';
+import { PaytabsService } from '../libs/paytabs/services/paytabs.service';
 import { rootLogger } from '../logger';
 import {
   PaymentData,
@@ -43,24 +45,38 @@ import { DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
 import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
 import { DonorDonateItemResponse } from './dto/donor-donate-item-response';
 import { DonorDonateItemDto } from './dto/donor-donate-item.dto';
+import { DonorDonateDto } from './dto/donor-donate.dto';
 import { DonationStatus } from './enum/donation-status.enum';
-import { DonationType } from './enum/donation-type.enum';
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { Anonymous, AnonymousDocument } from './schema/anonymous.schema';
 import { DonationLog, DonationLogDocument } from './schema/donation-log.schema';
+import { InjectConnection } from '@nestjs/mongoose';
 import {
   DonationLogDocument as DonationLogsDocument,
   DonationLogs,
 } from './schema/donation_log.schema';
 import { Donor, DonorDocument } from './schema/donor.schema';
 import { Volunteer, VolunteerDocument } from './schema/volunteer.schema';
+import { DonorDonationTypeMapResult } from './interfaces/donor-donation-type-map-result.interface';
+import {
+  DonationDetail,
+  DonationDetailDocument,
+} from './schema/donation-detail.schema';
+import { DonationType } from './enum/donation-type.enum';
+import { StripeService } from '../libs/stripe/services/stripe.service';
+import Stripe from 'stripe';
+import { PaytabsCreateTransactionResponse } from '../libs/paytabs/dtos/response/paytabs-create-transaction-response.dto';
+import { DonorDonateResponse } from './dto/donor-donate-response.dto';
 
 @Injectable()
 export class DonorService {
   private logger = rootLogger.child({ logger: DonorService.name });
 
   constructor(
+    @InjectConnection() private readonly connection: Connection, // mongodb DB transaction
     private bunnyService: BunnyService, // no need to import in donor module (modular utils)
-    private paytabsService: PaymentPaytabsService, // no need to import in donor module (modular utils)
+    private paytabsService: PaytabsService, // no need to import in donor module (modular utils)
+    private stripeService: StripeService, // no need to import in donor module (modular utils)
     private configService: ConfigService, // no need to import in donor module (modular utils)
     @InjectModel(Donor.name)
     private donorModel: Model<DonorDocument>,
@@ -70,6 +86,8 @@ export class DonorService {
     private donationLogModel: Model<DonationLogDocument>,
     @InjectModel(DonationLogs.name)
     private donationLogsModel: Model<DonationLogsDocument>,
+    @InjectModel(DonationDetail.name)
+    private donationDetailModel: Model<DonationDetailDocument>,
     @InjectModel(Anonymous.name)
     private anonymousModel: Model<AnonymousDocument>,
     @InjectModel(CampaignVendorLog.name)
@@ -184,6 +202,382 @@ export class DonorService {
     log.createdAt = moment().toISOString();
     log.updatedAt = moment().toISOString();
     return log.save();
+  }
+
+  /**
+   * define which organization can use which payment gateway
+   */
+  async paymentGatewayPermissionsCheck(
+    organizationId: string,
+    paymentGateway: PaymentGatewayDocument,
+  ): Promise<boolean> {
+    const ommar = '61b4794cfe52d41f557f1acc'; // iqam global (omar)
+    const duniaAnakAlam = '60f524626f471e54c18e39b9';
+    const gs = '60f52461817b13a5cc552bf0';
+    if (organizationId === ommar && paymentGateway.name !== 'PAYTABS') {
+      return false;
+    }
+    if (organizationId === gs && paymentGateway.name !== 'STRIPE') {
+      return false;
+    }
+    return true;
+  }
+
+  async donate(request: DonorDonateDto): Promise<DonorDonateResponse> {
+    const tracer = trace.getTracer('tmra-raise');
+    const span = tracer.startSpan('Stripe Payment Trace ', {
+      attributes: { 'donor.firstName': '-' },
+    });
+    const session = await this.connection.startSession(); // inject mongodb transaction
+    this.logger.debug('trying to donate');
+
+    try {
+      session.startTransaction(); // start mongodb transaction
+
+      const pgData = await this.paymentGatewayModel
+        .findOne({
+          organizationId: new Types.ObjectId(request.organizationId),
+        })
+        .session(session);
+      if (!pgData) {
+        throw new NotFoundException(
+          `Payment gateway not found for organization ${request.organizationId}`,
+        );
+      }
+
+      // check if payment gateway is allowed for this organization
+      const allowed = await this.paymentGatewayPermissionsCheck(
+        request.organizationId,
+        pgData,
+      );
+      if (!allowed) {
+        throw new ForbiddenException(
+          `Payment gateway ${pgData.name} is not allowed for organization ${request.organizationId}`,
+        );
+      }
+
+      let donorDetails: DonorDocument | null = null;
+      if (request.user) {
+        const details = await this.donorModel
+          .findOne({
+            ownerUserId: request.user._id,
+            organizationId: new Types.ObjectId(request.organizationId),
+          })
+          .session(session);
+        if (!details) {
+          throw new NotFoundException(
+            `Donor not found for user ${request.user._id} and organization ${request.organizationId}`,
+          );
+        }
+        donorDetails = details;
+      }
+
+      const donationLogId = new Types.ObjectId(); // as _id of donation Log, an ref for donation details
+      // if there's 5 campaign, 2 items, and 1 project, then it will create 8 donation details, and 1 donation log, 1 payment data
+      let donationDetail: DonationDetail[] = [];
+
+      //!TODO: provide tmp for item to pay(paymentgateway related requirement), and total of the amount,
+      let itemToPay: IPaymentGatewayItems[] = [];
+      let totalAmount = 0;
+      request.donationDetails.forEach(async (donation) => {
+        if (['campaign', 'project'].includes(donation.donationType)) {
+          if (!donation.donatedAmount) {
+            throw new BadRequestException(`Please provide donated amount!`);
+          }
+        }
+
+        if (donation.donationType === 'item' && !donation.qty) {
+          throw new BadRequestException(`Please provide quantity of the item!`);
+        }
+
+        if (donation.donationType === 'item') {
+          const result = await this.mapDonateTypeItem(
+            donation.itemId,
+            donation.qty,
+            donationLogId,
+            session,
+          );
+          itemToPay.push(result.items);
+          totalAmount += result.subAmount;
+          donationDetail.push(result.donationDetails);
+        } else if (donation.donationType === 'project') {
+          const result = await this.mapDonateTypeProject(
+            donation.projectId,
+            donation.donatedAmount,
+            donationLogId,
+            session,
+          );
+          itemToPay.push(result.items);
+          totalAmount += result.subAmount;
+          donationDetail.push(result.donationDetails);
+        } else if (donation.donationType === 'campaign') {
+          const result = await this.mapDonateTypeCampaign(
+            donation.campaignId,
+            donation.donatedAmount,
+            donationLogId,
+            session,
+          );
+          itemToPay.push(result.items);
+          totalAmount += result.subAmount;
+          donationDetail.push(result.donationDetails);
+        }
+      });
+
+      //!TODO: create tmp data for paymentData models
+      let stripeResponse: Stripe.Response<Stripe.Checkout.Session> | null =
+        null;
+      let paytabsResponse: PaytabsCreateTransactionResponse | null = null;
+
+      if (pgData.name === 'STRIPE') {
+        let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+        itemToPay.forEach((item) => {
+          lineItems.push({
+            name: item.name! || '',
+            amount: item.total! || 0,
+            currency: pgData.defaultCurrency || '',
+            quantity: item.quantity || 1,
+          });
+        });
+        const stripeParams: Stripe.Checkout.SessionCreateParams = {
+          success_url:
+            request.stripeSuccessUrl ||
+            'https://givingsadaqah-staging.tmra.io/',
+          cancel_url: request.stripeCancelUrl || 'https://dev.tmra.io',
+          customer_email: donorDetails?.email || '',
+          line_items: lineItems,
+          mode: 'payment',
+          submit_type: 'donate',
+        };
+        const response =
+          await this.stripeService.createStripeCheckoutTransaction(
+            stripeParams,
+            pgData.apiKey!,
+          );
+        stripeResponse = response;
+      }
+
+      if (pgData.name === 'PAYTABS') {
+        const firstName = donorDetails?.firstName || ''; // case of unfilled name
+        const lastName = donorDetails?.lastName || ''; // case of unfilled name
+        const name = `${firstName} ${lastName}`;
+
+        const paytabsPayload: PaytabsPaymentRequestPayloadModel = {
+          profile_id: pgData.profileId!,
+          cart_amount: totalAmount,
+          cart_currency:
+            (pgData.defaultCurrency! as PaytabsCurrencyEnum) || 'SAR',
+          cart_description: `donate [${donationLogId}]`,
+          cart_id: `${donationLogId}`,
+          tran_type: PaytabsTranType.SALE,
+          tran_class: PaytabsTranClass.ECOM,
+          // !TODO: change the harcoded value with env variable later on
+          callback: `https://api-staging.tmra.io/v2/raise/donor/donatePaytabs/callback`,
+          framed: true,
+          hide_shipping: true,
+          customer_details: {
+            name: name || '',
+            email: donorDetails?.email || '',
+            phone: donorDetails?.mobile || '',
+            street1: donorDetails?.address || '',
+            city: donorDetails?.city || '',
+            state: donorDetails?.state || '',
+            country: donorDetails?.country || '',
+            zip: donorDetails?.zipcode || '',
+          },
+        };
+
+        const response = await this.paytabsService.createTransaction(
+          paytabsPayload,
+          pgData.serverKey!,
+        );
+        paytabsResponse = response;
+      }
+
+      let transactionId = '';
+      if (stripeResponse !== null) {
+        transactionId = stripeResponse.id;
+      } else if (paytabsResponse !== null) {
+        transactionId = paytabsResponse.tran_ref;
+      } else {
+        throw new BadRequestException('Payment gateway not supported');
+      }
+
+      let now = moment().toISOString();
+
+      const createdDonationLogData = await new this.donationLogModel({
+        _id: donationLogId,
+        donorId: donorDetails?._id || null,
+        paymentGatewayId: pgData._id,
+        paymentGatewayName: pgData.name || '',
+        donationStatus: DonationStatus.PENDING,
+        amount: totalAmount,
+        currency: pgData.defaultCurrency || '',
+        createdAt: now,
+        updatedAt: now,
+        transactionId,
+        ipAddress: '',
+      }).save({ session });
+
+      if (!createdDonationLogData) {
+        throw Error('Donation log creation failed');
+      }
+
+      // create many donation details with foreach on donationDetail
+      const createdDonationDetails: DonationDetailDocument[] = [];
+      donationDetail.forEach(async (donation) => {
+        const createdDonationDetailData = await new this.donationDetailModel(
+          donation,
+        ).save({ session });
+        if (!createdDonationDetailData) {
+          throw Error('Donation detail creation failed');
+        }
+        createdDonationDetails.push(createdDonationDetailData);
+      });
+      // const createdDonationDetails = await this.donationDetailModel.insertMany(
+      //   donationDetail,
+      //   { session },
+      // );
+
+      const insertPaymentData = await new this.paymentDataModel({
+        _id: new Types.ObjectId(),
+        donationId: createdDonationLogData._id,
+        merchantId: pgData.profileId,
+        payerId: '',
+        orderId: transactionId,
+        cardType: '',
+        cardScheme: '',
+        paymentDescription: '',
+        expiryMonth: '',
+        expiryYear: '',
+        responseStatus: '',
+        responseCode: '',
+        responseMessage: '',
+        cvvResult: '',
+        avsResult: '',
+        transactionTime: '',
+        paymentStatus: 'PENDING',
+      }).save({ session });
+
+      if (!insertPaymentData) {
+        throw Error('Payment data creation failed');
+      }
+
+      const response: DonorDonateResponse = {
+        paytabsResponse,
+        stripeResponse,
+        createdDonationLog: createdDonationLogData,
+        createdDonationDetails,
+        createdPaymentData: insertPaymentData,
+      };
+      // await session.commitTransaction(); // apply changes to database if no error occured.
+      return response;
+    } catch (error) {
+      await session.abortTransaction(); // rollback changes if error occured.
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+        message: error.message,
+      });
+      throw Error(error);
+    } finally {
+      session.endSession(); // close mongodb session
+      span.end();
+    }
+  }
+
+  async mapDonateTypeItem(
+    itemId: string,
+    qty: number,
+    donationLogId: Types.ObjectId,
+    mongoSession: ClientSession,
+  ): Promise<DonorDonationTypeMapResult> {
+    const item = await this.itemModel
+      .findOne({ itemId: new Types.ObjectId(itemId) })
+      .session(mongoSession);
+    if (!item) {
+      throw new BadRequestException(`Item not found`);
+    }
+    const result: DonorDonationTypeMapResult = {
+      items: {
+        id: item._id.toString(),
+        name: item.name,
+        price: Number(item.defaultPrice),
+        total: Number(item.defaultPrice) * qty,
+        quantity: qty,
+      },
+      subAmount: Number(item.defaultPrice) * qty,
+      donationDetails: {
+        donationLogId,
+        donationType: DonationType.ITEM,
+        itemId: item._id,
+        qty: qty,
+        totalAmount: Number(item.defaultPrice) * qty,
+      },
+    };
+    return result;
+  }
+
+  async mapDonateTypeCampaign(
+    campaignIds: string,
+    donateAmount: number,
+    donationLogId: Types.ObjectId,
+    mongoSession: ClientSession,
+  ): Promise<DonorDonationTypeMapResult> {
+    const campaign = await this.campaignModel
+      .findOne({ campaignId: new Types.ObjectId(campaignIds) })
+      .session(mongoSession);
+    if (!campaign) {
+      throw new BadRequestException(`Campaign not found`);
+    }
+    const result: DonorDonationTypeMapResult = {
+      items: {
+        id: campaign._id.toString(),
+        name: campaign.campaignName,
+        price: donateAmount,
+        total: donateAmount,
+        quantity: 1,
+      },
+      subAmount: donateAmount,
+      donationDetails: {
+        donationLogId,
+        donationType: DonationType.CAMPAIGN,
+        campaignId: campaign._id,
+        qty: 1,
+        totalAmount: donateAmount,
+      },
+    };
+    return result;
+  }
+
+  async mapDonateTypeProject(
+    projectIds: string,
+    donateAmount: number,
+    donationLogId: Types.ObjectId,
+    mongoSession: ClientSession,
+  ): Promise<DonorDonationTypeMapResult> {
+    const project = await this.projectModel
+      .findOne({ projectId: new Types.ObjectId(projectIds) })
+      .session(mongoSession);
+    if (!project) {
+      throw new BadRequestException(`Project not found`);
+    }
+    const result: DonorDonationTypeMapResult = {
+      items: {
+        id: project._id.toString(),
+        name: project.name,
+        price: donateAmount,
+        total: donateAmount,
+        quantity: 1,
+      },
+      subAmount: donateAmount,
+      donationDetails: {
+        donationLogId,
+        donationType: DonationType.PROJECT,
+        projectId: project._id,
+        qty: 1,
+        totalAmount: donateAmount,
+      },
+    };
+    return result;
   }
 
   async donateSingleItem(
@@ -320,25 +714,25 @@ export class DonorService {
       throw new BadRequestException(`Donation log not found`);
     }
 
-    let status: DonationStatus = DonationStatus.pending;
+    let status: DonationStatus = DonationStatus.PENDING;
     switch (request.payment_result.response_status) {
       case PaytabsResponseStatus.A:
-        status = DonationStatus.success;
+        status = DonationStatus.SUCCESS;
         break;
       case PaytabsResponseStatus.D:
-        status = DonationStatus.declined;
+        status = DonationStatus.DECLINED;
         break;
       case PaytabsResponseStatus.E:
-        status = DonationStatus.error;
+        status = DonationStatus.ERROR;
         break;
       case PaytabsResponseStatus.H:
-        status = DonationStatus.hold;
+        status = DonationStatus.HOLD;
         break;
       case PaytabsResponseStatus.P:
-        status = DonationStatus.pending;
+        status = DonationStatus.PENDING;
         break;
       case PaytabsResponseStatus.V:
-        status = DonationStatus.voided;
+        status = DonationStatus.VOIDED;
         break;
     }
     console.log('payment status', status);

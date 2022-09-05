@@ -1,11 +1,10 @@
 import { Global, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { PaymentPaytabsService } from './payment-paytabs.service';
-import { PaymentPaytabsController } from './payment-paytabs.controller';
 import {
   DonationLogs,
   DonationLogSchema,
 } from 'src/donor/schema/donation_log.schema';
+import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
 import {
   PaymentData,
   PaymentDataSchema,
@@ -14,7 +13,7 @@ import {
   PaymentGateway,
   PaymentGatewaySchema,
 } from 'src/payment-stripe/schema/paymentGateway.schema';
-import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
+import { PaytabsService } from './services/paytabs.service';
 
 @Global()
 @Module({
@@ -38,8 +37,7 @@ import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
       },
     ]),
   ],
-  providers: [PaymentPaytabsService],
-  exports: [PaymentPaytabsService],
-  controllers: [PaymentPaytabsController],
+  providers: [PaytabsService],
+  exports: [PaytabsService],
 })
-export class PaymentPaytabsModule {}
+export class PaytabsModule {}

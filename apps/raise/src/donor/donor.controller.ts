@@ -15,7 +15,7 @@ import { Vendor } from '../buying/vendor/vendor.schema';
 import { CurrentUser } from '../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../commons/dtos/base-response';
 import { baseResponseHelper } from '../commons/helpers/base-response-helper';
-import { PaytabsIpnWebhookResponsePayload } from '../libs/payment-paytabs/dtos/response/paytabs-ipn-webhook-response-payload.dto';
+import { PaytabsIpnWebhookResponsePayload } from '../libs/paytabs/dtos/response/paytabs-ipn-webhook-response-payload.dto';
 import { rootLogger } from '../logger';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { DonorService } from './donor.service';
@@ -23,6 +23,8 @@ import { DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
 import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
 import { DonorDonateItemResponse } from './dto/donor-donate-item-response';
 import { DonorDonateItemDto } from './dto/donor-donate-item.dto';
+import { DonorDonateResponse } from './dto/donor-donate-response.dto';
+import { DonorDonateDto } from './dto/donor-donate.dto';
 
 @ApiTags('donor')
 @Controller('donor')
@@ -79,6 +81,36 @@ export class DonorController {
   async getAllSuccessDonation(@Param('donorId') donorId: string) {
     this.logger.debug('get success donation history ');
     return await this.donorService.getHistoryAllSuccess(donorId);
+  }
+
+  @ApiOperation({ summary: 'Create Donor Payment' })
+  @ApiResponse({
+    status: 201,
+    description: 'The Donor payment has been successfully created.',
+  })
+  @Post('/donate')
+  async donate(
+    @Body() request: DonorDonateDto,
+  ): Promise<BaseResponse<DonorDonateResponse>> {
+    const donateResponse = await this.donorService.donate(request);
+    return baseResponseHelper(
+      donateResponse,
+      HttpStatus.CREATED,
+      'Donor has successfully donated!',
+    );
+  }
+
+  @ApiOperation({ summary: 'Create Donor Payment' })
+  @ApiResponse({
+    status: 201,
+    description: 'The Donor payment has been successfully created.',
+  })
+  @Post('/donate-paytabs/webhook')
+  async donateCallback(@Body() request: PaytabsIpnWebhookResponsePayload) {
+    this.logger.debug(`webook paytabs from trans code: ${request.tran_ref}`);
+    this.logger.debug(JSON.stringify(request));
+    // !TODO: validate signature from Paytabs (valid from paytabs or not)
+    await this.donorService.donateSingleItemCallback(request);
   }
 
   @ApiOperation({ summary: 'Create Donor Payment' })
