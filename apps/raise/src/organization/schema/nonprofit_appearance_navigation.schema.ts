@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import paginate from 'mongoose-paginate-v2';
+import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
 export type AppearanceNavigationDocument = AppearanceNavigation & Document;
 
@@ -92,4 +94,6 @@ export class AppearanceNavigation {
 
 }
 
-export const AppearanceNavigationSchema = SchemaFactory.createForClass(AppearanceNavigation);
+export const AppearanceNavigationSchema = SchemaFactory.createForClass(AppearanceNavigation)
+  .plugin(paginate)
+  .plugin(aggregatePaginate);

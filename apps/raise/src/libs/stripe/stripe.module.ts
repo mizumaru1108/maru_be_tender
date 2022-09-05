@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Campaign, CampaignSchema } from 'src/campaign/campaign.schema';
 import { Anonymous, AnonymousSchema } from 'src/donor/schema/anonymous.schema';
@@ -30,6 +30,7 @@ import {
 } from '../../payment-stripe/schema/paymentGateway.schema';
 import { StripeService } from './services/stripe.service';
 
+@Global()
 @Module({
   imports: [
     MongooseModule.forFeature([

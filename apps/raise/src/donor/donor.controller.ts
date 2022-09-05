@@ -10,6 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { PaginatedResponse } from 'src/commons/dtos/paginated-response.dto';
+import { paginationHelper } from 'src/commons/helpers/pagination-helper';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { Vendor } from '../buying/vendor/vendor.schema';
 import { CurrentUser } from '../commons/decorators/current-user.decorator';
@@ -19,12 +21,19 @@ import { PaytabsIpnWebhookResponsePayload } from '../libs/paytabs/dtos/response/
 import { rootLogger } from '../logger';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { DonorService } from './donor.service';
-import { DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
+import {
+  DonorListDto,
+  DonorListTrxDto,
+  DonorPaymentSubmitDto,
+  DonorUpdateProfileDto,
+} from './dto';
 import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
 import { DonorDonateItemResponse } from './dto/donor-donate-item-response';
 import { DonorDonateItemDto } from './dto/donor-donate-item.dto';
 import { DonorDonateResponse } from './dto/donor-donate-response.dto';
 import { DonorDonateDto } from './dto/donor-donate.dto';
+import { DonationLogDocument as DonationLogsDocument } from './schema/donation_log.schema';
+import { Donor } from './schema/donor.schema';
 
 @ApiTags('donor')
 @Controller('donor')
@@ -207,5 +216,56 @@ export class DonorController {
   ) {
     this.logger.debug('get TotalDonationDonor');
     return await this.donorService.getTotalDonationDonor(donorId, currency);
+  }
+
+  @Get('donorTransaction')
+  async getTrxDonorList(
+    @Query() filter: DonorListTrxDto,
+    // ): Promise<PaginatedResponse<DonationLogDocument[]>> {
+  ): Promise<PaginatedResponse<DonationLogsDocument[]>> {
+    this.logger.debug('get All Donor Transaction');
+    //return await this.donorService.getTrxDonorList(filter);
+
+    const donorsList = await this.donorService.getTrxDonorList(filter);
+
+    const response = paginationHelper(
+      donorsList.docs,
+      donorsList.totalDocs,
+      donorsList.limit,
+      donorsList.page,
+      donorsList.totalPages,
+      donorsList.pagingCounter,
+      donorsList.hasPrevPage,
+      donorsList.hasNextPage,
+      donorsList.prevPage,
+      donorsList.nextPage,
+      HttpStatus.OK,
+      'Successfully get list all donor transactions',
+    );
+    return response;
+  }
+  @Get('donorList')
+  async getDonorList(
+    @Query() filter: DonorListDto,
+  ): Promise<PaginatedResponse<Donor[]>> {
+    this.logger.debug('get All Donor List');
+
+    const donorsList = await this.donorService.getDonorList(filter);
+
+    const response = paginationHelper(
+      donorsList.docs,
+      donorsList.totalDocs,
+      donorsList.limit,
+      donorsList.page,
+      donorsList.totalPages,
+      donorsList.pagingCounter,
+      donorsList.hasPrevPage,
+      donorsList.hasNextPage,
+      donorsList.prevPage,
+      donorsList.nextPage,
+      HttpStatus.OK,
+      'Successfully get list all donor',
+    );
+    return response;
   }
 }

@@ -1,10 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import paginate from 'mongoose-paginate-v2';
+import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
 export type DonorDocument = Donor & Document;
 
 @Schema({ collection: 'donor' })
 export class Donor {
+
+  @Prop()
+  organizationId: string;
+
   @Prop()
   isAnonymous: boolean;
 
@@ -66,4 +72,6 @@ export class Donor {
   profilePic: string;
 }
 
-export const DonorSchema = SchemaFactory.createForClass(Donor);
+export const DonorSchema = SchemaFactory.createForClass(Donor)
+  .plugin(paginate)
+  .plugin(aggregatePaginate);

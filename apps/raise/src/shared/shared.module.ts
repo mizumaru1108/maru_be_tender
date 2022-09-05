@@ -4,6 +4,7 @@ import { BunnyModule } from '../libs/bunny/bunny.module';
 import { EmailModule } from '../libs/email/email.module';
 import { FusionAuthModule } from '../libs/fusionauth/fusion-auth.module';
 import { PaytabsModule } from '../libs/paytabs/paytabs.module';
+import { StripeModule } from '../libs/stripe/stripe.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { PaytabsModule } from '../libs/paytabs/paytabs.module';
     AuthzedModule,
     EmailModule,
     PaytabsModule,
+    StripeModule,
   ],
 })
 export class SharedModule {}

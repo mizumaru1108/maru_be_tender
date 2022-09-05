@@ -28,6 +28,10 @@ import {
   PaymentDataSchema,
 } from '../payment-stripe/schema/paymentData.schema';
 import { Project, ProjectSchema } from '../project/project.schema';
+import {
+  DonationDetail,
+  DonationDetailSchema,
+} from './schema/donation-detail.schema';
 
 @Module({
   imports: [
@@ -47,6 +51,10 @@ import { Project, ProjectSchema } from '../project/project.schema';
       {
         name: DonationLog.name,
         schema: DonationLogSchema,
+      },
+      {
+        name: DonationDetail.name,
+        schema: DonationDetailSchema,
       },
       {
         name: DonationLogs.name,

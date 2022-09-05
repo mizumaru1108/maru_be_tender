@@ -30,12 +30,16 @@ import {
   EditNonProfitAppearanceNavigationAboutUsDto,
   EditNonProfitAppearanceNavigationBlogDto,
   EditNonProfitAppearanceNavigationDto,
+  EditNonProfApperNavDto,
 } from './dto/nonprofit_appearance_navigation.dto';
 import { DonorsFilterDto, FilterDonorDashboardDto } from './dto';
 import { PaginatedResponse } from 'src/commons/dtos/paginated-response.dto';
 import { paginationHelper } from 'src/commons/helpers/pagination-helper';
 import { DonationLogDocument } from 'src/donor/schema/donation-log.schema';
 import { DonationLogDocument as DonationLogsDocument } from 'src/donor/schema/donation_log.schema';
+import { BaseResponse } from 'src/commons/dtos/base-response';
+import { AppearanceNavigation } from './schema/nonprofit_appearance_navigation.schema';
+import { baseResponseHelper } from 'src/commons/helpers/base-response-helper';
 
 @ApiTags('orgs')
 @Controller('orgs')
@@ -104,6 +108,7 @@ export class OrganizationController {
     this.logger.debug('fetching donor list...');
     return await this.organizationService.getDonorList(organizationId);
   }
+
   @Get('donor')
   async getDonorsList(@Query() filter: DonorsFilterDto,)
     : Promise<PaginatedResponse<DonationLogsDocument[]>> {
@@ -279,12 +284,21 @@ export class OrganizationController {
   async editLandingPage(
     @Param('organizationId') organizationId: string,
     @Body()
-    editNonProfitAppearanceNavigationDto: EditNonProfitAppearanceNavigationDto,
-  ) {
-    return await this.organizationService.editLandingPage(
+    // editNonProfitAppearanceNavigationDto: EditNonProfitAppearanceNavigationDto,
+    editNonProfitAppearanceNavigationDto: EditNonProfApperNavDto,
+  ): Promise<BaseResponse<AppearanceNavigation>> {
+    const editLandingPage = await this.organizationService.editLandingPage(
       organizationId,
       editNonProfitAppearanceNavigationDto,
     );
+
+    const response = baseResponseHelper(
+      editLandingPage,
+      HttpStatus.OK,
+      'Campaign updated',
+    );
+    return response;
+
   }
   @Put(':organizationId/aboutUs')
   async editAboutUs(

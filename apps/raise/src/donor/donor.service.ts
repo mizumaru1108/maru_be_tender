@@ -9,7 +9,14 @@ import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { ApiOperation } from '@nestjs/swagger';
 import moment from 'moment';
-import { ClientSession, Model, Types, Connection } from 'mongoose';
+import {
+  ClientSession,
+  Model,
+  Types,
+  Connection,
+  AggregatePaginateModel,
+  AggregatePaginateResult,
+} from 'mongoose';
 import {
   PaymentGateway,
   PaymentGatewayDocument,
@@ -41,7 +48,12 @@ import {
 } from '../payment-stripe/schema/paymentData.schema';
 import { Project, ProjectDocument } from '../project/project.schema';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
-import { DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
+import {
+  DonorListDto,
+  DonorListTrxDto,
+  DonorPaymentSubmitDto,
+  DonorUpdateProfileDto,
+} from './dto';
 import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
 import { DonorDonateItemResponse } from './dto/donor-donate-item-response';
 import { DonorDonateItemDto } from './dto/donor-donate-item.dto';
@@ -80,10 +92,16 @@ export class DonorService {
     private configService: ConfigService, // no need to import in donor module (modular utils)
     @InjectModel(Donor.name)
     private donorModel: Model<DonorDocument>,
+    @InjectModel(Donor.name)
+    private donorAggregatePaginateModel: AggregatePaginateModel<DonorDocument>,
     @InjectModel(Volunteer.name)
     private volunteerModel: Model<VolunteerDocument>,
     @InjectModel(DonationLog.name)
     private donationLogModel: Model<DonationLogDocument>,
+    @InjectModel(DonationLog.name)
+    private campaignAggregatePaginateModel: AggregatePaginateModel<DonationLogDocument>,
+    @InjectModel(DonationLog.name)
+    private donorLogsAggregatePaginateModel: AggregatePaginateModel<DonationLogsDocument>,
     @InjectModel(DonationLogs.name)
     private donationLogsModel: Model<DonationLogsDocument>,
     @InjectModel(DonationDetail.name)
@@ -469,6 +487,7 @@ export class DonorService {
         createdDonationDetails,
         createdPaymentData: insertPaymentData,
       };
+      console.log('response', response);
       // await session.commitTransaction(); // apply changes to database if no error occured.
       return response;
     } catch (error) {
@@ -1446,5 +1465,249 @@ export class DonorService {
       campaign_per_type: campaignPerType.slice(0, 5),
       donor_list: donorList,
     };
+  }
+
+  /** Get All Donor Transaction List / Exlude Zakat Campaign Trx */
+  // async getTrxDonorList(filter: DonorListTrxDto): Promise<AggregatePaginateResult<DonationLogDocument>> {
+  async getTrxDonorList(
+    filter: DonorListTrxDto,
+  ): Promise<AggregatePaginateResult<DonationLogsDocument>> {
+    this.logger.debug(
+      `getTransactions Donors organizationId=${filter.organizationId}`,
+    );
+    const {
+      limit = 10,
+      page = 1,
+      createdAt,
+      donationStatus,
+      amount,
+      email,
+    } = filter;
+    let sortData = {};
+
+    sortData = {
+      _id: createdAt == 'asc' ? 1 : -1,
+    };
+
+    if (createdAt) {
+      sortData = {
+        createdAt: createdAt == 'asc' ? 1 : -1,
+      };
+    }
+    if (donationStatus) {
+      sortData = {
+        donationStatus: donationStatus == 'asc' ? 1 : -1,
+      };
+    }
+    if (amount) {
+      sortData = {
+        amount: amount == 'asc' ? 1 : -1,
+      };
+    }
+    if (email) {
+      sortData = {
+        email: email == 'asc' ? 1 : -1,
+      };
+    }
+    //console.log('currency', 'orgsID', new Types.ObjectId(filter.organizationId));
+
+    const exZakat = filter.exZktList
+      ? filter.exZktList
+      : '6299ed6a9f1ad428563563ed';
+    //const aggregateQuerry = this.donationLogsModel.aggregate();
+    // const aggregateQuerry = this.donationLogsModel.aggregate([
+    const aggregateQuerry = this.donationLogModel.aggregate([
+      {
+        $match: {
+          nonprofitRealmId: new Types.ObjectId(filter.organizationId),
+          campaignId: { $nin: [new Types.ObjectId(exZakat)] },
+        },
+      },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'donorUserId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'anonymous',
+          localField: '_id',
+          foreignField: 'donationLogId',
+          as: 'anonymous',
+        },
+      },
+      {
+        $unwind: {
+          path: '$anonymous',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: {
+          donorName: {
+            $cond: {
+              if: { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              then: {
+                $concat: ['$anonymous.firstName', ' ', '$anonymous.lastName'],
+              },
+              else: {
+                $concat: ['$user.firstname', ' ', '$user.lastname'],
+              },
+            },
+          },
+          email: {
+            $cond: [
+              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              '$anonymous.email',
+              '$user.email',
+            ],
+          },
+        },
+      },
+      // {
+      //   $match:
+      //   {
+      //     nonprofitRealmId: new Types.ObjectId(filter.organizationId),
+      //     campaignId: { $nin: [new Types.ObjectId(exZakat)] }
+      //   }
+      // }
+      // ,
+      {
+        $group: {
+          _id: '$_id',
+          createdAt: { $first: '$createdAt' },
+          donationStatus: { $first: '$donationStatus' },
+          amount: { $first: '$amount' },
+          donorName: { $first: '$donorName' },
+          email: { $first: '$email' },
+        },
+      },
+      // ,
+      // {
+      //   $sort: sortData,
+      // },
+    ]);
+
+    const donorTrxList =
+      // await this.campaignAggregatePaginateModel.aggregatePaginate(
+      await this.donorLogsAggregatePaginateModel.aggregatePaginate(
+        aggregateQuerry,
+        {
+          page,
+          limit,
+          sort: sortData,
+        },
+      );
+    console.log('Ini logs ==>', donorTrxList);
+    return donorTrxList;
+  }
+
+  /** Get All Donor List  */
+  async getDonorList(
+    filter: DonorListDto,
+  ): Promise<AggregatePaginateResult<Donor>> {
+    this.logger.debug(
+      `get Donors list organizationId=${filter.organizationId}`,
+    );
+    const {
+      limit = 10,
+      page = 1,
+      organizationId,
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      country,
+      type,
+    } = filter;
+    let sortData = {};
+
+    sortData = {
+      _id: firstName == 'asc' ? 1 : -1,
+    };
+
+    if (firstName) {
+      sortData = {
+        firstName: firstName == 'asc' ? 1 : -1,
+      };
+    }
+    if (lastName) {
+      sortData = {
+        lastName: lastName == 'asc' ? 1 : -1,
+      };
+    }
+    if (email) {
+      sortData = {
+        email: email == 'asc' ? 1 : -1,
+      };
+    }
+    if (phoneNumber) {
+      sortData = {
+        phoneNumber: phoneNumber == 'asc' ? 1 : -1,
+      };
+    }
+    if (country) {
+      sortData = {
+        country: country == 'asc' ? 1 : -1,
+      };
+    }
+    if (type) {
+      sortData = {
+        type: type == 'asc' ? 1 : -1,
+      };
+    }
+
+    const aggregateQuerry = this.donorModel.aggregate([
+      {
+        $match: {
+          organizationId: organizationId,
+        },
+      },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'ownerUserId',
+          foreignField: '_id',
+          as: 'users',
+        },
+      },
+      {
+        $unwind: {
+          path: '$users',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
+        $group: {
+          _id: '$_id',
+          firstName: { $first: '$firstName' },
+          lastName: { $first: '$lastName' },
+          email: { $first: '$email' },
+          phoneNumber: { $first: '$mobile' },
+          country: { $first: '$country' },
+          type: { $first: '$users.type' },
+        },
+      },
+    ]);
+
+    const donorList = await this.donorAggregatePaginateModel.aggregatePaginate(
+      aggregateQuerry,
+      {
+        page,
+        limit,
+        sort: sortData,
+      },
+    );
+    return donorList;
   }
 }
