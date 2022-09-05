@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { AggregatePaginateModel, AggregatePaginateResult, Model, Types } from 'mongoose';
 import { rootLogger } from '../logger';
@@ -53,11 +53,13 @@ import {
   EditNonProfitAppearanceNavigationAboutUsDto,
   EditNonProfitAppearanceNavigationBlogDto,
   EditNonProfitAppearanceNavigationDto,
+  EditNonProfApperNavDto,
 } from './dto/nonprofit_appearance_navigation.dto';
 
 import { DonorsFilterDto, FilterDonorDashboardDto } from './dto';
 import { FilterQueryDonorDashboard } from './enums';
 import { EmailService } from '../libs/email/email.service';
+import { BunnyService } from '../libs/bunny/services/bunny.service';
 
 @Injectable()
 export class OrganizationService {
@@ -90,6 +92,7 @@ export class OrganizationService {
     private readonly emailService: EmailService,
     @InjectModel(DonationLogs.name)
     private campaignAggregatePaginateModel: AggregatePaginateModel<DonationLogDocument>,
+    private bunnyService: BunnyService,
   ) { }
 
   async findAll() {
@@ -1296,20 +1299,151 @@ export class OrganizationService {
   }
   async editLandingPage(
     organizationId: string,
-    editNonProfitAppearanceNavigationDto: EditNonProfitAppearanceNavigationDto,
-  ) {
+    // editNonProfitAppearanceNavigationDto: EditNonProfitAppearanceNavigationDto,
+    editNonProfitAppearanceNavigationDto: EditNonProfApperNavDto,
+  ): Promise<AppearanceNavigation> {
     this.logger.debug(`Get Organization ${organizationId}...`);
     const getOrgsId = await this.getOrganization(organizationId);
-    if (getOrgsId.statusCode === 404) {
-      return {
-        statusCode: 404,
-        message: 'Organization not found',
-      };
+    if (!getOrgsId) {
+      throw new NotFoundException(`OrganizationId ${organizationId} not found`);
     }
+
+
+
+    const missionPath: any = [];
+    /** Create Path Url ForImage mission */
+    if (
+      editNonProfitAppearanceNavigationDto &&
+      editNonProfitAppearanceNavigationDto.mission
+    ) {
+      const dataMission = JSON.stringify(editNonProfitAppearanceNavigationDto.mission);
+      const mission = JSON.parse(dataMission);
+      for (let i = 0; i < mission.length; i++) {
+        console.log('Icon Mission', editNonProfitAppearanceNavigationDto.mission, 'Lengt Json', mission.length);
+        const path = await this.bunnyService.generatePath(
+          editNonProfitAppearanceNavigationDto.organizationId!,
+          'landingpage-mission',
+          mission[i].fullName,
+          mission[i].imageExtension,
+          editNonProfitAppearanceNavigationDto.organizationId,
+        );
+        const base64Data = mission[i].iconMission;
+        const binary = Buffer.from(
+          mission[i]!.iconMission!,
+          'base64',
+        );
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+
+        const imageUpload = await this.bunnyService.uploadImage(
+          path,
+          binary,
+          editNonProfitAppearanceNavigationDto.organizationId!,
+        );
+
+        missionPath.push({
+          mission: mission[i].mission, iconMission: path
+        })
+
+        if (imageUpload) {
+          if (mission[i].mission.iconMission) {
+            console.info(
+              'Old Mission image seems to be exist in the old record',
+            );
+            const isExist = await this.bunnyService.checkIfImageExists(
+              mission[i].mission.iconMission,
+            );
+            if (isExist) {
+              await this.bunnyService.deleteImage(
+                mission[i].mission.iconMission,
+              );
+            }
+          }
+          console.info('Mission image has been replaced');
+          mission[i].mission.iconMission = path;
+        }
+      }
+
+    }
+    const whyUsPath: any = [];
+    /** Create Path Url ForImage why Us */
+    if (
+      editNonProfitAppearanceNavigationDto &&
+      editNonProfitAppearanceNavigationDto.whyUs
+    ) {
+      const whyUsMission = JSON.stringify(editNonProfitAppearanceNavigationDto.whyUs);
+      const whyUs = JSON.parse(whyUsMission);
+      for (let i = 0; i < whyUs.length; i++) {
+        console.log('Icon Why US', editNonProfitAppearanceNavigationDto.whyUs, 'Length Json', whyUs.length);
+        const path = await this.bunnyService.generatePath(
+          editNonProfitAppearanceNavigationDto.organizationId!,
+          'landingpage-whyus',
+          whyUs[i].fullName,
+          whyUs[i].imageExtension,
+          editNonProfitAppearanceNavigationDto.organizationId,
+        );
+        const base64Data = whyUs[i].iconWhyUs;
+        const binary = Buffer.from(
+          whyUs[i]!.iconWhyUs!,
+          'base64',
+        );
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+
+        const imageUpload = await this.bunnyService.uploadImage(
+          path,
+          binary,
+          editNonProfitAppearanceNavigationDto.organizationId!,
+        );
+
+        whyUsPath.push({
+          whyUs: whyUs[i].whyUs, iconForMission: path
+        })
+
+        if (imageUpload) {
+          if (whyUs[i].whyUs.iconWhyUs) {
+            console.info(
+              'Old WhyUs image seems to be exist in the old record',
+            );
+            const isExist = await this.bunnyService.checkIfImageExists(
+              whyUs[i].whyUs.iconWhyUs,
+            );
+            if (isExist) {
+              await this.bunnyService.deleteImage(
+                whyUs[i].whyUs.iconWhyUs,
+              );
+            }
+          }
+          console.info('WhyUs image has been replaced');
+          whyUs[i].whyUs.iconWhyUs = path;
+        }
+      }
+
+    }
+
+    console.log('Path Missiion', missionPath);
+    console.log('Path WhyUs', whyUsPath);
+
 
     let now: Date = new Date();
     editNonProfitAppearanceNavigationDto.organizationId = organizationId;
     editNonProfitAppearanceNavigationDto.updatedAt = now.toISOString();
+    editNonProfitAppearanceNavigationDto.mission = missionPath;
+    editNonProfitAppearanceNavigationDto.whyUs = whyUsPath;
 
     this.logger.debug('Edit Landingpage Organization...');
     const landingPageUpdated =
@@ -1320,17 +1454,71 @@ export class OrganizationService {
       );
 
     if (!landingPageUpdated) {
-      return {
-        statusCode: 400,
-        message: 'Failed',
-      };
+      throw new BadRequestException(
+        {
+          statusCode: 400,
+          message: `Failed to update Landingpage`,
+        },
+      );
     }
 
-    return {
-      statusCode: 200,
-      notification: landingPageUpdated,
-    };
+    // return {
+    //   statusCode: 200,
+    //   notification: landingPageUpdated,
+    // };
+    return landingPageUpdated;
   }
+  // async editLandingPage(
+  //   organizationId: string,
+  //   editNonProfitAppearanceNavigationDto: EditNonProfitAppearanceNavigationDto,
+  // ) {
+  //   this.logger.debug(`Get Organization ${organizationId}...`);
+  //   const getOrgsId = await this.getOrganization(organizationId);
+  //   if (getOrgsId.statusCode === 404) {
+  //     return {
+  //       statusCode: 404,
+  //       message: 'Organization not found',
+  //     };
+  //   }
+
+  //   /** Create Path Url ForImage mission */
+  //   if (
+  //     editNonProfitAppearanceNavigationDto &&
+  //     editNonProfitAppearanceNavigationDto!.mission &&
+  //     editNonProfitAppearanceNavigationDto!.mission!.length > 0
+  //   ) {
+  //     for (let i = 0; i < editNonProfitAppearanceNavigationDto!.mission!.length; i++) {
+  //       console.log('Icon Mission', editNonProfitAppearanceNavigationDto!.mission);
+
+  //     }
+
+  //   }
+
+
+  //   let now: Date = new Date();
+  //   editNonProfitAppearanceNavigationDto.organizationId = organizationId;
+  //   editNonProfitAppearanceNavigationDto.updatedAt = now.toISOString();
+
+  //   this.logger.debug('Edit Landingpage Organization...');
+  //   const landingPageUpdated =
+  //     await this.appearanceNavigationModel.findOneAndUpdate(
+  //       { organizationId: organizationId, page: 'LANDINGPAGE' },
+  //       editNonProfitAppearanceNavigationDto,
+  //       { new: true },
+  //     );
+
+  //   if (!landingPageUpdated) {
+  //     return {
+  //       statusCode: 400,
+  //       message: 'Failed',
+  //     };
+  //   }
+
+  //   return {
+  //     statusCode: 200,
+  //     notification: landingPageUpdated,
+  //   };
+  // }
 
   async editAboutUs(
     organizationId: string,

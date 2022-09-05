@@ -1,85 +1,109 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ArrayNotEmpty, IsArray, IsEmail, IsEnum, IsNotEmpty, IsString } from "class-validator";
+import { ImagePayload } from "src/commons/dtos/image-payload.dto";
+import { z } from "zod";
 import { PageNavigation, IsActive } from "../enums";
 
-export class NonProfitAppearanceNavigationDto {
+const missionDto = z.object({
+  mission: z.string().min(1),
+  iconMission: z.string(ImagePayload),
+})
+const whyUsDto = z.object({
+  whyUs: z.string().min(1),
+  iconWhyUs: z.string(ImagePayload),
+})
 
-  @ApiProperty()
-  id: string;
+// export class NonProfitAppearanceNavigationDto {
+//   @ApiProperty()
+//   id: string;
+//   @ApiProperty()
+//   @IsString()
+//   organizationId: string;
+//   @ApiProperty()
+//   @IsString()
+//   readonly ownerUserId: string;
+//   @ApiProperty()
+//   @IsString()
+//   readonly ownerRealmId: string;
+//   @ApiProperty()
+//   @IsString()
+//   readonly titleThumbnail: string;
+//   @ApiProperty()
+//   @IsString()
+//   readonly photoThumbnail: string;
+//   @ApiProperty()
+//   @IsString()
+//   readonly descriptionThumbnail: string;
+//   @ApiProperty()
+//   // @IsArray()
+//   // @ArrayNotEmpty()
+//   // readonly mission: string[];
+// mission
+//   // mission: 
+//   @ApiProperty()
+//   @IsString()
+//   readonly iconForMission: string;
+//   @ApiProperty()
+//   @IsString()
+//   readonly titleActivities: string;
+//   @ApiProperty()
+//   @IsString()
+//   readonly photoOfActivity: string;
+//   @ApiProperty()
+//   @IsString()
+//   readonly descriptionActivity: string;
+//   @ApiProperty()
+//   @IsString()
+//   readonly detailDescriptionActivity: string;
+//   @ApiProperty()
+//   @IsArray()
+//   @ArrayNotEmpty()
+//   readonly whyUs: string[];
+//   @ApiProperty()
+//   @IsArray()
+//   @ArrayNotEmpty()
+//   readonly linkCampaign: string[];
+//   @ApiProperty()
+//   @IsString()
+//   page: string = 'LANDINGPAGE';
+//   @ApiProperty()
+//   @IsEnum(() => IsActive)
+//   isDeleted: IsActive;
+//   @ApiProperty()
+//   @IsEnum(() => IsActive)
+//   isActive: IsActive;
+//   @IsString()
+//   createdAt: string;
+//   @IsString()
+//   updatedAt: string;
+// }
+export const NonProfitAppearanceNavigationDto = z.object({
+  organizationId: z.string().optional(),
+  ownerUserId: z.string().optional(),
+  ownerRealmId: z.string().optional(),
+  titleThumbnail: z.string().optional(),
+  photoThumbnail: z.string().optional(),
+  descriptionThumbnail: z.string().optional(),
+  mission: z.array(missionDto),
+  iconForMission: z.string().optional(),
+  titleActivities: z.string().optional(),
+  photoOfActivity: z.string().optional(),
+  descriptionActivity: z.string().optional(),
+  detailDescriptionActivity: z.string().optional(),
+  whyUs: z.array(whyUsDto),
+  linkCampaign: z.string().optional(),
+  page: z.string().default('LANDINGPAGE'),
+  isDeleted: z.nativeEnum(IsActive),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+export type NonProfitAppearanceNavigationDto = z.infer<typeof NonProfitAppearanceNavigationDto>;
+export const EditNonProfApperNavDto = NonProfitAppearanceNavigationDto.partial().extend({
+  mission: missionDto,
+  whyUs: whyUsDto
+});
 
-  @ApiProperty()
-  @IsString()
-  organizationId: string;
-
-  @ApiProperty()
-  @IsString()
-  readonly ownerUserId: string;
-  @ApiProperty()
-  @IsString()
-  readonly ownerRealmId: string;
-  @ApiProperty()
-  @IsString()
-  readonly titleThumbnail: string;
-  @ApiProperty()
-  @IsString()
-  readonly photoThumbnail: string;
-  @ApiProperty()
-  @IsString()
-  readonly descriptionThumbnail: string;
-
-  @ApiProperty()
-  @IsArray()
-  @ArrayNotEmpty()
-  readonly mission: string[];
-
-  @ApiProperty()
-  @IsString()
-  readonly iconForMission: string;
-
-  @ApiProperty()
-  @IsString()
-  readonly titleActivities: string;
-
-  @ApiProperty()
-  @IsString()
-  readonly photoOfActivity: string;
-
-  @ApiProperty()
-  @IsString()
-  readonly descriptionActivity: string;
-
-  @ApiProperty()
-  @IsString()
-  readonly detailDescriptionActivity: string;
-
-  @ApiProperty()
-  @IsArray()
-  @ArrayNotEmpty()
-  readonly whyUs: string[];
-
-  @ApiProperty()
-  @IsArray()
-  @ArrayNotEmpty()
-  readonly linkCampaign: string[];
-
-  @ApiProperty()
-  @IsString()
-  page: string = 'LANDINGPAGE';
-
-  @ApiProperty()
-  @IsEnum(() => IsActive)
-  isDeleted: IsActive;
-
-  @ApiProperty()
-  @IsEnum(() => IsActive)
-  isActive: IsActive;
-
-  @IsString()
-  createdAt: string;
-
-  @IsString()
-  updatedAt: string;
-}
+export type EditNonProfApperNavDto = z.infer<typeof EditNonProfApperNavDto>;
 
 export class EditNonProfitAppearanceNavigationDto {
 
@@ -396,3 +420,17 @@ export class EditNonProfitAppearanceNavigationBlogDto {
   @IsString()
   updatedAt: string;
 }
+
+// const UpdateLandingPge = NonProfitAppearanceNavigationDto.partial().extend({
+//   images: z
+//     .array(ImagePayload)
+//     .optional()
+//     .transform((val) => {
+//       if (!val) {
+//         return {} as any;
+//       }
+//       return val;
+//     }),
+// });
+
+// export type UpdateCampaignDto = z.infer<typeof UpdateCampaignDto>;
