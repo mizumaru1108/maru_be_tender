@@ -2,7 +2,10 @@ import { FusionAuthClient } from '@fusionauth/typescript-client';
 import {
   BadRequestException,
   ForbiddenException,
+  HttpException,
+  HttpStatus,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -79,6 +82,7 @@ import { StripeService } from '../libs/stripe/services/stripe.service';
 import Stripe from 'stripe';
 import { PaytabsCreateTransactionResponse } from '../libs/paytabs/dtos/response/paytabs-create-transaction-response.dto';
 import { DonorDonateResponse } from './dto/donor-donate-response.dto';
+import { isLeafType } from 'graphql';
 
 @Injectable()
 export class DonorService {
@@ -241,9 +245,13 @@ export class DonorService {
     return true;
   }
 
+  async throwError(code: HttpStatus, message?: string) {
+    return new HttpException(message || 'Something went wrong!', code);
+  }
+
   async donate(request: DonorDonateDto): Promise<DonorDonateResponse> {
     const tracer = trace.getTracer('tmra-raise');
-    const span = tracer.startSpan('Stripe Payment Trace ', {
+    const span = tracer.startSpan('Donor Donate', {
       attributes: { 'donor.firstName': '-' },
     });
     const session = await this.connection.startSession(); // inject mongodb transaction
@@ -278,13 +286,13 @@ export class DonorService {
       if (request.user) {
         const details = await this.donorModel
           .findOne({
-            ownerUserId: request.user._id,
+            ownerUserId: request.user.id,
             organizationId: new Types.ObjectId(request.organizationId),
           })
           .session(session);
         if (!details) {
           throw new NotFoundException(
-            `Donor not found for user ${request.user._id} and organization ${request.organizationId}`,
+            `Donor not found for user ${request.user.id} and organization ${request.organizationId}`,
           );
         }
         donorDetails = details;
@@ -294,54 +302,91 @@ export class DonorService {
       // if there's 5 campaign, 2 items, and 1 project, then it will create 8 donation details, and 1 donation log, 1 payment data
       let donationDetail: DonationDetail[] = [];
 
-      //!TODO: provide tmp for item to pay(paymentgateway related requirement), and total of the amount,
       let itemToPay: IPaymentGatewayItems[] = [];
       let totalAmount = 0;
-      request.donationDetails.forEach(async (donation) => {
-        if (['campaign', 'project'].includes(donation.donationType)) {
-          if (!donation.donatedAmount) {
-            throw new BadRequestException(`Please provide donated amount!`);
+
+      const mapDonationDetails = request.donationDetails.map(
+        async (donation, index) => {
+          if (['campaign', 'project'].includes(donation.donationType)) {
+            if (donation.donationType === 'campaign' && !donation.campaignId) {
+              throw new BadRequestException(
+                `Please provide campaign id! for campaign at donationDetails[${index}]`,
+              );
+            }
+            if (donation.donationType === 'project' && !donation.projectId) {
+              throw new BadRequestException(
+                `Please provide project id! for project at donationDetails[${index}]`,
+              );
+            }
+            if (!donation.donationAmount) {
+              throw new BadRequestException(
+                `Please provide donation amount! for ${donation.donationType} ${
+                  donation.donationType === 'campaign'
+                    ? `${donation.campaignId}`
+                    : `${donation.projectId}`
+                } at donationDetails[${index}]`,
+              );
+            }
           }
-        }
 
-        if (donation.donationType === 'item' && !donation.qty) {
-          throw new BadRequestException(`Please provide quantity of the item!`);
-        }
+          if (donation.donationType === 'item' && !donation.qty) {
+            throw new BadRequestException(
+              `Please provide quantity for item ${donation.itemId}, at donationDetails[${index}]`,
+            );
+          }
 
-        if (donation.donationType === 'item') {
-          const result = await this.mapDonateTypeItem(
-            donation.itemId,
-            donation.qty,
-            donationLogId,
-            session,
-          );
-          itemToPay.push(result.items);
-          totalAmount += result.subAmount;
-          donationDetail.push(result.donationDetails);
-        } else if (donation.donationType === 'project') {
-          const result = await this.mapDonateTypeProject(
-            donation.projectId,
-            donation.donatedAmount,
-            donationLogId,
-            session,
-          );
-          itemToPay.push(result.items);
-          totalAmount += result.subAmount;
-          donationDetail.push(result.donationDetails);
-        } else if (donation.donationType === 'campaign') {
-          const result = await this.mapDonateTypeCampaign(
-            donation.campaignId,
-            donation.donatedAmount,
-            donationLogId,
-            session,
-          );
-          itemToPay.push(result.items);
-          totalAmount += result.subAmount;
-          donationDetail.push(result.donationDetails);
-        }
-      });
+          if (donation.donationType === 'item') {
+            const result = await this.mapDonateTypeItem(
+              donation.itemId,
+              donation.qty,
+              donationLogId,
+              session,
+            );
+            if (!result) {
+              throw new BadRequestException(
+                `Item ${donation.itemId} not found!`,
+              );
+            }
+            itemToPay.push(result.items);
+            totalAmount += result.subAmount;
+            donationDetail.push(result.donationDetails);
+          } else if (donation.donationType === 'project') {
+            const result = await this.mapDonateTypeProject(
+              donation.projectId,
+              donation.donationAmount,
+              donationLogId,
+              session,
+            );
+            if (!result) {
+              throw new BadRequestException(
+                `Project with id ${donation.projectId} not found!`,
+              );
+            }
+            itemToPay.push(result.items);
+            totalAmount += result.subAmount;
+            donationDetail.push(result.donationDetails);
+          } else if (donation.donationType === 'campaign') {
+            const result = await this.mapDonateTypeCampaign(
+              donation.campaignId,
+              donation.donationAmount,
+              donationLogId,
+              session,
+            );
+            if (!result) {
+              throw new BadRequestException(
+                `Campaign with id ${donation.campaignId} not found!`,
+              );
+            }
+            itemToPay.push(result.items);
+            totalAmount += result.subAmount;
+            donationDetail.push(result.donationDetails);
+          }
+        },
+      );
 
-      //!TODO: create tmp data for paymentData models
+      // resolve promise on mapDonationDetails, so it can throw error if there's any
+      await Promise.all(mapDonationDetails);
+
       let stripeResponse: Stripe.Response<Stripe.Checkout.Session> | null =
         null;
       let paytabsResponse: PaytabsCreateTransactionResponse | null = null;
@@ -357,6 +402,7 @@ export class DonorService {
           });
         });
         const stripeParams: Stripe.Checkout.SessionCreateParams = {
+          client_reference_id: donationLogId.toString() || '', // as refrences to donation log if webhook is called
           success_url:
             request.stripeSuccessUrl ||
             'https://givingsadaqah-staging.tmra.io/',
@@ -385,7 +431,7 @@ export class DonorService {
           cart_currency:
             (pgData.defaultCurrency! as PaytabsCurrencyEnum) || 'SAR',
           cart_description: `donate [${donationLogId}]`,
-          cart_id: `${donationLogId}`,
+          cart_id: `${donationLogId}`, // as refrences to donation log if webhook is called
           tran_type: PaytabsTranType.SALE,
           tran_class: PaytabsTranClass.ECOM,
           // !TODO: change the harcoded value with env variable later on
@@ -440,21 +486,17 @@ export class DonorService {
         throw Error('Donation log creation failed');
       }
 
-      // create many donation details with foreach on donationDetail
-      const createdDonationDetails: DonationDetailDocument[] = [];
-      donationDetail.forEach(async (donation) => {
-        const createdDonationDetailData = await new this.donationDetailModel(
+      // create many donation details with map on donationDetail
+      const createDonationDetails = donationDetail.map(async (donation) => {
+        const createdDonationDetail = await new this.donationDetailModel(
           donation,
         ).save({ session });
-        if (!createdDonationDetailData) {
+        if (!createdDonationDetail) {
           throw Error('Donation detail creation failed');
         }
-        createdDonationDetails.push(createdDonationDetailData);
+        return createdDonationDetail as DonationDetail;
       });
-      // const createdDonationDetails = await this.donationDetailModel.insertMany(
-      //   donationDetail,
-      //   { session },
-      // );
+      const createdDonationDetails = await Promise.all(createDonationDetails);
 
       const insertPaymentData = await new this.paymentDataModel({
         _id: new Types.ObjectId(),
@@ -496,7 +538,12 @@ export class DonorService {
         code: SpanStatusCode.ERROR,
         message: error.message,
       });
-      throw Error(error);
+      console.log('error', error);
+      if (error.response.statusCode < 500) {
+        throw new BadRequestException(error.message);
+      } else {
+        throw new InternalServerErrorException(error.message);
+      }
     } finally {
       session.endSession(); // close mongodb session
       span.end();
@@ -508,12 +555,12 @@ export class DonorService {
     qty: number,
     donationLogId: Types.ObjectId,
     mongoSession: ClientSession,
-  ): Promise<DonorDonationTypeMapResult> {
+  ): Promise<DonorDonationTypeMapResult | null> {
     const item = await this.itemModel
       .findOne({ itemId: new Types.ObjectId(itemId) })
       .session(mongoSession);
     if (!item) {
-      throw new BadRequestException(`Item not found`);
+      return null;
     }
     const result: DonorDonationTypeMapResult = {
       items: {
@@ -537,31 +584,31 @@ export class DonorService {
 
   async mapDonateTypeCampaign(
     campaignIds: string,
-    donateAmount: number,
+    donationAmount: number,
     donationLogId: Types.ObjectId,
     mongoSession: ClientSession,
-  ): Promise<DonorDonationTypeMapResult> {
+  ): Promise<DonorDonationTypeMapResult | null> {
     const campaign = await this.campaignModel
       .findOne({ campaignId: new Types.ObjectId(campaignIds) })
       .session(mongoSession);
     if (!campaign) {
-      throw new BadRequestException(`Campaign not found`);
+      return null;
     }
     const result: DonorDonationTypeMapResult = {
       items: {
         id: campaign._id.toString(),
         name: campaign.campaignName,
-        price: donateAmount,
-        total: donateAmount,
+        price: donationAmount,
+        total: donationAmount,
         quantity: 1,
       },
-      subAmount: donateAmount,
+      subAmount: donationAmount,
       donationDetails: {
         donationLogId,
         donationType: DonationType.CAMPAIGN,
         campaignId: campaign._id,
         qty: 1,
-        totalAmount: donateAmount,
+        totalAmount: donationAmount,
       },
     };
     return result;
@@ -569,31 +616,31 @@ export class DonorService {
 
   async mapDonateTypeProject(
     projectIds: string,
-    donateAmount: number,
+    donationAmount: number,
     donationLogId: Types.ObjectId,
     mongoSession: ClientSession,
-  ): Promise<DonorDonationTypeMapResult> {
+  ): Promise<DonorDonationTypeMapResult | null> {
     const project = await this.projectModel
       .findOne({ projectId: new Types.ObjectId(projectIds) })
       .session(mongoSession);
     if (!project) {
-      throw new BadRequestException(`Project not found`);
+      return null;
     }
     const result: DonorDonationTypeMapResult = {
       items: {
         id: project._id.toString(),
         name: project.name,
-        price: donateAmount,
-        total: donateAmount,
+        price: donationAmount,
+        total: donationAmount,
         quantity: 1,
       },
-      subAmount: donateAmount,
+      subAmount: donationAmount,
       donationDetails: {
         donationLogId,
         donationType: DonationType.PROJECT,
         projectId: project._id,
         qty: 1,
-        totalAmount: donateAmount,
+        totalAmount: donationAmount,
       },
     };
     return result;

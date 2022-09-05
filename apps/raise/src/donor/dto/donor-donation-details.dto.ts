@@ -73,5 +73,5 @@ export class DonorDonationDetailsDto {
   @IsOptional()
   @IsNumber()
   @Min(1)
-  donatedAmount: number;
+  donationAmount: number;
 }

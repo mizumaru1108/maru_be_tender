@@ -7,7 +7,7 @@ import {
   IsUrl,
 } from 'class-validator';
 import { ValidateObjectId } from '../../commons/decorators/validate-object-id.decorator';
-import { User } from '../../user/schema/user.schema';
+import { ICurrentUser } from '../../user/interfaces/current-user.interface';
 import { DonorDonationDetailsDto } from './donor-donation-details.dto';
 
 export class DonorDonateDto {
@@ -18,12 +18,14 @@ export class DonorDonateDto {
   organizationId: string;
 
   @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   @IsUrl()
   stripeSuccessUrl: string;
 
   @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   @IsUrl()
@@ -31,7 +33,7 @@ export class DonorDonateDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  user?: User;
+  user?: ICurrentUser;
 
   @ApiProperty()
   @IsArray()
