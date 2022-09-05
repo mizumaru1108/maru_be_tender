@@ -1,4 +1,6 @@
 export enum DonationType {
-  campaign = 'campaign',
-  item = 'item',
+  CAMPAIGN = 'campaign',
+  ITEM = 'item',
+  PROJECT = 'project',
+  MIXED = 'mixed',
 }

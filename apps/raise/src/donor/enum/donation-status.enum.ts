@@ -1,9 +1,9 @@
 export enum DonationStatus {
-  success = 'success',
-  failed = 'failed',
-  declined = 'declined',  
-  error = 'error',  
-  hold = 'hold',  
-  pending = 'pending',
-  voided = 'voided',
+  SUCCESS = 'success',
+  FAIlED = 'failed',
+  DECLINED = 'declined',
+  ERROR = 'error',
+  HOLD = 'hold', // from paytabs
+  PENDING = 'pending',
+  VOIDED = 'voided', // from paytabs
 }

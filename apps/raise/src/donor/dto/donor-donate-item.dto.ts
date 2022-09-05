@@ -9,7 +9,6 @@ import {
   Min,
 } from 'class-validator';
 import { ValidateObjectId } from '../../commons/decorators/validate-object-id.decorator';
-import { PaytabsCurrencyEnum } from '../../libs/payment-paytabs/enums/paytabs-currency-enum';
 
 export class DonorDonateItemDto {
   @ApiProperty()

@@ -1,14 +1,25 @@
 import { FusionAuthClient } from '@fusionauth/typescript-client';
 import {
   BadRequestException,
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { ApiOperation } from '@nestjs/swagger';
 import moment from 'moment';
-import { AggregatePaginateModel, AggregatePaginateResult, Model, Types } from 'mongoose';
+import {
+  ClientSession,
+  Model,
+  Types,
+  Connection,
+  AggregatePaginateModel,
+  AggregatePaginateResult,
+} from 'mongoose';
 import {
   PaymentGateway,
   PaymentGatewayDocument,
@@ -23,15 +34,16 @@ import {
 } from '../buying/vendor/vendor.schema';
 import { Campaign, CampaignDocument } from '../campaign/campaign.schema';
 import { CampaignSetFavoriteDto } from '../campaign/dto';
+import { IPaymentGatewayItems } from '../commons/interfaces/payment-gateway-items.interface';
 import { Item, ItemDocument } from '../item/item.schema';
 import { BunnyService } from '../libs/bunny/services/bunny.service';
-import { PaytabsIpnWebhookResponsePayload } from '../libs/payment-paytabs/dtos/response/paytabs-ipn-webhook-response-payload.dto';
-import { PaytabsCurrencyEnum } from '../libs/payment-paytabs/enums/paytabs-currency-enum';
-import { PaytabsResponseStatus } from '../libs/payment-paytabs/enums/paytabs-response-status.enum';
-import { PaytabsTranClass } from '../libs/payment-paytabs/enums/paytabs-tran-class.enum';
-import { PaytabsTranType } from '../libs/payment-paytabs/enums/paytabs-tran-type.enum';
-import { PaytabsPaymentRequestPayloadModel } from '../libs/payment-paytabs/models/paytabs-payment-request-payload.model';
-import { PaymentPaytabsService } from '../libs/payment-paytabs/payment-paytabs.service';
+import { PaytabsIpnWebhookResponsePayload } from '../libs/paytabs/dtos/response/paytabs-ipn-webhook-response-payload.dto';
+import { PaytabsCurrencyEnum } from '../libs/paytabs/enums/paytabs-currency-enum';
+import { PaytabsResponseStatus } from '../libs/paytabs/enums/paytabs-response-status.enum';
+import { PaytabsTranClass } from '../libs/paytabs/enums/paytabs-tran-class.enum';
+import { PaytabsTranType } from '../libs/paytabs/enums/paytabs-tran-type.enum';
+import { PaytabsPaymentRequestPayloadModel } from '../libs/paytabs/models/paytabs-payment-request-payload.model';
+import { PaytabsService } from '../libs/paytabs/services/paytabs.service';
 import { rootLogger } from '../logger';
 import {
   PaymentData,
@@ -39,28 +51,48 @@ import {
 } from '../payment-stripe/schema/paymentData.schema';
 import { Project, ProjectDocument } from '../project/project.schema';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
-import { DonorListDto, DonorListTrxDto, DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
+import {
+  DonorListDto,
+  DonorListTrxDto,
+  DonorPaymentSubmitDto,
+  DonorUpdateProfileDto,
+} from './dto';
 import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
 import { DonorDonateItemResponse } from './dto/donor-donate-item-response';
 import { DonorDonateItemDto } from './dto/donor-donate-item.dto';
+import { DonorDonateDto } from './dto/donor-donate.dto';
 import { DonationStatus } from './enum/donation-status.enum';
-import { DonationType } from './enum/donation-type.enum';
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { Anonymous, AnonymousDocument } from './schema/anonymous.schema';
 import { DonationLog, DonationLogDocument } from './schema/donation-log.schema';
+import { InjectConnection } from '@nestjs/mongoose';
 import {
   DonationLogDocument as DonationLogsDocument,
   DonationLogs,
 } from './schema/donation_log.schema';
 import { Donor, DonorDocument } from './schema/donor.schema';
 import { Volunteer, VolunteerDocument } from './schema/volunteer.schema';
+import { DonorDonationTypeMapResult } from './interfaces/donor-donation-type-map-result.interface';
+import {
+  DonationDetail,
+  DonationDetailDocument,
+} from './schema/donation-detail.schema';
+import { DonationType } from './enum/donation-type.enum';
+import { StripeService } from '../libs/stripe/services/stripe.service';
+import Stripe from 'stripe';
+import { PaytabsCreateTransactionResponse } from '../libs/paytabs/dtos/response/paytabs-create-transaction-response.dto';
+import { DonorDonateResponse } from './dto/donor-donate-response.dto';
+import { isLeafType } from 'graphql';
 
 @Injectable()
 export class DonorService {
   private logger = rootLogger.child({ logger: DonorService.name });
 
   constructor(
+    @InjectConnection() private readonly connection: Connection, // mongodb DB transaction
     private bunnyService: BunnyService, // no need to import in donor module (modular utils)
-    private paytabsService: PaymentPaytabsService, // no need to import in donor module (modular utils)
+    private paytabsService: PaytabsService, // no need to import in donor module (modular utils)
+    private stripeService: StripeService, // no need to import in donor module (modular utils)
     private configService: ConfigService, // no need to import in donor module (modular utils)
     @InjectModel(Donor.name)
     private donorModel: Model<DonorDocument>,
@@ -76,6 +108,8 @@ export class DonorService {
     private donorLogsAggregatePaginateModel: AggregatePaginateModel<DonationLogsDocument>,
     @InjectModel(DonationLogs.name)
     private donationLogsModel: Model<DonationLogsDocument>,
+    @InjectModel(DonationDetail.name)
+    private donationDetailModel: Model<DonationDetailDocument>,
     @InjectModel(Anonymous.name)
     private anonymousModel: Model<AnonymousDocument>,
     @InjectModel(CampaignVendorLog.name)
@@ -92,7 +126,7 @@ export class DonorService {
     private paymentDataModel: Model<PaymentDataDocument>,
     @InjectModel(Project.name)
     private projectModel: Model<ProjectDocument>,
-  ) { }
+  ) {}
 
   /* apply to become vendor from donor */
   // !Should we implements db transaction? when image upload failed, we should rollback the db transaction,
@@ -190,6 +224,426 @@ export class DonorService {
     log.createdAt = moment().toISOString();
     log.updatedAt = moment().toISOString();
     return log.save();
+  }
+
+  /**
+   * define which organization can use which payment gateway
+   */
+  async paymentGatewayPermissionsCheck(
+    organizationId: string,
+    paymentGateway: PaymentGatewayDocument,
+  ): Promise<boolean> {
+    const ommar = '61b4794cfe52d41f557f1acc'; // iqam global (omar)
+    const duniaAnakAlam = '60f524626f471e54c18e39b9';
+    const gs = '60f52461817b13a5cc552bf0';
+    if (organizationId === ommar && paymentGateway.name !== 'PAYTABS') {
+      return false;
+    }
+    if (organizationId === gs && paymentGateway.name !== 'STRIPE') {
+      return false;
+    }
+    return true;
+  }
+
+  async throwError(code: HttpStatus, message?: string) {
+    return new HttpException(message || 'Something went wrong!', code);
+  }
+
+  async donate(request: DonorDonateDto): Promise<DonorDonateResponse> {
+    const tracer = trace.getTracer('tmra-raise');
+    const span = tracer.startSpan('Donor Donate', {
+      attributes: { 'donor.firstName': '-' },
+    });
+    const session = await this.connection.startSession(); // inject mongodb transaction
+    this.logger.debug('trying to donate');
+
+    try {
+      session.startTransaction(); // start mongodb transaction
+
+      const pgData = await this.paymentGatewayModel
+        .findOne({
+          organizationId: new Types.ObjectId(request.organizationId),
+        })
+        .session(session);
+      if (!pgData) {
+        throw new NotFoundException(
+          `Payment gateway not found for organization ${request.organizationId}`,
+        );
+      }
+
+      // check if payment gateway is allowed for this organization
+      const allowed = await this.paymentGatewayPermissionsCheck(
+        request.organizationId,
+        pgData,
+      );
+      if (!allowed) {
+        throw new ForbiddenException(
+          `Payment gateway ${pgData.name} is not allowed for organization ${request.organizationId}`,
+        );
+      }
+
+      let donorDetails: DonorDocument | null = null;
+      if (request.user) {
+        const details = await this.donorModel
+          .findOne({
+            ownerUserId: request.user.id,
+            organizationId: new Types.ObjectId(request.organizationId),
+          })
+          .session(session);
+        if (!details) {
+          throw new NotFoundException(
+            `Donor not found for user ${request.user.id} and organization ${request.organizationId}`,
+          );
+        }
+        donorDetails = details;
+      }
+
+      const donationLogId = new Types.ObjectId(); // as _id of donation Log, an ref for donation details
+      // if there's 5 campaign, 2 items, and 1 project, then it will create 8 donation details, and 1 donation log, 1 payment data
+      let donationDetail: DonationDetail[] = [];
+
+      let itemToPay: IPaymentGatewayItems[] = [];
+      let totalAmount = 0;
+
+      const mapDonationDetails = request.donationDetails.map(
+        async (donation, index) => {
+          if (['campaign', 'project'].includes(donation.donationType)) {
+            if (donation.donationType === 'campaign' && !donation.campaignId) {
+              throw new BadRequestException(
+                `Please provide campaign id! for campaign at donationDetails[${index}]`,
+              );
+            }
+            if (donation.donationType === 'project' && !donation.projectId) {
+              throw new BadRequestException(
+                `Please provide project id! for project at donationDetails[${index}]`,
+              );
+            }
+            if (!donation.donationAmount) {
+              throw new BadRequestException(
+                `Please provide donation amount! for ${donation.donationType} ${
+                  donation.donationType === 'campaign'
+                    ? `${donation.campaignId}`
+                    : `${donation.projectId}`
+                } at donationDetails[${index}]`,
+              );
+            }
+          }
+
+          if (donation.donationType === 'item' && !donation.qty) {
+            throw new BadRequestException(
+              `Please provide quantity for item ${donation.itemId}, at donationDetails[${index}]`,
+            );
+          }
+
+          if (donation.donationType === 'item') {
+            const result = await this.mapDonateTypeItem(
+              donation.itemId,
+              donation.qty,
+              donationLogId,
+              session,
+            );
+            if (!result) {
+              throw new BadRequestException(
+                `Item ${donation.itemId} not found!`,
+              );
+            }
+            itemToPay.push(result.items);
+            totalAmount += result.subAmount;
+            donationDetail.push(result.donationDetails);
+          } else if (donation.donationType === 'project') {
+            const result = await this.mapDonateTypeProject(
+              donation.projectId,
+              donation.donationAmount,
+              donationLogId,
+              session,
+            );
+            if (!result) {
+              throw new BadRequestException(
+                `Project with id ${donation.projectId} not found!`,
+              );
+            }
+            itemToPay.push(result.items);
+            totalAmount += result.subAmount;
+            donationDetail.push(result.donationDetails);
+          } else if (donation.donationType === 'campaign') {
+            const result = await this.mapDonateTypeCampaign(
+              donation.campaignId,
+              donation.donationAmount,
+              donationLogId,
+              session,
+            );
+            if (!result) {
+              throw new BadRequestException(
+                `Campaign with id ${donation.campaignId} not found!`,
+              );
+            }
+            itemToPay.push(result.items);
+            totalAmount += result.subAmount;
+            donationDetail.push(result.donationDetails);
+          }
+        },
+      );
+
+      // resolve promise on mapDonationDetails, so it can throw error if there's any
+      await Promise.all(mapDonationDetails);
+
+      let stripeResponse: Stripe.Response<Stripe.Checkout.Session> | null =
+        null;
+      let paytabsResponse: PaytabsCreateTransactionResponse | null = null;
+
+      if (pgData.name === 'STRIPE') {
+        let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+        itemToPay.forEach((item) => {
+          lineItems.push({
+            name: item.name! || '',
+            amount: item.total! || 0,
+            currency: pgData.defaultCurrency || '',
+            quantity: item.quantity || 1,
+          });
+        });
+        const stripeParams: Stripe.Checkout.SessionCreateParams = {
+          client_reference_id: donationLogId.toString() || '', // as refrences to donation log if webhook is called
+          success_url:
+            request.stripeSuccessUrl ||
+            'https://givingsadaqah-staging.tmra.io/',
+          cancel_url: request.stripeCancelUrl || 'https://dev.tmra.io',
+          customer_email: donorDetails?.email || '',
+          line_items: lineItems,
+          mode: 'payment',
+          submit_type: 'donate',
+        };
+        const response =
+          await this.stripeService.createStripeCheckoutTransaction(
+            stripeParams,
+            pgData.apiKey!,
+          );
+        stripeResponse = response;
+      }
+
+      if (pgData.name === 'PAYTABS') {
+        const firstName = donorDetails?.firstName || ''; // case of unfilled name
+        const lastName = donorDetails?.lastName || ''; // case of unfilled name
+        const name = `${firstName} ${lastName}`;
+
+        const paytabsPayload: PaytabsPaymentRequestPayloadModel = {
+          profile_id: pgData.profileId!,
+          cart_amount: totalAmount,
+          cart_currency:
+            (pgData.defaultCurrency! as PaytabsCurrencyEnum) || 'SAR',
+          cart_description: `donate [${donationLogId}]`,
+          cart_id: `${donationLogId}`, // as refrences to donation log if webhook is called
+          tran_type: PaytabsTranType.SALE,
+          tran_class: PaytabsTranClass.ECOM,
+          // !TODO: change the harcoded value with env variable later on
+          callback: `https://api-staging.tmra.io/v2/raise/donor/donatePaytabs/callback`,
+          framed: true,
+          hide_shipping: true,
+          customer_details: {
+            name: name || '',
+            email: donorDetails?.email || '',
+            phone: donorDetails?.mobile || '',
+            street1: donorDetails?.address || '',
+            city: donorDetails?.city || '',
+            state: donorDetails?.state || '',
+            country: donorDetails?.country || '',
+            zip: donorDetails?.zipcode || '',
+          },
+        };
+
+        const response = await this.paytabsService.createTransaction(
+          paytabsPayload,
+          pgData.serverKey!,
+        );
+        paytabsResponse = response;
+      }
+
+      let transactionId = '';
+      if (stripeResponse !== null) {
+        transactionId = stripeResponse.id;
+      } else if (paytabsResponse !== null) {
+        transactionId = paytabsResponse.tran_ref;
+      } else {
+        throw new BadRequestException('Payment gateway not supported');
+      }
+
+      let now = moment().toISOString();
+
+      const createdDonationLogData = await new this.donationLogModel({
+        _id: donationLogId,
+        donorId: donorDetails?._id || null,
+        paymentGatewayId: pgData._id,
+        paymentGatewayName: pgData.name || '',
+        donationStatus: DonationStatus.PENDING,
+        amount: totalAmount,
+        currency: pgData.defaultCurrency || '',
+        createdAt: now,
+        updatedAt: now,
+        transactionId,
+        ipAddress: '',
+      }).save({ session });
+
+      if (!createdDonationLogData) {
+        throw Error('Donation log creation failed');
+      }
+
+      // create many donation details with map on donationDetail
+      const createDonationDetails = donationDetail.map(async (donation) => {
+        const createdDonationDetail = await new this.donationDetailModel(
+          donation,
+        ).save({ session });
+        if (!createdDonationDetail) {
+          throw Error('Donation detail creation failed');
+        }
+        return createdDonationDetail as DonationDetail;
+      });
+      const createdDonationDetails = await Promise.all(createDonationDetails);
+
+      const insertPaymentData = await new this.paymentDataModel({
+        _id: new Types.ObjectId(),
+        donationId: createdDonationLogData._id,
+        merchantId: pgData.profileId,
+        payerId: '',
+        orderId: transactionId,
+        cardType: '',
+        cardScheme: '',
+        paymentDescription: '',
+        expiryMonth: '',
+        expiryYear: '',
+        responseStatus: '',
+        responseCode: '',
+        responseMessage: '',
+        cvvResult: '',
+        avsResult: '',
+        transactionTime: '',
+        paymentStatus: 'PENDING',
+      }).save({ session });
+
+      if (!insertPaymentData) {
+        throw Error('Payment data creation failed');
+      }
+
+      const response: DonorDonateResponse = {
+        paytabsResponse,
+        stripeResponse,
+        createdDonationLog: createdDonationLogData,
+        createdDonationDetails,
+        createdPaymentData: insertPaymentData,
+      };
+
+      await session.commitTransaction(); // apply changes to database if no error occured.
+      return response;
+    } catch (error) {
+      await session.abortTransaction(); // rollback changes if error occured.
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+        message: error.message,
+      });
+      console.log('error', error);
+      if (error.response.statusCode < 500) {
+        throw new BadRequestException(error.message);
+      } else {
+        throw new InternalServerErrorException(error.message);
+      }
+    } finally {
+      session.endSession(); // close mongodb session
+      span.end();
+    }
+  }
+
+  async mapDonateTypeItem(
+    itemId: string,
+    qty: number,
+    donationLogId: Types.ObjectId,
+    mongoSession: ClientSession,
+  ): Promise<DonorDonationTypeMapResult | null> {
+    const item = await this.itemModel
+      .findOne({ _id: new Types.ObjectId(itemId) })
+      .session(mongoSession);
+    if (!item) {
+      return null;
+    }
+    const result: DonorDonationTypeMapResult = {
+      items: {
+        id: item._id.toString(),
+        name: item.name,
+        price: Number(item.defaultPrice),
+        total: Number(item.defaultPrice) * qty,
+        quantity: qty,
+      },
+      subAmount: Number(item.defaultPrice) * qty,
+      donationDetails: {
+        donationLogId,
+        donationType: DonationType.ITEM,
+        itemId: item._id,
+        qty: qty,
+        totalAmount: Number(item.defaultPrice) * qty,
+      },
+    };
+    return result;
+  }
+
+  async mapDonateTypeCampaign(
+    campaignId: string,
+    donationAmount: number,
+    donationLogId: Types.ObjectId,
+    mongoSession: ClientSession,
+  ): Promise<DonorDonationTypeMapResult | null> {
+    const campaign = await this.campaignModel
+      .findOne({ _id: new Types.ObjectId(campaignId) })
+      .session(mongoSession);
+    if (!campaign) {
+      return null;
+    }
+    const result: DonorDonationTypeMapResult = {
+      items: {
+        id: campaign._id.toString(),
+        name: campaign.campaignName,
+        price: donationAmount,
+        total: donationAmount,
+        quantity: 1,
+      },
+      subAmount: donationAmount,
+      donationDetails: {
+        donationLogId,
+        donationType: DonationType.CAMPAIGN,
+        campaignId: campaign._id,
+        qty: 1,
+        totalAmount: donationAmount,
+      },
+    };
+    return result;
+  }
+
+  async mapDonateTypeProject(
+    projectId: string,
+    donationAmount: number,
+    donationLogId: Types.ObjectId,
+    mongoSession: ClientSession,
+  ): Promise<DonorDonationTypeMapResult | null> {
+    const project = await this.projectModel
+      .findOne({ _id: new Types.ObjectId(projectId) })
+      .session(mongoSession);
+    if (!project) {
+      return null;
+    }
+    const result: DonorDonationTypeMapResult = {
+      items: {
+        id: project._id.toString(),
+        name: project.name,
+        price: donationAmount,
+        total: donationAmount,
+        quantity: 1,
+      },
+      subAmount: donationAmount,
+      donationDetails: {
+        donationLogId,
+        donationType: DonationType.PROJECT,
+        projectId: project._id,
+        qty: 1,
+        totalAmount: donationAmount,
+      },
+    };
+    return result;
   }
 
   async donateSingleItem(
@@ -326,25 +780,25 @@ export class DonorService {
       throw new BadRequestException(`Donation log not found`);
     }
 
-    let status: DonationStatus = DonationStatus.pending;
+    let status: DonationStatus = DonationStatus.PENDING;
     switch (request.payment_result.response_status) {
       case PaytabsResponseStatus.A:
-        status = DonationStatus.success;
+        status = DonationStatus.SUCCESS;
         break;
       case PaytabsResponseStatus.D:
-        status = DonationStatus.declined;
+        status = DonationStatus.DECLINED;
         break;
       case PaytabsResponseStatus.E:
-        status = DonationStatus.error;
+        status = DonationStatus.ERROR;
         break;
       case PaytabsResponseStatus.H:
-        status = DonationStatus.hold;
+        status = DonationStatus.HOLD;
         break;
       case PaytabsResponseStatus.P:
-        status = DonationStatus.pending;
+        status = DonationStatus.PENDING;
         break;
       case PaytabsResponseStatus.V:
-        status = DonationStatus.voided;
+        status = DonationStatus.VOIDED;
         break;
     }
     console.log('payment status', status);
@@ -1062,45 +1516,58 @@ export class DonorService {
 
   /** Get All Donor Transaction List / Exlude Zakat Campaign Trx */
   // async getTrxDonorList(filter: DonorListTrxDto): Promise<AggregatePaginateResult<DonationLogDocument>> {
-  async getTrxDonorList(filter: DonorListTrxDto): Promise<AggregatePaginateResult<DonationLogsDocument>> {
-    this.logger.debug(`getTransactions Donors organizationId=${filter.organizationId}`);
-    const { limit = 10, page = 1, createdAt, donationStatus, amount, email } = filter;
+  async getTrxDonorList(
+    filter: DonorListTrxDto,
+  ): Promise<AggregatePaginateResult<DonationLogsDocument>> {
+    this.logger.debug(
+      `getTransactions Donors organizationId=${filter.organizationId}`,
+    );
+    const {
+      limit = 10,
+      page = 1,
+      createdAt,
+      donationStatus,
+      amount,
+      email,
+    } = filter;
     let sortData = {};
 
     sortData = {
-      _id: createdAt == 'asc' ? 1 : -1
+      _id: createdAt == 'asc' ? 1 : -1,
     };
 
     if (createdAt) {
       sortData = {
-        createdAt: createdAt == 'asc' ? 1 : -1
+        createdAt: createdAt == 'asc' ? 1 : -1,
       };
     }
     if (donationStatus) {
       sortData = {
-        donationStatus: donationStatus == 'asc' ? 1 : -1
+        donationStatus: donationStatus == 'asc' ? 1 : -1,
       };
     }
     if (amount) {
       sortData = {
-        amount: amount == 'asc' ? 1 : -1
+        amount: amount == 'asc' ? 1 : -1,
       };
     }
     if (email) {
       sortData = {
-        email: email == 'asc' ? 1 : -1
+        email: email == 'asc' ? 1 : -1,
       };
     }
     //console.log('currency', 'orgsID', new Types.ObjectId(filter.organizationId));
 
-    const exZakat = filter.exZktList ? filter.exZktList : '6299ed6a9f1ad428563563ed';
+    const exZakat = filter.exZktList
+      ? filter.exZktList
+      : '6299ed6a9f1ad428563563ed';
     //const aggregateQuerry = this.donationLogsModel.aggregate();
     // const aggregateQuerry = this.donationLogsModel.aggregate([
     const aggregateQuerry = this.donationLogModel.aggregate([
       {
         $match: {
           nonprofitRealmId: new Types.ObjectId(filter.organizationId),
-          campaignId: { $nin: [new Types.ObjectId(exZakat)] }
+          campaignId: { $nin: [new Types.ObjectId(exZakat)] },
         },
       },
       {
@@ -1170,7 +1637,7 @@ export class DonorService {
           donorName: { $first: '$donorName' },
           email: { $first: '$email' },
         },
-      }
+      },
       // ,
       // {
       //   $sort: sortData,
@@ -1184,59 +1651,72 @@ export class DonorService {
         {
           page,
           limit,
-          sort: sortData
+          sort: sortData,
         },
       );
     console.log('Ini logs ==>', donorTrxList);
     return donorTrxList;
-
   }
 
   /** Get All Donor List  */
-  async getDonorList(filter: DonorListDto): Promise<AggregatePaginateResult<Donor>> {
-    this.logger.debug(`get Donors list organizationId=${filter.organizationId}`);
-    const { limit = 10, page = 1, organizationId, firstName, lastName, email, phoneNumber, country, type } = filter;
+  async getDonorList(
+    filter: DonorListDto,
+  ): Promise<AggregatePaginateResult<Donor>> {
+    this.logger.debug(
+      `get Donors list organizationId=${filter.organizationId}`,
+    );
+    const {
+      limit = 10,
+      page = 1,
+      organizationId,
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      country,
+      type,
+    } = filter;
     let sortData = {};
 
     sortData = {
-      _id: firstName == 'asc' ? 1 : -1
+      _id: firstName == 'asc' ? 1 : -1,
     };
 
     if (firstName) {
       sortData = {
-        firstName: firstName == 'asc' ? 1 : -1
+        firstName: firstName == 'asc' ? 1 : -1,
       };
     }
     if (lastName) {
       sortData = {
-        lastName: lastName == 'asc' ? 1 : -1
+        lastName: lastName == 'asc' ? 1 : -1,
       };
     }
     if (email) {
       sortData = {
-        email: email == 'asc' ? 1 : -1
+        email: email == 'asc' ? 1 : -1,
       };
     }
     if (phoneNumber) {
       sortData = {
-        phoneNumber: phoneNumber == 'asc' ? 1 : -1
+        phoneNumber: phoneNumber == 'asc' ? 1 : -1,
       };
     }
     if (country) {
       sortData = {
-        country: country == 'asc' ? 1 : -1
+        country: country == 'asc' ? 1 : -1,
       };
     }
     if (type) {
       sortData = {
-        type: type == 'asc' ? 1 : -1
+        type: type == 'asc' ? 1 : -1,
       };
     }
 
     const aggregateQuerry = this.donorModel.aggregate([
       {
         $match: {
-          organizationId: organizationId
+          organizationId: organizationId,
         },
       },
       {
@@ -1244,13 +1724,13 @@ export class DonorService {
           from: 'user',
           localField: 'ownerUserId',
           foreignField: '_id',
-          as: 'users'
+          as: 'users',
         },
       },
       {
         $unwind: {
           path: '$users',
-          preserveNullAndEmptyArrays: true
+          preserveNullAndEmptyArrays: true,
         },
       },
 
@@ -1262,20 +1742,19 @@ export class DonorService {
           email: { $first: '$email' },
           phoneNumber: { $first: '$mobile' },
           country: { $first: '$country' },
-          type: { $first: '$users.type' }
+          type: { $first: '$users.type' },
         },
-      }
+      },
     ]);
 
-    const donorList =
-      await this.donorAggregatePaginateModel.aggregatePaginate(
-        aggregateQuerry,
-        {
-          page,
-          limit,
-          sort: sortData
-        },
-      );
+    const donorList = await this.donorAggregatePaginateModel.aggregatePaginate(
+      aggregateQuerry,
+      {
+        page,
+        limit,
+        sort: sortData,
+      },
+    );
     return donorList;
   }
 }

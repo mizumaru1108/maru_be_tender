@@ -1,44 +1,65 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
+import * as mongoose from 'mongoose';
 import { DonationType } from '../enum/donation-type.enum';
 import { DonationStatus } from '../enum/donation-status.enum';
 import paginate from 'mongoose-paginate-v2';
 import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
+import { Donor } from './donor.schema';
 
 export type DonationLogDocument = DonationLog & Document;
 
+/**
+ * to see the details of the donation, please lookup from donation detail schemas
+ */
 @Schema({ collection: 'donationLog' })
 export class DonationLog {
-  @Prop()
-  donationLogId: string;
+  @Prop({ type: mongoose.Schema.Types.ObjectId })
+  _id?: Types.ObjectId;
 
   @Prop()
-  organizationId: string;
+  donationLogId?: string;
 
   @Prop()
-  projectId: string;
+  organizationId?: string;
 
   @Prop()
-  campaignId: string;
+  projectId?: string;
 
   @Prop()
-  donorId: string;
+  campaignId?: string;
 
   @Prop()
-  itemId: string;
+  donorId?: string;
+
+  /**
+   * not to filled but used as a lookup entity (as type refrences)
+   */
+  @Prop()
+  donorDetail?: Donor;
 
   @Prop()
-  type: DonationType;
-
-  @Prop()
-  donationStatus: DonationStatus;
+  itemId?: string;
 
   @Prop()
   paymentGatewayId: string;
 
   @Prop()
+  paymentGatewayName: string;
+
+  @Prop()
+  type?: DonationType;
+
+  @Prop()
+  donationStatus: DonationStatus;
+
+  @Prop()
   amount: number;
 
+  /**
+   * optional(used if type was item)
+   * to substract from item qty
+   */
   @Prop()
   purchaseQty?: number;
 
