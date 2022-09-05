@@ -21,11 +21,12 @@ import { PaytabsIpnWebhookResponsePayload } from '../libs/payment-paytabs/dtos/r
 import { rootLogger } from '../logger';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { DonorService } from './donor.service';
-import { DonorLitsTrxDto, DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
+import { DonorListDto, DonorListTrxDto, DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
 import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
 import { DonorDonateItemResponse } from './dto/donor-donate-item-response';
 import { DonorDonateItemDto } from './dto/donor-donate-item.dto';
 import { DonationLogDocument as DonationLogsDocument } from './schema/donation_log.schema';
+import { Donor } from './schema/donor.schema';
 
 @ApiTags('donor')
 @Controller('donor')
@@ -182,7 +183,7 @@ export class DonorController {
 
   @Get('donorTransaction')
   async getTrxDonorList(
-    @Query() filter: DonorLitsTrxDto
+    @Query() filter: DonorListTrxDto
     // ): Promise<PaginatedResponse<DonationLogDocument[]>> {
   ): Promise<PaginatedResponse<DonationLogsDocument[]>> {
     this.logger.debug('get All Donor Transaction')
@@ -204,6 +205,32 @@ export class DonorController {
       donorsList.nextPage,
       HttpStatus.OK,
       'Successfully get list all donor transactions',
+    );
+    return response;
+
+  }
+  @Get('donorList')
+  async getDonorList(
+    @Query() filter: DonorListDto
+  ): Promise<PaginatedResponse<Donor[]>> {
+    this.logger.debug('get All Donor List')
+
+    const donorsList =
+      await this.donorService.getDonorList(filter);
+
+    const response = paginationHelper(
+      donorsList.docs,
+      donorsList.totalDocs,
+      donorsList.limit,
+      donorsList.page,
+      donorsList.totalPages,
+      donorsList.pagingCounter,
+      donorsList.hasPrevPage,
+      donorsList.hasNextPage,
+      donorsList.prevPage,
+      donorsList.nextPage,
+      HttpStatus.OK,
+      'Successfully get list all donor',
     );
     return response;
 

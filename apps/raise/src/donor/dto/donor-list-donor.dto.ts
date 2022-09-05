@@ -1,7 +1,7 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { BaseFilterRequest } from "src/commons/dtos/base-filter-request.dto";
 
-export class DonorListTrxDto extends BaseFilterRequest {
+export class DonorListDto extends BaseFilterRequest {
 
   @IsNotEmpty()
   @IsString()
@@ -9,19 +9,11 @@ export class DonorListTrxDto extends BaseFilterRequest {
 
   @IsOptional()
   @IsString()
-  createdAt: string;
+  firstName: string;
 
   @IsOptional()
   @IsString()
-  donationStatus: string;
-
-  @IsOptional()
-  @IsString()
-  amount: string;
-
-  @IsOptional()
-  @IsString()
-  donorName: string;
+  lastName: string;
 
   @IsOptional()
   @IsString()
@@ -29,6 +21,14 @@ export class DonorListTrxDto extends BaseFilterRequest {
 
   @IsOptional()
   @IsString()
-  exZktList: string;
+  phoneNumber: string;
+
+  @IsOptional()
+  @IsString()
+  country: string;
+
+  @IsOptional()
+  @IsString()
+  type: string;
 
 }

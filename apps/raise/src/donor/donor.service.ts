@@ -39,7 +39,7 @@ import {
 } from '../payment-stripe/schema/paymentData.schema';
 import { Project, ProjectDocument } from '../project/project.schema';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
-import { DonorLitsTrxDto, DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
+import { DonorListDto, DonorListTrxDto, DonorPaymentSubmitDto, DonorUpdateProfileDto } from './dto';
 import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
 import { DonorDonateItemResponse } from './dto/donor-donate-item-response';
 import { DonorDonateItemDto } from './dto/donor-donate-item.dto';
@@ -64,6 +64,8 @@ export class DonorService {
     private configService: ConfigService, // no need to import in donor module (modular utils)
     @InjectModel(Donor.name)
     private donorModel: Model<DonorDocument>,
+    @InjectModel(Donor.name)
+    private donorAggregatePaginateModel: AggregatePaginateModel<DonorDocument>,
     @InjectModel(Volunteer.name)
     private volunteerModel: Model<VolunteerDocument>,
     @InjectModel(DonationLog.name)
@@ -71,7 +73,7 @@ export class DonorService {
     @InjectModel(DonationLog.name)
     private campaignAggregatePaginateModel: AggregatePaginateModel<DonationLogDocument>,
     @InjectModel(DonationLog.name)
-    private campaignsAggregatePaginateModel: AggregatePaginateModel<DonationLogsDocument>,
+    private donorLogsAggregatePaginateModel: AggregatePaginateModel<DonationLogsDocument>,
     @InjectModel(DonationLogs.name)
     private donationLogsModel: Model<DonationLogsDocument>,
     @InjectModel(Anonymous.name)
@@ -1059,8 +1061,8 @@ export class DonorService {
   }
 
   /** Get All Donor Transaction List / Exlude Zakat Campaign Trx */
-  // async getTrxDonorList(filter: DonorLitsTrxDto): Promise<AggregatePaginateResult<DonationLogDocument>> {
-  async getTrxDonorList(filter: DonorLitsTrxDto): Promise<AggregatePaginateResult<DonationLogsDocument>> {
+  // async getTrxDonorList(filter: DonorListTrxDto): Promise<AggregatePaginateResult<DonationLogDocument>> {
+  async getTrxDonorList(filter: DonorListTrxDto): Promise<AggregatePaginateResult<DonationLogsDocument>> {
     this.logger.debug(`getTransactions Donors organizationId=${filter.organizationId}`);
     const { limit = 10, page = 1, createdAt, donationStatus, amount, email } = filter;
     let sortData = {};
@@ -1177,7 +1179,7 @@ export class DonorService {
 
     const donorTrxList =
       // await this.campaignAggregatePaginateModel.aggregatePaginate(
-      await this.campaignsAggregatePaginateModel.aggregatePaginate(
+      await this.donorLogsAggregatePaginateModel.aggregatePaginate(
         aggregateQuerry,
         {
           page,
@@ -1190,6 +1192,93 @@ export class DonorService {
 
   }
 
+  /** Get All Donor List  */
+  async getDonorList(filter: DonorListDto): Promise<AggregatePaginateResult<Donor>> {
+    this.logger.debug(`get Donors list organizationId=${filter.organizationId}`);
+    const { limit = 10, page = 1, organizationId, firstName, lastName, email, phoneNumber, country, type } = filter;
+    let sortData = {};
+
+    sortData = {
+      _id: firstName == 'asc' ? 1 : -1
+    };
+
+    if (firstName) {
+      sortData = {
+        firstName: firstName == 'asc' ? 1 : -1
+      };
+    }
+    if (lastName) {
+      sortData = {
+        lastName: lastName == 'asc' ? 1 : -1
+      };
+    }
+    if (email) {
+      sortData = {
+        email: email == 'asc' ? 1 : -1
+      };
+    }
+    if (phoneNumber) {
+      sortData = {
+        phoneNumber: phoneNumber == 'asc' ? 1 : -1
+      };
+    }
+    if (country) {
+      sortData = {
+        country: country == 'asc' ? 1 : -1
+      };
+    }
+    if (type) {
+      sortData = {
+        type: type == 'asc' ? 1 : -1
+      };
+    }
+
+    const aggregateQuerry = this.donorModel.aggregate([
+      {
+        $match: {
+          organizationId: organizationId
+        },
+      },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'ownerUserId',
+          foreignField: '_id',
+          as: 'users'
+        },
+      },
+      {
+        $unwind: {
+          path: '$users',
+          preserveNullAndEmptyArrays: true
+        },
+      },
+
+      {
+        $group: {
+          _id: '$_id',
+          firstName: { $first: '$firstName' },
+          lastName: { $first: '$lastName' },
+          email: { $first: '$email' },
+          phoneNumber: { $first: '$mobile' },
+          country: { $first: '$country' },
+          type: { $first: '$users.type' }
+        },
+      }
+    ]);
+
+    const donorList =
+      await this.donorAggregatePaginateModel.aggregatePaginate(
+        aggregateQuerry,
+        {
+          page,
+          limit,
+          sort: sortData
+        },
+      );
+    return donorList;
+
+  }
 
 
 
