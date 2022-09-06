@@ -226,6 +226,18 @@ export class DonorService {
     return log.save();
   }
 
+  async getPaytabsServerKey(): Promise<string> {
+    const pgData = await this.paymentGatewayModel.findOne({
+      organizationId: new Types.ObjectId('61b4794cfe52d41f557f1acc'),
+    });
+    if (!pgData) {
+      throw new NotFoundException(
+        `Fetching Paytabs Server Key Failed: Payment Gateway Data Not Found`,
+      );
+    }
+    return pgData.serverKey!.toString() || '';
+  }
+
   /**
    * define which organization can use which payment gateway
    */
@@ -243,10 +255,6 @@ export class DonorService {
       return false;
     }
     return true;
-  }
-
-  async throwError(code: HttpStatus, message?: string) {
-    return new HttpException(message || 'Something went wrong!', code);
   }
 
   async donate(request: DonorDonateDto): Promise<DonorDonateResponse> {
@@ -395,10 +403,20 @@ export class DonorService {
         let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
         itemToPay.forEach((item) => {
           lineItems.push({
-            name: item.name! || '',
-            amount: item.total! || 0,
-            currency: pgData.defaultCurrency || '',
-            quantity: item.quantity || 1,
+            // !TODO: Please Checkout https://dashboard.stripe.com/test/products/prod_LZhxCI76m6SsBq
+            // !THE PRICING IS DEFINED THERE!
+            // name: item.name! || '',
+            // amount: item.total! || 0,
+            // currency: pgData.defaultCurrency || '',
+            // quantity: item.quantity || 1,
+            price_data: {
+              product: item.name! || '',
+              currency: pgData.defaultCurrency || '',
+              unit_amount_decimal: item.total!.toString() || '0',
+            },
+            // price: item.total!.toString() || '0',
+            quantity: item.quantity! || 1,
+            // price: item.total!.toString() || '0',
           });
         });
         const stripeParams: Stripe.Checkout.SessionCreateParams = {
@@ -435,7 +453,7 @@ export class DonorService {
           tran_type: PaytabsTranType.SALE,
           tran_class: PaytabsTranClass.ECOM,
           // !TODO: change the harcoded value with env variable later on
-          callback: `https://api-staging.tmra.io/v2/raise/donor/donatePaytabs/callback`,
+          callback: `https://377a-2001-448a-2082-e022-956c-5fb-6dc6-72a0.ap.ngrok.io/donor/donatePaytabs/webhook`,
           framed: true,
           hide_shipping: true,
           customer_details: {
@@ -538,8 +556,15 @@ export class DonorService {
         code: SpanStatusCode.ERROR,
         message: error.message,
       });
-      console.log('error', error);
-      if (error.response.statusCode < 500) {
+      console.log('error details', error);
+      // handling error from stripe
+      if (error.raw) {
+        throw new HttpException(
+          `StripeError, RequestId: ${error.raw.requestId}, Code: ${error.raw.code}, Type: ${error.raw.type}, Message: '${error.raw.message}',  Ref: ${error.raw.doc_url}`,
+          error.raw.statusCode,
+        );
+      }
+      if (error.response && error.response.statusCode < 500) {
         throw new BadRequestException(error.message);
       } else {
         throw new InternalServerErrorException(error.message);
@@ -771,6 +796,12 @@ export class DonorService {
     };
     return response;
   }
+
+  async donatePaytabsWebhookHandler(
+    payload: PaytabsIpnWebhookResponsePayload,
+  ) {}
+
+  async donateStripeWebhookHandler(payload: any) {}
 
   async donateSingleItemCallback(request: PaytabsIpnWebhookResponsePayload) {
     const donationLog = await this.donationLogModel.findOne({

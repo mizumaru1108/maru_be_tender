@@ -1,12 +1,24 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
+import { HmacSHA256 } from 'crypto-js';
 import { PaytabsCreateTransactionResponse } from '../dtos/response/paytabs-create-transaction-response.dto';
+import { PaytabsIpnWebhookResponsePayload } from '../dtos/response/paytabs-ipn-webhook-response-payload.dto';
 import { PaytabsPaymentRequestPayloadModel } from '../models/paytabs-payment-request-payload.model';
 
 @Injectable()
 export class PaytabsService {
   constructor(private configService: ConfigService) {}
+
+  async verifySignature(
+    payload: PaytabsIpnWebhookResponsePayload,
+    payloadSignature: string,
+    serverKey: string,
+  ): Promise<boolean> {
+    // hash payload + server key using HmacSHA256 (validate paytabs signature)
+    const signature = HmacSHA256(JSON.stringify(payload), serverKey);
+    return signature.toString() === payloadSignature;
+  }
 
   async createTransaction(
     paytabsPaymentRequest: PaytabsPaymentRequestPayloadModel,
