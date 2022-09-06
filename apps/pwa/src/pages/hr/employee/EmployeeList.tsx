@@ -163,7 +163,7 @@ export default function EcommerceProductList() {
             </Button>
           }
         />
-        {products.length == 0 ? (
+        {products.length === 0 ? (
           <EmptyContent
             title="You haven't created an Employee yet"
             description="You do not have a list of Employee at this time. Come on, make a list Employee now!"

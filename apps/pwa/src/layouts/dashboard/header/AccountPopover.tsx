@@ -1,21 +1,17 @@
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 // @mui
-import { alpha } from '@mui/material/styles';
-import { Box, Divider, Typography, Stack, MenuItem } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Box, Stack } from '@mui/material';
 import Paper from '@mui/material/Paper';
+import { styled } from '@mui/material/styles';
 
 // routes
-import { PATH_DASHBOARD, PATH_AUTH } from '../../../routes/paths';
+import { PATH_AUTH, PATH_DASHBOARD } from '../../../routes/paths';
 // hooks
 import useAuth from '../../../hooks/useAuth';
 import useIsMountedRef from '../../../hooks/useIsMountedRef';
 // components
-import MyAvatar from '../../../components/MyAvatar';
-import MenuPopover from '../../../components/MenuPopover';
-import { IconButtonAnimate } from '../../../components/animate';
 import SvgIconStyle from 'components/SvgIconStyle';
 // import {ReactComponent as AccountBar} from 'assets/icons/dashboard-header/account-bar.svg'
 
