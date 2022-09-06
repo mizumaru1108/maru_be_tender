@@ -39,6 +39,34 @@ The build is minified and the filenames include the hashes.<br>
 
 Your app is ready to be deployed.
 
+## Deploy to dev/qc/staging/prod
+
+First, you **must** commit and push to `main` branch.
+
+To deploy to `dev` namespace in our Kubernetes cluster: ( https://app-dev.tmra.io/ )
+
+```bash
+yarn push:dev
+```
+
+To deploy to `qc` namespace in our Kubernetes cluster: ( https://app-qc.tmra.io/ )
+
+```bash
+yarn push:qc
+```
+
+To deploy to `staging` namespace in our Kubernetes cluster: ( https://app-staging.tmra.io/ )
+
+```bash
+yarn push:staging
+```
+
+To deploy to `prod` namespace in our Kubernetes cluster: ( https://app.tmra.io/ )
+
+```bash
+yarn push:prod
+```
+
 ## User Guide
 
 You can find detailed instructions on using Create React App and many tips in [its documentation](https://facebook.github.io/create-react-app/).
