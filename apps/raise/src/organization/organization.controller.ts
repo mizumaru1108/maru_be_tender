@@ -281,7 +281,7 @@ export class OrganizationController {
     );
   }
 
-  @Put(':organizationId/landingPage')
+  @Patch(':organizationId/landingPage')
   async editLandingPage(
     @Param('organizationId') organizationId: string,
     @Body()
@@ -301,7 +301,7 @@ export class OrganizationController {
     return response;
 
   }
-  @Put(':organizationId/aboutUs')
+  @Patch(':organizationId/aboutUs')
   async editAboutUs(
     @Param('organizationId') organizationId: string,
     @Body()
@@ -318,7 +318,7 @@ export class OrganizationController {
     );
     return response;
   }
-  @Put(':organizationId/blog')
+  @Patch(':organizationId/blog')
   async editBlog(
     @Param('organizationId') organizationId: string,
     @Body()
@@ -329,7 +329,7 @@ export class OrganizationController {
       editNonProfitAppearanceNavigationBlogDto,
     );
   }
-  @Put(':organizationId/contactUs')
+  @Patch(':organizationId/contactUs')
   async editContactUs(
     @Param('organizationId') organizationId: string,
     @Body() editNonProfitAppearancePageDto: EditNonProfitAppearancePageDto,
