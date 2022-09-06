@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  ExecutionContext,
   Get,
+  Headers,
   HttpStatus,
   Param,
   Patch,
@@ -18,6 +20,7 @@ import { CurrentUser } from '../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../commons/dtos/base-response';
 import { baseResponseHelper } from '../commons/helpers/base-response-helper';
 import { PaytabsIpnWebhookResponsePayload } from '../libs/paytabs/dtos/response/paytabs-ipn-webhook-response-payload.dto';
+import { PaytabsService } from '../libs/paytabs/services/paytabs.service';
 import { rootLogger } from '../logger';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { DonorService } from './donor.service';
@@ -40,7 +43,17 @@ import { Donor } from './schema/donor.schema';
 export class DonorController {
   private logger = rootLogger.child({ logger: DonorController.name });
 
-  constructor(private donorService: DonorService) {}
+  constructor(
+    private donorService: DonorService,
+    private paytabsService: PaytabsService,
+  ) {}
+
+  @Post('anonymous/create')
+  async createDonor(@Body() donorProfileDto: DonorUpdateProfileDto) {
+    this.logger.debug('create donor as anonymous user');
+    this.logger.debug(JSON.stringify(donorProfileDto));
+    return await this.donorService.addAnonymousDonor(donorProfileDto);
+  }
 
   /**
    * Endpoint for donor to apply as vendor.
@@ -81,23 +94,12 @@ export class DonorController {
     return await this.donorService.submitPayment(donorPaymentSubmitDto);
   }
 
-  @ApiOperation({ summary: 'Get list of success donation history by donorId' })
-  @ApiResponse({
-    status: 200,
-    description: 'List of donation history sucessfully retrieved',
-  })
-  @Get(':donorId/history/getAllSuccess')
-  async getAllSuccessDonation(@Param('donorId') donorId: string) {
-    this.logger.debug('get success donation history ');
-    return await this.donorService.getHistoryAllSuccess(donorId);
-  }
-
   @ApiOperation({ summary: 'Create Donor Payment' })
   @ApiResponse({
     status: 201,
     description: 'The Donor payment has been successfully created.',
   })
-  @Post('/donate')
+  @Post('donate')
   async donate(
     @Body() request: DonorDonateDto,
   ): Promise<BaseResponse<DonorDonateResponse>> {
@@ -114,8 +116,33 @@ export class DonorController {
     status: 201,
     description: 'The Donor payment has been successfully created.',
   })
-  @Post('/donate-paytabs/webhook')
-  async donateCallback(@Body() request: PaytabsIpnWebhookResponsePayload) {
+  @Post('donatePaytabs/webhook')
+  async donatePaytabsWebhook(
+    @Headers('signature') signature: string,
+    @Body() payload: PaytabsIpnWebhookResponsePayload,
+  ) {
+    this.logger.debug(`webook paytabs from trans code: ${payload.tran_ref}`);
+    this.logger.debug(JSON.stringify(payload));
+    const serverKey = await this.donorService.getPaytabsServerKey();
+    const isValidSignature = await this.paytabsService.verifySignature(
+      payload,
+      signature,
+      serverKey,
+    );
+    if (!isValidSignature) {
+      throw new Error('Invalid paytabs signature!');
+    }
+    await this.donorService.donatePaytabsWebhookHandler(payload);
+    // to do
+  }
+
+  @ApiOperation({ summary: 'Create Donor Payment' })
+  @ApiResponse({
+    status: 201,
+    description: 'The Donor payment has been successfully created.',
+  })
+  @Post('/donateStripe/webhook')
+  async donateStripeWebhook(@Body() request: PaytabsIpnWebhookResponsePayload) {
     this.logger.debug(`webook paytabs from trans code: ${request.tran_ref}`);
     this.logger.debug(JSON.stringify(request));
     // !TODO: validate signature from Paytabs (valid from paytabs or not)
@@ -168,56 +195,6 @@ export class DonorController {
     );
   }
 
-  @Get(':donorId')
-  async getDonor(@Param('donorId') donorId: string) {
-    this.logger.debug('findOne...');
-    return await this.donorService.getDonor(donorId);
-  }
-
-  @Get('organization/:organizationId/manager/getListAll')
-  @UseGuards(JwtAuthGuard)
-  async getDonorListAll(@Param('organizationId') organizationId: string) {
-    this.logger.debug('findOne...');
-    return await this.donorService.getDonorListAll(organizationId);
-  }
-
-  @ApiOperation({ summary: 'Create Donor Payment' })
-  @Get('totalDonation/:donorId')
-  async getTotalDonation(
-    @Param('donorId') donorId: string,
-    @Query('currencyCode') currency: string,
-  ) {
-    this.logger.debug('get TotalDonation');
-    return await this.donorService.getTotalDonation(donorId, currency);
-  }
-
-  @Post('anonymous/create')
-  async createDonor(@Body() donorProfileDto: DonorUpdateProfileDto) {
-    this.logger.debug('create donor as anonymous user');
-    this.logger.debug(JSON.stringify(donorProfileDto));
-    return await this.donorService.addAnonymousDonor(donorProfileDto);
-  }
-
-  @Patch(':donorId')
-  async updateDonor(
-    @Param('donorId') donorId: string,
-    @Body() donorUpdateProfileDto: DonorUpdateProfileDto,
-  ) {
-    this.logger.debug('update donor');
-    this.logger.debug(JSON.stringify(donorUpdateProfileDto));
-    return await this.donorService.updateDonor(donorId, donorUpdateProfileDto);
-  }
-
-  @ApiOperation({ summary: 'Get Donation Donor Summary Dashboard' })
-  @Get('totalDonationDonor/:donorId')
-  async getTotalDonationDonor(
-    @Param('donorId') donorId: string,
-    @Query('currencyCode') currency: string,
-  ) {
-    this.logger.debug('get TotalDonationDonor');
-    return await this.donorService.getTotalDonationDonor(donorId, currency);
-  }
-
   @Get('donorTransaction')
   async getTrxDonorList(
     @Query() filter: DonorListTrxDto,
@@ -244,6 +221,7 @@ export class DonorController {
     );
     return response;
   }
+
   @Get('donorList')
   async getDonorList(
     @Query() filter: DonorListDto,
@@ -267,5 +245,59 @@ export class DonorController {
       'Successfully get list all donor',
     );
     return response;
+  }
+
+  @ApiOperation({ summary: 'Create Donor Payment' })
+  @Get('totalDonation/:donorId')
+  async getTotalDonation(
+    @Param('donorId') donorId: string,
+    @Query('currencyCode') currency: string,
+  ) {
+    this.logger.debug('get TotalDonation');
+    return await this.donorService.getTotalDonation(donorId, currency);
+  }
+
+  @ApiOperation({ summary: 'Get Donation Donor Summary Dashboard' })
+  @Get('totalDonationDonor/:donorId')
+  async getTotalDonationDonor(
+    @Param('donorId') donorId: string,
+    @Query('currencyCode') currency: string,
+  ) {
+    this.logger.debug('get TotalDonationDonor');
+    return await this.donorService.getTotalDonationDonor(donorId, currency);
+  }
+
+  @Get('organization/:organizationId/manager/getListAll')
+  @UseGuards(JwtAuthGuard)
+  async getDonorListAll(@Param('organizationId') organizationId: string) {
+    this.logger.debug('findOne...');
+    return await this.donorService.getDonorListAll(organizationId);
+  }
+
+  @Get(':donorId')
+  async getDonor(@Param('donorId') donorId: string) {
+    this.logger.debug('findOne...');
+    return await this.donorService.getDonor(donorId);
+  }
+
+  @ApiOperation({ summary: 'Get list of success donation history by donorId' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of donation history sucessfully retrieved',
+  })
+  @Get(':donorId/history/getAllSuccess')
+  async getAllSuccessDonation(@Param('donorId') donorId: string) {
+    this.logger.debug('get success donation history ');
+    return await this.donorService.getHistoryAllSuccess(donorId);
+  }
+
+  @Patch(':donorId')
+  async updateDonor(
+    @Param('donorId') donorId: string,
+    @Body() donorUpdateProfileDto: DonorUpdateProfileDto,
+  ) {
+    this.logger.debug('update donor');
+    this.logger.debug(JSON.stringify(donorUpdateProfileDto));
+    return await this.donorService.updateDonor(donorId, donorUpdateProfileDto);
   }
 }
