@@ -8,11 +8,12 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { rootLogger } from '../logger';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OrganizationDto } from './dto/organization.dto';
 import { AppearancenDto } from './dto/appearance.dto';
 import { NotificationSettingsDto } from './dto/notification_settings.dto';
@@ -41,6 +42,7 @@ import { DonationLogDocument as DonationLogsDocument } from 'src/donor/schema/do
 import { BaseResponse } from 'src/commons/dtos/base-response';
 import { AppearanceNavigation } from './schema/nonprofit_appearance_navigation.schema';
 import { baseResponseHelper } from 'src/commons/helpers/base-response-helper';
+import { JwtAuthGuard } from 'src/auth/jwt.guard';
 
 @ApiTags('orgs')
 @Controller('orgs')
@@ -248,6 +250,7 @@ export class OrganizationController {
       nonProfitAppearanceNavigationDto
     );
   }
+
   @Post(':organizationId/aboutUs')
   async createAboutUs(
     @Param('organizationId') organizationId: string,
@@ -259,6 +262,7 @@ export class OrganizationController {
       nonProfitAppearanceNavigationAboutUsDto,
     );
   }
+
   @Post(':organizationId/blog')
   async createBlog(
     @Param('organizationId') organizationId: string,
@@ -270,6 +274,9 @@ export class OrganizationController {
       nonProfitAppearanceNavigationBlogDto,
     );
   }
+
+  @ApiOperation({ summary: 'create contactUs' })
+  @UseGuards(JwtAuthGuard)
   @Post(':organizationId/contactUs')
   async createContactUs(
     @Param('organizationId') organizationId: string,
@@ -281,32 +288,36 @@ export class OrganizationController {
     );
   }
 
+  @ApiOperation({ summary: 'update landingPage' })
+  @UseGuards(JwtAuthGuard)
   @Patch(':organizationId/landingPage')
   async editLandingPage(
     @Param('organizationId') organizationId: string,
     @Body()
-    // editNonProfitAppearanceNavigationDto: EditNonProfitAppearanceNavigationDto,
     editNonProfitAppearanceNavigationDto: EditNonProfApperNavDto,
   ): Promise<BaseResponse<AppearanceNavigation>> {
+    this.logger.debug('update landingPage', JSON.stringify(editNonProfitAppearanceNavigationDto));
     const editLandingPage = await this.organizationService.editLandingPage(
       organizationId,
       editNonProfitAppearanceNavigationDto,
     );
-
     const response = baseResponseHelper(
       editLandingPage,
       HttpStatus.OK,
       'LandingPage updated',
     );
     return response;
-
   }
+
+  @ApiOperation({ summary: 'update aboutUs' })
+  @UseGuards(JwtAuthGuard)
   @Patch(':organizationId/aboutUs')
   async editAboutUs(
     @Param('organizationId') organizationId: string,
     @Body()
     EditNonProfApperNavAboutUsDto: EditNonProfApperNavAboutUsDto,
   ): Promise<BaseResponse<AppearanceNavigation>> {
+    this.logger.debug('update aboutUs', JSON.stringify(EditNonProfApperNavAboutUsDto));
     const editAboutUs = await this.organizationService.editAboutUs(
       organizationId,
       EditNonProfApperNavAboutUsDto,
@@ -318,22 +329,30 @@ export class OrganizationController {
     );
     return response;
   }
+
+  @ApiOperation({ summary: 'update blog' })
+  @UseGuards(JwtAuthGuard)
   @Patch(':organizationId/blog')
   async editBlog(
     @Param('organizationId') organizationId: string,
     @Body()
     editNonProfitAppearanceNavigationBlogDto: EditNonProfitAppearanceNavigationBlogDto,
   ) {
+    this.logger.debug('update blog', JSON.stringify(editNonProfitAppearanceNavigationBlogDto));
     return this.organizationService.editBlog(
       organizationId,
       editNonProfitAppearanceNavigationBlogDto,
     );
   }
+
+  @ApiOperation({ summary: 'update contactUs' })
+  @UseGuards(JwtAuthGuard)
   @Patch(':organizationId/contactUs')
   async editContactUs(
     @Param('organizationId') organizationId: string,
     @Body() editNonProfitAppearancePageDto: EditNonProfitAppearancePageDto,
   ) {
+    this.logger.debug('update contactUs', JSON.stringify(editNonProfitAppearancePageDto));
     return this.organizationService.editContactUs(
       organizationId,
       editNonProfitAppearancePageDto,
