@@ -1462,18 +1462,29 @@ export class OrganizationService {
     ) {
       const photoThumbnail = nonProfitAppearanceNavigationAboutUsDto.photoThumbnailUl[0]
       if (!!photoThumbnail && photoThumbnail) {
-        const path = await this.bunnyService.generatePath(
-          nonProfitAppearanceNavigationAboutUsDto.organizationId!,
-          'landingpage-photoThumbnail',
-          photoThumbnail.fullName!,
-          photoThumbnail.imageExtension!,
-          nonProfitAppearanceNavigationAboutUsDto.organizationId!,
-        );
+        let path: string = '';
+        try {
+          path = await this.bunnyService.generatePath(
+            nonProfitAppearanceNavigationAboutUsDto.organizationId!,
+            'landingpage-photoThumbnail',
+            photoThumbnail.fullName!,
+            photoThumbnail.imageExtension!,
+            nonProfitAppearanceNavigationAboutUsDto.organizationId!,
+          );
+        } catch (error) {
+          console.info('Have found same problem', error);
+        }
+
         const base64Data = photoThumbnail.base64Data!;
-        const binary = Buffer.from(
-          photoThumbnail.base64Data!,
-          'base64',
-        );
+        let binary;
+        try {
+          binary = Buffer.from(
+            photoThumbnail.base64Data!,
+            'base64',
+          );
+        } catch (error) {
+          console.info('Have found same problem', error);
+        }
         if (!binary) {
           const trimmedString = 56;
           base64Data.length > 40
@@ -1483,11 +1494,17 @@ export class OrganizationService {
             `Image payload photo OfActivity is not a valid base64 data: ${trimmedString}`,
           );
         }
-        const imageUpload = await this.bunnyService.uploadImage(
-          path,
-          binary,
-          nonProfitAppearanceNavigationAboutUsDto.organizationId!,
-        );
+
+        let imageUpload;
+        try {
+          imageUpload = await this.bunnyService.uploadImage(
+            path,
+            binary,
+            nonProfitAppearanceNavigationAboutUsDto.organizationId!,
+          );
+        } catch (error) {
+          console.info('Have found same problem', error);
+        }
 
         if (imageUpload) {
           console.info('photoThumbnail image has been created', path);
@@ -1502,18 +1519,31 @@ export class OrganizationService {
     ) {
       const iconForValues = nonProfitAppearanceNavigationAboutUsDto.iconForValuesUl[0]
       if (!!iconForValues && iconForValues) {
-        const path = await this.bunnyService.generatePath(
-          nonProfitAppearanceNavigationAboutUsDto.organizationId!,
-          'landingpage-iconForValues',
-          iconForValues.fullName!,
-          iconForValues.imageExtension!,
-          nonProfitAppearanceNavigationAboutUsDto.organizationId!,
-        );
+        let path: string = '';
+        try {
+          path = await this.bunnyService.generatePath(
+            nonProfitAppearanceNavigationAboutUsDto.organizationId!,
+            'landingpage-iconForValues',
+            iconForValues.fullName!,
+            iconForValues.imageExtension!,
+            nonProfitAppearanceNavigationAboutUsDto.organizationId!,
+          );
+        } catch (error) {
+          console.info('Have found same problem', error);
+        }
+
         const base64Data = iconForValues.base64Data!;
-        const binary = Buffer.from(
-          iconForValues.base64Data!,
-          'base64',
-        );
+        let binary
+
+        try {
+          binary = Buffer.from(
+            iconForValues.base64Data!,
+            'base64',
+          );
+        } catch (error) {
+          console.info('Have found same problem', error);
+        }
+
         if (!binary) {
           const trimmedString = 56;
           base64Data.length > 40
@@ -1523,12 +1553,16 @@ export class OrganizationService {
             `Image payload photo OfActivity is not a valid base64 data: ${trimmedString}`,
           );
         }
-        const imageUpload = await this.bunnyService.uploadImage(
-          path,
-          binary,
-          nonProfitAppearanceNavigationAboutUsDto.organizationId!,
-        );
-
+        let imageUpload;
+        try {
+          imageUpload = await this.bunnyService.uploadImage(
+            path,
+            binary,
+            nonProfitAppearanceNavigationAboutUsDto.organizationId!,
+          );
+        } catch (error) {
+          console.info('Have found same problem', error);
+        }
         if (imageUpload) {
           console.info('iconForValues image has been created', path);
           nonProfitAppearanceNavigationAboutUsDto.iconForValues = path;
@@ -1542,9 +1576,15 @@ export class OrganizationService {
     let now: Date = new Date();
     nonProfitAppearanceNavigationAboutUsDto.createdAt = now.toISOString();
     nonProfitAppearanceNavigationAboutUsDto.updatedAt = now.toISOString();
-    const appearanceCreateAboutUs = await this.appearanceNavigationModel.create(
-      nonProfitAppearanceNavigationAboutUsDto,
-    );
+    let appearanceCreateAboutUs;
+    try {
+      appearanceCreateAboutUs = await this.appearanceNavigationModel.create(
+        nonProfitAppearanceNavigationAboutUsDto,
+      );
+    } catch (error) {
+      console.info('Have found same problem', error);
+    }
+
     return {
       statusCode: 200,
       appearanceaboutus: appearanceCreateAboutUs,
