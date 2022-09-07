@@ -75,7 +75,14 @@ export class PermissionsGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
 
     // get organizationid from header
-    const organizationId = request.headers['tmra-organizationid'];
+    // const organizationId = request.headers['tmra-organizationid'];
+    // if request is post/put/patch then get organizationid from body, else get from query
+    const organizationId =
+      request.method === 'POST' ||
+      request.method === 'PUT' ||
+      request.method === 'PATCH'
+        ? request.body.organizationId
+        : request.query.organizationId;
     if (organizationId === '' || organizationId === undefined) {
       throw new BadRequestException(
         'No organizationId defined!, please add "tmra-organizationid" to header!',
