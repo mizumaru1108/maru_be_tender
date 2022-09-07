@@ -61,6 +61,15 @@ export class Campaign {
   })
   amountProgress: Types.Decimal128;
 
+  /**
+   * define that the data is ordered by someone and the order is not finished
+   */
+  @Prop({
+    type: mongoose.Schema.Types.Decimal128,
+    default: Types.Decimal128.fromString('0'),
+  })
+  amountProgressOnTransaction: Types.Decimal128;
+
   @Prop({
     type: mongoose.Schema.Types.Decimal128,
     default: Types.Decimal128.fromString('0'),

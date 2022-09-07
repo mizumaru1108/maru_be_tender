@@ -397,6 +397,7 @@ export class DonorService {
 
       let stripeResponse: Stripe.Response<Stripe.Checkout.Session> | null =
         null;
+
       let paytabsResponse: PaytabsCreateTransactionResponse | null = null;
 
       if (pgData.name === 'STRIPE') {
@@ -405,18 +406,8 @@ export class DonorService {
           lineItems.push({
             // !TODO: Please Checkout https://dashboard.stripe.com/test/products/prod_LZhxCI76m6SsBq
             // !THE PRICING IS DEFINED THERE!
-            // name: item.name! || '',
-            // amount: item.total! || 0,
-            // currency: pgData.defaultCurrency || '',
-            // quantity: item.quantity || 1,
-            price_data: {
-              product: item.name! || '',
-              currency: pgData.defaultCurrency || '',
-              unit_amount_decimal: item.total!.toString() || '0',
-            },
-            // price: item.total!.toString() || '0',
+            price: 'price_1Lf3C5HUWfuuNMSQU6I8QnaM',
             quantity: item.quantity! || 1,
-            // price: item.total!.toString() || '0',
           });
         });
         const stripeParams: Stripe.Checkout.SessionCreateParams = {
@@ -437,6 +428,31 @@ export class DonorService {
           );
         stripeResponse = response;
       }
+
+      // if (pgData.name == 'STRIPE') {
+      //   let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+      //   itemToPay.forEach((item) => {
+      //     lineItems.push({});
+      //   });
+      //   const stripeParams: Stripe.PaymentIntentCreateParams = {
+      //     amount: totalAmount,
+      //     currency: 'gbp',
+      //     automatic_payment_methods: {
+      //       enabled: true,
+      //     },
+      //     capture_method: 'automatic',
+      //     receipt_email: donorDetails?.email || '',
+      //     description: 'Donation',
+      //     metadata: {
+      //       donationLogId: donationLogId.toString(),
+      //     },
+      //   };
+      //   const response = await this.stripeService.createStripePaymentIntent(
+      //     stripeParams,
+      //     pgData.apiKey!,
+      //   );
+      //   stripeResponse = response;
+      // }
 
       if (pgData.name === 'PAYTABS') {
         const firstName = donorDetails?.firstName || ''; // case of unfilled name
@@ -587,6 +603,15 @@ export class DonorService {
     if (!item) {
       return null;
     }
+    // update item quantity
+    let onTransaction = Number(item.totalNeedOnTransaction);
+    let updatedOnTransaction = (onTransaction += qty);
+    item.totalNeedOnTransaction = updatedOnTransaction.toString();
+    item.totalNeed = (Number(item.totalNeed) - qty).toString();
+    const updateTotalNeed = await item.save({ session: mongoSession });
+    if (!updateTotalNeed) {
+      return null;
+    }
     const result: DonorDonationTypeMapResult = {
       items: {
         id: item._id.toString(),
@@ -616,9 +641,17 @@ export class DonorService {
     const campaign = await this.campaignModel
       .findOne({ _id: new Types.ObjectId(campaignId) })
       .session(mongoSession);
-    if (!campaign) {
-      return null;
-    }
+    if (!campaign) return null;
+    campaign.amountProgress = new Types.Decimal128(
+      (Number(campaign.amountProgress) + donationAmount).toString(),
+    );
+    campaign.amountProgressOnTransaction = new Types.Decimal128(
+      (
+        Number(campaign.amountProgressOnTransaction) + donationAmount
+      ).toString(),
+    );
+    const updateCampaign = await campaign.save({ session: mongoSession });
+    if (!updateCampaign) return null;
     const result: DonorDonationTypeMapResult = {
       items: {
         id: campaign._id.toString(),
@@ -669,6 +702,94 @@ export class DonorService {
       },
     };
     return result;
+  }
+
+  async donatePaytabsWebhookHandler(payload: PaytabsIpnWebhookResponsePayload) {
+    const donationLog = await this.donationLogModel.findOne({
+      transactionId: payload.tran_ref,
+    });
+    if (!donationLog) {
+      throw new BadRequestException(`Donation log not found`);
+    }
+
+    const donationDetails = await this.donationDetailModel.find({
+      donationLogId: donationLog._id,
+    });
+
+    let status: DonationStatus = DonationStatus.PENDING;
+    switch (payload.payment_result.response_status) {
+      case PaytabsResponseStatus.A:
+        status = DonationStatus.SUCCESS;
+        break;
+      case PaytabsResponseStatus.D:
+        status = DonationStatus.DECLINED;
+        break;
+      case PaytabsResponseStatus.E:
+        status = DonationStatus.ERROR;
+        break;
+      case PaytabsResponseStatus.H:
+        status = DonationStatus.HOLD;
+        break;
+      case PaytabsResponseStatus.P:
+        status = DonationStatus.PENDING;
+        break;
+      case PaytabsResponseStatus.V:
+        status = DonationStatus.VOIDED;
+        break;
+    }
+
+    donationLog.donationStatus = status;
+    donationLog.ipAddress = payload.customer_details?.ip || '';
+    donationLog.updatedAt = moment().toISOString();
+
+    this.logger.debug('updating donation log');
+    const updateDonationLog = await donationLog.save();
+    if (!updateDonationLog) {
+      throw new Error('Donation log not updated correctly!');
+    }
+
+    const paymentData = await this.paymentDataModel.findOne({
+      orderId: payload.tran_ref,
+    });
+    if (!paymentData) {
+      throw new BadRequestException(`Payment data not found`);
+    }
+    paymentData.cardType = payload.payment_info?.card_type || '';
+    paymentData.cardScheme = payload.payment_info?.card_scheme || '';
+    paymentData.paymentDescription =
+      payload.payment_info?.payment_description || '';
+    paymentData.expiryMonth =
+      Number(payload.payment_info?.expiryMonth) || undefined;
+    paymentData.expiryYear =
+      Number(payload.payment_info?.expiryYear) || undefined;
+    paymentData.responseStatus = payload.payment_result?.response_status || '';
+    paymentData.responseCode = payload.payment_result?.response_code || '';
+    paymentData.responseMessage =
+      payload.payment_result?.response_message || '';
+    paymentData.cvvResult = payload.payment_result?.cvv_result || '';
+    paymentData.avsResult = payload.payment_result?.avs_result || '';
+    paymentData.transactionTime =
+      payload.payment_result?.transaction_time || '';
+    paymentData.paymentStatus = payload.payment_result?.response_message || '';
+    this.logger.debug('updating payment data');
+
+    const updatePaymentData = await paymentData.save();
+    if (!updatePaymentData) {
+      throw new Error('Payment data not updated correctly!');
+    }
+
+    // !TODO: Do looping on all donation log.
+    const donationDetailsMapping = donationDetails.map(async (detail) => {
+      if (detail.donationType === DonationType.ITEM) {
+        await this.webhookHandleUpdateItem();
+      }
+      if (detail.donationType === DonationType.CAMPAIGN) {
+        await this.webhookHandleUpdateItem();
+      }
+      if (detail.donationType === DonationType.PROJECT) {
+        await this.webhookHandleUpdateItem();
+      }
+    });
   }
 
   async donateSingleItem(
@@ -797,9 +918,20 @@ export class DonorService {
     return response;
   }
 
-  async donatePaytabsWebhookHandler(
-    payload: PaytabsIpnWebhookResponsePayload,
-  ) {}
+  /**
+   * Webhook handle update item data
+   */
+  async webhookHandleUpdateItem() {}
+
+  /**
+   * Wenhook handle update campaign data
+   */
+  async webhookHandleUpdateCampaign() {}
+
+  /**
+   * Webhook handle update project data
+   */
+  async webhookHandleUpdateProject() {}
 
   async donateStripeWebhookHandler(payload: any) {}
 
@@ -832,7 +964,6 @@ export class DonorService {
         status = DonationStatus.VOIDED;
         break;
     }
-    console.log('payment status', status);
 
     donationLog.donationStatus = status;
     donationLog.ipAddress = request.customer_details?.ip || '';

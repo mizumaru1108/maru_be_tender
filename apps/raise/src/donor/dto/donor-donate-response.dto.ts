@@ -11,7 +11,7 @@ export class DonorDonateResponse {
   paytabsResponse: PaytabsCreateTransactionResponse | null;
 
   @ApiProperty()
-  stripeResponse: Stripe.Response<Stripe.Checkout.Session> | null = null;
+  stripeResponse: Stripe.Response<Stripe.Checkout.Session> | null;
 
   @ApiProperty()
   @IsNotEmptyObject()

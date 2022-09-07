@@ -86,6 +86,12 @@ export class Item {
   @Prop()
   public totalNeed?: string;
 
+  /**
+   * define that the data is ordered by someone and the order is not finished
+   */
+  @Prop({ default: '0' })
+  public totalNeedOnTransaction?: string;
+
   @Prop()
   public projectId?: string;
 

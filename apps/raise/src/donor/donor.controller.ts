@@ -111,11 +111,7 @@ export class DonorController {
     );
   }
 
-  @ApiOperation({ summary: 'Create Donor Payment' })
-  @ApiResponse({
-    status: 201,
-    description: 'The Donor payment has been successfully created.',
-  })
+  @ApiOperation({ summary: 'Paytabs webhook handler' })
   @Post('donatePaytabs/webhook')
   async donatePaytabsWebhook(
     @Headers('signature') signature: string,
@@ -136,17 +132,13 @@ export class DonorController {
     // to do
   }
 
-  @ApiOperation({ summary: 'Create Donor Payment' })
-  @ApiResponse({
-    status: 201,
-    description: 'The Donor payment has been successfully created.',
-  })
+  @ApiOperation({ summary: 'Stripe webhook handler' })
   @Post('/donateStripe/webhook')
-  async donateStripeWebhook(@Body() request: PaytabsIpnWebhookResponsePayload) {
-    this.logger.debug(`webook paytabs from trans code: ${request.tran_ref}`);
-    this.logger.debug(JSON.stringify(request));
+  async donateStripeWebhook(@Body() payload: any) {
+    this.logger.debug(`webook stripe from trans code: ${payload.tran_ref}`);
+    this.logger.debug(JSON.stringify(payload));
     // !TODO: validate signature from Paytabs (valid from paytabs or not)
-    await this.donorService.donateSingleItemCallback(request);
+    await this.donorService.donateStripeWebhookHandler(payload);
   }
 
   @ApiOperation({ summary: 'Create Donor Payment' })
