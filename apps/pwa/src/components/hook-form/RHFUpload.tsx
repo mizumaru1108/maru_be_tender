@@ -67,7 +67,7 @@ export function RHFUploadSingleFile({ name, placeholder, ...other }: Props) {
         );
       }
     },
-    [setValue]
+    [name, setValue]
   );
 
   return (

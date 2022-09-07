@@ -58,6 +58,7 @@
     "deck.gl": "^8.8.2",
     "emoji-mart": "^5.1.0",
     "firebase": "^9.8.4",
+    "formik": "^2.2.9",
     "framer-motion": "^6.3.16",
     "geojson": "^0.5.0",
     "highlight.js": "^11.5.1",

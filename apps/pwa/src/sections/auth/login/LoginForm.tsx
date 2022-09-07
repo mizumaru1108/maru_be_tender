@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Link, Stack, Alert, IconButton, InputAdornment } from '@mui/material';
@@ -22,6 +22,7 @@ type FormValuesProps = {
 export default function LoginForm() {
   const { translate } = useLocales();
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const LoginSchema = Yup.object().shape({
     email: Yup.string().email('Email must be a valid email address').required('Email is required'),
@@ -50,6 +51,7 @@ export default function LoginForm() {
     alert(data.email);
     alert(data.password);
     alert(data.remember);
+    navigate('/client/dashboard/app');
   };
 
   return (

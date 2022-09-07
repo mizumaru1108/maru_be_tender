@@ -1,8 +1,26 @@
 // routes
-import { PATH_DASHBOARD } from '../../../routes/paths';
+import { PATH_CLIENT } from '../../../routes/paths';
 import SvgIconStyle from '../../../components/SvgIconStyle';
 
 // ----------------------------------------------------------------------
+
+/**
+ * navConfig looks like this
+ * {
+ *  role : must be included[client, admin, CTO, .... etc]
+ * }
+ *  And inside everyone of those roles we have array of items, which the one of them includes
+ *  1- title: the translation key in the i18n files.
+ *  2- path: which goes the Paths file.
+ *  3- icone: the Icone for this tap/button.
+ *
+ *  In the conclusion, when ever you want to add a new route just follow these steps :
+ *  1- alter the route file.
+ *  2- alter the pathes file.
+ *  3- alter this file if it needs.
+ *
+ *  You may go through another situation, so it depends on the situation itself.
+ */
 
 const getIcon = (name: string) => (
   <SvgIconStyle src={`/assets/icons/dashboard-navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
@@ -26,12 +44,12 @@ const navConfig = {
       items: [
         {
           title: 'main',
-          path: PATH_DASHBOARD.general.app,
+          path: PATH_CLIENT.app,
           icon: ICONS.main,
         },
         {
           title: 'request_project_funding',
-          path: PATH_DASHBOARD.funding_project_request,
+          path: PATH_CLIENT.funding_project_request,
           icon: ICONS.project_fund_request,
         },
         // {

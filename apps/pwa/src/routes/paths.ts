@@ -6,6 +6,7 @@ function path(root: string, sublink: string) {
 
 const ROOTS_AUTH = '/auth';
 const ROOTS_DASHBOARD = '/dashboard';
+const ROOTS_CLIENT = '/client';
 
 // ----------------------------------------------------------------------
 
@@ -33,10 +34,15 @@ export const PATH_PAGE = {
   page500: '/500',
   components: '/components',
 };
+export const PATH_CLIENT = {
+  root: ROOTS_CLIENT,
+  funding_project_request: path(ROOTS_CLIENT, '/dashboard/funding-project-request'),
+  app: path(ROOTS_CLIENT, '/dashboard/app'),
+  contact_support: path(ROOTS_CLIENT, '/contact-support'),
+};
 
 export const PATH_DASHBOARD = {
   root: ROOTS_DASHBOARD,
-  funding_project_request: path(ROOTS_DASHBOARD, '/funding-project-request'),
   fundraising: path(ROOTS_DASHBOARD, '/fundraising'),
   hr: {
     root: path(ROOTS_DASHBOARD, '/hr'),
