@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { Document } from 'mongoose';
+import { CampaignStatus } from '../../campaign/enums/campaign-status.enum';
 
 export type VendorDocument = Vendor & Document;
 export type VendorChartDataDocument = VendorChartData & Document;
@@ -112,8 +113,8 @@ export class CampaignVendorLog {
   })
   public updatedAt: string;
 
-  @Prop({ type: String })
-  public status: string;
+  @Prop({ enum: CampaignStatus, default: CampaignStatus.NEW })
+  public status: CampaignStatus;
 }
 
 @Schema({ collection: 'vendorChartData' })

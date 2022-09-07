@@ -11,21 +11,20 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt.guard';
-import { ValidateObjectId } from '../commons/decorators/validate-object-id.decorator';
+import { Permissions } from '../auth/permissions.decorator';
+import { PermissionsGuard } from '../auth/permissions.guard';
+import { CampaignVendorLog } from '../buying/vendor/vendor.schema';
 
 import { BaseResponse } from '../commons/dtos/base-response';
 import { PaginatedResponse } from '../commons/dtos/paginated-response.dto';
 import { baseResponseHelper } from '../commons/helpers/base-response-helper';
 import { paginationHelper } from '../commons/helpers/pagination-helper';
 import { DonorService } from '../donor/donor.service';
+import { Permission } from '../libs/authzed/enums/permission.enum';
 import { rootLogger } from '../logger';
 import { Campaign, CampaignDocument } from './campaign.schema';
 import { CampaignService } from './campaign.service';
-import {
-  CampaignSetFavoriteDto,
-  CreateCampaignDto,
-  ApproveCampaignDto,
-} from './dto';
+import { CampaignSetFavoriteDto, CreateCampaignDto } from './dto';
 import { CampaignDonorOnOperatorDasboardFilter } from './dto/campaign-donor-on-operator-dashboard-filter.dto';
 import { CampaignDonorOnOperatorDasboardParam } from './dto/campaign-donor-on-operator-dashboard-param.dto';
 import { CampaignSetDeletedFlagDto } from './dto/capaign-set-flag-deleted';
@@ -33,6 +32,7 @@ import { GetAllMypendingCampaignFromVendorIdRequest } from './dto/get-all-my-pen
 import { GetAllNewCampaignFilter } from './dto/get-all-new-campaign-filter.dto';
 import { GetAllNewCampaignParams } from './dto/get-all-new-campaign-params.dto';
 import { UpdateCampaignDto } from './dto/update-campaign-dto';
+import { UpdateCampaignStatusDto } from './dto/update-campaign-status.dto';
 
 @ApiTags('campaign')
 @Controller('campaign')
@@ -325,18 +325,41 @@ export class CampaignController {
     return await this.campaignService.vendorApply(createCampaignDto);
   }
 
-  @ApiOperation({ summary: 'Operator response for vendor request' })
+  @ApiOperation({ summary: 'Operator approve for vendor request' })
   @ApiResponse({
     status: 201,
-    description: 'Operator response vendor request !',
+    description: 'Operator approve for vendor request !',
   })
   @Post('operator/approve')
-  async operatorResponse(@Body() approveCampaignDto: ApproveCampaignDto) {
+  async approveCampaign(@Body() request: UpdateCampaignStatusDto) {
     this.logger.debug(
       'apply to unapproved new campaign ',
-      JSON.stringify(approveCampaignDto),
+      JSON.stringify(request),
     );
-    return await this.campaignService.operatorApprove(approveCampaignDto);
+    return await this.campaignService.operatorApprove(request);
+  }
+
+  @ApiOperation({ summary: 'Operator reject for campaign' })
+  @ApiResponse({
+    status: 201,
+    description: 'Campaign `campaignId` has been rejected by Operator !',
+  })
+  @Permissions(Permission.OE) //only operator and manager(super admin) can reject
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Post('operator/reject')
+  async rejectCampaign(
+    @Body() request: UpdateCampaignStatusDto,
+  ): Promise<BaseResponse<CampaignVendorLog>> {
+    this.logger.debug(
+      'applying reject to unapproved new campaign ',
+      JSON.stringify(request),
+    );
+    const rejectedCampaign = await this.campaignService.operatorReject(request);
+    return baseResponseHelper(
+      rejectedCampaign,
+      HttpStatus.OK,
+      `Campaign ${request.campaignId} has been rejected by Operator!`,
+    );
   }
 
   @ApiOperation({ summary: 'create new campaign objectId' })

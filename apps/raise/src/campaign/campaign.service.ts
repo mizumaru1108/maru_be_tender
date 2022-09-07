@@ -19,26 +19,26 @@ import {
 import slugify from 'slugify';
 
 import { z } from 'zod';
-import { BunnyService } from '../libs/bunny/services/bunny.service';
 import {
   CampaignVendorLog,
   CampaignVendorLogDocument,
   Vendor,
   VendorDocument,
 } from '../buying/vendor/vendor.schema';
+import { BunnyService } from '../libs/bunny/services/bunny.service';
 import { rootLogger } from '../logger';
 import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
 import { User, UserDocument } from '../user/schema/user.schema';
 import { Campaign, CampaignDocument } from './campaign.schema';
 import { CreateCampaignDto } from './dto';
-import { UpdateCampaignDto } from './dto/update-campaign-dto';
-import { ApproveCampaignDto } from './dto/approve-campaign.dto';
-import { GetAllMypendingCampaignFromVendorIdRequest } from './dto/get-all-my-pending-campaign-from-vendor-id.request';
-import { CampaignDonorOnOperatorDasboardParam } from './dto/campaign-donor-on-operator-dashboard-param.dto';
 import { CampaignDonorOnOperatorDasboardFilter } from './dto/campaign-donor-on-operator-dashboard-filter.dto';
-import { PaginatedResponse } from '../commons/dtos/paginated-response.dto';
+import { CampaignDonorOnOperatorDasboardParam } from './dto/campaign-donor-on-operator-dashboard-param.dto';
+import { GetAllMypendingCampaignFromVendorIdRequest } from './dto/get-all-my-pending-campaign-from-vendor-id.request';
 import { GetAllNewCampaignFilter } from './dto/get-all-new-campaign-filter.dto';
+import { UpdateCampaignDto } from './dto/update-campaign-dto';
+import { UpdateCampaignStatusDto } from './dto/update-campaign-status.dto';
 import { CampaignSortByEnum } from './enums/campaign-sortby-enum';
+import { CampaignStatus } from './enums/campaign-status.enum';
 // import { catchError } from 'rxjs';
 // import { ObjectId } from 'mongodb';
 @Injectable()
@@ -203,7 +203,7 @@ export class CampaignService {
     if (dataCampaign) {
       createdCampaignVendorLog._id = new Types.ObjectId();
       createdCampaignVendorLog.campaignId = dataCampaign._id;
-      createdCampaignVendorLog.status = 'new';
+      // createdCampaignVendorLog.status = 'new'; // will be auto filled (default value in schema "CamapaignStatus.NEW ('new')")
       createdCampaignVendorLog.vendorId = '';
       createdCampaignVendorLog.createdAt = dayjs().toISOString();
       createdCampaignVendorLog.updatedAt = dayjs().toISOString();
@@ -707,44 +707,28 @@ export class CampaignService {
     return data;
   }
 
-  async operatorApprove(approveCampaignDto: ApproveCampaignDto) {
-    // let vendorData: any = new Vendor();
+  async operatorApprove(request: UpdateCampaignStatusDto) {
     let data: any;
     const ObjectId = require('mongoose').Types.ObjectId;
-
-    // this.logger.debug(`userId=${createCampaignDto.userId}`);
-
-    // let dataVendor = await this.vendorModel.findOne({
-    //   ownerUserId: createCampaignDto.userId,
-    // });
-
-    // this.logger.debug(`_id=${dataVendor?._id}`);
-
-    if (
-      !approveCampaignDto.campaignId ||
-      !approveCampaignDto.status ||
-      (approveCampaignDto.status != 'approved' &&
-        approveCampaignDto.status != 'rejected')
-    ) {
-      throw new NotFoundException(`Reject campaign approval process`);
-    }
-
-    // if (!createCampaignDto.campaignId) {
-    //   throw new NotFoundException(`Campaign not found`);
+    // refactor the campaign dto, see the dto (validate the request before it get to the service)
+    // if (
+    //   !approveCampaignDto.campaignId ||
+    //   !approveCampaignDto.status ||
+    //   (approveCampaignDto.status != 'approved' &&
+    //     approveCampaignDto.status != 'rejected')
+    // ) {
+    //   throw new NotFoundException(`Reject campaign approval process`);
     // }
-
-    // this.logger.debug(`campaignId=${createCampaignDto?.campaignId}`);
     try {
       //STEP 1: update initial campaign , change "new" to "approved"
       data = await this.campaignVendorLogModel.findOneAndUpdate(
         {
-          campaignId: new ObjectId(approveCampaignDto.campaignId),
-          status: 'new',
+          campaignId: new ObjectId(request.campaignId),
+          status: CampaignStatus.NEW,
         },
         {
-          vendorId: approveCampaignDto.vendorId,
-          status: 'approved',
-          // createdAt: dayjs().toISOString(),
+          vendorId: request.vendorId,
+          status: CampaignStatus.APPROVED,
           updatedAt: dayjs().toISOString(),
         },
         { upsert: false, overwrite: false, rawResult: true },
@@ -752,14 +736,16 @@ export class CampaignService {
 
       //STEP 2: update the rest of campaign set flag, change status
       //from "pending new" to "processed"
-
       data = await this.campaignVendorLogModel.updateMany(
         {
-          campaignId: new ObjectId(approveCampaignDto.campaignId),
-          status: 'pending new',
+          campaignId: new ObjectId(request.campaignId),
+          status: CampaignStatus.PENDING_NEW,
         },
         {
-          $set: { status: 'processed', updatedAt: dayjs().toISOString() },
+          $set: {
+            status: CampaignStatus.PROCESSED,
+            updatedAt: dayjs().toISOString(),
+          },
         },
         {
           upsert: false,
@@ -770,6 +756,29 @@ export class CampaignService {
     }
 
     return data;
+  }
+
+  async operatorReject(
+    request: UpdateCampaignStatusDto,
+  ): Promise<CampaignVendorLog> {
+    const campaignData = await this.campaignVendorLogModel.findOne({
+      campaignId: new Types.ObjectId(request.campaignId),
+    });
+    if (!campaignData) {
+      throw new NotFoundException(`Campaign not found`);
+    }
+    if (campaignData.status === CampaignStatus.PROCESSED) {
+      throw new BadRequestException(`Campaign already processed!`);
+    }
+    campaignData.status = CampaignStatus.PROCESSED;
+    campaignData.updatedAt = dayjs().toISOString();
+    const updateCampaignStatus = await campaignData.save();
+    if (!updateCampaignStatus) {
+      throw new InternalServerErrorException(
+        `Error occured when update campaign status!`,
+      );
+    }
+    return updateCampaignStatus;
   }
 
   async getAllNewCampaign(organizationId: string) {
