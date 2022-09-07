@@ -12,12 +12,14 @@ import Page from '../../components/Page';
 import { ReactComponent as Logo } from '../../assets/logo.svg';
 // sections
 import { LoginForm } from '../../sections/auth/login';
+import useLocales from 'hooks/useLocales';
 
 // ----------------------------------------------------------------------
 
 const RootStyle = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     display: 'flex',
+    backgroundColor: theme.palette.background.neutral,
   },
 }));
 
@@ -39,8 +41,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function Login() {
-  const { method } = useAuth();
-
+  const { translate } = useLocales();
   return (
     <Page title="Login">
       <RootStyle>
@@ -55,20 +56,20 @@ export default function Login() {
               gutterBottom
               sx={{ fontFamily: 'Cairo', color: 'text.secondary', mt: '10px' }}
             >
-              تسجيل الدخول
+              {translate('login')}
             </Typography>
             <Typography
               variant="h6"
               gutterBottom
               sx={{ fontFamily: 'Cairo', color: 'text.primary', fontSize: '16px' }}
             >
-              الرجاء إدخال عنوان البريد الإلكتروني أو رقم التصريح الخاص بك
+              {translate('the_login_message')}
             </Typography>
             <LoginForm />
             <Typography variant="body2" align="center" sx={{ mt: 3 }}>
-              ليس لديك حساب في غيث؟{' '}
+              {translate('dont_have_account')}
               <Link variant="subtitle2" component={RouterLink} to={PATH_AUTH.register}>
-                قم بإنشاء حساب من هنا
+                {translate('register_one')}
               </Link>
             </Typography>
           </ContentStyle>

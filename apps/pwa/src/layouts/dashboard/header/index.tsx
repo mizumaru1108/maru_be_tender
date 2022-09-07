@@ -9,7 +9,6 @@ import cssStyles from '../../../utils/cssStyles';
 // config
 import { HEADER, NAVBAR } from '../../../config';
 // components
-import Logo from '../../../components/Logo';
 import Iconify from '../../../components/Iconify';
 import { IconButtonAnimate } from '../../../components/animate';
 //
@@ -32,7 +31,7 @@ const RootStyle = styled(AppBar, {
   shouldForwardProp: (prop) =>
     prop !== 'isCollapse' && prop !== 'isOffset' && prop !== 'verticalLayout',
 })<RootStyleProps>(({ isCollapse, isOffset, verticalLayout, theme }) => ({
-  // ...cssStyles(theme).bgBlur(),
+  ...cssStyles(theme).bgBlur(),
   boxShadow: 'none',
   height: HEADER.MOBILE_HEIGHT,
   zIndex: theme.zIndex.appBar + 1,
@@ -48,11 +47,7 @@ const RootStyle = styled(AppBar, {
     ...(isOffset && {
       height: HEADER.DASHBOARD_DESKTOP_OFFSET_HEIGHT,
     }),
-    backgroundColor: theme.palette.background.paper,
-    // ...(verticalLayout && {
-    //   width: '100%',
-    //   height: HEADER.DASHBOARD_DESKTOP_OFFSET_HEIGHT,
-    // }),
+    backgroundColor: theme.palette.background.default,
   },
 }));
 
@@ -81,8 +76,6 @@ export default function DashboardHeader({
           px: { lg: 5 },
         }}
       >
-        {isDesktop && verticalLayout && <Logo sx={{ mr: 2.5 }} />}
-
         {!isDesktop && (
           <IconButtonAnimate onClick={onOpenSidebar} sx={{ mr: 1, color: 'text.primary' }}>
             <Iconify icon="eva:menu-2-fill" />
@@ -97,7 +90,6 @@ export default function DashboardHeader({
           <MessagePopover />
           <NotificationsPopover />
           <LanguagePopover />
-          {/* <ContactsPopover /> */}
         </Stack>
       </Toolbar>
     </RootStyle>

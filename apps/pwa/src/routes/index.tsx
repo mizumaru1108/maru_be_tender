@@ -66,31 +66,33 @@ export default function Router() {
     // Dashboard Routes
     {
       path: 'dashboard',
-      element: (
-          <DashboardLayout />
-      ),
+      element: <DashboardLayout />,
       children: [
         { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
         { path: 'app', element: <GeneralApp /> },
-        { path: 'fundraising', element: <GeneralEcommerce /> },
-        { 
-          path: 'hr', 
-          children: [
-            { element: <Navigate to="/dashboard/hr/home" replace />, index: true },
-            { path: 'home', element: <GeneralBanking /> },
-            {
-              path: 'employee',
-              children: [
-                { element: <Navigate to="/dashboard/hr/employee/list" replace />, index: true },
-                { path: 'list', element: <EmployeeList /> },
-                { path: 'type', element: <EcommerceShop /> },
-                { path: 'dapartement', element: <EcommerceShop /> },
-                { path: 'designation', element: <EcommerceShop /> },
-                { path: 'branch', element: <HRBranch /> }
-              ]
-            }
-          ]
+        {
+          path: 'funding-project-request',
+          element: <FundingProjectRequest />,
         },
+        // { path: 'fundraising', element: <GeneralEcommerce /> },
+        // {
+        //   path: 'hr',
+        //   children: [
+        //     { element: <Navigate to="/dashboard/hr/home" replace />, index: true },
+        //     { path: 'home', element: <GeneralBanking /> },
+        //     {
+        //       path: 'employee',
+        //       children: [
+        //         { element: <Navigate to="/dashboard/hr/employee/list" replace />, index: true },
+        //         { path: 'list', element: <EmployeeList /> },
+        //         { path: 'type', element: <EcommerceShop /> },
+        //         { path: 'dapartement', element: <EcommerceShop /> },
+        //         { path: 'designation', element: <EcommerceShop /> },
+        //         { path: 'branch', element: <HRBranch /> },
+        //       ],
+        //     },
+        //   ],
+        // },
       ],
     },
 
@@ -195,3 +197,6 @@ const Payment = Loadable(lazy(() => import('../pages/Payment')));
 const Page500 = Loadable(lazy(() => import('../pages/Page500')));
 const Page403 = Loadable(lazy(() => import('../pages/Page403')));
 const Page404 = Loadable(lazy(() => import('../pages/Page404')));
+const FundingProjectRequest = Loadable(
+  lazy(() => import('../pages/dashboard/FundingProjectRequest'))
+);

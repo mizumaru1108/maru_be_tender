@@ -42,13 +42,13 @@ export const PATH_AFTER_LOGIN = PATH_DASHBOARD.general.app; // as '/dashboard/ap
 export const HEADER = {
   MOBILE_HEIGHT: 64,
   MAIN_DESKTOP_HEIGHT: 88,
-  DASHBOARD_DESKTOP_HEIGHT: 92,
+  DASHBOARD_DESKTOP_HEIGHT: 80,
   DASHBOARD_DESKTOP_OFFSET_HEIGHT: 92 - 32,
 };
 
 export const NAVBAR = {
   BASE_WIDTH: 260,
-  DASHBOARD_WIDTH: 280,
+  DASHBOARD_WIDTH: 250,
   DASHBOARD_COLLAPSE_WIDTH: 88,
   //
   DASHBOARD_ITEM_ROOT_HEIGHT: 48,
@@ -86,24 +86,6 @@ export const allLangs = [
     icon: '/assets/icons/flags/ic_flag_en.svg',
   },
   {
-    label: 'French',
-    value: 'fr',
-    systemValue: frFR,
-    icon: '/assets/icons/flags/ic_flag_fr.svg',
-  },
-  {
-    label: 'Vietnamese',
-    value: 'vn',
-    systemValue: viVN,
-    icon: '/assets/icons/flags/ic_flag_vn.svg',
-  },
-  {
-    label: 'Chinese',
-    value: 'cn',
-    systemValue: zhCN,
-    icon: '/assets/icons/flags/ic_flag_cn.svg',
-  },
-  {
     label: 'Arabic (Sudan)',
     value: 'ar',
     systemValue: arSD,
@@ -111,4 +93,4 @@ export const allLangs = [
   },
 ];
 
-export const defaultLang = allLangs[4]; // Arabic
+export const defaultLang = allLangs[1]; // Arabic

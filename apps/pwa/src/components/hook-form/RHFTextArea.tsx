@@ -7,12 +7,11 @@ import { TextField, TextFieldProps } from '@mui/material';
 
 type IProps = {
   name: string;
-  children?: React.ReactNode;
 };
 
 type Props = IProps & TextFieldProps;
 
-export default function RHFSelect({ name, children, placeholder, ...other }: Props) {
+export default function RHFTextArea({ name, ...other }: Props) {
   const { control } = useFormContext();
 
   return (
@@ -22,21 +21,15 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
       render={({ field, fieldState: { error } }) => (
         <TextField
           {...field}
-          InputLabelProps={{ shrink: true }}
-          select
+          multiline
           fullWidth
-          SelectProps={{ native: true }}
+          InputLabelProps={{ shrink: true }}
+          rows={3}
+          value={typeof field.value === 'number' && field.value === 0 ? '' : field.value}
           error={!!error}
           helperText={error?.message}
           {...other}
-        >
-          {placeholder && (
-            <option value="" disabled selected>
-              {placeholder}
-            </option>
-          )}
-          {children}
-        </TextField>
+        />
       )}
     />
   );

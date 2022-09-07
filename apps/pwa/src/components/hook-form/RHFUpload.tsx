@@ -10,6 +10,7 @@ import {
   UploadProps,
   UploadMultiFileProps,
 } from '../upload';
+import { useCallback } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -51,7 +52,23 @@ export function RHFUploadAvatar({ name, ...other }: Props) {
 // ----------------------------------------------------------------------
 
 export function RHFUploadSingleFile({ name, placeholder, ...other }: Props) {
-  const { control } = useFormContext();
+  const { control, setValue } = useFormContext();
+
+  const handleDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      const file = acceptedFiles[0];
+
+      if (file) {
+        setValue(
+          name,
+          Object.assign(file, {
+            preview: URL.createObjectURL(file),
+          })
+        );
+      }
+    },
+    [setValue]
+  );
 
   return (
     <Controller
@@ -59,7 +76,6 @@ export function RHFUploadSingleFile({ name, placeholder, ...other }: Props) {
       control={control}
       render={({ field, fieldState: { error } }) => {
         const checkError = !!error && !field.value;
-
         return (
           <UploadSingleFile
             accept={{ 'image/*': [] }}
@@ -74,6 +90,7 @@ export function RHFUploadSingleFile({ name, placeholder, ...other }: Props) {
               )
             }
             {...other}
+            onDrop={handleDrop}
           />
         );
       }}

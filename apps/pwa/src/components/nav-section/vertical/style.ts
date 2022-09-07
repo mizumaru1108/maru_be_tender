@@ -33,7 +33,7 @@ export const ListItemStyle = styled(ListItemButton, {
   height: NAVBAR.DASHBOARD_ITEM_ROOT_HEIGHT,
   // Active item
   ...(active && {
-    backgroundColor: '#93A3B0',
+    backgroundColor: '#0E8478',
   }),
   // Active item
   ...(active &&

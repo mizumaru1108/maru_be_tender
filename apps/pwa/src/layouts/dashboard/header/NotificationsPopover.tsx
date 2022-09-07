@@ -62,7 +62,7 @@ export default function NotificationsPopover() {
       >
         <SvgIconStyle
           src={`/assets/icons/dashboard-header/notification-bar.svg`}
-          sx={{ width: 25, height: 25 }}
+          sx={{ width: 25, height: 25, color: '#000' }}
         />
       </IconButtonAnimate>
       {/* <IconButtonAnimate
