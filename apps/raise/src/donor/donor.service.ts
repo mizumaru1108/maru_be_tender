@@ -126,7 +126,7 @@ export class DonorService {
     private paymentDataModel: Model<PaymentDataDocument>,
     @InjectModel(Project.name)
     private projectModel: Model<ProjectDocument>,
-  ) { }
+  ) {}
 
   /* apply to become vendor from donor */
   // !Should we implements db transaction? when image upload failed, we should rollback the db transaction,
@@ -328,9 +328,10 @@ export class DonorService {
             }
             if (!donation.donationAmount) {
               throw new BadRequestException(
-                `Please provide donation amount! for ${donation.donationType} ${donation.donationType === 'campaign'
-                  ? `${donation.campaignId}`
-                  : `${donation.projectId}`
+                `Please provide donation amount! for ${donation.donationType} ${
+                  donation.donationType === 'campaign'
+                    ? `${donation.campaignId}`
+                    : `${donation.projectId}`
                 } at donationDetails[${index}]`,
               );
             }
@@ -720,20 +721,29 @@ export class DonorService {
       case PaytabsResponseStatus.A:
         status = DonationStatus.SUCCESS;
         break;
+      case PaytabsResponseStatus.C:
+        status = DonationStatus.FAIlED;
+        break;
       case PaytabsResponseStatus.D:
-        status = DonationStatus.DECLINED;
+        status = DonationStatus.FAIlED;
         break;
       case PaytabsResponseStatus.E:
-        status = DonationStatus.ERROR;
+        status = DonationStatus.FAIlED;
         break;
       case PaytabsResponseStatus.H:
-        status = DonationStatus.HOLD;
+        status = DonationStatus.PENDING;
         break;
       case PaytabsResponseStatus.P:
         status = DonationStatus.PENDING;
         break;
       case PaytabsResponseStatus.V:
-        status = DonationStatus.VOIDED;
+        status = DonationStatus.FAIlED;
+        break;
+      case PaytabsResponseStatus.X:
+        status = DonationStatus.FAIlED;
+        break;
+      default:
+        status = DonationStatus.PENDING;
         break;
     }
 
@@ -780,16 +790,92 @@ export class DonorService {
     // !TODO: Do looping on all donation log.
     const donationDetailsMapping = donationDetails.map(async (detail) => {
       if (detail.donationType === DonationType.ITEM) {
-        await this.webhookHandleUpdateItem();
+        await this.webhookHandleUpdateItem(
+          detail.itemId!.toString(),
+          detail.qty!,
+          status,
+        );
       }
       if (detail.donationType === DonationType.CAMPAIGN) {
-        await this.webhookHandleUpdateItem();
+        await this.webhookHandleUpdateCampaign(
+          detail.campaignId!.toString(),
+          detail.totalAmount!,
+          status,
+        );
       }
       if (detail.donationType === DonationType.PROJECT) {
-        await this.webhookHandleUpdateItem();
+        await this.webhookHandleUpdateProject();
       }
     });
+
+    await Promise.all(donationDetailsMapping);
   }
+
+  /**
+   * Webhook handle update item data (can be applied for stripe or other payment too, based on donation status)
+   */
+  async webhookHandleUpdateItem(
+    itemId: string,
+    qty: number,
+    status: DonationStatus,
+  ) {
+    const item = await this.itemModel.findOne({
+      _id: new Types.ObjectId(itemId),
+    });
+    if (!item) {
+      throw new BadRequestException(`Item not found`);
+    }
+    if (status === DonationStatus.SUCCESS) {
+      item.totalNeedOnTransaction = (
+        Number(item.totalNeedOnTransaction) - qty
+      ).toString();
+    }
+    if (status === DonationStatus.FAIlED) {
+      item.totalNeedOnTransaction = (
+        Number(item.totalNeedOnTransaction) - qty
+      ).toString();
+      item.totalNeed = (Number(item.totalNeed) + qty).toString();
+    }
+    const updateItem = await item.save();
+    if (!updateItem) {
+      throw new Error('Item not updated correctly!');
+    }
+  }
+
+  /**
+   * Wenhook handle update campaign data (can be applied for stripe or other payment too, based on donation status)
+   */
+  async webhookHandleUpdateCampaign(
+    campaignId: string,
+    amount: number,
+    status: DonationStatus,
+  ) {
+    const campaign = await this.campaignModel.findOne({
+      _id: new Types.ObjectId(campaignId),
+    });
+    if (!campaign) {
+      throw new BadRequestException(`Campaign not found`);
+    }
+    if (status === DonationStatus.SUCCESS) {
+    }
+    if (status === DonationStatus.FAIlED) {
+      campaign.amountProgress = new Types.Decimal128(
+        (Number(campaign.amountProgress) + amount).toString(),
+      );
+      campaign.amountProgressOnTransaction = new Types.Decimal128(
+        (Number(campaign.amountProgressOnTransaction) + amount).toString(),
+      );
+    }
+    const updateCampaign = await campaign.save();
+    if (!updateCampaign) {
+      throw new Error('Campaign not updated correctly!');
+    }
+  }
+
+  /**
+   * Webhook handle update project data
+   */
+  async webhookHandleUpdateProject() {}
 
   async donateSingleItem(
     user: ICurrentUser,
@@ -916,21 +1002,6 @@ export class DonorService {
     };
     return response;
   }
-
-  /**
-   * Webhook handle update item data
-   */
-  async webhookHandleUpdateItem() {}
-
-  /**
-   * Wenhook handle update campaign data
-   */
-  async webhookHandleUpdateCampaign() {}
-
-  /**
-   * Webhook handle update project data
-   */
-  async webhookHandleUpdateProject() {}
 
   async donateStripeWebhookHandler(payload: any) {}
 
@@ -1729,7 +1800,7 @@ export class DonorService {
         $match: {
           // nonprofitRealmId: new Types.ObjectId(filter.organizationId),
           campaignId: { $nin: [new Types.ObjectId(exZakat)] },
-          donationStatus: { $nin: ['PENDING'] }
+          donationStatus: { $nin: ['PENDING'] },
         },
       },
       {
