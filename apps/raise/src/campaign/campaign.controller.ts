@@ -25,6 +25,7 @@ import { rootLogger } from '../logger';
 import { Campaign, CampaignDocument } from './campaign.schema';
 import { CampaignService } from './campaign.service';
 import { CampaignSetFavoriteDto, CreateCampaignDto } from './dto';
+import { CampaignCreateDto } from './dto/campaign-create.dto';
 import { CampaignDonorOnOperatorDasboardFilter } from './dto/campaign-donor-on-operator-dashboard-filter.dto';
 import { CampaignDonorOnOperatorDasboardParam } from './dto/campaign-donor-on-operator-dashboard-param.dto';
 import { CampaignSetDeletedFlagDto } from './dto/capaign-set-flag-deleted';
@@ -311,6 +312,18 @@ export class CampaignController {
     return await this.campaignService.create(createCampaignDto);
   }
 
+  @ApiOperation({ summary: 'Create campaign' })
+  @ApiResponse({
+    status: 201,
+    description: 'The Campaign has been successfully created.',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Post('campaignCreate')
+  async campaignCreate(@Body() request: CampaignCreateDto) {
+    this.logger.debug('create new campaign ', JSON.stringify(request));
+    return await this.campaignService.campaignCreate(request);
+  }
+
   @ApiOperation({ summary: 'Vendor submit amd apply for campaign' })
   @ApiResponse({
     status: 201,
@@ -330,6 +343,8 @@ export class CampaignController {
     status: 201,
     description: 'Operator approve for vendor request !',
   })
+  @Permissions(Permission.OE)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
   @Post('operator/approve')
   async approveCampaign(@Body() request: UpdateCampaignStatusDto) {
     this.logger.debug(
@@ -344,7 +359,7 @@ export class CampaignController {
     status: 201,
     description: 'Campaign `campaignId` has been rejected by Operator !',
   })
-  @Permissions(Permission.OE) //only operator and manager(super admin) can reject
+  @Permissions(Permission.OE)
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @Post('operator/reject')
   async rejectCampaign(
@@ -385,10 +400,29 @@ export class CampaignController {
   }
 
   @ApiOperation({ summary: 'update campaign' })
-  // @ClusterRoles(RoleEnum.OPERATOR)
   @UseGuards(JwtAuthGuard)
   @Patch('update/:campaignId')
   async updateCampaign(
+    @Param('campaignId') campaignId: string,
+    @Body() updateCampaignRequest: UpdateCampaignDto,
+  ): Promise<BaseResponse<Campaign>> {
+    this.logger.debug('payload', JSON.stringify(updateCampaignRequest));
+    const updatedCampaign = await this.campaignService.updateCampaign(
+      campaignId,
+      updateCampaignRequest,
+    );
+    const response = baseResponseHelper(
+      updatedCampaign,
+      HttpStatus.OK,
+      'Campaign updated',
+    );
+    return response;
+  }
+
+  @ApiOperation({ summary: 'update campaign' })
+  @UseGuards(JwtAuthGuard)
+  @Patch('campaignUpdate/:campaignId')
+  async campaignUpdate(
     @Param('campaignId') campaignId: string,
     @Body() updateCampaignRequest: UpdateCampaignDto,
   ): Promise<BaseResponse<Campaign>> {

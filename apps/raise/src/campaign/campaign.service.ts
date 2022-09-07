@@ -31,6 +31,7 @@ import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
 import { User, UserDocument } from '../user/schema/user.schema';
 import { Campaign, CampaignDocument } from './campaign.schema';
 import { CreateCampaignDto } from './dto';
+import { CampaignCreateDto } from './dto/campaign-create.dto';
 import { CampaignDonorOnOperatorDasboardFilter } from './dto/campaign-donor-on-operator-dashboard-filter.dto';
 import { CampaignDonorOnOperatorDasboardParam } from './dto/campaign-donor-on-operator-dashboard-param.dto';
 import { GetAllMypendingCampaignFromVendorIdRequest } from './dto/get-all-my-pending-campaign-from-vendor-id.request';
@@ -213,6 +214,8 @@ export class CampaignService {
     return dataCampaign;
   }
 
+  async campaignCreate(request: CampaignCreateDto) {}
+
   async updateCampaign(
     campaignId: string,
     rawUpdateCampaignDto: UpdateCampaignDto,
@@ -251,7 +254,6 @@ export class CampaignService {
      * images [2] = image2
      * images [3] = image3
      */
-    //!TODO: refactor for better performance
     /* if there's new campaign images */
     if (
       updateCampaignData &&
@@ -287,6 +289,7 @@ export class CampaignService {
               `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
             );
           }
+
           const imageUpload = await this.bunnyService.uploadImage(
             path,
             binary,
@@ -710,15 +713,6 @@ export class CampaignService {
   async operatorApprove(request: UpdateCampaignStatusDto) {
     let data: any;
     const ObjectId = require('mongoose').Types.ObjectId;
-    // refactor the campaign dto, see the dto (validate the request before it get to the service)
-    // if (
-    //   !approveCampaignDto.campaignId ||
-    //   !approveCampaignDto.status ||
-    //   (approveCampaignDto.status != 'approved' &&
-    //     approveCampaignDto.status != 'rejected')
-    // ) {
-    //   throw new NotFoundException(`Reject campaign approval process`);
-    // }
     try {
       //STEP 1: update initial campaign , change "new" to "approved"
       data = await this.campaignVendorLogModel.findOneAndUpdate(
@@ -754,7 +748,6 @@ export class CampaignService {
     } catch (error) {
       throw new InternalServerErrorException(`Error get Data - ${error}`);
     }
-
     return data;
   }
 
