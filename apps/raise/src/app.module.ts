@@ -35,6 +35,7 @@ import { SharedModule } from './shared/shared.module';
 // import { OpenTelemetryModule } from '@metinseylan/nestjs-opentelemetry';
 import { WidgetBackendModule } from './widget-backend/widget-backend.module';
 import { CommentsModule } from './comments/comments.module';
+import { PermissionManagerModule } from './permission-manager/permission-manager.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -102,6 +103,7 @@ import { CommentsModule } from './comments/comments.module';
     SharedModule,
     WidgetBackendModule,
     CommentsModule,
+    PermissionManagerModule,
   ],
   controllers: [],
 })

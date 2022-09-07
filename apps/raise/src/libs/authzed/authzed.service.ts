@@ -104,7 +104,6 @@ export class AuthzedService {
         },
       );
     });
-    console.log(result);
     return result;
   }
 
