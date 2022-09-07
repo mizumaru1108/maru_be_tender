@@ -94,8 +94,7 @@ export class UserController {
     return user;
   }
 
-  @Permissions(Permission.PM)
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('authzed-tests')
   async authzedTesting(@CurrentUser() user: ICurrentUser, @Body() body: any) {
     console.log('body', body);
