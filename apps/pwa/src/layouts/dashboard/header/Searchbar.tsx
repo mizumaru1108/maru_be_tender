@@ -117,7 +117,7 @@ function Searchbar() {
 
   const [searchQuery, setSearchQuery] = useState('');
 
-  const role = 'admin';
+  const role = 'client';
   const reduceItems = navConfig[`${role}`]
     .map((list) => handleLoop(list.items, list.subheader))
     .flat();
@@ -156,7 +156,7 @@ function Searchbar() {
 
   return (
     <IconButtonAnimate onClick={() => setOpen((prev) => !prev)}>
-      <Iconify icon={'eva:search-fill'} width={30} height={30} color="#fff" />
+      <Iconify icon={'eva:search-fill'} width={30} height={30} color="#000" />
     </IconButtonAnimate>
     // <ClickAwayListener onClickAway={() => setOpen(false)}>
     //   <div>

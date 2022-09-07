@@ -36,6 +36,7 @@
     "@hookform/resolvers": "^2.9.3",
     "@iconify/react": "^3.2.2",
     "@material-ui/core": "^4.12.4",
+    "@mui/icons-material": "^5.10.3",
     "@mui/lab": "^5.0.0-alpha.88",
     "@mui/material": "^5.8.6",
     "@mui/x-data-grid": "^5.12.3",
@@ -174,6 +175,10 @@
     "lint:fix": "eslint --fix --ext .ts,.tsx ./src",
     "re-build": "rm -rf build node_modules && yarn install && yarn build",
     "re-start": "rm -rf build node_modules && yarn install && yarn start",
-    "start": "react-app-rewired start"
+    "start": "react-app-rewired start",
+    "push:dev": "git push origin main:stack/dev",
+    "push:qc": "git push origin main:stack/qc",
+    "push:staging": "git push origin main:stack/staging",
+    "push:prod": "git push origin main:stack/prod"
   }
 }

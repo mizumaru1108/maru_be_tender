@@ -126,7 +126,7 @@ export class DonorService {
     private paymentDataModel: Model<PaymentDataDocument>,
     @InjectModel(Project.name)
     private projectModel: Model<ProjectDocument>,
-  ) {}
+  ) { }
 
   /* apply to become vendor from donor */
   // !Should we implements db transaction? when image upload failed, we should rollback the db transaction,
@@ -328,10 +328,9 @@ export class DonorService {
             }
             if (!donation.donationAmount) {
               throw new BadRequestException(
-                `Please provide donation amount! for ${donation.donationType} ${
-                  donation.donationType === 'campaign'
-                    ? `${donation.campaignId}`
-                    : `${donation.projectId}`
+                `Please provide donation amount! for ${donation.donationType} ${donation.donationType === 'campaign'
+                  ? `${donation.campaignId}`
+                  : `${donation.projectId}`
                 } at donationDetails[${index}]`,
               );
             }
@@ -1724,12 +1723,13 @@ export class DonorService {
       ? filter.exZktList
       : '6299ed6a9f1ad428563563ed';
     //const aggregateQuerry = this.donationLogsModel.aggregate();
-    // const aggregateQuerry = this.donationLogsModel.aggregate([
-    const aggregateQuerry = this.donationLogModel.aggregate([
+    const aggregateQuerry = this.donationLogsModel.aggregate([
+      // const aggregateQuerry = this.donationLogModel.aggregate([
       {
         $match: {
-          nonprofitRealmId: new Types.ObjectId(filter.organizationId),
+          // nonprofitRealmId: new Types.ObjectId(filter.organizationId),
           campaignId: { $nin: [new Types.ObjectId(exZakat)] },
+          donationStatus: { $nin: ['PENDING'] }
         },
       },
       {

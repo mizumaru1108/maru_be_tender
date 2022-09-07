@@ -62,7 +62,7 @@ export default function MessagePopover() {
       >
         <SvgIconStyle
           src={`/assets/icons/dashboard-header/message-bar.svg`}
-          sx={{ width: 25, height: 25 }}
+          sx={{ width: 25, height: 25, color: '#000' }}
         />
       </IconButtonAnimate>
 

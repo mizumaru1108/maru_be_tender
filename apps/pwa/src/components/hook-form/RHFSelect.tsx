@@ -12,7 +12,7 @@ type IProps = {
 
 type Props = IProps & TextFieldProps;
 
-export default function RHFSelect({ name, children, ...other }: Props) {
+export default function RHFSelect({ name, children, placeholder, ...other }: Props) {
   const { control } = useFormContext();
 
   return (
@@ -30,6 +30,11 @@ export default function RHFSelect({ name, children, ...other }: Props) {
           helperText={error?.message}
           {...other}
         >
+          {placeholder && (
+            <option value="" disabled selected>
+              {placeholder}
+            </option>
+          )}
           {children}
         </TextField>
       )}

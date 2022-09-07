@@ -36,6 +36,7 @@ export const PATH_PAGE = {
 
 export const PATH_DASHBOARD = {
   root: ROOTS_DASHBOARD,
+  funding_project_request: path(ROOTS_DASHBOARD, '/funding-project-request'),
   fundraising: path(ROOTS_DASHBOARD, '/fundraising'),
   hr: {
     root: path(ROOTS_DASHBOARD, '/hr'),
@@ -47,7 +48,7 @@ export const PATH_DASHBOARD = {
       designation: path(ROOTS_DASHBOARD, '/hr/employee/designation'),
       branch: path(ROOTS_DASHBOARD, '/hr/employee/branch'),
     },
-    jobs: {}
+    jobs: {},
   },
   general: {
     app: path(ROOTS_DASHBOARD, '/app'),

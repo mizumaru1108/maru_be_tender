@@ -41,10 +41,23 @@ export default function NavList({
     <>
       {isExternalLink(data.path) ? (
         <Link href={data.path} target="_blank" rel="noopener" underline="none">
-          <NavItem item={data} depth={depth} open={open} active={active} isCollapse={isCollapse} />
+          <NavItem
+            sx={{
+              color: '#000',
+              fontFamily: 'Cairo',
+              fontStyle: 'Regular',
+              fontSize: '14px',
+            }}
+            item={data}
+            depth={depth}
+            open={open}
+            active={active}
+            isCollapse={isCollapse}
+          />
         </Link>
       ) : (
         <NavItem
+          sx={{ color: '#000', fontFamily: 'Cairo', fontStyle: 'Regular', fontSize: '14px' }}
           item={data}
           depth={depth}
           open={open}

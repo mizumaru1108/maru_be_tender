@@ -42,11 +42,12 @@ import Autocomplete from './Autocomplete';
 import ToggleButton from './ToggleButton';
 import ControlLabel from './ControlLabel';
 import LoadingButton from './LoadingButton';
-
+import TextField from './TextField';
 // ----------------------------------------------------------------------
 
 export default function ComponentsOverrides(theme: Theme) {
   return Object.assign(
+    TextField(theme),
     Fab(theme),
     Tabs(theme),
     Chip(theme),

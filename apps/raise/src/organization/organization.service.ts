@@ -1203,10 +1203,221 @@ export class OrganizationService {
       );
     }
 
+    nonProfitAppearanceNavigationDto.organizationId = organizationId;
+    const missionPath: any = [];
+    /** Create Path Url ForImage mission */
+    if (
+      nonProfitAppearanceNavigationDto! &&
+      nonProfitAppearanceNavigationDto.mission!
+    ) {
+      const dataMission = JSON.stringify(nonProfitAppearanceNavigationDto.mission!);
+      const mission = JSON.parse(dataMission);
+      for (let i = 0; i < mission.length; i++) {
+        const path = await this.bunnyService.generatePath(
+          nonProfitAppearanceNavigationDto.organizationId!,
+          'landingpage-mission',
+          mission[i].fullName!,
+          mission[i].imageExtension!,
+          nonProfitAppearanceNavigationDto.organizationId!,
+        );
+        const base64Data = mission[i].base64Data;
+        const binary = Buffer.from(
+          mission[i]!.base64Data!,
+          'base64',
+        );
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+        const imageUpload = await this.bunnyService.uploadImage(
+          path,
+          binary,
+          nonProfitAppearanceNavigationDto.organizationId!,
+        );
+
+        if (imageUpload) {
+          console.info('Mission image has been created');
+          missionPath.push({
+            mission: mission[i].mission!, iconMission: path
+          })
+        }
+      }
+    }
+
+    const whyUsPath: any = [];
+    /** Create Path Url ForImage why Us */
+    if (
+      nonProfitAppearanceNavigationDto &&
+      nonProfitAppearanceNavigationDto.whyUs!
+    ) {
+      const whyUsMission = JSON.stringify(nonProfitAppearanceNavigationDto.whyUs!);
+      const whyUs = JSON.parse(whyUsMission);
+      for (let i = 0; i < whyUs.length; i++) {
+        const path = await this.bunnyService.generatePath(
+          nonProfitAppearanceNavigationDto.organizationId!,
+          'landingpage-whyus',
+          whyUs[i].fullName!,
+          whyUs[i].imageExtension!,
+          nonProfitAppearanceNavigationDto.organizationId!,
+        );
+        const base64Data = whyUs[i].base64Data;
+        const binary = Buffer.from(
+          whyUs[i]!.base64Data!,
+          'base64',
+        );
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+        const imageUpload = await this.bunnyService.uploadImage(
+          path,
+          binary,
+          nonProfitAppearanceNavigationDto.organizationId!,
+        );
+        if (imageUpload) {
+          whyUsPath.push({
+            whyUs: whyUs[i].whyUs!, whyUsIcon: path
+          })
+          console.info('WhyUs image has been created');
+        }
+      }
+    }
+
+    if (
+      nonProfitAppearanceNavigationDto &&
+      nonProfitAppearanceNavigationDto.photoThumbnailUl!
+    ) {
+      const thumbnail = nonProfitAppearanceNavigationDto.photoThumbnailUl[0]
+      if (!!thumbnail) {
+        const path = await this.bunnyService.generatePath(
+          nonProfitAppearanceNavigationDto.organizationId!,
+          'landingpage-thumbnail',
+          thumbnail.fullName!,
+          thumbnail.imageExtension!,
+          nonProfitAppearanceNavigationDto.organizationId!,
+        );
+        const base64Data = thumbnail.base64Data!;
+        const binary = Buffer.from(
+          thumbnail.base64Data!,
+          'base64',
+        );
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image payload photo thumbnail is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+        const imageUpload = await this.bunnyService.uploadImage(
+          path,
+          binary,
+          nonProfitAppearanceNavigationDto.organizationId!,
+        );
+        if (imageUpload) {
+          console.info('Thumbnail image has been created', path);
+          nonProfitAppearanceNavigationDto.photoThumbnail = path;
+        }
+      }
+    }
+
+    if (
+      nonProfitAppearanceNavigationDto &&
+      nonProfitAppearanceNavigationDto.iconForMissionUl!
+    ) {
+      const iconForMission = nonProfitAppearanceNavigationDto.iconForMissionUl[0]
+      if (!!iconForMission) {
+        const path = await this.bunnyService.generatePath(
+          nonProfitAppearanceNavigationDto.organizationId!,
+          'landingpage-iconForMission',
+          iconForMission.fullName!,
+          iconForMission.imageExtension!,
+          nonProfitAppearanceNavigationDto.organizationId!,
+        );
+        const base64Data = iconForMission.base64Data!;
+        const binary = Buffer.from(
+          iconForMission.base64Data!,
+          'base64',
+        );
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image payload photo thumbnail is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+        const imageUpload = await this.bunnyService.uploadImage(
+          path,
+          binary,
+          nonProfitAppearanceNavigationDto.organizationId!,
+        );
+
+        if (imageUpload) {
+          console.info('Thumbnail image has been created', path);
+          nonProfitAppearanceNavigationDto.iconForMission = path;
+        }
+      }
+    }
+
+    if (
+      nonProfitAppearanceNavigationDto &&
+      nonProfitAppearanceNavigationDto.photoOfActivityUl!
+    ) {
+      const photoOfActivity = nonProfitAppearanceNavigationDto.photoOfActivityUl[0]
+      if (!!photoOfActivity) {
+        const path = await this.bunnyService.generatePath(
+          nonProfitAppearanceNavigationDto.organizationId!,
+          'landingpage-photoOfActivity',
+          photoOfActivity.fullName!,
+          photoOfActivity.imageExtension!,
+          nonProfitAppearanceNavigationDto.organizationId!,
+        );
+        const base64Data = photoOfActivity.base64Data!;
+        const binary = Buffer.from(
+          photoOfActivity.base64Data!,
+          'base64',
+        );
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image payload photo OfActivity is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+        const imageUpload = await this.bunnyService.uploadImage(
+          path,
+          binary,
+          nonProfitAppearanceNavigationDto.organizationId!,
+        );
+
+        if (imageUpload) {
+          console.info('PhotoOfActivity image has been created', path);
+          nonProfitAppearanceNavigationDto.photoOfActivity = path;
+        }
+      }
+    }
+
     this.logger.debug('Create Landingpage Organization...');
     nonProfitAppearanceNavigationDto.organizationId = organizationId;
     nonProfitAppearanceNavigationDto.page = 'LANDINGPAGE';
     let now: Date = new Date();
+    nonProfitAppearanceNavigationDto.whyUs = whyUsPath;
+    nonProfitAppearanceNavigationDto.mission = missionPath;
     nonProfitAppearanceNavigationDto.createdAt = now.toISOString();
     nonProfitAppearanceNavigationDto.updatedAt = now.toISOString();
     const appearanceCreateLandingPage =
@@ -1242,6 +1453,87 @@ export class OrganizationService {
         'Organization AboutUs page already exists',
         409,
       );
+    }
+
+    nonProfitAppearanceNavigationAboutUsDto.organizationId = organizationId;
+    if (
+      nonProfitAppearanceNavigationAboutUsDto &&
+      nonProfitAppearanceNavigationAboutUsDto.photoThumbnailUl!
+    ) {
+      const photoThumbnail = nonProfitAppearanceNavigationAboutUsDto.photoThumbnailUl[0]
+      if (!!photoThumbnail && photoThumbnail) {
+        const path = await this.bunnyService.generatePath(
+          nonProfitAppearanceNavigationAboutUsDto.organizationId!,
+          'landingpage-photoThumbnail',
+          photoThumbnail.fullName!,
+          photoThumbnail.imageExtension!,
+          nonProfitAppearanceNavigationAboutUsDto.organizationId!,
+        );
+        const base64Data = photoThumbnail.base64Data!;
+        const binary = Buffer.from(
+          photoThumbnail.base64Data!,
+          'base64',
+        );
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image payload photo OfActivity is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+        const imageUpload = await this.bunnyService.uploadImage(
+          path,
+          binary,
+          nonProfitAppearanceNavigationAboutUsDto.organizationId!,
+        );
+
+        if (imageUpload) {
+          console.info('photoThumbnail image has been created', path);
+          nonProfitAppearanceNavigationAboutUsDto.photoThumbnail = path;
+        }
+      }
+    }
+
+    if (
+      nonProfitAppearanceNavigationAboutUsDto &&
+      nonProfitAppearanceNavigationAboutUsDto.iconForValuesUl!
+    ) {
+      const iconForValues = nonProfitAppearanceNavigationAboutUsDto.iconForValuesUl[0]
+      if (!!iconForValues && iconForValues) {
+        const path = await this.bunnyService.generatePath(
+          nonProfitAppearanceNavigationAboutUsDto.organizationId!,
+          'landingpage-iconForValues',
+          iconForValues.fullName!,
+          iconForValues.imageExtension!,
+          nonProfitAppearanceNavigationAboutUsDto.organizationId!,
+        );
+        const base64Data = iconForValues.base64Data!;
+        const binary = Buffer.from(
+          iconForValues.base64Data!,
+          'base64',
+        );
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image payload photo OfActivity is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+        const imageUpload = await this.bunnyService.uploadImage(
+          path,
+          binary,
+          nonProfitAppearanceNavigationAboutUsDto.organizationId!,
+        );
+
+        if (imageUpload) {
+          console.info('iconForValues image has been created', path);
+          nonProfitAppearanceNavigationAboutUsDto.iconForValues = path;
+        }
+      }
     }
 
     this.logger.debug('Create AboutUs Organization...');

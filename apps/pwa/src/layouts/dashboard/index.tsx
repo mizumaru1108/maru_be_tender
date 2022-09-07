@@ -17,12 +17,13 @@ import NavbarHorizontal from './navbar/NavbarHorizontal';
 // ----------------------------------------------------------------------
 
 type MainStyleProps = {
-  collapseClick: boolean;
+  collapseClick?: boolean;
 };
 
 const MainStyle = styled('main', {
   shouldForwardProp: (prop) => prop !== 'collapseClick',
 })<MainStyleProps>(({ collapseClick, theme }) => ({
+  backgroundColor: theme.palette.background.neutral,
   flexGrow: 1,
   paddingTop: HEADER.MOBILE_HEIGHT + 24,
   paddingBottom: HEADER.MOBILE_HEIGHT + 24,
@@ -96,9 +97,9 @@ export default function DashboardLayout() {
 
       <NavbarVertical isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
 
-      {/* <MainStyle collapseClick={collapseClick}>
+      <MainStyle>
         <Outlet />
-      </MainStyle> */}
+      </MainStyle>
     </Box>
   );
 }

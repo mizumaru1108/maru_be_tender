@@ -57,6 +57,293 @@ const ar = {
   item_by_roles: `عنصر حسب الأدوار`,
   only_admin_can_see_this_item: `يمكن للمسؤول فقط رؤية هذا العنصر`,
   main: 'الرئيسية',
+  request_project_funding: 'طلب دعم مشروع',
+  drafts: 'طلبات دعم مسودة ',
+  previous_funding_requests: 'طلبات دعم سابقة',
+  messages: 'الرسائل',
+  contact_support: 'تواصل مع الدعم ',
+  register_first_tap: 'المعلومات الرئيسية',
+  register_second_tap: 'معلومات الاتصال',
+  register_third_tap: 'معلومات الترخيص',
+  register_fourth_tap: 'بيانات الإدارية',
+  register_fifth_tap: 'معلومات البنكية',
+  email_label: 'البريد الإلكتروني / رقم التصريح',
+  password_label: 'كلمة السر',
+  remember_me: 'تذكرني',
+  forget_the_password: 'نسيت كلمة المرور',
+  login: 'تسجيل الدخول',
+  the_login_message: 'الرجاء إدخال عنوان البريد الإلكتروني أو رقم التصريح الخاص بك',
+  dont_have_account: 'ليس لديك حساب في غيث',
+  register_one: 'قم بإنشاء حساب من هنا',
+  add_new_line: 'إنشاء سطر جديد',
+  create_new_account: ' إنشاء حساب جديد',
+  register_form1: {
+    entity_area: {
+      label: 'مجال الجهة',
+      placeholder: 'الرجاء اختيار مجال الجهة',
+      options: {
+        sub_entity_area: 'رئيسي',
+        main_entity_area: 'فرعي',
+      },
+    },
+    authority: {
+      label: 'الجهة المشرفة',
+      placeholder: 'الرجاء اختيار الجهة المشرفة',
+    },
+    date_of_establishment: {
+      label: 'تاريخ التأسيس',
+      placeholder: 'الرجاء اختيار تحديد تاريخ التأسيس',
+    },
+    headquarters: {
+      label: 'المقر',
+      placeholder: 'الرجاء اختيار نوع المقر',
+      options: {},
+    },
+    number_of_employees: {
+      label: 'عدد موظفين بدوام كلي للمنشأة',
+      placeholder: 'عدد موظفين المنشأة',
+    },
+    number_of_beneficiaries: {
+      label: 'عدد المستفيدين من خدمات الجهة',
+      placeholder: 'عدد المستفيدين من خدمات الجهة',
+    },
+  },
+  register_form2: {
+    region: {
+      label: 'المنطقة*',
+      placeholder: 'الرجاء اختيار المنطقة',
+      options: {},
+    },
+    city: {
+      label: 'المحافظة**',
+      placeholder: 'الرجاء اختيار المحافظة*',
+      options: {},
+    },
+    center: {
+      label: 'المركز الإدارة*',
+      placeholder: 'الرجاء اختيار المركز*',
+      options: {},
+    },
+    mobile_number: {
+      label: 'جوال الجهة*',
+      placeholder: 'الرجاء كتابة رقم الجوال',
+      options: {},
+    },
+    phone: {
+      label: 'الهاتف',
+      placeholder: 'الرجاء كتابة رقم الهاتف',
+    },
+    twitter: {
+      label: 'حساب تويتر',
+      placeholder: 'الرجاء ادخال رابط حساب التويتر',
+    },
+    website: {
+      label: 'الموقع الإلكتروني',
+      placeholder: 'الموقع الإلكتروني',
+    },
+    email: {
+      label: 'البريد الإلكتروني*',
+      placeholder: 'الرجاء ادخال البريد الالكتروني',
+    },
+    password: {
+      title: 'كلمة السر*',
+      placeholder: 'كلمة السر',
+    },
+  },
+  register_form3: {
+    license_number: {
+      label: 'رقم الترخيص*',
+      placeholder: 'الرجاء اختيار الجهة المشرفة',
+    },
+    license_issue_date: {
+      label: 'تاريخ اصدار الترخيص*',
+      placeholder: 'الرجاء تحديد تاريخ اصدار الترخيص',
+    },
+    license_expiry_date: {
+      label: 'تاريخ انتهاء الترخيص*',
+      placeholder: 'الرجاء تحديد تاريخ انتهاء الترخيص',
+    },
+    license_file: {
+      label: 'ملف الترخيص*',
+      placeholder: 'الرجاء اختيار ملف الترخيص',
+    },
+
+    resolution_file: {
+      label: 'ملف قرار تشكيل مجلس الإدارة',
+      placeholder: 'ملف قرار تشكيل مجلس الإدارة',
+    },
+  },
+  register_form4: {
+    executive_director: {
+      label: 'اسم المدير التنفيذي*',
+      placeholder: 'الرجاء كتابة اسم المدير التنفيذي',
+    },
+    executive_director_mobile: {
+      label: 'جوال المدير التنفيذي*',
+      placeholder: 'الرجاء كتابة جوال المدير التنفيذي',
+    },
+    entery_data_name: {
+      label: 'اسم مدخل البيانات*',
+      placeholder: 'الرجاء كتابة اسم مدخل البيانات',
+    },
+    entery_data_phone: {
+      label: 'جوال مدخل البيانات*',
+      placeholder: 'الرجاء كتابة جوال مدخل البيانات',
+    },
+    entery_data_email: {
+      label: 'بريد مدخل البيانات*',
+      placeholder: 'الرجاء ادخال البريد الالكتروني',
+    },
+    agree_on: 'أقر بصحة المعلومات الواردة',
+  },
+  register_form5: {
+    bank_account_number: {
+      label: 'رقم الحساب البنكي*',
+      placeholder: 'رقم الحساب البنكي',
+    },
+    bank_account_name: {
+      label: 'اسم الحساب البنكي*',
+      placeholder: 'اسم الحساب البنكي',
+    },
+    bank_name: {
+      label: 'اسم البنك*',
+      placeholder: 'اسم البنك',
+    },
+    bank_account_card_image: {
+      label: 'صورة بطاقة الحساب البنكي',
+      placeholder: 'صورة بطاقة الحساب البنكي',
+    },
+  },
+  funding_project_request_form1: {
+    step: 'معلومات عامة',
+    project_name: {
+      label: 'اسم المشروع*',
+      placeholder: 'الرجاء كتابة اسم المشروع',
+    },
+    project_idea: {
+      label: 'فكرة المشروع*',
+      placeholder: 'الرجاء كتابة عدد المستفيدين من المشروع',
+    },
+    project_applying_place: {
+      label: 'مكان تنفيذ المشروع*',
+      placeholder: 'الرجاء اختيار مكان تنفيذ المشروع',
+    },
+    project_applying_date: {
+      label: 'تاريخ تنفيذ المشروع*',
+      placeholder: 'الرجاء اختيار تاريخ تنفيذ المشروع',
+    },
+    applying_duration: {
+      label: 'مدة التنفيذ*',
+      placeholder: 'الرجاء تحديد مدة التنفيذ',
+    },
+    target_group_type: {
+      label: 'نوع الفئة المستهدفة*',
+      placeholder: 'الرجاء اختيار نوع الفئة المستهدفة',
+    },
+    letter_support_request: {
+      label: 'خطاب طلب الدعم',
+      placeholder: 'خطاب الدعم',
+    },
+    project_attachments: {
+      label: 'مرفقات المشروع',
+      placeholder: 'مرفقات المشروع',
+    },
+  },
+  funding_project_request_form2: {
+    step: 'معلومات تفصيلية عن المشروع',
+    number_of_project_beneficiaries: {
+      label: 'عدد المستفيدين من المشروع*',
+      placeholder: 'الرجاء كتابة عدد المستفيدين من المشروع',
+    },
+    project_goals: {
+      label: 'أهداف المشروع*',
+      placeholder: 'الرجاء كتابة أهداف المشروع ',
+    },
+    project_outputs: {
+      label: 'مخرجات المشروع*',
+      placeholder: 'الرجاء كتابة مخرجات المشروع ',
+    },
+    project_strengths: {
+      label: 'نقاط القوة للمشروع*',
+      placeholder: 'الرجاء كتابة نقاط القوة للمشروع',
+    },
+    project_risk: {
+      label: 'مخاطر المشروع*',
+      placeholder: 'الرجاء كتابة مخاطر المشروع',
+    },
+  },
+  funding_project_request_form3: {
+    step: 'معلومات الاتصال',
+    project_manager_name: {
+      label: 'اسم مدير المشروع*',
+      placeholder: 'الرجاء كتابة اسم مدير المشروع',
+    },
+    mobile_number: {
+      label: 'رقم الجوال*',
+      placeholder: 'الرجاء كتابة رقم الجوال',
+    },
+    email: {
+      label: 'البريد الإلكتروني*',
+      placeholder: 'الرجاء كتابة البريد الإلكتروني',
+    },
+    region: {
+      label: 'المنطقة*',
+      placeholder: 'الرجاء اختيار المنطقة',
+    },
+    city: {
+      label: 'المحافظة*',
+      placeholder: 'الرجاء اختيار المحافظة',
+    },
+  },
+  funding_project_request_form4: {
+    step: 'الموازنة التفصيلية للمشروع',
+    item: {
+      label: 'البند*',
+      placeholder: 'الرجاء كتابة اسم البند',
+    },
+    explanation: {
+      label: 'الشرح*',
+      placeholder: 'الرجاء كتابة الشرح',
+    },
+    amount: {
+      label: 'المبلغ*',
+      placeholder: 'المبلغ المطلوبة',
+    },
+  },
+  funding_project_request_form5: {
+    step: 'معلومات الدعم والمدة',
+    amount_required_for_support: {
+      label: 'المبلغ المطلوب للدعم*',
+      placeholder: 'الرجاء كتابة المبلغ المطلوب للدعم',
+    },
+    previously_added_banks: {
+      label: 'بنوك مضافة سابقا*',
+    },
+    add_new_bank_details: {
+      label: 'اضافة تفاصيل بنك جديد',
+    },
+    agree_on: {
+      label: 'أقر بصحة المعلومات الواردة في هذا النموذج وأتقدم بطلب دعم المشروع',
+    },
+  },
+  funding_project_request_form6: {
+    bank_account_number: {
+      label: 'رقم الحساب البنكي*',
+      placeholder: 'رقم الحساب البنكي',
+    },
+    bank_account_name: {
+      label: 'اسم الحساب البنكي*',
+      placeholder: 'اسم الحساب البنكي',
+    },
+    bank_name: {
+      label: 'اسم البنك*',
+      placeholder: 'اسم البنك',
+    },
+    bank_account_card_image: {
+      label: 'صورة بطاقة الحساب البنكي',
+      placeholder: 'صورة بطاقة الحساب البنكي',
+    },
+  },
 };
 
 export default ar;

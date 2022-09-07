@@ -1,14 +1,11 @@
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
-// components
-import Label from '../../../components/Label';
-import Iconify from '../../../components/Iconify';
 import SvgIconStyle from '../../../components/SvgIconStyle';
 
 // ----------------------------------------------------------------------
 
 const getIcon = (name: string) => (
-  <SvgIconStyle src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
+  <SvgIconStyle src={`/assets/icons/dashboard-navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
 );
 
 const ICONS = {
@@ -23,7 +20,7 @@ const ICONS = {
 const navConfig = {
   // GENERAL
   // ----------------------------------------------------------------------
-  admin: [
+  client: [
     {
       subheader: '',
       items: [
@@ -33,27 +30,27 @@ const navConfig = {
           icon: ICONS.main,
         },
         {
-          title: 'طلب دعم مشروع',
-          path: PATH_DASHBOARD.fundraising,
+          title: 'request_project_funding',
+          path: PATH_DASHBOARD.funding_project_request,
           icon: ICONS.project_fund_request,
         },
-        {
-          title: 'طلبات دعم مسودة',
-          path: PATH_DASHBOARD.hr.root,
-          icon: ICONS.draft_project_requests,
-        },
-        {
-          title: 'طلبات دعم سابقة',
-          path: PATH_DASHBOARD.general.ecommerce,
-          icon: ICONS.previous_project_requests,
-        },
-        { title: 'الرسائل', path: PATH_DASHBOARD.general.ecommerce, icon: ICONS.messages },
-        { title: 'نواصل مع الدعم', path: PATH_DASHBOARD.general.ecommerce, icon: ICONS.support },
+        // {
+        //   title: 'drafts',
+        //   path: PATH_DASHBOARD.general.app,
+        //   icon: ICONS.draft_project_requests,
+        // },
+        // {
+        //   title: 'previous_funding_requests',
+        //   path: PATH_DASHBOARD.general.app,
+        //   icon: ICONS.previous_project_requests,
+        // },
+        // { title: 'messages', path: PATH_DASHBOARD.general.app, icon: ICONS.messages },
+        // { title: 'contact_support', path: PATH_DASHBOARD.general.app, icon: ICONS.support },
       ],
     },
   ],
-  client: [],
-  common: [],
+  // client: [],
+  // common: [],
 };
 
 export default navConfig;

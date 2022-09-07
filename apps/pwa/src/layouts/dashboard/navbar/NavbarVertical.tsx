@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 // @mui
 import { styled, useTheme } from '@mui/material/styles';
-import { Box, Stack, Drawer, Avatar } from '@mui/material';
+import { Box, Stack, Drawer } from '@mui/material';
 // hooks
 import useResponsive from '../../../hooks/useResponsive';
 import useCollapseDrawer from '../../../hooks/useCollapseDrawer';
@@ -11,18 +11,11 @@ import cssStyles from '../../../utils/cssStyles';
 // config
 import { NAVBAR } from '../../../config';
 // components
-// import Logo from '../../../components/Logo';
 import Scrollbar from '../../../components/Scrollbar';
 import { NavSectionVertical } from '../../../components/nav-section';
 import { ReactComponent as Logo } from '../../../assets/logo.svg';
 //
 import navConfig from './NavConfig';
-import NavbarAccount from './NavbarAccount';
-import CollapseButton from './CollapseButton';
-import useLocales from 'hooks/useLocales';
-import { PATH_DASHBOARD } from '../../../routes/paths';
-import SvgIconStyle from 'components/SvgIconStyle';
-import { IconButtonAnimate } from 'components/animate';
 // ----------------------------------------------------------------------
 
 const RootStyle = styled('div')(({ theme }) => ({
@@ -44,15 +37,13 @@ type Props = {
 export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props) {
   const theme = useTheme();
 
-  const { translate } = useLocales();
-
   const { pathname } = useLocation();
 
   const isDesktop = useResponsive('up', 'lg');
 
-  const role = 'admin';
+  const role = 'client';
 
-  const { isCollapse, collapseClick, collapseHover, onToggleCollapse, onHoverEnter, onHoverLeave } =
+  const { isCollapse, collapseClick, collapseHover, onHoverEnter, onHoverLeave } =
     useCollapseDrawer();
   useEffect(() => {
     if (isOpenSidebar) {
@@ -70,7 +61,7 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
     >
       <Stack
         sx={{
-          pt: 3,
+          pt: 1,
           pb: 2,
           px: 2.5,
           flexShrink: 0,
@@ -117,7 +108,7 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
             sx: {
               width: NAVBAR.DASHBOARD_WIDTH,
               borderRightStyle: 'dashed',
-              bgcolor: '#0E8478',
+              bgcolor: 'background.default',
               transition: (theme) =>
                 theme.transitions.create('width', {
                   duration: theme.transitions.duration.standard,
