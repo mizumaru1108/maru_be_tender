@@ -83,6 +83,7 @@ export class PermissionsGuard implements CanActivate {
       request.method === 'PATCH'
         ? request.body.organizationId
         : request.query.organizationId;
+    console.log('organizationId', organizationId);
     if (
       organizationId === '' ||
       organizationId === undefined ||
@@ -90,7 +91,7 @@ export class PermissionsGuard implements CanActivate {
       !organizationId
     ) {
       throw new BadRequestException(
-        'No organizationId defined!, please add "tmra-organizationid" to header!',
+        'No organizationId defined!, please add "organizationid" to header!',
       );
     }
 
