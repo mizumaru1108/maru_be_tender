@@ -75,7 +75,7 @@ export class PermissionsGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
 
     // get organizationid from header
-    // const organizationId = request.headers['tmra-organizationid'];
+    // const organizationId = request.headers['x-tmra-organizationid'];
     // if request is post/put/patch then get organizationid from body, else get from query
     const organizationId =
       request.method === 'POST' ||
@@ -83,7 +83,6 @@ export class PermissionsGuard implements CanActivate {
       request.method === 'PATCH'
         ? request.body.organizationId
         : request.query.organizationId;
-    console.log('organizationId', organizationId);
     if (
       organizationId === '' ||
       organizationId === undefined ||
@@ -94,12 +93,14 @@ export class PermissionsGuard implements CanActivate {
         'No organizationId defined!, please add "organizationid" to header!',
       );
     }
+    console.log('organizationId', organizationId);
 
     //get userId from request.user
     const userId = request.user.id;
     if (!userId) {
       throw new BadRequestException('No user found, please login first!');
     }
+    console.log('userId', userId);
 
     const refrence: ObjectReference = {
       objectType: 'tmra_staging/organization',
@@ -113,12 +114,16 @@ export class PermissionsGuard implements CanActivate {
       },
       optionalRelation: '',
     };
+    console.log('refrence', refrence);
+    console.log('subject', subject);
 
     const isAllowed = await this.authzedService.checkPermissions(
       refrence,
       subject,
       permissions[0],
     );
+
+    console.log('authzed result', isAllowed);
 
     if (
       !isAllowed ||
