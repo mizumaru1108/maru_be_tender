@@ -71,6 +71,7 @@ export class PermissionsGuard implements CanActivate {
     if (!permissions) {
       throw new BadRequestException('No permissions defined!');
     }
+    console.log('requested permission', permissions);
 
     const request = context.switchToHttp().getRequest();
 

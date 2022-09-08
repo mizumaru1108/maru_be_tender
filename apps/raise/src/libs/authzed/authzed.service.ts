@@ -119,6 +119,8 @@ export class AuthzedService {
     subject: SubjectReference,
     permission: string,
   ): Promise<CheckPermissionResponse> {
+    let token = this.configService.get<string>('AUTHZED_TOKEN') || '';
+    console.log('authzed token used', token);
     const checkPermissionRequest = v1.CheckPermissionRequest.create({
       resource,
       subject,
