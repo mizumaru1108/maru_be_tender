@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, Matches } from 'class-validator';
 
 export class PayloadImage {
   @ApiProperty()
@@ -25,6 +25,9 @@ export class PayloadImage {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  @Matches(/^[.][^.]+/, {
+    message: 'Must start with "."',
+  })
   imageExtension: string;
 
   @ApiProperty()

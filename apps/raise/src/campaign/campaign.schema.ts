@@ -5,6 +5,7 @@ import { Document, Types } from 'mongoose';
 import { UpdateCampaignDto } from './dto/update-campaign-dto';
 import paginate from 'mongoose-paginate-v2';
 import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
+import { CampaignCreateDto } from './dto/campaign-create.dto';
 
 export type CampaignDocument = Campaign & Document;
 
@@ -40,7 +41,7 @@ export class Campaign {
   @Prop()
   description: string;
 
-  @Prop()
+  @Prop({ default: 'N' })
   isFinished: string;
 
   @Prop()
@@ -106,7 +107,7 @@ export class Campaign {
   @Prop()
   updatedBy: string;
 
-  @Prop()
+  @Prop({ default: 'N' })
   isDeleted: string;
 
   @Prop()
@@ -117,7 +118,7 @@ export class Campaign {
   @Prop()
   milestone?: Array<Object>;
 
-  static compare(
+  public static compare(
     currentData: CampaignDocument,
     request: UpdateCampaignDto,
   ): CampaignDocument {
@@ -149,6 +150,28 @@ export class Campaign {
     request.images && (currentData.images = request.images);
     request.milestone && (currentData.milestone = request.milestone);
     return currentData;
+  }
+
+  public static mapFromCreateRequest(
+    scheme: CampaignDocument,
+    request: CampaignCreateDto,
+  ): CampaignDocument {
+    scheme._id = new Types.ObjectId();
+    scheme.methods = request.methods;
+    scheme.amountProgress = Types.Decimal128.fromString(request.amountProgress);
+    scheme.amountTarget = Types.Decimal128.fromString(request.amountTarget);
+    scheme.isMoney = request.isMoney;
+    scheme.description = request.description;
+    scheme.campaignName = request.campaignName;
+    scheme.createdAt = dayjs().toISOString();
+    scheme.updatedAt = dayjs().toISOString();
+    scheme.milestone = request.milestone;
+    scheme.campaignType = request.campaignType;
+    scheme.organizationId = new Types.ObjectId(request.organizationId);
+    scheme.projectId = request.projectId
+      ? new Types.ObjectId(request.projectId)
+      : undefined;
+    return scheme;
   }
 }
 

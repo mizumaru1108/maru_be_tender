@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsArray } from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, IsIn, IsUUID } from 'class-validator';
 import { ValidateObjectId } from '../../commons/decorators/validate-object-id.decorator';
+import { PayloadImage } from '../../commons/dtos/payload-image.dto';
+import { CampaignMilestoneDto } from './campaign-milestone.dto';
 
 export class CampaignCreateDto {
   @ApiProperty()
@@ -14,11 +16,6 @@ export class CampaignCreateDto {
   @IsNotEmpty()
   @ValidateObjectId()
   projectId: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  userId: string;
 
   @ApiProperty()
   @IsString()
@@ -38,11 +35,13 @@ export class CampaignCreateDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  @IsIn(['Y', 'N'])
   isMoney: string;
 
   @ApiProperty()
   @IsArray()
-  @IsNotEmpty()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
   methods: string[];
 
   @ApiProperty()
@@ -60,28 +59,31 @@ export class CampaignCreateDto {
   @IsNotEmpty()
   amountTarget: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  coverImage: string;
+  // @ApiProperty()
+  // @IsString()
+  // @IsNotEmpty()
+  // coverImage: string;
+
+  // @ApiProperty()
+  // @IsString()
+  // @IsNotEmpty()
+  // image1: string;
+
+  // @ApiProperty()
+  // @IsString()
+  // @IsNotEmpty()
+  // image2: string;
+
+  // @ApiProperty()
+  // @IsString()
+  // @IsNotEmpty()
+  // image3: string;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  image1: string;
+  @IsArray()
+  images: PayloadImage[];
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  image2: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  image3: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  milestone: string;
+  @IsArray()
+  milestone: CampaignMilestoneDto[];
 }

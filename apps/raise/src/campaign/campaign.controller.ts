@@ -14,6 +14,7 @@ import { JwtAuthGuard } from '../auth/jwt.guard';
 import { Permissions } from '../auth/permissions.decorator';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import { CampaignVendorLog } from '../buying/vendor/vendor.schema';
+import { CurrentUser } from '../commons/decorators/current-user.decorator';
 
 import { BaseResponse } from '../commons/dtos/base-response';
 import { PaginatedResponse } from '../commons/dtos/paginated-response.dto';
@@ -22,9 +23,11 @@ import { paginationHelper } from '../commons/helpers/pagination-helper';
 import { DonorService } from '../donor/donor.service';
 import { Permission } from '../libs/authzed/enums/permission.enum';
 import { rootLogger } from '../logger';
+import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { Campaign, CampaignDocument } from './campaign.schema';
 import { CampaignService } from './campaign.service';
 import { CampaignSetFavoriteDto, CreateCampaignDto } from './dto';
+import { CampaignApplyVendorDto } from './dto/apply-vendor.dto';
 import { CampaignCreateDto } from './dto/campaign-create.dto';
 import { CampaignDonorOnOperatorDasboardFilter } from './dto/campaign-donor-on-operator-dashboard-filter.dto';
 import { CampaignDonorOnOperatorDasboardParam } from './dto/campaign-donor-on-operator-dashboard-param.dto';
@@ -317,11 +320,15 @@ export class CampaignController {
     status: 201,
     description: 'The Campaign has been successfully created.',
   })
-  @UseGuards(JwtAuthGuard)
+  @Permissions(Permission.OE)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
   @Post('campaignCreate')
-  async campaignCreate(@Body() request: CampaignCreateDto) {
+  async campaignCreate(
+    @CurrentUser() user: ICurrentUser,
+    @Body() request: CampaignCreateDto,
+  ) {
     this.logger.debug('create new campaign ', JSON.stringify(request));
-    return await this.campaignService.campaignCreate(request);
+    return await this.campaignService.campaignCreate(user.id, request);
   }
 
   @ApiOperation({ summary: 'Vendor submit amd apply for campaign' })
@@ -329,13 +336,23 @@ export class CampaignController {
     status: 201,
     description: 'The Campaign has been successfully applied by Vendor.',
   })
+  @Permissions(Permission.VE)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
   @Post('vendor/apply')
-  async vendorApply(@Body() createCampaignDto: CreateCampaignDto) {
+  async vendorApply(
+    @CurrentUser() user: ICurrentUser,
+    @Body() request: CampaignApplyVendorDto,
+  ): Promise<BaseResponse<CampaignVendorLog>> {
     this.logger.debug(
       'apply to unapproved new campaign ',
-      JSON.stringify(createCampaignDto),
+      JSON.stringify(request),
     );
-    return await this.campaignService.vendorApply(createCampaignDto);
+    const response = await this.campaignService.vendorApply(user.id, request);
+    return baseResponseHelper(
+      response,
+      HttpStatus.CREATED,
+      `Current vendor has been applied to campaign ${request.campaignId} successfully`,
+    );
   }
 
   @ApiOperation({ summary: 'Operator approve for vendor request' })

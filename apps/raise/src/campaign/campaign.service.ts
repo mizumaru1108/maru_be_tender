@@ -31,6 +31,7 @@ import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
 import { User, UserDocument } from '../user/schema/user.schema';
 import { Campaign, CampaignDocument } from './campaign.schema';
 import { CreateCampaignDto } from './dto';
+import { CampaignApplyVendorDto } from './dto/apply-vendor.dto';
 import { CampaignCreateDto } from './dto/campaign-create.dto';
 import { CampaignDonorOnOperatorDasboardFilter } from './dto/campaign-donor-on-operator-dashboard-filter.dto';
 import { CampaignDonorOnOperatorDasboardParam } from './dto/campaign-donor-on-operator-dashboard-param.dto';
@@ -214,7 +215,76 @@ export class CampaignService {
     return dataCampaign;
   }
 
-  async campaignCreate(request: CampaignCreateDto) {}
+  /**
+   * refactored
+   */
+  async campaignCreate(creatorId: string, request: CampaignCreateDto) {
+    const baseCampaignScheme = new this.campaignModel();
+    const campaignScheme = Campaign.mapFromCreateRequest(
+      baseCampaignScheme,
+      request,
+    );
+    campaignScheme.creatorUserId = creatorId;
+    const createdCampaignVendorLog = new this.campaignVendorLogModel(request);
+
+    try {
+      let path: string[] = [];
+      const processImages = request.images.map(async (image, index) => {
+        const tmpPath = await this.bunnyService.generatePath(
+          request.organizationId,
+          'campaign-photo',
+          request.images[index]!.fullName,
+          request.images[index]!.imageExtension,
+          campaignScheme._id,
+        );
+        path.push(tmpPath);
+
+        const base64Data = request.images[index].base64Data;
+        const binary = Buffer.from(request.images[index].base64Data, 'base64');
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image payload ${index} is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+        const imageUpload = await this.bunnyService.uploadImage(
+          path[index],
+          binary,
+          campaignScheme.campaignName,
+        );
+
+        //set the number of maximum file uploaded = 4 (included coverImage)
+        if (index == 0 && imageUpload) campaignScheme.coverImage = path[index];
+        if (index == 1 && imageUpload) campaignScheme.image1 = path[index];
+        if (index == 2 && imageUpload) campaignScheme.image2 = path[index];
+        if (index == 3 && imageUpload) campaignScheme.image3 = path[index];
+      });
+
+      await Promise.all(processImages);
+
+      //insert into Campaign
+      const dataCampaign = await campaignScheme.save();
+
+      //insert into Campaign Vendor Log
+      if (dataCampaign) {
+        createdCampaignVendorLog._id = new Types.ObjectId();
+        createdCampaignVendorLog.campaignId = dataCampaign._id;
+        createdCampaignVendorLog.vendorId = '';
+        createdCampaignVendorLog.createdAt = dayjs().toISOString();
+        createdCampaignVendorLog.updatedAt = dayjs().toISOString();
+        createdCampaignVendorLog.save();
+      }
+
+      return dataCampaign;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Error creating campaign: ${request.campaignName} - ${error}`,
+      );
+    }
+  }
 
   async updateCampaign(
     campaignId: string,
@@ -665,49 +735,89 @@ export class CampaignService {
     return donateList;
   }
 
-  async vendorApply(createCampaignDto: CreateCampaignDto) {
-    let vendorData: any = new Vendor();
-    let data: any;
-    const ObjectId = require('mongoose').Types.ObjectId;
+  // async vendorApply(createCampaignDto: CreateCampaignDto) {
+  //   let vendorData: any = new Vendor();
+  //   let data: any;
+  //   const ObjectId = require('mongoose').Types.ObjectId;
 
-    this.logger.debug(`userId=${createCampaignDto.userId}`);
+  //   this.logger.debug(`userId=${createCampaignDto.userId}`);
 
-    let dataVendor = await this.vendorModel.findOne({
-      ownerUserId: createCampaignDto.userId,
+  //   let dataVendor = await this.vendorModel.findOne({
+  //     ownerUserId: createCampaignDto.userId,
+  //   });
+
+  //   this.logger.debug(`_id=${dataVendor?._id}`);
+
+  //   if (!dataVendor) {
+  //     throw new NotFoundException(`Vendor not found`);
+  //   }
+
+  //   if (!createCampaignDto.campaignId) {
+  //     throw new NotFoundException(`Campaign not found`);
+  //   }
+
+  //   this.logger.debug(`campaignId=${createCampaignDto?.campaignId}`);
+  //   try {
+  //     data = await this.campaignVendorLogModel.findOneAndUpdate(
+  //       {
+  //         campaignId: new ObjectId(createCampaignDto?.campaignId),
+  //         status: 'something',
+  //         vendorId: '',
+  //       },
+  //       {
+  //         vendorId: dataVendor?._id,
+  //         status: 'pending new',
+  //         campaignId: new ObjectId(createCampaignDto?.campaignId),
+  //         createdAt: dayjs().toISOString(),
+  //         updatedAt: dayjs().toISOString(),
+  //       },
+  //       { upsert: true, overwrite: false, rawResult: true },
+  //     );
+  //   } catch (error) {
+  //     throw new InternalServerErrorException(`Error get Data - ${error}`);
+  //   }
+
+  //   return data;
+  // }
+
+  async vendorApply(
+    vendorUserId: string,
+    request: CampaignApplyVendorDto,
+  ): Promise<CampaignVendorLog> {
+    const vendorData = await this.vendorModel.findOne({
+      ownerUserId: vendorUserId,
     });
-
-    this.logger.debug(`_id=${dataVendor?._id}`);
-
-    if (!dataVendor) {
+    if (!vendorData) {
       throw new NotFoundException(`Vendor not found`);
     }
-
-    if (!createCampaignDto.campaignId) {
-      throw new NotFoundException(`Campaign not found`);
+    const isExist = await this.campaignVendorLogModel.find({
+      campaignId: new Types.ObjectId(request.campaignId),
+      vendorId: vendorData._id.toString(),
+      status: {
+        $nin: [CampaignStatus.NEW], //find campaign that not new (pending, approved, rejected, etc..)
+      },
+    });
+    // if exist then it means vendor already apply for this campaign
+    if (isExist) {
+      throw new BadRequestException(`Vendor already applied to this campaign!`);
     }
-
-    this.logger.debug(`campaignId=${createCampaignDto?.campaignId}`);
-    try {
-      data = await this.campaignVendorLogModel.findOneAndUpdate(
-        {
-          campaignId: new ObjectId(createCampaignDto?.campaignId),
-          status: 'something',
-          vendorId: '',
-        },
-        {
-          vendorId: dataVendor?._id,
-          status: 'pending new',
-          campaignId: new ObjectId(createCampaignDto?.campaignId),
-          createdAt: dayjs().toISOString(),
-          updatedAt: dayjs().toISOString(),
-        },
-        { upsert: true, overwrite: false, rawResult: true },
+    const appliedCampaignData = await this.campaignVendorLogModel.findOne({
+      campaignId: new Types.ObjectId(request.campaignId),
+      status: CampaignStatus.NEW,
+    });
+    if (!appliedCampaignData) {
+      throw new BadRequestException(`Campaign not found!`);
+    }
+    appliedCampaignData.status = CampaignStatus.PENDING_NEW; // change status from new to pending new
+    appliedCampaignData.vendorId = vendorData._id.toString();
+    appliedCampaignData.updatedAt = dayjs().toISOString();
+    const updatedCampaignData = await appliedCampaignData.save();
+    if (!updatedCampaignData) {
+      throw new InternalServerErrorException(
+        `Error occured when updating campaign data!`,
       );
-    } catch (error) {
-      throw new InternalServerErrorException(`Error get Data - ${error}`);
     }
-
-    return data;
+    return updatedCampaignData;
   }
 
   async operatorApprove(request: UpdateCampaignStatusDto) {
@@ -756,6 +866,7 @@ export class CampaignService {
   ): Promise<CampaignVendorLog> {
     const campaignData = await this.campaignVendorLogModel.findOne({
       campaignId: new Types.ObjectId(request.campaignId),
+      vendorId: request.vendorId,
     });
     if (!campaignData) {
       throw new NotFoundException(`Campaign not found`);
