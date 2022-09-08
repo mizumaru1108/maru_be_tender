@@ -44,63 +44,6 @@ export const EditNonProfApperNavDto = NonProfitAppearanceNavigationDto.partial()
 });
 export type EditNonProfApperNavDto = z.infer<typeof EditNonProfApperNavDto>;
 
-// export class EditNonProfitAppearanceNavigationDto {
-//   @ApiProperty()
-//   id: string;
-//   @ApiProperty()
-//   @IsString()
-//   organizationId: string;
-//   @ApiProperty()
-//   @IsString()
-//   readonly ownerUserId: string;
-//   @ApiProperty()
-//   @IsString()
-//   readonly ownerRealmId: string;
-//   @ApiProperty()
-//   @IsString()
-//   readonly titleThumbnail: string;
-//   @ApiProperty()
-//   @IsString()
-//   readonly photoThumbnail: string;
-//   @ApiProperty()
-//   @IsString()
-//   readonly descriptionThumbnail: string;
-//   @ApiProperty()
-//   @IsArray()
-//   @ArrayNotEmpty()
-//   readonly mission: string[];
-//   @ApiProperty()
-//   @IsString()
-//   readonly iconForMission: string;
-//   @ApiProperty()
-//   @IsString()
-//   readonly titleActivities: string;
-//   @ApiProperty()
-//   @IsString()
-//   readonly photoOfActivity: string;
-//   @ApiProperty()
-//   @IsString()
-//   readonly descriptionActivity: string;
-//   @ApiProperty()
-//   @IsString()
-//   readonly detailDescriptionActivity: string;
-//   @ApiProperty()
-//   @IsArray()
-//   @ArrayNotEmpty()
-//   readonly whyUs: string[];
-//   @ApiProperty()
-//   @IsArray()
-//   @ArrayNotEmpty()
-//   readonly linkCampaign: string[];
-//   @ApiProperty()
-//   @IsEnum(() => IsActive)
-//   isDeleted: IsActive;
-//   @ApiProperty()
-//   @IsEnum(() => IsActive)
-//   isActive: IsActive;
-//   @IsString()
-//   updatedAt: string;
-// }
 
 const vision = z.object({
   vision: z.string().optional()
@@ -122,7 +65,7 @@ export const NonProfitAppearanceNavigationAboutUsDto = z.object({
   titleThumbnail: z.string().optional(),
   photoThumbnail: z.string().optional(),
   descriptionThumbnail: z.string().optional(),
-  vision: z.array(vision),
+  vision: z.array(vision).optional(),
   iconForMission: z.string().optional(),
   linkedYoutube: z.string().optional(),
   companyValues: z.array(companyValues),
@@ -145,194 +88,76 @@ export const EditNonProfApperNavAboutUsDto = NonProfitAppearanceNavigationAboutU
 export type EditNonProfApperNavAboutUsDto = z.infer<typeof EditNonProfApperNavAboutUsDto>;
 
 
-export class EditNonProfitAppearanceNavigationAboutUsDto {
 
-  // @IsString()
-  // id: string;
+export const NonProfitAppearanceNavigationBlogDto = z.object({
+  // id: z.string(),
+  organizationId: z.string().optional(),
+  ownerUserId: z.string().optional(),
+  ownerRealmId: z.string().optional(),
+  titleThumbnail: z.string().optional(),
+  photoThumbnail: z.string().optional(),
+  descriptionThumbnail: z.string().optional(),
+  date: z.string().optional(),
+  news: z.array(news).optional(),
+  page: z.string().default('BLOG'),
+  isDeleted: z.nativeEnum(IsActive),
+  isActive: z.nativeEnum(IsActive),
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
+  photoThumbnailUl: z.array(ImagePayload).optional(),
+})
+export type NonProfitAppearanceNavigationBlogDto = z.infer<typeof NonProfitAppearanceNavigationBlogDto>;
 
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  organizationId: string;
+export const EditNonProfitAppearanceNavigationBlogDto = NonProfitAppearanceNavigationBlogDto.partial().extend({
 
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  ownerUserId: string;
+})
 
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  ownerRealmId: string;
+export type EditNonProfitAppearanceNavigationBlogDto = z.infer<typeof EditNonProfitAppearanceNavigationBlogDto>;
 
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  titleThumbnail: string;
+//   @ApiProperty()
+//   @IsString()
+//   id: string;
 
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  photoThumbnail: string;
+//   @ApiProperty()
+//   @IsString()
+//   organizationId: string;
 
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  descriptionThumbnail: string;
+//   @ApiProperty()
+//   @IsString()
+//   ownerUserId: string;
 
-  @ApiProperty()
-  @IsOptional()
-  @IsArray()
-  vision: string[];
+//   @ApiProperty()
+//   @IsString()
+//   ownerRealmId: string;
 
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  iconForMission: string;
+//   @ApiProperty()
+//   @IsString()
+//   titleThumbnail: string;
 
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  linkedYoutube: string;
+//   @ApiProperty()
+//   @IsString()
+//   photoThumbnail: string;
 
-  @ApiProperty()
-  @IsOptional()
-  @IsArray()
-  companyValues: string[];
+//   @ApiProperty()
+//   @IsString()
+//   descriptionThumbnail: string;
 
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  iconForValues: string;
+//   @ApiProperty()
+//   @IsString()
+//   date: string;
 
-  @ApiProperty()
-  @IsOptional()
-  @IsEnum(IsActive)
-  isDeleted: IsActive;
+//   @ApiProperty()
+//   @IsEnum(() => IsActive)
+//   isDeleted: IsActive;
 
-  @ApiProperty()
-  @IsOptional()
-  @IsEnum(IsActive)
-  isActive: IsActive;
+//   @ApiProperty()
+//   @IsEnum(() => IsActive)
+//   isActive: IsActive;
 
-  @ApiProperty()
-  @IsOptional()
-  @IsArray()
-  teamMemberAddUser: string[];
+//   @ApiProperty()
+//   @IsArray()
+//   news: string[];
 
-  @IsString()
-  @IsOptional()
-  updatedAt: string;
-
-  @IsArray()
-  photoThumbnailUl: string[]
-  @IsArray()
-  iconForValuesUl: string[]
-}
-
-export class NonProfitAppearanceNavigationBlogDto {
-
-  @ApiProperty()
-  @IsString()
-  id: string;
-
-  @ApiProperty()
-  @IsString()
-  organizationId: string;
-
-  @ApiProperty()
-  @IsString()
-  ownerUserId: string;
-
-  @ApiProperty()
-  @IsString()
-  ownerRealmId: string;
-
-  @ApiProperty()
-  @IsString()
-  titleThumbnail: string;
-
-  @ApiProperty()
-  @IsString()
-  photoThumbnail: string;
-
-  @ApiProperty()
-  @IsString()
-  descriptionThumbnail: string;
-
-  @ApiProperty()
-  @IsString()
-  date: string;
-
-  @ApiProperty()
-  @IsArray()
-  news: string[];
-
-  @ApiProperty()
-  @IsString()
-  page: string = 'BLOG';
-
-  @ApiProperty()
-  @IsEnum(() => IsActive)
-  isDeleted: IsActive;
-
-  @ApiProperty()
-  @IsEnum(() => IsActive)
-  isActive: IsActive;
-
-  @IsString()
-  createdAt: string;
-
-  @IsString()
-  updatedAt: string;
-}
-
-export class EditNonProfitAppearanceNavigationBlogDto {
-
-  @ApiProperty()
-  @IsString()
-  id: string;
-
-  @ApiProperty()
-  @IsString()
-  organizationId: string;
-
-  @ApiProperty()
-  @IsString()
-  ownerUserId: string;
-
-  @ApiProperty()
-  @IsString()
-  ownerRealmId: string;
-
-  @ApiProperty()
-  @IsString()
-  titleThumbnail: string;
-
-  @ApiProperty()
-  @IsString()
-  photoThumbnail: string;
-
-  @ApiProperty()
-  @IsString()
-  descriptionThumbnail: string;
-
-  @ApiProperty()
-  @IsString()
-  date: string;
-
-  @ApiProperty()
-  @IsEnum(() => IsActive)
-  isDeleted: IsActive;
-
-  @ApiProperty()
-  @IsEnum(() => IsActive)
-  isActive: IsActive;
-
-  @ApiProperty()
-  @IsArray()
-  news: string[];
-
-  @IsString()
-  updatedAt: string;
-}
+//   @IsString()
+//   updatedAt: string;
+// }

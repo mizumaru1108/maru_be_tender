@@ -50,9 +50,7 @@ import {
   NonProfitAppearanceNavigationDto,
   NonProfitAppearanceNavigationAboutUsDto,
   NonProfitAppearanceNavigationBlogDto,
-  EditNonProfitAppearanceNavigationAboutUsDto,
   EditNonProfitAppearanceNavigationBlogDto,
-  // EditNonProfitAppearanceNavigationDto,
   EditNonProfApperNavDto,
   EditNonProfApperNavAboutUsDto,
 } from './dto/nonprofit_appearance_navigation.dto';
@@ -1593,7 +1591,7 @@ export class OrganizationService {
 
   async createBlog(
     organizationId: string,
-    nonProfitAppearanceNavigationBlogDto: NonProfitAppearanceNavigationBlogDto,
+    nonProfitAppearanceNavBlogDto: NonProfitAppearanceNavigationBlogDto,
   ) {
     this.logger.debug(`Get Organization ${organizationId}...`);
     const getOrgsId = await this.getOrganization(organizationId);
@@ -1616,14 +1614,128 @@ export class OrganizationService {
       );
     }
 
+    const newsPath: any = [];
+    /** Create Path Url ForImage news */
+    if (
+      nonProfitAppearanceNavBlogDto &&
+      nonProfitAppearanceNavBlogDto.news!
+    ) {
+      const newsData = JSON.stringify(nonProfitAppearanceNavBlogDto.news);
+      const news = JSON.parse(newsData);
+      for (let i = 0; i < news.length; i++) {
+        const path = await this.bunnyService.generatePath(
+          nonProfitAppearanceNavBlogDto.organizationId!,
+          'landingpage-whyus',
+          news[i].fullName!,
+          news[i].imageExtension!,
+          nonProfitAppearanceNavBlogDto.organizationId!,
+        );
+        const base64Data = news[i].base64Data;
+        const binary = Buffer.from(
+          news[i]!.base64Data!,
+          'base64',
+        );
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+        const imageUpload = await this.bunnyService.uploadImage(
+          path,
+          binary,
+          nonProfitAppearanceNavBlogDto.organizationId!,
+        );
+        newsPath.push({
+          news: news[i].news!,
+          photo: path,
+          description: news[i].description!,
+          date: news[i].date!,
+        })
+        if (imageUpload) {
+          if (news[i].newsIcon!) {
+            console.info(
+              'Old news image seems to be exist in the old record',
+            );
+            const isExist = await this.bunnyService.checkIfImageExists(
+              news[i].newsIcon!,
+            );
+            if (isExist) {
+              await this.bunnyService.deleteImage(
+                news[i].newsIcon!,
+              );
+            }
+          }
+          console.info('news image has been replaced');
+        }
+      }
+    }
+
+    if (
+      nonProfitAppearanceNavBlogDto &&
+      nonProfitAppearanceNavBlogDto.photoThumbnailUl!
+    ) {
+      const photoThumbnail = nonProfitAppearanceNavBlogDto.photoThumbnailUl[0]
+      if (!!photoThumbnail && photoThumbnail) {
+        const path = await this.bunnyService.generatePath(
+          nonProfitAppearanceNavBlogDto.organizationId!,
+          'landingpage-photoThumbnail',
+          photoThumbnail.fullName!,
+          photoThumbnail.imageExtension!,
+          nonProfitAppearanceNavBlogDto.organizationId!,
+        );
+        const base64Data = photoThumbnail.base64Data!;
+        const binary = Buffer.from(
+          photoThumbnail.base64Data!,
+          'base64',
+        );
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image payload photo OfActivity is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+        const imageUpload = await this.bunnyService.uploadImage(
+          path,
+          binary,
+          nonProfitAppearanceNavBlogDto.organizationId!,
+        );
+
+        if (imageUpload) {
+          if (nonProfitAppearanceNavBlogDto.photoThumbnail!) {
+            console.info(
+              'Old photoThumbnail image seems to be exist in the old record',
+            );
+            const isExist = await this.bunnyService.checkIfImageExists(
+              nonProfitAppearanceNavBlogDto.photoThumbnail!,
+            );
+            if (isExist) {
+              await this.bunnyService.deleteImage(
+                nonProfitAppearanceNavBlogDto.photoThumbnail!,
+              );
+            }
+          }
+          console.info('photoThumbnail image has been replaced', path);
+          nonProfitAppearanceNavBlogDto.photoThumbnail = path;
+        }
+      }
+    }
+
     this.logger.debug('Create createBlog Organization...');
-    nonProfitAppearanceNavigationBlogDto.organizationId = organizationId;
-    nonProfitAppearanceNavigationBlogDto.page = 'BLOG';
+    nonProfitAppearanceNavBlogDto.organizationId = organizationId;
+    nonProfitAppearanceNavBlogDto.news = newsPath;
+    nonProfitAppearanceNavBlogDto.page = 'BLOG';
     let now: Date = new Date();
-    nonProfitAppearanceNavigationBlogDto.createdAt = now.toISOString();
-    nonProfitAppearanceNavigationBlogDto.updatedAt = now.toISOString();
+    nonProfitAppearanceNavBlogDto.createdAt = now.toISOString();
+    nonProfitAppearanceNavBlogDto.updatedAt = now.toISOString();
     const appearanceCreateBlog = await this.appearanceNavigationModel.create(
-      nonProfitAppearanceNavigationBlogDto,
+      nonProfitAppearanceNavBlogDto,
     );
     return {
       statusCode: 200,
@@ -2075,42 +2187,153 @@ export class OrganizationService {
         },
       );
     }
-
     return abouUsPageUpdated;
   }
 
   async editBlog(
     organizationId: string,
-    editNonProfitAppearanceNavigationBlogDto: EditNonProfitAppearanceNavigationBlogDto,
-  ) {
+    editNonProfitAppearanceNavBlogDto: EditNonProfitAppearanceNavigationBlogDto,
+  ): Promise<AppearanceNavigation> {
     this.logger.debug(`Get Organization ${organizationId}...`);
     const getOrgsId = await this.getOrganization(organizationId);
     if (getOrgsId.statusCode === 404) {
-      return {
-        statusCode: 404,
-        message: 'Organization not found',
-      };
+      throw new NotFoundException(`OrganizationId ${organizationId} not found`);
     }
+
+    const newsPath: any = [];
+    /** Create Path Url ForImage news */
+    if (
+      editNonProfitAppearanceNavBlogDto &&
+      editNonProfitAppearanceNavBlogDto.news!
+    ) {
+      const newsData = JSON.stringify(editNonProfitAppearanceNavBlogDto.news);
+      const news = JSON.parse(newsData);
+      for (let i = 0; i < news.length; i++) {
+        const path = await this.bunnyService.generatePath(
+          editNonProfitAppearanceNavBlogDto.organizationId!,
+          'landingpage-whyus',
+          news[i].fullName!,
+          news[i].imageExtension!,
+          editNonProfitAppearanceNavBlogDto.organizationId!,
+        );
+        const base64Data = news[i].base64Data;
+        const binary = Buffer.from(
+          news[i]!.base64Data!,
+          'base64',
+        );
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+        const imageUpload = await this.bunnyService.uploadImage(
+          path,
+          binary,
+          editNonProfitAppearanceNavBlogDto.organizationId!,
+        );
+        newsPath.push({
+          news: news[i].news!,
+          photo: path,
+          description: news[i].description!,
+          date: news[i].date!,
+        })
+        if (imageUpload) {
+          if (news[i].newsIcon!) {
+            console.info(
+              'Old news image seems to be exist in the old record',
+            );
+            const isExist = await this.bunnyService.checkIfImageExists(
+              news[i].newsIcon!,
+            );
+            if (isExist) {
+              await this.bunnyService.deleteImage(
+                news[i].newsIcon!,
+              );
+            }
+          }
+          console.info('news image has been replaced');
+        }
+      }
+    }
+
+
+    if (
+      editNonProfitAppearanceNavBlogDto &&
+      editNonProfitAppearanceNavBlogDto.photoThumbnailUl!
+    ) {
+      const photoThumbnail = editNonProfitAppearanceNavBlogDto.photoThumbnailUl[0]
+      if (!!photoThumbnail && photoThumbnail) {
+        const path = await this.bunnyService.generatePath(
+          editNonProfitAppearanceNavBlogDto.organizationId!,
+          'landingpage-photoThumbnail',
+          photoThumbnail.fullName!,
+          photoThumbnail.imageExtension!,
+          editNonProfitAppearanceNavBlogDto.organizationId!,
+        );
+        const base64Data = photoThumbnail.base64Data!;
+        const binary = Buffer.from(
+          photoThumbnail.base64Data!,
+          'base64',
+        );
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image payload photo OfActivity is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+        const imageUpload = await this.bunnyService.uploadImage(
+          path,
+          binary,
+          editNonProfitAppearanceNavBlogDto.organizationId!,
+        );
+
+        if (imageUpload) {
+          if (editNonProfitAppearanceNavBlogDto.photoThumbnail!) {
+            console.info(
+              'Old photoThumbnail image seems to be exist in the old record',
+            );
+            const isExist = await this.bunnyService.checkIfImageExists(
+              editNonProfitAppearanceNavBlogDto.photoThumbnail!,
+            );
+            if (isExist) {
+              await this.bunnyService.deleteImage(
+                editNonProfitAppearanceNavBlogDto.photoThumbnail!,
+              );
+            }
+          }
+          console.info('photoThumbnail image has been replaced', path);
+          editNonProfitAppearanceNavBlogDto.photoThumbnail = path;
+        }
+      }
+    }
+
+
     this.logger.debug('Edit AboutUs Organization...');
     let now: Date = new Date();
-    editNonProfitAppearanceNavigationBlogDto.updatedAt = now.toISOString();
+    editNonProfitAppearanceNavBlogDto.updatedAt = now.toISOString();
+    editNonProfitAppearanceNavBlogDto.news = newsPath;
     const blogUpdated = await this.appearanceNavigationModel.findOneAndUpdate(
       { organizationId: organizationId, page: 'BLOG' },
-      editNonProfitAppearanceNavigationBlogDto,
+      editNonProfitAppearanceNavBlogDto,
       { new: true },
     );
 
     if (!blogUpdated) {
-      return {
-        statusCode: 400,
-        message: 'Failed',
-      };
+      throw new BadRequestException(
+        {
+          statusCode: 400,
+          message: `Failed to update blog`,
+        },
+      );
     }
-
-    return {
-      statusCode: 200,
-      notification: blogUpdated,
-    };
+    return blogUpdated;
   }
 
   async getLandingPage(organizationId: string) {

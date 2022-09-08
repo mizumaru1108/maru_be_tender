@@ -28,9 +28,7 @@ import {
   NonProfitAppearanceNavigationAboutUsDto,
   NonProfitAppearanceNavigationBlogDto,
   NonProfitAppearanceNavigationDto,
-  EditNonProfitAppearanceNavigationAboutUsDto,
   EditNonProfitAppearanceNavigationBlogDto,
-  // EditNonProfitAppearanceNavigationDto,
   EditNonProfApperNavDto,
   EditNonProfApperNavAboutUsDto,
 } from './dto/nonprofit_appearance_navigation.dto';
@@ -337,12 +335,18 @@ export class OrganizationController {
     @Param('organizationId') organizationId: string,
     @Body()
     editNonProfitAppearanceNavigationBlogDto: EditNonProfitAppearanceNavigationBlogDto,
-  ) {
+  ): Promise<BaseResponse<AppearanceNavigation>> {
     this.logger.debug('update blog', JSON.stringify(editNonProfitAppearanceNavigationBlogDto));
-    return this.organizationService.editBlog(
+    const blogData = await this.organizationService.editBlog(
       organizationId,
       editNonProfitAppearanceNavigationBlogDto,
     );
+    const response = baseResponseHelper(
+      blogData,
+      HttpStatus.OK,
+      'Blog updated',
+    );
+    return response;
   }
 
   @ApiOperation({ summary: 'update contactUs' })
