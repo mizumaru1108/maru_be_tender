@@ -28,14 +28,17 @@ export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
     } else {
       throw new BadRequestException('Authorization header is required!');
     }
-    const fusionauth = await this.fusionAuthService.useFusionAuthClient();
     try {
-      // const validToken = await fusionauth.retrieveUserUsingJWT(jwtToken);
-      const validToken = await fusionauth.validateJWT(jwtToken);
+      const validToken = await this.fusionAuthService.fusionAuthValidateToken(
+        jwtToken,
+      );
+      if (!validToken || !validToken.response.jwt) {
+        throw new UnauthorizedException('Invalid token!');
+      }
       const user: ICurrentUser = {
-        id: validToken.response.jwt!.sub!,
-        email: validToken.response.jwt!.email!,
-        type: validToken.response.jwt!.roles! ?? [],
+        id: validToken.response.jwt.sub ?? '',
+        email: validToken.response.jwt.email,
+        type: validToken.response.jwt.roles ?? [],
       };
       // console.log(user);
       request.user = user;

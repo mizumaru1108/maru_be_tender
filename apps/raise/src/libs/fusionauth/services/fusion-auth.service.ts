@@ -4,18 +4,21 @@ import FusionAuthClient, {
   RegistrationResponse,
   User as IFusionAuthUser,
   UserRegistration as IFusionAuthUserRegistration,
+  ValidateResponse,
 } from '@fusionauth/typescript-client';
 import ClientResponse from '@fusionauth/typescript-client/build/src/ClientResponse';
 import {
   BadRequestException,
   HttpException,
   Injectable,
+  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
 import { LoginRequestDto } from '../../../auth/dtos/login-request.dto';
 import { RegisterRequestDto } from '../../../auth/dtos/register-request.dto';
+import { baseEnvCallErrorMessage } from '../../../commons/helpers/base-env-call-error-message';
 
 /**
  * Nest Fusion Auth Service
@@ -23,36 +26,101 @@ import { RegisterRequestDto } from '../../../auth/dtos/register-request.dto';
  */
 @Injectable()
 export class FusionAuthService {
-  constructor(private configService: ConfigService) {}
+  private fusionAuthClient: FusionAuthClient;
+  private fusionAuthAdminClient: FusionAuthClient;
+  private fusionAuthAppId: string;
+  private fusionAuthUrl: string;
+  private fusionAuthTenantId: string;
+  private fusionAuthAdminKey: string;
 
-  async useFusionAuthClient() {
-    return new FusionAuthClient(
-      this.configService.get('FUSIONAUTH_CLIENT_KEY', ''),
-      this.configService.get('FUSIONAUTH_URL', ''),
-      this.configService.get('FUSIONAUTH_TENANT_ID', ''),
+  constructor(private configService: ConfigService) {
+    const fusionAuthClientKey = this.configService.get<string>(
+      'FUSIONAUTH_CLIENT_KEY',
+    );
+    if (!fusionAuthClientKey) {
+      throw new InternalServerErrorException(
+        `FUSIONAUTH_CLIENT_KEY ${baseEnvCallErrorMessage}`,
+      );
+    }
+
+    const fusionAuthAdminKey = this.configService.get<string>(
+      'FUSIONAUTH_ADMIN_KEY',
+    );
+    if (!fusionAuthAdminKey) {
+      throw new InternalServerErrorException(
+        `FUSIONAUTH_ADMIN_KEY ${baseEnvCallErrorMessage}`,
+      );
+    }
+    this.fusionAuthAdminKey = fusionAuthAdminKey;
+
+    const fusionAuthUrl = this.configService.get<string>('FUSIONAUTH_URL');
+    if (!fusionAuthUrl) {
+      throw new InternalServerErrorException(
+        `FUSIONAUTH_URL ${baseEnvCallErrorMessage}`,
+      );
+    }
+    this.fusionAuthUrl = fusionAuthUrl;
+
+    const fusionAuthTenantId = this.configService.get<string>(
+      'FUSIONAUTH_TENANT_ID',
+    );
+    if (!fusionAuthTenantId) {
+      throw new InternalServerErrorException(
+        `FUSIONAUTH_TENANT_ID ${baseEnvCallErrorMessage}`,
+      );
+    }
+    this.fusionAuthTenantId = fusionAuthTenantId;
+
+    const appId = this.configService.get<string>('FUSIONAUTH_APP_ID');
+    if (!appId) {
+      throw new InternalServerErrorException(
+        `FUSIONAUTH_APP_ID ${baseEnvCallErrorMessage}`,
+      );
+    }
+    this.fusionAuthAppId = appId;
+
+    this.fusionAuthClient = new FusionAuthClient(
+      fusionAuthClientKey,
+      fusionAuthUrl,
+      fusionAuthTenantId,
+    );
+
+    this.fusionAuthAdminClient = new FusionAuthClient(
+      fusionAuthAdminKey,
+      fusionAuthUrl,
+      fusionAuthTenantId,
     );
   }
 
-  async useFusionAuthAdminClient() {
-    return new FusionAuthClient(
-      this.configService.get('FUSIONAUTH_ADMIN_KEY', ''),
-      this.configService.get('FUSIONAUTH_URL', ''),
-      this.configService.get('FUSIONAUTH_TENANT_ID', ''),
-    );
+  // async useFusionAuthClient() {
+  //   return new FusionAuthClient(
+  //     this.configService.get('FUSIONAUTH_CLIENT_KEY', ''),
+  //     this.configService.get('FUSIONAUTH_URL', ''),
+  //     this.configService.get('FUSIONAUTH_TENANT_ID', ''),
+  //   );
+  // }
+
+  // async useFusionAuthAdminClient() {
+  //   return new FusionAuthClient(
+  //     this.configService.get('FUSIONAUTH_ADMIN_KEY', ''),
+  //     this.configService.get('FUSIONAUTH_URL', ''),
+  //     this.configService.get('FUSIONAUTH_TENANT_ID', ''),
+  //   );
+  // }
+
+  async fusionAuthValidateToken(
+    token: string,
+  ): Promise<ClientResponse<ValidateResponse>> {
+    return await this.fusionAuthClient.validateJWT(token);
   }
 
   async fusionAuthLogin(
     loginRequest: LoginRequestDto,
   ): Promise<ClientResponse<LoginResponse>> {
-    loginRequest.applicationId = this.configService.get<string>(
-      'FUSIONAUTH_APP_ID',
-      '',
-    );
+    loginRequest.applicationId = this.fusionAuthAppId;
     try {
-      const fusionauth = await this.useFusionAuthClient();
-      const result: ClientResponse<LoginResponse> = await fusionauth.login(
-        loginRequest,
-      );
+      const result: ClientResponse<LoginResponse> =
+        await this.fusionAuthClient.login(loginRequest);
       return result;
     } catch (error) {
       if (error.statusCode < 500) {
@@ -116,10 +184,10 @@ export class FusionAuthService {
   // }
 
   /**
-   * Works fine with post T_T
+   * Fusion Auth Register
    */
   async fusionAuthRegister(registerRequest: RegisterRequestDto) {
-    const baseUrl = this.configService.get<string>('FUSIONAUTH_URL', '');
+    const baseUrl = this.fusionAuthUrl;
     const registerUrl = baseUrl + '/api/user/registration/';
     const user: IFusionAuthUser = {
       email: registerRequest.email,
@@ -128,7 +196,7 @@ export class FusionAuthService {
       lastName: registerRequest.lastName,
     };
     const registration: IFusionAuthUserRegistration = {
-      applicationId: this.configService.get<string>('FUSIONAUTH_APP_ID', ''),
+      applicationId: this.fusionAuthAppId,
     };
     const registrationRequest: IFusionAuthRegistrationRequest = {
       user,
@@ -139,14 +207,8 @@ export class FusionAuthService {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.configService.get<string>(
-          'FUSIONAUTH_ADMIN_KEY',
-          '',
-        ),
-        'X-FusionAuth-TenantId': this.configService.get<string>(
-          'FUSIONAUTH_TENANT_ID',
-          '',
-        ),
+        Authorization: this.fusionAuthAdminKey,
+        'X-FusionAuth-TenantId': this.fusionAuthTenantId,
       },
       data: registrationRequest,
       url: registerUrl,
@@ -156,9 +218,8 @@ export class FusionAuthService {
       const data = await axios(options);
       return data.data;
     } catch (error) {
-      // console.log(error);
-      // throw new HttpException(error.message, error.statusCode);
       if (error.response.status < 500) {
+        console.log(error.response.data);
         throw new BadRequestException(
           `Registration Failed, either user is exist or something else!, more details: ${
             error.response.data.fieldErrors
@@ -167,6 +228,7 @@ export class FusionAuthService {
           }`,
         );
       } else {
+        console.log(error);
         throw new Error('Something went wrong!');
       }
     }

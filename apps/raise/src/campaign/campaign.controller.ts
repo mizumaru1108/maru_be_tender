@@ -106,9 +106,10 @@ export class CampaignController {
    * Data Displayed by Frontend (response)
    * Vendor Name, Total Campaigns Done Before.
    */
-  @UseGuards(JwtAuthGuard)
+  @Permissions(Permission.OE)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
   @ApiOperation({ summary: 'Get list all my pending campaign (vendor)' })
-  @Get('mycampaign-getpendinglist-from-organizationId')
+  @Get('getPendingListPaginated')
   async getAllMyPendingCampaignByOrganizationId(
     @Query() request: GetAllMypendingCampaignFromVendorIdRequest,
   ): Promise<PaginatedResponse<CampaignDocument[]>> {
@@ -331,23 +332,43 @@ export class CampaignController {
     return await this.campaignService.campaignCreate(user.id, request);
   }
 
+  // @ApiOperation({ summary: 'Vendor submit amd apply for campaign' })
+  // @ApiResponse({
+  //   status: 201,
+  //   description: 'The Campaign has been successfully applied by Vendor.',
+  // })
+  // @Permissions(Permission.VE)
+  // @UseGuards(JwtAuthGuard, PermissionsGuard)
+  // @Post('vendor/apply')
+  // async vendorApply(
+  //   @CurrentUser() user: ICurrentUser,
+  //   @Body() request: CampaignApplyVendorDto,
+  // ): Promise<BaseResponse<CampaignVendorLog>> {
+  //   this.logger.debug(
+  //     'apply to unapproved new campaign ',
+  //     JSON.stringify(request),
+  //   );
+  //   const response = await this.campaignService.vendorApply(user.id, request);
+  //   return baseResponseHelper(
+  //     response,
+  //     HttpStatus.CREATED,
+  //     `Current vendor has been applied to campaign ${request.campaignId} successfully`,
+  //   );
+  // }
   @ApiOperation({ summary: 'Vendor submit amd apply for campaign' })
   @ApiResponse({
     status: 201,
     description: 'The Campaign has been successfully applied by Vendor.',
   })
-  @Permissions(Permission.VE)
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
   @Post('vendor/apply')
   async vendorApply(
-    @CurrentUser() user: ICurrentUser,
-    @Body() request: CampaignApplyVendorDto,
+    @Body() request: CreateCampaignDto,
   ): Promise<BaseResponse<CampaignVendorLog>> {
     this.logger.debug(
       'apply to unapproved new campaign ',
       JSON.stringify(request),
     );
-    const response = await this.campaignService.vendorApply(user.id, request);
+    const response = await this.campaignService.vendorApply(request);
     return baseResponseHelper(
       response,
       HttpStatus.CREATED,

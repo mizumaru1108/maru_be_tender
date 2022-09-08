@@ -8,49 +8,18 @@ import {
   SubjectReference,
 } from '@authzed/authzed-node/dist/src/v1';
 import { AuthzedRelationship } from './enums/relationship.enum';
+import { baseEnvCallErrorMessage } from '../../commons/helpers/base-env-call-error-message';
 
 @Injectable()
 export class AuthzedService {
   private client;
 
   constructor(private configService: ConfigService) {
-    const token = this.configService.get<string>('AUTHZED_TOKEN') || '';
-    this.client = v1.NewClient(token);
-  }
-
-  async createResourceReference(objectType: string, objectId: string) {
-    return await v1.ObjectReference.create({
-      objectType,
-      objectId,
-    });
-  }
-
-  async createSubjectReference(object: any) {
-    return await v1.SubjectReference.create({
-      object,
-    });
-  }
-
-  async checkPermission(resource: any, subject: any, permission: string) {
-    const checkPermissionRequest = v1.CheckPermissionRequest.create({
-      resource,
-      subject,
-      permission,
-    });
-
-    let result = false;
-
-    try {
-      const callback = (err: any, response: any) => {
-        if (err) console.log('Error\n', err);
-        if (response) result = true;
-      };
-      this.client.checkPermission(checkPermissionRequest, callback);
-    } catch (error) {
-      result = false;
-      console.log('WHATTT', error);
+    const token = this.configService.get<string>('AUTHZED_TOKEN');
+    if (!token) {
+      throw new Error(`AUTHZED_TOKEN ${baseEnvCallErrorMessage}`);
     }
-    return result;
+    this.client = v1.NewClient(token);
   }
 
   /**
@@ -119,8 +88,6 @@ export class AuthzedService {
     subject: SubjectReference,
     permission: string,
   ): Promise<CheckPermissionResponse> {
-    let token = this.configService.get<string>('AUTHZED_TOKEN') || '';
-    console.log('authzed token used', token);
     const checkPermissionRequest = v1.CheckPermissionRequest.create({
       resource,
       subject,
@@ -137,7 +104,6 @@ export class AuthzedService {
             reject(err);
           }
           if (response) {
-            // console.log('Response\n', response);
             const res: CheckPermissionResponse = {
               permissionship: response.permissionship,
               checkedAt: response.checkedAt,
