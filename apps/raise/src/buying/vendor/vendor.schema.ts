@@ -109,19 +109,12 @@ export class CampaignVendorLog {
   public vendorId: string;
 
   /**
-   * VendorId of the applier (the user who applied the campaign)
-   */
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'vendor',
-  })
-  public applierVendorId?: mongoose.Schema.Types.ObjectId;
-
-  /**
    * UserId of applier on this campaign request (the user who applied the campaign)
+   * can be ownerUserId of the vendor who apply
+   * can be userId of manager/superadmin who apply on behalf of the vendor
    */
   @Prop()
-  public applierVendorOwnerUserId?: string;
+  public updatedBy?: string;
 
   @Prop({
     type: mongoose.Schema.Types.Date,

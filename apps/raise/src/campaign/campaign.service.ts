@@ -33,6 +33,7 @@ import { User, UserDocument } from '../user/schema/user.schema';
 import { Campaign, CampaignDocument } from './campaign.schema';
 import { CreateCampaignDto } from './dto';
 import { CampaignApplyVendorDto } from './dto/apply-vendor.dto';
+import { ApproveCampaignResponseDto } from './dto/approve-campaign-response.dto';
 import { CampaignCreateDto } from './dto/campaign-create.dto';
 import { CampaignDonorOnOperatorDasboardFilter } from './dto/campaign-donor-on-operator-dashboard-filter.dto';
 import { CampaignDonorOnOperatorDasboardParam } from './dto/campaign-donor-on-operator-dashboard-param.dto';
@@ -794,45 +795,64 @@ export class CampaignService {
     return upsertedCampaignData;
   }
 
-  async operatorApprove(request: UpdateCampaignStatusDto) {
-    let data: any;
-    const ObjectId = require('mongoose').Types.ObjectId;
-    try {
-      //STEP 1: update initial campaign , change "new" to "approved"
-      data = await this.campaignVendorLogModel.findOneAndUpdate(
+  async operatorApprove(
+    request: UpdateCampaignStatusDto,
+    userId: string,
+  ): Promise<ApproveCampaignResponseDto> {
+    //STEP 1: update initial campaign , change "new" to "approved"
+    const approvedCampaignVendorRequest =
+      await this.campaignVendorLogModel.findOneAndUpdate(
         {
-          campaignId: new ObjectId(request.campaignId),
+          campaignId: new Types.ObjectId(request.campaignId),
           status: CampaignStatus.NEW,
         },
         {
           vendorId: request.vendorId,
           status: CampaignStatus.APPROVED,
+          updatedBy: userId, // user who responsible for this approval
           updatedAt: dayjs().toISOString(),
         },
-        { upsert: false, overwrite: false, rawResult: true },
+        { upsert: false, new: true },
       );
-
-      //STEP 2: update the rest of campaign set flag, change status
-      //from "pending new" to "processed"
-      data = await this.campaignVendorLogModel.updateMany(
-        {
-          campaignId: new ObjectId(request.campaignId),
-          status: CampaignStatus.PENDING_NEW,
-        },
-        {
-          $set: {
-            status: CampaignStatus.PROCESSED,
-            updatedAt: dayjs().toISOString(),
-          },
-        },
-        {
-          upsert: false,
-        },
-      );
-    } catch (error) {
-      throw new InternalServerErrorException(`Error get Data - ${error}`);
+    if (!approvedCampaignVendorRequest) {
+      throw new BadRequestException(`Campaign not found!`);
     }
-    return data;
+
+    //STEP 2: update the rest of campaign set flag, change status
+    //from "pending new" to "processed"
+    const rejectedCampaignVendorRequest =
+      await this.campaignVendorLogModel.find({
+        campaignId: new Types.ObjectId(request.campaignId),
+        status: CampaignStatus.PENDING_NEW,
+      });
+    if (!rejectedCampaignVendorRequest) {
+      throw new BadRequestException(`Campaign not found!`);
+    }
+
+    const rejectResults = await this.campaignVendorLogModel.updateMany(
+      {
+        _id: {
+          $in: rejectedCampaignVendorRequest.map((item) => item._id),
+        },
+      },
+      {
+        $set: {
+          status: CampaignStatus.PROCESSED,
+          updatedAt: dayjs().toISOString(),
+          updatedBy: userId, // user who resposible for rejection (operator/manager)
+        },
+      },
+    );
+    if (!rejectResults) {
+      throw new Error(`Campaign not found!`);
+    }
+
+    const response: ApproveCampaignResponseDto = {
+      approvedCampaign: approvedCampaignVendorRequest,
+      rejectedCampaign: rejectedCampaignVendorRequest,
+      totalRejected: rejectResults.modifiedCount,
+    };
+    return response;
   }
 
   async operatorReject(

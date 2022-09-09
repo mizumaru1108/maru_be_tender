@@ -28,6 +28,7 @@ import { Campaign, CampaignDocument } from './campaign.schema';
 import { CampaignService } from './campaign.service';
 import { CampaignSetFavoriteDto, CreateCampaignDto } from './dto';
 import { CampaignApplyVendorDto } from './dto/apply-vendor.dto';
+import { ApproveCampaignResponseDto } from './dto/approve-campaign-response.dto';
 import { CampaignCreateDto } from './dto/campaign-create.dto';
 import { CampaignDonorOnOperatorDasboardFilter } from './dto/campaign-donor-on-operator-dashboard-filter.dto';
 import { CampaignDonorOnOperatorDasboardParam } from './dto/campaign-donor-on-operator-dashboard-param.dto';
@@ -335,6 +336,9 @@ export class CampaignController {
   /**
    * Story Title: Vendor > Apply to campaign
    * Story URL: https://www.notion.so/hendyirawan/Vendor-Apply-to-campaign-548856c4d9a649479d57c0d9b29288d0
+   * @param user Current user (get from guards)
+   * @param request Request body
+   * @returns {Promise<BaseResponse<CampaignVendorLog>>}
    */
   @ApiOperation({ summary: 'Vendor apply to campaign' })
   @ApiResponse({
@@ -361,20 +365,38 @@ export class CampaignController {
     );
   }
 
-  @ApiOperation({ summary: 'Operator approve for vendor request' })
+  /**
+   * Story Title: Operator > approve campaign vendor request
+   * Story Ref: https://www.notion.so/hendyirawan/Operator-Campaign-Vendor-Request-d33e785f1bf54b2da37e8d71c2eef984
+   * @param user current user (get from guards)
+   * @param request request body
+   * @returns {Promise<BaseResponse<ApproveCampaignResponseDto>>}
+   */
+  @ApiOperation({ summary: 'Operator/Manager approve for vendor request' })
   @ApiResponse({
     status: 201,
-    description: 'Operator approve for vendor request !',
+    description: 'Campain vendor request has been approved successfully!',
   })
-  @Permissions(Permission.OE)
+  @Permissions(Permission.OE) // can be accessed by operator / admin
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @Post('operator/approve')
-  async approveCampaign(@Body() request: UpdateCampaignStatusDto) {
+  async approveCampaign(
+    @CurrentUser() user: ICurrentUser,
+    @Body() request: UpdateCampaignStatusDto,
+  ): Promise<BaseResponse<ApproveCampaignResponseDto>> {
     this.logger.debug(
       'apply to unapproved new campaign ',
       JSON.stringify(request),
     );
-    return await this.campaignService.operatorApprove(request);
+    const response = await this.campaignService.operatorApprove(
+      request,
+      user.id,
+    );
+    return baseResponseHelper(
+      response,
+      HttpStatus.CREATED,
+      `Campain vendor request has been approved successfully!`,
+    );
   }
 
   @ApiOperation({ summary: 'Operator reject for campaign' })
