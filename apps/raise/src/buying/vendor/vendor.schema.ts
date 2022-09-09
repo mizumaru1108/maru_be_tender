@@ -94,14 +94,43 @@ export class CampaignVendorLog {
   @Prop({ type: mongoose.Schema.Types.ObjectId })
   public _id?: mongoose.Schema.Types.ObjectId;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId })
-  public campaignId?: mongoose.Schema.Types.ObjectId;
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'campaign',
+    required: true,
+  })
+  public campaignId: mongoose.Schema.Types.ObjectId;
 
-  @Prop({ type: String })
+  /**
+   * Vendor that applied by the campaign
+   */
+  @Prop({ default: '' })
   public vendorId: string;
+
+  /**
+   * Applied vendor user id
+   */
+  @Prop({ default: '' })
+  public vendorOwnerUserId: string;
 
   @Prop({ type: String })
   public vendorName: string;
+
+  /**
+   * VendorId of the applier (the user who applied the campaign)
+   */
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'vendor',
+    required: true,
+  })
+  public applierVendorId: mongoose.Schema.Types.ObjectId;
+
+  /**
+   * UserId of applier on this campaign request (the user who applied the campaign)
+   */
+  @Prop({ required: true })
+  public applierVendorOwnerUserId: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: mongoose.Schema.Types.Date,

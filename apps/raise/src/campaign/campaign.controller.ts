@@ -332,49 +332,49 @@ export class CampaignController {
     return await this.campaignService.campaignCreate(user.id, request);
   }
 
-  // @ApiOperation({ summary: 'Vendor submit amd apply for campaign' })
-  // @ApiResponse({
-  //   status: 201,
-  //   description: 'The Campaign has been successfully applied by Vendor.',
-  // })
-  // @Permissions(Permission.VE)
-  // @UseGuards(JwtAuthGuard, PermissionsGuard)
-  // @Post('vendor/apply')
-  // async vendorApply(
-  //   @CurrentUser() user: ICurrentUser,
-  //   @Body() request: CampaignApplyVendorDto,
-  // ): Promise<BaseResponse<CampaignVendorLog>> {
-  //   this.logger.debug(
-  //     'apply to unapproved new campaign ',
-  //     JSON.stringify(request),
-  //   );
-  //   const response = await this.campaignService.vendorApply(user.id, request);
-  //   return baseResponseHelper(
-  //     response,
-  //     HttpStatus.CREATED,
-  //     `Current vendor has been applied to campaign ${request.campaignId} successfully`,
-  //   );
-  // }
-  @ApiOperation({ summary: 'Vendor submit amd apply for campaign' })
+  @ApiOperation({ summary: 'Vendor apply for campaign' })
   @ApiResponse({
     status: 201,
     description: 'The Campaign has been successfully applied by Vendor.',
   })
+  @Permissions(Permission.VE)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
   @Post('vendor/apply')
   async vendorApply(
-    @Body() request: CreateCampaignDto,
+    @CurrentUser() user: ICurrentUser,
+    @Body() request: CampaignApplyVendorDto,
   ): Promise<BaseResponse<CampaignVendorLog>> {
     this.logger.debug(
       'apply to unapproved new campaign ',
       JSON.stringify(request),
     );
-    const response = await this.campaignService.vendorApply(request);
+    const response = await this.campaignService.vendorApply(user.id, request);
     return baseResponseHelper(
       response,
       HttpStatus.CREATED,
       `Current vendor has been applied to campaign ${request.campaignId} successfully`,
     );
   }
+  // @ApiOperation({ summary: 'Vendor submit amd apply for campaign' })
+  // @ApiResponse({
+  //   status: 201,
+  //   description: 'The Campaign has been successfully applied by Vendor.',
+  // })
+  // @Post('vendor/apply')
+  // async vendorApply(
+  //   @Body() request: CreateCampaignDto,
+  // ): Promise<BaseResponse<CampaignVendorLog>> {
+  //   this.logger.debug(
+  //     'apply to unapproved new campaign ',
+  //     JSON.stringify(request),
+  //   );
+  //   const response = await this.campaignService.vendorApply(request);
+  //   return baseResponseHelper(
+  //     response,
+  //     HttpStatus.CREATED,
+  //     `Current vendor has been applied to campaign ${request.campaignId} successfully`,
+  //   );
+  // }
 
   @ApiOperation({ summary: 'Operator approve for vendor request' })
   @ApiResponse({
