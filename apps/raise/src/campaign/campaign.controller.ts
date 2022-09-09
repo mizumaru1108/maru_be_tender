@@ -332,10 +332,15 @@ export class CampaignController {
     return await this.campaignService.campaignCreate(user.id, request);
   }
 
-  @ApiOperation({ summary: 'Vendor apply for campaign' })
+  /**
+   * Story Title: Vendor > Apply to campaign
+   * Story URL: https://www.notion.so/hendyirawan/Vendor-Apply-to-campaign-548856c4d9a649479d57c0d9b29288d0
+   */
+  @ApiOperation({ summary: 'Vendor apply to campaign' })
   @ApiResponse({
     status: 201,
-    description: 'The Campaign has been successfully applied by Vendor.',
+    description:
+      'Current vendor has been applied to campaign `campaignId` successfully',
   })
   @Permissions(Permission.VE)
   @UseGuards(JwtAuthGuard, PermissionsGuard)
@@ -355,26 +360,6 @@ export class CampaignController {
       `Current vendor has been applied to campaign ${request.campaignId} successfully`,
     );
   }
-  // @ApiOperation({ summary: 'Vendor submit amd apply for campaign' })
-  // @ApiResponse({
-  //   status: 201,
-  //   description: 'The Campaign has been successfully applied by Vendor.',
-  // })
-  // @Post('vendor/apply')
-  // async vendorApply(
-  //   @Body() request: CreateCampaignDto,
-  // ): Promise<BaseResponse<CampaignVendorLog>> {
-  //   this.logger.debug(
-  //     'apply to unapproved new campaign ',
-  //     JSON.stringify(request),
-  //   );
-  //   const response = await this.campaignService.vendorApply(request);
-  //   return baseResponseHelper(
-  //     response,
-  //     HttpStatus.CREATED,
-  //     `Current vendor has been applied to campaign ${request.campaignId} successfully`,
-  //   );
-  // }
 
   @ApiOperation({ summary: 'Operator approve for vendor request' })
   @ApiResponse({

@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import dayjs from 'dayjs';
 import * as mongoose from 'mongoose';
 import { Document } from 'mongoose';
 import { CampaignStatus } from '../../campaign/enums/campaign-status.enum';
@@ -108,37 +109,29 @@ export class CampaignVendorLog {
   public vendorId: string;
 
   /**
-   * Applied vendor user id
-   */
-  @Prop({ default: '' })
-  public vendorOwnerUserId: string;
-
-  @Prop({ type: String })
-  public vendorName: string;
-
-  /**
    * VendorId of the applier (the user who applied the campaign)
    */
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'vendor',
-    required: true,
   })
-  public applierVendorId: mongoose.Schema.Types.ObjectId;
+  public applierVendorId?: mongoose.Schema.Types.ObjectId;
 
   /**
    * UserId of applier on this campaign request (the user who applied the campaign)
    */
-  @Prop({ required: true })
-  public applierVendorOwnerUserId: mongoose.Schema.Types.ObjectId;
+  @Prop()
+  public applierVendorOwnerUserId?: string;
 
   @Prop({
     type: mongoose.Schema.Types.Date,
+    default: dayjs().toISOString(),
   })
   public createdAt: string;
 
   @Prop({
     type: mongoose.Schema.Types.Date,
+    default: dayjs().toISOString(),
   })
   public updatedAt: string;
 

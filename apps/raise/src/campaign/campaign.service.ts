@@ -209,10 +209,6 @@ export class CampaignService {
     if (dataCampaign) {
       createdCampaignVendorLog._id = new Types.ObjectId();
       createdCampaignVendorLog.campaignId = dataCampaign._id;
-      // createdCampaignVendorLog.status = 'new'; // will be auto filled (default value in schema "CamapaignStatus.NEW ('new')")
-      createdCampaignVendorLog.vendorId = '';
-      createdCampaignVendorLog.createdAt = dayjs().toISOString();
-      createdCampaignVendorLog.updatedAt = dayjs().toISOString();
       createdCampaignVendorLog.save();
     }
 
@@ -738,61 +734,20 @@ export class CampaignService {
     return donateList;
   }
 
-  // async vendorApply(createCampaignDto: CreateCampaignDto) {
-  //   let vendorData: any = new Vendor();
-  //   let data: any;
-  //   const ObjectId = require('mongoose').Types.ObjectId;
-
-  //   this.logger.debug(`userId=${createCampaignDto.userId}`);
-
-  //   let dataVendor = await this.vendorModel.findOne({
-  //     ownerUserId: createCampaignDto.userId,
-  //   });
-
-  //   this.logger.debug(`_id=${dataVendor?._id}`);
-
-  //   if (!dataVendor) {
-  //     throw new NotFoundException(`Vendor not found`);
-  //   }
-
-  //   if (!createCampaignDto.campaignId) {
-  //     throw new NotFoundException(`Campaign not found`);
-  //   }
-
-  //   this.logger.debug(`campaignId=${createCampaignDto?.campaignId}`);
-  //   try {
-  //     data = await this.campaignVendorLogModel.findOneAndUpdate(
-  //       {
-  //         campaignId: new ObjectId(createCampaignDto?.campaignId),
-  //         status: 'something',
-  //         vendorId: '',
-  //       },
-  //       {
-  //         vendorId: dataVendor?._id,
-  //         status: 'pending new',
-  //         campaignId: new ObjectId(createCampaignDto?.campaignId),
-  //         createdAt: dayjs().toISOString(),
-  //         updatedAt: dayjs().toISOString(),
-  //       },
-  //       { upsert: true, overwrite: false, rawResult: true },
-  //     );
-  //   } catch (error) {
-  //     throw new InternalServerErrorException(`Error get Data - ${error}`);
-  //   }
-
-  //   return data;
-  // }
-
   async vendorApply(
     vendorUserId: string,
     request: CampaignApplyVendorDto,
   ): Promise<CampaignVendorLog> {
+    /* validate the requester, is it a vendor/not */
     const vendorData = await this.vendorModel.findOne({
       ownerUserId: vendorUserId,
     });
     if (!vendorData) {
-      throw new NotFoundException(`Vendor not found`);
+      throw new NotFoundException(
+        `Vendor not found, please use a valid vendor account!`,
+      );
     }
+
     /**
      * if this vendor already applied/processed/approved on this campaign (request.campaignId)
      * then the vendor can't apply again
@@ -804,31 +759,39 @@ export class CampaignService {
         $nin: [CampaignStatus.NEW], //find campaign that not new (pending, approved, rejected, etc..)
       },
     });
+
     // if exist then it means vendor already apply for this campaign
-    if (isExist) {
+    if (isExist.length > 0) {
       throw new BadRequestException(
         `Vendor already applied to this campaign before!`,
       );
     }
 
-    const appliedCampaignData = await this.campaignVendorLogModel.findOne({
-      campaignId: new Types.ObjectId(request.campaignId),
-      status: CampaignStatus.NEW,
-    });
-    if (!appliedCampaignData) {
-      throw new BadRequestException(`Campaign not found!`);
-    }
-    appliedCampaignData.status = CampaignStatus.PENDING_NEW; // change status from new to pending new
-    appliedCampaignData.vendorId = vendorData._id.toString();
-    appliedCampaignData.vendorOwnerUserId = vendorData.ownerUserId;
-    appliedCampaignData.updatedAt = dayjs().toISOString();
-    const updatedCampaignData = await appliedCampaignData.save();
-    if (!updatedCampaignData) {
+    const upsertedCampaignData =
+      await this.campaignVendorLogModel.findOneAndUpdate(
+        {
+          campaignId: new Types.ObjectId(request.campaignId),
+          vendorId: vendorData._id.toString(),
+          status: CampaignStatus.PENDING_NEW,
+        },
+        {
+          campaignId: new Types.ObjectId(request.campaignId),
+          vendorId: vendorData._id.toString(),
+          status: CampaignStatus.PENDING_NEW,
+        },
+        {
+          upsert: true, // upsert(if exist update, if not exist insert)
+          new: true, // return the created/updated data instead of the modified count details
+        },
+      );
+
+    if (!upsertedCampaignData) {
       throw new InternalServerErrorException(
-        `Error occured when updating campaign data!`,
+        `Error occured when upserting campaign data!`,
       );
     }
-    return updatedCampaignData;
+
+    return upsertedCampaignData;
   }
 
   async operatorApprove(request: UpdateCampaignStatusDto) {
