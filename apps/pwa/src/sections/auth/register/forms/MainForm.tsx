@@ -83,7 +83,7 @@ const MainForm = ({ setStep, setRegisterState }: Props) => {
                 <RHFTextField
                   name="authority"
                   label={translate('register_form1.authority.label')}
-                />{' '}
+                />
               </Grid>
             )}
           </>

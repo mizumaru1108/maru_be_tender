@@ -2,7 +2,7 @@ import * as Yup from 'yup';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Step, StepLabel, Typography, Stepper, Box, alpha } from '@mui/material';
+import { Step, StepLabel, Typography, Stepper, Box, alpha, Container } from '@mui/material';
 import useAuth from '../../../hooks/useAuth';
 import useIsMountedRef from '../../../hooks/useIsMountedRef';
 import useResponsive from 'hooks/useResponsive';
@@ -107,7 +107,13 @@ const FundingProjectRequestForm = () => {
           ))}
         </Stepper>
       </Box>
-      <Box sx={{ pl: '150px' }}>
+      <Container
+        sx={{
+          px: {
+            md: '150px',
+          },
+        }}
+      >
         <Typography
           variant="h4"
           sx={{ fontFamily: 'Cairo', fontStyle: 'Bold', fontSize: '16px', mb: '20px' }}
@@ -119,7 +125,7 @@ const FundingProjectRequestForm = () => {
         {step === 2 && <ConnectingInfoForm setStep={setStep} />}
         {step === 3 && <ProjectBudgetForm setStep={setStep} />}
         {step === 4 && <SupportingDurationInfoForm setStep={setStep} />}
-      </Box>
+      </Container>
     </>
   );
 };

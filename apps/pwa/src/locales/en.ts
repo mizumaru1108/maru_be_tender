@@ -342,6 +342,37 @@ const en = {
       placeholder: 'صورة بطاقة الحساب البنكي',
     },
   },
+  contact_support_form: {
+    inquiry_type: {
+      label: 'نوع الاستفسار',
+      placeholder: 'الرجاء اختيار نوع الاستفسار',
+      options: {
+        general_inquiry: 'استفسار عام',
+        project_inquiry: 'استفسار عن مشروع',
+        appointment_inquiry: 'طلب زيارة',
+      },
+    },
+    message: {
+      label: 'الرسالة*',
+      placeholder: 'الرجاء كتابة رسالتك هنا',
+    },
+    message_type: {
+      label: 'عنوان الرسالة*',
+      placeholder: 'الرجاء كتابة عنوان الرسالة',
+    },
+    project_name: {
+      label: 'اسم المشروع*',
+      placeholder: 'الرجاء كتابة عنوان الرسالة',
+    },
+    appointment_date: {
+      label: 'تاريخ الزيارة*',
+      placeholder: 'الرجاء اختيار تاريخ الزيارة',
+    },
+    appointment_cause: {
+      title: 'سبب الزيارة*',
+      placeholer: 'الرجاء كتابة سبب الزيارة هنا ',
+    },
+  },
 };
 
 export default en;

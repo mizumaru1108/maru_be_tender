@@ -174,7 +174,7 @@ export const ProjectBudgetData = [
         name: 'explanation',
         label: 'funding_project_request_form4.explanation.label',
         placeholder: 'funding_project_request_form4.explanation.placeholder',
-        md: 6,
+        md: 5,
         xs: 12,
       },
       {
@@ -182,9 +182,44 @@ export const ProjectBudgetData = [
         name: 'amount',
         label: 'funding_project_request_form4.amount.label',
         placeholder: 'funding_project_request_form4.amount.placeholder',
-        md: 2,
+        md: 3,
         xs: 12,
       },
     ],
+  },
+] as Array<FormSingleProps>;
+
+export const AddBankData = [
+  {
+    type: 'textField',
+    name: 'bank_account_number',
+    label: 'funding_project_request_form6.bank_account_number.label',
+    placeholder: 'funding_project_request_form6.bank_account_number.placeholder',
+    md: 6,
+    xs: 12,
+  },
+  {
+    type: 'textField',
+    name: 'bank_account_name',
+    label: 'funding_project_request_form6.bank_account_name.label',
+    placeholder: 'funding_project_request_form6.bank_account_name.placeholder',
+    md: 6,
+    xs: 12,
+  },
+  {
+    type: 'textField',
+    name: 'bank_name',
+    label: 'funding_project_request_form6.bank_name.label',
+    placeholder: 'funding_project_request_form6.bank_name.placeholder',
+    md: 12,
+    xs: 12,
+  },
+  {
+    type: 'upload',
+    name: 'bank_account_card_image',
+    label: 'funding_project_request_form6.bank_account_card_image.label',
+    placeholder: 'funding_project_request_form6.bank_account_card_image.placeholder',
+    md: 12,
+    xs: 12,
   },
 ] as Array<FormSingleProps>;

@@ -1,12 +1,14 @@
 import { Box, Typography, Stack, Button } from '@mui/material';
 import SvgIconStyle from 'components/SvgIconStyle';
+import { useNavigate } from 'react-router';
 
 export default function AccountPopover() {
+  const navigate = useNavigate();
   return (
     <Box
       component={Button}
       onClick={() => {
-        console.log('navigate to the profile page');
+        navigate('/client/my-profile');
       }}
       sx={{
         alignItems: 'center',

@@ -29,8 +29,8 @@ const getIcon = (name: string) => (
 const ICONS = {
   main: getIcon('main'),
   project_fund_request: getIcon('request-for-project'),
-  draft_project_requests: getIcon('draft-request'),
-  previous_project_requests: getIcon('previous-request'),
+  drafts: getIcon('draft-request'),
+  previous_funding_requests: getIcon('previous-request'),
   messages: getIcon('message-bar'),
   support: getIcon('contact-us'),
 };
@@ -52,18 +52,27 @@ const navConfig = {
           path: PATH_CLIENT.funding_project_request,
           icon: ICONS.project_fund_request,
         },
-        // {
-        //   title: 'drafts',
-        //   path: PATH_DASHBOARD.general.app,
-        //   icon: ICONS.draft_project_requests,
-        // },
-        // {
-        //   title: 'previous_funding_requests',
-        //   path: PATH_DASHBOARD.general.app,
-        //   icon: ICONS.previous_project_requests,
-        // },
-        // { title: 'messages', path: PATH_DASHBOARD.general.app, icon: ICONS.messages },
-        // { title: 'contact_support', path: PATH_DASHBOARD.general.app, icon: ICONS.support },
+
+        {
+          title: 'drafts',
+          path: PATH_CLIENT.drafts,
+          icon: ICONS.drafts,
+        },
+        {
+          title: 'previous_funding_requests',
+          path: PATH_CLIENT.previous_funding_requests,
+          icon: ICONS.previous_funding_requests,
+        },
+        {
+          title: 'messages',
+          path: PATH_CLIENT.messages,
+          icon: ICONS.messages,
+        },
+        {
+          title: 'contact_support',
+          path: PATH_CLIENT.contact_support,
+          icon: ICONS.support,
+        },
       ],
     },
   ],

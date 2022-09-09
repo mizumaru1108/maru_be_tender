@@ -36,9 +36,12 @@ export const PATH_PAGE = {
 };
 export const PATH_CLIENT = {
   root: ROOTS_CLIENT,
-  funding_project_request: path(ROOTS_CLIENT, '/dashboard/funding-project-request'),
   app: path(ROOTS_CLIENT, '/dashboard/app'),
-  contact_support: path(ROOTS_CLIENT, '/contact-support'),
+  funding_project_request: path(ROOTS_CLIENT, '/dashboard/funding-project-request'),
+  drafts: path(ROOTS_CLIENT, '/dashboard/drafts'),
+  previous_funding_requests: path(ROOTS_CLIENT, '/dashboard/previous-funding-requests'),
+  messages: path(ROOTS_CLIENT, '/dashboard/messages'),
+  contact_support: path(ROOTS_CLIENT, '/dashboard/contact-support'),
 };
 
 export const PATH_DASHBOARD = {

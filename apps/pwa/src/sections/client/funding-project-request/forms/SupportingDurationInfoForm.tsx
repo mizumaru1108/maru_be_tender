@@ -1,45 +1,38 @@
 import * as Yup from 'yup';
-import { useEffect } from 'react';
-import { Button, Grid, Stack, Box } from '@mui/material';
-import { FormProvider } from 'components/hook-form';
+import { useEffect, useState } from 'react';
+import { Box, Button, Grid, Stack, Paper } from '@mui/material';
+import { FormProvider, RHFCheckbox } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { BankImage } from '../../../../assets';
+import { LoadingButton } from '@mui/lab';
 import { ReactComponent as MovingBack } from '../../../../assets/move-back-icon.svg';
-import { ProjectBudgetData } from '../Forms-Data';
-import FormGenerator from 'components/FormGenerator';
+import BankImageComp from 'sections/shared/BankImageComp';
+import AddBankModal from './AddBankModal';
+
 type FormValuesProps = {
-  budget: {
-    item: string;
-    explanation: string;
-    amount: number;
-  }[];
+  test1: string;
+  test2: string;
+  budget?: Record<string, any>[];
 };
 
 type Props = {
   setStep: React.Dispatch<React.SetStateAction<number>>;
 };
+const SupportingDurationInfoForm = ({ setStep }: Props) => {
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
-const ProjectBudgetForm = ({ setStep }: Props) => {
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
   const RegisterSchema = Yup.object().shape({
-    budget: Yup.array().of(
-      Yup.object().shape({
-        item: Yup.string().required(),
-        explanation: Yup.string().required(),
-        amount: Yup.number().required(),
-      })
-    ),
+    test1: Yup.string(),
+    test2: Yup.string(),
+    budget: Yup.array(),
   });
   const defaultValues = {
-    budget: [
-      {
-        item: '',
-        explanation: '',
-        amount: undefined,
-      },
-    ],
+    test1: '',
+    test2: '',
+    budget: [{ field: '', explanation: '', cost: '' }],
   };
 
   const methods = useForm<FormValuesProps>({
@@ -48,18 +41,66 @@ const ProjectBudgetForm = ({ setStep }: Props) => {
   });
 
   const {
+    reset,
+    setError,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { errors, isSubmitting },
   } = methods;
 
   const onSubmit = async (data: FormValuesProps) => {
-    setStep((prevStep) => prevStep + 1);
+    console.log(data);
+    // setStep((prevStep) => prevStep + 1);
   };
+
+  const styles = {
+    paperContainer: {
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'center',
+      backgroundSize: 'inherit',
+      backgroundImage: `url(${BankImage})`,
+      width: '360px',
+      height: '180px',
+    },
+  };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container rowSpacing={4} columnSpacing={7}>
-        <FormGenerator data={ProjectBudgetData} />
+        <Grid item md={6} xs={12}>
+          <BankImageComp
+            enableButton={true}
+            accountNumber={'0000 0000 0000 0000'}
+            bankAccountName={'اسم الحساب البنكي'}
+            bankName={'البنك السعودي للاستثمار'}
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <BankImageComp
+            enableButton={true}
+            accountNumber={'0000 0000 0000 0000'}
+            bankAccountName={'اسم الحساب البنكي'}
+            bankName={'البنك السعودي للاستثمار'}
+          />
+        </Grid>
         <Grid item xs={12}>
+          <Stack justifyContent="center">
+            <Button sx={{ textDecoration: 'underline', margin: '0 auto' }} onClick={handleOpen}>
+              اضافة تفاصيل بنك جديد
+            </Button>
+            <AddBankModal open={open} handleClose={handleClose} />
+          </Stack>
+        </Grid>
+        <Grid item xs={12}>
+          <RHFCheckbox
+            name=""
+            label="أقر بصحة المعلومات الواردة في هذا النموذج وأتقدم بطلب دعم المشروع"
+          />
+        </Grid>
+        <Grid item xs={12} sx={{ mt: '10px' }}>
           <Stack direction="row" justifyContent="center">
             <Box
               sx={{
@@ -67,7 +108,6 @@ const ProjectBudgetForm = ({ setStep }: Props) => {
                 height: '90px',
                 backgroundColor: '#fff',
                 padding: '24px',
-                mr: '60px',
               }}
             >
               <Stack justifyContent="center" direction="row" gap={3}>
@@ -120,4 +160,4 @@ const ProjectBudgetForm = ({ setStep }: Props) => {
   );
 };
 
-export default ProjectBudgetForm;
+export default SupportingDurationInfoForm;

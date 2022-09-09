@@ -59,29 +59,37 @@ export default function Router() {
         { path: 'register-unprotected', element: <Register /> },
         { path: 'reset-password', element: <ResetPassword /> },
         { path: 'new-password', element: <NewPassword /> },
-        // { path: 'verify', element: <VerifyCode /> },
+        // { path: 'verify', element: <VerifyCode /> },s
       ],
     },
-
-    // Dashboard Routes
+    // Client Routes
     {
       path: 'client',
       element: <DashboardLayout />,
       children: [
         { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
         {
+          path: 'my-profile',
+          element: <ClientProfile />,
+          children: [{ path: 'edit', element: <ClientProfileEdit /> }],
+        },
+        {
           path: 'dashboard',
           children: [
-            { path: 'app', element: <GeneralApp /> },
+            { path: 'app', element: <MainClientPage /> },
             {
               path: 'funding-project-request',
               element: <FundingProjectRequest />,
             },
+
+            { path: 'drafts', element: <DraftsFundingRequest /> },
+            { path: 'previous-funding-requests', element: <PreviousFundingRequests /> },
+            { path: 'messages', element: <Messages /> },
+            {
+              path: 'contact-support',
+              element: <ContactSupport />,
+            },
           ],
-        },
-        {
-          path: 'contact-support',
-          element: <ContactSupport />,
         },
       ],
     },
@@ -103,82 +111,30 @@ export default function Router() {
     {
       path: '/',
       element: <Navigate to={'auth/login'} replace />,
-      // children: [
-      //   { element: <HomePage />, index: true },
-      //   { path: 'about-us', element: <About /> },
-      //   { path: 'contact-us', element: <Contact /> },
-      //   { path: 'faqs', element: <Faqs /> },
-      // ],
     },
     { path: '*', element: <Navigate to="/404" replace /> },
   ]);
 }
 
-// AUTHENTICATION
+// CLIENT ROUTES
+const FundingProjectRequest = Loadable(lazy(() => import('pages/client/FundingProjectRequest')));
+const DraftsFundingRequest = Loadable(lazy(() => import('pages/client/DraftsFundingRequest')));
+const PreviousFundingRequests = Loadable(
+  lazy(() => import('pages/client/PreviousFundingRequests'))
+);
+const Messages = Loadable(lazy(() => import('pages/client/Messages')));
+const ContactSupport = Loadable(lazy(() => import('pages/client/ContactSupport')));
+const MainClientPage = Loadable(lazy(() => import('pages/client/MainClientPage')));
+const ClientProfile = Loadable(lazy(() => import('pages/client/profile/ClientProfile')));
+const ClientProfileEdit = Loadable(lazy(() => import('pages/client/profile/ClientProfileEdit')));
+// AUTHENTICATION ROUTES
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));
 const Register = Loadable(lazy(() => import('../pages/auth/Register')));
 const ResetPassword = Loadable(lazy(() => import('../pages/auth/ResetPassword')));
 const NewPassword = Loadable(lazy(() => import('../pages/auth/NewPassword')));
-// const VerifyCode = Loadable(lazy(() => import('../pages/auth/VerifyCode')));
 
-// DASHBOARD
-// const HRBranch = Loadable(lazy(() => import('../pages/hr/employee/Branch')));
-// const EmployeeList = Loadable(lazy(() => import('../pages/hr/employee/EmployeeList')));
-
-// GENERAL
+// EXTRA ROUTES
 const GeneralApp = Loadable(lazy(() => import('../pages/dashboard/GeneralApp')));
-// const GeneralEcommerce = Loadable(lazy(() => import('../pages/dashboard/GeneralEcommerce')));
-// const GeneralBanking = Loadable(lazy(() => import('../pages/dashboard/GeneralBanking')));
-// const GeneralBooking = Loadable(lazy(() => import('../pages/dashboard/GeneralBooking')));
-
-// ECOMMERCE
-// const EcommerceShop = Loadable(lazy(() => import('../pages/dashboard/EcommerceShop')));
-// const EcommerceProductDetails = Loadable(
-//   lazy(() => import('../pages/dashboard/EcommerceProductDetails'))
-// );
-// const EcommerceProductList = Loadable(
-//   lazy(() => import('../pages/dashboard/EcommerceProductList'))
-// );
-// const EcommerceProductCreate = Loadable(
-//   lazy(() => import('../pages/dashboard/EcommerceProductCreate'))
-// );
-// const EcommerceProductEdit = Loadable(
-//   lazy(() => import('../pages/dashboard/EcommerceProductEdit'))
-// );
-// const EcommerceCheckout = Loadable(lazy(() => import('../pages/dashboard/EcommerceCheckout')));
-
-// // INVOICE
-// const InvoiceList = Loadable(lazy(() => import('../pages/dashboard/InvoiceList')));
-// const InvoiceDetails = Loadable(lazy(() => import('../pages/dashboard/InvoiceDetails')));
-// const InvoiceCreate = Loadable(lazy(() => import('../pages/dashboard/InvoiceCreate')));
-// const InvoiceEdit = Loadable(lazy(() => import('../pages/dashboard/InvoiceEdit')));
-
-// // BLOG
-// const BlogPosts = Loadable(lazy(() => import('../pages/dashboard/BlogPosts')));
-// const BlogPost = Loadable(lazy(() => import('../pages/dashboard/BlogPost')));
-// const BlogNewPost = Loadable(lazy(() => import('../pages/dashboard/BlogNewPost')));
-
-// // USER
-// const UserProfile = Loadable(lazy(() => import('../pages/dashboard/UserProfile')));
-// const UserCards = Loadable(lazy(() => import('../pages/dashboard/UserCards')));
-// const UserList = Loadable(lazy(() => import('../pages/dashboard/UserList')));
-// const UserAccount = Loadable(lazy(() => import('../pages/dashboard/UserAccount')));
-// const UserCreate = Loadable(lazy(() => import('../pages/dashboard/UserCreate')));
-
-// // APP
-// const Chat = Loadable(lazy(() => import('../pages/dashboard/Chat')));
-// const Mail = Loadable(lazy(() => import('../pages/dashboard/Mail')));
-// const Calendar = Loadable(lazy(() => import('../pages/dashboard/Calendar')));
-// const Kanban = Loadable(lazy(() => import('../pages/dashboard/Kanban')));
-
-// // TEST RENDER PAGE BY ROLE
-// const PermissionDenied = Loadable(lazy(() => import('../pages/dashboard/PermissionDenied')));
-
-// // MAIN
-const HomePage = Loadable(lazy(() => import('../pages/Home')));
-const About = Loadable(lazy(() => import('../pages/About')));
-const Contact = Loadable(lazy(() => import('../pages/Contact')));
-const Faqs = Loadable(lazy(() => import('../pages/Faqs')));
 const ComingSoon = Loadable(lazy(() => import('../pages/ComingSoon')));
 const Maintenance = Loadable(lazy(() => import('../pages/Maintenance')));
 const Pricing = Loadable(lazy(() => import('../pages/Pricing')));
@@ -186,5 +142,3 @@ const Payment = Loadable(lazy(() => import('../pages/Payment')));
 const Page500 = Loadable(lazy(() => import('../pages/Page500')));
 const Page403 = Loadable(lazy(() => import('../pages/Page403')));
 const Page404 = Loadable(lazy(() => import('../pages/Page404')));
-const FundingProjectRequest = Loadable(lazy(() => import('pages/dashboard/FundingProjectRequest')));
-const ContactSupport = Loadable(lazy(() => import('pages/dashboard/ContactSupport')));

@@ -53,14 +53,18 @@ const BankImageComp = ({ enableButton, bankName, bankAccountName, accountNumber 
       >
         <Stack direction="row" gap={2}>
           <Stack direction="column" justifyContent="center">
-            <SvgIconStyle src={`/assets/icons/png-icon.svg`} sx={{ width: 25, height: 25 }} />
+            <img src={`/assets/icons/png-icon.svg`} alt="" />
           </Stack>
           <Stack direction="column">
-            <Typography gutterBottom>صورة بطاقة الحساب البنكي</Typography>
-            <Typography gutterBottom>126KB</Typography>
+            <Typography gutterBottom sx={{ fontSize: '13px' }}>
+              صورة بطاقة الحساب البنكي
+            </Typography>
+            <Typography gutterBottom sx={{ fontSize: '13px' }}>
+              126KB
+            </Typography>
           </Stack>
         </Stack>
-        <SvgIconStyle src={`/assets/icons/upload-icon.svg`} sx={{ width: 25, height: 25 }} />
+        <img src={`/assets/icons/download-icon.svg`} alt="" style={{ width: 25, height: 25 }} />
       </Stack>
     )}
   </Stack>

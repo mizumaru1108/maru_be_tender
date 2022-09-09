@@ -29,7 +29,7 @@ export default function BlockContent({ placeholder }: Props) {
         </Typography>
       )}
 
-      <SvgIconStyle src={`/assets/icons/upload-icon.svg`} sx={{ width: 25, height: 25 }} />
+      <img src={`/assets/icons/upload-icon.svg`} style={{ width: 25, height: 25 }} alt="" />
     </Stack>
   );
 }
