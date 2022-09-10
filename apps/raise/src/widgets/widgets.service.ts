@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { rootLogger } from '../logger';
-import moment from 'moment';
-import { Basket, BasketDocument } from './schemas/basket.schema';
-import { BasketDto, BasketProjectDto } from './dto';
+import {
+  Campaign,
+  CampaignDocument,
+} from 'src/campaign/schema/campaign.schema';
 import { Donor, DonorDocument } from 'src/donor/schema/donor.schema';
-import { Campaign, CampaignDocument } from 'src/campaign/campaign.schema';
+import { rootLogger } from '../logger';
 import { ProjectService } from '../project/project.service';
+import { BasketDto, BasketProjectDto } from './dto';
+import { Basket, BasketDocument } from './schemas/basket.schema';
 
 @Injectable()
 export class WidgetsService {
@@ -20,7 +22,7 @@ export class WidgetsService {
     @InjectModel(Donor.name)
     private donorModel: Model<DonorDocument>,
     private projectServices: ProjectService,
-  ) { }
+  ) {}
 
   async getBasketList(donorId: string) {
     this.logger.debug(`getBasketList donorId=${donorId}`);
@@ -78,7 +80,6 @@ export class WidgetsService {
     return basketList;
   }
 
-
   async createBasket(basketDto: BasketDto) {
     const getDonor = await this.donorModel.findOne({
       _id: basketDto.donorId,
@@ -127,7 +128,6 @@ export class WidgetsService {
     return createdBasket.save();
   }
 
-
   async updateBasket(basketId: string, basketDto: BasketDto) {
     const updates: {
       isDeleted?: boolean;
@@ -162,7 +162,7 @@ export class WidgetsService {
   }
 
   /**
-   * Basket Cart Project 
+   * Basket Cart Project
    */
   async createProjectBasket(basketProjectDto: BasketProjectDto) {
     const getDonor = await this.donorModel.findOne({
@@ -170,7 +170,6 @@ export class WidgetsService {
     });
 
     //const getProject = await this.projectServices.getListAll();
-
 
     // const getProject = await this.campaignModel.findOne({
     //   _id: basketProjectDto.campaignId,
@@ -197,7 +196,8 @@ export class WidgetsService {
       donorId?: Types.ObjectId;
     } = {};
 
-    if (basketProjectDto.isDeleted) updates.isDeleted = basketProjectDto.isDeleted;
+    if (basketProjectDto.isDeleted)
+      updates.isDeleted = basketProjectDto.isDeleted;
     if (basketProjectDto.currency) updates.currency = basketProjectDto.currency;
     if (basketProjectDto.amount) updates.amount = basketProjectDto.amount;
     if (basketProjectDto.unit) updates.unit = basketProjectDto.unit;
@@ -214,7 +214,10 @@ export class WidgetsService {
     return createdBasket.save();
   }
 
-  async updateProjectBasket(basketId: string, basketProjectDto: BasketProjectDto) {
+  async updateProjectBasket(
+    basketId: string,
+    basketProjectDto: BasketProjectDto,
+  ) {
     const updates: {
       isDeleted?: boolean;
       currency?: string;
@@ -223,7 +226,8 @@ export class WidgetsService {
       donorId?: Types.ObjectId;
     } = {};
 
-    if (basketProjectDto.isDeleted) updates.isDeleted = basketProjectDto.isDeleted;
+    if (basketProjectDto.isDeleted)
+      updates.isDeleted = basketProjectDto.isDeleted;
     if (basketProjectDto.currency) updates.currency = basketProjectDto.currency;
     if (basketProjectDto.amount) updates.amount = basketProjectDto.amount;
     if (basketProjectDto.unit) updates.unit = basketProjectDto.unit;
@@ -303,5 +307,4 @@ export class WidgetsService {
   //   return basketList;
   // }
   /** ------------------------------------------------------- */
-
 }

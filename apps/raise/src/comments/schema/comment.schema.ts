@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Campaign } from '../../campaign/campaign.schema';
+import { Campaign } from '../../campaign/schema/campaign.schema';
 import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 import { Project } from '../../project/project.schema';
 import { User } from '@authzed/authzed-node/dist/src/v0';

@@ -1,5 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsDateString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsString,
+  IsNotEmpty,
+  IsDateString,
+  IsOptional,
+  IsNumber,
+} from 'class-validator';
 
 export class CampaignMilestoneDto {
   @ApiProperty()
@@ -11,6 +17,12 @@ export class CampaignMilestoneDto {
   @IsString()
   @IsNotEmpty()
   detail: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  @IsNotEmpty()
+  representationalValue: number;
 
   @ApiProperty()
   @IsDateString()

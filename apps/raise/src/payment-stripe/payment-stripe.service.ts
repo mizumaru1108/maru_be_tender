@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import axios, { AxiosRequestConfig } from 'axios';
 import { rootLogger } from '../logger';
-import { Campaign, CampaignDocument } from '../campaign/campaign.schema';
+import { Campaign, CampaignDocument } from '../campaign/schema/campaign.schema';
 import {
   PaymentGateway,
   PaymentGatewayDocument,

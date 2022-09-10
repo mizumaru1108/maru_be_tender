@@ -13,7 +13,7 @@ import {
 } from 'src/organization/schema/organization.schema';
 import { Expense, ExpenseSchema } from './schemas/expense.schema';
 import { Anonymous, AnonymousSchema } from 'src/donor/schema/anonymous.schema';
-import { Campaign, CampaignSchema } from 'src/campaign/campaign.schema';
+import { Campaign, CampaignSchema } from 'src/campaign/schema/campaign.schema';
 import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
 import {
   PaymentData,

@@ -28,7 +28,10 @@ import {
   AnonymousDocument,
 } from 'src/donor/schema/anonymous.schema';
 import { Donor, DonorDocument } from 'src/donor/schema/donor.schema';
-import { Campaign, CampaignDocument } from 'src/campaign/campaign.schema';
+import {
+  Campaign,
+  CampaignDocument,
+} from 'src/campaign/schema/campaign.schema';
 import {
   PaymentData,
   PaymentDataDocument,
@@ -63,7 +66,7 @@ export class ZakatService {
     private configService: ConfigService,
     @InjectModel(ZakatLog.name)
     private readonly zakatLogModel: Model<ZakatLogDocument>,
-  ) { }
+  ) {}
 
   async _getMetalPrice(carat: boolean, base: string, createdDate?: string) {
     const params = new URLSearchParams();
@@ -559,7 +562,12 @@ export class ZakatService {
       const getOrganization = await this.organizationModel.findOne({
         _id: paymentDto.organizationId,
       });
-      console.log('currency', getOrganization?.defaultCurrency, 'payment DTO=>', paymentDto);
+      console.log(
+        'currency',
+        getOrganization?.defaultCurrency,
+        'payment DTO=>',
+        paymentDto,
+      );
       if (!getOrganization) {
         txtMessage = `request rejected organizationId not found`;
         return {
@@ -631,7 +639,6 @@ export class ZakatService {
           }),
         };
       }
-
 
       console.log(getSecretKey['apiKey']);
       //let getUser = new UserModel();
@@ -713,14 +720,16 @@ export class ZakatService {
         };
       }
 
-
       const amountStr = data['data']['amount_total'].toString();
       const amount = amountStr.substring(0, amountStr.length - 2);
       const extraAmount = paymentDto.extraAmount ? paymentDto.extraAmount : 0;
 
-      const ownerUserId = await this.userModel.findOne({
-        _id: paymentDto.donorId,
-      }, { ownerUserId: 1 });
+      const ownerUserId = await this.userModel.findOne(
+        {
+          _id: paymentDto.donorId,
+        },
+        { ownerUserId: 1 },
+      );
 
       console.log('OwnerUserId=>', ownerUserId);
 

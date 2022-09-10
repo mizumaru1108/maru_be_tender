@@ -1,9 +1,8 @@
-import { User } from '@fusionauth/typescript-client';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema, Types } from 'mongoose';
-import { Campaign } from '../../campaign/campaign.schema';
-import paginate from 'mongoose-paginate-v2';
 import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
+import paginate from 'mongoose-paginate-v2';
+import { Campaign } from '../../campaign/schema/campaign.schema';
 import { Item } from '../../item/item.schema';
 import { Project } from '../../project/project.schema';
 import { DonationType } from '../enum/donation-type.enum';

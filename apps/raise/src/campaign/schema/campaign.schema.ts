@@ -2,10 +2,12 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import dayjs from 'dayjs';
 import * as mongoose from 'mongoose';
 import { Document, Types } from 'mongoose';
-import { UpdateCampaignDto } from './dto/update-campaign-dto';
+import { UpdateCampaignDto } from '../dto/update-campaign-dto';
 import paginate from 'mongoose-paginate-v2';
 import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
-import { CampaignCreateDto } from './dto/campaign-create.dto';
+import { CampaignCreateDto } from '../dto/campaign-create.dto';
+import { CampaignMilestone } from './campaign-milestone.schema';
+import { v4 as uuidv4 } from 'uuid';
 
 export type CampaignDocument = Campaign & Document;
 
@@ -113,10 +115,8 @@ export class Campaign {
   @Prop()
   isPublished: string;
 
-  images: Array<Object>;
-
-  @Prop()
-  milestone?: Array<Object>;
+  @Prop({ default: [] })
+  milestone?: CampaignMilestone[];
 
   public static compare(
     currentData: CampaignDocument,
@@ -147,8 +147,7 @@ export class Campaign {
     }
     currentData.updatedAt = dayjs().toISOString();
     request.isPublished && (currentData.isPublished = request.isPublished);
-    request.images && (currentData.images = request.images);
-    request.milestone && (currentData.milestone = request.milestone);
+    // request.milestone && (currentData.milestone = request.milestone);
     return currentData;
   }
 
@@ -165,7 +164,20 @@ export class Campaign {
     scheme.campaignName = request.campaignName;
     scheme.createdAt = dayjs().toISOString();
     scheme.updatedAt = dayjs().toISOString();
-    scheme.milestone = request.milestone;
+    const milestones: CampaignMilestone[] = request.milestone.map(
+      (milestone) => {
+        const newMilestone: CampaignMilestone = {
+          milestoneId: uuidv4(),
+          detail: milestone.detail,
+          deadline: new Date(milestone.deadline),
+          representationalValue: milestone.representationalValue ?? 0,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        return newMilestone;
+      },
+    );
+    scheme.milestone = milestones;
     scheme.campaignType = request.campaignType;
     scheme.organizationId = new Types.ObjectId(request.organizationId);
     scheme.projectId = request.projectId

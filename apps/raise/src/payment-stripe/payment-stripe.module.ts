@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Campaign, CampaignSchema } from 'src/campaign/campaign.schema';
+import { Campaign, CampaignSchema } from 'src/campaign/schema/campaign.schema';
 import { Anonymous, AnonymousSchema } from 'src/donor/schema/anonymous.schema';
 import {
   DonationLogs,

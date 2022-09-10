@@ -21,7 +21,7 @@ import { Volunteer, VolunteerSchema } from '../donor/schema/volunteer.schema';
 import { Operator, OperatorSchema } from '../operator/schema/operator.schema';
 import { User, UserSchema } from '../user/schema/user.schema';
 import { CampaignController } from './campaign.controller';
-import { Campaign, CampaignSchema } from './campaign.schema';
+import { Campaign, CampaignSchema } from './schema/campaign.schema';
 import { CampaignService } from './campaign.service';
 
 @Module({

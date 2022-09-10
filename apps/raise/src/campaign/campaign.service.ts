@@ -30,7 +30,7 @@ import { BunnyService } from '../libs/bunny/services/bunny.service';
 import { rootLogger } from '../logger';
 import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
 import { User, UserDocument } from '../user/schema/user.schema';
-import { Campaign, CampaignDocument } from './campaign.schema';
+import { Campaign, CampaignDocument } from './schema/campaign.schema';
 import { CreateCampaignDto } from './dto';
 import { CampaignApplyVendorDto } from './dto/apply-vendor.dto';
 import { ApproveCampaignResponseDto } from './dto/approve-campaign-response.dto';
@@ -43,6 +43,8 @@ import { UpdateCampaignDto } from './dto/update-campaign-dto';
 import { UpdateCampaignStatusDto } from './dto/update-campaign-status.dto';
 import { CampaignSortByEnum } from './enums/campaign-sortby-enum';
 import { CampaignStatus } from './enums/campaign-status.enum';
+import { CampaignMilestone } from './schema/campaign-milestone.schema';
+import { v4 as uuidv4 } from 'uuid';
 // import { catchError } from 'rxjs';
 // import { ObjectId } from 'mongodb';
 @Injectable()
@@ -116,7 +118,20 @@ export class CampaignService {
     createdCampaign.isMoney = 'Y';
     createdCampaign.amountProgress = decimal.fromString('0');
     createdCampaign.amountTarget = decimal.fromString('0');
-    createdCampaign.milestone = createCampaignDto.milestone;
+    // createdCampaign.milestone = createCampaignDto.milestone;
+    const milestones: CampaignMilestone[] = createCampaignDto!.milestone!.map(
+      (milestone) => {
+        const newMilestone: CampaignMilestone = {
+          milestoneId: uuidv4(),
+          detail: milestone.detail,
+          deadline: new Date(milestone.deadline),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        return newMilestone;
+      },
+    );
+    createdCampaign.milestone = milestones;
     createdCampaign.description = createCampaignDto.description;
     createdCampaign.campaignName = createCampaignDto.campaignName;
     createdCampaign.campaignType = createCampaignDto.campaignType;
@@ -217,7 +232,7 @@ export class CampaignService {
   }
 
   /**
-   * refactored
+   * refactored from createCampaign
    */
   async campaignCreate(creatorId: string, request: CampaignCreateDto) {
     const baseCampaignScheme = new this.campaignModel();

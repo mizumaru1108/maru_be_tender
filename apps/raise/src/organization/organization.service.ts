@@ -1,6 +1,16 @@
-import { BadRequestException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { AggregatePaginateModel, AggregatePaginateResult, Model, Types } from 'mongoose';
+import {
+  AggregatePaginateModel,
+  AggregatePaginateResult,
+  Model,
+  Types,
+} from 'mongoose';
 import { rootLogger } from '../logger';
 import { FusionAuthClient } from '@fusionauth/typescript-client';
 import { ConfigService } from '@nestjs/config';
@@ -18,7 +28,10 @@ import {
   PaymentGateway,
   PaymentGatewayDocument,
 } from 'src/payment-stripe/schema/paymentGateway.schema';
-import { Campaign, CampaignDocument } from 'src/campaign/campaign.schema';
+import {
+  Campaign,
+  CampaignDocument,
+} from 'src/campaign/schema/campaign.schema';
 import { AppearancenDto } from './dto/appearance.dto';
 import { Appearance, AppearanceDocument } from './schema/appearance.schema';
 import {
@@ -92,7 +105,7 @@ export class OrganizationService {
     @InjectModel(DonationLogs.name)
     private campaignAggregatePaginateModel: AggregatePaginateModel<DonationLogDocument>,
     private bunnyService: BunnyService,
-  ) { }
+  ) {}
 
   async findAll() {
     this.logger.debug('findAll...');
@@ -401,49 +414,50 @@ export class OrganizationService {
       },
     ]);
   }
-  async getDonorsList(filter: DonorsFilterDto)
-    : Promise<AggregatePaginateResult<DonationLogDocument>> {
+  async getDonorsList(
+    filter: DonorsFilterDto,
+  ): Promise<AggregatePaginateResult<DonationLogDocument>> {
     this.logger.debug(`getDonorsList organizationId=${filter}`);
     const { limit = 10, page = 1 } = filter;
 
     let sortData = {};
     sortData = {
-      donorId: filter.donor == 'asc' ? 1 : -1
+      donorId: filter.donor == 'asc' ? 1 : -1,
     };
     if (filter.donorName) {
       sortData = {
         firstName: filter.donorName == 'asc' ? 1 : -1,
-        lastName: filter.donorName == 'asc' ? 1 : -1
+        lastName: filter.donorName == 'asc' ? 1 : -1,
       };
     }
     if (filter.email) {
       sortData = {
-        email: filter.email == 'asc' ? 1 : -1
+        email: filter.email == 'asc' ? 1 : -1,
       };
     }
     if (filter.country) {
       sortData = {
-        country: filter.country == 'asc' ? 1 : -1
+        country: filter.country == 'asc' ? 1 : -1,
       };
     }
     if (filter.phoneNumber) {
       sortData = {
-        mobile: filter.phoneNumber == 'asc' ? 1 : -1
+        mobile: filter.phoneNumber == 'asc' ? 1 : -1,
       };
     }
     if (filter.amount) {
       sortData = {
-        totalAmount: filter.amount == 'asc' ? 1 : -1
+        totalAmount: filter.amount == 'asc' ? 1 : -1,
       };
     }
     if (filter.transactionDate) {
       sortData = {
-        createdAt: filter.transactionDate == 'asc' ? 1 : -1
+        createdAt: filter.transactionDate == 'asc' ? 1 : -1,
       };
     }
     if (filter.email) {
       sortData = {
-        email: filter.email == 'asc' ? 1 : -1
+        email: filter.email == 'asc' ? 1 : -1,
       };
     }
 
@@ -544,7 +558,7 @@ export class OrganizationService {
         {
           page,
           limit,
-          sort: sortData
+          sort: sortData,
         },
       );
     return donorList;
@@ -1178,7 +1192,7 @@ export class OrganizationService {
   /** Nonprofit_appearance_navigation */
   async createLandingPage(
     organizationId: string,
-    nonProfitAppearanceNavigationDto: NonProfitAppearanceNavigationDto
+    nonProfitAppearanceNavigationDto: NonProfitAppearanceNavigationDto,
   ) {
     this.logger.debug(`Get Organization. ${organizationId}...`);
     const getOrgsId = await this.getOrganization(organizationId);
@@ -1191,14 +1205,11 @@ export class OrganizationService {
 
     const LandingpageData = await this.appearanceNavigationModel.findOne({
       organizationId: organizationId,
-      page: "LANDINGPAGE"
+      page: 'LANDINGPAGE',
     });
 
     if (LandingpageData) {
-      throw new HttpException(
-        'Organization landing page already exists',
-        409,
-      );
+      throw new HttpException('Organization landing page already exists', 409);
     }
 
     nonProfitAppearanceNavigationDto.organizationId = organizationId;
@@ -1208,7 +1219,9 @@ export class OrganizationService {
       nonProfitAppearanceNavigationDto! &&
       nonProfitAppearanceNavigationDto.mission!
     ) {
-      const dataMission = JSON.stringify(nonProfitAppearanceNavigationDto.mission!);
+      const dataMission = JSON.stringify(
+        nonProfitAppearanceNavigationDto.mission!,
+      );
       const mission = JSON.parse(dataMission);
       for (let i = 0; i < mission.length; i++) {
         const path = await this.bunnyService.generatePath(
@@ -1219,10 +1232,7 @@ export class OrganizationService {
           nonProfitAppearanceNavigationDto.organizationId!,
         );
         const base64Data = mission[i].base64Data;
-        const binary = Buffer.from(
-          mission[i]!.base64Data!,
-          'base64',
-        );
+        const binary = Buffer.from(mission[i]!.base64Data!, 'base64');
         if (!binary) {
           const trimmedString = 56;
           base64Data.length > 40
@@ -1241,8 +1251,9 @@ export class OrganizationService {
         if (imageUpload) {
           console.info('Mission image has been created');
           missionPath.push({
-            mission: mission[i].mission!, iconMission: path
-          })
+            mission: mission[i].mission!,
+            iconMission: path,
+          });
         }
       }
     }
@@ -1253,7 +1264,9 @@ export class OrganizationService {
       nonProfitAppearanceNavigationDto &&
       nonProfitAppearanceNavigationDto.whyUs!
     ) {
-      const whyUsMission = JSON.stringify(nonProfitAppearanceNavigationDto.whyUs!);
+      const whyUsMission = JSON.stringify(
+        nonProfitAppearanceNavigationDto.whyUs!,
+      );
       const whyUs = JSON.parse(whyUsMission);
       for (let i = 0; i < whyUs.length; i++) {
         const path = await this.bunnyService.generatePath(
@@ -1264,10 +1277,7 @@ export class OrganizationService {
           nonProfitAppearanceNavigationDto.organizationId!,
         );
         const base64Data = whyUs[i].base64Data;
-        const binary = Buffer.from(
-          whyUs[i]!.base64Data!,
-          'base64',
-        );
+        const binary = Buffer.from(whyUs[i]!.base64Data!, 'base64');
         if (!binary) {
           const trimmedString = 56;
           base64Data.length > 40
@@ -1284,8 +1294,9 @@ export class OrganizationService {
         );
         if (imageUpload) {
           whyUsPath.push({
-            whyUs: whyUs[i].whyUs!, whyUsIcon: path
-          })
+            whyUs: whyUs[i].whyUs!,
+            whyUsIcon: path,
+          });
           console.info('WhyUs image has been created');
         }
       }
@@ -1295,7 +1306,7 @@ export class OrganizationService {
       nonProfitAppearanceNavigationDto &&
       nonProfitAppearanceNavigationDto.photoThumbnailUl!
     ) {
-      const thumbnail = nonProfitAppearanceNavigationDto.photoThumbnailUl[0]
+      const thumbnail = nonProfitAppearanceNavigationDto.photoThumbnailUl[0];
       if (!!thumbnail) {
         const path = await this.bunnyService.generatePath(
           nonProfitAppearanceNavigationDto.organizationId!,
@@ -1305,10 +1316,7 @@ export class OrganizationService {
           nonProfitAppearanceNavigationDto.organizationId!,
         );
         const base64Data = thumbnail.base64Data!;
-        const binary = Buffer.from(
-          thumbnail.base64Data!,
-          'base64',
-        );
+        const binary = Buffer.from(thumbnail.base64Data!, 'base64');
         if (!binary) {
           const trimmedString = 56;
           base64Data.length > 40
@@ -1334,7 +1342,8 @@ export class OrganizationService {
       nonProfitAppearanceNavigationDto &&
       nonProfitAppearanceNavigationDto.iconForMissionUl!
     ) {
-      const iconForMission = nonProfitAppearanceNavigationDto.iconForMissionUl[0]
+      const iconForMission =
+        nonProfitAppearanceNavigationDto.iconForMissionUl[0];
       if (!!iconForMission) {
         const path = await this.bunnyService.generatePath(
           nonProfitAppearanceNavigationDto.organizationId!,
@@ -1344,10 +1353,7 @@ export class OrganizationService {
           nonProfitAppearanceNavigationDto.organizationId!,
         );
         const base64Data = iconForMission.base64Data!;
-        const binary = Buffer.from(
-          iconForMission.base64Data!,
-          'base64',
-        );
+        const binary = Buffer.from(iconForMission.base64Data!, 'base64');
         if (!binary) {
           const trimmedString = 56;
           base64Data.length > 40
@@ -1374,7 +1380,8 @@ export class OrganizationService {
       nonProfitAppearanceNavigationDto &&
       nonProfitAppearanceNavigationDto.photoOfActivityUl!
     ) {
-      const photoOfActivity = nonProfitAppearanceNavigationDto.photoOfActivityUl[0]
+      const photoOfActivity =
+        nonProfitAppearanceNavigationDto.photoOfActivityUl[0];
       if (!!photoOfActivity) {
         const path = await this.bunnyService.generatePath(
           nonProfitAppearanceNavigationDto.organizationId!,
@@ -1384,10 +1391,7 @@ export class OrganizationService {
           nonProfitAppearanceNavigationDto.organizationId!,
         );
         const base64Data = photoOfActivity.base64Data!;
-        const binary = Buffer.from(
-          photoOfActivity.base64Data!,
-          'base64',
-        );
+        const binary = Buffer.from(photoOfActivity.base64Data!, 'base64');
         if (!binary) {
           const trimmedString = 56;
           base64Data.length > 40
@@ -1443,14 +1447,11 @@ export class OrganizationService {
 
     const aboutUsData = await this.appearanceNavigationModel.findOne({
       organizationId: organizationId,
-      page: "ABOUTUS"
+      page: 'ABOUTUS',
     });
 
     if (aboutUsData) {
-      throw new HttpException(
-        'Organization AboutUs page already exists',
-        409,
-      );
+      throw new HttpException('Organization AboutUs page already exists', 409);
     }
 
     nonProfitAppearanceNavigationAboutUsDto.organizationId = organizationId;
@@ -1458,7 +1459,8 @@ export class OrganizationService {
       nonProfitAppearanceNavigationAboutUsDto &&
       nonProfitAppearanceNavigationAboutUsDto.photoThumbnailUl!
     ) {
-      const photoThumbnail = nonProfitAppearanceNavigationAboutUsDto.photoThumbnailUl[0]
+      const photoThumbnail =
+        nonProfitAppearanceNavigationAboutUsDto.photoThumbnailUl[0];
       if (!!photoThumbnail && photoThumbnail) {
         let path: string = '';
         try {
@@ -1476,10 +1478,7 @@ export class OrganizationService {
         const base64Data = photoThumbnail.base64Data!;
         let binary;
         try {
-          binary = Buffer.from(
-            photoThumbnail.base64Data!,
-            'base64',
-          );
+          binary = Buffer.from(photoThumbnail.base64Data!, 'base64');
         } catch (error) {
           console.info('Have found same problem', error);
         }
@@ -1515,7 +1514,8 @@ export class OrganizationService {
       nonProfitAppearanceNavigationAboutUsDto &&
       nonProfitAppearanceNavigationAboutUsDto.iconForValuesUl!
     ) {
-      const iconForValues = nonProfitAppearanceNavigationAboutUsDto.iconForValuesUl[0]
+      const iconForValues =
+        nonProfitAppearanceNavigationAboutUsDto.iconForValuesUl[0];
       if (!!iconForValues && iconForValues) {
         let path: string = '';
         try {
@@ -1531,13 +1531,10 @@ export class OrganizationService {
         }
 
         const base64Data = iconForValues.base64Data!;
-        let binary
+        let binary;
 
         try {
-          binary = Buffer.from(
-            iconForValues.base64Data!,
-            'base64',
-          );
+          binary = Buffer.from(iconForValues.base64Data!, 'base64');
         } catch (error) {
           console.info('Have found same problem', error);
         }
@@ -1604,22 +1601,16 @@ export class OrganizationService {
 
     const blogData = await this.appearanceNavigationModel.findOne({
       organizationId: organizationId,
-      page: "BLOG"
+      page: 'BLOG',
     });
 
     if (blogData) {
-      throw new HttpException(
-        'Organization Blog page already exists',
-        409,
-      );
+      throw new HttpException('Organization Blog page already exists', 409);
     }
 
     const newsPath: any = [];
     /** Create Path Url ForImage news */
-    if (
-      nonProfitAppearanceNavBlogDto &&
-      nonProfitAppearanceNavBlogDto.news!
-    ) {
+    if (nonProfitAppearanceNavBlogDto && nonProfitAppearanceNavBlogDto.news!) {
       const newsData = JSON.stringify(nonProfitAppearanceNavBlogDto.news);
       const news = JSON.parse(newsData);
       for (let i = 0; i < news.length; i++) {
@@ -1631,10 +1622,7 @@ export class OrganizationService {
           nonProfitAppearanceNavBlogDto.organizationId!,
         );
         const base64Data = news[i].base64Data;
-        const binary = Buffer.from(
-          news[i]!.base64Data!,
-          'base64',
-        );
+        const binary = Buffer.from(news[i]!.base64Data!, 'base64');
         if (!binary) {
           const trimmedString = 56;
           base64Data.length > 40
@@ -1654,19 +1642,15 @@ export class OrganizationService {
           photo: path,
           description: news[i].description!,
           date: news[i].date!,
-        })
+        });
         if (imageUpload) {
           if (news[i].newsIcon!) {
-            console.info(
-              'Old news image seems to be exist in the old record',
-            );
+            console.info('Old news image seems to be exist in the old record');
             const isExist = await this.bunnyService.checkIfImageExists(
               news[i].newsIcon!,
             );
             if (isExist) {
-              await this.bunnyService.deleteImage(
-                news[i].newsIcon!,
-              );
+              await this.bunnyService.deleteImage(news[i].newsIcon!);
             }
           }
           console.info('news image has been replaced');
@@ -1678,7 +1662,7 @@ export class OrganizationService {
       nonProfitAppearanceNavBlogDto &&
       nonProfitAppearanceNavBlogDto.photoThumbnailUl!
     ) {
-      const photoThumbnail = nonProfitAppearanceNavBlogDto.photoThumbnailUl[0]
+      const photoThumbnail = nonProfitAppearanceNavBlogDto.photoThumbnailUl[0];
       if (!!photoThumbnail && photoThumbnail) {
         const path = await this.bunnyService.generatePath(
           nonProfitAppearanceNavBlogDto.organizationId!,
@@ -1688,10 +1672,7 @@ export class OrganizationService {
           nonProfitAppearanceNavBlogDto.organizationId!,
         );
         const base64Data = photoThumbnail.base64Data!;
-        const binary = Buffer.from(
-          photoThumbnail.base64Data!,
-          'base64',
-        );
+        const binary = Buffer.from(photoThumbnail.base64Data!, 'base64');
         if (!binary) {
           const trimmedString = 56;
           base64Data.length > 40
@@ -1758,7 +1739,9 @@ export class OrganizationService {
       editNonProfitAppearanceNavigationDto! &&
       editNonProfitAppearanceNavigationDto.mission!
     ) {
-      const dataMission = JSON.stringify(editNonProfitAppearanceNavigationDto.mission!);
+      const dataMission = JSON.stringify(
+        editNonProfitAppearanceNavigationDto.mission!,
+      );
       const mission = JSON.parse(dataMission);
       for (let i = 0; i < mission.length; i++) {
         const path = await this.bunnyService.generatePath(
@@ -1769,10 +1752,7 @@ export class OrganizationService {
           editNonProfitAppearanceNavigationDto.organizationId!,
         );
         const base64Data = mission[i].base64Data;
-        const binary = Buffer.from(
-          mission[i]!.base64Data!,
-          'base64',
-        );
+        const binary = Buffer.from(mission[i]!.base64Data!, 'base64');
         if (!binary) {
           const trimmedString = 56;
           base64Data.length > 40
@@ -1797,15 +1777,14 @@ export class OrganizationService {
               mission[i].iconMission!,
             );
             if (isExist) {
-              await this.bunnyService.deleteImage(
-                mission[i].iconMission!,
-              );
+              await this.bunnyService.deleteImage(mission[i].iconMission!);
             }
           }
           console.info('Mission image has been replaced');
           missionPath.push({
-            mission: mission[i].mission!, iconMission: path
-          })
+            mission: mission[i].mission!,
+            iconMission: path,
+          });
         }
       }
     }
@@ -1816,7 +1795,9 @@ export class OrganizationService {
       editNonProfitAppearanceNavigationDto &&
       editNonProfitAppearanceNavigationDto.whyUs!
     ) {
-      const whyUsMission = JSON.stringify(editNonProfitAppearanceNavigationDto.whyUs!);
+      const whyUsMission = JSON.stringify(
+        editNonProfitAppearanceNavigationDto.whyUs!,
+      );
       const whyUs = JSON.parse(whyUsMission);
       for (let i = 0; i < whyUs.length; i++) {
         const path = await this.bunnyService.generatePath(
@@ -1827,10 +1808,7 @@ export class OrganizationService {
           editNonProfitAppearanceNavigationDto.organizationId!,
         );
         const base64Data = whyUs[i].base64Data;
-        const binary = Buffer.from(
-          whyUs[i]!.base64Data!,
-          'base64',
-        );
+        const binary = Buffer.from(whyUs[i]!.base64Data!, 'base64');
         if (!binary) {
           const trimmedString = 56;
           base64Data.length > 40
@@ -1846,20 +1824,17 @@ export class OrganizationService {
           editNonProfitAppearanceNavigationDto.organizationId!,
         );
         whyUsPath.push({
-          whyUs: whyUs[i].whyUs!, whyUsIcon: path
-        })
+          whyUs: whyUs[i].whyUs!,
+          whyUsIcon: path,
+        });
         if (imageUpload) {
           if (whyUs[i].whyUsIcon!) {
-            console.info(
-              'Old WhyUs image seems to be exist in the old record',
-            );
+            console.info('Old WhyUs image seems to be exist in the old record');
             const isExist = await this.bunnyService.checkIfImageExists(
               whyUs[i].whyUsIcon!,
             );
             if (isExist) {
-              await this.bunnyService.deleteImage(
-                whyUs[i].whyUsIcon!,
-              );
+              await this.bunnyService.deleteImage(whyUs[i].whyUsIcon!);
             }
           }
           console.info('WhyUs image has been replaced');
@@ -1871,7 +1846,8 @@ export class OrganizationService {
       editNonProfitAppearanceNavigationDto &&
       editNonProfitAppearanceNavigationDto.photoThumbnailUl!
     ) {
-      const thumbnail = editNonProfitAppearanceNavigationDto.photoThumbnailUl[0]
+      const thumbnail =
+        editNonProfitAppearanceNavigationDto.photoThumbnailUl[0];
       if (!!thumbnail) {
         const path = await this.bunnyService.generatePath(
           editNonProfitAppearanceNavigationDto.organizationId!,
@@ -1881,10 +1857,7 @@ export class OrganizationService {
           editNonProfitAppearanceNavigationDto.organizationId!,
         );
         const base64Data = thumbnail.base64Data!;
-        const binary = Buffer.from(
-          thumbnail.base64Data!,
-          'base64',
-        );
+        const binary = Buffer.from(thumbnail.base64Data!, 'base64');
         if (!binary) {
           const trimmedString = 56;
           base64Data.length > 40
@@ -1923,7 +1896,8 @@ export class OrganizationService {
       editNonProfitAppearanceNavigationDto &&
       editNonProfitAppearanceNavigationDto.iconForMissionUl!
     ) {
-      const iconForMission = editNonProfitAppearanceNavigationDto.iconForMissionUl[0]
+      const iconForMission =
+        editNonProfitAppearanceNavigationDto.iconForMissionUl[0];
       if (!!iconForMission) {
         const path = await this.bunnyService.generatePath(
           editNonProfitAppearanceNavigationDto.organizationId!,
@@ -1933,10 +1907,7 @@ export class OrganizationService {
           editNonProfitAppearanceNavigationDto.organizationId!,
         );
         const base64Data = iconForMission.base64Data!;
-        const binary = Buffer.from(
-          iconForMission.base64Data!,
-          'base64',
-        );
+        const binary = Buffer.from(iconForMission.base64Data!, 'base64');
         if (!binary) {
           const trimmedString = 56;
           base64Data.length > 40
@@ -1976,7 +1947,8 @@ export class OrganizationService {
       editNonProfitAppearanceNavigationDto &&
       editNonProfitAppearanceNavigationDto.photoOfActivityUl!
     ) {
-      const photoOfActivity = editNonProfitAppearanceNavigationDto.photoOfActivityUl[0]
+      const photoOfActivity =
+        editNonProfitAppearanceNavigationDto.photoOfActivityUl[0];
       if (!!photoOfActivity) {
         const path = await this.bunnyService.generatePath(
           editNonProfitAppearanceNavigationDto.organizationId!,
@@ -1986,10 +1958,7 @@ export class OrganizationService {
           editNonProfitAppearanceNavigationDto.organizationId!,
         );
         const base64Data = photoOfActivity.base64Data!;
-        const binary = Buffer.from(
-          photoOfActivity.base64Data!,
-          'base64',
-        );
+        const binary = Buffer.from(photoOfActivity.base64Data!, 'base64');
         if (!binary) {
           const trimmedString = 56;
           base64Data.length > 40
@@ -2040,16 +2009,13 @@ export class OrganizationService {
       );
 
     if (!landingPageUpdated) {
-      throw new BadRequestException(
-        {
-          statusCode: 400,
-          message: `Failed to update Landingpage`,
-        },
-      );
+      throw new BadRequestException({
+        statusCode: 400,
+        message: `Failed to update Landingpage`,
+      });
     }
     return landingPageUpdated;
   }
-
 
   async editAboutUs(
     organizationId: string,
@@ -2066,7 +2032,8 @@ export class OrganizationService {
       editNonProfApprceNaviAboutUsDto &&
       editNonProfApprceNaviAboutUsDto.photoThumbnailUl!
     ) {
-      const photoThumbnail = editNonProfApprceNaviAboutUsDto.photoThumbnailUl[0]
+      const photoThumbnail =
+        editNonProfApprceNaviAboutUsDto.photoThumbnailUl[0];
       if (!!photoThumbnail && photoThumbnail) {
         const path = await this.bunnyService.generatePath(
           editNonProfApprceNaviAboutUsDto.organizationId!,
@@ -2076,10 +2043,7 @@ export class OrganizationService {
           editNonProfApprceNaviAboutUsDto.organizationId!,
         );
         const base64Data = photoThumbnail.base64Data!;
-        const binary = Buffer.from(
-          photoThumbnail.base64Data!,
-          'base64',
-        );
+        const binary = Buffer.from(photoThumbnail.base64Data!, 'base64');
         if (!binary) {
           const trimmedString = 56;
           base64Data.length > 40
@@ -2119,7 +2083,7 @@ export class OrganizationService {
       editNonProfApprceNaviAboutUsDto &&
       editNonProfApprceNaviAboutUsDto.iconForValuesUl!
     ) {
-      const iconForValues = editNonProfApprceNaviAboutUsDto.iconForValuesUl[0]
+      const iconForValues = editNonProfApprceNaviAboutUsDto.iconForValuesUl[0];
       if (!!iconForValues && iconForValues) {
         const path = await this.bunnyService.generatePath(
           editNonProfApprceNaviAboutUsDto.organizationId!,
@@ -2129,10 +2093,7 @@ export class OrganizationService {
           editNonProfApprceNaviAboutUsDto.organizationId!,
         );
         const base64Data = iconForValues.base64Data!;
-        const binary = Buffer.from(
-          iconForValues.base64Data!,
-          'base64',
-        );
+        const binary = Buffer.from(iconForValues.base64Data!, 'base64');
         if (!binary) {
           const trimmedString = 56;
           base64Data.length > 40
@@ -2168,7 +2129,6 @@ export class OrganizationService {
       }
     }
 
-
     this.logger.debug('Edit AboutUs Organization...');
     let now: Date = new Date();
     editNonProfApprceNaviAboutUsDto.updatedAt = now.toISOString();
@@ -2180,12 +2140,10 @@ export class OrganizationService {
       );
 
     if (!abouUsPageUpdated) {
-      throw new BadRequestException(
-        {
-          statusCode: 400,
-          message: `Failed to update aboutUs`,
-        },
-      );
+      throw new BadRequestException({
+        statusCode: 400,
+        message: `Failed to update aboutUs`,
+      });
     }
     return abouUsPageUpdated;
   }
@@ -2217,10 +2175,7 @@ export class OrganizationService {
           editNonProfitAppearanceNavBlogDto.organizationId!,
         );
         const base64Data = news[i].base64Data;
-        const binary = Buffer.from(
-          news[i]!.base64Data!,
-          'base64',
-        );
+        const binary = Buffer.from(news[i]!.base64Data!, 'base64');
         if (!binary) {
           const trimmedString = 56;
           base64Data.length > 40
@@ -2240,19 +2195,15 @@ export class OrganizationService {
           photo: path,
           description: news[i].description!,
           date: news[i].date!,
-        })
+        });
         if (imageUpload) {
           if (news[i].newsIcon!) {
-            console.info(
-              'Old news image seems to be exist in the old record',
-            );
+            console.info('Old news image seems to be exist in the old record');
             const isExist = await this.bunnyService.checkIfImageExists(
               news[i].newsIcon!,
             );
             if (isExist) {
-              await this.bunnyService.deleteImage(
-                news[i].newsIcon!,
-              );
+              await this.bunnyService.deleteImage(news[i].newsIcon!);
             }
           }
           console.info('news image has been replaced');
@@ -2260,12 +2211,12 @@ export class OrganizationService {
       }
     }
 
-
     if (
       editNonProfitAppearanceNavBlogDto &&
       editNonProfitAppearanceNavBlogDto.photoThumbnailUl!
     ) {
-      const photoThumbnail = editNonProfitAppearanceNavBlogDto.photoThumbnailUl[0]
+      const photoThumbnail =
+        editNonProfitAppearanceNavBlogDto.photoThumbnailUl[0];
       if (!!photoThumbnail && photoThumbnail) {
         const path = await this.bunnyService.generatePath(
           editNonProfitAppearanceNavBlogDto.organizationId!,
@@ -2275,10 +2226,7 @@ export class OrganizationService {
           editNonProfitAppearanceNavBlogDto.organizationId!,
         );
         const base64Data = photoThumbnail.base64Data!;
-        const binary = Buffer.from(
-          photoThumbnail.base64Data!,
-          'base64',
-        );
+        const binary = Buffer.from(photoThumbnail.base64Data!, 'base64');
         if (!binary) {
           const trimmedString = 56;
           base64Data.length > 40
@@ -2314,7 +2262,6 @@ export class OrganizationService {
       }
     }
 
-
     this.logger.debug('Edit AboutUs Organization...');
     let now: Date = new Date();
     editNonProfitAppearanceNavBlogDto.updatedAt = now.toISOString();
@@ -2326,12 +2273,10 @@ export class OrganizationService {
     );
 
     if (!blogUpdated) {
-      throw new BadRequestException(
-        {
-          statusCode: 400,
-          message: `Failed to update blog`,
-        },
-      );
+      throw new BadRequestException({
+        statusCode: 400,
+        message: `Failed to update blog`,
+      });
     }
     return blogUpdated;
   }
@@ -2786,7 +2731,7 @@ export class OrganizationService {
       total_donation:
         totalZakatCampaigns || totalCampaigns
           ? (totalZakatCampaigns ? totalZakatCampaigns : 0) +
-          (totalCampaigns ? totalCampaigns : 0)
+            (totalCampaigns ? totalCampaigns : 0)
           : 0,
       campaigns: totalCampaigns ? totalCampaigns : 0,
       amount_ofcampaigns: amountCampaigns ? amountCampaigns : 0,

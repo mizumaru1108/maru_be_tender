@@ -24,7 +24,7 @@ import { DonorService } from '../donor/donor.service';
 import { Permission } from '../libs/authzed/enums/permission.enum';
 import { rootLogger } from '../logger';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
-import { Campaign, CampaignDocument } from './campaign.schema';
+import { Campaign, CampaignDocument } from './schema/campaign.schema';
 import { CampaignService } from './campaign.service';
 import { CampaignSetFavoriteDto, CreateCampaignDto } from './dto';
 import { CampaignApplyVendorDto } from './dto/apply-vendor.dto';

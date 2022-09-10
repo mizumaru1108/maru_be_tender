@@ -32,7 +32,7 @@ import {
   Vendor,
   VendorDocument,
 } from '../buying/vendor/vendor.schema';
-import { Campaign, CampaignDocument } from '../campaign/campaign.schema';
+import { Campaign, CampaignDocument } from '../campaign/schema/campaign.schema';
 import { CampaignSetFavoriteDto } from '../campaign/dto';
 import { IPaymentGatewayItems } from '../commons/interfaces/payment-gateway-items.interface';
 import { Item, ItemDocument } from '../item/item.schema';

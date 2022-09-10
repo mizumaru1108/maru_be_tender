@@ -3,14 +3,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { DonorService } from './donor.service';
 import { Donor, DonorSchema } from './schema/donor.schema';
 import { Volunteer, VolunteerSchema } from './schema/volunteer.schema';
-// import { DonorController } from './donor.controller';
 import {
   CampaignVendorLog,
   CampaignVendorLogSchema,
   Vendor,
   VendorSchema,
 } from '../buying/vendor/vendor.schema';
-import { Campaign, CampaignSchema } from '../campaign/campaign.schema';
+import { Campaign, CampaignSchema } from '../campaign/schema/campaign.schema';
 import { DonorController } from './donor.controller';
 import { Anonymous, AnonymousSchema } from './schema/anonymous.schema';
 import { DonationLog, DonationLogSchema } from './schema/donation-log.schema';

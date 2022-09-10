@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 // import { OrgsService } from './orgs.service';
 // import { OrgsController } from './orgs.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Campaign, CampaignSchema } from 'src/campaign/campaign.schema';
+import { Campaign, CampaignSchema } from 'src/campaign/schema/campaign.schema';
 import {
   DonationLogs,
   DonationLogSchema,
