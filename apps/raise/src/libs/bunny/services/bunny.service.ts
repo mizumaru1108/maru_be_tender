@@ -141,7 +141,7 @@ export class BunnyService {
     }
   }
 
-  async deleteImage(path: string) {
+  async deleteImage(path: string): Promise<boolean> {
     const mediaUrl = this.urlMedia + '/' + path;
     const cdnUrl = this.cdnUrl + '/' + path;
     console.info(`Deleting ${cdnUrl} from storage ...`);
@@ -165,6 +165,7 @@ export class BunnyService {
           JSON.stringify(response.data, null, 2),
         );
       }
+      return true;
     } catch (error) {
       throw new InternalServerErrorException(`Error deleting image!`);
     }

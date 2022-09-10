@@ -1,5 +1,4 @@
 import { BadRequestException } from '@nestjs/common';
-import { Transform } from 'class-transformer';
 import {
   registerDecorator,
   ValidationArguments,
@@ -7,7 +6,9 @@ import {
 } from 'class-validator';
 import { isValidObjectId } from 'mongoose';
 
-export function ValidateObjectId(validationOptions?: ValidationOptions) {
+export function ValidateObjectIdDecorator(
+  validationOptions?: ValidationOptions,
+) {
   return (object: any, propertyName: string) => {
     registerDecorator({
       name: 'ValidateObjectId',

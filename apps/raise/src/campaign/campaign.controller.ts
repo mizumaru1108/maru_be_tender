@@ -38,6 +38,10 @@ import { GetAllNewCampaignFilter } from './dto/get-all-new-campaign-filter.dto';
 import { GetAllNewCampaignParams } from './dto/get-all-new-campaign-params.dto';
 import { UpdateCampaignDto } from './dto/update-campaign-dto';
 import { UpdateCampaignStatusDto } from './dto/update-campaign-status.dto';
+import { CampaignUpdateDto } from './dto/campaign-update.dto';
+import { CampaignMilestoneDto } from './dto/campaign-milestone.dto';
+import { AddMilestoneDto } from './dto/add-milestone.dto';
+import { CampaignCreateResponse } from './dto/campaign-create-response.dto';
 
 @ApiTags('campaign')
 @Controller('campaign')
@@ -302,6 +306,7 @@ export class CampaignController {
     );
   }
 
+  /* ![Deprecated] use campaignCreate instead, already implemented on ommar */
   @ApiOperation({ summary: 'Create campaign' })
   @ApiResponse({
     status: 201,
@@ -328,9 +333,36 @@ export class CampaignController {
   async campaignCreate(
     @CurrentUser() user: ICurrentUser,
     @Body() request: CampaignCreateDto,
+  ): Promise<BaseResponse<CampaignCreateResponse>> {
+    this.logger.debug('create new campaign ', JSON.stringify(request));
+    const response = await this.campaignService.campaignCreate(
+      user.id,
+      request,
+    );
+    return baseResponseHelper(
+      response,
+      HttpStatus.CREATED,
+      'The Campaign has been successfully created.',
+    );
+  }
+
+  /* add milestones to campaign */
+  @ApiOperation({
+    summary: 'Add new (extra milestone) after campaign already created',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'The Campaign has been successfully created.',
+  })
+  @Permissions(Permission.OE)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Post('addMilestone')
+  async addCampaignMilestone(
+    @CurrentUser() user: ICurrentUser,
+    @Body() request: AddMilestoneDto,
   ) {
     this.logger.debug('create new campaign ', JSON.stringify(request));
-    return await this.campaignService.campaignCreate(user.id, request);
+    return await this.campaignService.addMilestone(user.id, request);
   }
 
   /**
@@ -465,14 +497,17 @@ export class CampaignController {
   }
 
   @ApiOperation({ summary: 'update campaign' })
-  @UseGuards(JwtAuthGuard)
+  @Permissions(Permission.OE)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
   @Patch('campaignUpdate/:campaignId')
   async campaignUpdate(
+    @CurrentUser() user: ICurrentUser,
     @Param('campaignId') campaignId: string,
-    @Body() updateCampaignRequest: UpdateCampaignDto,
+    @Body() updateCampaignRequest: CampaignUpdateDto,
   ): Promise<BaseResponse<Campaign>> {
     this.logger.debug('payload', JSON.stringify(updateCampaignRequest));
-    const updatedCampaign = await this.campaignService.updateCampaign(
+    const updatedCampaign = await this.campaignService.campaignUpdate(
+      user.id,
       campaignId,
       updateCampaignRequest,
     );

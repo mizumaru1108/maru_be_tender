@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { ValidateObjectId } from '../../commons/decorators/validate-object-id.decorator';
+import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
 
 export class CreateCommentDto {
   /**
@@ -10,7 +10,7 @@ export class CreateCommentDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @ValidateObjectId()
+  @ValidateObjectIdDecorator()
   parentCommentId?: string;
 
   /**
@@ -20,7 +20,7 @@ export class CreateCommentDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @ValidateObjectId()
+  @ValidateObjectIdDecorator()
   campaignId?: string;
 
   /**
@@ -30,7 +30,7 @@ export class CreateCommentDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @ValidateObjectId()
+  @ValidateObjectIdDecorator()
   projectId?: string;
 
   /**
@@ -40,7 +40,7 @@ export class CreateCommentDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @ValidateObjectId()
+  @ValidateObjectIdDecorator()
   itemId?: string;
 
   /**

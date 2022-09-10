@@ -1,6 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsArray, IsIn, IsUUID } from 'class-validator';
-import { ValidateObjectId } from '../../commons/decorators/validate-object-id.decorator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsArray,
+  IsIn,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
 import { PayloadImage } from '../../commons/dtos/payload-image.dto';
 import { CampaignMilestoneDto } from './campaign-milestone.dto';
 
@@ -8,24 +14,26 @@ export class CampaignCreateDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @ValidateObjectId()
+  @ValidateObjectIdDecorator()
   organizationId: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @ValidateObjectId()
-  projectId: string;
+  @ValidateObjectIdDecorator()
+  projectId?: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
   campaignName: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  campaignType: string;
+  title?: string;
 
   @ApiProperty()
   @IsString()
@@ -35,7 +43,13 @@ export class CampaignCreateDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @IsIn(['Y', 'N'])
+  campaignType: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @IsIn(['Y', 'N'], { message: 'isMoney must be Y or N' })
   isMoney: string;
 
   @ApiProperty()
@@ -44,46 +58,30 @@ export class CampaignCreateDto {
   @IsNotEmpty({ each: true })
   methods: string[];
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  currencyCode: string;
+  currencyCode?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  amountProgress: string;
+  amountTarget?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  amountTarget: string;
-
-  // @ApiProperty()
-  // @IsString()
-  // @IsNotEmpty()
-  // coverImage: string;
-
-  // @ApiProperty()
-  // @IsString()
-  // @IsNotEmpty()
-  // image1: string;
-
-  // @ApiProperty()
-  // @IsString()
-  // @IsNotEmpty()
-  // image2: string;
-
-  // @ApiProperty()
-  // @IsString()
-  // @IsNotEmpty()
-  // image3: string;
+  isPublished?: string;
 
   @ApiProperty()
   @IsArray()
   images: PayloadImage[];
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsArray()
   milestone: CampaignMilestoneDto[];
 }

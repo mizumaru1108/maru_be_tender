@@ -1,14 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-  IsString,
-  IsNotEmpty,
   IsIn,
-  IsOptional,
-  IsArray,
+  IsNotEmpty,
   IsNumber,
+  IsOptional,
+  IsString,
   Min,
 } from 'class-validator';
-import { ValidateObjectId } from '../../commons/decorators/validate-object-id.decorator';
+import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
 
 export class DonorDonationDetailsDto {
   /**
@@ -17,7 +16,6 @@ export class DonorDonationDetailsDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @ValidateObjectId()
   @IsIn(['campaign', 'item', 'project'])
   donationType: string;
 
@@ -30,7 +28,7 @@ export class DonorDonationDetailsDto {
   @IsOptional()
   @IsString() // if exist value should be string
   @IsNotEmpty() // if exist value should not be empty
-  @ValidateObjectId()
+  @ValidateObjectIdDecorator()
   itemId: string;
 
   /**
@@ -51,7 +49,7 @@ export class DonorDonationDetailsDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @ValidateObjectId()
+  @ValidateObjectIdDecorator()
   projectId: string;
 
   /**
@@ -61,7 +59,7 @@ export class DonorDonationDetailsDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @ValidateObjectId()
+  @ValidateObjectIdDecorator()
   campaignId: string;
 
   /**

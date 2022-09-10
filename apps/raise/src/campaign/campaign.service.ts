@@ -45,6 +45,10 @@ import { CampaignSortByEnum } from './enums/campaign-sortby-enum';
 import { CampaignStatus } from './enums/campaign-status.enum';
 import { CampaignMilestone } from './schema/campaign-milestone.schema';
 import { v4 as uuidv4 } from 'uuid';
+import { validateObjectId } from '../commons/utils/validateObjectId';
+import { CampaignUpdateDto } from './dto/campaign-update.dto';
+import { AddMilestoneDto } from './dto/add-milestone.dto';
+import { CampaignCreateResponse } from './dto/campaign-create-response.dto';
 // import { catchError } from 'rxjs';
 // import { ObjectId } from 'mongodb';
 @Injectable()
@@ -68,9 +72,7 @@ export class CampaignService {
   ) {}
 
   /**
-   * Create the campaign document in MongoDB, and uploads all the image files to Bunny.
-   * @param createCampaignDto
-   * @returns
+   * ![Deprecated] Create the campaign document in MongoDB, and uploads all the image files to Bunny.
    */
   async create(rawCreateCampaignDto: CreateCampaignDto): Promise<Campaign> {
     let createCampaignDto: CreateCampaignDto;
@@ -232,68 +234,82 @@ export class CampaignService {
   }
 
   /**
-   * refactored from createCampaign
+   * refactored from createCampaign (func above)
    */
-  async campaignCreate(creatorId: string, request: CampaignCreateDto) {
+  async campaignCreate(
+    creatorId: string,
+    request: CampaignCreateDto,
+  ): Promise<CampaignCreateResponse> {
     const baseCampaignScheme = new this.campaignModel();
     const campaignScheme = Campaign.mapFromCreateRequest(
       baseCampaignScheme,
       request,
     );
     campaignScheme.creatorUserId = creatorId;
-    const createdCampaignVendorLog = new this.campaignVendorLogModel(request);
 
+    let tmpPath: string[] = []; // for implementing db transaction later on
     try {
-      let path: string[] = [];
       const processImages = request.images.map(async (image, index) => {
-        const tmpPath = await this.bunnyService.generatePath(
+        const path = await this.bunnyService.generatePath(
           request.organizationId,
           'campaign-photo',
-          request.images[index]!.fullName,
-          request.images[index]!.imageExtension,
+          image.fullName,
+          image.imageExtension,
           campaignScheme._id,
         );
-        path.push(tmpPath);
+        tmpPath.push(path);
 
-        const base64Data = request.images[index].base64Data;
-        const binary = Buffer.from(request.images[index].base64Data, 'base64');
+        const base64Data = image.base64Data;
+        const binary = Buffer.from(image.base64Data, 'base64');
         if (!binary) {
           const trimmedString = 56;
           base64Data.length > 40
             ? base64Data.substring(0, 40 - 3) + '...'
             : base64Data.substring(0, length);
           throw new BadRequestException(
-            `Image payload ${index} is not a valid base64 data: ${trimmedString}`,
+            `Image payload on images[${index}] is not a valid base64 data: ${trimmedString}`,
           );
         }
         const imageUpload = await this.bunnyService.uploadImage(
-          path[index],
+          path,
           binary,
           campaignScheme.campaignName,
         );
+        if (!imageUpload) {
+          throw new InternalServerErrorException(
+            `Error uploading image[${index}] to Bunny ${path} (${binary.length} bytes) while creating campaign: ${campaignScheme.campaignName}`,
+          );
+        }
 
         //set the number of maximum file uploaded = 4 (included coverImage)
-        if (index == 0 && imageUpload) campaignScheme.coverImage = path[index];
-        if (index == 1 && imageUpload) campaignScheme.image1 = path[index];
-        if (index == 2 && imageUpload) campaignScheme.image2 = path[index];
-        if (index == 3 && imageUpload) campaignScheme.image3 = path[index];
+        if (index == 0 && imageUpload) campaignScheme.coverImage = path;
+        if (index == 1 && imageUpload) campaignScheme.image1 = path;
+        if (index == 2 && imageUpload) campaignScheme.image2 = path;
+        if (index == 3 && imageUpload) campaignScheme.image3 = path;
       });
 
       await Promise.all(processImages);
 
       //insert into Campaign
-      const dataCampaign = await campaignScheme.save();
+      const createdCampaign = await campaignScheme.save();
 
       //insert into Campaign Vendor Log
-      if (dataCampaign) {
-        createdCampaignVendorLog._id = new Types.ObjectId();
-        createdCampaignVendorLog.campaignId = dataCampaign._id;
-        createdCampaignVendorLog.createdAt = dayjs().toISOString();
-        createdCampaignVendorLog.updatedAt = dayjs().toISOString();
-        createdCampaignVendorLog.save();
+      let createdCampaignVendorLog: CampaignVendorLog | null = null;
+      const campaignVendorLogSchema = new this.campaignVendorLogModel();
+      if (createdCampaign) {
+        campaignVendorLogSchema._id = new Types.ObjectId();
+        campaignVendorLogSchema.campaignId = createdCampaign._id;
+        campaignVendorLogSchema.createdAt = dayjs().toISOString();
+        campaignVendorLogSchema.updatedAt = dayjs().toISOString();
+        createdCampaignVendorLog = await campaignVendorLogSchema.save();
       }
 
-      return dataCampaign;
+      const response: CampaignCreateResponse = {
+        createdCampaign,
+        createdCampaignVendorLog,
+      };
+
+      return response;
     } catch (error) {
       throw new InternalServerErrorException(
         `Error creating campaign: ${request.campaignName} - ${error}`,
@@ -301,6 +317,9 @@ export class CampaignService {
     }
   }
 
+  /**
+   * ![Deprecated]
+   */
   async updateCampaign(
     campaignId: string,
     rawUpdateCampaignDto: UpdateCampaignDto,
@@ -447,6 +466,76 @@ export class CampaignService {
 
     return await updateCampaignData.save();
   }
+
+  /**
+   * refactored from current updateCampaign (func above)
+   */
+  async campaignUpdate(
+    userId: string,
+    campaignId: string,
+    request: CampaignUpdateDto,
+  ): Promise<Campaign> {
+    validateObjectId(campaignId);
+    const baseCampaignScheme = new this.campaignModel();
+    const campaignScheme = Campaign.mapFromUpdateRequest(
+      baseCampaignScheme,
+      request,
+    );
+    campaignScheme.updaterUserId = userId;
+
+    let tmpPath: string[] = []; //for implement db transaction later
+    try {
+      const processImages = request.updatedImage.map(async (image, index) => {
+        if (image.newImage) {
+          const imagePath = await this.bunnyService.generatePath(
+            request.organizationId,
+            'campaign-photo',
+            image.newImage.fullName,
+            image.newImage.imageExtension,
+            campaignId,
+          );
+          const binary = Buffer.from(image.newImage.base64Data, 'base64');
+          const imageUpload = await this.bunnyService.uploadImage(
+            imagePath,
+            binary,
+            request.campaignName,
+          );
+          if (!imageUpload) {
+            throw new Error(`Failed to upload at updatedImage[${index}]`);
+          }
+          if (image.oldUrl) {
+            const isExist = await this.bunnyService.checkIfImageExists(
+              image.oldUrl,
+            );
+            if (isExist) {
+              const deleteImages = await this.bunnyService.deleteImage(
+                image.oldUrl,
+              );
+              if (!deleteImages) {
+                throw new Error(`Failed to delete at updatedImage[${index}]`);
+              }
+            }
+          }
+          if (index === 0 && imageUpload) campaignScheme.coverImage = imagePath;
+          if (index === 1 && imageUpload) campaignScheme.image1 = imagePath;
+          if (index === 2 && imageUpload) campaignScheme.image2 = imagePath;
+          if (index === 3 && imageUpload) campaignScheme.image3 = imagePath;
+        }
+      });
+      await Promise.all(processImages);
+
+      //update campaign
+      const dataCampaign = await campaignScheme.save();
+
+      return dataCampaign;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Error creating campaign: ${request.campaignName} - ${error}`,
+      );
+    }
+  }
+
+  async addMilestone(userId: string, request: AddMilestoneDto) {}
 
   async findAll(
     organizationId: string,

@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString, IsNotEmpty, IsEnum } from 'class-validator';
-import { ValidateObjectId } from '../../commons/decorators/validate-object-id.decorator';
+import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
 import { BaseFilterRequest } from '../../commons/dtos/base-filter-request.dto';
 import { SortBy } from '../../commons/enums/sortby-enum';
 
@@ -12,7 +12,7 @@ export class CommentFilterRequest extends BaseFilterRequest {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @ValidateObjectId()
+  @ValidateObjectIdDecorator()
   parentCommentId?: string;
 
   /**
@@ -22,7 +22,7 @@ export class CommentFilterRequest extends BaseFilterRequest {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @ValidateObjectId()
+  @ValidateObjectIdDecorator()
   campaignId?: string;
 
   /**
@@ -32,7 +32,7 @@ export class CommentFilterRequest extends BaseFilterRequest {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @ValidateObjectId()
+  @ValidateObjectIdDecorator()
   projectId?: string;
 
   /**
@@ -42,7 +42,7 @@ export class CommentFilterRequest extends BaseFilterRequest {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @ValidateObjectId()
+  @ValidateObjectIdDecorator()
   itemId?: string;
 
   /**

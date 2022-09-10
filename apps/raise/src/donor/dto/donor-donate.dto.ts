@@ -6,7 +6,7 @@ import {
   IsString,
   IsUrl,
 } from 'class-validator';
-import { ValidateObjectId } from '../../commons/decorators/validate-object-id.decorator';
+import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
 import { ICurrentUser } from '../../user/interfaces/current-user.interface';
 import { DonorDonationDetailsDto } from './donor-donation-details.dto';
 
@@ -14,7 +14,7 @@ export class DonorDonateDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @ValidateObjectId()
+  @ValidateObjectIdDecorator()
   organizationId: string;
 
   @ApiPropertyOptional()

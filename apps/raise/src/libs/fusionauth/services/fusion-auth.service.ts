@@ -72,6 +72,7 @@ export class FusionAuthService {
     this.fusionAuthTenantId = fusionAuthTenantId;
 
     const appId = this.configService.get<string>('FUSIONAUTH_APP_ID');
+    console.log('application id (FUSIONAUTH_APP_ID):', appId);
     if (!appId) {
       throw new InternalServerErrorException(
         `FUSIONAUTH_APP_ID ${baseEnvCallErrorMessage}`,
@@ -198,6 +199,7 @@ export class FusionAuthService {
     const registration: IFusionAuthUserRegistration = {
       applicationId: this.fusionAuthAppId,
     };
+    console.log('application id(FUSIONAUTH_APP_ID)', this.fusionAuthAppId);
     const registrationRequest: IFusionAuthRegistrationRequest = {
       user,
       registration,

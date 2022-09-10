@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
+import { CampaignMilestoneDto } from './campaign-milestone.dto';
 
-export class DonorDonateItemDto {
+export class AddMilestoneDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -13,11 +14,10 @@ export class DonorDonateItemDto {
   @IsString()
   @IsNotEmpty()
   @ValidateObjectIdDecorator()
-  itemId: string;
+  campaignId: string;
 
   @ApiProperty()
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  @Min(1)
-  qty: number;
+  addedMilestone: CampaignMilestoneDto;
 }
