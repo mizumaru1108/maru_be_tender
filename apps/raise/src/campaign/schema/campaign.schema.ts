@@ -24,7 +24,6 @@ export class Campaign {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Organization',
-    required: true,
   })
   organizationId: Types.ObjectId;
 

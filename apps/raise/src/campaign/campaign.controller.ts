@@ -42,6 +42,7 @@ import { CampaignUpdateDto } from './dto/campaign-update.dto';
 import { CampaignMilestoneDto } from './dto/campaign-milestone.dto';
 import { AddMilestoneDto } from './dto/add-milestone.dto';
 import { CampaignCreateResponse } from './dto/campaign-create-response.dto';
+import { validateObjectId } from '../commons/utils/validateObjectId';
 
 @ApiTags('campaign')
 @Controller('campaign')

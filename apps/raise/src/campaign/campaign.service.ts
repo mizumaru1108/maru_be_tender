@@ -476,12 +476,17 @@ export class CampaignService {
     request: CampaignUpdateDto,
   ): Promise<Campaign> {
     validateObjectId(campaignId);
-    const baseCampaignScheme = new this.campaignModel();
-    const campaignScheme = Campaign.mapFromUpdateRequest(
-      baseCampaignScheme,
+    const currentCampaignData = await this.campaignModel.findById(
+      new Types.ObjectId(campaignId),
+    );
+    if (!currentCampaignData) {
+      throw new NotFoundException(`Campaign with id ${campaignId} not found`);
+    }
+    const updateCampaignData = Campaign.mapFromUpdateRequest(
+      currentCampaignData,
       request,
     );
-    campaignScheme.updaterUserId = userId;
+    updateCampaignData.updaterUserId = userId;
 
     let tmpPath: string[] = []; //for implement db transaction later
     try {
@@ -516,18 +521,19 @@ export class CampaignService {
               }
             }
           }
-          if (index === 0 && imageUpload) campaignScheme.coverImage = imagePath;
-          if (index === 1 && imageUpload) campaignScheme.image1 = imagePath;
-          if (index === 2 && imageUpload) campaignScheme.image2 = imagePath;
-          if (index === 3 && imageUpload) campaignScheme.image3 = imagePath;
+          if (index === 0 && imageUpload)
+            updateCampaignData.coverImage = imagePath;
+          if (index === 1 && imageUpload) updateCampaignData.image1 = imagePath;
+          if (index === 2 && imageUpload) updateCampaignData.image2 = imagePath;
+          if (index === 3 && imageUpload) updateCampaignData.image3 = imagePath;
         }
       });
       await Promise.all(processImages);
 
       //update campaign
-      const dataCampaign = await campaignScheme.save();
+      const updatedCampaign = await updateCampaignData.save();
 
-      return dataCampaign;
+      return updatedCampaign;
     } catch (error) {
       throw new InternalServerErrorException(
         `Error creating campaign: ${request.campaignName} - ${error}`,
