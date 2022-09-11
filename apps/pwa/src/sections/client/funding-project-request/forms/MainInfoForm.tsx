@@ -113,6 +113,7 @@ const MainInfoForm = ({ setStep }: Props) => {
                     color: '#fff',
                     width: { xs: '100%', sm: '200px' },
                     hieght: { xs: '100%', sm: '50px' },
+                    '&:hover': { backgroundColor: '#0E8478' },
                   }}
                 >
                   التالي

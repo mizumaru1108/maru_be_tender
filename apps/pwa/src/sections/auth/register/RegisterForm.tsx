@@ -6,11 +6,12 @@ import {
   LicenseInfoForm,
   AdministrativeInfoForm,
   BankingInfoForm,
-  FinalPage,
-} from './forms';
+} from '../../shared';
 import useResponsive from 'hooks/useResponsive';
 import useLocales from 'hooks/useLocales';
-import { RegisterValues } from './register-shared/register-types';
+import { AccountValuesProps } from '../../shared/types';
+import ActionsBox from './ActionsBox';
+import FinalPage from './FinalPage';
 // ----------------------------------------------------------------------
 
 const taps = [
@@ -50,7 +51,7 @@ const initialValue = {
   bank_account_name: '',
   bank_name: '',
   bank_account_card_image: null,
-} as RegisterValues;
+} as AccountValuesProps;
 export default function RegisterForm() {
   const { translate } = useLocales();
   const isMobile = useResponsive('down', 'sm');
@@ -58,6 +59,16 @@ export default function RegisterForm() {
 
   const [registerState, setRegisterState] = useState(initialValue);
 
+  const onSubmit = (data: any) => {
+    setStep((prevStep) => prevStep + 1);
+    setRegisterState((prevRegisterState: AccountValuesProps) => ({
+      ...prevRegisterState,
+      ...data,
+    }));
+  };
+  const onReturn = () => {
+    if (step > 0) setStep((prevStep) => prevStep - 1);
+  };
   return (
     <>
       {step !== 5 && (
@@ -85,13 +96,31 @@ export default function RegisterForm() {
           </Stepper>
         </Box>
       )}
-      {step === 0 && <MainForm setStep={setStep} setRegisterState={setRegisterState} />}
-      {step === 1 && <ConnectingInfoForm setStep={setStep} setRegisterState={setRegisterState} />}
-      {step === 2 && <LicenseInfoForm setStep={setStep} setRegisterState={setRegisterState} />}
-      {step === 3 && (
-        <AdministrativeInfoForm setStep={setStep} setRegisterState={setRegisterState} />
+      {step === 0 && (
+        <MainForm onSubmit={onSubmit}>
+          <ActionsBox onReturn={onReturn} />
+        </MainForm>
       )}
-      {step === 4 && <BankingInfoForm setStep={setStep} setRegisterState={setRegisterState} />}
+      {step === 1 && (
+        <ConnectingInfoForm onSubmit={onSubmit}>
+          <ActionsBox onReturn={onReturn} />
+        </ConnectingInfoForm>
+      )}
+      {step === 2 && (
+        <LicenseInfoForm onSubmit={onSubmit}>
+          <ActionsBox onReturn={onReturn} />
+        </LicenseInfoForm>
+      )}
+      {step === 3 && (
+        <AdministrativeInfoForm onSubmit={onSubmit}>
+          <ActionsBox onReturn={onReturn} />
+        </AdministrativeInfoForm>
+      )}
+      {step === 4 && (
+        <BankingInfoForm onSubmit={onSubmit}>
+          <ActionsBox onReturn={onReturn} />
+        </BankingInfoForm>
+      )}
       {step === 5 && <FinalPage {...registerState} />}
     </>
   );

@@ -5,12 +5,6 @@ import Page from 'components/Page';
 import ContactSupportForm from 'sections/client/contact-and-support/ContactSupportForm';
 
 const ContactSupport = () => {
-  const SectionStyle = styled(Box)(({ theme }) => ({
-    width: '100%',
-    maxWidth: '500px',
-    backgroundColor: theme.palette.background.neutral,
-  }));
-
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -20,7 +14,6 @@ const ContactSupport = () => {
   }));
   return (
     <Page title="Fundin Project Request">
-      <SectionStyle />
       <Container>
         <ContentStyle>
           <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>

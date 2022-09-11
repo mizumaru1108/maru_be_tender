@@ -14,7 +14,7 @@ import SvgIconStyle from 'components/SvgIconStyle';
 import { useNavigate } from 'react-router';
 
 function CurrentProject() {
-  const project_exist = false;
+  const project_exist = true;
   const navigate = useNavigate();
   const item = {
     id: '#768873',

@@ -57,7 +57,7 @@ export default function NavList({
         </Link>
       ) : (
         <NavItem
-          sx={{ color: '#000', fontFamily: 'Cairo', fontStyle: 'Regular', fontSize: '14px' }}
+          sx={{ color: '#000', fontSize: '14px' }}
           item={data}
           depth={depth}
           open={open}

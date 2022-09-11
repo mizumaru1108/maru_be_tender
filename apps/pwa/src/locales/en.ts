@@ -74,7 +74,7 @@ const en = {
   login: 'تسجيل الدخول',
   create_new_account: 'Create a new account',
   the_login_message: 'الرجاء إدخال عنوان البريد الإلكتروني أو رقم التصريح الخاص بك',
-  dont_have_account: 'ليس لديك حساب في غيث',
+  dont_have_account: 'ليس لديك حساب في المنصة',
   register_one: 'قم بإنشاء حساب من هنا',
   register_form1: {
     entity_area: {

@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import RHFDatePicker from 'components/hook-form/RHFDatePicker';
 import useLocales from 'hooks/useLocales';
-import { ContactSupportProps } from '../client-shared/client-types';
+import { ContactSupportProps } from './types';
 import RHFTextArea from 'components/hook-form/RHFTextArea';
 // import { MainValuesProps, Props, RegisterValues } from '../register-shared/register-types';
 

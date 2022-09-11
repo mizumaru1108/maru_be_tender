@@ -73,7 +73,7 @@ const ar = {
   forget_the_password: 'نسيت كلمة المرور',
   login: 'تسجيل الدخول',
   the_login_message: 'الرجاء إدخال عنوان البريد الإلكتروني أو رقم التصريح الخاص بك',
-  dont_have_account: 'ليس لديك حساب في غيث',
+  dont_have_account: 'ليس لديك حساب في المنصة',
   register_one: 'قم بإنشاء حساب من هنا',
   add_new_line: 'إنشاء سطر جديد',
   create_new_account: ' إنشاء حساب جديد',

@@ -1,6 +1,7 @@
 // @mui
 import { styled } from '@mui/material/styles';
 import { Popover, PopoverProps } from '@mui/material';
+import useSettings from 'hooks/useSettings';
 
 // ----------------------------------------------------------------------
 
@@ -101,8 +102,8 @@ export default function MenuPopover({
 }: Props) {
   return (
     <Popover
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      transformOrigin={{ vertical: 'top', horizontal: 'left' }}
       PaperProps={{
         sx: {
           p: 1,

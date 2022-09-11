@@ -70,8 +70,10 @@ export default function Router() {
         { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
         {
           path: 'my-profile',
-          element: <ClientProfile />,
-          children: [{ path: 'edit', element: <ClientProfileEdit /> }],
+          children: [
+            { path: '', element: <ClientProfile /> },
+            { path: 'edit', element: <ClientProfileEdit /> },
+          ],
         },
         {
           path: 'dashboard',
@@ -125,8 +127,8 @@ const PreviousFundingRequests = Loadable(
 const Messages = Loadable(lazy(() => import('pages/client/Messages')));
 const ContactSupport = Loadable(lazy(() => import('pages/client/ContactSupport')));
 const MainClientPage = Loadable(lazy(() => import('pages/client/MainClientPage')));
-const ClientProfile = Loadable(lazy(() => import('pages/client/profile/ClientProfile')));
-const ClientProfileEdit = Loadable(lazy(() => import('pages/client/profile/ClientProfileEdit')));
+const ClientProfile = Loadable(lazy(() => import('pages/client/ClientProfile')));
+const ClientProfileEdit = Loadable(lazy(() => import('pages/client/ClientProfileEdit')));
 // AUTHENTICATION ROUTES
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));
 const Register = Loadable(lazy(() => import('../pages/auth/Register')));

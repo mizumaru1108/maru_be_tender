@@ -1,7 +1,7 @@
 import { styled } from '@mui/material/styles';
 import { Box, Container, Typography } from '@mui/material';
 import Page from '../../components/Page';
-import { RegisterForm } from '../../sections/auth/register';
+import { RegisterForm } from 'sections/auth/register';
 import useLocales from 'hooks/useLocales';
 
 // ----------------------------------------------------------------------

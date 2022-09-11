@@ -12,11 +12,12 @@ export default function AccountPopover() {
       }}
       sx={{
         alignItems: 'center',
+        p: '2px',
         display: 'flex',
         direction: 'row',
         justifyContent: 'left',
         width: '290px',
-        height: '60px',
+        height: '50px',
         backgroundColor: 'rgba(147, 163, 176, 0.16)',
         borderRadius: 1,
         '&:hover': {
@@ -30,7 +31,6 @@ export default function AccountPopover() {
             borderRadius: '50%',
             borderStyle: 'solid',
             width: '56px',
-            height: '56px',
             textAlign: 'center',
             backgroundColor: 'background.paper',
             padding: '10px',

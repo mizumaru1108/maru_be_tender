@@ -5,9 +5,9 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import RHFDatePicker from 'components/hook-form/RHFDatePicker';
 import useLocales from 'hooks/useLocales';
-import { MainValuesProps, Props, RegisterValues } from '../register-shared/register-types';
+import { MainValuesProps, FormProps } from './types';
 
-const MainForm = ({ setStep, setRegisterState }: Props) => {
+const MainForm: React.FC<FormProps> = ({ children, onSubmit }) => {
   const { translate } = useLocales();
   const RegisterSchema = Yup.object().shape({
     entity_area: Yup.string().required('Entity Area is required'),
@@ -42,17 +42,15 @@ const MainForm = ({ setStep, setRegisterState }: Props) => {
     watch,
     handleSubmit,
     formState: { isSubmitting },
+    getValues,
   } = methods;
 
-  const onSubmit = async (data: MainValuesProps) => {
-    setRegisterState((prevRegisterState: RegisterValues) => ({ ...prevRegisterState, ...data }));
-    setStep((prevStep) => prevStep + 1);
+  const onSubmitForm = async (data: MainValuesProps) => {
+    onSubmit(data);
   };
-
   const entity_area = watch('entity_area');
-
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7}>
         <Grid item md={12} xs={12}>
           <RHFSelect name="entity_area" label={translate('register_form1.entity_area.label')}>
@@ -75,6 +73,7 @@ const MainForm = ({ setStep, setRegisterState }: Props) => {
                   <option value="" disabled selected>
                     {translate('register_form1.authority.placeholder')}
                   </option>
+                  <option value="1">test option</option>
                 </RHFSelect>
               </Grid>
             )}
@@ -90,7 +89,7 @@ const MainForm = ({ setStep, setRegisterState }: Props) => {
         )}
         <Grid item md={6} xs={12}>
           <RHFDatePicker
-            name=""
+            name="date_of_establishment"
             label={translate('register_form1.date_of_establishment.label')}
             placeholder={translate('register_form1.date_of_establishment.placeholder')}
           />
@@ -100,6 +99,7 @@ const MainForm = ({ setStep, setRegisterState }: Props) => {
             <option value="" disabled selected>
               {translate('register_form1.headquarters.placeholder')}
             </option>
+            <option value="1">test option</option>
           </RHFSelect>
         </Grid>
         <Grid item md={6} xs={12}>
@@ -117,35 +117,7 @@ const MainForm = ({ setStep, setRegisterState }: Props) => {
           />
         </Grid>
         <Grid item md={12} xs={12}>
-          <Stack justifyContent="center" direction="row" gap={2}>
-            <Button
-              onClick={() => {
-                setStep((prevStep) => (prevStep > 0 ? prevStep - 1 : prevStep));
-              }}
-              sx={{
-                color: '#000',
-                size: 'large',
-                width: { xs: '100%', sm: '200px' },
-                hieght: { xs: '100%', sm: '50px' },
-              }}
-            >
-              رجوع
-            </Button>
-            <Button
-              // type="submit"
-              onClick={() => {
-                setStep((prevStep) => prevStep + 1);
-              }}
-              sx={{
-                backgroundColor: 'background.paper',
-                color: '#fff',
-                width: { xs: '100%', sm: '200px' },
-                hieght: { xs: '100%', sm: '50px' },
-              }}
-            >
-              التالي
-            </Button>
-          </Stack>
+          {children}
         </Grid>
       </Grid>
     </FormProvider>

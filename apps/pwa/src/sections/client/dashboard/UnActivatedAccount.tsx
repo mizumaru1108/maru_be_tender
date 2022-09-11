@@ -13,13 +13,11 @@ function UnActivatedAccount() {
       <Box
         sx={{
           width: '100%',
-          height: '115px',
-          borderRadius: '5px',
+          height: '130px',
+          borderRadius: '30px',
           backgroundColor: '#FFC107',
           position: 'relative',
-          zIndex: '-1 !important',
         }}
-        style={{ borderRadius: '30px' }}
       >
         <img
           src={'/icons/client-activate-icons/top-left.svg'}
@@ -28,9 +26,8 @@ function UnActivatedAccount() {
             width: '68.64px',
             height: '77.19px',
             position: 'absolute',
-            left: '60.31px',
+            left: '43.31px',
             top: '-40px',
-            zIndex: '1 !important',
           }}
         />
 
@@ -40,8 +37,7 @@ function UnActivatedAccount() {
             width: '22px',
             height: '22px',
             position: 'absolute',
-            left: '112px',
-            zIndex: '1 !important',
+            left: '85px',
             top: '32px',
           }}
           alt=""
@@ -51,9 +47,9 @@ function UnActivatedAccount() {
           style={{
             width: '8.32px',
             position: 'absolute',
-            left: '99.04px',
-            zIndex: '1 !important',
-            top: '70.96px',
+            left: '72.04px',
+            // zIndex: '1 !important',
+            top: '65px',
           }}
           alt=""
         />
@@ -63,19 +59,34 @@ function UnActivatedAccount() {
             width: '5.55px',
             height: '5.55px',
             position: 'absolute',
-            left: '39.22px',
-            zIndex: '1 !important',
-            top: '36px',
+            left: '25.22px',
+            // zIndex: '1 !important',
+            top: '30px',
           }}
           alt=""
         />
-
+        <div
+          style={{
+            left: '0px',
+            top: '52.8px',
+            position: 'absolute',
+            overflow: 'hidden',
+            borderBottomLeftRadius: '30px',
+          }}
+        >
+          <img
+            src={'/icons/client-activate-icons/bottom-left.svg'}
+            alt=""
+            style={{ height: '77.19px' }}
+          />
+        </div>
         <Box
           style={{
             position: 'absolute',
-            left: '225px',
+            left: '276px',
             height: '100%',
             width: '575px',
+            top: '17px',
           }}
         >
           <Typography variant="h6" sx={{ position: 'absolute', left: '152px', top: '15px' }}>

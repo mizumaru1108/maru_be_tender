@@ -67,8 +67,13 @@ export default function Login() {
             </Typography>
             <LoginForm />
             <Typography variant="body2" align="center" sx={{ mt: 3 }}>
-              {translate('dont_have_account')}
-              <Link variant="subtitle2" component={RouterLink} to={PATH_AUTH.register}>
+              {translate('dont_have_account')}؟
+              <Link
+                variant="subtitle2"
+                component={RouterLink}
+                to={PATH_AUTH.register}
+                sx={{ textDecorationLine: 'underline' }}
+              >
                 {translate('register_one')}
               </Link>
             </Typography>

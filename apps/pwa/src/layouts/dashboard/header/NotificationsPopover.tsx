@@ -15,77 +15,76 @@ import {
   ListSubheader,
   ListItemAvatar,
   ListItemButton,
+  Stack,
 } from '@mui/material';
 // utils
 import { fToNow } from '../../../utils/formatTime';
-// import {ReactComponent as NotificationBar} from '../../../assets/dashboard-header/notification-bar.svg'
-// _mock_
-import { _notifications } from '../../../_mock';
-// components
 import Iconify from '../../../components/Iconify';
 import Scrollbar from '../../../components/Scrollbar';
 import MenuPopover from '../../../components/MenuPopover';
 import { IconButtonAnimate } from '../../../components/animate';
 import SvgIconStyle from 'components/SvgIconStyle';
+import { sub } from 'date-fns';
 
 // ----------------------------------------------------------------------
+const _notifications = [...Array(3)].map((_, index) => ({
+  id: `e99f09a7-dd88-49d5-b1c8-1daf80c2d7b${index + 1}`,
+  description: [
+    'مدير المشروع قام برفضك مشروعك - #675675',
+    'مشرف المشروع قام بارسال طلب تعديل معلومات لمشروعك الحالي قم بتعديل المعلومات المطلوبة لاكمال المشروع',
+    'مسؤول الحسابات قام بقبول حسابك يمكنك الآن انشاء طلبات دعم',
+  ][index],
+  createdAt: sub(new Date(), { days: index, hours: index }),
+  isUnRead: [true, true, false][index],
+  buttonColor: ['red', 'blue', 'green'][index],
+  buttonText: ['استعراض المشروع', 'تعديل معلومات المشروع', 'انشاء طلب دعم'][index],
+}));
 
 export default function NotificationsPopover() {
-  // const [notifications, setNotifications] = useState(_notifications);
+  const [notifications, setNotifications] = useState(_notifications);
 
-  // const totalUnRead = notifications.filter((item) => item.isUnRead === true).length;
+  const totalUnRead = notifications.filter((item) => item.isUnRead === true).length;
 
-  // const [open, setOpen] = useState<HTMLElement | null>(null);
+  const [open, setOpen] = useState<HTMLElement | null>(null);
 
-  // const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
-  //   setOpen(event.currentTarget);
-  // };
+  const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setOpen(event.currentTarget);
+  };
 
-  // const handleClose = () => {
-  //   setOpen(null);
-  // };
+  const handleClose = () => {
+    setOpen(null);
+  };
 
-  // const handleMarkAllAsRead = () => {
-  //   setNotifications(
-  //     notifications.map((notification) => ({
-  //       ...notification,
-  //       isUnRead: false,
-  //     }))
-  //   );
-  // };
+  const handleMarkAllAsRead = () => {
+    setNotifications(
+      notifications.map((notification) => ({
+        ...notification,
+        isUnRead: false,
+      }))
+    );
+  };
 
   return (
     <>
-      <IconButtonAnimate
-        // onClick={handleOpen}
-        sx={{ width: 40, height: 40 }}
-      >
+      <IconButtonAnimate onClick={handleOpen} sx={{ width: 40, height: 40 }}>
         <SvgIconStyle
           src={`/assets/icons/dashboard-header/notification-bar.svg`}
           sx={{ width: 25, height: 25, color: '#000' }}
         />
       </IconButtonAnimate>
-      {/* <IconButtonAnimate
-        color={open ? 'primary' : 'default'}
-        onClick={handleOpen}
-        sx={{ width: 40, height: 40 }}
-      >
-        <Badge badgeContent={totalUnRead} color="error">
-          <Iconify icon="eva:bell-fill" width={20} height={20} />
-        </Badge>
-      </IconButtonAnimate> */}
 
-      {/* <MenuPopover
+      <MenuPopover
         open={Boolean(open)}
         anchorEl={open}
         onClose={handleClose}
-        sx={{ width: 360, p: 0, mt: 1.5, ml: 0.75 }}
+        sx={{ width: 400, p: 0, mt: 1.5, ml: 0.75, backgroundColor: '#fff' }}
+        disabledArrow={true}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', py: 2, px: 2.5 }}>
           <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="subtitle1">Notifications</Typography>
+            <Typography variant="subtitle1">الإشعارات</Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              You have {totalUnRead} unread messages
+              لديك {totalUnRead} إشعارات غير مقروئة
             </Typography>
           </Box>
 
@@ -98,32 +97,12 @@ export default function NotificationsPopover() {
           )}
         </Box>
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
+        <Divider sx={{ borderStyle: 'dashed', mb: '10px' }} />
 
         <Scrollbar sx={{ height: { xs: 340, sm: 'auto' } }}>
-          <List
-            disablePadding
-            subheader={
-              <ListSubheader disableSticky sx={{ py: 1, px: 2.5, typography: 'overline' }}>
-                New
-              </ListSubheader>
-            }
-          >
-            {notifications.slice(0, 2).map((notification) => (
-              <NotificationItem key={notification.id} notification={notification} />
-            ))}
-          </List>
-
-          <List
-            disablePadding
-            subheader={
-              <ListSubheader disableSticky sx={{ py: 1, px: 2.5, typography: 'overline' }}>
-                Before that
-              </ListSubheader>
-            }
-          >
-            {notifications.slice(2, 5).map((notification) => (
-              <NotificationItem key={notification.id} notification={notification} />
+          <List disablePadding>
+            {notifications.map((notification, index) => (
+              <NotificationItem key={index} notification={notification} />
             ))}
           </List>
         </Scrollbar>
@@ -135,119 +114,120 @@ export default function NotificationsPopover() {
             View All
           </Button>
         </Box>
-      </MenuPopover> */}
+      </MenuPopover>
     </>
   );
 }
 
 // ----------------------------------------------------------------------
 
-// type NotificationItemProps = {
-//   id: string;
-//   title: string;
-//   description: string;
-//   avatar: string | null;
-//   type: string;
-//   createdAt: Date;
-//   isUnRead: boolean;
-// };
+type NotificationItemProps = {
+  id: string;
+  description: string;
+  createdAt: Date;
+  isUnRead: boolean;
+  buttonColor: string;
+  buttonText: string;
+};
 
-// function NotificationItem({ notification }: { notification: NotificationItemProps }) {
-//   const { avatar, title } = renderContent(notification);
+function NotificationItem({ notification }: { notification: NotificationItemProps }) {
+  const { description } = renderContent(notification);
 
-//   return (
-//     <ListItemButton
-//       sx={{
-//         py: 1.5,
-//         px: 2.5,
-//         mt: '1px',
-//         ...(notification.isUnRead && {
-//           bgcolor: 'action.selected',
-//         }),
-//       }}
-//     >
-//       <ListItemAvatar>
-//         <Avatar sx={{ bgcolor: 'background.neutral' }}>{avatar}</Avatar>
-//       </ListItemAvatar>
-//       <ListItemText
-//         primary={title}
-//         secondary={
-//           <Typography
-//             variant="caption"
-//             sx={{
-//               mt: 0.5,
-//               display: 'flex',
-//               alignItems: 'center',
-//               color: 'text.disabled',
-//             }}
-//           >
-//             <Iconify icon="eva:clock-outline" sx={{ mr: 0.5, width: 16, height: 16 }} />
-//             {fToNow(notification.createdAt)}
-//           </Typography>
-//         }
-//       />
-//     </ListItemButton>
-//   );
-// }
+  return (
+    <ListItemButton
+      sx={{
+        py: 1.5,
+        px: 2.5,
+        mt: '1px',
+        ...(notification.isUnRead && {
+          bgcolor: 'action.selected',
+        }),
+      }}
+    >
+      <ListItemText
+        primary={description}
+        secondary={
+          <Stack direction="column">
+            <Typography
+              variant="caption"
+              sx={{
+                mt: 0.5,
+                display: 'flex',
+                alignItems: 'center',
+                color: 'text.disabled',
+              }}
+            >
+              {fToNow(notification.createdAt)}
+            </Typography>
+            <Stack direction="row" justifyContent="start">
+              <Button style={{ textAlign: 'start', color: notification.buttonColor }}>
+                {notification.buttonText}
+              </Button>
+            </Stack>
+          </Stack>
+        }
+      />
+    </ListItemButton>
+  );
+}
 
 // ----------------------------------------------------------------------
 
-// function renderContent(notification: NotificationItemProps) {
-//   const title = (
-//     <Typography variant="subtitle2">
-//       {notification.title}
-//       <Typography component="span" variant="body2" sx={{ color: 'text.secondary' }}>
-//         &nbsp; {noCase(notification.description)}
-//       </Typography>
-//     </Typography>
-//   );
+function renderContent(notification: NotificationItemProps) {
+  const description = (
+    <Typography variant="subtitle2">
+      {notification.description}
+      {/* <Typography component="span" variant="body2" sx={{ color: 'text.secondary' }}>
+        &nbsp; {noCase(notification.description)}
+      </Typography> */}
+    </Typography>
+  );
 
-//   if (notification.type === 'order_placed') {
-//     return {
-//       avatar: (
-//         <img
-//           alt={notification.title}
-//           src="https://minimal-assets-api-dev.vercel.app/assets/icons/ic_notification_package.svg"
-//         />
-//       ),
-//       title,
-//     };
-//   }
-//   if (notification.type === 'order_shipped') {
-//     return {
-//       avatar: (
-//         <img
-//           alt={notification.title}
-//           src="https://minimal-assets-api-dev.vercel.app/assets/icons/ic_notification_shipping.svg"
-//         />
-//       ),
-//       title,
-//     };
-//   }
-//   if (notification.type === 'mail') {
-//     return {
-//       avatar: (
-//         <img
-//           alt={notification.title}
-//           src="https://minimal-assets-api-dev.vercel.app/assets/icons/ic_notification_mail.svg"
-//         />
-//       ),
-//       title,
-//     };
-//   }
-//   if (notification.type === 'chat_message') {
-//     return {
-//       avatar: (
-//         <img
-//           alt={notification.title}
-//           src="https://minimal-assets-api-dev.vercel.app/assets/icons/ic_notification_chat.svg"
-//         />
-//       ),
-//       title,
-//     };
-//   }
-//   return {
-//     avatar: notification.avatar ? <img alt={notification.title} src={notification.avatar} /> : null,
-//     title,
-//   };
-// }
+  // if (notification.type === 'order_placed') {
+  //   return {
+  //     avatar: (
+  //       <img
+  //         alt={notification.title}
+  //         src="https://minimal-assets-api-dev.vercel.app/assets/icons/ic_notification_package.svg"
+  //       />
+  //     ),
+  //     title,
+  //   };
+  // }
+  // if (notification.type === 'order_shipped') {
+  //   return {
+  //     avatar: (
+  //       <img
+  //         alt={notification.title}
+  //         src="https://minimal-assets-api-dev.vercel.app/assets/icons/ic_notification_shipping.svg"
+  //       />
+  //     ),
+  //     title,
+  //   };
+  // }
+  // if (notification.type === 'mail') {
+  //   return {
+  //     avatar: (
+  //       <img
+  //         alt={notification.title}
+  //         src="https://minimal-assets-api-dev.vercel.app/assets/icons/ic_notification_mail.svg"
+  //       />
+  //     ),
+  //     title,
+  //   };
+  // }
+  // if (notification.type === 'chat_message') {
+  //   return {
+  //     avatar: (
+  //       <img
+  //         alt={notification.title}
+  //         src="https://minimal-assets-api-dev.vercel.app/assets/icons/ic_notification_chat.svg"
+  //       />
+  //     ),
+  //     title,
+  //   };
+  // }
+  return {
+    description,
+  };
+}

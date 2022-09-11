@@ -13,7 +13,7 @@ function DashboardPage() {
       {unActivated && <UnActivatedAccount />}
       {!unActivated && (
         <>
-          {/* <ClientCarousel /> */}
+          <ClientCarousel />
           <CurrentProject />
           <DraftProject />
           <PreviousFundingInqueries />

@@ -20,11 +20,11 @@ export default function BlockContent({ placeholder }: Props) {
       sx={{ width: 1, textAlign: { xs: 'center', md: 'left' } }}
     >
       {placeholder ? (
-        <Typography gutterBottom variant="h5">
+        <Typography gutterBottom sx={{ fontSize: '16px' }}>
           {placeholder}
         </Typography>
       ) : (
-        <Typography gutterBottom variant="h5">
+        <Typography gutterBottom sx={{ fontSize: '16px' }}>
           Drop or Select file
         </Typography>
       )}
