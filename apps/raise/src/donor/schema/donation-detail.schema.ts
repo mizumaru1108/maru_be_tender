@@ -7,6 +7,7 @@ import { Item } from '../../item/item.schema';
 import { Project } from '../../project/project.schema';
 import { DonationType } from '../enum/donation-type.enum';
 import { DonationLog } from './donation-log.schema';
+import { ZakatDetails } from './zakat-details.schema';
 
 export type DonationDetailDocument = DonationDetail & Document;
 
@@ -76,6 +77,12 @@ export class DonationDetail {
    */
   @Prop({ default: null })
   totalAmount: number;
+
+  /**
+   * will exist if donationType is Zakat
+   */
+  @Prop({ default: [] })
+  zakatDetails?: ZakatDetails[];
 
   /**
    * i don't use props decorator here, it's just for accessing the auto created fields
