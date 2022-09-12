@@ -167,7 +167,7 @@ export class Campaign {
   isPublished: string;
 
   @Prop({ default: [] })
-  milestone?: CampaignMilestone[];
+  milestone: CampaignMilestone[];
 
   /**
    * Deprecated, use mapFromUpdateRequest instead
@@ -258,16 +258,24 @@ export class Campaign {
 
     // if milestone is defined, then use it, else use default
     if (request.milestone) {
+      // const milestones: CampaignMilestone[] = request.milestone.map(
+      //   (milestone) => {
+      //     const newMilestone: CampaignMilestone = {
+      //       milestoneId: uuidv4(),
+      //       detail: milestone.detail,
+      //       deadline: new Date(milestone.deadline),
+      //       representationalValue: milestone.representationalValue ?? 0,
+      //       createdAt: new Date(),
+      //       updatedAt: new Date(),
+      //     };
+      //     return newMilestone;
+      //   },
+      // );
+      // scheme.milestone = milestones;
       const milestones: CampaignMilestone[] = request.milestone.map(
         (milestone) => {
-          const newMilestone: CampaignMilestone = {
-            milestoneId: uuidv4(),
-            detail: milestone.detail,
-            deadline: new Date(milestone.deadline),
-            representationalValue: milestone.representationalValue ?? 0,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          };
+          const newMilestone =
+            CampaignMilestone.mapFromCreateRequest(milestone);
           return newMilestone;
         },
       );

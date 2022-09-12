@@ -5,6 +5,7 @@ export const CampaignMilestone = z.object({
   name: z.string(),
   detail: z.string(),
   deadline: z.string(),
+  representationalValue: z.number(),
 });
 export type CampaignMilestone = z.infer<typeof CampaignMilestone>;
 

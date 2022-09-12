@@ -24,33 +24,33 @@ import {
   CampaignVendorLogDocument,
   Vendor,
   VendorDocument,
-} from '../buying/vendor/vendor.schema';
-import { baseEnvCallErrorMessage } from '../commons/helpers/base-env-call-error-message';
-import { BunnyService } from '../libs/bunny/services/bunny.service';
-import { rootLogger } from '../logger';
-import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
-import { User, UserDocument } from '../user/schema/user.schema';
-import { Campaign, CampaignDocument } from './schema/campaign.schema';
-import { CreateCampaignDto } from './dto';
-import { CampaignApplyVendorDto } from './dto/apply-vendor.dto';
-import { ApproveCampaignResponseDto } from './dto/approve-campaign-response.dto';
-import { CampaignCreateDto } from './dto/campaign-create.dto';
-import { CampaignDonorOnOperatorDasboardFilter } from './dto/campaign-donor-on-operator-dashboard-filter.dto';
-import { CampaignDonorOnOperatorDasboardParam } from './dto/campaign-donor-on-operator-dashboard-param.dto';
-import { GetAllMypendingCampaignFromVendorIdRequest } from './dto/get-all-my-pending-campaign-from-vendor-id.request';
-import { GetAllNewCampaignFilter } from './dto/get-all-new-campaign-filter.dto';
-import { UpdateCampaignDto } from './dto/update-campaign-dto';
-import { UpdateCampaignStatusDto } from './dto/update-campaign-status.dto';
-import { CampaignSortByEnum } from './enums/campaign-sortby-enum';
-import { CampaignStatus } from './enums/campaign-status.enum';
-import { CampaignMilestone } from './schema/campaign-milestone.schema';
+} from '../../buying/vendor/vendor.schema';
+import { baseEnvCallErrorMessage } from '../../commons/helpers/base-env-call-error-message';
+import { BunnyService } from '../../libs/bunny/services/bunny.service';
+import { rootLogger } from '../../logger';
+import {
+  Operator,
+  OperatorDocument,
+} from '../../operator/schema/operator.schema';
+import { User, UserDocument } from '../../user/schema/user.schema';
+import { Campaign, CampaignDocument } from '../schema/campaign.schema';
+import { CreateCampaignDto } from '../dto';
+import { CampaignApplyVendorDto } from '../dto/apply-vendor.dto';
+import { ApproveCampaignResponseDto } from '../dto/approve-campaign-response.dto';
+import { CampaignCreateDto } from '../dto/campaign-create.dto';
+import { CampaignDonorOnOperatorDasboardFilter } from '../dto/campaign-donor-on-operator-dashboard-filter.dto';
+import { CampaignDonorOnOperatorDasboardParam } from '../dto/campaign-donor-on-operator-dashboard-param.dto';
+import { GetAllMypendingCampaignFromVendorIdRequest } from '../dto/get-all-my-pending-campaign-from-vendor-id.request';
+import { GetAllNewCampaignFilter } from '../dto/get-all-new-campaign-filter.dto';
+import { UpdateCampaignDto } from '../dto/update-campaign-dto';
+import { UpdateCampaignStatusDto } from '../dto/update-campaign-status.dto';
+import { CampaignSortByEnum } from '../enums/campaign-sortby-enum';
+import { CampaignStatus } from '../enums/campaign-status.enum';
+import { CampaignMilestone } from '../schema/campaign-milestone.schema';
 import { v4 as uuidv4 } from 'uuid';
-import { validateObjectId } from '../commons/utils/validateObjectId';
-import { CampaignUpdateDto } from './dto/campaign-update.dto';
-import { AddMilestoneDto } from './dto/add-milestone.dto';
-import { CampaignCreateResponse } from './dto/campaign-create-response.dto';
-// import { catchError } from 'rxjs';
-// import { ObjectId } from 'mongodb';
+import { validateObjectId } from '../../commons/utils/validateObjectId';
+import { CampaignUpdateDto } from '../dto/campaign-update.dto';
+import { CampaignCreateResponse } from '../dto/campaign-create-response.dto';
 @Injectable()
 export class CampaignService {
   private logger = rootLogger.child({ logger: CampaignService.name });
@@ -121,15 +121,21 @@ export class CampaignService {
     createdCampaign.amountProgress = decimal.fromString('0');
     createdCampaign.amountTarget = decimal.fromString('0');
     // createdCampaign.milestone = createCampaignDto.milestone;
+    // const milestones: CampaignMilestone[] = createCampaignDto!.milestone!.map(
+    //   (milestone) => {
+    //     const newMilestone: CampaignMilestone = {
+    //       milestoneId: uuidv4(),
+    //       detail: milestone.detail,
+    //       deadline: new Date(milestone.deadline),
+    //       createdAt: new Date(),
+    //       updatedAt: new Date(),
+    //     };
+    //     return newMilestone;
+    //   },
+    // );
     const milestones: CampaignMilestone[] = createCampaignDto!.milestone!.map(
       (milestone) => {
-        const newMilestone: CampaignMilestone = {
-          milestoneId: uuidv4(),
-          detail: milestone.detail,
-          deadline: new Date(milestone.deadline),
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
+        const newMilestone = CampaignMilestone.mapFromCreateRequest(milestone);
         return newMilestone;
       },
     );
@@ -540,8 +546,6 @@ export class CampaignService {
       );
     }
   }
-
-  async addMilestone(userId: string, request: AddMilestoneDto) {}
 
   async findAll(
     organizationId: string,

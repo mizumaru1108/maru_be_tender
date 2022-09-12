@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
 import { PayloadImage } from '../../commons/dtos/payload-image.dto';
-import { CampaignMilestoneDto } from './campaign-milestone.dto';
+import { CreateMilestoneDto } from './milestone/requests/create-milestone.dto';
 
 export class CampaignCreateDto {
   @ApiProperty()
@@ -83,5 +83,5 @@ export class CampaignCreateDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsArray()
-  milestone: CampaignMilestoneDto[];
+  milestone: CreateMilestoneDto[];
 }

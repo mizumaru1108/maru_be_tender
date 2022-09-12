@@ -20,9 +20,11 @@ import { Donor, DonorSchema } from '../donor/schema/donor.schema';
 import { Volunteer, VolunteerSchema } from '../donor/schema/volunteer.schema';
 import { Operator, OperatorSchema } from '../operator/schema/operator.schema';
 import { User, UserSchema } from '../user/schema/user.schema';
-import { CampaignController } from './campaign.controller';
+import { CampaignMilestoneController } from './controllers/campaign-milestone.controller';
+import { CampaignController } from './controllers/campaign.controller';
 import { Campaign, CampaignSchema } from './schema/campaign.schema';
-import { CampaignService } from './campaign.service';
+import { CampaignMilestoneService } from './services/campaign-milestone.service';
+import { CampaignService } from './services/campaign.service';
 
 @Module({
   imports: [
@@ -70,7 +72,7 @@ import { CampaignService } from './campaign.service';
     ]),
     DonorModule,
   ],
-  providers: [CampaignService],
-  controllers: [CampaignController],
+  providers: [CampaignService, CampaignMilestoneService],
+  controllers: [CampaignController, CampaignMilestoneController],
 })
 export class CampaignModule {}

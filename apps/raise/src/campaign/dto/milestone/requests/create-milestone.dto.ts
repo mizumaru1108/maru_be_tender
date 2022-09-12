@@ -7,7 +7,7 @@ import {
   IsNumber,
 } from 'class-validator';
 
-export class CampaignMilestoneDto {
+export class CreateMilestoneDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

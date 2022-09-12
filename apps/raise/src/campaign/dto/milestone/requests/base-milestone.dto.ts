@@ -1,9 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNotEmpty } from 'class-validator';
-import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
-import { CampaignMilestoneDto } from './campaign-milestone.dto';
+import { ValidateObjectIdDecorator } from '../../../../commons/decorators/validate-object-id.decorator';
 
-export class AddMilestoneDto {
+export class BaseMilestoneDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -15,9 +14,4 @@ export class AddMilestoneDto {
   @IsNotEmpty()
   @ValidateObjectIdDecorator()
   campaignId: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  addedMilestone: CampaignMilestoneDto;
 }

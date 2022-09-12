@@ -72,7 +72,6 @@ export class FusionAuthService {
     this.fusionAuthTenantId = fusionAuthTenantId;
 
     const appId = this.configService.get<string>('FUSIONAUTH_APP_ID');
-    console.log('application id (FUSIONAUTH_APP_ID):', appId);
     if (!appId) {
       throw new InternalServerErrorException(
         `FUSIONAUTH_APP_ID ${baseEnvCallErrorMessage}`,

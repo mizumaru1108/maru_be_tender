@@ -10,39 +10,37 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/jwt.guard';
-import { Permissions } from '../auth/permissions.decorator';
-import { PermissionsGuard } from '../auth/permissions.guard';
-import { CampaignVendorLog } from '../buying/vendor/vendor.schema';
-import { CurrentUser } from '../commons/decorators/current-user.decorator';
+import { JwtAuthGuard } from '../../auth/jwt.guard';
+import { Permissions } from '../../auth/permissions.decorator';
+import { PermissionsGuard } from '../../auth/permissions.guard';
+import { CampaignVendorLog } from '../../buying/vendor/vendor.schema';
+import { CurrentUser } from '../../commons/decorators/current-user.decorator';
 
-import { BaseResponse } from '../commons/dtos/base-response';
-import { PaginatedResponse } from '../commons/dtos/paginated-response.dto';
-import { baseResponseHelper } from '../commons/helpers/base-response-helper';
-import { paginationHelper } from '../commons/helpers/pagination-helper';
-import { DonorService } from '../donor/donor.service';
-import { Permission } from '../libs/authzed/enums/permission.enum';
-import { rootLogger } from '../logger';
-import { ICurrentUser } from '../user/interfaces/current-user.interface';
-import { Campaign, CampaignDocument } from './schema/campaign.schema';
-import { CampaignService } from './campaign.service';
-import { CampaignSetFavoriteDto, CreateCampaignDto } from './dto';
-import { CampaignApplyVendorDto } from './dto/apply-vendor.dto';
-import { ApproveCampaignResponseDto } from './dto/approve-campaign-response.dto';
-import { CampaignCreateDto } from './dto/campaign-create.dto';
-import { CampaignDonorOnOperatorDasboardFilter } from './dto/campaign-donor-on-operator-dashboard-filter.dto';
-import { CampaignDonorOnOperatorDasboardParam } from './dto/campaign-donor-on-operator-dashboard-param.dto';
-import { CampaignSetDeletedFlagDto } from './dto/capaign-set-flag-deleted';
-import { GetAllMypendingCampaignFromVendorIdRequest } from './dto/get-all-my-pending-campaign-from-vendor-id.request';
-import { GetAllNewCampaignFilter } from './dto/get-all-new-campaign-filter.dto';
-import { GetAllNewCampaignParams } from './dto/get-all-new-campaign-params.dto';
-import { UpdateCampaignDto } from './dto/update-campaign-dto';
-import { UpdateCampaignStatusDto } from './dto/update-campaign-status.dto';
-import { CampaignUpdateDto } from './dto/campaign-update.dto';
-import { CampaignMilestoneDto } from './dto/campaign-milestone.dto';
-import { AddMilestoneDto } from './dto/add-milestone.dto';
-import { CampaignCreateResponse } from './dto/campaign-create-response.dto';
-import { validateObjectId } from '../commons/utils/validateObjectId';
+import { BaseResponse } from '../../commons/dtos/base-response';
+import { PaginatedResponse } from '../../commons/dtos/paginated-response.dto';
+import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
+import { paginationHelper } from '../../commons/helpers/pagination-helper';
+import { DonorService } from '../../donor/donor.service';
+import { Permission } from '../../libs/authzed/enums/permission.enum';
+import { rootLogger } from '../../logger';
+import { ICurrentUser } from '../../user/interfaces/current-user.interface';
+import { Campaign, CampaignDocument } from '../schema/campaign.schema';
+import { CampaignService } from '../services/campaign.service';
+import { CampaignSetFavoriteDto, CreateCampaignDto } from '../dto';
+import { CampaignApplyVendorDto } from '../dto/apply-vendor.dto';
+import { ApproveCampaignResponseDto } from '../dto/approve-campaign-response.dto';
+import { CampaignCreateDto } from '../dto/campaign-create.dto';
+import { CampaignDonorOnOperatorDasboardFilter } from '../dto/campaign-donor-on-operator-dashboard-filter.dto';
+import { CampaignDonorOnOperatorDasboardParam } from '../dto/campaign-donor-on-operator-dashboard-param.dto';
+import { CampaignSetDeletedFlagDto } from '../dto/capaign-set-flag-deleted';
+import { GetAllMypendingCampaignFromVendorIdRequest } from '../dto/get-all-my-pending-campaign-from-vendor-id.request';
+import { GetAllNewCampaignFilter } from '../dto/get-all-new-campaign-filter.dto';
+import { GetAllNewCampaignParams } from '../dto/get-all-new-campaign-params.dto';
+import { UpdateCampaignDto } from '../dto/update-campaign-dto';
+import { UpdateCampaignStatusDto } from '../dto/update-campaign-status.dto';
+import { CampaignUpdateDto } from '../dto/campaign-update.dto';
+import { AddMilestoneDto } from '../dto/milestone/requests/add-milestone.dto';
+import { CampaignCreateResponse } from '../dto/campaign-create-response.dto';
 
 @ApiTags('campaign')
 @Controller('campaign')
@@ -345,25 +343,6 @@ export class CampaignController {
       HttpStatus.CREATED,
       'The Campaign has been successfully created.',
     );
-  }
-
-  /* add milestones to campaign */
-  @ApiOperation({
-    summary: 'Add new (extra milestone) after campaign already created',
-  })
-  @ApiResponse({
-    status: 201,
-    description: 'The Campaign has been successfully created.',
-  })
-  @Permissions(Permission.OE)
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Post('addMilestone')
-  async addCampaignMilestone(
-    @CurrentUser() user: ICurrentUser,
-    @Body() request: AddMilestoneDto,
-  ) {
-    this.logger.debug('create new campaign ', JSON.stringify(request));
-    return await this.campaignService.addMilestone(user.id, request);
   }
 
   /**
