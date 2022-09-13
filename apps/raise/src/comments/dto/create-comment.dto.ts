@@ -3,6 +3,12 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
 
 export class CreateCommentDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @ValidateObjectIdDecorator()
+  organizationId: string;
+
   /**
    * Add it if you want this comment to be a reply to another comment
    */
@@ -49,5 +55,5 @@ export class CreateCommentDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  content?: string;
+  content: string;
 }

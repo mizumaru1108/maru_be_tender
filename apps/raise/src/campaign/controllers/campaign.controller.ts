@@ -113,15 +113,14 @@ export class CampaignController {
   @Permissions(Permission.OE)
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @ApiOperation({ summary: 'Get list all my pending campaign (vendor)' })
-  @Get('getPendingListPaginated')
-  async getAllMyPendingCampaignByOrganizationId(
+  @Get('getAllCampaignVendorRequest')
+  async getAllCampaignVendorRequest(
     @Query() request: GetAllMypendingCampaignFromVendorIdRequest,
   ): Promise<PaginatedResponse<CampaignDocument[]>> {
     this.logger.debug(`Get list all my pending campaign`);
-    const campaignList =
-      await this.campaignService.getAllMyPendingCampaignByOrganizationId(
-        request,
-      );
+    const campaignList = await this.campaignService.getAllCampaignVendorRequest(
+      request,
+    );
     const response = paginationHelper(
       campaignList.docs,
       campaignList.totalDocs,

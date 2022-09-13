@@ -4,22 +4,27 @@ import {
   Get,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt.guard';
+import { Permissions } from '../auth/permissions.decorator';
+import { PermissionsGuard } from '../auth/permissions.guard';
 import { CurrentUser } from '../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../commons/dtos/base-response';
 import { PaginatedResponse } from '../commons/dtos/paginated-response.dto';
 import { baseResponseHelper } from '../commons/helpers/base-response-helper';
 import { paginationHelper } from '../commons/helpers/pagination-helper';
+import { validateObjectId } from '../commons/utils/validateObjectId';
+import { Permission } from '../libs/authzed/enums/permission.enum';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { CommentsService } from './comments.service';
-import { AdminCommentFilterRequest } from './dto/admin-comment-filter-request.dto';
 import { CommentFilterRequest } from './dto/comment-filter-request.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { DeleteCommentsDto } from './dto/delete-comments.dto';
 import { Comment, CommentDocument } from './schema/comment.schema';
 
 @Controller('comments')
@@ -33,7 +38,7 @@ export class CommentsController {
     description: 'Comment created successfully.',
   })
   @UseGuards(JwtAuthGuard)
-  @Post('create-comment')
+  @Post('createComment')
   async createComment(
     @CurrentUser() user: ICurrentUser,
     @Body() createCommentDto: CreateCommentDto,
@@ -49,21 +54,17 @@ export class CommentsController {
     );
   }
 
-  // !TODO: Secure it with CASL for admin only.
-  /* can be filtered by campaign, project, item */
   @ApiOperation({ summary: 'Get ALL USER comment without paginated' })
   @ApiResponse({
     status: 200,
     description: 'All user comments fetched successfully.',
   })
   @UseGuards(JwtAuthGuard)
-  @Get('all-comment')
-  async getAllUserComment(
-    @Query() filter: AdminCommentFilterRequest,
+  @Get('allComment')
+  async getAllComment(
+    @Query() filter: CommentFilterRequest,
   ): Promise<BaseResponse<CommentDocument[]>> {
-    const userCommentList = await this.commentsService.getAllUserComment(
-      filter,
-    );
+    const userCommentList = await this.commentsService.getAllComment(filter);
     return baseResponseHelper(
       userCommentList,
       HttpStatus.OK,
@@ -71,19 +72,19 @@ export class CommentsController {
     );
   }
 
-  // !TODO: Secure it with CASL for admin only.
   @ApiOperation({ summary: 'Get ALL USER Comment Paginated' })
   @ApiResponse({
     status: 200,
     description: 'All user comments fetched successfully.',
   })
   @UseGuards(JwtAuthGuard)
-  @Get('all-comments-paginated')
-  async getAllUserCommentPaginated(
-    @Query() filter: AdminCommentFilterRequest,
+  @Get('allCommentsPaginated')
+  async getAllCommentPaginated(
+    @Query() filter: CommentFilterRequest,
   ): Promise<PaginatedResponse<CommentDocument[]>> {
-    const allUserComment =
-      await this.commentsService.getAllUserCommentPaginated(filter);
+    const allUserComment = await this.commentsService.getAllCommentPaginated(
+      filter,
+    );
     return paginationHelper(
       allUserComment.docs,
       allUserComment.totalDocs,
@@ -106,7 +107,7 @@ export class CommentsController {
     description: 'Successfully fetch all of my comment.',
   })
   @UseGuards(JwtAuthGuard)
-  @Get('current-user-comment')
+  @Get('currentUserComment')
   async getMyComment(
     @CurrentUser() user: ICurrentUser,
     @Query() filter: CommentFilterRequest,
@@ -128,7 +129,7 @@ export class CommentsController {
     description: 'Successfully fetch all of my comment.',
   })
   @UseGuards(JwtAuthGuard)
-  @Get('current-user-comment-paginated')
+  @Get('currentUserCommentPaginated')
   async getMyCommentPaginated(
     @CurrentUser() user: ICurrentUser,
     @Query() filter: CommentFilterRequest,
@@ -160,7 +161,7 @@ export class CommentsController {
     description: 'Successfully fetch user comment.',
   })
   @UseGuards(JwtAuthGuard)
-  @Get('find-comment')
+  @Get('findComment')
   async findOneComment(
     @Query() filter: CommentFilterRequest,
   ): Promise<BaseResponse<CommentDocument>> {
@@ -178,10 +179,11 @@ export class CommentsController {
     description: 'Successfully fetch user comment.',
   })
   @UseGuards(JwtAuthGuard)
-  @Get('user-comment/:id')
+  @Get('userComment/:id')
   async findCommentById(
     @Param('id') id: string,
   ): Promise<BaseResponse<CommentDocument>> {
+    validateObjectId(id);
     const result = await this.commentsService.findCommentById(id);
     return baseResponseHelper(
       result,
@@ -190,30 +192,48 @@ export class CommentsController {
     );
   }
 
-  //!TODO: softdelete, softdelte batch, delete, delete batch
-  // @Patch(':id')
-  // async softDelete(
-  //   @Param('id') id: string,
-  //   @Body() updateCommentDto: UpdateCommentDto,
-  // ) {
-  //   return this.commentsService.update(+id, updateCommentDto);
-  // }
+  @ApiOperation({ summary: 'Soft delete comment' })
+  @ApiResponse({
+    status: 200,
+    description: 'Soft delete comment performed successfully!',
+  })
+  @Permissions(Permission.MO)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Patch('softDeleteComments')
+  async softDeleteComment(
+    @CurrentUser() user: ICurrentUser,
+    @Body() request: DeleteCommentsDto,
+  ): Promise<BaseResponse<Comment[] | undefined>> {
+    const response = await this.commentsService.softDeleteComment(
+      user.id,
+      request,
+    );
+    return baseResponseHelper(
+      response,
+      HttpStatus.OK,
+      'Soft delele comment performed successfully!',
+    );
+  }
 
-  // @Patch(':id')
-  // async softDeleteBatch(
-  //   @Param('id') id: string,
-  //   @Body() updateCommentDto: UpdateCommentDto,
-  // ) {
-  //   return this.commentsService.update(+id, updateCommentDto);
-  // }
-
-  // @Delete(':id')
-  // async delete(@Param('id') id: string) {
-  //   return this.commentsService.remove(+id);
-  // }
-
-  // @Delete(':id')
-  // async deleteBatch(@Param('id') id: string) {
-  //   return this.commentsService.remove(+id);
-  // }
+  @ApiOperation({ summary: 'Soft delete current user comment' })
+  @ApiResponse({
+    status: 200,
+    description: 'Soft delete comment performed successfully!',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Patch('softDeleteMyComments')
+  async softDeleteMyComments(
+    @CurrentUser() user: ICurrentUser,
+    @Body() request: DeleteCommentsDto,
+  ): Promise<BaseResponse<any>> {
+    const response = await this.commentsService.softDeleteMyComments(
+      user.id,
+      request,
+    );
+    return baseResponseHelper(
+      response,
+      HttpStatus.OK,
+      'Soft delete comment performed successfully!',
+    );
+  }
 }

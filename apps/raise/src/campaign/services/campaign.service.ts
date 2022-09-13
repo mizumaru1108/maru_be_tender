@@ -1296,7 +1296,7 @@ export class CampaignService {
     return campaignList;
   }
 
-  async getAllMyPendingCampaignByOrganizationId(
+  async getAllCampaignVendorRequest(
     request: GetAllMypendingCampaignFromVendorIdRequest,
   ): Promise<AggregatePaginateResult<CampaignDocument>> {
     const { limit = 10, page = 1 } = request;
@@ -1330,9 +1330,8 @@ export class CampaignService {
         $match: {
           amountProgress: { $nin: ['', null, 0] },
           amountTarget: { $nin: ['', null, 0] },
-          isDone: true,
           organizationId: ObjectId(request.organizationId),
-          'campaignDatasInVendorLog.status': 'pending',
+          'campaignDatasInVendorLog.status': 'pending new',
         },
       },
       {

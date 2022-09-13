@@ -1,11 +1,17 @@
 import {
   BadRequestException,
+  ForbiddenException,
+  HttpException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import {
   AggregatePaginateModel,
+  AggregatePaginateResult,
+  ClientSession,
+  Connection,
   FilterQuery,
   Model,
   PaginateModel,
@@ -15,12 +21,11 @@ import {
 } from 'mongoose';
 import { CommentFilterRequest } from './dto/comment-filter-request.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
-import { createCommentDtoMapper } from './mappers/create-comment.mapper';
 import { Comment, CommentDocument } from './schema/comment.schema';
 import { Types } from 'mongoose';
 import { SortBy } from '../commons/enums/sortby-enum';
-import { AdminCommentFilterRequest } from './dto/admin-comment-filter-request.dto';
+import { DeleteCommentsDto } from './dto/delete-comments.dto';
+import { BaseBooleanString } from '../commons/enums/base-boolean-string.enum';
 
 const lookupUser: PipelineStage[] = [
   {
@@ -79,14 +84,8 @@ const lookupParrentComment: PipelineStage[] = [
 
 @Injectable()
 export class CommentsService {
-  /**
-   * tbh i wanna use repository design pattern T-T,
-   * to split between business logic and store to database
-   *
-   * constructor(private readonly commentRepository: CommentRepository) {}
-   */
-
   constructor(
+    @InjectConnection() private readonly connection: Connection, // mongodb DB transaction
     @InjectModel(Comment.name)
     private commentModel: Model<CommentDocument>,
     @InjectModel(Comment.name)
@@ -118,7 +117,7 @@ export class CommentsService {
   }
 
   async applyCommentFilter(
-    filter: AdminCommentFilterRequest,
+    filter: CommentFilterRequest,
   ): Promise<FilterQuery<CommentDocument>> {
     const filterQuery: FilterQuery<CommentDocument> = {};
     const { campaignId, projectId, itemId, parentCommentId, commentOwnerId } =
@@ -146,11 +145,15 @@ export class CommentsService {
   async applySorting(filter: CommentFilterRequest) {
     const { sortBy } = filter;
     // type of sort in mongoose = { [key: string]: SortOrder | { $meta: 'textScore' } } = {};
-    let sortByQuery: { [key: string]: SortOrder | { $meta: 'textScore' } } = {};
-    if (sortBy == SortBy.ASC) {
-      sortByQuery = { createdAt: 1 };
-    }
-    if (sortBy == SortBy.DESC) {
+    let sortByQuery: Record<string, 1 | -1> = {};
+    if (sortBy) {
+      if (sortBy == SortBy.ASC) {
+        sortByQuery = { createdAt: 1 };
+      }
+      if (sortBy == SortBy.DESC) {
+        sortByQuery = { createdAt: -1 };
+      }
+    } else {
       sortByQuery = { createdAt: -1 };
     }
     return sortByQuery;
@@ -161,46 +164,57 @@ export class CommentsService {
     createCommentDto: CreateCommentDto,
   ): Promise<Comment> {
     this.validateAmbiguousRequest(createCommentDto);
-    const commentPayload = createCommentDtoMapper(createCommentDto);
+    const commentPayload = Comment.mapFromCreateRequest(createCommentDto);
     commentPayload.commentOwnerId = currentUserId;
     const createdComment = new this.commentModel(commentPayload);
     return await createdComment.save();
   }
 
-  async getAllUserComment(
+  async getAllComment(
     filter: CommentFilterRequest,
   ): Promise<CommentDocument[]> {
     const filterQuery = await this.applyCommentFilter(filter);
     const sortByQuery = await this.applySorting(filter);
-    const { page = 1, limit = 0 } = filter;
-    const offset = (page - 1) * limit;
-    return await this.commentModel
-      .find(filterQuery)
-      .sort(sortByQuery)
-      .skip(offset)
-      .limit(limit);
+    return await this.commentModel.aggregate([
+      { $match: filterQuery },
+      { $sort: sortByQuery },
+      ...lookupUser,
+      ...lookupParrentComment,
+      ...lookupCampaign,
+      ...lookupProject,
+      ...lookupItem,
+    ]);
   }
 
-  async getAllUserCommentPaginated(
+  async getAllCommentPaginated(
     filter: CommentFilterRequest,
-  ): Promise<PaginateResult<CommentDocument>> {
+  ): Promise<AggregatePaginateResult<CommentDocument>> {
     const filterQuery = await this.applyCommentFilter(filter);
     const sortByQuery = await this.applySorting(filter);
-    return await this.commentPaginateModel.paginate(
-      {
-        ...filterQuery,
-      },
+    const aggregateQuerry = this.commentModel.aggregate([
+      { $match: filterQuery },
+      { $sort: sortByQuery },
+      ...lookupUser,
+      ...lookupParrentComment,
+      ...lookupCampaign,
+      ...lookupProject,
+      ...lookupItem,
+    ]);
+
+    const result = await this.commentAggregatePaginateModel.aggregatePaginate(
+      aggregateQuerry,
       {
         page: filter.page,
         limit: filter.limit,
-        sort: sortByQuery,
       },
     );
+
+    return result;
   }
 
   async getCurrentUserComment(
     userId: string,
-    filter: AdminCommentFilterRequest,
+    filter: CommentFilterRequest,
   ): Promise<CommentDocument[]> {
     filter.commentOwnerId = userId;
     const filterQuery = await this.applyCommentFilter(filter);
@@ -216,7 +230,7 @@ export class CommentsService {
 
   async getCurrentUserCommentPaginated(
     userId: string,
-    filter: AdminCommentFilterRequest,
+    filter: CommentFilterRequest,
   ): Promise<PaginateResult<CommentDocument>> {
     filter.commentOwnerId = userId;
     const filterQuery = await this.applyCommentFilter(filter);
@@ -235,11 +249,18 @@ export class CommentsService {
 
   async findOneComment(filter: CommentFilterRequest): Promise<CommentDocument> {
     const filterQuery = await this.applyCommentFilter(filter);
-    const result = await this.commentModel.findOne(filterQuery);
-    if (!result) {
+    const result = await this.commentModel.aggregate([
+      { $match: filterQuery },
+      ...lookupUser,
+      ...lookupParrentComment,
+      ...lookupCampaign,
+      ...lookupProject,
+      ...lookupItem,
+    ]);
+    if (result.length == 0) {
       throw new NotFoundException(`Comment not found`);
     }
-    return result;
+    return result[0];
   }
 
   async findCommentById(id: string): Promise<CommentDocument> {
@@ -247,15 +268,119 @@ export class CommentsService {
       {
         $match: { _id: new Types.ObjectId(id) },
       },
-      ...lookupParrentComment,
       ...lookupUser,
+      ...lookupParrentComment,
       ...lookupCampaign,
       ...lookupProject,
       ...lookupItem,
     ]);
-    if (!result) {
+    if (result.length == 0) {
       throw new NotFoundException(`Comment with id ${id} not found`);
     }
     return result[0];
+  }
+
+  async softDeleteMyComments(
+    userId: string,
+    request: DeleteCommentsDto,
+  ): Promise<Comment[] | undefined> {
+    let deletedCommets: Comment[] = [];
+    const session = await this.connection.startSession();
+
+    try {
+      session.startTransaction(); // start mongodb transaction
+
+      const promises = request.commentIds.map(async (commentId, index) => {
+        const comment = await this.commentModel
+          .findOne({
+            _id: new Types.ObjectId(commentId),
+          })
+          .session(session);
+
+        if (!comment) {
+          throw new NotFoundException(`Comment with id ${commentId} not found`);
+        }
+
+        if (comment.commentOwnerId !== userId) {
+          throw new ForbiddenException(
+            `You are not the owner of this comment! (comment at index ${index}, comment id ${commentId})`,
+          );
+        }
+
+        comment.isDeleted = BaseBooleanString.Y;
+        comment.deletedDate = new Date();
+        comment.deletedBy = userId;
+
+        // if break occured, this will not be executed
+        const updateComment = await comment.save({ session });
+        if (!updateComment) {
+          throw new InternalServerErrorException(
+            `Something went wrong when deleting comment at index ${index}, comment id ${commentId}`,
+          );
+        }
+        // if break, no comment will be pushed to deletedCommets
+        deletedCommets.push(updateComment);
+      });
+
+      await Promise.all(promises);
+      await session.commitTransaction(); // apply changes to database if no error occured.
+      return deletedCommets;
+    } catch (error) {
+      console.log('error', error);
+      if (error.response) {
+        throw new HttpException(
+          error.response.message,
+          error.response.statusCode,
+        );
+      }
+      await session.abortTransaction(); // rollback changes if error occured.
+    } finally {
+      session.endSession(); // close mongodb session
+    }
+  }
+
+  async softDeleteComment(
+    currentUserId: string,
+    request: DeleteCommentsDto,
+  ): Promise<Comment[] | undefined> {
+    const session = await this.connection.startSession();
+    try {
+      session.startTransaction(); // start mongodb transaction
+      let deletedCommets: Comment[] = [];
+
+      const promises = request.commentIds.map(async (commentId, index) => {
+        const comment = await this.commentModel.findOne({
+          _id: new Types.ObjectId(commentId),
+        });
+        if (!comment) {
+          throw new NotFoundException(`Comment with id ${commentId} not found`);
+        }
+        comment.isDeleted = BaseBooleanString.Y;
+        comment.deletedDate = new Date();
+        comment.deletedBy = currentUserId;
+        const updateComment = await comment.save({ session });
+        if (!updateComment) {
+          throw new InternalServerErrorException(
+            `Something went wrong when deleting comment at index ${index}, comment id ${commentId}`,
+          );
+        }
+        deletedCommets.push(updateComment);
+      });
+      await Promise.all(promises);
+
+      await session.commitTransaction(); // apply changes to database if no error occured.
+      return deletedCommets;
+    } catch (error) {
+      console.log('error', error);
+      if (error.response) {
+        throw new HttpException(
+          error.response.message,
+          error.response.statusCode,
+        );
+      }
+      await session.abortTransaction(); // rollback changes if error occured.
+    } finally {
+      session.endSession(); // close mongodb session
+    }
   }
 }

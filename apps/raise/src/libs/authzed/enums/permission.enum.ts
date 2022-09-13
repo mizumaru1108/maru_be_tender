@@ -5,32 +5,18 @@
  */
 export enum Permission {
   /**
-   * Only Operator and Manager can access this route.
-   * will be used to secure the route for the operator and manager.
+   * Used for edit and view data that can only be accessed by the operator and manager.
    */
   OE = 'operator_edit',
 
   /**
-   * Only Operator and Manager can access this route.
-   * will be used to secure the route for the operator and manager.
-   */
-  OV = 'operator_view',
-
-  /**
-   * Only Vendor and Manager can access this route.
-   * will be used to secure the route for the vendor and manager.
+   * Used for edit and view data that can only be accessed by the vendor and manager.
    */
   VE = 'vendor_edit',
 
   /**
-   * Only Vendor and Manager can access this route.
-   * will be used to secure the route for the vendor and manager.
-   */
-  VV = 'vendor_view',
-
-  /**
    * Only Manager can access this route.
-   * will be used to secure the route for the manager.
+   * Used for GLOBAL EDIT (can edit and view all the data)
    */
-  PM = 'permission_management',
+  MO = 'manager_only',
 }

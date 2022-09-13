@@ -1,10 +1,36 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, IsNotEmpty, IsEnum } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsNotEmpty,
+  IsEnum,
+  IsUUID,
+} from 'class-validator';
 import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
 import { BaseFilterRequest } from '../../commons/dtos/base-filter-request.dto';
 import { SortBy } from '../../commons/enums/sortby-enum';
 
 export class CommentFilterRequest extends BaseFilterRequest {
+  /**
+   * Apply to find by commentOwnerId.
+   */
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @IsUUID()
+  commentOwnerId?: string;
+
+  /**
+   * Apply to find by commentOwnerId.
+   */
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @ValidateObjectIdDecorator()
+  organizationId?: string;
+
   /**
    * Apply to filter comments by campaignId
    */

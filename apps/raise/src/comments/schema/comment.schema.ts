@@ -7,6 +7,8 @@ import { Item } from '../../item/item.schema';
 import { BaseBooleanString } from '../../commons/enums/base-boolean-string.enum';
 import paginate from 'mongoose-paginate-v2';
 import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
+import { CreateCommentDto } from '../dto/create-comment.dto';
+import { Organization } from '../../organization/schema/organization.schema';
 
 export type CommentDocument = Comment & Document;
 
@@ -37,6 +39,15 @@ export class Comment {
    * @example Comment.projectDetails
    */
   commentOwnerDetails: User;
+
+  /**
+   * Refrence to the campaign this comment belongs to.
+   */
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'organization',
+  })
+  organizationId: Types.ObjectId | Organization;
 
   /**
    * Refrence to the campaign this comment belongs to.
@@ -89,6 +100,12 @@ export class Comment {
   @Prop({ default: null })
   deletedDate: Date;
 
+  @Prop({ default: null })
+  deletedBy: string;
+
+  @Prop({ default: null })
+  updatedBy: string;
+
   /**
    * i don't use props decorator here, it's just for accessing the auto created fields
    * @example Comment.createdAt
@@ -96,6 +113,25 @@ export class Comment {
   public createdAt?: Date;
 
   public updatedAt?: Date;
+
+  public static mapFromCreateRequest = (request: CreateCommentDto): Comment => {
+    const comment = new Comment();
+    comment.organizationId = new Types.ObjectId(request.organizationId);
+    if (request.campaignId) {
+      comment.campaignId = new Types.ObjectId(request.campaignId);
+    }
+    if (request.projectId) {
+      comment.projectId = new Types.ObjectId(request.projectId);
+    }
+    if (request.itemId) {
+      comment.itemId = new Types.ObjectId(request.itemId);
+    }
+    if (request.parentCommentId) {
+      comment.parentCommentId = new Types.ObjectId(request.parentCommentId);
+    }
+    comment.content = request.content ?? '';
+    return comment;
+  };
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment)

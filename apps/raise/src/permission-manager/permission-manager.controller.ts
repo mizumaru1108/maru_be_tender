@@ -15,7 +15,7 @@ export class PermissionManagerController {
     private readonly permissionManagerService: PermissionManagerService,
   ) {}
 
-  @Permissions(Permission.PM)
+  @Permissions(Permission.MO)
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @Post('assign/operator')
   async assignOperator(
@@ -30,7 +30,7 @@ export class PermissionManagerController {
     );
   }
 
-  @Permissions(Permission.PM)
+  @Permissions(Permission.MO)
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @Post('assign/vendor')
   async assignVendor(

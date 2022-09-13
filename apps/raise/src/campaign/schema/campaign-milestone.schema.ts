@@ -22,7 +22,7 @@ export class CampaignMilestone {
   /**
    * reprecentational value of the milestone as percentage (request form sarah)
    */
-  public representationalValue?: number;
+  public representationalValue: number;
 
   public createdAt: Date;
 
