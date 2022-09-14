@@ -23,7 +23,7 @@ import { CommentFilterRequest } from './dto/comment-filter-request.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { Comment, CommentDocument } from './schema/comment.schema';
 import { Types } from 'mongoose';
-import { SortBy } from '../commons/enums/sortby-enum';
+import { SortMethod } from '../commons/enums/sortby-method';
 import { DeleteCommentsDto } from './dto/delete-comments.dto';
 import { BaseBooleanString } from '../commons/enums/base-boolean-string.enum';
 
@@ -143,18 +143,19 @@ export class CommentsService {
   }
 
   async applySorting(filter: CommentFilterRequest) {
-    const { sortBy } = filter;
-    // type of sort in mongoose = { [key: string]: SortOrder | { $meta: 'textScore' } } = {};
+    const { sortBy, sortMethod } = filter;
+    const method: 1 | -1 = sortMethod === SortMethod.ASC ? 1 : -1;
     let sortByQuery: Record<string, 1 | -1> = {};
+
     if (sortBy) {
-      if (sortBy == SortBy.ASC) {
-        sortByQuery = { createdAt: 1 };
+      if (sortBy == 'createdAt') {
+        sortByQuery = { createdAt: method };
       }
-      if (sortBy == SortBy.DESC) {
-        sortByQuery = { createdAt: -1 };
+      if (sortBy == 'updatedAt') {
+        sortByQuery = { updatedAt: method };
       }
     } else {
-      sortByQuery = { createdAt: -1 };
+      sortByQuery = { updatedAt: method };
     }
     return sortByQuery;
   }

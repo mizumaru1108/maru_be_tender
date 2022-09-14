@@ -92,22 +92,6 @@ export class FusionAuthService {
     );
   }
 
-  // async useFusionAuthClient() {
-  //   return new FusionAuthClient(
-  //     this.configService.get('FUSIONAUTH_CLIENT_KEY', ''),
-  //     this.configService.get('FUSIONAUTH_URL', ''),
-  //     this.configService.get('FUSIONAUTH_TENANT_ID', ''),
-  //   );
-  // }
-
-  // async useFusionAuthAdminClient() {
-  //   return new FusionAuthClient(
-  //     this.configService.get('FUSIONAUTH_ADMIN_KEY', ''),
-  //     this.configService.get('FUSIONAUTH_URL', ''),
-  //     this.configService.get('FUSIONAUTH_TENANT_ID', ''),
-  //   );
-  // }
-
   async fusionAuthValidateToken(
     token: string,
   ): Promise<ClientResponse<ValidateResponse>> {
@@ -132,59 +116,9 @@ export class FusionAuthService {
   }
 
   /**
-   * spending much time, turns out i typo on FUSIONAUTH to FUSINAUTH, also have to
-   * and have to add /api/user/registration
-   * !NOT WORKING T_T, response 400
-   * Ref: https://github.com/FusionAuth/fusionauth-typescript-client/issues/10
-   * {"statusCode":400,"exception":{"fieldErrors":{"applicationId":[{"code":"[couldNotConvert]applicationId",
-   * "message":"Invalid applicationId [user]. This must be a valid UUID String (e.g. 25a872da-bb44-4af8-a43d-e7bcb5351ebc)."}]
-   * ,"userId":[{"code":"[couldNotConvert]userId","message":"Invalid userId [api]. This must be a valid UUID String
-   * (e.g. 25a872da-bb44-4af8-a43d-e7bcb5351ebc)."}]}}}
-   * !TODO: fix it when i have time
-   */
-  // async fusionAuthRegister(
-  //   registerRequest: RegisterRequestDto,
-  // ): Promise<ClientResponse<RegistrationResponse>> {
-  //   // const fusionAuth = await this.useFusionAuthAdminClient();
-  //   const baseUrl = this.configService.get<string>('FUSIONAUTH_URL', '');
-  //   const registerUrl = baseUrl + '/api/user/registration';
-  //   const fusionAuth = new FusionAuthClient(
-  //     this.configService.get('FUSIONAUTH_ADMIN_KEY', ''),
-  //     registerUrl,
-  //     this.configService.get('FUSIONAUTH_TENANT_ID', ''),
-  //   );
-  //   const appId = this.configService.get<string>('FUSIONAUTH_APP_ID', '');
-  //   const userId = uuidv4();
-  //   console.log('appId', appId);
-  //   console.log('userId', userId);
-  //   const user: IFusionAuthUser = {
-  //     email: registerRequest.email,
-  //     password: registerRequest.password,
-  //     firstName: registerRequest.firstName,
-  //     lastName: registerRequest.lastName,
-  //   };
-  //   const registration: IFusionAuthUserRegistration = {
-  //     applicationId: appId,
-  //   };
-  //   const registrationRequest: IFusionAuthRegistrationRequest = {
-  //     user,
-  //     registration,
-  //   };
-  //   console.log('masuk sini ko');
-  //   console.log(registrationRequest);
-  //   try {
-  //     const response = await fusionAuth.register(userId, registrationRequest);
-  //     return response;
-  //   } catch (error: any) {
-  //     console.log('eh error');
-  //     console.log(error);
-  //     console.log(JSON.stringify(error));
-  //     throw new HttpException(error.message, error.statusCode);
-  //   }
-  // }
-
-  /**
    * Fusion Auth Register
+   * why use raw axios post o fusion auth ?
+   * reason, there's error on lib, ref: https://github.com/FusionAuth/fusionauth-typescript-client/issues/10
    */
   async fusionAuthRegister(registerRequest: RegisterRequestDto) {
     const baseUrl = this.fusionAuthUrl;
@@ -198,7 +132,7 @@ export class FusionAuthService {
     const registration: IFusionAuthUserRegistration = {
       applicationId: this.fusionAuthAppId,
     };
-    console.log('application id(FUSIONAUTH_APP_ID)', this.fusionAuthAppId);
+
     const registrationRequest: IFusionAuthRegistrationRequest = {
       user,
       registration,
