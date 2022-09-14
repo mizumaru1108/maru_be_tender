@@ -1607,23 +1607,54 @@ export class CampaignService {
     return JSON.stringify(newObjectId);
   }
 
-  async getCampaignDetailById(campaignId: String) {
-    let data: any = [];
-    const ObjectId = require('mongoose').Types.ObjectId;
+  async getCampaignDetailById(campaignId: string): Promise<Campaign> {
+    if (!campaignId) throw new NotFoundException(`Please define campaignId`);
+    validateObjectId(campaignId);
 
-    if (!campaignId) {
-      throw new NotFoundException(`user not found`);
+    const campaignData = await this.campaignModel.findById(
+      new Types.ObjectId(campaignId),
+    );
+    if (!campaignData) throw new NotFoundException(`Campaign not found`);
+
+    const campaignDetails = await this.campaignModel.aggregate([
+      { $match: { _id: new Types.ObjectId(campaignId) } },
+      {
+        $lookup: {
+          from: 'project',
+          localField: 'projectId',
+          foreignField: '_id',
+          as: 'projectDetails',
+        },
+      },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'creatorUserId',
+          foreignField: '_id',
+          as: 'createdBy',
+        },
+      },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'updaterUserId',
+          foreignField: '_id',
+          as: 'updatedBy',
+        },
+      },
+      {
+        $addFields: {
+          projectName: { $first: '$projectDetails.name' },
+          createdBy: { $first: '$createdBy' },
+          updatedBy: { $first: '$updatedBy' },
+        },
+      },
+    ]);
+    if (!campaignDetails || campaignDetails.length === 0) {
+      throw new NotFoundException(`Campaign not found`);
     }
 
-    try {
-      data = await this.campaignModel.findOne({
-        _id: ObjectId(campaignId),
-      });
-    } catch (error) {
-      throw new InternalServerErrorException(`Error get Data - ${error}`);
-    }
-
-    return data;
+    return campaignDetails[0];
   }
 
   async getUnapprovalCampaignById(organizationId: string, campaignId: string) {

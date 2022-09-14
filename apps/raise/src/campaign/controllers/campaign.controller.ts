@@ -493,15 +493,24 @@ export class CampaignController {
     return await this.campaignService.getObjectId(createCampaignDto);
   }
 
-  @ApiOperation({ summary: 'get a campaign detail by campaignId' })
+  @ApiOperation({ summary: 'get a campaign detail by campaignId (only for )' })
   @ApiResponse({
     status: 200,
-    description: 'get a campaign detail by campaignId',
+    description: 'Campaign `campaignId` details retrieved successfully!',
   })
   @Get('detail/:campaignId')
-  async getCampaignDetailById(@Param('campaignId') campaignId: string) {
-    this.logger.debug('get ObjectId ');
-    return await this.campaignService.getCampaignDetailById(campaignId);
+  async getCampaignDetailById(
+    @Param('campaignId') campaignId: string,
+  ): Promise<BaseResponse<Campaign>> {
+    this.logger.debug(`get details of ${campaignId}`);
+    const campaign = await this.campaignService.getCampaignDetailById(
+      campaignId,
+    );
+    return baseResponseHelper(
+      campaign,
+      HttpStatus.OK,
+      `Campaign ${campaignId} details retrieved successfully!`,
+    );
   }
 
   @ApiOperation({ summary: 'update campaign' })
