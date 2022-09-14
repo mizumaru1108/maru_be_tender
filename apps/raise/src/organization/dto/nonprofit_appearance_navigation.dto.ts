@@ -8,6 +8,10 @@ const missionDto = z.object({
   mission: z.string().min(1),
   iconMission: z.string(ImagePayload),
 })
+// const photoWhyUsUlDto = z.object({
+//   mission: z.string().min(1),
+//   iconMission: z.string(ImagePayload),
+// })
 const whyUsDto = z.object({
   whyUs: z.string().min(1),
   iconWhyUs: z.string(ImagePayload),
@@ -21,6 +25,7 @@ export const NonProfitAppearanceNavigationDto = z.object({
   titleThumbnail: z.string().optional(),
   photoThumbnail: z.string().optional(),
   descriptionThumbnail: z.string().optional(),
+  photoWhyUs: z.string().optional(),
   mission: z.array(missionDto),
   iconForMission: z.string().optional(),
   titleActivities: z.string().optional(),
@@ -34,7 +39,7 @@ export const NonProfitAppearanceNavigationDto = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
   photoThumbnailUl: z.array(ImagePayload).optional(),
-  iconForMissionUl: z.array(ImagePayload).optional(),
+  photoWhyUsUl: z.array(ImagePayload).optional(),
   photoOfActivityUl: z.array(ImagePayload).optional(),
 });
 export type NonProfitAppearanceNavigationDto = z.infer<typeof NonProfitAppearanceNavigationDto>;

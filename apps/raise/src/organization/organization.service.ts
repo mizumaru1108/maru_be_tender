@@ -1214,7 +1214,7 @@ export class OrganizationService {
 
     nonProfitAppearanceNavigationDto.organizationId = organizationId;
     const missionPath: any = [];
-    /** Create Path Url ForImage mission */
+    /** Create Path Url ForImage why Us */
     if (
       nonProfitAppearanceNavigationDto! &&
       nonProfitAppearanceNavigationDto.mission!
@@ -1249,7 +1249,6 @@ export class OrganizationService {
         );
 
         if (imageUpload) {
-          console.info('Mission image has been created');
           missionPath.push({
             mission: mission[i].mission!,
             iconMission: path,
@@ -1340,14 +1339,14 @@ export class OrganizationService {
 
     if (
       nonProfitAppearanceNavigationDto &&
-      nonProfitAppearanceNavigationDto.iconForMissionUl!
+      nonProfitAppearanceNavigationDto.photoWhyUsUl!
     ) {
       const iconForMission =
-        nonProfitAppearanceNavigationDto.iconForMissionUl[0];
+        nonProfitAppearanceNavigationDto.photoWhyUsUl[0];
       if (!!iconForMission) {
         const path = await this.bunnyService.generatePath(
           nonProfitAppearanceNavigationDto.organizationId!,
-          'landingpage-iconForMission',
+          'landingpage-photoWhyUs',
           iconForMission.fullName!,
           iconForMission.imageExtension!,
           nonProfitAppearanceNavigationDto.organizationId!,
@@ -1371,7 +1370,7 @@ export class OrganizationService {
 
         if (imageUpload) {
           console.info('Thumbnail image has been created', path);
-          nonProfitAppearanceNavigationDto.iconForMission = path;
+          nonProfitAppearanceNavigationDto.photoWhyUs = path;
         }
       }
     }
@@ -1942,27 +1941,27 @@ export class OrganizationService {
 
     if (
       editNonProfitAppearanceNavigationDto &&
-      editNonProfitAppearanceNavigationDto.iconForMissionUl!
+      editNonProfitAppearanceNavigationDto.photoWhyUsUl! //iconForMissionUl!
     ) {
-      const iconForMission =
-        editNonProfitAppearanceNavigationDto.iconForMissionUl[0];
-      if (!!iconForMission) {
+      const photoWhyUs =
+        editNonProfitAppearanceNavigationDto.photoWhyUsUl[0];
+      if (!!photoWhyUs) {
         const path = await this.bunnyService.generatePath(
           editNonProfitAppearanceNavigationDto.organizationId!,
-          'landingpage-iconForMission',
-          iconForMission.fullName!,
-          iconForMission.imageExtension!,
+          'landingpage-photoWhyUs',
+          photoWhyUs.fullName!,
+          photoWhyUs.imageExtension!,
           editNonProfitAppearanceNavigationDto.organizationId!,
         );
-        const base64Data = iconForMission.base64Data!;
-        const binary = Buffer.from(iconForMission.base64Data!, 'base64');
+        const base64Data = photoWhyUs.base64Data!;
+        const binary = Buffer.from(photoWhyUs.base64Data!, 'base64');
         if (!binary) {
           const trimmedString = 56;
           base64Data.length > 40
             ? base64Data.substring(0, 40 - 3) + '...'
             : base64Data.substring(0, length);
           throw new BadRequestException(
-            `Image payload photo thumbnail is not a valid base64 data: ${trimmedString}`,
+            `Image payload photo why us is not a valid base64 data: ${trimmedString}`,
           );
         }
         const imageUpload = await this.bunnyService.uploadImage(
@@ -1972,21 +1971,21 @@ export class OrganizationService {
         );
 
         if (imageUpload) {
-          if (editNonProfitAppearanceNavigationDto.iconForMission!) {
+          if (editNonProfitAppearanceNavigationDto.photoWhyUs!) {
             console.info(
-              'Old Thumbnail image seems to be exist in the old record',
+              'Old why us image seems to be exist in the old record',
             );
             const isExist = await this.bunnyService.checkIfImageExists(
-              editNonProfitAppearanceNavigationDto.iconForMission!,
+              editNonProfitAppearanceNavigationDto.photoWhyUs!,
             );
             if (isExist) {
               await this.bunnyService.deleteImage(
-                editNonProfitAppearanceNavigationDto.iconForMission!,
+                editNonProfitAppearanceNavigationDto.photoWhyUs!,
               );
             }
           }
-          console.info('Thumbnail image has been replaced', path);
-          editNonProfitAppearanceNavigationDto.iconForMission = path;
+          console.info('Why Us image has been replaced', path);
+          editNonProfitAppearanceNavigationDto.photoWhyUs = path;
         }
       }
     }

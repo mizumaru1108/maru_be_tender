@@ -92,6 +92,9 @@ export class AppearanceNavigation {
   @Prop()
   updatedAt?: string;
 
+  @Prop()
+  photoWhyUs?: string;
+
 }
 
 export const AppearanceNavigationSchema = SchemaFactory.createForClass(AppearanceNavigation)
