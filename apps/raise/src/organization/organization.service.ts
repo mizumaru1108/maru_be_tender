@@ -105,7 +105,7 @@ export class OrganizationService {
     @InjectModel(DonationLogs.name)
     private campaignAggregatePaginateModel: AggregatePaginateModel<DonationLogDocument>,
     private bunnyService: BunnyService,
-  ) {}
+  ) { }
 
   async findAll() {
     this.logger.debug('findAll...');
@@ -1565,12 +1565,60 @@ export class OrganizationService {
       }
     }
 
+    const companyPath: any = [];
+    /** Create Path Url ForImage company */
+    if (
+      nonProfitAppearanceNavigationAboutUsDto! &&
+      nonProfitAppearanceNavigationAboutUsDto.companyValues!
+    ) {
+      const dataCompany = JSON.stringify(
+        nonProfitAppearanceNavigationAboutUsDto.companyValues!,
+      );
+      const company = JSON.parse(dataCompany);
+      for (let i = 0; i < company.length; i++) {
+        const path = await this.bunnyService.generatePath(
+          nonProfitAppearanceNavigationAboutUsDto.organizationId!,
+          'aboutus-company',
+          company[i].fullName!,
+          company[i].imageExtension!,
+          nonProfitAppearanceNavigationAboutUsDto.organizationId!,
+        );
+        const base64Data = company[i].base64Data;
+        const binary = Buffer.from(company[i]!.base64Data!, 'base64');
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+        const imageUpload = await this.bunnyService.uploadImage(
+          path,
+          binary,
+          nonProfitAppearanceNavigationAboutUsDto.organizationId!,
+        );
+
+        if (imageUpload) {
+          console.info('company image has been created');
+          companyPath.push({
+            companyValues: company[i].companyValues!,
+            iconCompanyValues: path,
+          });
+        }
+      }
+    }
+
+
     this.logger.debug('Create AboutUs Organization...');
     nonProfitAppearanceNavigationAboutUsDto.organizationId = organizationId;
     nonProfitAppearanceNavigationAboutUsDto.page = 'ABOUTUS';
     let now: Date = new Date();
     nonProfitAppearanceNavigationAboutUsDto.createdAt = now.toISOString();
     nonProfitAppearanceNavigationAboutUsDto.updatedAt = now.toISOString();
+    nonProfitAppearanceNavigationAboutUsDto.companyValues = companyPath;
+
     let appearanceCreateAboutUs;
     try {
       appearanceCreateAboutUs = await this.appearanceNavigationModel.create(
@@ -2037,7 +2085,7 @@ export class OrganizationService {
       if (!!photoThumbnail && photoThumbnail) {
         const path = await this.bunnyService.generatePath(
           editNonProfApprceNaviAboutUsDto.organizationId!,
-          'landingpage-photoThumbnail',
+          'aboutus-photoThumbnail',
           photoThumbnail.fullName!,
           photoThumbnail.imageExtension!,
           editNonProfApprceNaviAboutUsDto.organizationId!,
@@ -2129,9 +2177,59 @@ export class OrganizationService {
       }
     }
 
+
+    const companyPath: any = [];
+    /** Create Path Url ForImage company */
+    if (
+      editNonProfApprceNaviAboutUsDto! &&
+      editNonProfApprceNaviAboutUsDto.companyValues!
+    ) {
+      const dataCompany = JSON.stringify(
+        editNonProfApprceNaviAboutUsDto.companyValues!,
+      );
+
+      const company = JSON.parse(dataCompany);
+      console.log('company Lenght', company);
+
+      for (let i = 0; i < company.length; i++) {
+        const path = await this.bunnyService.generatePath(
+          editNonProfApprceNaviAboutUsDto.organizationId,
+          'aboutus-company',
+          company[i].fullName!,
+          company[i].imageExtension!,
+          editNonProfApprceNaviAboutUsDto.organizationId!,
+        );
+        const base64Data = company[i].base64Data;
+        const binary = Buffer.from(company[i]!.base64Data!, 'base64');
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+        const imageUpload = await this.bunnyService.uploadImage(
+          path,
+          binary,
+          editNonProfApprceNaviAboutUsDto.organizationId,
+        );
+
+        if (imageUpload) {
+          console.info('company image has been created');
+          companyPath.push({
+            companyValues: company[i].companyValues!,
+            iconCompanyValues: path,
+          });
+        }
+      }
+    }
+
     this.logger.debug('Edit AboutUs Organization...');
     let now: Date = new Date();
     editNonProfApprceNaviAboutUsDto.updatedAt = now.toISOString();
+    editNonProfApprceNaviAboutUsDto.companyValues = companyPath;
     const abouUsPageUpdated =
       await this.appearanceNavigationModel.findOneAndUpdate(
         { organizationId: organizationId, page: 'ABOUTUS' },
@@ -2731,7 +2829,7 @@ export class OrganizationService {
       total_donation:
         totalZakatCampaigns || totalCampaigns
           ? (totalZakatCampaigns ? totalZakatCampaigns : 0) +
-            (totalCampaigns ? totalCampaigns : 0)
+          (totalCampaigns ? totalCampaigns : 0)
           : 0,
       campaigns: totalCampaigns ? totalCampaigns : 0,
       amount_ofcampaigns: amountCampaigns ? amountCampaigns : 0,

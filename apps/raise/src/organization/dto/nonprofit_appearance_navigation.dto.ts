@@ -13,6 +13,7 @@ const whyUsDto = z.object({
   iconWhyUs: z.string(ImagePayload),
 })
 
+
 export const NonProfitAppearanceNavigationDto = z.object({
   organizationId: z.string().optional(),
   ownerUserId: z.string().optional(),
@@ -48,15 +49,20 @@ export type EditNonProfApperNavDto = z.infer<typeof EditNonProfApperNavDto>;
 const vision = z.object({
   vision: z.string().optional()
 });
-const companyValues = z.object({
-  companyValues: z.string().optional()
-});
+// const companyValues = z.object({
+//   companyValues: z.string().optional()
+// });
+const companyValuesDto = z.object({
+  companyValues: z.string().min(1),
+  iconCompanyValues: z.string(ImagePayload),
+})
 const teamMemberAddUser = z.object({
   teamMemberAddUser: z.string().optional()
 });
 const news = z.object({
   news: z.string().optional()
 });
+
 
 export const NonProfitAppearanceNavigationAboutUsDto = z.object({
   organizationId: z.string().optional(),
@@ -68,7 +74,7 @@ export const NonProfitAppearanceNavigationAboutUsDto = z.object({
   vision: z.array(vision).optional(),
   iconForMission: z.string().optional(),
   linkedYoutube: z.string().optional(),
-  companyValues: z.array(companyValues),
+  companyValues: z.array(companyValuesDto),
   iconForValues: z.string().optional(),
   teamMemberAddUser: z.array(teamMemberAddUser),
   page: z.string().default('ABOUTUS'),
@@ -114,50 +120,3 @@ export const EditNonProfitAppearanceNavigationBlogDto = NonProfitAppearanceNavig
 
 export type EditNonProfitAppearanceNavigationBlogDto = z.infer<typeof EditNonProfitAppearanceNavigationBlogDto>;
 
-//   @ApiProperty()
-//   @IsString()
-//   id: string;
-
-//   @ApiProperty()
-//   @IsString()
-//   organizationId: string;
-
-//   @ApiProperty()
-//   @IsString()
-//   ownerUserId: string;
-
-//   @ApiProperty()
-//   @IsString()
-//   ownerRealmId: string;
-
-//   @ApiProperty()
-//   @IsString()
-//   titleThumbnail: string;
-
-//   @ApiProperty()
-//   @IsString()
-//   photoThumbnail: string;
-
-//   @ApiProperty()
-//   @IsString()
-//   descriptionThumbnail: string;
-
-//   @ApiProperty()
-//   @IsString()
-//   date: string;
-
-//   @ApiProperty()
-//   @IsEnum(() => IsActive)
-//   isDeleted: IsActive;
-
-//   @ApiProperty()
-//   @IsEnum(() => IsActive)
-//   isActive: IsActive;
-
-//   @ApiProperty()
-//   @IsArray()
-//   news: string[];
-
-//   @IsString()
-//   updatedAt: string;
-// }
