@@ -40,7 +40,6 @@ import { ApproveCampaignResponseDto } from '../dto/approve-campaign-response.dto
 import { CampaignCreateDto } from '../dto/campaign-create.dto';
 import { CampaignDonorOnOperatorDasboardFilter } from '../dto/campaign-donor-on-operator-dashboard-filter.dto';
 import { CampaignDonorOnOperatorDasboardParam } from '../dto/campaign-donor-on-operator-dashboard-param.dto';
-import { GetAllMypendingCampaignFromVendorIdRequest } from '../dto/get-all-my-pending-campaign-from-vendor-id.request';
 import { GetAllNewCampaignFilter } from '../dto/get-all-new-campaign-filter.dto';
 import { UpdateCampaignDto } from '../dto/update-campaign-dto';
 import { UpdateCampaignStatusDto } from '../dto/update-campaign-status.dto';
@@ -51,6 +50,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { validateObjectId } from '../../commons/utils/validateObjectId';
 import { CampaignUpdateDto } from '../dto/campaign-update.dto';
 import { CampaignCreateResponse } from '../dto/campaign-create-response.dto';
+import { CampaignGetAllVendorRequestDto } from '../dto/campaign-get-all-vendor-request.dto';
+import { GetAllMyCampaignFilterDto } from '../dto/get-all-my-campaign.dto';
+import { RoleEnum } from '../../user/enums/role-enum';
 @Injectable()
 export class CampaignService {
   private logger = rootLogger.child({ logger: CampaignService.name });
@@ -1297,75 +1299,88 @@ export class CampaignService {
   }
 
   async getAllCampaignVendorRequest(
-    request: GetAllMypendingCampaignFromVendorIdRequest,
+    request: CampaignGetAllVendorRequestDto,
   ): Promise<AggregatePaginateResult<CampaignDocument>> {
     const { limit = 10, page = 1 } = request;
-    const ObjectId = require('mongoose').Types.ObjectId;
     const aggregateQuerry = this.campaignModel.aggregate([
+      // STEP 1: vendor and all campaign that has been done by the vendor -------------------------------------------------------
       {
-        $lookup: {
-          from: 'campaignVendorLog',
-          localField: '_id',
-          foreignField: 'campaignId',
-          as: 'campaignDatasInVendorLog',
+        $match: {
+          isDeleted: { $regex: /.*n.*/, $options: 'i' }, // not deleted
+          amountProgress: { $nin: ['', null, 0] }, // not null/""/0
+          amountTarget: { $nin: ['', null, 0] }, // not null/""/0
+          organizationId: new Types.ObjectId(request.organizationId),
         },
       },
-      {
-        $unwind: {
-          path: '$campaignDatasInVendorLog',
-          preserveNullAndEmptyArrays: false,
-        },
-      },
+      // add new field [is done, (boolan)], from matching progress and amount target, if progress >= target, then is done = true
       {
         $addFields: {
           isDone: {
-            $eq: [
+            $gte: [
               { $toDouble: { $trunc: ['$amountProgress', 2] } },
               { $toDouble: { $trunc: ['$amountTarget', 2] } },
             ],
           },
         },
       },
+      // find only campaign that is done
+      { $match: { isDone: true } },
+      // lookup from campaignVendorLog to get vendorId
       {
-        $match: {
-          amountProgress: { $nin: ['', null, 0] },
-          amountTarget: { $nin: ['', null, 0] },
-          organizationId: ObjectId(request.organizationId),
-          'campaignDatasInVendorLog.status': 'pending new',
+        $lookup: {
+          from: 'campaignVendorLog',
+          localField: '_id',
+          foreignField: 'campaignId',
+          as: 'vendorLog',
+        },
+      },
+      { $unwind: { path: '$vendorLog', preserveNullAndEmptyArrays: true } },
+      { $addFields: { vendorId: { $toObjectId: '$vendorLog.vendorId' } } }, // parse vendorId to ObjectId for lookup to vendor collection
+      // find vendor from vendorId obtained from campaignVendorLog
+      {
+        $lookup: {
+          from: 'vendor',
+          localField: 'vendorId',
+          foreignField: '_id',
+          as: 'vendor',
+        },
+      },
+      { $unwind: { path: '$vendor', preserveNullAndEmptyArrays: true } },
+      // add field vendorName from vendor
+      { $addFields: { vendorName: '$vendor.name' } },
+      // group by vendorId
+      {
+        $group: {
+          _id: '$vendorId',
+          vendorName: { $first: '$vendorName' },
+          completedCampaignId: { $push: '$_id' }, // as field so we can trace wether the campaign is completed or not
         },
       },
       {
         $addFields: {
-          'campaignDatasInVendorLog.vendorId': {
-            $toObjectId: '$campaignDatasInVendorLog.vendorId',
-          },
+          totalCampaignDone: { $size: '$completedCampaignId' },
+          stringVendorId: { $toString: '$_id' },
+          currentCampaignId: new Types.ObjectId(request.campaignId), // current id of page where we on
         },
       },
+      // STEP 2: get all pending new  ------------------------------------------------------------------------------------------
       {
         $lookup: {
-          from: 'vendor',
-          localField: 'campaignDatasInVendorLog.vendorId',
-          foreignField: '_id',
-          as: 'vendorDatas',
+          from: 'campaignVendorLog',
+          localField: 'stringVendorId',
+          foreignField: 'vendorId',
+          as: 'vendorLog',
         },
       },
+      { $unwind: { path: '$vendorLog', preserveNullAndEmptyArrays: true } },
       {
-        $unwind: {
-          path: '$vendorDatas',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $group: {
-          _id: '$_id',
-          campaignId: { $first: '$campaignDatasInVendorLog.campaignId' },
-          vendorId: { $first: '$campaignDatasInVendorLog.vendorId' },
-          vendorName: { $first: '$vendorDatas.name' },
-          campaignType: { $first: '$campaignType' },
-          campaignDone: { $sum: 1 },
+        $match: {
+          'vendorLog.status': CampaignStatus.PENDING_NEW,
+          'vendorLog.campaignId': new Types.ObjectId(request.campaignId),
         },
       },
     ]);
+
     const campaignList =
       await this.campaignAggregatePaginateModel.aggregatePaginate(
         aggregateQuerry,
@@ -1374,6 +1389,88 @@ export class CampaignService {
           limit,
         },
       );
+    return campaignList;
+  }
+
+  async getAllMyCampaign(
+    userId: string,
+    request: GetAllMyCampaignFilterDto,
+  ): Promise<AggregatePaginateResult<CampaignDocument>> {
+    const { limit = 10, page = 1, sortBy, sortMethod } = request;
+    const filter: FilterQuery<CampaignDocument> = {};
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+    // this api can only be accessed by operator & manager, if roles = operator, show only campaign that created by user
+    if (user.type === RoleEnum.OPERATOR) filter.creatorUserId = userId;
+    filter.isDeleted = { $regex: 'n', $options: 'i' };
+    filter.organizationId = new Types.ObjectId(request.organizationId);
+    request.campaignType && (filter.campaignType = request.campaignType);
+    request.campaignId && (filter._id = new Types.ObjectId(request.campaignId));
+
+    // default get the latest first
+    const method: 1 | -1 = sortMethod === 'asc' ? 1 : -1;
+    let sort: Record<string, 1 | -1> = {};
+    if (sortBy) {
+      if (sortBy === 'campaignName') sort = { campaignName: method };
+      if (sortBy === 'campaignType') sort = { campaignType: method };
+      if (sortBy === 'updatedAt') sort = { updatedAt: method };
+      if (sortBy === 'status') sort = { status: method };
+      if (sortBy === 'milestoneCount') sort = { milestoneCount: method };
+    } else {
+      sort = { updatedAt: method };
+    }
+
+    // objective, get CampaignName, Type, Last Update, Condition, Milestone (count).
+    const aggregateQuerry = this.campaignModel.aggregate([
+      { $match: filter },
+      {
+        $project: {
+          campaignName: 1,
+          campaignType: 1,
+          updatedAt: 1,
+          createdAt: 1,
+          status: 1,
+          milestoneCount: { $size: '$milestone' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'campaignVendorLog',
+          localField: '_id',
+          foreignField: 'campaignId',
+          as: 'campaignVendorLog',
+        },
+      },
+      {
+        $unwind: {
+          path: '$campaignVendorLog',
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          campaignName: { $first: '$campaignName' },
+          campaignType: { $first: '$campaignType' },
+          updatedAt: { $first: '$updatedAt' },
+          createdAt: { $first: '$createdAt' },
+          status: { $first: '$campaignVendorLog.status' },
+          milestoneCount: { $first: '$milestoneCount' },
+        },
+      },
+      { $sort: sort },
+    ]);
+
+    const campaignList =
+      await this.campaignAggregatePaginateModel.aggregatePaginate(
+        aggregateQuerry,
+        {
+          page,
+          limit,
+        },
+      );
+
     return campaignList;
   }
 

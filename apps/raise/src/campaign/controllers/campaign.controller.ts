@@ -24,23 +24,23 @@ import { DonorService } from '../../donor/donor.service';
 import { Permission } from '../../libs/authzed/enums/permission.enum';
 import { rootLogger } from '../../logger';
 import { ICurrentUser } from '../../user/interfaces/current-user.interface';
-import { Campaign, CampaignDocument } from '../schema/campaign.schema';
-import { CampaignService } from '../services/campaign.service';
 import { CampaignSetFavoriteDto, CreateCampaignDto } from '../dto';
 import { CampaignApplyVendorDto } from '../dto/apply-vendor.dto';
 import { ApproveCampaignResponseDto } from '../dto/approve-campaign-response.dto';
+import { CampaignCreateResponse } from '../dto/campaign-create-response.dto';
 import { CampaignCreateDto } from '../dto/campaign-create.dto';
 import { CampaignDonorOnOperatorDasboardFilter } from '../dto/campaign-donor-on-operator-dashboard-filter.dto';
 import { CampaignDonorOnOperatorDasboardParam } from '../dto/campaign-donor-on-operator-dashboard-param.dto';
+import { CampaignUpdateDto } from '../dto/campaign-update.dto';
 import { CampaignSetDeletedFlagDto } from '../dto/capaign-set-flag-deleted';
-import { GetAllMypendingCampaignFromVendorIdRequest } from '../dto/get-all-my-pending-campaign-from-vendor-id.request';
+import { CampaignGetAllVendorRequestDto } from '../dto/campaign-get-all-vendor-request.dto';
 import { GetAllNewCampaignFilter } from '../dto/get-all-new-campaign-filter.dto';
 import { GetAllNewCampaignParams } from '../dto/get-all-new-campaign-params.dto';
 import { UpdateCampaignDto } from '../dto/update-campaign-dto';
 import { UpdateCampaignStatusDto } from '../dto/update-campaign-status.dto';
-import { CampaignUpdateDto } from '../dto/campaign-update.dto';
-import { AddMilestoneDto } from '../dto/milestone/requests/add-milestone.dto';
-import { CampaignCreateResponse } from '../dto/campaign-create-response.dto';
+import { Campaign, CampaignDocument } from '../schema/campaign.schema';
+import { CampaignService } from '../services/campaign.service';
+import { GetAllMyCampaignFilterDto } from '../dto/get-all-my-campaign.dto';
 
 @ApiTags('campaign')
 @Controller('campaign')
@@ -110,14 +110,22 @@ export class CampaignController {
    * Data Displayed by Frontend (response)
    * Vendor Name, Total Campaigns Done Before.
    */
+  @ApiOperation({
+    summary: 'Get all pending campaign vendor request (operator/admin)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: `Successfully fetch all campaign vendor request on 'campaignId'`,
+  })
   @Permissions(Permission.OE)
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @ApiOperation({ summary: 'Get list all my pending campaign (vendor)' })
   @Get('getAllCampaignVendorRequest')
   async getAllCampaignVendorRequest(
-    @Query() request: GetAllMypendingCampaignFromVendorIdRequest,
+    @Query() request: CampaignGetAllVendorRequestDto,
   ): Promise<PaginatedResponse<CampaignDocument[]>> {
-    this.logger.debug(`Get list all my pending campaign`);
+    this.logger.debug(
+      `Get all pending campaign vendor request from ${request.campaignId}`,
+    );
     const campaignList = await this.campaignService.getAllCampaignVendorRequest(
       request,
     );
@@ -133,7 +141,48 @@ export class CampaignController {
       campaignList.prevPage,
       campaignList.nextPage,
       HttpStatus.OK,
-      'Successfully get list all campaign',
+      `Successfully fetch all campaign vendor request on '${request.campaignId}'`,
+    );
+    return response;
+  }
+
+  /**
+   *
+   */
+  @ApiOperation({
+    summary: 'Get all my campaign (operator/admin)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: `Successfully fetch all campaign on user 'userId'`,
+  })
+  @Permissions(Permission.OE)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Get('getAllMyCampaign')
+  async getAllMyCampaign(
+    @CurrentUser() user: ICurrentUser,
+    @Query() request: GetAllMyCampaignFilterDto,
+  ): Promise<PaginatedResponse<CampaignDocument[]>> {
+    this.logger.debug(
+      `Get all pending campaign vendor request from ${user.id}`,
+    );
+    const campaignList = await this.campaignService.getAllMyCampaign(
+      user.id,
+      request,
+    );
+    const response = paginationHelper(
+      campaignList.docs,
+      campaignList.totalDocs,
+      campaignList.limit,
+      campaignList.page,
+      campaignList.totalPages,
+      campaignList.pagingCounter,
+      campaignList.hasPrevPage,
+      campaignList.hasNextPage,
+      campaignList.prevPage,
+      campaignList.nextPage,
+      HttpStatus.OK,
+      `Successfully fetch all campaign on user '${user.id}'`,
     );
     return response;
   }
