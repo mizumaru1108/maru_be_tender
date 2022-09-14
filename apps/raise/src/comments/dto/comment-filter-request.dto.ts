@@ -5,10 +5,11 @@ import {
   IsNotEmpty,
   IsEnum,
   IsUUID,
+  IsIn,
 } from 'class-validator';
 import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
 import { BaseFilterRequest } from '../../commons/dtos/base-filter-request.dto';
-import { SortBy } from '../../commons/enums/sortby-enum';
+import { SortMethod } from '../../commons/enums/sortby-method';
 
 export class CommentFilterRequest extends BaseFilterRequest {
   /**
@@ -76,6 +77,15 @@ export class CommentFilterRequest extends BaseFilterRequest {
    */
   @ApiPropertyOptional()
   @IsOptional()
-  @IsEnum(SortBy)
-  sortBy?: SortBy;
+  @IsString()
+  @IsIn(['createdAt', 'updatedAt'])
+  sortBy?: string;
+
+  /**
+   * sort by querry
+   */
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsEnum(SortMethod, { message: `sortMethod must be "asc" or "desc"` })
+  sortMethod?: SortMethod;
 }
