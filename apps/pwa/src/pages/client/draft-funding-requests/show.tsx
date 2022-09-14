@@ -14,7 +14,7 @@ function DraftsFundingRequest() {
   return (
     <Page title="Draft Funding Request | #123D13V">
       <Container>
-        <ContentStyle></ContentStyle>
+        <ContentStyle />
       </Container>
     </Page>
   );

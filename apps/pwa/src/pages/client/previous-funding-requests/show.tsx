@@ -15,7 +15,7 @@ function PreviousFundingRequests() {
   return (
     <Page title="Previous Funding Request | #Af123V3">
       <Container>
-        <ContentStyle></ContentStyle>
+        <ContentStyle />
       </Container>
     </Page>
   );
