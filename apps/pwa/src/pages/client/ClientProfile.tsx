@@ -32,7 +32,7 @@ function ClientProfile() {
   }));
 
   return (
-    <Page title="Fundin Project Request">
+    <Page title="My Profile">
       <Container>
         <ContentStyle>
           <Stack direction="row" justifyContent="space-between">
@@ -70,7 +70,10 @@ function ClientProfile() {
                 backgroundColor: '#0169DE',
                 color: '#fff',
                 borderRadius: '10px',
-                '&:hover': { backgroundColor: 'blue' },
+                '&:hover': { backgroundColor: '#1482FE' },
+                px: '15px',
+                py: '0px',
+                height: '45px',
               }}
               onClick={() => navigate('/client/my-profile/edit')}
             >

@@ -1,27 +1,23 @@
+import { Container } from '@mui/material';
 import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
-import { Container } from '@mui/material';
-import DashboardPage from 'sections/client/dashboard';
 
-function MainClientPage() {
+function DraftsFundingRequest() {
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
     display: 'flex',
     justifyContent: 'start',
     flexDirection: 'column',
-    rowGap: '50px',
+    gap: 20,
   }));
-
   return (
-    <Page title="Client Dashboard">
+    <Page title="Draft Funding Request | #123D13V">
       <Container>
-        <ContentStyle>
-          <DashboardPage />
-        </ContentStyle>
+        <ContentStyle></ContentStyle>
       </Container>
     </Page>
   );
 }
 
-export default MainClientPage;
+export default DraftsFundingRequest;

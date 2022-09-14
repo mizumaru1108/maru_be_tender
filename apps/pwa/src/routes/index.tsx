@@ -84,8 +84,26 @@ export default function Router() {
               element: <FundingProjectRequest />,
             },
 
-            { path: 'drafts', element: <DraftsFundingRequest /> },
-            { path: 'previous-funding-requests', element: <PreviousFundingRequests /> },
+            {
+              path: 'draft-funding-requests',
+              children: [
+                { path: '', element: <DraftFundingRequests /> },
+                { path: ':id/:actionType', element: <DraftFundingRequestShow /> },
+              ],
+            },
+            {
+              path: 'previous-funding-requests',
+              children: [
+                {
+                  path: '',
+                  element: <PreviousFundingRequests />,
+                },
+                {
+                  path: ':id/:actionType',
+                  element: <PreviousFundingRequestShow />,
+                },
+              ],
+            },
             { path: 'messages', element: <Messages /> },
             {
               path: 'contact-support',
@@ -120,9 +138,15 @@ export default function Router() {
 
 // CLIENT ROUTES
 const FundingProjectRequest = Loadable(lazy(() => import('pages/client/FundingProjectRequest')));
-const DraftsFundingRequest = Loadable(lazy(() => import('pages/client/DraftsFundingRequest')));
+const DraftFundingRequests = Loadable(lazy(() => import('pages/client/draft-funding-requests')));
+const DraftFundingRequestShow = Loadable(
+  lazy(() => import('pages/client/draft-funding-requests/show'))
+);
 const PreviousFundingRequests = Loadable(
-  lazy(() => import('pages/client/PreviousFundingRequests'))
+  lazy(() => import('pages/client/previous-funding-requests'))
+);
+const PreviousFundingRequestShow = Loadable(
+  lazy(() => import('pages/client/previous-funding-requests/show'))
 );
 const Messages = Loadable(lazy(() => import('pages/client/Messages')));
 const ContactSupport = Loadable(lazy(() => import('pages/client/ContactSupport')));

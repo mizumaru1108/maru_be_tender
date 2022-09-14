@@ -13,7 +13,7 @@ const ContactSupport = () => {
     flexDirection: 'column',
   }));
   return (
-    <Page title="Fundin Project Request">
+    <Page title="Contact And Support">
       <Container>
         <ContentStyle>
           <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>

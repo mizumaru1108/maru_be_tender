@@ -77,6 +77,12 @@ const ar = {
   register_one: 'قم بإنشاء حساب من هنا',
   add_new_line: 'إنشاء سطر جديد',
   create_new_account: ' إنشاء حساب جديد',
+  show_details: 'عرض التفاصيل',
+  show_project: 'استعراض المشروع',
+  completing_exchange_permission: 'إتمام إذن الصرف',
+  pending: 'الطلب معلق',
+  completed: 'الطلب مكتمل',
+  canceled: 'الطلب ملفى',
   register_form1: {
     entity_area: {
       label: 'مجال الجهة',

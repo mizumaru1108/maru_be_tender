@@ -72,9 +72,7 @@ export default function AddBankModal({ open, handleClose }: any) {
                 <Stack direction="row" justifyContent="center">
                   <Stack justifyContent="center" direction="row" gap={3}>
                     <Button
-                      onClick={() => {
-                        console.log('asdasodmpams');
-                      }}
+                      onClick={handleClose}
                       sx={{
                         color: 'text.primary',
                         width: { xs: '100%', sm: '200px' },

@@ -41,6 +41,9 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
 
   const isDesktop = useResponsive('up', 'lg');
 
+  // here the role should come from the user account
+  // it is now just for testing
+  // const role = LocalStorage.get(role)
   const role = 'client';
 
   const { isCollapse, collapseClick, collapseHover, onHoverEnter, onHoverLeave } =

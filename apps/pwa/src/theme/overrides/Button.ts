@@ -9,6 +9,7 @@ export default function Button(theme: Theme) {
         root: {
           '&:hover': {
             boxShadow: 'none',
+            backgroundColor: '#13B2A2',
           },
         },
         sizeLarge: {

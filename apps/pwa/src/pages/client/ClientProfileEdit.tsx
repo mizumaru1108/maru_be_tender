@@ -14,7 +14,7 @@ function ClientProfileEdit() {
   }));
 
   return (
-    <Page title="Fundin Project Request">
+    <Page title="Profile Editing">
       <Container>
         <ContentStyle>
           <ClientProfileEditForm />

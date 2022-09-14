@@ -138,34 +138,40 @@ function CurrentProject() {
             <Typography variant="h4">الميزانية الحالية</Typography>
             <Stack direction="column" gap={3}>
               <Stack direction="row" gap={1}>
-                <Card sx={{ backgroundColor: '#fff' }}>
-                  <CardContent>
-                    <img src={`/icons/rial-currency.svg`} alt="" />
-                    <Typography variant="h6" sx={{ fontSize: '10px !important' }}>
-                      الميزانية المطلوبة
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      sx={{ fontSize: '13px !important', color: 'text.tertiary' }}
-                    >
-                      400,000 ريال
-                    </Typography>
-                  </CardContent>
-                </Card>
-                <Card sx={{ backgroundColor: '#fff' }}>
-                  <CardContent>
-                    <img src={`/icons/rial-currency.svg`} alt="" />
-                    <Typography variant="h6" sx={{ fontSize: '10px !important' }}>
-                      الميزانية المطلوبة
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      sx={{ fontSize: '13px !important', color: 'text.tertiary' }}
-                    >
-                      400,000 ريال
-                    </Typography>
-                  </CardContent>
-                </Card>
+                <Box
+                  sx={{
+                    borderRadius: '8px',
+                    backgroundColor: '#fff',
+                    py: '30px',
+                    paddingRight: '40px',
+                    paddingLeft: '5px',
+                  }}
+                >
+                  <img src={`/icons/rial-currency.svg`} alt="" />
+                  <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
+                    الميزانية المطلوبة
+                  </Typography>
+                  <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                    400,000 ريال
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    borderRadius: '8px',
+                    backgroundColor: '#fff',
+                    py: '30px',
+                    paddingRight: '40px',
+                    paddingLeft: '5px',
+                  }}
+                >
+                  <img src={`/icons/rial-currency.svg`} alt="" />
+                  <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
+                    الميزانية المطلوبة
+                  </Typography>
+                  <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                    400,000 ريال
+                  </Typography>
+                </Box>
               </Stack>
             </Stack>
           </Stack>

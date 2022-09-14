@@ -76,6 +76,12 @@ const en = {
   the_login_message: 'الرجاء إدخال عنوان البريد الإلكتروني أو رقم التصريح الخاص بك',
   dont_have_account: 'ليس لديك حساب في المنصة',
   register_one: 'قم بإنشاء حساب من هنا',
+  show_details: 'عرض التفاصيل',
+  show_project: 'استعراض المشروع',
+  completing_exchange_permission: 'إتمام إذن الصرف',
+  pending: '',
+  completed: '',
+  canceled: '',
   register_form1: {
     entity_area: {
       label: 'مجال الجهة',
