@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
 import { PayloadImage } from '../../commons/dtos/payload-image.dto';
-import { CreateMilestoneDto } from './milestone/requests/create-milestone.dto';
+import { CreateMilestoneDto } from './create-milestone.dto';
 
 export class CampaignCreateDto {
   @ApiProperty()

@@ -1,5 +1,5 @@
-import { CreateMilestoneDto } from '../dto/milestone/requests/create-milestone.dto';
-import { UpdateMilestoneDto } from '../dto/milestone/requests/update-milestone.dto';
+import { CreateMilestoneDto } from '../dto/create-milestone.dto';
+
 /**
  * not using doc type nor schema (it will be used as a type also a validator)
  */
