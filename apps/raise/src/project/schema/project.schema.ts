@@ -58,7 +58,7 @@ export class Project {
   @Prop({ default: null })
   public applierUserId?: string;
 
-  @Prop({ type: ProjectStatus, default: ProjectStatus.PENDING })
+  @Prop({ enum: ProjectStatus, default: ProjectStatus.PENDING })
   public projectStatus: ProjectStatus;
 
   @Prop({ required: true })
