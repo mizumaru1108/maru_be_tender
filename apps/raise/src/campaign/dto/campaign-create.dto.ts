@@ -1,10 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
+  ValidateNested,
 } from 'class-validator';
 import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
 import { PayloadImage } from '../../commons/dtos/payload-image.dto';
@@ -76,9 +78,13 @@ export class CampaignCreateDto {
 
   @ApiProperty()
   @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => PayloadImage)
   images: PayloadImage[];
 
   @ApiProperty()
   @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateMilestoneDto)
   milestone: CreateMilestoneDto[];
 }
