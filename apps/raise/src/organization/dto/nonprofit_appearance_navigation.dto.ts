@@ -70,6 +70,11 @@ const news = z.object({
   news: z.string().optional()
 });
 
+const featuresItemDto = z.object({
+  featuresItemTitle: z.string().min(1),
+  featuresItemDesc: z.string().min(1),
+  iconFeaturesItem: z.string(ImagePayload),
+})
 
 export const NonProfitAppearanceNavigationAboutUsDto = z.object({
   organizationId: z.string().optional(),
@@ -94,6 +99,10 @@ export const NonProfitAppearanceNavigationAboutUsDto = z.object({
   photoThumbnailUl: z.array(ImagePayload).optional(),
   news: z.array(news).optional(),
   iconForValuesUl: z.array(ImagePayload).optional(),
+  features: z.string().optional(),
+  featuresTitle: z.string().optional(),
+  featuresDesc: z.string().optional(),
+  featuresItem: z.array(featuresItemDto).optional(),
 })
 
 export type NonProfitAppearanceNavigationAboutUsDto = z.infer<typeof NonProfitAppearanceNavigationAboutUsDto>;
@@ -101,6 +110,7 @@ export type NonProfitAppearanceNavigationAboutUsDto = z.infer<typeof NonProfitAp
 export const EditNonProfApperNavAboutUsDto = NonProfitAppearanceNavigationAboutUsDto.partial().extend({
 });
 export type EditNonProfApperNavAboutUsDto = z.infer<typeof EditNonProfApperNavAboutUsDto>;
+
 
 
 
@@ -121,6 +131,7 @@ export const NonProfitAppearanceNavigationBlogDto = z.object({
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
   photoThumbnailUl: z.array(ImagePayload).optional(),
+
 })
 export type NonProfitAppearanceNavigationBlogDto = z.infer<typeof NonProfitAppearanceNavigationBlogDto>;
 

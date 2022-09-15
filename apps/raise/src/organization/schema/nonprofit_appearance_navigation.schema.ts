@@ -116,6 +116,17 @@ export class AppearanceNavigation {
   @Prop()
   photoWhyUs?: string;
 
+  @Prop()
+  features?: string;
+
+  @Prop()
+  featuresTitle?: string;
+
+  @Prop()
+  featuresDesc?: string;
+
+  @Prop()
+  featuresItem?: string[];
 }
 
 export const AppearanceNavigationSchema = SchemaFactory.createForClass(AppearanceNavigation)

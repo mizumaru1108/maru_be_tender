@@ -1609,6 +1609,52 @@ export class OrganizationService {
       }
     }
 
+    const featuresPath: any = [];
+    /** Create Path Url ForImage mission */
+    if (
+      nonProfitAppearanceNavigationAboutUsDto! &&
+      nonProfitAppearanceNavigationAboutUsDto.featuresItem!
+    ) {
+      const dataFeatures = JSON.stringify(
+        nonProfitAppearanceNavigationAboutUsDto.featuresItem!,
+      );
+      const features = JSON.parse(dataFeatures);
+      for (let i = 0; i < features.length; i++) {
+        const path = await this.bunnyService.generatePath(
+          nonProfitAppearanceNavigationAboutUsDto.organizationId!,
+          'landingpage-aboutus',
+          features[i].fullName!,
+          features[i].imageExtension!,
+          nonProfitAppearanceNavigationAboutUsDto.organizationId!,
+        );
+        const base64Data = features[i].base64Data;
+        const binary = Buffer.from(features[i]!.base64Data!, 'base64');
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image features ${i} is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+        const imageUpload = await this.bunnyService.uploadImage(
+          path,
+          binary,
+          nonProfitAppearanceNavigationAboutUsDto.organizationId!,
+        );
+
+        if (imageUpload) {
+          console.info('Features Item image has been upload');
+          featuresPath.push({
+            featuresItemTitle: features[i].featuresItemTitle!,
+            featuresItemDesc: features[i].featuresItemDesc!,
+            iconFeaturesItem: path,
+          });
+        }
+      }
+    }
+
 
     this.logger.debug('Create AboutUs Organization...');
     nonProfitAppearanceNavigationAboutUsDto.organizationId = organizationId;
@@ -1617,6 +1663,7 @@ export class OrganizationService {
     nonProfitAppearanceNavigationAboutUsDto.createdAt = now.toISOString();
     nonProfitAppearanceNavigationAboutUsDto.updatedAt = now.toISOString();
     nonProfitAppearanceNavigationAboutUsDto.companyValues = companyPath;
+    nonProfitAppearanceNavigationAboutUsDto.featuresItem = featuresPath;
 
     let appearanceCreateAboutUs;
     try {
@@ -2225,10 +2272,70 @@ export class OrganizationService {
       }
     }
 
+    const featuresPath: any = [];
+    /** Create Path Url ForImage mission */
+    if (
+      editNonProfApprceNaviAboutUsDto! &&
+      editNonProfApprceNaviAboutUsDto.featuresItem!
+    ) {
+      const dataFeatures = JSON.stringify(
+        editNonProfApprceNaviAboutUsDto.featuresItem!,
+      );
+      const features = JSON.parse(dataFeatures);
+      for (let i = 0; i < features.length; i++) {
+        const path = await this.bunnyService.generatePath(
+          editNonProfApprceNaviAboutUsDto.organizationId!,
+          'landingpage-aboutus',
+          features[i].fullName!,
+          features[i].imageExtension!,
+          editNonProfApprceNaviAboutUsDto.organizationId!,
+        );
+        const base64Data = features[i].base64Data;
+        const binary = Buffer.from(features[i]!.base64Data!, 'base64');
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image features ${i} is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+        const imageUpload = await this.bunnyService.uploadImage(
+          path,
+          binary,
+          editNonProfApprceNaviAboutUsDto.organizationId!,
+        );
+
+        if (imageUpload) {
+          if (features[i].iconFeaturesItem!) {
+            console.info(
+              'Old Features image seems to be exist in the old record',
+            );
+            const isExist = await this.bunnyService.checkIfImageExists(
+              features[i].iconFeaturesItem!,
+            );
+            if (isExist) {
+              await this.bunnyService.deleteImage(features[i].iconFeaturesItem!);
+            }
+          }
+          console.info('Features Item image has been replaced');
+          featuresPath.push({
+            featuresItemTitle: features[i].featuresItemTitle!,
+            featuresItemDesc: features[i].featuresItemDesc!,
+            iconFeaturesItem: path,
+          });
+        }
+      }
+    }
+
+
+
     this.logger.debug('Edit AboutUs Organization...');
     let now: Date = new Date();
     editNonProfApprceNaviAboutUsDto.updatedAt = now.toISOString();
     editNonProfApprceNaviAboutUsDto.companyValues = companyPath;
+    editNonProfApprceNaviAboutUsDto.featuresItem = featuresPath;
     const abouUsPageUpdated =
       await this.appearanceNavigationModel.findOneAndUpdate(
         { organizationId: organizationId, page: 'ABOUTUS' },
