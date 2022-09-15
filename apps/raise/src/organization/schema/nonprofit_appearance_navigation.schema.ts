@@ -48,6 +48,12 @@ export class AppearanceNavigation {
   whyUs?: string[];
 
   @Prop()
+  titleWhyUs: string;
+
+  @Prop()
+  descriptionWhyUs: string;
+
+  @Prop()
   linkCampaign?: string[];
 
   @Prop()
@@ -58,6 +64,12 @@ export class AppearanceNavigation {
 
   @Prop()
   companyValues?: string[];
+
+  @Prop()
+  titleCompany: string;
+
+  @Prop()
+  descriptionCompany: string;
 
   @Prop()
   iconForValues?: string;
@@ -73,6 +85,15 @@ export class AppearanceNavigation {
 
   @Prop()
   news?: string[];
+
+  @Prop()
+  recentNews?: string;
+
+  @Prop()
+  recentNewsTittle?: string;
+
+  @Prop()
+  recentNewsDesc?: string;
 
   @Prop(() => String)
   page?: string;
