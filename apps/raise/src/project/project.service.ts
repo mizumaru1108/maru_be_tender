@@ -27,6 +27,7 @@ import {
   isBooleanStringN,
   isBooleanStringY,
 } from '../commons/utils/is-boolean-string';
+import { validateObjectId } from '../commons/utils/validateObjectId';
 
 /**
  * basicly project all value from project schema, but parse diameter,prayer, and toilet value to int
@@ -882,6 +883,16 @@ export class ProjectService {
       Object.assign({}, item, dataItem[i]),
     );
     return data;
+  }
+
+  async getProjectDetailById(projectId: string): Promise<Project> {
+    if (!projectId) throw new BadRequestException('Project Id is required');
+    validateObjectId(projectId);
+    const project = await this.projectModel.findById(
+      new Types.ObjectId(projectId),
+    );
+    if (!project) throw new NotFoundException('Project not found');
+    return project;
   }
 
   async setDeletedFlag(projectIds: string[]): Promise<string> {

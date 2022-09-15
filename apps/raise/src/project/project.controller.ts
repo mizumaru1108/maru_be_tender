@@ -63,6 +63,26 @@ export class ProjectController {
     return await this.projectService.getListAllByOperatorId(operatorId);
   }
 
+  @ApiOperation({ summary: 'Get a project detail by projectId' })
+  @ApiResponse({
+    status: 200,
+    description: 'Project `projectId` details retrieved successfully!',
+  })
+  @Get('detail/:projectId')
+  async getProjectDetailById(
+    @Param('projectId') projectId: string,
+  ): Promise<BaseResponse<Project>> {
+    this.logger.debug(`getting details of project ${projectId}`);
+    const projectDetails = await this.projectService.getProjectDetailById(
+      projectId,
+    );
+    return baseResponseHelper(
+      projectDetails,
+      HttpStatus.OK,
+      `Project ${projectId} details retrieved successfully!`,
+    );
+  }
+
   @ApiOperation({ summary: 'Create project' })
   @ApiResponse({
     status: 201,

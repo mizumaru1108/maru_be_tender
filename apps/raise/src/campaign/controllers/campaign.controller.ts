@@ -493,7 +493,7 @@ export class CampaignController {
     return await this.campaignService.getObjectId(createCampaignDto);
   }
 
-  @ApiOperation({ summary: 'get a campaign detail by campaignId (only for )' })
+  @ApiOperation({ summary: 'get a campaign detail by campaignId' })
   @ApiResponse({
     status: 200,
     description: 'Campaign `campaignId` details retrieved successfully!',
