@@ -17,12 +17,11 @@ export class CampaignCreateDto {
   @ValidateObjectIdDecorator()
   organizationId: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   @ValidateObjectIdDecorator()
-  projectId?: string;
+  projectId: string;
 
   @ApiProperty()
   @IsString()
@@ -45,8 +44,7 @@ export class CampaignCreateDto {
   @IsNotEmpty()
   campaignType: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   @IsIn(['Y', 'N'], { message: 'isMoney must be Y or N' })
@@ -80,8 +78,7 @@ export class CampaignCreateDto {
   @IsArray()
   images: PayloadImage[];
 
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiProperty()
   @IsArray()
   milestone: CreateMilestoneDto[];
 }

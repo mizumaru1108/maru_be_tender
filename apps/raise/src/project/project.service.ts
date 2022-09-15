@@ -13,7 +13,7 @@ import {
   ProjectDocument,
   ProjectOperatorLog,
   ProjectOperatorLogDocument,
-} from './project.schema';
+} from './schema/project.schema';
 import { rootLogger } from '../logger';
 import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
 import axios, { AxiosRequestConfig } from 'axios';
@@ -28,6 +28,12 @@ import {
   isBooleanStringY,
 } from '../commons/utils/is-boolean-string';
 import { validateObjectId } from '../commons/utils/validateObjectId';
+import { ProjectCreateDto } from './dto/project-create.dto';
+import { ProjectNearbyPlaces } from './schema/project-nearby-places';
+import { User, UserDocument } from '../user/schema/user.schema';
+import { RoleEnum } from '../user/enums/role-enum';
+import { ProjectStatus } from './enums/project-status.enum';
+import { ProjectUpdateDto } from './dto/project-update.dto';
 
 /**
  * basicly project all value from project schema, but parse diameter,prayer, and toilet value to int
@@ -105,10 +111,15 @@ export class ProjectService {
     private operatorModel: Model<OperatorDocument>,
     @InjectModel(ProjectOperatorLog.name)
     private projectOperatorLogModel: Model<ProjectOperatorLogDocument>,
+    @InjectModel(User.name)
+    private readonly userModel: Model<UserDocument>,
     private configService: ConfigService,
     private bunnyService: BunnyService,
   ) {}
 
+  /**
+   * !Deprecated by ommar frontend, ommar frontend using on the projectCreate method instead
+   */
   async create(
     rawCreateProjectDto: CreateProjectDto,
     operatorId: string,
@@ -159,8 +170,12 @@ export class ProjectService {
     createdProject.isDeleted = 'N';
     createdProject.isPublished = 'N';
     createdProject.description = createProjectDto.description;
+
     if (createProjectDto.nearByPlaces) {
-      createdProject.nearByPlaces = createProjectDto.nearByPlaces;
+      const nearBy = createProjectDto.nearByPlaces.map((nearByPlace) => {
+        return ProjectNearbyPlaces.mapFromCreateRequest(nearByPlace);
+      });
+      createdProject.nearByPlaces = nearBy;
     }
 
     createdProject.organizationId = new Types.ObjectId(
@@ -264,6 +279,106 @@ export class ProjectService {
     return dataProject;
   }
 
+  /**
+   * ommar frontend will use this func instead of create
+   * i think it will no need to use projectOperatorLog
+   * since there's no requirement for reject all when
+   * one of vendor is accepted like campaign and vendor
+   * case.
+   */
+  async projectCreate(
+    creatorId: string,
+    request: ProjectCreateDto,
+  ): Promise<Project> {
+    const baseProjectScheme = new this.projectModel();
+    const newProjectScheme = Project.mapFromRequest(baseProjectScheme, request);
+
+    // this api endpoint can only be used by operator / manager (super admin).
+    const user = await this.userModel.findById(creatorId);
+    if (!user) throw new BadRequestException('User not found!');
+
+    newProjectScheme.creatorUserId = creatorId; // case created by
+    newProjectScheme.updaterUserId = creatorId;
+
+    // if user type is operator, the publish status will be set to default ("N"),
+    // and project status will be set to "PENDING"
+    if (user.type === RoleEnum.OPERATOR) {
+      newProjectScheme.operatorId = creatorId; // the operator id will be operator it self
+    }
+
+    // if user type is manager/superadmin, project will be auto published and auto approved
+    if (user.type === RoleEnum.SUPERADMIN) {
+      if (!request.operatorUserId) {
+        throw new BadRequestException('Operator user id is required!');
+      }
+      newProjectScheme.operatorId = request.operatorUserId; // if created by superadmin, it will be behalf of operator (manager select the operator)
+      newProjectScheme.applierUserId = creatorId;
+      newProjectScheme.isPublished = 'Y';
+      newProjectScheme.projectStatus = ProjectStatus.APPROVED;
+    }
+
+    let tmpPath: string[] = []; // for implementing db transaction later on
+    try {
+      const processImages = request.images.map(async (image, index) => {
+        const path = await this.bunnyService.generatePath(
+          request.organizationId,
+          'project-photo',
+          image.fullName,
+          image.imageExtension,
+          newProjectScheme._id,
+        );
+        tmpPath.push(path);
+
+        const base64Data = image.base64Data;
+        const binary = Buffer.from(image.base64Data, 'base64');
+        if (!binary) {
+          const trimmedString = 56;
+          base64Data.length > 40
+            ? base64Data.substring(0, 40 - 3) + '...'
+            : base64Data.substring(0, length);
+          throw new BadRequestException(
+            `Image payload on images[${index}] is not a valid base64 data: ${trimmedString}`,
+          );
+        }
+        const imageUpload = await this.bunnyService.uploadImage(
+          path,
+          binary,
+          newProjectScheme.name,
+        );
+        if (!imageUpload) {
+          throw new InternalServerErrorException(
+            `Error uploading image[${index}] to Bunny ${path} (${binary.length} bytes) while creating campaign: ${newProjectScheme.name}`,
+          );
+        }
+
+        //set the number of maximum file uploaded = 5 (included coverImage and projectAvatar)
+        if (index == 0 && imageUpload) newProjectScheme.coverImage = path;
+        if (index == 1 && imageUpload) newProjectScheme.image1 = path;
+        if (index == 2 && imageUpload) newProjectScheme.image2 = path;
+        if (index == 3 && imageUpload) newProjectScheme.image3 = path;
+        if (index == 4 && imageUpload) newProjectScheme.projectAvatar = path;
+      });
+
+      await Promise.all(processImages);
+
+      /**
+       * insert into Project (save)
+       * createdAt and updatedAt are gonna be default values (dayjs().toISOString())
+       */
+      const createdProject = await newProjectScheme.save();
+
+      return createdProject;
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(
+        `Error while creating project: ${request.name}`,
+      );
+    }
+  }
+
+  /**
+   * !Deprecated by ommar frontend, ommar frontend using on the projectUpdate method instead
+   */
   async updateProject(projectId: string, rawDto: UpdateProjectDto) {
     const currentProjectData = await this.projectModel.findById(projectId);
     if (!currentProjectData) {
@@ -423,6 +538,86 @@ export class ProjectService {
     }
 
     return await updateProjectData.save();
+  }
+
+  async projectUpdate(
+    userId: string,
+    projectId: string,
+    request: ProjectUpdateDto,
+  ): Promise<Project> {
+    if (!projectId) {
+      throw new BadRequestException('Project ID is required');
+    }
+    validateObjectId(projectId);
+
+    const currentProjectData = await this.projectModel.findById(
+      new Types.ObjectId(projectId),
+    );
+    if (!currentProjectData) {
+      throw new NotFoundException(`Project with id ${projectId} not found`);
+    }
+
+    const updateCampaignData = Project.mapFromRequest(
+      currentProjectData,
+      request,
+    );
+    updateCampaignData.updaterUserId = userId;
+
+    let tmpPath: string[] = []; //for implement db transaction later
+    try {
+      const processImages = request.updatedImage.map(async (image, index) => {
+        if (image.newImage) {
+          const imagePath = await this.bunnyService.generatePath(
+            request.organizationId,
+            'project-photo',
+            image.newImage.fullName,
+            image.newImage.imageExtension,
+            projectId,
+          );
+          const binary = Buffer.from(image.newImage.base64Data, 'base64');
+          const imageUpload = await this.bunnyService.uploadImage(
+            imagePath,
+            binary,
+            updateCampaignData.name,
+          );
+          if (!imageUpload) {
+            throw new Error(`Failed to upload at updatedImage[${index}]`);
+          }
+          if (image.oldUrl) {
+            const isExist = await this.bunnyService.checkIfImageExists(
+              image.oldUrl,
+            );
+            if (isExist) {
+              const deleteImages = await this.bunnyService.deleteImage(
+                image.oldUrl,
+              );
+              if (!deleteImages) {
+                throw new Error(`Failed to delete at updatedImage[${index}]`);
+              }
+            }
+          }
+          if (index === 0 && imageUpload) {
+            updateCampaignData.coverImage = imagePath;
+          }
+          if (index === 1 && imageUpload) updateCampaignData.image1 = imagePath;
+          if (index === 2 && imageUpload) updateCampaignData.image2 = imagePath;
+          if (index === 3 && imageUpload) updateCampaignData.image3 = imagePath;
+          if (index === 4 && imageUpload) {
+            updateCampaignData.projectAvatar = imagePath;
+          }
+        }
+      });
+      await Promise.all(processImages);
+
+      //update campaign
+      const updatedCampaign = await updateCampaignData.save();
+
+      return updatedCampaign;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Error creating campaign: ${request.name} - ${error}`,
+      );
+    }
   }
 
   async applyFilter(

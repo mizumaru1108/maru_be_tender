@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Campaign } from '../../campaign/schema/campaign.schema';
 import { Document, Schema as MongooseSchema, Types } from 'mongoose';
-import { Project } from '../../project/project.schema';
+import { Project } from '../../project/schema/project.schema';
 import { User } from '@authzed/authzed-node/dist/src/v0';
 import { Item } from '../../item/item.schema';
 import { BaseBooleanString } from '../../commons/enums/base-boolean-string.enum';

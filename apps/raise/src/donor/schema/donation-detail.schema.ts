@@ -4,7 +4,7 @@ import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
 import paginate from 'mongoose-paginate-v2';
 import { Campaign } from '../../campaign/schema/campaign.schema';
 import { Item } from '../../item/item.schema';
-import { Project } from '../../project/project.schema';
+import { Project } from '../../project/schema/project.schema';
 import { DonationType } from '../enum/donation-type.enum';
 import { DonationLog } from './donation-log.schema';
 import { ZakatDetails } from './zakat-details.schema';

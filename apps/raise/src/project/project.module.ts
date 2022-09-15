@@ -7,8 +7,9 @@ import {
   ProjectOperatorLog,
   ProjectOperatorLogSchema,
   ProjectSchema,
-} from './project.schema';
+} from './schema/project.schema';
 import { ProjectService } from './project.service';
+import { User, UserSchema } from '../user/schema/user.schema';
 
 @Module({
   imports: [
@@ -24,6 +25,10 @@ import { ProjectService } from './project.service';
       {
         name: ProjectOperatorLog.name,
         schema: ProjectOperatorLogSchema,
+      },
+      {
+        name: User.name,
+        schema: UserSchema,
       },
     ]),
   ],

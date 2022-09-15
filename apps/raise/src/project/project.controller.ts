@@ -13,18 +13,23 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ClusterRoles } from '../auth/cluster-roles.decorator';
 import { ClusterRolesGuard } from '../auth/cluster-roles.guard';
 import { JwtAuthGuard } from '../auth/jwt.guard';
+import { Permissions } from '../auth/permissions.decorator';
+import { PermissionsGuard } from '../auth/permissions.guard';
 import { CurrentUser } from '../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../commons/dtos/base-response';
 import { baseResponseHelper } from '../commons/helpers/base-response-helper';
+import { Permission } from '../libs/authzed/enums/permission.enum';
 import { rootLogger } from '../logger';
 import { RoleEnum } from '../user/enums/role-enum';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { CreateProjectDto } from './dto';
+import { ProjectCreateDto } from './dto/project-create.dto';
 import { ProjectFilterRequest } from './dto/project-filter.request';
 import { ProjectSetDeletedFlagDto } from './dto/project-set-flag-deleted';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import { Project } from './project.schema';
+import { Project } from './schema/project.schema';
 import { ProjectService } from './project.service';
+import { ProjectUpdateDto } from './dto/project-update.dto';
 
 @ApiTags('project')
 @Controller('project')
@@ -99,6 +104,27 @@ export class ProjectController {
     return await this.projectService.create(createProjectDto, currentUser.id);
   }
 
+  @ApiOperation({ summary: 'Create Project' })
+  @ApiResponse({
+    status: 201,
+    description: 'The Project has been successfully created!',
+  })
+  @Permissions(Permission.OE) // only admin and operator
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Post('campaignCreate')
+  async campaignCreate(
+    @CurrentUser() user: ICurrentUser,
+    @Body() request: ProjectCreateDto,
+  ): Promise<BaseResponse<Project>> {
+    this.logger.debug('create new campaign ', JSON.stringify(request));
+    const response = await this.projectService.projectCreate(user.id, request);
+    return baseResponseHelper(
+      response,
+      HttpStatus.CREATED,
+      'The Campaign has been successfully created.',
+    );
+  }
+
   @ApiOperation({ summary: 'set flag to delete campaign' })
   @ApiResponse({
     status: 200,
@@ -119,8 +145,7 @@ export class ProjectController {
   }
 
   @ApiOperation({ summary: 'update project' })
-  @ClusterRoles(RoleEnum.SUPERADMIN)
-  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
+  @UseGuards(JwtAuthGuard)
   @Patch('update/:projectId')
   async updateProject(
     @Param('projectId') projectId: string,
@@ -129,6 +154,30 @@ export class ProjectController {
     this.logger.debug('payload', JSON.stringify(updateRequest));
     this.logger.debug(`update project ${projectId}`);
     const updatedProject = await this.projectService.updateProject(
+      projectId,
+      updateRequest,
+    );
+    const response = baseResponseHelper(
+      updatedProject,
+      HttpStatus.OK,
+      'Project updated successfully',
+    );
+    return response;
+  }
+
+  @ApiOperation({ summary: 'update project' })
+  @Permissions(Permission.OE) // only admin and operator
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Patch('projectUpdate/:projectId')
+  async projectUpdate(
+    @CurrentUser() user: ICurrentUser,
+    @Param('projectId') projectId: string,
+    @Body() updateRequest: ProjectUpdateDto,
+  ): Promise<BaseResponse<Project>> {
+    this.logger.debug('payload', JSON.stringify(updateRequest));
+    this.logger.debug(`update project ${projectId}`);
+    const updatedProject = await this.projectService.projectUpdate(
+      user.id,
       projectId,
       updateRequest,
     );

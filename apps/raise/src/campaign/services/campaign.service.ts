@@ -46,7 +46,6 @@ import { UpdateCampaignStatusDto } from '../dto/update-campaign-status.dto';
 import { CampaignSortByEnum } from '../enums/campaign-sortby-enum';
 import { CampaignStatus } from '../enums/campaign-status.enum';
 import { CampaignMilestone } from '../schema/campaign-milestone.schema';
-import { v4 as uuidv4 } from 'uuid';
 import { validateObjectId } from '../../commons/utils/validateObjectId';
 import { CampaignUpdateDto } from '../dto/campaign-update.dto';
 import { CampaignCreateResponse } from '../dto/campaign-create-response.dto';
@@ -122,22 +121,9 @@ export class CampaignService {
     createdCampaign.isMoney = 'Y';
     createdCampaign.amountProgress = decimal.fromString('0');
     createdCampaign.amountTarget = decimal.fromString('0');
-    // createdCampaign.milestone = createCampaignDto.milestone;
-    // const milestones: CampaignMilestone[] = createCampaignDto!.milestone!.map(
-    //   (milestone) => {
-    //     const newMilestone: CampaignMilestone = {
-    //       milestoneId: uuidv4(),
-    //       detail: milestone.detail,
-    //       deadline: new Date(milestone.deadline),
-    //       createdAt: new Date(),
-    //       updatedAt: new Date(),
-    //     };
-    //     return newMilestone;
-    //   },
-    // );
     const milestones: CampaignMilestone[] = createCampaignDto!.milestone!.map(
       (milestone) => {
-        const newMilestone = CampaignMilestone.mapFromCreateRequest(milestone);
+        const newMilestone = CampaignMilestone.mapFromRequest(milestone);
         return newMilestone;
       },
     );
@@ -249,10 +235,7 @@ export class CampaignService {
     request: CampaignCreateDto,
   ): Promise<CampaignCreateResponse> {
     const baseCampaignScheme = new this.campaignModel();
-    const campaignScheme = Campaign.mapFromCreateRequest(
-      baseCampaignScheme,
-      request,
-    );
+    const campaignScheme = Campaign.mapFromRequest(baseCampaignScheme, request);
     campaignScheme.creatorUserId = creatorId;
 
     let tmpPath: string[] = []; // for implementing db transaction later on
@@ -490,11 +473,13 @@ export class CampaignService {
     if (!currentCampaignData) {
       throw new NotFoundException(`Campaign with id ${campaignId} not found`);
     }
-    const updateCampaignData = Campaign.mapFromUpdateRequest(
+    const updateCampaignData = Campaign.mapFromRequest(
       currentCampaignData,
       request,
     );
+
     updateCampaignData.updaterUserId = userId;
+    updateCampaignData.updatedAt = dayjs().toISOString();
 
     let tmpPath: string[] = []; //for implement db transaction later
     try {

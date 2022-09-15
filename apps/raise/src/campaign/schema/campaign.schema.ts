@@ -206,36 +206,32 @@ export class Campaign {
 
   /**
    * Map from create request to campaign document,
-   * Progress should be 0 by default (not from request),
-   * isFinished should be N by default (not from request),
-   * finishedDate should be null by default (not from request),
+   * Progress should be 0 by default (not from request) later on updated by webhook,
+   * isFinished should be N by default (not from request) later on updated by webhook,
+   * finishedDate should be null by default (not from request) later on updated by webhook,
    * creatorUserId should be from services (not on this map),
    * cover,image1,image2,image3 will be from services (not on this map).
+   * why use both of dto ?, because the only diffrence is how to process image,
+   * for ceratedAt and updatedAt, we use default value on schema, on edit we update it on service
    * @param scheme campaign document
    * @param request create request
    * @returns {CampaignDocument} campaign document
    */
-  public static mapFromCreateRequest(
+  public static mapFromRequest(
     scheme: CampaignDocument,
-    request: CampaignCreateDto,
+    request: CampaignCreateDto | CampaignUpdateDto,
   ): CampaignDocument {
     scheme._id = new Types.ObjectId();
     scheme.organizationId = new Types.ObjectId(request.organizationId);
-    if (request.projectId) {
-      scheme.projectId = new Types.ObjectId(request.projectId);
-    }
+    scheme.projectId = new Types.ObjectId(request.projectId);
     scheme.campaignName = request.campaignName;
     request.title && (scheme.title = request.title); // if defined then set
     scheme.description = request.description;
     scheme.campaignType = request.campaignType;
-    if (request.campaignType === 'project' && !request.projectId) {
-      throw new BadRequestException(
-        'projectId is required for campaign with type project!',
-      );
-    }
-    request.isMoney && (scheme.isMoney = request.isMoney); // if defined then set else use default
+    scheme.isMoney = request.isMoney; // if defined then set else use default
     scheme.methods = request.methods;
 
+    // if there's no currency code, match by organization
     if (!request.currencyCode) {
       // if organization is OMAR, then use SAR
       if (request.organizationId === '61b4794cfe52d41f557f1acc') {
@@ -254,61 +250,26 @@ export class Campaign {
     if (request.amountTarget) {
       scheme.amountTarget = Types.Decimal128.fromString(request.amountTarget);
     }
+
     request.isPublished && (scheme.isPublished = request.isPublished);
 
     // if milestone is defined, then use it, else use default
     if (request.milestone) {
-      // const milestones: CampaignMilestone[] = request.milestone.map(
-      //   (milestone) => {
-      //     const newMilestone: CampaignMilestone = {
-      //       milestoneId: uuidv4(),
-      //       detail: milestone.detail,
-      //       deadline: new Date(milestone.deadline),
-      //       representationalValue: milestone.representationalValue ?? 0,
-      //       createdAt: new Date(),
-      //       updatedAt: new Date(),
-      //     };
-      //     return newMilestone;
-      //   },
-      // );
-      // scheme.milestone = milestones;
+      let totalRepresentational: number = 0;
       const milestones: CampaignMilestone[] = request.milestone.map(
         (milestone) => {
-          const newMilestone =
-            CampaignMilestone.mapFromCreateRequest(milestone);
+          totalRepresentational += milestone.representationalValue;
+          const newMilestone = CampaignMilestone.mapFromRequest(milestone);
           return newMilestone;
         },
       );
+      if (totalRepresentational !== 100) {
+        throw new BadRequestException(
+          'Total representational value must be 100!',
+        );
+      }
       scheme.milestone = milestones;
     }
-    return scheme;
-  }
-
-  /**
-   * mapping from update reqeust to campaign document,
-   * - progress, is finished, also finished date will be updated by transaction(webhooks),
-   * - milestone will updated separately,
-   * - project and organization can't be changed (at least for now / waiting for confirmation/clarification),
-   * - cover, image1, image2, image3 will be handled by services,
-   * @param scheme campaign document
-   * @param request update request
-   * @returns {CampaignDocument} campaign document
-   */
-  public static mapFromUpdateRequest(
-    scheme: CampaignDocument,
-    request: CampaignUpdateDto,
-  ): CampaignDocument {
-    request.campaignName && (scheme.campaignName = request.campaignName);
-    request.title && (scheme.title = request.title);
-    request.description && (scheme.description = request.description);
-    request.methods && (scheme.methods = request.methods);
-    if (request.amountTarget) {
-      scheme.amountTarget = Types.Decimal128.fromString(request.amountTarget);
-    }
-    request.isMoney && (scheme.isMoney = request.isMoney);
-    request.description && (scheme.description = request.description);
-    request.campaignType && (scheme.campaignType = request.campaignType);
-    scheme.updatedAt = dayjs().toISOString();
     return scheme;
   }
 }

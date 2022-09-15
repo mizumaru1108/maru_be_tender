@@ -26,7 +26,7 @@ import {
   PaymentData,
   PaymentDataSchema,
 } from '../payment-stripe/schema/paymentData.schema';
-import { Project, ProjectSchema } from '../project/project.schema';
+import { Project, ProjectSchema } from '../project/schema/project.schema';
 import {
   DonationDetail,
   DonationDetailSchema,

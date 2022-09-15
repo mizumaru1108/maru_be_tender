@@ -49,7 +49,7 @@ import {
   PaymentData,
   PaymentDataDocument,
 } from '../payment-stripe/schema/paymentData.schema';
-import { Project, ProjectDocument } from '../project/project.schema';
+import { Project, ProjectDocument } from '../project/schema/project.schema';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import {
   DonorListDto,

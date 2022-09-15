@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsNotEmpty } from 'class-validator';
 import { UpdateImagePayload } from '../../commons/dtos/update-image-payload.dto';
-import { CampaignCreateDto } from './campaign-create.dto';
+import { ProjectCreateDto } from './project-create.dto';
 
-export class CampaignUpdateDto extends CampaignCreateDto {
+export class ProjectUpdateDto extends ProjectCreateDto {
   @ApiProperty()
   @IsArray()
   @IsNotEmpty()

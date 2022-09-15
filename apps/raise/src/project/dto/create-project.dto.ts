@@ -4,7 +4,7 @@ import { ImagePayload } from '../../commons/dtos/image-payload.dto';
 export const NearByPlaces = z.object({
   placeType: z.string(),
   name: z.string(),
-  distance: z.string(),
+  distance: z.number(),
 });
 export type NearByPlaces = z.infer<typeof NearByPlaces>;
 
