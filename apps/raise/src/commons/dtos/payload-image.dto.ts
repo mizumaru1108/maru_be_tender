@@ -8,19 +8,9 @@ export class PayloadImage {
   base64Data: string;
 
   @ApiProperty()
-  @IsOptional()
   @IsString()
   @IsNotEmpty()
   imageName: string;
-
-  /**
-   * ![Deprecated] NOT REASONABLE TO USE THIS
-   */
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  imagePrefix?: string;
 
   @ApiProperty()
   @IsString()
@@ -34,13 +24,4 @@ export class PayloadImage {
     message: 'Must start with "."',
   })
   imageExtension: string;
-
-  /**
-   * ![Deprecated] NOT REASONABLE TO USE THIS
-   */
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  currentPhoto?: string;
 }

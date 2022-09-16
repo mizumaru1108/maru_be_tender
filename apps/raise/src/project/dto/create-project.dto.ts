@@ -1,10 +1,19 @@
 import { z } from 'zod';
 import { ImagePayload } from '../../commons/dtos/image-payload.dto';
+import { CoordiateLocation } from '../../commons/dtos/location.dto';
+
+const coor = z.object({
+  latitude: z.number(),
+  longitude: z.number(),
+});
 
 export const NearByPlaces = z.object({
   placeType: z.string(),
   name: z.string(),
   distance: z.number(),
+  description: z.string(),
+  unitDistance: z.string(),
+  coordinates: z.optional(coor),
 });
 export type NearByPlaces = z.infer<typeof NearByPlaces>;
 

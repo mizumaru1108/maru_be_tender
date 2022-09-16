@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import dayjs from 'dayjs';
 import * as mongoose from 'mongoose';
 import { Document, Types } from 'mongoose';
+import { CoordiateLocation } from '../../commons/dtos/location.dto';
 import { ProjectCreateDto } from '../dto/project-create.dto';
 import { ProjectUpdateDto } from '../dto/project-update.dto';
 import { UpdateProjectDto } from '../dto/update-project.dto';
@@ -66,6 +67,9 @@ export class Project {
 
   @Prop()
   public address: string;
+
+  @Prop({ default: null })
+  public addressCoordinate?: CoordiateLocation;
 
   @Prop()
   public description: string;
@@ -135,6 +139,12 @@ export class Project {
     default: dayjs().toISOString(),
   })
   public updatedAt: string;
+
+  @Prop({
+    type: mongoose.Schema.Types.Date,
+    default: null,
+  })
+  public appliedAt?: string;
 
   static compare(
     currentData: ProjectDocument,
