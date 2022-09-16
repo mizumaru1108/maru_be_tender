@@ -1,5 +1,11 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { PayloadImage } from './payload-image.dto';
 
 export class UpdateImagePayload {
@@ -13,5 +19,7 @@ export class UpdateImagePayload {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => PayloadImage)
   newImage?: PayloadImage;
 }
