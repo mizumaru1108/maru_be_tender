@@ -144,7 +144,7 @@ export class ProjectController {
   @ApiOperation({ summary: 'Approve project' })
   @Permissions(Permission.MO)
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Patch('approve/:projectId')
+  @Patch('approve')
   async approveProject(
     @CurrentUser() user: ICurrentUser,
     @Body() request: ProjectStatusUpdateDto,
@@ -165,7 +165,7 @@ export class ProjectController {
   @ApiOperation({ summary: 'Approve project' })
   @Permissions(Permission.MO)
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Patch('reject/:projectId')
+  @Patch('reject')
   async rejectProject(
     @CurrentUser() user: ICurrentUser,
     @Body() request: ProjectStatusUpdateDto,
