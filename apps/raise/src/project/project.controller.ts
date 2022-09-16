@@ -10,8 +10,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ClusterRoles } from '../auth/cluster-roles.decorator';
-import { ClusterRolesGuard } from '../auth/cluster-roles.guard';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { Permissions } from '../auth/permissions.decorator';
 import { PermissionsGuard } from '../auth/permissions.guard';
@@ -20,16 +18,16 @@ import { BaseResponse } from '../commons/dtos/base-response';
 import { baseResponseHelper } from '../commons/helpers/base-response-helper';
 import { Permission } from '../libs/authzed/enums/permission.enum';
 import { rootLogger } from '../logger';
-import { RoleEnum } from '../user/enums/role-enum';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { CreateProjectDto } from './dto';
 import { ProjectCreateDto } from './dto/project-create.dto';
 import { ProjectFilterRequest } from './dto/project-filter.request';
 import { ProjectSetDeletedFlagDto } from './dto/project-set-flag-deleted';
-import { UpdateProjectDto } from './dto/update-project.dto';
-import { Project } from './schema/project.schema';
-import { ProjectService } from './project.service';
+import { ProjectStatusUpdateDto } from './dto/project-status-update.dto';
 import { ProjectUpdateDto } from './dto/project-update.dto';
+import { UpdateProjectDto } from './dto/update-project.dto';
+import { ProjectService } from './project.service';
+import { Project } from './schema/project.schema';
 
 @ApiTags('project')
 @Controller('project')
@@ -93,7 +91,6 @@ export class ProjectController {
     status: 201,
     description: 'The Project has been successfully created.',
   })
-  // @ClusterRoles(RoleEnum.OPERATOR)
   @UseGuards(JwtAuthGuard)
   @Post('create')
   async create(
@@ -111,8 +108,8 @@ export class ProjectController {
   })
   @Permissions(Permission.OE) // only admin and operator
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Post('campaignCreate')
-  async campaignCreate(
+  @Post('createProject')
+  async createProject(
     @CurrentUser() user: ICurrentUser,
     @Body() request: ProjectCreateDto,
   ): Promise<BaseResponse<Project>> {
@@ -140,6 +137,48 @@ export class ProjectController {
       affectedDeleteStatus,
       HttpStatus.OK,
       'Projects has successfully changed to the deleted state',
+    );
+    return response;
+  }
+
+  @ApiOperation({ summary: 'Approve project' })
+  @Permissions(Permission.MO)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Patch('approve/:projectId')
+  async approveProject(
+    @CurrentUser() user: ICurrentUser,
+    @Body() request: ProjectStatusUpdateDto,
+  ): Promise<BaseResponse<Project>> {
+    this.logger.debug(`${user.id} try approve project ${request.projectId}`);
+    const updatedProject = await this.projectService.projectStatusUpdate(
+      user.id,
+      request,
+    );
+    const response = baseResponseHelper(
+      updatedProject,
+      HttpStatus.OK,
+      'Project updated successfully',
+    );
+    return response;
+  }
+
+  @ApiOperation({ summary: 'Approve project' })
+  @Permissions(Permission.MO)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Patch('reject/:projectId')
+  async rejectProject(
+    @CurrentUser() user: ICurrentUser,
+    @Body() request: ProjectStatusUpdateDto,
+  ): Promise<BaseResponse<Project>> {
+    this.logger.debug(`${user.id} try approve project ${request.projectId}`);
+    const updatedProject = await this.projectService.projectStatusUpdate(
+      user.id,
+      request,
+    );
+    const response = baseResponseHelper(
+      updatedProject,
+      HttpStatus.OK,
+      'Project updated successfully',
     );
     return response;
   }

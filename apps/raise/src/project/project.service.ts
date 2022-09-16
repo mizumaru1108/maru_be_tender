@@ -2,38 +2,41 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  NotFoundException,
+  NotFoundException
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, PipelineStage, Types } from 'mongoose';
-import { CreateProjectDto } from './dto';
 import { ConfigService } from '@nestjs/config';
+import { InjectModel } from '@nestjs/mongoose';
+import axios, { AxiosRequestConfig } from 'axios';
+import dayjs from 'dayjs';
+import { FilterQuery, Model, PipelineStage, Types } from 'mongoose';
+import slugify from 'slugify';
+import { z } from 'zod';
+import {
+  isBooleanStringN,
+  isBooleanStringY
+} from '../commons/utils/is-boolean-string';
+import { validateObjectId } from '../commons/utils/validateObjectId';
+import { BunnyService } from '../libs/bunny/services/bunny.service';
+import { rootLogger } from '../logger';
+import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
+import { RoleEnum } from '../user/enums/role-enum';
+import { User, UserDocument } from '../user/schema/user.schema';
+import { CreateProjectDto } from './dto';
+import { ProjectCreateDto } from './dto/project-create.dto';
+import { ProjectFilterRequest } from './dto/project-filter.request';
+import {
+  ProjectStatusUpdateDto
+} from './dto/project-status-update.dto';
+import { ProjectUpdateDto } from './dto/project-update.dto';
+import { UpdateProjectDto } from './dto/update-project.dto';
+import { ProjectStatus } from './enums/project-status.enum';
+import { ProjectNearbyPlaces } from './schema/project-nearby-places';
 import {
   Project,
   ProjectDocument,
   ProjectOperatorLog,
-  ProjectOperatorLogDocument,
+  ProjectOperatorLogDocument
 } from './schema/project.schema';
-import { rootLogger } from '../logger';
-import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
-import axios, { AxiosRequestConfig } from 'axios';
-import dayjs from 'dayjs';
-import slugify from 'slugify';
-import { UpdateProjectDto } from './dto/update-project.dto';
-import { z } from 'zod';
-import { BunnyService } from '../libs/bunny/services/bunny.service';
-import { ProjectFilterRequest } from './dto/project-filter.request';
-import {
-  isBooleanStringN,
-  isBooleanStringY,
-} from '../commons/utils/is-boolean-string';
-import { validateObjectId } from '../commons/utils/validateObjectId';
-import { ProjectCreateDto } from './dto/project-create.dto';
-import { ProjectNearbyPlaces } from './schema/project-nearby-places';
-import { User, UserDocument } from '../user/schema/user.schema';
-import { RoleEnum } from '../user/enums/role-enum';
-import { ProjectStatus } from './enums/project-status.enum';
-import { ProjectUpdateDto } from './dto/project-update.dto';
 
 /**
  * basicly project all value from project schema, but parse diameter,prayer, and toilet value to int
@@ -780,6 +783,47 @@ export class ProjectService {
     }
 
     return filterQuery;
+  }
+
+  async projectStatusUpdate(
+    userId: string,
+    request: ProjectStatusUpdateDto,
+  ): Promise<Project> {
+    // set base query (updaterUserId, applierUserId, updatedAt)
+    let baseQuery = {
+      updaterUserId: userId,
+      applierUserId: userId,
+      updatedAt: dayjs().toISOString(),
+    };
+    
+    // if status is approved
+    if (request.status === 'approved') {
+      Object.assign(baseQuery, {
+        isPublished: 'Y',
+        projectStatus: ProjectStatus.APPROVED,
+      });
+    }
+
+    // if status is rejected
+    if (request.status === 'rejected') {
+      if (!request.rejectReason) {
+        throw new BadRequestException('Reject Reason is required!');
+      }
+      Object.assign(baseQuery, {
+        isPublished: 'N',
+        projectStatus: ProjectStatus.REJECTED,
+        rejectReason: request.rejectReason,
+      });
+    }
+    const project = await this.projectModel.findByIdAndUpdate(
+      new Types.ObjectId(new Types.ObjectId(request.projectId)),
+      {
+        $set: baseQuery,
+      },
+      { new: true },
+    );
+    if (!project) throw new NotFoundException('Project not found!');
+    return project;
   }
 
   async getProjectList(filterRequest: ProjectFilterRequest) {

@@ -115,10 +115,10 @@ export class Project {
   @Prop()
   public image3?: string;
 
-  @Prop()
+  @Prop({})
   public projectAvatar?: string;
 
-  @Prop()
+  @Prop({ default: null })
   public rejectReason?: string;
 
   @Prop({ default: [] })
