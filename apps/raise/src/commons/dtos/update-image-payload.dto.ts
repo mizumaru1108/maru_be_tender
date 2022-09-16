@@ -17,7 +17,6 @@ export class UpdateImagePayload {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => PayloadImage)

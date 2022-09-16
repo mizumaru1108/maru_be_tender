@@ -221,7 +221,7 @@ export class Campaign {
     scheme: CampaignDocument,
     request: CampaignCreateDto | CampaignUpdateDto,
   ): CampaignDocument {
-    scheme._id = new Types.ObjectId();
+    if (!scheme._id) scheme._id = new Types.ObjectId();
     scheme.organizationId = new Types.ObjectId(request.organizationId);
     scheme.projectId = new Types.ObjectId(request.projectId);
     scheme.campaignName = request.campaignName;

@@ -179,7 +179,7 @@ export class Project {
     scheme: ProjectDocument,
     request: ProjectCreateDto | ProjectUpdateDto,
   ): ProjectDocument {
-    scheme._id = new Types.ObjectId();
+    if (!scheme._id) scheme._id = new Types.ObjectId();
     scheme.organizationId = new Types.ObjectId(request.organizationId);
     scheme.name = request.name;
     scheme.description = request.description;

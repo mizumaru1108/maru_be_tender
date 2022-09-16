@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  HttpException,
+  HttpStatus,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -280,32 +282,52 @@ export class CampaignService {
       });
 
       await Promise.all(processImages);
-
-      //insert into Campaign
-      const createdCampaign = await campaignScheme.save();
-
-      //insert into Campaign Vendor Log
-      let createdCampaignVendorLog: CampaignVendorLog | null = null;
-      const campaignVendorLogSchema = new this.campaignVendorLogModel();
-      if (createdCampaign) {
-        campaignVendorLogSchema._id = new Types.ObjectId();
-        campaignVendorLogSchema.campaignId = createdCampaign._id;
-        campaignVendorLogSchema.createdAt = dayjs().toISOString();
-        campaignVendorLogSchema.updatedAt = dayjs().toISOString();
-        createdCampaignVendorLog = await campaignVendorLogSchema.save();
-      }
-
-      const response: CampaignCreateResponse = {
-        createdCampaign,
-        createdCampaignVendorLog,
-      };
-
-      return response;
     } catch (error) {
+      console.log('error', error);
+      if (error.response) {
+        throw new HttpException(
+          error.response.message,
+          error.response.statusCode,
+        );
+      } else {
+        throw new HttpException(
+          error.message,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+
+    //insert into Campaign
+    const createdCampaign = await campaignScheme.save();
+    if (!createdCampaign) {
       throw new InternalServerErrorException(
-        `Error creating campaign: ${request.campaignName} - ${error}`,
+        `Error creating campaign: ${campaignScheme.campaignName}`,
       );
     }
+
+    //insert into Campaign Vendor Log
+    let createdCampaignVendorLog: CampaignVendorLog | null = null;
+    const campaignVendorLogSchema = new this.campaignVendorLogModel();
+    if (createdCampaign) {
+      campaignVendorLogSchema._id = new Types.ObjectId();
+      campaignVendorLogSchema.campaignId = createdCampaign._id;
+      campaignVendorLogSchema.createdAt = dayjs().toISOString();
+      campaignVendorLogSchema.updatedAt = dayjs().toISOString();
+      createdCampaignVendorLog = await campaignVendorLogSchema.save();
+
+      if (!createdCampaignVendorLog) {
+        throw new InternalServerErrorException(
+          `Error creating campaign vendor log: ${campaignScheme.campaignName}`,
+        );
+      }
+    }
+
+    const response: CampaignCreateResponse = {
+      createdCampaign,
+      createdCampaignVendorLog,
+    };
+
+    return response;
   }
 
   /**
@@ -473,6 +495,7 @@ export class CampaignService {
     if (!currentCampaignData) {
       throw new NotFoundException(`Campaign with id ${campaignId} not found`);
     }
+
     const updateCampaignData = Campaign.mapFromRequest(
       currentCampaignData,
       request,
@@ -522,16 +545,27 @@ export class CampaignService {
         }
       });
       await Promise.all(processImages);
-
-      //update campaign
-      const updatedCampaign = await updateCampaignData.save();
-
-      return updatedCampaign;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error creating campaign: ${request.campaignName} - ${error}`,
-      );
+      console.log('error', error);
+      if (error.response) {
+        throw new HttpException(
+          error.response.message,
+          error.response.statusCode,
+        );
+      } else {
+        throw new HttpException(
+          error.message,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
+
+    //update campaign
+    const updatedCampaign = await updateCampaignData.save();
+    if (!updatedCampaign) {
+      throw new Error('Failed to update campaign');
+    }
+    return updatedCampaign;
   }
 
   async findAll(
