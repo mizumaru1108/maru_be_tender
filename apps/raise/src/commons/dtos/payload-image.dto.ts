@@ -10,11 +10,6 @@ export class PayloadImage {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  imageName: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
   fullName: string;
 
   @ApiProperty()
