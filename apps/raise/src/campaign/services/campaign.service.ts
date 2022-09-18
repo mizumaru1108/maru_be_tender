@@ -27,7 +27,6 @@ import {
   Vendor,
   VendorDocument,
 } from '../../buying/vendor/vendor.schema';
-import { baseEnvCallErrorMessage } from '../../commons/helpers/base-env-call-error-message';
 import { BunnyService } from '../../libs/bunny/services/bunny.service';
 import { rootLogger } from '../../logger';
 import {
@@ -54,6 +53,7 @@ import { CampaignCreateResponse } from '../dto/campaign-create-response.dto';
 import { CampaignGetAllVendorRequestDto } from '../dto/campaign-get-all-vendor-request.dto';
 import { GetAllMyCampaignFilterDto } from '../dto/get-all-my-campaign.dto';
 import { RoleEnum } from '../../user/enums/role-enum';
+import { envLoadErrorHelper } from '../../commons/helpers/env-loaderror-helper';
 @Injectable()
 export class CampaignService {
   private logger = rootLogger.child({ logger: CampaignService.name });
@@ -108,9 +108,7 @@ export class CampaignService {
       createCampaignDto,
     );
     const appEnv = this.configService.get('APP_ENV');
-    if (!appEnv) {
-      throw new Error(`APP_ENV ${baseEnvCallErrorMessage}`);
-    }
+    if (!appEnv) envLoadErrorHelper('APP_ENV');
     const path: string[] = [];
 
     let folderType: string = '';

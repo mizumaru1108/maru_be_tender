@@ -1,41 +1,42 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ScheduleModule } from '@nestjs/schedule';
+import { AccountsModule } from './accounts/accounts.module';
+import { AuthModule } from './auth/auth.module';
+import { BuyingModule } from './buying/buying.module';
+import { CampaignModule } from './campaign/campaign.module';
+import { ContactsModule } from './contacts/contacts.module';
 import { CoreModule } from './core/core.module';
+import { CrmModule } from './crm/crm.module';
+import { DonorModule } from './donor/donor.module';
+import { FundraisingGiftModule } from './fundraising-gift/fundraising-gift.module';
 import { FundraisingModule } from './fundraising/fundraising.module';
 import { GeoModule } from './geo/geo.module';
+import { HrModule } from './hr/hr.module';
+import { IntegrationsModule } from './integrations/integrations.module';
+import { ItemModule } from './item/item.module';
+import { ManagerModule } from './manager/manager.module';
+import { OperatorModule } from './operator/operator.module';
+import { OrganizationModule } from './organization/organization.module';
 import { PaymentAmazonpsModule } from './payment-amazonps/payment-amazonps.module';
 import { PaymentHyperpayModule } from './payment-hyperpay/payment-hyperpay.module';
 import { PaymentPaypalModule } from './payment-paypal/payment-paypal.module';
 import { PaymentStripeModule } from './payment-stripe/payment-stripe.module';
 import { PaymentXenditModule } from './payment-xendit/payment-xendit.module';
 import { ProjectModule } from './project/project.module';
-import { AccountsModule } from './accounts/accounts.module';
-import { ContactsModule } from './contacts/contacts.module';
-import { CrmModule } from './crm/crm.module';
-import { HrModule } from './hr/hr.module';
-import { FundraisingGiftModule } from './fundraising-gift/fundraising-gift.module';
-import { OrganizationModule } from './organization/organization.module';
 import { ReferralModule } from './referral/referral.module';
-import { IntegrationsModule } from './integrations/integrations.module';
-import { MongooseModule } from '@nestjs/mongoose';
-import { DonorModule } from './donor/donor.module';
-import { CampaignModule } from './campaign/campaign.module';
-import { ItemModule } from './item/item.module';
-import { TicketModule } from './ticket/ticket.module';
-import { ZakatModule } from './zakat/zakat.module';
-import { UsersModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
-import { BuyingModule } from './buying/buying.module';
-import { ScheduleModule } from '@nestjs/schedule';
-import { OperatorModule } from './operator/operator.module';
-import { ManagerModule } from './manager/manager.module';
-import { WidgetsModule } from './widgets/widgets.module';
 import { SharedModule } from './shared/shared.module';
+import { TicketModule } from './ticket/ticket.module';
+import { UsersModule } from './user/user.module';
+import { WidgetsModule } from './widgets/widgets.module';
+import { ZakatModule } from './zakat/zakat.module';
 // import { OpenTelemetryModule } from 'nestjs-otel';
 // import { OpenTelemetryModule } from '@metinseylan/nestjs-opentelemetry';
-import { WidgetBackendModule } from './widget-backend/widget-backend.module';
 import { CommentsModule } from './comments/comments.module';
+import { envLoadErrorHelper } from './commons/helpers/env-loaderror-helper';
 import { PermissionManagerModule } from './permission-manager/permission-manager.module';
+import { WidgetBackendModule } from './widget-backend/widget-backend.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -64,12 +65,18 @@ import { PermissionManagerModule } from './permission-manager/permission-manager
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGODB_URL'),
-        loggerLevel: 'debug',
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const mongoUrl = configService.get<string>('MONGODB_URL')!;
+        if (!mongoUrl) envLoadErrorHelper('MONGODB_URL');
+
+        return {
+          uri: mongoUrl,
+          loggerLevel: 'debug',
+        };
+      },
       inject: [ConfigService],
     }),
     CoreModule,

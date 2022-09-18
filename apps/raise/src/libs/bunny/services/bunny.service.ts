@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
-import { baseEnvCallErrorMessage } from '../../../commons/helpers/base-env-call-error-message';
+import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import { generateRandomNumberString } from '../../../commons/utils/generate-random-string';
 import { sanitizeString } from '../../../commons/utils/sanitize-string';
 /**
@@ -17,37 +17,21 @@ export class BunnyService {
 
   constructor(private configService: ConfigService) {
     const environment = this.configService.get('APP_ENV');
-    if (!environment) {
-      throw new InternalServerErrorException(
-        `APP_ENV ${baseEnvCallErrorMessage}`,
-      );
-    }
+    if (!environment) envLoadErrorHelper('APP_ENV');
     this.appEnv = environment;
 
     const bunnyMediaUrl = this.configService.get('BUNNY_STORAGE_URL_MEDIA');
-    if (!bunnyMediaUrl) {
-      throw new InternalServerErrorException(
-        `BUNNY_STORAGE_URL_MEDIA ${baseEnvCallErrorMessage}`,
-      );
-    }
+    if (!bunnyMediaUrl) envLoadErrorHelper('BUNNY_STORAGE_URL_MEDIA');
     this.urlMedia = bunnyMediaUrl;
 
     const bunnyAccessKey = this.configService.get(
       'BUNNY_STORAGE_ACCESS_KEY_MEDIA',
     );
-    if (!bunnyAccessKey) {
-      throw new InternalServerErrorException(
-        `BUNNY_STORAGE_ACCESS_KEY_MEDIA ${baseEnvCallErrorMessage}`,
-      );
-    }
+    if (!bunnyAccessKey) envLoadErrorHelper('BUNNY_STORAGE_ACCESS_KEY_MEDIA');
     this.accessKey = bunnyAccessKey;
 
     const bunnyCdnUrl = this.configService.get('BUNNY_CDN_URL_MEDIA');
-    if (!bunnyCdnUrl) {
-      throw new InternalServerErrorException(
-        `BUNNY_CDN_URL_MEDIA ${baseEnvCallErrorMessage}`,
-      );
-    }
+    if (!bunnyCdnUrl) envLoadErrorHelper('BUNNY_CDN_URL_MEDIA');
     this.cdnUrl = bunnyCdnUrl;
   }
 

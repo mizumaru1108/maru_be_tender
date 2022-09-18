@@ -8,17 +8,15 @@ import {
   SubjectReference,
 } from '@authzed/authzed-node/dist/src/v1';
 import { AuthzedRelationship } from './enums/relationship.enum';
-import { baseEnvCallErrorMessage } from '../../commons/helpers/base-env-call-error-message';
+import { envLoadErrorHelper } from '../../commons/helpers/env-loaderror-helper';
 
 @Injectable()
 export class AuthzedService {
   private client;
 
   constructor(private configService: ConfigService) {
-    const token = this.configService.get<string>('AUTHZED_TOKEN');
-    if (!token) {
-      throw new Error(`AUTHZED_TOKEN ${baseEnvCallErrorMessage}`);
-    }
+    const token = this.configService.get<string>('AUTHZED_TOKEN')!;
+    if (!token) envLoadErrorHelper('AUTHZED_TOKEN');
     this.client = v1.NewClient(token);
   }
 

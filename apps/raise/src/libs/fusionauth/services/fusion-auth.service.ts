@@ -1,7 +1,6 @@
 import FusionAuthClient, {
   LoginResponse,
   RegistrationRequest as IFusionAuthRegistrationRequest,
-  RegistrationResponse,
   User as IFusionAuthUser,
   UserRegistration as IFusionAuthUserRegistration,
   ValidateResponse,
@@ -9,16 +8,14 @@ import FusionAuthClient, {
 import ClientResponse from '@fusionauth/typescript-client/build/src/ClientResponse';
 import {
   BadRequestException,
-  HttpException,
   Injectable,
-  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
 import { LoginRequestDto } from '../../../auth/dtos/login-request.dto';
 import { RegisterRequestDto } from '../../../auth/dtos/register-request.dto';
-import { baseEnvCallErrorMessage } from '../../../commons/helpers/base-env-call-error-message';
+import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 
 /**
  * Nest Fusion Auth Service
@@ -36,47 +33,27 @@ export class FusionAuthService {
   constructor(private configService: ConfigService) {
     const fusionAuthClientKey = this.configService.get<string>(
       'FUSIONAUTH_CLIENT_KEY',
-    );
-    if (!fusionAuthClientKey) {
-      throw new InternalServerErrorException(
-        `FUSIONAUTH_CLIENT_KEY ${baseEnvCallErrorMessage}`,
-      );
-    }
+    )!;
+    if (!fusionAuthClientKey) envLoadErrorHelper('FUSIONAUTH_CLIENT_KEY');
 
     const fusionAuthAdminKey = this.configService.get<string>(
       'FUSIONAUTH_ADMIN_KEY',
-    );
-    if (!fusionAuthAdminKey) {
-      throw new InternalServerErrorException(
-        `FUSIONAUTH_ADMIN_KEY ${baseEnvCallErrorMessage}`,
-      );
-    }
+    )!;
+    if (!fusionAuthAdminKey) envLoadErrorHelper('FUSIONAUTH_ADMIN_KEY');
     this.fusionAuthAdminKey = fusionAuthAdminKey;
 
-    const fusionAuthUrl = this.configService.get<string>('FUSIONAUTH_URL');
-    if (!fusionAuthUrl) {
-      throw new InternalServerErrorException(
-        `FUSIONAUTH_URL ${baseEnvCallErrorMessage}`,
-      );
-    }
+    const fusionAuthUrl = this.configService.get<string>('FUSIONAUTH_URL')!;
+    if (!fusionAuthUrl) envLoadErrorHelper('FUSIONAUTH_URL');
     this.fusionAuthUrl = fusionAuthUrl;
 
     const fusionAuthTenantId = this.configService.get<string>(
       'FUSIONAUTH_TENANT_ID',
-    );
-    if (!fusionAuthTenantId) {
-      throw new InternalServerErrorException(
-        `FUSIONAUTH_TENANT_ID ${baseEnvCallErrorMessage}`,
-      );
-    }
+    )!;
+    if (!fusionAuthTenantId) envLoadErrorHelper('FUSIONAUTH_TENANT_ID');
     this.fusionAuthTenantId = fusionAuthTenantId;
 
-    const appId = this.configService.get<string>('FUSIONAUTH_APP_ID');
-    if (!appId) {
-      throw new InternalServerErrorException(
-        `FUSIONAUTH_APP_ID ${baseEnvCallErrorMessage}`,
-      );
-    }
+    const appId = this.configService.get<string>('FUSIONAUTH_APP_ID')!;
+    if (!appId) envLoadErrorHelper('FUSIONAUTH_APP_ID');
     this.fusionAuthAppId = appId;
 
     this.fusionAuthClient = new FusionAuthClient(
