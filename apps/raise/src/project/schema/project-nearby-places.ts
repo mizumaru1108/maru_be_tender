@@ -33,7 +33,7 @@ export class ProjectNearbyPlaces {
   /**
    * Coordinates
    */
-  coordinates?: CoordiateLocation;
+  coordinates: CoordiateLocation;
 
   public static mapFromCreateRequest(
     request: CreateProjectNearbyPlacesDto,

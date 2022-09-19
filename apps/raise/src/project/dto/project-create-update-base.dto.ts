@@ -10,6 +10,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
+import { CoordiateLocation } from '../../commons/dtos/location.dto';
 import { ProjectNearbyPlaces } from '../schema/project-nearby-places';
 
 export class ProjectCreateUpdateBaseDto {
@@ -34,7 +35,12 @@ export class ProjectCreateUpdateBaseDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  address: string;
+  country: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  city: string;
 
   @ApiProperty()
   @IsString()
@@ -42,9 +48,10 @@ export class ProjectCreateUpdateBaseDto {
   description: string;
 
   @ApiProperty()
-  @IsString()
   @IsNotEmpty()
-  location: string;
+  @ValidateNested()
+  @Type(() => CoordiateLocation)
+  coordinate: CoordiateLocation;
 
   @ApiProperty()
   @IsString()

@@ -66,16 +66,16 @@ export class Project {
   public name: string;
 
   @Prop()
-  public address: string;
+  public country: string;
+
+  @Prop()
+  public city: string;
 
   @Prop({ default: null })
-  public addressCoordinate?: CoordiateLocation;
+  public coordinate?: CoordiateLocation;
 
   @Prop()
   public description: string;
-
-  @Prop()
-  public location: string;
 
   @Prop()
   public diameterSize: string;
@@ -155,9 +155,9 @@ export class Project {
     }
     request.name && (currentData.name = request.name);
     request.description && (currentData.description = request.description);
-    request.address && (currentData.address = request.address);
+    // request.address && (currentData.address = request.address);
     // request.nearByPlaces && (currentData.nearByPlaces = request.nearByPlaces);
-    request.location && (currentData.location = request.location);
+    // request.location && (currentData.location = request.location);
     request.diameterSize && (currentData.diameterSize = request.diameterSize);
     request.prayerSize && (currentData.prayerSize = request.prayerSize);
     request.toiletSize && (currentData.toiletSize = request.toiletSize);
@@ -183,8 +183,9 @@ export class Project {
     scheme.organizationId = new Types.ObjectId(request.organizationId);
     scheme.name = request.name;
     scheme.description = request.description;
-    scheme.address = request.address;
-    scheme.location = request.location;
+    scheme.country = request.country;
+    scheme.city = request.city;
+    scheme.coordinate = request.coordinate;
     scheme.diameterSize = request.diameterSize;
     scheme.prayerSize = request.prayerSize;
     scheme.toiletSize = request.toiletSize;
