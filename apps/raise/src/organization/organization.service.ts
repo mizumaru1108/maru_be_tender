@@ -414,6 +414,7 @@ export class OrganizationService {
       },
     ]);
   }
+
   async getDonorsList(
     filter: DonorsFilterDto,
   ): Promise<AggregatePaginateResult<DonationLogDocument>> {
@@ -483,7 +484,6 @@ export class OrganizationService {
           preserveNullAndEmptyArrays: true,
         },
       },
-
       {
         $lookup: {
           from: 'anonymous',
@@ -495,6 +495,20 @@ export class OrganizationService {
       {
         $unwind: {
           path: '$user_anonymous',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'campaign',
+          localField: 'campaignId',
+          foreignField: '_id',
+          as: 'campaign',
+        },
+      },
+      {
+        $unwind: {
+          path: '$campaign',
           preserveNullAndEmptyArrays: true,
         },
       },
@@ -548,6 +562,8 @@ export class OrganizationService {
           mobile: { $first: '$user.mobile' },
           totalAmount: { $sum: '$amount' },
           createdAt: { $first: '$createdAt' },
+          campaignName: { $first: '$campaign.title' },
+          campaignType: { $first: '$campaign.islamCharityType' },
         },
       },
     ]);
