@@ -30,11 +30,6 @@ export class ProjectNearbyPlaces {
    */
   unitDistance: string;
 
-  /**
-   * Coordinates
-   */
-  coordinates: CoordiateLocation;
-
   public static mapFromCreateRequest(
     request: CreateProjectNearbyPlacesDto,
   ): ProjectNearbyPlaces {
@@ -44,9 +39,6 @@ export class ProjectNearbyPlaces {
     nearbyPlaces.description = request.description;
     nearbyPlaces.distance = request.distance;
     nearbyPlaces.unitDistance = request.unitDistance;
-    if (request.coordinates) {
-      nearbyPlaces.coordinates = request.coordinates;
-    }
     return nearbyPlaces;
   }
 }
