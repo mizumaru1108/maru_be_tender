@@ -102,6 +102,7 @@ export class OperatorService {
           image2: { $first: '$image2' },
           image3: { $first: '$image3' },
           description: { $first: '$description' },
+          ownerUserId: { $first: '$ownerUserId' },
           createdAt: { $first: '$createdAt' },
           updatedAt: { $first: '$updatedAt' },
           projectId: { $first: '$op.projectId' },
