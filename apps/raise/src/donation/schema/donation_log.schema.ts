@@ -4,7 +4,7 @@ import { Document, Types } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
 import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
-export type DonationLogDocument = DonationLogs & Document;
+export type DonationLogsDocument = DonationLogs & Document;
 
 @Schema({ collection: 'donation_log' }) // for zakat transaction
 export class DonationLogs {
@@ -42,6 +42,6 @@ export class DonationLogs {
   public ipAddress?: string;
 }
 
-export const DonationLogSchema = SchemaFactory.createForClass(DonationLogs)
+export const DonationLogsSchema = SchemaFactory.createForClass(DonationLogs)
   .plugin(paginate)
   .plugin(aggregatePaginate);

@@ -35,19 +35,18 @@ import {
 import { DonorsFilterDto, FilterDonorDashboardDto } from './dto';
 import { PaginatedResponse } from 'src/commons/dtos/paginated-response.dto';
 import { paginationHelper } from 'src/commons/helpers/pagination-helper';
-import { DonationLogDocument } from 'src/donor/schema/donation-log.schema';
-import { DonationLogDocument as DonationLogsDocument } from 'src/donor/schema/donation_log.schema';
 import { BaseResponse } from 'src/commons/dtos/base-response';
 import { AppearanceNavigation } from './schema/nonprofit_appearance_navigation.schema';
 import { baseResponseHelper } from 'src/commons/helpers/base-response-helper';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
+import { DonationLogsDocument } from '../donation/schema/donation_log.schema';
 
 @ApiTags('orgs')
 @Controller('orgs')
 export class OrganizationController {
   private logger = rootLogger.child({ logger: OrganizationController.name });
 
-  constructor(private organizationService: OrganizationService) { }
+  constructor(private organizationService: OrganizationService) {}
 
   @Get('getListAll')
   async findAll() {
@@ -111,14 +110,12 @@ export class OrganizationController {
   }
 
   @Get('donor')
-  async getDonorsList(@Query() filter: DonorsFilterDto,)
-    : Promise<PaginatedResponse<DonationLogsDocument[]>> {
+  async getDonorsList(
+    @Query() filter: DonorsFilterDto,
+  ): Promise<PaginatedResponse<DonationLogsDocument[]>> {
     this.logger.debug('fetching donors list...');
 
-    const donorsList =
-      await this.organizationService.getDonorsList(
-        filter
-      )
+    const donorsList = await this.organizationService.getDonorsList(filter);
     const response = paginationHelper(
       donorsList.docs,
       donorsList.totalDocs,
@@ -241,11 +238,11 @@ export class OrganizationController {
   @Post(':organizationId/landingPage')
   async createLandingPage(
     @Param('organizationId') organizationId: string,
-    @Body() nonProfitAppearanceNavigationDto: NonProfitAppearanceNavigationDto
+    @Body() nonProfitAppearanceNavigationDto: NonProfitAppearanceNavigationDto,
   ) {
     return await this.organizationService.createLandingPage(
       organizationId,
-      nonProfitAppearanceNavigationDto
+      nonProfitAppearanceNavigationDto,
     );
   }
 
@@ -294,7 +291,10 @@ export class OrganizationController {
     @Body()
     editNonProfitAppearanceNavigationDto: EditNonProfApperNavDto,
   ): Promise<BaseResponse<AppearanceNavigation>> {
-    this.logger.debug('update landingPage', JSON.stringify(editNonProfitAppearanceNavigationDto));
+    this.logger.debug(
+      'update landingPage',
+      JSON.stringify(editNonProfitAppearanceNavigationDto),
+    );
     const editLandingPage = await this.organizationService.editLandingPage(
       organizationId,
       editNonProfitAppearanceNavigationDto,
@@ -315,7 +315,10 @@ export class OrganizationController {
     @Body()
     EditNonProfApperNavAboutUsDto: EditNonProfApperNavAboutUsDto,
   ): Promise<BaseResponse<AppearanceNavigation>> {
-    this.logger.debug('update aboutUs', JSON.stringify(EditNonProfApperNavAboutUsDto));
+    this.logger.debug(
+      'update aboutUs',
+      JSON.stringify(EditNonProfApperNavAboutUsDto),
+    );
     const editAboutUs = await this.organizationService.editAboutUs(
       organizationId,
       EditNonProfApperNavAboutUsDto,
@@ -336,7 +339,10 @@ export class OrganizationController {
     @Body()
     editNonProfitAppearanceNavigationBlogDto: EditNonProfitAppearanceNavigationBlogDto,
   ): Promise<BaseResponse<AppearanceNavigation>> {
-    this.logger.debug('update blog', JSON.stringify(editNonProfitAppearanceNavigationBlogDto));
+    this.logger.debug(
+      'update blog',
+      JSON.stringify(editNonProfitAppearanceNavigationBlogDto),
+    );
     const blogData = await this.organizationService.editBlog(
       organizationId,
       editNonProfitAppearanceNavigationBlogDto,
@@ -356,7 +362,10 @@ export class OrganizationController {
     @Param('organizationId') organizationId: string,
     @Body() editNonProfitAppearancePageDto: EditNonProfitAppearancePageDto,
   ) {
-    this.logger.debug('update contactUs', JSON.stringify(editNonProfitAppearancePageDto));
+    this.logger.debug(
+      'update contactUs',
+      JSON.stringify(editNonProfitAppearancePageDto),
+    );
     return this.organizationService.editContactUs(
       organizationId,
       editNonProfitAppearancePageDto,
@@ -393,8 +402,12 @@ export class OrganizationController {
     @Param('donorId') donorId: string,
     @Query('period') period: string,
     @Query() filter: FilterDonorDashboardDto,
-
   ) {
-    return this.organizationService.getInsightSummaryDonorId(organizationId, donorId, period, filter);
+    return this.organizationService.getInsightSummaryDonorId(
+      organizationId,
+      donorId,
+      period,
+      filter,
+    );
   }
 }

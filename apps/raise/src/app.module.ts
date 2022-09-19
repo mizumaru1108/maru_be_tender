@@ -37,6 +37,7 @@ import { CommentsModule } from './comments/comments.module';
 import { envLoadErrorHelper } from './commons/helpers/env-loaderror-helper';
 import { PermissionManagerModule } from './permission-manager/permission-manager.module';
 import { WidgetBackendModule } from './widget-backend/widget-backend.module';
+import { DonationModule } from './donation/donation.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -111,6 +112,7 @@ import { WidgetBackendModule } from './widget-backend/widget-backend.module';
     WidgetBackendModule,
     CommentsModule,
     PermissionManagerModule,
+    DonationModule,
   ],
   controllers: [],
 })

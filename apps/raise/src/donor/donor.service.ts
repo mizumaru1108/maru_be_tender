@@ -23,10 +23,11 @@ import {
 import {
   PaymentGateway,
   PaymentGatewayDocument,
-} from 'src/payment-stripe/schema/paymentGateway.schema';
+} from 'src/donation/schema/paymentGateway.schema';
 import Stripe from 'stripe';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
+
 import {
   CampaignVendorLog,
   CampaignVendorLogDocument,
@@ -48,10 +49,6 @@ import { PaytabsPaymentRequestPayloadModel } from '../libs/paytabs/models/paytab
 import { PaytabsService } from '../libs/paytabs/services/paytabs.service';
 import { StripeService } from '../libs/stripe/services/stripe.service';
 import { rootLogger } from '../logger';
-import {
-  PaymentData,
-  PaymentDataDocument,
-} from '../payment-stripe/schema/paymentData.schema';
 import { Project, ProjectDocument } from '../project/schema/project.schema';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import {
@@ -68,16 +65,23 @@ import { DonorDonateDto } from './dto/donor-donate.dto';
 import { DonationStatus } from './enum/donation-status.enum';
 import { DonationType } from './enum/donation-type.enum';
 import { DonorDonationTypeMapResult } from './interfaces/donor-donation-type-map-result.interface';
+import {
+  DonationLog,
+  DonationLogDocument,
+} from '../donation/schema/donation-log.schema';
 import { Anonymous, AnonymousDocument } from './schema/anonymous.schema';
 import {
   DonationDetail,
   DonationDetailDocument,
-} from './schema/donation-detail.schema';
-import { DonationLog, DonationLogDocument } from './schema/donation-log.schema';
+} from '../donation/schema/donation-detail.schema';
 import {
-  DonationLogDocument as DonationLogsDocument,
   DonationLogs,
-} from './schema/donation_log.schema';
+  DonationLogsDocument,
+} from '../donation/schema/donation_log.schema';
+import {
+  PaymentData,
+  PaymentDataDocument,
+} from '../donation/schema/paymentData.schema';
 import { Donor, DonorDocument } from './schema/donor.schema';
 import { Volunteer, VolunteerDocument } from './schema/volunteer.schema';
 

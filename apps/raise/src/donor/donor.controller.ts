@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  ExecutionContext,
   Get,
   Headers,
   HttpStatus,
@@ -19,6 +18,7 @@ import { Vendor } from '../buying/vendor/vendor.schema';
 import { CurrentUser } from '../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../commons/dtos/base-response';
 import { baseResponseHelper } from '../commons/helpers/base-response-helper';
+import { DonationLogsDocument } from '../donation/schema/donation_log.schema';
 import { PaytabsIpnWebhookResponsePayload } from '../libs/paytabs/dtos/response/paytabs-ipn-webhook-response-payload.dto';
 import { PaytabsService } from '../libs/paytabs/services/paytabs.service';
 import { rootLogger } from '../logger';
@@ -35,7 +35,6 @@ import { DonorDonateItemResponse } from './dto/donor-donate-item-response';
 import { DonorDonateItemDto } from './dto/donor-donate-item.dto';
 import { DonorDonateResponse } from './dto/donor-donate-response.dto';
 import { DonorDonateDto } from './dto/donor-donate.dto';
-import { DonationLogDocument as DonationLogsDocument } from './schema/donation_log.schema';
 import { Donor } from './schema/donor.schema';
 
 @ApiTags('donor')

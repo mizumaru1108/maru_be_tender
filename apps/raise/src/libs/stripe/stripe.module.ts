@@ -1,11 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Campaign, CampaignSchema } from 'src/campaign/schema/campaign.schema';
-import { Anonymous, AnonymousSchema } from 'src/donor/schema/anonymous.schema';
-import {
-  DonationLogs,
-  DonationLogSchema,
-} from 'src/donor/schema/donation_log.schema';
+
 import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
 import {
   Notifications,
@@ -21,13 +17,23 @@ import {
 } from 'src/organization/schema/organization.schema';
 import { User, UserSchema } from 'src/user/schema/user.schema';
 import {
+  DonationLog,
+  DonationLogSchema,
+} from '../../donation/schema/donation-log.schema';
+
+import {
   PaymentData,
   PaymentDataSchema,
-} from '../../payment-stripe/schema/paymentData.schema';
+} from '../../donation/schema/paymentData.schema';
 import {
   PaymentGateway,
   PaymentGatewaySchema,
-} from '../../payment-stripe/schema/paymentGateway.schema';
+} from '../../donation/schema/paymentGateway.schema';
+import {
+  Anonymous,
+  AnonymousSchema,
+} from '../../donor/schema/anonymous.schema';
+
 import { StripeService } from './services/stripe.service';
 
 @Global()
@@ -43,7 +49,7 @@ import { StripeService } from './services/stripe.service';
         schema: CampaignSchema,
       },
       {
-        name: DonationLogs.name,
+        name: DonationLog.name,
         schema: DonationLogSchema,
       },
       {

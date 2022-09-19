@@ -5,10 +5,7 @@ import { Model, Types } from 'mongoose';
 import axios, { AxiosRequestConfig } from 'axios';
 import { rootLogger } from '../logger';
 import { CreateMetalPriceDto } from './dto';
-import {
-  DonationLogs,
-  DonationLogDocument,
-} from '../donor/schema/donation_log.schema';
+
 import {
   Organization,
   OrganizationDocument,
@@ -19,25 +16,28 @@ import { ExpenseDto } from './dto/expense.dto';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { Cron } from '@nestjs/schedule';
 import { User, UserDocument } from 'src/user/schema/user.schema';
-import {
-  PaymentGateway,
-  PaymentGatewayDocument,
-} from 'src/payment-stripe/schema/paymentGateway.schema';
-import {
-  Anonymous,
-  AnonymousDocument,
-} from 'src/donor/schema/anonymous.schema';
+
 import { Donor, DonorDocument } from 'src/donor/schema/donor.schema';
 import {
   Campaign,
   CampaignDocument,
 } from 'src/campaign/schema/campaign.schema';
+
+import { ZakatLog, ZakatLogDocument } from './schemas/zakat_log.schema';
+import { PaymentRequestDto } from 'src/payment-stripe/payment-stripe.dto';
+import {
+  DonationLogs,
+  DonationLogsDocument,
+} from '../donation/schema/donation_log.schema';
 import {
   PaymentData,
   PaymentDataDocument,
-} from 'src/payment-stripe/schema/paymentData.schema';
-import { ZakatLog, ZakatLogDocument } from './schemas/zakat_log.schema';
-import { PaymentRequestDto } from 'src/payment-stripe/payment-stripe.dto';
+} from '../donation/schema/paymentData.schema';
+import {
+  PaymentGateway,
+  PaymentGatewayDocument,
+} from '../donation/schema/paymentGateway.schema';
+import { Anonymous, AnonymousDocument } from '../donor/schema/anonymous.schema';
 
 @Injectable()
 export class ZakatService {
@@ -46,7 +46,7 @@ export class ZakatService {
     @InjectModel(MetalPrice.name)
     private metalPriceModel: Model<MetalPriceDocument>,
     @InjectModel(DonationLogs.name)
-    private donationLogModel: Model<DonationLogDocument>,
+    private donationLogsModel: Model<DonationLogsDocument>,
     @InjectModel(Expense.name)
     private expenseModel: Model<ExpenseDocument>,
     @InjectModel(Organization.name)
@@ -184,7 +184,7 @@ export class ZakatService {
         }),
       };
     }
-    const donationList = await this.donationLogModel.aggregate([
+    const donationList = await this.donationLogsModel.aggregate([
       {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
@@ -245,7 +245,7 @@ export class ZakatService {
     //   },
     // ]);
     // console.log(expenseList);
-    // const donationList = await this.donationLogModel.find({
+    // const donationList = await this.donationLogsModel.find({
     //   nonprofitRealmId: new Types.ObjectId(organizationId),
     //   campaignId: new Types.ObjectId('6299ed6a9f1ad428563563ed'),
     // });
@@ -258,7 +258,7 @@ export class ZakatService {
     //     +new Date(x.createdAt) - +new Date(y.createdAt),
     // );
     // return transactionAll;
-    return await this.donationLogModel.aggregate([
+    return await this.donationLogsModel.aggregate([
       {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
@@ -345,7 +345,7 @@ export class ZakatService {
 
   async getTransactionList(organizationId: string, sortStatus: string) {
     this.logger.debug(`getTransactions organizationId=${organizationId}`);
-    // const list = await this.donationLogModel
+    // const list = await this.donationLogsModel
     //   .find({
     //     nonprofitRealmId: new Types.ObjectId(organizationId),
     //     campaignId: new Types.ObjectId('6299ed6a9f1ad428563563ed'),
@@ -364,7 +364,7 @@ export class ZakatService {
         createdAt: -1,
       };
     }
-    return await this.donationLogModel.aggregate([
+    return await this.donationLogsModel.aggregate([
       {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
@@ -488,7 +488,7 @@ export class ZakatService {
 
   async getDonorList(organizationId: string) {
     this.logger.debug(`getDonorList organizationId=${organizationId}`);
-    return await this.donationLogModel.aggregate([
+    return await this.donationLogsModel.aggregate([
       {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
@@ -736,7 +736,7 @@ export class ZakatService {
       //insert data to donation_log
       let objectIdDonation = new Types.ObjectId();
       let now: Date = new Date();
-      const getDonationLog = await new this.donationLogModel({
+      const getDonationLog = await new this.donationLogsModel({
         _id: objectIdDonation,
         nonprofitRealmId: ObjectId(paymentDto.organizationId),
         donorUserId: isAnonymous ? '' : ownerUserId, //paymentDto.donorId,

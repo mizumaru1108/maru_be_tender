@@ -1,11 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Campaign, CampaignSchema } from 'src/campaign/schema/campaign.schema';
-import { Anonymous, AnonymousSchema } from 'src/donor/schema/anonymous.schema';
-import {
-  DonationLogs,
-  DonationLogSchema,
-} from 'src/donor/schema/donation_log.schema';
+
 import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
 import {
   Notifications,
@@ -20,13 +16,21 @@ import {
   OrganizationSchema,
 } from 'src/organization/schema/organization.schema';
 import { User, UserSchema } from 'src/user/schema/user.schema';
-import { PaymentStripeController } from './payment-stripe.controller';
-import { PaymentStripeService } from './payment-stripe.service';
-import { PaymentData, PaymentDataSchema } from './schema/paymentData.schema';
+import {
+  DonationLogs,
+  DonationLogsSchema,
+} from '../donation/schema/donation_log.schema';
+import {
+  PaymentData,
+  PaymentDataSchema,
+} from '../donation/schema/paymentData.schema';
 import {
   PaymentGateway,
   PaymentGatewaySchema,
-} from './schema/paymentGateway.schema';
+} from '../donation/schema/paymentGateway.schema';
+import { Anonymous, AnonymousSchema } from '../donor/schema/anonymous.schema';
+import { PaymentStripeController } from './payment-stripe.controller';
+import { PaymentStripeService } from './payment-stripe.service';
 
 @Module({
   imports: [
@@ -41,7 +45,7 @@ import {
       },
       {
         name: DonationLogs.name,
-        schema: DonationLogSchema,
+        schema: DonationLogsSchema,
       },
       {
         name: Donor.name,

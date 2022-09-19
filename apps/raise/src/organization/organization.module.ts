@@ -1,17 +1,12 @@
 import { Module } from '@nestjs/common';
-// import { OrgsService } from './orgs.service';
-// import { OrgsController } from './orgs.controller';
 import { MongooseModule } from '@nestjs/mongoose';
+
 import { Campaign, CampaignSchema } from 'src/campaign/schema/campaign.schema';
-import {
-  DonationLogs,
-  DonationLogSchema,
-} from 'src/donor/schema/donation_log.schema';
 import { Donor, DonorSchema } from 'src/donor/schema/donor.schema';
 import {
   PaymentGateway,
   PaymentGatewaySchema,
-} from 'src/payment-stripe/schema/paymentGateway.schema';
+} from 'src/donation/schema/paymentGateway.schema';
 import { OrganizationController } from './organization.controller';
 import { OrganizationService } from './organization.service';
 import { Appearance, AppearanceSchema } from './schema/appearance.schema';
@@ -25,7 +20,6 @@ import {
   NotificationSettingsSchema,
 } from './schema/notification_settings.schema';
 import { Organization, OrganizationSchema } from './schema/organization.schema';
-
 import {
   AppearanceNavigation,
   AppearanceNavigationSchema,
@@ -34,6 +28,10 @@ import {
   AppearancePage,
   AppearancePageSchema,
 } from './schema/nonprofit_appearance_page.schema';
+import {
+  DonationLogs,
+  DonationLogsSchema,
+} from '../donation/schema/donation_log.schema';
 
 @Module({
   imports: [
@@ -48,7 +46,7 @@ import {
       },
       {
         name: DonationLogs.name,
-        schema: DonationLogSchema,
+        schema: DonationLogsSchema,
       },
       {
         name: Donor.name,

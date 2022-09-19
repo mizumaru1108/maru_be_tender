@@ -11,26 +11,31 @@ import {
 } from '../buying/vendor/vendor.schema';
 import { Campaign, CampaignSchema } from '../campaign/schema/campaign.schema';
 import { DonorController } from './donor.controller';
-import { Anonymous, AnonymousSchema } from './schema/anonymous.schema';
-import { DonationLog, DonationLogSchema } from './schema/donation-log.schema';
 import {
-  DonationLogs,
-  DonationLogSchema as DonationLogsSchema,
-} from './schema/donation_log.schema';
+  DonationLog,
+  DonationLogSchema,
+} from '../donation/schema/donation-log.schema';
+
 import {
   PaymentGateway,
   PaymentGatewaySchema,
-} from 'src/payment-stripe/schema/paymentGateway.schema';
+} from 'src/donation/schema/paymentGateway.schema';
 import { Item, ItemSchema } from '../item/item.schema';
-import {
-  PaymentData,
-  PaymentDataSchema,
-} from '../payment-stripe/schema/paymentData.schema';
+
 import { Project, ProjectSchema } from '../project/schema/project.schema';
+import { Anonymous, AnonymousSchema } from './schema/anonymous.schema';
 import {
   DonationDetail,
   DonationDetailSchema,
-} from './schema/donation-detail.schema';
+} from '../donation/schema/donation-detail.schema';
+import {
+  PaymentData,
+  PaymentDataSchema,
+} from '../donation/schema/paymentData.schema';
+import {
+  DonationLogs,
+  DonationLogsSchema,
+} from '../donation/schema/donation_log.schema';
 
 @Module({
   imports: [

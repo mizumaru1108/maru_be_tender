@@ -1,5 +1,5 @@
 import { IPaymentGatewayItems } from '../../commons/interfaces/payment-gateway-items.interface';
-import { DonationDetail } from '../schema/donation-detail.schema';
+import { DonationDetail } from '../../donation/schema/donation-detail.schema';
 
 export interface DonorDonationTypeMapResult {
   items: IPaymentGatewayItems;

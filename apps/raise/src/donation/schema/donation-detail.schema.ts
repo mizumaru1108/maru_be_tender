@@ -3,9 +3,9 @@ import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
 import paginate from 'mongoose-paginate-v2';
 import { Campaign } from '../../campaign/schema/campaign.schema';
+import { DonationType } from '../../donor/enum/donation-type.enum';
 import { Item } from '../../item/item.schema';
 import { Project } from '../../project/schema/project.schema';
-import { DonationType } from '../enum/donation-type.enum';
 import { DonationLog } from './donation-log.schema';
 import { ZakatDetails } from './zakat-details.schema';
 

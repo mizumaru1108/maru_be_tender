@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmptyObject } from 'class-validator';
+import { DonationLog } from '../../donation/schema/donation-log.schema';
+import { PaymentData } from '../../donation/schema/paymentData.schema';
 import { PaytabsCreateTransactionResponse } from '../../libs/paytabs/dtos/response/paytabs-create-transaction-response.dto';
-import { PaymentData } from '../../payment-stripe/schema/paymentData.schema';
-import { DonationLog } from '../schema/donation-log.schema';
 
 export class DonorDonateItemResponse {
   @ApiProperty()

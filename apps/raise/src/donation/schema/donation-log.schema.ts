@@ -1,11 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import * as mongoose from 'mongoose';
-import { DonationType } from '../enum/donation-type.enum';
-import { DonationStatus } from '../enum/donation-status.enum';
+import { DonationType } from '../../donor/enum/donation-type.enum';
+import { DonationStatus } from '../../donor/enum/donation-status.enum';
 import paginate from 'mongoose-paginate-v2';
 import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
-import { Donor } from './donor.schema';
+import { Donor } from '../../donor/schema/donor.schema';
 
 export type DonationLogDocument = DonationLog & Document;
 

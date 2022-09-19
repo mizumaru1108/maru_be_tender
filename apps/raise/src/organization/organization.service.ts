@@ -14,20 +14,17 @@ import {
 import { rootLogger } from '../logger';
 import { FusionAuthClient } from '@fusionauth/typescript-client';
 import { ConfigService } from '@nestjs/config';
+
 import { OrganizationDto } from './dto/organization.dto';
 import {
   Organization,
   OrganizationDocument,
 } from './schema/organization.schema';
-import {
-  DonationLogDocument,
-  DonationLogs,
-} from 'src/donor/schema/donation_log.schema';
 import { Donor, DonorDocument } from 'src/donor/schema/donor.schema';
 import {
   PaymentGateway,
   PaymentGatewayDocument,
-} from 'src/payment-stripe/schema/paymentGateway.schema';
+} from 'src/donation/schema/paymentGateway.schema';
 import {
   Campaign,
   CampaignDocument,
@@ -67,23 +64,26 @@ import {
   EditNonProfApperNavDto,
   EditNonProfApperNavAboutUsDto,
 } from './dto/nonprofit_appearance_navigation.dto';
-
 import { DonorsFilterDto, FilterDonorDashboardDto } from './dto';
 import { FilterQueryDonorDashboard } from './enums';
 import { EmailService } from '../libs/email/email.service';
 import { BunnyService } from '../libs/bunny/services/bunny.service';
+import {
+  DonationLogs,
+  DonationLogsDocument,
+} from '../donation/schema/donation_log.schema';
 
 @Injectable()
 export class OrganizationService {
   private logger = rootLogger.child({ logger: OrganizationService.name });
 
   constructor(
+    private readonly emailService: EmailService,
+    private bunnyService: BunnyService,
     @InjectModel(Appearance.name)
     private appearanceModel: Model<AppearanceDocument>,
     @InjectModel(Campaign.name)
     private campaignModel: Model<CampaignDocument>,
-    @InjectModel(DonationLogs.name)
-    private donationLogModel: Model<DonationLogDocument>,
     @InjectModel(Donor.name)
     private donorModel: Model<DonorDocument>,
     @InjectModel(Faq.name)
@@ -101,11 +101,11 @@ export class OrganizationService {
     private appearanceNavigationModel: Model<AppearanceNavigationDocument>,
     @InjectModel(AppearancePage.name)
     private appearancePageModel: Model<AppearancePageDocument>,
-    private readonly emailService: EmailService,
     @InjectModel(DonationLogs.name)
-    private campaignAggregatePaginateModel: AggregatePaginateModel<DonationLogDocument>,
-    private bunnyService: BunnyService,
-  ) { }
+    private donationLogsModel: Model<DonationLogsDocument>,
+    @InjectModel(DonationLogs.name)
+    private donationLogsAggregatePaginateModel: AggregatePaginateModel<DonationLogsDocument>,
+  ) {}
 
   async findAll() {
     this.logger.debug('findAll...');
@@ -284,15 +284,7 @@ export class OrganizationService {
 
   async getDonorList(organizationId: string) {
     this.logger.debug(`getDonorList organizationId=${organizationId}`);
-    // const donorUserIds = await this.donationLogModel
-    //   .find({
-    //     nonprofitRealmId: new Types.ObjectId(organizationId),
-    //     donationStatus: 'PENDING',
-    //     donorUserId: { $ne: null },
-    //   })
-    //   .distinct('donorUserId');
-    // return await this.donorModel.find({ ownerUserId: { $in: donorUserIds } });
-    return await this.donationLogModel.aggregate([
+    return await this.donationLogsModel.aggregate([
       {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
@@ -417,7 +409,7 @@ export class OrganizationService {
 
   async getDonorsList(
     filter: DonorsFilterDto,
-  ): Promise<AggregatePaginateResult<DonationLogDocument>> {
+  ): Promise<AggregatePaginateResult<DonationLogsDocument>> {
     this.logger.debug(`getDonorsList organizationId=${filter}`);
     const { limit = 10, page = 1 } = filter;
 
@@ -462,7 +454,7 @@ export class OrganizationService {
       };
     }
 
-    const aggregateQuerry = this.donationLogModel.aggregate([
+    const aggregateQuerry = this.donationLogsModel.aggregate([
       {
         $match: {
           nonprofitRealmId: new Types.ObjectId(filter.organizationId),
@@ -569,7 +561,7 @@ export class OrganizationService {
     ]);
 
     const donorList =
-      await this.campaignAggregatePaginateModel.aggregatePaginate(
+      await this.donationLogsAggregatePaginateModel.aggregatePaginate(
         aggregateQuerry,
         {
           page,
@@ -735,7 +727,7 @@ export class OrganizationService {
       })
       .count();
 
-    const donationList = await this.donationLogModel.aggregate([
+    const donationList = await this.donationLogsModel.aggregate([
       {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
@@ -753,7 +745,7 @@ export class OrganizationService {
 
     const totalDonation = donationList.length == 0 ? 0 : donationList[0].total;
 
-    const returningDonorAgg = await this.donationLogModel.aggregate([
+    const returningDonorAgg = await this.donationLogsModel.aggregate([
       {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
@@ -789,7 +781,7 @@ export class OrganizationService {
     ]);
     // console.log(totalReturningDonor);
 
-    const mostPopularProgramsDiagram = await this.donationLogModel.aggregate([
+    const mostPopularProgramsDiagram = await this.donationLogsModel.aggregate([
       {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
@@ -832,7 +824,7 @@ export class OrganizationService {
     ]);
     console.log(mostPopularProgramsDiagram);
 
-    const totalDonationPerProgram = await this.donationLogModel.aggregate([
+    const totalDonationPerProgram = await this.donationLogsModel.aggregate([
       {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
@@ -910,7 +902,7 @@ export class OrganizationService {
         amountProgress: 1,
         amountTarget: 1,
       });
-    const donorList = await this.donationLogModel.aggregate([
+    const donorList = await this.donationLogsModel.aggregate([
       {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
@@ -1357,8 +1349,7 @@ export class OrganizationService {
       nonProfitAppearanceNavigationDto &&
       nonProfitAppearanceNavigationDto.photoWhyUsUl!
     ) {
-      const iconForMission =
-        nonProfitAppearanceNavigationDto.photoWhyUsUl[0];
+      const iconForMission = nonProfitAppearanceNavigationDto.photoWhyUsUl[0];
       if (!!iconForMission) {
         const path = await this.bunnyService.generatePath(
           nonProfitAppearanceNavigationDto.organizationId!,
@@ -2005,8 +1996,7 @@ export class OrganizationService {
       editNonProfitAppearanceNavigationDto &&
       editNonProfitAppearanceNavigationDto.photoWhyUsUl! //iconForMissionUl!
     ) {
-      const photoWhyUs =
-        editNonProfitAppearanceNavigationDto.photoWhyUsUl[0];
+      const photoWhyUs = editNonProfitAppearanceNavigationDto.photoWhyUsUl[0];
       if (!!photoWhyUs) {
         const path = await this.bunnyService.generatePath(
           editNonProfitAppearanceNavigationDto.organizationId!,
@@ -2330,7 +2320,9 @@ export class OrganizationService {
               features[i].iconFeaturesItem!,
             );
             if (isExist) {
-              await this.bunnyService.deleteImage(features[i].iconFeaturesItem!);
+              await this.bunnyService.deleteImage(
+                features[i].iconFeaturesItem!,
+              );
             }
           }
           console.info('Features Item image has been replaced');
@@ -2562,11 +2554,14 @@ export class OrganizationService {
     }
 
     const contactData = await this.appearancePageModel.findOne({
-      organizationId: organizationId
+      organizationId: organizationId,
     });
 
     if (contactData) {
-      throw new HttpException('Organization Contact Us page already exists', 409);
+      throw new HttpException(
+        'Organization Contact Us page already exists',
+        409,
+      );
     }
 
     nonProfitAppearancePageDto.organizationId = organizationId;
@@ -2603,7 +2598,7 @@ export class OrganizationService {
       await this.appearancePageModel.findOneAndUpdate(
         { organizationId },
         editNonProfitAppearancePageDto,
-        { new: true }
+        { new: true },
       );
 
     if (!appearanceEditContactUs) {
@@ -2717,7 +2712,7 @@ export class OrganizationService {
         : '62414373cf00cca3a830814a',
     };
 
-    const totalZakatCampaigns = await this.donationLogModel
+    const totalZakatCampaigns = await this.donationLogsModel
       .find({
         campaignId: new Types.ObjectId(filterCampaigns.campaignId),
         donationStatus: filterCampaigns.donationStatus,
@@ -2727,7 +2722,7 @@ export class OrganizationService {
       })
       .count();
 
-    const totalCampaigns = await this.donationLogModel
+    const totalCampaigns = await this.donationLogsModel
       .find({
         campaignId: { $ne: new Types.ObjectId(filterCampaigns.campaignId) },
         donationStatus: filterCampaigns.donationStatus,
@@ -2737,7 +2732,7 @@ export class OrganizationService {
       })
       .count();
 
-    const amountCampaigns = await this.donationLogModel.aggregate([
+    const amountCampaigns = await this.donationLogsModel.aggregate([
       {
         $match: {
           campaignId: { $ne: new Types.ObjectId(filterCampaigns.campaignId) },
@@ -2757,7 +2752,7 @@ export class OrganizationService {
       },
     ]);
 
-    const amountZakatCampaigns = await this.donationLogModel.aggregate([
+    const amountZakatCampaigns = await this.donationLogsModel.aggregate([
       {
         $match: {
           campaignId: new Types.ObjectId(filterCampaigns.campaignId),
@@ -2777,7 +2772,7 @@ export class OrganizationService {
       },
     ]);
 
-    const totalDonationPerProgram = await this.donationLogModel.aggregate([
+    const totalDonationPerProgram = await this.donationLogsModel.aggregate([
       {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
@@ -2833,59 +2828,61 @@ export class OrganizationService {
       },
     ]);
 
-    const totalDonationZakatPerProgram = await this.donationLogModel.aggregate([
-      {
-        $match: {
-          nonprofitRealmId: new Types.ObjectId(organizationId),
-          donationStatus: 'SUCCESS',
-          donorUserId: donorId,
-          createdAt: getDateQuery(filter.priode),
-          campaignId: new Types.ObjectId(filterCampaigns.campaignId),
-          currency: filterCampaigns.currency,
+    const totalDonationZakatPerProgram = await this.donationLogsModel.aggregate(
+      [
+        {
+          $match: {
+            nonprofitRealmId: new Types.ObjectId(organizationId),
+            donationStatus: 'SUCCESS',
+            donorUserId: donorId,
+            createdAt: getDateQuery(filter.priode),
+            campaignId: new Types.ObjectId(filterCampaigns.campaignId),
+            currency: filterCampaigns.currency,
+          },
         },
-      },
-      {
-        $lookup: {
-          from: 'campaign',
-          localField: 'campaignId',
-          foreignField: '_id',
-          as: 'campaign',
+        {
+          $lookup: {
+            from: 'campaign',
+            localField: 'campaignId',
+            foreignField: '_id',
+            as: 'campaign',
+          },
         },
-      },
-      {
-        $unwind: {
-          path: '$campaign',
+        {
+          $unwind: {
+            path: '$campaign',
+          },
         },
-      },
-      {
-        $addFields: {
-          name: {
-            $cond: {
-              if: { $eq: [{ $ifNull: ['$campaign.title', 0] }, 0] },
-              then: '$campaign.campaignName',
-              else: '$campaign.title',
+        {
+          $addFields: {
+            name: {
+              $cond: {
+                if: { $eq: [{ $ifNull: ['$campaign.title', 0] }, 0] },
+                then: '$campaign.campaignName',
+                else: '$campaign.title',
+              },
             },
           },
         },
-      },
-      {
-        $group: {
-          _id: '$_id',
-          createdAt: { $first: '$createdAt' },
-          campaignName: { $first: '$name' },
-          total_donation: { $sum: '$amount' },
-        },
-      },
-      {
-        $project: {
-          campaignName: 1,
-          total_donation: 1,
-          created: {
-            $dateToString: { format: '%Y-%m-%d', date: '$createdAt' },
+        {
+          $group: {
+            _id: '$_id',
+            createdAt: { $first: '$createdAt' },
+            campaignName: { $first: '$name' },
+            total_donation: { $sum: '$amount' },
           },
         },
-      },
-    ]);
+        {
+          $project: {
+            campaignName: 1,
+            total_donation: 1,
+            created: {
+              $dateToString: { format: '%Y-%m-%d', date: '$createdAt' },
+            },
+          },
+        },
+      ],
+    );
 
     const chartData: any = {};
     for (let i = 0; i < totalDonationPerProgram.length; i++) {
@@ -2956,7 +2953,7 @@ export class OrganizationService {
       total_donation:
         totalZakatCampaigns || totalCampaigns
           ? (totalZakatCampaigns ? totalZakatCampaigns : 0) +
-          (totalCampaigns ? totalCampaigns : 0)
+            (totalCampaigns ? totalCampaigns : 0)
           : 0,
       campaigns: totalCampaigns ? totalCampaigns : 0,
       amount_ofcampaigns: amountCampaigns ? amountCampaigns : 0,
