@@ -5,7 +5,6 @@ import { Document, Types } from 'mongoose';
 import { CoordiateLocation } from '../../commons/dtos/location.dto';
 import { ProjectCreateDto } from '../dto/project-create.dto';
 import { ProjectUpdateDto } from '../dto/project-update.dto';
-import { UpdateProjectDto } from '../dto/update-project.dto';
 import { ProjectStatus } from '../enums/project-status.enum';
 import { ProjectNearbyPlaces } from './project-nearby-places';
 
@@ -39,7 +38,10 @@ export class ProjectOperatorLog {
   status: string;
 }
 
-@Schema({ collection: 'project' })
+@Schema({
+  collection: 'project',
+  timestamps: true, // will created CreatedAt and UpdatedAt fields automatically
+})
 export class Project {
   @Prop({ type: mongoose.Schema.Types.ObjectId })
   public _id?: Types.ObjectId;
@@ -70,6 +72,9 @@ export class Project {
 
   @Prop()
   public city: string;
+
+  @Prop()
+  public address: string;
 
   @Prop({ default: null })
   public coordinate?: CoordiateLocation;
@@ -128,49 +133,16 @@ export class Project {
   @Prop({ default: [] })
   public nearByPlaces?: ProjectNearbyPlaces[];
 
-  @Prop({
-    type: mongoose.Schema.Types.Date,
-    default: dayjs().toISOString(),
-  })
-  public createdAt: string;
+  @Prop({ default: null })
+  public appliedAt?: Date;
 
-  @Prop({
-    type: mongoose.Schema.Types.Date,
-    default: dayjs().toISOString(),
-  })
-  public updatedAt: string;
+  /**
+   * i don't use props decorator here, it's just for accessing the auto created fields
+   * @example Comment.createdAt
+   */
+  public createdAt?: Date;
 
-  @Prop({
-    type: mongoose.Schema.Types.Date,
-    default: null,
-  })
-  public appliedAt?: string;
-
-  static compare(
-    currentData: ProjectDocument,
-    request: UpdateProjectDto,
-  ): ProjectDocument {
-    if (request.organizationId) {
-      currentData.organizationId = new Types.ObjectId(request.organizationId);
-    }
-    request.name && (currentData.name = request.name);
-    request.description && (currentData.description = request.description);
-    // request.address && (currentData.address = request.address);
-    // request.nearByPlaces && (currentData.nearByPlaces = request.nearByPlaces);
-    // request.location && (currentData.location = request.location);
-    request.diameterSize && (currentData.diameterSize = request.diameterSize);
-    request.prayerSize && (currentData.prayerSize = request.prayerSize);
-    request.toiletSize && (currentData.toiletSize = request.toiletSize);
-    request.hasAc && (currentData.hasAc = request.hasAc);
-    request.hasClassroom && (currentData.hasClassroom = request.hasClassroom);
-    request.hasParking && (currentData.hasParking = request.hasParking);
-    request.hasGreenSpace &&
-      (currentData.hasGreenSpace = request.hasGreenSpace);
-    request.hasFemaleSection &&
-      (currentData.hasFemaleSection = request.hasFemaleSection);
-    currentData.updatedAt = dayjs().toISOString();
-    return currentData;
-  }
+  public updatedAt?: Date;
 
   /**
    * it could use both of the dto, becouse th diffrence is only the processing on the image processing
@@ -185,6 +157,7 @@ export class Project {
     scheme.description = request.description;
     scheme.country = request.country;
     scheme.city = request.city;
+    scheme.address = request.address;
     scheme.coordinate = request.coordinate;
     scheme.diameterSize = request.diameterSize;
     scheme.prayerSize = request.prayerSize;

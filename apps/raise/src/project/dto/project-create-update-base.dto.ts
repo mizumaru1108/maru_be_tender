@@ -35,6 +35,11 @@ export class ProjectCreateUpdateBaseDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  description: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   country: string;
 
   @ApiProperty()
@@ -45,7 +50,7 @@ export class ProjectCreateUpdateBaseDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  description: string;
+  address: string;
 
   @ApiProperty()
   @IsNotEmpty()

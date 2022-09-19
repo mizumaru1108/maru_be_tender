@@ -19,13 +19,11 @@ import { baseResponseHelper } from '../commons/helpers/base-response-helper';
 import { Permission } from '../libs/authzed/enums/permission.enum';
 import { rootLogger } from '../logger';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
-import { CreateProjectDto } from './dto';
 import { ProjectCreateDto } from './dto/project-create.dto';
 import { ProjectFilterRequest } from './dto/project-filter.request';
 import { ProjectSetDeletedFlagDto } from './dto/project-set-flag-deleted';
 import { ProjectStatusUpdateDto } from './dto/project-status-update.dto';
 import { ProjectUpdateDto } from './dto/project-update.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectService } from './project.service';
 import { Project } from './schema/project.schema';
 
@@ -84,21 +82,6 @@ export class ProjectController {
       HttpStatus.OK,
       `Project ${projectId} details retrieved successfully!`,
     );
-  }
-
-  @ApiOperation({ summary: 'Create project' })
-  @ApiResponse({
-    status: 201,
-    description: 'The Project has been successfully created.',
-  })
-  @UseGuards(JwtAuthGuard)
-  @Post('create')
-  async create(
-    @CurrentUser() currentUser: ICurrentUser,
-    @Body() createProjectDto: CreateProjectDto,
-  ) {
-    this.logger.debug('create new project ', JSON.stringify(createProjectDto));
-    return await this.projectService.create(createProjectDto, currentUser.id);
   }
 
   @ApiOperation({ summary: 'Create Project' })
@@ -184,31 +167,10 @@ export class ProjectController {
   }
 
   @ApiOperation({ summary: 'update project' })
-  @UseGuards(JwtAuthGuard)
-  @Patch('update/:projectId')
-  async updateProject(
-    @Param('projectId') projectId: string,
-    @Body() updateRequest: UpdateProjectDto,
-  ): Promise<BaseResponse<Project>> {
-    this.logger.debug('payload', JSON.stringify(updateRequest));
-    this.logger.debug(`update project ${projectId}`);
-    const updatedProject = await this.projectService.updateProject(
-      projectId,
-      updateRequest,
-    );
-    const response = baseResponseHelper(
-      updatedProject,
-      HttpStatus.OK,
-      'Project updated successfully',
-    );
-    return response;
-  }
-
-  @ApiOperation({ summary: 'update project' })
   @Permissions(Permission.OE) // only admin and operator
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Patch('projectUpdate/:projectId')
-  async projectUpdate(
+  @Patch('updateProject/:projectId')
+  async updateProject(
     @CurrentUser() user: ICurrentUser,
     @Param('projectId') projectId: string,
     @Body() updateRequest: ProjectUpdateDto,

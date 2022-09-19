@@ -3,27 +3,28 @@ import {
   BadRequestException,
   ForbiddenException,
   HttpException,
-  HttpStatus,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { ApiOperation } from '@nestjs/swagger';
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 import moment from 'moment';
 import {
-  ClientSession,
-  Model,
-  Types,
-  Connection,
   AggregatePaginateModel,
   AggregatePaginateResult,
+  ClientSession,
+  Connection,
+  Model,
+  Types,
 } from 'mongoose';
 import {
   PaymentGateway,
   PaymentGatewayDocument,
 } from 'src/payment-stripe/schema/paymentGateway.schema';
+import Stripe from 'stripe';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import {
@@ -32,11 +33,12 @@ import {
   Vendor,
   VendorDocument,
 } from '../buying/vendor/vendor.schema';
+import { CampaignSetFavoriteDto } from '../campaign/dto/campaign-set-favorite.dto';
 import { Campaign, CampaignDocument } from '../campaign/schema/campaign.schema';
-import { CampaignSetFavoriteDto } from '../campaign/dto';
 import { IPaymentGatewayItems } from '../commons/interfaces/payment-gateway-items.interface';
 import { Item, ItemDocument } from '../item/item.schema';
 import { BunnyService } from '../libs/bunny/services/bunny.service';
+import { PaytabsCreateTransactionResponse } from '../libs/paytabs/dtos/response/paytabs-create-transaction-response.dto';
 import { PaytabsIpnWebhookResponsePayload } from '../libs/paytabs/dtos/response/paytabs-ipn-webhook-response-payload.dto';
 import { PaytabsCurrencyEnum } from '../libs/paytabs/enums/paytabs-currency-enum';
 import { PaytabsResponseStatus } from '../libs/paytabs/enums/paytabs-response-status.enum';
@@ -44,6 +46,7 @@ import { PaytabsTranClass } from '../libs/paytabs/enums/paytabs-tran-class.enum'
 import { PaytabsTranType } from '../libs/paytabs/enums/paytabs-tran-type.enum';
 import { PaytabsPaymentRequestPayloadModel } from '../libs/paytabs/models/paytabs-payment-request-payload.model';
 import { PaytabsService } from '../libs/paytabs/services/paytabs.service';
+import { StripeService } from '../libs/stripe/services/stripe.service';
 import { rootLogger } from '../logger';
 import {
   PaymentData,
@@ -60,29 +63,23 @@ import {
 import { DonorApplyVendorDto } from './dto/donor-apply-vendor.dto';
 import { DonorDonateItemResponse } from './dto/donor-donate-item-response';
 import { DonorDonateItemDto } from './dto/donor-donate-item.dto';
+import { DonorDonateResponse } from './dto/donor-donate-response.dto';
 import { DonorDonateDto } from './dto/donor-donate.dto';
 import { DonationStatus } from './enum/donation-status.enum';
-import { SpanStatusCode, trace } from '@opentelemetry/api';
+import { DonationType } from './enum/donation-type.enum';
+import { DonorDonationTypeMapResult } from './interfaces/donor-donation-type-map-result.interface';
 import { Anonymous, AnonymousDocument } from './schema/anonymous.schema';
+import {
+  DonationDetail,
+  DonationDetailDocument,
+} from './schema/donation-detail.schema';
 import { DonationLog, DonationLogDocument } from './schema/donation-log.schema';
-import { InjectConnection } from '@nestjs/mongoose';
 import {
   DonationLogDocument as DonationLogsDocument,
   DonationLogs,
 } from './schema/donation_log.schema';
 import { Donor, DonorDocument } from './schema/donor.schema';
 import { Volunteer, VolunteerDocument } from './schema/volunteer.schema';
-import { DonorDonationTypeMapResult } from './interfaces/donor-donation-type-map-result.interface';
-import {
-  DonationDetail,
-  DonationDetailDocument,
-} from './schema/donation-detail.schema';
-import { DonationType } from './enum/donation-type.enum';
-import { StripeService } from '../libs/stripe/services/stripe.service';
-import Stripe from 'stripe';
-import { PaytabsCreateTransactionResponse } from '../libs/paytabs/dtos/response/paytabs-create-transaction-response.dto';
-import { DonorDonateResponse } from './dto/donor-donate-response.dto';
-import { isLeafType } from 'graphql';
 
 @Injectable()
 export class DonorService {

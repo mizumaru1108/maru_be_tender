@@ -24,7 +24,6 @@ import { DonorService } from '../../donor/donor.service';
 import { Permission } from '../../libs/authzed/enums/permission.enum';
 import { rootLogger } from '../../logger';
 import { ICurrentUser } from '../../user/interfaces/current-user.interface';
-import { CampaignSetFavoriteDto, CreateCampaignDto } from '../dto';
 import { CampaignApplyVendorDto } from '../dto/apply-vendor.dto';
 import { ApproveCampaignResponseDto } from '../dto/approve-campaign-response.dto';
 import { CampaignCreateResponse } from '../dto/campaign-create-response.dto';
@@ -36,11 +35,12 @@ import { CampaignSetDeletedFlagDto } from '../dto/capaign-set-flag-deleted';
 import { CampaignGetAllVendorRequestDto } from '../dto/campaign-get-all-vendor-request.dto';
 import { GetAllNewCampaignFilter } from '../dto/get-all-new-campaign-filter.dto';
 import { GetAllNewCampaignParams } from '../dto/get-all-new-campaign-params.dto';
-import { UpdateCampaignDto } from '../dto/update-campaign-dto';
 import { UpdateCampaignStatusDto } from '../dto/update-campaign-status.dto';
 import { Campaign, CampaignDocument } from '../schema/campaign.schema';
 import { CampaignService } from '../services/campaign.service';
 import { GetAllMyCampaignFilterDto } from '../dto/get-all-my-campaign.dto';
+import { CampaignSetFavoriteDto } from '../dto/campaign-set-favorite.dto';
+import { CreateCampaignDto } from '../dto/create-campaign.dto';
 
 @ApiTags('campaign')
 @Controller('campaign')
@@ -353,22 +353,6 @@ export class CampaignController {
     );
   }
 
-  /* ![Deprecated] use campaignCreate instead, already implemented on ommar */
-  @ApiOperation({ summary: 'Create campaign' })
-  @ApiResponse({
-    status: 201,
-    description: 'The Campaign has been successfully created.',
-  })
-  @UseGuards(JwtAuthGuard)
-  @Post('create')
-  async create(@Body() createCampaignDto: CreateCampaignDto) {
-    this.logger.debug(
-      'create new campaign ',
-      JSON.stringify(createCampaignDto),
-    );
-    return await this.campaignService.create(createCampaignDto);
-  }
-
   @ApiOperation({ summary: 'Create campaign' })
   @ApiResponse({
     status: 201,
@@ -511,26 +495,6 @@ export class CampaignController {
       HttpStatus.OK,
       `Campaign ${campaignId} details retrieved successfully!`,
     );
-  }
-
-  @ApiOperation({ summary: 'update campaign' })
-  @UseGuards(JwtAuthGuard)
-  @Patch('update/:campaignId')
-  async updateCampaign(
-    @Param('campaignId') campaignId: string,
-    @Body() updateCampaignRequest: UpdateCampaignDto,
-  ): Promise<BaseResponse<Campaign>> {
-    this.logger.debug('payload', JSON.stringify(updateCampaignRequest));
-    const updatedCampaign = await this.campaignService.updateCampaign(
-      campaignId,
-      updateCampaignRequest,
-    );
-    const response = baseResponseHelper(
-      updatedCampaign,
-      HttpStatus.OK,
-      'Campaign updated',
-    );
-    return response;
   }
 
   @ApiOperation({ summary: 'update campaign' })

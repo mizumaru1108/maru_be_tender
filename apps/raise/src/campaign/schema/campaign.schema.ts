@@ -1,15 +1,13 @@
+import { BadRequestException } from '@nestjs/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import dayjs from 'dayjs';
 import * as mongoose from 'mongoose';
 import { Document, Types } from 'mongoose';
-import { UpdateCampaignDto } from '../dto/update-campaign-dto';
-import paginate from 'mongoose-paginate-v2';
 import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
+import paginate from 'mongoose-paginate-v2';
 import { CampaignCreateDto } from '../dto/campaign-create.dto';
-import { CampaignMilestone } from './campaign-milestone.schema';
-import { v4 as uuidv4 } from 'uuid';
 import { CampaignUpdateDto } from '../dto/campaign-update.dto';
-import { BadRequestException } from '@nestjs/common';
+import { CampaignMilestone } from './campaign-milestone.schema';
 
 export type CampaignDocument = Campaign & Document;
 
@@ -168,41 +166,6 @@ export class Campaign {
 
   @Prop({ default: [] })
   milestone: CampaignMilestone[];
-
-  /**
-   * Deprecated, use mapFromUpdateRequest instead
-   */
-  public static compare(
-    currentData: CampaignDocument,
-    request: UpdateCampaignDto,
-  ): CampaignDocument {
-    if (request.organizationId) {
-      currentData.organizationId = new Types.ObjectId(request.organizationId);
-    }
-    request.campaignName && (currentData.campaignName = request.campaignName);
-    request.campaignType && (currentData.campaignType = request.campaignType);
-    if (request.projectId) {
-      currentData.projectId = new Types.ObjectId(request.projectId);
-    }
-    request.description && (currentData.description = request.description);
-    request.isMoney && (currentData.isMoney = request.isMoney);
-    request.methods && (currentData.methods = request.methods);
-    request.currencyCode && (currentData.currencyCode = request.currencyCode);
-    if (request.amountProgress) {
-      currentData.amountProgress = Types.Decimal128.fromString(
-        request.amountProgress,
-      );
-    }
-    if (request.amountTarget) {
-      currentData.amountTarget = Types.Decimal128.fromString(
-        request.amountTarget,
-      );
-    }
-    currentData.updatedAt = dayjs().toISOString();
-    request.isPublished && (currentData.isPublished = request.isPublished);
-    // request.milestone && (currentData.milestone = request.milestone);
-    return currentData;
-  }
 
   /**
    * Map from create request to campaign document,
