@@ -1671,7 +1671,6 @@ export class OrganizationService {
       }
     }
 
-
     this.logger.debug('Create AboutUs Organization...');
     nonProfitAppearanceNavigationAboutUsDto.organizationId = organizationId;
     nonProfitAppearanceNavigationAboutUsDto.page = 'ABOUTUS';
@@ -2239,7 +2238,6 @@ export class OrganizationService {
       }
     }
 
-
     const companyPath: any = [];
     /** Create Path Url ForImage company */
     if (
@@ -2344,8 +2342,6 @@ export class OrganizationService {
         }
       }
     }
-
-
 
     this.logger.debug('Edit AboutUs Organization...');
     let now: Date = new Date();
@@ -2563,6 +2559,14 @@ export class OrganizationService {
         statusCode: 404,
         message: 'Organization not found',
       };
+    }
+
+    const contactData = await this.appearancePageModel.findOne({
+      organizationId: organizationId
+    });
+
+    if (contactData) {
+      throw new HttpException('Organization Contact Us page already exists', 409);
     }
 
     nonProfitAppearancePageDto.organizationId = organizationId;

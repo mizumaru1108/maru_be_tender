@@ -46,6 +46,10 @@ export class NonProfitAppearancePageDto {
   @IsOptional()
   longitude: string;
 
+  @IsString()
+  @IsOptional()
+  locationName: string;
+
   @IsArray()
   @IsOptional()
   privacyPolicy: string[];

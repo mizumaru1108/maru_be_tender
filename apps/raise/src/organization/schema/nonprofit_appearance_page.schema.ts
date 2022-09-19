@@ -45,6 +45,9 @@ export class AppearancePage {
   longitude: string;
 
   @Prop()
+  locationName: string;
+
+  @Prop()
   privacyPolicy: string[];
 
 }
