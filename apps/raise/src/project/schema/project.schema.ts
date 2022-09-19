@@ -83,13 +83,13 @@ export class Project {
   public description: string;
 
   @Prop()
-  public diameterSize: string;
+  public diameterSize: number;
 
   @Prop()
-  public prayerSize: string;
+  public prayerSize: number;
 
   @Prop()
-  public toiletSize: string;
+  public toiletSize: number;
 
   @Prop()
   public hasAc: string;

@@ -8,6 +8,7 @@ import {
   IsIn,
   IsArray,
   ValidateNested,
+  IsNumber,
 } from 'class-validator';
 import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
 import { CoordiateLocation } from '../../commons/dtos/location.dto';
@@ -59,19 +60,19 @@ export class ProjectCreateUpdateBaseDto {
   coordinate: CoordiateLocation;
 
   @ApiProperty()
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
-  diameterSize: string;
+  diameterSize: number;
 
   @ApiProperty()
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
-  prayerSize: string;
+  prayerSize: number;
 
   @ApiProperty()
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
-  toiletSize: string;
+  toiletSize: number;
 
   @ApiProperty()
   @IsString()

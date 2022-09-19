@@ -1,4 +1,3 @@
-import { CoordiateLocation } from '../../commons/dtos/location.dto';
 import { CreateProjectNearbyPlacesDto } from '../dto/create-project-nearby-places.dto';
 
 /**
