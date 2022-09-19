@@ -2,7 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
@@ -13,7 +13,7 @@ import slugify from 'slugify';
 import { z } from 'zod';
 import {
   isBooleanStringN,
-  isBooleanStringY
+  isBooleanStringY,
 } from '../commons/utils/is-boolean-string';
 import { validateObjectId } from '../commons/utils/validateObjectId';
 import { BunnyService } from '../libs/bunny/services/bunny.service';
@@ -24,9 +24,7 @@ import { User, UserDocument } from '../user/schema/user.schema';
 import { CreateProjectDto } from './dto';
 import { ProjectCreateDto } from './dto/project-create.dto';
 import { ProjectFilterRequest } from './dto/project-filter.request';
-import {
-  ProjectStatusUpdateDto
-} from './dto/project-status-update.dto';
+import { ProjectStatusUpdateDto } from './dto/project-status-update.dto';
 import { ProjectUpdateDto } from './dto/project-update.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectStatus } from './enums/project-status.enum';
@@ -35,7 +33,7 @@ import {
   Project,
   ProjectDocument,
   ProjectOperatorLog,
-  ProjectOperatorLogDocument
+  ProjectOperatorLogDocument,
 } from './schema/project.schema';
 
 /**
@@ -167,7 +165,7 @@ export class ProjectService {
     createdProject.toiletSize = createProjectDto.toiletSize;
     createdProject.diameterSize = createProjectDto.diameterSize;
     createdProject.prayerSize = createProjectDto.prayerSize;
-    createdProject.address = createProjectDto.address;
+    // createdProject.address = createProjectDto.address;
     createdProject.createdAt = dayjs().toISOString();
     createdProject.updatedAt = dayjs().toISOString();
     createdProject.isDeleted = 'N';
@@ -795,7 +793,7 @@ export class ProjectService {
       applierUserId: userId,
       updatedAt: dayjs().toISOString(),
     };
-    
+
     // if status is approved
     if (request.status === 'approved') {
       Object.assign(baseQuery, {
