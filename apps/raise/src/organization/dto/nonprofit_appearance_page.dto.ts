@@ -1,76 +1,56 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { ArrayNotEmpty, IsArray, IsEmail, IsEnum, IsString } from "class-validator";
+import { ArrayNotEmpty, IsArray, IsEmail, IsEnum, IsOptional, IsString } from "class-validator";
 import { IsActive } from "../enums";
 
 
 
 export class NonProfitAppearancePageDto {
 
-  @ApiProperty()
   @IsString()
-  id: string;
-
-  @IsString()
+  @IsOptional()
   ownerUserId: string;
 
   @IsString()
+  @IsOptional()
   ownerRealmId: string;
 
   @IsEmail()
+  @IsOptional()
   contactUsCsEmail: string;
 
-  @IsArray()
-  @ArrayNotEmpty()
-  readonly disclaimer: string[];
+  @IsString()
+  @IsOptional()
+  readonly disclaimer: string;
 
   @IsArray()
-  @ArrayNotEmpty()
+  @IsOptional()
   readonly faq: string[];
 
+  @IsOptional()
   @IsString()
   organizationId: string;
 
   @IsString()
+  @IsOptional()
   createdAt: string;
 
   @IsString()
+  @IsOptional()
   updatedAt: string;
+
+  @IsString()
+  @IsOptional()
+  latitude: string;
+
+  @IsString()
+  @IsOptional()
+  longitude: string;
+
+  @IsArray()
+  @IsOptional()
+  privacyPolicy: string[];
 }
 
-export class EditNonProfitAppearancePageDto {
+export class EditNonProfitAppearancePageDto extends NonProfitAppearancePageDto {
 
-  @ApiProperty()
-  @IsString()
-  id: string;
-
-  @IsString()
-  organizationId: string;
-
-  @IsString()
-  ownerUserId: string;
-
-  @IsString()
-  ownerRealmId: string;
-
-  @IsEmail()
-  contactUsCsEmail: string;
-
-  @IsArray()
-  @ArrayNotEmpty()
-  readonly disclaimer: string[];
-
-  @IsArray()
-  @ArrayNotEmpty()
-  readonly faq: string[];
-
-  @ApiProperty()
-  @IsEnum(() => IsActive)
-  isDeleted: IsActive;
-
-  @ApiProperty()
-  @IsEnum(() => IsActive)
-  isActive: IsActive;
-
-  @IsString()
-  updatedAt: string;
 }

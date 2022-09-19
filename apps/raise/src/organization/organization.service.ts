@@ -2599,6 +2599,7 @@ export class OrganizationService {
       await this.appearancePageModel.findOneAndUpdate(
         { organizationId },
         editNonProfitAppearancePageDto,
+        { new: true }
       );
 
     if (!appearanceEditContactUs) {

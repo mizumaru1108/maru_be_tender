@@ -5,8 +5,8 @@ export type AppearancePageDocument = AppearancePage & Document;
 
 @Schema({ collection: 'nonprofitAppearancePage' })
 export class AppearancePage {
-  @Prop()
-  id?: string;
+  // @Prop()
+  // id?: string;
 
   @Prop()
   ownerUserId: string;
@@ -18,7 +18,7 @@ export class AppearancePage {
   contactUsCsEmail: string;
 
   @Prop()
-  disclaimer: string[];
+  disclaimer: string;
 
   @Prop()
   faq: string[];
@@ -37,6 +37,16 @@ export class AppearancePage {
 
   @Prop()
   updatedAt: string;
+
+  @Prop()
+  latitude: string;
+
+  @Prop()
+  longitude: string;
+
+  @Prop()
+  privacyPolicy: string[];
+
 }
 
 export const AppearancePageSchema = SchemaFactory.createForClass(AppearancePage);
