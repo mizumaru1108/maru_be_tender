@@ -118,6 +118,7 @@ export class OperatorService {
           image2: 1,
           image3: 1,
           description: 1,
+          ownerUserId: 1,
           createdAt: 1,
           projectId: 1,
           projectCount: '$count',
