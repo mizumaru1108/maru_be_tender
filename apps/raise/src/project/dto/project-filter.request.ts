@@ -1,8 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import { BaseBooleanString } from '../../commons/enums/base-boolean-string.enum';
-import { BooleanString } from '../../commons/enums/boolean-string.enum';
+import { IsIn, IsNumber, IsOptional } from 'class-validator';
 
 export class ProjectFilterRequest {
   @ApiPropertyOptional()
@@ -37,36 +35,36 @@ export class ProjectFilterRequest {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsEnum(BooleanString || BaseBooleanString)
-  hasAc?: BooleanString | BaseBooleanString;
+  @IsIn(['Y', 'N'], { message: 'hasAc must be Y or N' })
+  hasAc?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsEnum(BooleanString || BaseBooleanString)
-  hasClassroom?: BooleanString;
+  @IsIn(['Y', 'N'], { message: 'hasClassroom must be Y or N' })
+  hasClassroom?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsEnum(BooleanString || BaseBooleanString)
-  hasGreenSpace?: BooleanString;
+  @IsIn(['Y', 'N'], { message: 'hasGreenSpace must be Y or N' })
+  hasGreenSpace?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsEnum(BooleanString || BaseBooleanString)
-  hasFemaleSection?: BooleanString | BaseBooleanString;
+  @IsIn(['Y', 'N'], { message: 'hasFemaleSection must be Y or N' })
+  hasFemaleSection?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsEnum(BooleanString || BaseBooleanString)
-  hasParking?: BooleanString | BaseBooleanString;
+  @IsIn(['Y', 'N'], { message: 'hasParking must be Y or N' })
+  hasParking?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsEnum(BooleanString || BaseBooleanString)
-  isDeleted?: BooleanString | BaseBooleanString;
+  @IsIn(['Y', 'N'], { message: 'isDeleted must be Y or N' })
+  isDeleted?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsEnum(BooleanString || BaseBooleanString)
-  isPublished?: BooleanString | BaseBooleanString;
+  @IsIn(['Y', 'N'], { message: 'isPublished must be Y or N' })
+  isPublished?: string;
 }

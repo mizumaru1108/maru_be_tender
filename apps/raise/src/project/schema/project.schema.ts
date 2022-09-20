@@ -3,6 +3,8 @@ import dayjs from 'dayjs';
 import * as mongoose from 'mongoose';
 import { Document, Types } from 'mongoose';
 import { CoordiateLocation } from '../../commons/dtos/location.dto';
+import { Operator } from '../../operator/schema/operator.schema';
+import { User } from '../../user/schema/user.schema';
 import { ProjectCreateDto } from '../dto/project-create.dto';
 import { ProjectUpdateDto } from '../dto/project-update.dto';
 import { ProjectStatus } from '../enums/project-status.enum';
@@ -50,16 +52,31 @@ export class Project {
   public organizationId: Types.ObjectId;
 
   @Prop({ ref: 'projectOperatorLog' })
-  public operatorId?: string;
+  public operatorId: string;
 
+  // not to filled but used as a type
+  public operatorDetails: Operator;
+
+  /**
+   * as a ref to user schma
+   */
   @Prop()
   public creatorUserId: string;
+
+  // not to filled but used as a type
+  public readonly createdBy: User;
 
   @Prop()
   public updaterUserId: string;
 
+  // not to filled but used as a type
+  public readonly updatedBy: User;
+
   @Prop({ default: null })
   public applierUserId?: string;
+
+  // not to filled but used as a type
+  public readonly appliedBy: User;
 
   @Prop({ enum: ProjectStatus, default: ProjectStatus.PENDING })
   public projectStatus: ProjectStatus;

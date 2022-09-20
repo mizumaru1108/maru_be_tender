@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
@@ -20,6 +21,7 @@ import { Permission } from '../libs/authzed/enums/permission.enum';
 import { rootLogger } from '../logger';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { ProjectCreateDto } from './dto/project-create.dto';
+import { ProjectDeleteQueryDto } from './dto/project-delete-query.dto';
 import { ProjectFilterRequest } from './dto/project-filter.request';
 import { ProjectSetDeletedFlagDto } from './dto/project-set-flag-deleted';
 import { ProjectStatusUpdateDto } from './dto/project-status-update.dto';
@@ -186,6 +188,27 @@ export class ProjectController {
       updatedProject,
       HttpStatus.OK,
       'Project updated successfully',
+    );
+    return response;
+  }
+
+  @ApiOperation({ summary: 'permanent delete project!' })
+  @Permissions(Permission.OE) // only admin and operator
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Delete('deleteProject')
+  async deleteProject(
+    @CurrentUser() user: ICurrentUser,
+    @Query() request: ProjectDeleteQueryDto,
+  ): Promise<BaseResponse<Project>> {
+    this.logger.debug(`delete project ${request.projectId}`);
+    const deletedProject = await this.projectService.deleteProject(
+      user.id,
+      request,
+    );
+    const response = baseResponseHelper(
+      deletedProject,
+      HttpStatus.OK,
+      'Project deleted successfully',
     );
     return response;
   }

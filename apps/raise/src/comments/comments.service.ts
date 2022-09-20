@@ -10,22 +10,20 @@ import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import {
   AggregatePaginateModel,
   AggregatePaginateResult,
-  ClientSession,
   Connection,
   FilterQuery,
   Model,
   PaginateModel,
   PaginateResult,
   PipelineStage,
-  SortOrder,
+  Types,
 } from 'mongoose';
+import { BaseBooleanString } from '../commons/enums/base-boolean-string.enum';
+import { SortMethod } from '../commons/enums/sortby-method';
 import { CommentFilterRequest } from './dto/comment-filter-request.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { Comment, CommentDocument } from './schema/comment.schema';
-import { Types } from 'mongoose';
-import { SortMethod } from '../commons/enums/sortby-method';
 import { DeleteCommentsDto } from './dto/delete-comments.dto';
-import { BaseBooleanString } from '../commons/enums/base-boolean-string.enum';
+import { Comment, CommentDocument } from './schema/comment.schema';
 
 const lookupUser: PipelineStage[] = [
   {

@@ -3,14 +3,10 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, PipelineStage, Types } from 'mongoose';
-import {
-  isBooleanStringN,
-  isBooleanStringY,
-} from '../commons/utils/is-boolean-string';
 import { validateObjectId } from '../commons/utils/validateObjectId';
 import { BunnyService } from '../libs/bunny/services/bunny.service';
 import { rootLogger } from '../logger';
@@ -18,51 +14,58 @@ import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
 import { RoleEnum } from '../user/enums/role-enum';
 import { User, UserDocument } from '../user/schema/user.schema';
 import { ProjectCreateDto } from './dto/project-create.dto';
+import { ProjectDeleteQueryDto } from './dto/project-delete-query.dto';
 import { ProjectFilterRequest } from './dto/project-filter.request';
 import { ProjectStatusUpdateDto } from './dto/project-status-update.dto';
 import { ProjectUpdateDto } from './dto/project-update.dto';
 import { ProjectStatus } from './enums/project-status.enum';
-import {
-  Project,
-  ProjectDocument,
-  ProjectOperatorLog,
-  ProjectOperatorLogDocument,
-} from './schema/project.schema';
-
-/**
- * basicly project all value from project schema, but parse diameter,prayer, and toilet value to int
- */
-const defaultProjectPipelineParseInt: PipelineStage[] = [
+import { Project, ProjectDocument } from './schema/project.schema';
+const populateCreatedBy: PipelineStage[] = [
   {
-    $project: {
-      _id: 1,
-      organizationId: 1,
-      name: 1,
-      address: 1,
-      description: 1,
-      location: 1,
-      diameterSize: { $toInt: '$diameterSize' },
-      prayerSize: { $toInt: '$prayerSize' },
-      toiletSize: { $toInt: '$toiletSize' },
-      hasAc: 1,
-      hasClassroom: 1,
-      hasParking: 1,
-      hasGreenSpace: 1,
-      hasFemaleSection: 1,
-      createdAt: 1,
-      updatedAt: 1,
-      ipAddress: 1,
-      isDeleted: 1,
-      isPublished: 1,
-      projectId: 1,
-      coverImage: 1,
-      image1: 1,
-      image2: 1,
-      image3: 1,
-      projectAvatar: 1,
-      nearByPlaces: 1,
+    $lookup: {
+      from: 'user',
+      localField: 'creatorUserId',
+      foreignField: '_id',
+      as: 'createdBy',
     },
   },
+  { $addFields: { createdBy: { $first: '$createdBy' } } },
+];
+
+const populateUpdatedBy: PipelineStage[] = [
+  {
+    $lookup: {
+      from: 'user',
+      localField: 'creatorUserId',
+      foreignField: '_id',
+      as: 'updatedBy',
+    },
+  },
+  { $addFields: { updatedBy: { $first: '$updatedBy' } } },
+];
+
+const populateAppliedBy: PipelineStage[] = [
+  {
+    $lookup: {
+      from: 'user',
+      localField: 'applierUserId',
+      foreignField: '_id',
+      as: 'appliedBy',
+    },
+  },
+  { $addFields: { appliedBy: { $first: '$appliedBy' } } },
+];
+
+const populateOperatorDetails: PipelineStage[] = [
+  {
+    $lookup: {
+      from: 'operator',
+      localField: 'operatorId',
+      foreignField: 'ownerUserId',
+      as: 'operatorDetails',
+    },
+  },
+  { $addFields: { operatorDetails: { $first: '$operatorDetails' } } },
 ];
 
 const baseProjectGrouping = {
@@ -93,31 +96,20 @@ const baseProjectGrouping = {
   projectAvatar: { $first: '$projectAvatar' },
   nearByPlaces: { $first: '$nearByPlaces' },
 };
-
 @Injectable()
 export class ProjectService {
   private logger = rootLogger.child({ logger: ProjectService.name });
 
   constructor(
+    private bunnyService: BunnyService,
     @InjectModel(Project.name)
     private projectModel: Model<ProjectDocument>,
     @InjectModel(Operator.name)
     private operatorModel: Model<OperatorDocument>,
-    @InjectModel(ProjectOperatorLog.name)
-    private projectOperatorLogModel: Model<ProjectOperatorLogDocument>,
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
-    private configService: ConfigService,
-    private bunnyService: BunnyService,
   ) {}
 
-  /**
-   * ommar frontend will use this func instead of create
-   * i think it will no need to use projectOperatorLog
-   * since there's no requirement for reject all when
-   * one of vendor is accepted like campaign and vendor
-   * case.
-   */
   async projectCreate(
     creatorId: string,
     request: ProjectCreateDto,
@@ -147,6 +139,7 @@ export class ProjectService {
       newProjectScheme.applierUserId = creatorId;
       newProjectScheme.isPublished = 'Y';
       newProjectScheme.projectStatus = ProjectStatus.APPROVED;
+      newProjectScheme.appliedAt = new Date();
     }
 
     let tmpPath: string[] = []; // for implementing db transaction later on
@@ -328,121 +321,69 @@ export class ProjectService {
     }
 
     if (hasAc) {
-      const isY = await isBooleanStringY(hasAc);
-      if (isY) {
-        filterQuery.hasAc = { $regex: 'y', $options: 'i' };
-      } else {
-        const isN = await isBooleanStringN(hasAc);
-        if (!isN) {
-          throw new BadRequestException(
-            'hasAc value is not valid Boolean String!',
-          );
-        }
-        filterQuery.hasAc = { $regex: 'n', $options: 'i' };
-      }
+      if (hasAc === 'Y') filterQuery.hasAc = { $regex: 'y', $options: 'i' };
+      if (hasAc === 'N') filterQuery.hasAc = { $regex: 'n', $options: 'i' };
     }
 
     if (hasClassroom) {
-      const isY = await isBooleanStringY(hasClassroom);
-      if (isY) {
+      if (hasClassroom === 'Y') {
         filterQuery.hasClassroom = { $regex: 'y', $options: 'i' };
-      } else {
-        const isN = await isBooleanStringN(hasClassroom);
-        if (!isN) {
-          throw new BadRequestException(
-            'hasClassroom value is not valid Boolean String!',
-          );
-        }
+      }
+      if (hasClassroom === 'N') {
         filterQuery.hasClassroom = { $regex: 'n', $options: 'i' };
       }
     }
 
     if (hasClassroom) {
-      const isY = await isBooleanStringY(hasClassroom);
-      if (isY) {
+      if (hasClassroom === 'Y') {
         filterQuery.hasClassroom = { $regex: 'y', $options: 'i' };
-      } else {
-        const isN = await isBooleanStringN(hasClassroom);
-        if (!isN) {
-          throw new BadRequestException(
-            'hasClassroom value is not valid Boolean String!',
-          );
-        }
+      }
+      if (hasClassroom === 'N') {
         filterQuery.hasClassroom = { $regex: 'n', $options: 'i' };
       }
     }
 
     if (hasGreenSpace) {
-      const isY = await isBooleanStringY(hasGreenSpace);
-      if (isY) {
+      if (hasGreenSpace === 'Y') {
         filterQuery.hasGreenSpace = { $regex: 'y', $options: 'i' };
-      } else {
-        const isN = await isBooleanStringN(hasGreenSpace);
-        if (!isN) {
-          throw new BadRequestException(
-            'hasGreenSpace value is not valid Boolean String!',
-          );
-        }
+      }
+      if (hasGreenSpace === 'N') {
         filterQuery.hasGreenSpace = { $regex: 'n', $options: 'i' };
       }
     }
 
     if (hasFemaleSection) {
-      const isY = await isBooleanStringY(hasFemaleSection);
-      if (isY) {
+      if (hasFemaleSection === 'Y') {
         filterQuery.hasFemaleSection = { $regex: 'y', $options: 'i' };
-      } else {
-        const isN = await isBooleanStringN(hasFemaleSection);
-        if (!isN) {
-          throw new BadRequestException(
-            'hasFemaleSection value must be valid Boolean String!',
-          );
-        }
+      }
+      if (hasFemaleSection === 'N') {
         filterQuery.hasFemaleSection = { $regex: 'n', $options: 'i' };
       }
     }
 
     if (hasParking) {
-      const isY = await isBooleanStringY(hasParking);
-      if (isY) {
+      if (hasParking === 'Y') {
         filterQuery.hasParking = { $regex: 'y', $options: 'i' };
-      } else {
-        const isN = await isBooleanStringN(hasParking);
-        if (!isN) {
-          throw new BadRequestException(
-            'hasParking value must be valid Boolean String!',
-          );
-        }
+      }
+      if (hasParking === 'N') {
         filterQuery.hasParking = { $regex: 'n', $options: 'i' };
       }
     }
 
     if (isPublished) {
-      const isY = await isBooleanStringY(isPublished);
-      if (isY) {
+      if (isPublished === 'Y') {
         filterQuery.isPublished = { $regex: 'y', $options: 'i' };
-      } else {
-        const isN = await isBooleanStringN(isPublished);
-        if (!isN) {
-          throw new BadRequestException(
-            'isPublished value must be valid Boolean String!',
-          );
-        }
+      }
+      if (isPublished === 'N') {
         filterQuery.isPublished = { $regex: 'n', $options: 'i' };
       }
     }
 
     if (isDeleted) {
-      const isY = await isBooleanStringY(isDeleted);
-      if (isY) {
+      if (isDeleted === 'Y') {
         filterQuery.isDeleted = { $regex: 'y', $options: 'i' };
-      } else {
-        const isN = await isBooleanStringN(isDeleted);
-        if (!isN) {
-          throw new BadRequestException(
-            'isDeleted value must be valid Boolean String!',
-          );
-        }
+      }
+      if (isDeleted === 'N') {
         filterQuery.isDeleted = { $regex: 'n', $options: 'i' };
       }
     }
@@ -459,6 +400,7 @@ export class ProjectService {
       updaterUserId: userId,
       applierUserId: userId,
       updatedAt: new Date(),
+      appliedAt: new Date(),
     };
 
     // if status is approved
@@ -494,7 +436,6 @@ export class ProjectService {
   async getProjectList(filterRequest: ProjectFilterRequest) {
     const filterQuery = await this.applyFilter(filterRequest);
     const projectList = await this.projectModel.aggregate([
-      ...defaultProjectPipelineParseInt,
       {
         $match: filterQuery,
       },
@@ -792,11 +733,19 @@ export class ProjectService {
   async getProjectDetailById(projectId: string): Promise<Project> {
     if (!projectId) throw new BadRequestException('Project Id is required');
     validateObjectId(projectId);
-    const project = await this.projectModel.findById(
-      new Types.ObjectId(projectId),
-    );
-    if (!project) throw new NotFoundException('Project not found');
-    return project;
+    const project = await this.projectModel.aggregate([
+      { $match: { _id: new Types.ObjectId(projectId) } },
+      ...populateCreatedBy,
+      ...populateUpdatedBy,
+      ...populateAppliedBy,
+      ...populateOperatorDetails,
+    ]);
+
+    if (!project || project.length === 0) {
+      throw new NotFoundException('Project not found');
+    }
+
+    return project[0];
   }
 
   async setDeletedFlag(projectIds: string[]): Promise<string> {
@@ -811,5 +760,37 @@ export class ProjectService {
       `${updatedProject.matchedCount} match, ${updatedProject.modifiedCount} data updated`,
     );
     return `${updatedProject.matchedCount} match, ${updatedProject.modifiedCount} data updated`;
+  }
+
+  async deleteProject(
+    userId: string,
+    request: ProjectDeleteQueryDto,
+  ): Promise<Project> {
+    const user = await this.userModel.findOne({
+      _id: userId,
+    });
+    if (!user) throw new NotFoundException('User not found!');
+
+    const deletedProject = await this.projectModel.findById({
+      _id: new Types.ObjectId(request.projectId),
+    });
+    if (!deletedProject) throw new NotFoundException('Project not found');
+
+    if (user.type === RoleEnum.OPERATOR) {
+      if (deletedProject.creatorUserId !== userId) {
+        throw new UnauthorizedException(
+          'You are not authorized to delete this project',
+        );
+      }
+    }
+
+    const deleted = await this.projectModel.deleteOne({
+      _id: new Types.ObjectId(request.projectId),
+    });
+    if (!deleted) {
+      throw new InternalServerErrorException('Failed to delete project!');
+    }
+
+    return deletedProject;
   }
 }

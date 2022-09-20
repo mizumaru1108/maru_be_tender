@@ -38,8 +38,7 @@ export class PermissionsGuard implements CanActivate {
     const organizationId =
       request.method === 'POST' ||
       request.method === 'PUT' ||
-      request.method === 'PATCH' ||
-      request.method === 'DELETE'
+      request.method === 'PATCH'
         ? request.body.organizationId
         : request.query.organizationId;
     if (
