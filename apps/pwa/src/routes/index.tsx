@@ -113,6 +113,38 @@ export default function Router() {
         },
       ],
     },
+    // Manager Routes
+    {
+      path: 'manager',
+      element: <DashboardLayout />,
+      children: [
+        { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
+        {
+          path: 'dashboard',
+          children: [{ path: '', element: <MainManagerPage /> }],
+        },
+        {
+          path: 'new',
+          children: [{ path: 'join-request', element: <NewJoinRequestPage /> }],
+        },
+        {
+          path: 'info',
+          children: [{ path: 'update-request', element: <InfoUpdateRequestPage /> }],
+        },
+        {
+          path: 'partner',
+          children: [{ path: 'management', element: <PartnerManagementPage /> }],
+        },
+        {
+          path: 'portal-reports',
+          children: [{ path: '', element: <PortalReportsPage /> }],
+        },
+        {
+          path: 'messages',
+          children: [{ path: '', element: <MessagesManagerPage /> }],
+        },
+      ],
+    },
     // Main Routes
     {
       path: '*',
@@ -153,6 +185,15 @@ const ContactSupport = Loadable(lazy(() => import('pages/client/ContactSupport')
 const MainClientPage = Loadable(lazy(() => import('pages/client/MainClientPage')));
 const ClientProfile = Loadable(lazy(() => import('pages/client/ClientProfile')));
 const ClientProfileEdit = Loadable(lazy(() => import('pages/client/ClientProfileEdit')));
+
+// MANAGER ROUTES
+const MainManagerPage = Loadable(lazy(() => import('pages/manager/MainManagerPage')));
+const NewJoinRequestPage = Loadable(lazy(() => import('pages/manager/new/join-request')));
+const InfoUpdateRequestPage = Loadable(lazy(() => import('pages/manager/info/update-request')));
+const PartnerManagementPage = Loadable(lazy(() => import('pages/manager/partner/management')));
+const PortalReportsPage = Loadable(lazy(() => import('pages/manager/PortalReportsPage')));
+const MessagesManagerPage = Loadable(lazy(() => import('pages/manager/Messages')));
+
 // AUTHENTICATION ROUTES
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));
 const Register = Loadable(lazy(() => import('../pages/auth/Register')));

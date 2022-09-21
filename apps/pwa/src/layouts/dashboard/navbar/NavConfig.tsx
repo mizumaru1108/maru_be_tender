@@ -1,5 +1,5 @@
 // routes
-import { PATH_CLIENT } from '../../../routes/paths';
+import { PATH_CLIENT, PATH_MANAGER } from '../../../routes/paths';
 import SvgIconStyle from '../../../components/SvgIconStyle';
 
 // ----------------------------------------------------------------------
@@ -72,6 +72,44 @@ const navConfig = {
           title: 'contact_support',
           path: PATH_CLIENT.contact_support,
           icon: ICONS.support,
+        },
+      ],
+    },
+  ],
+  manager: [
+    {
+      subheader: '',
+      items: [
+        {
+          title: 'main',
+          path: PATH_MANAGER.app,
+          icon: ICONS.main,
+        },
+        {
+          title: 'new_join_request',
+          path: PATH_MANAGER.newJoinRequest,
+          icon: ICONS.project_fund_request,
+        },
+
+        {
+          title: 'information_update_request',
+          path: PATH_MANAGER.infoUpdateRequest,
+          icon: ICONS.drafts,
+        },
+        {
+          title: 'partner_management',
+          path: PATH_MANAGER.partnerManagement,
+          icon: ICONS.previous_funding_requests,
+        },
+        {
+          title: 'portal_reports',
+          path: PATH_MANAGER.portalReports,
+          icon: ICONS.support,
+        },
+        {
+          title: 'messages',
+          path: PATH_MANAGER.messages,
+          icon: ICONS.messages,
         },
       ],
     },

@@ -7,6 +7,7 @@ function path(root: string, sublink: string) {
 const ROOTS_AUTH = '/auth';
 const ROOTS_DASHBOARD = '/dashboard';
 const ROOTS_CLIENT = '/client';
+const ROOTS_MANAGER = '/manager';
 
 // ----------------------------------------------------------------------
 
@@ -42,6 +43,16 @@ export const PATH_CLIENT = {
   previous_funding_requests: path(ROOTS_CLIENT, '/dashboard/previous-funding-requests'),
   messages: path(ROOTS_CLIENT, '/dashboard/messages'),
   contact_support: path(ROOTS_CLIENT, '/dashboard/contact-support'),
+};
+
+export const PATH_MANAGER = {
+  root: ROOTS_MANAGER,
+  app: path(ROOTS_MANAGER, '/dashboard'),
+  newJoinRequest: path(ROOTS_MANAGER, '/new/join-request'),
+  infoUpdateRequest: path(ROOTS_MANAGER, '/info/update-request'),
+  partnerManagement: path(ROOTS_MANAGER, '/partner/management'),
+  portalReports: path(ROOTS_MANAGER, '/portal-reports'),
+  messages: path(ROOTS_MANAGER, '/messages'),
 };
 
 export const PATH_DASHBOARD = {

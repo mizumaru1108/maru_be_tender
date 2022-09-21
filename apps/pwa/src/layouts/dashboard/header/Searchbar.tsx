@@ -118,6 +118,7 @@ function Searchbar() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const role = 'client';
+  // const role = 'manager';
   const reduceItems = navConfig[`${role}`]
     .map((list) => handleLoop(list.items, list.subheader))
     .flat();

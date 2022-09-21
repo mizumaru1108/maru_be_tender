@@ -45,6 +45,7 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
   // it is now just for testing
   // const role = LocalStorage.get(role)
   const role = 'client';
+  // const role = 'manager';
 
   const { isCollapse, collapseClick, collapseHover, onHoverEnter, onHoverLeave } =
     useCollapseDrawer();

@@ -30,6 +30,7 @@ const RootStyle = styled(AppBar)(({ theme }) => ({
 function NavbarHorizontal() {
   // for visualization
   const role = 'client';
+  // const role = 'manager';
   return (
     <RootStyle>
       <Container maxWidth={false}>
