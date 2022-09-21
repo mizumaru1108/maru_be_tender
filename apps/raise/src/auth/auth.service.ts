@@ -5,8 +5,9 @@ import { UserService } from 'src/user/user.service';
 import { EmailService } from '../libs/email/email.service';
 import { FusionAuthService } from '../libs/fusionauth/services/fusion-auth.service';
 import { User } from '../user/schema/user.schema';
-import { LoginRequestDto } from './dtos/login-request.dto';
-import { RegisterRequestDto } from './dtos/register-request.dto';
+// import { LoginRequestDto } from './dtos/login-request.dto';
+// import { RegisterRequestDto } from './dtos/register-request.dto';
+import { LoginRequestDto, RegisterRequestDto, RegReqTenderDto } from './dtos';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +16,7 @@ export class AuthService {
     private readonly emailService: EmailService,
     private readonly fusionAuthService: FusionAuthService,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async fusionLogin(loginRequest: LoginRequestDto) {
     const loginResponse = await this.fusionAuthService.fusionAuthLogin(
@@ -84,6 +85,20 @@ export class AuthService {
     if (!isSend) {
       throw new BadRequestException('An error occured while sending email');
     }
+    return registeredUser;
+  }
+
+  async fusionRegTender(registerRequest: RegReqTenderDto) {
+    const result = await this.fusionAuthService.fusionAuthRegTender(
+      registerRequest,
+    );
+    const registeredUser = await this.usersService.regFromFusionTender({
+      id: result.user.id,
+      employee_name: result.user.firstName,
+      email: result.user.email,
+      mobile_number: result.user.mobile,
+    });
+
     return registeredUser;
   }
 

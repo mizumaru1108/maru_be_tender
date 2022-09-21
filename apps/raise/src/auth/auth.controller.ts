@@ -5,13 +5,11 @@ import { baseResponseHelper } from '../commons/helpers/base-response-helper';
 import { User } from '../user/schema/user.schema';
 
 import { AuthService } from './auth.service';
-import { LoginRequestDto } from './dtos/login-request.dto';
-import { LoginResponseDto } from './dtos/login-response.dto';
-import { RegisterRequestDto } from './dtos/register-request.dto';
+import { LoginRequestDto, LoginResponseDto, RegisterRequestDto, RegReqTenderDto } from './dtos';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @ApiOperation({ summary: 'Login with fusion auth' })
   @ApiResponse({
@@ -56,5 +54,25 @@ export class AuthController {
     @Body('password') password: string,
   ) {
     return await this.authService.registerUser(name, email, password);
+  }
+
+  @ApiOperation({ summary: 'Register user with fusion auth' })
+  @ApiResponse({
+    status: 201,
+    description: 'User has been registered successfully!',
+  })
+
+  @Post('fusion/regTender')
+  async fusionRegTender(
+    @Body() registerRequest: RegReqTenderDto,
+  ) {
+    const registeredUser = await this.authService.fusionRegTender(
+      registerRequest,
+    );
+    return baseResponseHelper(
+      registeredUser,
+      HttpStatus.CREATED,
+      'Create User Success!',
+    );
   }
 }

@@ -38,6 +38,7 @@ import { envLoadErrorHelper } from './commons/helpers/env-loaderror-helper';
 import { PermissionManagerModule } from './permission-manager/permission-manager.module';
 import { WidgetBackendModule } from './widget-backend/widget-backend.module';
 import { DonationModule } from './donation/donation.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -113,7 +114,9 @@ import { DonationModule } from './donation/donation.module';
     CommentsModule,
     PermissionManagerModule,
     DonationModule,
+    // PrismaModule,
+
   ],
   controllers: [],
 })
-export class AppModule {}
+export class AppModule { }

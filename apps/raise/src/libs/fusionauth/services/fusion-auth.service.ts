@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
+import { RegReqTenderDto } from 'src/auth/dtos';
 import { LoginRequestDto } from '../../../auth/dtos/login-request.dto';
 import { RegisterRequestDto } from '../../../auth/dtos/register-request.dto';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
@@ -133,10 +134,57 @@ export class FusionAuthService {
       if (error.response.status < 500) {
         console.log(error.response.data);
         throw new BadRequestException(
-          `Registration Failed, either user is exist or something else!, more details: ${
-            error.response.data.fieldErrors
-              ? JSON.stringify(error.response.data.fieldErrors)
-              : JSON.stringify(error.response.data)
+          `Registration Failed, either user is exist or something else!, more details: ${error.response.data.fieldErrors
+            ? JSON.stringify(error.response.data.fieldErrors)
+            : JSON.stringify(error.response.data)
+          }`,
+        );
+      } else {
+        console.log(error);
+        throw new Error('Something went wrong!');
+      }
+    }
+  }
+
+  async fusionAuthRegTender(registerRequest: RegReqTenderDto) {
+    const baseUrl = this.fusionAuthUrl;
+    const registerUrl = baseUrl + '/api/user/registration/';
+    const user: IFusionAuthUser = {
+      email: registerRequest.email,
+      password: registerRequest.password,
+      firstName: registerRequest.employee_name,
+      lastName: '',
+    };
+    const registration: IFusionAuthUserRegistration = {
+      applicationId: this.fusionAuthAppId,
+    };
+
+    const registrationRequest: IFusionAuthRegistrationRequest = {
+      user,
+      registration,
+    };
+
+    const options: AxiosRequestConfig<any> = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.fusionAuthAdminKey,
+        'X-FusionAuth-TenantId': this.fusionAuthTenantId,
+      },
+      data: registrationRequest,
+      url: registerUrl,
+    };
+
+    try {
+      const data = await axios(options);
+      return data.data;
+    } catch (error) {
+      if (error.response.status < 500) {
+        console.log(error.response.data);
+        throw new BadRequestException(
+          `Registration Failed, either user is exist or something else!, more details: ${error.response.data.fieldErrors
+            ? JSON.stringify(error.response.data.fieldErrors)
+            : JSON.stringify(error.response.data)
           }`,
         );
       } else {

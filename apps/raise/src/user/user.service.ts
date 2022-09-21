@@ -5,9 +5,10 @@ import { FusionAuthClient } from '@fusionauth/typescript-client';
 import { ConfigService } from '@nestjs/config';
 
 import { User, UserDocument } from './schema/user.schema';
-import { RegisterFromFusionAuthDto } from './dtos/register-from-fusion-auth.dto';
+import { RegFromFusionAuthTenderDto, RegisterFromFusionAuthDto } from './dtos/register-from-fusion-auth.dto';
 import { RoleEnum } from './enums/role-enum';
 import { Donor } from 'src/donor/schema/donor.schema';
+// import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class UserService {
@@ -15,7 +16,8 @@ export class UserService {
     @InjectModel('User') private readonly userModel: Model<User>,
     private configService: ConfigService,
     @InjectModel('Donor') private readonly donorModel: Model<Donor>,
-  ) {}
+    // private prisma: PrismaService
+  ) { }
 
   async registerFromFusion(request: RegisterFromFusionAuthDto): Promise<User> {
     const newUser = new this.userModel({
@@ -42,6 +44,14 @@ export class UserService {
 
     return result;
   }
+  /** Create user and client for tender */
+  async regFromFusionTender(request: RegFromFusionAuthTenderDto) {
+    //  this.prisma
+
+    const result = '';
+    return result;
+  }
+
   async createUser(name: string, email: string, password: string) {
     const newUser = new this.userModel({ name, email, password });
     const result = await newUser.save();
@@ -174,7 +184,7 @@ export class UserService {
     }
   }
 
-  async verifyEmailAuthZed(verfUserId:string){
+  async verifyEmailAuthZed(verfUserId: string) {
 
   }
 }
