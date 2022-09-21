@@ -32,7 +32,13 @@ const cardFooterButtonActionLocal = {
   'completing-exchange-permission': 'completing_exchange_permission',
   draft: 'draft',
 };
-const ProjectCard = ({ title, content, footer, cardFooterButtonAction }: ProjectCardProps) => {
+const ProjectCard = ({
+  title,
+  content,
+  footer,
+  cardFooterButtonAction,
+  destination, // it refers to the url that I came from and the url that I have to go to
+}: ProjectCardProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { translate } = useLocales();
@@ -50,7 +56,15 @@ const ProjectCard = ({ title, content, footer, cardFooterButtonAction }: Project
   };
 
   const handleOnClick = () => {
-    navigate(`${location.pathname}/${title.id}/${cardFooterButtonAction}`);
+    if (destination) {
+      const x = location.pathname.split('/');
+      console.log(
+        `/${x[1] + '/' + x[2] + '/' + destination}/${title.id}/${cardFooterButtonAction}/main`
+      );
+      navigate(
+        `/${x[1] + '/' + x[2] + '/' + destination}/${title.id}/${cardFooterButtonAction}/main`
+      );
+    } else navigate(`${location.pathname}/${title.id}/${cardFooterButtonAction}/main`);
   };
   return (
     <Card sx={{ backgroundColor: '#fff' }}>

@@ -9,10 +9,22 @@ import { MotionContainer, varBounce } from '../components/animate';
 import { ForbiddenIllustration } from '../assets';
 
 // ----------------------------------------------------------------------
+export type Role =
+  | 'cluster_admin'
+  | 'tender_accounts_manager'
+  | 'tender_admin'
+  | 'tender_ceo'
+  | 'tender_cashier'
+  | 'tender_client'
+  | 'tender_consultant'
+  | 'tender_finance'
+  | 'tender_moderator'
+  | 'tender_project_manager'
+  | 'tender_project_supervisor';
 
 type RoleBasedGuardProp = {
   hasContent?: boolean;
-  roles?: string[];
+  roles: Role[];
   children: React.ReactNode;
 };
 
@@ -21,9 +33,10 @@ export default function RoleBasedGuard({ hasContent, roles, children }: RoleBase
   const { user } = useAuth();
 
   // const currentRole = 'user';
-  const currentRole = user?.role; // admin;
+  const currentRoles = user?.registrations[0].roles; // admin;
 
-  if (typeof roles !== 'undefined' && !roles.includes(currentRole)) {
+  if (typeof roles !== 'undefined' && !currentRoles.find((role: any) => roles.includes(role))) {
+    console.log('asklansdklnasd');
     return hasContent ? (
       <Container component={MotionContainer} sx={{ textAlign: 'center' }}>
         <m.div variants={varBounce().in}>

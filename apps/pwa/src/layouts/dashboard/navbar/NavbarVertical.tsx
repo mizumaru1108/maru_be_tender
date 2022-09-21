@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 // @mui
 import { styled, useTheme } from '@mui/material/styles';
-import { Box, Stack, Drawer } from '@mui/material';
+import { Box, Stack, Drawer, Typography, Button } from '@mui/material';
 // hooks
 import useResponsive from '../../../hooks/useResponsive';
 import useCollapseDrawer from '../../../hooks/useCollapseDrawer';
@@ -16,6 +16,8 @@ import { NavSectionVertical } from '../../../components/nav-section';
 import { ReactComponent as Logo } from '../../../assets/logo.svg';
 //
 import navConfig from './NavConfig';
+import useAuth from 'hooks/useAuth';
+import { Role } from 'guards/RoleBasedGuard';
 // ----------------------------------------------------------------------
 
 const RootStyle = styled('div')(({ theme }) => ({
@@ -37,15 +39,12 @@ type Props = {
 export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props) {
   const theme = useTheme();
 
+  const { logout, user } = useAuth();
   const { pathname } = useLocation();
 
   const isDesktop = useResponsive('up', 'lg');
 
-  // here the role should come from the user account
-  // it is now just for testing
-  // const role = LocalStorage.get(role)
-  const role = 'client';
-  // const role = 'manager';
+  const role = user?.registrations[0].roles as Role;
 
   const { isCollapse, collapseClick, collapseHover, onHoverEnter, onHoverLeave } =
     useCollapseDrawer();
@@ -78,6 +77,21 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
       <NavSectionVertical navConfig={navConfig[`${role}`]} isCollapse={isCollapse} />
 
       <Box sx={{ flexGrow: 1 }} />
+      <Box
+        component={Button}
+        sx={{
+          mx: '15px',
+          mb: '10px',
+          backgroundColor: '#FF484229! important',
+          display: 'inline-block',
+        }}
+        onClick={logout}
+      >
+        <Stack direction="row" gap={2}>
+          <img src="/assets/icons/dashboard-navbar/log-out-icon.svg" alt="" />
+          <Typography color="#FF4842">تسجيل الخروج</Typography>
+        </Stack>
+      </Box>
     </Scrollbar>
   );
 

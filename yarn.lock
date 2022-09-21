@@ -2,7 +2,7 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 6
+  version: 5
   cacheKey: 8
 
 "@ampproject/remapping@npm:^2.1.0":
@@ -649,7 +649,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-proposal-private-property-in-object@npm:^7.16.0, @babel/plugin-proposal-private-property-in-object@npm:^7.18.6":
+"@babel/plugin-proposal-private-property-in-object@npm:^7.18.6":
   version: 7.18.6
   resolution: "@babel/plugin-proposal-private-property-in-object@npm:7.18.6"
   dependencies:
@@ -2976,6 +2976,15 @@ __metadata:
   dependencies:
     node-fetch: ^2.6.1
   checksum: 34ff1050561610b008d1f6265dc24af1026057c1195f1e91623ca296c393645c54cbb2fe83ccaee2f3f0290caf5a4a7fe37c071772be6f88a36a8bb3185084c2
+  languageName: node
+  linkType: hard
+
+"@fusionauth/typescript-client@npm:^1.39.0":
+  version: 1.39.0
+  resolution: "@fusionauth/typescript-client@npm:1.39.0"
+  dependencies:
+    node-fetch: ^2.6.1
+  checksum: fd87025265d549602c14d83f47aa4a8250bc9118b9dfedc95eea0b7069547b4a0662ea32136c70a15c0f579333551104d7416491b29d04a973b983090e31d632
   languageName: node
   linkType: hard
 
@@ -7356,6 +7365,7 @@ __metadata:
     "@types/react-slick": ^0.23.10
     "@typescript-eslint/eslint-plugin": ^5.30.3
     "@typescript-eslint/parser": ^5.30.3
+    "@urql/preact": ^3.0.2
     amazon-cognito-identity-js: ^5.2.9
     apexcharts: ^3.35.3
     assert: ^2.0.0
@@ -7430,7 +7440,9 @@ __metadata:
     stylis: ^4.1.1
     stylis-plugin-rtl: ^2.1.1
     typescript: ^4.7.4
+    urql: ^3.0.3
     util: ^0.12.4
+    uuid: ^9.0.0
     web-vitals: ^2.1.4
     webpack: ^5.74.0
     workbox-core: ^6.5.4
@@ -8894,6 +8906,31 @@ __metadata:
     "@typescript-eslint/types": 5.33.0
     eslint-visitor-keys: ^3.3.0
   checksum: d7e3653de6bac6841e6fcc54226b93ad6bdca4aa76ebe7d83459c016c3eebcc50d4f65ee713174bc267d765295b642d1927a778c5de707b8389e3fcc052aa4a1
+  languageName: node
+  linkType: hard
+
+"@urql/core@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "@urql/core@npm:3.0.3"
+  dependencies:
+    "@graphql-typed-document-node/core": ^3.1.1
+    wonka: ^6.0.0
+  peerDependencies:
+    graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+  checksum: 5bc972422fc733e815d82f84b10daef05288d31c2b4958555ea982bd83dd42ec939165c66cc94eeed447c45b8798242971b3682714c7df21c25d6f9bad53303c
+  languageName: node
+  linkType: hard
+
+"@urql/preact@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "@urql/preact@npm:3.0.2"
+  dependencies:
+    "@urql/core": ^3.0.3
+    wonka: ^6.0.0
+  peerDependencies:
+    graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+    preact: ">= 10.0.0"
+  checksum: cbaac89b89dc902351f4ae0001a71adaf83c2640f275dcaff7513d44bb3836457fe6089804385703d7470abcc313392861b8dd631cde61873cb33a268664f771
   languageName: node
   linkType: hard
 
@@ -26206,6 +26243,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "tmra@workspace:."
   dependencies:
+    "@fusionauth/typescript-client": ^1.39.0
     eslint: ^8.19.0
     husky: ^7.0.4
     lerna: ^4.0.0
@@ -26633,11 +26671,11 @@ __metadata:
 
 "typescript@patch:typescript@4.7.4#~builtin<compat/typescript>, typescript@patch:typescript@^4.7.4#~builtin<compat/typescript>":
   version: 4.7.4
-  resolution: "typescript@patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=a1c5e5"
+  resolution: "typescript@patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=ddd1e8"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 9096d8f6c16cb80ef3bf96fcbbd055bf1c4a43bd14f3b7be45a9fbe7ada46ec977f604d5feed3263b4f2aa7d4c7477ce5f9cd87de0d6feedec69a983f3a4f93e
+  checksum: 96d3030cb01143570567cb4f3a616b10df65f658f0e74e853e77a089a6a954e35c800be7db8b9bfe9a1ae05d9c2897e281359f65e4caa1caf266368e1c4febd3
   languageName: node
   linkType: hard
 
@@ -26973,6 +27011,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"urql@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "urql@npm:3.0.3"
+  dependencies:
+    "@urql/core": ^3.0.3
+    wonka: ^6.0.0
+  peerDependencies:
+    graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+    react: ">= 16.8.0"
+  checksum: 0376873d95b28a7593c9c791da2df54fbbd079caa283ef0225b51bd169d87108744dc47d3d14417e51f7079439e4dd28427bc7f4d74b22b7c5de36a0dea06855
+  languageName: node
+  linkType: hard
+
 "use-memo-one@npm:^1.1.1":
   version: 1.1.2
   resolution: "use-memo-one@npm:1.1.2"
@@ -27062,6 +27113,15 @@ __metadata:
   bin:
     uuid: ./bin/uuid
   checksum: 58de2feed61c59060b40f8203c0e4ed7fd6f99d42534a499f1741218a1dd0c129f4aa1de797bcf822c8ea5da7e4137aa3673431a96dae729047f7aca7b27866f
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "uuid@npm:9.0.0"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 8dd2c83c43ddc7e1c71e36b60aea40030a6505139af6bee0f382ebcd1a56f6cd3028f7f06ffb07f8cf6ced320b76aea275284b224b002b289f89fe89c389b028
   languageName: node
   linkType: hard
 
@@ -27718,6 +27778,13 @@ __metadata:
     assert-never: ^1.2.1
     babel-walk: 3.0.0-canary-5
   checksum: a00fe87b736e434bd8b9d3e62ddcd664bde7d3990a011a0f1bdeb499db0d6c28e6d2ef921dcc47650b8d436eee55459bcae8fab4ce1ed89f4926ddda407ab755
+  languageName: node
+  linkType: hard
+
+"wonka@npm:^6.0.0":
+  version: 6.1.0
+  resolution: "wonka@npm:6.1.0"
+  checksum: 662793c7429affc12c4ee9f8b8b642fd44a9f69886bd782ee3df241ac6b1ada66d366e4669bbea43f52f6167e4697dd6f4aa40b8e71dbfe9046d91203ae59731
   languageName: node
   linkType: hard
 

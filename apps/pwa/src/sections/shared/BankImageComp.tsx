@@ -27,15 +27,9 @@ const BankImageComp = ({ enableButton, bankName, bankAccountName, accountNumber 
   <Stack direction="column" gap={1} sx={{ height: '270px' }} justifyContent="center">
     <Paper style={styles.paperContainer}>
       <Stack direction="column" sx={{ color: '#fff' }}>
-        <Typography gutterBottom variant="h5" sx={{ fontSize: 'sm' }}>
-          {bankName}
-        </Typography>
-        <Typography gutterBottom variant="h5" sx={{ fontSize: '14' }}>
-          {bankAccountName}
-        </Typography>
-        <Typography gutterBottom variant="h5" sx={{ fontSize: '14' }}>
-          {accountNumber}
-        </Typography>
+        <Typography sx={{ fontSize: '10px', mb: '30px' }}>{bankName}</Typography>
+        <Typography sx={{ fontSize: '15px', mb: '10px' }}>{bankAccountName}</Typography>
+        <Typography sx={{ fontSize: '15px' }}>{accountNumber}</Typography>
       </Stack>
     </Paper>
     {enableButton && (

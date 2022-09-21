@@ -2,6 +2,7 @@ import { Button, Divider, Grid, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Box, Container } from '@mui/system';
 import Page from 'components/Page';
+import useResponsive from 'hooks/useResponsive';
 import { useNavigate } from 'react-router';
 import BankImageComp from 'sections/shared/BankImageComp';
 
@@ -21,7 +22,7 @@ const mockData = {
 };
 function ClientProfile() {
   const navigate = useNavigate();
-
+  const isMobile = useResponsive('down', 'sm');
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -74,6 +75,7 @@ function ClientProfile() {
                 px: '15px',
                 py: '0px',
                 height: '45px',
+                fontSize: isMobile ? '10px' : '15px',
               }}
               onClick={() => navigate('/client/my-profile/edit')}
             >

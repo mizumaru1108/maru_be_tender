@@ -4,6 +4,7 @@ import { useTheme } from '@mui/material/styles';
 import SvgIconStyle from 'components/SvgIconStyle';
 import { Box, Button, Grid, Stack, Typography } from '@mui/material';
 import { CarouselArrows, CarouselDots } from 'components/carousel';
+import { makeStyles } from '@material-ui/core/styles';
 
 const data = [
   {
@@ -37,8 +38,23 @@ function ClientCarousel() {
     slidesToShow: 1,
     slidesToScroll: 1,
     rtl: Boolean(theme.direction === 'rtl'),
-    ...CarouselDots({ rounded: true, zIndex: 9, top: 200, left: 450, position: 'absolute' }),
+    ...CarouselDots({ rounded: true, zIndex: 9 }),
   };
+
+  const LINES_TO_SHOW = 1;
+
+  // src: https://stackoverflow.com/a/13924997/8062659
+  const useStyles = makeStyles({
+    multiLineEllipsis: {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      display: '-webkit-box',
+      '-webkit-line-clamp': LINES_TO_SHOW,
+      '-webkit-box-orient': 'vertical',
+    },
+  });
+
+  const classes = useStyles();
 
   const handlePrevious = () => {
     carouselRef.current?.slickPrev();
@@ -83,16 +99,24 @@ function ClientCarousel() {
                 <Box flex={1}>
                   <img src={`/icons/mosque-carousel-icon.svg`} alt="" />
                 </Box>
-                <Stack direction="column" gap={3} justifyContent="end" flex={4}>
-                  <Typography sx={{ fontSize: '16px', textAlign: 'end', color: 'text.tertiary' }}>
+                <Stack direction="column" gap={1} justifyContent="end" flex={4}>
+                  <Typography
+                    className={classes.multiLineEllipsis}
+                    sx={{ fontSize: '16px', textAlign: 'end', color: 'text.tertiary' }}
+                  >
                     {item.firstField}
                   </Typography>
-                  <Typography sx={{ fontSize: '16px', textAlign: 'end' }}>
+                  <Typography
+                    className={classes.multiLineEllipsis}
+                    sx={{ fontSize: '16px', textAlign: 'end' }}
+                  >
                     {item.secondField}
                   </Typography>
                   <Stack justifyContent="space-between" direction="row">
                     <Box>{''}</Box>
-                    <Button sx={{ color: '#1E1E1E' }}>{item.thirdField}</Button>
+                    <Button className={classes.multiLineEllipsis} sx={{ color: '#1E1E1E' }}>
+                      {item.thirdField}
+                    </Button>
                   </Stack>
                 </Stack>
               </Stack>

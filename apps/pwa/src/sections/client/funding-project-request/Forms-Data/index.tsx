@@ -17,15 +17,16 @@ export const MainFormData = [
   },
   {
     type: 'select',
-    name: 'project_applying_place',
+    name: 'project_location',
     label: 'funding_project_request_form1.project_applying_place.label',
     placeholder: 'funding_project_request_form1.project_applying_place.placeholder',
     md: 6,
     xs: 12,
+    children: <option value="test">test</option>,
   },
   {
     type: 'datePicker',
-    name: 'project_applying_date',
+    name: 'project_implement_date',
     label: 'funding_project_request_form1.project_applying_date.label',
     placeholder: 'funding_project_request_form1.project_applying_date.placeholder',
     md: 6,
@@ -33,7 +34,7 @@ export const MainFormData = [
   },
   {
     type: 'textField',
-    name: 'applying_duration',
+    name: 'execution_time',
     label: 'funding_project_request_form1.applying_duration.label',
     placeholder: 'funding_project_request_form1.applying_duration.placeholder',
     md: 6,
@@ -46,6 +47,7 @@ export const MainFormData = [
     placeholder: 'funding_project_request_form1.target_group_type.placeholder',
     md: 6,
     xs: 12,
+    children: <option value="test">test</option>,
   },
   {
     type: 'uploadLabel',
@@ -61,7 +63,7 @@ export const MainFormData = [
   },
   {
     type: 'upload',
-    name: 'letter_support_request',
+    name: 'letter_ofsupport_req',
     placeholder: 'funding_project_request_form1.letter_support_request.placeholder',
     md: 6,
     xs: 12,
@@ -78,7 +80,7 @@ export const MainFormData = [
 export const ProjectInfoData = [
   {
     type: 'textField',
-    name: 'number_of_project_beneficiaries',
+    name: 'num_ofproject_binicficiaries',
     label: 'funding_project_request_form2.number_of_project_beneficiaries.label',
     placeholder: 'funding_project_request_form2.number_of_project_beneficiaries.placeholder',
     xs: 12,
@@ -107,7 +109,7 @@ export const ProjectInfoData = [
   },
   {
     type: 'textArea',
-    name: 'project_risk',
+    name: 'project_risks',
     label: 'funding_project_request_form2.project_risk.label',
     placeholder: 'funding_project_request_form2.project_risk.placeholder',
     xs: 12,
@@ -117,14 +119,14 @@ export const ProjectInfoData = [
 export const ConnectingInfoData = [
   {
     type: 'textField',
-    name: 'project_manager_name',
+    name: 'pm_name',
     label: 'funding_project_request_form3.project_manager_name.label',
     placeholder: 'funding_project_request_form3.project_manager_name.placeholder',
     xs: 12,
   },
   {
     type: 'textField',
-    name: 'mobile_number',
+    name: 'pm_mobile',
     label: 'funding_project_request_form3.mobile_number.label',
     placeholder: 'funding_project_request_form3.mobile_number.placeholder',
     md: 6,
@@ -132,7 +134,7 @@ export const ConnectingInfoData = [
   },
   {
     type: 'textField',
-    name: 'email',
+    name: 'pm_email',
     label: 'funding_project_request_form3.email.label',
     placeholder: 'funding_project_request_form3.email.placeholder',
     md: 6,
@@ -145,21 +147,31 @@ export const ConnectingInfoData = [
     placeholder: 'funding_project_request_form3.region.placeholder',
     md: 6,
     xs: 12,
+    children: <option value="test">test</option>,
   },
   {
     type: 'select',
-    name: 'city',
+    name: 'governorate',
     label: 'funding_project_request_form3.city.label',
     placeholder: 'funding_project_request_form3.city.placeholder',
     md: 6,
     xs: 12,
+    children: <option value="test">test</option>,
   },
 ] as Array<FormSingleProps>;
 
 export const ProjectBudgetData = [
   {
+    type: 'textField',
+    name: 'amount_required_fsupport',
+    label: 'المبلغ المطلوب للدعم*',
+    placeholder: 'الرجاء كتابة المبلغ المطلوب للدعم',
+    md: 12,
+    xs: 12,
+  },
+  {
     type: 'repeater',
-    name: 'budget',
+    name: 'detail_project_budget',
     repeaterFields: [
       {
         type: 'textField',

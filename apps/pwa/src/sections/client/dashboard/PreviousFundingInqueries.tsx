@@ -93,7 +93,11 @@ function PreviousFundingInqueries() {
       <Grid container rowSpacing={3} columnSpacing={3}>
         {data.map((item, index) => (
           <Grid item md={6} key={index}>
-            <ProjectCard {...item} cardFooterButtonAction={'show-details'} />
+            <ProjectCard
+              {...item}
+              cardFooterButtonAction="show-details"
+              destination="previous-funding-requests"
+            />
           </Grid>
         ))}
       </Grid>

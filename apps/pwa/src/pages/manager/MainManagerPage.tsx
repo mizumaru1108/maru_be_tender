@@ -24,7 +24,7 @@ function MainManagerPage() {
     flexDirection: 'column',
     rowGap: '50px',
   }));
-
+  console.log('adskadkla');
   return (
     <Page title="Manager Dashboard">
       <Container>

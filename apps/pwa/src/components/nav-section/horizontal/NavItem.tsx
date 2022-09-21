@@ -20,7 +20,7 @@ const NavItem = forwardRef<HTMLDivElement & HTMLAnchorElement, Props>(
   ({ item, depth, active, open, ...other }, ref) => {
     const { translate } = useLocales();
 
-    const { title, icon, info, children, disabled, caption, roles } = item;
+    const { title, icon, info, children, disabled, caption } = item;
 
     const renderContent = (
       <ListItemStyle
@@ -86,7 +86,7 @@ const NavItem = forwardRef<HTMLDivElement & HTMLAnchorElement, Props>(
       </ListItemStyle>
     );
 
-    return <RoleBasedGuard roles={roles}>{renderContent}</RoleBasedGuard>;
+    return <>{renderContent}</>;
   }
 );
 
