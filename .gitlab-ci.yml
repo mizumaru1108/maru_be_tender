@@ -12,7 +12,7 @@ stages:
   - post-publish
   - deploy
 
-image: node:lts-slim
+image: node:lts
 
 # Cache modules in between jobs
 cache:
