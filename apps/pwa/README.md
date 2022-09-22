@@ -1,6 +1,6 @@
 # Minimal TypeScript v3.5.0 react-scripts_TS
 
-.
+..
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## 1.Install
