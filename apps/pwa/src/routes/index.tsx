@@ -208,7 +208,7 @@ export default function Router() {
         {
           path: 'dashboard',
           children: [
-            { path: '', element: <MainManagerPage /> },
+            { path: 'app', element: <MainManagerPage /> },
             { path: 'new/join-request', element: <NewJoinRequestPage /> },
             { path: 'info/update-request', element: <InfoUpdateRequestPage /> },
             { path: 'partner/management', element: <PartnerManagementPage /> },

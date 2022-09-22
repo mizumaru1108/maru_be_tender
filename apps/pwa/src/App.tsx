@@ -11,7 +11,7 @@ import NotistackProvider from './components/NotistackProvider';
 import { ProgressBarStyle } from './components/ProgressBar';
 import ScrollToTop from './components/ScrollToTop';
 import { Provider } from 'urql';
-import { client } from 'api/urql';
+import { client } from 'utils/urql';
 // ----------------------------------------------------------------------
 
 export default function App() {
