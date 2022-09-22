@@ -8,6 +8,7 @@ import {
   PATH_PROJECT_MANAGER,
   PATH_PROJECT_SUPERVISOR,
   PATH_ACCOUNTS_MANAGER,
+  PATH_MODERATOR,
 } from '../../../routes/paths';
 import SvgIconStyle from '../../../components/SvgIconStyle';
 
@@ -87,6 +88,11 @@ const ICONS = {
     previous_funding_requests: getIcon('previous_funding_requests'),
     payment_adjustment: getIcon('payment_adjustment'),
     portal_reports: getIcon('portal_reports'),
+    messages: getIcon('message-bar'),
+  },
+  tender_moderator: {
+    main: getIcon('main'),
+    support_requests_received: getIcon('draft-request'),
     messages: getIcon('message-bar'),
   },
   tender_accounts_manager: {
@@ -384,9 +390,32 @@ const navConfig = {
       ],
     },
   ],
+  tender_moderator: [
+    {
+      subheader: '',
+      items: [
+        {
+          title: 'main',
+          path: PATH_MODERATOR.app,
+          icon: ICONS.tender_client.main,
+        },
+
+        {
+          title: 'support_requests_received',
+          path: PATH_MODERATOR.support_requests_received,
+          icon: ICONS.tender_client.drafts,
+        },
+
+        {
+          title: 'messages',
+          path: PATH_MODERATOR.messages,
+          icon: ICONS.tender_client.messages,
+        },
+      ],
+    },
+  ],
   cluster_admin: [],
   tender_admin: [],
-  tender_moderator: [],
 };
 
 export default navConfig;

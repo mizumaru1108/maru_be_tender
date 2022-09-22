@@ -111,6 +111,40 @@ export default function Router() {
         },
       ],
     },
+
+    // Moderator Routes
+    {
+      path: 'moderator',
+      element: (
+        <AuthGuard>
+          <RoleBasedGuard roles={['tender_moderator']} hasContent={true}>
+            <DashboardLayout />
+          </RoleBasedGuard>
+        </AuthGuard>
+      ),
+      children: [
+        { element: <Navigate to="/dashboard" replace />, index: true },
+        {
+          path: 'my-profile',
+          children: [
+            { path: '', element: <ModeratorProfile /> },
+            { path: 'edit', element: <ModeratorProfileEdit /> },
+          ],
+        },
+        {
+          path: 'dashboard',
+          children: [
+            { path: 'app', element: <MainModeratorPage /> },
+            {
+              path: 'support-requests-received',
+              element: <SupportRequestsReceived />,
+            },
+
+            { path: 'messages', element: <ModeratorMessages /> },
+          ],
+        },
+      ],
+    },
     // Consultant Routes
     // {
     //   path: 'consultant',
@@ -225,6 +259,15 @@ const InfoUpdateRequestPage = Loadable(lazy(() => import('pages/manager/info/upd
 const PartnerManagementPage = Loadable(lazy(() => import('pages/manager/partner/management')));
 const PortalReportsPage = Loadable(lazy(() => import('pages/manager/PortalReportsPage')));
 const MessagesManagerPage = Loadable(lazy(() => import('pages/manager/Messages')));
+
+// MODERATOR ROUTES
+const MainModeratorPage = Loadable(lazy(() => import('pages/moderator/MainModeratorPage')));
+const ModeratorProfile = Loadable(lazy(() => import('pages/moderator/ModeratorProfile')));
+const ModeratorProfileEdit = Loadable(lazy(() => import('pages/moderator/ModeratorProfileEdit')));
+const ModeratorMessages = Loadable(lazy(() => import('pages/moderator/ModeratorMessages')));
+const SupportRequestsReceived = Loadable(
+  lazy(() => import('pages/moderator/support-requests-received'))
+);
 
 // AUTHENTICATION ROUTES
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));

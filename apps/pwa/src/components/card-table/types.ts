@@ -28,7 +28,7 @@ export type ProjectCardProps = {
   destination?: 'previous-funding-requests'; // it refers to the url that I came from and the url that I have to go to
 };
 
-type filterInterface = {
+export type filterInterface = {
   name: string;
   options: { label: string; value: string }[];
 };
