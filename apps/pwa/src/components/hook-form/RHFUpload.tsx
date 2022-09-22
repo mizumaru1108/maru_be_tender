@@ -59,12 +59,7 @@ export function RHFUploadSingleFile({ name, placeholder, ...other }: Props) {
       const file = acceptedFiles[0];
 
       if (file) {
-        setValue(
-          name,
-          Object.assign(file, {
-            preview: URL.createObjectURL(file),
-          })
-        );
+        setValue(name, URL.createObjectURL(file));
       }
     },
     [name, setValue]

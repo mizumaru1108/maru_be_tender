@@ -1,14 +1,14 @@
 import * as Yup from 'yup';
 import { useEffect } from 'react';
-import { Button, Grid, Stack, Box } from '@mui/material';
+import { Grid } from '@mui/material';
 import { FormProvider } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ReactComponent as MovingBack } from '../../../../assets/move-back-icon.svg';
 import { ProjectBudgetData } from '../Forms-Data';
 import FormGenerator from 'components/FormGenerator';
 type FormValuesProps = {
-  budget: {
+  amount_required_fsupport: number;
+  detail_project_budget: {
     item: string;
     explanation: string;
     amount: number;
@@ -16,15 +16,18 @@ type FormValuesProps = {
 };
 
 type Props = {
-  setStep: React.Dispatch<React.SetStateAction<number>>;
+  onSubmit: (data: any) => void;
+  children?: React.ReactNode;
+  defaultValues: any;
 };
 
-const ProjectBudgetForm = ({ setStep }: Props) => {
+const ProjectBudgetForm = ({ onSubmit, children, defaultValues }: Props) => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
   const RegisterSchema = Yup.object().shape({
-    budget: Yup.array().of(
+    amount_required_fsupport: Yup.number().required(),
+    detail_project_budget: Yup.array().of(
       Yup.object().shape({
         item: Yup.string().required(),
         explanation: Yup.string().required(),
@@ -32,15 +35,6 @@ const ProjectBudgetForm = ({ setStep }: Props) => {
       })
     ),
   });
-  const defaultValues = {
-    budget: [
-      {
-        item: '',
-        explanation: '',
-        amount: undefined,
-      },
-    ],
-  };
 
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(RegisterSchema),
@@ -52,68 +46,12 @@ const ProjectBudgetForm = ({ setStep }: Props) => {
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmit = async (data: FormValuesProps) => {
-    setStep((prevStep) => prevStep + 1);
-  };
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container rowSpacing={4} columnSpacing={2}>
         <FormGenerator data={ProjectBudgetData} />
         <Grid item xs={12}>
-          <Stack direction="row" justifyContent="center">
-            <Box
-              sx={{
-                borderRadius: 2,
-                height: '90px',
-                backgroundColor: '#fff',
-                padding: '24px',
-                mr: '60px',
-              }}
-            >
-              <Stack justifyContent="center" direction="row" gap={3}>
-                <Button
-                  onClick={() => {
-                    setStep((prevStep) => (prevStep > 0 ? prevStep - 1 : prevStep));
-                  }}
-                  endIcon={<MovingBack />}
-                  sx={{
-                    color: 'text.primary',
-                    width: { xs: '100%', sm: '200px' },
-                    hieght: { xs: '100%', sm: '50px' },
-                  }}
-                >
-                  رجوع
-                </Button>
-                <Box sx={{ width: '10px' }} />
-                <Button
-                  variant="outlined"
-                  sx={{
-                    color: 'text.primary',
-                    width: { xs: '100%', sm: '200px' },
-                    hieght: { xs: '100%', sm: '50px' },
-                    borderColor: '#000',
-                  }}
-                >
-                  حفظ كمسودة
-                </Button>
-                <Button
-                  // type="submit"
-                  onClick={() => {
-                    setStep((prevStep) => (prevStep < 4 ? prevStep + 1 : prevStep));
-                  }}
-                  variant="outlined"
-                  sx={{
-                    backgroundColor: 'background.paper',
-                    color: '#fff',
-                    width: { xs: '100%', sm: '200px' },
-                    hieght: { xs: '100%', sm: '50px' },
-                  }}
-                >
-                  التالي
-                </Button>
-              </Stack>
-            </Box>
-          </Stack>
+          {children}
         </Grid>
       </Grid>
     </FormProvider>

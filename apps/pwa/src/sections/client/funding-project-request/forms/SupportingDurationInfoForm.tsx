@@ -1,39 +1,30 @@
 import * as Yup from 'yup';
 import { useEffect, useState } from 'react';
-import { Box, Button, Grid, Stack, Paper } from '@mui/material';
+import { Button, Grid, Stack } from '@mui/material';
 import { FormProvider, RHFCheckbox } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { BankImage } from '../../../../assets';
-import { LoadingButton } from '@mui/lab';
-import { ReactComponent as MovingBack } from '../../../../assets/move-back-icon.svg';
 import BankImageComp from 'sections/shared/BankImageComp';
 import AddBankModal from './AddBankModal';
 
 type FormValuesProps = {
-  test1: string;
-  test2: string;
-  budget?: Record<string, any>[];
+  need_consultant: boolean;
 };
 
 type Props = {
-  setStep: React.Dispatch<React.SetStateAction<number>>;
+  onSubmit: (data: any) => void;
+  children?: React.ReactNode;
+  defaultValues: any;
 };
-const SupportingDurationInfoForm = ({ setStep }: Props) => {
+const SupportingDurationInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const RegisterSchema = Yup.object().shape({
-    test1: Yup.string(),
-    test2: Yup.string(),
-    budget: Yup.array(),
+    need_consultant: Yup.boolean().required(),
   });
-  const defaultValues = {
-    test1: '',
-    test2: '',
-    budget: [{ field: '', explanation: '', cost: '' }],
-  };
 
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(RegisterSchema),
@@ -46,11 +37,6 @@ const SupportingDurationInfoForm = ({ setStep }: Props) => {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = methods;
-
-  const onSubmit = async (data: FormValuesProps) => {
-    console.log(data);
-    // setStep((prevStep) => prevStep + 1);
-  };
 
   const styles = {
     paperContainer: {
@@ -96,64 +82,12 @@ const SupportingDurationInfoForm = ({ setStep }: Props) => {
         </Grid>
         <Grid item xs={12}>
           <RHFCheckbox
-            name=""
+            name="need_consultant"
             label="أقر بصحة المعلومات الواردة في هذا النموذج وأتقدم بطلب دعم المشروع"
           />
         </Grid>
         <Grid item xs={12} sx={{ mt: '10px' }}>
-          <Stack direction="row" justifyContent="center">
-            <Box
-              sx={{
-                borderRadius: 2,
-                height: '90px',
-                backgroundColor: '#fff',
-                padding: '24px',
-              }}
-            >
-              <Stack justifyContent="center" direction="row" gap={3}>
-                <Button
-                  onClick={() => {
-                    setStep((prevStep) => (prevStep > 0 ? prevStep - 1 : prevStep));
-                  }}
-                  endIcon={<MovingBack />}
-                  sx={{
-                    color: 'text.primary',
-                    width: { xs: '100%', sm: '200px' },
-                    hieght: { xs: '100%', sm: '50px' },
-                  }}
-                >
-                  رجوع
-                </Button>
-                <Box sx={{ width: '10px' }} />
-                <Button
-                  variant="outlined"
-                  sx={{
-                    color: 'text.primary',
-                    width: { xs: '100%', sm: '200px' },
-                    hieght: { xs: '100%', sm: '50px' },
-                    borderColor: '#000',
-                  }}
-                >
-                  حفظ كمسودة
-                </Button>
-                <Button
-                  // type="submit"
-                  onClick={() => {
-                    setStep((prevStep) => (prevStep < 4 ? prevStep + 1 : prevStep));
-                  }}
-                  variant="outlined"
-                  sx={{
-                    backgroundColor: 'background.paper',
-                    color: '#fff',
-                    width: { xs: '100%', sm: '200px' },
-                    hieght: { xs: '100%', sm: '50px' },
-                  }}
-                >
-                  التالي
-                </Button>
-              </Stack>
-            </Box>
-          </Stack>
+          {children}
         </Grid>
       </Grid>
     </FormProvider>

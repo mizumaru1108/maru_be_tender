@@ -8,7 +8,7 @@
   "typescript.tsdk": ".yarn/sdks/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "editor.fontFamily": "'Iosevka Nerd Font', 'Iosevka', 'Droid Sans Mono', Menlo, Monaco, 'Courier New', monospace, 'Droid Sans Fallback'",
-  "files.autoSave": "off",
+  "files.autoSave": "onFocusChange",
   "editor.tabSize": 2,
   "editor.fontLigatures": true,
   "editor.formatOnSave": true

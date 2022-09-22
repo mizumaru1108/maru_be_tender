@@ -7,9 +7,99 @@ function path(root: string, sublink: string) {
 const ROOTS_AUTH = '/auth';
 const ROOTS_DASHBOARD = '/dashboard';
 const ROOTS_CLIENT = '/client';
-
+const ROOTS_CONSULTANT = '/consultant';
+const ROOTS_FINANCE = '/finance';
+const ROOTS_CASHIER = '/cashier';
+const ROOTS_CEO = '/ceo';
+const ROOTS_PROJECT_MANAGER = '/project-manager';
+const ROOTS_PROJECT_SUPERVISOR = '/project-supervisor';
+const ROOTS_ACCOUNTS_MANAGER = '/accounts-manager';
 // ----------------------------------------------------------------------
 
+export const PATH_CLIENT = {
+  root: ROOTS_CLIENT,
+  app: path(ROOTS_CLIENT, '/dashboard/app'),
+  funding_project_request: path(ROOTS_CLIENT, '/dashboard/funding-project-request'),
+  drafts: path(ROOTS_CLIENT, '/dashboard/draft-funding-requests'),
+  previous_funding_requests: path(ROOTS_CLIENT, '/dashboard/previous-funding-requests'),
+  messages: path(ROOTS_CLIENT, '/dashboard/messages'),
+  contact_support: path(ROOTS_CLIENT, '/dashboard/contact-support'),
+};
+
+export const PATH_CONSULTANT = {
+  root: ROOTS_CONSULTANT,
+  app: path(ROOTS_CONSULTANT, '/dashboard/app'),
+  incoming_funding_requests: path(ROOTS_CONSULTANT, '/dashboard/incoming-funding-requests'),
+  portal_reports: path(ROOTS_CONSULTANT, '/dashboard/portal-reports'),
+  messages: path(ROOTS_CONSULTANT, '/dashboard/messages'),
+};
+
+export const PATH_FINANCE = {
+  root: ROOTS_FINANCE,
+  app: path(ROOTS_FINANCE, '/dashboard/app'),
+  Incoming_exchange_permission_requests: path(
+    ROOTS_FINANCE,
+    '/dashboard/Incoming-exchange-permission-requests'
+  ),
+  requests_in_process: path(ROOTS_FINANCE, '/dashboard/requests-in-process'),
+  portal_reports: path(ROOTS_FINANCE, '/dashboard/portal-reports'),
+  messages: path(ROOTS_FINANCE, '/dashboard/messages'),
+};
+
+export const PATH_CASHIER = {
+  root: ROOTS_CASHIER,
+  app: path(ROOTS_CASHIER, '/dashboard/app'),
+  Incoming_exchange_permission_requests: path(
+    ROOTS_CASHIER,
+    '/dashboard/Incoming-exchange-permission-requests'
+  ),
+  requests_in_process: path(ROOTS_CASHIER, '/dashboard/requests-in-process'),
+  portal_reports: path(ROOTS_CASHIER, '/dashboard/portal-reports'),
+  messages: path(ROOTS_CASHIER, '/dashboard/messages'),
+};
+
+export const PATH_CEO = {
+  root: ROOTS_CEO,
+  app: path(ROOTS_CEO, '/dashboard/app'),
+  project_management: path(ROOTS_CEO, '/dashboard/project-management'),
+  rejection_list: path(ROOTS_CEO, '/dashboard/rejection-list'),
+  portal_reports: path(ROOTS_CEO, '/dashboard/portal-reports'),
+  messages: path(ROOTS_CEO, '/dashboard/messages'),
+};
+
+export const PATH_PROJECT_MANAGER = {
+  root: ROOTS_PROJECT_MANAGER,
+  app: path(ROOTS_PROJECT_MANAGER, '/dashboard/app'),
+  incoming_funding_requests: path(ROOTS_PROJECT_MANAGER, '/dashboard/incoming-funding-requests'),
+  requests_in_process: path(ROOTS_PROJECT_MANAGER, '/dashboard/requests-in-process'),
+  previous_funding_requests: path(ROOTS_PROJECT_MANAGER, '/dashboard/previous-funding-requests'),
+  exchange_permission: path(ROOTS_PROJECT_MANAGER, '/dashboard/exchange-permission'),
+  portal_reports: path(ROOTS_PROJECT_MANAGER, '/dashboard/portal-reports'),
+  messages: path(ROOTS_PROJECT_MANAGER, '/dashboard/messages'),
+};
+
+export const PATH_PROJECT_SUPERVISOR = {
+  root: ROOTS_PROJECT_SUPERVISOR,
+  app: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/app'),
+  incoming_funding_requests: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/incoming-funding-requests'),
+  requests_in_process: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/requests-in-process'),
+  previous_funding_requests: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/previous-funding-requests'),
+  payment_adjustment: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/payment-adjustment'),
+  portal_reports: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/portal-reports'),
+  messages: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/messages'),
+};
+
+export const PATH_ACCOUNTS_MANAGER = {
+  root: ROOTS_ACCOUNTS_MANAGER,
+  app: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/app'),
+  newJoinRequest: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/new/join-request'),
+  infoUpdateRequest: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/info/update-request'),
+  partnerManagement: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/partner/management'),
+  portalReports: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/portal-reports'),
+  messages: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/messages'),
+};
+
+/************************************************* */
 export const PATH_AUTH = {
   root: ROOTS_AUTH,
   login: path(ROOTS_AUTH, '/login'),
@@ -20,28 +110,12 @@ export const PATH_AUTH = {
   resetPassword: path(ROOTS_AUTH, '/reset-password'),
   newPassword: path(ROOTS_AUTH, '/new-password'),
 };
-
 export const PATH_PAGE = {
   comingSoon: '/coming-soon',
   maintenance: '/maintenance',
-  pricing: '/pricing',
-  payment: '/payment',
-  about: '/about-us',
-  contact: '/contact-us',
-  faqs: '/faqs',
   page403: '/403',
   page404: '/404',
   page500: '/500',
-  components: '/components',
-};
-export const PATH_CLIENT = {
-  root: ROOTS_CLIENT,
-  app: path(ROOTS_CLIENT, '/dashboard/app'),
-  funding_project_request: path(ROOTS_CLIENT, '/dashboard/funding-project-request'),
-  drafts: path(ROOTS_CLIENT, '/dashboard/draft-funding-requests'),
-  previous_funding_requests: path(ROOTS_CLIENT, '/dashboard/previous-funding-requests'),
-  messages: path(ROOTS_CLIENT, '/dashboard/messages'),
-  contact_support: path(ROOTS_CLIENT, '/dashboard/contact-support'),
 };
 
 export const PATH_DASHBOARD = {

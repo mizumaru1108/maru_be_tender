@@ -25,6 +25,8 @@ import SearchNotFound from '../../../components/SearchNotFound';
 //
 import navConfig from '../navbar/NavConfig';
 import useLocales from 'hooks/useLocales';
+import { Role } from 'guards/RoleBasedGuard';
+import useAuth from 'hooks/useAuth';
 
 // ----------------------------------------------------------------------
 
@@ -114,10 +116,10 @@ function Searchbar() {
   const { pathname } = useLocation();
 
   const [open, setOpen] = useState(false);
-
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const role = 'client';
+  const role = user?.registrations[0].roles as Role;
   const reduceItems = navConfig[`${role}`]
     .map((list) => handleLoop(list.items, list.subheader))
     .flat();
@@ -155,102 +157,99 @@ function Searchbar() {
   };
 
   return (
-    <IconButtonAnimate onClick={() => setOpen((prev) => !prev)}>
-      <Iconify icon={'eva:search-fill'} width={30} height={30} color="#000" />
-    </IconButtonAnimate>
-    // <ClickAwayListener onClickAway={() => setOpen(false)}>
-    //   <div>
-    //     {!open && (
-    //       <IconButtonAnimate onClick={() => setOpen((prev) => !prev)}>
-    //         <Iconify icon={'eva:search-fill'} width={30} height={30} color='#fff'  />
-    //       </IconButtonAnimate>
-    //     )}
+    <ClickAwayListener onClickAway={() => setOpen(false)}>
+      <div>
+        {!open && (
+          <IconButtonAnimate onClick={() => setOpen((prev) => !prev)}>
+            <Iconify icon={'eva:search-fill'} width={30} height={30} sx={{ color: '#000' }} />
+          </IconButtonAnimate>
+        )}
 
-    //     <Slide direction="down" in={open} mountOnEnter unmountOnExit>
-    //       <SearchbarStyle>
-    //         <Autocomplete
-    //           sx={autocompleteStyle}
-    //           autoHighlight
-    //           disablePortal
-    //           disableClearable
-    //           popupIcon={null}
-    //           PopperComponent={PopperStyle}
-    //           onInputChange={(event, value) => setSearchQuery(value)}
-    //           noOptionsText={<SearchNotFound searchQuery={searchQuery} />}
-    //           options={allItems.sort((a, b) => -b.group.localeCompare(a.group))}
-    //           groupBy={(option) => option.group}
-    //           getOptionLabel={(option) => option.path}
-    //           isOptionEqualToValue={(option, value) => option.path === value.path}
-    //           filterOptions={createFilterOptions({
-    //             matchFrom: 'start',
-    //             stringify: (option) => option.title || option.path,
-    //           })}
-    //           renderOption={(props, option, { inputValue }) => {
-    //             const { title, path } = option;
+        <Slide direction="down" in={open} mountOnEnter unmountOnExit>
+          <SearchbarStyle>
+            <Autocomplete
+              sx={autocompleteStyle}
+              autoHighlight
+              disablePortal
+              disableClearable
+              popupIcon={null}
+              PopperComponent={PopperStyle}
+              onInputChange={(event, value) => setSearchQuery(value)}
+              noOptionsText={<SearchNotFound searchQuery={searchQuery} />}
+              options={allItems.sort((a, b) => -b.group.localeCompare(a.group))}
+              groupBy={(option) => option.group}
+              getOptionLabel={(option) => option.path}
+              isOptionEqualToValue={(option, value) => option.path === value.path}
+              filterOptions={createFilterOptions({
+                matchFrom: 'start',
+                stringify: (option) => option.title || option.path,
+              })}
+              renderOption={(props, option, { inputValue }) => {
+                const { title, path } = option;
 
-    //             const partsTitle = parse(title, match(title, inputValue));
+                const partsTitle = parse(title, match(title, inputValue));
 
-    //             const partsPath = parse(path, match(path, inputValue));
+                const partsPath = parse(path, match(path, inputValue));
 
-    //             return (
-    //               <Box component="li" {...props} onClick={() => handleClick(path)}>
-    //                 <div>
-    //                   {partsTitle.map((part, index) => (
-    //                     <Box
-    //                       key={index}
-    //                       component="span"
-    //                       sx={{
-    //                         typography: 'subtitle2',
-    //                         textTransform: 'capitalize',
-    //                         color: part.highlight ? 'primary.main' : 'text,primary',
-    //                       }}
-    //                     >
-    //                       {part.text}
-    //                     </Box>
-    //                   ))}
-    //                 </div>
+                return (
+                  <Box component="li" {...props} onClick={() => handleClick(path)}>
+                    <div>
+                      {partsTitle.map((part, index) => (
+                        <Box
+                          key={index}
+                          component="span"
+                          sx={{
+                            typography: 'subtitle2',
+                            textTransform: 'capitalize',
+                            color: part.highlight ? 'primary.main' : 'text,primary',
+                          }}
+                        >
+                          {part.text}
+                        </Box>
+                      ))}
+                    </div>
 
-    //                 <div>
-    //                   {partsPath.map((part, index) => (
-    //                     <Box
-    //                       key={index}
-    //                       component="span"
-    //                       sx={{
-    //                         typography: 'caption',
-    //                         color: part.highlight ? 'primary.main' : 'text.secondary',
-    //                       }}
-    //                     >
-    //                       {part.text}
-    //                     </Box>
-    //                   ))}
-    //                 </div>
-    //               </Box>
-    //             );
-    //           }}
-    //           renderInput={(params) => (
-    //             <TextField
-    //               {...params}
-    //               autoFocus
-    //               placeholder="Search..."
-    //               onKeyUp={handleKeyUp}
-    //               InputProps={{
-    //                 ...params.InputProps,
-    //                 startAdornment: (
-    //                   <InputAdornment position="start">
-    //                     <Iconify
-    //                       icon="eva:search-fill"
-    //                       sx={{ color: 'text.disabled', width: 20, height: 20 }}
-    //                     />
-    //                   </InputAdornment>
-    //                 ),
-    //               }}
-    //             />
-    //           )}
-    //         />
-    //       </SearchbarStyle>
-    //     </Slide>
-    //   </div>
-    // </ClickAwayListener>
+                    <div>
+                      {partsPath.map((part, index) => (
+                        <Box
+                          key={index}
+                          component="span"
+                          sx={{
+                            typography: 'caption',
+                            color: part.highlight ? 'primary.main' : 'text.secondary',
+                          }}
+                        >
+                          {part.text}
+                        </Box>
+                      ))}
+                    </div>
+                  </Box>
+                );
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  autoFocus
+                  placeholder="Search..."
+                  onKeyUp={handleKeyUp}
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Iconify
+                          icon="eva:search-fill"
+                          sx={{ color: 'text.disabled', width: 20, height: 20 }}
+                        />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              )}
+            />
+          </SearchbarStyle>
+        </Slide>
+      </div>
+    </ClickAwayListener>
   );
 }
 

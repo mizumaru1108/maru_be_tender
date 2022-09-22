@@ -19,6 +19,13 @@ const SectionStyle = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
 }));
 
+// const SectionStyle = styled(Box)(() => ({
+//   width: '100%',
+//   maxWidth: '500px',
+//   backgroundImage: `url(${Image})`,
+//   display: 'block',
+// }));
+
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
   minHeight: '100vh',
