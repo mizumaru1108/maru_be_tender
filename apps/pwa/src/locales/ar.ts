@@ -58,6 +58,7 @@ const ar = {
   only_admin_can_see_this_item: `يمكن للمسؤول فقط رؤية هذا العنصر`,
   main: 'الرئيسية',
   request_project_funding: 'طلب دعم مشروع',
+  support_requests_received: 'تلقي طلبات الدعم',
   drafts: 'طلبات دعم مسودة ',
   previous_funding_requests: 'طلبات دعم سابقة',
   messages: 'الرسائل',

@@ -58,6 +58,7 @@ const en = {
   only_admin_can_see_this_item: `Only admin can see this item`,
   main: 'dashboard',
   request_project_funding: 'Request project funding',
+  support_requests_received: 'Support requests received',
   drafts: 'Drafts',
   previous_funding_requests: 'Previous funding requests',
   messages: 'Messages',
