@@ -122,6 +122,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     };
 
     initialize();
+    // eslint-disable-next-line
   }, []);
 
   const login = async (email: string, password: string) => {
