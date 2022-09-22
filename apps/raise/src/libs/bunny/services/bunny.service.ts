@@ -1,9 +1,13 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
+import { AllowedFileType } from '../../../commons/enums/allowed-filetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import { generateRandomNumberString } from '../../../commons/utils/generate-random-string';
 import { sanitizeString } from '../../../commons/utils/sanitize-string';
+import { uploadFileNameParser } from '../../../commons/utils/upload-filename-parser';
+import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
+import { validateFileSize } from '../../../commons/utils/validate-file-size';
 /**
  * Nest Bunny Module
  * @author RDanang (Iyoy!)
@@ -152,6 +156,55 @@ export class BunnyService {
       return true;
     } catch (error) {
       throw new InternalServerErrorException(`Error deleting image!`);
+    }
+  }
+
+  public async uploadFile(
+    file: Express.Multer.File,
+    allowedFileType: AllowedFileType[],
+    maxFileSize: number,
+    serviceName: string,
+    path?: string,
+  ) {
+    validateAllowedExtension(file, allowedFileType);
+    validateFileSize(file, maxFileSize);
+
+    let fileName = uploadFileNameParser(file.originalname);
+
+    if (path) {
+      fileName = path + '/' + fileName;
+    }
+
+    const mediaUrl = this.urlMedia + '/' + path;
+
+    const options: AxiosRequestConfig<any> = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/octet-stream',
+        AccessKey: this.accessKey,
+      },
+      data: file.buffer,
+      url: mediaUrl,
+    };
+
+    try {
+      console.info(
+        `Uploading to Bunny: ${mediaUrl} (${file.buffer.length} bytes)...`,
+      );
+      const response = await axios(options);
+      console.info(
+        'Uploaded %s (%d bytes) to Bunny: %s %s %s',
+        mediaUrl,
+        file.buffer.length,
+        response.status,
+        response.statusText,
+        JSON.stringify(response.data, null, 2),
+      );
+      return true;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Error uploading image file to Bunny ${mediaUrl} (${file.buffer.length} bytes) while creating ${serviceName}`,
+      );
     }
   }
 }
