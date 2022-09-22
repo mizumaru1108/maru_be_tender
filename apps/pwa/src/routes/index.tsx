@@ -93,13 +93,13 @@ export default function Router() {
                   path: '',
                   element: <PreviousFundingRequests />,
                 },
-                // {
-                //   path: ':id/:actionType',
-                //   children: [
-                //     { path: 'main', element: <ProjectDetails /> },
-                //     { path: 'project-budget', element: <ProjectDetails /> },
-                //   ],
-                // },
+                {
+                  path: ':id/:actionType',
+                  children: [
+                    { path: 'main', element: <ProjectDetails /> },
+                    { path: 'project-budget', element: <ProjectDetails /> },
+                  ],
+                },
               ],
             },
             { path: 'messages', element: <Messages /> },
@@ -245,7 +245,7 @@ const DraftFundingRequests = Loadable(lazy(() => import('pages/client/draft-fund
 const PreviousFundingRequests = Loadable(
   lazy(() => import('pages/client/previous-funding-requests'))
 );
-// const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
+const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
 const Messages = Loadable(lazy(() => import('pages/client/Messages')));
 const ContactSupport = Loadable(lazy(() => import('pages/client/ContactSupport')));
 const MainClientPage = Loadable(lazy(() => import('pages/client/MainClientPage')));
@@ -253,12 +253,16 @@ const ClientProfile = Loadable(lazy(() => import('pages/client/ClientProfile')))
 const ClientProfileEdit = Loadable(lazy(() => import('pages/client/ClientProfileEdit')));
 
 // MANAGER ROUTES
-const MainManagerPage = Loadable(lazy(() => import('pages/manager/MainManagerPage')));
-const NewJoinRequestPage = Loadable(lazy(() => import('pages/manager/new/join-request')));
-const InfoUpdateRequestPage = Loadable(lazy(() => import('pages/manager/info/update-request')));
-const PartnerManagementPage = Loadable(lazy(() => import('pages/manager/partner/management')));
-const PortalReportsPage = Loadable(lazy(() => import('pages/manager/PortalReportsPage')));
-const MessagesManagerPage = Loadable(lazy(() => import('pages/manager/Messages')));
+const MainManagerPage = Loadable(lazy(() => import('pages/accounts-manager/MainManagerPage')));
+const NewJoinRequestPage = Loadable(lazy(() => import('pages/accounts-manager/new/join-request')));
+const InfoUpdateRequestPage = Loadable(
+  lazy(() => import('pages/accounts-manager/info/update-request'))
+);
+const PartnerManagementPage = Loadable(
+  lazy(() => import('pages/accounts-manager/partner/management'))
+);
+const PortalReportsPage = Loadable(lazy(() => import('pages/accounts-manager/PortalReportsPage')));
+const MessagesManagerPage = Loadable(lazy(() => import('pages/accounts-manager/Messages')));
 
 // MODERATOR ROUTES
 const MainModeratorPage = Loadable(lazy(() => import('pages/moderator/MainModeratorPage')));
