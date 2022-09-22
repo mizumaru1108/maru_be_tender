@@ -114,7 +114,7 @@ import { PrismaModule } from './prisma/prisma.module';
     CommentsModule,
     PermissionManagerModule,
     DonationModule,
-    // PrismaModule,
+    PrismaModule,
 
   ],
   controllers: [],

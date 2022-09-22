@@ -8,7 +8,7 @@ import { User, UserDocument } from './schema/user.schema';
 import { RegFromFusionAuthTenderDto, RegisterFromFusionAuthDto } from './dtos/register-from-fusion-auth.dto';
 import { RoleEnum } from './enums/role-enum';
 import { Donor } from 'src/donor/schema/donor.schema';
-// import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class UserService {
@@ -16,7 +16,7 @@ export class UserService {
     @InjectModel('User') private readonly userModel: Model<User>,
     private configService: ConfigService,
     @InjectModel('Donor') private readonly donorModel: Model<Donor>,
-    // private prisma: PrismaService
+    private prisma: PrismaService,
   ) { }
 
   async registerFromFusion(request: RegisterFromFusionAuthDto): Promise<User> {
@@ -46,9 +46,16 @@ export class UserService {
   }
   /** Create user and client for tender */
   async regFromFusionTender(request: RegFromFusionAuthTenderDto) {
-    //  this.prisma
+    const result = await this.prisma.user.create({
+      data: {
+        id: request.id,
+        employee_name: request.employee_name,
+        email: request.email,
+        mobile_number: request.mobile_number,
+        user_type_id: request.user_type_id!
+      }
+    });
 
-    const result = '';
     return result;
   }
 

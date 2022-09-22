@@ -4,6 +4,7 @@ import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class RegReqTenderDto {
 
   @ApiProperty()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   id: string;

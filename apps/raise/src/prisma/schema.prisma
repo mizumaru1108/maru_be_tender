@@ -7,16 +7,210 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id             String   @id
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updated_at
-
-  email          String @unique
-  employee_name  String
-
-  mobile_number  String?
-  user_type_id   String?
-
-  @@map("user")
+model bank_information {
+  id                  Int         @id @default(autoincrement())
+  client_data_id      String
+  bank_account_name   String?     @db.Char
+  bank_account_number String?     @db.Char
+  bank_name           String?     @db.Char
+  card_image          String?
+  client_data         client_data @relation(fields: [client_data_id], references: [id], onUpdate: Restrict)
 }
+
+model client_data {
+  id                                         String             @id(map: "users_pkey")
+  entity                                     String?            @default(dbgenerated("now()")) @db.Char
+  authority                                  String?            @db.Char
+  headquarters                               String?
+  date_of_esthablistmen                      DateTime?          @db.Date
+  num_of_beneficiaries                       Int?
+  num_of_employed                            Int?
+  governorate                                String?
+  region                                     String?            @db.Char
+  entity_mobile                              String?            @db.Char
+  center_administration                      String?            @db.Char
+  twitter_acount                             String?
+  phone                                      String?            @db.Char
+  website                                    String?
+  email                                      String?            @db.Char
+  password                                   String?
+  license_number                             String?            @db.Char
+  license_expired                            DateTime?          @db.Date
+  license_issue_date                         DateTime?          @db.Date
+  license_file                               String?
+  board_ofdir_file                           String?
+  ceo_mobile                                 String?            @db.Char
+  ceo_name                                   String?            @db.Char
+  mobile_data_entry                          String?            @db.Char
+  data_entry_name                            String?            @db.Char
+  data_entry_mail                            String?            @db.Char
+  created_at                                 DateTime?          @default(now()) @db.Timestamptz(6)
+  updated_at                                 DateTime?          @default(now()) @db.Timestamptz(6)
+  user                                       user?              @relation(fields: [email], references: [email], onDelete: Restrict, onUpdate: Restrict)
+  license_number_client_dataTolicense_number license_number?    @relation(fields: [license_number], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  bank_information                           bank_information[]
+}
+
+model employees_permissions {
+  id          String @id
+  orgs_id     String
+  user_id     String
+  permissions String @db.Char
+}
+
+model inquiry_type {
+  id      String    @id
+  tittle  String
+  message message[]
+}
+
+model license_number {
+  id             String        @id(map: "permit_num_pkey")
+  license_number String?
+  client_data    client_data[]
+}
+
+model message {
+  id                                 String        @id
+  sender_id                          String
+  receiver_id                        String
+  inquiry_type                       String?       @db.Char
+  title                              String?       @db.Char
+  project_name                       String?       @db.Char
+  the_message                        String?
+  date_of_visit                      DateTime?     @db.Date
+  reason_visit                       String?
+  created_at                         DateTime?     @default(now()) @db.Timestamptz(6)
+  updated_at                         DateTime?     @default(now()) @db.Timestamptz(6)
+  inquiry_type_inquiry_typeTomessage inquiry_type? @relation(fields: [inquiry_type], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  user_message_receiver_idTouser     user          @relation("message_receiver_idTouser", fields: [receiver_id], references: [id], onUpdate: Restrict)
+  user_message_sender_idTouser       user          @relation("message_sender_idTouser", fields: [sender_id], references: [id], onUpdate: Restrict)
+}
+
+model organization {
+  id        String @id
+  orgs_name String @db.Char
+}
+
+model payment {
+  id                 String    @id
+  payment_amount     Decimal?  @db.Decimal
+  number_of_payments String?   @db.Char
+  proposal_id        String?
+  proposal           proposal? @relation(fields: [proposal_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
+}
+
+model project_kind {
+  id       String     @id
+  title    String     @unique
+  proposal proposal[]
+}
+
+model proposal {
+  id                           String                      @id
+  project_name                 String                      @db.Char
+  submitter_user_id            String
+  created_at                   DateTime                    @default(now()) @db.Timestamptz(6)
+  updated_at                   DateTime                    @default(now()) @db.Timestamptz(6)
+  project_kind_id              String?
+  project_idea                 String?
+  project_implement_date       DateTime?                   @db.Date
+  project_location             String?
+  target_group_type            String?
+  execution_time               String?                     @db.Char
+  project_attachments          String?
+  letter_ofsupport_req         String?
+  num_ofproject_binicficiaries Int?
+  project_goals                String?
+  project_outputs              String?
+  project_strengths            String?
+  project_risks                String?
+  pm_name                      String?                     @db.Char
+  pm_email                     String?                     @db.Char
+  pm_mobile                    String?                     @db.Char
+  governorate                  String?
+  region                       String?                     @db.Char
+  amount_required_fsupport     Decimal?                    @db.Decimal
+  previously_add_bank          Unsupported("int2vector")[]
+  need_consultant              Boolean?                    @default(false)
+  step                         String?                     @db.Char
+  whole_budget                 Decimal?                    @db.Decimal
+  state                        String?
+  project_kind                 project_kind?               @relation(fields: [project_kind_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  proposal_state               proposal_state?             @relation(fields: [state], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  user                         user                        @relation(fields: [submitter_user_id], references: [id], onUpdate: Restrict)
+  payment                      payment[]
+  proposal_comment             proposal_comment[]
+  proposal_item_budget         proposal_item_budget[]
+  proposal_log                 proposal_log[]
+}
+
+model proposal_comment {
+  id          String    @unique
+  proposal_id String
+  created_at  DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime? @default(now()) @db.Timestamptz(6)
+  comment     String?
+  user_id     String?
+  proposal    proposal  @relation(fields: [proposal_id], references: [id], onUpdate: Restrict)
+}
+
+model proposal_item_budget {
+  id          String   @id(map: "detail_project_budget_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  amount      Decimal  @db.Decimal
+  explanation String
+  item        String   @db.Char
+  proposal_id String
+  proposal    proposal @relation(fields: [proposal_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "detail_project_budget_proposal_id_fkey")
+}
+
+model proposal_log {
+  id          String   @id
+  proposal_id String
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @default(now()) @db.Timestamptz(6)
+  user_id     String?
+  proposal    proposal @relation(fields: [proposal_id], references: [id], onUpdate: Restrict)
+  user        user?    @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
+}
+
+model proposal_state {
+  id       String     @id
+  title    String     @unique
+  proposal proposal[]
+}
+
+model region {
+  id     String @id
+  region String @db.Char
+}
+
+model user {
+  id                                String                      @id @unique
+  employee_name                     String?                     @db.Char
+  mobile_number                     String?                     @db.Char
+  email                             String                      @unique @db.Char
+  user_type_id                      String?
+  updated_at                        DateTime?                   @default(now()) @db.Timestamptz(6)
+  created_at                        DateTime?                   @default(now()) @db.Timestamptz(6)
+  is_active                         Boolean?                    @default(false)
+  employee_path                     String?                     @db.Char
+  employees_permissions             Unsupported("int2vector")[]
+  user_type                         user_type?                  @relation(fields: [user_type_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "user_user_type_fkey")
+  client_data                       client_data[]
+  message_message_receiver_idTouser message[]                   @relation("message_receiver_idTouser")
+  message_message_sender_idTouser   message[]                   @relation("message_sender_idTouser")
+  proposal                          proposal[]
+  proposal_log                      proposal_log[]
+}
+
+model user_type {
+  id               String @id
+  user_type_tittle String @unique
+  user             user[]
+}
+
+// We could not retrieve columns for the underlying table. Either it has none or you are missing rights to see them. Please check your privileges.
+// model log_trx {
+// 
+// }
