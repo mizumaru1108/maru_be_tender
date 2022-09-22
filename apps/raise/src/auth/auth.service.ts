@@ -5,8 +5,6 @@ import { UserService } from 'src/user/user.service';
 import { EmailService } from '../libs/email/email.service';
 import { FusionAuthService } from '../libs/fusionauth/services/fusion-auth.service';
 import { User } from '../user/schema/user.schema';
-// import { LoginRequestDto } from './dtos/login-request.dto';
-// import { RegisterRequestDto } from './dtos/register-request.dto';
 import { LoginRequestDto, RegisterRequestDto, RegReqTenderDto } from './dtos';
 
 @Injectable()
@@ -97,9 +95,24 @@ export class AuthService {
       employee_name: result.user.firstName,
       email: result.user.email,
       mobile_number: result.user.mobile,
+      user_type_id: registerRequest.user_type_id
     });
 
+
     return registeredUser;
+    // return 'registeredUser';
+  }
+  async fusionRegisterTender(registerRequest: RegReqTenderDto) {
+    const result = await this.fusionAuthService.fusionAuthRegTender(
+      registerRequest,
+    );
+
+    return {
+      statusCode: 201,
+      message: "Create User Success!",
+      id: result.user.id
+    }
+
   }
 
   async registerUser(name: string, email: string, password: string) {

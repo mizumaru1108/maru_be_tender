@@ -75,4 +75,17 @@ export class AuthController {
       'Create User Success!',
     );
   }
+  @Post('fusion/registerTender')
+  async fusionRegisterTender(
+    @Body() registerRequest: RegReqTenderDto,
+  ) {
+    const registeredUser = await this.authService.fusionRegisterTender(
+      registerRequest,
+    );
+    return baseResponseHelper(
+      registeredUser,
+      HttpStatus.CREATED,
+      'Create User Success!',
+    );
+  }
 }

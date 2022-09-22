@@ -52,7 +52,7 @@ export class UserService {
         employee_name: request.employee_name,
         email: request.email,
         mobile_number: request.mobile_number,
-        user_type_id: request.user_type_id!
+        user_type_id: request.user_type_id
       }
     });
 

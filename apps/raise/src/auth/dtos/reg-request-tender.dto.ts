@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { RoleTenderEnum } from 'src/user/enums/role-enum';
 
 export class RegReqTenderDto {
 
@@ -23,8 +24,13 @@ export class RegReqTenderDto {
   @ApiProperty()
   @IsOptional()
   @IsString()
-  @IsEmail()
-  user_type_id: string;
+  @IsEnum(RoleTenderEnum,
+    {
+      message: `Enum Valid is CLIENT, ACCOUNTS_MANAGER,  MODERATOR,
+                PROJECT_SUPERVISOR, PROJECT_MANAGER,
+                CONSULTANT, CEO, FINANCE, CASHIER, ADMIN`
+    })
+  user_type_id: RoleTenderEnum;
 
   @ApiProperty()
   @IsOptional()
@@ -34,9 +40,9 @@ export class RegReqTenderDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsString()
+  @IsArray()
   @IsNotEmpty()
-  employees_permissions: string;
+  employees_permissions: string[];
 
   @ApiProperty()
   @IsString()
