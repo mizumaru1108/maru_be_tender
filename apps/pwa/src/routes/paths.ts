@@ -14,6 +14,7 @@ const ROOTS_CEO = '/ceo';
 const ROOTS_PROJECT_MANAGER = '/project-manager';
 const ROOTS_PROJECT_SUPERVISOR = '/project-supervisor';
 const ROOTS_ACCOUNTS_MANAGER = '/accounts-manager';
+const ROOTS_MODERATOR = '/moderator';
 // ----------------------------------------------------------------------
 
 export const PATH_CLIENT = {
@@ -76,6 +77,12 @@ export const PATH_PROJECT_MANAGER = {
   exchange_permission: path(ROOTS_PROJECT_MANAGER, '/dashboard/exchange-permission'),
   portal_reports: path(ROOTS_PROJECT_MANAGER, '/dashboard/portal-reports'),
   messages: path(ROOTS_PROJECT_MANAGER, '/dashboard/messages'),
+};
+export const PATH_MODERATOR = {
+  root: ROOTS_MODERATOR,
+  app: path(ROOTS_MODERATOR, '/dashboard/app'),
+  support_requests_received: path(ROOTS_MODERATOR, '/dashboard/support-requests-received'),
+  messages: path(ROOTS_MODERATOR, '/dashboard/messages'),
 };
 
 export const PATH_PROJECT_SUPERVISOR = {
