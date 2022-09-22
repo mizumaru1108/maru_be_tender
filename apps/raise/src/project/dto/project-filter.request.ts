@@ -1,8 +1,51 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsIn, IsNumber, IsOptional } from 'class-validator';
+import {
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
+import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
+import { BaseFilterRequest } from '../../commons/dtos/base-filter-request.dto';
 
-export class ProjectFilterRequest {
+export class ProjectFilterRequest extends BaseFilterRequest {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @ValidateObjectIdDecorator()
+  organizationId: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @IsUUID()
+  createdBy?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @IsUUID()
+  updatedBy?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @IsUUID()
+  appliedBy?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @IsUUID()
+  operatorUserId?: string;
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()

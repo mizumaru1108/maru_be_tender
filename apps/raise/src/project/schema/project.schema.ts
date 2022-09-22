@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import dayjs from 'dayjs';
 import * as mongoose from 'mongoose';
 import { Document, Types } from 'mongoose';
 import { CoordiateLocation } from '../../commons/dtos/location.dto';
@@ -9,6 +8,7 @@ import { ProjectCreateDto } from '../dto/project-create.dto';
 import { ProjectUpdateDto } from '../dto/project-update.dto';
 import { ProjectStatus } from '../enums/project-status.enum';
 import { ProjectNearbyPlaces } from './project-nearby-places';
+import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
 export type ProjectDocument = Project & Document;
 export type ProjectOperatorLogDocument = ProjectOperatorLog & Document;
@@ -196,6 +196,7 @@ export class Project {
   }
 }
 
-export const ProjectSchema = SchemaFactory.createForClass(Project);
+export const ProjectSchema =
+  SchemaFactory.createForClass(Project).plugin(aggregatePaginate);
 export const ProjectOperatorLogSchema =
   SchemaFactory.createForClass(ProjectOperatorLog);

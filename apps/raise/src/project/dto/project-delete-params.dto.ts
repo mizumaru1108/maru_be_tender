@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNotEmpty } from 'class-validator';
 import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
 
-export class ProjectDeleteQueryDto {
+export class ProjectDeleteParamsDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

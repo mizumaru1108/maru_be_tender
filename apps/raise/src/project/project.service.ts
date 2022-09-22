@@ -6,7 +6,14 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, PipelineStage, Types } from 'mongoose';
+import {
+  AggregatePaginateModel,
+  AggregatePaginateResult,
+  FilterQuery,
+  Model,
+  PipelineStage,
+  Types,
+} from 'mongoose';
 import { validateObjectId } from '../commons/utils/validateObjectId';
 import { BunnyService } from '../libs/bunny/services/bunny.service';
 import { rootLogger } from '../logger';
@@ -14,12 +21,14 @@ import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
 import { RoleEnum } from '../user/enums/role-enum';
 import { User, UserDocument } from '../user/schema/user.schema';
 import { ProjectCreateDto } from './dto/project-create.dto';
-import { ProjectDeleteQueryDto } from './dto/project-delete-query.dto';
+import { ProjectDeleteParamsDto } from './dto/project-delete-params.dto';
 import { ProjectFilterRequest } from './dto/project-filter.request';
 import { ProjectStatusUpdateDto } from './dto/project-status-update.dto';
 import { ProjectUpdateDto } from './dto/project-update.dto';
 import { ProjectStatus } from './enums/project-status.enum';
 import { Project, ProjectDocument } from './schema/project.schema';
+
+// get details of project creator.
 const populateCreatedBy: PipelineStage[] = [
   {
     $lookup: {
@@ -32,6 +41,7 @@ const populateCreatedBy: PipelineStage[] = [
   { $addFields: { createdBy: { $first: '$createdBy' } } },
 ];
 
+// get details of project updater.
 const populateUpdatedBy: PipelineStage[] = [
   {
     $lookup: {
@@ -44,6 +54,7 @@ const populateUpdatedBy: PipelineStage[] = [
   { $addFields: { updatedBy: { $first: '$updatedBy' } } },
 ];
 
+// get details of project applier (rejector/approver).
 const populateAppliedBy: PipelineStage[] = [
   {
     $lookup: {
@@ -56,6 +67,7 @@ const populateAppliedBy: PipelineStage[] = [
   { $addFields: { appliedBy: { $first: '$appliedBy' } } },
 ];
 
+// get details of project operator.
 const populateOperatorDetails: PipelineStage[] = [
   {
     $lookup: {
@@ -102,12 +114,14 @@ export class ProjectService {
 
   constructor(
     private bunnyService: BunnyService,
-    @InjectModel(Project.name)
-    private projectModel: Model<ProjectDocument>,
-    @InjectModel(Operator.name)
-    private operatorModel: Model<OperatorDocument>,
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
+    @InjectModel(Operator.name)
+    private readonly operatorModel: Model<OperatorDocument>,
+    @InjectModel(Project.name)
+    private readonly projectModel: Model<ProjectDocument>,
+    @InjectModel(Project.name)
+    private readonly projectAggregateModel: AggregatePaginateModel<ProjectDocument>,
   ) {}
 
   async projectCreate(
@@ -183,22 +197,25 @@ export class ProjectService {
         if (index == 3 && imageUpload) newProjectScheme.image3 = path;
         if (index == 4 && imageUpload) newProjectScheme.projectAvatar = path;
       });
-
       await Promise.all(processImages);
-
-      /**
-       * insert into Project (save)
-       * createdAt and updatedAt are gonna be default values (dayjs().toISOString())
-       */
-      const createdProject = await newProjectScheme.save();
-
-      return createdProject;
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException(
         `Error while creating project: ${request.name}`,
       );
     }
+
+    /**
+     * insert into Project (save)
+     * createdAt and updatedAt are gonna be default values (dayjs().toISOString())
+     */
+    const createdProject = await newProjectScheme.save();
+    if (!createdProject) {
+      throw new InternalServerErrorException(
+        `Error while creating project: ${request.name}`,
+      );
+    }
+    return createdProject;
   }
 
   async projectUpdate(
@@ -298,6 +315,10 @@ export class ProjectService {
       hasParking,
       isDeleted,
       isPublished,
+      createdBy,
+      updatedBy,
+      appliedBy,
+      operatorUserId,
     } = filter;
 
     if (maxDiameterSize) {
@@ -388,6 +409,22 @@ export class ProjectService {
       }
     }
 
+    if (createdBy) {
+      filterQuery.creatorUserId = createdBy;
+    }
+
+    if (updatedBy) {
+      filterQuery.updaterUserId = updatedBy;
+    }
+
+    if (appliedBy) {
+      filterQuery.applierUserId = appliedBy;
+    }
+
+    if (operatorUserId) {
+      filterQuery.operatorId = operatorUserId;
+    }
+
     return filterQuery;
   }
 
@@ -433,6 +470,31 @@ export class ProjectService {
     return project;
   }
 
+  async getMyProjects(
+    userId: string,
+    filter: ProjectFilterRequest,
+  ): Promise<AggregatePaginateResult<ProjectDocument>> {
+    filter.operatorUserId = userId;
+    const filterQuery = await this.applyFilter(filter);
+    const aggregationQuery = this.projectModel.aggregate([
+      {
+        $match: filterQuery,
+      },
+      ...populateCreatedBy,
+      ...populateUpdatedBy,
+      ...populateAppliedBy,
+      ...populateOperatorDetails,
+    ]);
+    const projects = await this.projectAggregateModel.aggregatePaginate(
+      aggregationQuery,
+      {
+        page: filter.page!,
+        limit: filter.limit!,
+      },
+    );
+    return projects;
+  }
+
   async getProjectList(filterRequest: ProjectFilterRequest) {
     const filterQuery = await this.applyFilter(filterRequest);
     const projectList = await this.projectModel.aggregate([
@@ -464,7 +526,6 @@ export class ProjectService {
               $toDouble: { $trunc: ['$campaignDatas.amountProgress', 2] },
             },
           },
-
           campaignCount: { $sum: 1 },
         },
       },
@@ -764,7 +825,7 @@ export class ProjectService {
 
   async deleteProject(
     userId: string,
-    request: ProjectDeleteQueryDto,
+    request: ProjectDeleteParamsDto,
   ): Promise<Project> {
     const user = await this.userModel.findOne({
       _id: userId,

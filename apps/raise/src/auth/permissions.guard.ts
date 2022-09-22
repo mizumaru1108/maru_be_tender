@@ -33,14 +33,19 @@ export class PermissionsGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
 
-    // get organizationid from header
-    // if request is post/put/patch then get organizationid from body, else get from query
-    const organizationId =
-      request.method === 'POST' ||
-      request.method === 'PUT' ||
-      request.method === 'PATCH'
-        ? request.body.organizationId
-        : request.query.organizationId;
+    // get organizationid
+    let organizationId = '';
+    if (['POST', 'PUT', 'PATCH'].includes(request.method)) {
+      organizationId = request.body.organizationId;
+    }
+    if (request.method === 'GET') {
+      organizationId = request.query.organizationId;
+    }
+    if (request.method === 'DELETE') {
+      organizationId = request.params.organizationId;
+    }
+
+    // console.log('organizationId', organizationId);
     if (
       organizationId === '' ||
       organizationId === undefined ||
@@ -51,7 +56,6 @@ export class PermissionsGuard implements CanActivate {
         'No organizationId defined!, please add "organizationid" to header!',
       );
     }
-    // console.log('organizationId', organizationId);
 
     const userId = request.user.id;
     if (!userId) {
@@ -77,6 +81,7 @@ export class PermissionsGuard implements CanActivate {
       subject,
       permissions[0],
     );
+    // console.log('isAllowed', isAllowed);
 
     if (
       !isAllowed ||

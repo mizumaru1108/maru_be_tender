@@ -16,24 +16,56 @@ import { Permissions } from '../auth/permissions.decorator';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import { CurrentUser } from '../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../commons/dtos/base-response';
+import { PaginatedResponse } from '../commons/dtos/paginated-response.dto';
 import { baseResponseHelper } from '../commons/helpers/base-response-helper';
+import { paginationHelper } from '../commons/helpers/pagination-helper';
 import { Permission } from '../libs/authzed/enums/permission.enum';
 import { rootLogger } from '../logger';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { ProjectCreateDto } from './dto/project-create.dto';
-import { ProjectDeleteQueryDto } from './dto/project-delete-query.dto';
+import { ProjectDeleteParamsDto } from './dto/project-delete-params.dto';
 import { ProjectFilterRequest } from './dto/project-filter.request';
 import { ProjectSetDeletedFlagDto } from './dto/project-set-flag-deleted';
 import { ProjectStatusUpdateDto } from './dto/project-status-update.dto';
 import { ProjectUpdateDto } from './dto/project-update.dto';
 import { ProjectService } from './project.service';
-import { Project } from './schema/project.schema';
+import { Project, ProjectDocument } from './schema/project.schema';
 
 @ApiTags('project')
 @Controller('project')
 export class ProjectController {
   private logger = rootLogger.child({ logger: ProjectController.name });
   constructor(private projectService: ProjectService) {}
+
+  @ApiOperation({ summary: 'Get list of my projects' })
+  @Permissions(Permission.OE) // only admin and operator
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Get('getMyProjects')
+  async getMyProjects(
+    @CurrentUser() user: ICurrentUser,
+    @Query() projectFilter: ProjectFilterRequest,
+  ): Promise<PaginatedResponse<ProjectDocument[]>> {
+    this.logger.debug(`Getting all of projects on user ${user.id}!`);
+    const myProjects = await this.projectService.getMyProjects(
+      user.id,
+      projectFilter,
+    );
+    const response = paginationHelper(
+      myProjects.docs,
+      myProjects.totalDocs,
+      myProjects.limit,
+      myProjects.page,
+      myProjects.totalPages,
+      myProjects.pagingCounter,
+      myProjects.hasPrevPage,
+      myProjects.hasNextPage,
+      myProjects.prevPage,
+      myProjects.nextPage,
+      HttpStatus.OK,
+      `Successfully fetch all of my project (User: '${user.id}')`,
+    );
+    return response;
+  }
 
   @ApiOperation({ summary: 'Get All Projects viewed by manager' })
   @Get('manager/getListAll')
@@ -195,10 +227,10 @@ export class ProjectController {
   @ApiOperation({ summary: 'permanent delete project!' })
   @Permissions(Permission.OE) // only admin and operator
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Delete('deleteProject')
+  @Delete('deleteProject/:organizationId/:projectId')
   async deleteProject(
     @CurrentUser() user: ICurrentUser,
-    @Query() request: ProjectDeleteQueryDto,
+    @Param() request: ProjectDeleteParamsDto,
   ): Promise<BaseResponse<Project>> {
     this.logger.debug(`delete project ${request.projectId}`);
     const deletedProject = await this.projectService.deleteProject(
