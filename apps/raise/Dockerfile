@@ -2,7 +2,7 @@
 
 # --- Builder ---
 
-# FROM node:lts-slim AS builder
+# FROM node:lts AS builder
 
 # ARG CI=true
 # ARG NODE_ENV=build
@@ -25,7 +25,7 @@
 
 # --- Runtime ---
 
-FROM node:lts-slim
+FROM node:lts
 
 ENV NO_COLOR=1
 ENV FORCE_COLOR=0
