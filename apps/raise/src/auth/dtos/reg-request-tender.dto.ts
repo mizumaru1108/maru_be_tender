@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { RoleTenderEnum } from 'src/user/enums/role-enum';
 
 export class RegReqTenderDto {
@@ -53,4 +53,9 @@ export class RegReqTenderDto {
   @IsString()
   @IsNotEmpty()
   password: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsBoolean()
+  is_active: boolean;
 }

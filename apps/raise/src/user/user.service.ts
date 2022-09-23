@@ -56,26 +56,6 @@ export class UserService {
 
     const dataEmployees = JSON.stringify(request.employees_permissions);
     const dataEmp = JSON.parse(dataEmployees);
-    let newUser: any = {
-      organization_id: dataEmp[0].organization_id ? dataEmp[0].organization_id : null,
-      director_of_baptisms_department: dataEmp[0].director_of_baptisms_department,
-      director_of_initiatives_department: dataEmp[0].director_of_initiatives_department,
-      director_of_mosque_administration: dataEmp[0].director_of_mosque_administration,
-      director_of_charity_department: dataEmp[0].director_of_charity_department,
-      president: dataEmp[0].president,
-      reports: dataEmp[0].reports,
-      sorting_officer: dataEmp[0].sorting_officer,
-      relationship_officer: dataEmp[0].relationship_officer,
-      treasurer: dataEmp[0].treasurer,
-      acountant: dataEmp[0].acountant,
-      edit_drop_down_menus: dataEmp[0].edit_drop_down_menus,
-      entering_the_anual_plan: dataEmp[0].entering_the_anual_plan,
-      user_and_permision: dataEmp[0].user_and_permision,
-      correspondence: dataEmp[0].correspondence,
-      advisors_committee: dataEmp[0].advisors_committee,
-      project_supervisor: dataEmp[0].project_supervisor,
-    }
-
     try {
       const result = await this.prisma.user.create({
         data: {
@@ -84,12 +64,14 @@ export class UserService {
           email: request.email,
           mobile_number: request.mobile_number,
           user_type_id: request.user_type_id,
+          is_active: request.is_active,
           employees_permissions_employees_permissionsTouser: {
-            create: newUser
+            create: dataEmp[0]
           },
         }
       });
       return result;
+
     } catch (error) {
       throw new HttpException('Data not recorded in database', 400);
     }

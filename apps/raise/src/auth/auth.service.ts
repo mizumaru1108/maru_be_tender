@@ -96,10 +96,9 @@ export class AuthService {
       email: result.user.email,
       mobile_number: result.user.mobile,
       user_type_id: registerRequest.user_type_id,
+      is_active: registerRequest.is_active,
       employees_permissions: registerRequest.employees_permissions
     });
-
-
     return registeredUser;
   }
   async fusionRegisterTender(registerRequest: RegReqTenderDto) {

@@ -66,4 +66,8 @@ export class RegFromFusionAuthTenderDto {
   @IsOptional()
   employees_permissions?: string[];
 
+  @ApiProperty()
+  @IsOptional()
+  is_active?: boolean;
+
 }

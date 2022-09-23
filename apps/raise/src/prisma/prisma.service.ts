@@ -9,14 +9,14 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       log: ['query', 'info', 'warn', 'error'],
       datasources: {
         db: {
-          url: configService.get('DATABASE_URL'),
+          url: configService.get('POSTGRES_URL'),
         },
       },
     });
   }
 
   async onModuleInit() {
-    console.log('DATABASE_URL', this.configService.get('DATABASE_URL')!);
+    console.log('POSTGRES_URL', this.configService.get('POSTGRES_URL')!);
     await this.$connect();
   }
 
