@@ -87,20 +87,15 @@ export class AuthService {
   }
 
   async fusionRegTender(registerRequest: RegReqTenderDto) {
-    // const result = await this.fusionAuthService.fusionAuthRegTender(
-    //   registerRequest,
-    // );
+    const result = await this.fusionAuthService.fusionAuthRegTender(
+      registerRequest,
+    );
     const registeredUser = await this.usersService.regFromFusionTender({
-      id: `regfromnestjs${new Date().getTime()}`,
-      employee_name: "result.user.firstName",
-      email: registerRequest.email,
-      mobile_number: "081111111",
+      id: result.user.id,
+      employee_name: result.user.firstName,
+      email: result.user.email,
+      mobile_number: result.user.mobile,
       user_type_id: registerRequest.user_type_id,
-      // id: result.user.id,
-      // employee_name: result.user.firstName,
-      // email: result.user.email,
-      // mobile_number: result.user.mobile,
-      // user_type_id: registerRequest.user_type_id,
       employees_permissions: registerRequest.employees_permissions
     });
 
