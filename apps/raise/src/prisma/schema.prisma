@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgres://tmra_dev:6jKeojnZ5hemJA@tmra-postgres.ciqexnopojnk.ap-south-1.rds.amazonaws.com/tmra_dev"
 }
 
 model bank_information {
@@ -52,8 +52,7 @@ model client_data {
 }
 
 model employees_permissions {
-  id                                 String   @id
-  orgs_id                            String
+  organization_id                    String?
   user_id                            String
   director_of_baptisms_department    Boolean  @default(false)
   director_of_initiatives_department Boolean? @default(false)
@@ -71,6 +70,7 @@ model employees_permissions {
   correspondence                     Boolean? @default(false)
   advisors_committee                 Boolean? @default(false)
   project_supervisor                 Boolean? @default(false)
+  id                                 String   @id @unique(map: "employees_permissions_idd_key") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user                               user     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
 }
 
@@ -93,7 +93,7 @@ model message {
   inquiry_type                       String?       @db.Char
   title                              String?       @db.Char
   project_name                       String?       @db.Char
-  the_message                        String?
+  message                            String?
   date_of_visit                      DateTime?     @db.Date
   reason_visit                       String?
   created_at                         DateTime?     @default(now()) @db.Timestamptz(6)
@@ -104,8 +104,8 @@ model message {
 }
 
 model organization {
-  id        String @id
-  orgs_name String @db.Char
+  id           String @id
+  organization String @db.Char
 }
 
 model payment {
