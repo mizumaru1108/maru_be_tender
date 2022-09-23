@@ -4,11 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-<<<<<<< HEAD
-  url      = "postgres://tmra_dev:6jKeojnZ5hemJA@tmra-postgres.ciqexnopojnk.ap-south-1.rds.amazonaws.com/tmra_dev"
-=======
   url      = env("POSTGRES_URL")
->>>>>>> be8563778a0c18aab760df1a7c37de4882241acc
 }
 
 model bank_information {
