@@ -94,7 +94,7 @@ export class AuthService {
       id: result.user.id,
       employee_name: result.user.firstName,
       email: result.user.email,
-      mobile_number: result.user.mobile,
+      mobile_number: result.user.mobilePhone,
       user_type_id: registerRequest.user_type_id,
       is_active: registerRequest.is_active,
       employees_permissions: registerRequest.employees_permissions

@@ -154,6 +154,7 @@ export class FusionAuthService {
       password: registerRequest.password,
       firstName: registerRequest.employee_name,
       lastName: '',
+      mobilePhone: registerRequest.mobile_number,
 
     };
     const registration: IFusionAuthUserRegistration = {
