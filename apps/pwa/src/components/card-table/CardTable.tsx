@@ -12,6 +12,7 @@ function CardTable({
   data,
   dateFilter,
   alphabeticalOrder,
+  pagination = true,
   filters,
   taps,
   cardFooterButtonAction,
@@ -102,7 +103,7 @@ function CardTable({
           {/* Alpha-betical Order Filter */}
           {alphabeticalOrder && (
             <Stack direction="row" gap={1}>
-              <Typography sx={{ textAlign: 'center' }}>ترتيب حسب:</Typography>
+              <Typography sx={{ textAlign: 'center', my: 'auto' }}>ترتيب حسب:</Typography>
               <Button endIcon={<img src="/icons/asc-order-icon.svg" alt="" />}>
                 اسم المشروع من أ الى ي
               </Button>
@@ -124,42 +125,44 @@ function CardTable({
           <ProjectCard {...item} cardFooterButtonAction={cardFooterButtonAction} />
         </Grid>
       ))}
-      <Grid item md={12} xs={12}>
-        <Stack direction="row" justifyContent="space-between">
-          <Box flex={1} />
-          <Stack direction="row" flex={2} gap={1} justifyContent="center">
-            {Array.from(Array(pagesNumber).keys()).map((elem, index) => (
-              <Button
-                key={index}
-                onClick={() => {
-                  setPage(index + 1);
-                }}
-                sx={{
-                  color: index === page - 1 ? '#fff' : 'rgba(147, 163, 176, 0.8)',
-                  backgroundColor:
-                    index === page - 1 ? 'background.paper' : 'rgba(147, 163, 176, 0.16)',
-                  height: '50px',
-                }}
+      {pagination && (
+        <Grid item md={12} xs={12}>
+          <Stack direction="row" justifyContent="space-between">
+            <Box flex={1} />
+            <Stack direction="row" flex={2} gap={1} justifyContent="center">
+              {Array.from(Array(pagesNumber).keys()).map((elem, index) => (
+                <Button
+                  key={index}
+                  onClick={() => {
+                    setPage(index + 1);
+                  }}
+                  sx={{
+                    color: index === page - 1 ? '#fff' : 'rgba(147, 163, 176, 0.8)',
+                    backgroundColor:
+                      index === page - 1 ? 'background.paper' : 'rgba(147, 163, 176, 0.16)',
+                    height: '50px',
+                  }}
+                >
+                  {index + 1}
+                </Button>
+              ))}
+            </Stack>
+            <Stack direction="row" flex={1}>
+              <Typography sx={{ padding: '13px' }}>عدد المشاريع المعروضة:</Typography>
+              <Select
+                labelId="simple-select"
+                id="demo-simple-select"
+                value={params.limit}
+                onChange={handleLimitChange}
               >
-                {index + 1}
-              </Button>
-            ))}
+                <MenuItem value={6}>6</MenuItem>
+                <MenuItem value={8}>8</MenuItem>
+                <MenuItem value={10}>10</MenuItem>
+              </Select>
+            </Stack>
           </Stack>
-          <Stack direction="row" flex={1}>
-            <Typography sx={{ padding: '13px' }}>عدد المشاريع المعروضة:</Typography>
-            <Select
-              labelId="simple-select"
-              id="demo-simple-select"
-              value={params.limit}
-              onChange={handleLimitChange}
-            >
-              <MenuItem value={6}>6</MenuItem>
-              <MenuItem value={8}>8</MenuItem>
-              <MenuItem value={10}>10</MenuItem>
-            </Select>
-          </Stack>
-        </Stack>
-      </Grid>
+        </Grid>
+      )}
     </Grid>
   );
 }

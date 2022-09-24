@@ -5,7 +5,7 @@ export const topBar = {
   },
   tender_moderator: {
     show_details: ['general', 'project-path', 'follow-ups'],
-    completing_exchange_permission: [],
+    completing_exchange_permission: ['general', 'project-path', 'follow-ups'],
   },
   tender_project_supervisor: {
     show_details: ['general', 'project-pudget', 'project-path', 'follow-ups'],

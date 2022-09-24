@@ -126,22 +126,46 @@ export default function Router() {
       ),
       children: [
         { element: <Navigate to="/dashboard" replace />, index: true },
-        {
-          path: 'my-profile',
-          children: [
-            { path: '', element: <ModeratorProfile /> },
-            { path: 'edit', element: <ModeratorProfileEdit /> },
-          ],
-        },
+        // {
+        //   path: 'my-profile',
+        //   children: [
+        //     { path: '', element: <ModeratorProfile /> },
+        //     { path: 'edit', element: <ModeratorProfileEdit /> },
+        //   ],
+        // },
         {
           path: 'dashboard',
           children: [
             { path: 'app', element: <MainModeratorPage /> },
             {
-              path: 'support-requests-received',
-              element: <SupportRequestsReceived />,
+              path: 'incoming-support-requests',
+              // element: <IncomingSupportRequests />,
+              children: [
+                { path: '', element: <IncomingSupportRequests /> },
+                {
+                  path: ':id/:actionType',
+                  children: [
+                    { path: 'main', element: <ProjectDetails /> },
+                    { path: 'project-path', element: <ProjectDetails /> },
+                    { path: 'follow-ups', element: <ProjectDetails /> },
+                  ],
+                },
+              ],
+            },
+            {
+              path: 'previous-support-requests',
+              // element: <IncomingSupportRequests />,
+              children: [
+                { path: '', element: <PreviouseSupportRequests /> },
+                {
+                  path: ':id/:actionType',
+                  children: [{ path: 'main', element: <ProjectDetails /> }],
+                },
+              ],
             },
 
+            // { path: 'previous-support-requests', element: <PreviouseSupportRequests /> },
+            { path: 'portal-reports', element: <PortalReports /> },
             { path: 'messages', element: <ModeratorMessages /> },
           ],
         },
@@ -269,11 +293,15 @@ const MessagesManagerPage = Loadable(lazy(() => import('pages/accounts-manager/M
 // MODERATOR ROUTES
 const MainModeratorPage = Loadable(lazy(() => import('pages/moderator/MainModeratorPage')));
 const ModeratorProfile = Loadable(lazy(() => import('pages/moderator/ModeratorProfile')));
-const ModeratorProfileEdit = Loadable(lazy(() => import('pages/moderator/ModeratorProfileEdit')));
+// const ModeratorProfileEdit = Loadable(lazy(() => import('pages/moderator/ModeratorProfileEdit')));
 const ModeratorMessages = Loadable(lazy(() => import('pages/moderator/ModeratorMessages')));
-const SupportRequestsReceived = Loadable(
-  lazy(() => import('pages/moderator/support-requests-received'))
+const IncomingSupportRequests = Loadable(
+  lazy(() => import('pages/moderator/incoming-support-requests'))
 );
+const PreviouseSupportRequests = Loadable(
+  lazy(() => import('pages/moderator/previous-support-requests'))
+);
+const PortalReports = Loadable(lazy(() => import('pages/moderator/PortalReports')));
 
 // AUTHENTICATION ROUTES
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));

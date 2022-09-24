@@ -1,16 +1,25 @@
 import { ProjectCardProps } from 'components/card-table/types';
 
-export const CardTableData = [
+type footerMessage = {
+  createdAt: Date;
+};
+
+type message = {
+  partnerName: string;
+  projectName: string;
+  message: string;
+  footer: footerMessage;
+};
+
+export const CardTableIncomingSupportRequests = [
   {
     title: {
       id: '768873',
     },
     content: {
       projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
+      employee: 'لا يوجد',
+      sentSection: 'لا يوجد',
     },
     footer: {
       createdAt: new Date(2022, 8, 2, 15, 58),
@@ -18,14 +27,12 @@ export const CardTableData = [
   },
   {
     title: {
-      id: '768873',
+      id: '768874',
     },
     content: {
       projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
+      employee: 'لا يوجد',
+      sentSection: 'لا يوجد',
     },
     footer: {
       createdAt: new Date(2022, 8, 2, 15, 58),
@@ -33,14 +40,12 @@ export const CardTableData = [
   },
   {
     title: {
-      id: '768873',
+      id: '768875',
     },
     content: {
       projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
+      employee: 'لا يوجد',
+      sentSection: 'لا يوجد',
     },
     footer: {
       createdAt: new Date(2022, 8, 2, 15, 58),
@@ -48,201 +53,20 @@ export const CardTableData = [
   },
   {
     title: {
-      id: '768873',
+      id: '768876',
     },
     content: {
       projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
+      employee: 'لا يوجد',
+      sentSection: 'لا يوجد',
     },
     footer: {
       createdAt: new Date(2022, 8, 2, 15, 58),
     },
   },
 ] as ProjectCardProps[];
-export const CardTableDataPrevious = [
+
+export const CardTablePreviousSupportRequests = [
   {
     title: {
       id: '768873',
@@ -250,10 +74,8 @@ export const CardTableDataPrevious = [
     },
     content: {
       projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
+      employee: 'لا يوجد',
+      sentSection: 'لا يوجد',
     },
     footer: {
       createdAt: new Date(2022, 8, 2, 15, 58),
@@ -261,31 +83,13 @@ export const CardTableDataPrevious = [
   },
   {
     title: {
-      id: '768873',
-      inquiryStatus: 'completed',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
+      id: '768874',
       inquiryStatus: 'pending',
     },
     content: {
       projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
+      employee: 'لا يوجد',
+      sentSection: 'لا يوجد',
     },
     footer: {
       createdAt: new Date(2022, 8, 2, 15, 58),
@@ -293,15 +97,13 @@ export const CardTableDataPrevious = [
   },
   {
     title: {
-      id: '768873',
+      id: '768875',
       inquiryStatus: 'completed',
     },
     content: {
       projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
+      employee: 'لا يوجد',
+      sentSection: 'لا يوجد',
     },
     footer: {
       createdAt: new Date(2022, 8, 2, 15, 58),
@@ -309,194 +111,68 @@ export const CardTableDataPrevious = [
   },
   {
     title: {
-      id: '768873',
-      inquiryStatus: 'completed',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-      inquiryStatus: 'completed',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-      inquiryStatus: 'pending',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-      inquiryStatus: 'pending',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-      inquiryStatus: 'pending',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-      inquiryStatus: 'pending',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-      inquiryStatus: 'completed',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-      inquiryStatus: 'completed',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
+      id: '768876',
       inquiryStatus: 'canceled',
     },
     content: {
       projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-      inquiryStatus: 'completed',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-      inquiryStatus: 'pending',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-      inquiryStatus: 'completed',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      projectStatus: 'في انتظار موافقة',
-      projectDetails:
-        'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو........',
+      employee: 'لا يوجد',
+      sentSection: 'لا يوجد',
     },
     footer: {
       createdAt: new Date(2022, 8, 2, 15, 58),
     },
   },
 ] as ProjectCardProps[];
+
+export const Messages = [
+  {
+    partnerName: 'project1',
+    projectName: 'name1',
+    message:
+      'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem sequi, blanditiis provident assumenda ipsam officia ipsa repellendus quia quaerat reprehenderit inventore totam, necessitatibus ipsum ullam amet atque rerumiure saepe.',
+    footer: new Date(),
+  },
+  {
+    partnerName: 'project2',
+    projectName: 'name2',
+    message:
+      'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem sequi, blanditiis provident assumenda ipsam officia ipsa repellendus quia quaerat reprehenderit inventore totam, necessitatibus ipsum ullam amet atque rerumiure saepe.',
+    footer: new Date(),
+  },
+  {
+    partnerName: 'project3',
+    projectName: 'name3',
+    message:
+      'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem sequi, blanditiis provident assumenda ipsam officia ipsa repellendus quia quaerat reprehenderit inventore totam, necessitatibus ipsum ullam amet atque rerumiure saepe.',
+    footer: new Date(),
+  },
+  {
+    partnerName: 'project3',
+    projectName: 'name3',
+    message:
+      'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem sequi, blanditiis provident assumenda ipsam officia ipsa repellendus quia quaerat reprehenderit inventore totam, necessitatibus ipsum ullam amet atque rerumiure saepe.',
+    footer: new Date(),
+  },
+  {
+    partnerName: 'project3',
+    projectName: 'name3',
+    message:
+      'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem sequi, blanditiis provident assumenda ipsam officia ipsa repellendus quia quaerat reprehenderit inventore totam, necessitatibus ipsum ullam amet atque rerumiure saepe.',
+    footer: new Date(),
+  },
+  {
+    partnerName: 'project3',
+    projectName: 'name3',
+    message:
+      'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem sequi, blanditiis provident assumenda ipsam officia ipsa repellendus quia quaerat reprehenderit inventore totam, necessitatibus ipsum ullam amet atque rerumiure saepe.',
+    footer: new Date(),
+  },
+  {
+    partnerName: 'project3',
+    projectName: 'name3',
+    message:
+      'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem sequi, blanditiis provident assumenda ipsam officia ipsa repellendus quia quaerat reprehenderit inventore totam, necessitatibus ipsum ullam amet atque rerumiure saepe.',
+    footer: new Date(),
+  },
+];

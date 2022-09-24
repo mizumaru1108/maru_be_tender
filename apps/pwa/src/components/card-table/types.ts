@@ -38,6 +38,7 @@ export type CardTableProps = {
   data: ProjectCardProps[];
   dateFilter?: boolean;
   alphabeticalOrder?: boolean;
+  pagination?: boolean;
   filters?: filterInterface[];
   taps?: string[];
   cardFooterButtonAction:

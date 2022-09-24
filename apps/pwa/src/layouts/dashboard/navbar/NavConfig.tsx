@@ -92,7 +92,9 @@ const ICONS = {
   },
   tender_moderator: {
     main: getIcon('main'),
-    support_requests_received: getIcon('draft-request'),
+    incoming_support_requests: getIcon('previous-request'),
+    previous_support_requests: getIcon('draft-request'),
+    portal_reports: getIcon('request-for-project'),
     messages: getIcon('message-bar'),
   },
   tender_accounts_manager: {
@@ -395,21 +397,31 @@ const navConfig = {
       subheader: '',
       items: [
         {
-          title: 'main',
+          title: 'dashboard',
           path: PATH_MODERATOR.app,
-          icon: ICONS.tender_client.main,
+          icon: ICONS.tender_moderator.main,
         },
 
         {
-          title: 'support_requests_received',
-          path: PATH_MODERATOR.support_requests_received,
-          icon: ICONS.tender_client.drafts,
+          title: 'incoming_support_requests',
+          path: PATH_MODERATOR.incoming_support_requests,
+          icon: ICONS.tender_moderator.incoming_support_requests,
+        },
+        {
+          title: 'previous_support_requests',
+          path: PATH_MODERATOR.previous_support_requests,
+          icon: ICONS.tender_moderator.previous_support_requests,
         },
 
+        {
+          title: 'portal_reports',
+          path: PATH_MODERATOR.portal_reports,
+          icon: ICONS.tender_moderator.portal_reports,
+        },
         {
           title: 'messages',
           path: PATH_MODERATOR.messages,
-          icon: ICONS.tender_client.messages,
+          icon: ICONS.tender_moderator.messages,
         },
       ],
     },

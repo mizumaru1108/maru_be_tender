@@ -1,5 +1,5 @@
 export const Taps = {
-  client: [
+  tender_client: [
     {
       title: 'main',
     },
@@ -11,6 +11,17 @@ export const Taps = {
     },
     {
       title: 'payments',
+    },
+  ],
+  tender_moderator: [
+    {
+      title: 'main',
+    },
+    {
+      title: 'project-path',
+    },
+    {
+      title: 'follow-ups',
     },
   ],
 } as TapsProps;

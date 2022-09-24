@@ -81,7 +81,9 @@ export const PATH_PROJECT_MANAGER = {
 export const PATH_MODERATOR = {
   root: ROOTS_MODERATOR,
   app: path(ROOTS_MODERATOR, '/dashboard/app'),
-  support_requests_received: path(ROOTS_MODERATOR, '/dashboard/support-requests-received'),
+  incoming_support_requests: path(ROOTS_MODERATOR, '/dashboard/incoming-support-requests'),
+  previous_support_requests: path(ROOTS_MODERATOR, '/dashboard/previous-support-requests'),
+  portal_reports: path(ROOTS_MODERATOR, '/dashboard/portal-reports'),
   messages: path(ROOTS_MODERATOR, '/dashboard/messages'),
 };
 
