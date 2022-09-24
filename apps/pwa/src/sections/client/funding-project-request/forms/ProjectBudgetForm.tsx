@@ -8,7 +8,7 @@ import { ProjectBudgetData } from '../Forms-Data';
 import FormGenerator from 'components/FormGenerator';
 type FormValuesProps = {
   amount_required_fsupport: number;
-  detail_project_budget: {
+  detail_project_budgets: {
     item: string;
     explanation: string;
     amount: number;
@@ -27,7 +27,7 @@ const ProjectBudgetForm = ({ onSubmit, children, defaultValues }: Props) => {
   }, []);
   const RegisterSchema = Yup.object().shape({
     amount_required_fsupport: Yup.number().required(),
-    detail_project_budget: Yup.array().of(
+    detail_project_budgets: Yup.array().of(
       Yup.object().shape({
         item: Yup.string().required(),
         explanation: Yup.string().required(),
@@ -38,7 +38,10 @@ const ProjectBudgetForm = ({ onSubmit, children, defaultValues }: Props) => {
 
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(RegisterSchema),
-    defaultValues,
+    defaultValues: {
+      amount_required_fsupport: defaultValues.amount_required_fsupport,
+      detail_project_budgets: defaultValues.detail_project_budgets.data,
+    },
   });
 
   const {

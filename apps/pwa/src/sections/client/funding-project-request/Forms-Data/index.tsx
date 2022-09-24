@@ -171,7 +171,7 @@ export const ProjectBudgetData = [
   },
   {
     type: 'repeater',
-    name: 'detail_project_budget',
+    name: 'detail_project_budgets',
     repeaterFields: [
       {
         type: 'textField',

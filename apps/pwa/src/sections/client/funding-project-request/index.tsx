@@ -13,42 +13,8 @@ import ActionBox from './forms/ActionBox';
 import { CustomFile } from 'components/upload';
 import { useMutation } from 'urql';
 import { CreateProposel } from 'queries/client/createProposel';
-
-type FormValuesProps = {
-  form1: {
-    project_name: string;
-    project_idea: string;
-    project_location: string;
-    project_implement_date: string;
-    execution_time: string;
-    target_group_type: string;
-    letter_ofsupport_req: CustomFile | string | null;
-    project_attachments: CustomFile | string | null;
-  };
-  form2: {
-    num_ofproject_binicficiaries: number;
-    project_goals: string;
-    project_outputs: string;
-    project_strengths: string;
-    project_risks: string;
-  };
-  form3: {
-    pm_name: string;
-    pm_mobile: number;
-    pm_email: string;
-    region: string;
-    governorate: string;
-  };
-  form4: {
-    amount_required_fsupport: number;
-    detail_project_budget: {
-      item: string;
-      explanation: string;
-      amount: number;
-    }[];
-  };
-  form5: { need_consultant: boolean };
-};
+import { nanoid } from 'nanoid';
+import { useNavigate } from 'react-router';
 
 const steps = [
   'funding_project_request_form1.step',
@@ -58,6 +24,7 @@ const steps = [
   'funding_project_request_form5.step',
 ];
 const FundingProjectRequestForm = () => {
+  const navigate = useNavigate();
   const { translate } = useLocales();
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -84,13 +51,15 @@ const FundingProjectRequestForm = () => {
     form3: { pm_name: '', pm_mobile: '', pm_email: '', region: '', governorate: '' },
     form4: {
       amount_required_fsupport: undefined,
-      detail_project_budget: [
-        {
-          item: '',
-          explanation: '',
-          amount: undefined,
-        },
-      ],
+      detail_project_budgets: {
+        data: [
+          {
+            item: '',
+            explanation: '',
+            amount: undefined,
+          },
+        ],
+      },
     },
     form5: { need_consultant: false },
   };
@@ -135,27 +104,32 @@ const FundingProjectRequestForm = () => {
     setRequestState((prevRegisterState: any) => ({
       ...prevRegisterState,
       form4: {
-        ...prevRegisterState.form4,
-        ...data,
+        amount_required_fsupport: data.amount_required_fsupport,
+        detail_project_budgets: {
+          ...prevRegisterState.form4.detail_project_budgets,
+          data: data.detail_project_budgets,
+        },
       },
     }));
   };
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     setRequestState((prevRegisterState: any) => ({
       ...prevRegisterState,
       form5: { ...prevRegisterState.form5, ...data },
     }));
-    console.log(requestState);
     const createdProposel = {
       ...requestState.form1,
       ...requestState.form2,
       ...requestState.form3,
       ...requestState.form4,
       ...requestState.form5,
+      submitter_user_id: 'ruAow402uaFO68PHvbLlF',
+      id: nanoid(),
     };
-    updateTodo({
+    const res = await updateTodo({
       createdProposel,
     });
+    if (res.error === undefined) navigate(-1);
   };
 
   const onSavingDraft = () => {

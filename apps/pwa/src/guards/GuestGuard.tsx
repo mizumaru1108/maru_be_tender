@@ -31,8 +31,6 @@ export default function GuestGuard({ children }: GuestGuardProps) {
   const { isAuthenticated, isInitialized, user } = useAuth();
 
   const role = user?.registrations[0].roles[0] as Role;
-  // TODO map all the roles with their dashboard page
-  // FOR testing now I will only redirect to the client dashboard page
   if (isAuthenticated) {
     return <Navigate to={`/${role_url_map[`${role}`]}/dashboard/app`} />;
   }

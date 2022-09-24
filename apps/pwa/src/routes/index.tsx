@@ -98,6 +98,8 @@ export default function Router() {
                   children: [
                     { path: 'main', element: <ProjectDetails /> },
                     { path: 'project-budget', element: <ProjectDetails /> },
+                    { path: 'follow-ups', element: <ProjectDetails /> },
+                    { path: 'payments', element: <ProjectDetails /> },
                   ],
                 },
               ],

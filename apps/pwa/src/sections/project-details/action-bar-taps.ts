@@ -6,6 +6,12 @@ export const Taps = {
     {
       title: 'project-budget',
     },
+    {
+      title: 'follow-ups',
+    },
+    {
+      title: 'payments',
+    },
   ],
 } as TapsProps;
 

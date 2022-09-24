@@ -1,5 +1,4 @@
 import { Box, Divider, Grid, Stack, Typography } from '@mui/material';
-import React from 'react';
 import BankImageComp from 'sections/shared/BankImageComp';
 
 function MainPage() {

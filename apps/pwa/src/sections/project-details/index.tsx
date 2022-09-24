@@ -1,14 +1,15 @@
 import { Box, IconButton, Stack, Typography } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router';
 import ActionBar from './ActionBar';
+import FollowUps from './FollowUps';
 import MainPage from './MainPage';
+import Payments from './Payments';
 import ProjectBudget from './ProjectBudget';
 
 function ProjectDetailsMainPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const activeTap = location.pathname.split('/').at(-1);
-  console.log(activeTap);
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -70,6 +71,8 @@ function ProjectDetailsMainPage() {
       <ActionBar />
       {activeTap === 'main' && <MainPage />}
       {activeTap === 'project-budget' && <ProjectBudget />}
+      {activeTap === 'follow-ups' && <FollowUps />}
+      {activeTap === 'payments' && <Payments />}
     </Box>
   );
 }
