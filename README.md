@@ -10,7 +10,7 @@ You will get IDE errors in VS Code / Gitpod if you haven't yet set up Yarn PnP E
 To set this up:
 
 ```bash
-yarn dlx @yarnpkg/sdks vscode
+yarn dlx @yarnpkg/sdks vscodee
 ```
 
 Then in your IDE:
