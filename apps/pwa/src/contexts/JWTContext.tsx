@@ -80,12 +80,9 @@ type AuthProviderProps = {
 function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(JWTReducer, initialState);
   const client = new FusionAuthClient(
-    'yp5RUAoaMb22hRXMzOt2qwYUuovfzH3lEYtWXD8fWQMnDraVsuxBjupQ',
-    'https://login.lovia.life',
-    '731425cc-2184-4b75-a895-e075cdef99ec'
-    // process.env.REACT_APP_FUSIONAUTH_CLIENT_KEY!,
-    // process.env.REACT_APP_FUSIONAUTH_URL!,
-    // process.env.REACT_APP_FUSIONAUTH_TENANT_ID!
+    process.env.REACT_APP_FUSIONAUTH_CLIENT_KEY!,
+    process.env.REACT_APP_FUSIONAUTH_URL!,
+    process.env.REACT_APP_FUSIONAUTH_TENANT_ID!
   );
 
   // FusionAuthClient
@@ -134,8 +131,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     const response = await client.login({
       loginId: email,
       password: password,
-      applicationId: 'b5ee66f1-cc1c-4185-97a9-e562ce8e98f6',
-      // applicationId: process.env.REACT_APP_FUSIONAUTH_APP_ID,
+      applicationId: process.env.REACT_APP_FUSIONAUTH_APP_ID,
     });
 
     const { token: accessToken, user } = response.response;
