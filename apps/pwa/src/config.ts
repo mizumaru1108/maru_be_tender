@@ -5,6 +5,8 @@ import { SettingsValueProps } from './components/settings/type';
 // routes
 import { PATH_DASHBOARD } from './routes/paths';
 
+export const HASURA_GRAPHQL_URL = process.env.REACT_APP_HASURA_GRAPHQL_URL!;
+
 // API
 // ----------------------------------------------------------------------
 
