@@ -1,6 +1,7 @@
 import { Box, IconButton, Stack, Typography } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router';
 import ActionBar from './ActionBar';
+import ExchangeDetails from './ExchangeDetails';
 import FollowUps from './FollowUps';
 import MainPage from './MainPage';
 import Payments from './Payments';
@@ -73,6 +74,7 @@ function ProjectDetailsMainPage() {
       {activeTap === 'project-budget' && <ProjectBudget />}
       {activeTap === 'follow-ups' && <FollowUps />}
       {activeTap === 'payments' && <Payments />}
+      {activeTap === 'exchange-details' && <ExchangeDetails />}
     </Box>
   );
 }

@@ -5,6 +5,7 @@ import { isValidToken, setSession } from '../utils/jwt';
 // @types
 import { ActionMap, AuthState, AuthUser, JWTContextType } from '../@types/auth';
 import { FusionAuthClient } from '@fusionauth/typescript-client';
+import { FUSIONAUTH_API } from 'config';
 // ----------------------------------------------------------------------
 
 enum Types {
@@ -80,9 +81,9 @@ type AuthProviderProps = {
 function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(JWTReducer, initialState);
   const client = new FusionAuthClient(
-    process.env.REACT_APP_FUSIONAUTH_CLIENT_KEY!,
-    process.env.REACT_APP_FUSIONAUTH_URL!,
-    process.env.REACT_APP_FUSIONAUTH_TENANT_ID!
+    FUSIONAUTH_API.clientKey!,
+    FUSIONAUTH_API.apiUrl!,
+    FUSIONAUTH_API.tenantId!
   );
 
   // FusionAuthClient
@@ -131,7 +132,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     const response = await client.login({
       loginId: email,
       password: password,
-      applicationId: process.env.REACT_APP_FUSIONAUTH_APP_ID,
+      applicationId: FUSIONAUTH_API.appId,
     });
 
     const { token: accessToken, user } = response.response;

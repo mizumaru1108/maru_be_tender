@@ -22,6 +22,12 @@ export const FIREBASE_API = {
   appId: process.env.REACT_APP_FIREBASE_APPID,
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
+export const FUSIONAUTH_API = {
+  clientKey: process.env.REACT_APP_FUSIONAUTH_CLIENT_KEY,
+  apiUrl: process.env.REACT_APP_FUSIONAUTH_URL,
+  tenantId: process.env.REACT_APP_FUSIONAUTH_TENANT_ID,
+  appId: process.env.REACT_APP_FUSIONAUTH_APP_ID,
+};
 
 export const COGNITO_API = {
   userPoolId: process.env.REACT_APP_AWS_COGNITO_USER_POOL_ID,
@@ -37,7 +43,6 @@ export const MAPBOX_API = process.env.REACT_APP_MAPBOX_API;
 
 // ROOT PATH AFTER LOGIN SUCCESSFUL
 export const PATH_AFTER_LOGIN = PATH_DASHBOARD.general.app; // as '/dashboard/app'
-
 // LAYOUT
 // ----------------------------------------------------------------------
 

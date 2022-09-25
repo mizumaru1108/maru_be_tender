@@ -36,7 +36,6 @@ export default function RoleBasedGuard({ hasContent, roles, children }: RoleBase
   const currentRoles = user?.registrations[0].roles; // admin;
 
   if (typeof roles !== 'undefined' && !currentRoles.find((role: any) => roles.includes(role))) {
-    console.log('asklansdklnasd');
     return hasContent ? (
       <Container component={MotionContainer} sx={{ textAlign: 'center' }}>
         <m.div variants={varBounce().in}>

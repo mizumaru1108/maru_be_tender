@@ -59,6 +59,9 @@ const en = {
   main: 'dashboard',
   request_project_funding: 'Request project funding',
   support_requests_received: 'Support requests received',
+  incoming_support_requests: 'Incoming support requests',
+  previous_support_requests: 'Previous support requests',
+  portal_reports: 'Portal reports',
   drafts: 'Drafts',
   previous_funding_requests: 'Previous funding requests',
   messages: 'Messages',
@@ -80,9 +83,9 @@ const en = {
   show_details: 'عرض التفاصيل',
   show_project: 'استعراض المشروع',
   completing_exchange_permission: 'إتمام إذن الصرف',
-  pending: '',
-  completed: '',
-  canceled: '',
+  pending: 'Request Pending',
+  completed: 'Completed Order',
+  canceled: 'Request Canceled',
   register_form1: {
     entity_area: {
       label: 'مجال الجهة',
@@ -380,6 +383,19 @@ const en = {
       placeholer: 'الرجاء كتابة سبب الزيارة هنا ',
     },
   },
+  incoming_funding_requests: 'Incoming Funding Requests',
+  project_details: {
+    actions: {
+      main: 'Main',
+      project_budget: 'Project Budget',
+      follow_ups: 'Follow Ups',
+      payments: 'Payments',
+      project_path: 'Project Path',
+      project_timeline: 'Project Timeline',
+    },
+  },
+  incoming_exchange_permission_requests: 'Incoming Exchange Permission Requests',
+  requests_in_process: 'Requests in Process',
 };
 
 export default en;

@@ -59,6 +59,9 @@ const ar = {
   main: 'الرئيسية',
   request_project_funding: 'طلب دعم مشروع',
   support_requests_received: 'تلقي طلبات الدعم',
+  incoming_support_requests: 'طلبات الدعم الواردة',
+  previous_support_requests: 'طلبات الدعم السابقة',
+  portal_reports: 'تقارير البوابة',
   drafts: 'طلبات دعم مسودة ',
   previous_funding_requests: 'طلبات دعم سابقة',
   messages: 'الرسائل',
@@ -382,6 +385,20 @@ const ar = {
       placeholer: 'الرجاء كتابة سبب الزيارة هنا ',
     },
   },
+  incoming_funding_requests: 'الطلبات الواردة',
+  project_details: {
+    actions: {
+      main: 'العامة',
+      project_budget: 'موازنة المشروع',
+      follow_ups: 'المتابعات',
+      payments: 'الدفعات',
+      project_path: 'مسار المشروع',
+      project_timeline: 'الخطة الزمنية',
+      exchange_details: 'تفاصيل الصرف',
+    },
+  },
+  incoming_exchange_permission_requests: 'طلبات إذن الصرف الواردة',
+  requests_in_process: 'طلبات قيد الاجراء',
 };
 
 export default ar;

@@ -38,9 +38,9 @@ export const PATH_CONSULTANT = {
 export const PATH_FINANCE = {
   root: ROOTS_FINANCE,
   app: path(ROOTS_FINANCE, '/dashboard/app'),
-  Incoming_exchange_permission_requests: path(
+  incoming_exchange_permission_requests: path(
     ROOTS_FINANCE,
-    '/dashboard/Incoming-exchange-permission-requests'
+    '/dashboard/incoming-exchange-permission-requests'
   ),
   requests_in_process: path(ROOTS_FINANCE, '/dashboard/requests-in-process'),
   portal_reports: path(ROOTS_FINANCE, '/dashboard/portal-reports'),

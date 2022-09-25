@@ -1,9 +1,9 @@
 import { Container } from '@mui/material';
 import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
-import ClientProfileEditForm from 'sections/client/profile';
+import Main from 'sections/finance/main/Main';
 
-function ModeratorProfileEdit() {
+function MainPage() {
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -12,16 +12,15 @@ function ModeratorProfileEdit() {
     flexDirection: 'column',
     gap: 20,
   }));
-
   return (
-    <Page title="Profile Editing">
+    <Page title="Previous Funding Requests">
       <Container>
         <ContentStyle>
-          <ClientProfileEditForm />
+          <Main />
         </ContentStyle>
       </Container>
     </Page>
   );
 }
 
-export default ModeratorProfileEdit;
+export default MainPage;

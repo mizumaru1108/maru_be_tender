@@ -47,16 +47,16 @@ const ContactSupportForm = () => {
       <Grid container rowSpacing={4} columnSpacing={7}>
         <Grid item md={12} xs={12}>
           <RHFSelect name="type" label={translate('contact_support_form.inquiry_type.label')}>
-            <option value="" disabled selected>
+            <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
               {translate('contact_support_form.inquiry_type.placeholder')}
             </option>
-            <option value="general_inquiry">
+            <option value="general_inquiry" style={{ backgroundColor: '#fff' }}>
               {translate('contact_support_form.inquiry_type.options.general_inquiry')}
             </option>
-            <option value="project_inquiry">
+            <option value="project_inquiry" style={{ backgroundColor: '#fff' }}>
               {translate('contact_support_form.inquiry_type.options.project_inquiry')}
             </option>
-            <option value="appointment_inquiry">
+            <option value="appointment_inquiry" style={{ backgroundColor: '#fff' }}>
               {translate('contact_support_form.inquiry_type.options.appointment_inquiry')}
             </option>
           </RHFSelect>
