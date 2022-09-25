@@ -9,6 +9,8 @@ import {
   TableHead,
   TableSortLabel,
 } from '@mui/material';
+//
+import useLocales from 'hooks/useLocales';
 
 // ----------------------------------------------------------------------
 
@@ -47,6 +49,8 @@ export default function TableHeadCustom({
   onSelectAllRows,
   sx,
 }: Props) {
+  const { translate } = useLocales();
+
   return (
     <TableHead sx={sx}>
       <TableRow>
@@ -67,7 +71,11 @@ export default function TableHeadCustom({
             key={headCell.id}
             align={headCell.align || 'left'}
             sortDirection={orderBy === headCell.id ? order : false}
-            sx={{ width: headCell.width, minWidth: headCell.minWidth, display: headCell.display || 'table-cell' }}
+            sx={{
+              width: headCell.width,
+              minWidth: headCell.minWidth,
+              display: headCell.display || 'table-cell',
+            }}
           >
             {onSort ? (
               <TableSortLabel
@@ -77,7 +85,7 @@ export default function TableHeadCustom({
                 onClick={() => onSort(headCell.id)}
                 sx={{ textTransform: 'capitalize' }}
               >
-                {headCell.label}
+                {translate(headCell.label)}
 
                 {orderBy === headCell.id ? (
                   <Box sx={{ ...visuallyHidden }}>
@@ -86,7 +94,7 @@ export default function TableHeadCustom({
                 ) : null}
               </TableSortLabel>
             ) : (
-              headCell.label
+              translate(headCell.label)
             )}
           </TableCell>
         ))}

@@ -1,23 +1,50 @@
+import React, { useState } from 'react';
 // @mui
-import { IconButton } from '@mui/material';
+import { IconButton, MenuItem, Snackbar, Alert } from '@mui/material';
 //
 import Iconify from '../Iconify';
 import MenuPopover from '../MenuPopover';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 // ----------------------------------------------------------------------
 
 type Props = {
+  // actions: React.ReactNode;
+  // open?: HTMLElement | null;
+  // onClose?: VoidFunction;
+  // onOpen?: (event: React.MouseEvent<HTMLElement>) => void;
+  // direction?: 'vertical' | 'horizontal';
   actions: React.ReactNode;
-  open?: HTMLElement | null;
-  onClose?: VoidFunction;
-  onOpen?: (event: React.MouseEvent<HTMLElement>) => void;
   direction?: 'vertical' | 'horizontal';
+  share?: boolean;
+  shareLink?: string;
 };
 
-export default function TableMoreMenu({ actions, open, onClose, onOpen, direction }: Props) {
+export default function TableMoreMenu({ actions, direction, share, shareLink }: Props) {
+  const [open, setOpen] = useState<HTMLElement | null>(null);
+  const [copiedStatus, setCopiedStatus] = useState<boolean>(false);
+
+  const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setOpen(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setOpen(null);
+  };
+
   return (
     <>
-      <IconButton onClick={onOpen}>
+      <Snackbar
+        open={copiedStatus}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        autoHideDuration={2000}
+        onClose={() => setCopiedStatus(false)}
+      >
+        <Alert onClose={() => setCopiedStatus(false)} severity="success">
+          Copied
+        </Alert>
+      </Snackbar>
+      <IconButton onClick={handleOpen}>
         <Iconify
           icon={direction ? `eva:more-${direction}-fill` : 'eva:more-vertical-fill'}
           width={20}
@@ -28,10 +55,9 @@ export default function TableMoreMenu({ actions, open, onClose, onOpen, directio
       <MenuPopover
         open={Boolean(open)}
         anchorEl={open}
-        onClose={onClose}
+        onClose={handleClose}
         anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        arrow="right-top"
         sx={{
           mt: -1,
           width: 160,
@@ -44,6 +70,20 @@ export default function TableMoreMenu({ actions, open, onClose, onOpen, directio
         }}
       >
         {actions}
+        {share && shareLink && (
+          <CopyToClipboard
+            text={shareLink ?? window.location.origin}
+            onCopy={() => {
+              setCopiedStatus(true);
+              setOpen(null);
+            }}
+          >
+            <MenuItem>
+              <Iconify icon={'bi:share-fill'} />
+              Share
+            </MenuItem>
+          </CopyToClipboard>
+        )}
       </MenuPopover>
     </>
   );

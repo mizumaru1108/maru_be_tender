@@ -1,22 +1,30 @@
+// material
+import { Container, styled } from '@mui/material';
+// components
 import Page from 'components/Page';
-import { styled } from '@mui/material/styles';
-import { Container, Typography } from '@mui/material';
+import { TableAMCustom } from 'components/table';
+// mock
+import { AM_UPDATE_REQUEST } from '../mock-data';
+
+// -------------------------------------------------------------------------------
+
+const ContentStyle = styled('div')(({ theme }) => ({
+  maxWidth: '100%',
+  minHeight: '100vh',
+  display: 'flex',
+  justifyContent: 'start',
+  flexDirection: 'column',
+  rowGap: 42,
+}));
+
+// -------------------------------------------------------------------------------
 
 function InfoUpdateRequestPage() {
-  const ContentStyle = styled('div')(({ theme }) => ({
-    maxWidth: '100%',
-    minHeight: '100vh',
-    display: 'flex',
-    justifyContent: 'start',
-    flexDirection: 'column',
-    rowGap: '50px',
-  }));
-
   return (
     <Page title="Information Update Request">
       <Container>
         <ContentStyle>
-          <Typography>Info Update Request</Typography>
+          <TableAMCustom data={AM_UPDATE_REQUEST} headline="info_update_request" />
         </ContentStyle>
       </Container>
     </Page>

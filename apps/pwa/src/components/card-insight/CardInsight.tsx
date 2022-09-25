@@ -21,7 +21,13 @@ export default function CardInsight({ headline, data }: CardInsightProps) {
           </Typography>
         </Grid>
       </Grid>
-      <Grid container spacing={{ xs: 2, md: 4 }} direction="row" alignItems="center">
+      <Grid
+        container
+        spacing={{ xs: 2, md: 4 }}
+        direction="row"
+        alignItems="center"
+        columns={data!.length === 5 ? 15 : 12}
+      >
         {data?.length &&
           data.map((item, i) => (
             <Grid item xs={6} md={3} key={i}>

@@ -1,6 +1,10 @@
+// material
+import { Container, styled } from '@mui/material';
+// components
 import Page from 'components/Page';
-import { styled } from '@mui/material/styles';
-import { Container, Typography } from '@mui/material';
+import { TableAMCustom } from 'components/table';
+// mock
+import { AM_PARTNER_MANAGEMENT } from '../mock-data';
 
 function PartnerManagementPage() {
   const ContentStyle = styled('div')(({ theme }) => ({
@@ -16,7 +20,11 @@ function PartnerManagementPage() {
     <Page title="Partner Management">
       <Container>
         <ContentStyle>
-          <Typography>Partner Management</Typography>
+          <TableAMCustom
+            data={AM_PARTNER_MANAGEMENT}
+            headline="info_update_request"
+            lengthRowsPerPage={10}
+          />
         </ContentStyle>
       </Container>
     </Page>
