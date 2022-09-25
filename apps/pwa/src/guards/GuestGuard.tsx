@@ -15,7 +15,7 @@ const role_url_map = {
   tender_accounts_manager: 'accounts-manager',
   tender_admin: '',
   tender_ceo: '',
-  tender_cashier: '',
+  tender_cashier: 'cashier',
   tender_client: 'client',
   tender_consultant: 'consultant',
   tender_finance: 'finance',

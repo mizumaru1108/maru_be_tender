@@ -50,9 +50,9 @@ export const PATH_FINANCE = {
 export const PATH_CASHIER = {
   root: ROOTS_CASHIER,
   app: path(ROOTS_CASHIER, '/dashboard/app'),
-  Incoming_exchange_permission_requests: path(
+  incoming_exchange_permission_requests: path(
     ROOTS_CASHIER,
-    '/dashboard/Incoming-exchange-permission-requests'
+    '/dashboard/incoming-exchange-permission-requests'
   ),
   requests_in_process: path(ROOTS_CASHIER, '/dashboard/requests-in-process'),
   portal_reports: path(ROOTS_CASHIER, '/dashboard/portal-reports'),

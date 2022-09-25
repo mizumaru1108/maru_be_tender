@@ -60,9 +60,9 @@ const ICONS = {
   },
   tender_cashier: {
     main: getIcon('main'),
-    Incoming_exchange_permission_requests: getIcon('Incoming_exchange_permission_requests'),
+    Incoming_exchange_permission_requests: getIcon('incoming-exchange-permission-requests'),
     requests_in_process: getIcon('requests-in-process'),
-    portal_reports: getIcon('portal_reports'),
+    portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
   },
   tender_ceo: {
@@ -216,8 +216,8 @@ const navConfig = {
           icon: ICONS.tender_cashier.main,
         },
         {
-          title: 'Incoming_exchange_permission_requests',
-          path: PATH_CASHIER.Incoming_exchange_permission_requests,
+          title: 'incoming_exchange_permission_requests',
+          path: PATH_CASHIER.incoming_exchange_permission_requests,
           icon: ICONS.tender_cashier.Incoming_exchange_permission_requests,
         },
         {
