@@ -385,6 +385,17 @@ const ar = {
       placeholer: 'الرجاء كتابة سبب الزيارة هنا ',
     },
   },
+  incoming_funding_requests: 'الطلبات الواردة',
+  project_details: {
+    actions: {
+      main: 'العامة',
+      project_budget: 'موازنة المشروع',
+      follow_ups: 'المتابعات',
+      payments: 'الدفعات',
+      project_path: 'مسار المشروع',
+      project_timeline: 'المسار الزمني للمشروع',
+    },
+  },
 };
 
 export default ar;

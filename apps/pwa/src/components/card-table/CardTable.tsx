@@ -58,7 +58,7 @@ function CardTable({
 
   return (
     <Grid container rowSpacing={3} columnSpacing={2}>
-      <FilterModal open={open} handleClose={handleCloseFilter} />
+      <FilterModal open={open} handleClose={handleCloseFilter} filters={filters} />
       {taps && (
         <Grid item md={12} xs={12}>
           <Typography variant="h4">{title}</Typography>

@@ -51,7 +51,7 @@ function Payments() {
             عدد الدفعات المسجلة
           </Typography>
           <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>5 دفعات</Typography>
-        </Box>{' '}
+        </Box>
       </Grid>
       <Grid item md={2} xs={12}>
         <Box

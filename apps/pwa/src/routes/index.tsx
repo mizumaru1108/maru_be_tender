@@ -66,7 +66,7 @@ export default function Router() {
         </AuthGuard>
       ),
       children: [
-        { element: <Navigate to="/dashboard" replace />, index: true },
+        { element: <Navigate to="/client/dashboard/app" replace />, index: true },
         {
           path: 'my-profile',
           children: [
@@ -77,6 +77,7 @@ export default function Router() {
         {
           path: 'dashboard',
           children: [
+            { element: <Navigate to="/client/dashboard/app" replace />, index: true },
             { path: 'app', element: <MainClientPage /> },
             {
               path: 'funding-project-request',
@@ -125,17 +126,11 @@ export default function Router() {
         </AuthGuard>
       ),
       children: [
-        { element: <Navigate to="/dashboard" replace />, index: true },
-        // {
-        //   path: 'my-profile',
-        //   children: [
-        //     { path: '', element: <ModeratorProfile /> },
-        //     { path: 'edit', element: <ModeratorProfileEdit /> },
-        //   ],
-        // },
+        { element: <Navigate to="/moderator/dashboard/app" replace />, index: true },
         {
           path: 'dashboard',
           children: [
+            { element: <Navigate to="/moderator/dashboard/app" replace />, index: true },
             { path: 'app', element: <MainModeratorPage /> },
             {
               path: 'incoming-support-requests',
@@ -172,54 +167,47 @@ export default function Router() {
       ],
     },
     // Consultant Routes
-    // {
-    //   path: 'consultant',
-    //   element: (
-    //     <AuthGuard>
-    //       <RoleBasedGuard roles={['tender_consultant']} hasContent={true}>
-    //         <DashboardLayout />
-    //       </RoleBasedGuard>
-    //     </AuthGuard>
-    //   ),
-    //   children: [
-    //     { element: <Navigate to="/dashboard" replace />, index: true },
-    //     {
-    //       path: 'dashboard',
-    //       children: [
-    //         { path: 'app', element: <MainClientPage /> },
-    //         {
-    //           path: 'funding-project-request',
-    //           element: <FundingProjectRequest />,
-    //         },
-    //         {
-    //           path: 'draft-funding-requests',
-    //           children: [{ path: '', element: <DraftFundingRequests /> }],
-    //         },
-    //         {
-    //           path: 'previous-funding-requests',
-    //           children: [
-    //             {
-    //               path: '',
-    //               element: <PreviousFundingRequests />,
-    //             },
-    //             // {
-    //             //   path: ':id/:actionType',
-    //             //   children: [
-    //             //     { path: 'main', element: <ProjectDetails /> },
-    //             //     { path: 'project-budget', element: <ProjectDetails /> },
-    //             //   ],
-    //             // },
-    //           ],
-    //         },
-    //         { path: 'messages', element: <Messages /> },
-    //         {
-    //           path: 'contact-support',
-    //           element: <ContactSupport />,
-    //         },
-    //       ],
-    //     },
-    //   ],
-    // },
+    {
+      path: 'consultant',
+      element: (
+        <AuthGuard>
+          <RoleBasedGuard roles={['tender_consultant']} hasContent={true}>
+            <DashboardLayout />
+          </RoleBasedGuard>
+        </AuthGuard>
+      ),
+      children: [
+        { element: <Navigate to="/consultant/dashboard/app" replace />, index: true },
+        {
+          path: 'dashboard',
+          children: [
+            { element: <Navigate to="/consultant/dashboard/app" replace />, index: true },
+            { path: 'app', element: <MainConsultant /> },
+            {
+              path: 'incoming-funding-requests',
+              children: [
+                { path: '', element: <IncomingFundingRequestConsultant /> },
+                {
+                  path: ':id/:actionType',
+                  children: [
+                    { path: 'main', element: <ProjectDetails /> },
+                    { path: 'project-budget', element: <ProjectDetails /> },
+                    { path: 'project-path', element: <ProjectDetails /> },
+                    { path: 'project-timeline', element: <ProjectDetails /> },
+                    { path: 'follow-ups', element: <ProjectDetails /> },
+                  ],
+                },
+              ],
+            },
+            {
+              path: 'portal-reports',
+              children: [{ path: '', element: <PortalReportsConsultant /> }],
+            },
+            { path: 'messages', element: <MessagesConsultant /> },
+          ],
+        },
+      ],
+    },
     // Accounts Manager Routes
     {
       path: 'accounts-manager',
@@ -259,7 +247,7 @@ export default function Router() {
     },
     {
       path: '/',
-      element: <Navigate to={'auth/login'} replace />,
+      element: <Navigate to={'/auth/login'} replace />,
     },
     { path: '*', element: <Navigate to="/404" replace /> },
   ]);
@@ -303,6 +291,13 @@ const PreviouseSupportRequests = Loadable(
 );
 const PortalReports = Loadable(lazy(() => import('pages/moderator/PortalReports')));
 
+// CONSULTANT ROUTES
+const MainConsultant = Loadable(lazy(() => import('pages/consultant/MainPage')));
+const IncomingFundingRequestConsultant = Loadable(
+  lazy(() => import('pages/consultant/IncomingFundingRequests'))
+);
+const PortalReportsConsultant = Loadable(lazy(() => import('pages/consultant/PortalReports')));
+const MessagesConsultant = Loadable(lazy(() => import('pages/consultant/Messages')));
 // AUTHENTICATION ROUTES
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));
 const Register = Loadable(lazy(() => import('../pages/auth/Register')));

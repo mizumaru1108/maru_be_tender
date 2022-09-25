@@ -383,6 +383,17 @@ const en = {
       placeholer: 'الرجاء كتابة سبب الزيارة هنا ',
     },
   },
+  incoming_funding_requests: 'Incoming Funding Requests',
+  project_details: {
+    actions: {
+      main: 'Main',
+      project_budget: 'Project Budget',
+      follow_ups: 'Follow Ups',
+      payments: 'Payments',
+      project_path: 'Project Path',
+      project_timeline: 'Project Timeline',
+    },
+  },
 };
 
 export default en;

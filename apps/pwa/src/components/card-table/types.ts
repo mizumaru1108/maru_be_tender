@@ -10,6 +10,7 @@ type CardTitle = {
 
 type CardContentComp = {
   projectName: string;
+  organizationName?: string;
   createdAt?: Date;
   projectStatus?: string;
   sentSection?: string;
@@ -25,7 +26,7 @@ export type ProjectCardProps = {
     | 'show-details' // With the action bar at the end if the page.
     | 'completing-exchange-permission' // With the action bar at the end if the page.
     | 'draft'; // Without the action bar at the end of the page, but with the ability to continue or remove the project.
-  destination?: 'previous-funding-requests'; // it refers to the url that I came from and the url that I have to go to
+  destination?: 'previous-funding-requests' | 'incoming-funding-requests'; // it refers to the url that I came from and the url that I have to go to
 };
 
 export type filterInterface = {

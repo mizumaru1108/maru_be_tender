@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 // @mui
 import { styled, useTheme } from '@mui/material/styles';
 import { Box, Stack, Drawer, Typography, Button } from '@mui/material';
@@ -41,7 +41,7 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
 
   const { logout, user } = useAuth();
   const { pathname } = useLocation();
-
+  const navigate = useNavigate();
   const isDesktop = useResponsive('up', 'lg');
 
   const role = user?.registrations[0].roles as Role;
@@ -85,7 +85,10 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
           backgroundColor: '#FF484229! important',
           display: 'inline-block',
         }}
-        onClick={logout}
+        onClick={() => {
+          logout();
+          navigate('/auth/login');
+        }}
       >
         <Stack direction="row" gap={2}>
           <img src="/assets/icons/dashboard-navbar/log-out-icon.svg" alt="" />

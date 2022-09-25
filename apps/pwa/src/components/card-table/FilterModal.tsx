@@ -1,6 +1,13 @@
 import { Box, Button, Modal, Stack, TextField, Typography } from '@mui/material';
+import { filterInterface } from './types';
 
-function FilterModal({ open, handleClose }: any) {
+type Props = {
+  open: boolean;
+  handleClose: () => void;
+  filters?: filterInterface[];
+};
+
+function FilterModal({ open, handleClose, filters }: Props) {
   const style = {
     position: 'absolute' as 'absolute',
     top: '50%',
@@ -23,12 +30,16 @@ function FilterModal({ open, handleClose }: any) {
         <Box sx={style}>
           <Stack direction="column" gap={4}>
             <Typography>فلتر</Typography>
-            <TextField select label="اسم الجهة المشرفة*">
-              <option>test</option>
-            </TextField>
-            <TextField select label="حالة المشروع*">
-              <option>test</option>
-            </TextField>
+            {filters?.map((item, index) => (
+              <TextField select label={item.name} key={index}>
+                {item.options.map((option, optionIndex) => (
+                  <option key={optionIndex} value={option.label}>
+                    {option.label}
+                  </option>
+                ))}
+              </TextField>
+            ))}
+
             <Stack direction="row" justifyContent="center">
               <Button onClick={handleClose}>رجوع</Button>
               <Button onClick={handleClose}>تأكيد</Button>

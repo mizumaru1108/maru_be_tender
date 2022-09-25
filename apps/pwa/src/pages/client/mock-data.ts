@@ -500,3 +500,215 @@ export const CardTableDataPrevious = [
     },
   },
 ] as ProjectCardProps[];
+export const IncomingConultationRequests = [
+  {
+    title: {
+      id: '768873',
+    },
+    content: {
+      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
+      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
+      sentSection: 'لا يوجد',
+      employee: 'لا يوجد',
+    },
+    footer: {
+      createdAt: new Date(2022, 8, 2, 15, 58),
+    },
+  },
+  {
+    title: {
+      id: '768873',
+    },
+    content: {
+      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
+      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
+      sentSection: 'لا يوجد',
+      employee: 'لا يوجد',
+    },
+    footer: {
+      createdAt: new Date(2022, 8, 2, 15, 58),
+    },
+  },
+  {
+    title: {
+      id: '768873',
+    },
+    content: {
+      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
+      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
+      sentSection: 'لا يوجد',
+      employee: 'لا يوجد',
+    },
+    footer: {
+      createdAt: new Date(2022, 8, 2, 15, 58),
+    },
+  },
+  {
+    title: {
+      id: '768873',
+    },
+    content: {
+      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
+      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
+      sentSection: 'لا يوجد',
+      employee: 'لا يوجد',
+    },
+    footer: {
+      createdAt: new Date(2022, 8, 2, 15, 58),
+    },
+  },
+  {
+    title: {
+      id: '768873',
+    },
+    content: {
+      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
+      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
+      sentSection: 'لا يوجد',
+      employee: 'لا يوجد',
+    },
+    footer: {
+      createdAt: new Date(2022, 8, 2, 15, 58),
+    },
+  },
+  {
+    title: {
+      id: '768873',
+    },
+    content: {
+      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
+      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
+      sentSection: 'لا يوجد',
+      employee: 'لا يوجد',
+    },
+    footer: {
+      createdAt: new Date(2022, 8, 2, 15, 58),
+    },
+  },
+  {
+    title: {
+      id: '768873',
+    },
+    content: {
+      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
+      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
+      sentSection: 'لا يوجد',
+      employee: 'لا يوجد',
+    },
+    footer: {
+      createdAt: new Date(2022, 8, 2, 15, 58),
+    },
+  },
+  {
+    title: {
+      id: '768873',
+    },
+    content: {
+      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
+      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
+      sentSection: 'لا يوجد',
+      employee: 'لا يوجد',
+    },
+    footer: {
+      createdAt: new Date(2022, 8, 2, 15, 58),
+    },
+  },
+  {
+    title: {
+      id: '768873',
+    },
+    content: {
+      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
+      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
+      sentSection: 'لا يوجد',
+      employee: 'لا يوجد',
+    },
+    footer: {
+      createdAt: new Date(2022, 8, 2, 15, 58),
+    },
+  },
+  {
+    title: {
+      id: '768873',
+    },
+    content: {
+      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
+      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
+      sentSection: 'لا يوجد',
+      employee: 'لا يوجد',
+    },
+    footer: {
+      createdAt: new Date(2022, 8, 2, 15, 58),
+    },
+  },
+  {
+    title: {
+      id: '768873',
+    },
+    content: {
+      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
+      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
+      sentSection: 'لا يوجد',
+      employee: 'لا يوجد',
+    },
+    footer: {
+      createdAt: new Date(2022, 8, 2, 15, 58),
+    },
+  },
+  {
+    title: {
+      id: '768873',
+    },
+    content: {
+      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
+      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
+      sentSection: 'لا يوجد',
+      employee: 'لا يوجد',
+    },
+    footer: {
+      createdAt: new Date(2022, 8, 2, 15, 58),
+    },
+  },
+  {
+    title: {
+      id: '768873',
+    },
+    content: {
+      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
+      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
+      sentSection: 'لا يوجد',
+      employee: 'لا يوجد',
+    },
+    footer: {
+      createdAt: new Date(2022, 8, 2, 15, 58),
+    },
+  },
+  {
+    title: {
+      id: '768873',
+    },
+    content: {
+      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
+      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
+      sentSection: 'لا يوجد',
+      employee: 'لا يوجد',
+    },
+    footer: {
+      createdAt: new Date(2022, 8, 2, 15, 58),
+    },
+  },
+  {
+    title: {
+      id: '768873',
+    },
+    content: {
+      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
+      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
+      sentSection: 'لا يوجد',
+      employee: 'لا يوجد',
+    },
+    footer: {
+      createdAt: new Date(2022, 8, 2, 15, 58),
+    },
+  },
+] as ProjectCardProps[];

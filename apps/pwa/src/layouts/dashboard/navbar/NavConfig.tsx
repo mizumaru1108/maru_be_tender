@@ -47,8 +47,8 @@ const ICONS = {
   },
   tender_consultant: {
     main: getIcon('main'),
-    incoming_funding_requests: getIcon('incoming_funding_requests'),
-    portal_reports: getIcon('portal_reports'),
+    incoming_funding_requests: getIcon('incoming-funding-requests'),
+    portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
   },
   tender_finance: {

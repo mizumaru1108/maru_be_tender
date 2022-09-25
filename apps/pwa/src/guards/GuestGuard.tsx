@@ -17,7 +17,7 @@ const role_url_map = {
   tender_ceo: '',
   tender_cashier: '',
   tender_client: 'client',
-  tender_consultant: '',
+  tender_consultant: 'consultant',
   tender_finance: '',
   tender_moderator: 'moderator',
   tender_project_manager: '',
@@ -31,6 +31,7 @@ export default function GuestGuard({ children }: GuestGuardProps) {
   const { isAuthenticated, isInitialized, user } = useAuth();
 
   const role = user?.registrations[0].roles[0] as Role;
+  console.log(role);
   if (isAuthenticated) {
     return <Navigate to={`/${role_url_map[`${role}`]}/dashboard/app`} />;
   }

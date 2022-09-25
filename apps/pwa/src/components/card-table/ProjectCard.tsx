@@ -103,8 +103,23 @@ const ProjectCard = ({
         </Stack>
 
         {/* The Content Section  */}
-        <Typography variant="h6" gutterBottom sx={{ fontSize: '15px !important' }}>
+        <Typography
+          gutterBottom
+          sx={{ fontSize: '18px !important', fontWeight: 700, lineHeight: 28 / 18 }}
+        >
           {content.projectName}
+        </Typography>
+        <Typography
+          gutterBottom
+          sx={{
+            fontSize: '15px !important',
+            mt: '-4px',
+            mb: '15px',
+            fontWeight: 400,
+            lineHeight: 28 / 18,
+          }}
+        >
+          {content.organizationName}
         </Typography>
         <Stack direction="row" justifyContent="space-between" sx={{ marginBottom: '10px' }}>
           <Stack direction="column" gap={1}>
@@ -200,7 +215,9 @@ const ProjectCard = ({
             gutterBottom
             sx={{ fontSize: '15px !important' }}
           >
-            5 ساعات
+            {footer.createdAt
+              ? `${footer.createdAt.getDay()}.${footer.createdAt.getMonth()}.${footer.createdAt.getFullYear()} في ${footer.createdAt.getHours()}:${footer.createdAt.getMinutes()}`
+              : '5 ساعات'}
           </Typography>
         </Stack>
         {cardFooterButtonAction === 'draft' ? (
