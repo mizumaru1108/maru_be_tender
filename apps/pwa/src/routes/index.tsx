@@ -232,6 +232,65 @@ export default function Router() {
         },
       ],
     },
+    // Finance Routes
+    {
+      path: 'finance',
+      element: (
+        <AuthGuard>
+          <RoleBasedGuard roles={['tender_finance']} hasContent={true}>
+            <DashboardLayout />
+          </RoleBasedGuard>
+        </AuthGuard>
+      ),
+      children: [
+        { element: <Navigate to="/finance/dashboard/app" replace />, index: true },
+        {
+          path: 'dashboard',
+          children: [
+            { element: <Navigate to="/finance/dashboard/app" replace />, index: true },
+            { path: 'app', element: <MainFinance /> },
+            {
+              path: 'incoming-exchange-permission-requests',
+              children: [
+                { path: '', element: <IncomingExchangePermissionRequestsFinance /> },
+                {
+                  path: ':id/:actionType',
+                  children: [
+                    { path: 'main', element: <ProjectDetails /> },
+                    { path: 'project-budget', element: <ProjectDetails /> },
+                    { path: 'project-path', element: <ProjectDetails /> },
+                    { path: 'project-timeline', element: <ProjectDetails /> },
+                    { path: 'follow-ups', element: <ProjectDetails /> },
+                    { path: 'payments', element: <ProjectDetails /> },
+                    { path: 'exchange-details', element: <ProjectDetails /> },
+                  ],
+                },
+              ],
+            },
+            {
+              path: 'requests-in-process',
+              children: [
+                { path: '', element: <RequestsInProcessFinance /> },
+                {
+                  path: ':id/:actionType',
+                  children: [
+                    { path: 'main', element: <ProjectDetails /> },
+                    { path: 'project-budget', element: <ProjectDetails /> },
+                    { path: 'project-path', element: <ProjectDetails /> },
+                    { path: 'project-timeline', element: <ProjectDetails /> },
+                    { path: 'follow-ups', element: <ProjectDetails /> },
+                    { path: 'payments', element: <ProjectDetails /> },
+                    { path: 'exchange-details', element: <ProjectDetails /> },
+                  ],
+                },
+              ],
+            },
+            { path: 'portal-reports', element: <PortalReportsFinance /> },
+            { path: 'messages', element: <MessagesFinance /> },
+          ],
+        },
+      ],
+    },
     // Main Routes
     {
       path: '*',
@@ -298,6 +357,15 @@ const IncomingFundingRequestConsultant = Loadable(
 );
 const PortalReportsConsultant = Loadable(lazy(() => import('pages/consultant/PortalReports')));
 const MessagesConsultant = Loadable(lazy(() => import('pages/consultant/Messages')));
+
+// FINANCE ROUTES
+const MainFinance = Loadable(lazy(() => import('pages/finance/MainPage')));
+const IncomingExchangePermissionRequestsFinance = Loadable(
+  lazy(() => import('pages/finance/IncomingExchangePermissionRequests'))
+);
+const RequestsInProcessFinance = Loadable(lazy(() => import('pages/finance/RequestsInProcess')));
+const PortalReportsFinance = Loadable(lazy(() => import('pages/finance/PortalReports')));
+const MessagesFinance = Loadable(lazy(() => import('pages/finance/Messages')));
 // AUTHENTICATION ROUTES
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));
 const Register = Loadable(lazy(() => import('../pages/auth/Register')));

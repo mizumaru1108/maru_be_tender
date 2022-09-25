@@ -393,9 +393,12 @@ const ar = {
       follow_ups: 'المتابعات',
       payments: 'الدفعات',
       project_path: 'مسار المشروع',
-      project_timeline: 'المسار الزمني للمشروع',
+      project_timeline: 'الخطة الزمنية',
+      exchange_details: 'تفاصيل الصرف',
     },
   },
+  incoming_exchange_permission_requests: 'طلبات إذن الصرف الواردة',
+  requests_in_process: 'طلبات قيد الاجراء',
 };
 
 export default ar;

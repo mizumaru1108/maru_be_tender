@@ -394,6 +394,8 @@ const en = {
       project_timeline: 'Project Timeline',
     },
   },
+  incoming_exchange_permission_requests: 'Incoming Exchange Permission Requests',
+  requests_in_process: 'Requests in Process',
 };
 
 export default en;

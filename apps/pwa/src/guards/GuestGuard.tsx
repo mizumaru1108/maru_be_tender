@@ -18,7 +18,7 @@ const role_url_map = {
   tender_cashier: '',
   tender_client: 'client',
   tender_consultant: 'consultant',
-  tender_finance: '',
+  tender_finance: 'finance',
   tender_moderator: 'moderator',
   tender_project_manager: '',
   tender_project_supervisor: '',

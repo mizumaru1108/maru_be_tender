@@ -7,6 +7,7 @@ import {
   CardContent,
   Divider,
   Box,
+  Grid,
 } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 import { useLocation, useNavigate } from 'react-router';
@@ -182,78 +183,85 @@ const ProjectCard = ({
 
       {/* The Footer Section  */}
       <CardActions sx={{ justifyContent: 'space-between', px: '30px' }}>
-        {footer.payments && (
-          <>
-            {footer.payments.map((payment, index) => (
-              <Typography
-                key={index}
-                variant="h6"
-                color="#1E1E1E"
-                gutterBottom
-                sx={{
-                  textDecorationLine: 'underline',
-                  color: payment.status ? '#1E1E1E' : '#93A3B0',
-                }}
-              >
-                {payment.name}
-              </Typography>
-            ))}
-          </>
-        )}
-        <Stack direction="column">
-          <Typography
-            variant="h6"
-            color="#93A3B0"
-            gutterBottom
-            sx={{ fontSize: '10px !important' }}
-          >
-            تاريخ الإنشاء
-          </Typography>
-          <Typography
-            variant="h6"
-            color="#1E1E1E"
-            gutterBottom
-            sx={{ fontSize: '15px !important' }}
-          >
-            {footer.createdAt
-              ? `${footer.createdAt.getDay()}.${footer.createdAt.getMonth()}.${footer.createdAt.getFullYear()} في ${footer.createdAt.getHours()}:${footer.createdAt.getMinutes()}`
-              : '5 ساعات'}
-          </Typography>
-        </Stack>
-        {cardFooterButtonAction === 'draft' ? (
-          <Stack direction="row" gap={2}>
-            <Button
-              variant="outlined"
-              onClick={onDeleteDraftClick}
-              startIcon={<img alt="" src="/icons/trash-icon.svg" />}
-              sx={{
-                color: 'Red',
-                borderColor: 'Red',
-              }}
-            >
-              حذف المسودة
-            </Button>
-            <Button
-              onClick={onContinuingDraftClick}
-              startIcon={<img alt="" src="/icons/edit-pencile-icon.svg" />}
-              sx={{ backgroundColor: 'text.tertiary', color: '#fff' }}
-            >
-              إكمال الطلب
-            </Button>
-          </Stack>
-        ) : (
-          <Button
-            variant="outlined"
-            sx={{
-              background: cardFooterButtonAction === 'show-project' ? '#fff' : '#0E8478',
-              color: cardFooterButtonAction === 'show-project' ? '#1E1E1E' : '#fff',
-              borderColor: cardFooterButtonAction === 'show-project' ? '#000' : undefined,
-            }}
-            onClick={handleOnClick}
-          >
-            {translate(cardFooterButtonActionLocal[`${cardFooterButtonAction}`])}
-          </Button>
-        )}
+        <Grid container spacing={2}>
+          {footer.payments && (
+            <Grid container item md={12} columnSpacing={1}>
+              {footer.payments.map((payment, index) => (
+                <Grid item key={index}>
+                  <Typography
+                    key={index}
+                    color="#1E1E1E"
+                    gutterBottom
+                    sx={{
+                      textDecorationLine: 'underline',
+                      color: payment.status ? '#1E1E1E' : '#93A3B0',
+                    }}
+                  >
+                    {payment.name}
+                  </Typography>
+                </Grid>
+              ))}
+            </Grid>
+          )}
+          <Grid item md={12}>
+            <Stack direction="row" justifyContent="space-between">
+              <Stack direction="column">
+                <Typography
+                  variant="h6"
+                  color="#93A3B0"
+                  gutterBottom
+                  sx={{ fontSize: '10px !important' }}
+                >
+                  تاريخ الإنشاء
+                </Typography>
+                <Typography
+                  variant="h6"
+                  color="#1E1E1E"
+                  gutterBottom
+                  sx={{ fontSize: '15px !important' }}
+                >
+                  {footer.createdAt
+                    ? `${footer.createdAt.getDay()}.${footer.createdAt.getMonth()}.${footer.createdAt.getFullYear()} في ${footer.createdAt.getHours()}:${footer.createdAt.getMinutes()}`
+                    : '5 ساعات'}
+                </Typography>
+              </Stack>
+              {cardFooterButtonAction === 'draft' ? (
+                <Stack direction="row" gap={2}>
+                  <Button
+                    variant="outlined"
+                    onClick={onDeleteDraftClick}
+                    startIcon={<img alt="" src="/icons/trash-icon.svg" />}
+                    sx={{
+                      color: 'Red',
+                      borderColor: 'Red',
+                    }}
+                  >
+                    حذف المسودة
+                  </Button>
+                  <Button
+                    onClick={onContinuingDraftClick}
+                    startIcon={<img alt="" src="/icons/edit-pencile-icon.svg" />}
+                    sx={{ backgroundColor: 'text.tertiary', color: '#fff' }}
+                  >
+                    إكمال الطلب
+                  </Button>
+                </Stack>
+              ) : (
+                <Button
+                  variant="outlined"
+                  sx={{
+                    background: cardFooterButtonAction === 'show-project' ? '#fff' : '#0E8478',
+                    color: cardFooterButtonAction === 'show-project' ? '#1E1E1E' : '#fff',
+                    borderColor: cardFooterButtonAction === 'show-project' ? '#000' : undefined,
+                  }}
+                  onClick={handleOnClick}
+                >
+                  {translate(cardFooterButtonActionLocal[`${cardFooterButtonAction}`])}
+                </Button>
+              )}
+            </Stack>
+          </Grid>
+        </Grid>
       </CardActions>
     </Card>
   );
