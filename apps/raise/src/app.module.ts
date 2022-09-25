@@ -39,6 +39,7 @@ import { PermissionManagerModule } from './permission-manager/permission-manager
 import { WidgetBackendModule } from './widget-backend/widget-backend.module';
 import { DonationModule } from './donation/donation.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { TenderModule } from './tender/tender.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -115,7 +116,7 @@ import { PrismaModule } from './prisma/prisma.module';
     PermissionManagerModule,
     DonationModule,
     PrismaModule,
-
+    TenderModule,
   ],
   controllers: [],
 })
