@@ -26,6 +26,7 @@ const data = [
     thirdField: 'عرض تفاصيل المشروع',
   },
 ];
+
 function ClientCarousel() {
   const theme = useTheme();
   const carouselRef = useRef<Slider | null>(null);

@@ -55,6 +55,7 @@ export default function Router() {
         { path: 'new-password', element: <NewPassword /> },
       ],
     },
+
     // Client Routes
     {
       path: 'client',
@@ -166,6 +167,7 @@ export default function Router() {
         },
       ],
     },
+
     // Consultant Routes
     {
       path: 'consultant',
@@ -232,6 +234,7 @@ export default function Router() {
         },
       ],
     },
+
     // Finance Routes
     {
       path: 'finance',
@@ -349,6 +352,7 @@ export default function Router() {
         },
       ],
     },
+
     // Project Supervisor Routes
     {
       path: 'project-supervisor',
@@ -438,6 +442,29 @@ export default function Router() {
         },
       ],
     },
+
+    // CEO Routes
+    {
+      path: 'ceo',
+      element: (
+        <AuthGuard>
+          <RoleBasedGuard roles={['tender_ceo']} hasContent={true}>
+            <DashboardLayout />
+          </RoleBasedGuard>
+        </AuthGuard>
+      ),
+      children: [
+        { element: <Navigate to="/ceo/dashboard/app" replace />, index: true },
+        {
+          path: 'dashboard',
+          children: [
+            { element: <Navigate to="/ceo/dashboard/app" replace />, index: true },
+            { path: 'app', element: <MainCeoPage /> },
+          ],
+        },
+      ],
+    },
+
     // Main Routes
     {
       path: '*',
@@ -541,6 +568,10 @@ const IncomingExchangePermissionRequestsCashier = Loadable(
 const RequestsInProcessCashier = Loadable(lazy(() => import('pages/cashier/RequestsInProcess')));
 const PortalReportsCashier = Loadable(lazy(() => import('pages/cashier/PortalReports')));
 const MessagesCashier = Loadable(lazy(() => import('pages/cashier/Messages')));
+
+// CEO ROUTES
+const MainCeoPage = Loadable(lazy(() => import('pages/ceo/MainCeoPage')));
+
 // AUTHENTICATION ROUTES
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));
 const Register = Loadable(lazy(() => import('../pages/auth/Register')));
