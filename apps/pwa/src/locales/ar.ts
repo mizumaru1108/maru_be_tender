@@ -399,6 +399,8 @@ const ar = {
   },
   incoming_exchange_permission_requests: 'طلبات إذن الصرف الواردة',
   requests_in_process: 'طلبات قيد الاجراء',
+  incoming_funding_requests_project_supervisor: 'طلبات الدعم الواردة',
+  payment_adjustment: 'ضبط الدفعات',
 };
 
 export default ar;

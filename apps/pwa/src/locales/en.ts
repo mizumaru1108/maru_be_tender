@@ -396,6 +396,8 @@ const en = {
   },
   incoming_exchange_permission_requests: 'Incoming Exchange Permission Requests',
   requests_in_process: 'Requests in Process',
+  incoming_funding_requests_project_supervisor: 'Incoming Funding Requests',
+  payment_adjustment: 'Payment Adjustment',
 };
 
 export default en;

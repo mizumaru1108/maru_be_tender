@@ -68,7 +68,7 @@ function Payments() {
             الميزانية الكلية للمشروع
           </Typography>
           <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>500 ريال</Typography>
-        </Box>{' '}
+        </Box>
       </Grid>
       <Grid item md={2} xs={12}>
         <Box

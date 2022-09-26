@@ -30,7 +30,8 @@ export type ProjectCardProps = {
     | 'previous-funding-requests'
     | 'incoming-funding-requests'
     | 'requests-in-process'
-    | 'incoming-exchange-permission-requests'; // it refers to the url that I came from and the url that I have to go to
+    | 'incoming-exchange-permission-requests'
+    | 'payment-adjustment'; // it refers to the url that I came from and the url that I have to go to
 };
 
 export type filterInterface = {

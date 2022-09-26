@@ -83,11 +83,11 @@ const ICONS = {
   },
   tender_project_supervisor: {
     main: getIcon('main'),
-    incoming_funding_requests: getIcon('incoming_funding_requests'),
-    requests_in_process: getIcon('requests_in_process'),
-    previous_funding_requests: getIcon('previous_funding_requests'),
-    payment_adjustment: getIcon('payment_adjustment'),
-    portal_reports: getIcon('portal_reports'),
+    incoming_funding_requests: getIcon('incoming-funding-requests-project-supervisor'),
+    requests_in_process: getIcon('requests-in-process'),
+    previous_funding_requests: getIcon('previous-funding-requests'),
+    payment_adjustment: getIcon('payment-adjustment'),
+    portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
   },
   tender_moderator: {
@@ -322,7 +322,7 @@ const navConfig = {
           icon: ICONS.tender_project_supervisor.main,
         },
         {
-          title: 'incoming_funding_requests',
+          title: 'incoming_funding_requests_project_supervisor',
           path: PATH_PROJECT_SUPERVISOR.incoming_funding_requests,
           icon: ICONS.tender_project_supervisor.incoming_funding_requests,
         },
