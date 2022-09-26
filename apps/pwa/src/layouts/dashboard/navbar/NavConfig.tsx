@@ -74,11 +74,11 @@ const ICONS = {
   },
   tender_project_manager: {
     main: getIcon('main'),
-    incoming_funding_requests: getIcon('incoming_funding_requests'),
-    requests_in_process: getIcon('requests_in_process'),
-    previous_funding_requests: getIcon('previous_funding_requests'),
-    exchange_permission: getIcon('exchange_permission'),
-    portal_reports: getIcon('portal_reports'),
+    incoming_funding_requests: getIcon('incoming-funding-requests'),
+    requests_in_process: getIcon('requests-in-process'),
+    previous_funding_requests: getIcon('previous-funding-requests'),
+    exchange_permission: getIcon('payment-adjustment'),
+    portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
   },
   tender_project_supervisor: {

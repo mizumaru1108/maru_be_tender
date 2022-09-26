@@ -20,7 +20,7 @@ const role_url_map = {
   tender_consultant: 'consultant',
   tender_finance: 'finance',
   tender_moderator: 'moderator',
-  tender_project_manager: '',
+  tender_project_manager: 'project-manager',
   tender_project_supervisor: 'project-supervisor',
 };
 type GuestGuardProps = {
