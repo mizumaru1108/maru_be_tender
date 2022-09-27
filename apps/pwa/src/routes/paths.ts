@@ -77,6 +77,7 @@ export const PATH_PROJECT_MANAGER = {
   exchange_permission: path(ROOTS_PROJECT_MANAGER, '/dashboard/exchange-permission'),
   portal_reports: path(ROOTS_PROJECT_MANAGER, '/dashboard/portal-reports'),
   messages: path(ROOTS_PROJECT_MANAGER, '/dashboard/messages'),
+  appointments_with_partners: path(ROOTS_PROJECT_MANAGER, '/dashboard/appointments-with-partners'),
 };
 export const PATH_MODERATOR = {
   root: ROOTS_MODERATOR,

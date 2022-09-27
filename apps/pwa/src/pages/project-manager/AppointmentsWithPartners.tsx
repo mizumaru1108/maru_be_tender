@@ -1,9 +1,9 @@
 import { Container } from '@mui/material';
 import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
-import Main from 'sections/project-manager/main/Main';
+import Appointments from 'sections/project-manager/appintments-with-partner';
 
-function MainPage() {
+function AppointmentsWithPartners() {
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -13,14 +13,14 @@ function MainPage() {
     gap: 20,
   }));
   return (
-    <Page title="Previous Funding Requests">
+    <Page title="Appointments With Partners">
       <Container>
         <ContentStyle>
-          <Main />
+          <Appointments />
         </ContentStyle>
       </Container>
     </Page>
   );
 }
 
-export default MainPage;
+export default AppointmentsWithPartners;

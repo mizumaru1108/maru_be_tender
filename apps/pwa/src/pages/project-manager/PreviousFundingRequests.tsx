@@ -24,6 +24,10 @@ function PreviousFundingRequests() {
             dateFilter={true}
             filters={[
               { name: 'اسم الجهة المشرفة*', options: [{ label: 'اسم الجهة المشرفة*', value: '' }] },
+              {
+                name: 'حالة المشروع*',
+                options: [{ label: 'الرجاء اختيار حالة المشروع', value: '' }],
+              },
             ]}
             taps={['اسم الجمعية المختارة', 'اسم الجمعية المختارة', 'حالة المشروع المختارة']}
           />

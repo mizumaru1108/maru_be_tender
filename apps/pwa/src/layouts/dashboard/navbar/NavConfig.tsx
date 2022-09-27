@@ -80,6 +80,7 @@ const ICONS = {
     exchange_permission: getIcon('payment-adjustment'),
     portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
+    appointments_with_partners: getIcon('appointments-with-partners'),
   },
   tender_project_supervisor: {
     main: getIcon('main'),
@@ -308,6 +309,11 @@ const navConfig = {
           title: 'messages',
           path: PATH_PROJECT_MANAGER.messages,
           icon: ICONS.tender_project_manager.messages,
+        },
+        {
+          title: 'appointments_with_partners',
+          path: PATH_PROJECT_MANAGER.appointments_with_partners,
+          icon: ICONS.tender_project_manager.appointments_with_partners,
         },
       ],
     },

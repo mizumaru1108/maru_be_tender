@@ -398,6 +398,8 @@ const en = {
   requests_in_process: 'Requests in Process',
   incoming_funding_requests_project_supervisor: 'Incoming Funding Requests',
   payment_adjustment: 'Payment Adjustment',
+  appointments_with_partners: 'Appointments With Partners',
+  exchange_permission: 'Exchange Permission',
 };
 
 export default en;
