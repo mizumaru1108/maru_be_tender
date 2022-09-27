@@ -4,13 +4,6 @@ type footerMessage = {
   createdAt: Date;
 };
 
-type message = {
-  partnerName: string;
-  projectName: string;
-  message: string;
-  footer: footerMessage;
-};
-
 export const CardTableIncomingSupportRequests = [
   {
     title: {
@@ -131,48 +124,13 @@ export const Messages = [
     projectName: 'name1',
     message:
       'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem sequi, blanditiis provident assumenda ipsam officia ipsa repellendus quia quaerat reprehenderit inventore totam, necessitatibus ipsum ullam amet atque rerumiure saepe.',
-    footer: new Date(),
+    footer: new Date(2022, 8, 2, 15, 58),
   },
   {
     partnerName: 'project2',
     projectName: 'name2',
     message:
       'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem sequi, blanditiis provident assumenda ipsam officia ipsa repellendus quia quaerat reprehenderit inventore totam, necessitatibus ipsum ullam amet atque rerumiure saepe.',
-    footer: new Date(),
-  },
-  {
-    partnerName: 'project3',
-    projectName: 'name3',
-    message:
-      'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem sequi, blanditiis provident assumenda ipsam officia ipsa repellendus quia quaerat reprehenderit inventore totam, necessitatibus ipsum ullam amet atque rerumiure saepe.',
-    footer: new Date(),
-  },
-  {
-    partnerName: 'project3',
-    projectName: 'name3',
-    message:
-      'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem sequi, blanditiis provident assumenda ipsam officia ipsa repellendus quia quaerat reprehenderit inventore totam, necessitatibus ipsum ullam amet atque rerumiure saepe.',
-    footer: new Date(),
-  },
-  {
-    partnerName: 'project3',
-    projectName: 'name3',
-    message:
-      'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem sequi, blanditiis provident assumenda ipsam officia ipsa repellendus quia quaerat reprehenderit inventore totam, necessitatibus ipsum ullam amet atque rerumiure saepe.',
-    footer: new Date(),
-  },
-  {
-    partnerName: 'project3',
-    projectName: 'name3',
-    message:
-      'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem sequi, blanditiis provident assumenda ipsam officia ipsa repellendus quia quaerat reprehenderit inventore totam, necessitatibus ipsum ullam amet atque rerumiure saepe.',
-    footer: new Date(),
-  },
-  {
-    partnerName: 'project3',
-    projectName: 'name3',
-    message:
-      'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem sequi, blanditiis provident assumenda ipsam officia ipsa repellendus quia quaerat reprehenderit inventore totam, necessitatibus ipsum ullam amet atque rerumiure saepe.',
-    footer: new Date(),
+    footer: new Date(2022, 8, 2, 15, 58),
   },
 ];

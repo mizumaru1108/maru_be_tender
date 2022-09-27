@@ -54,119 +54,230 @@ function ModeratorMessages() {
         <Grid
           container
           columns={14}
+          spacing={4}
           direction="row"
           sx={{
-            height: '0vh',
+            '& .MuiGrid-root.MuiGrid-item': {
+              paddingTop: '24px',
+              paddingBottom: '24px',
+              paddingRight: 0,
+            },
           }}
         >
-          {/* Grid Container Kiri */}
-          <Grid item xs={8} sx={{ border: '2px solid red' }}>
-            <Typography variant="h4">test</Typography>
-          </Grid>
-
           {/* Grid Container Kanan */}
           <Grid item xs={6}>
             {/* Stack for Message Option */}
-            <Stack spacing={1} sx={{ margin: 2 }}>
-              {/* Box for Tabs */}
-              <Box>
-                {/* Tabs */}
-                <Tabs
-                  value={valueTabItem}
-                  onChange={handleChangeTabsItem}
-                  variant="fullWidth"
-                  textColor="inherit"
-                  TabIndicatorProps={{
-                    style: { display: 'none' },
-                  }}
-                  aria-label="full width tabs example"
-                >
-                  <TabItemCustom label="External Corespondence" {...a11yItemProps(0)} />
-                  <TabItemCustom label="Internal Corespondence" {...a11yItemProps(1)} />
-                </Tabs>
-              </Box>
+            <Stack display="flex" spacing={1} sx={{ margin: 2 }} gap="24px">
+              {/* Tabs */}
+              <Tabs
+                value={valueTabItem}
+                onChange={handleChangeTabsItem}
+                variant="fullWidth"
+                textColor="inherit"
+                TabIndicatorProps={{
+                  style: { display: 'none' },
+                }}
+                sx={{
+                  backgroundColor: 'rgba(147, 163, 176, 0.16)',
+                  borderRadius: '16px',
+                  '& .MuiTabs-indicator': {
+                    backgroundColor: 'orange',
+                  },
+                  '& .MuiTab-root.Mui-selected': {
+                    backgroundColor: '#0E8478',
+                    color: '#fff',
+                    borderRadius: 2,
+                  },
+                  '& .MuiButtonBase-root.MuiTab-root:not(:last-of-type)': {
+                    marginRight: 0,
+                  },
+                }}
+                aria-label="full width tabs example"
+              >
+                <Tab label="External Corespondence" {...a11yItemProps(0)} />
+                <Tab label="Internal Corespondence" {...a11yItemProps(1)} />
+              </Tabs>
               {/* Filter & Message */}
-              <Grid container direction="row" columns={14}>
-                <Grid item xs={4}>
-                  <Button
+              <Stack
+                direction="row"
+                display="flex"
+                gap="24px"
+                alignItems="center"
+                justifyContent="right"
+                sx={{
+                  marginTop: '0px !important',
+                  '& .MuiStack-root.:not(style)+:not(style)': {
+                    marginTop: 0,
+                    paddingTop: '8px',
+                  },
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontFamily: 'Cairo',
+                    fontWeight: 700,
+                    fontSize: '24px',
+                  }}
+                >
+                  Message
+                </Typography>
+                <Stack
+                  display="flex"
+                  direction="row"
+                  onClick={() => alert('Clicked')}
+                  sx={{
+                    width: '82px',
+                    height: '38px',
+                    borderRadius: '8px',
+                    color: '#000',
+                    backgroundColor: '#fff',
+                    border: '1px solid #000',
+                    '&:hover': {
+                      cursor: 'pointer',
+                    },
+                  }}
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  <Iconify icon={'clarity:filter-line'} color="#000" width={16} height={16} />
+                  <Typography
                     sx={{
-                      color: '#000',
-                      backgroundColor: '#fff',
-                      border: '1px solid #000',
-                      width: 100,
+                      fontFamily: 'Cairo',
+                      fontWeight: 500,
+                      fontSize: '12px',
+                      lineHeight: '22px',
+                      color: '#1E1E1E',
+                      paddingLeft: '4px',
                     }}
-                    endIcon={
-                      <Iconify icon={'clarity:filter-line'} color="#000" width={24} height={24} />
-                    }
                   >
                     Filter
-                  </Button>
-                </Grid>
-                <Grid item xs={10}>
-                  <Typography variant="h4" sx={{ textAlign: 'left' }}>
-                    Message
                   </Typography>
-                </Grid>
-              </Grid>
-              <Box sx={{ height: '300px', overflowX: 'auto' }}>
+                </Stack>
+              </Stack>
+              {/* Mapping message */}
+              <Box sx={{ height: '978px', overflowX: 'hidden' }}>
                 {Messages.map((item, index) => (
-                  <Grid
-                    container
+                  <Stack
+                    direction="row"
                     key={index}
+                    gap="8px"
                     sx={{
-                      py: 1,
+                      padding: 2,
                       color: '#000',
-                      backgroundColor:
-                        focusedIndex === index ? '#fff' : 'rgba(147, 163, 176, 0.16)',
+                      backgroundColor: focusedIndex === index ? '#fff' : undefined,
 
                       // set on hover to change color, give delay 0.5s
                       '&:hover': {
+                        cursor: 'pointer',
                         // only if focusedIndex is not equal to index
                         ...(focusedIndex !== index && {
                           //set transition when mouse hover
-                          transition: 'all 1.2s',
+                          transition: 'all 0.5s',
                           color: '#000',
                           // background color gradient darker than #fff
                           backgroundColor: '#fff',
                         }),
                       },
-                    }}
-                    // on hover
+                    }} // on hover
                     onClick={() => {
                       setFocusedIndex(index);
                     }}
                   >
-                    <Grid item xs={11}>
-                      <Typography>
+                    <Stack>
+                      <Iconify
+                        icon={'codicon:account'}
+                        color="#000"
+                        sx={{
+                          width: '32px',
+                          height: '32px',
+                        }}
+                      />
+                    </Stack>
+                    <Stack
+                      direction="column"
+                      sx={{
+                        '& .MuiStack-root': {
+                          gap: '9px',
+                        },
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          height: '26px',
+                          fontFamily: 'Cairo',
+                          fontWeight: 700,
+                          fontSize: '14px',
+                          lineHeight: '26px',
+                          color: '#1E1E1E',
+                          bottopPadding: '3px',
+                        }}
+                      >
                         {item.partnerName} - {item.projectName}
                       </Typography>
-                    </Grid>
-                    <Grid item xs={1}>
-                      <Iconify icon={'codicon:account'} color="#000" width={24} height={24} />
-                    </Grid>
-                    <Grid item xs={12}>
-                      {item.message}
-                    </Grid>
-                    <Grid item xs={12}>
-                      {new Date(item.footer).toLocaleString()}
-                    </Grid>
-                  </Grid>
+                      <Typography
+                        sx={{
+                          fontFamily: 'Cairo',
+                          fontWeight: 400,
+                          fontSize: '12px',
+                          lineHeight: '24px',
+                          color: '#1E1E1E',
+                          bottopPadding: '8px',
+                        }}
+                      >
+                        {item.message}
+                      </Typography>
+
+                      <Typography
+                        sx={{
+                          fontFamily: 'Cairo',
+                          fontWeight: 600,
+                          fontSize: '10px',
+                          lineHeight: '19px',
+                          color: '#8E8E8E',
+                          bottopPadding: '8px',
+                          height: '19px',
+                        }}
+                      >
+                        {new Date(item.footer).toLocaleString()}
+                      </Typography>
+                    </Stack>
+                  </Stack>
                 ))}
-              </Box>
-              <Box display="flex" justifyContent="flex-end">
-                <Button
-                  sx={{ backgroundColor: '#0E8478', color: '#fff', borderRadius: 4, padding: 2 }}
-                  endIcon={
-                    <Iconify icon={'bi:chat-square-text'} color="#fff" width={24} height={24} />
-                  }
-                >
-                  Create a new message
-                </Button>
               </Box>
 
               {/* <Typography display="flex" justifyContent="flex-end" padding={2}>
                 asdas
               </Typography> */}
+            </Stack>
+
+            <Button
+              sx={{
+                backgroundColor: '#0E8478',
+                color: '#fff',
+                borderRadius: 4,
+                padding: 2,
+                width: '162px',
+                height: '51px',
+              }}
+              endIcon={<Iconify icon={'bi:chat-square-text'} color="#fff" width={24} height={24} />}
+            >
+              <Typography
+                sx={{
+                  fontFamily: 'Cairo',
+                  fontWeight: 600,
+                  fontSize: '10px',
+                  lineHeight: '19px',
+                  color: '#fff',
+                }}
+              >
+                Create a new message
+              </Typography>
+            </Button>
+          </Grid>
+          {/* Grid Container Kiri */}
+          <Grid item xs={8} sx={{ border: '2px solid red' }}>
+            <Stack height="978px">
+              <Typography variant="h4">test</Typography>
             </Stack>
           </Grid>
         </Grid>
