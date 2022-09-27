@@ -225,7 +225,13 @@ export default function Router() {
             { path: 'app', element: <MainManagerPage /> },
             { path: 'new/join-request', element: <NewJoinRequestPage /> },
             { path: 'info/update-request', element: <InfoUpdateRequestPage /> },
-            { path: 'partner/management', element: <PartnerManagementPage /> },
+            {
+              path: 'partner',
+              children: [
+                { path: 'management', element: <PartnerManagementPage /> },
+                { path: ':partnerName', element: <PartnerDetailsPage /> },
+              ],
+            },
             { path: 'portal-reports', element: <PortalReportsPage /> },
             { path: 'messages', element: <MessagesManagerPage /> },
           ],
@@ -480,6 +486,9 @@ const InfoUpdateRequestPage = Loadable(
 );
 const PartnerManagementPage = Loadable(
   lazy(() => import('pages/accounts-manager/partner/management'))
+);
+const PartnerDetailsPage = Loadable(
+  lazy(() => import('pages/accounts-manager/partner/PartnerDetails'))
 );
 const PortalReportsPage = Loadable(lazy(() => import('pages/accounts-manager/PortalReportsPage')));
 const MessagesManagerPage = Loadable(lazy(() => import('pages/accounts-manager/Messages')));

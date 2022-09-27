@@ -22,7 +22,7 @@ function PartnerManagementPage() {
         <ContentStyle>
           <TableAMCustom
             data={AM_PARTNER_MANAGEMENT}
-            headline="info_update_request"
+            headline="partner_management"
             lengthRowsPerPage={10}
           />
         </ContentStyle>

@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { TableRow, Checkbox, TableCell, Typography, IconButton, Button } from '@mui/material';
+import { TableRow, Checkbox, TableCell, Typography, Button } from '@mui/material';
 // components
 import Label from '../Label';
 import Image from '../Image';
 import TableMoreMenu from './TableMoreMenu';
+import Iconify from '../Iconify';
 // hooks
 import { IPropsTablesList } from './type';
 import moment from 'moment';
-// import currency from 'currency.js';
 import useLocales from 'hooks/useLocales';
-//
-import Iconify from '../Iconify';
+import { PATH_ACCOUNTS_MANAGER } from 'routes/paths';
+import { useNavigate } from 'react-router-dom';
 
 // ----------------------------------------------------------------------
 
@@ -28,6 +28,7 @@ type Props = {
 export default function ProductTableRow({ row, selected, onSelectRow }: Props) {
   const theme = useTheme();
   const { translate } = useLocales();
+  const navigate = useNavigate();
 
   const { partner_name, createdAt, account_status, events, update_status } = row;
 
@@ -61,7 +62,7 @@ export default function ProductTableRow({ row, selected, onSelectRow }: Props) {
       </TableCell>
       <TableCell align="left">
         <Button
-          onClick={() => alert(`${partner_name}`)}
+          onClick={() => navigate(PATH_ACCOUNTS_MANAGER.partnerDetails(partner_name as string))}
           color="inherit"
           size="small"
           sx={{ mr: 0.5 }}
