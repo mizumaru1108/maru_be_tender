@@ -1,8 +1,4 @@
-import { Suspense, lazy, ElementType } from 'react';
-import { Navigate, useRoutes, useLocation } from 'react-router-dom';
-import useAuth from '../hooks/useAuth';
-import LogoOnlyLayout from '../layouts/LogoOnlyLayout';
-import LoadingScreen from '../components/LoadingScreen';
+import { Navigate, useRoutes } from 'react-router-dom';
 import { clientRoute } from './client-route';
 import { consultantRoute } from './consultant-route';
 import { moderatorRoute } from './moderator-route';
@@ -14,6 +10,7 @@ import { authRoute } from './auth-route';
 import { accoutsManagerRoute } from './accounts-manager-route';
 import { ceoRoute } from './ceo-route';
 import { mainRoute } from './main-route';
+import { adminRoute } from './admin-route';
 
 // ----------------------------------------------------------------------
 
@@ -30,6 +27,7 @@ export default function Router() {
     projectManagerRoute,
     ceoRoute,
     mainRoute,
+    adminRoute,
     {
       path: '/',
       element: <Navigate to={'/auth/login'} replace />,

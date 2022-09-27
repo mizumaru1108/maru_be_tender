@@ -400,6 +400,20 @@ const en = {
   payment_adjustment: 'Payment Adjustment',
   appointments_with_partners: 'Appointments With Partners',
   exchange_permission: 'Exchange Permission',
+  transaction_progression: 'Transaction Progression',
+  tracks_budget: 'Tracks Budget',
+  gregorian_year: 'Gregorian Year',
+  application_and_admission_settings: 'Application and Admission Settings',
+  mobile_settings: 'Mobile Settings',
+  system_messages: 'System Messages',
+  system_configuration: 'System Configuration',
+  users_and_permissions: 'Users and Permissions',
+  authority: 'Authority',
+  entity_area: 'Entity Area',
+  regions_project_location: 'Regions Project Location',
+  entity_classification: 'Entity Classification',
+  bank_name: 'Bank Name',
+  beneficiaries: 'Beneficiaries',
 };
 
 export default en;

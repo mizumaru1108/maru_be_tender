@@ -15,8 +15,32 @@ const ROOTS_PROJECT_MANAGER = '/project-manager';
 const ROOTS_PROJECT_SUPERVISOR = '/project-supervisor';
 const ROOTS_ACCOUNTS_MANAGER = '/accounts-manager';
 const ROOTS_MODERATOR = '/moderator';
+const ROOTS_ADMIN = '/admin';
 // ----------------------------------------------------------------------
 
+export const PATH_ADMIN = {
+  root: ROOTS_ADMIN,
+  app: path(ROOTS_ADMIN, '/dashboard/app'),
+  transaction_progression: path(ROOTS_ADMIN, '/dashboard/transaction-progression'),
+  tracks_budget: path(ROOTS_ADMIN, '/dashboard/tracks-budget'),
+  gregorian_year: path(ROOTS_ADMIN, '/dashboard/gregorian-year'),
+  application_and_admission_settings: path(
+    ROOTS_ADMIN,
+    '/dashboard/application-and-admission-settings'
+  ),
+  mobile_settings: path(ROOTS_ADMIN, '/dashboard/mobile-settings'),
+  system_messages: path(ROOTS_ADMIN, '/dashboard/system-messages'),
+  system_configuration: path(ROOTS_ADMIN, '/dashboard/system-configuration'),
+  users_and_permissions: path(ROOTS_ADMIN, '/dashboard/users-and-permissions'),
+  authority: path(ROOTS_ADMIN, '/dashboard/authority'),
+  entity_area: path(ROOTS_ADMIN, '/dashboard/entity-area'),
+  regions_project_location: path(ROOTS_ADMIN, '/dashboard/regions-project-location'),
+  entity_classification: path(ROOTS_ADMIN, '/dashboard/entity-classification'),
+  bank_name: path(ROOTS_ADMIN, '/dashboard/bank-name'),
+  beneficiaries: path(ROOTS_ADMIN, '/dashboard/beneficiaries'),
+  portal_reports: path(ROOTS_ADMIN, '/dashboard/portal-reports'),
+  messages: path(ROOTS_ADMIN, '/dashboard/messages'),
+};
 export const PATH_CLIENT = {
   root: ROOTS_CLIENT,
   app: path(ROOTS_CLIENT, '/dashboard/app'),
