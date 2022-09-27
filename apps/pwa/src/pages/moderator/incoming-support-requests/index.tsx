@@ -20,7 +20,7 @@ function IncomingSupportRequests() {
     options: [
       {
         label: 'filter',
-        value: 'a to z',
+        value: 'filter',
       },
     ],
   };

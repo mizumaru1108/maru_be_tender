@@ -401,6 +401,22 @@ const ar = {
   requests_in_process: 'طلبات قيد الاجراء',
   incoming_funding_requests_project_supervisor: 'طلبات الدعم الواردة',
   payment_adjustment: 'ضبط الدفعات',
+  appointments_with_partners: 'المواعيد مع الشركاء',
+  exchange_permission: 'إذن الصرف',
+  transaction_progression: 'سير المعاملات',
+  tracks_budget: 'ميزانية المسارات',
+  gregorian_year: 'السنة الميلادية',
+  application_and_admission_settings: 'إعدادات التقديم و القبول',
+  mobile_settings: 'إعدادات الجوال',
+  system_messages: 'رسائل النظام',
+  system_configuration: 'إعدادات النظام',
+  users_and_permissions: 'المستخدمين والصلاحيات',
+  authority: 'الجهة المشرفة',
+  entity_area: 'مجال الجهة',
+  regions_project_location: 'المناطق - مكان المشروع',
+  entity_classification: 'تصنيف الجهة',
+  bank_name: 'اسم البنك',
+  beneficiaries: 'المستفيدين',
 };
 
 export default ar;

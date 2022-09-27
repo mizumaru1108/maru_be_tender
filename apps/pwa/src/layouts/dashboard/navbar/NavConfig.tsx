@@ -9,6 +9,7 @@ import {
   PATH_PROJECT_SUPERVISOR,
   PATH_ACCOUNTS_MANAGER,
   PATH_MODERATOR,
+  PATH_ADMIN,
 } from '../../../routes/paths';
 import SvgIconStyle from '../../../components/SvgIconStyle';
 
@@ -74,12 +75,13 @@ const ICONS = {
   },
   tender_project_manager: {
     main: getIcon('main'),
-    incoming_funding_requests: getIcon('incoming_funding_requests'),
-    requests_in_process: getIcon('requests_in_process'),
-    previous_funding_requests: getIcon('previous_funding_requests'),
-    exchange_permission: getIcon('exchange_permission'),
-    portal_reports: getIcon('portal_reports'),
+    incoming_funding_requests: getIcon('incoming-funding-requests'),
+    requests_in_process: getIcon('requests-in-process'),
+    previous_funding_requests: getIcon('previous-funding-requests'),
+    exchange_permission: getIcon('payment-adjustment'),
+    portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
+    appointments_with_partners: getIcon('appointments-with-partners'),
   },
   tender_project_supervisor: {
     main: getIcon('main'),
@@ -103,6 +105,25 @@ const ICONS = {
     infoUpdateRequest: getIcon('draft-request'),
     partnerManagement: getIcon('draft-request'),
     portal_reports: getIcon('portal_reports'),
+    messages: getIcon('message-bar'),
+  },
+  tender_admin: {
+    main: getIcon('main'),
+    transaction_progression: getIcon('transaction-progression'),
+    tracks_budget: getIcon('tracks-budget'),
+    gregorian_year: getIcon('gregorian-year'),
+    application_and_admission_settings: getIcon('application-and-admission-settings'),
+    mobile_settings: getIcon('mobile-settings'),
+    system_messages: getIcon('system-messages'),
+    system_configuration: getIcon('system-configuration'),
+    users_and_permissions: getIcon('users-and-permissions'),
+    authority: getIcon('authority'),
+    entity_area: getIcon('entity-area'),
+    regions_project_location: getIcon('regions-project-location'),
+    entity_classification: getIcon('entity-classification'),
+    bank_name: getIcon('bank-name'),
+    beneficiaries: getIcon('beneficiaries'),
+    portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
   },
 };
@@ -309,6 +330,11 @@ const navConfig = {
           path: PATH_PROJECT_MANAGER.messages,
           icon: ICONS.tender_project_manager.messages,
         },
+        {
+          title: 'appointments_with_partners',
+          path: PATH_PROJECT_MANAGER.appointments_with_partners,
+          icon: ICONS.tender_project_manager.appointments_with_partners,
+        },
       ],
     },
   ],
@@ -426,8 +452,101 @@ const navConfig = {
       ],
     },
   ],
+  tender_admin: [
+    {
+      subheader: '',
+      items: [
+        {
+          title: 'main',
+          path: PATH_ADMIN.app,
+          icon: ICONS.tender_admin.main,
+        },
+
+        {
+          title: 'transaction_progression',
+          path: PATH_ADMIN.transaction_progression,
+          icon: ICONS.tender_admin.transaction_progression,
+        },
+        {
+          title: 'tracks_budget',
+          path: PATH_ADMIN.tracks_budget,
+          icon: ICONS.tender_admin.tracks_budget,
+        },
+
+        {
+          title: 'gregorian_year',
+          path: PATH_ADMIN.gregorian_year,
+          icon: ICONS.tender_admin.gregorian_year,
+        },
+        {
+          title: 'application_and_admission_settings',
+          path: PATH_ADMIN.application_and_admission_settings,
+          icon: ICONS.tender_admin.application_and_admission_settings,
+        },
+        {
+          title: 'mobile_settings',
+          path: PATH_ADMIN.mobile_settings,
+          icon: ICONS.tender_admin.mobile_settings,
+        },
+        {
+          title: 'system_messages',
+          path: PATH_ADMIN.system_messages,
+          icon: ICONS.tender_admin.system_messages,
+        },
+        {
+          title: 'system_configuration',
+          path: PATH_ADMIN.system_configuration,
+          icon: ICONS.tender_admin.system_configuration,
+        },
+        {
+          title: 'users_and_permissions',
+          path: PATH_ADMIN.users_and_permissions,
+          icon: ICONS.tender_admin.users_and_permissions,
+        },
+        {
+          title: 'authority',
+          path: PATH_ADMIN.authority,
+          icon: ICONS.tender_admin.authority,
+        },
+        {
+          title: 'entity_area',
+          path: PATH_ADMIN.entity_area,
+          icon: ICONS.tender_admin.entity_area,
+        },
+        {
+          title: 'regions_project_location',
+          path: PATH_ADMIN.regions_project_location,
+          icon: ICONS.tender_admin.regions_project_location,
+        },
+        {
+          title: 'entity_classification',
+          path: PATH_ADMIN.entity_classification,
+          icon: ICONS.tender_admin.entity_classification,
+        },
+        {
+          title: 'bank_name',
+          path: PATH_ADMIN.bank_name,
+          icon: ICONS.tender_admin.bank_name,
+        },
+        {
+          title: 'beneficiaries',
+          path: PATH_ADMIN.beneficiaries,
+          icon: ICONS.tender_admin.beneficiaries,
+        },
+        {
+          title: 'portal_reports',
+          path: PATH_ADMIN.portal_reports,
+          icon: ICONS.tender_admin.portal_reports,
+        },
+        {
+          title: 'messages',
+          path: PATH_ADMIN.messages,
+          icon: ICONS.tender_admin.messages,
+        },
+      ],
+    },
+  ],
   cluster_admin: [],
-  tender_admin: [],
 };
 
 export default navConfig;
