@@ -3,7 +3,7 @@ import Complexity from './Complexity';
 import Concessional from './Concessional';
 import Initiatives from './Initiatives';
 import Mosques from './Mosques';
-import ProjectManagement from './ProjectManagement';
+import ProjectManagementPage from './ProjectManagement';
 
 function DashboardPage() {
   return (
@@ -22,7 +22,7 @@ function DashboardPage() {
           <Initiatives />
         </Grid>
       </Grid>
-      <ProjectManagement />
+      <ProjectManagementPage />
     </>
   );
 }

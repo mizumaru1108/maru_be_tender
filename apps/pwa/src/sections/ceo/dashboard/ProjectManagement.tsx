@@ -5,7 +5,7 @@ import {
 
 import ProjectManagementTable from '../../../components/table/ceo/project-management/ProjectManagementTable';
 
-function ProjectManagement() {
+function ProjectManagementPage() {
   const headerCells: ProjectManagementTableHeader[] = [
     { id: 'partner_name', label: 'partner_name' },
     { id: 'createdAt', label: 'date_of_registration' },
@@ -98,4 +98,4 @@ function ProjectManagement() {
   return <ProjectManagementTable headerCell={headerCells} data={projectManagementData} />;
 }
 
-export default ProjectManagement;
+export default ProjectManagementPage;
