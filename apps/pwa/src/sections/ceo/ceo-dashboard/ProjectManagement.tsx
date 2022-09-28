@@ -5,11 +5,13 @@ import {
 
 import ProjectManagementTable from '../../../components/table/ceo/project-management/ProjectManagementTable';
 
-function ProjectManagementPage() {
+function DashboardProjectManagement() {
   const headerCells: ProjectManagementTableHeader[] = [
-    { id: 'partner_name', label: 'partner_name' },
-    { id: 'createdAt', label: 'date_of_registration' },
-    { id: 'account_status', label: 'account_status', align: 'left' },
+    { id: 'projectNumber', label: 'Project Number' },
+    { id: 'projectName', label: 'Project Name' },
+    { id: 'associationName', label: 'Association Name', align: 'left' },
+    { id: 'projectSection', label: 'Section', align: 'left' },
+    { id: 'createdAt', label: 'Date Created', align: 'left' },
     { id: 'events', label: 'events', align: 'left' },
   ];
 
@@ -98,4 +100,4 @@ function ProjectManagementPage() {
   return <ProjectManagementTable headerCell={headerCells} data={projectManagementData} />;
 }
 
-export default ProjectManagementPage;
+export default DashboardProjectManagement;

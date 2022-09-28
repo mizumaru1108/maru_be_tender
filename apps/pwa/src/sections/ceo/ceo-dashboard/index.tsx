@@ -3,9 +3,9 @@ import Complexity from './Complexity';
 import Concessional from './Concessional';
 import Initiatives from './Initiatives';
 import Mosques from './Mosques';
-import ProjectManagementPage from './ProjectManagement';
+import DashboardProjectManagement from './ProjectManagement';
 
-function DashboardPage() {
+function CeoDashboard() {
   return (
     <>
       <Grid container rowSpacing={0} columnSpacing={0} gap={0}>
@@ -22,9 +22,9 @@ function DashboardPage() {
           <Initiatives />
         </Grid>
       </Grid>
-      <ProjectManagementPage />
+      <DashboardProjectManagement />
     </>
   );
 }
 
-export default DashboardPage;
+export default CeoDashboard;

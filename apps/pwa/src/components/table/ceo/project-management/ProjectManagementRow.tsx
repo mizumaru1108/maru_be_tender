@@ -1,17 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { TableRow, Checkbox, TableCell, Typography, IconButton, Button } from '@mui/material';
+import { TableRow, Checkbox, TableCell, Typography, Button } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 //
 import { ProjectManagementTableColumn } from './project-management';
+import Iconify from '../../../Iconify';
+import { stringTruncate } from '../../../../utils/stringTruncate';
+import moment from 'moment';
 
 export default function ProductTableRow({
   row,
   selected,
   onSelectRow,
 }: ProjectManagementTableColumn) {
-  const {} = row;
   const theme = useTheme();
   const { translate } = useLocales();
 
@@ -22,30 +24,28 @@ export default function ProductTableRow({
       </TableCell>
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
         <Typography variant="subtitle2" noWrap>
-          {/* {partner_name} */}
+          {row.projectNumber ?? ''}
         </Typography>
       </TableCell>
-      {/* <TableCell>{moment(createdAt).format('DD-MM-YYYY')}</TableCell>
       <TableCell align="left">
-        <Label
-          variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
-          color={
-            ((!account_status || account_status === 'waiting') && 'warning') ||
-            (account_status === 'approved' && 'success') ||
-            'error'
-          }
-          sx={{ textTransform: 'capitalize' }}
-        >
-          {(account_status === 'approved' && translate('active_account')) ||
-            (account_status === 'waiting' && translate('waiting_activation')) ||
-            (account_status !== 'waiting' &&
-              account_status !== 'approved' &&
-              translate('canceled_account'))}
-        </Label>
+        <Typography variant="subtitle2" noWrap>
+          {row.projectName ? stringTruncate(row.projectName, 23) : ''}
+        </Typography>
       </TableCell>
       <TableCell align="left">
+        <Typography variant="subtitle2" noWrap>
+          {row.associationName ? stringTruncate(row.associationName, 23) : ''}
+        </Typography>
+      </TableCell>
+      <TableCell align="left">
+        <Typography variant="subtitle2" noWrap>
+          {row.projectSection ? stringTruncate(row.projectSection, 23) : ''}
+        </Typography>
+      </TableCell>
+      <TableCell>{row.createdAt ? moment(row.createdAt).format('DD-MM-YYYY') : ''}</TableCell>
+      <TableCell align="left">
         <Button
-          onClick={() => alert(`${partner_name}`)}
+          onClick={() => alert(`${row.projectName}`)}
           color="inherit"
           size="small"
           sx={{ mr: 0.5 }}
@@ -54,20 +54,6 @@ export default function ProductTableRow({
           {translate('account_review')}
         </Button>
       </TableCell>
-      {update_status && (
-        <TableCell align="left">
-          <Button
-            onClick={() => alert(`${partner_name}`)}
-            color="inherit"
-            variant="outlined"
-            size="medium"
-            sx={{ mr: 0.5 }}
-          >
-            <Iconify icon={'bx:briefcase'} width={20} height={20} sx={{ mr: 1 }} />
-            {translate('view_partner_projects')}
-          </Button>
-        </TableCell>
-      )} */}
     </TableRow>
   );
 }

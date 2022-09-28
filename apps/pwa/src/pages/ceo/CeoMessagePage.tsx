@@ -1,9 +1,9 @@
 import { Container } from '@mui/material';
 import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
-import CeoDashboard from '../../sections/ceo/ceo-dashboard';
+import CeoMessage from '../../sections/ceo/ceo-messages';
 
-function MainCeoPage() {
+function CeoMessagePage() {
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -14,14 +14,14 @@ function MainCeoPage() {
   }));
 
   return (
-    <Page title="Ceo Dashboard">
+    <Page title="Ceo Messaging">
       <Container>
         <ContentStyle>
-          <CeoDashboard />
+          <CeoMessage />
         </ContentStyle>
       </Container>
     </Page>
   );
 }
 
-export default MainCeoPage;
+export default CeoMessagePage;

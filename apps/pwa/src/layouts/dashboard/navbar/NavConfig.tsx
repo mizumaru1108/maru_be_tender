@@ -68,9 +68,9 @@ const ICONS = {
   },
   tender_ceo: {
     main: getIcon('main'),
-    project_management: getIcon('project_management'),
-    rejection_list: getIcon('rejection_list'),
-    portal_reports: getIcon('portal_reports'),
+    project_management: getIcon('project-management'),
+    rejection_list: getIcon('rejection-list'),
+    portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
   },
   tender_project_manager: {
@@ -269,12 +269,12 @@ const navConfig = {
           icon: ICONS.tender_ceo.main,
         },
         {
-          title: 'Incoming_exchange_permission_requests',
+          title: 'project_management',
           path: PATH_CEO.project_management,
           icon: ICONS.tender_ceo.project_management,
         },
         {
-          title: 'requests_in_process',
+          title: 'rejection_list',
           path: PATH_CEO.rejection_list,
           icon: ICONS.tender_ceo.rejection_list,
         },
