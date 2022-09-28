@@ -123,7 +123,7 @@ const FundingProjectRequestForm = () => {
       ...requestState.form3,
       ...requestState.form4,
       ...requestState.form5,
-      submitter_user_id: 'ruAow402uaFO68PHvbLlF',
+      submitter_user_id: 'ruAow402uaFO68PHvbLlF', // a dummy user_id, in the future we'll get the user_id from the user state
       id: nanoid(),
     };
     const res = await updateTodo({
