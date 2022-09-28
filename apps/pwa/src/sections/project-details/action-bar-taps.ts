@@ -41,13 +41,16 @@ export const Taps = {
   ],
   tender_moderator: [
     {
-      title: 'main',
+      title: 'project_details.actions.main',
+      value: 'main',
     },
     {
-      title: 'project-path',
+      title: 'project_details.actions.project_path',
+      value: 'project-path',
     },
     {
-      title: 'follow-ups',
+      title: 'project_details.actions.follow_ups',
+      value: 'follow-ups',
     },
   ],
   tender_finance: [

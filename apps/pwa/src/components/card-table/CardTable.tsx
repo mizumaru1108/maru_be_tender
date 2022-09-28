@@ -11,6 +11,7 @@ function CardTable({
   title,
   data,
   dateFilter,
+  limitShowCard,
   alphabeticalOrder,
   pagination = true,
   filters,
@@ -20,7 +21,7 @@ function CardTable({
   const [page, setPage] = useState(1);
   // The params that will be used with the query later on
   const [params, setParams] = useState({
-    limit: 6,
+    limit: limitShowCard ? limitShowCard : 6,
     offset: 0,
     order_by: { email: 'asc' },
   });

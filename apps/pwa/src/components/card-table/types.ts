@@ -41,6 +41,7 @@ export type filterInterface = {
 
 export type CardTableProps = {
   title: string;
+  limitShowCard?: number;
   data: ProjectCardProps[];
   dateFilter?: boolean;
   alphabeticalOrder?: boolean;

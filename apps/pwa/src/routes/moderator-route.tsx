@@ -33,7 +33,20 @@ export const moderatorRoute = {
       path: 'dashboard',
       children: [
         { element: <Navigate to="/moderator/dashboard/app" replace />, index: true },
-        { path: 'app', element: <MainModeratorPage /> },
+        {
+          path: 'app',
+          children: [
+            { path: '', element: <MainModeratorPage /> },
+            {
+              path: ':id/:actionType',
+              children: [
+                { path: 'main', element: <ProjectDetails /> },
+                { path: 'project-path', element: <ProjectDetails /> },
+                { path: 'follow-ups', element: <ProjectDetails /> },
+              ],
+            },
+          ],
+        },
         {
           path: 'incoming-support-requests',
           // element: <IncomingSupportRequests />,
@@ -56,7 +69,11 @@ export const moderatorRoute = {
             { path: '', element: <PreviouseSupportRequests /> },
             {
               path: ':id/:actionType',
-              children: [{ path: 'main', element: <ProjectDetails /> }],
+              children: [
+                { path: 'main', element: <ProjectDetails /> },
+                { path: 'project-path', element: <ProjectDetails /> },
+                { path: 'follow-ups', element: <ProjectDetails /> },
+              ],
             },
           ],
         },

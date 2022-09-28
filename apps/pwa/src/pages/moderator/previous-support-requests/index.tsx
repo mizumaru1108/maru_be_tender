@@ -35,7 +35,7 @@ function PreviousSupportRequests() {
             filters={[filter]} // optional
             dateFilter={true}
             // taps={['كل المشاريع', 'مشاريع منتهية', 'مشاريع معلقة']}
-            cardFooterButtonAction="show-details"
+            cardFooterButtonAction="show-project"
           />
         </ContentStyle>
       </Container>
