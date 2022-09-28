@@ -40,7 +40,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // -------------------------------------------------------------------------------
 
 function AccountPartnerDetails() {
-  const secret = HASURA_ADMIN_SECRET || 'hbd4KbAS5XjHw5';
+  const secret = 'hbd4KbAS5XjHw5';
   const theme = useTheme();
 
   // Routes

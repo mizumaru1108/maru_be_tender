@@ -27,7 +27,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 function InfoUpdateRequestPage() {
   const path = HASURA_GRAPHQL_URL;
-  const secret = HASURA_ADMIN_SECRET || 'hbd4KbAS5XjHw5';
+  const secret = 'hbd4KbAS5XjHw5';
 
   const [newJoinRequestData, setNewJoinRequestData] = useState<IPropsTablesList[] | null>(null);
 
