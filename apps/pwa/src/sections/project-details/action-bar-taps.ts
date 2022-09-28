@@ -39,6 +39,24 @@ export const Taps = {
       value: 'follow-ups',
     },
   ],
+  tender_ceo: [
+    {
+      title: 'project_details.actions.main',
+      value: 'main',
+    },
+    {
+      title: 'project_details.actions.project_budget',
+      value: 'project-budget',
+    },
+    {
+      title: 'project_details.actions.project_path',
+      value: 'project-path',
+    },
+    {
+      title: 'project_details.actions.follow_ups',
+      value: 'follow-ups',
+    },
+  ],
   tender_moderator: [
     {
       title: 'main',

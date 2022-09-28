@@ -21,13 +21,13 @@ import { TableHeadCustom, TableSelectedActions } from 'components/table';
 // hooks
 import useLocales from 'hooks/useLocales';
 import useTable, { getComparator } from 'hooks/useTable';
+import { ProjectManagement } from '../project-management/project-management';
+import ProjectManagementRow from '../project-management/ProjectManagementRow';
+import { RejectionListTableProps, RejectionList } from './rejection-list';
 
-import { ProjectManagement, ProjectManagementTableProps } from './project-management';
-import ProjectManagementTableRow from './ProjectManagementRow';
-
-export default function ProjectManagementTable({ data, headerCell }: ProjectManagementTableProps) {
+export default function RejectionListTable({ data, headerCell }: RejectionListTableProps) {
   const { translate } = useLocales();
-  const [tableData, setTableData] = useState<ProjectManagement[]>([]);
+  const [tableData, setTableData] = useState<RejectionList[]>([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 
   const {
@@ -142,7 +142,7 @@ export default function ProjectManagementTable({ data, headerCell }: ProjectMana
               dataFiltered
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((projectManagement, key) => (
-                  <ProjectManagementTableRow
+                  <ProjectManagementRow
                     key={projectManagement.id}
                     row={projectManagement}
                     selected={selected.includes(projectManagement.id as string)}

@@ -1,4 +1,4 @@
-export interface ProjectManagement {
+export interface RejectionList {
   id: string;
   projectNumber: string;
   projectName: string;
@@ -7,20 +7,20 @@ export interface ProjectManagement {
   createdAt: Date;
 }
 
-export interface ProjectManagementTableHeader {
+export interface RejectionListTableHeader {
   id: string;
   label: string;
   align?: 'left' | 'right' | 'center';
 }
 
-export interface ProjectManagementTableColumn {
-  row: ProjectManagement;
+export interface RejectionListTableColumn {
+  row: RejectionList;
   selected?: boolean;
   onSelectRow?: VoidFunction;
   destination?: string;
 }
 
-export interface ProjectManagementTableProps {
-  data: ProjectManagement[];
-  headerCell: ProjectManagementTableHeader[];
+export interface RejectionListTableProps {
+  data: RejectionList[];
+  headerCell: RejectionListTableHeader[];
 }
