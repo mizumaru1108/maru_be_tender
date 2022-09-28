@@ -1,6 +1,6 @@
 import { Box, Container, styled, Typography } from '@mui/material';
 import Page from 'components/Page';
-import MobileSettingsForm from 'sections/admin/system-confiquration/MobileSettingsForm';
+import MobileSettingsForm from 'sections/admin/mobile-settings/MobileSettingsForm';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
