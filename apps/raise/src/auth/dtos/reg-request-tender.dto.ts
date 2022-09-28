@@ -35,6 +35,11 @@ export class RegReqTenderDto {
   @ApiProperty()
   @IsOptional()
   @IsString()
+  roles: string[];
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
   @IsNotEmpty()
   employee_path: string;
 
