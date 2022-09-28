@@ -103,6 +103,7 @@ export const PATH_PROJECT_MANAGER = {
   messages: path(ROOTS_PROJECT_MANAGER, '/dashboard/messages'),
   appointments_with_partners: path(ROOTS_PROJECT_MANAGER, '/dashboard/appointments-with-partners'),
 };
+
 export const PATH_MODERATOR = {
   root: ROOTS_MODERATOR,
   app: path(ROOTS_MODERATOR, '/dashboard/app'),
@@ -129,7 +130,8 @@ export const PATH_ACCOUNTS_MANAGER = {
   newJoinRequest: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/new/join-request'),
   infoUpdateRequest: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/info/update-request'),
   partnerManagement: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/partner/management'),
-  partnerDetails: (partnerName: string) =>  `${path(ROOTS_ACCOUNTS_MANAGER, `/dashboard/partner/${partnerName}`)}`,
+  partnerDetails: (partnerName: string) =>
+    `${path(ROOTS_ACCOUNTS_MANAGER, `/dashboard/partner/${partnerName}`)}`,
   portalReports: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/portal-reports'),
   messages: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/messages'),
 };

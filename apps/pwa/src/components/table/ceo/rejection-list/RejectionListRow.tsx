@@ -3,19 +3,19 @@
 import { useTheme } from '@mui/material/styles';
 import { TableRow, Checkbox, TableCell, Typography, Button } from '@mui/material';
 import useLocales from 'hooks/useLocales';
-//
-import { ProjectManagementTableColumn } from './project-management';
+
 import Iconify from '../../../Iconify';
 import { stringTruncate } from '../../../../utils/stringTruncate';
 import moment from 'moment';
+import { RejectionListTableColumn } from './rejection-list';
 import { useLocation, useNavigate } from 'react-router';
 
-export default function ProjectManagementTableRow({
+export default function RejectionListTableRow({
   row,
   selected,
-  onSelectRow,
   destination,
-}: ProjectManagementTableColumn) {
+  onSelectRow,
+}: RejectionListTableColumn) {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
