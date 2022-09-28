@@ -30,7 +30,7 @@ export default function ProductTableRow({ row, selected, onSelectRow }: Props) {
   const { translate } = useLocales();
   const navigate = useNavigate();
 
-  const { partner_name, createdAt, account_status, events, update_status } = row;
+  const { partner_name, createdAt, account_status, events, update_status, id } = row;
 
   return (
     <TableRow hover selected={selected}>
@@ -62,7 +62,7 @@ export default function ProductTableRow({ row, selected, onSelectRow }: Props) {
       </TableCell>
       <TableCell align="left">
         <Button
-          onClick={() => navigate(PATH_ACCOUNTS_MANAGER.partnerDetails(partner_name as string))}
+          onClick={() => navigate(PATH_ACCOUNTS_MANAGER.partnerDetails(id as string))}
           color="inherit"
           size="small"
           sx={{ mr: 0.5 }}

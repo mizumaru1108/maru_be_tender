@@ -38,7 +38,7 @@ export const accoutsManagerRoute = {
           path: 'partner',
           children: [
             { path: 'management', element: <PartnerManagementPage /> },
-            { path: ':partnerName', element: <PartnerDetailsPage /> },
+            { path: ':partnerId', element: <PartnerDetailsPage /> },
           ],
         },
         { path: 'portal-reports', element: <PortalReportsPage /> },
