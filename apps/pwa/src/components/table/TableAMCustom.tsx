@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+/* eslint-disable array-callback-return */
+import { useState, useEffect, ChangeEvent } from 'react';
 // material
 import {
   Link,
@@ -18,7 +19,7 @@ import {
 // components
 import { TableHeadCustom, TableRowsData, TableSelectedActions } from 'components/table';
 import Iconify from 'components/Iconify';
-import Searchbar from 'layouts/dashboard/header/SearchbarV3_2_0';
+import SearchbarTable from './SearchbarTable';
 // hooks
 import useTable, { getComparator } from 'hooks/useTable';
 import useLocales from 'hooks/useLocales';
@@ -112,6 +113,13 @@ export default function TableAMCustom({
     alert('data');
   };
 
+  // Searchbar
+  const [query, setQuery] = useState('');
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+  };
+
   useEffect(() => {
     setTableData(data);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -119,25 +127,19 @@ export default function TableAMCustom({
 
   return (
     <>
-      <Stack
-        direction="row"
-        spacing={2}
-        justifyContent={view_all ? 'flex-end' : 'space-between'}
-        alignItems="center"
-      >
-        {/* {!view_all && <Searchbar />} */}
-        <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-          <Typography variant="h4" sx={{ mr: 2 }}>
-            {translate(`${headline}`)}
-          </Typography>
-          {view_all && (
-            <Link component={RouterLink} to={view_all} variant="caption">
-              <Typography variant="subtitle2" noWrap>
-                {translate(`link_view_all`)}
-              </Typography>
-            </Link>
-          )}
-        </Box>
+      <Stack direction="row" spacing={6} justifyContent="space-between" alignItems="center">
+        <Typography variant="h4" sx={{ mr: 2 }}>
+          {translate(`${headline}`)}
+        </Typography>
+        {!view_all ? (
+          <SearchbarTable func={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)} />
+        ) : (
+          <Link component={RouterLink} to={view_all} variant="caption">
+            <Typography variant="subtitle2" noWrap>
+              {translate(`link_view_all`)}
+            </Typography>
+          </Link>
+        )}
       </Stack>
       <TableContainer sx={{ minWidth: 800, position: 'relative' }}>
         {selected.length > 0 && (
@@ -184,6 +186,13 @@ export default function TableAMCustom({
             {dataFiltered.length > 0 &&
               dataFiltered
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .filter((v) => {
+                  if (query === '') {
+                    return v;
+                  } else if (v.partner_name?.toLowerCase().includes(query.toLowerCase())) {
+                    return v;
+                  }
+                })
                 .map((x, key) => (
                   <TableRowsData
                     key={x?.partner_name}

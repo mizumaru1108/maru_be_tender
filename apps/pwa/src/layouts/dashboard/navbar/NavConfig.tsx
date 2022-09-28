@@ -101,10 +101,10 @@ const ICONS = {
   },
   tender_accounts_manager: {
     main: getIcon('main'),
-    newJoinRequest: getIcon('previous-request'),
-    infoUpdateRequest: getIcon('draft-request'),
-    partnerManagement: getIcon('draft-request'),
-    portal_reports: getIcon('portal_reports'),
+    newJoinRequest: getIcon('new-join-request'),
+    infoUpdateRequest: getIcon('information-update-request'),
+    partnerManagement: getIcon('users-and-permissions'),
+    portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
   },
   tender_admin: {

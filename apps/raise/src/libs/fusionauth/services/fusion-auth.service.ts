@@ -149,12 +149,19 @@ export class FusionAuthService {
   async fusionAuthRegTender(registerRequest: RegReqTenderDto) {
     const baseUrl = this.fusionAuthUrl;
     const registerUrl = baseUrl + '/api/user/registration/';
+    const role: any = registerRequest.roles ? registerRequest.roles : ['tender_client'];
     const user: IFusionAuthUser = {
       email: registerRequest.email,
       password: registerRequest.password,
       firstName: registerRequest.employee_name,
       lastName: '',
       mobilePhone: registerRequest.mobile_number,
+      registrations: [
+        {
+          roles: role,
+        }
+      ]
+
 
     };
     const registration: IFusionAuthUserRegistration = {

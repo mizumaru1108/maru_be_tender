@@ -129,6 +129,7 @@ export const PATH_ACCOUNTS_MANAGER = {
   newJoinRequest: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/new/join-request'),
   infoUpdateRequest: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/info/update-request'),
   partnerManagement: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/partner/management'),
+  partnerDetails: (partnerName: string) =>  `${path(ROOTS_ACCOUNTS_MANAGER, `/dashboard/partner/${partnerName}`)}`,
   portalReports: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/portal-reports'),
   messages: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/messages'),
 };

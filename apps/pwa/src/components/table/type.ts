@@ -1,4 +1,5 @@
 export type IPropsTablesList = {
+  id?: string | null;
   partner_name?: string | null;
   createdAt?: Date | string | null;
   account_status?: string | null;

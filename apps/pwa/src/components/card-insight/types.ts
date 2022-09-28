@@ -1,6 +1,5 @@
 import { GridSpacing } from '@mui/material';
-import { ResponsiveStyleValue } from '@mui/system';
-import { SxProps } from '@mui/system';
+import { ResponsiveStyleValue, SxProps } from '@mui/system';
 import { Theme } from '@mui/material/styles';
 
 export type CardInsightProps = {

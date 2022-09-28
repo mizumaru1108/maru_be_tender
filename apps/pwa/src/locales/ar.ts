@@ -417,6 +417,50 @@ const ar = {
   entity_classification: 'تصنيف الجهة',
   bank_name: 'اسم البنك',
   beneficiaries: 'المستفيدين',
+  system_configuration_form: {
+    enterprise_name: { label: 'اسم المؤسسة', placeholder: 'اسم المؤسسة' },
+    enterprise_email: { label: 'ايميل المؤسسة', placeholder: 'ايميل المؤسسة' },
+    telephone_fix: { label: 'الهاتف الارضي', placeholder: 'الهاتف الارضي' },
+    mobile_phone: { label: 'رقم الموبايل', placeholder: 'رقم الموبايل' },
+    enterprise_logo: {
+      label: 'شعار المؤسسة',
+      placeholder: 'تصفح واختر الملفات التي تريد تحميلها من جهاز الكمبيوتر الخاص بك',
+    },
+  },
+  application_and_admission_settings_form: {
+    starting_date: { label: 'تاريخ البداية', placeholder: 'الرجاء اختيار تاريخ البداية' },
+    ending_date: { label: 'تاريخ النهاية', placeholder: 'الرجاء اختيار تاريخ النهاية' },
+    number_of_allowing_projects: {
+      label: 'عدد المشاريع المسموح بها',
+      placeholder: 'الرجاء كتابة عدد المشاريع المسموح بها',
+    },
+    hieght_project_budget: {
+      label: 'الميزانية العليا للمشروع',
+      placeholder: 'الرجاء كتابة الميزانية العليا للمشروع',
+    },
+    number_of_days_to_meet_business: {
+      label: 'عدد الأيام لتلبية الأعمال',
+      placeholder: 'الرجاء كتابة عدد الأيام لتلبية الأعمال',
+    },
+    Indicator_of_project_duration_days: {
+      label: 'مؤشر أيام جراسة المشروع',
+      placeholder: 'الرجاء كتابة مؤشر أيام جراسة المشروع',
+    },
+  },
+  mobile_settings_form: {
+    field1: {
+      label: 'TWILIO_ACCOUNT_SID ',
+      placeholder: 'TWILIO_ACCOUNT_SID ',
+    },
+    field2: {
+      label: 'TWILIO_ACCOUNT_SID ',
+      placeholder: 'TWILIO_AUTH_TOKEN',
+    },
+    mobile_number: {
+      label: 'رقم الموبايل',
+      placeholder: 'الرجاء كتابة رقم الموبايل',
+    },
+  },
 };
 
 export default ar;

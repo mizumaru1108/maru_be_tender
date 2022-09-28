@@ -14,6 +14,9 @@ const PartnerManagementPage = Loadable(
 );
 const PortalReportsPage = Loadable(lazy(() => import('pages/accounts-manager/PortalReportsPage')));
 const MessagesManagerPage = Loadable(lazy(() => import('pages/accounts-manager/Messages')));
+const PartnerDetailsPage = Loadable(
+  lazy(() => import('pages/accounts-manager/partner/PartnerDetails'))
+);
 
 export const accoutsManagerRoute = {
   path: 'accounts-manager',
@@ -31,7 +34,13 @@ export const accoutsManagerRoute = {
         { path: 'app', element: <MainManagerPage /> },
         { path: 'new/join-request', element: <NewJoinRequestPage /> },
         { path: 'info/update-request', element: <InfoUpdateRequestPage /> },
-        { path: 'partner/management', element: <PartnerManagementPage /> },
+        {
+          path: 'partner',
+          children: [
+            { path: 'management', element: <PartnerManagementPage /> },
+            { path: ':partnerId', element: <PartnerDetailsPage /> },
+          ],
+        },
         { path: 'portal-reports', element: <PortalReportsPage /> },
         { path: 'messages', element: <MessagesManagerPage /> },
       ],

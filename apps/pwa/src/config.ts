@@ -6,6 +6,7 @@ import { SettingsValueProps } from './components/settings/type';
 import { PATH_DASHBOARD } from './routes/paths';
 
 export const HASURA_GRAPHQL_URL = process.env.REACT_APP_HASURA_GRAPHQL_URL!;
+export const HASURA_ADMIN_SECRET = process.env.REACT_APP_HASURA_ADMIN_SECRET!;
 
 // API
 // ----------------------------------------------------------------------
