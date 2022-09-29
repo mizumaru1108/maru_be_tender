@@ -34,8 +34,8 @@ export class RegReqTenderDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsString()
-  roles: string[];
+  @IsArray()
+  roles: Array<string>;
 
   @ApiProperty()
   @IsOptional()
