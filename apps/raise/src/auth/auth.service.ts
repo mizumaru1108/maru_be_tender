@@ -1,11 +1,12 @@
 import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { RegisterFromFusionAuthTenderDto } from 'src/user/dtos';
 
 import { UserService } from 'src/user/user.service';
 import { EmailService } from '../libs/email/email.service';
 import { FusionAuthService } from '../libs/fusionauth/services/fusion-auth.service';
 import { User } from '../user/schema/user.schema';
-import { LoginRequestDto, RegisterRequestDto, RegReqTenderDto } from './dtos';
+import { LoginRequestDto, RegisterRequestDto, RegisterTendersDto, RegReqTenderDto } from './dtos';
 
 @Injectable()
 export class AuthService {
@@ -101,16 +102,52 @@ export class AuthService {
     });
     return registeredUser;
   }
-  async fusionRegisterTender(registerRequest: RegReqTenderDto) {
-    const result = await this.fusionAuthService.fusionAuthRegTender(
+
+
+  async fusionRegisterTender(registerRequest: RegisterTendersDto) {
+    const result = await this.fusionAuthService.fusionAuthRegisterTender(
       registerRequest,
     );
+    const dataRegister = JSON.stringify(registerRequest.data);
+    const dtReg = JSON.parse(dataRegister);
+    const registeredUser = await this.usersService.registerFromFusionTender({
+      id: result.id,
+      authority: dtReg.authority,
+      bank_informations: dtReg.bank_informations,
+      board_ofdec_file: dtReg.board_ofdec_file,
+      center_administration: dtReg.center_administration,
+      ceo_mobile: dtReg.ceo_mobile,
+      ceo_name: dtReg.ceo_name,
+      data_entry_mail: dtReg.data_entry_mail,
+      data_entry_mobile: dtReg.data_entry_mobile,
+      email: dtReg.email,
+      employee_name: dtReg.employee_name,
+      employee_path: dtReg.employee_path,
+      entity: dtReg.entity,
+      entity_mobile: dtReg.entity_mobile,
+      governorate: dtReg.governorate,
+      headquarters: dtReg.headquarters,
+      license_expired: dtReg.license_expired,
+      license_file: dtReg.license_file,
+      license_issue_date: dtReg.license_issue_date,
+      license_number: dtReg.license_number,
+      num_of_beneficiaries: dtReg.num_of_beneficiaries,
+      num_of_employed_facility: dtReg.num_of_employed_facility,
+      password: "",
+      phone: dtReg.phone,
+      region: dtReg.region,
+      status: dtReg.status,
+      twitter_acount: dtReg.twitter_acount,
+      website: dtReg.website
 
-    return {
-      statusCode: 201,
-      message: "Create User Success!",
-      id: result.user.id
-    }
+    });
+    return registeredUser;
+
+    // return {
+    //   statusCode: 201,
+    //   message: "Create User Success!",
+    //   //id: result.user.id
+    // }
 
   }
 

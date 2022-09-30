@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsBoolean, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsEmail, IsEnum, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
 import { RoleTenderEnum } from 'src/user/enums/role-enum';
 
 export class RegReqTenderDto {
@@ -63,4 +63,17 @@ export class RegReqTenderDto {
   @IsOptional()
   @IsBoolean()
   is_active: boolean;
+}
+
+export class RegisterTendersDto {
+
+  @ApiProperty()
+  @IsArray()
+  // @IsString()
+
+  data?: Array<string>;
+
+  @ApiProperty()
+  @IsArray()
+  roles: Array<string>;
 }

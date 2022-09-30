@@ -5,10 +5,11 @@ import { FusionAuthClient } from '@fusionauth/typescript-client';
 import { ConfigService } from '@nestjs/config';
 
 import { User, UserDocument } from './schema/user.schema';
-import { RegFromFusionAuthTenderDto, RegisterFromFusionAuthDto } from './dtos/register-from-fusion-auth.dto';
+import { RegFromFusionAuthTenderDto, RegisterFromFusionAuthDto, RegisterFromFusionAuthTenderDto } from './dtos/register-from-fusion-auth.dto';
 import { RoleEnum } from './enums/role-enum';
 import { Donor } from 'src/donor/schema/donor.schema';
 import { PrismaService } from '../prisma/prisma.service';
+import { RegisterTendersDto } from 'src/auth/dtos';
 
 @Injectable()
 export class UserService {
@@ -68,6 +69,41 @@ export class UserService {
           employees_permissions_employees_permissionsTouser: {
             create: dataEmp[0]
           },
+        }
+      });
+      return result;
+
+    } catch (error) {
+      throw new HttpException('Data not recorded in database', 400);
+    }
+
+  }
+
+  /** Create user and client for tender completed data */
+  async registerFromFusionTender(request: RegisterFromFusionAuthTenderDto) {
+    const emailData = await this.prisma.user.findUnique({
+      where: { email: request.email }
+    });
+
+    if (emailData && emailData.email) {
+      throw new HttpException('Email already exist', 400);
+    }
+
+    const dataEmployees = JSON.stringify(request.bank_informations);
+    const dataEmp = JSON.parse(dataEmployees);
+    try {
+
+      const result = await this.prisma.user.create({
+        data: {
+          id: "request.id ?",
+          employee_name: request.employee_name,
+          email: request.email,
+          mobile_number: request.phone,
+          user_type_id: '',
+          employees_permissions_employees_permissionsTouser: {
+            create: dataEmp[0]
+          },
+
         }
       });
       return result;

@@ -71,3 +71,34 @@ export class RegFromFusionAuthTenderDto {
   is_active?: boolean;
 
 }
+
+export class RegisterFromFusionAuthTenderDto {
+  email: string;
+  password: string;
+  employee_name: string;
+  employee_path: string;
+  id?: string;
+  authority: string;
+  board_ofdec_file: string;
+  center_administration: string;
+  ceo_mobile: string;
+  ceo_name: string;
+  data_entry_mail: string;
+  entity_mobile: string;
+  governorate: string;
+  headquarters: string;
+  license_number: string;
+  license_expired: string;
+  license_file: string;
+  license_issue_date: string;
+  data_entry_mobile: string;
+  num_of_beneficiaries: string;
+  num_of_employed_facility: string;
+  phone: string;
+  region: string;
+  twitter_acount: string;
+  website: string;
+  entity: string;
+  status: string;
+  bank_informations: string[];
+}

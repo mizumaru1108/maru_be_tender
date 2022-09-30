@@ -5,7 +5,7 @@ import { baseResponseHelper } from '../commons/helpers/base-response-helper';
 import { User } from '../user/schema/user.schema';
 
 import { AuthService } from './auth.service';
-import { LoginRequestDto, LoginResponseDto, RegisterRequestDto, RegReqTenderDto } from './dtos';
+import { LoginRequestDto, LoginResponseDto, RegisterRequestDto, RegisterTendersDto, RegReqTenderDto } from './dtos';
 
 @Controller('auth')
 export class AuthController {
@@ -83,7 +83,7 @@ export class AuthController {
   })
   @Post('fusion/registerTender')
   async fusionRegisterTender(
-    @Body() registerRequest: RegReqTenderDto,
+    @Body() registerRequest: RegisterTendersDto,
   ) {
     const registeredUser = await this.authService.fusionRegisterTender(
       registerRequest,
