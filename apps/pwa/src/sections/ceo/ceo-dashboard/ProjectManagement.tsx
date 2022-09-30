@@ -52,6 +52,7 @@ function DashboardProjectManagement() {
     } finally {
       setIsLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const initFetchProjectList = useCallback(async () => {
@@ -59,10 +60,12 @@ function DashboardProjectManagement() {
     if (projects !== null && isLoading === false) {
       setProjectManagementData(projects);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchProjectList]);
 
   useEffect(() => {
     initFetchProjectList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const headerCells: ProjectManagementTableHeader[] = [

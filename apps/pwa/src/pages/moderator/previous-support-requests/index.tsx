@@ -49,9 +49,9 @@ function PreviousSupportRequests() {
 
     try {
       const response = await axios.post(`${path}`, queryData, headers);
-      const data = response.data.data;
+      const { data } = response.data.data;
       console.log('Data : ', data);
-      const newData = data.proposal.map((item: any) => {
+      const newData = data.proposal.map(function (item: any) {
         return {
           title: {
             id: item.id,
@@ -76,6 +76,7 @@ function PreviousSupportRequests() {
 
   useEffect(() => {
     fetchProjectList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filter: filterInterface = {

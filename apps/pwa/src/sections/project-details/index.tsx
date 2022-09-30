@@ -35,6 +35,7 @@ function ProjectDetailsMainPage() {
   // useeffect for current roles
   useEffect(() => {
     console.log('actionType', actionType);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

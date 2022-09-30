@@ -50,6 +50,7 @@ function CeoRejectionList() {
     } finally {
       setIsLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const initFetchRejectionList = useCallback(async () => {
@@ -57,10 +58,12 @@ function CeoRejectionList() {
     if (projects !== null && isLoading === false) {
       setRejectionListData(projects);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchRejectionList]);
 
   useEffect(() => {
     initFetchRejectionList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

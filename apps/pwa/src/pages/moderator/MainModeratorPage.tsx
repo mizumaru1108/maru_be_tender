@@ -67,9 +67,10 @@ function MainManagerPage() {
 
     try {
       const response = await axios.post(`${path}`, queryData, headers);
-      const data = response.data.data;
+      const { data } = response.data.data;
       console.log('Data : ', data);
-      const newData = data.proposal.map((item: any) => {
+      // map data to ProjectCardProps without arrow function
+      const newData = data.proposal.map(function (item: any) {
         return {
           title: {
             id: item.id,
@@ -94,6 +95,7 @@ function MainManagerPage() {
 
   useEffect(() => {
     fetchProjectList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
