@@ -28,7 +28,6 @@ query detailsClientData($id: String!) {
     license_file
     license_issue_date
     license_number
-    mobile_data_entry
     num_of_beneficiaries
     num_of_employed_facility
     password
@@ -38,6 +37,7 @@ query detailsClientData($id: String!) {
     twitter_acount
     updated_at
     website
+    data_entry_mobile
   }
 }
 `;
