@@ -11,17 +11,17 @@ const LicenseInfoForm = ({ children, onSubmit }: FormProps) => {
   const RegisterSchema = Yup.object().shape({
     license_number: Yup.string().required('License Number is required'),
     license_issue_date: Yup.string().required('License Issue Date is required'),
-    license_expiry_date: Yup.string().required('License Expiry Date is required'),
+    license_expired: Yup.string().required('License Expiry Date is required'),
     license_file: Yup.mixed().required('License File is required'),
-    resolution_file: Yup.mixed().required('Resolution File is required'),
+    board_ofdec_file: Yup.mixed().required('Resolution File is required'),
   });
 
   const defaultValues = {
     license_number: '',
     license_issue_date: '',
-    license_expiry_date: '',
+    license_expired: '',
     license_file: undefined,
-    resolution_file: undefined,
+    board_ofdec_file: undefined,
   };
 
   const methods = useForm<LicenseValuesProps>({

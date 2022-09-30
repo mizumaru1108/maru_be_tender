@@ -41,3 +41,14 @@ query detailsClientData($id: String!) {
   }
 }
 `;
+
+export const activateClientStatus =`
+mutation MyMutation(
+  $pk_columns: client_data_pk_columns_input = {id: ""}, 
+  $_set: client_data_set_input = {}) 
+  {
+      update_client_data_by_pk(pk_columns: $pk_columns, _set: $_set){
+    id
+  }
+}
+`

@@ -9,17 +9,17 @@ import { BankingValuesProps, FormProps } from './types';
 
 const BankingInfoForm = ({ children, onSubmit }: FormProps) => {
   const RegisterSchema = Yup.object().shape({
-    bank_account_number: Yup.number().required('Bank Account Number required'),
+    bank_account_number: Yup.string().required('Bank Account Number required'),
     bank_account_name: Yup.string().required('Bank Account name required'),
     bank_name: Yup.string().required('Bank Name is required'),
-    bank_account_card_image: Yup.mixed().required('Bank Account Card Image is required'),
+    card_image: Yup.mixed().required('Bank Account Card Image is required'),
   });
 
   const defaultValues = {
-    bank_account_number: undefined,
+    bank_account_number: '',
     bank_account_name: '',
     bank_name: '',
-    bank_account_card_image: undefined,
+    card_image: undefined,
   };
 
   const methods = useForm<BankingValuesProps>({

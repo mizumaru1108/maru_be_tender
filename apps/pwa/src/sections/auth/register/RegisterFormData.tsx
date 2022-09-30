@@ -11,26 +11,29 @@ export const ConnectingInfoData = [
     xs: 12,
     md: 6,
     placeholder: 'register_form2.region.placeholder',
+    children: <option value="1">test option</option>,
   },
   {
     type: 'select',
-    name: 'city',
+    name: 'governorate',
     label: 'register_form2.city.label',
     xs: 12,
     md: 6,
     placeholder: 'register_form2.region.placeholder',
+    children: <option value="1">test option</option>,
   },
   {
     type: 'select',
-    name: 'center',
+    name: 'center_administration',
     label: 'register_form2.center.label',
     xs: 12,
     md: 6,
     placeholder: 'register_form2.region.placeholder',
+    children: <option value="1">test option</option>,
   },
   {
     type: 'textField',
-    name: 'mobile_number',
+    name: 'entity_mobile',
     label: 'register_form2.mobile_number.label',
     placeholder: 'register_form2.mobile_number.placeholder',
     xs: 12,
@@ -46,7 +49,7 @@ export const ConnectingInfoData = [
   },
   {
     type: 'textField',
-    name: 'twitter',
+    name: 'twitter_acount',
     label: 'register_form2.twitter.label',
     placeholder: 'register_form2.twitter.placeholder',
     xs: 12,
@@ -92,7 +95,7 @@ export const LicenseInfoData = [
   },
   {
     type: 'datePicker',
-    name: 'license_expiry_date',
+    name: 'license_expired',
     label: 'register_form3.license_expiry_date.label',
     xs: 12,
     md: 6,
@@ -117,7 +120,7 @@ export const LicenseInfoData = [
   },
   {
     type: 'upload',
-    name: 'resolution_file',
+    name: 'board_ofdec_file',
     placeholder: 'register_form3.resolution_file.placeholder',
     xs: 12,
   },
@@ -125,7 +128,7 @@ export const LicenseInfoData = [
 export const AdministrativeInfoData = [
   {
     type: 'textField',
-    name: 'executive_director',
+    name: 'ceo_name',
     label: 'register_form4.executive_director.label',
     md: 6,
     xs: 12,
@@ -133,7 +136,7 @@ export const AdministrativeInfoData = [
   },
   {
     type: 'textField',
-    name: 'executive_director_mobile',
+    name: 'ceo_mobile',
     label: 'register_form4.executive_director_mobile.label',
     xs: 12,
     md: 6,
@@ -141,7 +144,7 @@ export const AdministrativeInfoData = [
   },
   {
     type: 'textField',
-    name: 'entery_data_name',
+    name: 'data_entry_name',
     label: 'register_form4.entery_data_name.label',
     xs: 12,
     md: 6,
@@ -149,7 +152,7 @@ export const AdministrativeInfoData = [
   },
   {
     type: 'textField',
-    name: 'entery_data_phone',
+    name: 'data_entry_mobile',
     label: 'register_form4.entery_data_phone.label',
     xs: 12,
     md: 6,
@@ -157,7 +160,7 @@ export const AdministrativeInfoData = [
   },
   {
     type: 'textField',
-    name: 'entery_data_email',
+    name: 'data_entry_mail',
     labe: 'register_form4.entery_data_email.placeholder',
     xs: 12,
     placeholder: 'register_form4.entery_data_email.placeholder',
@@ -201,7 +204,7 @@ export const BankingInfoData = [
   },
   {
     type: 'upload',
-    name: 'bank_account_card_image',
+    name: 'card_image',
     label: 'register_form5.entery_data_phone.label',
     xs: 12,
     placeholder: 'register_form5.bank_account_card_image.placeholder',

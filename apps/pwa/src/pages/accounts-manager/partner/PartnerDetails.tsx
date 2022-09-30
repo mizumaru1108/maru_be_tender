@@ -21,8 +21,9 @@ import BankImageComp from 'sections/shared/BankImageComp';
 // hooks
 import { useParams, useNavigate } from 'react-router-dom';
 import useLocales from 'hooks/useLocales';
-import { useQuery } from 'urql';
-import { detailsClientData } from 'queries/account_manager/detailsClientData';
+import { useQuery, useMutation } from 'urql';
+import { detailsClientData, activateClientStatus } from 'queries/account_manager/detailsClientData';
+import { useSnackbar } from 'notistack';
 //
 import { PartnerDetailsProps } from '../../../@types/client_data';
 
@@ -40,8 +41,8 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // -------------------------------------------------------------------------------
 
 function AccountPartnerDetails() {
-  const secret = 'hbd4KbAS5XjHw5';
   const theme = useTheme();
+  const { enqueueSnackbar } = useSnackbar();
 
   // Routes
   const params = useParams();
@@ -61,6 +62,30 @@ function AccountPartnerDetails() {
 
   // Partner Details Data
   const [partnerDetails, setPartnerDetails] = useState<PartnerDetailsProps | null>(null);
+
+  // Activate Client
+  const [activateResult, activateClient] = useMutation(activateClientStatus);
+  const [isSubmitting, setIsSubimitting] = useState(false);
+
+  const handleActivateAccount = async (id: string) => {
+    setIsSubimitting(true);
+
+    const resActivate = await activateClient({
+      pk_columns: {
+        id: id,
+      },
+      _set: {
+        status: 'ACTIVE_ACCOUNT',
+      },
+    });
+
+    if (resActivate) {
+      setIsSubimitting(false);
+      enqueueSnackbar('Activate Account Is Successfull!', {
+        variant: 'success',
+      });
+    }
+  };
 
   useEffect(() => {
     if (data) {
@@ -503,9 +528,25 @@ function AccountPartnerDetails() {
                     </Button>
                   </Grid>
                   <Grid item>
-                    <Button variant="contained" color="primary">
-                      {translate('activate_account')}
-                    </Button>
+                    {partnerDetails?.status === 'ACTIVE_ACCOUNT' ? (
+                      <Button
+                        onClick={() => alert(partnerDetails?.id!)}
+                        variant="contained"
+                        color="warning"
+                        disabled={isSubmitting}
+                      >
+                        {translate('disabled_account')}
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => handleActivateAccount(partnerDetails?.id!)}
+                        variant="contained"
+                        color="primary"
+                        disabled={isSubmitting}
+                      >
+                        {translate('activate_account')}
+                      </Button>
+                    )}
                   </Grid>
                 </Grid>
               </Box>
