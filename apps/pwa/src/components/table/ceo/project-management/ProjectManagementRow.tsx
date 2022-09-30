@@ -54,11 +54,15 @@ export default function ProjectManagementTableRow({
           onClick={() => {
             if (destination) {
               const x = location.pathname.split('/');
-              navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${row.id}/show-details/main`);
+              navigate(
+                `/${x[1] + '/' + x[2] + '/' + destination}/${row.projectNumber}/show-details/main`
+              );
             } else {
               console.log('destination is not defined');
-              console.log(`navigate to ${location.pathname}/${row.id}/show-details/main`);
-              navigate(`${location.pathname}/${row.id}/show-details/main`);
+              console.log(
+                `navigate to ${location.pathname}/${row.projectNumber}/show-details/main`
+              );
+              navigate(`${location.pathname}/${row.projectNumber}/show-details/main`);
             }
           }}
           size="small"

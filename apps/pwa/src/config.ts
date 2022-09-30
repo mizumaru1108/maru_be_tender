@@ -1,5 +1,5 @@
 // @mui
-import { enUS, frFR, zhCN, viVN, arSD } from '@mui/material/locale';
+import { enUS, arSD } from '@mui/material/locale';
 // components
 import { SettingsValueProps } from './components/settings/type';
 // routes
