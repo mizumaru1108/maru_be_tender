@@ -8,6 +8,7 @@ import FusionAuthClient, {
 import ClientResponse from '@fusionauth/typescript-client/build/src/ClientResponse';
 import {
   BadRequestException,
+  ConsoleLogger,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -210,6 +211,7 @@ export class FusionAuthService {
       lastName: '',
       mobilePhone: dataRegister[0].mobile_number!
     };
+
     const registration: IFusionAuthUserRegistration = {
       applicationId: this.fusionAuthAppId,
       roles: role

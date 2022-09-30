@@ -73,11 +73,12 @@ export class RegFromFusionAuthTenderDto {
 }
 
 export class RegisterFromFusionAuthTenderDto {
+  id?: string;
+  id_: string;
   email: string;
   password: string;
   employee_name: string;
   employee_path: string;
-  id?: string;
   authority: string;
   board_ofdec_file: string;
   center_administration: string;
@@ -92,13 +93,16 @@ export class RegisterFromFusionAuthTenderDto {
   license_file: string;
   license_issue_date: string;
   data_entry_mobile: string;
-  num_of_beneficiaries: string;
-  num_of_employed_facility: string;
+  num_of_beneficiaries?: number;
+  num_of_employed_facility?: number;
   phone: string;
   region: string;
   twitter_acount: string;
   website: string;
   entity: string;
   status: string;
+  data_entry_name: string;
+  date_of_esthablistmen: string;
+  mobile_data_entry: string;
   bank_informations: string[];
 }

@@ -62,7 +62,8 @@ export class AuthController {
     description: 'User has been registered successfully!',
   })
 
-  @Post('fusion/regTender')
+  // @Post('fusion/regTender')
+  @Post('fusion/registerTender')
   async fusionRegTender(
     @Body() registerRequest: RegReqTenderDto,
   ) {
@@ -76,12 +77,12 @@ export class AuthController {
     );
   }
 
-  @ApiOperation({ summary: 'Register user with fusion auth' })
-  @ApiResponse({
-    status: 201,
-    description: 'User has been registered successfully!',
-  })
-  @Post('fusion/registerTender')
+  // @ApiOperation({ summary: 'Register user with fusion auth' })
+  // @ApiResponse({
+  //   status: 201,
+  //   description: 'User has been registered successfully!',
+  // })
+  @Post('fusion/regTender')
   async fusionRegisterTender(
     @Body() registerRequest: RegisterTendersDto,
   ) {

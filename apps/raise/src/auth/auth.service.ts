@@ -110,37 +110,50 @@ export class AuthService {
     );
     const dataRegister = JSON.stringify(registerRequest.data);
     const dtReg = JSON.parse(dataRegister);
-    const registeredUser = await this.usersService.registerFromFusionTender({
-      id: result.id,
-      authority: dtReg.authority,
-      bank_informations: dtReg.bank_informations,
-      board_ofdec_file: dtReg.board_ofdec_file,
-      center_administration: dtReg.center_administration,
-      ceo_mobile: dtReg.ceo_mobile,
-      ceo_name: dtReg.ceo_name,
-      data_entry_mail: dtReg.data_entry_mail,
-      data_entry_mobile: dtReg.data_entry_mobile,
-      email: dtReg.email,
-      employee_name: dtReg.employee_name,
-      employee_path: dtReg.employee_path,
-      entity: dtReg.entity,
-      entity_mobile: dtReg.entity_mobile,
-      governorate: dtReg.governorate,
-      headquarters: dtReg.headquarters,
-      license_expired: dtReg.license_expired,
-      license_file: dtReg.license_file,
-      license_issue_date: dtReg.license_issue_date,
-      license_number: dtReg.license_number,
-      num_of_beneficiaries: dtReg.num_of_beneficiaries,
-      num_of_employed_facility: dtReg.num_of_employed_facility,
-      password: "",
-      phone: dtReg.phone,
-      region: dtReg.region,
-      status: dtReg.status,
-      twitter_acount: dtReg.twitter_acount,
-      website: dtReg.website
-
-    });
+    let num1: any = dtReg[0].num_of_employed_facility;
+    let num2: any = dtReg[0].num_of_beneficiaries;
+    let registeredUser;
+    if (result.id) {
+      registeredUser = await this.usersService.registerFromFusionTender({
+        id_: result.id,
+        id: dtReg[0].id,
+        authority: dtReg[0].authority,
+        bank_informations: dtReg[0].bank_informations,
+        board_ofdec_file: dtReg[0].board_ofdec_file,
+        center_administration: dtReg[0].center_administration,
+        ceo_mobile: dtReg[0].ceo_mobile,
+        ceo_name: dtReg[0].ceo_name,
+        data_entry_mail: dtReg[0].data_entry_mail,
+        data_entry_mobile: dtReg[0].data_entry_mobile,
+        email: dtReg[0].email,
+        employee_name: dtReg[0].employee_name,
+        employee_path: dtReg[0].employee_path,
+        entity: dtReg[0].entity,
+        entity_mobile: dtReg[0].entity_mobile,
+        governorate: dtReg[0].governorate,
+        headquarters: dtReg[0].headquarters,
+        license_expired: dtReg[0].license_expired,
+        license_file: dtReg[0].license_file,
+        license_issue_date: dtReg[0].license_issue_date,
+        license_number: dtReg[0].license_number,
+        num_of_beneficiaries: num1,
+        num_of_employed_facility: num2,
+        data_entry_name: dtReg[0].data_entry_name,
+        date_of_esthablistmen: dtReg[0].date_of_esthablistmen,
+        password: "",
+        phone: dtReg[0].phone,
+        region: dtReg[0].region,
+        status: dtReg[0].status,
+        twitter_acount: dtReg[0].twitter_acount,
+        website: dtReg[0].website,
+        mobile_data_entry: dtReg[0].mobile_data_entry,
+      });
+    } else {
+      return {
+        messageCode: 400,
+        message: 'An error occured while sending data',
+      }
+    }
     return registeredUser;
 
     // return {
