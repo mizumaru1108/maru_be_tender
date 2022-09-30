@@ -28,25 +28,27 @@ export default function RejectionListTableRow({
       </TableCell>
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
         <Typography variant="subtitle2" noWrap>
-          {row.projectNumber ?? ''}
+          {row.projectNumber ?? 'N/A'}
         </Typography>
       </TableCell>
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
-          {row.projectName ? stringTruncate(row.projectName, 23) : ''}
+          {row.projectName ? stringTruncate(row.projectName, 23) : 'N/A'}
         </Typography>
       </TableCell>
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
-          {row.associationName ? stringTruncate(row.associationName, 23) : ''}
+          {row.associationName ? stringTruncate(row.associationName, 23) : 'N/A'}
         </Typography>
       </TableCell>
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
-          {row.projectSection ? stringTruncate(row.projectSection, 23) : ''}
+          {row.projectSection ? stringTruncate(row.projectSection, 23) : 'N/A'}
         </Typography>
       </TableCell>
-      <TableCell>{row.createdAt ? moment(row.createdAt).format('DD-MM-YYYY') : ''}</TableCell>
+      <TableCell>
+        {row.createdAt ? moment(row.createdAt).format('DD.MM.YYYY, HH:MM a') : 'N/A'}
+      </TableCell>
       <TableCell align="left">
         <Button
           onClick={() => {

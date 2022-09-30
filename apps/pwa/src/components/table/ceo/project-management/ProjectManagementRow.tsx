@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // @mui
+import { Button, Checkbox, TableCell, TableRow, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { TableRow, Checkbox, TableCell, Typography, Button } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 //
-import { ProjectManagementTableColumn } from './project-management';
-import Iconify from '../../../Iconify';
-import { stringTruncate } from '../../../../utils/stringTruncate';
 import moment from 'moment';
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
+import { stringTruncate } from '../../../../utils/stringTruncate';
+import { ProjectManagementTableColumn } from './project-management';
 
 export default function ProjectManagementTableRow({
   row,
@@ -28,25 +28,27 @@ export default function ProjectManagementTableRow({
       </TableCell>
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
         <Typography variant="subtitle2" noWrap>
-          {row.projectNumber ?? ''}
+          {row.projectNumber ?? 'N/A'}
         </Typography>
       </TableCell>
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
-          {row.projectName ? stringTruncate(row.projectName, 23) : ''}
+          {row.projectName ? stringTruncate(row.projectName, 23) : 'N/A'}
         </Typography>
       </TableCell>
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
-          {row.associationName ? stringTruncate(row.associationName, 23) : ''}
+          {row.associationName ? stringTruncate(row.associationName, 23) : 'N/A'}
         </Typography>
       </TableCell>
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
-          {row.projectSection ? stringTruncate(row.projectSection, 23) : ''}
+          {row.projectSection ? stringTruncate(row.projectSection, 23) : 'N/A'}
         </Typography>
       </TableCell>
-      <TableCell>{row.createdAt ? moment(row.createdAt).format('DD-MM-YYYY') : ''}</TableCell>
+      <TableCell>
+        {row.createdAt ? moment(row.createdAt).format('DD.MM.YYYY, HH:MM a') : 'N/A'}
+      </TableCell>
       <TableCell align="left">
         <Button
           onClick={() => {

@@ -23,12 +23,13 @@ const INSIGHT_DATA = [
 
 // -------------------------------------------------------------------------------
 
+// -------------------------------------------------------------------------------
+
 function MainManagerPage() {
   const path = HASURA_GRAPHQL_URL;
   const secret = HASURA_ADMIN_SECRET;
-  const [incomingSupportRequests, setIncomingSupportRequests] = useState<ProjectCardProps[] | []>(
-    []
-  );
+  const [incomingSupportRequests, setIncomingSupportRequests] = useState<ProjectCardProps[]>([]);
+  const incoming: ProjectCardProps[] = [];
 
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
@@ -40,66 +41,60 @@ function MainManagerPage() {
   }));
   console.log('adskadkla');
 
-  // create a function to get data from hasura using callback
-  // const getData = useCallback(async () => {
-  //   setIncomingSupportRequests([]);
-  //   const queryData = {
-  //     query: `
-  //     query MyQuery {
-  //       proposal(where: {proposal_assign: {assign: {_is_null: false}}}, order_by: {created_at: asc}) {
-  //         created_at
-  //         user {
-  //           employee_name
-  //         }
-  //         id
-  //         project_name
-  //         proposal_assign {
-  //           assign
-  //         }
-  //       }
-  //     }
-  //     `,
-  //   };
+  const fetchProjectList = async () => {
+    const queryData = {
+      query: `
+      query MyQuery {
+        proposal(where: {state: {_eq: MODERATOR}}) {
+          id
+          created_at
+          project_name
+          user {
+            employee_name
+          }
+          state
+        }
+      }
+      `,
+    };
 
-  //   const headers = {
-  //     headers: {
-  //       'Content-Type': 'aplication/json',
-  //       'x-hasura-admin-secret': `${secret}`,
-  //     },
-  //   };
+    const headers = {
+      headers: {
+        'Content-Type': 'aplication/json',
+        'x-hasura-admin-secret': `${secret}`,
+      },
+    };
 
-  //   try {
-  //     const res = await axios.post(path, queryData, headers);
-  //     const data = res.data.data.proposal;
-  //     const newData = data.map((v: any, index: number) => {
-  //       return {
-  //         title: {
-  //           id: v.id,
-  //         },
-  //         content: {
-  //           projectName: v.project_name,
-  //           employee: v.user.employee_name,
-  //           sentSection: v.proposal_assign[index].assign,
-  //         },
-  //         footer: {
-  //           createdAt: v.created_at,
-  //         },
-  //       };
-  //     });
-  //     console.log('data :', data);
-  //     console.log('newData :', newData);
-  //     if (data.length > 0) {
-  //       setIncomingSupportRequests(newData);
-  //     }
-  //     console.log('incomingSupportRequests :', incomingSupportRequests);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }, []);
-  // // create useEffect for fetch data using async function
-  // useEffect(() => {
-  //   getData();
-  // }, []);
+    try {
+      const response = await axios.post(`${path}`, queryData, headers);
+      const data = response.data.data;
+      console.log('Data : ', data);
+      const newData = data.proposal.map((item: any) => {
+        return {
+          title: {
+            id: item.id,
+          },
+          content: {
+            projectName: item.project_name,
+            employee: item.user.employee_name,
+            sentSection: item.state,
+          },
+          footer: {
+            createAt: item.created_at,
+          },
+        };
+      }) as ProjectCardProps[];
+      incoming.push(...newData);
+      setIncomingSupportRequests(incoming);
+      console.log('Incoming : ', incoming);
+    } catch (err) {
+      console.log('Error:  ', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchProjectList();
+  }, []);
 
   return (
     <Page title="Manager Dashboard">
@@ -113,8 +108,8 @@ function MainManagerPage() {
             cardStyle={{ p: 2, bgcolor: 'white' }}
           />
           <CardTable
-            data={CardTableIncomingSupportRequests} // For testing, later on we will send the query to it
-            title="مسودة طلبات الدعم"
+            data={incomingSupportRequests} // For testing, later on we will send the query to it
+            title="طلبات الدعم السابقة"
             pagination={false}
             limitShowCard={4}
             // alphabeticalOrder={true} // optional

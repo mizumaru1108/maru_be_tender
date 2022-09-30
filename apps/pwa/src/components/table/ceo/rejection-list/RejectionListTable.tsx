@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import {
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogContent,
   IconButton,
@@ -25,7 +26,12 @@ import { ProjectManagement } from '../project-management/project-management';
 import ProjectManagementRow from '../project-management/ProjectManagementRow';
 import { RejectionListTableProps, RejectionList } from './rejection-list';
 
-export default function RejectionListTable({ data, headerCell }: RejectionListTableProps) {
+export default function RejectionListTable({
+  data,
+  headerCell,
+  headline,
+  isLoading,
+}: RejectionListTableProps) {
   const { translate } = useLocales();
   const [tableData, setTableData] = useState<RejectionList[]>([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
@@ -96,76 +102,91 @@ export default function RejectionListTable({ data, headerCell }: RejectionListTa
 
   return (
     <>
-      <TableContainer sx={{ minWidth: 800, position: 'relative' }}>
-        {selected.length > 0 && (
-          <TableSelectedActions
-            numSelected={selected.length}
-            rowCount={tableData.length}
-            onSelectAllRows={(checked) =>
-              onSelectAllRows(checked, tableData.map((row) => row.id) as string[])
-            }
-            actions={
-              <Tooltip title="Delete">
-                <IconButton color="primary" onClick={() => setDeleteDialogOpen(true)}>
-                  <Iconify icon={'eva:trash-2-outline'} />
-                </IconButton>
-              </Tooltip>
-            }
-          />
-        )}
-        <Table
-          size="medium"
-          sx={{ bgcolor: '#FFFFFF', borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
-        >
-          <TableHeadCustom
-            order={order}
-            orderBy={orderBy}
-            headLabel={headerCell}
-            rowCount={tableData.length}
-            onSort={onSort}
-            onSelectAllRows={(checked) =>
-              onSelectAllRows(checked, tableData.map((row) => row.id) as string[])
-            }
+      {headline && (
+        <Typography variant="h4" sx={{ mr: 2 }}>
+          {translate(`${headline}`)}
+        </Typography>
+      )}
+      {isLoading && (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <CircularProgress size={20} sx={{ color: 'white' }} thickness={4} />
+          <Typography sx={{ color: 'white', fontSize: '1em', ml: 1 }}>
+            Fetching Table Datas...
+          </Typography>
+        </Box>
+      )}
+      {!isLoading && (
+        <TableContainer sx={{ minWidth: 800, position: 'relative' }}>
+          {selected.length > 0 && (
+            <TableSelectedActions
+              numSelected={selected.length}
+              rowCount={tableData.length}
+              onSelectAllRows={(checked) =>
+                onSelectAllRows(checked, tableData.map((row) => row.id) as string[])
+              }
+              actions={
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={() => setDeleteDialogOpen(true)}>
+                    <Iconify icon={'eva:trash-2-outline'} />
+                  </IconButton>
+                </Tooltip>
+              }
+            />
+          )}
+          <Table
+            size="medium"
+            sx={{ bgcolor: '#FFFFFF', borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
+          >
+            <TableHeadCustom
+              order={order}
+              orderBy={orderBy}
+              headLabel={headerCell}
+              rowCount={tableData.length}
+              onSort={onSort}
+              onSelectAllRows={(checked) =>
+                onSelectAllRows(checked, tableData.map((row) => row.id) as string[])
+              }
+              sx={{
+                minWidth: '100%',
+                '& .MuiTableCell-root': {
+                  bgcolor: '#FFFFFF',
+                  borderRadius: 0,
+                },
+                '& .MuiTableCell-root:first-of-type, .MuiTableCell-root:last-of-type': {
+                  boxShadow: 'none !important',
+                },
+              }}
+            />
+            <TableBody>
+              {data.length > 0 &&
+                data
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((projectManagement, key) => (
+                    <ProjectManagementRow
+                      key={projectManagement.id}
+                      row={projectManagement}
+                      selected={selected.includes(projectManagement.id as string)}
+                      onSelectRow={() => onSelectRow(projectManagement.id as string)}
+                    />
+                  ))}
+            </TableBody>
+          </Table>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={dataFiltered.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={onChangePage}
+            onRowsPerPageChange={onChangeRowsPerPage}
             sx={{
-              minWidth: '100%',
-              '& .MuiTableCell-root': {
-                bgcolor: '#FFFFFF',
-                borderRadius: 0,
-              },
-              '& .MuiTableCell-root:first-of-type, .MuiTableCell-root:last-of-type': {
-                boxShadow: 'none !important',
-              },
+              bgcolor: 'rgba(147, 163, 176, 0.16)',
+              borderBottomRightRadius: 10,
+              borderBottomLeftRadius: 10,
             }}
           />
-          <TableBody>
-            {dataFiltered.length > 0 &&
-              dataFiltered
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((projectManagement, key) => (
-                  <ProjectManagementRow
-                    key={projectManagement.id}
-                    row={projectManagement}
-                    selected={selected.includes(projectManagement.id as string)}
-                    onSelectRow={() => onSelectRow(projectManagement.id as string)}
-                  />
-                ))}
-          </TableBody>
-        </Table>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={dataFiltered.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={onChangePage}
-          onRowsPerPageChange={onChangeRowsPerPage}
-          sx={{
-            bgcolor: 'rgba(147, 163, 176, 0.16)',
-            borderBottomRightRadius: 10,
-            borderBottomLeftRadius: 10,
-          }}
-        />
-      </TableContainer>
+        </TableContainer>
+      )}
       <Dialog
         open={deleteDialogOpen}
         onClose={() => {

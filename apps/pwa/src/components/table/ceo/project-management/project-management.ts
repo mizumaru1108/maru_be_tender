@@ -1,10 +1,12 @@
-export interface ProjectManagement {
+import { BasePaginateResponse } from '../../../../@types/commons';
+
+export interface ProjectManagement extends BasePaginateResponse {
   id: string;
-  projectNumber: string;
-  projectName: string;
-  associationName: string;
-  projectSection: string;
-  createdAt: Date;
+  projectNumber?: string;
+  projectName?: string;
+  associationName?: string;
+  projectSection?: string;
+  createdAt?: Date | string;
 }
 
 export interface ProjectManagementTableHeader {
@@ -23,4 +25,6 @@ export interface ProjectManagementTableColumn {
 export interface ProjectManagementTableProps {
   data: ProjectManagement[];
   headerCell: ProjectManagementTableHeader[];
+  headline?: string;
+  isLoading?: boolean;
 }

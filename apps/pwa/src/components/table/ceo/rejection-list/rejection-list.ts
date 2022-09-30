@@ -1,4 +1,6 @@
-export interface RejectionList {
+import { BasePaginateResponse } from "../../../../@types/commons";
+
+export interface RejectionList extends BasePaginateResponse {
   id: string;
   projectNumber: string;
   projectName: string;
@@ -23,4 +25,6 @@ export interface RejectionListTableColumn {
 export interface RejectionListTableProps {
   data: RejectionList[];
   headerCell: RejectionListTableHeader[];
+  headline?: string;
+  isLoading?: boolean;
 }
