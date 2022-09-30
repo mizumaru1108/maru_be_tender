@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { Button, Grid, Stack } from '@mui/material';
+import { Grid } from '@mui/material';
 import { FormProvider, RHFSelect, RHFTextField } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -10,27 +10,27 @@ import { MainValuesProps, FormProps } from './types';
 const MainForm: React.FC<FormProps> = ({ children, onSubmit }) => {
   const { translate } = useLocales();
   const RegisterSchema = Yup.object().shape({
-    entity_area: Yup.string().required('Entity Area is required'),
+    entity: Yup.string().required('Entity Area is required'),
     authority: Yup.string().required('Authority is required'),
-    date_of_establishment: Yup.date().default(null).required('Date Of Establishment is required'),
+    date_of_esthablistmen: Yup.date().default(null).required('Date Of Establishment is required'),
     headquarters: Yup.string().required('Headquarters is required'),
-    number_of_employees: Yup.number()
+    num_of_employed_facility: Yup.number()
       .positive()
       .integer()
       .required('Number Of Employees is required'),
-    number_of_beneficiaries: Yup.number()
+    num_of_beneficiaries: Yup.number()
       .positive()
       .integer()
       .required('Number Of Beneficiaries is required'),
   });
 
   const defaultValues = {
-    entity_area: '',
+    entity: '',
     authority: '',
-    date_of_establishment: '',
+    date_of_esthablistmen: '',
     headquarters: '',
-    number_of_employees: undefined,
-    number_of_beneficiaries: undefined,
+    num_of_employed_facility: undefined,
+    num_of_beneficiaries: undefined,
   };
 
   const methods = useForm<MainValuesProps>({
@@ -48,12 +48,12 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit }) => {
   const onSubmitForm = async (data: MainValuesProps) => {
     onSubmit(data);
   };
-  const entity_area = watch('entity_area');
+  const entity = watch('entity');
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7}>
         <Grid item md={12} xs={12}>
-          <RHFSelect name="entity_area" label={translate('register_form1.entity_area.label')}>
+          <RHFSelect name="entity" label={translate('register_form1.entity_area.label')}>
             <option value="" disabled selected>
               {translate('register_form1.entity_area.placeholder')}
             </option>
@@ -65,9 +65,9 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit }) => {
             </option>
           </RHFSelect>
         </Grid>
-        {entity_area !== '' && (
+        {entity !== '' && (
           <>
-            {entity_area === 'main' && (
+            {entity === 'main' && (
               <Grid item md={12} xs={12}>
                 <RHFSelect name="authority" label={translate('register_form1.authority.label')}>
                   <option value="" disabled selected>
@@ -77,7 +77,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit }) => {
                 </RHFSelect>
               </Grid>
             )}
-            {entity_area === 'sub' && (
+            {entity === 'sub' && (
               <Grid item md={12} xs={12}>
                 <RHFTextField
                   name="authority"
@@ -89,7 +89,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit }) => {
         )}
         <Grid item md={6} xs={12}>
           <RHFDatePicker
-            name="date_of_establishment"
+            name="date_of_esthablistmen"
             label={translate('register_form1.date_of_establishment.label')}
             placeholder={translate('register_form1.date_of_establishment.placeholder')}
           />
@@ -104,14 +104,14 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit }) => {
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFTextField
-            name="number_of_employees"
+            name="num_of_employed_facility"
             label={translate('register_form1.number_of_employees.label')}
             placeholder={translate('register_form1.number_of_employees.placeholder')}
           />
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFTextField
-            name="number_of_beneficiaries"
+            name="num_of_beneficiaries"
             label={translate('register_form1.number_of_beneficiaries.label')}
             placeholder={translate('register_form1.number_of_beneficiaries.placeholder')}
           />

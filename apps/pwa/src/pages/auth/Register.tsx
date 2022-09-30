@@ -15,7 +15,7 @@ const RootStyle = styled('div')(({ theme }) => ({
 
 const SectionStyle = styled(Box)(({ theme }) => ({
   width: '100%',
-  maxWidth: '500px',
+  maxWidth: '600px',
   backgroundColor: theme.palette.background.paper,
 }));
 
@@ -44,15 +44,6 @@ export default function Register() {
         <SectionStyle />
         <Container>
           <ContentStyle>
-            <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
-              <Typography
-                variant="h4"
-                gutterBottom
-                sx={{ fontFamily: 'Cairo', fontStyle: 'Bold', mt: 5 }}
-              >
-                {translate('create_new_account')}
-              </Typography>
-            </Box>
             <RegisterForm />
           </ContentStyle>
         </Container>

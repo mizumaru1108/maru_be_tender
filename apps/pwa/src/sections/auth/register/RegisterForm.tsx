@@ -23,34 +23,36 @@ const taps = [
 ];
 
 const initialValue = {
-  entity_area: '',
+  agree_on: false,
+  entity: '',
   authority: '',
-  date_of_establishment: '',
+  date_of_esthablistmen: '',
   headquarters: '',
-  number_of_employees: undefined,
-  number_of_beneficiaries: undefined,
+  num_of_employed_facility: undefined,
+  num_of_beneficiaries: undefined,
   region: '',
-  city: '',
+  governorate: '',
+  center_administration: '',
+  entity_mobile: '',
   phone: '',
-  twitter: '',
+  twitter_acount: '',
   website: '',
   email: '',
   password: '',
   license_number: undefined,
   license_issue_date: '',
-  license_expiry_date: '',
-  license_file: null,
-  resolution_file: null,
-  executive_director: '',
-  executive_director_mobile: '',
-  entery_data_name: '',
-  entery_data_phone: '',
-  entery_data_email: '',
-  agree_on: false,
-  bank_account_number: undefined,
+  license_expired: '',
+  license_file: '',
+  board_ofdec_file: '',
+  ceo_name: '',
+  ceo_mobile: '',
+  data_entry_name: '',
+  data_entry_mobile: '',
+  data_entry_mail: '',
+  bank_account_number: '',
   bank_account_name: '',
   bank_name: '',
-  bank_account_card_image: null,
+  card_image: '',
 } as AccountValuesProps;
 export default function RegisterForm() {
   const { translate } = useLocales();
@@ -71,6 +73,15 @@ export default function RegisterForm() {
   };
   return (
     <>
+      {step !== 5 && (
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{ fontFamily: 'Cairo', fontStyle: 'Bold', mt: 5 }}
+        >
+          {translate('create_new_account')}
+        </Typography>
+      )}
       {step !== 5 && (
         <Box
           sx={{
