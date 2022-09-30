@@ -1,15 +1,22 @@
 // material
-import { async } from '@firebase/util';
 import { Container, styled } from '@mui/material';
-import axios from 'axios';
 // components
 import { CardInsight } from 'components/card-insight';
 import Page from 'components/Page';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useQuery } from 'urql';
+import { CardInsightProps } from '../../components/card-insight/types';
 import { CardTable } from '../../components/card-table';
 import { ProjectCardProps } from '../../components/card-table/types';
-import { HASURA_ADMIN_SECRET, HASURA_GRAPHQL_URL } from '../../config';
-import { CardTableIncomingSupportRequests } from './mock-data';
+import useLocales from '../../hooks/useLocales';
+import {
+  acceptableRequest,
+  incomingNewRequest,
+  pendingRequest,
+  rejectedRequest,
+  totalRequest,
+} from '../../queries/Moderator/stactic';
+import { incomingRequest } from '../../queries/Moderator/supportRequest';
 
 // -------------------------------------------------------------------------------
 
@@ -23,13 +30,46 @@ const INSIGHT_DATA = [
 
 // -------------------------------------------------------------------------------
 
-// -------------------------------------------------------------------------------
-
 function MainManagerPage() {
-  const path = HASURA_GRAPHQL_URL;
-  const secret = HASURA_ADMIN_SECRET;
-  const [incomingSupportRequests, setIncomingSupportRequests] = useState<ProjectCardProps[]>([]);
-  const incoming: ProjectCardProps[] = [];
+  const [previousSupportRequests, setPreviousSupportRequest] = useState<ProjectCardProps[]>([]);
+  const [cardInsightData, setCardInsightData] = useState<CardInsightProps>();
+  const previousSupport: ProjectCardProps[] = [];
+
+  const { currentLang, translate } = useLocales();
+
+  // graphql for statistic data
+  const [acc, reexecuteAcc] = useQuery({
+    query: acceptableRequest,
+  });
+  const [rejected, reexecuteRejected] = useQuery({
+    query: rejectedRequest,
+  });
+  const [incomingNew, reexecuteIncomingNew] = useQuery({
+    query: incomingNewRequest,
+  });
+  const [pending, reexecutePending] = useQuery({
+    query: pendingRequest,
+  });
+  const [total, reexecuteTotal] = useQuery({
+    query: totalRequest,
+  });
+
+  const { data: countAcc, fetching: fetchingAcc, error: errorAcc } = acc;
+  const { data: countRejected, fetching: fetchingRejected, error: errorRejected } = rejected;
+  const {
+    data: countIncomingNew,
+    fetching: fetchingIncomingNew,
+    error: errorIncomingNew,
+  } = incomingNew;
+  const { data: countPending, fetching: fetchingPending, error: errorPending } = pending;
+  const { data: countTotal, fetching: fetchingTotal, error: errorTotal } = total;
+
+  // graphql for fetching all incoming request
+  const [incoming, fetchIncoming] = useQuery({
+    query: incomingRequest,
+  });
+
+  const { data: incomingData, fetching: incomingFetching, error: incomingError } = incoming;
 
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
@@ -41,77 +81,74 @@ function MainManagerPage() {
   }));
   console.log('adskadkla');
 
-  const fetchProjectList = async () => {
-    const queryData = {
-      query: `
-      query MyQuery {
-        proposal(where: {state: {_eq: MODERATOR}}) {
-          id
-          created_at
-          project_name
-          user {
-            employee_name
-          }
-          state
-        }
-      }
-      `,
-    };
-
-    const headers = {
-      headers: {
-        'Content-Type': 'aplication/json',
-        'x-hasura-admin-secret': `${secret}`,
-      },
-    };
-
-    try {
-      const response = await axios.post(`${path}`, queryData, headers);
-      // const data = response.data.data;
-      // console.log('Data : ', data);
-      // map data to ProjectCardProps without arrow function
-      const newData = response.data.data.proposal.map(function (item: any) {
-        return {
-          title: {
-            id: item.id,
-          },
-          content: {
-            projectName: item.project_name,
-            employee: item.user.employee_name,
-            sentSection: item.state,
-          },
-          footer: {
-            createAt: item.created_at,
-          },
-        };
-      }) as ProjectCardProps[];
-      incoming.push(...newData);
-      setIncomingSupportRequests(incoming);
-      console.log('Incoming : ', incoming);
-    } catch (err) {
-      console.log('Error:  ', err);
-    }
-  };
-
   useEffect(() => {
-    fetchProjectList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const previousSupport: ProjectCardProps[] = [];
+    const newCard: CardInsightProps = {
+      data: [],
+    };
+    if (incomingData) {
+      // map incomingData then push to previousSupport with const function
+      const prev = incomingData.proposal.map((item: any) => ({
+        title: {
+          id: item.id,
+        },
+        content: {
+          projectName: item.project_name,
+          employee: item.user.employee_name,
+          sentSection: item.state,
+        },
+        footer: {
+          createdAt: item.created_at,
+        },
+        cardFooterButtonAction: 'show-details',
+      }));
+      previousSupport.push(...prev);
+      setPreviousSupportRequest(previousSupport);
+      console.log('hasil set state : ', previousSupport);
+    }
+    if (countAcc && countRejected && countIncomingNew && countPending && countTotal) {
+      newCard.data.push(
+        {
+          title: 'acceptable_projects',
+          value: countAcc?.proposal_aggregate?.aggregate?.count,
+        },
+        {
+          title: 'rejected_projects',
+          value: countRejected?.proposal_aggregate?.aggregate?.count,
+        },
+        {
+          title: 'incoming_new_projects',
+          value: countIncomingNew?.proposal_aggregate?.aggregate?.count,
+        },
+        {
+          title: 'pending_projects',
+          value: countPending?.proposal_aggregate?.aggregate?.count,
+        },
+        {
+          title: 'total_number_of_projects',
+          value: countTotal?.proposal_aggregate?.aggregate?.count,
+        }
+      );
+      setCardInsightData(newCard);
+    }
+  }, [incomingData, countAcc, countRejected, countIncomingNew, countPending, countTotal]);
 
   return (
-    <Page title="Manager Dashboard">
+    <Page title="Moderator Dashboard">
       <Container>
         <ContentStyle>
-          <CardInsight
-            headline="daily_stats"
-            data={INSIGHT_DATA}
-            cardContainerColumns={15}
-            cardContainerSpacing={1}
-            cardStyle={{ p: 2, bgcolor: 'white' }}
-          />
+          {cardInsightData && (
+            <CardInsight
+              headline="daily_stats"
+              data={cardInsightData.data}
+              cardContainerColumns={15}
+              cardContainerSpacing={1}
+              cardStyle={{ p: 2, bgcolor: 'white' }}
+            />
+          )}
           <CardTable
-            data={incomingSupportRequests} // For testing, later on we will send the query to it
-            title="طلبات الدعم السابقة"
+            data={previousSupportRequests} // For testing, later on we will send the query to it
+            title={translate('incoming_support_requests')}
             pagination={false}
             limitShowCard={4}
             // alphabeticalOrder={true} // optional
