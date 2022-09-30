@@ -21,9 +21,9 @@ import BankImageComp from 'sections/shared/BankImageComp';
 // hooks
 import { useParams, useNavigate } from 'react-router-dom';
 import useLocales from 'hooks/useLocales';
+import { useQuery } from 'urql';
+import { detailsClientData } from 'queries/account_manager/detailsClientData';
 //
-import axios from 'axios';
-import { HASURA_GRAPHQL_URL, HASURA_ADMIN_SECRET } from 'config';
 import { PartnerDetailsProps } from '../../../@types/client_data';
 
 // -------------------------------------------------------------------------------
@@ -49,82 +49,31 @@ function AccountPartnerDetails() {
 
   // Language
   const { currentLang, translate } = useLocales();
-  // const accessToken = localStorage.getItem('accessToken');
+
+  const [resultDetailsClient, reexecuteDetailsClient] = useQuery({
+    query: detailsClientData,
+    variables: {
+      id: params.partnerId as string,
+    },
+  });
+
+  const { data, fetching, error } = resultDetailsClient;
 
   // Partner Details Data
   const [partnerDetails, setPartnerDetails] = useState<PartnerDetailsProps | null>(null);
 
-  const getPartnerDetails = async (path: string, id: string) => {
-    await axios
-      .post(
-        `${path}`,
-        {
-          query: `
-            query MyQuery {
-              client_data_by_pk(id: "${id}") {
-                id
-                bank_informations {
-                  bank_account_name
-                  bank_account_number
-                  bank_name
-                  card_image
-                }
-                board_ofdec_file
-                center_administration
-                ceo_mobile
-                ceo_name
-                created_at
-                data_entry_mail
-                data_entry_name
-                date_of_esthablistmen
-                email
-                entity
-                entity_mobile
-                governorate
-                headquarters
-                license_expired
-                license_file
-                license_issue_date
-                license_number
-                mobile_data_entry
-                num_of_beneficiaries
-                num_of_employed_facility
-                phone
-                region
-                twitter_acount
-                updated_at
-                website
-              }
-            }          
-          `,
-        },
-        {
-          headers: {
-            'Content-Type': 'aplication/json',
-            'x-hasura-admin-secret': `${secret}`,
-          },
-        }
-      )
-      .then((res) => {
-        setPartnerDetails(res?.data?.data?.client_data_by_pk);
-      });
-  };
-
   useEffect(() => {
-    const path = HASURA_GRAPHQL_URL;
-    const partnerId = params.partnerId as string;
-
-    getPartnerDetails(path, partnerId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (data) {
+      setPartnerDetails(data?.client_data_by_pk);
+    }
+  }, [data]);
 
   return (
     <Page title="Partner Details">
       <Container>
         <ContentStyle>
-          {!partnerDetails ? (
-            <Skeleton variant="rectangular" sx={{ height: 500, borderRadius: 2 }} />
-          ) : (
+          {fetching && <Skeleton variant="rectangular" sx={{ height: 500, borderRadius: 2 }} />}
+          {partnerDetails && (
             <>
               <Stack
                 spacing={4}
@@ -152,16 +101,28 @@ function AccountPartnerDetails() {
                     />
                   </Button>
                   <Box>
-                    <Typography variant="h4">{partnerDetails?.ceo_name}</Typography>
-                    {/* <Typography variant="body1">Ministry of Commerce - Commercial</Typography> */}
+                    <Typography variant="h4">{partnerDetails?.entity ?? '-'}</Typography>
                   </Box>
                 </Box>
                 <Label
                   variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
-                  color="warning"
+                  color={
+                    ((!partnerDetails?.status ||
+                      partnerDetails?.status === 'WAITING_FOR_ACTIVATION' ||
+                      partnerDetails?.status === 'REVISED_ACCOUNT') &&
+                      'warning') ||
+                    (partnerDetails?.status === 'ACTIVE_ACCOUNT' && 'success') ||
+                    'error'
+                  }
                   sx={{ textTransform: 'capitalize', fontSize: 14, py: 2.5, px: 4 }}
                 >
-                  Waiting for Activation
+                  {(partnerDetails?.status === 'ACTIVE_ACCOUNT' && translate('active_account')) ||
+                    ((partnerDetails?.status === 'WAITING_FOR_ACTIVATION' ||
+                      partnerDetails?.status === 'REVISED_ACCOUNT') &&
+                      translate('waiting_activation')) ||
+                    (partnerDetails?.status !== 'waiting' &&
+                      partnerDetails?.status !== 'approved' &&
+                      translate('canceled_account'))}
                 </Label>
               </Stack>
               <Divider />
@@ -181,7 +142,7 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.num_of_employed_facility}
+                        {partnerDetails?.num_of_employed_facility ?? '-'}
                       </Typography>
                     </Box>
                     <Box>
@@ -193,7 +154,7 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.num_of_beneficiaries}
+                        {partnerDetails?.num_of_beneficiaries ?? '-'}
                       </Typography>
                     </Box>
                     <Box>
@@ -205,7 +166,7 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.date_of_esthablistmen}
+                        {partnerDetails?.date_of_esthablistmen ?? '-'}
                       </Typography>
                     </Box>
                     <Box>
@@ -217,7 +178,7 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.headquarters}
+                        {partnerDetails?.headquarters ?? '-'}
                       </Typography>
                     </Box>
                   </Stack>
@@ -241,7 +202,7 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.license_number}
+                        {partnerDetails?.license_number ?? '-'}
                       </Typography>
                     </Box>
                     <Box>
@@ -253,7 +214,7 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.entity}
+                        {partnerDetails?.entity ?? '-'}
                       </Typography>
                     </Box>
                     <Box>
@@ -265,7 +226,7 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.license_expired}
+                        {partnerDetails?.license_expired ?? '-'}
                       </Typography>
                     </Box>
                     <Box>
@@ -277,7 +238,7 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.license_issue_date}
+                        {partnerDetails?.license_issue_date ?? '-'}
                       </Typography>
                     </Box>
                     <Box>
@@ -289,7 +250,7 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.license_file}
+                        {partnerDetails?.license_file ?? '-'}
                       </Typography>
                     </Box>
                   </Stack>
@@ -341,7 +302,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.data_entry_name}
+                          {partnerDetails?.data_entry_name ?? '-'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -355,7 +316,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.mobile_data_entry}
+                          {partnerDetails?.mobile_data_entry ?? '-'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -369,7 +330,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.data_entry_mail}
+                          {partnerDetails?.data_entry_mail ?? '-'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -393,7 +354,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.center_administration}
+                          {partnerDetails?.center_administration ?? '-'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -407,7 +368,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.governorate}
+                          {partnerDetails?.governorate ?? '-'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -421,7 +382,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.region}
+                          {partnerDetails?.region ?? '-'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -435,7 +396,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.email}
+                          {partnerDetails?.email ?? '-'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -449,7 +410,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.twitter_acount}
+                          {partnerDetails?.twitter_acount ?? '-'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -463,21 +424,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.website}
-                        </Typography>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <Box>
-                        <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
-                          {translate('partner_details.website')}:
-                        </Typography>
-                        <Typography
-                          variant="subtitle1"
-                          component="p"
-                          sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
-                        >
-                          {partnerDetails?.website}
+                          {partnerDetails?.website ?? '-'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -491,7 +438,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.phone}
+                          {partnerDetails?.phone ?? '-'}
                         </Typography>
                       </Box>
                     </Grid>

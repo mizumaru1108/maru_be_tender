@@ -195,7 +195,7 @@ export default function TableAMCustom({
                 })
                 .map((x, key) => (
                   <TableRowsData
-                    key={x?.partner_name}
+                    key={x?.id}
                     row={x}
                     selected={selected.includes(x.partner_name as string)}
                     onSelectRow={() => onSelectRow(x.partner_name as string)}

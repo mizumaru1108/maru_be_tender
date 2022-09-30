@@ -31,4 +31,5 @@ export type PartnerDetailsProps = {
   twitter_acount?: string | null;
   updated_at?: string | null;
   website?: string | null;
+  status?: string | null;
 }

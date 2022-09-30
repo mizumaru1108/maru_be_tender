@@ -60,7 +60,6 @@ export default function CardInsights({
                     sx={{
                       fontWeight: theme.typography.fontWeightMedium,
                       color: theme.palette.grey[500],
-                      minHeight: '50px',
                     }}
                   >
                     {translate(item?.title)}
