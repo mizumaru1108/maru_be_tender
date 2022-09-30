@@ -49,9 +49,7 @@ function PreviousSupportRequests() {
 
     try {
       const response = await axios.post(`${path}`, queryData, headers);
-      const { data } = response.data.data;
-      console.log('Data : ', data);
-      const newData = data.proposal.map(function (item: any) {
+      const newData = response.data.data.proposal.map(function (item: any) {
         return {
           title: {
             id: item.id,

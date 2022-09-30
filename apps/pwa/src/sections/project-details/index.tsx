@@ -123,10 +123,17 @@ function ProjectDetailsMainPage() {
             <Stack direction={{ sm: 'column', md: 'row' }} justifyContent="space-between">
               <Stack flexDirection={{ sm: 'column', md: 'row' }}>
                 <Button variant="contained" color="primary" sx={{ mr: { md: '1em' } }}>
-                  {translate('activate_account')}
+                  {translate('project_acceptance')}
                 </Button>
-                <Button variant="contained" color="error" sx={{ my: { xs: '1.3em', md: '0' } }}>
-                  {translate('delete_account')}
+                <Button
+                  variant="contained"
+                  color="error"
+                  sx={{ my: { xs: '1.3em', md: '0' }, mr: { md: '1em' } }}
+                >
+                  {translate('project_rejected')}
+                </Button>
+                <Button variant="outlined" color="primary" sx={{ my: { xs: '1.3em', md: '0' } }}>
+                  {translate('send_message_to_partner')}
                 </Button>
               </Stack>
 
@@ -135,7 +142,7 @@ function ProjectDetailsMainPage() {
                 color="info"
                 endIcon={<Iconify icon="eva:edit-2-outline" />}
               >
-                {translate('partner_details.submit_amendment_request')}
+                {translate('submit_amendment_request')}
               </Button>
             </Stack>
           </Box>
