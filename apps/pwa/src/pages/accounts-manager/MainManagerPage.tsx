@@ -7,13 +7,13 @@ import { CardInsight } from 'components/card-insight';
 import { TableAMCustom } from 'components/table';
 // hooks
 import { useQuery } from 'urql';
+import useAuth from 'hooks/useAuth';
 import {
   numberOfRequests,
   activePartners,
   rejectedPartners,
   suspendedPartners,
 } from 'queries/account_manager/statistic';
-
 import { tableNewRequest, tableInfoUpdateRequest } from 'queries/account_manager/clientNewRequest';
 //
 import { PATH_ACCOUNTS_MANAGER } from '../../routes/paths';
@@ -34,6 +34,8 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // -------------------------------------------------------------------------------
 
 function MainManagerPage() {
+  const { user } = useAuth();
+
   const [cardInsightData, setCardInsightData] = useState<CardInsightProps | null>(null);
   const [newJoinRequestData, setNewJoinRequestData] = useState<IPropsTablesList[] | null>(null);
   const [infoUpdateRequest, setInfoUpdateRequest] = useState<IPropsTablesList[] | null>(null);
@@ -83,6 +85,9 @@ function MainManagerPage() {
 
   const [resultInfoUpdateQuery, reexecuteInfoUpdateRequest] = useQuery({
     query: tableInfoUpdateRequest,
+    variables: {
+      reviewer_id: user?.id,
+    },
   });
 
   const {
@@ -146,14 +151,18 @@ function MainManagerPage() {
     }
 
     if (resultInfoUpdate) {
-      const resultDataInfoUpdate = resultInfoUpdate?.client_data?.map((v: any) => ({
-        id: v.id,
-        partner_name: v.entity,
-        createdAt: v.created_at,
-        account_status: v.status,
-        events: v.id,
-        update_status: v.status === 'REVISED_ACCOUNT' ? true : false,
-      }));
+      const resultDataInfoUpdate = resultInfoUpdate?.client_log?.map((vcl: any) => {
+        const vcd = vcl.client_data;
+
+        return {
+          id: vcd.id,
+          partner_name: vcd.entity,
+          createdAt: vcd.created_at,
+          account_status: vcd.status,
+          events: vcd.id,
+          update_status: true,
+        };
+      });
 
       setInfoUpdateRequest(resultDataInfoUpdate);
     }

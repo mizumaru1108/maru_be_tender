@@ -22,10 +22,16 @@ import BankImageComp from 'sections/shared/BankImageComp';
 import { useParams, useNavigate } from 'react-router-dom';
 import useLocales from 'hooks/useLocales';
 import { useQuery, useMutation } from 'urql';
-import { detailsClientData, activateClientStatus } from 'queries/account_manager/detailsClientData';
+import useAuth from 'hooks/useAuth';
+import {
+  detailsClientData,
+  changeClientStatus,
+  deleteClientData,
+} from 'queries/account_manager/detailsClientData';
 import { useSnackbar } from 'notistack';
 //
 import { PartnerDetailsProps } from '../../../@types/client_data';
+import { PATH_ACCOUNTS_MANAGER } from 'routes/paths';
 
 // -------------------------------------------------------------------------------
 
@@ -41,6 +47,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // -------------------------------------------------------------------------------
 
 function AccountPartnerDetails() {
+  const { user } = useAuth();
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -63,8 +70,10 @@ function AccountPartnerDetails() {
   // Partner Details Data
   const [partnerDetails, setPartnerDetails] = useState<PartnerDetailsProps | null>(null);
 
-  // Activate Client
-  const [activateResult, activateClient] = useMutation(activateClientStatus);
+  // Activate | Suspended Client
+  const [activateResult, activateClient] = useMutation(changeClientStatus);
+  const [suspendedResult, suspendedClient] = useMutation(changeClientStatus);
+  const [deleteResult, deleteClient] = useMutation(deleteClientData);
   const [isSubmitting, setIsSubimitting] = useState(false);
 
   const handleActivateAccount = async (id: string) => {
@@ -79,9 +88,55 @@ function AccountPartnerDetails() {
       },
     });
 
+    console.log('resActivate', resActivate);
+
     if (resActivate) {
       setIsSubimitting(false);
       enqueueSnackbar('Activate Account Is Successfull!', {
+        variant: 'success',
+      });
+    }
+  };
+
+  const handeSuspendedAccount = async (id: string) => {
+    setIsSubimitting(true);
+
+    const resSuspended = await suspendedClient({
+      pk_columns: {
+        id: id,
+      },
+      _set: {
+        status: 'SUSPENDED_ACCOUNT',
+      },
+    });
+
+    console.log('resSuspended', resSuspended);
+
+    if (resSuspended) {
+      setIsSubimitting(false);
+      enqueueSnackbar('Disabled Account Is Successfull!', {
+        variant: 'success',
+      });
+    }
+  };
+
+  const handleDeleteAccount = async (email: string) => {
+    setIsSubimitting(true);
+
+    const resDeleted = await deleteClient({
+      _set: {
+        status: 'CANCELED_ACCOUNT',
+      },
+      email: {
+        _eq: email,
+      },
+    });
+
+    console.log('resDeleted', resDeleted);
+
+    if (resDeleted) {
+      setIsSubimitting(false);
+      enqueueSnackbar('Account Delete Is Successfull!', {
         variant: 'success',
       });
     }
@@ -477,18 +532,24 @@ function AccountPartnerDetails() {
                     {translate('partner_details.bank_information')}
                   </Typography>
                   <Grid container spacing={{ xs: 2 }} component="div">
-                    {partnerDetails?.bank_informations && partnerDetails?.bank_informations.length
-                      ? partnerDetails?.bank_informations.map((v, i) => (
-                          <Grid item xs={12} md={6} key={i}>
-                            <BankImageComp
-                              enableButton={true}
-                              bankName={`${v.bank_name}`}
-                              accountNumber={`${v.bank_account_number}`}
-                              bankAccountName={`${v.bank_account_name}`}
-                            />
-                          </Grid>
-                        ))
-                      : ''}
+                    {partnerDetails?.user &&
+                    partnerDetails?.user?.bank_informations &&
+                    partnerDetails?.user?.bank_informations.length ? (
+                      partnerDetails?.user?.bank_informations.map((v, i) => (
+                        <Grid item xs={12} md={6} key={i}>
+                          <BankImageComp
+                            enableButton={true}
+                            bankName={`${v.bank_name}`}
+                            accountNumber={`${v.bank_account_number}`}
+                            bankAccountName={`${v.bank_account_name}`}
+                          />
+                        </Grid>
+                      ))
+                    ) : (
+                      <Grid item xs={12} md={6}>
+                        -
+                      </Grid>
+                    )}
                   </Grid>
                 </Grid>
               </Grid>
@@ -505,32 +566,9 @@ function AccountPartnerDetails() {
               >
                 <Grid container spacing={2} alignItems="center" justifyContent="space-around">
                   <Grid item>
-                    <Button
-                      variant="contained"
-                      color="info"
-                      endIcon={<Iconify icon="eva:edit-2-outline" />}
-                    >
-                      {translate('partner_details.submit_amendment_request')}
-                    </Button>
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      variant="outlined"
-                      color="inherit"
-                      endIcon={<Iconify icon="eva:message-circle-outline" />}
-                    >
-                      {translate('partner_details.send_messages')}
-                    </Button>
-                  </Grid>
-                  <Grid item>
-                    <Button variant="contained" color="error">
-                      {translate('delete_account')}
-                    </Button>
-                  </Grid>
-                  <Grid item>
                     {partnerDetails?.status === 'ACTIVE_ACCOUNT' ? (
                       <Button
-                        onClick={() => alert(partnerDetails?.id!)}
+                        onClick={() => handeSuspendedAccount(partnerDetails?.id!)}
                         variant="contained"
                         color="warning"
                         disabled={isSubmitting}
@@ -547,6 +585,39 @@ function AccountPartnerDetails() {
                         {translate('activate_account')}
                       </Button>
                     )}
+                  </Grid>
+                  <Grid item>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => handleDeleteAccount(user?.email)}
+                    >
+                      {translate('delete_account')}
+                    </Button>
+                  </Grid>
+                  <Grid item>
+                    <Button
+                      variant="outlined"
+                      color="inherit"
+                      endIcon={<Iconify icon="eva:message-circle-outline" />}
+                      onClick={() => navigate(PATH_ACCOUNTS_MANAGER.messages)}
+                    >
+                      {translate('partner_details.send_messages')}
+                    </Button>
+                  </Grid>
+                  <Grid item>
+                    <Button
+                      variant="contained"
+                      color="info"
+                      endIcon={<Iconify icon="eva:edit-2-outline" />}
+                      onClick={() =>
+                        navigate(
+                          PATH_ACCOUNTS_MANAGER.partnerSendAmandement(params.partnerId as string)
+                        )
+                      }
+                    >
+                      {translate('partner_details.submit_amendment_request')}
+                    </Button>
                   </Grid>
                 </Grid>
               </Box>
