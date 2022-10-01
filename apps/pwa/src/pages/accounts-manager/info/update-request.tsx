@@ -7,6 +7,7 @@ import { TableAMCustom } from 'components/table';
 // hooks
 import { useQuery } from 'urql';
 import { tableInfoUpdateRequest } from 'queries/account_manager/clientNewRequest';
+import useAuth from 'hooks/useAuth';
 //
 import { IPropsTablesList } from 'components/table/type';
 
@@ -25,9 +26,13 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 function InfoUpdateRequestPage() {
   const [infoUpdateRequest, setInfoUpdateRequest] = useState<IPropsTablesList[] | null>(null);
+  const { user } = useAuth();
 
   const [resultInfoUpdateQuery, reexecuteInfoUpdateRequest] = useQuery({
     query: tableInfoUpdateRequest,
+    variables: {
+      reviewer_id: user?.id,
+    },
   });
 
   const {
@@ -38,14 +43,18 @@ function InfoUpdateRequestPage() {
 
   useEffect(() => {
     if (resultInfoUpdate) {
-      const resultDataInfoUpdate = resultInfoUpdate?.client_data?.map((v: any) => ({
-        id: v.id,
-        partner_name: v.entity,
-        createdAt: v.created_at,
-        account_status: v.status,
-        events: v.id,
-        update_status: v.status === 'REVISED_ACCOUNT' ? true : false,
-      }));
+      const resultDataInfoUpdate = resultInfoUpdate?.client_log?.map((vcl: any) => {
+        const vcd = vcl.client_data;
+
+        return {
+          id: vcd.id,
+          partner_name: vcd.entity,
+          createdAt: vcd.created_at,
+          account_status: vcd.status,
+          events: vcd.id,
+          update_status: true,
+        };
+      });
 
       setInfoUpdateRequest(resultDataInfoUpdate);
     }

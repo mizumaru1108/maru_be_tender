@@ -1,11 +1,5 @@
 export type PartnerDetailsProps = {
   id?: string | null;
-  bank_informations?: {
-    bank_account_name?: string | null;
-    bank_account_number?: string | null;
-    bank_name?: string | null;
-    card_image?: string | null;
-  }[];
   board_ofdec_file?: string | null;
   center_administration?: string | null;
   ceo_mobile?: string | null;
@@ -32,4 +26,15 @@ export type PartnerDetailsProps = {
   updated_at?: string | null;
   website?: string | null;
   status?: string | null;
+  user?: {
+    bank_informations?: {
+      bank_account_name?: string | null;
+      bank_account_number?: string | null;
+      bank_name?: string | null;
+      card_image?: string | null;
+      id?: string | null;
+      proposal_id?: string | null;
+      user_id?: string | null;
+    }[];
+  }
 }

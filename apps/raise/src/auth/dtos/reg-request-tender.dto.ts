@@ -66,7 +66,7 @@ export class RegReqTenderDto {
   is_active: boolean;
 }
 
-class bankData{
+class bankData {
   @ApiProperty()
   @IsString()
   @IsOptional()
@@ -88,7 +88,7 @@ class bankData{
   card_image: string;
 }
 class basePayload {
-  
+
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -162,6 +162,7 @@ class basePayload {
   headquarters: string;
 
   @ApiProperty()
+  @IsOptional()
   @IsNotEmpty()
   mobile_data_entry: string;
 
@@ -214,12 +215,12 @@ class basePayload {
   @ApiProperty()
   @IsNotEmpty()
   status: string;
-  
+
   @ApiProperty()
   @IsNotEmpty()
   data_entry_name: string;
 
-  @ApiProperty()  
+  @ApiProperty()
   @ValidateNested()
   @Type(() => bankData)
   bank_informations: bankData;
@@ -227,7 +228,7 @@ class basePayload {
 }
 
 export class RegisterTendersDto {
-  @ApiProperty()  
+  @ApiProperty()
   @ValidateNested()
   @Type(() => basePayload)
   data: basePayload;

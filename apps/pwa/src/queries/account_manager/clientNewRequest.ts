@@ -10,12 +10,14 @@ export const tableNewRequest = `
 `;
 
 export const tableInfoUpdateRequest = `
-  query tableInfoUpdateRequest {
-    client_data(where: {status: {_in: REVISED_ACCOUNT}}) {
+query tableInfoUpdateRequest($reviewer_id: String!){
+  client_log(where: {reviewer_id: {_eq: $reviewer_id}, status: {_eq: REVISED_ACCOUNT}}) {
+    client_data {
       status
       id
-      created_at
       entity
+      created_at
     }
   }
+}
 `;

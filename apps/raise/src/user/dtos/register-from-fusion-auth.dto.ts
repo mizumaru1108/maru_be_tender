@@ -73,7 +73,7 @@ export class RegFromFusionAuthTenderDto {
 
 }
 
-class bankData{
+class bankData {
   @ApiProperty()
   @IsString()
   @IsOptional()
@@ -110,123 +110,124 @@ export class RegisterFromFusionAuthTenderDto {
   @IsEmail()
   @IsNotEmpty()
   email: string;
-  
+
   @ApiProperty()
   @IsString()
   password: string;
-  
+
   @ApiProperty()
   @IsString()
   employee_name: string;
-  
-  
+
+
   @ApiProperty()
   @IsString()
   employee_path: string;
-    
+
   @ApiProperty()
   @IsString()
   authority: string;
-    
+
   @ApiProperty()
   @IsString()
   board_ofdec_file: string;
-  
+
   @ApiProperty()
   @IsString()
   center_administration: string;
-  
+
   @ApiProperty()
   @IsString()
   ceo_mobile: string;
-  
+
   @ApiProperty()
   @IsString()
   ceo_name: string;
-  
+
   @ApiProperty()
   @IsString()
   data_entry_mail: string;
-  
+
   @ApiProperty()
   @IsString()
   entity_mobile: string;
-  
+
   @ApiProperty()
   @IsString()
   governorate: string;
-  
+
   @ApiProperty()
   @IsString()
   headquarters: string;
-  
+
   @ApiProperty()
   @IsString()
   license_number: string;
-  
+
   @ApiProperty()
   @IsString()
   license_expired: string;
-  
-  
+
+
   @ApiProperty()
   @IsString()
   license_file: string;
-  
+
   @ApiProperty()
   @IsString()
   license_issue_date: string;
-  
+
   @ApiProperty()
   @IsString()
   data_entry_mobile: string;
-  
+
   @ApiProperty()
   @IsString()
   num_of_beneficiaries?: number;
-  
+
   @ApiProperty()
   @ApiProperty()
   @IsString()
   num_of_employed_facility?: number;
-  
+
   @ApiProperty()
   @IsString()
   phone: string;
-  
+
   @ApiProperty()
   @IsString()
   region: string;
-  
+
   @ApiProperty()
   @IsString()
   twitter_acount: string;
-  
+
   @ApiProperty()
   @IsString()
   website: string;
-  
+
   @ApiProperty()
   @IsString()
   entity: string;
-  
+
   @ApiProperty()
   @IsString()
   status: string;
-  
+
   @ApiProperty()
   @IsString()
   data_entry_name: string;
-  
+
   @ApiProperty()
   @IsString()
   date_of_esthablistmen: string;
-  
+
   @ApiProperty()
+  @IsOptional()
   @IsString()
   mobile_data_entry: string;
-  
-  @ApiProperty()  
+
+  @ApiProperty()
   @ValidateNested()
   @Type(() => bankData)
   bank_informations: bankData;
