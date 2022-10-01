@@ -14,7 +14,7 @@ type FormValuesProps = {
   project_location: string;
   project_implement_date: string;
   execution_time: string;
-  target_group_type: string;
+  project_beneficiaries: string;
   letter_ofsupport_req: CustomFile | string | null;
   project_attachments: CustomFile | string | null;
 };
@@ -35,7 +35,7 @@ const MainInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
     project_location: Yup.string().required('Project location place is required'),
     project_implement_date: Yup.string().required('Project applying date is required'),
     execution_time: Yup.string().required('Applying duration name required'),
-    target_group_type: Yup.string().required('Target group type required'),
+    project_beneficiaries: Yup.string().required('Target group type required'),
     letter_ofsupport_req: Yup.mixed().required('Letter support request is required'),
     project_attachments: Yup.mixed().required('Project attachments is required'),
   });

@@ -1,71 +1,30 @@
-import axios from 'axios';
-import { useState, useCallback, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useQuery } from 'urql';
 import {
   ProjectManagement,
   ProjectManagementTableHeader,
 } from '../../../components/table/ceo/project-management/project-management';
 import ProjectManagementTable from '../../../components/table/ceo/project-management/ProjectManagementTable';
-import { HASURA_ADMIN_SECRET, HASURA_GRAPHQL_URL } from '../../../config';
+import { GetProjectList } from '../../../queries/ceo/get-project-list';
 
 function CeoProjectManagement() {
-  const path = HASURA_GRAPHQL_URL;
-  const secret = HASURA_ADMIN_SECRET;
-
   const [projectManagementData, setProjectManagementData] = useState<ProjectManagement[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const fetchProjectList = useCallback(async (): Promise<ProjectManagement[] | null> => {
-    const queryData = {
-      query: `
-        query GetProjectList {
-          proposal(where: {state: {_eq: CEO}}, limit: 5) {
-            projectNumber: id
-            projectName: project_name
-            projectSection: project_kind_id
-            createdAt: created_at
-          }
-          proposal_aggregate(where: {state: {_eq: CEO}}, limit: 5) {
-            aggregate {
-              totalData: count
-            }
-          }
-        }
-      `,
-    };
+  const [projectList, fetchProject] = useQuery({
+    query: GetProjectList,
+  });
 
-    const headers = {
-      headers: {
-        'Content-Type': 'aplication/json',
-        'x-hasura-admin-secret': `${secret}`,
-      },
-    };
+  const { data: projectDatas, fetching, error } = projectList;
 
-    setIsLoading(true);
-    try {
-      const response = await axios.post(`${path}`, queryData, headers);
-      const data = response.data.data.proposal;
-      return data as ProjectManagement[];
-    } catch (err) {
-      console.log('Error:  ', err);
-      return null;
-    } finally {
-      setIsLoading(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const initFetchProjectList = useCallback(async () => {
-    const projects = await fetchProjectList();
-    if (projects !== null && isLoading === false) {
-      setProjectManagementData(projects);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchProjectList]);
+  if (error) {
+    console.log(error);
+  }
 
   useEffect(() => {
-    initFetchProjectList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (projectDatas) {
+      setProjectManagementData(projectDatas.proposal);
+    }
+  }, [projectDatas]);
 
   const headerCells: ProjectManagementTableHeader[] = [
     { id: 'projectNumber', label: 'Project Number' },
@@ -79,9 +38,9 @@ function CeoProjectManagement() {
   return (
     <ProjectManagementTable
       headline="Project Management"
-      isLoading={isLoading}
+      isLoading={fetching}
       headerCell={headerCells}
-      data={projectManagementData}
+      data={projectManagementData ?? []}
     />
   );
 }

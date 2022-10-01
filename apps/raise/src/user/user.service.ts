@@ -5,10 +5,11 @@ import { FusionAuthClient } from '@fusionauth/typescript-client';
 import { ConfigService } from '@nestjs/config';
 
 import { User, UserDocument } from './schema/user.schema';
-import { RegFromFusionAuthTenderDto, RegisterFromFusionAuthDto } from './dtos/register-from-fusion-auth.dto';
+import { RegFromFusionAuthTenderDto, RegisterFromFusionAuthDto, RegisterFromFusionAuthTenderDto } from './dtos/register-from-fusion-auth.dto';
 import { RoleEnum } from './enums/role-enum';
 import { Donor } from 'src/donor/schema/donor.schema';
 import { PrismaService } from '../prisma/prisma.service';
+import { RegisterTendersDto } from 'src/auth/dtos';
 
 @Injectable()
 export class UserService {
@@ -78,6 +79,50 @@ export class UserService {
 
   }
 
+  /** Create user and client for tender completed data */
+  async registerFromFusionTender(request: RegisterFromFusionAuthTenderDto) {
+    try {
+      const result = await this.prisma.user.create({
+        data: {
+          id: request.id_,
+          employee_name: request.employee_name,
+          email: request.email,
+          mobile_number: request.phone,
+          client_data: {
+            create: {
+              id: request.id!,
+              license_number: request.license_number!,
+              authority: request.authority,
+              board_ofdec_file: request.board_ofdec_file,
+              center_administration: request.center_administration,
+              ceo_mobile: request.ceo_mobile,
+              data_entry_mail: request.data_entry_mail,
+              data_entry_name: request.data_entry_name,
+              ceo_name: request.ceo_name,
+              entity_mobile: request.entity_mobile,
+              governorate: request.governorate,
+              region: request.region,
+              headquarters: request.headquarters,
+              entity: request.entity,
+              date_of_esthablistmen: request.date_of_esthablistmen,
+              license_file: request.license_file,
+              license_expired: request.license_expired,
+              license_issue_date: request.license_issue_date,
+              num_of_beneficiaries: request.num_of_beneficiaries,
+            }
+          },
+          bank_information: {
+            create: request.bank_informations
+          }
+        }
+      });
+      return result;
+    } catch (error) {
+      console.log(error);
+      throw new Error("something went wrong!");
+    }
+  }
+
   async createUser(name: string, email: string, password: string) {
     const newUser = new this.userModel({ name, email, password });
     const result = await newUser.save();
@@ -86,7 +131,6 @@ export class UserService {
 
   async getAllUser() {
     const user = await this.userModel.find().exec();
-
     return user.map((user: UserDocument) => ({
       _id: user._id,
       name: user.name,

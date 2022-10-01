@@ -22,7 +22,11 @@ export const MainFormData = [
     placeholder: 'funding_project_request_form1.project_applying_place.placeholder',
     md: 6,
     xs: 12,
-    children: <option value="test">test</option>,
+    children: (
+      <option value="test" style={{ backgroundColor: '#fff' }}>
+        test
+      </option>
+    ),
   },
   {
     type: 'datePicker',
@@ -42,12 +46,27 @@ export const MainFormData = [
   },
   {
     type: 'select',
-    name: 'target_group_type',
+    name: 'project_beneficiaries',
     label: 'funding_project_request_form1.target_group_type.label',
     placeholder: 'funding_project_request_form1.target_group_type.placeholder',
     md: 6,
     xs: 12,
-    children: <option value="test">test</option>,
+    children: (
+      <>
+        <option value="GENERAL" style={{ backgroundColor: '#fff' }}>
+          General
+        </option>
+        <option value="MIDDLE_AGED" style={{ backgroundColor: '#fff' }}>
+          Middle Aged
+        </option>
+        <option value="KIDS" style={{ backgroundColor: '#fff' }}>
+          Kids
+        </option>
+        <option value="ELDERLY" style={{ backgroundColor: '#fff' }}>
+          Elderly
+        </option>
+      </>
+    ),
   },
   {
     type: 'uploadLabel',
@@ -147,7 +166,11 @@ export const ConnectingInfoData = [
     placeholder: 'funding_project_request_form3.region.placeholder',
     md: 6,
     xs: 12,
-    children: <option value="test">test</option>,
+    children: (
+      <option value="test" style={{ backgroundColor: '#fff' }}>
+        test
+      </option>
+    ),
   },
   {
     type: 'select',
@@ -156,7 +179,11 @@ export const ConnectingInfoData = [
     placeholder: 'funding_project_request_form3.city.placeholder',
     md: 6,
     xs: 12,
-    children: <option value="test">test</option>,
+    children: (
+      <option value="test" style={{ backgroundColor: '#fff' }}>
+        test
+      </option>
+    ),
   },
 ] as Array<FormSingleProps>;
 
@@ -175,7 +202,7 @@ export const ProjectBudgetData = [
     repeaterFields: [
       {
         type: 'textField',
-        name: 'item',
+        name: 'clause',
         label: 'funding_project_request_form4.item.label',
         placeholder: 'funding_project_request_form4.item.placeholder',
         md: 3,

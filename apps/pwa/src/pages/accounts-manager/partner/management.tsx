@@ -8,7 +8,7 @@ import { TableAMCustom } from 'components/table';
 // import { AM_PARTNER_MANAGEMENT } from '../mock-data';
 // hooks
 import axios from 'axios';
-import { HASURA_GRAPHQL_URL, HASURA_ADMIN_SECRET } from 'config';
+import { HASURA_GRAPHQL_URL } from 'config';
 //
 import { IPropsTablesList } from 'components/table/type';
 

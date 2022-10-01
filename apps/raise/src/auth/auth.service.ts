@@ -1,19 +1,23 @@
-import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConsoleLogger, HttpException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-
+import moment from 'moment';
+import { rootLogger } from 'src/logger';
 import { UserService } from 'src/user/user.service';
 import { EmailService } from '../libs/email/email.service';
 import { FusionAuthService } from '../libs/fusionauth/services/fusion-auth.service';
 import { User } from '../user/schema/user.schema';
-import { LoginRequestDto, RegisterRequestDto, RegReqTenderDto } from './dtos';
+import { LoginRequestDto, RegisterRequestDto, RegisterTendersDto, RegReqTenderDto } from './dtos';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
+  private logger = rootLogger.child({ logger: AuthService.name });
   constructor(
     private readonly usersService: UserService,
     private readonly emailService: EmailService,
     private readonly fusionAuthService: FusionAuthService,
     private readonly jwtService: JwtService,
+    private readonly prisma: PrismaService,
   ) { }
 
   async fusionLogin(loginRequest: LoginRequestDto) {
@@ -101,17 +105,94 @@ export class AuthService {
     });
     return registeredUser;
   }
-  async fusionRegisterTender(registerRequest: RegReqTenderDto) {
-    const result = await this.fusionAuthService.fusionAuthRegTender(
-      registerRequest,
-    );
 
-    return {
-      statusCode: 201,
-      message: "Create User Success!",
-      id: result.user.id
+  async fusionRegisterTender(registerRequest: RegisterTendersDto) {
+    const dataRegister = JSON.stringify(registerRequest.data);
+    const dtReg = JSON.parse(dataRegister);
+    const emailData = await this.prisma.user.findUnique({
+      where: { email: dtReg[0].email }
+    });
+
+    if (emailData) {
+      throw new HttpException('Email already exist', 400);
+    }
+    const licenseNumber = await this.prisma.client_data.findFirst({
+      where:{
+        OR: [
+          {
+            license_number:{
+              equals: dtReg[0].license_number
+            }
+          },
+          {
+           id:{
+            equals: dtReg[0].id
+           }
+          },
+        ]
+      }
+    });
+
+    if (licenseNumber) {
+      throw new HttpException('license Number or id already exist', 400);
     }
 
+    const result = await this.fusionAuthService.fusionAuthRegisterTender(
+      registerRequest,
+    );
+    
+    let registeredUser;
+    try {
+      if (result && result.user.id) {
+        registeredUser = await this.usersService.registerFromFusionTender({
+          id_: result.user.id,
+          id: dtReg[0].id,
+          authority: dtReg[0].authority,
+          board_ofdec_file: dtReg[0].board_ofdec_file,
+          center_administration: dtReg[0].center_administration,
+          ceo_mobile: dtReg[0].ceo_mobile,
+          ceo_name: dtReg[0].ceo_name,
+          data_entry_mail: dtReg[0].data_entry_mail,
+          data_entry_mobile: dtReg[0].data_entry_mobile,
+          email: dtReg[0].email,
+          employee_name: dtReg[0].employee_name,
+          employee_path: dtReg[0].employee_path,
+          entity: dtReg[0].entity,
+          entity_mobile: dtReg[0].entity_mobile,
+          governorate: dtReg[0].governorate,
+          headquarters: dtReg[0].headquarters,
+          license_expired: moment(dtReg[0].license_expired).toISOString(), // Date
+          license_file: dtReg[0].license_file,
+          license_issue_date: moment(dtReg[0].license_issue_date).toISOString(), // Date
+          license_number: dtReg[0].license_number,
+          num_of_beneficiaries: dtReg[0].num_of_employed_facility,
+          num_of_employed_facility: dtReg[0].num_of_beneficiaries,
+          data_entry_name: dtReg[0].data_entry_name,
+          date_of_esthablistmen: moment(dtReg[0].date_of_esthablistmen).toISOString(),// Date
+          password: "",
+          phone: dtReg[0].phone,
+          region: dtReg[0].region,
+          status: dtReg[0].status,
+          twitter_acount: dtReg[0].twitter_acount,
+          website: dtReg[0].website,
+          mobile_data_entry: dtReg[0].mobile_data_entry,
+          bank_informations: dtReg[0].bank_informations
+        });
+        return registeredUser;
+      } else {
+        return {
+          messageCode: 400,
+          message: 'An error occured while sending data',
+        }
+      }
+    } catch (error) {
+      console.log('error',error)
+      console.log('error=',error.response)
+      return {
+        messageCode: 400,
+        message: error.response,
+      }
+    }
   }
 
   async registerUser(name: string, email: string, password: string) {
