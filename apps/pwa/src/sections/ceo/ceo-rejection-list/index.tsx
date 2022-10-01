@@ -66,9 +66,9 @@ function CeoRejectionList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    console.log('rejectionListData: ', rejectionListData);
-  }, [rejectionListData]);
+  // useEffect(() => {
+  //   console.log('rejectionListData: ', rejectionListData);
+  // }, [rejectionListData]);
 
   const headerCells: RejectionListTableHeader[] = [
     { id: 'projectNumber', label: 'Project Number' },

@@ -1,29 +1,30 @@
-import { Box, Button, Grid, IconButton, Stack, Typography, useTheme } from '@mui/material';
+import { Box, IconButton, Stack, Typography, useTheme } from '@mui/material';
+import useLocales from 'hooks/useLocales';
+import { useSnackbar } from 'notistack';
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import Iconify from '../../components/Iconify';
+import { useMutation } from 'urql';
+import FloatingActionBar from '../../components/floating-action-bar/FloatingActionBar';
+import { Role } from '../../guards/RoleBasedGuard';
+import useAuth from '../../hooks/useAuth';
+import { approveProposal } from '../../queries/commons/approveProposal';
+import { rejectProposal } from '../../queries/commons/rejectProposal';
 import ActionBar from './ActionBar';
 import ExchangeDetails from './ExchangeDetails';
 import FollowUps from './FollowUps';
 import MainPage from './MainPage';
 import Payments from './Payments';
 import ProjectBudget from './ProjectBudget';
-import useLocales from 'hooks/useLocales';
-import useAuth from '../../hooks/useAuth';
-import { hasAccess } from '../../guards/CertainRolesGuard';
-import { useEffect } from 'react';
-import { Role } from '../../guards/RoleBasedGuard';
 
 function ProjectDetailsMainPage() {
   const theme = useTheme();
-
-  // // Routes
-  // const params = useParams();
-  // const navigate = useNavigate();
 
   // Language
   const { currentLang, translate } = useLocales();
   const location = useLocation();
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
+  const pid = location.pathname.split('/')[4];
   const activeTap = location.pathname.split('/').at(-1);
   const actionType = location.pathname.split('/').at(-2);
 
@@ -32,11 +33,74 @@ function ProjectDetailsMainPage() {
 
   const currentRoles = user?.registrations[0].roles[0] as Role;
 
-  // useeffect for current roles
+  const [proposalRejection, reject] = useMutation(rejectProposal);
+  const [proposalAccepting, accept] = useMutation(approveProposal);
+
+  const handleCeoAccept = () => {
+    accept({
+      proposalId: pid,
+      approveProposalPayloads: {
+        inner_status: 'ACCEPTED',
+        outter_status: 'ONGOING',
+        state: 'PROJECT_SUPERVISOR', // the next step when accepted
+      },
+    });
+    const { data, error, fetching } = proposalAccepting;
+    if (data && !fetching) {
+      enqueueSnackbar('Proposal Approved!', {
+        variant: 'success',
+      });
+      navigate('/ceo/dashboard/app');
+    }
+    if (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+      });
+      console.log(error);
+    }
+  };
+
+  const handleCeoReject = () => {
+    reject({
+      proposalId: pid,
+      rejectProposalPayloads: {
+        inner_status: 'REJECTED',
+        outter_status: 'CANCELED',
+      },
+    });
+    const { data, error, fetching } = proposalRejection;
+    if (data && !fetching) {
+      enqueueSnackbar('Proposal Rejected Successfully!', {
+        variant: 'success',
+      });
+      navigate('/ceo/dashboard/app');
+    }
+    if (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+      });
+      console.log(error);
+    }
+  };
+
+  // log the payload with useEffect
   useEffect(() => {
-    console.log('actionType', actionType);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    console.log(pid);
+  }, [pid]);
+
+  // const [requestState, setRequestState] = useState(defaultValues);
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -103,49 +167,19 @@ function ProjectDetailsMainPage() {
       {activeTap === 'payments' && <Payments />}
       {activeTap === 'exchange-details' && <ExchangeDetails />}
 
-      {/* Floating action bar to accept and reject project */}
-      {hasAccess(currentRoles, ['tender_ceo', 'tender_moderator']) &&
-        activeTap &&
+      {activeTap &&
         ['main', 'project-budget'].includes(activeTap) &&
         actionType &&
         actionType === 'show-details' && (
-          <Box
-            sx={{
-              backgroundColor: 'white',
-              p: 3,
-              borderRadius: 1,
-              position: 'sticky',
-              width: '100%',
-              bottom: 24,
-              border: `1px solid ${theme.palette.grey[400]}`,
+          <FloatingActionBar
+            handleAccept={() => {
+              handleCeoAccept();
             }}
-          >
-            <Stack direction={{ sm: 'column', md: 'row' }} justifyContent="space-between">
-              <Stack flexDirection={{ sm: 'column', md: 'row' }}>
-                <Button variant="contained" color="primary" sx={{ mr: { md: '1em' } }}>
-                  {translate('project_acceptance')}
-                </Button>
-                <Button
-                  variant="contained"
-                  color="error"
-                  sx={{ my: { xs: '1.3em', md: '0' }, mr: { md: '1em' } }}
-                >
-                  {translate('project_rejected')}
-                </Button>
-                <Button variant="outlined" color="primary" sx={{ my: { xs: '1.3em', md: '0' } }}>
-                  {translate('send_message_to_partner')}
-                </Button>
-              </Stack>
-
-              <Button
-                variant="contained"
-                color="info"
-                endIcon={<Iconify icon="eva:edit-2-outline" />}
-              >
-                {translate('submit_amendment_request')}
-              </Button>
-            </Stack>
-          </Box>
+            handleReject={() => {
+              handleCeoReject();
+            }}
+            role={currentRoles}
+          />
         )}
     </Box>
   );

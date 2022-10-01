@@ -10,7 +10,6 @@ import {
 } from './forms';
 import useLocales from 'hooks/useLocales';
 import ActionBox from './forms/ActionBox';
-import { CustomFile } from 'components/upload';
 import { useMutation } from 'urql';
 import { CreateProposel } from 'queries/client/createProposel';
 import { nanoid } from 'nanoid';
