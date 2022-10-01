@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Grid,
-  Stack,
-  Typography,
-  Container,
-} from '@mui/material';
+import { Box, Button, Grid, Stack, Typography, Container } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
 import SvgIconStyle from 'components/SvgIconStyle';
 import useAuth from 'hooks/useAuth';
@@ -23,7 +16,8 @@ function CurrentProject() {
   const { data, fetching, error } = result;
   const navigate = useNavigate();
 
-  const props = data?.proposal[1] ?? null;
+  const props = data?.proposal[0] ?? null;
+  console.log(props);
   if (fetching) {
     return <>...Loading</>;
   }
