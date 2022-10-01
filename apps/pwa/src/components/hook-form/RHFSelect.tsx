@@ -31,7 +31,7 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
           {...other}
         >
           {placeholder && (
-            <option value="" disabled selected>
+            <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
               {placeholder}
             </option>
           )}
