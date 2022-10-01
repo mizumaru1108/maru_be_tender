@@ -5,6 +5,7 @@ export const rejectProposal = `
         id
         inner_status
         outter_status
+        state
       }
     }
   }
