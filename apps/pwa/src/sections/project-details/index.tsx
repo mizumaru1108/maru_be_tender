@@ -90,7 +90,7 @@ function ProjectDetailsMainPage() {
           currentRoles === 'tender_moderator'
             ? 'CLIENT'
             : currentRoles === 'tender_ceo'
-            ? 'MODERATOR'
+            ? 'CLIENT'
             : `${a}`,
       },
     });

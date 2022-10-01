@@ -36,12 +36,11 @@ query incomingNewRequest {
 }
 `;
 export const totalRequest = `
-query totalRequest {
-  proposal_aggregate(where: {outter_status: {}}) {
-    aggregate {
-      count(columns: outter_status)
+  query totalRequest {
+    proposal_aggregate(where: {outter_status: {}}) {
+      aggregate {
+        count(columns: outter_status)
+      }
     }
   }
-}
-
 `;
