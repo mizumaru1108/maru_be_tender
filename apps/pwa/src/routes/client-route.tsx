@@ -71,6 +71,42 @@ export const clientRoute = {
           path: 'contact-support',
           element: <ContactSupport />,
         },
+        {
+          path: 'previous-funding-requests',
+          children: [
+            {
+              path: '',
+              element: <PreviousFundingRequests />,
+            },
+            {
+              path: ':id/:actionType',
+              children: [
+                { path: 'main', element: <ProjectDetails /> },
+                { path: 'project-budget', element: <ProjectDetails /> },
+                { path: 'follow-ups', element: <ProjectDetails /> },
+                { path: 'payments', element: <ProjectDetails /> },
+              ],
+            },
+          ],
+        },
+        {
+          path: 'current-project',
+          children: [
+            {
+              path: '',
+              element: <PreviousFundingRequests />,
+            },
+            {
+              path: ':id/:actionType',
+              children: [
+                { path: 'main', element: <ProjectDetails /> },
+                { path: 'project-budget', element: <ProjectDetails /> },
+                { path: 'follow-ups', element: <ProjectDetails /> },
+                { path: 'payments', element: <ProjectDetails /> },
+              ],
+            },
+          ],
+        },
       ],
     },
   ],

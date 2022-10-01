@@ -461,6 +461,12 @@ const ar = {
       placeholder: 'الرجاء كتابة رقم الموبايل',
     },
   },
+  accept_project: 'قبول المشروع',
+  reject_project: 'رفض المشروع',
+  partner_details: {
+    send_messages: 'ارسال رسالة للشريك',
+    submit_amendment_request: 'ارسال طلب تعديل',
+  },
 };
 
 export default ar;

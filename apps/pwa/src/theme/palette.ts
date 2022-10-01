@@ -172,7 +172,7 @@ const palette = {
     background: {
       paper: '#0E8478',
       default: '#fff',
-      neutral: 'rgba(147, 163, 176, 0.16)',
+      neutral: '#F5F6FA',
     },
     action: { active: '#fff', ...COMMON.action },
   },

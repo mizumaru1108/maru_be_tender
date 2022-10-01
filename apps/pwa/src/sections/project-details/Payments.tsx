@@ -45,6 +45,7 @@ function Payments() {
             py: '30px',
             paddingRight: '40px',
             paddingLeft: '5px',
+            height: '120px',
           }}
         >
           <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
@@ -61,6 +62,7 @@ function Payments() {
             py: '30px',
             paddingRight: '40px',
             paddingLeft: '5px',
+            height: '120px',
           }}
         >
           <img src={`/icons/rial-currency.svg`} alt="" />
@@ -78,6 +80,7 @@ function Payments() {
             py: '30px',
             paddingRight: '40px',
             paddingLeft: '5px',
+            height: '120px',
           }}
         >
           <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>

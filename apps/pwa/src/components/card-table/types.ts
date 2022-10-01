@@ -31,6 +31,7 @@ export type ProjectCardProps = {
     | 'incoming-funding-requests'
     | 'requests-in-process'
     | 'incoming-exchange-permission-requests'
+    | 'current-project'
     | 'payment-adjustment'; // it refers to the url that I came from and the url that I have to go to
 };
 

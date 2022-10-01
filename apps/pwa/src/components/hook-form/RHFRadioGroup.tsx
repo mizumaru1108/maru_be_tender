@@ -7,11 +7,14 @@ import {
   FormHelperText,
   RadioGroupProps,
   FormControlLabel,
+  Typography,
 } from '@mui/material';
+import { Stack } from '@mui/system';
 
 // ----------------------------------------------------------------------
 
 type IProps = {
+  label: string;
   name: string;
   options: {
     label: string;
@@ -21,7 +24,7 @@ type IProps = {
 
 type Props = IProps & RadioGroupProps;
 
-export default function RHFRadioGroup({ name, options, ...other }: Props) {
+export default function RHFRadioGroup({ name, options, label, ...other }: Props) {
   const { control } = useFormContext();
 
   return (
@@ -29,7 +32,8 @@ export default function RHFRadioGroup({ name, options, ...other }: Props) {
       name={name}
       control={control}
       render={({ field, fieldState: { error } }) => (
-        <div>
+        <Stack direction="column">
+          <Typography>{label}</Typography>
           <RadioGroup {...field} row {...other}>
             {options.map((option) => (
               <FormControlLabel
@@ -46,7 +50,7 @@ export default function RHFRadioGroup({ name, options, ...other }: Props) {
               {error.message}
             </FormHelperText>
           )}
-        </div>
+        </Stack>
       )}
     />
   );

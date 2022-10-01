@@ -9,6 +9,7 @@ import { FormSingleProps } from 'components/FormGenerator';
 import useLocales from 'hooks/useLocales';
 import { RHFCheckbox } from './RHFCheckbox';
 import RHFTextArea from './RHFTextArea';
+import RHFRadioGroup from './RHFRadioGroup';
 
 const LabelStyle = styled(Typography)(({ theme }) => ({
   ...theme.typography.subtitle2,
@@ -16,10 +17,21 @@ const LabelStyle = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(-11),
 }));
 
-function BaseField({ type, name, label, placeholder, children, repeaterFields }: FormSingleProps) {
+function BaseField({
+  type,
+  name,
+  label,
+  placeholder,
+  children,
+  repeaterFields,
+  options,
+}: FormSingleProps) {
   const { translate } = useLocales();
   return (
     <>
+      {type === 'radioGroup' && (
+        <RHFRadioGroup name={name ?? ''} options={options!} label={translate(label)} />
+      )}
       {type === 'select' && (
         <RHFSelect
           name={name ?? ''}

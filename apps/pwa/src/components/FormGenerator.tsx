@@ -12,7 +12,8 @@ type FieldType =
   | 'uploadLabel'
   | 'textArea'
   | 'repeater'
-  | 'checkbox';
+  | 'checkbox'
+  | 'radioGroup';
 
 // ----------------------------------------------------------------------
 
@@ -25,6 +26,10 @@ export interface FormSingleProps {
   placeholder?: string;
   children?: React.ReactNode;
   repeaterFields?: FormSingleProps[];
+  options?: {
+    label: string;
+    value: any;
+  }[];
 }
 
 // ----------------------------------------------------------------------

@@ -1,9 +1,10 @@
-import { Box, Button, IconButton, Stack, Typography, useTheme } from '@mui/material';
+import { Box, IconButton, Stack, Typography, useTheme } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
+import { getOneProposal } from 'queries/commons/getOneProposal';
 import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
-import { useMutation } from 'urql';
+import { useLocation, useNavigate, useParams } from 'react-router';
+import { useMutation, useQuery } from 'urql';
 import FloatingActionBar from '../../components/floating-action-bar/FloatingActionBar';
 import ModalDialog from '../../components/modal-dialog';
 import { Role } from '../../guards/RoleBasedGuard';
@@ -16,13 +17,21 @@ import ProposalAcceptingForm from '../ceo/forms/ProposalAcceptingForm';
 import ProposalRejectingForm from '../ceo/forms/ProposalRejectingForm';
 import ActionBar from './ActionBar';
 import ExchangeDetails from './ExchangeDetails';
+import FloatinActonBar from './floatin-acton-bar/FloatinActonBar';
 import FollowUps from './FollowUps';
 import MainPage from './MainPage';
 import Payments from './Payments';
 import ProjectBudget from './ProjectBudget';
 
 function ProjectDetailsMainPage() {
-  const theme = useTheme();
+  const { id } = useParams();
+  const [result, reexecuteQuery] = useQuery({
+    query: getOneProposal,
+    variables: { id },
+  });
+  const { data, fetching, error } = result;
+  const { user } = useAuth();
+  const role = user?.registrations[0].roles[0] as Role;
 
   // Language
   const { currentLang, translate } = useLocales();
@@ -40,7 +49,6 @@ function ProjectDetailsMainPage() {
   };
 
   // Logic here to get current user role
-  const { user } = useAuth();
 
   const currentRoles = user?.registrations[0].roles[0] as Role;
 
@@ -56,7 +64,6 @@ function ProjectDetailsMainPage() {
   const { fetching: accFetch, error: accError } = proposalAccepting;
   const { fetching: rejFetch, error: rejError } = proposalRejection;
   const [action, setAction] = useState<'accept' | 'reject'>('reject');
-
   const handleApproval = () => {
     accept({
       proposalId: pid,
@@ -127,6 +134,9 @@ function ProjectDetailsMainPage() {
     }
   };
 
+  if (fetching) return <>...Loading</>;
+  if (error) return <>{error.graphQLErrors}</>;
+  if (data.proposal_by_pk === null) return <>There is no data for this tap ... </>;
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Stack direction="row">
@@ -159,10 +169,16 @@ function ProjectDetailsMainPage() {
       </Stack>
       <Stack direction="row" justifyContent="space-between">
         <Stack direction="column" gap={1}>
-          <Typography variant="h4">
-            مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض
+          <Typography variant="h4">{data.proposal_by_pk.project_name}</Typography>
+          <Typography>
+            {`أنشئ بواسطة ${data.proposal_by_pk.user.employee_name} تاريخ ${new Date(
+              data.proposal_by_pk.created_at
+            ).getDay()}.
+          ${new Date(data.proposal_by_pk.created_at).getMonth()}.
+          ${new Date(data.proposal_by_pk.created_at).getFullYear()} في 
+          ${new Date(data.proposal_by_pk.created_at).getHours()}:
+          ${new Date(data.proposal_by_pk.created_at).getMinutes()}`}
           </Typography>
-          <Typography>إنشىء بواسطة اسم مدير المشروع - تاريخ 22.8.2022 في 15:58</Typography>
         </Stack>
         <Box
           sx={{
@@ -186,7 +202,7 @@ function ProjectDetailsMainPage() {
       </Stack>
       <ActionBar />
 
-      {activeTap === 'main' && <MainPage />}
+      {activeTap === 'main' && <MainPage data={data.proposal_by_pk} />}
       {activeTap === 'project-budget' && <ProjectBudget />}
       {activeTap === 'follow-ups' && <FollowUps />}
       {activeTap === 'payments' && <Payments />}
@@ -195,7 +211,9 @@ function ProjectDetailsMainPage() {
       {activeTap &&
         ['main', 'project-budget'].includes(activeTap) &&
         actionType &&
-        actionType === 'show-details' && (
+        actionType === 'show-details' &&
+        ['tender_ceo', 'tender_moderator'].includes(role) && (
+          /** Floating Action Bar for Moderator and CEO */
           <FloatingActionBar
             handleAccept={() => {
               setModalState(true);
@@ -208,7 +226,7 @@ function ProjectDetailsMainPage() {
             role={currentRoles}
           />
         )}
-
+      {/* Modal Dialog for moderator and CEO */}
       <ModalDialog
         title={
           <Stack display="flex">
@@ -256,6 +274,7 @@ function ProjectDetailsMainPage() {
         onClose={handleCloseModal}
         styleContent={{ padding: '1em', backgroundColor: '#fff' }}
       />
+      <FloatinActonBar />
     </Box>
   );
 }

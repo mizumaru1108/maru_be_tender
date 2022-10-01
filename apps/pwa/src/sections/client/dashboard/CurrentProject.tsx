@@ -65,7 +65,8 @@ function CurrentProject() {
           <Stack gap={3}>
             <Typography variant="h4">المشروع الحالي</Typography>
             <ProjectCard
-              title={{ id: `${props.id}#` }}
+              destination="current-project"
+              title={{ id: `${props.id}` }}
               content={{
                 projectName: props.project_name,
                 createdAt: new Date(props.created_at),
@@ -74,7 +75,6 @@ function CurrentProject() {
               }}
               footer={{ createdAt: new Date(props.created_at) }}
               cardFooterButtonAction="show-details"
-              destination="previous-funding-requests"
             />
           </Stack>
         </Grid>
