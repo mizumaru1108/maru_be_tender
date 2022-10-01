@@ -77,11 +77,6 @@ export class AuthController {
     );
   }
 
-  // @ApiOperation({ summary: 'Register user with fusion auth' })
-  // @ApiResponse({
-  //   status: 201,
-  //   description: 'User has been registered successfully!',
-  // })
   @Post('fusion/regTender')
   async fusionRegisterTender(
     @Body() registerRequest: RegisterTendersDto,

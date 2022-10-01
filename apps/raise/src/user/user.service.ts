@@ -81,39 +81,7 @@ export class UserService {
 
   /** Create user and client for tender completed data */
   async registerFromFusionTender(request: RegisterFromFusionAuthTenderDto) {
-    console.log('request=',request)
-    const emailData = await this.prisma.user.findUnique({
-      where: { email: request.email }
-    });
-
-    if (emailData) {
-      throw new HttpException('Email already exist', 400);
-    }
-    const licenseNumber = await this.prisma.client_data.findUnique({
-      where: { license_number: request.license_number }
-    });
-
-    if (licenseNumber) {
-      throw new HttpException('license Number already exist', 400);
-    }
-    const clientid = await this.prisma.client_data.findUnique({
-      where: { id: request.id }
-    });
-
-    if (clientid) {
-      throw new HttpException('Number Id Client already exist', 400);
-    }
-
-    // const dataEmployees = JSON.stringify(request.bank_informations);
-    // const dataEmp = JSON.parse(dataEmployees);
-    // console.log('dataEmp', dataEmp);
-
-    // const dataBank: [] = {
-    //   ...dataEmp[0],
-    //   user_id: request.id_,
-    // }
-    // console.log('dataBank', dataBank);
-    try {
+      try {
       const result = await this.prisma.user.create({
         data: {
           id: request.id_,
@@ -139,10 +107,12 @@ export class UserService {
               date_of_esthablistmen: request.date_of_esthablistmen,
               license_file: request.license_file,
               license_expired: request.license_expired,
-              // mobile_data_entry: request.mobile_data_entry,
               license_issue_date: request.license_issue_date,
               num_of_beneficiaries: request.num_of_beneficiaries,
             }
+          },
+          bank_information:{
+            create:request.bank_informations
           }
         }
       });      

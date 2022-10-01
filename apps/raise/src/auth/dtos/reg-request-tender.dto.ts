@@ -66,6 +66,27 @@ export class RegReqTenderDto {
   is_active: boolean;
 }
 
+class bankData{
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  bank_account_name: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  bank_account_number: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  bank_name: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  card_image: string;
+}
 class basePayload {
   
   @ApiProperty()
@@ -197,10 +218,13 @@ class basePayload {
   @ApiProperty()
   @IsNotEmpty()
   data_entry_name: string;
-  // bank_informations: 
+
+  @ApiProperty()  
+  @ValidateNested()
+  @Type(() => bankData)
+  bank_informations: bankData;
 
 }
-
 
 export class RegisterTendersDto {
   @ApiProperty()  

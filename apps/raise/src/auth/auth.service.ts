@@ -7,7 +7,7 @@ import { EmailService } from '../libs/email/email.service';
 import { FusionAuthService } from '../libs/fusionauth/services/fusion-auth.service';
 import { User } from '../user/schema/user.schema';
 import { LoginRequestDto, RegisterRequestDto, RegisterTendersDto, RegReqTenderDto } from './dtos';
-
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +17,7 @@ export class AuthService {
     private readonly emailService: EmailService,
     private readonly fusionAuthService: FusionAuthService,
     private readonly jwtService: JwtService,
+    private readonly prisma: PrismaService,
   ) { }
 
   async fusionLogin(loginRequest: LoginRequestDto) {
@@ -105,53 +106,48 @@ export class AuthService {
     return registeredUser;
   }
 
-
   async fusionRegisterTender(registerRequest: RegisterTendersDto) {
+    const dataRegister = JSON.stringify(registerRequest.data);
+    const dtReg = JSON.parse(dataRegister);
+    const emailData = await this.prisma.user.findUnique({
+      where: { email: dtReg[0].email }
+    });
+
+    if (emailData) {
+      throw new HttpException('Email already exist', 400);
+    }
+    const licenseNumber = await this.prisma.client_data.findFirst({
+      where:{
+        OR: [
+          {
+            license_number:{
+              equals: dtReg[0].license_number
+            }
+          },
+          {
+           id:{
+            equals: dtReg[0].id
+           }
+          },
+        ]
+      }
+    });
+
+    if (licenseNumber) {
+      throw new HttpException('license Number or id already exist', 400);
+    }
+
     const result = await this.fusionAuthService.fusionAuthRegisterTender(
       registerRequest,
     );
-    const dataRegister = JSON.stringify(registerRequest.data);
-    const dtReg = JSON.parse(dataRegister);
-    console.log('result', result);
+    
     let registeredUser;
     try {
       if (result && result.user.id) {
         registeredUser = await this.usersService.registerFromFusionTender({
           id_: result.user.id,
-          // id: registerRequest.data.id,
-          // authority: registerRequest.data.authority,
-          // //bank_informations: registerRequest.data.bank_informations,
-          // board_ofdec_file: registerRequest.data.board_ofdec_file,
-          // center_administration: registerRequest.data.center_administration,
-          // ceo_mobile: registerRequest.data.ceo_mobile,
-          // ceo_name: registerRequest.data.ceo_name,
-          // data_entry_mail: registerRequest.data.data_entry_mail,
-          // data_entry_mobile: registerRequest.data.data_entry_mobile,
-          // email: registerRequest.data.email,
-          // employee_name: registerRequest.data.employee_name,
-          // employee_path: registerRequest.data.employee_path,
-          // entity: registerRequest.data.entity,
-          // entity_mobile: registerRequest.data.entity_mobile,
-          // governorate: registerRequest.data.governorate,
-          // headquarters: registerRequest.data.headquarters,
-          // license_expired: registerRequest.data.license_expired,
-          // license_file: registerRequest.data.license_file,
-          // license_issue_date: registerRequest.data.license_issue_date,
-          // license_number: registerRequest.data.license_number,
-          // num_of_beneficiaries: registerRequest.data.num_of_employed_facility,
-          // num_of_employed_facility: registerRequest.data.num_of_beneficiaries,
-          // data_entry_name: registerRequest.data.data_entry_name,
-          // date_of_esthablistmen: registerRequest.data.date_of_esthablistmen,
-          // password: "",
-          // phone: registerRequest.data.phone,
-          // region: registerRequest.data.region,
-          // status: registerRequest.data.status,
-          // twitter_acount: registerRequest.data.twitter_acount,
-          // website: registerRequest.data.website,
-          // mobile_data_entry: registerRequest.data.mobile_data_entry,
           id: dtReg[0].id,
           authority: dtReg[0].authority,
-          //bank_informations: dtReg[0].bank_informations,
           board_ofdec_file: dtReg[0].board_ofdec_file,
           center_administration: dtReg[0].center_administration,
           ceo_mobile: dtReg[0].ceo_mobile,
@@ -180,8 +176,9 @@ export class AuthService {
           twitter_acount: dtReg[0].twitter_acount,
           website: dtReg[0].website,
           mobile_data_entry: dtReg[0].mobile_data_entry,
-          
+          bank_informations: dtReg[0].bank_informations
         });
+        return registeredUser;
       } else {
         return {
           messageCode: 400,
@@ -190,20 +187,12 @@ export class AuthService {
       }
     } catch (error) {
       console.log('error',error)
+      console.log('error=',error.response)
       return {
         messageCode: 400,
-        message: 'An error occured while not recorded data',
+        message: error.response,
       }
     }
-    
-   // return {data: registeredUser};
-
-    // return {
-    //   statusCode: 201,
-    //   message: "Create User Success!",
-    //   //id: result.user.id
-    // }
-
   }
 
   async registerUser(name: string, email: string, password: string) {
