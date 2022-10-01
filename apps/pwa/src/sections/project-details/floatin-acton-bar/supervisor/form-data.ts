@@ -103,7 +103,7 @@ export const ApproveProposalFormFieldsSupervisor = [
   },
 ] as Array<FormSingleProps>;
 
-export const RejectProposalFormFields = [
+export const RejectProposalFormFieldsSupervisor = [
   {
     type: 'textArea',
     name: 'procedures',

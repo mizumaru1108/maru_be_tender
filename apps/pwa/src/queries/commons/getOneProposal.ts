@@ -4,6 +4,7 @@ export const getOneProposal = `query MyQuery($id: String!) {
     project_implement_date
     project_location
     user {
+      id
       employee_name
       client_data {
         email

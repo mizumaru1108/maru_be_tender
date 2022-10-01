@@ -5,14 +5,14 @@ import { FormSingleProps } from 'components/FormGenerator';
  */
 export const ApproveProposalFormFields = [
   {
-    type: 'textField',
+    type: 'textArea',
     name: 'procedures',
     label: 'procedures',
     xs: 12,
     placeholder: 'procedures',
   },
   {
-    type: 'textField',
+    type: 'textArea',
     name: 'supportOutputs',
     label: 'supportOutputs',
     xs: 12,

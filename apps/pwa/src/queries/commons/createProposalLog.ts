@@ -11,14 +11,14 @@ export const CreateProposalLog = `
 
 // GRAPHQL QUERY EXAMPLE
 // {
-//   "object": {
-//     "id":"xxxxx",
-//     "reviewer_id": "xxx",
-//     "proposal_id": "xxxxx",
-//     "organization_id": "xxxx", // from clientid
-//     "status": "ACCEPTED",
-//     "assign": "xxxx", // asfasdf
-//     "notes": "Notes Approve By CEO",
-//     "procedures": "This is procedure From CEO"
-//   }
+// "proposalLogPayload": {
+//   "id":"xxxxx",
+//   "reviewer_id": "xxx",
+//   "proposal_id": "xxxxx",
+//   "organization_id": "xxxx", // from clientid
+//   "status": "ACCEPTED",
+//   "assign": "xxxx", // asfasdf
+//   "notes": "Notes Approve By CEO",
+//   "procedures": "This is procedure From CEO"
+// }
 // }

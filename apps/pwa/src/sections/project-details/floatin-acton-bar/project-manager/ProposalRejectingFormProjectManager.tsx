@@ -4,20 +4,21 @@ import FormGenerator from 'components/FormGenerator';
 import { FormProvider } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
-import { RejectProposalFormFields } from './PassedFormFields';
+import { ProposalApprovePayloadSupervisor, ProposalFormProps } from '../types';
+import { RejectProposalFormFieldsProjectManager } from './form-data';
 
-import { ProposalApprovePayload, ProposalFormProps } from './types';
-
-function ProposalRejectingForm({ children, onSubmit }: ProposalFormProps) {
+function ProposalRejectingFormProjectManager({ children, onSubmit }: ProposalFormProps) {
   const validationSchema = Yup.object().shape({
     procedures: Yup.string().required('Procedures is required!'),
+    notes: Yup.string().required('Procedures is required!'),
   });
 
   const defaultValues = {
     procedures: '',
+    notes: '',
   };
 
-  const methods = useForm<ProposalApprovePayload>({
+  const methods = useForm<ProposalApprovePayloadSupervisor>({
     resolver: yupResolver(validationSchema),
     defaultValues,
   });
@@ -27,14 +28,14 @@ function ProposalRejectingForm({ children, onSubmit }: ProposalFormProps) {
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmitForm = async (data: ProposalApprovePayload) => {
+  const onSubmitForm = async (data: ProposalApprovePayloadSupervisor) => {
     onSubmit(data);
   };
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
-        <FormGenerator data={RejectProposalFormFields} />
+        <FormGenerator data={RejectProposalFormFieldsProjectManager} />
         <Grid item md={12} xs={12} sx={{ mb: '70px' }}>
           {children}
         </Grid>
@@ -43,4 +44,4 @@ function ProposalRejectingForm({ children, onSubmit }: ProposalFormProps) {
   );
 }
 
-export default ProposalRejectingForm;
+export default ProposalRejectingFormProjectManager;

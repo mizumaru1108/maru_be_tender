@@ -35,7 +35,7 @@ function ProposalAcceptingForm({ children, onSubmit }: ProposalFormProps) {
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
-      <Grid container rowSpacing={4} columnSpacing={7}>
+      <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
         <FormGenerator data={ApproveProposalFormFields} />
         <Grid item md={12} xs={12} sx={{ mb: '70px' }}>
           {children}

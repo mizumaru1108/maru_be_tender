@@ -5,7 +5,7 @@ import { FormProvider } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { ProposalApprovePayloadSupervisor, ProposalFormProps } from '../types';
-import { RejectProposalFormFields } from './form-data';
+import { RejectProposalFormFieldsSupervisor } from './form-data';
 
 function ProposalRejectingFormSupervisor({ children, onSubmit }: ProposalFormProps) {
   const validationSchema = Yup.object().shape({
@@ -35,7 +35,7 @@ function ProposalRejectingFormSupervisor({ children, onSubmit }: ProposalFormPro
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
-        <FormGenerator data={RejectProposalFormFields} />
+        <FormGenerator data={RejectProposalFormFieldsSupervisor} />
         <Grid item md={12} xs={12} sx={{ mb: '70px' }}>
           {children}
         </Grid>

@@ -274,7 +274,7 @@ function ProjectDetailsMainPage() {
         onClose={handleCloseModal}
         styleContent={{ padding: '1em', backgroundColor: '#fff' }}
       />
-      <FloatinActonBar />
+      <FloatinActonBar proposalData={data.proposal_by_pk} />
     </Box>
   );
 }
