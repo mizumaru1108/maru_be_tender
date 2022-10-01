@@ -67,7 +67,7 @@ export class RegReqTenderDto {
 }
 
 class basePayload {
-
+  
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -193,19 +193,20 @@ class basePayload {
   @ApiProperty()
   @IsNotEmpty()
   status: string;
-
+  
+  @ApiProperty()
+  @IsNotEmpty()
+  data_entry_name: string;
   // bank_informations: 
 
 }
 
 
 export class RegisterTendersDto {
-
-  @ApiProperty()
-  @IsArray()
-  @ValidateNested({ each: true })
+  @ApiProperty()  
+  @ValidateNested()
   @Type(() => basePayload)
-  data?: basePayload;
+  data: basePayload;
 
   @ApiProperty()
   @IsArray()

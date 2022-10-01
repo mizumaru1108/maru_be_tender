@@ -15,6 +15,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
 import { RegisterTendersDto, RegReqTenderDto } from 'src/auth/dtos';
+import { rootLogger } from 'src/logger';
 import { RegisterFromFusionAuthTenderDto } from 'src/user/dtos';
 import { LoginRequestDto } from '../../../auth/dtos/login-request.dto';
 import { RegisterRequestDto } from '../../../auth/dtos/register-request.dto';
@@ -26,14 +27,15 @@ import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helpe
  */
 @Injectable()
 export class FusionAuthService {
+  private logger = rootLogger.child({ logger: FusionAuthService.name });
   private fusionAuthClient: FusionAuthClient;
   private fusionAuthAdminClient: FusionAuthClient;
   private fusionAuthAppId: string;
   private fusionAuthUrl: string;
   private fusionAuthTenantId: string;
   private fusionAuthAdminKey: string;
-
-  constructor(private configService: ConfigService) {
+  constructor(private configService: ConfigService,
+    ) {
     const fusionAuthClientKey = this.configService.get<string>(
       'FUSIONAUTH_CLIENT_KEY',
     )!;
@@ -198,18 +200,21 @@ export class FusionAuthService {
       }
     }
   }
+
   async fusionAuthRegisterTender(registerRequest: RegisterTendersDto) {
-    const dataReg = JSON.stringify(registerRequest.data);
-    const dataRegister = JSON.parse(dataReg);
+    const dataRegister = JSON.stringify(registerRequest.data);
+    const dtReg = JSON.parse(dataRegister);
     const baseUrl = this.fusionAuthUrl;
     const registerUrl = baseUrl + '/api/user/registration/';
     const role: any = registerRequest.roles ? registerRequest.roles : ['tender_client'];
+
     const user: IFusionAuthUser = {
-      email: dataRegister[0].email!,
-      password: dataRegister[0].password!,
-      firstName: dataRegister[0].employee_name!,
+      email: dtReg[0].email,
+      password: dtReg[0].password,
+      firstName: dtReg[0].employee_name,
       lastName: '',
-      mobilePhone: dataRegister[0].mobile_number!
+      // mobilePhone: dtReg.mobile_number!
+      mobilePhone: dtReg[0].phone
     };
 
     const registration: IFusionAuthUserRegistration = {
@@ -237,6 +242,7 @@ export class FusionAuthService {
       const data = await axios(options);
       return data.data;
     } catch (error) {
+      this.logger.debug('Error', error);
       if (error.response.status < 500) {
         console.log(error.response.data);
         throw new BadRequestException(

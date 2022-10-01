@@ -81,73 +81,75 @@ export class UserService {
 
   /** Create user and client for tender completed data */
   async registerFromFusionTender(request: RegisterFromFusionAuthTenderDto) {
+    console.log('request=',request)
     const emailData = await this.prisma.user.findUnique({
       where: { email: request.email }
     });
 
-    if (emailData && emailData.email) {
+    if (emailData) {
       throw new HttpException('Email already exist', 400);
     }
     const licenseNumber = await this.prisma.client_data.findUnique({
       where: { license_number: request.license_number }
     });
 
-    if (licenseNumber && request.license_number) {
+    if (licenseNumber) {
       throw new HttpException('license Number already exist', 400);
     }
     const clientid = await this.prisma.client_data.findUnique({
       where: { id: request.id }
     });
 
-    if (clientid && request.id) {
+    if (clientid) {
       throw new HttpException('Number Id Client already exist', 400);
     }
 
-    const dataEmployees = JSON.stringify(request.bank_informations);
-    const dataEmp = JSON.parse(dataEmployees);
-    console.log('dataEmp', dataEmp);
+    // const dataEmployees = JSON.stringify(request.bank_informations);
+    // const dataEmp = JSON.parse(dataEmployees);
+    // console.log('dataEmp', dataEmp);
 
-    const dataBank: [] = {
-      ...dataEmp[0],
-      user_id: request.id_,
-    }
-    console.log('dataBank', dataBank);
+    // const dataBank: [] = {
+    //   ...dataEmp[0],
+    //   user_id: request.id_,
+    // }
+    // console.log('dataBank', dataBank);
     try {
       const result = await this.prisma.user.create({
         data: {
-          id: request.id_ ? request.id_! : 'xxxxx',
+          id: request.id_,
           employee_name: request.employee_name,
           email: request.email,
           mobile_number: request.phone,
-          // client_data: {
-          //   create: {
-          //     id: request.id!,
-          //     license_number: request.license_number!,
-          //     authority: request.authority,
-          //     board_ofdec_file: request.board_ofdec_file,
-          //     center_administration: request.center_administration,
-          //     ceo_mobile: request.ceo_mobile,
-          //     data_entry_mail: request.data_entry_mail,
-          //     data_entry_name: request.data_entry_name,
-          //     ceo_name: request.ceo_name,
-          //     entity_mobile: request.entity_mobile,
-          //     governorate: request.governorate,
-          //     region: request.region,
-          //     headquarters: request.headquarters,
-          //     entity: request.entity,
-          //     date_of_esthablistmen: request.date_of_esthablistmen,
-          //     license_file: request.license_file,
-          //     license_expired: request.license_expired,
-          //     // mobile_data_entry: request.mobile_data_entry,
-          //     license_issue_date: request.license_issue_date,
-          //     num_of_beneficiaries: request.num_of_beneficiaries,
-          //   }
-          // }
+          client_data: {
+            create: {
+              id: request.id!,
+              license_number: request.license_number!,
+              authority: request.authority,
+              board_ofdec_file: request.board_ofdec_file,
+              center_administration: request.center_administration,
+              ceo_mobile: request.ceo_mobile,
+              data_entry_mail: request.data_entry_mail,
+              data_entry_name: request.data_entry_name,
+              ceo_name: request.ceo_name,
+              entity_mobile: request.entity_mobile,
+              governorate: request.governorate,
+              region: request.region,
+              headquarters: request.headquarters,
+              entity: request.entity,
+              date_of_esthablistmen: request.date_of_esthablistmen,
+              license_file: request.license_file,
+              license_expired: request.license_expired,
+              // mobile_data_entry: request.mobile_data_entry,
+              license_issue_date: request.license_issue_date,
+              num_of_beneficiaries: request.num_of_beneficiaries,
+            }
+          }
         }
-      });
+      });      
       return result;
     } catch (error) {
-      throw new HttpException(`Data not recorded in database ${error}`, 400);
+      console.log(error);
+      throw new Error("something went wrong!");
     }
 
   }

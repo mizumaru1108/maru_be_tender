@@ -1,15 +1,17 @@
-import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConsoleLogger, HttpException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { RegisterFromFusionAuthTenderDto } from 'src/user/dtos';
-
+import moment from 'moment';
+import { rootLogger } from 'src/logger';
 import { UserService } from 'src/user/user.service';
 import { EmailService } from '../libs/email/email.service';
 import { FusionAuthService } from '../libs/fusionauth/services/fusion-auth.service';
 import { User } from '../user/schema/user.schema';
 import { LoginRequestDto, RegisterRequestDto, RegisterTendersDto, RegReqTenderDto } from './dtos';
 
+
 @Injectable()
 export class AuthService {
+  private logger = rootLogger.child({ logger: AuthService.name });
   constructor(
     private readonly usersService: UserService,
     private readonly emailService: EmailService,
@@ -108,54 +110,93 @@ export class AuthService {
     const result = await this.fusionAuthService.fusionAuthRegisterTender(
       registerRequest,
     );
-    console.log('result Data=>', result);
     const dataRegister = JSON.stringify(registerRequest.data);
     const dtReg = JSON.parse(dataRegister);
-    let num1: any = dtReg[0].num_of_employed_facility;
-    let num2: any = dtReg[0].num_of_beneficiaries;
+    console.log('result', result);
     let registeredUser;
-    if (result.id) {
-      registeredUser = await this.usersService.registerFromFusionTender({
-        id_: result.id,
-        id: dtReg[0].id,
-        authority: dtReg[0].authority,
-        bank_informations: dtReg[0].bank_informations,
-        board_ofdec_file: dtReg[0].board_ofdec_file,
-        center_administration: dtReg[0].center_administration,
-        ceo_mobile: dtReg[0].ceo_mobile,
-        ceo_name: dtReg[0].ceo_name,
-        data_entry_mail: dtReg[0].data_entry_mail,
-        data_entry_mobile: dtReg[0].data_entry_mobile,
-        email: dtReg[0].email,
-        employee_name: dtReg[0].employee_name,
-        employee_path: dtReg[0].employee_path,
-        entity: dtReg[0].entity,
-        entity_mobile: dtReg[0].entity_mobile,
-        governorate: dtReg[0].governorate,
-        headquarters: dtReg[0].headquarters,
-        license_expired: dtReg[0].license_expired,
-        license_file: dtReg[0].license_file,
-        license_issue_date: dtReg[0].license_issue_date,
-        license_number: dtReg[0].license_number,
-        num_of_beneficiaries: num1,
-        num_of_employed_facility: num2,
-        data_entry_name: dtReg[0].data_entry_name,
-        date_of_esthablistmen: dtReg[0].date_of_esthablistmen,
-        password: "",
-        phone: dtReg[0].phone,
-        region: dtReg[0].region,
-        status: dtReg[0].status,
-        twitter_acount: dtReg[0].twitter_acount,
-        website: dtReg[0].website,
-        mobile_data_entry: dtReg[0].mobile_data_entry,
-      });
-    } else {
+    try {
+      if (result && result.user.id) {
+        registeredUser = await this.usersService.registerFromFusionTender({
+          id_: result.user.id,
+          // id: registerRequest.data.id,
+          // authority: registerRequest.data.authority,
+          // //bank_informations: registerRequest.data.bank_informations,
+          // board_ofdec_file: registerRequest.data.board_ofdec_file,
+          // center_administration: registerRequest.data.center_administration,
+          // ceo_mobile: registerRequest.data.ceo_mobile,
+          // ceo_name: registerRequest.data.ceo_name,
+          // data_entry_mail: registerRequest.data.data_entry_mail,
+          // data_entry_mobile: registerRequest.data.data_entry_mobile,
+          // email: registerRequest.data.email,
+          // employee_name: registerRequest.data.employee_name,
+          // employee_path: registerRequest.data.employee_path,
+          // entity: registerRequest.data.entity,
+          // entity_mobile: registerRequest.data.entity_mobile,
+          // governorate: registerRequest.data.governorate,
+          // headquarters: registerRequest.data.headquarters,
+          // license_expired: registerRequest.data.license_expired,
+          // license_file: registerRequest.data.license_file,
+          // license_issue_date: registerRequest.data.license_issue_date,
+          // license_number: registerRequest.data.license_number,
+          // num_of_beneficiaries: registerRequest.data.num_of_employed_facility,
+          // num_of_employed_facility: registerRequest.data.num_of_beneficiaries,
+          // data_entry_name: registerRequest.data.data_entry_name,
+          // date_of_esthablistmen: registerRequest.data.date_of_esthablistmen,
+          // password: "",
+          // phone: registerRequest.data.phone,
+          // region: registerRequest.data.region,
+          // status: registerRequest.data.status,
+          // twitter_acount: registerRequest.data.twitter_acount,
+          // website: registerRequest.data.website,
+          // mobile_data_entry: registerRequest.data.mobile_data_entry,
+          id: dtReg[0].id,
+          authority: dtReg[0].authority,
+          //bank_informations: dtReg[0].bank_informations,
+          board_ofdec_file: dtReg[0].board_ofdec_file,
+          center_administration: dtReg[0].center_administration,
+          ceo_mobile: dtReg[0].ceo_mobile,
+          ceo_name: dtReg[0].ceo_name,
+          data_entry_mail: dtReg[0].data_entry_mail,
+          data_entry_mobile: dtReg[0].data_entry_mobile,
+          email: dtReg[0].email,
+          employee_name: dtReg[0].employee_name,
+          employee_path: dtReg[0].employee_path,
+          entity: dtReg[0].entity,
+          entity_mobile: dtReg[0].entity_mobile,
+          governorate: dtReg[0].governorate,
+          headquarters: dtReg[0].headquarters,
+          license_expired: moment(dtReg[0].license_expired).toISOString(), // Date
+          license_file: dtReg[0].license_file,
+          license_issue_date: moment(dtReg[0].license_issue_date).toISOString(), // Date
+          license_number: dtReg[0].license_number,
+          num_of_beneficiaries: dtReg[0].num_of_employed_facility,
+          num_of_employed_facility: dtReg[0].num_of_beneficiaries,
+          data_entry_name: dtReg[0].data_entry_name,
+          date_of_esthablistmen: moment(dtReg[0].date_of_esthablistmen).toISOString(),// Date
+          password: "",
+          phone: dtReg[0].phone,
+          region: dtReg[0].region,
+          status: dtReg[0].status,
+          twitter_acount: dtReg[0].twitter_acount,
+          website: dtReg[0].website,
+          mobile_data_entry: dtReg[0].mobile_data_entry,
+          
+        });
+      } else {
+        return {
+          messageCode: 400,
+          message: 'An error occured while sending data',
+        }
+      }
+    } catch (error) {
+      console.log('error',error)
       return {
         messageCode: 400,
-        message: 'An error occured while sending data',
+        message: 'An error occured while not recorded data',
       }
     }
-    return registeredUser;
+    
+   // return {data: registeredUser};
 
     // return {
     //   statusCode: 201,
