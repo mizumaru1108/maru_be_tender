@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsEnum, IsEmpty, IsOptional, IsEmail } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsString, IsNotEmpty, IsEnum, IsEmpty, IsOptional, IsEmail, ValidateNested } from 'class-validator';
 import { RoleTenderEnum } from '../enums/role-enum';
 
 export class RegisterFromFusionAuthDto {
@@ -72,6 +73,27 @@ export class RegFromFusionAuthTenderDto {
 
 }
 
+class bankData{
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  bank_account_name: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  bank_account_number: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  bank_name: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  card_image: string;
+}
 export class RegisterFromFusionAuthTenderDto {
 
   @ApiProperty()
@@ -204,5 +226,8 @@ export class RegisterFromFusionAuthTenderDto {
   @IsString()
   mobile_data_entry: string;
   
-  // bank_informations: string[];
+  @ApiProperty()  
+  @ValidateNested()
+  @Type(() => bankData)
+  bank_informations: bankData;
 }
