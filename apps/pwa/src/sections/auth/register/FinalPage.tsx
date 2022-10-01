@@ -436,17 +436,6 @@ function FinalPage({ ...props }: AccountValuesProps) {
           >
             رجوع
           </Button>
-          {/* <Button
-            onClick={hanelSubmit}
-            sx={{
-              backgroundColor: 'background.paper',
-              color: '#fff',
-              width: { xs: '100%', sm: '200px' },
-              hieght: { xs: '100%', sm: '50px' },
-            }}
-          >
-            انشاء حساب
-          </Button> */}
           <LoadingButton
             fullWidth
             size="large"

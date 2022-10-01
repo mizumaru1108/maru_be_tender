@@ -1,5 +1,71 @@
 import { FormSingleProps } from 'components/FormGenerator';
 
+const regions = [
+  'منطقة الرياض',
+  'منطقة مكة المكرمة',
+  'منطقة المدينة المنورة',
+  'منطقة القصيم',
+  'المنطقة الشرقية',
+  'منطقة عسير',
+  'منطقة تبوك',
+  'منطقة حائل',
+  'منطقة الحدود الشمالية',
+  'منطقة جازان',
+  'منطقة نجران',
+  'منطقة الباحة',
+  'منطقة الجوف',
+];
+const governorates = [
+  'الرياض',
+  'الدرعية',
+  'الخرج',
+  'الدوادمي',
+  'المجمعة',
+  'القويعية',
+  'الأفلاج',
+  'وادي الدواسر',
+  'الزلفي',
+  'شقراء',
+  'حوطة بني تميم',
+  'عفيف',
+  'الغاط',
+  'السليل',
+  'ضرما',
+  'المزاحمية',
+  'رماح',
+  'ثادق',
+  'حريملاء',
+  'الحريق',
+  'مرات',
+  'الرين',
+  'الدلم',
+  'مكة المكرمة',
+  'جدة',
+  'الطائف',
+  'القنفذة',
+  'الليث',
+  'رابغ',
+  'خليص',
+  'الخرمة',
+  'رنية',
+  'تربة',
+  'الجموم',
+  'الكامل',
+  'المويه',
+  'ميسان',
+  'أضم',
+  'العرضيات',
+  'بحرة',
+  'المدينة المنورة',
+  'ينبع',
+  'العلا',
+  'المهد',
+  'الحناكية',
+  'بدر',
+  'خيبر',
+  'العيص',
+  'وادي الفرع',
+];
 /**
  * The form which has conditions inside, I write it in the dummy way
  */
@@ -11,7 +77,15 @@ export const ConnectingInfoData = [
     xs: 12,
     md: 6,
     placeholder: 'register_form2.region.placeholder',
-    children: <option value="1">test option</option>,
+    children: (
+      <>
+        {regions.map((item, index) => (
+          <option key={index} value={item} style={{ backgroundColor: '#fff' }}>
+            {item}
+          </option>
+        ))}
+      </>
+    ),
   },
   {
     type: 'select',
@@ -20,7 +94,15 @@ export const ConnectingInfoData = [
     xs: 12,
     md: 6,
     placeholder: 'register_form2.region.placeholder',
-    children: <option value="1">test option</option>,
+    children: (
+      <>
+        {governorates.map((item, index) => (
+          <option key={index} value={item} style={{ backgroundColor: '#fff' }}>
+            {item}
+          </option>
+        ))}
+      </>
+    ),
   },
   {
     type: 'select',
@@ -29,7 +111,11 @@ export const ConnectingInfoData = [
     xs: 12,
     md: 6,
     placeholder: 'register_form2.region.placeholder',
-    children: <option value="1">test option</option>,
+    children: (
+      <option value="1" style={{ backgroundColor: '#fff' }}>
+        test option
+      </option>
+    ),
   },
   {
     type: 'textField',
@@ -161,7 +247,7 @@ export const AdministrativeInfoData = [
   {
     type: 'textField',
     name: 'data_entry_mail',
-    labe: 'register_form4.entery_data_email.placeholder',
+    label: 'register_form4.entery_data_email.label',
     xs: 12,
     placeholder: 'register_form4.entery_data_email.placeholder',
   },
