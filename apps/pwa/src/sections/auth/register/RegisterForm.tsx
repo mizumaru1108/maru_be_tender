@@ -57,7 +57,7 @@ const initialValue = {
 export default function RegisterForm() {
   const { translate } = useLocales();
   const isMobile = useResponsive('down', 'sm');
-  const [step, setStep] = useState(3);
+  const [step, setStep] = useState(0);
 
   const [registerState, setRegisterState] = useState(initialValue);
 
