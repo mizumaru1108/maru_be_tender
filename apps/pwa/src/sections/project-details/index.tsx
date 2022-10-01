@@ -1,11 +1,10 @@
-import { Box, Button, IconButton, Stack, Typography, useTheme } from '@mui/material';
+import { Box, IconButton, Stack, Typography, useTheme } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useMutation } from 'urql';
-import Iconify from '../../components/Iconify';
-import { hasAccess } from '../../guards/CertainRolesGuard';
+import FloatingActionBar from '../../components/floating-action-bar/FloatingActionBar';
 import { Role } from '../../guards/RoleBasedGuard';
 import useAuth from '../../hooks/useAuth';
 import { approveProposal } from '../../queries/commons/approveProposal';
@@ -39,13 +38,11 @@ function ProjectDetailsMainPage() {
 
   const handleCeoAccept = () => {
     accept({
-      variables: {
-        proposalId: pid,
-        approveProposalPayloads: {
-          inner_status: 'ACCEPTED',
-          outter_status: 'ONGOING',
-          state: currentRoles as String,
-        },
+      proposalId: pid,
+      approveProposalPayloads: {
+        inner_status: 'ACCEPTED',
+        outter_status: 'ONGOING',
+        state: 'PROJECT_SUPERVISOR', // the next step when accepted
       },
     });
     const { data, error, fetching } = proposalAccepting;
@@ -53,6 +50,7 @@ function ProjectDetailsMainPage() {
       enqueueSnackbar('Proposal Approved!', {
         variant: 'success',
       });
+      navigate('/ceo/dashboard/app');
     }
     if (error) {
       enqueueSnackbar(error.message, {
@@ -70,12 +68,10 @@ function ProjectDetailsMainPage() {
 
   const handleCeoReject = () => {
     reject({
-      variables: {
-        proposalId: pid,
-        rejectProposalPayloads: {
-          inner_status: 'REJECTED',
-          outter_status: 'CANCELED',
-        },
+      proposalId: pid,
+      rejectProposalPayloads: {
+        inner_status: 'REJECTED',
+        outter_status: 'CANCELED',
       },
     });
     const { data, error, fetching } = proposalRejection;
@@ -83,6 +79,7 @@ function ProjectDetailsMainPage() {
       enqueueSnackbar('Proposal Rejected Successfully!', {
         variant: 'success',
       });
+      navigate('/ceo/dashboard/app');
     }
     if (error) {
       enqueueSnackbar(error.message, {
@@ -170,63 +167,19 @@ function ProjectDetailsMainPage() {
       {activeTap === 'payments' && <Payments />}
       {activeTap === 'exchange-details' && <ExchangeDetails />}
 
-      {/* Floating action bar to accept and reject project */}
-      {hasAccess(currentRoles, ['tender_ceo', 'tender_moderator']) &&
-        activeTap &&
+      {activeTap &&
         ['main', 'project-budget'].includes(activeTap) &&
         actionType &&
         actionType === 'show-details' && (
-          <Box
-            sx={{
-              backgroundColor: 'white',
-              p: 3,
-              borderRadius: 1,
-              position: 'sticky',
-              width: '100%',
-              bottom: 24,
-              border: `1px solid ${theme.palette.grey[400]}`,
+          <FloatingActionBar
+            handleAccept={() => {
+              handleCeoAccept();
             }}
-          >
-            <Stack direction={{ sm: 'column', md: 'row' }} justifyContent="space-between">
-              <Stack flexDirection={{ sm: 'column', md: 'row' }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{ mr: { md: '1em' } }}
-                  onClick={() => {
-                    if (currentRoles === 'tender_ceo') {
-                      handleCeoAccept(); // incase that the accepting process is having a different logic seperated by roles
-                    }
-                  }}
-                >
-                  {translate('project_acceptance')}
-                </Button>
-                <Button
-                  variant="contained"
-                  color="error"
-                  sx={{ my: { xs: '1.3em', md: '0' }, mr: { md: '1em' } }}
-                  onClick={() => {
-                    if (currentRoles === 'tender_ceo') {
-                      handleCeoReject(); // incase that the accepting process is having a different logic seperated by roles
-                    }
-                  }}
-                >
-                  {translate('project_rejected')}
-                </Button>
-                <Button variant="outlined" color="primary" sx={{ my: { xs: '1.3em', md: '0' } }}>
-                  {translate('send_message_to_partner')}
-                </Button>
-              </Stack>
-
-              <Button
-                variant="contained"
-                color="info"
-                endIcon={<Iconify icon="eva:edit-2-outline" />}
-              >
-                {translate('submit_amendment_request')}
-              </Button>
-            </Stack>
-          </Box>
+            handleReject={() => {
+              handleCeoReject();
+            }}
+            role={currentRoles}
+          />
         )}
     </Box>
   );

@@ -26,6 +26,7 @@ function DashboardProjectManagement() {
     if (projectDatas) {
       setProjectManagementData(projectDatas.proposal);
     }
+    console.log(projectDatas);
   }, [projectDatas]);
 
   const headerCells: ProjectManagementTableHeader[] = [
