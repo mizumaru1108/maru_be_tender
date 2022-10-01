@@ -156,7 +156,7 @@ const ar = {
       placeholder: 'الرجاء ادخال البريد الالكتروني',
     },
     password: {
-      title: 'كلمة السر*',
+      label: 'كلمة السر*',
       placeholder: 'كلمة السر',
     },
   },

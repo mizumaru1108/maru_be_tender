@@ -54,13 +54,13 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit }) => {
       <Grid container rowSpacing={4} columnSpacing={7}>
         <Grid item md={12} xs={12}>
           <RHFSelect name="entity" label={translate('register_form1.entity_area.label')}>
-            <option value="" disabled selected>
+            <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
               {translate('register_form1.entity_area.placeholder')}
             </option>
-            <option value="main">
+            <option value="main" style={{ backgroundColor: '#fff' }}>
               {translate('register_form1.entity_area.options.sub_entity_area')}
             </option>
-            <option value="sub">
+            <option value="sub" style={{ backgroundColor: '#fff' }}>
               {translate('register_form1.entity_area.options.main_entity_area')}
             </option>
           </RHFSelect>
@@ -70,10 +70,33 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit }) => {
             {entity === 'main' && (
               <Grid item md={12} xs={12}>
                 <RHFSelect name="authority" label={translate('register_form1.authority.label')}>
-                  <option value="" disabled selected>
+                  <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
                     {translate('register_form1.authority.placeholder')}
                   </option>
-                  <option value="1">test option</option>
+                  <option value="0" style={{ backgroundColor: '#fff' }}>
+                    أخرى
+                  </option>
+                  <option value="1" style={{ backgroundColor: '#fff' }}>
+                    المؤسسة العامة للتدريب التقني والمهني
+                  </option>
+                  <option value="2" style={{ backgroundColor: '#fff' }}>
+                    هيئة الأوقاف
+                  </option>
+                  <option value="3" style={{ backgroundColor: '#fff' }}>
+                    وزارة التجارة والاستثمار
+                  </option>
+                  <option value="4" style={{ backgroundColor: '#fff' }}>
+                    وزارة التعليم
+                  </option>
+                  <option value="5" style={{ backgroundColor: '#fff' }}>
+                    وزارة الشؤون الإسلامية
+                  </option>
+                  <option value="6" style={{ backgroundColor: '#fff' }}>
+                    وزارة العدل
+                  </option>
+                  <option value="7" style={{ backgroundColor: '#fff' }}>
+                    وزارة الموارد البشرية والتنميةالاجتماعية
+                  </option>
                 </RHFSelect>
               </Grid>
             )}
@@ -96,10 +119,12 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit }) => {
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFSelect name="headquarters" label={translate('register_form1.headquarters.label')}>
-            <option value="" disabled selected>
+            <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
               {translate('register_form1.headquarters.placeholder')}
             </option>
-            <option value="1">test option</option>
+            <option value="1" style={{ backgroundColor: '#fff' }}>
+              test option
+            </option>
           </RHFSelect>
         </Grid>
         <Grid item md={6} xs={12}>
