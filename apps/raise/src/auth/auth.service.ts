@@ -108,6 +108,7 @@ export class AuthService {
     const result = await this.fusionAuthService.fusionAuthRegisterTender(
       registerRequest,
     );
+    console.log('result Data=>', result);
     const dataRegister = JSON.stringify(registerRequest.data);
     const dtReg = JSON.parse(dataRegister);
     let num1: any = dtReg[0].num_of_employed_facility;
