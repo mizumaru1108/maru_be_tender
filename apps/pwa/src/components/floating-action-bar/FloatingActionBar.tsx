@@ -1,8 +1,11 @@
-import { Stack, Button, useTheme, Box } from '@mui/material';
+import { Stack, Button, useTheme, Box, Typography } from '@mui/material';
 import { Role } from '../../guards/RoleBasedGuard';
 import useLocales from 'hooks/useLocales';
 
 import Iconify from '../Iconify';
+import ModalDialog from '../modal-dialog';
+import { openModal } from '../../redux/slices/calendar';
+import { useState } from 'react';
 
 // const Hasura_Roles = {
 //   cluster_admin: 'CLUSTER_ADMIN',
@@ -62,9 +65,12 @@ function FloatingActionBar(props: FloatingActionBarProps) {
           >
             {translate('project_rejected')}
           </Button>
-          <Button variant="outlined" color="primary" sx={{ my: { xs: '1.3em', md: '0' } }}>
-            {translate('send_message_to_partner')}
-          </Button>
+
+          {props.role === 'tender_moderator' && (
+            <Button variant="outlined" color="primary" sx={{ my: { xs: '1.3em', md: '0' } }}>
+              {translate('send_message_to_partner')}
+            </Button>
+          )}
         </Stack>
 
         <Button variant="contained" color="info" endIcon={<Iconify icon="eva:edit-2-outline" />}>

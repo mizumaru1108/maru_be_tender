@@ -49,7 +49,7 @@ export default function ModalDialog({
   return (
     <Dialog fullWidth={fullWidth} maxWidth={maxWidth} open={isOpen} onClose={() => onClose()}>
       {title && (
-        <DialogTitle>
+        <DialogTitle sx={styleContent}>
           <Box display="flex" justifyContent="space-between" alignItems="center">
             {title}
             {showCloseIcon && (
@@ -66,7 +66,7 @@ export default function ModalDialog({
         </DialogTitle>
       )}
       <DialogContent sx={styleContent}>{content}</DialogContent>
-      <DialogActions style={{ padding: !showCancelBtn && !actionBtn ? 0 : 24 }}>
+      <DialogActions style={{ padding: !showCancelBtn && !actionBtn ? 0 : 24 }} sx={styleContent}>
         {showCancelBtn && (
           <Button variant="outlined" size="medium" color="inherit" onClick={() => onClose()}>
             Cancel

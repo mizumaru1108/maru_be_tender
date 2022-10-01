@@ -1,15 +1,18 @@
-import { Box, IconButton, Stack, Typography, useTheme } from '@mui/material';
-import { current } from '@reduxjs/toolkit';
+import { Box, Button, IconButton, Stack, Typography, useTheme } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useMutation } from 'urql';
 import FloatingActionBar from '../../components/floating-action-bar/FloatingActionBar';
+import ModalDialog from '../../components/modal-dialog';
 import { Role } from '../../guards/RoleBasedGuard';
 import useAuth from '../../hooks/useAuth';
 import { approveProposal } from '../../queries/commons/approveProposal';
 import { rejectProposal } from '../../queries/commons/rejectProposal';
+import FormActionBox from '../ceo/forms/FormActionBox';
+import ProposalAcceptingForm from '../ceo/forms/ProposalAcceptingForm';
+import ProposalRejectingForm from '../ceo/forms/ProposalRejectingForm';
 import ActionBar from './ActionBar';
 import ExchangeDetails from './ExchangeDetails';
 import FollowUps from './FollowUps';
@@ -29,6 +32,12 @@ function ProjectDetailsMainPage() {
   const activeTap = location.pathname.split('/').at(-1);
   const actionType = location.pathname.split('/').at(-2);
 
+  const [modalState, setModalState] = useState(false);
+  //create handleclose modal function
+  const handleCloseModal = () => {
+    setModalState(false);
+  };
+
   // Logic here to get current user role
   const { user } = useAuth();
 
@@ -44,6 +53,7 @@ function ProjectDetailsMainPage() {
   const [proposalAccepting, accept] = useMutation(approveProposal);
   const { data: approval, fetching: accFetch, error: accError } = proposalAccepting;
   const { data: rejected, fetching: rejFetch, error: rejError } = proposalRejection;
+  const [action, setAction] = useState<'accept' | 'reject'>('reject');
 
   const handleApproval = () => {
     accept({
@@ -90,7 +100,7 @@ function ProjectDetailsMainPage() {
           currentRoles === 'tender_moderator'
             ? 'CLIENT'
             : currentRoles === 'tender_ceo'
-            ? 'MODERATOR'
+            ? 'CLIENT'
             : `${a}`,
       },
     });
@@ -116,9 +126,9 @@ function ProjectDetailsMainPage() {
   };
 
   // log the payload with useEffect
-  useEffect(() => {
-    console.log(pid);
-  }, [pid, approval, rejected]);
+  // useEffect(() => {
+  //   console.log(pid);
+  // }, [pid, approval, rejected]);
 
   // const [requestState, setRequestState] = useState(defaultValues);
 
@@ -193,14 +203,72 @@ function ProjectDetailsMainPage() {
         actionType === 'show-details' && (
           <FloatingActionBar
             handleAccept={() => {
-              handleApproval();
+              setModalState(true);
+              setAction('accept');
             }}
             handleReject={() => {
-              handleRejected();
+              setModalState(true);
+              setAction('reject');
             }}
             role={currentRoles}
           />
         )}
+
+      <ModalDialog
+        title={
+          <Stack display="flex">
+            <Typography variant="h6" fontWeight="bold" color="#000000">
+              Title A
+            </Typography>
+          </Stack>
+        }
+        content={
+          action === 'accept' ? (
+            <ProposalAcceptingForm
+              onSubmit={() => {
+                console.log('accept clicked');
+              }}
+            >
+              <FormActionBox
+                action="accept"
+                onReturn={() => {
+                  setModalState(false);
+                }}
+              />
+            </ProposalAcceptingForm>
+          ) : (
+            <ProposalRejectingForm
+              onSubmit={() => {
+                console.log('reject clicked');
+              }}
+            >
+              <FormActionBox
+                action="reject"
+                onReturn={() => {
+                  setModalState(false);
+                }}
+              />
+            </ProposalRejectingForm>
+          )
+        }
+        isOpen={modalState}
+        onClose={handleCloseModal}
+        styleContent={{ padding: '1em', backgroundColor: '#fff' }}
+        // actionBtn={
+        //   <Stack display="flex" direction="row" justifyContent="space-between">
+        //     <Button variant="contained" color="primary" sx={{ mr: { md: '1em' } }}>
+        //       {translate('oke')}
+        //     </Button>
+        //     <Button
+        //       variant="contained"
+        //       color="error"
+        //       sx={{ my: { xs: '1.3em', md: '0' }, mr: { md: '1em' } }}
+        //     >
+        //       {translate('cancel')}
+        //     </Button>
+        //   </Stack>
+        // }
+      />
     </Box>
   );
 }
