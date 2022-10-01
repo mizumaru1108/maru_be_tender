@@ -9,6 +9,7 @@ import ModalDialog from '../../components/modal-dialog';
 import { Role } from '../../guards/RoleBasedGuard';
 import useAuth from '../../hooks/useAuth';
 import { approveProposal } from '../../queries/commons/approveProposal';
+import { CreateProposalLog } from '../../queries/commons/createProposalLog';
 import { rejectProposal } from '../../queries/commons/rejectProposal';
 import FormActionBox from '../ceo/forms/FormActionBox';
 import ProposalAcceptingForm from '../ceo/forms/ProposalAcceptingForm';
@@ -51,8 +52,9 @@ function ProjectDetailsMainPage() {
 
   const [proposalRejection, reject] = useMutation(rejectProposal);
   const [proposalAccepting, accept] = useMutation(approveProposal);
-  const { data: approval, fetching: accFetch, error: accError } = proposalAccepting;
-  const { data: rejected, fetching: rejFetch, error: rejError } = proposalRejection;
+  const [creatingLog, createLog] = useMutation(CreateProposalLog);
+  const { fetching: accFetch, error: accError } = proposalAccepting;
+  const { fetching: rejFetch, error: rejError } = proposalRejection;
   const [action, setAction] = useState<'accept' | 'reject'>('reject');
 
   const handleApproval = () => {
@@ -124,13 +126,6 @@ function ProjectDetailsMainPage() {
       console.log(rejError);
     }
   };
-
-  // log the payload with useEffect
-  // useEffect(() => {
-  //   console.log(pid);
-  // }, [pid, approval, rejected]);
-
-  // const [requestState, setRequestState] = useState(defaultValues);
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -218,19 +213,22 @@ function ProjectDetailsMainPage() {
         title={
           <Stack display="flex">
             <Typography variant="h6" fontWeight="bold" color="#000000">
-              Title A
+              {action === 'accept' ? 'Project Accept Form' : 'Project Reject Form'}
             </Typography>
           </Stack>
         }
         content={
           action === 'accept' ? (
             <ProposalAcceptingForm
-              onSubmit={() => {
-                console.log('accept clicked');
+              onSubmit={(data) => {
+                console.log('form callback', data);
+                console.log('just a dummy not create log yet');
+                handleApproval();
               }}
             >
               <FormActionBox
                 action="accept"
+                isLoading={accFetch}
                 onReturn={() => {
                   setModalState(false);
                 }}
@@ -238,12 +236,15 @@ function ProjectDetailsMainPage() {
             </ProposalAcceptingForm>
           ) : (
             <ProposalRejectingForm
-              onSubmit={() => {
-                console.log('reject clicked');
+              onSubmit={(value) => {
+                console.log('form callback', value);
+                console.log('just a dummy not create log yet');
+                handleRejected();
               }}
             >
               <FormActionBox
                 action="reject"
+                isLoading={rejFetch}
                 onReturn={() => {
                   setModalState(false);
                 }}
@@ -254,20 +255,6 @@ function ProjectDetailsMainPage() {
         isOpen={modalState}
         onClose={handleCloseModal}
         styleContent={{ padding: '1em', backgroundColor: '#fff' }}
-        // actionBtn={
-        //   <Stack display="flex" direction="row" justifyContent="space-between">
-        //     <Button variant="contained" color="primary" sx={{ mr: { md: '1em' } }}>
-        //       {translate('oke')}
-        //     </Button>
-        //     <Button
-        //       variant="contained"
-        //       color="error"
-        //       sx={{ my: { xs: '1.3em', md: '0' }, mr: { md: '1em' } }}
-        //     >
-        //       {translate('cancel')}
-        //     </Button>
-        //   </Stack>
-        // }
       />
     </Box>
   );

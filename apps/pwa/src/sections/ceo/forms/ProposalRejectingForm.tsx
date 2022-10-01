@@ -10,7 +10,7 @@ import { ProposalApprovePayload, ProposalFormProps } from './types';
 
 function ProposalRejectingForm({ children, onSubmit }: ProposalFormProps) {
   const validationSchema = Yup.object().shape({
-    procedures: Yup.string().required('Region name required'),
+    procedures: Yup.string().required('Procedures is required!'),
   });
 
   const defaultValues = {
