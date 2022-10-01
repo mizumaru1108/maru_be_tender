@@ -9,6 +9,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import * as React from 'react';
 import useAuth from 'hooks/useAuth';
+import { LoadingButton } from '@mui/lab';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -19,6 +20,8 @@ function FinalPage({ ...props }: AccountValuesProps) {
   const [id, setId] = useState('');
   const [open, setOpen] = useState(false);
   const [_, updateTodo] = useMutation(createClient);
+  const [errors, setErrors] = useState('');
+  const [isSending, setIsSending] = useState(false);
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
@@ -27,42 +30,25 @@ function FinalPage({ ...props }: AccountValuesProps) {
     setOpen(false);
   };
   const hanelSubmit = async () => {
-    console.log(props);
+    setIsSending(true);
+    const {
+      bank_account_name,
+      bank_account_number,
+      bank_name,
+      card_image,
+      agree_on,
+      ...client_data
+    } = props;
     try {
       const { data } = await axios.post(
-        'https://api-staging.tmra.io/v2/raise/auth/fusion/registerTender',
+        'https://api-staging.tmra.io/v2/raise/auth/fusion/regTender',
         {
-          employee_name: props.email,
-          employee_path: props.email,
-          email: props.email,
-          password: props.password,
-          mobile_number: props.phone,
-          roles: ['tender_client'],
-        }
-      );
-
-      await login(props.email, props.password);
-      console.log(data);
-      const {
-        email,
-        bank_account_name,
-        bank_account_number,
-        bank_name,
-        card_image,
-        agree_on,
-        ...client_data
-      } = props;
-      const object = {
-        id: data.data.id,
-        email: email,
-        employee_name: email,
-        employee_path: email,
-        client_data: {
-          data: {
-            id: nanoid(),
-            ...client_data,
-            bank_informations: {
-              data: [
+          data: [
+            {
+              id: nanoid(),
+              employee_name: props.email,
+              employee_path: props.email,
+              bank_informations: [
                 {
                   bank_account_name,
                   bank_account_number,
@@ -70,14 +56,18 @@ function FinalPage({ ...props }: AccountValuesProps) {
                   card_image,
                 },
               ],
+              status: 'WAITING_FOR_ACTIVATION',
+              ...client_data,
             },
-          },
-        },
-      };
-      console.log(object);
-      await updateTodo({ object });
+          ],
+          roles: ['tender_client'],
+        }
+      );
+      await login(props.email, props.password);
     } catch (error) {
+      setErrors(error.message);
       setOpen(true);
+      setIsSending(false);
     }
   };
 
@@ -89,7 +79,7 @@ function FinalPage({ ...props }: AccountValuesProps) {
         onClose={handleClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Alert severity="error">This user is already exist, try to use another email please</Alert>
+        <Alert severity="error">{errors}</Alert>
       </Snackbar>
       <Stack direction="column" gap={4}>
         <Typography variant="h4">إنشاء حساب جديد - التفاصيل كاملة</Typography>
@@ -446,7 +436,7 @@ function FinalPage({ ...props }: AccountValuesProps) {
           >
             رجوع
           </Button>
-          <Button
+          {/* <Button
             onClick={hanelSubmit}
             sx={{
               backgroundColor: 'background.paper',
@@ -456,7 +446,22 @@ function FinalPage({ ...props }: AccountValuesProps) {
             }}
           >
             انشاء حساب
-          </Button>
+          </Button> */}
+          <LoadingButton
+            fullWidth
+            size="large"
+            variant="contained"
+            loading={isSending}
+            onClick={hanelSubmit}
+            sx={{
+              backgroundColor: 'background.paper',
+              color: '#fff',
+              width: { xs: '100%', sm: '200px' },
+              hieght: { xs: '100%', sm: '50px' },
+            }}
+          >
+            انشاء حساب
+          </LoadingButton>
         </Stack>
       </Stack>
     </Container>
