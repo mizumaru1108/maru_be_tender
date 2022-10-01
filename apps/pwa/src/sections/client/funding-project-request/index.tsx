@@ -14,6 +14,7 @@ import { useMutation } from 'urql';
 import { CreateProposel } from 'queries/client/createProposel';
 import { nanoid } from 'nanoid';
 import { useNavigate } from 'react-router';
+import useAuth from 'hooks/useAuth';
 
 const steps = [
   'funding_project_request_form1.step',
@@ -23,6 +24,7 @@ const steps = [
   'funding_project_request_form5.step',
 ];
 const FundingProjectRequestForm = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { translate } = useLocales();
   useEffect(() => {
@@ -36,7 +38,7 @@ const FundingProjectRequestForm = () => {
       project_location: '',
       project_implement_date: '',
       execution_time: '',
-      target_group_type: '',
+      project_beneficiaries: '',
       letter_ofsupport_req: undefined,
       project_attachments: undefined,
     },
@@ -53,7 +55,7 @@ const FundingProjectRequestForm = () => {
       detail_project_budgets: {
         data: [
           {
-            item: '',
+            clause: '',
             explanation: '',
             amount: undefined,
           },
@@ -120,11 +122,13 @@ const FundingProjectRequestForm = () => {
       ...requestState.form1,
       ...requestState.form2,
       ...requestState.form3,
-      ...requestState.form4,
+      amount_required_fsupport: requestState.form4.amount_required_fsupport,
+      proposal_item_budgets: requestState.form4.detail_project_budgets,
       ...requestState.form5,
-      submitter_user_id: 'ruAow402uaFO68PHvbLlF', // a dummy user_id, in the future we'll get the user_id from the user state
+      submitter_user_id: user?.id,
       id: nanoid(),
     };
+    console.log(createdProposel);
     const res = await updateTodo({
       createdProposel,
     });

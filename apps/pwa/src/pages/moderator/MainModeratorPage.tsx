@@ -31,9 +31,8 @@ const INSIGHT_DATA = [
 // -------------------------------------------------------------------------------
 
 function MainManagerPage() {
-  const [previousSupportRequests, setPreviousSupportRequest] = useState<ProjectCardProps[]>([]);
+  const [supportRequest, setSupportRequest] = useState<ProjectCardProps[]>([]);
   const [cardInsightData, setCardInsightData] = useState<CardInsightProps>();
-  const previousSupport: ProjectCardProps[] = [];
 
   const { currentLang, translate } = useLocales();
 
@@ -103,8 +102,7 @@ function MainManagerPage() {
         cardFooterButtonAction: 'show-details',
       }));
       previousSupport.push(...prev);
-      setPreviousSupportRequest(previousSupport);
-      console.log('hasil set state : ', previousSupport);
+      setSupportRequest(previousSupport);
     }
     if (countAcc && countRejected && countIncomingNew && countPending && countTotal) {
       newCard.data.push(
@@ -122,7 +120,7 @@ function MainManagerPage() {
         },
         {
           title: 'pending_projects',
-          value: countPending?.proposal_aggregate?.aggregate?.count,
+          value: countPending.proposal_aggregate.aggregate.count,
         },
         {
           title: 'total_number_of_projects',
@@ -147,7 +145,7 @@ function MainManagerPage() {
             />
           )}
           <CardTable
-            data={previousSupportRequests} // For testing, later on we will send the query to it
+            data={supportRequest} // For testing, later on we will send the query to it
             title={translate('incoming_support_requests')}
             pagination={false}
             limitShowCard={4}

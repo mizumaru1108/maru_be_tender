@@ -9,7 +9,7 @@ import FormGenerator from 'components/FormGenerator';
 type FormValuesProps = {
   amount_required_fsupport: number;
   detail_project_budgets: {
-    item: string;
+    clause: string;
     explanation: string;
     amount: number;
   }[];
@@ -29,7 +29,7 @@ const ProjectBudgetForm = ({ onSubmit, children, defaultValues }: Props) => {
     amount_required_fsupport: Yup.number().required(),
     detail_project_budgets: Yup.array().of(
       Yup.object().shape({
-        item: Yup.string().required(),
+        clause: Yup.string().required(),
         explanation: Yup.string().required(),
         amount: Yup.number().required(),
       })

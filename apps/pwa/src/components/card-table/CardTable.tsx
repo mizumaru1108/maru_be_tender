@@ -121,11 +121,17 @@ function CardTable({
           )}
         </Stack>
       </Grid>
-      {dataSinglePage.map((item, index) => (
+      {/* {dataSinglePage.map((item, index) => (
         <Grid item key={index} md={6} xs={12}>
           <ProjectCard {...item} cardFooterButtonAction={cardFooterButtonAction} />
         </Grid>
-      ))}
+      ))} */}
+      {dataSinglePage.length !== 0 &&
+        dataSinglePage.map((item, index) => (
+          <Grid item key={index} md={6} xs={12}>
+            <ProjectCard {...item} cardFooterButtonAction={cardFooterButtonAction} />
+          </Grid>
+        ))}
       {pagination && (
         <Grid item md={12} xs={12}>
           <Stack direction="row" justifyContent="space-between">

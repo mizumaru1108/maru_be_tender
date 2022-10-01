@@ -3,13 +3,25 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
+import useAuth from 'hooks/useAuth';
+import { gettingSavedProjects } from 'queries/client/gettingSavedProjects';
+import { useQuery } from 'urql';
 
 function DraftProject() {
-  const bull = (
-    <Box component="span" sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}>
-      •
-    </Box>
-  );
+  const { user } = useAuth();
+  const { id } = user!;
+  const [result, reexecuteQuery] = useQuery({
+    query: gettingSavedProjects,
+    variables: { id },
+  });
+  const { data, fetching, error } = result;
+
+  const props = data?.proposal[0] ?? null;
+  if (fetching) {
+    return <>...Loading</>;
+  }
+  if (!props) return <></>;
+
   return (
     <Container>
       <Typography variant="h4">مشاريع محفوظة كمسودة</Typography>

@@ -21,7 +21,7 @@ export const pendingRequest = `
 query pendingRequest {
   proposal_aggregate(where: {outter_status: {_in: ONGOING}}) {
     aggregate {
-      count(columns: outter_status)
+      count(columns: project_name)
     }
   }
 }

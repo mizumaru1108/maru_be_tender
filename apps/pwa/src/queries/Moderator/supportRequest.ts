@@ -1,6 +1,6 @@
 export const incomingRequest = `
 query incomingRequest {
-  proposal(where: {state: {_in: MODERATOR}, outter_status: {_in: PENDING}, inner_status: {_in: [ACCEPTED, REVISED]}}) {
+  proposal(where: {state: {_in: MODERATOR}, outter_status: {_in: PENDING}}) {
     id
     created_at
     project_name
@@ -23,6 +23,7 @@ query MyQuery {
       employee_name
     }
     state
+    outter_status
   }
 }
 `;

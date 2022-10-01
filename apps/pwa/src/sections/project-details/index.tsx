@@ -1,4 +1,5 @@
 import { Box, IconButton, Stack, Typography, useTheme } from '@mui/material';
+import { current } from '@reduxjs/toolkit';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import { useEffect } from 'react';
@@ -33,27 +34,40 @@ function ProjectDetailsMainPage() {
 
   const currentRoles = user?.registrations[0].roles[0] as Role;
 
+  // var for insert into navigate in handel Approval and Rejected
+  const p = currentRoles.split('_')[1];
+
+  // var for else on state in approveProposalPayloads
+  const a = p.toUpperCase();
+
   const [proposalRejection, reject] = useMutation(rejectProposal);
   const [proposalAccepting, accept] = useMutation(approveProposal);
+  const { data: approval, fetching: accFetch, error: accError } = proposalAccepting;
+  const { data: rejected, fetching: rejFetch, error: rejError } = proposalRejection;
 
-  const handleCeoAccept = () => {
+  const handleApproval = () => {
     accept({
       proposalId: pid,
       approveProposalPayloads: {
         inner_status: 'ACCEPTED',
         outter_status: 'ONGOING',
-        state: 'PROJECT_SUPERVISOR', // the next step when accepted
+        state:
+          currentRoles === 'tender_ceo'
+            ? 'PROJECT_SUPERVISOR'
+            : currentRoles === 'tender_moderator'
+            ? 'PROJECT_SUPERVISOR'
+            : `${a}`, // the next step when accepted
       },
     });
-    const { data, error, fetching } = proposalAccepting;
-    if (data && !fetching) {
+
+    if (!accFetch) {
       enqueueSnackbar('Proposal Approved!', {
         variant: 'success',
       });
-      navigate('/ceo/dashboard/app');
+      navigate(`/${p}/dashboard/app`);
     }
-    if (error) {
-      enqueueSnackbar(error.message, {
+    if (accError) {
+      enqueueSnackbar(accError.message, {
         variant: 'error',
         preventDuplicate: true,
         autoHideDuration: 3000,
@@ -62,27 +76,33 @@ function ProjectDetailsMainPage() {
           horizontal: 'right',
         },
       });
-      console.log(error);
+      console.log(accError);
     }
   };
 
-  const handleCeoReject = () => {
+  const handleRejected = () => {
     reject({
       proposalId: pid,
       rejectProposalPayloads: {
         inner_status: 'REJECTED',
         outter_status: 'CANCELED',
+        state:
+          currentRoles === 'tender_moderator'
+            ? 'CLIENT'
+            : currentRoles === 'tender_ceo'
+            ? 'MODERATOR'
+            : `${a}`,
       },
     });
-    const { data, error, fetching } = proposalRejection;
-    if (data && !fetching) {
+
+    if (!rejFetch) {
       enqueueSnackbar('Proposal Rejected Successfully!', {
         variant: 'success',
       });
-      navigate('/ceo/dashboard/app');
+      navigate(`/${p}/dashboard/app`);
     }
-    if (error) {
-      enqueueSnackbar(error.message, {
+    if (rejError) {
+      enqueueSnackbar(rejError.message, {
         variant: 'error',
         preventDuplicate: true,
         autoHideDuration: 3000,
@@ -91,14 +111,14 @@ function ProjectDetailsMainPage() {
           horizontal: 'right',
         },
       });
-      console.log(error);
+      console.log(rejError);
     }
   };
 
   // log the payload with useEffect
   useEffect(() => {
     console.log(pid);
-  }, [pid]);
+  }, [pid, approval, rejected]);
 
   // const [requestState, setRequestState] = useState(defaultValues);
 
@@ -173,10 +193,10 @@ function ProjectDetailsMainPage() {
         actionType === 'show-details' && (
           <FloatingActionBar
             handleAccept={() => {
-              handleCeoAccept();
+              handleApproval();
             }}
             handleReject={() => {
-              handleCeoReject();
+              handleRejected();
             }}
             role={currentRoles}
           />
