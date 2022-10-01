@@ -81,7 +81,7 @@ export class UserService {
 
   /** Create user and client for tender completed data */
   async registerFromFusionTender(request: RegisterFromFusionAuthTenderDto) {
-      try {
+    try {
       const result = await this.prisma.user.create({
         data: {
           id: request.id_,
@@ -111,17 +111,16 @@ export class UserService {
               num_of_beneficiaries: request.num_of_beneficiaries,
             }
           },
-          bank_information:{
-            create:request.bank_informations
+          bank_information: {
+            create: request.bank_informations
           }
         }
-      });      
+      });
       return result;
     } catch (error) {
       console.log(error);
       throw new Error("something went wrong!");
     }
-
   }
 
   async createUser(name: string, email: string, password: string) {
@@ -132,7 +131,6 @@ export class UserService {
 
   async getAllUser() {
     const user = await this.userModel.find().exec();
-
     return user.map((user: UserDocument) => ({
       _id: user._id,
       name: user.name,
