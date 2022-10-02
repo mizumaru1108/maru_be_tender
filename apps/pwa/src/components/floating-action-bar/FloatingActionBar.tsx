@@ -1,11 +1,8 @@
-import { Stack, Button, useTheme, Box, Typography } from '@mui/material';
-import { Role } from '../../guards/RoleBasedGuard';
+import { Box, Button, Stack, useTheme } from '@mui/material';
 import useLocales from 'hooks/useLocales';
+import { Role } from '../../guards/RoleBasedGuard';
 
 import Iconify from '../Iconify';
-import ModalDialog from '../modal-dialog';
-import { openModal } from '../../redux/slices/calendar';
-import { useState } from 'react';
 
 // const Hasura_Roles = {
 //   cluster_admin: 'CLUSTER_ADMIN',

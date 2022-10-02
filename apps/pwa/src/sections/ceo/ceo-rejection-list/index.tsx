@@ -1,74 +1,30 @@
-import axios from 'axios';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useQuery } from 'urql';
 import {
-  RejectionListTableHeader,
   RejectionList,
+  RejectionListTableHeader,
 } from '../../../components/table/ceo/rejection-list/rejection-list';
 import RejectionListTable from '../../../components/table/ceo/rejection-list/RejectionListTable';
-import { HASURA_ADMIN_SECRET, HASURA_GRAPHQL_URL } from '../../../config';
+import { GetRejectionList } from '../../../queries/ceo/get-rejection-list';
 
 function CeoRejectionList() {
-  const path = HASURA_GRAPHQL_URL;
-  const secret = HASURA_ADMIN_SECRET;
-
   const [rejectionListData, setRejectionListData] = useState<RejectionList[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const fetchRejectionList = useCallback(async (): Promise<RejectionList[] | null> => {
-    const queryData = {
-      query: `
-        query GetRejectedList {
-          proposal(where: {state: {_eq: CEO}, inner_status: {_eq: REJECTED}}, limit: 5) {
-            projectNumber: id
-            projectName: project_name
-            projectSection: project_kind_id
-            createdAt: created_at
-          }
-          proposal_aggregate(where: {state: {_eq: CEO}, inner_status: {_eq: REJECTED}}, limit: 5) {
-            aggregate {
-              totalData: count
-            }
-          }
-        }
-      `,
-    };
+  const [fetchRejectionList, setFetchRejectionList] = useQuery({
+    query: GetRejectionList,
+  });
 
-    const headers = {
-      headers: {
-        'Content-Type': 'aplication/json',
-        'x-hasura-admin-secret': `${secret}`,
-      },
-    };
+  const { data: rejectionList, fetching, error } = fetchRejectionList;
 
-    setIsLoading(true);
-    try {
-      const response = await axios.post(`${path}`, queryData, headers);
-      return response.data.data.proposal as RejectionList[];
-    } catch (err) {
-      console.log('Error:  ', err);
-      return null;
-    } finally {
-      setIsLoading(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const initFetchRejectionList = useCallback(async () => {
-    const projects = await fetchRejectionList();
-    if (projects !== null && isLoading === false) {
-      setRejectionListData(projects);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchRejectionList]);
+  if (error) {
+    console.log(error);
+  }
 
   useEffect(() => {
-    initFetchRejectionList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // useEffect(() => {
-  //   console.log('rejectionListData: ', rejectionListData);
-  // }, [rejectionListData]);
+    if (rejectionList) {
+      setRejectionListData(rejectionList.proposal);
+    }
+  }, [rejectionList]);
 
   const headerCells: RejectionListTableHeader[] = [
     { id: 'projectNumber', label: 'Project Number' },
@@ -82,7 +38,7 @@ function CeoRejectionList() {
   return (
     <RejectionListTable
       headline="Rejection Lists"
-      isLoading={isLoading}
+      isLoading={fetching}
       headerCell={headerCells}
       data={rejectionListData}
     />
