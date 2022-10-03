@@ -1,23 +1,25 @@
-import { Container } from '@mui/material';
-import Page from 'components/Page';
-import { styled } from '@mui/material/styles';
+import { styled } from '@mui/material';
+import React from 'react';
+import MessagesPage from '../../components/message';
+import Page from '../../components/Page';
 
-function Messages() {
-  const ContentStyle = styled('div')(({ theme }) => ({
-    maxWidth: '100%',
-    minHeight: '100vh',
-    display: 'flex',
-    justifyContent: 'start',
-    flexDirection: 'column',
-    gap: 20,
-  }));
+const ContentStyle = styled('div')(({ theme }) => ({
+  maxWidth: '100%',
+  minHeight: '100vh',
+  display: 'flex',
+  justifyContent: 'start',
+  flexDirection: 'column',
+  rowGap: '50px',
+}));
+
+function ConsultantMessages() {
   return (
-    <Page title="Previous Funding Requests">
-      <Container>
-        <ContentStyle>Messages</ContentStyle>
-      </Container>
+    <Page title="Messages">
+      <ContentStyle>
+        <MessagesPage />
+      </ContentStyle>
     </Page>
   );
 }
 
-export default Messages;
+export default ConsultantMessages;

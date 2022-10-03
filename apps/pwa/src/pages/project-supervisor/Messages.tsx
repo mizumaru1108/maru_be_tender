@@ -1,7 +1,25 @@
+import { styled } from '@mui/material';
 import React from 'react';
+import MessagesPage from '../../components/message';
+import Page from '../../components/Page';
 
-function Messages() {
-  return <div>Messages</div>;
+const ContentStyle = styled('div')(({ theme }) => ({
+  maxWidth: '100%',
+  minHeight: '100vh',
+  display: 'flex',
+  justifyContent: 'start',
+  flexDirection: 'column',
+  rowGap: '50px',
+}));
+
+function ProjectSupervisorMessages() {
+  return (
+    <Page title="Messages">
+      <ContentStyle>
+        <MessagesPage />
+      </ContentStyle>
+    </Page>
+  );
 }
 
-export default Messages;
+export default ProjectSupervisorMessages;
