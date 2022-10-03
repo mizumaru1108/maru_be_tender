@@ -11,7 +11,7 @@ export const CreateProposalLog = `
 
 // GRAPHQL QUERY EXAMPLE
 // {
-// "proposalLogPayload": {
+// "object": {
 //   "id":"xxxxx",
 //   "reviewer_id": "xxx",
 //   "proposal_id": "xxxxx",

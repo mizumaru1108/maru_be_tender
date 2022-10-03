@@ -6,9 +6,9 @@ import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import ModalDialog from 'components/modal-dialog';
 import { useState } from 'react';
-import FormActionBox from 'sections/ceo/forms/FormActionBox';
-import ProposalAcceptingForm from 'sections/ceo/forms/ProposalAcceptingForm';
-import ProposalRejectingFormProjectManager from './ProposalRejectingFormProjectManager';
+import FormActionBox from './FormActionBox';
+import ProposalAcceptingForm from './ProposalAcceptingForm';
+import ProposalRejectingForm from './ProposalRejectingForm';
 import { rejectProposal } from 'queries/commons/rejectProposal';
 import { approveProposal } from 'queries/commons/approveProposal';
 import { CreateProposalLog } from 'queries/commons/createProposalLog';
@@ -18,16 +18,14 @@ import { Role } from 'guards/RoleBasedGuard';
 import { useSnackbar } from 'notistack';
 import { nanoid } from 'nanoid';
 
-function ProjectManagerFloatingActionBar({ organizationId }: any) {
+function FloatingActionBar({ organizationId }: any) {
   const { id } = useParams();
   const { user } = useAuth();
-  const currentRoles = user?.registrations[0].roles[0] as Role;
-  const p = currentRoles.split('_')[1];
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const [proposalRejection, reject] = useMutation(rejectProposal);
   const [proposalAccepting, accept] = useMutation(approveProposal);
-  const [creatingLog, createLog] = useMutation(CreateProposalLog);
+  const [_, createLog] = useMutation(CreateProposalLog);
   const { fetching: accFetch, error: accError } = proposalAccepting;
   const { fetching: rejFetch, error: rejError } = proposalRejection;
   const { translate } = useLocales();
@@ -43,7 +41,7 @@ function ProjectManagerFloatingActionBar({ organizationId }: any) {
     setModalState(false);
   };
 
-  const handleApproval = () => {
+  const handleApproval = (values: any) => {
     accept({
       proposalId: id,
       approveProposalPayloads: {
@@ -56,6 +54,18 @@ function ProjectManagerFloatingActionBar({ organizationId }: any) {
     if (!accFetch) {
       enqueueSnackbar('Proposal Approved!', {
         variant: 'success',
+      });
+      createLog({
+        proposalLogPayload: {
+          id: nanoid(),
+          reviewer_id: user?.id,
+          proposal_id: id,
+          organization_id: organizationId, // from clientid
+          status: 'ACCEPTED',
+          assign: 'CEO',
+          notes: values.notes,
+          procedures: values.procedures,
+        },
       });
       navigate('/project-manager/dashboard/app');
     }
@@ -195,10 +205,10 @@ function ProjectManagerFloatingActionBar({ organizationId }: any) {
         content={
           action === 'accept' ? (
             <ProposalAcceptingForm
-              onSubmit={(data) => {
-                console.log('form callback', data);
+              onSubmit={(values) => {
+                console.log('form callback', values);
                 console.log('just a dummy not create log yet');
-                handleApproval();
+                handleApproval(values);
               }}
             >
               <FormActionBox
@@ -210,7 +220,7 @@ function ProjectManagerFloatingActionBar({ organizationId }: any) {
               />
             </ProposalAcceptingForm>
           ) : (
-            <ProposalRejectingFormProjectManager
+            <ProposalRejectingForm
               onSubmit={(values: any) => {
                 console.log('form callback', values);
                 console.log('just a dummy not create log yet');
@@ -224,7 +234,7 @@ function ProjectManagerFloatingActionBar({ organizationId }: any) {
                   setModalState(false);
                 }}
               />
-            </ProposalRejectingFormProjectManager>
+            </ProposalRejectingForm>
           )
         }
         isOpen={modalState}
@@ -235,4 +245,4 @@ function ProjectManagerFloatingActionBar({ organizationId }: any) {
   );
 }
 
-export default ProjectManagerFloatingActionBar;
+export default FloatingActionBar;

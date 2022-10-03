@@ -3,6 +3,7 @@ import { useLocation, useParams } from 'react-router';
 import { SupervisorFloatingActionBar } from './supervisor';
 import { Role } from 'guards/RoleBasedGuard';
 import { ProjectManagerFloatingActionBar } from './project-manager';
+import { ModeratoeCeoFloatingActionBar } from './moderator-ceo';
 
 function FloatinActonBar({ proposalData }: any) {
   const { actionType } = useParams();
@@ -16,13 +17,19 @@ function FloatinActonBar({ proposalData }: any) {
       {activeTap &&
         ['main', 'project-budget'].includes(activeTap) &&
         actionType === 'show-details' &&
-        role === 'tender_project_supervisor' && <SupervisorFloatingActionBar />}
+        role === 'tender_project_supervisor' && (
+          <SupervisorFloatingActionBar organizationId={proposalData.user.id} />
+        )}
       {activeTap &&
         ['main', 'project-budget'].includes(activeTap) &&
         actionType === 'show-details' &&
         role === 'tender_project_manager' && (
           <ProjectManagerFloatingActionBar organizationId={proposalData.user.id} />
         )}
+      {activeTap &&
+        ['main', 'project-budget'].includes(activeTap) &&
+        actionType === 'show-details' &&
+        ['tender_ceo', 'tender_moderator'].includes(role) && <ModeratoeCeoFloatingActionBar />}
     </>
   );
 }

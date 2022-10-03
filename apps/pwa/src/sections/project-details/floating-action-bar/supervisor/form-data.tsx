@@ -11,6 +11,11 @@ export const ApproveProposalFormFieldsSupervisor = [
     md: 6,
     xs: 12,
     placeholder: 'clause',
+    children: (
+      <option value="test" style={{ backgroundColor: '#fff' }}>
+        test
+      </option>
+    ),
   },
   {
     type: 'select',
@@ -19,6 +24,11 @@ export const ApproveProposalFormFieldsSupervisor = [
     md: 6,
     xs: 12,
     placeholder: 'clasification_field',
+    children: (
+      <option value="test" style={{ backgroundColor: '#fff' }}>
+        test
+      </option>
+    ),
   },
   {
     type: 'radioGroup',
@@ -96,10 +106,10 @@ export const ApproveProposalFormFieldsSupervisor = [
   },
   {
     type: 'textArea',
-    name: 'type_of_support',
-    label: 'type_of_support',
+    name: 'support_outputs',
+    label: 'support_outputs',
     xs: 12,
-    placeholder: 'type_of_support',
+    placeholder: 'support_outputs',
   },
 ] as Array<FormSingleProps>;
 

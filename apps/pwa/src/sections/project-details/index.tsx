@@ -1,23 +1,10 @@
-import { Box, IconButton, Stack, Typography, useTheme } from '@mui/material';
-import useLocales from 'hooks/useLocales';
-import { useSnackbar } from 'notistack';
+import { Box, IconButton, Stack, Typography } from '@mui/material';
 import { getOneProposal } from 'queries/commons/getOneProposal';
-import { useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { useMutation, useQuery } from 'urql';
-import FloatingActionBar from '../../components/floating-action-bar/FloatingActionBar';
-import ModalDialog from '../../components/modal-dialog';
-import { Role } from '../../guards/RoleBasedGuard';
-import useAuth from '../../hooks/useAuth';
-import { approveProposal } from '../../queries/commons/approveProposal';
-import { CreateProposalLog } from '../../queries/commons/createProposalLog';
-import { rejectProposal } from '../../queries/commons/rejectProposal';
-import FormActionBox from '../ceo/forms/FormActionBox';
-import ProposalAcceptingForm from '../ceo/forms/ProposalAcceptingForm';
-import ProposalRejectingForm from '../ceo/forms/ProposalRejectingForm';
+import { useQuery } from 'urql';
 import ActionBar from './ActionBar';
 import ExchangeDetails from './ExchangeDetails';
-import FloatinActonBar from './floatin-acton-bar/FloatinActonBar';
+import FloatinActonBar from './floating-action-bar/FloatinActonBar';
 import FollowUps from './FollowUps';
 import MainPage from './MainPage';
 import Payments from './Payments';
@@ -25,114 +12,16 @@ import ProjectBudget from './ProjectBudget';
 
 function ProjectDetailsMainPage() {
   const { id } = useParams();
-  const [result, reexecuteQuery] = useQuery({
+  const [result, _] = useQuery({
     query: getOneProposal,
     variables: { id },
   });
   const { data, fetching, error } = result;
-  const { user } = useAuth();
-  const role = user?.registrations[0].roles[0] as Role;
 
   // Language
-  const { currentLang, translate } = useLocales();
   const location = useLocation();
   const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar();
-  const pid = location.pathname.split('/')[4];
   const activeTap = location.pathname.split('/').at(-1);
-  const actionType = location.pathname.split('/').at(-2);
-
-  const [modalState, setModalState] = useState(false);
-  //create handleclose modal function
-  const handleCloseModal = () => {
-    setModalState(false);
-  };
-
-  // Logic here to get current user role
-
-  const currentRoles = user?.registrations[0].roles[0] as Role;
-
-  // var for insert into navigate in handel Approval and Rejected
-  const p = currentRoles.split('_')[1];
-
-  // var for else on state in approveProposalPayloads
-  const a = p.toUpperCase();
-
-  const [proposalRejection, reject] = useMutation(rejectProposal);
-  const [proposalAccepting, accept] = useMutation(approveProposal);
-  const [creatingLog, createLog] = useMutation(CreateProposalLog);
-  const { fetching: accFetch, error: accError } = proposalAccepting;
-  const { fetching: rejFetch, error: rejError } = proposalRejection;
-  const [action, setAction] = useState<'accept' | 'reject'>('reject');
-  const handleApproval = () => {
-    accept({
-      proposalId: pid,
-      approveProposalPayloads: {
-        inner_status: 'ACCEPTED',
-        outter_status: 'ONGOING',
-        state:
-          currentRoles === 'tender_ceo'
-            ? 'PROJECT_SUPERVISOR'
-            : currentRoles === 'tender_moderator'
-            ? 'PROJECT_SUPERVISOR'
-            : `${a}`, // the next step when accepted
-      },
-    });
-
-    if (!accFetch) {
-      enqueueSnackbar('Proposal Approved!', {
-        variant: 'success',
-      });
-      navigate(`/${p}/dashboard/app`);
-    }
-    if (accError) {
-      enqueueSnackbar(accError.message, {
-        variant: 'error',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
-      });
-      console.log(accError);
-    }
-  };
-
-  const handleRejected = () => {
-    reject({
-      proposalId: pid,
-      rejectProposalPayloads: {
-        inner_status: 'REJECTED',
-        outter_status: 'CANCELED',
-        state:
-          currentRoles === 'tender_moderator'
-            ? 'CLIENT'
-            : currentRoles === 'tender_ceo'
-            ? 'CLIENT'
-            : `${a}`,
-      },
-    });
-
-    if (!rejFetch) {
-      enqueueSnackbar('Proposal Rejected Successfully!', {
-        variant: 'success',
-      });
-      navigate(`/${p}/dashboard/app`);
-    }
-    if (rejError) {
-      enqueueSnackbar(rejError.message, {
-        variant: 'error',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
-      });
-      console.log(rejError);
-    }
-  };
 
   if (fetching) return <>...Loading</>;
   if (error) return <>{error.graphQLErrors}</>;
@@ -208,72 +97,6 @@ function ProjectDetailsMainPage() {
       {activeTap === 'payments' && <Payments />}
       {activeTap === 'exchange-details' && <ExchangeDetails />}
 
-      {activeTap &&
-        ['main', 'project-budget'].includes(activeTap) &&
-        actionType &&
-        actionType === 'show-details' &&
-        ['tender_ceo', 'tender_moderator'].includes(role) && (
-          /** Floating Action Bar for Moderator and CEO */
-          <FloatingActionBar
-            handleAccept={() => {
-              setModalState(true);
-              setAction('accept');
-            }}
-            handleReject={() => {
-              setModalState(true);
-              setAction('reject');
-            }}
-            role={currentRoles}
-          />
-        )}
-      {/* Modal Dialog for moderator and CEO */}
-      <ModalDialog
-        title={
-          <Stack display="flex">
-            <Typography variant="h6" fontWeight="bold" color="#000000">
-              {action === 'accept' ? 'Project Accept Form' : 'Project Reject Form'}
-            </Typography>
-          </Stack>
-        }
-        content={
-          action === 'accept' ? (
-            <ProposalAcceptingForm
-              onSubmit={(data) => {
-                console.log('form callback', data);
-                console.log('just a dummy not create log yet');
-                handleApproval();
-              }}
-            >
-              <FormActionBox
-                action="accept"
-                isLoading={accFetch}
-                onReturn={() => {
-                  setModalState(false);
-                }}
-              />
-            </ProposalAcceptingForm>
-          ) : (
-            <ProposalRejectingForm
-              onSubmit={(value) => {
-                console.log('form callback', value);
-                console.log('just a dummy not create log yet');
-                handleRejected();
-              }}
-            >
-              <FormActionBox
-                action="reject"
-                isLoading={rejFetch}
-                onReturn={() => {
-                  setModalState(false);
-                }}
-              />
-            </ProposalRejectingForm>
-          )
-        }
-        isOpen={modalState}
-        onClose={handleCloseModal}
-        styleContent={{ padding: '1em', backgroundColor: '#fff' }}
-      />
       <FloatinActonBar proposalData={data.proposal_by_pk} />
     </Box>
   );

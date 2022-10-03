@@ -1,28 +1,112 @@
 import { Box, Button, Grid, Stack, Typography, useTheme } from '@mui/material';
 import Iconify from 'components/Iconify';
 import useLocales from 'hooks/useLocales';
-import { useLocation, useParams } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import ModalDialog from 'components/modal-dialog';
 import { useState } from 'react';
-import ProposalAcceptingFormSupervisor from './ProposalAcceptingFormSupervisor';
-import ProposalRejectingFormSupervisor from './ProposalRejectingFormSupervisor';
-import FormActionBox from 'sections/ceo/forms/FormActionBox';
+import ProposalAcceptingForm from './ProposalAcceptingForm';
+import ProposalRejectingForm from './ProposalRejectingForm';
+import FormActionBox from './FormActionBox';
+import { nanoid } from 'nanoid';
+import useAuth from 'hooks/useAuth';
+import { useSnackbar } from 'notistack';
+import { useMutation } from 'urql';
+import { rejectProposal } from 'queries/commons/rejectProposal';
+import { approveProposal } from 'queries/commons/approveProposal';
+import { CreateProposalLog } from 'queries/commons/createProposalLog';
+import { insertSupervisor } from 'queries/project-supervisor/insertSupervisor';
 
-function SupervisorFloatingActionBar() {
+function FloatingActionBar({ organizationId }: any) {
+  const { id } = useParams();
+  const { user } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
+  const [proposalRejection, reject] = useMutation(rejectProposal);
+  const [proposalAccepting, accept] = useMutation(approveProposal);
+  const [supervisorAcceptance, insertSupervisorAcceptance] = useMutation(insertSupervisor);
+  const { fetching: accFetch, error: accError } = proposalAccepting;
+  const { fetching: rejFetch, error: rejError } = proposalRejection;
+  const { fetching: insSupFetch, error: insSupError } = supervisorAcceptance;
   const { translate } = useLocales();
   const theme = useTheme();
   const [action, setAction] = useState<
     'accept' | 'reject' | 'edit_request' | 'send_client_message'
   >('reject');
   const [modalState, setModalState] = useState(false);
-
   const handleOpenModal = () => {
     setModalState(true);
   };
   const handleCloseModal = () => {
     setModalState(false);
+  };
+
+  const handleApproval = async (values: any) => {
+    await insertSupervisorAcceptance({
+      supervisorAcceptance: {
+        ...values,
+        id: nanoid(),
+        proposal_id: id,
+        user_id: organizationId,
+      },
+    });
+    await accept({
+      proposalId: id,
+      approveProposalPayloads: {
+        inner_status: 'ACCEPTED',
+        outter_status: 'PENDING',
+        state: 'PROJECT_MANAGER',
+      },
+    });
+
+    if (!accFetch) {
+      enqueueSnackbar('Proposal Approved!', {
+        variant: 'success',
+      });
+      navigate('/project-supervisor/dashboard/app');
+    }
+    if (accError) {
+      enqueueSnackbar(accError.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+      });
+      console.log(accError);
+    }
+  };
+
+  const handleRejected = async (values: any) => {
+    await reject({
+      proposalId: id,
+      rejectProposalPayloads: {
+        inner_status: 'REJECTED',
+        outter_status: 'PENDING',
+        state: 'PROJECT_MANAGER',
+      },
+    });
+    if (!rejFetch) {
+      enqueueSnackbar('Proposal Rejected Successfully!', {
+        variant: 'success',
+      });
+      navigate('/project-supervisor/dashboard/app');
+    }
+    if (rejError) {
+      enqueueSnackbar(rejError.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+      });
+      console.log(rejError);
+    }
   };
   return (
     <>
@@ -105,11 +189,9 @@ function SupervisorFloatingActionBar() {
         }
         content={
           action === 'accept' ? (
-            <ProposalAcceptingFormSupervisor
+            <ProposalAcceptingForm
               onSubmit={(data) => {
-                console.log('form callback', data);
-                console.log('just a dummy not create log yet');
-                // handleApproval();
+                handleApproval(data);
               }}
             >
               <FormActionBox
@@ -119,13 +201,11 @@ function SupervisorFloatingActionBar() {
                   setModalState(false);
                 }}
               />
-            </ProposalAcceptingFormSupervisor>
+            </ProposalAcceptingForm>
           ) : (
-            <ProposalRejectingFormSupervisor
-              onSubmit={(value: any) => {
-                console.log('form callback', value);
-                console.log('just a dummy not create log yet');
-                // handleRejected();
+            <ProposalRejectingForm
+              onSubmit={(data) => {
+                handleRejected(data);
               }}
             >
               <FormActionBox
@@ -135,7 +215,7 @@ function SupervisorFloatingActionBar() {
                   setModalState(false);
                 }}
               />
-            </ProposalRejectingFormSupervisor>
+            </ProposalRejectingForm>
           )
         }
         isOpen={modalState}
@@ -146,4 +226,4 @@ function SupervisorFloatingActionBar() {
   );
 }
 
-export default SupervisorFloatingActionBar;
+export default FloatingActionBar;
