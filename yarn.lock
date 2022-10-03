@@ -2252,6 +2252,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fastify/busboy@npm:^1.0.0":
+  version: 1.1.0
+  resolution: "@fastify/busboy@npm:1.1.0"
+  dependencies:
+    text-decoding: ^1.0.0
+  checksum: 8ef01870c5e2ddae787fb8775c844b26e54c366732565287d5f7fb7d8c3c746bd4f0ad8f8695f4006e4b63af2fdd9a206ca74b2bc6c5d3c96d88abc07daa16f5
+  languageName: node
+  linkType: hard
+
 "@fastify/cors@npm:8.1.0":
   version: 8.1.0
   resolution: "@fastify/cors@npm:8.1.0"
@@ -7523,6 +7532,7 @@ __metadata:
     "@types/uuid": ^8.3.4
     "@typescript-eslint/eslint-plugin": ^5.30.3
     "@typescript-eslint/parser": ^5.30.3
+    "@webundsoehne/nest-fastify-file-upload": ^2.0.0
     axios: ^0.27.2
     class-transformer: ^0.5.1
     class-validator: ^0.13.2
@@ -9100,6 +9110,21 @@ __metadata:
     "@webassemblyjs/ast": 1.11.1
     "@xtuc/long": 4.2.2
   checksum: f15ae4c2441b979a3b4fce78f3d83472fb22350c6dc3fd34bfe7c3da108e0b2360718734d961bba20e7716cb8578e964b870da55b035e209e50ec9db0378a3f7
+  languageName: node
+  linkType: hard
+
+"@webundsoehne/nest-fastify-file-upload@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@webundsoehne/nest-fastify-file-upload@npm:2.0.0"
+  dependencies:
+    fastify-multer: ^2.0.3
+  peerDependencies:
+    "@nestjs/common": ">= 7 < 9"
+    "@nestjs/core": ">= 7 < 9"
+    "@nestjs/platform-fastify": ">= 7 < 9"
+    reflect-metadata: ^0.1.13
+    rxjs: ^7.0.0
+  checksum: 50325a3d8d21b2bedd2530305d8ff0cd019ceb7d8bd5e5addb7401e1a503e4ae5e5b67d50495bec4d30a5b32f404ff7b090b8e8c804be4cd0ce4fd62b41b7edf
   languageName: node
   linkType: hard
 
@@ -14053,6 +14078,31 @@ __metadata:
   version: 2.1.0
   resolution: "fast-uri@npm:2.1.0"
   checksum: 60ecece5ab05515729ec04d1732ee68bd4429cab8c06ebf8db512a094a0077ddc5af6a27c75922875bc9e13b58e947832242cdcb2cb23c51dc753412222dca83
+  languageName: node
+  linkType: hard
+
+"fastify-multer@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "fastify-multer@npm:2.0.3"
+  dependencies:
+    "@fastify/busboy": ^1.0.0
+    append-field: ^1.0.0
+    concat-stream: ^2.0.0
+    fastify-plugin: ^2.0.1
+    mkdirp: ^1.0.4
+    on-finished: ^2.3.0
+    type-is: ~1.6.18
+    xtend: ^4.0.2
+  checksum: 88756fac00b358b9f9209a559c2c1efd8a8418a989dc4f54229f6b17407fde4468ac0c5e48912b7f648a4e120cb812942b1ceca22a5814d264b64a312b84fd1a
+  languageName: node
+  linkType: hard
+
+"fastify-plugin@npm:^2.0.1":
+  version: 2.3.4
+  resolution: "fastify-plugin@npm:2.3.4"
+  dependencies:
+    semver: ^7.3.2
+  checksum: 19ce9ec783c2c59c56a8a4854bba15367c447fc74ff300ccaefa99276f2d009854626425df2346aa4cbe9f09617b88bfd080f922056771ccec2d0bca505afed1
   languageName: node
   linkType: hard
 
@@ -20583,7 +20633,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"on-finished@npm:2.4.1":
+"on-finished@npm:2.4.1, on-finished@npm:^2.3.0":
   version: 2.4.1
   resolution: "on-finished@npm:2.4.1"
   dependencies:
@@ -26146,6 +26196,13 @@ __metadata:
     glob: ^7.1.4
     minimatch: ^3.0.4
   checksum: 3b34a3d77165a2cb82b34014b3aba93b1c4637a5011807557dc2f3da826c59975a5ccad765721c4648b39817e3472789f9b0fa98fc854c5c1c7a1e632aacdc28
+  languageName: node
+  linkType: hard
+
+"text-decoding@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "text-decoding@npm:1.0.0"
+  checksum: 4b2359d8efdabea72ac470304e991913e9b82a55b1c33ab5204f115d11305ac5900add80aee5f7d22b2bcf0faebaf35b193d28a10b74adf175d9ac9d63604445
   languageName: node
   linkType: hard
 
