@@ -72,11 +72,9 @@ export class UserService {
         }
       });
       return result;
-
     } catch (error) {
       throw new HttpException('Data not recorded in database', 400);
     }
-
   }
 
   /** Create user and client for tender completed data */
@@ -109,6 +107,7 @@ export class UserService {
               license_expired: request.license_expired,
               license_issue_date: request.license_issue_date,
               num_of_beneficiaries: request.num_of_beneficiaries,
+              phone: request.phone
             }
           },
           bank_information: {
