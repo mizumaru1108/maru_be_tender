@@ -8,6 +8,7 @@ import {
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
+import { contentParser } from 'fastify-multer';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -34,6 +35,8 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, document);
   }
+
+  app.register(contentParser);
 
   await app.listen(3000, '0.0.0.0');
 }
