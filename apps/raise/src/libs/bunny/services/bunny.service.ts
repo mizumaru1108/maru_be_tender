@@ -1,5 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
 import axios, { AxiosRequestConfig } from 'axios';
 import { AllowedFileType } from '../../../commons/enums/allowed-filetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
@@ -160,16 +161,19 @@ export class BunnyService {
   }
 
   public async uploadFile(
-    file: Express.Multer.File,
+    file: MulterFile,
     allowedFileType: AllowedFileType[],
     maxFileSize: number,
     serviceName: string,
+    parseFileName: boolean,
     path?: string,
   ) {
     validateAllowedExtension(file, allowedFileType);
     validateFileSize(file, maxFileSize);
 
-    let fileName = uploadFileNameParser(file.originalname);
+    let fileName = parseFileName
+      ? uploadFileNameParser(file.originalname)
+      : file.originalname;
 
     if (path) {
       fileName = path + '/' + fileName;
@@ -200,7 +204,7 @@ export class BunnyService {
         response.statusText,
         JSON.stringify(response.data, null, 2),
       );
-      return true;
+      return fileName;
     } catch (error) {
       throw new InternalServerErrorException(
         `Error uploading image file to Bunny ${mediaUrl} (${file.buffer.length} bytes) while creating ${serviceName}`,

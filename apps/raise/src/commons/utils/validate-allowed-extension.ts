@@ -1,4 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
+import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
 import { AllowedFileType } from '../enums/allowed-filetype.enum';
 
 /**
@@ -9,7 +10,7 @@ import { AllowedFileType } from '../enums/allowed-filetype.enum';
  * @author RDanang (Iyoy)
  */
 export function validateAllowedExtension(
-  file: Express.Multer.File,
+  file: MulterFile,
   allowed: AllowedFileType[],
 ): boolean {
   const fileExtension = file.mimetype;
