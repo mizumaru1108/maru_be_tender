@@ -44,3 +44,5 @@ export const totalRequest = `
     }
   }
 `;
+
+// You can summerize all the queries in only one

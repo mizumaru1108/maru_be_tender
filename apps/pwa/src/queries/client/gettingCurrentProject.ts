@@ -5,5 +5,6 @@ export const gettingCurrentProject = `query GettingCurrentProject($id: String = 
     created_at
     amount_required_fsupport
     project_idea
+    outter_status
   }
 }`;
