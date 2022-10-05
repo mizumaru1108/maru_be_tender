@@ -59,7 +59,10 @@ function NewJoinRequestPage() {
             <Skeleton variant="rectangular" sx={{ height: 250, borderRadius: 2 }} />
           )}
           {newJoinRequestData && (
-            <TableAMCustom data={newJoinRequestData} headline="new_join_request" />
+            <TableAMCustom
+              data={newJoinRequestData}
+              headline="account_manager.heading.new_join_request"
+            />
           )}
         </ContentStyle>
       </Container>

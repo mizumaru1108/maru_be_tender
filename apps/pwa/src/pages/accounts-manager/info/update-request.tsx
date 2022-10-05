@@ -68,7 +68,10 @@ function InfoUpdateRequestPage() {
             <Skeleton variant="rectangular" sx={{ height: 250, borderRadius: 2 }} />
           )}
           {infoUpdateRequest && (
-            <TableAMCustom data={infoUpdateRequest} headline="info_update_request" />
+            <TableAMCustom
+              data={infoUpdateRequest}
+              headline="account_manager.heading.info_update_request"
+            />
           )}
         </ContentStyle>
       </Container>

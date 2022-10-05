@@ -30,10 +30,10 @@ import { Link as RouterLink } from 'react-router-dom';
 // -------------------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'partner_name', label: 'partner_name' },
-  { id: 'createdAt', label: 'date_of_registration' },
-  { id: 'account_status', label: 'account_status', align: 'left' },
-  { id: 'events', label: 'events', align: 'left' },
+  { id: 'partner_name', label: 'account_manager.table.th.partner_name' },
+  { id: 'createdAt', label: 'account_manager.table.th.createdAt' },
+  { id: 'account_status', label: 'account_manager.table.th.account_status', align: 'left' },
+  { id: 'events', label: 'account_manager.table.th.events', align: 'left' },
   // { id: '', label: '', align: 'center' },
 ];
 
@@ -136,7 +136,7 @@ export default function TableAMCustom({
         ) : (
           <Link component={RouterLink} to={view_all} variant="caption">
             <Typography variant="subtitle2" noWrap>
-              {translate(`link_view_all`)}
+              {translate(`account_manager.heading.link_view_all`)}
             </Typography>
           </Link>
         )}

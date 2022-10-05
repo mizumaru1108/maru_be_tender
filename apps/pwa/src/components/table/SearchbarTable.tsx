@@ -5,6 +5,7 @@ import { Input } from '@mui/material';
 // utils
 import cssStyles from '../../utils/cssStyles';
 import { ChangeEvent } from 'react';
+import useLocales from 'hooks/useLocales';
 
 // ----------------------------------------------------------------------
 
@@ -24,13 +25,15 @@ export default function SearchbarTable({
 }: {
   func?: (e: ChangeEvent<HTMLInputElement>) => void;
 }) {
+  const { translate } = useLocales();
+
   return (
     <SearchbarStyle>
       <Input
         autoFocus
         fullWidth
         disableUnderline
-        placeholder="Type a name to search for"
+        placeholder={translate('account_manager.search_bar')}
         onChange={func}
         sx={{
           mr: 1,
