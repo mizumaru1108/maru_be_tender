@@ -423,7 +423,7 @@ const navConfig = {
       subheader: '',
       items: [
         {
-          title: 'dashboard',
+          title: 'main',
           path: PATH_MODERATOR.app,
           icon: ICONS.tender_moderator.main,
         },

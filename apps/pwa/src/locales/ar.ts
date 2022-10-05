@@ -468,6 +468,22 @@ const ar = {
     submit_amendment_request: 'ارسال طلب تعديل',
   },
 
+  // tender_moderator
+  daily_stats: 'الإحصائيات اليومية',
+  acceptable_projects: 'المشاريع المقبولة',
+  incoming_new_projects: 'المشاريع الجديدة الواردة',
+  pending_projects: 'المشاريع المعلقة',
+  total_number_of_projects: 'إجمالي عدد المشاريع',
+  project_acceptance: 'قبول المشروع',
+  project_rejected: 'رفض المشروع',
+  rejected_projects: 'المشاريع المرفوضة',
+  send_message_to_partner: 'ارسال رسالة للشريك',
+  submit_amendment_request: 'ارسال طلب تعديل',
+  view_all: 'عرض الكل',
+  accept: 'قبول',
+  reject: 'رفض',
+  close: 'اغلاق',
+
   // TENDER_CEO PAGES
   rejection_list: 'قائمة الرفض', //navigation
   project_management: 'إدارة المشروع', //navigation
@@ -549,7 +565,7 @@ const ar = {
       project_number_lowest: 'رقم المشروع (الأقل)',
       project_number_highest: 'رقم المشروع (الأعلى)',
     },
-    filter_button_label: 'تصفية',    
+    filter_button_label: 'تصفية',
   },
 
   table_actions: {

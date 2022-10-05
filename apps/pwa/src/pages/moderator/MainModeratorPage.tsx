@@ -107,28 +107,30 @@ function MainManagerPage() {
     if (countAcc && countRejected && countIncomingNew && countPending && countTotal) {
       newCard.data.push(
         {
-          title: 'acceptable_projects',
+          title: translate('acceptable_projects'),
           value: countAcc?.proposal_aggregate?.aggregate?.count,
         },
         {
-          title: 'rejected_projects',
+          title: translate('rejected_projects'),
           value: countRejected?.proposal_aggregate?.aggregate?.count,
         },
         {
-          title: 'incoming_new_projects',
+          title: translate('incoming_new_projects'),
           value: countIncomingNew?.proposal_aggregate?.aggregate?.count,
         },
         {
-          title: 'pending_projects',
+          title: translate('pending_projects'),
           value: countPending.proposal_aggregate.aggregate.count,
         },
         {
-          title: 'total_number_of_projects',
+          title: translate('total_number_of_projects'),
           value: countTotal?.proposal_aggregate?.aggregate?.count,
         }
       );
       setCardInsightData(newCard);
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [incomingData, countAcc, countRejected, countIncomingNew, countPending, countTotal]);
 
   return (
@@ -137,7 +139,7 @@ function MainManagerPage() {
         <ContentStyle>
           {cardInsightData && (
             <CardInsight
-              headline="daily_stats"
+              headline={translate('daily_stats')}
               data={cardInsightData.data}
               cardContainerColumns={15}
               cardContainerSpacing={1}
