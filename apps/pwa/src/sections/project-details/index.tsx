@@ -2,6 +2,8 @@ import { Box, IconButton, Stack, Typography } from '@mui/material';
 import { getOneProposal } from 'queries/commons/getOneProposal';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useQuery } from 'urql';
+import { Role } from '../../guards/RoleBasedGuard';
+import useAuth from '../../hooks/useAuth';
 import ActionBar from './ActionBar';
 import ExchangeDetails from './ExchangeDetails';
 import FloatinActonBar from './floating-action-bar/FloatinActonBar';
@@ -12,6 +14,8 @@ import ProjectBudget from './ProjectBudget';
 
 function ProjectDetailsMainPage() {
   const { id } = useParams();
+  const { user } = useAuth();
+  const Role = user?.registrations[0].roles[0] as Role;
   const [result, _] = useQuery({
     query: getOneProposal,
     variables: { id },
@@ -94,7 +98,7 @@ function ProjectDetailsMainPage() {
       {activeTap === 'main' && <MainPage data={data.proposal_by_pk} />}
       {activeTap === 'project-budget' && <ProjectBudget />}
       {activeTap === 'follow-ups' && <FollowUps />}
-      {activeTap === 'payments' && <Payments />}
+      {activeTap === 'payments' && <Payments role={Role} />}
       {activeTap === 'exchange-details' && <ExchangeDetails />}
 
       <FloatinActonBar proposalData={data.proposal_by_pk} />

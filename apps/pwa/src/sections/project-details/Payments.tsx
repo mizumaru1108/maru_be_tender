@@ -35,7 +35,7 @@ import { SupervisorPaymentsPage } from './payments/supervisor';
 //     status: 'pending',
 //   },
 // ];
-function Payments() {
+function Payments({ role }: any) {
   /**
    * 1- check the proposal status
    * 2- if(proposal status === ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION && the role === project_supervisor ) =>
@@ -63,19 +63,19 @@ function Payments() {
   return (
     <div>
       {/*  inside everything is gonna be controlled */}
-      <SupervisorPaymentsPage />
+      {role === 'tender_supervisor' && <SupervisorPaymentsPage />}
       {/* proposal.payments !== null
           and inside we will look at everysingle payment's status.
       */}
-      <ProjectManagerPaymentsTable />
+      {role === 'tender_project_manager' && <ProjectManagerPaymentsTable />}
       {/* proposal.payments !== null
           and inside we will look at everysingle payment's status.
       */}
-      <FinancePaymentsTable />
+      {role === 'tender_finance' && <FinancePaymentsTable />}
       {/* proposal.payments !== null
           and inside we will look at everysingle payment's status.
       */}
-      <CachierPaymentsTable />
+      {role === 'tender_cashier' && <CachierPaymentsTable />}
     </div>
     // <Grid container spacing={3} sx={{ mt: '8px' }}>
     //   <Grid item md={12}>

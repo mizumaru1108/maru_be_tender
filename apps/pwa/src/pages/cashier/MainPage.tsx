@@ -1,7 +1,7 @@
 import { Container } from '@mui/material';
 import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
-import Main from 'sections/finance/main/Main';
+import Main from 'sections/cashier/main/Main';
 
 function MainPage() {
   const ContentStyle = styled('div')(({ theme }) => ({
