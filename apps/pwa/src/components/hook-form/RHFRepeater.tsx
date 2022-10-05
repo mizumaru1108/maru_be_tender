@@ -37,11 +37,6 @@ const RHFRepeater = ({
         <>
           {repeaterFields?.map((repeaterField, i) => (
             <>
-              {repeaterField.repeaterLabel && (
-                <Grid item md={2} xs={12}>
-                  label
-                </Grid>
-              )}
               <Controller
                 key={index}
                 name={`${name}[${index}].${repeaterField.name}`}

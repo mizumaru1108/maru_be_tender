@@ -32,6 +32,15 @@ export const getOneProposal = `query MyQuery($id: String!) {
     letter_ofsupport_req
     project_attachments
     project_beneficiaries
+    inner_status
+    payments (order_by: {order: asc}){
+      id
+      payment_amount
+      payment_date
+      status
+      order
+    }
+    number_of_payments
   }
 }
 `;

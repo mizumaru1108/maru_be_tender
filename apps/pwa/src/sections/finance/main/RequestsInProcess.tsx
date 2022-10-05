@@ -1,6 +1,8 @@
 import { Typography, Grid } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
 import { ProjectCardProps } from 'components/card-table/types';
+import { gettingPaymentAdjustment } from 'queries/project-supervisor/gettingPaymentAdjustment';
+import { useQuery } from 'urql';
 
 const data = [
   {
@@ -29,16 +31,32 @@ const data = [
 ] as ProjectCardProps[];
 
 function RequestsInProcess() {
+  const [result, reexecuteQuery] = useQuery({
+    query: gettingPaymentAdjustment,
+  });
+  const { data, fetching, error } = result;
+  if (fetching) {
+    return <>...Loading</>;
+  }
+  const props = data?.proposal ?? [];
+  if (!props) return <></>;
   return (
     <>
       <Typography variant="h4" sx={{ mb: '20px' }}>
         طلبات قيد الإجراء
       </Typography>
       <Grid container rowSpacing={3} columnSpacing={3}>
-        {data.map((item, index) => (
+        {props.map((item: any, index: any) => (
           <Grid item md={6} key={index}>
             <ProjectCard
-              {...item}
+              title={{ id: item.id }}
+              content={{
+                projectName: item.project_name,
+                organizationName: item.project_name,
+                sentSection: 'Finance',
+                employee: 'Finance',
+              }}
+              footer={{ createdAt: new Date(item.createdAt), payments: item.payments }}
               cardFooterButtonAction="completing-exchange-permission"
               destination="requests-in-process"
             />

@@ -396,7 +396,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.mobile_data_entry ?? '-'}
+                          {partnerDetails?.data_entry_mobile ?? '-'}
                         </Typography>
                       </Box>
                     </Grid>

@@ -17,7 +17,7 @@ export type PartnerDetailsProps = {
   license_file?: string | null;
   license_issue_date?: string | null;
   license_number?: string | null;
-  mobile_data_entry?: string | null;
+  data_entry_mobile?: string | null;
   num_of_beneficiaries?: string | null;
   num_of_employed_facility?: string | null;
   phone?: string | null;
@@ -36,5 +36,5 @@ export type PartnerDetailsProps = {
       proposal_id?: string | null;
       user_id?: string | null;
     }[];
-  }
-}
+  };
+};
