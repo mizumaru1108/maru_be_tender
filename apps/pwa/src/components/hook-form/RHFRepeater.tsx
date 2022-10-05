@@ -6,7 +6,13 @@ import useLocales from 'hooks/useLocales';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 
-const RHFRepeater = ({ name, repeaterFields, ...other }: FormSingleProps) => {
+const RHFRepeater = ({
+  name,
+  repeaterFields,
+  enableAddButton,
+  enableRemoveButton,
+  ...other
+}: FormSingleProps) => {
   const { control } = useFormContext();
   const { translate } = useLocales();
 
@@ -31,6 +37,11 @@ const RHFRepeater = ({ name, repeaterFields, ...other }: FormSingleProps) => {
         <>
           {repeaterFields?.map((repeaterField, i) => (
             <>
+              {repeaterField.repeaterLabel && (
+                <Grid item md={2} xs={12}>
+                  label
+                </Grid>
+              )}
               <Controller
                 key={index}
                 name={`${name}[${index}].${repeaterField.name}`}
@@ -47,7 +58,7 @@ const RHFRepeater = ({ name, repeaterFields, ...other }: FormSingleProps) => {
               />
             </>
           ))}
-          {fields.length > 1 && (
+          {fields.length > 1 && enableRemoveButton && (
             <Grid item md={1} xs={12}>
               <IconButton
                 sx={{ width: '100%', backgroundColor: 'red', color: '#fff', borderRadius: '10px' }}
@@ -62,22 +73,24 @@ const RHFRepeater = ({ name, repeaterFields, ...other }: FormSingleProps) => {
         </>
       ))}
 
-      <Grid item md={11} xs={12}>
-        <Button
-          type="button"
-          sx={{
-            width: '100%',
-            color: '#93A3B0',
-            borderRadius: '10px',
-            border: `1.5px dashed`,
-          }}
-          onClick={() => {
-            append(cleanField());
-          }}
-        >
-          {translate('add_new_line')}
-        </Button>
-      </Grid>
+      {enableAddButton && (
+        <Grid item md={11} xs={12}>
+          <Button
+            type="button"
+            sx={{
+              width: '100%',
+              color: '#93A3B0',
+              borderRadius: '10px',
+              border: `1.5px dashed`,
+            }}
+            onClick={() => {
+              append(cleanField());
+            }}
+          >
+            {translate('add_new_line')}
+          </Button>
+        </Grid>
+      )}
     </>
   );
 };

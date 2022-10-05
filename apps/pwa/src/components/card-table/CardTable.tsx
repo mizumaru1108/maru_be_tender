@@ -1,5 +1,4 @@
 import { Box, Button, Grid, Stack, TextField, Typography } from '@mui/material';
-import { RHFSelect } from 'components/hook-form';
 import { useEffect, useState } from 'react';
 import ProjectCard from './ProjectCard';
 import { CardTableProps } from './types';
@@ -161,6 +160,9 @@ function CardTable({
                 id="demo-simple-select"
                 value={params.limit}
                 onChange={handleLimitChange}
+                sx={{
+                  backgroundColor: '#fff !important',
+                }}
               >
                 <MenuItem value={6}>6</MenuItem>
                 <MenuItem value={8}>8</MenuItem>

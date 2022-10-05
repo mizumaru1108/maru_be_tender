@@ -8,15 +8,16 @@ datasource db {
 }
 
 model bank_information {
-  user_id             String
-  bank_account_name   String?   @db.Char(255)
-  bank_account_number String?   @db.Char(255)
-  bank_name           String?   @db.Char(255)
-  card_image          String?
-  proposal_id         String?
-  id                  String    @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  proposal            proposal? @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
-  user                user      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id                  String
+  bank_account_name        String?                    @db.Char(255)
+  bank_account_number      String?                    @db.Char(255)
+  bank_name                String?                    @db.Char(255)
+  card_image               String?
+  proposal_id              String?
+  id                       String                     @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  proposal                 proposal?                  @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
+  user                     user                       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  propsal_bank_information propsal_bank_information[]
 }
 
 model client_data {
@@ -111,11 +112,16 @@ model organization {
 }
 
 model payment {
-  id                 String    @id
-  payment_amount     Decimal?  @db.Decimal
-  number_of_payments String?   @db.Char(255)
+  id                 String          @id
+  payment_amount     Decimal?        @db.Decimal
   proposal_id        String?
-  proposal           proposal? @relation(fields: [proposal_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  payment_date       DateTime?       @db.Date
+  status             String?
+  number_of_payments Decimal?        @db.Decimal
+  order              Decimal?        @db.Decimal
+  proposal           proposal?       @relation(fields: [proposal_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  payment_status     payment_status? @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  cheque             cheque[]
 }
 
 model project_kind {
@@ -125,16 +131,16 @@ model project_kind {
 }
 
 model proposal {
-  id                           String                  @id
-  project_name                 String                  @db.Char(255)
+  id                           String                     @id
+  project_name                 String                     @db.Char(255)
   submitter_user_id            String
-  created_at                   DateTime                @default(now()) @db.Timestamptz(6)
-  updated_at                   DateTime                @default(now()) @db.Timestamptz(6)
+  created_at                   DateTime                   @default(now()) @db.Timestamptz(6)
+  updated_at                   DateTime                   @default(now()) @db.Timestamptz(6)
   project_kind_id              String?
   project_idea                 String?
-  project_implement_date       DateTime?               @db.Date
+  project_implement_date       DateTime?                  @db.Date
   project_location             String?
-  execution_time               String?                 @db.Char(255)
+  execution_time               String?                    @db.Char(255)
   project_attachments          String?
   letter_ofsupport_req         String?
   num_ofproject_binicficiaries Int?
@@ -142,34 +148,37 @@ model proposal {
   project_outputs              String?
   project_strengths            String?
   project_risks                String?
-  pm_name                      String?                 @db.Char(255)
-  pm_email                     String?                 @db.Char(255)
-  pm_mobile                    String?                 @db.Char(255)
+  pm_name                      String?                    @db.Char(255)
+  pm_email                     String?                    @db.Char(255)
+  pm_mobile                    String?                    @db.Char(255)
   governorate                  String?
-  region                       String?                 @db.Char(255)
-  amount_required_fsupport     Decimal?                @db.Decimal
-  need_consultant              Boolean?                @default(false)
-  step                         String?                 @default("0") @db.Char(255)
-  whole_budget                 Decimal?                @db.Decimal
-  state                        String?                 @default("MODERATOR")
-  inner_status                 String?
+  region                       String?                    @db.Char(255)
+  amount_required_fsupport     Decimal?                   @db.Decimal
+  need_consultant              Boolean?                   @default(false)
+  step                         String?                    @default("ZERO") @db.Char(255)
+  whole_budget                 Decimal?                   @db.Decimal
+  state                        String?                    @default("MODERATOR")
+  inner_status                 String?                    @default("CREATED_BY_CLIENT")
   previously_add_bank          String[]
-  outter_status                String?                 @default("ONGOING")
-  project_beneficiaries        String?                 @db.Char
-  proposal_beneficiaries       proposal_beneficiaries? @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
-  project_kind                 project_kind?           @relation(fields: [project_kind_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
-  proposal_request             proposal_request?       @relation(fields: [outter_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_requested_fkey")
-  user_type                    user_type?              @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  proposal_status              proposal_status?        @relation(fields: [inner_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_status_fkey")
-  proposal_step                proposal_step?          @relation(fields: [step], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user                         user                    @relation(fields: [submitter_user_id], references: [id], onDelete: Cascade)
+  outter_status                String?                    @default("PENDING")
+  project_beneficiaries        String?                    @db.Char
+  number_of_payments           Decimal?                   @db.Decimal
+  proposal_beneficiaries       proposal_beneficiaries?    @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
+  project_kind                 project_kind?              @relation(fields: [project_kind_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  proposal_request             proposal_request?          @relation(fields: [outter_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_requested_fkey")
+  user_type                    user_type?                 @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proposal_status              proposal_status?           @relation(fields: [inner_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_status_fkey")
+  proposal_step                proposal_step?             @relation(fields: [step], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user                         user                       @relation(fields: [submitter_user_id], references: [id], onDelete: Cascade)
   bank_information             bank_information[]
+  consultation_commite         consultation_commite[]
   payment                      payment[]
   proposal_assign              proposal_assign[]
   proposal_comment             proposal_comment[]
   proposal_follow_up           proposal_follow_up[]
   proposal_item_budget         proposal_item_budget[]
   proposal_log                 proposal_log[]
+  propsal_bank_information     propsal_bank_information[]
   supervisor                   supervisor[]
 }
 
@@ -198,23 +207,26 @@ model proposal_log {
   created_at      DateTime        @default(now()) @db.Timestamptz(6)
   updated_at      DateTime        @default(now()) @db.Timestamptz(6)
   reviewer_id     String
-  status          String
-  assign          String
+  inner_status    String
+  state           String
   organization_id String
   moderators      String?         @db.Char
   path            String?         @db.Char
   notes           String?
   procedures      String?
   send_amandement Json?
-  user_type       user_type       @relation(fields: [assign], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  outter_status   String?
+  user_type       user_type       @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_assign_fkey")
+  proposal_state  proposal_state? @relation(fields: [outter_status], references: [id], onDelete: NoAction, onUpdate: NoAction)
   proposal        proposal        @relation(fields: [proposal_id], references: [id], onUpdate: Restrict)
-  proposal_status proposal_status @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proposal_status proposal_status @relation(fields: [inner_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_status_fkey")
   user            user            @relation(fields: [reviewer_id], references: [id], onUpdate: Restrict, map: "proposal_log_user_id_fkey")
 }
 
 model proposal_state {
-  id    String @id
-  title String @unique
+  id           String         @id
+  title        String         @unique
+  proposal_log proposal_log[]
 }
 
 model region {
@@ -312,77 +324,23 @@ model proposal_request {
 }
 
 model supervisor {
-  id                       String                     @id
-  user_id                  String
-  proposal_id              String
-  clasification_field      String                     @db.Char
-  item_by_category         String                     @db.Char
-  closing_report           Boolean
-  support_type             Boolean
-  does_an_agreement        Boolean
-  need_picture             Boolean
-  number_of_payments       Decimal                    @db.Decimal
-  support_amount           Decimal                    @db.Decimal
-  procedures               String
-  notes                    String
-  outputs                  String
-  entity_name              String?                    @db.Char
-  governorate              String?
-  region                   String?
-  chairman_of_director     String?
-  establishment_date       DateTime?                  @db.Date
-  project_manager          String?                    @db.Char
-  executive_director       String?                    @db.Char
-  the_most_promiment       String?
-  proviously_supported     Boolean?
-  num_of_benefiaries       Int?
-  project_name             String?                    @db.Char
-  project_idea             String?
-  project_goals            String?
-  add_val_project          String?
-  total_cost               Decimal?                   @db.Decimal
-  project_beneficiaries    String?
-  project_sup_rationale    String?
-  their_type               String?
-  their_age                String?                    @db.Char(1)
-  their_number             String?                    @db.Char
-  duration_of_project      String?
-  project_start_date       DateTime?                  @db.Date
-  has_estabilish           Boolean?
-  project_plc_residence    String?
-  remote_or_in_attendace   Boolean?
-  total_amount             Decimal?                   @db.Decimal
-  type_of_support          String?
-  clause                   String?
-  objectives               String?
-  type_of_acreditation     String?
-  proposal                 proposal                   @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
-  supervisor_item_budget   supervisor_item_budget[]
-  supervisor_reccom_budget supervisor_reccom_budget[]
+  id                  String   @id
+  user_id             String
+  proposal_id         String
+  clasification_field String   @db.Char
+  closing_report      Boolean
+  support_type        Boolean
+  does_an_agreement   Boolean
+  need_picture        Boolean
+  number_of_payments  Decimal  @db.Decimal
+  support_amount      Decimal  @db.Decimal
+  procedures          String
+  notes               String
+  support_outputs     String?
+  clause              String?
+  proposal            proposal @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
 }
 
-model supervisor_item_budget {
-  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  supevisor_id String
-  amount       Decimal    @db.Decimal
-  explanation  String
-  clause       String
-  supervisor   supervisor @relation(fields: [supevisor_id], references: [id], onDelete: Cascade)
-}
-
-model supervisor_reccom_budget {
-  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  supevisor_id String
-  amount       Decimal    @db.Decimal
-  explanation  String
-  clause       String
-  supervisor   supervisor @relation(fields: [supevisor_id], references: [id], onDelete: Cascade)
-}
-
-// We could not retrieve columns for the underlying table. Either it has none or you are missing rights to see them. Please check your privileges.
-// model log_trx {
-// 
-// }
 model proposal_beneficiaries {
   id       String     @id
   title    String     @unique
@@ -393,4 +351,88 @@ model proposal_step {
   id       String     @id
   title    String     @unique
   proposal proposal[]
+}
+
+model cheque {
+  id               String   @id
+  payment_id       String
+  transfer_receipt String   @db.Char
+  deposit_date     DateTime @db.Date
+  number           String   @db.VarChar
+  payment          payment  @relation(fields: [payment_id], references: [id], onDelete: Cascade)
+}
+
+model consultation_commite {
+  id                         String                       @id(map: "supervisor_copy1_pkey")
+  user_id                    String
+  proposal_id                String
+  entity_name                String?                      @db.Char(1)
+  governorate                String?
+  region                     String?
+  chairman_of_director       String?
+  establishment_date         DateTime?                    @db.Date
+  project_manager            String?                      @db.Char(1)
+  executive_director         String?                      @db.Char(1)
+  the_most_promiment         String?
+  proviously_supported       Boolean?
+  num_of_benefiaries         Int?
+  project_name               String?                      @db.Char(1)
+  project_idea               String?
+  project_goals              String?
+  add_val_project            String?
+  total_cost                 Decimal?                     @db.Decimal
+  project_beneficiaries      String?
+  project_sup_rationale      String?
+  their_type                 String?
+  their_age                  String?                      @db.Char(1)
+  their_number               String?                      @db.Char(1)
+  duration_of_project        String?
+  project_start_date         DateTime?                    @db.Date
+  has_estabilish             Boolean?
+  project_plc_residence      String?
+  remote_or_in_attendace     Boolean?
+  total_amount               Decimal?                     @db.Decimal
+  type_of_support            String?
+  clause                     String?
+  objectives                 String?
+  type_of_acreditation       String?
+  proposal                   proposal                     @relation(fields: [proposal_id], references: [id], onDelete: Cascade, map: "supervisor_copy1_proposal_id_fkey")
+  consultation_item_budget   consultation_item_budget[]
+  consultation_reccom_budget consultation_reccom_budget[]
+}
+
+model consultation_item_budget {
+  id                   String               @id(map: "supervisor_item_budget_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  consultation_id      String
+  amount               Decimal              @db.Decimal
+  explanation          String
+  clause               String
+  consultation_commite consultation_commite @relation(fields: [consultation_id], references: [id], onDelete: Cascade)
+}
+
+model consultation_reccom_budget {
+  id                   String               @id(map: "supervisor_reccom_budget_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  consultation_id      String
+  amount               Decimal              @db.Decimal
+  explanation          String
+  clause               String
+  consultation_commite consultation_commite @relation(fields: [consultation_id], references: [id], onDelete: Cascade)
+}
+
+// We could not retrieve columns for the underlying table. Either it has none or you are missing rights to see them. Please check your privileges.
+// model log_trx {
+// 
+// }
+model payment_status {
+  id      String    @id
+  title   String?
+  payment payment[]
+}
+
+model propsal_bank_information {
+  id                  Int              @id @default(autoincrement())
+  bank_information_id String           @db.Uuid
+  proposal_id         String
+  bank_information    bank_information @relation(fields: [bank_information_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proposal            proposal         @relation(fields: [proposal_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

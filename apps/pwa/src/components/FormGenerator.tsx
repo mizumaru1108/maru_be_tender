@@ -23,9 +23,12 @@ export interface FormSingleProps {
   label?: string;
   md?: number;
   xs?: number;
+  repeaterLabel?: string;
   placeholder?: string;
   children?: React.ReactNode;
   repeaterFields?: FormSingleProps[];
+  enableAddButton?: boolean;
+  enableRemoveButton?: boolean;
   options?: {
     label: string;
     value: any;

@@ -225,6 +225,8 @@ export const ProjectBudgetData = [
         xs: 12,
       },
     ],
+    enableAddButton: true,
+    enableRemoveButton: true,
   },
 ] as Array<FormSingleProps>;
 

@@ -117,17 +117,17 @@ export class AuthService {
       throw new HttpException('Email already exist', 400);
     }
     const licenseNumber = await this.prisma.client_data.findFirst({
-      where:{
+      where: {
         OR: [
           {
-            license_number:{
+            license_number: {
               equals: dtReg[0].license_number
             }
           },
           {
-           id:{
-            equals: dtReg[0].id
-           }
+            id: {
+              equals: dtReg[0].id
+            }
           },
         ]
       }
@@ -140,7 +140,7 @@ export class AuthService {
     const result = await this.fusionAuthService.fusionAuthRegisterTender(
       registerRequest,
     );
-    
+
     let registeredUser;
     try {
       if (result && result.user.id) {
@@ -165,8 +165,8 @@ export class AuthService {
           license_file: dtReg[0].license_file,
           license_issue_date: moment(dtReg[0].license_issue_date).toISOString(), // Date
           license_number: dtReg[0].license_number,
-          num_of_beneficiaries: dtReg[0].num_of_employed_facility,
-          num_of_employed_facility: dtReg[0].num_of_beneficiaries,
+          num_of_beneficiaries: dtReg[0].num_of_beneficiaries,
+          num_of_employed_facility: dtReg[0].num_of_employed_facility,
           data_entry_name: dtReg[0].data_entry_name,
           date_of_esthablistmen: moment(dtReg[0].date_of_esthablistmen).toISOString(),// Date
           password: "",
@@ -186,8 +186,8 @@ export class AuthService {
         }
       }
     } catch (error) {
-      console.log('error',error)
-      console.log('error=',error.response)
+      console.log('error', error)
+      console.log('error=', error.response)
       return {
         messageCode: 400,
         message: error.response,

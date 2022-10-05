@@ -21,6 +21,8 @@ function BaseField({
   type,
   name,
   label,
+  enableAddButton,
+  enableRemoveButton,
   placeholder,
   children,
   repeaterFields,
@@ -61,7 +63,14 @@ function BaseField({
           placeholder={translate(placeholder)}
         />
       )}
-      {type === 'repeater' && <RHFRepeater name={name} repeaterFields={repeaterFields} />}
+      {type === 'repeater' && (
+        <RHFRepeater
+          name={name}
+          repeaterFields={repeaterFields}
+          enableAddButton={enableAddButton}
+          enableRemoveButton={enableRemoveButton}
+        />
+      )}
     </>
   );
 }

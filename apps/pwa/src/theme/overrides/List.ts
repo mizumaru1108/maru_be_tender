@@ -4,6 +4,15 @@ import { Theme } from '@mui/material/styles';
 
 export default function List(theme: Theme) {
   return {
+    MuiList: {
+      styleOverrides: {
+        root: {
+          color: 'inherit',
+          minWidth: 'auto',
+          backgroundColor: '#fff',
+        },
+      },
+    },
     MuiListItemIcon: {
       styleOverrides: {
         root: {

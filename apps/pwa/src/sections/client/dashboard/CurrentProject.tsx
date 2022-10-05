@@ -70,7 +70,7 @@ function CurrentProject() {
               content={{
                 projectName: props.project_name,
                 createdAt: new Date(props.created_at),
-                projectStatus: 'On going',
+                projectStatus: props.outter_status,
                 projectDetails: props.project_idea,
               }}
               footer={{ createdAt: new Date(props.created_at) }}

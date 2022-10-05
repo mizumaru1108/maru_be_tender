@@ -107,7 +107,12 @@ export class UserService {
               license_expired: request.license_expired,
               license_issue_date: request.license_issue_date,
               num_of_beneficiaries: request.num_of_beneficiaries,
-              phone: request.phone
+              data_entry_mobile: request.data_entry_mobile,
+              website: request.website,
+              twitter_acount: request.twitter_acount,
+              num_of_employed_facility: request.num_of_employed_facility,
+              phone: request.phone,
+
             }
           },
           bank_information: {
