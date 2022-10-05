@@ -4,6 +4,7 @@ import { SupervisorFloatingActionBar } from './supervisor';
 import { Role } from 'guards/RoleBasedGuard';
 import { ProjectManagerFloatingActionBar } from './project-manager';
 import { ModeratoeCeoFloatingActionBar } from './moderator-ceo';
+import { ModeratorFloatingActionBar } from './moderator';
 
 function FloatinActonBar({ proposalData }: any) {
   const { actionType } = useParams();
@@ -29,7 +30,11 @@ function FloatinActonBar({ proposalData }: any) {
       {activeTap &&
         ['main', 'project-budget'].includes(activeTap) &&
         actionType === 'show-details' &&
-        ['tender_ceo', 'tender_moderator'].includes(role) && <ModeratoeCeoFloatingActionBar />}
+        ['tender_ceo'].includes(role) && <ModeratoeCeoFloatingActionBar />}
+      {activeTap &&
+        ['main', 'project-budget'].includes(activeTap) &&
+        actionType === 'show-details' &&
+        ['tender_moderator'].includes(role) && <ModeratorFloatingActionBar />}
     </>
   );
 }
