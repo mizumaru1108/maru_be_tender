@@ -68,7 +68,7 @@ export default function ProjectManagementTableRow({
           size="small"
           sx={{ backgroundColor: '#0E8478', color: 'white' }}
         >
-          {translate('View Details')}
+          {translate('table_actions.view_details')}
         </Button>
       </TableCell>
     </TableRow>

@@ -467,6 +467,95 @@ const ar = {
     send_messages: 'ارسال رسالة للشريك',
     submit_amendment_request: 'ارسال طلب تعديل',
   },
+
+  // TENDER_CEO PAGES
+  rejection_list: 'قائمة الرفض', //navigation
+  project_management: 'إدارة المشروع', //navigation
+  project_management_table: {
+    headline: 'إدارة المشروع',
+  },
+  rejection_list_table: {
+    headline: 'قائمة الرفض',
+  },
+  project_management_headercell: {
+    project_number: 'رقم المشروع',
+    project_name: 'اسم المشروع',
+    association_name: 'اسم الجمعية',
+    section: 'القسم',
+    date_created: 'تاريخ الانشاء',
+    events: 'الاحداث',
+  },
+  concessional_card_insights: {
+    title: {
+      reserved_budget: 'الميزانية المخصصة',
+      spent_budget: 'الميزانية المنفقة',
+      total_budget_for_the_course: 'إجمالي الميزانية للمسار',
+    },
+    headline: {
+      the_concessional_grant_track_budget: 'مسار الميزانية المخصصة',
+    },
+  },
+  mosques_card_insights: {
+    title: {
+      reserved_budget: 'الميزانية المخصصة',
+      spent_budget: 'الميزانية المنفقة',
+      total_budget_for_the_course: 'إجمالي الميزانية للمسار',
+    },
+    headline: {
+      mosques_grant_track_budget: 'مسار الميزانية المخصصة',
+    },
+  },
+  complexity_card_insights: {
+    title: {
+      reserved_budget: 'الميزانية المخصصة',
+      spent_budget: 'الميزانية المنفقة',
+      total_budget_for_the_course: 'إجمالي الميزانية للمسار',
+    },
+    headline: {
+      complexity_grant_track_budget: 'مسار الميزانية المخصصة',
+    },
+  },
+  initiatives_card_insights: {
+    title: {
+      reserved_budget: 'الميزانية المخصصة',
+      spent_budget: 'الميزانية المنفقة',
+      total_budget_for_the_course: 'إجمالي الميزانية للمسار',
+    },
+    headline: {
+      initiatives_track_budget: 'مسار الميزانية المخصصة',
+    },
+  },
+
+  // filter above table on project management and rejection list
+  table_filter: {
+    button_group: {
+      all_tracks: 'جميع المسارات',
+      mosques_track: 'مسار المساجد',
+      scholarships_track: 'مسار الجامعات',
+      initiatives_track: 'مسار المبادرات',
+      baptism_track: 'مسار الاستقطاب',
+      syeikh_track: 'مسار السيوخ',
+    },
+    sortby_title: 'ترتيب حسب',
+    sortby_options: {
+      date_created_oldest: 'تاريخ الانشاء (الأقدم)',
+      date_created_newest: 'تاريخ الانشاء (الأحدث)',
+      project_name_az: 'اسم المشروع (أ-ي)',
+      project_name_za: 'اسم المشروع (ي-أ)',
+      association_name_az: 'اسم الجمعية (أ-ي)',
+      association_name_za: 'اسم الجمعية (ي-أ)',
+      section_az: 'القسم (أ-ي)',
+      section_za: 'القسم (ي-أ)',
+      project_number_lowest: 'رقم المشروع (الأقل)',
+      project_number_highest: 'رقم المشروع (الأعلى)',
+    },
+    filter_button_label: 'تصفية',    
+  },
+
+  table_actions: {
+    view_details: 'عرض التفاصيل',
+    delete_button_label: 'حذف',
+  },
 };
 
 export default ar;

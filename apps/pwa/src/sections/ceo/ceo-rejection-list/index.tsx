@@ -5,9 +5,11 @@ import {
   RejectionListTableHeader,
 } from '../../../components/table/ceo/rejection-list/rejection-list';
 import RejectionListTable from '../../../components/table/ceo/rejection-list/RejectionListTable';
+import useLocales from '../../../hooks/useLocales';
 import { GetRejectionList } from '../../../queries/ceo/get-rejection-list';
 
 function CeoRejectionList() {
+  const { translate } = useLocales();
   const [rejectionListData, setRejectionListData] = useState<RejectionList[]>([]);
 
   const [fetchRejectionList, setFetchRejectionList] = useQuery({
@@ -37,7 +39,7 @@ function CeoRejectionList() {
 
   return (
     <RejectionListTable
-      headline="Rejection Lists"
+      headline={translate('rejection_list_table.headline')}
       isLoading={fetching}
       headerCell={headerCells}
       data={rejectionListData}

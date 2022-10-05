@@ -8,8 +8,10 @@ import ProjectManagementTable from '../../../components/table/ceo/project-manage
 import { useEffect, useState } from 'react';
 import { useQuery } from 'urql';
 import { GetProjectList } from '../../../queries/ceo/get-project-list';
+import useLocales from '../../../hooks/useLocales';
 
 function DashboardProjectManagement() {
+  const { translate } = useLocales();
   const [projectManagementData, setProjectManagementData] = useState<ProjectManagement[]>([]);
 
   const [projectList, fetchProject] = useQuery({
@@ -26,21 +28,32 @@ function DashboardProjectManagement() {
     if (projectDatas) {
       setProjectManagementData(projectDatas.proposal);
     }
-    console.log(projectDatas);
   }, [projectDatas]);
 
   const headerCells: ProjectManagementTableHeader[] = [
-    { id: 'projectNumber', label: 'Project Number' },
-    { id: 'projectName', label: 'Project Name' },
-    { id: 'associationName', label: 'Association Name', align: 'left' },
-    { id: 'projectSection', label: 'Section', align: 'left' },
-    { id: 'createdAt', label: 'Date Created', align: 'left' },
-    { id: 'events', label: 'events', align: 'left' },
+    { id: 'projectNumber', label: translate('project_management_headercell.project_number') },
+    { id: 'projectName', label: translate('project_management_headercell.project_name') },
+    {
+      id: 'associationName',
+      label: translate('project_management_headercell.association_name'),
+      align: 'left',
+    },
+    {
+      id: 'projectSection',
+      label: translate('project_management_headercell.section'),
+      align: 'left',
+    },
+    {
+      id: 'createdAt',
+      label: translate('project_management_headercell.date_created'),
+      align: 'left',
+    },
+    { id: 'events', label: translate('project_management_headercell.events'), align: 'left' },
   ];
 
   return (
     <ProjectManagementTable
-      headline="Project Management"
+      headline={translate('project_management_table.headline')}
       isLoading={fetching}
       headerCell={headerCells}
       data={projectManagementData ?? []}

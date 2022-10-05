@@ -65,70 +65,70 @@ export default function RejectionListTable({
   const projectTracks = [
     {
       value: '',
-      title: 'All Tracks',
+      title: translate('table_filter.button_group.all_tracks'),
     },
     {
       value: 'Mosques Department',
-      title: 'Mosques Track',
+      title: translate('table_filter.button_group.mosques_track'),
     },
     {
       value: 'Facilitated Scholarship Track',
-      title: 'Scholarship Track',
+      title: translate('table_filter.button_group.scholarships_track'),
     },
     {
       value: 'Initiatives Track',
-      title: 'Initiatives Track',
+      title: translate('table_filter.button_group.initiatives_track'),
     },
     {
       value: 'Baptismal Path',
-      title: 'Baptism Track',
+      title: translate('table_filter.button_group.baptism_track'),
     },
     {
       value: "Syeikh's Path",
-      title: "Syeikh's Track",
+      title: translate('table_filter.button_group.syeikh_track'),
     },
   ];
 
   const sortOptions = [
     {
       value: 'createdAt-asc',
-      title: 'Date Created (Oldest)',
+      title: translate('table_filter.sortby_options.date_created_oldest'),
     },
     {
       value: 'createdAt-desc',
-      title: 'Date Created (Newest)',
+      title: translate('table_filter.sortby_options.date_created_newest'),
     },
     {
       value: 'projectName-asc',
-      title: 'Project Name (A-Z)',
+      title: translate('table_filter.sortby_options.project_name_az'),
     },
     {
       value: 'projectName-desc',
-      title: 'Project Name (Z-A)',
+      title: translate('table_filter.sortby_options.project_name_za'),
     },
     {
       value: 'associationName-asc',
-      title: 'Association Name (A-Z)',
+      title: translate('table_filter.sortby_options.association_name_az'),
     },
     {
       value: 'associationName-desc',
-      title: 'Association Name (Z-A)',
+      title: translate('table_filter.sortby_options.association_name_za'),
     },
     {
       value: 'projectSection-asc',
-      title: 'Section (A-Z)',
+      title: translate('table_filter.sortby_options.section_az'),
     },
     {
       value: 'projectSection-desc',
-      title: 'Section (Z-A)',
+      title: translate('table_filter.sortby_options.section_za'),
     },
     {
       value: 'projectNumber-asc',
-      title: 'Project Number (Lowest)',
+      title: translate('table_filter.sortby_options.project_number_lowest'),
     },
     {
       value: 'projectNumber-desc',
-      title: 'Project Number (Highest)',
+      title: translate('table_filter.sortby_options.project_number_highest'),
     },
   ];
 
@@ -213,7 +213,7 @@ export default function RejectionListTable({
           <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
             <Box display="flex" alignItems="center">
               <Typography variant="body2" sx={{ color: 'grey.600' }}>
-                Sort by: &nbsp;
+                {translate('table_filter.sortby_title')} &nbsp;
               </Typography>
               <Select
                 value={sortValue}
@@ -241,7 +241,7 @@ export default function RejectionListTable({
                   },
                 }}
               >
-                Filter
+                {translate('table_filter.filter_button_label')}
                 <Iconify icon="bx:bx-filter-alt" sx={{ ml: 1 }} />
               </Button>
             </Box>

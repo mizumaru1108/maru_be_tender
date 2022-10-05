@@ -5,9 +5,11 @@ import {
   ProjectManagementTableHeader,
 } from '../../../components/table/ceo/project-management/project-management';
 import ProjectManagementTable from '../../../components/table/ceo/project-management/ProjectManagementTable';
+import useLocales from '../../../hooks/useLocales';
 import { GetProjectList } from '../../../queries/ceo/get-project-list';
 
 function CeoProjectManagement() {
+  const { translate } = useLocales();
   const [projectManagementData, setProjectManagementData] = useState<ProjectManagement[]>([]);
 
   const [projectList, fetchProject] = useQuery({
@@ -37,7 +39,7 @@ function CeoProjectManagement() {
 
   return (
     <ProjectManagementTable
-      headline="Project Management"
+      headline={translate('project_management_table.headline')}
       isLoading={fetching}
       headerCell={headerCells}
       data={projectManagementData ?? []}

@@ -458,6 +458,95 @@ const en = {
       placeholder: 'الرجاء كتابة رقم الموبايل',
     },
   },
+
+  // TENDER_CEO PAGES
+  rejection_list: 'Rejection List', // navigation
+  project_management: 'Project Management', // navigation
+  project_management_table: {
+    headline: 'Project Management',
+  },
+  rejection_list_table: {
+    headline: 'Rejection List',
+  },
+  project_management_headercell: {
+    project_number: 'Project Number',
+    project_name: 'Project Name',
+    association_name: 'Association Name',
+    section: 'Section',
+    date_created: 'Date Created',
+    events: 'Events',
+  },
+  concessional_card_insights: {
+    title: {
+      reserved_budget: 'Reserved budget',
+      spent_budget: 'Spent Budget',
+      total_budget_for_the_course: 'Total Budget for the course',
+    },
+    headline: {
+      the_concessional_grant_track_budget: 'The Concessional Grant Track Budget',
+    },
+  },
+  mosques_card_insights: {
+    title: {
+      reserved_budget: 'Reserved budget',
+      spent_budget: 'Spent Budget',
+      total_budget_for_the_course: 'Total Budget for the course',
+    },
+    headline: {
+      mosques_grant_track_budget: 'Mosques Grant Track Budget',
+    },
+  },
+  complexity_card_insights: {
+    title: {
+      reserved_budget: 'Reserved budget',
+      spent_budget: 'Spent Budget',
+      total_budget_for_the_course: 'Total Budget for the course',
+    },
+    headline: {
+      complexity_grant_track_budget: 'Complexity Grant Track Budget',
+    },
+  },
+  initiatives_card_insights: {
+    title: {
+      reserved_budget: 'Reserved budget',
+      spent_budget: 'Spent Budget',
+      total_budget_for_the_course: 'Total Budget for the course',
+    },
+    headline: {
+      initiatives_track_budget: 'Initiatives Track Budget',
+    },
+  },
+
+  // filter above table on project management and rejection list
+  table_filter: {
+    button_group: {
+      all_tracks: 'All Tracks',
+      mosques_track: 'Mosques Track',
+      scholarships_track: 'Scholarships Track',
+      initiatives_track: 'Initiatives Track',
+      baptism_track: 'Baptism Track',
+      syeikh_track: "Syeikh's Track",
+    },
+    sortby_title: 'Sort By',
+    sortby_options: {
+      date_created_oldest: 'Date Created (Oldest)',
+      date_created_newest: 'Date Created (Newest)',
+      project_name_az: 'Project Name (A-Z)',
+      project_name_za: 'Project Name (Z-A)',
+      association_name_az: 'Association Name (A-Z)',
+      association_name_za: 'Association Name (Z-A)',
+      section_az: 'Section (A-Z)',
+      section_za: 'Section (Z-A)',
+      project_number_lowest: 'Project Number (Lowest)',
+      project_number_highest: 'Project Number (Highest)',
+    },
+    filter_button_label: 'Filter',
+  },
+
+  table_actions: {
+    view_details: 'View Details',
+    delete_button_label: 'Delete',
+  },
 };
 
 export default en;
