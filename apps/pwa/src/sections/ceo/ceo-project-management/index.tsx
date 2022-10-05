@@ -29,12 +29,24 @@ function CeoProjectManagement() {
   }, [projectDatas]);
 
   const headerCells: ProjectManagementTableHeader[] = [
-    { id: 'projectNumber', label: 'Project Number' },
-    { id: 'projectName', label: 'Project Name' },
-    { id: 'associationName', label: 'Association Name', align: 'left' },
-    { id: 'projectSection', label: 'Section', align: 'left' },
-    { id: 'createdAt', label: 'Date Created', align: 'left' },
-    { id: 'events', label: 'events', align: 'left' },
+    { id: 'projectNumber', label: translate('project_management_headercell.project_number') },
+    { id: 'projectName', label: translate('project_management_headercell.project_name') },
+    {
+      id: 'associationName',
+      label: translate('project_management_headercell.association_name'),
+      align: 'left',
+    },
+    {
+      id: 'projectSection',
+      label: translate('project_management_headercell.section'),
+      align: 'left',
+    },
+    {
+      id: 'createdAt',
+      label: translate('project_management_headercell.date_created'),
+      align: 'left',
+    },
+    { id: 'events', label: translate('project_management_headercell.events'), align: 'left' },
   ];
 
   return (

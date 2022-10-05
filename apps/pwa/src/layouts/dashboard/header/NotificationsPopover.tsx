@@ -25,6 +25,7 @@ import MenuPopover from '../../../components/MenuPopover';
 import { IconButtonAnimate } from '../../../components/animate';
 import SvgIconStyle from 'components/SvgIconStyle';
 import { sub } from 'date-fns';
+import useLocales from '../../../hooks/useLocales';
 
 // ----------------------------------------------------------------------
 const _notifications = [...Array(3)].map((_, index) => ({
@@ -41,6 +42,7 @@ const _notifications = [...Array(3)].map((_, index) => ({
 }));
 
 export default function NotificationsPopover() {
+  const { translate } = useLocales();
   const [notifications, setNotifications] = useState(_notifications);
 
   const totalUnRead = notifications.filter((item) => item.isUnRead === true).length;
@@ -111,7 +113,7 @@ export default function NotificationsPopover() {
 
         <Box sx={{ p: 1 }}>
           <Button fullWidth disableRipple>
-            View All
+            {translate('view_all')}
           </Button>
         </Box>
       </MenuPopover>

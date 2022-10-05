@@ -177,7 +177,7 @@ function FloatingActionBar() {
         title={
           <Stack display="flex">
             <Typography variant="h6" fontWeight="bold" color="#000000">
-            {action === 'accept' ? translate('accept_project') : translate('reject_project')}
+              {action === 'accept' ? translate('accept_project') : translate('reject_project')}
             </Typography>
           </Stack>
         }
@@ -187,8 +187,7 @@ function FloatingActionBar() {
               onSubmit={(data: any) => {
                 console.log('form callback', data);
                 console.log('just a dummy not create log yet');
-                // handleApproval();
-                setModalState(false);
+                handleApproval();
               }}
             >
               <FormActionBox
