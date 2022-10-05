@@ -8,6 +8,8 @@ import {
   DialogContent,
   IconButton,
   Link,
+  MenuItem,
+  Select,
   Stack,
   Table,
   TableBody,
@@ -35,6 +37,10 @@ export default function RejectionListTable({
   const { translate } = useLocales();
   const [tableData, setTableData] = useState<RejectionList[]>([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+  const [selectedTrack, setSelectedTrack] = useState<string>('');
+  const [sortValue, setSortValue] = useState<string>('projectName-asc');
+  const [selectedSortValue, setSelectedSortValue] = useState<string>('projectName');
+  const [selectedSortOrder, setSelectedSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const {
     page,
@@ -55,6 +61,82 @@ export default function RejectionListTable({
     defaultRowsPerPage: 5,
     defaultCurrentPage: 0,
   });
+
+  const projectTracks = [
+    {
+      value: '',
+      title: 'All Tracks',
+    },
+    {
+      value: 'Mosques Department',
+      title: 'Mosques Track',
+    },
+    {
+      value: 'Facilitated Scholarship Track',
+      title: 'Scholarship Track',
+    },
+    {
+      value: 'Initiatives Track',
+      title: 'Initiatives Track',
+    },
+    {
+      value: 'Baptismal Path',
+      title: 'Baptism Track',
+    },
+    {
+      value: "Syeikh's Path",
+      title: "Syeikh's Track",
+    },
+  ];
+
+  const sortOptions = [
+    {
+      value: 'createdAt-asc',
+      title: 'Date Created (Oldest)',
+    },
+    {
+      value: 'createdAt-desc',
+      title: 'Date Created (Newest)',
+    },
+    {
+      value: 'projectName-asc',
+      title: 'Project Name (A-Z)',
+    },
+    {
+      value: 'projectName-desc',
+      title: 'Project Name (Z-A)',
+    },
+    {
+      value: 'associationName-asc',
+      title: 'Association Name (A-Z)',
+    },
+    {
+      value: 'associationName-desc',
+      title: 'Association Name (Z-A)',
+    },
+    {
+      value: 'projectSection-asc',
+      title: 'Section (A-Z)',
+    },
+    {
+      value: 'projectSection-desc',
+      title: 'Section (Z-A)',
+    },
+    {
+      value: 'projectNumber-asc',
+      title: 'Project Number (Lowest)',
+    },
+    {
+      value: 'projectNumber-desc',
+      title: 'Project Number (Highest)',
+    },
+  ];
+
+  useEffect(() => {
+    const sortValue = selectedSortValue.split('-');
+    setSelectedSortOrder(sortValue[1] as 'asc' | 'desc');
+    setSelectedSortValue(sortValue[0]);
+  }, [selectedSortValue]);
 
   const applySortFilter = ({
     tableData,
@@ -107,6 +189,65 @@ export default function RejectionListTable({
           {translate(`${headline}`)}
         </Typography>
       )}
+      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
+        <Box>
+          {projectTracks.map((item) => (
+            <Button
+              key={item.value}
+              variant="text"
+              onClick={() => setSelectedTrack(item.value)}
+              sx={{
+                backgroundColor: selectedTrack === item.value ? 'primary.main' : 'inherit',
+                color: selectedTrack === item.value ? 'white' : 'grey.600',
+                '&:hover': {
+                  backgroundColor: selectedTrack === item.value ? 'primary.main' : 'inherit',
+                  color: selectedTrack === item.value ? 'white' : 'grey.600',
+                },
+              }}
+            >
+              {item.title}
+            </Button>
+          ))}
+        </Box>
+        <Box>
+          <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
+            <Box display="flex" alignItems="center">
+              <Typography variant="body2" sx={{ color: 'grey.600' }}>
+                Sort by: &nbsp;
+              </Typography>
+              <Select
+                value={sortValue}
+                onChange={(e) => setSortValue(e.target.value as string)}
+                size="small"
+                sx={{ width: 200 }}
+              >
+                {sortOptions.map((item) => (
+                  <MenuItem key={item.value} value={item.value}>
+                    {item.title}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Box>
+            <Box>
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: 'black',
+                  color: 'white',
+                  p: 1,
+                  '&:hover': {
+                    backgroundColor: 'black',
+                    color: 'white',
+                  },
+                }}
+              >
+                Filter
+                <Iconify icon="bx:bx-filter-alt" sx={{ ml: 1 }} />
+              </Button>
+            </Box>
+          </Stack>
+        </Box>
+      </Stack>
       {isLoading && (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <CircularProgress size={20} sx={{ color: 'white' }} thickness={4} />
