@@ -27,4 +27,7 @@ export interface ProjectManagementTableProps {
   headerCell: ProjectManagementTableHeader[];
   headline?: string;
   isLoading?: boolean;
+  onFilterChange?: (filter: any) => void;
+  onSortChange?: (sort: any) => void;
+  onSortMethodChange?: (sortMethod: any) => void;
 }
