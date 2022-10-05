@@ -43,23 +43,21 @@ function FinalPage({ ...props }: AccountValuesProps) {
       const { data } = await axios.post(
         'https://api-staging.tmra.io/v2/raise/auth/fusion/regTender',
         {
-          data: [
-            {
-              id: nanoid(),
-              employee_name: props.email,
-              employee_path: props.email,
-              bank_informations: [
-                {
-                  bank_account_name,
-                  bank_account_number,
-                  bank_name,
-                  card_image,
-                },
-              ],
-              status: 'WAITING_FOR_ACTIVATION',
-              ...client_data,
-            },
-          ],
+          data: {
+            id: nanoid(),
+            employee_name: props.email,
+            employee_path: props.email,
+            bank_informations: [
+              {
+                bank_account_name,
+                bank_account_number,
+                bank_name,
+                card_image,
+              },
+            ],
+            status: 'WAITING_FOR_ACTIVATION',
+            ...client_data,
+          },
           roles: ['tender_client'],
         }
       );
