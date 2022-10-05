@@ -1,74 +1,106 @@
-import { Button, Box, Stack, Typography } from '@mui/material';
-import { nanoid } from 'nanoid';
-import React, { useState } from 'react';
-import { useLocation } from 'react-router';
+import { Box, Button, Grid, Stack, Typography } from '@mui/material';
+import { updatePayment } from 'queries/project-supervisor/updatePayment';
+import React, { useEffect, useState } from 'react';
 import { useMutation } from 'urql';
-import ModalDialog from '../../../../components/modal-dialog';
-import Page from '../../../../components/Page';
-import { paymentReq } from '../../../../queries/Cashier/supportRequest';
-import FormActionBox from './PopUpActionBar';
-import UploadingForm from './UploadingForm';
 
-function PaymentsTable() {
-  const [modalState, setModalState] = useState(false);
-  const [chequeInsert, cheque] = useMutation(paymentReq);
-  const location = useLocation();
-  const paymentId = location.pathname.split('/').at(4);
-
-  console.log('split :', paymentId);
-  // create handleSubmit function with async await for use mutation cheque
-  const handleSubmit = async (data: any) => {
-    await cheque({
-      objects: {
-        id: nanoid(),
-        payment_id: paymentId,
-        transfer_receipt: data.transactionReceipt,
-        deposit_date: data.depositDate,
-        number: data.checkTransferNumber,
-      },
-    });
-  };
-
-  const handleCloseModal = () => {
-    setModalState(false);
-  };
+// The general page after the payments are set
+/**
+ * payments = [
+ *  {
+ *    payment_date: string
+      payment_amount: number
+      id: nanoid
+      status: SET_BY_SUPERVISOR | ISSUED_BY_SUPERVISOR | ACCEPTED_BY_PROJECT_MANAGER | ACCEPTED_BY_FINANCE | DONE
+ *  }
+ * ]
+ */
+const PaymentsNames = [
+  'الدفعة الأولى',
+  'الدفعة الثانية',
+  'الدفعة الثالثة',
+  'الدفعة الرابعة',
+  'الدفعة الخامسة',
+  'الدفعة السادسة',
+  'الدفعة السابعة',
+];
+type PaymentProps = {
+  payment_date: string;
+  payment_amount: number;
+  id: string;
+  status:
+    | 'SET_BY_SUPERVISOR'
+    | 'ISSUED_BY_SUPERVISOR'
+    | 'ACCEPTED_BY_PROJECT_MANAGER'
+    | 'ACCEPTED_BY_FINANCE'
+    | 'DONE';
+};
+function PaymentsTable({ payments, children }: { payments: PaymentProps[]; children?: any }) {
   return (
-    <Page title="PaymentsTable">
-      <Box>
-        <Button variant="contained" onClick={() => setModalState(true)}>
-          Test
-        </Button>
-      </Box>
-      <ModalDialog
-        title={
-          <Stack display="flex">
-            <Typography variant="h6" fontWeight="bold" color="#000000">
-              {'Upload Receipt Form'}
-            </Typography>
-          </Stack>
-        }
-        content={
-          <UploadingForm
-            onSubmit={(data: any) => {
-              console.log('form callback', data);
-              console.log('just a dummy not create log yet');
-              // handleSubmit(data);
-              setModalState(false);
-            }}
-          >
-            <FormActionBox
-              isLoading={false}
-              onReturn={() => {
-                setModalState(false);
-              }}
-            />
-          </UploadingForm>
-        }
-        isOpen={modalState}
-        onClose={handleCloseModal}
-        styleContent={{ padding: '1em', backgroundColor: '#fff' }}
-      />
-    </Page>
+    <>
+      {payments.map((item: any, index: any) => (
+        <Grid item md={12} key={index} sx={{ mb: '20px' }}>
+          <Grid container direction="row" key={index}>
+            <Grid item md={2}>
+              <Typography variant="h6">{PaymentsNames[index]}</Typography>
+            </Grid>
+            <Grid item md={2}>
+              <Stack direction="column">
+                <Typography sx={{ color: '#93A3B0' }}>مبلغ الدفعة:</Typography>
+                <Typography sx={{ color: '#1E1E1E' }} variant="h6">
+                  {item.payment_amount}
+                </Typography>
+              </Stack>
+            </Grid>
+            <Grid item md={2}>
+              <Stack direction="column">
+                <Typography sx={{ color: '#93A3B0' }}>تاريخ الدفعة:</Typography>
+                <Typography sx={{ color: '#1E1E1E' }} variant="h6">
+                  {item.payment_date}
+                </Typography>
+              </Stack>
+            </Grid>
+            {item.status !== 'SET_BY_SUPERVISOR' ? (
+              <Grid item md={3} sx={{ textAlign: '-webkit-center', pt: '14px' }}>
+                <Typography
+                  sx={{
+                    color: '#0E8478',
+                  }}
+                >
+                  تم اصدار إذن الصرف بنجاح
+                </Typography>
+              </Grid>
+            ) : (
+              <Grid item md={3}>
+                <Box>{''}</Box>
+              </Grid>
+            )}
+            {item.status === 'DONE' ? (
+              <Grid item md={3} sx={{ textAlign: '-webkit-center' }}>
+                <Button
+                  sx={{
+                    backgroundColor: 'transparent',
+                    color: '#000',
+                    textDecorationLine: 'underline',
+                    height: '100%',
+                    ':hover': { backgroundColor: '#b8b7b4', textDecorationLine: 'underline' },
+                    width: '100%',
+                  }}
+                  onClick={() => {
+                    console.log('asdasd');
+                  }}
+                >
+                  استعراض ايصال التحويل
+                </Button>
+              </Grid>
+            ) : (
+              <Grid item md={3}>
+                <Box>{''}</Box>
+              </Grid>
+            )}
+          </Grid>
+        </Grid>
+      ))}
+    </>
   );
 }
 

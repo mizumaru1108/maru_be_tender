@@ -23,6 +23,7 @@ function ManagerPaymentsPage({ data, mutate }: any) {
         break;
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const handleApprovalPayment = () => {
     const payload = {

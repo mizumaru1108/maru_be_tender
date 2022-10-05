@@ -1,12 +1,11 @@
-import React from 'react';
-import * as Yup from 'yup';
-import { useEffect } from 'react';
-import { Grid } from '@mui/material';
-import { FormProvider } from 'components/hook-form';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { PaymentsData } from './form-data';
+import { Grid } from '@mui/material';
 import FormGenerator from 'components/FormGenerator';
+import { FormProvider } from 'components/hook-form';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
+import { PaymentsData } from './form-data';
 
 type FormValuesProps = {
   payments: {

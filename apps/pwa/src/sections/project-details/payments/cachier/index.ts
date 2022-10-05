@@ -1,1 +1,1 @@
-export { default as CachierPaymentsTable } from './PaymentsTable';
+export { default as CachierPaymentsTable } from './CashierPaymentsPage';
