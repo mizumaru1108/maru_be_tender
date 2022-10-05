@@ -1,1 +1,1 @@
-export { default as ProjectManagerPaymentsTable } from './PaymentsTable';
+export { default as ManagerPaymentsPage } from './ManagerPaymentsPage';

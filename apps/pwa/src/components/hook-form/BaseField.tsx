@@ -1,4 +1,4 @@
-import { Typography, TextField } from '@mui/material';
+import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import RHFSelect from './RHFSelect';
 import RHFDatePicker from './RHFDatePicker';
@@ -71,6 +71,7 @@ function BaseField({
           enableRemoveButton={enableRemoveButton}
         />
       )}
+      {type === 'repeaterLabel' && <Typography variant="h4">{label}</Typography>}
     </>
   );
 }

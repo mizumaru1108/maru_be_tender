@@ -1,5 +1,6 @@
 import { Box, IconButton, Stack, Typography } from '@mui/material';
 import { getOneProposal } from 'queries/commons/getOneProposal';
+import { useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useQuery } from 'urql';
 import ActionBar from './ActionBar';
@@ -12,7 +13,7 @@ import ProjectBudget from './ProjectBudget';
 
 function ProjectDetailsMainPage() {
   const { id } = useParams();
-  const [result, _] = useQuery({
+  const [result, reexecuteGetOne] = useQuery({
     query: getOneProposal,
     variables: { id },
   });
@@ -22,7 +23,9 @@ function ProjectDetailsMainPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const activeTap = location.pathname.split('/').at(-1);
-
+  useEffect(() => {
+    console.log('Asdaksdmlkamsdk');
+  }, [data]);
   if (fetching) return <>...Loading</>;
   if (error) return <>{error.graphQLErrors}</>;
   if (data.proposal_by_pk === null) return <>There is no data for this tap ... </>;
@@ -94,7 +97,7 @@ function ProjectDetailsMainPage() {
       {activeTap === 'main' && <MainPage data={data.proposal_by_pk} />}
       {activeTap === 'project-budget' && <ProjectBudget />}
       {activeTap === 'follow-ups' && <FollowUps />}
-      {activeTap === 'payments' && <Payments />}
+      {activeTap === 'payments' && <Payments data={data.proposal_by_pk} mutate={reexecuteGetOne} />}
       {activeTap === 'exchange-details' && <ExchangeDetails />}
 
       <FloatinActonBar proposalData={data.proposal_by_pk} />

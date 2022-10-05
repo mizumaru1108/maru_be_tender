@@ -1,7 +1,7 @@
 import React from 'react';
 import { CachierPaymentsTable } from './cachier';
 import { FinancePaymentsTable } from './finance';
-import { ProjectManagerPaymentsTable } from './project-manager';
+// import { ProjectManagerPaymentsTable } from './project-manager';
 import { SupervisorPaymentsPage } from './supervisor';
 
 function Payments({ proposal }: { proposal: any }) {
@@ -14,15 +14,15 @@ function Payments({ proposal }: { proposal: any }) {
       {/* proposal.payments !== null
           and inside we will look at everysingle payment's status.
       */}
-      <ProjectManagerPaymentsTable />
+      {/* <ProjectManagerPaymentsTable /> */}
       {/* proposal.payments !== null
           and inside we will look at everysingle payment's status.
       */}
-      <FinancePaymentsTable />
+      {/* <FinancePaymentsTable /> */}
       {/* proposal.payments !== null
           and inside we will look at everysingle payment's status.
       */}
-      <CachierPaymentsTable />
+      {/* <CachierPaymentsTable /> */}
     </div>
   );
 }

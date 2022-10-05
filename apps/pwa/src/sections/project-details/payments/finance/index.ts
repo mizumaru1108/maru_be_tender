@@ -1,1 +1,1 @@
-export { default as FinancePaymentsTable } from './PaymentsTable';
+export { default as FinancePaymentsTable } from './FinancePaymentsPage';
