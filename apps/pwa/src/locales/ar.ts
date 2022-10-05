@@ -468,6 +468,22 @@ const ar = {
     submit_amendment_request: 'ارسال طلب تعديل',
   },
 
+  // tender_moderator
+  daily_stats: 'الإحصائيات اليومية',
+  acceptable_projects: 'المشاريع المقبولة',
+  incoming_new_projects: 'المشاريع الجديدة الواردة',
+  pending_projects: 'المشاريع المعلقة',
+  total_number_of_projects: 'إجمالي عدد المشاريع',
+  project_acceptance: 'قبول المشروع',
+  project_rejected: 'رفض المشروع',
+  rejected_projects: 'المشاريع المرفوضة',
+  send_message_to_partner: 'ارسال رسالة للشريك',
+  submit_amendment_request: 'ارسال طلب تعديل',
+  view_all: 'عرض الكل',
+  accept: 'قبول',
+  reject: 'رفض',
+  close: 'اغلاق',
+
   // TENDER_CEO PAGES
   rejection_list: 'قائمة الرفض', //navigation
   project_management: 'إدارة المشروع', //navigation
@@ -549,13 +565,78 @@ const ar = {
       project_number_lowest: 'رقم المشروع (الأقل)',
       project_number_highest: 'رقم المشروع (الأعلى)',
     },
-    filter_button_label: 'تصفية',    
+    filter_button_label: 'تصفية',
   },
 
   table_actions: {
     view_details: 'عرض التفاصيل',
     delete_button_label: 'حذف',
   },
+
+  // ACCOUNT_MANAGER PAGES
+  account_manager: {
+    card: {
+      suspended_partners: 'الشركاء  المعلقين آليا',
+      active_partners: 'الشركاء المفعلين',
+      rejected_partners: 'الجهات المرفوضة',
+      number_of_request: 'عدد طلبات الانضمام الكلي'
+    },
+    heading: {
+      daily_stats: 'احصائيات يومية',
+      new_join_request: 'طلبات الانضمام الواردة',
+      link_view_all: 'عرض الكل',
+      info_update_request: 'طلبات تحديث المعلومات',
+      partner_management: 'إدارة الشركاء'
+    },
+    table: {
+      th: {
+        partner_name: 'اسم الشريك',
+        createdAt: 'تاريخ التسجيل',
+        account_status: 'حالة الحساب',
+        events: 'الاحداث'
+      },
+      td: {
+        btn_account_review: 'استعراض الحساب',
+        btn_view_partner_projects: 'عرض مشاريع الشريك',
+        label_waiting_activation: 'بانتظار التفعيل',
+        label_active_account: 'حساب مفعل',
+        label_canceled_account: 'حساب ملغى'
+      }
+    },
+    partner_details: {
+      main_information: 'المعلومات الرئيسية',
+      number_of_fulltime_employees: 'عدد موظفين بدوام كلي للمنشأة',
+      number_of_beneficiaries: 'عدد المستفيدين من خدمات الجهة',
+      date_of_establishment: 'تاريخ التأسيس',
+      headquarters: 'المقر',
+      license_information: 'معلومات الترخيص',
+      license_number: 'رقم الترخيص',
+      entity_clasification: 'تصنيف الجهة',
+      license_expiry_date: 'تاريخ انتهاء الترخيص',
+      license_issue_date: 'تاريخ اصدار الترخيص:',
+      license_file: 'ملف الترخيص',
+      administrative_data: 'بيانات الإدارية',
+      ceo_name: 'اسم المدير التنفيذي',
+      ceo_mobiles: 'جوال المدير التنفيذي:',
+      data_entry_name: 'اسم مدخل البيانات',
+      mobile_data_entry: 'جوال مدخل البيانات',
+      data_entry_mail: 'بريد مدخل البيانات',
+      contact_information: 'معلومات الاتصال',
+      center_management: 'المركز (الإدارة)',
+      governorate: 'المحافظة',
+      region: 'المنطقة',
+      email: 'البريد الإلكتروني',
+      twitter_account: 'حساب تويتر',
+      website: 'الموقع الإلكتروني',
+      phone: 'الهاتف',
+      bank_information: 'المعلومات البنكية',
+      send_messages: 'ارسال رسالة للشريك',
+      submit_amendment_request: 'ارسال طلب تعديل',
+      btn_deleted_account: 'حذف الحساب',
+      btn_activate_account: 'تفعيل الحساب'
+    },
+    search_bar: 'اكتب اسم للبحث عنه'
+  }
 };
 
 export default ar;

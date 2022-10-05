@@ -102,7 +102,7 @@ function PartnerManagementPage() {
               </Grid> */}
               <TableAMCustom
                 data={clientData}
-                headline="partner_management"
+                headline="account_manager.heading.partner_management"
                 lengthRowsPerPage={10}
               />
             </>

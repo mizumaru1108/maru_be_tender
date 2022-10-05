@@ -108,28 +108,28 @@ function MainManagerPage() {
 
     if (numberOfRequestData) {
       newDataInsight.data.push({
-        title: 'number_of_request',
+        title: 'account_manager.card.number_of_request',
         value: numberOfRequestData?.client_data_aggregate?.aggregate?.count,
       });
     }
 
     if (activePartnerData) {
       newDataInsight.data.push({
-        title: 'active_partners',
+        title: 'account_manager.card.active_partners',
         value: activePartnerData?.client_data_aggregate?.aggregate?.count,
       });
     }
 
     if (rejectedPartnerData) {
       newDataInsight.data.push({
-        title: 'rejected',
+        title: 'account_manager.card.rejected_partners',
         value: rejectedPartnerData?.client_data_aggregate?.aggregate?.count,
       });
     }
 
     if (suspendedPartnerData) {
       newDataInsight.data.push({
-        title: 'suspended_partners',
+        title: 'account_manager.card.suspended_partners',
         value: suspendedPartnerData?.client_data_aggregate?.aggregate?.count,
       });
     }
@@ -191,7 +191,12 @@ function MainManagerPage() {
                 ))}
               </Grid>
             )}
-          {cardInsightData && <CardInsight headline="daily_stats" data={cardInsightData.data} />}
+          {cardInsightData && (
+            <CardInsight
+              headline="account_manager.heading.daily_stats"
+              data={cardInsightData.data}
+            />
+          )}
 
           {fetchingNewRequest && (
             <Skeleton variant="rectangular" sx={{ height: 250, borderRadius: 2 }} />
@@ -199,7 +204,7 @@ function MainManagerPage() {
           {newJoinRequestData && (
             <TableAMCustom
               data={newJoinRequestData}
-              headline="new_join_request"
+              headline="account_manager.heading.new_join_request"
               view_all={PATH_ACCOUNTS_MANAGER.newJoinRequest}
             />
           )}
@@ -210,7 +215,7 @@ function MainManagerPage() {
           {infoUpdateRequest && (
             <TableAMCustom
               data={infoUpdateRequest}
-              headline="info_update_request"
+              headline="account_manager.heading.info_update_request"
               view_all={PATH_ACCOUNTS_MANAGER.infoUpdateRequest}
             />
           )}

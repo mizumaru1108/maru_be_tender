@@ -547,6 +547,71 @@ const en = {
     view_details: 'View Details',
     delete_button_label: 'Delete',
   },
+
+  // ACCOUNT_MANAGER PAGES
+  account_manager: {
+    card: {
+      suspended_partners: 'Automatically suspended partners',
+      active_partners: 'Active Partners',
+      rejected_partners: 'Rejected',
+      number_of_request: 'Total number of requests to join'
+    },
+    heading: {
+      daily_stats: 'Daily Stats',
+      new_join_request: 'Incoming requests to join',
+      link_view_all: 'View All',
+      info_update_request: 'Information update requests',
+      partner_management: 'Partner management'
+    },
+    table: {
+      th: {
+        partner_name: 'Partner name',
+        createdAt: 'Date of registration',
+        account_status: 'Account Status',
+        events: 'Events'
+      },
+      td: {
+        btn_account_review: 'Account review',
+        btn_view_partner_projects: 'View partner projects',
+        label_waiting_activation: 'Waiting for activation',
+        label_active_account: 'Active account',
+        label_canceled_account: 'Canceled account'
+      }
+    },
+    partner_details: {
+      main_information: 'Main information',
+      number_of_fulltime_employees: 'Number of full-time employees of the facility',
+      number_of_beneficiaries: "Number of beneficiaries of the entity's services",
+      date_of_establishment: 'Date of Establishment',
+      headquarters: 'Headquarters',
+      license_information: 'License information',
+      license_number: 'License number',
+      entity_clasification: 'Entity classification',
+      license_expiry_date: 'License expiry date',
+      license_issue_date: 'License issue date',
+      license_file: 'License file',
+      administrative_data: 'Administrative data',
+      ceo_name: "CEO's name",
+      ceo_mobiles: "CEO's mobile",
+      data_entry_name: 'Data entry name',
+      mobile_data_entry: 'Mobile data entry',
+      data_entry_mail: 'Data entry mail',
+      contact_information: 'Contact information',
+      center_management: 'Center (Management)',
+      governorate: 'Governorate',
+      region: 'Region',
+      email: 'E-mail',
+      twitter_account: 'Twitter account',
+      website: 'Website',
+      phone: 'Phone',
+      bank_information: 'Bank information',
+      send_messages: 'Send a message to the partner',
+      submit_amendment_request: 'Submit an amendment request',
+      btn_deleted_account: 'Delete account',
+      btn_activate_account: 'Activate account'
+    },
+    search_bar: 'Type a name to search for'
+  }
 };
 
 export default en;

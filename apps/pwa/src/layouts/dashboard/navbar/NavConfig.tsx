@@ -390,18 +390,18 @@ const navConfig = {
           icon: ICONS.tender_accounts_manager.main,
         },
         {
-          title: 'new_join_request',
+          title: 'account_manager.heading.new_join_request',
           path: PATH_ACCOUNTS_MANAGER.newJoinRequest,
           icon: ICONS.tender_accounts_manager.newJoinRequest,
         },
 
         {
-          title: 'information_update_request',
+          title: 'account_manager.heading.info_update_request',
           path: PATH_ACCOUNTS_MANAGER.infoUpdateRequest,
           icon: ICONS.tender_accounts_manager.infoUpdateRequest,
         },
         {
-          title: 'partner_management',
+          title: 'account_manager.heading.partner_management',
           path: PATH_ACCOUNTS_MANAGER.partnerManagement,
           icon: ICONS.tender_accounts_manager.partnerManagement,
         },
@@ -423,7 +423,7 @@ const navConfig = {
       subheader: '',
       items: [
         {
-          title: 'dashboard',
+          title: 'main',
           path: PATH_MODERATOR.app,
           icon: ICONS.tender_moderator.main,
         },

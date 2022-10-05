@@ -54,13 +54,14 @@ export default function ProductTableRow({ row, selected, onSelectRow }: Props) {
           }
           sx={{ textTransform: 'capitalize' }}
         >
-          {(account_status === 'ACTIVE_ACCOUNT' && translate('active_account')) ||
+          {(account_status === 'ACTIVE_ACCOUNT' &&
+            translate('account_manager.table.td.label_active_account')) ||
             ((account_status === 'WAITING_FOR_ACTIVATION' ||
               account_status === 'REVISED_ACCOUNT') &&
-              translate('waiting_activation')) ||
+              translate('account_manager.table.td.label_waiting_activation')) ||
             (account_status !== 'waiting' &&
               account_status !== 'approved' &&
-              translate('canceled_account'))}
+              translate('account_manager.table.td.label_canceled_account'))}
         </Label>
       </TableCell>
       {update_status ? (
@@ -71,7 +72,7 @@ export default function ProductTableRow({ row, selected, onSelectRow }: Props) {
             variant="outlined"
             size="medium"
           >
-            {translate('view_partner_projects')}
+            {translate('account_manager.table.td.btn_view_partner_projects')}
             <Iconify icon={'bx:briefcase'} width={20} height={20} sx={{ ml: 1 }} />
           </Button>
         </TableCell>
@@ -82,7 +83,7 @@ export default function ProductTableRow({ row, selected, onSelectRow }: Props) {
             color="inherit"
             size="small"
           >
-            {translate('account_review')}
+            {translate('account_manager.table.td.btn_account_review')}
             <Iconify icon={'eva:eye-outline'} width={20} height={20} sx={{ ml: 1 }} />
           </Button>
         </TableCell>

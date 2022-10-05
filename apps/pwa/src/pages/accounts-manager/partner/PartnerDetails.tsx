@@ -196,13 +196,14 @@ function AccountPartnerDetails() {
                   }
                   sx={{ textTransform: 'capitalize', fontSize: 14, py: 2.5, px: 4 }}
                 >
-                  {(partnerDetails?.status === 'ACTIVE_ACCOUNT' && translate('active_account')) ||
+                  {(partnerDetails?.status === 'ACTIVE_ACCOUNT' &&
+                    translate('account_manager.table.td.label_active_account')) ||
                     ((partnerDetails?.status === 'WAITING_FOR_ACTIVATION' ||
                       partnerDetails?.status === 'REVISED_ACCOUNT') &&
-                      translate('waiting_activation')) ||
+                      translate('account_manager.table.td.label_waiting_activation')) ||
                     (partnerDetails?.status !== 'waiting' &&
                       partnerDetails?.status !== 'approved' &&
-                      translate('canceled_account'))}
+                      translate('account_manager.table.td.label_canceled_account'))}
                 </Label>
               </Stack>
               <Divider />
@@ -211,11 +212,11 @@ function AccountPartnerDetails() {
                   {/* Main Information */}
                   <Stack spacing={2} direction="column" component="div">
                     <Typography variant="h6">
-                      {translate('partner_details.main_information')}
+                      {translate('account_manager.partner_details.main_information')}
                     </Typography>
                     <Box>
                       <Typography variant="body1" component="p" sx={{ color: '#93A3B0' }}>
-                        {translate('partner_details.number_of_fulltime_employees')}:
+                        {translate('account_manager.partner_details.number_of_fulltime_employees')}:
                       </Typography>
                       <Typography
                         variant="h6"
@@ -227,7 +228,7 @@ function AccountPartnerDetails() {
                     </Box>
                     <Box>
                       <Typography variant="body1" component="p" sx={{ color: '#93A3B0' }}>
-                        {translate('partner_details.number_of_beneficiaries')}:
+                        {translate('account_manager.partner_details.number_of_beneficiaries')}:
                       </Typography>
                       <Typography
                         variant="h6"
@@ -239,7 +240,7 @@ function AccountPartnerDetails() {
                     </Box>
                     <Box>
                       <Typography variant="body1" component="p" sx={{ color: '#93A3B0' }}>
-                        {translate('partner_details.date_of_establishment')}:
+                        {translate('account_manager.partner_details.date_of_establishment')}:
                       </Typography>
                       <Typography
                         variant="h6"
@@ -251,7 +252,7 @@ function AccountPartnerDetails() {
                     </Box>
                     <Box>
                       <Typography variant="body1" component="p" sx={{ color: '#93A3B0' }}>
-                        {translate('partner_details.headquarters')}:
+                        {translate('account_manager.partner_details.headquarters')}:
                       </Typography>
                       <Typography
                         variant="h6"
@@ -271,11 +272,11 @@ function AccountPartnerDetails() {
                     component="div"
                   >
                     <Typography variant="h6">
-                      {translate('partner_details.license_information')}
+                      {translate('account_manager.partner_details.license_information')}
                     </Typography>
                     <Box>
                       <Typography variant="body1" component="p" sx={{ color: '#93A3B0' }}>
-                        {translate('partner_details.license_number')}:
+                        {translate('account_manager.partner_details.license_number')}:
                       </Typography>
                       <Typography
                         variant="h6"
@@ -287,7 +288,7 @@ function AccountPartnerDetails() {
                     </Box>
                     <Box>
                       <Typography variant="body1" component="p" sx={{ color: '#93A3B0' }}>
-                        {translate('partner_details.entity_clasification')}:
+                        {translate('account_manager.partner_details.entity_clasification')}:
                       </Typography>
                       <Typography
                         variant="h6"
@@ -299,7 +300,7 @@ function AccountPartnerDetails() {
                     </Box>
                     <Box>
                       <Typography variant="body1" component="p" sx={{ color: '#93A3B0' }}>
-                        {translate('partner_details.license_expiry_date')}:
+                        {translate('account_manager.partner_details.license_expiry_date')}:
                       </Typography>
                       <Typography
                         variant="h6"
@@ -311,7 +312,7 @@ function AccountPartnerDetails() {
                     </Box>
                     <Box>
                       <Typography variant="body1" component="p" sx={{ color: '#93A3B0' }}>
-                        {translate('partner_details.license_issue_date')}:
+                        {translate('account_manager.partner_details.license_issue_date')}:
                       </Typography>
                       <Typography
                         variant="h6"
@@ -323,7 +324,7 @@ function AccountPartnerDetails() {
                     </Box>
                     <Box>
                       <Typography variant="body1" component="p" sx={{ color: '#93A3B0' }}>
-                        {translate('partner_details.license_file')}:
+                        {translate('account_manager.partner_details.license_file')}:
                       </Typography>
                       <Typography
                         variant="h6"
@@ -341,13 +342,13 @@ function AccountPartnerDetails() {
                     variant="subtitle1"
                     sx={{ mb: 2, fontWeight: theme.typography.fontWeightBold }}
                   >
-                    {translate('partner_details.administrative_data')}
+                    {translate('account_manager.partner_details.administrative_data')}
                   </Typography>
                   <Grid container spacing={{ xs: 2 }} component="div">
                     <Grid item xs={12} md={6}>
                       <Box>
                         <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
-                          {translate('partner_details.ceo_name')}:
+                          {translate('account_manager.partner_details.ceo_name')}:
                         </Typography>
                         <Typography
                           variant="subtitle1"
@@ -361,7 +362,7 @@ function AccountPartnerDetails() {
                     <Grid item xs={12} md={6}>
                       <Box>
                         <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
-                          {translate('partner_details.ceo_mobiles')}:
+                          {translate('account_manager.partner_details.ceo_mobiles')}:
                         </Typography>
                         <Typography
                           variant="subtitle1"
@@ -375,7 +376,7 @@ function AccountPartnerDetails() {
                     <Grid item xs={12} md={6}>
                       <Box>
                         <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
-                          {translate('partner_details.data_entry_name')}:
+                          {translate('account_manager.partner_details.data_entry_name')}:
                         </Typography>
                         <Typography
                           variant="subtitle1"
@@ -389,7 +390,7 @@ function AccountPartnerDetails() {
                     <Grid item xs={12} md={6}>
                       <Box>
                         <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
-                          {translate('partner_details.mobile_data_entry')}:
+                          {translate('account_manager.partner_details.mobile_data_entry')}:
                         </Typography>
                         <Typography
                           variant="subtitle1"
@@ -403,7 +404,7 @@ function AccountPartnerDetails() {
                     <Grid item xs={12} md={6}>
                       <Box>
                         <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
-                          {translate('partner_details.data_entry_mail')}:
+                          {translate('account_manager.partner_details.data_entry_mail')}:
                         </Typography>
                         <Typography
                           variant="subtitle1"
@@ -421,13 +422,13 @@ function AccountPartnerDetails() {
                     variant="subtitle1"
                     sx={{ mt: 4, mb: 2, fontWeight: theme.typography.fontWeightBold }}
                   >
-                    {translate('partner_details.contact_information')}
+                    {translate('account_manager.partner_details.contact_information')}
                   </Typography>
                   <Grid container spacing={{ xs: 2 }} component="div">
                     <Grid item xs={12} md={6}>
                       <Box>
                         <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
-                          {translate('partner_details.center_management')}:
+                          {translate('account_manager.partner_details.center_management')}:
                         </Typography>
                         <Typography
                           variant="subtitle1"
@@ -441,7 +442,7 @@ function AccountPartnerDetails() {
                     <Grid item xs={12} md={6}>
                       <Box>
                         <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
-                          {translate('partner_details.governorate')}:
+                          {translate('account_manager.partner_details.governorate')}:
                         </Typography>
                         <Typography
                           variant="subtitle1"
@@ -455,7 +456,7 @@ function AccountPartnerDetails() {
                     <Grid item xs={12} md={6}>
                       <Box>
                         <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
-                          {translate('partner_details.region')}:
+                          {translate('account_manager.partner_details.region')}:
                         </Typography>
                         <Typography
                           variant="subtitle1"
@@ -469,7 +470,7 @@ function AccountPartnerDetails() {
                     <Grid item xs={12} md={6}>
                       <Box>
                         <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
-                          {translate('partner_details.email')}:
+                          {translate('account_manager.partner_details.email')}:
                         </Typography>
                         <Typography
                           variant="subtitle1"
@@ -483,7 +484,7 @@ function AccountPartnerDetails() {
                     <Grid item xs={12} md={6}>
                       <Box>
                         <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
-                          {translate('partner_details.twitter_account')}:
+                          {translate('account_manager.partner_details.twitter_account')}:
                         </Typography>
                         <Typography
                           variant="subtitle1"
@@ -497,7 +498,7 @@ function AccountPartnerDetails() {
                     <Grid item xs={12} md={6}>
                       <Box>
                         <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
-                          {translate('partner_details.website')}:
+                          {translate('account_manager.partner_details.website')}:
                         </Typography>
                         <Typography
                           variant="subtitle1"
@@ -511,7 +512,7 @@ function AccountPartnerDetails() {
                     <Grid item xs={12} md={6}>
                       <Box>
                         <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
-                          {translate('partner_details.phone')}:
+                          {translate('account_manager.partner_details.phone')}:
                         </Typography>
                         <Typography
                           variant="subtitle1"
@@ -529,7 +530,7 @@ function AccountPartnerDetails() {
                     variant="subtitle1"
                     sx={{ mt: 4, mb: 2, fontWeight: theme.typography.fontWeightBold }}
                   >
-                    {translate('partner_details.bank_information')}
+                    {translate('account_manager.partner_details.bank_information')}
                   </Typography>
                   <Grid container spacing={{ xs: 2 }} component="div">
                     {partnerDetails?.user &&
@@ -582,7 +583,7 @@ function AccountPartnerDetails() {
                         color="primary"
                         disabled={isSubmitting}
                       >
-                        {translate('activate_account')}
+                        {translate('account_manager.partner_details.btn_activate_account')}
                       </Button>
                     )}
                   </Grid>
@@ -592,7 +593,7 @@ function AccountPartnerDetails() {
                       color="error"
                       onClick={() => handleDeleteAccount(user?.email)}
                     >
-                      {translate('delete_account')}
+                      {translate('account_manager.partner_details.btn_deleted_account')}
                     </Button>
                   </Grid>
                   <Grid item>
@@ -602,7 +603,7 @@ function AccountPartnerDetails() {
                       endIcon={<Iconify icon="eva:message-circle-outline" />}
                       onClick={() => navigate(PATH_ACCOUNTS_MANAGER.messages)}
                     >
-                      {translate('partner_details.send_messages')}
+                      {translate('account_manager.partner_details.send_messages')}
                     </Button>
                   </Grid>
                   <Grid item>
@@ -616,7 +617,7 @@ function AccountPartnerDetails() {
                         )
                       }
                     >
-                      {translate('partner_details.submit_amendment_request')}
+                      {translate('account_manager.partner_details.submit_amendment_request')}
                     </Button>
                   </Grid>
                 </Grid>
