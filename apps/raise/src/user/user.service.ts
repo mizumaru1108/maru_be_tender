@@ -5,7 +5,11 @@ import { FusionAuthClient } from '@fusionauth/typescript-client';
 import { ConfigService } from '@nestjs/config';
 
 import { User, UserDocument } from './schema/user.schema';
-import { RegFromFusionAuthTenderDto, RegisterFromFusionAuthDto, RegisterFromFusionAuthTenderDto } from './dtos/register-from-fusion-auth.dto';
+import {
+  RegFromFusionAuthTenderDto,
+  RegisterFromFusionAuthDto,
+  RegisterFromFusionAuthTenderDto,
+} from './dtos/register-from-fusion-auth.dto';
 import { RoleEnum } from './enums/role-enum';
 import { Donor } from 'src/donor/schema/donor.schema';
 import { PrismaService } from '../prisma/prisma.service';
@@ -18,7 +22,7 @@ export class UserService {
     private configService: ConfigService,
     @InjectModel('Donor') private readonly donorModel: Model<Donor>,
     private prisma: PrismaService,
-  ) { }
+  ) {}
 
   async registerFromFusion(request: RegisterFromFusionAuthDto): Promise<User> {
     const newUser = new this.userModel({
@@ -48,7 +52,7 @@ export class UserService {
   /** Create user and client for tender */
   async regFromFusionTender(request: RegFromFusionAuthTenderDto) {
     const emailData = await this.prisma.user.findUnique({
-      where: { email: request.email }
+      where: { email: request.email },
     });
 
     if (emailData && emailData.email) {
@@ -67,9 +71,9 @@ export class UserService {
           user_type_id: request.user_type_id,
           is_active: request.is_active,
           employees_permissions_employees_permissionsTouser: {
-            create: dataEmp[0]
+            create: dataEmp[0],
           },
-        }
+        },
       });
       return result;
     } catch (error) {
@@ -96,6 +100,7 @@ export class UserService {
               ceo_mobile: request.ceo_mobile,
               data_entry_mail: request.data_entry_mail,
               data_entry_name: request.data_entry_name,
+              data_entry_mobile: request.data_entry_mobile,
               ceo_name: request.ceo_name,
               entity_mobile: request.entity_mobile,
               governorate: request.governorate,
@@ -107,23 +112,21 @@ export class UserService {
               license_expired: request.license_expired,
               license_issue_date: request.license_issue_date,
               num_of_beneficiaries: request.num_of_beneficiaries,
-              data_entry_mobile: request.data_entry_mobile,
               website: request.website,
               twitter_acount: request.twitter_acount,
               num_of_employed_facility: request.num_of_employed_facility,
               phone: request.phone,
-
-            }
+            },
           },
           bank_information: {
-            create: request.bank_informations
-          }
-        }
+            create: request.bank_informations,
+          },
+        },
       });
       return result;
     } catch (error) {
       console.log(error);
-      throw new Error("something went wrong!");
+      throw new Error('something went wrong!');
     }
   }
 
@@ -258,7 +261,5 @@ export class UserService {
     }
   }
 
-  async verifyEmailAuthZed(verfUserId: string) {
-
-  }
+  async verifyEmailAuthZed(verfUserId: string) {}
 }

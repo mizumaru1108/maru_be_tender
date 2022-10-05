@@ -1,6 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsString, IsNotEmpty, IsEnum, IsEmpty, IsOptional, IsEmail, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsEnum,
+  IsEmpty,
+  IsOptional,
+  IsEmail,
+  ValidateNested,
+} from 'class-validator';
 import { RoleTenderEnum } from '../enums/role-enum';
 
 export class RegisterFromFusionAuthDto {
@@ -35,7 +43,6 @@ export class RegisterFromFusionAuthDto {
 
   @ApiProperty()
   mobile?: string;
-
 }
 
 export class RegFromFusionAuthTenderDto {
@@ -70,7 +77,6 @@ export class RegFromFusionAuthTenderDto {
   @ApiProperty()
   @IsOptional()
   is_active?: boolean;
-
 }
 
 class bankData {
@@ -95,7 +101,6 @@ class bankData {
   card_image: string;
 }
 export class RegisterFromFusionAuthTenderDto {
-
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -118,7 +123,6 @@ export class RegisterFromFusionAuthTenderDto {
   @ApiProperty()
   @IsString()
   employee_name: string;
-
 
   @ApiProperty()
   @IsString()
@@ -167,7 +171,6 @@ export class RegisterFromFusionAuthTenderDto {
   @ApiProperty()
   @IsString()
   license_expired: string;
-
 
   @ApiProperty()
   @IsString()
@@ -221,11 +224,6 @@ export class RegisterFromFusionAuthTenderDto {
   @ApiProperty()
   @IsString()
   date_of_esthablistmen: string;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  mobile_data_entry: string;
 
   @ApiProperty()
   @ValidateNested()

@@ -16,7 +16,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   }
 
   async onModuleInit() {
-    console.log('POSTGRES_URL', this.configService.get('POSTGRES_URL')!);
     await this.$connect();
   }
 

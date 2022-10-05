@@ -1,10 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsBoolean, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { RoleTenderEnum } from 'src/user/enums/role-enum';
 
 export class RegReqTenderDto {
-
   @ApiProperty()
   @IsOptional()
   @IsString()
@@ -25,12 +34,11 @@ export class RegReqTenderDto {
   @ApiProperty()
   @IsOptional()
   @IsString()
-  @IsEnum(RoleTenderEnum,
-    {
-      message: `Enum Valid is CLIENT, ACCOUNTS_MANAGER,  MODERATOR,
+  @IsEnum(RoleTenderEnum, {
+    message: `Enum Valid is CLIENT, ACCOUNTS_MANAGER,  MODERATOR,
                 PROJECT_SUPERVISOR, PROJECT_MANAGER,
-                CONSULTANT, CEO, FINANCE, CASHIER, ADMIN`
-    })
+                CONSULTANT, CEO, FINANCE, CASHIER, ADMIN`,
+  })
   user_type_id: RoleTenderEnum;
 
   @ApiProperty()
@@ -88,18 +96,15 @@ class bankData {
   card_image: string;
 }
 class basePayload {
-
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
   id: string;
 
-
   @ApiProperty()
   @IsEmail()
   @IsNotEmpty()
   email: string;
-
 
   @ApiProperty()
   @IsString()
@@ -126,7 +131,6 @@ class basePayload {
   @ApiProperty()
   @IsNotEmpty()
   board_ofdec_file: string;
-
 
   @ApiProperty()
   @IsNotEmpty()
@@ -161,10 +165,10 @@ class basePayload {
   @IsNotEmpty()
   headquarters: string;
 
-  @ApiProperty()
-  @IsOptional()
-  @IsNotEmpty()
-  mobile_data_entry: string;
+  // @ApiProperty()
+  // @IsString()
+  // @IsNotEmpty()
+  // mobile_data_entry: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -179,6 +183,7 @@ class basePayload {
   license_issue_date: string;
 
   @ApiProperty()
+  @IsString()
   @IsNotEmpty()
   data_entry_mobile: string;
 
@@ -224,7 +229,6 @@ class basePayload {
   @ValidateNested()
   @Type(() => bankData)
   bank_informations: bankData;
-
 }
 
 export class RegisterTendersDto {
@@ -237,4 +241,3 @@ export class RegisterTendersDto {
   @IsArray()
   roles: Array<string>;
 }
-

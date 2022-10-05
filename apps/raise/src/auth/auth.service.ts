@@ -1,4 +1,9 @@
-import { BadRequestException, ConsoleLogger, HttpException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConsoleLogger,
+  HttpException,
+  Injectable,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import moment from 'moment';
 import { rootLogger } from 'src/logger';
@@ -6,7 +11,12 @@ import { UserService } from 'src/user/user.service';
 import { EmailService } from '../libs/email/email.service';
 import { FusionAuthService } from '../libs/fusionauth/services/fusion-auth.service';
 import { User } from '../user/schema/user.schema';
-import { LoginRequestDto, RegisterRequestDto, RegisterTendersDto, RegReqTenderDto } from './dtos';
+import {
+  LoginRequestDto,
+  RegisterRequestDto,
+  RegisterTendersDto,
+  RegReqTenderDto,
+} from './dtos';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -18,7 +28,7 @@ export class AuthService {
     private readonly fusionAuthService: FusionAuthService,
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
-  ) { }
+  ) {}
 
   async fusionLogin(loginRequest: LoginRequestDto) {
     const loginResponse = await this.fusionAuthService.fusionAuthLogin(
@@ -101,16 +111,14 @@ export class AuthService {
       mobile_number: result.user.mobilePhone,
       user_type_id: registerRequest.user_type_id,
       is_active: registerRequest.is_active,
-      employees_permissions: registerRequest.employees_permissions
+      employees_permissions: registerRequest.employees_permissions,
     });
     return registeredUser;
   }
 
   async fusionRegisterTender(registerRequest: RegisterTendersDto) {
-    const dataRegister = JSON.stringify(registerRequest.data);
-    const dtReg = JSON.parse(dataRegister);
     const emailData = await this.prisma.user.findUnique({
-      where: { email: dtReg[0].email }
+      where: { email: registerRequest.data.email },
     });
 
     if (emailData) {
@@ -121,16 +129,16 @@ export class AuthService {
         OR: [
           {
             license_number: {
-              equals: dtReg[0].license_number
-            }
+              equals: registerRequest.data.license_number,
+            },
           },
           {
             id: {
-              equals: dtReg[0].id
-            }
+              equals: registerRequest.data.id,
+            },
           },
-        ]
-      }
+        ],
+      },
     });
 
     if (licenseNumber) {
@@ -146,52 +154,58 @@ export class AuthService {
       if (result && result.user.id) {
         registeredUser = await this.usersService.registerFromFusionTender({
           id_: result.user.id,
-          id: dtReg[0].id,
-          authority: dtReg[0].authority,
-          board_ofdec_file: dtReg[0].board_ofdec_file,
-          center_administration: dtReg[0].center_administration,
-          ceo_mobile: dtReg[0].ceo_mobile,
-          ceo_name: dtReg[0].ceo_name,
-          data_entry_mail: dtReg[0].data_entry_mail,
-          data_entry_mobile: dtReg[0].data_entry_mobile,
-          email: dtReg[0].email,
-          employee_name: dtReg[0].employee_name,
-          employee_path: dtReg[0].employee_path,
-          entity: dtReg[0].entity,
-          entity_mobile: dtReg[0].entity_mobile,
-          governorate: dtReg[0].governorate,
-          headquarters: dtReg[0].headquarters,
-          license_expired: moment(dtReg[0].license_expired).toISOString(), // Date
-          license_file: dtReg[0].license_file,
-          license_issue_date: moment(dtReg[0].license_issue_date).toISOString(), // Date
-          license_number: dtReg[0].license_number,
-          num_of_beneficiaries: dtReg[0].num_of_beneficiaries,
-          num_of_employed_facility: dtReg[0].num_of_employed_facility,
-          data_entry_name: dtReg[0].data_entry_name,
-          date_of_esthablistmen: moment(dtReg[0].date_of_esthablistmen).toISOString(),// Date
-          password: "",
-          phone: dtReg[0].phone,
-          region: dtReg[0].region,
-          status: dtReg[0].status,
-          twitter_acount: dtReg[0].twitter_acount,
-          website: dtReg[0].website,
-          mobile_data_entry: dtReg[0].mobile_data_entry,
-          bank_informations: dtReg[0].bank_informations
+          id: registerRequest.data.id,
+          authority: registerRequest.data.authority,
+          board_ofdec_file: registerRequest.data.board_ofdec_file,
+          center_administration: registerRequest.data.center_administration,
+          ceo_mobile: registerRequest.data.ceo_mobile,
+          ceo_name: registerRequest.data.ceo_name,
+          data_entry_mail: registerRequest.data.data_entry_mail,
+          data_entry_mobile: registerRequest.data.data_entry_mobile,
+          email: registerRequest.data.email,
+          employee_name: registerRequest.data.employee_name,
+          employee_path: registerRequest.data.employee_path,
+          entity: registerRequest.data.entity,
+          entity_mobile: registerRequest.data.entity_mobile,
+          governorate: registerRequest.data.governorate,
+          headquarters: registerRequest.data.headquarters,
+          license_expired: moment(
+            registerRequest.data.license_expired,
+          ).toISOString(), // Date
+          license_file: registerRequest.data.license_file,
+          license_issue_date: moment(
+            registerRequest.data.license_issue_date,
+          ).toISOString(), // Date
+          license_number: registerRequest.data.license_number,
+          num_of_beneficiaries: registerRequest.data.num_of_beneficiaries,
+          num_of_employed_facility:
+            registerRequest.data.num_of_employed_facility,
+          data_entry_name: registerRequest.data.data_entry_name,
+          date_of_esthablistmen: moment(
+            registerRequest.data.date_of_esthablistmen,
+          ).toISOString(), // Date
+          password: '',
+          phone: registerRequest.data.phone,
+          region: registerRequest.data.region,
+          status: registerRequest.data.status,
+          twitter_acount: registerRequest.data.twitter_acount,
+          website: registerRequest.data.website,
+          bank_informations: registerRequest.data.bank_informations,
         });
         return registeredUser;
       } else {
         return {
           messageCode: 400,
           message: 'An error occured while sending data',
-        }
+        };
       }
     } catch (error) {
-      console.log('error', error)
-      console.log('error=', error.response)
+      console.log('error', error);
+      console.log('error=', error.response);
       return {
         messageCode: 400,
         message: error.response,
-      }
+      };
     }
   }
 
