@@ -53,7 +53,12 @@ function FloatingActionBar() {
     await accept({
       proposalId: pid,
       approveProposalPayloads: {
-        inner_status: 'ACCEPTED',
+        inner_status:
+          currentRoles === 'tender_ceo'
+            ? 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION'
+            : currentRoles === 'tender_moderator'
+            ? 'ACCEPTED_BY_MODERATOR'
+            : `${a}`, // the next step when accepted
         outter_status: 'ONGOING',
         state:
           currentRoles === 'tender_ceo'
