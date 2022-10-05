@@ -1,5 +1,7 @@
+import MessagesPage from '../../../components/message';
+
 function CeoMessage() {
-  return <div>this is message page</div>;
+  return <MessagesPage />;
 }
 
 export default CeoMessage;
