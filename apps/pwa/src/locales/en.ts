@@ -564,6 +564,8 @@ const en = {
       link_view_all: 'View All',
       info_update_request: 'Information update requests',
       partner_management: 'Partner management',
+      amandment_request: 'Send an amendment request to the partner',
+      subhead_amandment_request: 'Write the appropriate notes to inform the partner of the things required of him',
     },
     table: {
       th: {
@@ -611,6 +613,13 @@ const en = {
       submit_amendment_request: 'Submit an amendment request',
       btn_deleted_account: 'Delete account',
       btn_activate_account: 'Activate account',
+      btn_disabled_account: 'Disable account',
+      btn_amndreq_send_request: 'Send request',
+      btn_amndreq_back: 'Back',
+      form: {
+        amndreq_label: 'Notes on account information*',
+        amndreq_placeholder: 'Please write notes here',
+      }
     },
     search_bar: 'Type a name to search for',
   },

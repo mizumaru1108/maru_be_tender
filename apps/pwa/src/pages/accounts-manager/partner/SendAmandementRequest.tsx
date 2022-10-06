@@ -164,10 +164,11 @@ export default function AccountSendAmandementRequest() {
                     />
                   </Button>
                   <Box>
-                    <Typography variant="h4">Send an amendment request to the partner</Typography>
+                    <Typography variant="h4">
+                      {translate('account_manager.heading.amandment_request')}
+                    </Typography>
                     <Typography variant="subtitle1" component="p" sx={{ color: '#93A3B0' }}>
-                      Write the appropriate notes to inform the partner of the things required of
-                      him
+                      {translate('account_manager.heading.subhead_amandment_request')}
                     </Typography>
                   </Box>
                 </Box>
@@ -178,8 +179,10 @@ export default function AccountSendAmandementRequest() {
                   <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
                     <RHFTextArea
                       name="notes"
-                      label={translate('partner_details.send_request.form1.label')}
-                      placeholder={translate('partner_details.send_request.form1.placeholder')}
+                      label={translate('account_manager.partner_details.form.amndreq_label')}
+                      placeholder={translate(
+                        'account_manager.partner_details.form.amndreq_placeholder'
+                      )}
                       rows={6}
                       sx={{ mb: 4 }}
                     />
@@ -196,7 +199,7 @@ export default function AccountSendAmandementRequest() {
                         endIcon={<Iconify icon="eva:checkmark-outline" />}
                         disabled={isSubmitting}
                       >
-                        {translate('partner_details.send_request.send_button')}
+                        {translate('account_manager.partner_details.btn_amndreq_send_request')}
                       </Button>
                       <Button
                         variant="contained"
@@ -204,7 +207,7 @@ export default function AccountSendAmandementRequest() {
                         sx={{ backgroundColor: '#000000' }}
                         onClick={() => navigate(PATH_ACCOUNTS_MANAGER.infoUpdateRequest)}
                       >
-                        {translate('partner_details.send_request.reference_button')}
+                        {translate('account_manager.partner_details.btn_amndreq_back')}
                       </Button>
                     </Stack>
                   </FormProvider>

@@ -593,6 +593,8 @@ const ar = {
       link_view_all: 'عرض الكل',
       info_update_request: 'طلبات تحديث المعلومات',
       partner_management: 'إدارة الشركاء',
+      amandment_request: 'ارسال طلب تعديل للشريك',
+      subhead_amandment_request: 'قم بكتابة الملاحظات المناسبة لإعلام الشريك بالامور المطلوبة منه',
     },
     table: {
       th: {
@@ -640,7 +642,13 @@ const ar = {
       submit_amendment_request: 'ارسال طلب تعديل',
       btn_deleted_account: 'حذف الحساب',
       btn_activate_account: 'تفعيل الحساب',
-      disabled_account: 'حساب معلق',
+      btn_disabled_account: 'تعطيل الحساب',
+      btn_amndreq_send_request: 'ارسال الطلب',
+      btn_amndreq_back: 'رجوع',
+      form: {
+        amndreq_label: 'ملاحظات على معلومات الحساب*',
+        amndreq_placeholder: 'الرجاء كتابة الملاحظات هنا',
+      }
     },
     search_bar: 'اكتب اسم للبحث عنه',
   },
