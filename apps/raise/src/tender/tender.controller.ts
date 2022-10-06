@@ -5,6 +5,7 @@ import {
   UploadedFiles,
   UseInterceptors,
   HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@webundsoehne/nest-fastify-file-upload';
 import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
@@ -23,6 +24,7 @@ export class TenderController {
     @Body() payload: UploadFilesDto,
     @UploadedFiles() file: MulterFile[],
   ): Promise<BaseResponse<string>> {
+    if (!file) throw new BadRequestException();
     const uploadResult = await this.tenderService.uploadFiles(payload, file);
     return baseResponseHelper(
       uploadResult,

@@ -54,9 +54,9 @@ export class TenderService {
           true,
           path,
         );
-        if (!uploaded) {
-          throw new BadRequestException('Failed to upload file!');
-        }
+        // if (!uploaded) {
+        //   throw new BadRequestException('Failed to upload file!');
+        // }
         // console.log('uploaded', uploaded);
         if (uploaded) uploadedFileLinks += `[${index}] ${uploaded} \n`;
       });

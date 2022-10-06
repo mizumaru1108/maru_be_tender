@@ -183,7 +183,7 @@ export class BunnyService {
     console.log('path', path);
     console.log('fileName after path: ', fileName);
 
-    const mediaUrl = this.urlMedia + '/' + path;
+    const mediaUrl = this.urlMedia + '/' + fileName;
 
     const options: AxiosRequestConfig<any> = {
       method: 'PUT',
