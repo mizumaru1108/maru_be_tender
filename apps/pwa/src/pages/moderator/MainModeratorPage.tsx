@@ -1,12 +1,12 @@
 // material
-import { Container, styled } from '@mui/material';
+import { Container, Grid, styled, Typography } from '@mui/material';
 // components
 import { CardInsight } from 'components/card-insight';
 import Page from 'components/Page';
 import { useEffect, useState } from 'react';
 import { useQuery } from 'urql';
 import { CardInsightProps } from '../../components/card-insight/types';
-import { CardTable } from '../../components/card-table';
+import { CardTable, ProjectCard } from '../../components/card-table';
 import { ProjectCardProps } from '../../components/card-table/types';
 import useLocales from '../../hooks/useLocales';
 import {
@@ -87,20 +87,22 @@ function MainManagerPage() {
     };
     if (incomingData) {
       // map incomingData then push to previousSupport with const function
-      const prev = incomingData.proposal.map((item: any) => ({
-        title: {
-          id: item.id,
-        },
-        content: {
-          projectName: item.project_name,
-          employee: item.user.employee_name,
-          sentSection: item.state,
-        },
-        footer: {
-          createdAt: item.created_at,
-        },
-        cardFooterButtonAction: 'show-details',
-      }));
+      const prev = incomingData.proposal;
+      // (
+      //   {
+      //   title: {
+      //     id: item.id,
+      //   },
+      //   content: {
+      //     projectName: item.project_name,
+      //     employee: item.user.employee_name,
+      //     sentSection: item.state,
+      //   },
+      //   footer: {
+      //     createdAt: item.created_at,
+      //   },
+      //   cardFooterButtonAction: 'show-details',
+      // }));
       previousSupport.push(...prev);
       setSupportRequest(previousSupport);
     }
@@ -146,16 +148,27 @@ function MainManagerPage() {
               cardStyle={{ p: 2, bgcolor: 'white' }}
             />
           )}
-          <CardTable
-            data={supportRequest} // For testing, later on we will send the query to it
-            title={translate('incoming_support_requests')}
-            pagination={false}
-            limitShowCard={4}
-            // alphabeticalOrder={true} // optional
-            // filters={[filter]} // optional
-            // taps={['كل المشاريع', 'مشاريع منتهية', 'مشاريع معلقة']}
-            cardFooterButtonAction="show-details"
-          />
+          <Typography variant="h4" sx={{ mb: '20px' }}>
+            {supportRequest.length === 0 ? '' : translate('incoming_support_requests')}
+          </Typography>
+          <Grid container rowSpacing={3} columnSpacing={3}>
+            {supportRequest?.map((item: any, index: any) => (
+              <Grid item md={6} key={index}>
+                <ProjectCard
+                  title={{ id: item.id }}
+                  content={{
+                    projectName: item.project_name,
+                    organizationName: item.project_name,
+                    sentSection: 'Moderator',
+                    employee: 'Moderator',
+                  }}
+                  footer={{ createdAt: new Date(item.createdAt) }}
+                  cardFooterButtonAction="show-details"
+                  destination="requests-in-process"
+                />
+              </Grid>
+            ))}
+          </Grid>
         </ContentStyle>
       </Container>
     </Page>

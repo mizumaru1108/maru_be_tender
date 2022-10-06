@@ -574,7 +574,7 @@ function AccountPartnerDetails() {
                         color="warning"
                         disabled={isSubmitting}
                       >
-                        {translate('disabled_account')}
+                        {translate('account_manager.partner_details.disabled_account')}
                       </Button>
                     ) : (
                       <Button
