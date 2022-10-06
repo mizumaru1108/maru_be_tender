@@ -7,7 +7,7 @@ import useLocales from '../../../../hooks/useLocales';
 export const ApproveProposalFormFields = [
   {
     type: 'select',
-    name: 'المشرفين',
+    name: 'supervisors',
     label: 'المشرفين',
     xs: 12,
     md: 6,
@@ -28,38 +28,38 @@ export const ApproveProposalFormFields = [
   },
   {
     type: 'select',
-    name: 'المسار',
+    name: 'path',
     label: 'المسار',
     xs: 12,
     md: 6,
     placeholder: 'المسار',
     children: (
       <>
-        <option value="mosques" style={{ backgroundColor: '#fff' }}>
-          mosques
+        <option value="مشروع يخص المساجد" style={{ backgroundColor: '#fff' }}>
+          مشروع يخص المساجد
         </option>
-        <option value="concessionalGrants" style={{ backgroundColor: '#fff' }}>
-          concessionalGrants
-        </option>{' '}
-        <option value="initiatives" style={{ backgroundColor: '#fff' }}>
-          initiatives
+        <option value="مشروع يخص المنح الميسر" style={{ backgroundColor: '#fff' }}>
+          مشروع يخص المنح الميسر
         </option>
-        <option value="baptisms" style={{ backgroundColor: '#fff' }}>
-          baptisms
+        <option value="مشروع يخص المبادرات" style={{ backgroundColor: '#fff' }}>
+          مشروع يخص المبادرات
+        </option>
+        <option value="test" style={{ backgroundColor: '#fff' }}>
+          مشروع يخص تعميدات
         </option>
       </>
     ),
   },
   {
     type: 'textArea',
-    name: 'الإجراءات',
+    name: 'procedures',
     label: 'الإجراءات',
     xs: 12,
     placeholder: 'الإجراءات',
   },
   {
     type: 'textArea',
-    name: 'المخرجات الداعمة',
+    name: 'supportOutputs',
     label: 'المخرجات الداعمة',
     xs: 12,
     placeholder: 'المخرجات الداعمة',
@@ -69,7 +69,7 @@ export const ApproveProposalFormFields = [
 export const RejectProposalFormFields = [
   {
     type: 'textField',
-    name: 'الإجراءات',
+    name: 'procedures',
     label: 'الإجراءات',
     xs: 12,
     placeholder: 'الإجراءات',
