@@ -4,7 +4,6 @@ import useLocales from '../../../../hooks/useLocales';
 /**
  * The form which has conditions inside, I write it in the dummy way
  */
-
 export const ApproveProposalFormFields = [
   {
     type: 'select',
