@@ -33,10 +33,11 @@ export const moderatorRoute = {
       path: 'dashboard',
       children: [
         { element: <Navigate to="/moderator/dashboard/app" replace />, index: true },
+        { path: 'app', element: <MainModeratorPage /> },
         {
-          path: 'app',
+          path: 'requests-in-process',
           children: [
-            { path: '', element: <MainModeratorPage /> },
+            { path: '', element: <IncomingSupportRequests /> },
             {
               path: ':id/:actionType',
               children: [

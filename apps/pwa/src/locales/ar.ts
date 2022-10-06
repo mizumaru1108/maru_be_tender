@@ -640,6 +640,7 @@ const ar = {
       submit_amendment_request: 'ارسال طلب تعديل',
       btn_deleted_account: 'حذف الحساب',
       btn_activate_account: 'تفعيل الحساب',
+      disabled_account: 'حساب معلق',
     },
     search_bar: 'اكتب اسم للبحث عنه',
   },

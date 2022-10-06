@@ -7,27 +7,6 @@ import useLocales from '../../../../hooks/useLocales';
 export const ApproveProposalFormFields = [
   {
     type: 'select',
-    name: 'supervisors',
-    label: 'المشرفين',
-    xs: 12,
-    md: 6,
-    placeholder: 'المشرفين',
-    children: (
-      <>
-        <option value="supervisor1" style={{ backgroundColor: '#fff' }}>
-          supervisors1
-        </option>
-        <option value="supervisor2" style={{ backgroundColor: '#fff' }}>
-          supervisor2
-        </option>{' '}
-        <option value="supervisor3" style={{ backgroundColor: '#fff' }}>
-          supervisors3
-        </option>
-      </>
-    ),
-  },
-  {
-    type: 'select',
     name: 'path',
     label: 'المسار',
     xs: 12,
@@ -50,6 +29,28 @@ export const ApproveProposalFormFields = [
       </>
     ),
   },
+  {
+    type: 'select',
+    name: 'supervisors',
+    label: 'المشرفين',
+    xs: 12,
+    md: 6,
+    placeholder: 'المشرفين',
+    children: (
+      <>
+        <option value="supervisor1" style={{ backgroundColor: '#fff' }}>
+          supervisors1
+        </option>
+        <option value="supervisor2" style={{ backgroundColor: '#fff' }}>
+          supervisor2
+        </option>{' '}
+        <option value="supervisor3" style={{ backgroundColor: '#fff' }}>
+          supervisors3
+        </option>
+      </>
+    ),
+  },
+
   {
     type: 'textArea',
     name: 'procedures',
