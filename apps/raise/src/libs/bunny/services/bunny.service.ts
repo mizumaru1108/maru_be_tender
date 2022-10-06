@@ -175,9 +175,13 @@ export class BunnyService {
       ? uploadFileNameParser(file.originalname)
       : file.originalname;
 
+    console.log('fileName befor path: ', fileName);
+
     if (path) {
       fileName = path + '/' + fileName;
     }
+    console.log('path', path);
+    console.log('fileName after path: ', fileName);
 
     const mediaUrl = this.urlMedia + '/' + path;
 
