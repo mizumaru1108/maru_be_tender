@@ -1,37 +1,39 @@
 import { FormSingleProps } from 'components/FormGenerator';
+import useLocales from '../../../../hooks/useLocales';
 
 /**
  * The form which has conditions inside, I write it in the dummy way
  */
+
 export const ApproveProposalFormFields = [
   {
     type: 'select',
-    name: 'supervisors',
-    label: 'supervisors',
+    name: 'المشرفين',
+    label: 'المشرفين',
     xs: 12,
     md: 6,
-    placeholder: 'supervisors',
+    placeholder: 'المشرفين',
     children: (
       <>
         <option value="supervisor1" style={{ backgroundColor: '#fff' }}>
-          supervisor1
+          supervisors1
         </option>
         <option value="supervisor2" style={{ backgroundColor: '#fff' }}>
           supervisor2
         </option>{' '}
         <option value="supervisor3" style={{ backgroundColor: '#fff' }}>
-          supervisor3
+          supervisors3
         </option>
       </>
     ),
   },
   {
     type: 'select',
-    name: 'path',
-    label: 'path',
+    name: 'المسار',
+    label: 'المسار',
     xs: 12,
     md: 6,
-    placeholder: 'path',
+    placeholder: 'المسار',
     children: (
       <>
         <option value="mosques" style={{ backgroundColor: '#fff' }}>
@@ -51,26 +53,26 @@ export const ApproveProposalFormFields = [
   },
   {
     type: 'textArea',
-    name: 'procedures',
-    label: 'procedures',
+    name: 'الإجراءات',
+    label: 'الإجراءات',
     xs: 12,
-    placeholder: 'procedures',
+    placeholder: 'الإجراءات',
   },
   {
     type: 'textArea',
-    name: 'supportOutputs',
-    label: 'supportOutputs',
+    name: 'المخرجات الداعمة',
+    label: 'المخرجات الداعمة',
     xs: 12,
-    placeholder: 'supportOutputs',
+    placeholder: 'المخرجات الداعمة',
   },
 ] as Array<FormSingleProps>;
 
 export const RejectProposalFormFields = [
   {
     type: 'textField',
-    name: 'procedures',
-    label: 'procedures',
+    name: 'الإجراءات',
+    label: 'الإجراءات',
     xs: 12,
-    placeholder: 'procedures',
+    placeholder: 'الإجراءات',
   },
 ] as Array<FormSingleProps>;

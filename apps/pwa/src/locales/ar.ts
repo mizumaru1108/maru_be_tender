@@ -483,6 +483,10 @@ const ar = {
   accept: 'قبول',
   reject: 'رفض',
   close: 'اغلاق',
+  supervisors: 'المشرفين',
+  path: 'المسار',
+  procedures: 'الإجراءات',
+  supportOutputs: 'المخرجات الداعمة',
 
   // TENDER_CEO PAGES
   rejection_list: 'قائمة الرفض', //navigation
@@ -579,29 +583,29 @@ const ar = {
       suspended_partners: 'الشركاء  المعلقين آليا',
       active_partners: 'الشركاء المفعلين',
       rejected_partners: 'الجهات المرفوضة',
-      number_of_request: 'عدد طلبات الانضمام الكلي'
+      number_of_request: 'عدد طلبات الانضمام الكلي',
     },
     heading: {
       daily_stats: 'احصائيات يومية',
       new_join_request: 'طلبات الانضمام الواردة',
       link_view_all: 'عرض الكل',
       info_update_request: 'طلبات تحديث المعلومات',
-      partner_management: 'إدارة الشركاء'
+      partner_management: 'إدارة الشركاء',
     },
     table: {
       th: {
         partner_name: 'اسم الشريك',
         createdAt: 'تاريخ التسجيل',
         account_status: 'حالة الحساب',
-        events: 'الاحداث'
+        events: 'الاحداث',
       },
       td: {
         btn_account_review: 'استعراض الحساب',
         btn_view_partner_projects: 'عرض مشاريع الشريك',
         label_waiting_activation: 'بانتظار التفعيل',
         label_active_account: 'حساب مفعل',
-        label_canceled_account: 'حساب ملغى'
-      }
+        label_canceled_account: 'حساب ملغى',
+      },
     },
     partner_details: {
       main_information: 'المعلومات الرئيسية',
@@ -633,10 +637,10 @@ const ar = {
       send_messages: 'ارسال رسالة للشريك',
       submit_amendment_request: 'ارسال طلب تعديل',
       btn_deleted_account: 'حذف الحساب',
-      btn_activate_account: 'تفعيل الحساب'
+      btn_activate_account: 'تفعيل الحساب',
     },
-    search_bar: 'اكتب اسم للبحث عنه'
-  }
+    search_bar: 'اكتب اسم للبحث عنه',
+  },
 };
 
 export default ar;
