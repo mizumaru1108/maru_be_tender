@@ -60,7 +60,7 @@ function RequestsInProcess() {
                 sentSection: 'Finance',
                 employee: 'Finance',
               }}
-              footer={{ createdAt: new Date(item.createdAt), payments: item.payments }}
+              footer={{ createdAt: new Date(item.created_at), payments: item.payments }}
               cardFooterButtonAction="completing-exchange-permission"
               destination="requests-in-process"
             />

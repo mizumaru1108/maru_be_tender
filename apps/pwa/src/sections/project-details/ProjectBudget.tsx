@@ -1,4 +1,5 @@
 import { Box, Divider, Stack, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 
 const data = [
   {
@@ -32,7 +33,14 @@ const data = [
     cost: '2,000 ريال',
   },
 ];
-function ProjectBudget() {
+
+type Budget = { amount: number; clause: string; explanation: string; id: string };
+
+type IProps = {
+  data: Budget[];
+  total: number;
+};
+function ProjectBudget({ data, total }: IProps) {
   return (
     <>
       <Box
@@ -50,17 +58,17 @@ function ProjectBudget() {
         <Typography flex={3}>الشرح</Typography>
         <Typography flex={2}>المبلغ</Typography>
       </Box>
-      {data.map((item, index) => (
+      {data.map((item: Budget, index) => (
         <>
           <Stack direction="row" key={index} gap={3}>
             <Typography flex={2} sx={{ color: '#1E1E1E' }}>
-              {item.field}
+              {item.clause}
             </Typography>
             <Typography flex={3} sx={{ color: '#1E1E1E' }}>
               {item.explanation}
             </Typography>
-            <Typography flex={2} sx={{ pt: '25px', color: '#1E1E1E' }}>
-              {item.cost}
+            <Typography flex={2} sx={{ color: '#1E1E1E' }}>
+              {item.amount}
             </Typography>
           </Stack>
           <Divider />
@@ -80,7 +88,7 @@ function ProjectBudget() {
         <Box flex={2} />
         <Box flex={2} />
         <Typography variant="h6" flex={2.8}>
-          المبلغ الاجمالي: 10,000 ريال
+          {`المبلغ الإجمالي : ${total} ريال`}
         </Typography>
       </Box>
     </>

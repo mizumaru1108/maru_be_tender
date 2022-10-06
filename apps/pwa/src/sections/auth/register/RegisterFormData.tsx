@@ -1,6 +1,6 @@
 import { FormSingleProps } from 'components/FormGenerator';
 
-const regions = [
+export const REGIONS = [
   'منطقة الرياض',
   'منطقة مكة المكرمة',
   'منطقة المدينة المنورة',
@@ -15,7 +15,7 @@ const regions = [
   'منطقة الباحة',
   'منطقة الجوف',
 ];
-const governorates = [
+export const GOVERNORATES = [
   'الرياض',
   'الدرعية',
   'الخرج',
@@ -79,7 +79,7 @@ export const ConnectingInfoData = [
     placeholder: 'register_form2.region.placeholder',
     children: (
       <>
-        {regions.map((item, index) => (
+        {REGIONS.map((item, index) => (
           <option key={index} value={item} style={{ backgroundColor: '#fff' }}>
             {item}
           </option>
@@ -96,7 +96,7 @@ export const ConnectingInfoData = [
     placeholder: 'register_form2.region.placeholder',
     children: (
       <>
-        {governorates.map((item, index) => (
+        {GOVERNORATES.map((item, index) => (
           <option key={index} value={item} style={{ backgroundColor: '#fff' }}>
             {item}
           </option>

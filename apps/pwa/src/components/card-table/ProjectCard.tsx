@@ -190,7 +190,9 @@ const ProjectCard = ({
               </>
             )}
           </Stack>
-          <Stack direction="column" gap={1} style={{ marginLeft: '100px' }}>
+
+          {/* the project status */}
+          {/* <Stack direction="column" gap={1} style={{ marginLeft: '100px' }}>
             {content.projectStatus && (
               <>
                 <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
@@ -213,7 +215,7 @@ const ProjectCard = ({
                 </Typography>
               </>
             )}
-          </Stack>
+          </Stack> */}
         </Stack>
         {content.projectDetails && (
           <>

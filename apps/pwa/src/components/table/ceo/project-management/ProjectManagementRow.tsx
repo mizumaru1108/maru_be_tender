@@ -38,6 +38,7 @@ export default function ProjectManagementTableRow({
       </TableCell>
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
+          {/* it should be the entity */}
           {row.associationName ? stringTruncate(row.associationName, 23) : 'N/A'}
         </Typography>
       </TableCell>

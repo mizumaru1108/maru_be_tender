@@ -1,4 +1,5 @@
 import { Box, Button, Grid, Stack, Typography } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { updatePayment } from 'queries/project-supervisor/updatePayment';
 import React, { useEffect, useState } from 'react';
 import { useMutation } from 'urql';
@@ -35,6 +36,7 @@ type PaymentProps = {
     | 'DONE';
 };
 function PaymentsTable({ payments, children }: { payments: PaymentProps[]; children: any }) {
+  const { enqueueSnackbar } = useSnackbar();
   const [currentIssuedPayament, setCurrentIssuedPayament] = useState(0);
   const [beenIssued, setBeenIssued] = useState(false);
   const [_, updatePay] = useMutation(updatePayment);
@@ -42,11 +44,27 @@ function PaymentsTable({ payments, children }: { payments: PaymentProps[]; child
     const payload = { id: data.id, newState: { status: 'ISSUED_BY_SUPERVISOR' } };
     updatePay(payload).then((result) => {
       if (!result.error) {
-        alert('The payment has been issued');
+        enqueueSnackbar('تم إصدار أذن الصرف بنجاح', {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'right',
+          },
+        });
         setBeenIssued(true);
       }
       if (result.error) {
-        alert(`oobs there is an error occured ${result.error}`);
+        enqueueSnackbar(result.error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'right',
+          },
+        });
       }
     });
   };

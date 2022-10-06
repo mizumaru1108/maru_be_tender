@@ -82,7 +82,7 @@ function ExchangePermission() {
                 sentSection: 'Supervisor',
                 employee: 'Supervisor',
               }}
-              footer={{ createdAt: new Date(item.createdAt), payments: item.payments }}
+              footer={{ createdAt: new Date(item.created_at), payments: item.payments }}
               cardFooterButtonAction="completing-exchange-permission"
               destination="exchange-permission"
             />

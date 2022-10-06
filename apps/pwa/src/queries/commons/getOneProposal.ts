@@ -12,6 +12,13 @@ export const getOneProposal = `query MyQuery($id: String!) {
         region
         governorate
       }
+      bank_informations {
+        id
+        bank_account_name
+        bank_account_number
+        bank_name
+        card_image
+      }
     }
     created_at
     num_ofproject_binicficiaries
@@ -33,7 +40,7 @@ export const getOneProposal = `query MyQuery($id: String!) {
     project_attachments
     project_beneficiaries
     inner_status
-    payments (order_by: {order: asc}){
+    payments(order_by: {order: asc}) {
       id
       payment_amount
       payment_date
@@ -41,6 +48,19 @@ export const getOneProposal = `query MyQuery($id: String!) {
       order
     }
     number_of_payments
+    proposal_item_budgets(where: {proposal_id: {_eq: $id}}) {
+      amount
+      explanation
+      clause
+      id
+    }
+    proposal_item_budgets_aggregate(where: {proposal_id: {_eq: $id}}) {
+      aggregate {
+        sum {
+          amount
+        }
+      }
+    }
   }
 }
 `;

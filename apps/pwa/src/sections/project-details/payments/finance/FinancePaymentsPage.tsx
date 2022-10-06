@@ -3,7 +3,6 @@ import React from 'react';
 import PaymentsTable from './PaymentsTable';
 
 function FinancePaymentsPage({ data }: any) {
-  console.log(data);
   return (
     <Grid container spacing={3} sx={{ mt: '8px' }}>
       <Grid item md={12}>

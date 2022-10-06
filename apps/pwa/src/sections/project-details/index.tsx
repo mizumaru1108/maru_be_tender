@@ -98,7 +98,12 @@ function ProjectDetailsMainPage() {
       <ActionBar />
 
       {activeTap === 'main' && <MainPage data={data.proposal_by_pk} />}
-      {activeTap === 'project-budget' && <ProjectBudget />}
+      {activeTap === 'project-budget' && (
+        <ProjectBudget
+          data={data.proposal_by_pk.proposal_item_budgets}
+          total={data.proposal_by_pk.proposal_item_budgets_aggregate.aggregate.sum.amount}
+        />
+      )}
       {activeTap === 'follow-ups' && <FollowUps />}
       {activeTap === 'payments' && <Payments data={data.proposal_by_pk} mutate={reexecuteGetOne} />}
       {activeTap === 'exchange-details' && (

@@ -16,6 +16,7 @@ function RequestsInProcess() {
   }
   const props = data?.proposal ?? [];
   if (!props || props.length === 0) return <></>;
+  console.log(props);
   return (
     <Box sx={{ mt: '20px' }}>
       <Typography variant="h4" sx={{ mb: '20px' }}>
@@ -32,7 +33,7 @@ function RequestsInProcess() {
                 sentSection: 'Supervisor',
                 employee: 'Supervisor',
               }}
-              footer={{ createdAt: new Date(item.createdAt) }}
+              footer={{ createdAt: new Date(item.created_at) }}
               cardFooterButtonAction="show-details"
               destination="requests-in-process"
             />

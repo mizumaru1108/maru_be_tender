@@ -39,18 +39,17 @@ export const ApproveProposalFormFields = [
     children: (
       <>
         <option value="supervisor1" style={{ backgroundColor: '#fff' }}>
-          supervisors1
+          الشمرف 1
         </option>
         <option value="supervisor2" style={{ backgroundColor: '#fff' }}>
-          supervisor2
+          المشرف 2
         </option>{' '}
         <option value="supervisor3" style={{ backgroundColor: '#fff' }}>
-          supervisors3
+          المشرف 3
         </option>
       </>
     ),
   },
-
   {
     type: 'textArea',
     name: 'procedures',

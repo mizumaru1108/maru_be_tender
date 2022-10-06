@@ -500,7 +500,7 @@ const ar = {
   project_management_headercell: {
     project_number: 'رقم المشروع',
     project_name: 'اسم المشروع',
-    association_name: 'اسم الجمعية',
+    association_name: 'اسم العميل',
     section: 'القسم',
     date_created: 'تاريخ الانشاء',
     events: 'الاحداث',
@@ -644,6 +644,8 @@ const ar = {
     },
     search_bar: 'اكتب اسم للبحث عنه',
   },
+  proposal_approved: 'تم قبول الطلب بنجاح',
+  proposal_rejected: 'تم رفض الطلب بنجاح',
 };
 
 export default ar;

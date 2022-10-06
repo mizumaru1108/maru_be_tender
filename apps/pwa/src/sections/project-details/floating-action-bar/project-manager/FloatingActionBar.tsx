@@ -52,7 +52,7 @@ function FloatingActionBar({ organizationId }: any) {
     });
 
     if (!accFetch) {
-      enqueueSnackbar('Proposal Approved!', {
+      enqueueSnackbar(translate('proposal_approved'), {
         variant: 'success',
       });
       createLog({
@@ -94,7 +94,7 @@ function FloatingActionBar({ organizationId }: any) {
     });
 
     if (!rejFetch) {
-      enqueueSnackbar('Proposal Rejected Successfully!', {
+      enqueueSnackbar(translate('proposal_rejected'), {
         variant: 'success',
       });
       createLog({

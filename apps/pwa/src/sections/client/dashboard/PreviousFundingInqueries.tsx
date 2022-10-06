@@ -28,8 +28,8 @@ function PreviousFundingInqueries() {
       },
       content: {
         projectName: item.project_name,
-        createdAt: new Date(item.created_at),
-        projectStatus: item.outter_status,
+        // createdAt: new Date(item.created_at),
+        // projectStatus: item.outter_status,
         projectDetails: item.project_idea,
       },
       footer: {

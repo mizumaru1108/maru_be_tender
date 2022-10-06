@@ -6,11 +6,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import RHFDatePicker from 'components/hook-form/RHFDatePicker';
 import useLocales from 'hooks/useLocales';
 import { MainValuesProps, FormProps } from './types';
+import { REGIONS } from 'sections/auth/register/RegisterFormData';
 
 const MainForm: React.FC<FormProps> = ({ children, onSubmit }) => {
   const { translate } = useLocales();
   const RegisterSchema = Yup.object().shape({
-    entity: Yup.string().required('Entity Area is required'),
+    entity: Yup.string().required('Entity is required'),
+    client_field: Yup.string().required('Client Field Area is required'),
     authority: Yup.string().required('Authority is required'),
     date_of_esthablistmen: Yup.date().default(null).required('Date Of Establishment is required'),
     headquarters: Yup.string().required('Headquarters is required'),
@@ -25,6 +27,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit }) => {
   });
 
   const defaultValues = {
+    client_field: '',
     entity: '',
     authority: '',
     date_of_esthablistmen: '',
@@ -48,12 +51,15 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit }) => {
   const onSubmitForm = async (data: MainValuesProps) => {
     onSubmit(data);
   };
-  const entity = watch('entity');
+  const client_field = watch('client_field');
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7}>
         <Grid item md={12} xs={12}>
-          <RHFSelect name="entity" label={translate('register_form1.entity_area.label')}>
+          <RHFTextField name="entity" label={'اسم العميل'} placeholder={'الرجاء أدخل اسم العميل'} />
+        </Grid>
+        <Grid item md={12} xs={12}>
+          <RHFSelect name="client_field" label={'مجال الجهة'}>
             <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
               {translate('register_form1.entity_area.placeholder')}
             </option>
@@ -65,9 +71,9 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit }) => {
             </option>
           </RHFSelect>
         </Grid>
-        {entity !== '' && (
+        {client_field !== '' && (
           <>
-            {entity === 'main' && (
+            {client_field === 'main' && (
               <Grid item md={12} xs={12}>
                 <RHFSelect name="authority" label={translate('register_form1.authority.label')}>
                   <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
@@ -100,7 +106,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit }) => {
                 </RHFSelect>
               </Grid>
             )}
-            {entity === 'sub' && (
+            {client_field === 'sub' && (
               <Grid item md={12} xs={12}>
                 <RHFTextField
                   name="authority"
@@ -119,12 +125,16 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit }) => {
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFSelect name="headquarters" label={translate('register_form1.headquarters.label')}>
-            <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
-              {translate('register_form1.headquarters.placeholder')}
-            </option>
-            <option value="1" style={{ backgroundColor: '#fff' }}>
-              test option
-            </option>
+            <>
+              <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
+                {translate('register_form1.headquarters.placeholder')}
+              </option>
+              {REGIONS.map((item, index) => (
+                <option key={index} value="item" style={{ backgroundColor: '#fff' }}>
+                  {item}
+                </option>
+              ))}
+            </>
           </RHFSelect>
         </Grid>
         <Grid item md={6} xs={12}>

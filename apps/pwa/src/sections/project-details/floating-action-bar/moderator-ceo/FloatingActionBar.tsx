@@ -70,7 +70,7 @@ function FloatingActionBar() {
     });
 
     if (!accFetch) {
-      enqueueSnackbar('Proposal Approved!', {
+      enqueueSnackbar(translate('proposal_approved'), {
         variant: 'success',
       });
       navigate(`/${p}/dashboard/app`);
@@ -105,7 +105,7 @@ function FloatingActionBar() {
     });
 
     if (!rejFetch) {
-      enqueueSnackbar('Proposal Rejected Successfully!', {
+      enqueueSnackbar(translate('proposal_rejected'), {
         variant: 'success',
       });
       navigate(`/${p}/dashboard/app`);

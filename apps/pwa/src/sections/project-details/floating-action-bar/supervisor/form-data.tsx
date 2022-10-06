@@ -76,8 +76,8 @@ export const ApproveProposalFormFieldsSupervisor = [
   },
   {
     type: 'radioGroup',
-    name: 'هل يحتاج إلى صور',
-    label: 'need_picture',
+    name: 'need_picture',
+    label: 'هل يحتاج إلى صور',
     md: 6,
     xs: 12,
     options: [

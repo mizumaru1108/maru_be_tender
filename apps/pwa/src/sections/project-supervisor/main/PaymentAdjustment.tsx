@@ -19,7 +19,7 @@ function PaymentAdjustment() {
   return (
     <Box sx={{ mt: '20px' }}>
       <Typography variant="h4" sx={{ mb: '20px' }}>
-        طلبات إذن الصرف الواردة
+        ضبط الدفعات
       </Typography>
       <Grid container rowSpacing={3} columnSpacing={3}>
         {props.map((item: any, index: any) => (
@@ -32,7 +32,7 @@ function PaymentAdjustment() {
                 sentSection: 'Supervisor',
                 employee: 'Supervisor',
               }}
-              footer={{ createdAt: new Date(item.createdAt), payments: item.payments }}
+              footer={{ createdAt: new Date(item.created_at), payments: item.payments }}
               cardFooterButtonAction="completing-exchange-permission"
               destination="payment-adjustment"
             />

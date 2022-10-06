@@ -1,4 +1,5 @@
 import { FormSingleProps } from 'components/FormGenerator';
+import { GOVERNORATES, REGIONS } from 'sections/auth/register/RegisterFormData';
 
 export const MainFormData = [
   {
@@ -23,9 +24,13 @@ export const MainFormData = [
     md: 6,
     xs: 12,
     children: (
-      <option value="test" style={{ backgroundColor: '#fff' }}>
-        test
-      </option>
+      <>
+        {REGIONS.map((item, index) => (
+          <option key={index} value="item" style={{ backgroundColor: '#fff' }}>
+            {item}
+          </option>
+        ))}
+      </>
     ),
   },
   {
@@ -54,16 +59,22 @@ export const MainFormData = [
     children: (
       <>
         <option value="GENERAL" style={{ backgroundColor: '#fff' }}>
-          General
+          أخرى
         </option>
         <option value="MIDDLE_AGED" style={{ backgroundColor: '#fff' }}>
-          Middle Aged
+          شباب
         </option>
         <option value="KIDS" style={{ backgroundColor: '#fff' }}>
-          Kids
+          أشبال
+        </option>
+        <option value="MEN" style={{ backgroundColor: '#fff' }}>
+          رجال
+        </option>
+        <option value="WOMEN" style={{ backgroundColor: '#fff' }}>
+          فتيات
         </option>
         <option value="ELDERLY" style={{ backgroundColor: '#fff' }}>
-          Elderly
+          كبار السن
         </option>
       </>
     ),
@@ -167,9 +178,13 @@ export const ConnectingInfoData = [
     md: 6,
     xs: 12,
     children: (
-      <option value="test" style={{ backgroundColor: '#fff' }}>
-        test
-      </option>
+      <>
+        {REGIONS.map((item, index) => (
+          <option key={index} value="item" style={{ backgroundColor: '#fff' }}>
+            {item}
+          </option>
+        ))}
+      </>
     ),
   },
   {
@@ -180,9 +195,13 @@ export const ConnectingInfoData = [
     md: 6,
     xs: 12,
     children: (
-      <option value="test" style={{ backgroundColor: '#fff' }}>
-        test
-      </option>
+      <>
+        {GOVERNORATES.map((item, index) => (
+          <option key={index} value="item" style={{ backgroundColor: '#fff' }}>
+            {item}
+          </option>
+        ))}
+      </>
     ),
   },
 ] as Array<FormSingleProps>;

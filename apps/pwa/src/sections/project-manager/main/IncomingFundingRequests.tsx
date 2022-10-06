@@ -29,7 +29,7 @@ function IncomingFundingRequests() {
                 sentSection: 'Supervisor',
                 employee: 'Supervisor',
               }}
-              footer={{ createdAt: new Date(item.createdAt) }}
+              footer={{ createdAt: new Date(item.created_at) }}
               cardFooterButtonAction="show-details"
               destination="incoming-funding-requests"
             />

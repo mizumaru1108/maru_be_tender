@@ -23,6 +23,7 @@ const taps = [
 ];
 
 const initialValue = {
+  client_field: '',
   agree_on: false,
   entity: '',
   authority: '',

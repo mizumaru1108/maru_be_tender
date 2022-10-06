@@ -5,8 +5,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useEffect, useState } from 'react';
 import { useMutation } from 'urql';
 import { updatePayment } from 'queries/project-supervisor/updatePayment';
+import { useSnackbar } from 'notistack';
 
 function ManagerPaymentsPage({ data, mutate }: any) {
+  const { enqueueSnackbar } = useSnackbar();
   const [paymentToApprove, setPaymentToApprove] = useState<{
     id: string;
     order: number | undefined;
@@ -32,7 +34,15 @@ function ManagerPaymentsPage({ data, mutate }: any) {
     };
     updatePay(payload).then((result) => {
       if (!result.error) {
-        alert('The payment has been issued');
+        enqueueSnackbar('The payment has been issued', {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'right',
+          },
+        });
         setPaymentToApprove({
           id: '',
           order: undefined,
@@ -43,7 +53,15 @@ function ManagerPaymentsPage({ data, mutate }: any) {
         mutate();
       }
       if (result.error) {
-        alert(`oobs there is an error occured ${result.error}`);
+        enqueueSnackbar(result.error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'right',
+          },
+        });
       }
     });
   };

@@ -614,6 +614,8 @@ const en = {
     },
     search_bar: 'Type a name to search for',
   },
+  proposal_approved: 'Proposal Approved!',
+  proposal_rejected: 'Proposal Rejected!',
 };
 
 export default en;

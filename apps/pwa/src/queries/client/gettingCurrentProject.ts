@@ -1,5 +1,5 @@
 export const gettingCurrentProject = `query GettingCurrentProject($id: String = "") {
-  proposal(where: {submitter_user_id: {_eq: $id}, _and: {outter_status: {_eq: ONGOING}}}) {
+  proposal(where: {submitter_user_id: {_eq: $id}, _and: {outter_status: {_eq: PENDING}}}) {
     id
     project_name
     created_at

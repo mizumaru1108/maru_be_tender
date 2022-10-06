@@ -75,6 +75,7 @@ export type ConnectingValuesProps = {
 };
 
 export type MainValuesProps = {
+  client_field: string;
   entity: string;
   authority: string;
   date_of_esthablistmen: string;

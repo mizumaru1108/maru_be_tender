@@ -24,7 +24,7 @@ function CurrentProject() {
   if (!props) {
     return (
       <Container>
-        <Typography variant="h4">المشروع الحالي</Typography>
+        <Typography variant="h4">المشاريع الحالية</Typography>
         <Grid
           container
           spacing={0}
@@ -69,7 +69,7 @@ function CurrentProject() {
               title={{ id: `${props.id}` }}
               content={{
                 projectName: props.project_name,
-                createdAt: new Date(props.created_at),
+                // createdAt: new Date(props.created_at),
                 projectStatus: props.outter_status,
                 projectDetails: props.project_idea,
               }}

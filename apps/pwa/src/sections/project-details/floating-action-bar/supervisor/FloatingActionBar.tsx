@@ -62,7 +62,7 @@ function FloatingActionBar({ organizationId, data }: any) {
     });
 
     if (!accFetch) {
-      enqueueSnackbar('Proposal Approved!', {
+      enqueueSnackbar(translate('proposal_approved'), {
         variant: 'success',
       });
       navigate('/project-supervisor/dashboard/app');
@@ -91,7 +91,7 @@ function FloatingActionBar({ organizationId, data }: any) {
       },
     });
     if (!rejFetch) {
-      enqueueSnackbar('Proposal Rejected Successfully!', {
+      enqueueSnackbar(translate('proposal_rejected'), {
         variant: 'success',
       });
       navigate('/project-supervisor/dashboard/app');

@@ -1,11 +1,13 @@
 import Check from '@mui/icons-material/Check';
 import { Box, Button, Grid, Stack, Typography, useTheme } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { updatePayment } from 'queries/project-supervisor/updatePayment';
 import { useEffect, useState } from 'react';
 import BankImageComp from 'sections/shared/BankImageComp';
 import { useMutation } from 'urql';
 
 function ExchangeDetails({ data, mutate }: any) {
+  const { enqueueSnackbar } = useSnackbar();
   const [currentPayment, setCurrentPayment] = useState<{
     id: string;
     order: number | undefined;
@@ -29,12 +31,29 @@ function ExchangeDetails({ data, mutate }: any) {
     const payload = { id: currentPayment?.id, newState: { status: 'ACCEPTED_BY_FINANCE' } };
     updatePay(payload).then((result) => {
       if (!result.error) {
+        enqueueSnackbar('تم إصدار أذن الصرف بنجاح', {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'right',
+          },
+        });
         alert('The payment has been issued');
         setBeenIssued(true);
         mutate();
       }
       if (result.error) {
-        alert(`oobs there is an error occured ${result.error}`);
+        enqueueSnackbar(result.error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'right',
+          },
+        });
       }
     });
   };

@@ -1,5 +1,6 @@
 import { Button, Box, Stack, Typography, Grid } from '@mui/material';
 import { nanoid } from 'nanoid';
+import { useSnackbar } from 'notistack';
 import { insertChequeUpdatePayment } from 'queries/Cashier/insertChequeUpdatePayment';
 import React, { useState } from 'react';
 import { useLocation } from 'react-router';
@@ -12,6 +13,7 @@ import FormActionBox from './PopUpActionBar';
 import UploadingForm from './UploadingForm';
 
 function CashierPaymentsPage({ data, mutate }: any) {
+  const { enqueueSnackbar } = useSnackbar();
   console.log(data);
   const [modalState, setModalState] = useState(false);
   const [_, insChequeUpdatePay] = useMutation(insertChequeUpdatePayment);
@@ -42,10 +44,26 @@ function CashierPaymentsPage({ data, mutate }: any) {
       newState: { status: 'DONE' },
     }).then((result) => {
       if (result.error) {
-        console.error('Oh no!', result.error);
+        enqueueSnackbar(result.error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'right',
+          },
+        });
       }
       if (!result.error) {
-        alert('The chique has been sent, the payment been modefied ');
+        enqueueSnackbar('تم إرسال الشيك بنجاح, بالإضافة إلى تعديل حالة الدفعة', {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'right',
+          },
+        });
         mutate();
       }
     });

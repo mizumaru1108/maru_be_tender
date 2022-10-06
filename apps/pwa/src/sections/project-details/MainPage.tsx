@@ -5,7 +5,7 @@ function MainPage({ data }: any) {
   const {
     project_location,
     project_implement_date,
-    user: { client_data },
+    user: { client_data, bank_informations },
     num_ofproject_binicficiaries,
     project_beneficiaries,
     execution_time,
@@ -14,7 +14,6 @@ function MainPage({ data }: any) {
     project_outputs,
     project_strengths,
     project_risks,
-    bank_informations,
     amount_required_fsupport,
     letter_ofsupport_req,
     project_attachments,
