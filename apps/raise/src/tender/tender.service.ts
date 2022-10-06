@@ -1,52 +1,70 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
 import { extname } from 'path';
+import { Http } from 'winston/lib/winston/transports';
 import { AllowedFileType } from '../commons/enums/allowed-filetype.enum';
+import { envLoadErrorHelper } from '../commons/helpers/env-loaderror-helper';
 import { BunnyService } from '../libs/bunny/services/bunny.service';
+import { UploadFilesDto } from './dto/upload-files.dto';
 
 @Injectable()
 export class TenderService {
-  constructor(private readonly bunnyService: BunnyService) {}
+  private appEnv: string;
+  constructor(
+    private readonly bunnyService: BunnyService,
+    private configService: ConfigService,
+  ) {
+    const environment = this.configService.get('APP_ENV');
+    if (!environment) envLoadErrorHelper('APP_ENV');
+    this.appEnv = environment;
+  }
 
-  async upload(files: MulterFile[]) {
+  async uploadFiles(payload: UploadFilesDto, files: MulterFile[]) {
     const maxSize: number = 1024 * 1024 * 1; // 1MB
     const allowedType: AllowedFileType[] = [
-      AllowedFileType.PDF,
       AllowedFileType.JPG,
       AllowedFileType.JPEG,
       AllowedFileType.PNG,
-      AllowedFileType.MP4,
+      AllowedFileType.PDF,
+      AllowedFileType.DOC,
+      AllowedFileType.DOCX,
+      AllowedFileType.XLS,
+      AllowedFileType.XLSX,
     ];
-    console.log(files);
-
+    let uploadedFileLinks: string = 'Uploaded file links: \n';
     try {
       const processFiles = files.map(async (file, index) => {
-        // split fiilename and extension use extname
-        const fileExtName = extname(file.originalname);
-        const name = file.originalname.split(fileExtName)[0]; // get the name and remove the extension.
-
-        let path = await this.bunnyService.generatePath(
-          'tender-management',
-          `proposal-files/replaceWithUserNanoId`,
-          name,
-          fileExtName,
-        );
+        const path = payload.optionalFolderPath
+          ? `tmra/${this.appEnv}/organization/tender-management` +
+            `/${payload.userId}/${payload.optionalFolderPath}`
+          : `tmra/${this.appEnv}/organization/tender-management` +
+            `/${payload.userId}/proposal-files`;
 
         const uploaded = await this.bunnyService.uploadFile(
           file,
           allowedType,
           maxSize,
-          'Testing Upload',
+          'Tender Management Uploading Files',
           true,
           path,
         );
-        path = uploaded;
-        // the link will be on the path variable
+        if (!uploaded) {
+          throw new BadRequestException('Failed to upload file!');
+        }
+        // console.log('uploaded', uploaded);
+        if (uploaded) uploadedFileLinks += `[${index}] ${uploaded} \n`;
       });
-
-      return Promise.all(processFiles);
+      await Promise.all(processFiles);
+      return uploadedFileLinks;
     } catch (error) {
       console.log(error);
+      throw error;
     }
   }
 }

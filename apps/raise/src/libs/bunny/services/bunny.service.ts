@@ -167,7 +167,7 @@ export class BunnyService {
     serviceName: string,
     parseFileName: boolean,
     path?: string,
-  ) {
+  ): Promise<string> {
     validateAllowedExtension(file, allowedFileType);
     validateFileSize(file, maxFileSize);
 
