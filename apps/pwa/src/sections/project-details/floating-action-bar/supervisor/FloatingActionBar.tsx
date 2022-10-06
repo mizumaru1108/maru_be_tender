@@ -18,7 +18,7 @@ import { approveProposal } from 'queries/commons/approveProposal';
 import { CreateProposalLog } from 'queries/commons/createProposalLog';
 import { insertSupervisor } from 'queries/project-supervisor/insertSupervisor';
 
-function FloatingActionBar({ organizationId }: any) {
+function FloatingActionBar({ organizationId, data }: any) {
   const { id } = useParams();
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
@@ -57,6 +57,7 @@ function FloatingActionBar({ organizationId }: any) {
         inner_status: 'ACCEPTED',
         outter_status: 'PENDING',
         state: 'PROJECT_MANAGER',
+        number_of_payments: values.number_of_payments,
       },
     });
 

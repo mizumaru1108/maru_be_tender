@@ -19,7 +19,7 @@ const FormActionBox = ({ isLoading, onReturn }: Props) => (
         hieght: { xs: '100%', sm: '50px' },
       }}
     >
-      Close
+      رجوع
     </Button>
     <LoadingButton
       loading={isLoading}
@@ -48,7 +48,7 @@ const FormActionBox = ({ isLoading, onReturn }: Props) => (
       disabled={isLoading}
     >
       {isLoading && <CircularProgress size={23} sx={{ color: 'white' }} thickness={10} />}
-      Submit
+      اضافة
     </LoadingButton>
   </Stack>
 );

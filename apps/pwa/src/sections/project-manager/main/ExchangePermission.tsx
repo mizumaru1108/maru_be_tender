@@ -1,7 +1,8 @@
 import { Typography, Grid, Box } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
 import { ProjectCardProps } from 'components/card-table/types';
-import { gettingPaymentAdjustment } from 'queries/project-supervisor/gettingPaymentAdjustment';
+import useAuth from 'hooks/useAuth';
+import { gettingPaymentAdjustment } from 'queries/project-manager/gettingPaymentAdjustment';
 import { useQuery } from 'urql';
 
 const data = [
@@ -54,15 +55,17 @@ const data = [
 ] as ProjectCardProps[];
 
 function ExchangePermission() {
+  const { user } = useAuth();
   const [result, reexecuteQuery] = useQuery({
     query: gettingPaymentAdjustment,
+    variables: { project_manager_id: user?.id },
   });
   const { data, fetching, error } = result;
   if (fetching) {
     return <>...Loading</>;
   }
   const props = data?.proposal ?? [];
-  if (!props) return <></>;
+  if (!props || props.length === 0) return <></>;
   return (
     <Box sx={{ mt: '20px' }}>
       <Typography variant="h4" sx={{ mb: '20px' }}>

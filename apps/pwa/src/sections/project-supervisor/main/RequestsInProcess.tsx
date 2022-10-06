@@ -1,18 +1,21 @@
 import { Typography, Grid, Box } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
-import { gettingRequestedProcess } from 'queries/project-supervisor/gettingRequestedProcess';
+import useAuth from 'hooks/useAuth';
+import { gettingMyRequestedProcess } from 'queries/project-supervisor/gettingMyRequestedProcess';
 import { useQuery } from 'urql';
 
 function RequestsInProcess() {
+  const { user } = useAuth();
   const [result, reexecuteQuery] = useQuery({
-    query: gettingRequestedProcess,
+    query: gettingMyRequestedProcess,
+    variables: { supervisor_id: user?.id },
   });
   const { data, fetching, error } = result;
   if (fetching) {
     return <>...Loading</>;
   }
   const props = data?.proposal ?? [];
-  if (!props) return <></>;
+  if (!props || props.length === 0) return <></>;
   return (
     <Box sx={{ mt: '20px' }}>
       <Typography variant="h4" sx={{ mb: '20px' }}>

@@ -1,5 +1,4 @@
 import { HASURA_GRAPHQL_URL } from 'config';
-import useAuth from 'hooks/useAuth';
 import { createClient } from 'urql';
 
 export const client = createClient({
@@ -10,4 +9,5 @@ export const client = createClient({
       headers: { authorization: token ? `Bearer ${token}` : '' },
     };
   },
+  requestPolicy: 'cache-and-network',
 });

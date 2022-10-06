@@ -7,24 +7,25 @@ export const UploadReceiptFormFields = [
   {
     type: 'upload',
     name: 'transactionReceipt',
-    label: 'transactionReceipt',
+    label: 'إيصال التحويل*',
     xs: 12,
-    placeholder: 'transactionReceipt',
-  },
-  {
-    type: 'datePicker',
-    name: 'depositDate',
-    label: 'depositDate',
-    md: 6,
-    xs: 12,
-    placeholder: 'depositeDate',
+    placeholder: 'إيصال التحويل',
   },
   {
     type: 'textField',
     name: 'checkTransferNumber',
-    label: 'check/transferNumber',
+    label: 'رقم الشيك/التحويل*',
     md: 6,
     xs: 12,
-    placeholder: 'check/transferNumber',
+    placeholder: 'رقم الشيك/التحويل',
+  },
+
+  {
+    type: 'datePicker',
+    name: 'depositDate',
+    label: 'تاريخ الإيداع*',
+    md: 6,
+    xs: 12,
+    placeholder: 'الرجاء اختيار تاريخ الإيداع',
   },
 ] as Array<FormSingleProps>;

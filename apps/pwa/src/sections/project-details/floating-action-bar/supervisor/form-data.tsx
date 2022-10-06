@@ -7,44 +7,66 @@ export const ApproveProposalFormFieldsSupervisor = [
   {
     type: 'select',
     name: 'clause',
-    label: 'clause',
+    label: 'البند حسب التصنيف*',
     md: 6,
     xs: 12,
-    placeholder: 'clause',
+    placeholder: 'الرجاء اختيار البند',
     children: (
-      <option value="test" style={{ backgroundColor: '#fff' }}>
-        test
-      </option>
+      <>
+        <option value="test" style={{ backgroundColor: '#fff' }}>
+          مشروع يخص المساجد
+        </option>
+        <option value="test" style={{ backgroundColor: '#fff' }}>
+          مشروع يخص المنح الميسر
+        </option>
+        <option value="test" style={{ backgroundColor: '#fff' }}>
+          مشروع يخص المبادرات
+        </option>
+        <option value="test" style={{ backgroundColor: '#fff' }}>
+          مشروع يخص تعميدات
+        </option>
+      </>
     ),
   },
   {
     type: 'select',
     name: 'clasification_field',
-    label: 'clasification_field',
+    label: 'مجال التصنيف*',
     md: 6,
     xs: 12,
-    placeholder: 'clasification_field',
+    placeholder: 'الرجاء اختيار مجال التصنيف',
     children: (
-      <option value="test" style={{ backgroundColor: '#fff' }}>
-        test
-      </option>
+      <>
+        <option value="test" style={{ backgroundColor: '#fff' }}>
+          test
+        </option>
+        <option value="test" style={{ backgroundColor: '#fff' }}>
+          test
+        </option>
+        <option value="test" style={{ backgroundColor: '#fff' }}>
+          test
+        </option>
+        <option value="test" style={{ backgroundColor: '#fff' }}>
+          test
+        </option>
+      </>
     ),
   },
   {
     type: 'radioGroup',
     name: 'support_type',
-    label: 'support_type',
+    label: 'نوع الدعم',
     md: 6,
     xs: 12,
     options: [
       { label: 'دعم جزئي', value: true },
-      { label: 'دعم جزئي', value: false },
+      { label: 'دعم كلي', value: false },
     ],
   },
   {
     type: 'radioGroup',
     name: 'closing_report',
-    label: 'closing_report',
+    label: 'تقرير الإغلاق',
     md: 6,
     xs: 12,
     options: [
@@ -54,7 +76,7 @@ export const ApproveProposalFormFieldsSupervisor = [
   },
   {
     type: 'radioGroup',
-    name: 'need_picture',
+    name: 'هل يحتاج إلى صور',
     label: 'need_picture',
     md: 6,
     xs: 12,
@@ -66,7 +88,7 @@ export const ApproveProposalFormFieldsSupervisor = [
   {
     type: 'radioGroup',
     name: 'does_an_agreement',
-    label: 'does_an_agreement',
+    label: 'هل يحتاج اتفاقية',
     md: 6,
     xs: 12,
     options: [
@@ -77,39 +99,39 @@ export const ApproveProposalFormFieldsSupervisor = [
   {
     type: 'textField',
     name: 'support_amount',
-    label: 'support_amount',
+    label: 'مبلغ الدعم*',
     md: 6,
     xs: 12,
-    placeholder: 'support_amount',
+    placeholder: 'مبلغ الدعم',
   },
   {
     type: 'textField',
     name: 'number_of_payments',
-    label: 'number_of_payments',
+    label: 'عدد الدفعات*',
     md: 6,
     xs: 12,
-    placeholder: 'number_of_payments',
+    placeholder: 'دفعة واحدة',
   },
   {
     type: 'textArea',
     name: 'procedures',
-    label: 'procedures',
+    label: 'الإجراءات*',
     xs: 12,
-    placeholder: 'procedures',
+    placeholder: 'اكتب الاجراءات هنا',
   },
   {
     type: 'textArea',
     name: 'notes',
-    label: 'notes',
+    label: 'ملاحظات على المشروع*',
     xs: 12,
-    placeholder: 'notes',
+    placeholder: 'اكتب ملاحظاتك هنا',
   },
   {
     type: 'textArea',
     name: 'support_outputs',
-    label: 'support_outputs',
+    label: 'مخرجات الدعم (لصالح)*',
     xs: 12,
-    placeholder: 'support_outputs',
+    placeholder: 'اكتب هنا',
   },
 ] as Array<FormSingleProps>;
 

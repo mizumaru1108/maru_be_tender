@@ -19,7 +19,7 @@ function FloatinActonBar({ proposalData }: any) {
         ['main', 'project-budget'].includes(activeTap) &&
         actionType === 'show-details' &&
         role === 'tender_project_supervisor' && (
-          <SupervisorFloatingActionBar organizationId={proposalData.user.id} />
+          <SupervisorFloatingActionBar organizationId={proposalData.user.id} data={proposalData} />
         )}
       {activeTap &&
         ['main', 'project-budget'].includes(activeTap) &&

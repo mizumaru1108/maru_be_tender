@@ -31,6 +31,7 @@ function ProjectDetailsMainPage() {
   if (fetching) return <>...Loading</>;
   if (error) return <>{error.graphQLErrors}</>;
   if (data.proposal_by_pk === null) return <>There is no data for this tap ... </>;
+  console.log(data.proposal_by_pk);
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Stack direction="row">
@@ -100,7 +101,9 @@ function ProjectDetailsMainPage() {
       {activeTap === 'project-budget' && <ProjectBudget />}
       {activeTap === 'follow-ups' && <FollowUps />}
       {activeTap === 'payments' && <Payments data={data.proposal_by_pk} mutate={reexecuteGetOne} />}
-      {activeTap === 'exchange-details' && <ExchangeDetails />}
+      {activeTap === 'exchange-details' && (
+        <ExchangeDetails data={data.proposal_by_pk} mutate={reexecuteGetOne} />
+      )}
 
       <FloatinActonBar proposalData={data.proposal_by_pk} />
     </Box>

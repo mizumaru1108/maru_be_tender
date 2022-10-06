@@ -1,7 +1,7 @@
 import { Typography, Grid } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
 import { ProjectCardProps } from 'components/card-table/types';
-import { gettingPaymentAdjustment } from 'queries/project-supervisor/gettingPaymentAdjustment';
+import { gettingAllTheAcceptedProposalsByCeoAndIssuedBySupervisor } from 'queries/finance/gettingAllTheAcceptedProposalsByCeoAndIssuedBySupervisor';
 import { useQuery } from 'urql';
 
 const data = [
@@ -55,14 +55,14 @@ const data = [
 
 function IncomingExchangePermissionRequests() {
   const [result, reexecuteQuery] = useQuery({
-    query: gettingPaymentAdjustment,
+    query: gettingAllTheAcceptedProposalsByCeoAndIssuedBySupervisor,
   });
   const { data, fetching, error } = result;
   if (fetching) {
     return <>...Loading</>;
   }
   const props = data?.proposal ?? [];
-  if (!props) return <></>;
+  if (!props || props.length === 0) return <></>;
   return (
     <>
       <Typography variant="h4" sx={{ mb: '20px' }}>

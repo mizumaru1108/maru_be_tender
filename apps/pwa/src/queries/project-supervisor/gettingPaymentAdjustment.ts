@@ -1,14 +1,11 @@
-export const gettingPaymentAdjustment = `query MyQuery {
- proposal(where: {inner_status: {_eq: ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION}}) {
+export const gettingPaymentAdjustment = `query MyQuery2($supervisor_id: String = "") {
+  proposal(where: {inner_status: {_eq: ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION}, _and: {supervisor_id: {_eq: $supervisor_id}}}) {
     id
-    created_at
-    project_idea
     project_name
-  	payments {
+    payments {
       id
-      payment_amount
-      payment_date
     }
+    created_at
   }
 }
 `;

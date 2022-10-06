@@ -81,7 +81,7 @@ const ar = {
   register_one: 'قم بإنشاء حساب من هنا',
   add_new_line: 'إنشاء سطر جديد',
   create_new_account: ' إنشاء حساب جديد',
-  show_details: 'عرض التفاصيل',
+  show_details: 'دراسة المشروع',
   show_project: 'استعراض المشروع',
   completing_exchange_permission: 'إتمام إذن الصرف',
   pending: 'الطلب معلق',
@@ -576,6 +576,8 @@ const ar = {
     view_details: 'عرض التفاصيل',
     delete_button_label: 'حذف',
   },
+  continue_studying_the_project: 'متابعة الداراسة',
+  no_employee: 'لا يوجد',
 
   // ACCOUNT_MANAGER PAGES
   account_manager: {

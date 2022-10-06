@@ -15,6 +15,10 @@ import { ProjectCardProps } from './types';
 import 'moment/locale/es';
 import 'moment/locale/ar';
 import moment from 'moment';
+import useAuth from 'hooks/useAuth';
+import { asignProposalToAUser } from 'queries/commons/asignProposalToAUser';
+import { useMutation } from 'urql';
+import { Role } from 'guards/RoleBasedGuard';
 
 /**
  *
@@ -36,6 +40,20 @@ const cardFooterButtonActionLocal = {
   'completing-exchange-permission': 'completing_exchange_permission',
   draft: 'draft',
 };
+
+const RolesMap = {
+  tender_finance: 'finance_id',
+  tender_cashier: 'cashier_id',
+  tender_project_manager: 'project_manager_id',
+  tender_project_supervisor: 'supervisor_id',
+  cluster_admin: '',
+  tender_accounts_manager: '',
+  tender_admin: '',
+  tender_ceo: '',
+  tender_client: '',
+  tender_consultant: '',
+  tender_moderator: '',
+};
 const ProjectCard = ({
   title,
   content,
@@ -43,10 +61,13 @@ const ProjectCard = ({
   cardFooterButtonAction,
   destination, // it refers to the url that I came from and the url that I have to go to
 }: ProjectCardProps) => {
+  const { user } = useAuth();
+  const role = user?.registrations[0].roles[0] as Role;
   const navigate = useNavigate();
   const location = useLocation();
   const { translate } = useLocales();
   moment().locale('ar');
+  const [_, updateAsigning] = useMutation(asignProposalToAUser);
   console.log(cardFooterButtonAction);
 
   const onDeleteDraftClick = () => {
@@ -59,7 +80,28 @@ const ProjectCard = ({
     // navigate(/client/dashboard/funding-project-request/step) with a specific step
   };
 
-  const handleOnClick = () => {
+  const handleOnClick = async () => {
+    console.log(role);
+    if (
+      [
+        'tender_finance',
+        'tender_cashier',
+        'tender_project_manager',
+        'tender_project_supervisor',
+      ].includes(role) &&
+      destination !== 'requests-in-process'
+    ) {
+      await updateAsigning({
+        _set: {
+          [`${RolesMap[role]!}`]: user?.id,
+        },
+        where: {
+          id: {
+            _eq: title.id,
+          },
+        },
+      });
+    }
     if (destination) {
       const x = location.pathname.split('/');
       console.log(
@@ -165,7 +207,9 @@ const ProjectCard = ({
                   الموظف
                 </Typography>
                 <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
-                  {content.employee}
+                  {destination === 'requests-in-process'
+                    ? user?.fullName
+                    : translate('no_employee')}
                 </Typography>
               </>
             )}
@@ -189,7 +233,7 @@ const ProjectCard = ({
         <Grid container spacing={2}>
           {footer.payments && (
             <Grid container item md={12} columnSpacing={1}>
-              {footer.payments.map((payment, index) => (
+              {footer.payments.map((payment: any, index: any) => (
                 <Grid item key={index}>
                   <Typography
                     key={index}
@@ -260,7 +304,9 @@ const ProjectCard = ({
                   }}
                   onClick={handleOnClick}
                 >
-                  {translate(cardFooterButtonActionLocal[`${cardFooterButtonAction}`])}
+                  {destination === 'requests-in-process'
+                    ? translate('continue_studying_the_project')
+                    : translate(cardFooterButtonActionLocal[`${cardFooterButtonAction}`])}
                 </Button>
               )}
             </Stack>

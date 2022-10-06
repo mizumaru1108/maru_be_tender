@@ -1,5 +1,6 @@
 import { Button, Box, Stack, Typography, Grid } from '@mui/material';
 import { nanoid } from 'nanoid';
+import { insertChequeUpdatePayment } from 'queries/Cashier/insertChequeUpdatePayment';
 import React, { useState } from 'react';
 import { useLocation } from 'react-router';
 import { useMutation } from 'urql';
@@ -10,31 +11,55 @@ import PaymentsTable from './PaymentsTable';
 import FormActionBox from './PopUpActionBar';
 import UploadingForm from './UploadingForm';
 
-function CashierPaymentsPage({ data }: any) {
+function CashierPaymentsPage({ data, mutate }: any) {
+  console.log(data);
   const [modalState, setModalState] = useState(false);
-  const [chequeInsert, cheque] = useMutation(paymentReq);
-  const location = useLocation();
-  const paymentId = location.pathname.split('/').at(4);
+  const [_, insChequeUpdatePay] = useMutation(insertChequeUpdatePayment);
+  const [paymentSent, setPaymentSent] = useState<{
+    payment_date: string;
+    payment_amount: number | undefined;
+    id: string;
+    status:
+      | 'SET_BY_SUPERVISOR'
+      | 'ISSUED_BY_SUPERVISOR'
+      | 'ACCEPTED_BY_PROJECT_MANAGER'
+      | 'ACCEPTED_BY_FINANCE'
+      | 'DONE'
+      | '';
+  }>({ payment_date: '', payment_amount: undefined, id: '', status: '' });
 
-  console.log('split :', paymentId);
   // create handleSubmit function with async await for use mutation cheque
   const handleSubmit = async (data: any) => {
-    await cheque({
-      objects: {
+    insChequeUpdatePay({
+      cheque: {
         id: nanoid(),
-        payment_id: paymentId,
+        payment_id: paymentSent.id,
         transfer_receipt: data.transactionReceipt,
         deposit_date: data.depositDate,
         number: data.checkTransferNumber,
       },
+      paymentId: paymentSent.id,
+      newState: { status: 'DONE' },
+    }).then((result) => {
+      if (result.error) {
+        console.error('Oh no!', result.error);
+      }
+      if (!result.error) {
+        alert('The chique has been sent, the payment been modefied ');
+        mutate();
+      }
     });
   };
 
   const handleCloseModal = () => {
     setModalState(false);
   };
+  const handleOpenModal = (item: any) => {
+    setModalState(true);
+    setPaymentSent(item);
+  };
   return (
-    <Page title="CashierPaymentsPage">
+    <>
       <Grid container spacing={3} sx={{ mt: '8px' }}>
         <Grid item md={12}>
           <Typography variant="h4">ميزانية المشروع</Typography>
@@ -82,22 +107,23 @@ function CashierPaymentsPage({ data }: any) {
         <Grid item md={12}>
           <Typography variant="h4">تقسيم الدفعات</Typography>
         </Grid>
-        {data.payments.length !== 0 && <PaymentsTable payments={data.payments} />}
+        {data.payments.length !== 0 && (
+          <PaymentsTable payments={data.payments} setModalOpen={handleOpenModal} />
+        )}
       </Grid>
       <ModalDialog
+        maxWidth="md"
         title={
           <Stack display="flex">
             <Typography variant="h6" fontWeight="bold" color="#000000">
-              {'Upload Receipt Form'}
+              رفع إيصال التحويل
             </Typography>
           </Stack>
         }
         content={
           <UploadingForm
             onSubmit={(data: any) => {
-              console.log('form callback', data);
-              console.log('just a dummy not create log yet');
-              // handleSubmit(data);
+              handleSubmit(data);
               setModalState(false);
             }}
           >
@@ -113,7 +139,7 @@ function CashierPaymentsPage({ data }: any) {
         onClose={handleCloseModal}
         styleContent={{ padding: '1em', backgroundColor: '#fff' }}
       />
-    </Page>
+    </>
   );
 }
 

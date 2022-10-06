@@ -1,50 +1,21 @@
 import { Typography, Grid, Box } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
-import { ProjectCardProps } from 'components/card-table/types';
-import { gettingRequestedProcess } from 'queries/project-manager/gettingRequestedProcess';
+import useAuth from 'hooks/useAuth';
+import { gettingMyRequestedProcess } from 'queries/project-manager/gettingMyRequestedProcess';
 import { useQuery } from 'urql';
 
-const data = [
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
-      sentSection: 'لا يوجد',
-      employee: 'لا يوجد',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
-      sentSection: 'لا يوجد',
-      employee: 'لا يوجد',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-] as ProjectCardProps[];
-
 function RequestsInProcess() {
+  const { user } = useAuth();
   const [result, reexecuteQuery] = useQuery({
-    query: gettingRequestedProcess,
+    query: gettingMyRequestedProcess,
+    variables: { project_manager_id: user?.id },
   });
   const { data, fetching, error } = result;
   if (fetching) {
     return <>...Loading</>;
   }
   const props = data?.proposal ?? [];
-  if (props.length === 0) return <></>;
+  if (!props || props.length === 0) return <></>;
   return (
     <Box sx={{ mt: '20px' }}>
       <Typography variant="h4" sx={{ mb: '20px' }}>

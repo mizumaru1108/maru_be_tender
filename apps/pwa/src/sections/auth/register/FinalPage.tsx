@@ -10,6 +10,7 @@ import { useState } from 'react';
 import * as React from 'react';
 import useAuth from 'hooks/useAuth';
 import { LoadingButton } from '@mui/lab';
+import { useNavigate } from 'react-router';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -17,6 +18,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props,
 
 function FinalPage({ ...props }: AccountValuesProps) {
   const { login } = useAuth();
+  const navigate = useNavigate();
   const [id, setId] = useState('');
   const [open, setOpen] = useState(false);
   const [_, updateTodo] = useMutation(createClient);
@@ -62,6 +64,7 @@ function FinalPage({ ...props }: AccountValuesProps) {
         }
       );
       await login(props.email, props.password);
+      navigate('/');
     } catch (error) {
       setErrors(error.message);
       setOpen(true);

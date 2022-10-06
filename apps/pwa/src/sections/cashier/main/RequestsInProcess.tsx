@@ -1,45 +1,21 @@
 import { Typography, Grid } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
 import { ProjectCardProps } from 'components/card-table/types';
+import useAuth from 'hooks/useAuth';
+import { gettingAllMyProposels } from 'queries/Cashier/gettingAllMyProposels';
 import { useQuery } from 'urql';
-import { incomingRequest } from '../../../queries/Cashier/supportRequest';
-
-const data = [
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
-      sentSection: 'مسار المساجد',
-      employee: 'اسم الموظف - مدير المشروع',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      payments: [
-        { name: 'الدفعة الأولى', status: true },
-        { name: 'الدفعة الثانية', status: true },
-        { name: 'الدفعة الثالثة', status: true },
-        { name: 'الدفعة الرابعة', status: false },
-        { name: 'الدفعة الخامسة', status: false },
-        { name: 'الدفعة السادسة', status: false },
-        { name: 'الدفعة السابعة', status: false },
-      ],
-    },
-  },
-] as ProjectCardProps[];
 
 function RequestsInProcess() {
+  const { user } = useAuth();
   const [result, reexecuteQuery] = useQuery({
-    query: incomingRequest,
+    query: gettingAllMyProposels,
+    variables: { cashier_id: user?.id },
   });
   const { data, fetching, error } = result;
   if (fetching) {
     return <>...Loading</>;
   }
   const props = data?.proposal ?? [];
-  console.log('props :', props);
   if (props.length === 0) return <></>;
   return (
     <>
@@ -51,7 +27,6 @@ function RequestsInProcess() {
           props.map((item: any, index: any) => (
             <Grid item md={6} key={index}>
               <ProjectCard
-                // {...item}
                 title={{ id: item.id }}
                 content={{
                   projectName: item.project_name,
@@ -61,15 +36,7 @@ function RequestsInProcess() {
                 }}
                 footer={{
                   createdAt: item.created_at,
-                  payments: [
-                    { name: 'الدفعة الأولى', status: true },
-                    { name: 'الدفعة الثانية', status: true },
-                    { name: 'الدفعة الثالثة', status: true },
-                    { name: 'الدفعة الرابعة', status: false },
-                    { name: 'الدفعة الخامسة', status: false },
-                    { name: 'الدفعة السادسة', status: false },
-                    { name: 'الدفعة السابعة', status: false },
-                  ],
+                  payments: item.payments,
                 }}
                 cardFooterButtonAction="completing-exchange-permission"
                 destination="requests-in-process"

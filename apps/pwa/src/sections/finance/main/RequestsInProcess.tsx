@@ -1,6 +1,8 @@
 import { Typography, Grid } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
 import { ProjectCardProps } from 'components/card-table/types';
+import useAuth from 'hooks/useAuth';
+import { gettingAllMyProposals } from 'queries/finance/gettingAllMyProposals';
 import { gettingPaymentAdjustment } from 'queries/project-supervisor/gettingPaymentAdjustment';
 import { useQuery } from 'urql';
 
@@ -31,15 +33,17 @@ const data = [
 ] as ProjectCardProps[];
 
 function RequestsInProcess() {
+  const { user } = useAuth();
   const [result, reexecuteQuery] = useQuery({
-    query: gettingPaymentAdjustment,
+    query: gettingAllMyProposals,
+    variables: { finance_id: user?.id },
   });
   const { data, fetching, error } = result;
   if (fetching) {
     return <>...Loading</>;
   }
   const props = data?.proposal ?? [];
-  if (!props) return <></>;
+  if (!props || props.length === 0) return <></>;
   return (
     <>
       <Typography variant="h4" sx={{ mb: '20px' }}>

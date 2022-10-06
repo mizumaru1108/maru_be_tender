@@ -47,7 +47,8 @@ function Payments({ data, mutate }: any) {
         */}
         {role === 'tender_project_manager' && <ManagerPaymentsPage data={data} mutate={mutate} />}
         {role === 'tender_finance' && <FinancePaymentsTable data={data} />}
-        {role === 'tender_cashier' && <CachierPaymentsTable data={data} />}
+        {role === 'tender_cashier' && <CachierPaymentsTable data={data} mutate={mutate} />}
+
         {/* proposal.payments !== null
             and inside we will look at everysingle payment's status.
         */}

@@ -1,6 +1,6 @@
 type CardFooter = {
   createdAt: Date;
-  payments?: { status: boolean; name: string }[];
+  payments?: any;
 };
 
 type CardTitle = {

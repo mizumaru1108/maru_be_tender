@@ -80,7 +80,7 @@ const en = {
   the_login_message: 'الرجاء إدخال عنوان البريد الإلكتروني أو رقم التصريح الخاص بك',
   dont_have_account: 'ليس لديك حساب في المنصة',
   register_one: 'قم بإنشاء حساب من هنا',
-  show_details: 'عرض التفاصيل',
+  show_details: 'Studying The Project',
   show_project: 'استعراض المشروع',
   completing_exchange_permission: 'إتمام إذن الصرف',
   pending: 'Request Pending',
@@ -547,6 +547,8 @@ const en = {
     view_details: 'View Details',
     delete_button_label: 'Delete',
   },
+  continue_studying_the_project: 'Continue Studying',
+  no_employee: 'No Employee',
 
   // ACCOUNT_MANAGER PAGES
   account_manager: {
@@ -554,29 +556,29 @@ const en = {
       suspended_partners: 'Automatically suspended partners',
       active_partners: 'Active Partners',
       rejected_partners: 'Rejected',
-      number_of_request: 'Total number of requests to join'
+      number_of_request: 'Total number of requests to join',
     },
     heading: {
       daily_stats: 'Daily Stats',
       new_join_request: 'Incoming requests to join',
       link_view_all: 'View All',
       info_update_request: 'Information update requests',
-      partner_management: 'Partner management'
+      partner_management: 'Partner management',
     },
     table: {
       th: {
         partner_name: 'Partner name',
         createdAt: 'Date of registration',
         account_status: 'Account Status',
-        events: 'Events'
+        events: 'Events',
       },
       td: {
         btn_account_review: 'Account review',
         btn_view_partner_projects: 'View partner projects',
         label_waiting_activation: 'Waiting for activation',
         label_active_account: 'Active account',
-        label_canceled_account: 'Canceled account'
-      }
+        label_canceled_account: 'Canceled account',
+      },
     },
     partner_details: {
       main_information: 'Main information',
@@ -608,10 +610,10 @@ const en = {
       send_messages: 'Send a message to the partner',
       submit_amendment_request: 'Submit an amendment request',
       btn_deleted_account: 'Delete account',
-      btn_activate_account: 'Activate account'
+      btn_activate_account: 'Activate account',
     },
-    search_bar: 'Type a name to search for'
-  }
+    search_bar: 'Type a name to search for',
+  },
 };
 
 export default en;

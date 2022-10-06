@@ -11,6 +11,7 @@ function UploadingForm({ children, onSubmit }: ProposalFormProps) {
   const validationSchema = Yup.object().shape({
     transactionReceipt: Yup.string().required('Transaction Receipt is required!'),
     checkTransferNumber: Yup.string().required('Check Transfer Number is required!'),
+    depositDate: Yup.string().required('Deposit Date is required!'),
   });
 
   const defaultValues = {
