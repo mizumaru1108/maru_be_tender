@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Iconify from '../../Iconify';
 import { Menu, TabPanelProps } from '../type';
 
-const MessageMenu = ({ internalData, externalData }: Menu) => {
+const MessageMenu = ({ internalTabData, externalTabData }: Menu) => {
   const [valueTabItem, setValueTabItem] = useState(0);
   const [focusedIndex, setFocusedIndex] = useState<number | undefined>(undefined);
   const handleChangeTabsItem = (event: React.SyntheticEvent, newValue: number) => {
@@ -124,7 +124,7 @@ const MessageMenu = ({ internalData, externalData }: Menu) => {
         </Stack>
         {/* Mapping message */}
         <Box sx={{ overflowX: 'hidden', height: '550px' }}>
-          {internalData.map((item, index) => (
+          {internalTabData.map((item, index) => (
             <Stack
               direction="row"
               key={index}
@@ -260,7 +260,7 @@ const MessageMenu = ({ internalData, externalData }: Menu) => {
         </Stack>
         {/* Mapping message */}
         <Box sx={{ overflowX: 'hidden', height: '550px' }}>
-          {externalData.map((item, index) => (
+          {externalTabData.map((item, index) => (
             <Stack
               direction="row"
               key={index}

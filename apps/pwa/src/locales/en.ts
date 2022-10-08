@@ -645,6 +645,11 @@ const en = {
       },
     },
   },
+
+  // Message Page
+  message_page: {
+    page_title: 'Previous Funding Requests',
+  },
 };
 
 export default en;

@@ -1,4 +1,4 @@
-type message = {
+type messageContent = {
   sender: string;
   dateCreated: string;
   messageBody: string;
@@ -6,17 +6,17 @@ type message = {
 };
 
 export type ContentMessage = {
-  data: message[];
+  data: messageContent[];
 };
 export type BodyContent = {
-  data: message[];
+  data: messageContent[];
 };
 
 export type FooterContent = {
-  data: message[];
+  data: messageContent[];
 };
 
-type internalExternal = {
+type correspondanceData = {
   partnerName: string;
   projectName: string;
   message: string;
@@ -24,8 +24,8 @@ type internalExternal = {
 };
 
 export type Menu = {
-  internalData: internalExternal[];
-  externalData: internalExternal[];
+  internalTabData: correspondanceData[];
+  externalTabData: correspondanceData[];
 };
 
 export interface TabPanelProps {

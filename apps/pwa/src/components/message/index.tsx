@@ -1,10 +1,7 @@
-import { Box, Button, Grid, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { Stack } from '@mui/system';
 import Page from 'components/Page';
-import React, { useEffect, useState } from 'react';
 
-import Iconify from '../Iconify';
 import MessageContent from './content/MessageContent';
 import MessageMenu from './menu/MessageMenu';
 import { Message, MessagesExternalCorespondence, MessagesInternalCorespondence } from './mock-data';
@@ -25,8 +22,8 @@ function MessagesPage() {
         <Grid container columns={14} spacing={3} direction="row">
           <Grid item xs={6}>
             <MessageMenu
-              internalData={MessagesInternalCorespondence}
-              externalData={MessagesExternalCorespondence}
+              internalTabData={MessagesInternalCorespondence}
+              externalTabData={MessagesExternalCorespondence}
             />
           </Grid>
           <Grid
