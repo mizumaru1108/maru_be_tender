@@ -673,6 +673,42 @@ const ar = {
       },
     },
   },
+  section_portal_reports: {
+    heading: {
+      reports: 'Reports',
+      average_transaction: 'Average transaction processing speed on the platform',
+      achievement_effectiveness: 'Achievement and effectiveness of employees',
+      mosque_track_budget: 'Mosques track budget',
+      concessional_track_budget: 'The concessional grant track budget',
+      initiatives_track_budget: 'Initiatives track budget',
+      complexity_track_budget: 'Complexity track budget'
+    },
+    form: {
+      date_picker: {
+        label: {
+          start_date: 'Start Date',
+          end_date: 'End Date'
+        }
+      }
+    },
+    tabs: {
+      label_1: 'Information about orders',
+      label_2: 'Information about partners',
+      label_3: 'Budget info',
+      label_4: 'Information about achievement and efficacy'
+    },
+    button: {
+      create_special_report: 'Create a special report'
+    },
+    table: {
+      th: {
+        employee_name: 'Employee Name',
+        account_type: 'Account Type',
+        section: 'Section',
+        number_of_clock: 'Number of Clock',
+      }
+    }
+  }
 };
 
 export default ar;

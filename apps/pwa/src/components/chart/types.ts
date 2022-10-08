@@ -17,3 +17,19 @@ export interface IBarCartProps extends IBaseChartProps {
   chartBarHeight?: number | string;
   chartBarWidth?: number | string;
 }
+
+interface ValueChartDonut {
+  label: string;
+  value: number;
+}
+interface IDataChart {
+  accepted: ValueChartDonut;
+  processing: ValueChartDonut;
+  pending: ValueChartDonut;
+  rejected: ValueChartDonut;
+}
+export interface IDonatChartProps {
+  data: IDataChart;
+  type: 'projects' | 'accounts';
+  headLine: string;
+}

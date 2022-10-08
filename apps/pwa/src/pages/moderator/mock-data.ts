@@ -117,3 +117,41 @@ export const CardTablePreviousSupportRequests = [
     },
   },
 ] as ProjectCardProps[];
+
+export const dataAccount = {
+  accepted: {
+    label: 'Active partner',
+    value: 14,
+  },
+  processing: {
+    label: 'Partner need to active',
+    value: 40,
+  },
+  rejected: {
+    label: 'Rejected partner',
+    value: 20,
+  },
+  pending: {
+    label: 'Pending partner',
+    value: 25,
+  },
+};
+
+export const dataProject = {
+  accepted: {
+    label: 'Successfully done',
+    value: 40,
+  },
+  processing: {
+    label: 'Processing',
+    value: 14,
+  },
+  rejected: {
+    label: 'Rejected',
+    value: 20,
+  },
+  pending: {
+    label: 'Spoon',
+    value: 25,
+  },
+};

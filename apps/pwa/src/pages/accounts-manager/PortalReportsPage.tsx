@@ -1,6 +1,8 @@
 import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
 import { Container, Typography } from '@mui/material';
+// sections
+import PortalReportsSection from 'sections/portal-reports';
 
 function PortalReportsPage() {
   const ContentStyle = styled('div')(({ theme }) => ({
@@ -9,14 +11,14 @@ function PortalReportsPage() {
     display: 'flex',
     justifyContent: 'start',
     flexDirection: 'column',
-    rowGap: '50px',
+    rowGap: 40,
   }));
 
   return (
     <Page title="Portal Reports Page">
       <Container>
         <ContentStyle>
-          <Typography>Portal Reports</Typography>
+          <PortalReportsSection />
         </ContentStyle>
       </Container>
     </Page>
