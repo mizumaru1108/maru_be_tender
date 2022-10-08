@@ -648,7 +648,7 @@ const ar = {
       form: {
         amndreq_label: 'ملاحظات على معلومات الحساب*',
         amndreq_placeholder: 'الرجاء كتابة الملاحظات هنا',
-      }
+      },
     },
     search_bar: 'اكتب اسم للبحث عنه',
   },

@@ -565,7 +565,8 @@ const en = {
       info_update_request: 'Information update requests',
       partner_management: 'Partner management',
       amandment_request: 'Send an amendment request to the partner',
-      subhead_amandment_request: 'Write the appropriate notes to inform the partner of the things required of him',
+      subhead_amandment_request:
+        'Write the appropriate notes to inform the partner of the things required of him',
     },
     table: {
       th: {
@@ -619,7 +620,7 @@ const en = {
       form: {
         amndreq_label: 'Notes on account information*',
         amndreq_placeholder: 'Please write notes here',
-      }
+      },
     },
     search_bar: 'Type a name to search for',
   },
