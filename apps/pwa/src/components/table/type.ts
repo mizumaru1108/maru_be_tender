@@ -8,3 +8,12 @@ export type IPropsTablesList = {
   shareLink?: string;
   update_status?: boolean | false;
 };
+
+export type IPropsPortalReportEmployee = {
+  id?: string | null;
+  employee_name?: string | null;
+  createdAt?: Date | string | null;
+  account_type?: string | null;
+  sections?: string | null;
+  number_of_clock?: string | null;
+};

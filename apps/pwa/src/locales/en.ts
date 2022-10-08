@@ -625,6 +625,61 @@ const en = {
   },
   proposal_approved: 'Proposal Approved!',
   proposal_rejected: 'Proposal Rejected!',
+
+  // PORTAL REPORTS
+  ceo_portal_reports: {
+    bar_chart: {
+      headline: {
+        partners: 'Partners',
+      },
+      series_name: {
+        last_month: 'Last Month',
+        this_month: 'This Month',
+      },
+      label: {
+        partners_need_to_active: 'Parters Need to Active',
+        active_partners: 'Active Partners',
+        rejected_partners: 'Rejected Partners',
+        pending_partners: 'Pending Partners',
+      },
+    },
+  },
+  section_portal_reports: {
+    heading: {
+      reports: 'Reports',
+      average_transaction: 'Average transaction processing speed on the platform',
+      achievement_effectiveness: 'Achievement and effectiveness of employees',
+      mosque_track_budget: 'Mosques track budget',
+      conessional_track_budget: 'The concessional grant track budget',
+      initiatives_track_budget: 'Initiatives track budget',
+      complexity_track_budget: 'Complexity track budget'
+    },
+    form: {
+      date_picker: {
+        label: {
+          start_date: 'Start Date',
+          end_date: 'End Date'
+        }
+      }
+    },
+    tabs: {
+      label_1: 'Information about orders',
+      label_2: 'Information about partners',
+      label_3: 'Budget info',
+      label_4: 'Information about achievement and efficacy'
+    },
+    button: {
+      create_special_report: 'Create a special report'
+    },
+    table: {
+      th: {
+        employee_name: 'Employee Name',
+        account_type: 'Account Type',
+        section: 'Section',
+        number_of_clock: 'Number of Clock',
+      }
+    }
+  }
 };
 
 export default en;

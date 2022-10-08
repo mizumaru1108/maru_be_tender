@@ -654,6 +654,61 @@ const ar = {
   },
   proposal_approved: 'تم قبول الطلب بنجاح',
   proposal_rejected: 'تم رفض الطلب بنجاح',
+
+  // PORTAL REPORTS
+  ceo_portal_reports: {
+    bar_chart: {
+      headline: {
+        partners: 'الشركاء',
+      },
+      series_name: {
+        last_month: 'الشهر الماضي',
+        this_month: 'هذا الشهر',
+      },
+      label: {
+        partners_need_to_active: 'الشركاء المطلوب تفعيلهم',
+        active_partners: 'الشركاء المفعلين',
+        rejected_partners: 'الشركاء المرفوضين',
+        pending_partners: 'الشركاء المعلقين',
+      },
+    },
+  },
+  section_portal_reports: {
+    heading: {
+      reports: 'Reports',
+      average_transaction: 'Average transaction processing speed on the platform',
+      achievement_effectiveness: 'Achievement and effectiveness of employees',
+      mosque_track_budget: 'Mosques track budget',
+      concessional_track_budget: 'The concessional grant track budget',
+      initiatives_track_budget: 'Initiatives track budget',
+      complexity_track_budget: 'Complexity track budget'
+    },
+    form: {
+      date_picker: {
+        label: {
+          start_date: 'Start Date',
+          end_date: 'End Date'
+        }
+      }
+    },
+    tabs: {
+      label_1: 'Information about orders',
+      label_2: 'Information about partners',
+      label_3: 'Budget info',
+      label_4: 'Information about achievement and efficacy'
+    },
+    button: {
+      create_special_report: 'Create a special report'
+    },
+    table: {
+      th: {
+        employee_name: 'Employee Name',
+        account_type: 'Account Type',
+        section: 'Section',
+        number_of_clock: 'Number of Clock',
+      }
+    }
+  }
 };
 
 export default ar;

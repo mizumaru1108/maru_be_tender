@@ -5,5 +5,6 @@ export { default as TableEmptyRows } from './TableEmptyRows';
 export { default as TableHeadCustom } from './TableHeadCustom';
 export { default as TableSelectedActions } from './TableSelectedActions';
 export { default as TableRowsData } from './TableRowsData';
+export { default as TableRowsEmployee } from './TableRowsEmployee';
 export { default as TableAMCustom } from './TableAMCustom';
 export { default as SearchbarTable } from './SearchbarTable';
