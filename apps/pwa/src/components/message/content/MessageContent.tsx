@@ -5,7 +5,7 @@ import MessageContentFooter from './MessageContentFooter';
 import MessageContentHeader from './MessageContentHeader';
 import { ContentMessage } from '../type';
 
-const MessageContent = ({ data }: ContentMessage) => {
+export default function MessageContent({ data }: ContentMessage) {
   const [messages, setMessages] = useState('');
   return (
     <Stack display="flex">
@@ -21,6 +21,4 @@ const MessageContent = ({ data }: ContentMessage) => {
       <MessageContentFooter data={data} />
     </Stack>
   );
-};
-
-export default MessageContent;
+}

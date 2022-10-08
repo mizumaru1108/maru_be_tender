@@ -1,7 +1,7 @@
 import { Box, Stack, Typography } from '@mui/material';
 import { BodyContent } from '../type';
 
-const MessageContentBody = ({ data }: BodyContent) => {
+export default function MessageContentBody({ data }: BodyContent) {
   return (
     <Stack>
       {data.map((item, index) => (
@@ -34,5 +34,4 @@ const MessageContentBody = ({ data }: BodyContent) => {
       ))}
     </Stack>
   );
-};
-export default MessageContentBody;
+}

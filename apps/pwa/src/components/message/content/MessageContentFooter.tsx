@@ -2,7 +2,7 @@ import { Box, Stack, TextField } from '@mui/material';
 import { useState } from 'react';
 import { FooterContent } from '../type';
 
-const MessageContentFooter = ({ data }: FooterContent) => {
+export default function MessageContentFooter({ data }: FooterContent) {
   const [messages, setMessages] = useState('');
   return (
     <Stack
@@ -81,5 +81,4 @@ const MessageContentFooter = ({ data }: FooterContent) => {
       </Box>
     </Stack>
   );
-};
-export default MessageContentFooter;
+}

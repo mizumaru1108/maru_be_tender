@@ -1,6 +1,6 @@
 import { Box, Stack, Typography } from '@mui/material';
 
-const MessageContentHeader = () => {
+export default function MessageContentHeader() {
   return (
     <Stack direction="column" padding="10px" sx={{ mt: 4 }}>
       {/* Stack for header message */}
@@ -12,5 +12,4 @@ const MessageContentHeader = () => {
       </Stack>
     </Stack>
   );
-};
-export default MessageContentHeader;
+}
