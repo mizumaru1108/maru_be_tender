@@ -565,7 +565,8 @@ const en = {
       info_update_request: 'Information update requests',
       partner_management: 'Partner management',
       amandment_request: 'Send an amendment request to the partner',
-      subhead_amandment_request: 'Write the appropriate notes to inform the partner of the things required of him',
+      subhead_amandment_request:
+        'Write the appropriate notes to inform the partner of the things required of him',
     },
     table: {
       th: {
@@ -619,12 +620,31 @@ const en = {
       form: {
         amndreq_label: 'Notes on account information*',
         amndreq_placeholder: 'Please write notes here',
-      }
+      },
     },
     search_bar: 'Type a name to search for',
   },
   proposal_approved: 'Proposal Approved!',
   proposal_rejected: 'Proposal Rejected!',
+
+  // PORTAL REPORTS
+  ceo_portal_reports: {
+    bar_chart: {
+      headline: {
+        partners: 'Partners',
+      },
+      series_name: {
+        last_month: 'Last Month',
+        this_month: 'This Month',
+      },
+      label: {
+        partners_need_to_active: 'Parters Need to Active',
+        active_partners: 'Active Partners',
+        rejected_partners: 'Rejected Partners',
+        pending_partners: 'Pending Partners',
+      },
+    },
+  },
 };
 
 export default en;

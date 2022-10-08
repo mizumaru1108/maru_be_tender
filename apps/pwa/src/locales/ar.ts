@@ -648,12 +648,31 @@ const ar = {
       form: {
         amndreq_label: 'ملاحظات على معلومات الحساب*',
         amndreq_placeholder: 'الرجاء كتابة الملاحظات هنا',
-      }
+      },
     },
     search_bar: 'اكتب اسم للبحث عنه',
   },
   proposal_approved: 'تم قبول الطلب بنجاح',
   proposal_rejected: 'تم رفض الطلب بنجاح',
+
+  // PORTAL REPORTS
+  ceo_portal_reports: {
+    bar_chart: {
+      headline: {
+        partners: 'الشركاء',
+      },
+      series_name: {
+        last_month: 'الشهر الماضي',
+        this_month: 'هذا الشهر',
+      },
+      label: {
+        partners_need_to_active: 'الشركاء المطلوب تفعيلهم',
+        active_partners: 'الشركاء المفعلين',
+        rejected_partners: 'الشركاء المرفوضين',
+        pending_partners: 'الشركاء المعلقين',
+      },
+    },
+  },
 };
 
 export default ar;
