@@ -9,7 +9,7 @@ const MainConsultant = Loadable(lazy(() => import('pages/consultant/MainPage')))
 const IncomingFundingRequestConsultant = Loadable(
   lazy(() => import('pages/consultant/IncomingFundingRequests'))
 );
-const PortalReportsConsultant = Loadable(lazy(() => import('pages/consultant/PortalReports')));
+const PortalReportsConsultant = Loadable(lazy(() => import('pages/PortalReports')));
 const MessagesConsultant = Loadable(lazy(() => import('pages/consultant/Messages')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
 

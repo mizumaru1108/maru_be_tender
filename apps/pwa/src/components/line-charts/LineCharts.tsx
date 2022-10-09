@@ -8,6 +8,7 @@ import Label from 'components/Label';
 import Iconify from 'components/Iconify';
 //
 import { ILineCharts } from './LineCharts.types';
+import useLocales from 'hooks/useLocales';
 
 const LineCharts = ({
   lineChartData,
@@ -21,6 +22,7 @@ const LineCharts = ({
   color,
   icon,
 }: ILineCharts) => {
+  const { translate } = useLocales();
   const theme = useTheme();
   const chartOptions = merge(BaseOptionChart(), {
     colors: [
@@ -70,6 +72,49 @@ const LineCharts = ({
         alignItems="center"
         component="div"
       >
+        <Grid item xs={lineChartData ? 6 : 12}>
+          <Stack component="div" spacing={1} sx={{ textAlign: 'left' }}>
+            {title && <Typography variant="h6">{translate(title)}</Typography>}
+            {icon && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                }}
+              >
+                <img src="/assets/icons/currency-icon.svg" alt="currency-icon" />
+              </Box>
+            )}
+            {subtitle && (
+              <Typography variant="subtitle2" sx={{ color: theme.palette.grey[500] }}>
+                {translate(subtitle)}
+              </Typography>
+            )}
+            {type && (
+              <Typography variant="h4" component="p" sx={{ color: theme.palette.primary.main }}>
+                {type?.value} {translate(type?.label)}
+              </Typography>
+            )}
+            {compareValue && (
+              <Box>
+                <Label
+                  color={
+                    (color === 'up' && 'primary') ||
+                    (color === 'stable' && 'warning') ||
+                    (color === 'down' && 'error') ||
+                    'default'
+                  }
+                  sx={{ mr: 1 }}
+                >
+                  {compareValue} {translate(type?.label)}
+                </Label>
+                <Typography variant="caption" sx={{ color: theme.palette.grey[500] }}>
+                  {translate('section_portal_reports.since_last_month')}
+                </Typography>
+              </Box>
+            )}
+          </Stack>
+        </Grid>
         {typeof lineChartData === 'object' && (
           <Grid item xs={lineChartData ? 6 : 12}>
             {lineChartData?.map((item) => (
@@ -86,49 +131,6 @@ const LineCharts = ({
             ))}
           </Grid>
         )}
-        <Grid item xs={lineChartData ? 6 : 12}>
-          <Stack component="div" spacing={1} sx={{ textAlign: lineChartData ? 'right' : 'left' }}>
-            {title && <Typography variant="h6">{title}</Typography>}
-            {icon && (
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: lineChartData ? 'flex-end' : 'flex-start',
-                }}
-              >
-                <img src="/assets/icons/currency-icon.svg" alt="currency-icon" />
-              </Box>
-            )}
-            {subtitle && (
-              <Typography variant="subtitle2" sx={{ color: theme.palette.grey[500] }}>
-                {subtitle}
-              </Typography>
-            )}
-            {type && (
-              <Typography variant="h4" component="p" sx={{ color: theme.palette.primary.main }}>
-                {type?.value} {type?.label}
-              </Typography>
-            )}
-            {compareValue && (
-              <Box>
-                <Label
-                  color={
-                    (color === 'up' && 'primary') ||
-                    (color === 'stable' && 'warning') ||
-                    (color === 'down' && 'error') ||
-                    'default'
-                  }
-                  sx={{ mr: 1 }}
-                >
-                  {compareValue} {type?.label}
-                </Label>
-                <Typography variant="caption" sx={{ color: theme.palette.grey[500] }}>
-                  Since last month
-                </Typography>
-              </Box>
-            )}
-          </Stack>
-        </Grid>
       </Stack>
     </Card>
   );

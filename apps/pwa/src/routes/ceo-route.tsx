@@ -10,7 +10,7 @@ const MainCeoPage = Loadable(lazy(() => import('pages/ceo/MainCeoPage')));
 const CeoMessagePage = Loadable(lazy(() => import('pages/ceo/CeoMessagePage')));
 const CeoProjectManagementPage = Loadable(lazy(() => import('pages/ceo/CeoProjectManagementPage')));
 const CeoRejectionListPage = Loadable(lazy(() => import('pages/ceo/CeoRejectionListPage')));
-const CeoPortalReportPage = Loadable(lazy(() => import('pages/ceo/CeoPortalReportPage')));
+const CeoPortalReportPage = Loadable(lazy(() => import('pages/PortalReports')));
 
 export const ceoRoute = {
   path: 'ceo',

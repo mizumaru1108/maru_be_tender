@@ -10,7 +10,7 @@ const IncomingExchangePermissionRequestsFinance = Loadable(
   lazy(() => import('pages/finance/IncomingExchangePermissionRequests'))
 );
 const RequestsInProcessFinance = Loadable(lazy(() => import('pages/finance/RequestsInProcess')));
-const PortalReportsFinance = Loadable(lazy(() => import('pages/finance/PortalReports')));
+const PortalReportsFinance = Loadable(lazy(() => import('pages/PortalReports')));
 const MessagesFinance = Loadable(lazy(() => import('pages/finance/Messages')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
 

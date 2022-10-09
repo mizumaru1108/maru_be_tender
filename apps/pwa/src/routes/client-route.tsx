@@ -16,7 +16,7 @@ const ContactSupport = Loadable(lazy(() => import('pages/client/ContactSupport')
 const MainClientPage = Loadable(lazy(() => import('pages/client/MainClientPage')));
 const ClientProfile = Loadable(lazy(() => import('pages/client/ClientProfile')));
 const ClientProfileEdit = Loadable(lazy(() => import('pages/client/ClientProfileEdit')));
-
+const CheakClientActivation = Loadable(lazy(() => import('pages/client/ClientProfileEdit')));
 export const clientRoute = {
   path: 'client',
   element: (
@@ -42,7 +42,11 @@ export const clientRoute = {
         { path: 'app', element: <MainClientPage /> },
         {
           path: 'funding-project-request',
-          element: <FundingProjectRequest />,
+          element: (
+            <CheakClientActivation>
+              <FundingProjectRequest />
+            </CheakClientActivation>
+          ),
         },
         {
           path: 'draft-funding-requests',
