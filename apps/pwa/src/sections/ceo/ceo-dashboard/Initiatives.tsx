@@ -18,7 +18,7 @@ function Initiatives() {
       cardContainerColumns={12}
       cardItemMdBreakpoints={4}
       cardStyle={{ minHeight: { md: '160px' }, p: 2, bgcolor: 'white' }}
-      headline={translate('initiatives_card_insights.headline.initiatives_track_budget')}
+      headline={'ميزانية مسار التعميدات'}
       icon={'/assets/icons/currency-icon.svg'}
       iconPosition={'right'}
       data={INSIGHT_DATA}

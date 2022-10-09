@@ -13,29 +13,23 @@ import { ReactComponent as Logo } from '../../assets/logo.svg';
 // sections
 import { LoginForm } from '../../sections/auth/login';
 import useLocales from 'hooks/useLocales';
-
+import Image from './background.jpg';
 // ----------------------------------------------------------------------
 
 const RootStyle = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     display: 'flex',
     backgroundColor: theme.palette.background.neutral,
+    height: '100vh',
   },
 }));
 
-const SectionStyle = styled(Box)(({ theme }) => ({
-  width: '100%',
-  maxWidth: '500px',
-  backgroundColor: theme.palette.background.paper,
-}));
-
 const ContentStyle = styled('div')(({ theme }) => ({
-  maxWidth: 480,
+  maxWidth: '100%',
   minHeight: '100vh',
   display: 'flex',
   justifyContent: 'start',
   flexDirection: 'column',
-  padding: theme.spacing(5, 0),
 }));
 
 // ----------------------------------------------------------------------
@@ -45,7 +39,18 @@ export default function Login() {
   return (
     <Page title="Login">
       <RootStyle>
-        <SectionStyle />
+        <Box
+          sx={{
+            backgroundImage: `url(${Image})`,
+            width: '100%',
+            maxWidth: '600px',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            backgroundSize: 'inherit',
+            objectFit: 'none',
+            position: 'relative',
+          }}
+        />
         <Container maxWidth="sm">
           <ContentStyle>
             <Stack direction="column" alignItems="center">

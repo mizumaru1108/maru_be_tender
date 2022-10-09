@@ -18,7 +18,7 @@ function Mosques() {
       cardContainerColumns={12}
       cardItemMdBreakpoints={4}
       cardStyle={{ minHeight: { md: '160px' }, p: 2, bgcolor: 'white' }}
-      headline={translate('mosques_card_insights.headline.mosques_grant_track_budget')}
+      headline={'ميزانية مسار المساجد'}
       icon={'/assets/icons/currency-icon.svg'}
       iconPosition={'right'}
       data={INSIGHT_DATA}

@@ -8,23 +8,27 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const data = [
   {
-    firstField: 'مكان مخصص للإعلانات في الجمعية لعرض النتائج مع الشركاء في مجال معين',
-    secondField:
-      'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا .',
-    thirdField: 'عرض تفاصيل المشروع',
+    firstField: 'رسالة ترحيبية',
+    secondField: 'شكراً لاستخدامكم منصة مانح',
+    // thirdField: 'عرض تفاصيل المشروع',
   },
   {
-    firstField: 'مكان مخصص للإعلانات في الجمعية لعرض النتائج مع الشركاء في مجال معين',
-    secondField:
-      'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا .',
-    thirdField: 'عرض تفاصيل المشروع',
+    firstField: 'رسالة ترحيبية',
+    secondField: 'شكراً لاستخدامكم منصة مانح',
+    // thirdField: 'عرض تفاصيل المشروع',
   },
-  {
-    firstField: 'مكان مخصص للإعلانات في الجمعية لعرض النتائج مع الشركاء في مجال معين',
-    secondField:
-      'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا .',
-    thirdField: 'عرض تفاصيل المشروع',
-  },
+  // {
+  //   firstField: 'مكان مخصص للإعلانات في الجمعية لعرض النتائج مع الشركاء في مجال معين',
+  //   secondField:
+  //     'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا .',
+  //   thirdField: 'عرض تفاصيل المشروع',
+  // },
+  // {
+  //   firstField: 'مكان مخصص للإعلانات في الجمعية لعرض النتائج مع الشركاء في مجال معين',
+  //   secondField:
+  //     'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا .',
+  //   thirdField: 'عرض تفاصيل المشروع',
+  // },
 ];
 
 function ClientCarousel() {
@@ -100,25 +104,29 @@ function ClientCarousel() {
                 <Box flex={1}>
                   <img src={`/icons/mosque-carousel-icon.svg`} alt="" />
                 </Box>
-                <Stack direction="column" gap={1} justifyContent="end" flex={4}>
+                <Stack direction="column" gap={1} justifyContent="center" flex={4}>
                   <Typography
                     className={classes.multiLineEllipsis}
                     sx={{ fontSize: '16px', textAlign: 'end', color: 'text.tertiary' }}
+                    variant="h4"
                   >
                     {item.firstField}
                   </Typography>
                   <Typography
                     className={classes.multiLineEllipsis}
                     sx={{ fontSize: '16px', textAlign: 'end' }}
+                    variant="h4"
                   >
                     {item.secondField}
                   </Typography>
-                  <Stack justifyContent="space-between" direction="row">
-                    <Box>{''}</Box>
-                    <Button className={classes.multiLineEllipsis} sx={{ color: '#1E1E1E' }}>
-                      {item.thirdField}
-                    </Button>
-                  </Stack>
+                  {/* {item.thirdField && (
+                    <Stack justifyContent="space-between" direction="row">
+                      <Box>{''}</Box>
+                      <Button className={classes.multiLineEllipsis} sx={{ color: '#1E1E1E' }}>
+                        {item.thirdField}
+                      </Button>
+                    </Stack>
+                  )} */}
                 </Stack>
               </Stack>
             </Box>

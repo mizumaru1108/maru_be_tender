@@ -64,28 +64,28 @@ export default function ProjectManagementTable({
   const projectTracks = [
     {
       value: '',
-      title: translate('table_filter.button_group.all_tracks'),
+      title: 'مسار المساجد', //translate('table_filter.button_group.all_tracks'),
     },
     {
       value: 'Mosques Department',
-      title: translate('table_filter.button_group.mosques_track'),
+      title: 'مسار المنح ميسر', //translate('table_filter.button_group.mosques_track'),
     },
     {
       value: 'Facilitated Scholarship Track',
-      title: translate('table_filter.button_group.scholarships_track'),
+      title: 'مسار المبادرات', //translate('table_filter.button_group.scholarships_track'),
     },
     {
       value: 'Initiatives Track',
-      title: translate('table_filter.button_group.initiatives_track'),
+      title: 'مسار التعميدات', //translate('table_filter.button_group.initiatives_track'),
     },
-    {
-      value: 'Baptismal Path',
-      title: translate('table_filter.button_group.baptism_track'),
-    },
-    {
-      value: "Syeikh's Path",
-      title: translate('table_filter.button_group.syeikh_track'),
-    },
+    // {
+    //   value: 'Baptismal Path',
+    //   title: translate('table_filter.button_group.baptism_track'),
+    // },
+    // {
+    //   value: "Syeikh's Path",
+    //   title: translate('table_filter.button_group.syeikh_track'),
+    // },
   ];
 
   const sortOptions = [
