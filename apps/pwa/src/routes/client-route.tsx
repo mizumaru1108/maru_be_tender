@@ -42,11 +42,7 @@ export const clientRoute = {
         { path: 'app', element: <MainClientPage /> },
         {
           path: 'funding-project-request',
-          element: (
-            <CheakClientActivation>
-              <FundingProjectRequest />
-            </CheakClientActivation>
-          ),
+          element: <FundingProjectRequest />,
         },
         {
           path: 'draft-funding-requests',
