@@ -173,6 +173,7 @@ function FloatingActionBar() {
           </Button>
         </Stack>
       </Box>
+
       <ModalDialog
         title={
           <Stack display="flex">

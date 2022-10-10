@@ -3,8 +3,6 @@ import { getOneProposal } from 'queries/commons/getOneProposal';
 import { useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useQuery } from 'urql';
-import { Role } from '../../guards/RoleBasedGuard';
-import useAuth from '../../hooks/useAuth';
 import ActionBar from './ActionBar';
 import ExchangeDetails from './ExchangeDetails';
 import FloatinActonBar from './floating-action-bar/FloatinActonBar';

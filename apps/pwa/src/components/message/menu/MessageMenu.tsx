@@ -1,6 +1,7 @@
 import { Box, Button, Stack, Tab, Tabs, Typography } from '@mui/material';
 import { useState } from 'react';
 import Iconify from '../../Iconify';
+import ModalDialog from '../../modal-dialog';
 import { Menu, TabPanelProps } from '../type';
 
 const MessageMenu = ({ internalTabData, externalTabData }: Menu) => {
@@ -9,6 +10,9 @@ const MessageMenu = ({ internalTabData, externalTabData }: Menu) => {
   const handleChangeTabsItem = (event: React.SyntheticEvent, newValue: number) => {
     setValueTabItem(newValue);
   };
+  const [modalState, setModalState] = useState(false);
+  const [messageModalState, setMesssageModalState] = useState(false);
+  const [filterModalState, setFilterModalState] = useState(false);
 
   function TabPanel(props: TabPanelProps) {
     const { children, value, index, ...other } = props;
@@ -351,6 +355,10 @@ const MessageMenu = ({ internalTabData, externalTabData }: Menu) => {
             height: '51px',
           }}
           endIcon={<Iconify icon={'bi:chat-square-text'} color="#fff" width={24} height={24} />}
+          onClick={() => {
+            setModalState(true);
+            setMesssageModalState(true);
+          }}
         >
           <Typography
             sx={{
@@ -363,6 +371,34 @@ const MessageMenu = ({ internalTabData, externalTabData }: Menu) => {
           </Typography>
         </Button>
       </Stack>
+
+      <ModalDialog
+        title={
+          <Stack display="flex">
+            <Typography variant="h6" fontWeight="bold" color="#000000">
+              {messageModalState ? 'Create a new message' : 'Filter'}
+            </Typography>
+          </Stack>
+        }
+        content={
+          <Stack display="flex">
+            <Typography variant="h6" fontWeight="bold" color="#000000">
+              tet
+            </Typography>
+          </Stack>
+        }
+        isOpen={modalState}
+        onClose={() => {
+          setModalState(false);
+          if (messageModalState) {
+            setMesssageModalState(false);
+          }
+          if (filterModalState) {
+            setFilterModalState(false);
+          }
+        }}
+        styleContent={{ padding: '1em', backgroundColor: '#fff' }}
+      />
     </Stack>
   );
 };
