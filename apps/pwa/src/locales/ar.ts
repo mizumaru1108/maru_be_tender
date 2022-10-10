@@ -675,30 +675,30 @@ const ar = {
   },
   section_portal_reports: {
     heading: {
-      reports: 'Reports',
-      average_transaction: 'Average transaction processing speed on the platform',
-      achievement_effectiveness: 'Achievement and effectiveness of employees',
-      mosque_track_budget: 'Mosques track budget',
-      concessional_track_budget: 'The concessional grant track budget',
-      initiatives_track_budget: 'Initiatives track budget',
-      complexity_track_budget: 'Complexity track budget'
+      reports: 'التقارير',
+      average_transaction: 'متوسط سرعة إنجاز المعاملات في المنصة',
+      achievement_effectiveness: 'الانجاز والفعالية الخاصة بالموظفين',
+      mosque_track_budget: 'ميزانية مسار المساجد',
+      concessional_track_budget: 'ميزانية مسار المنح الميسر',
+      initiatives_track_budget: 'ميزانية مسار المبادرات',
+      complexity_track_budget: 'ميزانية مسار التعقيدات',
     },
     form: {
       date_picker: {
         label: {
-          start_date: 'Start Date',
-          end_date: 'End Date'
-        }
-      }
+          start_date: 'تاريخ البداية',
+          end_date: 'تاريخ النهاية',
+        },
+      },
     },
     tabs: {
-      label_1: 'Information about orders',
-      label_2: 'Information about partners',
-      label_3: 'Budget info',
-      label_4: 'Information about achievement and efficacy'
+      label_1: 'معلومات عن الطلبات',
+      label_2: 'معلومات عن الشركاء',
+      label_3: 'معلومات عن الميزانية',
+      label_4: 'معلومات عن الانجاز والفعالية',
     },
     button: {
-      create_special_report: 'Create a special report'
+      create_special_report: 'إنشاء تقرير خاص',
     },
     table: {
       th: {
@@ -706,9 +706,18 @@ const ar = {
         account_type: 'Account Type',
         section: 'Section',
         number_of_clock: 'Number of Clock',
-      }
-    }
-  }
+      },
+    },
+    total_budget_for_the_course: 'الميزانية الكلية للمسار',
+    riyals: 'ريال',
+    spent_budget: 'الميزانية المصروفة',
+    reserved_budget: 'الميزانية المحجوزة',
+    since_last_month: 'منذ الأسبوع الماض',
+    initiatives_track: 'مسار المبادرات',
+    facilitated_scholarship_track: 'مسار المنح الميسر',
+    the_path_of_the_mosques: 'مسار المساجد',
+    the_path_of_baptisms: 'مسار التعميدات',
+  },
 };
 
 export default ar;

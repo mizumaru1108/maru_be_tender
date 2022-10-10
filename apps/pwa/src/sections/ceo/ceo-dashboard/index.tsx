@@ -10,10 +10,10 @@ function CeoDashboard() {
     <>
       <Grid container rowSpacing={0} columnSpacing={0} gap={0}>
         <Grid item md={6}>
-          <Concessional />
+          <Mosques />
         </Grid>
         <Grid item md={6}>
-          <Mosques />
+          <Concessional />
         </Grid>
         <Grid item md={6}>
           <Complexity />

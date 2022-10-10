@@ -15,9 +15,7 @@ const RequestsInProcessProjectManager = Loadable(
 const PreviousFundingRequestsProjectManager = Loadable(
   lazy(() => import('pages/project-manager/PreviousFundingRequests'))
 );
-const PortalReportsProjectManager = Loadable(
-  lazy(() => import('pages/project-manager/PortalReports'))
-);
+const PortalReportsProjectManager = Loadable(lazy(() => import('pages/PortalReports')));
 const MessagesProjectManager = Loadable(lazy(() => import('pages/project-manager/Messages')));
 const ExchangePermissionProjectManager = Loadable(
   lazy(() => import('pages/project-manager/ExchangePermission'))

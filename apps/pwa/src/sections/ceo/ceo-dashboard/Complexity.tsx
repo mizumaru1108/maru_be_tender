@@ -18,7 +18,7 @@ function Complexity() {
       cardContainerColumns={12}
       cardItemMdBreakpoints={4}
       cardStyle={{ minHeight: { md: '160px' }, p: 2, bgcolor: 'white' }}
-      headline={translate('complexity_card_insights.headline.complexity_grant_track_budget')}
+      headline={'ميزانية مسار المبادرات'}
       icon={'/assets/icons/currency-icon.svg'}
       iconPosition={'right'}
       data={INSIGHT_DATA}

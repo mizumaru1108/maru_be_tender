@@ -26,7 +26,7 @@ export const MainFormData = [
     children: (
       <>
         {REGIONS.map((item, index) => (
-          <option key={index} value="item" style={{ backgroundColor: '#fff' }}>
+          <option key={index} value={item} style={{ backgroundColor: '#fff' }}>
             {item}
           </option>
         ))}

@@ -9,6 +9,8 @@ import MosqueTrack from './MosqueTrack';
 import ConcessionalTrack from './ConcessionalTrack';
 import InitiativeTrack from './InitiativeTrack';
 import ComplexityTrack from './ComplexityTrack';
+import PartnersInformation from './PartnersInformation';
+import ProjectsInformation from './ProjectsInformation';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -68,7 +70,7 @@ export default function HeaderTabs() {
         indicatorColor="primary"
         textColor="inherit"
         sx={{
-          bgcolor: theme.palette.grey[400],
+          bgcolor: '#93A3B029',
           borderRadius: 1,
         }}
       >
@@ -135,12 +137,16 @@ export default function HeaderTabs() {
       </Tabs>
       <TabPanel value={value} index={0} dir={theme.direction}>
         <ContentStyle sx={{ mt: 3 }}>
-          <Typography variant="h4">You can put component in this sections</Typography>
+          <Typography variant="h4">
+            <ProjectsInformation />
+          </Typography>
         </ContentStyle>
       </TabPanel>
       <TabPanel value={value} index={1} dir={theme.direction}>
         <ContentStyle sx={{ mt: 3 }}>
-          <Typography variant="h4">You can put component in this sections</Typography>
+          <Typography variant="h4">
+            <PartnersInformation />
+          </Typography>
         </ContentStyle>
       </TabPanel>
       <TabPanel value={value} index={2} dir={theme.direction}>

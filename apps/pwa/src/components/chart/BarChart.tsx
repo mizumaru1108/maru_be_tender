@@ -31,9 +31,10 @@ export default function BarChart({
   ];
 
   var options: ApexOptions = {
-    chart: customApexChartOptions ?? {
+    chart: {
       type: 'bar',
-      height: !customApexChartOptions && chartBarHeight ? chartBarHeight : 350,
+      height: 400,
+      // height: !customApexChartOptions && chartBarHeight ? chartBarHeight : 350,
       width: !customApexChartOptions && chartBarWidth ? chartBarWidth : '100%',
     },
     plotOptions: barRenderOptions ?? {

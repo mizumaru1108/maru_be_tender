@@ -18,9 +18,7 @@ const PreviousFundingRequestsProjectSupervisor = Loadable(
 const PaymentAdjustmenProjectSupervisor = Loadable(
   lazy(() => import('pages/project-supervisor/PaymentAdjustment'))
 );
-const PortalReportsProjectSupervisor = Loadable(
-  lazy(() => import('pages/project-supervisor/PortalReports'))
-);
+const PortalReportsProjectSupervisor = Loadable(lazy(() => import('pages/PortalReports')));
 const MessagesProjectSupervisor = Loadable(lazy(() => import('pages/project-supervisor/Messages')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
 

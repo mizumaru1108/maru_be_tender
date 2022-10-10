@@ -15,7 +15,7 @@ const IncomingSupportRequests = Loadable(
 const PreviouseSupportRequests = Loadable(
   lazy(() => import('pages/moderator/previous-support-requests'))
 );
-const PortalReports = Loadable(lazy(() => import('pages/moderator/PortalReports')));
+const PortalReports = Loadable(lazy(() => import('pages/PortalReports')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
 
 export const moderatorRoute = {

@@ -10,7 +10,7 @@ const IncomingExchangePermissionRequestsCashier = Loadable(
   lazy(() => import('pages/cashier/IncomingExchangePermissionRequests'))
 );
 const RequestsInProcessCashier = Loadable(lazy(() => import('pages/cashier/RequestsInProcess')));
-const PortalReportsCashier = Loadable(lazy(() => import('pages/cashier/PortalReports')));
+const PortalReportsCashier = Loadable(lazy(() => import('pages/PortalReports')));
 const MessagesCashier = Loadable(lazy(() => import('pages/cashier/Messages')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
 
