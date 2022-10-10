@@ -83,6 +83,7 @@ const MessageMenu = ({ internalData, externalData, accountType }: IMenu) => {
           <Tab label="Internal Corespondence" {...a11yProps(1)} />
         </Tabs>
       )}
+
       {[
         'tender_project_manager',
         'tender_consultant',
@@ -96,6 +97,7 @@ const MessageMenu = ({ internalData, externalData, accountType }: IMenu) => {
           }}
         />
       )}
+
       {[
         'tender_moderator',
         'tender_accounts_manager',
@@ -105,16 +107,12 @@ const MessageMenu = ({ internalData, externalData, accountType }: IMenu) => {
         <>
           <TabPanel value={valueTabItem} index={0}>
             <Box sx={{ overflowX: 'hidden', height: '550px' }}>
-              {internalData.map((item, index) => (
-                <MessageMenuItem data={item} index={index} key={index} />
-              ))}
+              <MessageMenuItem data={internalData} />
             </Box>
           </TabPanel>
           <TabPanel value={valueTabItem} index={1}>
             <Box sx={{ overflowX: 'hidden', height: '550px' }}>
-              {externalData.map((item, index) => (
-                <MessageMenuItem data={item} index={index} key={index} />
-              ))}
+              <MessageMenuItem data={externalData} />
             </Box>
           </TabPanel>
         </>
@@ -129,9 +127,7 @@ const MessageMenu = ({ internalData, externalData, accountType }: IMenu) => {
         'tender_cashier',
       ].includes(accountType) && (
         <Box sx={{ overflowX: 'hidden', height: '550px' }}>
-          {internalData.map((item, index) => (
-            <MessageMenuItem data={item} index={index} key={index} />
-          ))}
+          <MessageMenuItem data={internalData} />
         </Box>
       )}
 

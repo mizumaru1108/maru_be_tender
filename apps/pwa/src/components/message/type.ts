@@ -24,8 +24,7 @@ type internalExternal = {
 };
 
 export type IMessageMenuItem = {
-  data: internalExternal;
-  index: number | undefined;
+  data: internalExternal[];
 };
 
 export type IMenu = {
