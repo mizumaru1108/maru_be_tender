@@ -65,27 +65,27 @@ export default function RejectionListTable({
   const projectTracks = [
     {
       value: '',
-      title: translate('table_filter.button_group.all_tracks'),
+      title: translate('commons.track_type.all_tracks'),
     },
     {
       value: 'Mosques Department',
-      title: translate('table_filter.button_group.mosques_track'),
+      title: translate('commons.track_type.mosques_track'),
     },
     {
       value: 'Facilitated Scholarship Track',
-      title: translate('table_filter.button_group.scholarships_track'),
+      title: translate('commons.track_type.scholarships_track'),
     },
     {
       value: 'Initiatives Track',
-      title: translate('table_filter.button_group.initiatives_track'),
+      title: translate('commons.track_type.initiatives_track'),
     },
     {
       value: 'Baptismal Path',
-      title: translate('table_filter.button_group.baptism_track'),
+      title: translate('commons.track_type.baptism_track'),
     },
     {
       value: "Syeikh's Path",
-      title: translate('table_filter.button_group.syeikh_track'),
+      title: translate('commons.track_type.syeikh_track'),
     },
   ];
 
@@ -241,7 +241,7 @@ export default function RejectionListTable({
                   },
                 }}
               >
-                {translate('table_filter.filter_button_label')}
+                {translate('commons.filter_button_label')}
                 <Iconify icon="bx:bx-filter-alt" sx={{ ml: 1 }} />
               </Button>
             </Box>

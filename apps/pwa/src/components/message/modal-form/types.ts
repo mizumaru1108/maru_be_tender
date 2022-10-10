@@ -1,7 +1,7 @@
-export interface NewMessageModalFormProps {
-  children: React.ReactNode;
-  onSubmit: (values: NewMessageModalFormValues) => void;
-}
+export type NewMessageModalFormProps = {
+  children?: React.ReactNode;
+  onSubmit: (data: any) => void;
+};
 
 export interface NewMessageModalFormValues {
   trackType: string;

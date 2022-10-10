@@ -6,6 +6,17 @@
 // ----------------------------------------------------------------------
 
 const ar = {
+  commons: {
+    track_type: {
+      all_tracks: 'جميع المسارات',
+      mosques_track: 'مسار المساجد',
+      scholarships_track: 'مسار الجامعات',
+      initiatives_track: 'مسار المبادرات',
+      baptism_track: 'مسار الاستقطاب',
+      syeikh_track: 'مسار السيوخ',
+    },
+    filter_button_label: 'تصفية',
+  },
   demo: {
     title: `Arabic`,
     introduction: `لوريم إيبسوم هو ببساطة نص شكلي يستخدم في صناعة الطباعة والتنضيد. كان Lorem Ipsum هو النص الوهمي القياسي في الصناعة منذ القرن الخامس عشر الميلادي ، عندما أخذت طابعة غير معروفة لوحًا من النوع وتدافعت عليه لعمل كتاب عينة. لقد نجت ليس فقط خمسة قرون ، ولكن أيضًا القفزة في التنضيد الإلكتروني ، وظلت دون تغيير جوهري. تم نشره في الستينيات من القرن الماضي بإصدار أوراق Letraset التي تحتوي على مقاطع Lorem Ipsum ، ومؤخرًا مع برامج النشر المكتبي مثل Aldus PageMaker بما في ذلك إصدارات Lorem Ipsum.`,
@@ -548,14 +559,6 @@ const ar = {
 
   // filter above table on project management and rejection list
   table_filter: {
-    button_group: {
-      all_tracks: 'جميع المسارات',
-      mosques_track: 'مسار المساجد',
-      scholarships_track: 'مسار الجامعات',
-      initiatives_track: 'مسار المبادرات',
-      baptism_track: 'مسار الاستقطاب',
-      syeikh_track: 'مسار السيوخ',
-    },
     sortby_title: 'ترتيب حسب',
     sortby_options: {
       date_created_oldest: 'تاريخ الانشاء (الأقدم)',
@@ -569,7 +572,6 @@ const ar = {
       project_number_lowest: 'رقم المشروع (الأقل)',
       project_number_highest: 'رقم المشروع (الأعلى)',
     },
-    filter_button_label: 'تصفية',
   },
 
   table_actions: {
@@ -717,6 +719,18 @@ const ar = {
     facilitated_scholarship_track: 'مسار المنح الميسر',
     the_path_of_the_mosques: 'مسار المساجد',
     the_path_of_baptisms: 'مسار التعميدات',
+  },
+
+  // massaging
+  message: 'رسالة',
+  new_message_modal: {
+    title: 'إنشاء رسالة جديدة',
+    form: {
+      label: {
+        track_type: 'نوع المسار',
+        employees: 'الموظفين',
+      },
+    },
   },
 };
 

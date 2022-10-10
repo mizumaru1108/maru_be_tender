@@ -6,6 +6,17 @@
 // ----------------------------------------------------------------------
 
 const en = {
+  commons: {
+    track_type: {
+      all_tracks: 'All Tracks',
+      mosques_track: 'Mosques Track',
+      scholarships_track: 'Scholarships Track',
+      initiatives_track: 'Initiatives Track',
+      baptism_track: 'Baptism Track',
+      syeikh_track: "Syeikh's Track",
+    },
+    filter_button_label: 'Filter',
+  },
   demo: {
     title: `English`,
     introduction: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`,
@@ -519,14 +530,6 @@ const en = {
 
   // filter above table on project management and rejection list
   table_filter: {
-    button_group: {
-      all_tracks: 'All Tracks',
-      mosques_track: 'Mosques Track',
-      scholarships_track: 'Scholarships Track',
-      initiatives_track: 'Initiatives Track',
-      baptism_track: 'Baptism Track',
-      syeikh_track: "Syeikh's Track",
-    },
     sortby_title: 'Sort By',
     sortby_options: {
       date_created_oldest: 'Date Created (Oldest)',
@@ -540,7 +543,6 @@ const en = {
       project_number_lowest: 'Project Number (Lowest)',
       project_number_highest: 'Project Number (Highest)',
     },
-    filter_button_label: 'Filter',
   },
 
   table_actions: {
@@ -678,6 +680,18 @@ const en = {
         account_type: 'Account Type',
         section: 'Section',
         number_of_clock: 'Number of Clock',
+      },
+    },
+  },
+
+  // Message Page
+  message: 'Message',
+  new_message_modal: {
+    title: 'Create a New Message',
+    form: {
+      label: {
+        track_type: 'Track Type',
+        employees: 'Employees',
       },
     },
   },

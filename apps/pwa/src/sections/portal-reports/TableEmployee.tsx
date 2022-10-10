@@ -208,7 +208,7 @@ export default function TableEmployee({
                 },
               }}
             >
-              {translate('table_filter.filter_button_label')}
+              {translate('commons.filter_button_label')}
               <Iconify icon="bx:bx-filter-alt" sx={{ ml: 1 }} />
             </Button>
           </Box>

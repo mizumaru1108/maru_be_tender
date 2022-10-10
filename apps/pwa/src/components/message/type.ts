@@ -5,14 +5,14 @@ type messageContent = {
   timeCreated: string;
 };
 
-export type ContentMessage = {
+export type IContentMessage = {
   data: messageContent[];
 };
-export type BodyContent = {
+export type IBodyContent = {
   data: messageContent[];
 };
 
-export type FooterContent = {
+export type IFooterContent = {
   data: messageContent[];
 };
 
@@ -23,9 +23,14 @@ type correspondanceData = {
   footer: Date;
 };
 
-export type Menu = {
-  internalTabData: correspondanceData[];
-  externalTabData: correspondanceData[];
+export type IMessageMenuItem = {
+  data: correspondanceData[];
+};
+
+export type IMenu = {
+  internalData: correspondanceData[];
+  externalData: correspondanceData[];
+  accountType: string;
 };
 
 export interface TabPanelProps {

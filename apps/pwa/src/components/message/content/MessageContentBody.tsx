@@ -1,7 +1,7 @@
 import { Box, Stack, Typography } from '@mui/material';
-import { BodyContent } from '../type';
+import { IBodyContent } from '../type';
 
-export default function MessageContentBody({ data }: BodyContent) {
+export default function MessageContentBody({ data }: IBodyContent) {
   return (
     <Stack>
       {data.map((item, index) => (
