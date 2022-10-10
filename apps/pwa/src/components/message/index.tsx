@@ -3,11 +3,13 @@ import { styled } from '@mui/material/styles';
 import { Stack } from '@mui/system';
 import Page from 'components/Page';
 import React, { useEffect, useState } from 'react';
+import useAuth from 'hooks/useAuth';
 
 import Iconify from '../Iconify';
 import MessageContent from './content/MessageContent';
 import MessageMenu from './menu/MessageMenu';
 import { Message, MessagesExternalCorespondence, MessagesInternalCorespondence } from './mock-data';
+import { Role } from 'guards/RoleBasedGuard';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -19,14 +21,17 @@ const ContentStyle = styled('div')(({ theme }) => ({
 }));
 
 function MessagesPage() {
+  const { user } = useAuth();
+  const role = user?.registrations[0].roles[0] as Role;
   return (
     <Page title="Previous Funding Requests">
       <ContentStyle>
-        <Grid container columns={14} spacing={3} direction="row">
-          <Grid item xs={6}>
+        <Grid container columns={15} spacing={3} direction="row">
+          <Grid item xs={7} padding={2}>
             <MessageMenu
               internalData={MessagesInternalCorespondence}
               externalData={MessagesExternalCorespondence}
+              accountType={role}
             />
           </Grid>
           <Grid
@@ -35,6 +40,7 @@ function MessagesPage() {
             sx={{
               backgroundColor: '#fff',
             }}
+            padding={3}
           >
             <MessageContent data={Message} />
           </Grid>

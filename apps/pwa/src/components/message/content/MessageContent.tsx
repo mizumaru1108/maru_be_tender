@@ -3,9 +3,9 @@ import { useState } from 'react';
 import MessageContentBody from './MessageContentBody';
 import MessageContentFooter from './MessageContentFooter';
 import MessageContentHeader from './MessageContentHeader';
-import { ContentMessage } from '../type';
+import { IContentMessage } from '../type';
 
-export default function MessageContent({ data }: ContentMessage) {
+export default function MessageContent({ data }: IContentMessage) {
   const [messages, setMessages] = useState('');
   return (
     <Stack display="flex">

@@ -1,8 +1,8 @@
 import { Box, Stack, TextField } from '@mui/material';
 import { useState } from 'react';
-import { FooterContent } from '../type';
+import { IFooterContent } from '../type';
 
-export default function MessageContentFooter({ data }: FooterContent) {
+export default function MessageContentFooter({ data }: IFooterContent) {
   const [messages, setMessages] = useState('');
   return (
     <Stack
