@@ -13,6 +13,13 @@ const PortalReportsConsultant = Loadable(lazy(() => import('pages/PortalReports'
 const MessagesConsultant = Loadable(lazy(() => import('pages/consultant/Messages')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
 
+const NonClientProfile = Loadable(
+  lazy(() => import('sections/non-client-profile/NonClientProfile'))
+);
+const NonClientProfileEdit = Loadable(
+  lazy(() => import('sections/non-client-profile/NonClientProfileEdit'))
+);
+
 export const consultantRoute = {
   path: 'consultant',
   element: (
@@ -24,6 +31,13 @@ export const consultantRoute = {
   ),
   children: [
     { element: <Navigate to="/consultant/dashboard/app" replace />, index: true },
+    {
+      path: 'my-profile',
+      children: [
+        { path: '', element: <NonClientProfile /> },
+        { path: 'edit', element: <NonClientProfileEdit /> },
+      ],
+    },
     {
       path: 'dashboard',
       children: [

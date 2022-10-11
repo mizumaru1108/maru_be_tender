@@ -21,6 +21,13 @@ const PartnerSendAmandementPage = Loadable(
   lazy(() => import('pages/accounts-manager/partner/SendAmandementRequest'))
 );
 
+const NonClientProfile = Loadable(
+  lazy(() => import('sections/non-client-profile/NonClientProfile'))
+);
+const NonClientProfileEdit = Loadable(
+  lazy(() => import('sections/non-client-profile/NonClientProfileEdit'))
+);
+
 export const accoutsManagerRoute = {
   path: 'accounts-manager',
   element: (
@@ -50,6 +57,13 @@ export const accoutsManagerRoute = {
         },
         { path: 'portal-reports', element: <PortalReportsPage /> },
         { path: 'messages', element: <MessagesManagerPage /> },
+      ],
+    },
+    {
+      path: 'my-profile',
+      children: [
+        { path: '', element: <NonClientProfile /> },
+        { path: 'edit', element: <NonClientProfileEdit /> },
       ],
     },
   ],

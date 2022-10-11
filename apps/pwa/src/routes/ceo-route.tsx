@@ -12,6 +12,13 @@ const CeoProjectManagementPage = Loadable(lazy(() => import('pages/ceo/CeoProjec
 const CeoRejectionListPage = Loadable(lazy(() => import('pages/ceo/CeoRejectionListPage')));
 const CeoPortalReportPage = Loadable(lazy(() => import('pages/PortalReports')));
 
+const NonClientProfile = Loadable(
+  lazy(() => import('sections/non-client-profile/NonClientProfile'))
+);
+const NonClientProfileEdit = Loadable(
+  lazy(() => import('sections/non-client-profile/NonClientProfileEdit'))
+);
+
 export const ceoRoute = {
   path: 'ceo',
   element: (
@@ -23,6 +30,13 @@ export const ceoRoute = {
   ),
   children: [
     { element: <Navigate to="/ceo/dashboard/app" replace />, index: true },
+    {
+      path: 'my-profile',
+      children: [
+        { path: '', element: <NonClientProfile /> },
+        { path: 'edit', element: <NonClientProfileEdit /> },
+      ],
+    },
     {
       path: 'dashboard',
       children: [

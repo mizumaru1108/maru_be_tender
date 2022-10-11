@@ -24,6 +24,14 @@ const ProjectDetails = Loadable(lazy(() => import('pages/project-details/Project
 const AppointmentsWithPartners = Loadable(
   lazy(() => import('pages/project-manager/AppointmentsWithPartners'))
 );
+
+const NonClientProfile = Loadable(
+  lazy(() => import('sections/non-client-profile/NonClientProfile'))
+);
+const NonClientProfileEdit = Loadable(
+  lazy(() => import('sections/non-client-profile/NonClientProfileEdit'))
+);
+
 export const projectManagerRoute = {
   path: 'project-manager',
   element: (
@@ -35,6 +43,13 @@ export const projectManagerRoute = {
   ),
   children: [
     { element: <Navigate to="/project-manager/dashboard/app" replace />, index: true },
+    {
+      path: 'my-profile',
+      children: [
+        { path: '', element: <NonClientProfile /> },
+        { path: 'edit', element: <NonClientProfileEdit /> },
+      ],
+    },
     {
       path: 'dashboard',
       children: [

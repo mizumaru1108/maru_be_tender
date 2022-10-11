@@ -732,6 +732,24 @@ const ar = {
       },
     },
   },
+
+  // User Profile
+  user_profile: {
+    label: {
+      page_title: 'الملف الشخصي',
+      main_information: 'المعلومات الرئيسية',
+      contact_information: 'معلومات الاتصال',
+      edit_button: 'تعديل معلومات الحساب',
+    },
+    fields: {
+      first_name: 'الاسم الاول',
+      last_name: 'الاسم الاخير',
+      address: 'العنوان',
+      region: 'المنطقة',
+      email: 'البريد الالكتروني',
+      phone_number: 'رقم الهاتف',
+    },
+  },
 };
 
 export default ar;

@@ -18,6 +18,13 @@ const PreviouseSupportRequests = Loadable(
 const PortalReports = Loadable(lazy(() => import('pages/PortalReports')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
 
+const NonClientProfile = Loadable(
+  lazy(() => import('sections/non-client-profile/NonClientProfile'))
+);
+const NonClientProfileEdit = Loadable(
+  lazy(() => import('sections/non-client-profile/NonClientProfileEdit'))
+);
+
 export const moderatorRoute = {
   path: 'moderator',
   element: (
@@ -29,6 +36,13 @@ export const moderatorRoute = {
   ),
   children: [
     { element: <Navigate to="/moderator/dashboard/app" replace />, index: true },
+    {
+      path: 'my-profile',
+      children: [
+        { path: '', element: <NonClientProfile /> },
+        { path: 'edit', element: <NonClientProfileEdit /> },
+      ],
+    },
     {
       path: 'dashboard',
       children: [

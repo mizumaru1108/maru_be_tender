@@ -14,6 +14,13 @@ const PortalReportsFinance = Loadable(lazy(() => import('pages/PortalReports')))
 const MessagesFinance = Loadable(lazy(() => import('pages/finance/Messages')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
 
+const NonClientProfile = Loadable(
+  lazy(() => import('sections/non-client-profile/NonClientProfile'))
+);
+const NonClientProfileEdit = Loadable(
+  lazy(() => import('sections/non-client-profile/NonClientProfileEdit'))
+);
+
 export const financeRoute = {
   path: 'finance',
   element: (
@@ -25,6 +32,13 @@ export const financeRoute = {
   ),
   children: [
     { element: <Navigate to="/finance/dashboard/app" replace />, index: true },
+    {
+      path: 'my-profile',
+      children: [
+        { path: '', element: <NonClientProfile /> },
+        { path: 'edit', element: <NonClientProfileEdit /> },
+      ],
+    },
     {
       path: 'dashboard',
       children: [

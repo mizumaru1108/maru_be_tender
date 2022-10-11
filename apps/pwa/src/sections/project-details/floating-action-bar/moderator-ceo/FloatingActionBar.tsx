@@ -10,9 +10,11 @@ import { rejectProposal } from 'queries/commons/rejectProposal';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useMutation } from 'urql';
+import { rejectProposalWLog } from '../../../../queries/commons/rejectProposalWithLog';
 import FormActionBox from './FormActionBox';
 import ProposalAcceptingForm from './ProposalAcceptingForm';
 import ProposalRejectingForm from './ProposalRejectingForm';
+import { ProposalRejectPayload } from './types';
 
 function FloatingActionBar() {
   const { user } = useAuth();
@@ -25,6 +27,7 @@ function FloatingActionBar() {
 
   // Logic here to get current user role
   const currentRoles = user?.registrations[0].roles[0] as Role;
+  const userId = user?.id;
 
   // var for insert into navigate in handel Approval and Rejected
   const p = currentRoles.split('_')[1];
@@ -34,7 +37,7 @@ function FloatingActionBar() {
   // var for else on state in approveProposalPayloads
   const a = p.toUpperCase();
 
-  const [proposalRejection, reject] = useMutation(rejectProposal);
+  const [proposalRejection, reject] = useMutation(rejectProposalWLog);
   const [proposalAccepting, accept] = useMutation(approveProposal);
   const { fetching: accFetch, error: accError } = proposalAccepting;
   const { fetching: rejFetch, error: rejError } = proposalRejection;
@@ -89,18 +92,20 @@ function FloatingActionBar() {
     }
   };
 
-  const handleRejected = async () => {
+  const handleRejected = async (reason: string) => {
     await reject({
-      proposalId: pid,
-      rejectProposalPayloads: {
-        inner_status: 'REJECTED',
+      ceoRejectProposalPayload: {
+        proposal_id: pid,
+        reviewer_id: userId,
+        status: 'REJECTED',
         outter_status: 'CANCELED',
-        state:
+        assign:
           currentRoles === 'tender_moderator'
-            ? 'CLIENT'
+            ? 'MODERATOR'
             : currentRoles === 'tender_ceo'
-            ? 'CLIENT'
+            ? 'CEO'
             : `${a}`,
+        notes: reason,
       },
     });
 
@@ -201,10 +206,8 @@ function FloatingActionBar() {
             </ProposalAcceptingForm>
           ) : (
             <ProposalRejectingForm
-              onSubmit={(value: any) => {
-                console.log('form callback', value);
-                console.log('just a dummy not create log yet');
-                handleRejected();
+              onSubmit={(value: ProposalRejectPayload) => {
+                handleRejected(value.procedures);
               }}
             >
               <FormActionBox

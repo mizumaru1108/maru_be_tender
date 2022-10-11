@@ -695,6 +695,24 @@ const en = {
       },
     },
   },
+
+  // User Profile
+  user_profile: {
+    label: {
+      page_title: 'My Profile',
+      main_information: 'Main Information',
+      contact_information: 'Contact Information',
+      edit_button: 'Edit Account Information',
+    },
+    fields: {
+      first_name: 'First Name',
+      last_name: 'Last Name',
+      address: 'Address',
+      region: 'Region',
+      email: 'E-mail',
+      phone_number: 'Phone Number',
+    },
+  },
 };
 
 export default en;

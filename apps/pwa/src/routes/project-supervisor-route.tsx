@@ -22,6 +22,13 @@ const PortalReportsProjectSupervisor = Loadable(lazy(() => import('pages/PortalR
 const MessagesProjectSupervisor = Loadable(lazy(() => import('pages/project-supervisor/Messages')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
 
+const NonClientProfile = Loadable(
+  lazy(() => import('sections/non-client-profile/NonClientProfile'))
+);
+const NonClientProfileEdit = Loadable(
+  lazy(() => import('sections/non-client-profile/NonClientProfileEdit'))
+);
+
 export const projectSupervisorRoute = {
   path: 'project-supervisor',
   element: (
@@ -33,6 +40,13 @@ export const projectSupervisorRoute = {
   ),
   children: [
     { element: <Navigate to="/project-supervisor/dashboard/app" replace />, index: true },
+    {
+      path: 'my-profile',
+      children: [
+        { path: '', element: <NonClientProfile /> },
+        { path: 'edit', element: <NonClientProfileEdit /> },
+      ],
+    },
     {
       path: 'dashboard',
       children: [

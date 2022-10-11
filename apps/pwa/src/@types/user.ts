@@ -1,5 +1,14 @@
 // ----------------------------------------------------------------------
 
+export type UserProfileDetails = {
+  firstName: string;
+  lastName: string;
+  address: string;
+  region: string;
+  email: string;
+  phoneNumber: string;
+};
+
 export type UserInvoice = {
   id: string;
   createdAt: Date | string | number;

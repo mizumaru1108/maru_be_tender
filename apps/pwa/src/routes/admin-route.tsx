@@ -25,6 +25,14 @@ const Beneficiaries = Loadable(lazy(() => import('pages/admin/Beneficiaries')));
 
 const PortalReports = Loadable(lazy(() => import('pages/PortalReports')));
 const Messages = Loadable(lazy(() => import('pages/admin/Messages')));
+
+const NonClientProfile = Loadable(
+  lazy(() => import('sections/non-client-profile/NonClientProfile'))
+);
+const NonClientProfileEdit = Loadable(
+  lazy(() => import('sections/non-client-profile/NonClientProfileEdit'))
+);
+
 export const adminRoute = {
   path: 'admin',
   element: (
@@ -36,6 +44,13 @@ export const adminRoute = {
   ),
   children: [
     { element: <Navigate to="/cashier/dashboard/app" replace />, index: true },
+    {
+      path: 'my-profile',
+      children: [
+        { path: '', element: <NonClientProfile /> },
+        { path: 'edit', element: <NonClientProfileEdit /> },
+      ],
+    },
     {
       path: 'dashboard',
       children: [
