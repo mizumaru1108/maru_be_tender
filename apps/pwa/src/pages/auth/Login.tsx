@@ -46,7 +46,7 @@ export default function Login() {
             maxWidth: '600px',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
-            backgroundSize: 'inherit',
+            backgroundSize: 'cover',
             objectFit: 'none',
             position: 'relative',
           }}

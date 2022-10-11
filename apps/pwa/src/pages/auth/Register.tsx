@@ -37,7 +37,7 @@ export default function Register() {
             maxWidth: '600px',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
-            backgroundSize: 'inherit',
+            backgroundSize: 'cover',
             objectFit: 'none',
             position: 'relative',
           }}

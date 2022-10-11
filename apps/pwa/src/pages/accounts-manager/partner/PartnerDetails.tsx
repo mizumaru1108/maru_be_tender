@@ -92,9 +92,12 @@ function AccountPartnerDetails() {
 
     if (resActivate) {
       setIsSubimitting(false);
-      enqueueSnackbar('Activate Account Is Successfull!', {
-        variant: 'success',
-      });
+      enqueueSnackbar(
+        `${translate('account_manager.partner_details.notification.activate_account')}`,
+        {
+          variant: 'success',
+        }
+      );
     }
   };
 
@@ -114,9 +117,12 @@ function AccountPartnerDetails() {
 
     if (resSuspended) {
       setIsSubimitting(false);
-      enqueueSnackbar('Disabled Account Is Successfull!', {
-        variant: 'success',
-      });
+      enqueueSnackbar(
+        `${translate('account_manager.partner_details.notification.disabled_account')}`,
+        {
+          variant: 'success',
+        }
+      );
     }
   };
 
@@ -136,9 +142,12 @@ function AccountPartnerDetails() {
 
     if (resDeleted) {
       setIsSubimitting(false);
-      enqueueSnackbar('Account Delete Is Successfull!', {
-        variant: 'success',
-      });
+      enqueueSnackbar(
+        `${translate('account_manager.partner_details.notification.deleted_account')}`,
+        {
+          variant: 'success',
+        }
+      );
     }
   };
 
@@ -288,7 +297,7 @@ function AccountPartnerDetails() {
                     </Box>
                     <Box>
                       <Typography variant="body1" component="p" sx={{ color: '#93A3B0' }}>
-                        {translate('account_manager.partner_details.entity_clasification')}:
+                        {translate('account_manager.partner_details.entity_name_of_partner')}:
                       </Typography>
                       <Typography
                         variant="h6"

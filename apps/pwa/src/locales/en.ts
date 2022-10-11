@@ -593,7 +593,7 @@ const en = {
       headquarters: 'Headquarters',
       license_information: 'License information',
       license_number: 'License number',
-      entity_clasification: 'Entity classification',
+      entity_name_of_partner: 'Entity name of partner',
       license_expiry_date: 'License expiry date',
       license_issue_date: 'License issue date',
       license_file: 'License file',
@@ -623,6 +623,11 @@ const en = {
         amndreq_label: 'Notes on account information*',
         amndreq_placeholder: 'Please write notes here',
       },
+      notification: {
+        disabled_account: 'Disabled Account is Successfull!',
+        activate_account: 'Activate Account is Successfull!',
+        deleted_account: 'Account Delete Is Successfull!'
+      }
     },
     search_bar: 'Type a name to search for',
   },

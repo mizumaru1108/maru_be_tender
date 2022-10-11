@@ -621,9 +621,9 @@ const ar = {
       headquarters: 'المقر',
       license_information: 'معلومات الترخيص',
       license_number: 'رقم الترخيص',
-      entity_clasification: 'تصنيف الجهة',
+      entity_name_of_partner: 'اسم الكيان للشريك',
       license_expiry_date: 'تاريخ انتهاء الترخيص',
-      license_issue_date: 'تاريخ اصدار الترخيص:',
+      license_issue_date: 'تاريخ اصدار الترخيص',
       license_file: 'ملف الترخيص',
       administrative_data: 'بيانات الإدارية',
       ceo_name: 'اسم المدير التنفيذي',
@@ -651,6 +651,11 @@ const ar = {
         amndreq_label: 'ملاحظات على معلومات الحساب*',
         amndreq_placeholder: 'الرجاء كتابة الملاحظات هنا',
       },
+      notification: {
+        disabled_account: 'تم تعطيل الحساب بنجاح!',
+        activate_account: 'تم تفعيل الحساب بنجاح!',
+        deleted_account: 'تم حذف الحساب بنجاح!'
+      }
     },
     search_bar: 'اكتب اسم للبحث عنه',
   },
