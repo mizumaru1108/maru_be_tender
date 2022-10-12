@@ -13,11 +13,13 @@ import { useMutation } from 'urql';
 import {
   AppRole,
   HashuraRoles,
+  InnerStatus,
   role_url_map,
   updateProposalStatusAndState,
 } from '../../../../@types/commons';
 import { approveProposalWLog } from '../../../../queries/commons/approveProposalWithLog';
 import { rejectProposalWLog } from '../../../../queries/commons/rejectProposalWithLog';
+import ApproveModal from './ApproveModal';
 import FormActionBox from './FormActionBox';
 import ProposalAcceptingForm from './ProposalAcceptingForm';
 import ProposalRejectingForm from './ProposalRejectingForm';
@@ -60,10 +62,15 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
   const { fetching: rejFetch, error: rejError } = proposalRejection;
   const [action, setAction] = useState<'accept' | 'reject'>('reject');
 
-  const innerStatus =
-    currentRoles === 'tender_ceo'
+  const acceptInnerStatus =
+    currentRoles === 'tender_ceo' && action === 'accept'
       ? 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION'
-      : 'REJECTED_BY_MODERATOR_WITH_COMMENT';
+      : 'ACCEPTED_BY_MODERATOR';
+
+  const rejectInnerStatus =
+    currentRoles === 'tender_ceo' && action === 'reject'
+      ? 'REJECTED_BY_CEO_WITH_COMMENT'
+      : 'REJECTED_BY_MODERATOR';
 
   //create handleclose modal function
   const handleCloseModal = () => {
@@ -81,13 +88,13 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
         proposal_id: pid, // from the proposal it self
         reviewer_id: userId, // user id of current user (moderator/ceo)
         organization_id: organizationId, // user id on the proposal data
-        inner_status: innerStatus,
+        inner_status: acceptInnerStatus,
         outter_status: 'ONGOING',
         state: 'PROJECT_SUPERVISOR',
       } as ceoAndModeratorProposalLogPayload,
       proposalId: pid,
-      updateProposalStatusAndState: {
-        inner_status: innerStatus,
+      updateProposalStatusAndStatePayloads: {
+        inner_status: acceptInnerStatus as InnerStatus,
         outter_status: 'ONGOING',
         state: `${roles.toUpperCase() as AppRole}`,
       } as updateProposalStatusAndState,
@@ -122,14 +129,14 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
         proposal_id: pid, // from the proposal it self
         reviewer_id: userId, // user id of current user (moderator/ceo)
         organization_id: organizationId, // user id on the proposal data
-        inner_status: innerStatus,
+        inner_status: rejectInnerStatus,
         outter_status: 'CANCELED',
         state: currentRoles === 'tender_ceo' ? 'CEO' : 'MODERATOR',
         procedures,
       } as ceoAndModeratorProposalLogPayload,
       proposalId: pid,
-      updateProposalStatusAndState: {
-        inner_status: innerStatus,
+      updateProposalStatusAndStatePayloads: {
+        inner_status: rejectInnerStatus as InnerStatus,
         outter_status: 'CANCELED',
         state: `${roles.toUpperCase() as AppRole}`,
       } as updateProposalStatusAndState,
@@ -217,15 +224,14 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
           action === 'accept' ? (
             <>
               {currentRoles === 'tender_ceo' ? (
-                <FormActionBox
+                <ApproveModal
                   action="accept"
                   isLoading={accFetch}
                   onReturn={() => {
-                    if (currentRoles === 'tender_ceo') {
-                      handleApproval();
-                    } else {
-                      setModalState(false);
-                    }
+                    setModalState(false);
+                  }}
+                  onSubmited={() => {
+                    handleApproval();
                   }}
                 />
               ) : (
