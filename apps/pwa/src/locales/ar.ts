@@ -654,8 +654,8 @@ const ar = {
       notification: {
         disabled_account: 'تم تعطيل الحساب بنجاح!',
         activate_account: 'تم تفعيل الحساب بنجاح!',
-        deleted_account: 'تم حذف الحساب بنجاح!'
-      }
+        deleted_account: 'تم حذف الحساب بنجاح!',
+      },
     },
     search_bar: 'اكتب اسم للبحث عنه',
   },
@@ -736,6 +736,9 @@ const ar = {
         employees: 'الموظفين',
       },
     },
+  },
+  filte_message_modal: {
+    title: 'تصفية الرسائل',
   },
 
   // User Profile

@@ -108,7 +108,7 @@ export const PATH_MODERATOR = {
   root: ROOTS_MODERATOR,
   app: path(ROOTS_MODERATOR, '/dashboard/app'),
   incoming_support_requests: path(ROOTS_MODERATOR, '/dashboard/incoming-support-requests'),
-  previous_support_requests: path(ROOTS_MODERATOR, '/dashboard/previous-support-requests'),
+  previous_support_requests: path(ROOTS_MODERATOR, '/dashboard/previous-funding-requests'),
   portal_reports: path(ROOTS_MODERATOR, '/dashboard/portal-reports'),
   messages: path(ROOTS_MODERATOR, '/dashboard/messages'),
 };
@@ -132,7 +132,8 @@ export const PATH_ACCOUNTS_MANAGER = {
   partnerManagement: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/partner/management'),
   partnerDetails: (partnerId: string) =>
     path(ROOTS_ACCOUNTS_MANAGER, `/dashboard/partner/${partnerId}`),
-  partnerSendAmandement: (partnerId: string) => path(ROOTS_ACCOUNTS_MANAGER, `/dashboard/partner/${partnerId}/amendment-request`),
+  partnerSendAmandement: (partnerId: string) =>
+    path(ROOTS_ACCOUNTS_MANAGER, `/dashboard/partner/${partnerId}/amendment-request`),
   portalReports: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/portal-reports'),
   messages: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/messages'),
 };

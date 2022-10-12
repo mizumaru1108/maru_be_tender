@@ -39,7 +39,7 @@ function PreviousSupportRequests() {
   };
 
   useEffect(() => {
-    const previousSupport: ProjectCardProps[] = [];
+    const previousSupport = [];
     if (incomingData) {
       const prev = incomingData.proposal.map((item: any) => ({
         title: {
@@ -57,8 +57,7 @@ function PreviousSupportRequests() {
         footer: {
           createdAt: item.created_at,
         },
-        cardFooterButtonAction: 'show-projet',
-      }));
+      })) as ProjectCardProps[];
       previousSupport.push(...prev);
       setSupportRequests(previousSupport);
       console.log('hasil set state : ', previousSupport);

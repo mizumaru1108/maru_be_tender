@@ -38,3 +38,8 @@ export interface TabPanelProps {
   index: number;
   value: number;
 }
+
+export type IFilterMessage = {
+  name: string;
+  options: { label: string; value: string; Role?: string }[];
+};

@@ -79,8 +79,7 @@ export const moderatorRoute = {
           ],
         },
         {
-          path: 'previous-support-requests',
-          // element: <IncomingSupportRequests />,
+          path: 'previous-funding-requests',
           children: [
             { path: '', element: <PreviouseSupportRequests /> },
             {
@@ -89,6 +88,7 @@ export const moderatorRoute = {
                 { path: 'main', element: <ProjectDetails /> },
                 { path: 'project-path', element: <ProjectDetails /> },
                 { path: 'follow-ups', element: <ProjectDetails /> },
+                { path: 'payments', element: <ProjectDetails /> },
               ],
             },
           ],

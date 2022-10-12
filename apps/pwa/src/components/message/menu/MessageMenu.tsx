@@ -2,6 +2,8 @@ import { Box, Stack, Tab, Tabs, Typography } from '@mui/material';
 import { useState } from 'react';
 import useLocales from '../../../hooks/useLocales';
 import ModalDialog from '../../modal-dialog';
+import { filterSupervisor } from '../mock-data';
+import FilterModalMessage from '../modal-form/FilterModalMessage';
 import NewMessageModalForm from '../modal-form/NewMessageModalForm';
 import { IMenu, TabPanelProps } from '../type';
 import MessageMenuButton from './MessageMenuButton';
@@ -11,6 +13,7 @@ import MessageMenuItem from './MessageMenuItem';
 const MessageMenu = ({ internalData, externalData, accountType }: IMenu) => {
   const { translate } = useLocales();
   const [modalState, setModalState] = useState(false);
+  const [open, setOpen] = useState(false);
   const [valueTabItem, setValueTabItem] = useState(0);
   const [focusedIndex, setFocusedIndex] = useState<number | undefined>(undefined);
   const handleChangeTabsItem = (event: React.SyntheticEvent, newValue: number) => {
@@ -22,6 +25,9 @@ const MessageMenu = ({ internalData, externalData, accountType }: IMenu) => {
   const handleCloseModal = () => {
     setModalState(false);
   };
+
+  const handleOpenFilter = () => setOpen(true);
+  const handleCloseFilter = () => setOpen(false);
 
   const handleAddNewMessage = () => {};
 
@@ -53,7 +59,13 @@ const MessageMenu = ({ internalData, externalData, accountType }: IMenu) => {
 
   return (
     <Stack display="flex" spacing={1} sx={{ margin: 2.5 }} gap="20px">
-      <MessageMenuHeader />
+      <MessageMenuHeader onClickFilter={() => setOpen(true)} />
+      {/* <FilterModalMessage
+        open={open}
+        handleClose={handleCloseFilter}
+        filters={filterProjectTrack}
+      /> */}
+      <FilterModalMessage open={open} handleClose={handleCloseFilter} filters={filterSupervisor} />
       {[
         'tender_moderator',
         'tender_accounts_manager',
@@ -146,7 +158,7 @@ const MessageMenu = ({ internalData, externalData, accountType }: IMenu) => {
           </Stack>
         }
         content={
-          <Stack display="flex" spacing={1} sx={{ margin: 2.5 }} gap="20px">
+          <Stack display="flex" spacing={1} sx={{ margin: 2.5 }} height={400}>
             <NewMessageModalForm
               onSubmit={(value: any) => {
                 console.log('form callback', value);

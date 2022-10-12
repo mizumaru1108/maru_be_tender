@@ -52,17 +52,16 @@ export default function NonClientProfile() {
   useEffect(() => {
     console.log('data', data);
     console.log('user', user);
-    if (data && data.user && user) {
-      setProfile({
-        firstName: user.fullName || 'N/A',
-        lastName: user.lastName || 'N/A',
-        address: data.user[0].address || 'N/A',
-        region: data.user[0].region || 'N/A',
-        email: user.email || 'N/A',
-        phoneNumber: data.user[0].mobileNumber || 'N/A',
-      });
-    }
-  }, [data, user]);
+    setProfile({
+      firstName: user?.fullName || 'N/A',
+      lastName: user?.lastName || 'N/A',
+      address: data?.user[0].address || 'N/A',
+      region: data?.user[0].region || 'N/A',
+      email: user?.email || 'N/A',
+      phoneNumber: data?.user[0].mobileNumber || 'N/A',
+    });
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Page title={translate('user_profile.label.page_title')}>
@@ -125,18 +124,18 @@ export default function NonClientProfile() {
                   <Typography sx={{ fontSize: '12px' }}>
                     {translate('user_profile.fields.first_name')}
                   </Typography>
-                  <Typography sx={{ mb: '15px' }}>{profile.firstName}</Typography>
+                  <Typography sx={{ mb: '15px' }}>{profile.firstName || 'N/A'}</Typography>
                   <Typography sx={{ fontSize: '12px' }}>
                     {translate('user_profile.fields.address')}
                   </Typography>
-                  <Typography>{profile.address}</Typography>
+                  <Typography>{profile.address || 'N/A'}</Typography>
                 </Stack>
 
                 <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>
                     {translate('user_profile.fields.last_name')}
                   </Typography>
-                  <Typography sx={{ mb: '15px' }}>{profile.lastName}</Typography>
+                  <Typography sx={{ mb: '15px' }}>{profile.lastName || 'N/A'}</Typography>
                 </Stack>
               </Stack>
             </Grid>
@@ -150,21 +149,21 @@ export default function NonClientProfile() {
                   <Typography sx={{ mb: '15px' }}>
                     {translate('user_profile.fields.region')}
                   </Typography>
-                  <Typography sx={{ mb: '15px' }}>{profile.region}</Typography>
+                  <Typography sx={{ mb: '15px' }}>{profile.region || 'N/A'}</Typography>
                 </Stack>
 
                 <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>
                     {translate('user_profile.fields.email')}
                   </Typography>
-                  <Typography sx={{ mb: '15px' }}>{profile.email}</Typography>
+                  <Typography sx={{ mb: '15px' }}>{profile.email || 'N/A'}</Typography>
                 </Stack>
 
                 <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>
                     {translate('user_profile.fields.phone_number')}
                   </Typography>
-                  <Typography sx={{ mb: '15px' }}>{profile.phoneNumber}</Typography>
+                  <Typography sx={{ mb: '15px' }}>{profile.phoneNumber || 'N/A'}</Typography>
                 </Stack>
               </Stack>
             </Grid>
