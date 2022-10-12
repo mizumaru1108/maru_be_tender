@@ -60,6 +60,7 @@ export default function NonClientProfile() {
       email: user?.email || 'N/A',
       phoneNumber: data?.user[0].mobileNumber || 'N/A',
     });
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
