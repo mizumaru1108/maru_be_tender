@@ -1,25 +1,11 @@
 import { Box, Button, Stack, useTheme } from '@mui/material';
 import useLocales from 'hooks/useLocales';
-import { Role } from '../../guards/RoleBasedGuard';
+import { HashuraRoles } from '../../@types/commons';
 
 import Iconify from '../Iconify';
 
-// const Hasura_Roles = {
-//   cluster_admin: 'CLUSTER_ADMIN',
-//   tender_accounts_manager: 'ACCOUNTS_MANAGER',
-//   tender_admin: 'ADMIN',
-//   tender_ceo: 'CEO',
-//   tender_cashier: 'CASHIER',
-//   tender_client: 'CLIENT',
-//   tender_consultant: 'CONSULTANT',
-//   tender_finance: 'FINANCE',
-//   tender_moderator: 'MODERATOR',
-//   tender_project_manager: 'PROJECT_MANAGER',
-//   tender_project_supervisor: 'PROJECT_SUPERVISOR',
-// } as Record<Role, string>;
-
 interface FloatingActionBarProps {
-  role: Role;
+  role: HashuraRoles;
   handleAccept: () => void;
   handleReject: () => void;
 }

@@ -7,24 +7,13 @@ import useAuth from '../hooks/useAuth';
 import { MotionContainer, varBounce } from '../components/animate';
 // assets
 import { ForbiddenIllustration } from '../assets';
+import { HashuraRoles } from '../@types/commons';
 
 // ----------------------------------------------------------------------
-export type Role =
-  | 'cluster_admin'
-  | 'tender_accounts_manager'
-  | 'tender_admin'
-  | 'tender_ceo'
-  | 'tender_cashier'
-  | 'tender_client'
-  | 'tender_consultant'
-  | 'tender_finance'
-  | 'tender_moderator'
-  | 'tender_project_manager'
-  | 'tender_project_supervisor';
 
 type RoleBasedGuardProp = {
   hasContent?: boolean;
-  roles: Role[];
+  roles: HashuraRoles[];
   children: React.ReactNode;
 };
 

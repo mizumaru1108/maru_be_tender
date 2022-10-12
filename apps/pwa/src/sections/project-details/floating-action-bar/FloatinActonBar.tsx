@@ -1,16 +1,17 @@
 import useAuth from 'hooks/useAuth';
 import { useLocation, useParams } from 'react-router';
 import { SupervisorFloatingActionBar } from './supervisor';
-import { Role } from 'guards/RoleBasedGuard';
+
 import { ProjectManagerFloatingActionBar } from './project-manager';
 import { ModeratoeCeoFloatingActionBar } from './moderator-ceo';
 import { ModeratorFloatingActionBar } from './moderator';
+import { HashuraRoles } from '../../../@types/commons';
 
 function FloatinActonBar({ proposalData }: any) {
   const { actionType } = useParams();
   const { user } = useAuth();
   const location = useLocation();
-  const role = user?.registrations[0].roles[0] as Role;
+  const role = user?.registrations[0].roles[0] as HashuraRoles;
   const activeTap = location.pathname.split('/').at(-1);
 
   return (
@@ -30,7 +31,9 @@ function FloatinActonBar({ proposalData }: any) {
       {activeTap &&
         ['main', 'project-budget'].includes(activeTap) &&
         actionType === 'show-details' &&
-        ['tender_ceo'].includes(role) && <ModeratoeCeoFloatingActionBar />}
+        ['tender_ceo'].includes(role) && (
+          <ModeratoeCeoFloatingActionBar organizationId={proposalData.user.id} />
+        )}
       {activeTap &&
         ['main', 'project-budget'].includes(activeTap) &&
         actionType === 'show-details' &&

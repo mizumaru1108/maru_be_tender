@@ -2,8 +2,9 @@ import { Taps } from './action-bar-taps';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { Box, Button } from '@mui/material';
 import useAuth from 'hooks/useAuth';
-import { Role } from 'guards/RoleBasedGuard';
+
 import useLocales from 'hooks/useLocales';
+import { HashuraRoles } from '../../@types/commons';
 
 function ActionBar() {
   const { translate } = useLocales();
@@ -12,7 +13,7 @@ function ActionBar() {
   const locationArray = location.pathname.split('/');
   const { user } = useAuth();
   const { actionType } = useParams();
-  const role = user?.registrations[0].roles[0] as Role;
+  const role = user?.registrations[0].roles[0] as HashuraRoles;
   const handleOnClick = (title: any) => {
     navigate(`${location.pathname.split('/').slice(0, -1).join('/')}/${title}`);
   };

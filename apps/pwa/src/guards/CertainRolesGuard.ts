@@ -1,4 +1,4 @@
-import { Role } from './RoleBasedGuard';
+import { HashuraRoles } from '../@types/commons';
 
 /**
  * @Author (RDanang, Iyoy!)
@@ -10,7 +10,7 @@ import { Role } from './RoleBasedGuard';
  * @example
  * {hasAccess(tender_project_manager, [tender_project_manager, tender_finance]) && <Component />}
  */
-export const hasAccess = (userRole: Role, requiredRole: Role[]): boolean => {
+export const hasAccess = (userRole: HashuraRoles, requiredRole: HashuraRoles[]): boolean => {
   if (requiredRole.includes(userRole)) {
     return true;
   }

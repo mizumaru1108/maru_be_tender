@@ -5,15 +5,20 @@ import {
   RejectionListTableHeader,
 } from '../../../components/table/ceo/rejection-list/rejection-list';
 import RejectionListTable from '../../../components/table/ceo/rejection-list/RejectionListTable';
+import useAuth from '../../../hooks/useAuth';
 import useLocales from '../../../hooks/useLocales';
-import { GetRejectionList } from '../../../queries/ceo/get-rejection-list';
+import { GetMyRejectionList } from '../../../queries/ceo/get-my-rejection-list';
 
 function CeoRejectionList() {
   const { translate } = useLocales();
+  const { user } = useAuth();
   const [rejectionListData, setRejectionListData] = useState<RejectionList[]>([]);
 
   const [fetchRejectionList, setFetchRejectionList] = useQuery({
-    query: GetRejectionList,
+    query: GetMyRejectionList,
+    variables: {
+      reviewerId: user?.id,
+    },
   });
 
   const { data: rejectionList, fetching, error } = fetchRejectionList;
@@ -24,7 +29,8 @@ function CeoRejectionList() {
 
   useEffect(() => {
     if (rejectionList) {
-      setRejectionListData(rejectionList.proposal);
+      // TODO: Find out how to map object out, so it's not remapped every time frontend get from Gql.
+      setRejectionListData(rejectionList.data.map((item: any) => item.proposal));
     }
   }, [rejectionList]);
 

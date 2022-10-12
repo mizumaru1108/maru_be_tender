@@ -7,9 +7,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import { useQuery } from 'urql';
-import { role_url_map } from '../../@types/commons';
+import { HashuraRoles, role_url_map } from '../../@types/commons';
 import { UserProfileDetails } from '../../@types/user';
-import { Role } from '../../guards/RoleBasedGuard';
+
 import useAuth from '../../hooks/useAuth';
 import useLocales from '../../hooks/useLocales';
 import { getNonClientDetails } from '../../queries/commons/getNonClientUserDetails';
@@ -17,7 +17,7 @@ import { getNonClientDetails } from '../../queries/commons/getNonClientUserDetai
 export default function NonClientProfile() {
   const { translate } = useLocales();
   const { user } = useAuth();
-  const role = user?.registrations[0].roles[0] as Role;
+  const role = user?.registrations[0].roles[0] as HashuraRoles;
   const [profile, setProfile] = useState<UserProfileDetails>({
     firstName: '',
     lastName: '',

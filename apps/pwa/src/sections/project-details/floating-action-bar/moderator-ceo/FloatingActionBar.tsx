@@ -1,22 +1,33 @@
 import { Box, Button, Stack, Typography, useTheme } from '@mui/material';
 import Iconify from 'components/Iconify';
 import ModalDialog from 'components/modal-dialog';
-import { Role } from 'guards/RoleBasedGuard';
+
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
+import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import { approveProposal } from 'queries/commons/approveProposal';
-import { rejectProposal } from 'queries/commons/rejectProposal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useMutation } from 'urql';
+import {
+  AppRole,
+  HashuraRoles,
+  role_url_map,
+  updateProposalStatusAndState,
+} from '../../../../@types/commons';
+import { approveProposalWLog } from '../../../../queries/commons/approveProposalWithLog';
 import { rejectProposalWLog } from '../../../../queries/commons/rejectProposalWithLog';
 import FormActionBox from './FormActionBox';
 import ProposalAcceptingForm from './ProposalAcceptingForm';
 import ProposalRejectingForm from './ProposalRejectingForm';
-import { ProposalRejectPayload } from './types';
+import {
+  ceoAndModeratorProposalLogPayload,
+  ModeratoeCeoFloatingActionBarProps,
+  ProposalRejectPayload,
+} from './types';
 
-function FloatingActionBar() {
+function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProps) {
   const { user } = useAuth();
   const theme = useTheme();
   const location = useLocation();
@@ -26,22 +37,33 @@ function FloatingActionBar() {
   const navigate = useNavigate();
 
   // Logic here to get current user role
-  const currentRoles = user?.registrations[0].roles[0] as Role;
+  const currentRoles = user?.registrations[0].roles[0] as HashuraRoles; // from db
   const userId = user?.id;
 
   // var for insert into navigate in handel Approval and Rejected
-  const p = currentRoles.split('_')[1];
+  // const p = currentRoles.split('_')[1];
+  const roles = role_url_map[`${currentRoles}`]; // routing from app
 
   const pid = location.pathname.split('/')[4];
 
   // var for else on state in approveProposalPayloads
-  const a = p.toUpperCase();
+  // const a = p.toUpperCase();
+
+  useEffect(() => {
+    console.log('currentRoles', currentRoles);
+    console.log('roles', roles);
+  }, [currentRoles, roles]);
 
   const [proposalRejection, reject] = useMutation(rejectProposalWLog);
-  const [proposalAccepting, accept] = useMutation(approveProposal);
+  const [proposalAccepting, accept] = useMutation(approveProposalWLog);
   const { fetching: accFetch, error: accError } = proposalAccepting;
   const { fetching: rejFetch, error: rejError } = proposalRejection;
   const [action, setAction] = useState<'accept' | 'reject'>('reject');
+
+  const innerStatus =
+    currentRoles === 'tender_ceo'
+      ? 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION'
+      : 'REJECTED_BY_MODERATOR_WITH_COMMENT';
 
   //create handleclose modal function
   const handleCloseModal = () => {
@@ -54,29 +76,28 @@ function FloatingActionBar() {
 
   const handleApproval = async () => {
     await accept({
-      proposalId: pid,
-      approveProposalPayloads: {
-        inner_status:
-          currentRoles === 'tender_ceo'
-            ? 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION'
-            : currentRoles === 'tender_moderator'
-            ? 'ACCEPTED_BY_MODERATOR'
-            : `${a}`, // the next step when accepted
+      proposalLogPayload: {
+        id: nanoid(), // generate by nano id
+        proposal_id: pid, // from the proposal it self
+        reviewer_id: userId, // user id of current user (moderator/ceo)
+        organization_id: organizationId, // user id on the proposal data
+        inner_status: innerStatus,
         outter_status: 'ONGOING',
-        state:
-          currentRoles === 'tender_ceo'
-            ? 'PROJECT_SUPERVISOR'
-            : currentRoles === 'tender_moderator'
-            ? 'PROJECT_SUPERVISOR'
-            : `${a}`, // the next step when accepted
-      },
+        state: 'PROJECT_SUPERVISOR',
+      } as ceoAndModeratorProposalLogPayload,
+      proposalId: pid,
+      updateProposalStatusAndState: {
+        inner_status: innerStatus,
+        outter_status: 'ONGOING',
+        state: `${roles.toUpperCase() as AppRole}`,
+      } as updateProposalStatusAndState,
     });
 
     if (!accFetch) {
       enqueueSnackbar(translate('proposal_approved'), {
         variant: 'success',
       });
-      navigate(`/${p}/dashboard/app`);
+      navigate(`/${roles}/dashboard/app`);
     }
     if (accError) {
       enqueueSnackbar(accError.message, {
@@ -90,30 +111,35 @@ function FloatingActionBar() {
       });
       console.log(accError);
     }
+
+    if (currentRoles === 'tender_ceo') setModalState(false);
   };
 
-  const handleRejected = async (reason: string) => {
+  const handleRejected = async (procedures: string) => {
     await reject({
-      ceoRejectProposalPayload: {
-        proposal_id: pid,
-        reviewer_id: userId,
-        status: 'REJECTED',
+      proposalLogPayload: {
+        id: nanoid(), // generate by nano id
+        proposal_id: pid, // from the proposal it self
+        reviewer_id: userId, // user id of current user (moderator/ceo)
+        organization_id: organizationId, // user id on the proposal data
+        inner_status: innerStatus,
         outter_status: 'CANCELED',
-        assign:
-          currentRoles === 'tender_moderator'
-            ? 'MODERATOR'
-            : currentRoles === 'tender_ceo'
-            ? 'CEO'
-            : `${a}`,
-        notes: reason,
-      },
+        state: currentRoles === 'tender_ceo' ? 'CEO' : 'MODERATOR',
+        procedures,
+      } as ceoAndModeratorProposalLogPayload,
+      proposalId: pid,
+      updateProposalStatusAndState: {
+        inner_status: innerStatus,
+        outter_status: 'CANCELED',
+        state: `${roles.toUpperCase() as AppRole}`,
+      } as updateProposalStatusAndState,
     });
 
     if (!rejFetch) {
       enqueueSnackbar(translate('proposal_rejected'), {
         variant: 'success',
       });
-      navigate(`/${p}/dashboard/app`);
+      navigate(`/${roles}/dashboard/app`);
     }
     if (rejError) {
       enqueueSnackbar(rejError.message, {
@@ -189,21 +215,37 @@ function FloatingActionBar() {
         }
         content={
           action === 'accept' ? (
-            <ProposalAcceptingForm
-              onSubmit={(data: any) => {
-                console.log('form callback', data);
-                console.log('just a dummy not create log yet');
-                handleApproval();
-              }}
-            >
-              <FormActionBox
-                action="accept"
-                isLoading={accFetch}
-                onReturn={() => {
-                  setModalState(false);
-                }}
-              />
-            </ProposalAcceptingForm>
+            <>
+              {currentRoles === 'tender_ceo' ? (
+                <FormActionBox
+                  action="accept"
+                  isLoading={accFetch}
+                  onReturn={() => {
+                    if (currentRoles === 'tender_ceo') {
+                      handleApproval();
+                    } else {
+                      setModalState(false);
+                    }
+                  }}
+                />
+              ) : (
+                <ProposalAcceptingForm
+                  onSubmit={(data: any) => {
+                    console.log('form callback', data);
+                    console.log('just a dummy not create log yet');
+                    handleApproval();
+                  }}
+                >
+                  <FormActionBox
+                    action="accept"
+                    isLoading={accFetch}
+                    onReturn={() => {
+                      setModalState(false);
+                    }}
+                  />
+                </ProposalAcceptingForm>
+              )}
+            </>
           ) : (
             <ProposalRejectingForm
               onSubmit={(value: ProposalRejectPayload) => {

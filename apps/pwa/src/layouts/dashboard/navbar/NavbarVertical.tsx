@@ -17,7 +17,8 @@ import { ReactComponent as Logo } from '../../../assets/logo.svg';
 //
 import navConfig from './NavConfig';
 import useAuth from 'hooks/useAuth';
-import { Role } from 'guards/RoleBasedGuard';
+import { HashuraRoles } from '../../../@types/commons';
+
 // ----------------------------------------------------------------------
 
 const RootStyle = styled('div')(({ theme }) => ({
@@ -44,7 +45,7 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
   const navigate = useNavigate();
   const isDesktop = useResponsive('up', 'lg');
 
-  const role = user?.registrations[0].roles as Role;
+  const role = user?.registrations[0].roles as HashuraRoles;
 
   const { isCollapse, collapseClick, collapseHover, onHoverEnter, onHoverLeave } =
     useCollapseDrawer();

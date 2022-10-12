@@ -14,7 +14,7 @@ import { approveProposal } from 'queries/commons/approveProposal';
 import { CreateProposalLog } from 'queries/commons/createProposalLog';
 import { useMutation } from 'urql';
 import useAuth from 'hooks/useAuth';
-import { Role } from 'guards/RoleBasedGuard';
+
 import { useSnackbar } from 'notistack';
 import { nanoid } from 'nanoid';
 

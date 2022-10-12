@@ -1,6 +1,7 @@
 import { Box, Button, Grid, Stack, Typography } from '@mui/material';
-import { Role } from 'guards/RoleBasedGuard';
+
 import useAuth from 'hooks/useAuth';
+import { HashuraRoles } from '../../@types/commons';
 import { CachierPaymentsTable } from './payments/cachier';
 import { FinancePaymentsTable } from './payments/finance';
 import { ManagerPaymentsPage } from './payments/project-manager';
@@ -9,7 +10,7 @@ import { SupervisorPaymentsPage } from './payments/supervisor';
 function Payments({ data, mutate }: any) {
   console.log(data);
   const { user } = useAuth();
-  const role = user?.registrations[0].roles[0] as Role;
+  const role = user?.registrations[0].roles[0] as HashuraRoles;
   /**
    * 1- check the proposal status
    * 2- if(proposal status === ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION && the role === project_supervisor ) =>

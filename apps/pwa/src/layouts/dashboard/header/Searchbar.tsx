@@ -25,8 +25,9 @@ import SearchNotFound from '../../../components/SearchNotFound';
 //
 import navConfig from '../navbar/NavConfig';
 import useLocales from 'hooks/useLocales';
-import { Role } from 'guards/RoleBasedGuard';
+
 import useAuth from 'hooks/useAuth';
+import { HashuraRoles } from '../../../@types/commons';
 
 // ----------------------------------------------------------------------
 
@@ -119,7 +120,7 @@ function Searchbar() {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const role = user?.registrations[0].roles as Role;
+  const role = user?.registrations[0].roles as HashuraRoles;
   const reduceItems = navConfig[`${role}`]
     .map((list) => handleLoop(list.items, list.subheader))
     .flat();

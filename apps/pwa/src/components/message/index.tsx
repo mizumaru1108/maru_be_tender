@@ -2,8 +2,8 @@ import { Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Page from 'components/Page';
 import useAuth from 'hooks/useAuth';
+import { HashuraRoles } from '../../@types/commons';
 
-import { Role } from 'guards/RoleBasedGuard';
 import MessageContent from './content/MessageContent';
 import MessageMenu from './menu/MessageMenu';
 import { Message, MessagesExternalCorespondence, MessagesInternalCorespondence } from './mock-data';
@@ -19,7 +19,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 function MessagesPage() {
   const { user } = useAuth();
-  const role = user?.registrations[0].roles[0] as Role;
+  const role = user?.registrations[0].roles[0] as HashuraRoles;
   return (
     <Page title="Previous Funding Requests">
       <ContentStyle>

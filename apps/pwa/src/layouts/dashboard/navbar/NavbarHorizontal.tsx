@@ -9,7 +9,7 @@ import { NavSectionHorizontal } from '../../../components/nav-section';
 //
 import navConfig from './NavConfig';
 import useAuth from 'hooks/useAuth';
-import { Role } from 'guards/RoleBasedGuard';
+import { HashuraRoles } from '../../../@types/commons';
 
 // ----------------------------------------------------------------------
 
@@ -31,7 +31,7 @@ const RootStyle = styled(AppBar)(({ theme }) => ({
 
 function NavbarHorizontal() {
   const { user } = useAuth();
-  const role = user?.registrations[0].roles as Role;
+  const role = user?.registrations[0].roles as HashuraRoles;
   return (
     <RootStyle>
       <Container maxWidth={false}>
