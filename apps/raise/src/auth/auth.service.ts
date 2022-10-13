@@ -28,7 +28,7 @@ export class AuthService {
     private readonly fusionAuthService: FusionAuthService,
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
-  ) {}
+  ) { }
 
   async fusionLogin(loginRequest: LoginRequestDto) {
     const loginResponse = await this.fusionAuthService.fusionAuthLogin(
@@ -126,18 +126,7 @@ export class AuthService {
     }
     const licenseNumber = await this.prisma.client_data.findFirst({
       where: {
-        OR: [
-          {
-            license_number: {
-              equals: registerRequest.data.license_number,
-            },
-          },
-          {
-            id: {
-              equals: registerRequest.data.id,
-            },
-          },
-        ],
+        id: registerRequest.data.id,
       },
     });
 

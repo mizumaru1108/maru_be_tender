@@ -202,10 +202,12 @@ export class RegisterFromFusionAuthTenderDto {
   region: string;
 
   @ApiProperty()
+  @IsOptional()
   @IsString()
   twitter_acount: string;
 
   @ApiProperty()
+  @IsOptional()
   @IsString()
   website: string;
 

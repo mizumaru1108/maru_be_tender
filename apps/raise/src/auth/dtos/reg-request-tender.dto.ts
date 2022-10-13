@@ -206,11 +206,13 @@ class basePayload {
   region: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
+  @IsString()
   twitter_acount: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
+  @IsString()
   website: string;
 
   @ApiProperty()
