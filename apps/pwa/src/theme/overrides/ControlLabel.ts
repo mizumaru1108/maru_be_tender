@@ -7,23 +7,24 @@ export default function ControlLabel(theme: Theme) {
     MuiFormControlLabel: {
       styleOverrides: {
         label: {
-          ...theme.typography.body2
-        }
-      }
+          ...theme.typography.body2,
+        },
+      },
     },
     MuiFormHelperText: {
       styleOverrides: {
         root: {
-          marginTop: theme.spacing(1)
-        }
-      }
+          margin: '0px 0px 0px 0px !important',
+          backgroundColor: theme.palette.background.neutral,
+        },
+      },
     },
     MuiFormLabel: {
       styleOverrides: {
         root: {
-          color: theme.palette.text.disabled
-        }
-      }
-    }
+          color: theme.palette.text.disabled,
+        },
+      },
+    },
   };
 }

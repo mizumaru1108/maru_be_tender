@@ -135,7 +135,7 @@ const en = {
       options: {},
     },
     city: {
-      label: 'المحافظة**',
+      label: 'المحافظة*',
       placeholder: 'الرجاء اختيار المحافظة*',
       options: {},
     },
@@ -626,8 +626,8 @@ const en = {
       notification: {
         disabled_account: 'Disabled Account is Successfull!',
         activate_account: 'Activate Account is Successfull!',
-        deleted_account: 'Account Delete Is Successfull!'
-      }
+        deleted_account: 'Account Delete Is Successfull!',
+      },
     },
     search_bar: 'Type a name to search for',
   },

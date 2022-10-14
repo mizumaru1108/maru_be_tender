@@ -1,11 +1,11 @@
 import axios from 'axios';
 // config
-import { HOST_API } from '../config';
+import { UPLOAD_API } from '../config';
 
 // ----------------------------------------------------------------------
 
 const axiosInstance = axios.create({
-  baseURL: HOST_API,
+  baseURL: UPLOAD_API,
 });
 
 axiosInstance.interceptors.response.use(

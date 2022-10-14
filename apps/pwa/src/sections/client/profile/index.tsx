@@ -27,43 +27,43 @@ function ClientProfileEditForm() {
   const isMobile = useResponsive('down', 'sm');
   const [step, setStep] = useState(0);
   const { translate } = useLocales();
-  const initialValue = {
-    agree_on: false,
-    entity: '',
-    authority: '',
-    date_of_esthablistmen: '',
-    headquarters: '',
-    num_of_employed_facility: undefined,
-    num_of_beneficiaries: undefined,
-    region: '',
-    governorate: '',
-    center_administration: '',
-    entity_mobile: '',
-    phone: '',
-    twitter_acount: '',
-    website: '',
-    email: '',
-    password: '',
-    license_number: undefined,
-    license_issue_date: '',
-    license_expired: '',
-    license_file: '',
-    board_ofdec_file: '',
-    ceo_name: '',
-    ceo_mobile: '',
-    data_entry_name: '',
-    data_entry_mobile: '',
-    data_entry_mail: '',
-    bank_account_number: '',
-    bank_account_name: '',
-    bank_name: '',
-    card_image: '',
-  } as AccountValuesProps;
-  const [registerState, setRegisterState] = useState(initialValue);
-  const [open, setOpen] = useState(false);
-  const onSubmit = () => {
-    setOpen(true);
-  };
+  // const initialValue = {
+  //   agree_on: false,
+  //   entity: '',
+  //   authority: '',
+  //   date_of_esthablistmen: '',
+  //   headquarters: '',
+  //   num_of_employed_facility: undefined,
+  //   num_of_beneficiaries: undefined,
+  //   region: '',
+  //   governorate: '',
+  //   center_administration: '',
+  //   entity_mobile: '',
+  //   phone: '',
+  //   twitter_acount: '',
+  //   website: '',
+  //   email: '',
+  //   password: '',
+  //   license_number: undefined,
+  //   license_issue_date: '',
+  //   license_expired: '',
+  //   license_file: '',
+  //   board_ofdec_file: '',
+  //   ceo_name: '',
+  //   ceo_mobile: '',
+  //   data_entry_name: '',
+  //   data_entry_mobile: '',
+  //   data_entry_mail: '',
+  //   bank_account_number: '',
+  //   bank_account_name: '',
+  //   bank_name: '',
+  //   card_image: '',
+  // } as AccountValuesProps;
+  // const [registerState, setRegisterState] = useState(initialValue);
+  // const [open, setOpen] = useState(false);
+  // const onSubmit = () => {
+  //   setOpen(true);
+  // };
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Stack direction="row">
@@ -129,7 +129,7 @@ function ClientProfileEditForm() {
         ))}
       </Box>
 
-      {step === 0 && (
+      {/* {step === 0 && (
         <Box sx={{ px: '100px', display: 'flex', flexDirection: 'column', gap: 4 }}>
           <Typography variant="h5">المعلومات الرئيسية</Typography>
           <MainForm onSubmit={onSubmit}>
@@ -168,8 +168,8 @@ function ClientProfileEditForm() {
             <ActionsBox />
           </BankingInfoForm>
         </Box>
-      )}
-      <Toast
+      )} */}
+      {/* <Toast
         variant="standard"
         toastType="success"
         message="تم التعديل بنجاح"
@@ -179,7 +179,7 @@ function ClientProfileEditForm() {
         onClose={() => {
           setOpen(false);
         }}
-      />
+      /> */}
     </Box>
   );
 }
