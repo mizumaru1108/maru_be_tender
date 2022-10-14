@@ -82,27 +82,27 @@ export const MainFormData = [
   {
     type: 'uploadLabel',
     label: 'funding_project_request_form1.letter_support_request.label',
-    md: 6,
-    xs: 12,
-  },
-  {
-    type: 'uploadLabel',
-    label: 'funding_project_request_form1.project_attachments.label',
-    md: 6,
+    md: 12,
     xs: 12,
   },
   {
     type: 'upload',
     name: 'letter_ofsupport_req',
     placeholder: 'funding_project_request_form1.letter_support_request.placeholder',
-    md: 6,
+    md: 12,
+    xs: 12,
+  },
+  {
+    type: 'uploadLabel',
+    label: 'funding_project_request_form1.project_attachments.label',
+    md: 12,
     xs: 12,
   },
   {
     type: 'upload',
     name: 'project_attachments',
     placeholder: 'funding_project_request_form1.project_attachments.placeholder',
-    md: 6,
+    md: 12,
     xs: 12,
   },
 ] as Array<FormSingleProps>;

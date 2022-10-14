@@ -21,6 +21,8 @@ const mockData = {
   license_file: 'image.',
 };
 function ClientProfile() {
+  // TODO get the fields
+  // getClientProfile
   const navigate = useNavigate();
   const isMobile = useResponsive('down', 'sm');
   const ContentStyle = styled('div')(({ theme }) => ({
@@ -223,10 +225,6 @@ function ClientProfile() {
                   <Stack direction="column" gap={1} justifyContent="start" sx={{ mb: '10px' }}>
                     <Typography sx={{ color: '#93A3B0' }}>رقم الترخيص:</Typography>
                     <Typography>{mockData.license_number}</Typography>
-                  </Stack>
-                  <Stack direction="column" gap={1} justifyContent="start" sx={{ mb: '10px' }}>
-                    <Typography sx={{ color: '#93A3B0' }}>تصنيف الجهة:</Typography>
-                    <Typography>{mockData.authority}</Typography>
                   </Stack>
                   <Stack direction="column" gap={1} justifyContent="start" sx={{ mb: '10px' }}>
                     <Typography sx={{ color: '#93A3B0' }}>تاريخ انتهاء الترخيص:</Typography>

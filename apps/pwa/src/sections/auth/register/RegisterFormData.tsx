@@ -156,7 +156,7 @@ export const ConnectingInfoData = [
     xs: 12,
   },
   {
-    type: 'textField',
+    type: 'password',
     name: 'password',
     label: 'register_form2.password.label',
     placeholder: 'register_form2.password.placeholder',

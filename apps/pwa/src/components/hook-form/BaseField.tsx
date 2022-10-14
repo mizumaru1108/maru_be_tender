@@ -10,6 +10,7 @@ import useLocales from 'hooks/useLocales';
 import { RHFCheckbox } from './RHFCheckbox';
 import RHFTextArea from './RHFTextArea';
 import RHFRadioGroup from './RHFRadioGroup';
+import RHFPassword from './RHFPassword';
 
 const LabelStyle = styled(Typography)(({ theme }) => ({
   ...theme.typography.subtitle2,
@@ -72,6 +73,13 @@ function BaseField({
         />
       )}
       {type === 'repeaterLabel' && <Typography variant="h4">{label}</Typography>}
+      {type === 'password' && (
+        <RHFPassword
+          name={name ?? ''}
+          label={translate(label)}
+          placeholder={translate(placeholder)}
+        />
+      )}
     </>
   );
 }

@@ -5,9 +5,15 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import FormGenerator from 'components/FormGenerator';
 import { LicenseInfoData } from '../auth/register/RegisterFormData';
-import { LicenseValuesProps, FormProps } from './types';
+import { LicenseValuesProps } from './types';
 
-const LicenseInfoForm = ({ children, onSubmit }: FormProps) => {
+type FormProps = {
+  children?: React.ReactNode;
+  onSubmit: (data: any) => void;
+  defaultValues: LicenseValuesProps;
+};
+
+const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
   const RegisterSchema = Yup.object().shape({
     license_number: Yup.string().required('License Number is required'),
     license_issue_date: Yup.string().required('License Issue Date is required'),
@@ -15,14 +21,6 @@ const LicenseInfoForm = ({ children, onSubmit }: FormProps) => {
     license_file: Yup.mixed().required('License File is required'),
     board_ofdec_file: Yup.mixed().required('Resolution File is required'),
   });
-
-  const defaultValues = {
-    license_number: '',
-    license_issue_date: '',
-    license_expired: '',
-    license_file: undefined,
-    board_ofdec_file: undefined,
-  };
 
   const methods = useForm<LicenseValuesProps>({
     resolver: yupResolver(RegisterSchema),

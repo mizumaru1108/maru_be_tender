@@ -5,22 +5,21 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import FormGenerator from 'components/FormGenerator';
 import { BankingInfoData } from '../auth/register/RegisterFormData';
-import { BankingValuesProps, FormProps } from './types';
+import { BankingValuesProps } from './types';
 
-const BankingInfoForm = ({ children, onSubmit }: FormProps) => {
+type FormProps = {
+  children?: React.ReactNode;
+  onSubmit: (data: any) => void;
+  defaultValues: BankingValuesProps;
+};
+
+const BankingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
   const RegisterSchema = Yup.object().shape({
     bank_account_number: Yup.string().required('Bank Account Number required'),
     bank_account_name: Yup.string().required('Bank Account name required'),
     bank_name: Yup.string().required('Bank Name is required'),
     card_image: Yup.mixed().required('Bank Account Card Image is required'),
   });
-
-  const defaultValues = {
-    bank_account_number: '',
-    bank_account_name: '',
-    bank_name: '',
-    card_image: undefined,
-  };
 
   const methods = useForm<BankingValuesProps>({
     resolver: yupResolver(RegisterSchema),

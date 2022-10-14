@@ -5,10 +5,15 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import RHFDatePicker from 'components/hook-form/RHFDatePicker';
 import useLocales from 'hooks/useLocales';
-import { MainValuesProps, FormProps } from './types';
+import { MainValuesProps } from './types';
 import { REGIONS } from 'sections/auth/register/RegisterFormData';
 
-const MainForm: React.FC<FormProps> = ({ children, onSubmit }) => {
+type FormProps = {
+  children?: React.ReactNode;
+  onSubmit: (data: any) => void;
+  defaultValues: MainValuesProps;
+};
+const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) => {
   const { translate } = useLocales();
   const RegisterSchema = Yup.object().shape({
     entity: Yup.string().required('Entity is required'),
@@ -25,16 +30,6 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit }) => {
       .integer()
       .required('Number Of Beneficiaries is required'),
   });
-
-  const defaultValues = {
-    client_field: '',
-    entity: '',
-    authority: '',
-    date_of_esthablistmen: '',
-    headquarters: '',
-    num_of_employed_facility: undefined,
-    num_of_beneficiaries: undefined,
-  };
 
   const methods = useForm<MainValuesProps>({
     resolver: yupResolver(RegisterSchema),

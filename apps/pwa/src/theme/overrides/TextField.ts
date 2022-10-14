@@ -7,7 +7,7 @@ export default function TextField(theme: Theme) {
     MuiTextField: {
       styleOverrides: {
         root: {
-          backgroundColor: '#fff',
+          backgroundColor: theme.palette.background.default,
           borderRadius: '10px',
         },
       },

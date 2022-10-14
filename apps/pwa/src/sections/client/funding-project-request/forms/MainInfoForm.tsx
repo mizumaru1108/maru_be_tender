@@ -36,8 +36,8 @@ const MainInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
     project_implement_date: Yup.string().required('Project applying date is required'),
     execution_time: Yup.string().required('Applying duration name required'),
     project_beneficiaries: Yup.string().required('Target group type required'),
-    letter_ofsupport_req: Yup.mixed().required('Letter support request is required'),
-    project_attachments: Yup.mixed().required('Project attachments is required'),
+    letter_ofsupport_req: Yup.string().required('Letter support request is required'),
+    project_attachments: Yup.string().required('Project attachments is required'),
   });
 
   const methods = useForm<FormValuesProps>({

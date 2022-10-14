@@ -136,7 +136,7 @@ const ar = {
       options: {},
     },
     city: {
-      label: 'المحافظة**',
+      label: 'المحافظة*',
       placeholder: 'الرجاء اختيار المحافظة*',
       options: {},
     },

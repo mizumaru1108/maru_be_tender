@@ -5,32 +5,26 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import FormGenerator from 'components/FormGenerator';
 import { ConnectingInfoData } from '../auth/register/RegisterFormData';
-import { ConnectingValuesProps, FormProps } from './types';
+import { ConnectingValuesProps } from './types';
 
-const ConnectingInfoForm = ({ children, onSubmit }: FormProps) => {
+type FormProps = {
+  children?: React.ReactNode;
+  onSubmit: (data: any) => void;
+  defaultValues: ConnectingValuesProps;
+};
+
+const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
   const RegisterSchema = Yup.object().shape({
     region: Yup.string().required('Region name required'),
     governorate: Yup.string().required('City name required'),
     center_administration: Yup.string().required('Center is required'),
     entity_mobile: Yup.string().required('Mobile Number is required'),
     phone: Yup.string().required('Phone Number required'),
-    twitter_acount: Yup.string().required('Twitter Account is required'),
-    website: Yup.string().required('The Website is required'),
+    twitter_acount: Yup.string(),
+    website: Yup.string(),
     email: Yup.string().email('Email must be a valid email address').required('Email is required'),
     password: Yup.string().required('Password is required'),
   });
-
-  const defaultValues = {
-    region: '',
-    governorate: '',
-    center_administration: '',
-    entity_mobile: '',
-    phone: '',
-    twitter_acount: '',
-    website: '',
-    email: '',
-    password: '',
-  };
 
   const methods = useForm<ConnectingValuesProps>({
     resolver: yupResolver(RegisterSchema),

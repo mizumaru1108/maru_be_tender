@@ -9,9 +9,16 @@ import {
 } from '../../shared';
 import useResponsive from 'hooks/useResponsive';
 import useLocales from 'hooks/useLocales';
-import { AccountValuesProps } from '../../shared/types';
+import {
+  AccountValuesProps,
+  AdministrativeValuesProps,
+  BankingValuesProps,
+  ConnectingValuesProps,
+  LicenseValuesProps,
+  MainValuesProps,
+} from '../../shared/types';
 import ActionsBox from './ActionsBox';
-import FinalPage from './FinalPage';
+import FinalPage from './final-page';
 // ----------------------------------------------------------------------
 
 const taps = [
@@ -23,37 +30,47 @@ const taps = [
 ];
 
 const initialValue = {
-  client_field: '',
-  agree_on: false,
-  entity: '',
-  authority: '',
-  date_of_esthablistmen: '',
-  headquarters: '',
-  num_of_employed_facility: undefined,
-  num_of_beneficiaries: undefined,
-  region: '',
-  governorate: '',
-  center_administration: '',
-  entity_mobile: '',
-  phone: '',
-  twitter_acount: '',
-  website: '',
-  email: '',
-  password: '',
-  license_number: undefined,
-  license_issue_date: '',
-  license_expired: '',
-  license_file: '',
-  board_ofdec_file: '',
-  ceo_name: '',
-  ceo_mobile: '',
-  data_entry_name: '',
-  data_entry_mobile: '',
-  data_entry_mail: '',
-  bank_account_number: '',
-  bank_account_name: '',
-  bank_name: '',
-  card_image: '',
+  form1: {
+    client_field: '',
+    entity: '',
+    authority: '',
+    date_of_esthablistmen: '',
+    headquarters: '',
+    num_of_employed_facility: undefined,
+    num_of_beneficiaries: undefined,
+  },
+  form2: {
+    region: '',
+    governorate: '',
+    center_administration: '',
+    entity_mobile: '',
+    phone: '',
+    twitter_acount: '',
+    website: '',
+    email: '',
+    password: '',
+  },
+  form3: {
+    license_number: '',
+    license_issue_date: '',
+    license_expired: '',
+    license_file: '',
+    board_ofdec_file: '',
+  },
+  form4: {
+    agree_on: false,
+    ceo_name: '',
+    ceo_mobile: '',
+    data_entry_name: '',
+    data_entry_mobile: '',
+    data_entry_mail: '',
+  },
+  form5: {
+    bank_account_number: '',
+    bank_account_name: '',
+    bank_name: '',
+    card_image: '',
+  },
 } as AccountValuesProps;
 export default function RegisterForm() {
   const { translate } = useLocales();
@@ -62,11 +79,58 @@ export default function RegisterForm() {
 
   const [registerState, setRegisterState] = useState(initialValue);
 
-  const onSubmit = (data: any) => {
+  const onSubmit1 = (data: MainValuesProps) => {
     setStep((prevStep) => prevStep + 1);
     setRegisterState((prevRegisterState: AccountValuesProps) => ({
       ...prevRegisterState,
-      ...data,
+      form1: {
+        ...prevRegisterState.form1,
+        ...data,
+      },
+    }));
+  };
+
+  const onSubmit2 = (data: ConnectingValuesProps) => {
+    setStep((prevStep) => prevStep + 1);
+    setRegisterState((prevRegisterState: AccountValuesProps) => ({
+      ...prevRegisterState,
+      form2: {
+        ...prevRegisterState.form1,
+        ...data,
+      },
+    }));
+  };
+
+  const onSubmit3 = (data: LicenseValuesProps) => {
+    setStep((prevStep) => prevStep + 1);
+    setRegisterState((prevRegisterState: AccountValuesProps) => ({
+      ...prevRegisterState,
+      form3: {
+        ...prevRegisterState.form1,
+        ...data,
+      },
+    }));
+  };
+
+  const onSubmit4 = (data: AdministrativeValuesProps) => {
+    setStep((prevStep) => prevStep + 1);
+    setRegisterState((prevRegisterState: AccountValuesProps) => ({
+      ...prevRegisterState,
+      form4: {
+        ...prevRegisterState.form1,
+        ...data,
+      },
+    }));
+  };
+
+  const onSubmit5 = (data: BankingValuesProps) => {
+    setStep((prevStep) => prevStep + 1);
+    setRegisterState((prevRegisterState: AccountValuesProps) => ({
+      ...prevRegisterState,
+      form5: {
+        ...prevRegisterState.form1,
+        ...data,
+      },
     }));
   };
   const onReturn = () => {
@@ -109,31 +173,31 @@ export default function RegisterForm() {
         </Box>
       )}
       {step === 0 && (
-        <MainForm onSubmit={onSubmit}>
+        <MainForm onSubmit={onSubmit1} defaultValues={registerState.form1}>
           <ActionsBox onReturn={onReturn} />
         </MainForm>
       )}
       {step === 1 && (
-        <ConnectingInfoForm onSubmit={onSubmit}>
+        <ConnectingInfoForm onSubmit={onSubmit2} defaultValues={registerState.form2}>
           <ActionsBox onReturn={onReturn} />
         </ConnectingInfoForm>
       )}
       {step === 2 && (
-        <LicenseInfoForm onSubmit={onSubmit}>
+        <LicenseInfoForm onSubmit={onSubmit3} defaultValues={registerState.form3}>
           <ActionsBox onReturn={onReturn} />
         </LicenseInfoForm>
       )}
       {step === 3 && (
-        <AdministrativeInfoForm onSubmit={onSubmit}>
+        <AdministrativeInfoForm onSubmit={onSubmit4} defaultValues={registerState.form4}>
           <ActionsBox onReturn={onReturn} />
         </AdministrativeInfoForm>
       )}
       {step === 4 && (
-        <BankingInfoForm onSubmit={onSubmit}>
+        <BankingInfoForm onSubmit={onSubmit5} defaultValues={registerState.form5}>
           <ActionsBox onReturn={onReturn} />
         </BankingInfoForm>
       )}
-      {step === 5 && <FinalPage {...registerState} />}
+      {step === 5 && <FinalPage registerState={registerState} setStep={setStep} />}
     </>
   );
 }

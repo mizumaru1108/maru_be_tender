@@ -5,9 +5,15 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import FormGenerator from 'components/FormGenerator';
 import { AdministrativeInfoData } from '../auth/register/RegisterFormData';
-import { AdministrativeValuesProps, FormProps } from './types';
+import { AdministrativeValuesProps } from './types';
 
-const AdministrativeInfoForm = ({ children, onSubmit }: FormProps) => {
+type FormProps = {
+  children?: React.ReactNode;
+  onSubmit: (data: any) => void;
+  defaultValues: AdministrativeValuesProps;
+};
+
+const AdministrativeInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
   const RegisterSchema = Yup.object().shape({
     ceo_name: Yup.string().required('Executive Director is required'),
     ceo_mobile: Yup.string().required('Executive Director Mobile is required'),
@@ -16,15 +22,6 @@ const AdministrativeInfoForm = ({ children, onSubmit }: FormProps) => {
     data_entry_mail: Yup.string().email().required('Entery Data Email is required'),
     agree_on: Yup.boolean().required('Agreeing_On is required'),
   });
-
-  const defaultValues = {
-    ceo_name: '',
-    ceo_mobile: '',
-    data_entry_name: '',
-    data_entry_mobile: '',
-    data_entry_mail: '',
-    agree_on: false,
-  };
 
   const methods = useForm<AdministrativeValuesProps>({
     resolver: yupResolver(RegisterSchema),

@@ -39,8 +39,8 @@ const FundingProjectRequestForm = () => {
       project_implement_date: '',
       execution_time: '',
       project_beneficiaries: '',
-      letter_ofsupport_req: undefined,
-      project_attachments: undefined,
+      letter_ofsupport_req: '',
+      project_attachments: '',
     },
     form2: {
       num_ofproject_binicficiaries: undefined,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid } from '@mui/material';
+import { Grid, styled } from '@mui/material';
 import BaseField from './hook-form/BaseField';
 
 // ----------------------------------------------------------------------
@@ -14,7 +14,8 @@ type FieldType =
   | 'repeater'
   | 'checkbox'
   | 'radioGroup'
-  | 'repeaterLabel';
+  | 'repeaterLabel'
+  | 'password';
 
 // ----------------------------------------------------------------------
 
