@@ -5,13 +5,13 @@ import { SupervisorFloatingActionBar } from './supervisor';
 import { ProjectManagerFloatingActionBar } from './project-manager';
 import { ModeratoeCeoFloatingActionBar } from './moderator-ceo';
 import { ModeratorFloatingActionBar } from './moderator';
-import { HashuraRoles } from '../../../@types/commons';
+import { FusionAuthRoles } from '../../../@types/commons';
 
 function FloatinActonBar({ proposalData }: any) {
   const { actionType } = useParams();
   const { user } = useAuth();
   const location = useLocation();
-  const role = user?.registrations[0].roles[0] as HashuraRoles;
+  const role = user?.registrations[0].roles[0] as FusionAuthRoles;
   const activeTap = location.pathname.split('/').at(-1);
 
   return (
@@ -31,7 +31,8 @@ function FloatinActonBar({ proposalData }: any) {
       {activeTap &&
         ['main', 'project-budget'].includes(activeTap) &&
         actionType === 'show-details' &&
-        ['tender_ceo'].includes(role) && (
+        ['tender_ceo'].includes(role) &&
+        proposalData.outter_status !== 'CANCELED' && (
           <ModeratoeCeoFloatingActionBar organizationId={proposalData.user.id} />
         )}
       {activeTap &&

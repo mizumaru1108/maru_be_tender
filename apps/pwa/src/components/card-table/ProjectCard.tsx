@@ -18,7 +18,7 @@ import moment from 'moment';
 import useAuth from 'hooks/useAuth';
 import { asignProposalToAUser } from 'queries/commons/asignProposalToAUser';
 import { useMutation } from 'urql';
-import { HashuraRoles } from '../../@types/commons';
+import { FusionAuthRoles } from '../../@types/commons';
 
 /**
  *
@@ -62,7 +62,7 @@ const ProjectCard = ({
   destination, // it refers to the url that I came from and the url that I have to go to
 }: ProjectCardProps) => {
   const { user } = useAuth();
-  const role = user?.registrations[0].roles[0] as HashuraRoles;
+  const role = user?.registrations[0].roles[0] as FusionAuthRoles;
   const navigate = useNavigate();
   const location = useLocation();
   const { translate } = useLocales();

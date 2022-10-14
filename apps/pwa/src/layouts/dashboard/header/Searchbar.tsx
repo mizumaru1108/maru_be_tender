@@ -27,7 +27,7 @@ import navConfig from '../navbar/NavConfig';
 import useLocales from 'hooks/useLocales';
 
 import useAuth from 'hooks/useAuth';
-import { HashuraRoles } from '../../../@types/commons';
+import { FusionAuthRoles } from '../../../@types/commons';
 
 // ----------------------------------------------------------------------
 
@@ -120,7 +120,7 @@ function Searchbar() {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const role = user?.registrations[0].roles as HashuraRoles;
+  const role = user?.registrations[0].roles as FusionAuthRoles;
   const reduceItems = navConfig[`${role}`]
     .map((list) => handleLoop(list.items, list.subheader))
     .flat();

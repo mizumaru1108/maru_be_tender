@@ -2,7 +2,7 @@ import { Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Page from 'components/Page';
 import useAuth from 'hooks/useAuth';
-import { HashuraRoles } from '../../@types/commons';
+import { FusionAuthRoles } from '../../@types/commons';
 
 import MessageContent from './content/MessageContent';
 import MessageMenu from './menu/MessageMenu';
@@ -19,7 +19,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 function MessagesPage() {
   const { user } = useAuth();
-  const role = user?.registrations[0].roles[0] as HashuraRoles;
+  const role = user?.registrations[0].roles[0] as FusionAuthRoles;
   return (
     <Page title="Previous Funding Requests">
       <ContentStyle>

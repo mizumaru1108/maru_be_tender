@@ -10,7 +10,7 @@ import { rejectProposal } from 'queries/commons/rejectProposal';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useMutation } from 'urql';
-import { HashuraRoles } from '../../../../@types/commons';
+import { FusionAuthRoles } from '../../../../@types/commons';
 import FormActionBox from './FormActionBox';
 import ProposalAcceptingForm from './ProposalAcceptingForm';
 import ProposalRejectingForm from './ProposalRejectingForm';
@@ -25,7 +25,7 @@ function FloatingActionBar() {
   const navigate = useNavigate();
 
   // Logic here to get current user role
-  const currentRoles = user?.registrations[0].roles[0] as HashuraRoles;
+  const currentRoles = user?.registrations[0].roles[0] as FusionAuthRoles;
 
   // var for insert into navigate in handel Approval and Rejected
   const p = currentRoles.split('_')[1];

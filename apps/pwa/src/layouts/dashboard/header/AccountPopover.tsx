@@ -2,7 +2,7 @@ import { Box, Button, Stack, Typography } from '@mui/material';
 import useResponsive from 'hooks/useResponsive';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { HashuraRoles, role_url_map } from '../../../@types/commons';
+import { FusionAuthRoles, role_url_map } from '../../../@types/commons';
 
 import useAuth from '../../../hooks/useAuth';
 
@@ -10,7 +10,7 @@ export default function AccountPopover() {
   const navigate = useNavigate();
   const isMobile = useResponsive('down', 'sm');
   const { user } = useAuth();
-  const role = user?.registrations[0].roles[0] as HashuraRoles;
+  const role = user?.registrations[0].roles[0] as FusionAuthRoles;
 
   return (
     <>

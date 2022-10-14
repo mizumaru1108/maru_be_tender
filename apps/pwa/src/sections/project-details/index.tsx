@@ -23,13 +23,12 @@ function ProjectDetailsMainPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const activeTap = location.pathname.split('/').at(-1);
-  useEffect(() => {
-    console.log('Asdaksdmlkamsdk');
-  }, [data]);
+
   if (fetching) return <>...Loading</>;
   if (error) return <>{error.graphQLErrors}</>;
   if (data.proposal_by_pk === null) return <>There is no data for this tap ... </>;
   console.log(data.proposal_by_pk);
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Stack direction="row">
@@ -74,22 +73,45 @@ function ProjectDetailsMainPage() {
           </Typography>
         </Stack>
         <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
           sx={{
             borderRadius: '10px',
             backgroundColor: '#0E847829',
-            p: '5px',
+            px: '15px',
           }}
         >
           <Typography
             variant="h6"
-            gutterBottom
             sx={{
               color: '#0E8478',
-              fontSize: '15px !important',
-              mt: '12px',
             }}
           >
-            حالة المشروع
+            {'State : ' + data.proposal_by_pk.state || 'حالة المشروع'}
+          </Typography>
+          <Typography
+            sx={{
+              // 'COMPLETED' | 'PENDING' | 'CANCELED' | 'ONGOING';
+              // if data.proposal_by_pk.outter_status include [completed / ongoing] => color green
+              // if canceled => color red
+              // if pending => color yellow
+              color: {
+                COMPLETED: '#0E8478',
+                ONGOING: '#0E8478',
+                PENDING: '#000',
+                CANCELED: '#EB5757',
+              }[
+                data.proposal_by_pk.outter_status as
+                  | 'COMPLETED'
+                  | 'PENDING'
+                  | 'CANCELED'
+                  | 'ONGOING'
+              ],
+            }}
+          >
+            {'status : ' + data.proposal_by_pk.outter_status || 'status'}
           </Typography>
         </Box>
       </Stack>

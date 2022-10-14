@@ -6,7 +6,7 @@ import useAuth from '../hooks/useAuth';
 // import { PATH_DASHBOARD } from '../routes/paths';
 // components
 import LoadingScreen from '../components/LoadingScreen';
-import { HashuraRoles, role_url_map } from '../@types/commons';
+import { FusionAuthRoles, role_url_map } from '../@types/commons';
 
 // ----------------------------------------------------------------------
 type GuestGuardProps = {
@@ -16,7 +16,7 @@ type GuestGuardProps = {
 export default function GuestGuard({ children }: GuestGuardProps) {
   const { isAuthenticated, isInitialized, user } = useAuth();
 
-  const role = user?.registrations[0].roles[0] as HashuraRoles;
+  const role = user?.registrations[0].roles[0] as FusionAuthRoles;
   console.log(role);
   if (isAuthenticated) {
     return <Navigate to={`/${role_url_map[`${role}`]}/dashboard/app`} />;

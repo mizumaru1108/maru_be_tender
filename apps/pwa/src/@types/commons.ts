@@ -1,4 +1,4 @@
-export type HashuraRoles =
+export type FusionAuthRoles =
   | 'cluster_admin'
   | 'tender_accounts_manager'
   | 'tender_admin'

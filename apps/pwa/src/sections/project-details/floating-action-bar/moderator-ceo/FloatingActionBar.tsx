@@ -12,7 +12,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { useMutation } from 'urql';
 import {
   AppRole,
-  HashuraRoles,
+  FusionAuthRoles,
   InnerStatus,
   role_url_map,
   updateProposalStatusAndState,
@@ -39,7 +39,7 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
   const navigate = useNavigate();
 
   // Logic here to get current user role
-  const currentRoles = user?.registrations[0].roles[0] as HashuraRoles; // from db
+  const currentRoles = user?.registrations[0].roles[0] as FusionAuthRoles; // from db
   const userId = user?.id;
 
   // var for insert into navigate in handel Approval and Rejected

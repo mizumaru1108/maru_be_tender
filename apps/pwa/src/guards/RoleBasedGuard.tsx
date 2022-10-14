@@ -7,13 +7,13 @@ import useAuth from '../hooks/useAuth';
 import { MotionContainer, varBounce } from '../components/animate';
 // assets
 import { ForbiddenIllustration } from '../assets';
-import { HashuraRoles } from '../@types/commons';
+import { FusionAuthRoles } from '../@types/commons';
 
 // ----------------------------------------------------------------------
 
 type RoleBasedGuardProp = {
   hasContent?: boolean;
-  roles: HashuraRoles[];
+  roles: FusionAuthRoles[];
   children: React.ReactNode;
 };
 

@@ -1,4 +1,4 @@
-import { HashuraRoles } from '../@types/commons';
+import { FusionAuthRoles } from '../@types/commons';
 
 /**
  * @Author (RDanang, Iyoy!)
@@ -10,7 +10,7 @@ import { HashuraRoles } from '../@types/commons';
  * @example
  * {hasAccess(tender_project_manager, [tender_project_manager, tender_finance]) && <Component />}
  */
-export const hasAccess = (userRole: HashuraRoles, requiredRole: HashuraRoles[]): boolean => {
+export const hasAccess = (userRole: FusionAuthRoles, requiredRole: FusionAuthRoles[]): boolean => {
   if (requiredRole.includes(userRole)) {
     return true;
   }

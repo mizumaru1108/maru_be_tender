@@ -1,11 +1,11 @@
 import { Box, Button, Stack, useTheme } from '@mui/material';
 import useLocales from 'hooks/useLocales';
-import { HashuraRoles } from '../../@types/commons';
+import { FusionAuthRoles } from '../../@types/commons';
 
 import Iconify from '../Iconify';
 
 interface FloatingActionBarProps {
-  role: HashuraRoles;
+  role: FusionAuthRoles;
   handleAccept: () => void;
   handleReject: () => void;
 }

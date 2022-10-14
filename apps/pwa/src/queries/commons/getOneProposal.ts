@@ -40,6 +40,8 @@ export const getOneProposal = `query MyQuery($id: String!) {
     project_attachments
     project_beneficiaries
     inner_status
+    outter_status
+    state
     payments(order_by: {order: asc}) {
       id
       payment_amount
