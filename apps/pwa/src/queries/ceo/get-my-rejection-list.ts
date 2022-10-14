@@ -5,6 +5,11 @@ export const GetMyRejectionList = `
         projectNumber: id
         projectName: project_name
         projectSection: project_kind_id
+        associationName: user{
+          client_data {
+            entity
+          }
+        }
         createdAt: created_at
       }
     }

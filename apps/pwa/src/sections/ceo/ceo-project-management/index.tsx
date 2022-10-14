@@ -24,7 +24,16 @@ function CeoProjectManagement() {
 
   useEffect(() => {
     if (projectDatas) {
-      setProjectManagementData(projectDatas.proposal);
+      setProjectManagementData(
+        projectDatas.proposal.map((project: any) => ({
+          id: (project.projectNumber as string) || 'N/A',
+          projectNumber: (project.projectNumber as string) || 'N/A',
+          projectName: (project.projectName as string) || 'N/A',
+          projectSection: project.projectSection || 'N/A',
+          associationName: (project.associationName.client_data[0].entity as string) || 'N/A',
+          createdAt: (project.createdAt as string) || 'N/A',
+        }))
+      );
     }
   }, [projectDatas]);
 

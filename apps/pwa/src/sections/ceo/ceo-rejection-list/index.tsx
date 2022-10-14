@@ -23,6 +23,10 @@ function CeoRejectionList() {
 
   const { data: rejectionList, fetching, error } = fetchRejectionList;
 
+  useEffect(() => {
+    console.log(rejectionList);
+  }, [rejectionList]);
+
   if (error) {
     console.log(error);
   }
@@ -30,7 +34,18 @@ function CeoRejectionList() {
   useEffect(() => {
     if (rejectionList) {
       // TODO: Find out how to map object out, so it's not remapped every time frontend get from Gql.
-      setRejectionListData(rejectionList.data.map((item: any) => item.proposal));
+      // setRejectionListData(rejectionList.data.map((item: any) => item.proposal));
+      setRejectionListData(
+        rejectionList.data.map((project: any) => ({
+          id: (project.proposal.projectNumber as string) || 'N/A',
+          projectNumber: (project.proposal.projectNumber as string) || 'N/A',
+          projectName: (project.proposal.projectName as string) || 'N/A',
+          projectSection: project.proposal.projectSection || 'N/A',
+          associationName:
+            (project.proposal.associationName.client_data[0].entity as string) || 'N/A',
+          createdAt: (project.proposal.createdAt as string) || 'N/A',
+        }))
+      );
     }
   }, [rejectionList]);
 
