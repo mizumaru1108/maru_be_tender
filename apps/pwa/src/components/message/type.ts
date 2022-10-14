@@ -17,6 +17,7 @@ export type IFooterContent = {
 };
 
 type correspondanceData = {
+  roomId: string;
   partnerName: string;
   projectName: string;
   message: string;
@@ -25,12 +26,14 @@ type correspondanceData = {
 
 export type IMessageMenuItem = {
   data: correspondanceData[];
+  getRoomId: (id: string) => void;
 };
 
 export type IMenu = {
   internalData: correspondanceData[];
   externalData: correspondanceData[];
   accountType: string;
+  roomId: (id: string) => void;
 };
 
 export interface TabPanelProps {

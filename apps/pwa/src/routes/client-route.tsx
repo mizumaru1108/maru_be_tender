@@ -17,6 +17,7 @@ const ContactSupport = Loadable(lazy(() => import('pages/client/ContactSupport')
 const MainClientPage = Loadable(lazy(() => import('pages/client/MainClientPage')));
 const ClientProfile = Loadable(lazy(() => import('pages/client/ClientProfile')));
 const ClientProfileEdit = Loadable(lazy(() => import('pages/client/ClientProfileEdit')));
+const Searching = Loadable(lazy(() => import('pages/searching')));
 export const clientRoute = {
   path: 'client',
   element: (
@@ -33,6 +34,21 @@ export const clientRoute = {
       children: [
         { path: '', element: <ClientProfile /> },
         { path: 'edit', element: <ClientProfileEdit /> },
+      ],
+    },
+    {
+      path: 'searching',
+      children: [
+        { path: '', element: <Searching /> },
+        {
+          path: ':id/:actionType',
+          children: [
+            { path: 'main', element: <ProjectDetails /> },
+            { path: 'project-path', element: <ProjectDetails /> },
+            { path: 'follow-ups', element: <ProjectDetails /> },
+            { path: 'payments', element: <ProjectDetails /> },
+          ],
+        },
       ],
     },
     {

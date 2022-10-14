@@ -1,10 +1,25 @@
 import { Stack, Typography } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Iconify from '../../Iconify';
 import { IMessageMenuItem } from '../type';
 
-export default function MessageMenuItem({ data }: IMessageMenuItem) {
+type IroomId = {
+  data: {
+    id: string;
+  }[];
+};
+
+export default function MessageMenuItem({ data, getRoomId }: IMessageMenuItem) {
   const [focusedIndex, setFocusedIndex] = useState<number | undefined>(undefined);
+  const [id, setId] = useState('');
+
+  const getId = (roomId: string) => {
+    const a: IroomId = { data: [] };
+    a.data.push({ id: roomId });
+    // setId(a.data[0].id);
+    getRoomId(a.data[0].id);
+  };
+
   return (
     <>
       {data.map((item, index) => (
@@ -32,6 +47,7 @@ export default function MessageMenuItem({ data }: IMessageMenuItem) {
           }} // on hover
           onClick={() => {
             setFocusedIndex(index);
+            getId(item.roomId);
           }}
         >
           <Stack>

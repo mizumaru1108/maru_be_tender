@@ -56,3 +56,22 @@ export type CardTableProps = {
     | 'completing-exchange-permission' // With the action bar at the end if the page.
     | 'draft'; // Without the action bar at the end of the page, but with the ability to continue or remove the project.
 };
+export type CardTableSearchingProps = {
+  title: string;
+  limitShowCard?: number;
+  data: ProjectCardProps[];
+  pagination?: boolean;
+  cardFooterButtonAction:
+    | 'show-project' // Without the action bar at the end of the page.
+    | 'show-details' // With the action bar at the end if the page.
+    | 'completing-exchange-permission' // With the action bar at the end if the page.
+    | 'draft'; // Without the action bar at the end of the page, but with the ability to continue or remove the project.
+};
+
+export type SearchingProposal = {
+  project: string;
+  theYear: string;
+  detailReport: string;
+  geoRange: string;
+  theField: string;
+};
