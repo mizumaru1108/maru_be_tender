@@ -128,11 +128,12 @@ export default function RegisterForm() {
     setRegisterState((prevRegisterState: AccountValuesProps) => ({
       ...prevRegisterState,
       form5: {
-        ...prevRegisterState.form1,
+        ...prevRegisterState.form5,
         ...data,
       },
     }));
   };
+
   const onReturn = () => {
     if (step > 0) setStep((prevStep) => prevStep - 1);
   };
