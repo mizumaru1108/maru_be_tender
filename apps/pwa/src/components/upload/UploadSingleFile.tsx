@@ -27,7 +27,6 @@ const DropZoneStyle = styled('div')(({ theme }) => ({
 interface Props extends UploadProps {
   placeholder?: string;
   uploading?: boolean;
-  fileInfo?: { size: number | undefined; type: string };
 }
 
 export default function UploadSingleFile({
@@ -37,7 +36,6 @@ export default function UploadSingleFile({
   sx,
   placeholder,
   uploading,
-  fileInfo,
   ...other
 }: Props) {
   const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = useDropzone({
@@ -56,20 +54,21 @@ export default function UploadSingleFile({
             bgcolor: 'error.lighter',
           }),
           ...(file &&
-            fileInfo &&
-            fileInfo.type === 'image/jpeg' && {
+            file.type.split('/')[0] === 'image' && {
               padding: '12% 0',
             }),
         }}
       >
         <input {...getInputProps()} />
 
-        {!file && <BlockContent placeholder={placeholder} uploading={uploading} />}
+        {(file.url === '' || uploading) && (
+          <BlockContent placeholder={placeholder} uploading={uploading} />
+        )}
 
-        {file && fileInfo && fileInfo.type === 'image/jpeg' && (
+        {file && file.type.split('/')[0] === 'image' && !uploading && (
           <Image
             alt="file preview"
-            src={typeof file === 'string' ? file : file.preview}
+            src={file.url}
             sx={{
               top: 8,
               left: 8,
@@ -80,7 +79,7 @@ export default function UploadSingleFile({
             }}
           />
         )}
-        {file && fileInfo && fileInfo.type === 'application/pdf' && (
+        {file && file.type === 'application/pdf' && !uploading && (
           <Box
             sx={{
               flex: 1,
@@ -113,7 +112,7 @@ export default function UploadSingleFile({
                     {placeholder}
                   </Typography>
                   <Typography gutterBottom sx={{ fontSize: '13px' }}>
-                    {`${fileInfo.size}KB`}
+                    {`${file.size !== undefined && Math.floor(file.size)}KB`}
                   </Typography>
                 </Stack>
               </Stack>

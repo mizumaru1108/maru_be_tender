@@ -125,7 +125,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
                 {translate('register_form1.headquarters.placeholder')}
               </option>
               {REGIONS.map((item, index) => (
-                <option key={index} value="item" style={{ backgroundColor: '#fff' }}>
+                <option key={index} value={item} style={{ backgroundColor: '#fff' }}>
                   {item}
                 </option>
               ))}

@@ -1,4 +1,5 @@
 import { IconButton, Stack, Typography } from '@mui/material';
+import Image from 'components/Image';
 import { LicenseValuesProps } from 'sections/shared/types';
 
 function LicenseInfo({
@@ -62,13 +63,25 @@ function LicenseInfo({
       <Stack direction="row" justifyContent="space-between">
         <Stack direction="column" flex={1}>
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>ملف الترخيص:</Typography>
-          <Typography sx={{ fontSize: '18px' }}>{data.license_file}</Typography>
+          <Typography sx={{ fontSize: '18px' }}>
+            <a target="_blank" rel="noopener noreferrer" href={data.license_file.url}>
+              اضغط هنا لرؤية ملف الترخيص
+            </a>
+          </Typography>
         </Stack>
         <Stack direction="column" flex={1}>
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>
             ملف قرار تشكيل مجلس الإدارة:
           </Typography>
-          <Typography sx={{ fontSize: '18px' }}>{data.board_ofdec_file}</Typography>
+          <Typography sx={{ fontSize: '18px' }}>
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href={data.board_ofdec_file && data.board_ofdec_file.url}
+            >
+              اضغط هنا لرؤية ملف قرار تشكيل مجلس الإدارة
+            </a>
+          </Typography>
         </Stack>
       </Stack>
     </Stack>

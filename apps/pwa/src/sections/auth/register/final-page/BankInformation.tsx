@@ -1,4 +1,5 @@
 import { IconButton, Stack, Typography } from '@mui/material';
+import Image from 'components/Image';
 import { BankingValuesProps } from 'sections/shared/types';
 
 function BankInformation({
@@ -63,7 +64,11 @@ function BankInformation({
         <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>
           صورة بطاقة الحساب البنكي:
         </Typography>
-        <Typography sx={{ fontSize: '18px' }}>{data.card_image}</Typography>
+        <Typography sx={{ fontSize: '18px' }}>
+          <a target="_blank" rel="noopener noreferrer" href={data.card_image.url}>
+            اضغط هنا لرؤية صورة بطاقة الحساب البنكي
+          </a>
+        </Typography>
       </Stack>
     </Stack>
   );

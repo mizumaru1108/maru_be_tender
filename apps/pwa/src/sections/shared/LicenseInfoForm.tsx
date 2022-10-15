@@ -18,8 +18,16 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
     license_number: Yup.string().required('License Number is required'),
     license_issue_date: Yup.string().required('License Issue Date is required'),
     license_expired: Yup.string().required('License Expiry Date is required'),
-    license_file: Yup.mixed().required('License File is required'),
-    board_ofdec_file: Yup.mixed().required('Resolution File is required'),
+    license_file: Yup.object().shape({
+      url: Yup.string().required(),
+      size: Yup.number(),
+      type: Yup.string().required(),
+    }),
+    board_ofdec_file: Yup.object().shape({
+      url: Yup.string().required(),
+      size: Yup.number(),
+      type: Yup.string().required(),
+    }),
   });
 
   const methods = useForm<LicenseValuesProps>({
@@ -27,10 +35,7 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
     defaultValues,
   });
 
-  const {
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
+  const { handleSubmit } = methods;
 
   const onSubmitForm = async (data: LicenseValuesProps) => {
     onSubmit(data);

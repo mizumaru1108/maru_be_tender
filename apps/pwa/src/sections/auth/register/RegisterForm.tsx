@@ -54,8 +54,8 @@ const initialValue = {
     license_number: '',
     license_issue_date: '',
     license_expired: '',
-    license_file: '',
-    board_ofdec_file: '',
+    license_file: { size: undefined, url: '', type: '' },
+    board_ofdec_file: { size: undefined, url: '', type: '' },
   },
   form4: {
     agree_on: false,
@@ -69,7 +69,7 @@ const initialValue = {
     bank_account_number: '',
     bank_account_name: '',
     bank_name: '',
-    card_image: '',
+    card_image: { size: undefined, url: '', type: '' },
   },
 } as AccountValuesProps;
 export default function RegisterForm() {

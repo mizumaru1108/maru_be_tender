@@ -1,6 +1,4 @@
 import { Stack, Typography, Container, Button } from '@mui/material';
-import { createClient } from 'queries/auth/createClient';
-import { useMutation } from 'urql';
 import { nanoid } from 'nanoid';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
@@ -30,9 +28,7 @@ function FinalPage({
 }) {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [id, setId] = useState('');
   const [open, setOpen] = useState(false);
-  const [_, updateTodo] = useMutation(createClient);
   const [errors, setErrors] = useState('');
   const [isSending, setIsSending] = useState(false);
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
@@ -55,13 +51,20 @@ function FinalPage({
             employee_path: registerState.form2.email,
             bank_informations: [
               {
-                ...form5,
+                bank_account_number: form5.bank_account_number,
+                bank_account_name: form5.bank_account_name,
+                bank_name: form5.bank_name,
+                card_image: form5.card_image.url,
               },
             ],
             status: 'WAITING_FOR_ACTIVATION',
             ...form1,
             ...form2,
-            ...form3,
+            license_number: form3.license_number,
+            license_issue_date: form3.license_issue_date,
+            license_expired: form3.license_expired,
+            license_file: form3.license_file.url,
+            board_ofdec_file: form3.board_ofdec_file ? form3.board_ofdec_file.url : '',
             ...form4,
           },
           roles: ['tender_client'],
@@ -70,7 +73,7 @@ function FinalPage({
       await login(registerState.form2.email, registerState.form2.password);
       navigate('/');
     } catch (error) {
-      setErrors(error.message);
+      setErrors(error.response.data.message);
       setOpen(true);
       setIsSending(false);
     }
@@ -99,6 +102,9 @@ function FinalPage({
               size: 'large',
               width: { xs: '100%', sm: '200px' },
               hieght: { xs: '100%', sm: '50px' },
+            }}
+            onClick={() => {
+              setStep(4);
             }}
           >
             رجوع

@@ -18,7 +18,11 @@ const BankingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
     bank_account_number: Yup.string().required('Bank Account Number required'),
     bank_account_name: Yup.string().required('Bank Account name required'),
     bank_name: Yup.string().required('Bank Name is required'),
-    card_image: Yup.mixed().required('Bank Account Card Image is required'),
+    card_image: Yup.object().shape({
+      url: Yup.string().required(),
+      size: Yup.number(),
+      type: Yup.string().required(),
+    }),
   });
 
   const methods = useForm<BankingValuesProps>({

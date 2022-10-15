@@ -105,17 +105,12 @@ export const ConnectingInfoData = [
     ),
   },
   {
-    type: 'select',
+    type: 'textField',
     name: 'center_administration',
     label: 'register_form2.center.label',
     xs: 12,
     md: 6,
     placeholder: 'register_form2.region.placeholder',
-    children: (
-      <option value="1" style={{ backgroundColor: '#fff' }}>
-        test option
-      </option>
-    ),
   },
   {
     type: 'textField',

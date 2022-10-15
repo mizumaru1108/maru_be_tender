@@ -18,8 +18,18 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
     region: Yup.string().required('Region name required'),
     governorate: Yup.string().required('City name required'),
     center_administration: Yup.string().required('Center is required'),
-    entity_mobile: Yup.string().required('Mobile Number is required'),
-    phone: Yup.string().required('Phone Number required'),
+    entity_mobile: Yup.string()
+      .required('Mobile Number is required')
+      .matches(
+        /^\+9665[0-9]{8}$/,
+        `The Entity Mobile must be written in the exact way of +9665xxxxxxxx`
+      ),
+    phone: Yup.string()
+      .required('Phone Number required')
+      .matches(
+        /^\+9665[0-9]{8}$/,
+        `The Entity Mobile must be written in the exact way of +9665xxxxxxxx`
+      ),
     twitter_acount: Yup.string(),
     website: Yup.string(),
     email: Yup.string().email('Email must be a valid email address').required('Email is required'),

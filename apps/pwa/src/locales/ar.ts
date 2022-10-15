@@ -147,12 +147,12 @@ const ar = {
     },
     mobile_number: {
       label: 'جوال الجهة*',
-      placeholder: 'الرجاء كتابة رقم الجوال',
+      placeholder: 'الرجاء كتابة الرقم                                         963932569875+',
       options: {},
     },
     phone: {
-      label: 'الهاتف',
-      placeholder: 'الرجاء كتابة رقم الهاتف',
+      label: 'الهاتف*',
+      placeholder: 'الرجاء كتابة رقم الهاتف                               963932569875+',
     },
     twitter: {
       label: 'حساب تويتر',

@@ -16,9 +16,19 @@ type FormProps = {
 const AdministrativeInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
   const RegisterSchema = Yup.object().shape({
     ceo_name: Yup.string().required('Executive Director is required'),
-    ceo_mobile: Yup.string().required('Executive Director Mobile is required'),
+    ceo_mobile: Yup.string()
+      .required('CEO Mobile is required')
+      .matches(
+        /^\+9665[0-9]{8}$/,
+        `The CEO Mobile must be written in the exact way of +9665xxxxxxxx`
+      ),
     data_entry_name: Yup.string().required('Entery Data Name is required'),
-    data_entry_mobile: Yup.string().required('Entery Data Phone is required'),
+    data_entry_mobile: Yup.string()
+      .required('Data Entry Mobile is required')
+      .matches(
+        /^\+9665[0-9]{8}$/,
+        `The Data Entry Mobile must be written in the exact way of +9665xxxxxxxx`
+      ),
     data_entry_mail: Yup.string().email().required('Entery Data Email is required'),
     agree_on: Yup.boolean().required('Agreeing_On is required'),
   });

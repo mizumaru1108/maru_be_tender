@@ -12,9 +12,15 @@ export interface CustomFile extends File {
   lastModifiedDate?: Date;
 }
 
+export interface FileProp {
+  url: string;
+  size: number | undefined;
+  type: string;
+}
+
 export interface UploadProps extends DropzoneOptions {
   error?: boolean;
-  file: CustomFile | string | null;
+  file: FileProp; //CustomFile | string | null;
   helperText?: ReactNode;
   sx?: SxProps<Theme>;
 }
