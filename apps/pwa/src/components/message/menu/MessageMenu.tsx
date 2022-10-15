@@ -2,7 +2,7 @@ import { Box, Stack, Tab, Tabs, Typography } from '@mui/material';
 import { useState } from 'react';
 import useLocales from '../../../hooks/useLocales';
 import ModalDialog from '../../modal-dialog';
-import { filterSupervisor } from '../mock-data';
+import { filterProjectTrack, filterSupervisor } from '../mock-data';
 import FilterModalMessage from '../modal-form/FilterModalMessage';
 import NewMessageModalForm from '../modal-form/NewMessageModalForm';
 import { IMenu, TabPanelProps } from '../type';
@@ -10,7 +10,7 @@ import MessageMenuButton from './MessageMenuButton';
 import MessageMenuHeader from './MessageMenuHeader';
 import MessageMenuItem from './MessageMenuItem';
 
-const MessageMenu = ({ internalData, externalData, accountType }: IMenu) => {
+const MessageMenu = ({ internalData, externalData, accountType, roomId }: IMenu) => {
   const { translate } = useLocales();
   const [modalState, setModalState] = useState(false);
   const [open, setOpen] = useState(false);
@@ -21,6 +21,7 @@ const MessageMenu = ({ internalData, externalData, accountType }: IMenu) => {
   };
   const [messageModalState, setMesssageModalState] = useState(false);
   const [filterModalState, setFilterModalState] = useState(false);
+  const [id, setId] = useState('');
 
   const handleCloseModal = () => {
     setModalState(false);
@@ -65,7 +66,16 @@ const MessageMenu = ({ internalData, externalData, accountType }: IMenu) => {
         handleClose={handleCloseFilter}
         filters={filterProjectTrack}
       /> */}
-      <FilterModalMessage open={open} handleClose={handleCloseFilter} filters={filterSupervisor} />
+      <FilterModalMessage
+        open={open}
+        handleClose={handleCloseFilter}
+        appliedFilter={(value) => {
+          console.log('value : ', value);
+        }}
+        supervisors={filterSupervisor}
+        projectTracks={filterProjectTrack}
+      />
+
       {[
         'tender_moderator',
         'tender_accounts_manager',
@@ -104,6 +114,9 @@ const MessageMenu = ({ internalData, externalData, accountType }: IMenu) => {
 
       {[
         'tender_project_manager',
+        'tender_accounts_manager',
+        'tender_project_supervisor',
+        'tender_moderator',
         'tender_consultant',
         'tender_ceo',
         'tender_finance',
@@ -125,12 +138,20 @@ const MessageMenu = ({ internalData, externalData, accountType }: IMenu) => {
         <>
           <TabPanel value={valueTabItem} index={0}>
             <Box sx={{ overflowX: 'hidden', height: '550px' }}>
-              <MessageMenuItem data={internalData} />
+              <MessageMenuItem
+                data={externalData}
+                // data={internalData}
+                getRoomId={(value) => roomId(value)}
+              />
             </Box>
           </TabPanel>
           <TabPanel value={valueTabItem} index={1}>
             <Box sx={{ overflowX: 'hidden', height: '550px' }}>
-              <MessageMenuItem data={externalData} />
+              <MessageMenuItem
+                // data={externalData}
+                data={internalData}
+                getRoomId={(value) => roomId(value)}
+              />
             </Box>
           </TabPanel>
         </>
@@ -145,7 +166,7 @@ const MessageMenu = ({ internalData, externalData, accountType }: IMenu) => {
         'tender_cashier',
       ].includes(accountType) && (
         <Box sx={{ overflowX: 'hidden', height: '550px' }}>
-          <MessageMenuItem data={internalData} />
+          <MessageMenuItem data={internalData} getRoomId={(value) => roomId(value)} />
         </Box>
       )}
 

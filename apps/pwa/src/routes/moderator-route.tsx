@@ -12,6 +12,7 @@ const ModeratorMessages = Loadable(lazy(() => import('pages/moderator/ModeratorM
 const IncomingSupportRequests = Loadable(
   lazy(() => import('pages/moderator/incoming-support-requests'))
 );
+const Searching = Loadable(lazy(() => import('pages/searching')));
 const PreviouseSupportRequests = Loadable(
   lazy(() => import('pages/moderator/previous-support-requests'))
 );
@@ -41,6 +42,21 @@ export const moderatorRoute = {
       children: [
         { path: '', element: <NonClientProfile /> },
         { path: 'edit', element: <NonClientProfileEdit /> },
+      ],
+    },
+    {
+      path: 'searching',
+      children: [
+        { path: '', element: <Searching /> },
+        {
+          path: ':id/:actionType',
+          children: [
+            { path: 'main', element: <ProjectDetails /> },
+            { path: 'project-path', element: <ProjectDetails /> },
+            { path: 'follow-ups', element: <ProjectDetails /> },
+            { path: 'payments', element: <ProjectDetails /> },
+          ],
+        },
       ],
     },
     {

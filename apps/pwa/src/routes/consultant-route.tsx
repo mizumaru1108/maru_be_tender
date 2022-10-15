@@ -19,6 +19,7 @@ const NonClientProfile = Loadable(
 const NonClientProfileEdit = Loadable(
   lazy(() => import('sections/non-client-profile/NonClientProfileEdit'))
 );
+const Searching = Loadable(lazy(() => import('pages/searching')));
 
 export const consultantRoute = {
   path: 'consultant',
@@ -36,6 +37,21 @@ export const consultantRoute = {
       children: [
         { path: '', element: <NonClientProfile /> },
         { path: 'edit', element: <NonClientProfileEdit /> },
+      ],
+    },
+    {
+      path: 'searching',
+      children: [
+        { path: '', element: <Searching /> },
+        {
+          path: ':id/:actionType',
+          children: [
+            { path: 'main', element: <ProjectDetails /> },
+            { path: 'project-path', element: <ProjectDetails /> },
+            { path: 'follow-ups', element: <ProjectDetails /> },
+            { path: 'payments', element: <ProjectDetails /> },
+          ],
+        },
       ],
     },
     {

@@ -27,7 +27,7 @@ import navConfig from '../navbar/NavConfig';
 import useLocales from 'hooks/useLocales';
 
 import useAuth from 'hooks/useAuth';
-import { FusionAuthRoles } from '../../../@types/commons';
+import { FusionAuthRoles, role_url_map } from '../../../@types/commons';
 
 // ----------------------------------------------------------------------
 
@@ -161,7 +161,8 @@ function Searchbar() {
     <ClickAwayListener onClickAway={() => setOpen(false)}>
       <div>
         {!open && (
-          <IconButtonAnimate onClick={() => setOpen((prev) => !prev)}>
+          // <IconButtonAnimate onClick={() => setOpen((prev) => !prev)}>
+          <IconButtonAnimate onClick={() => navigate(`/${role_url_map[`${role}`]}/searching`)}>
             <Iconify icon={'eva:search-fill'} width={30} height={30} sx={{ color: '#000' }} />
           </IconButtonAnimate>
         )}

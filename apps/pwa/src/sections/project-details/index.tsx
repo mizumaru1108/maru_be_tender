@@ -93,10 +93,6 @@ function ProjectDetailsMainPage() {
           </Typography>
           <Typography
             sx={{
-              // 'COMPLETED' | 'PENDING' | 'CANCELED' | 'ONGOING';
-              // if data.proposal_by_pk.outter_status include [completed / ongoing] => color green
-              // if canceled => color red
-              // if pending => color yellow
               color: {
                 COMPLETED: '#0E8478',
                 ONGOING: '#0E8478',

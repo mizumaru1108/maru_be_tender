@@ -5,14 +5,37 @@ import { IFilterMessage } from '../type';
 type Props = {
   open: boolean;
   handleClose: () => void;
-  filters?: IFilterMessage[];
+  appliedFilter: (filter: any) => void;
+  supervisors?: IFilterMessage;
+  projectTracks?: IFilterMessage;
 };
 
-function FilterModalMessage({ open, handleClose, filters }: Props) {
-  const [selected, setSelected] = useState('');
-  const handleChange = (event: any) => {
-    // console.log(event.target.value);
-    setSelected(event.target.value as string);
+function FilterModalMessage({
+  open,
+  handleClose,
+  appliedFilter,
+  supervisors,
+  projectTracks,
+}: Props) {
+  const [selected, setSelected] = useState({
+    supervisor: '',
+    projectTrack: '',
+  });
+  // creata default values for selected
+  // const [selected, setSelected] = useState<IFilterMessage>({
+  //   name: '',
+  //   options: {
+  //     label: '',
+  //     value: '',
+  //   },
+  // });
+  const handleSubmit = () => {
+    appliedFilter(selected);
+    handleClose();
+    setSelected({
+      supervisor: '',
+      projectTrack: '',
+    });
   };
   const style = {
     position: 'absolute' as 'absolute',
@@ -36,35 +59,56 @@ function FilterModalMessage({ open, handleClose, filters }: Props) {
         <Box sx={style}>
           <Stack direction="column" gap={4}>
             <Typography>فلتر</Typography>
-            {filters?.map((item, index) => (
-              // <TextField fullWidth select label={item.name} key={index}>
-              //   {item.options.map((option, optionIndex) => (
-              //     <option key={optionIndex} value={option.label} style={{ padding: 1 }}>
-              //       {option.label} - {option.Role}
-              //     </option>
-              //   ))}
-              // </TextField>
+            {supervisors && (
               <TextField
-                key={index}
-                label={item.name}
+                label={supervisors.name}
                 InputLabelProps={{ shrink: true }}
                 SelectProps={{ native: true }}
                 select
                 fullWidth
-                value={selected}
-                onChange={handleChange}
+                // value={selected}
+                onChange={(event) => {
+                  setSelected({
+                    ...selected,
+                    supervisor: event.target.value,
+                  });
+                }}
               >
-                {item.options.map((option, index) => (
+                <option value="">اختر</option>
+                {supervisors.options.map((option, index) => (
                   <option key={index} value={option.value} style={{ backgroundColor: '#fff' }}>
                     {option.label} {option.Role !== undefined && `- ${option.Role}`}
                   </option>
                 ))}
               </TextField>
-            ))}
+            )}
 
+            {projectTracks && (
+              <TextField
+                label={projectTracks.name}
+                InputLabelProps={{ shrink: true }}
+                SelectProps={{ native: true }}
+                select
+                fullWidth
+                // value={selected}
+                onChange={(event) => {
+                  setSelected({
+                    ...selected,
+                    projectTrack: event.target.value,
+                  });
+                }}
+              >
+                <option value="">اختر</option>
+                {projectTracks.options.map((option, index) => (
+                  <option key={index} value={option.value} style={{ backgroundColor: '#fff' }}>
+                    {option.label}
+                  </option>
+                ))}
+              </TextField>
+            )}
             <Stack direction="row" justifyContent="center">
               <Button onClick={handleClose}>رجوع</Button>
-              <Button onClick={handleClose}>تأكيد</Button>
+              <Button onClick={handleSubmit}>تأكيد</Button>
             </Stack>
           </Stack>
         </Box>

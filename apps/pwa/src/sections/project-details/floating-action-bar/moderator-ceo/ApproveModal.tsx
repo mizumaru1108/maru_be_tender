@@ -1,6 +1,5 @@
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, CircularProgress, Stack, Typography } from '@mui/material';
-import { on } from 'events';
 
 type Props = {
   action: 'accept' | 'reject';
