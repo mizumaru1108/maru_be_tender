@@ -1,11 +1,11 @@
 import axios from 'axios';
 // config
-import { UPLOAD_API } from '../config';
+import { TMRA_RAISE_URL } from '../config';
 
 // ----------------------------------------------------------------------
 
 const axiosInstance = axios.create({
-  baseURL: UPLOAD_API,
+  baseURL: TMRA_RAISE_URL,
 });
 
 axiosInstance.interceptors.response.use(
