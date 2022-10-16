@@ -50,20 +50,20 @@ export const ApproveProposalFormFields = [
       </>
     ),
   },
-  {
-    type: 'textArea',
-    name: 'procedures',
-    label: 'الإجراءات',
-    xs: 12,
-    placeholder: 'الإجراءات',
-  },
-  {
-    type: 'textArea',
-    name: 'supportOutputs',
-    label: 'المخرجات الداعمة',
-    xs: 12,
-    placeholder: 'المخرجات الداعمة',
-  },
+  // {
+  //   type: 'textArea',
+  //   name: 'procedures',
+  //   label: 'الإجراءات',
+  //   xs: 12,
+  //   placeholder: 'الإجراءات',
+  // },
+  // {
+  //   type: 'textArea',
+  //   name: 'supportOutputs',
+  //   label: 'المخرجات الداعمة',
+  //   xs: 12,
+  //   placeholder: 'المخرجات الداعمة',
+  // },
 ] as Array<FormSingleProps>;
 
 export const RejectProposalFormFields = [

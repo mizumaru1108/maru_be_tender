@@ -164,6 +164,12 @@ function MainManagerPage() {
         };
       });
 
+      // const resultFilter = resultDataInfoUpdate.filter(
+      //   (v: { id: any }, i: any, a: any[]) =>
+      //     a.findIndex((t: { id: string }) => t.id === v.id) === i
+      // );
+
+      // setInfoUpdateRequest(resultFilter);
       setInfoUpdateRequest(resultDataInfoUpdate);
     }
   }, [
