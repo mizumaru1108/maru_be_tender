@@ -18,6 +18,9 @@ const PreviouseSupportRequests = Loadable(
 );
 const PortalReports = Loadable(lazy(() => import('pages/PortalReports')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
+const AmandementRequest = Loadable(
+  lazy(() => import('pages/amandement-request/AmandementRequest'))
+);
 
 const NonClientProfile = Loadable(
   lazy(() => import('sections/non-client-profile/NonClientProfile'))
@@ -81,9 +84,12 @@ export const moderatorRoute = {
         },
         {
           path: 'incoming-support-requests',
-          // element: <IncomingSupportRequests />,
           children: [
             { path: '', element: <IncomingSupportRequests /> },
+            {
+              path: ':id/amandementRequest',
+              element: <AmandementRequest />,
+            },
             {
               path: ':id/:actionType',
               children: [

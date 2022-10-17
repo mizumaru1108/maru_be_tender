@@ -17,25 +17,21 @@ export interface ModeratoeCeoFloatingActionBarProps {
   organizationId: string;
 }
 
-// create log for ceo and moderator when accept and reject proposal
-export interface ceoAndModeratorProposalLogPayload {
+// create log for ceo when accept and reject proposal
+export interface ceoProposalLogPayload {
   id: string; // generate by nano id
   proposal_id: string; // from the proposal it self
   reviewer_id: string; // user id of current user (moderator/ceo)
   organization_id: string; // user id on the proposal data
-  inner_status:
-    | 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION'
-    | 'ACCEPTED_BY_MODERATOR'
-    | 'REJECTED_BY_CEO_WITH_COMMENT'
-    | 'REJECTED_BY_MODERATOR';
+  inner_status: 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION' | 'REJECTED_BY_CEO_WITH_COMMENT';
   outter_status: 'CANCELED' | 'ONGOING';
-  state: 'CEO' | 'MODERATOR' | 'PROJECT_SUPERVISOR';
+  state: 'CEO' | 'PROJECT_SUPERVISOR';
   procedures?: string;
   notes?: string;
 }
 
-export interface ceoAndModeratorApproveRejectVariables {
-  proposalLogPayload: ceoAndModeratorProposalLogPayload;
+export interface ceoApproveRejectVariables {
+  proposalLogPayload: ceoProposalLogPayload;
   updateProposalStatusAndStatePayloads: updateProposalStatusAndState;
   proposalId: string;
 }

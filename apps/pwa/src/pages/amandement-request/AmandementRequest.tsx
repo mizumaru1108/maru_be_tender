@@ -1,40 +1,32 @@
-import { useEffect, useState } from 'react';
 // material
 import {
-  Container,
-  styled,
-  Typography,
-  Button,
-  Stack,
   Box,
-  useTheme,
+  Button,
+  Container,
   Divider,
   Grid,
-  Skeleton,
+  Stack,
+  styled,
+  Typography,
+  useTheme,
 } from '@mui/material';
 // components
-import Page from 'components/Page';
 import Iconify from 'components/Iconify';
+import Page from 'components/Page';
 // hooks
-import * as Yup from 'yup';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useParams, useNavigate } from 'react-router-dom';
-import useLocales from 'hooks/useLocales';
-import { useQuery, useMutation } from 'urql';
-import { detailsClientData, sendAmandmentNotes } from 'queries/account_manager/detailsClientData';
-import { useSnackbar } from 'notistack';
 import { FormProvider } from 'components/hook-form';
 import RHFTextArea from 'components/hook-form/RHFTextArea';
-import { nanoid } from 'nanoid';
 import useAuth from 'hooks/useAuth';
-//
+import { useSnackbar } from 'notistack';
+import { useForm } from 'react-hook-form';
+import { useNavigate, useParams } from 'react-router-dom';
+import * as Yup from 'yup';
 
+import { useEffect } from 'react';
 import { PATH_ACCOUNTS_MANAGER } from 'routes/paths';
-
-export type SendAmandmentNotesProps = {
-  notes: string;
-};
+import { BaseAmandementRequest } from './types';
+import useLocales from '../../hooks/useLocales';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -45,17 +37,27 @@ const ContentStyle = styled('div')(({ theme }) => ({
   rowGap: 24,
 }));
 
+type ValueMapper = {
+  [key: string]: {
+    page_name: string;
+    headline: string;
+    sub_headline: string;
+  };
+};
+
+// export default function AmandementRequest({ onSubmit, children }: AmandementRequestProps) {
 export default function AmandementRequest() {
+  const { currentLang, translate } = useLocales();
+
+  const { user } = useAuth();
+  const role = user?.registrations[0].roles[0] as string;
+
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
-  const { user } = useAuth();
 
   // Routes
-  const params = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
-
-  // Language
-  const { currentLang, translate } = useLocales();
 
   // Note Amandment Request
   const sendNotesSchema = Yup.object().shape({
@@ -66,7 +68,7 @@ export default function AmandementRequest() {
     notes: '',
   };
 
-  const methods = useForm<SendAmandmentNotesProps>({
+  const methods = useForm<BaseAmandementRequest>({
     resolver: yupResolver(sendNotesSchema),
     defaultValues,
   });
@@ -76,12 +78,72 @@ export default function AmandementRequest() {
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmit = async (values: SendAmandmentNotesProps) => {
-    console.log(values);
+  // use effect to list params
+  useEffect(() => {
+    console.log('params', id);
+    console.log('role', role);
+  }, [id, role]);
+
+  const valueMapper: ValueMapper = {
+    cluster_admin: {
+      page_name: 'Amandement Request',
+      headline: 'Amandement Request',
+      sub_headline: translate('proposal_amandement.moderator.headline'),
+    },
+    tender_accounts_manager: {
+      page_name: 'Tender Accounts Manager',
+      headline: 'Tender Accounts Manager',
+      sub_headline: translate('proposal_amandement.moderator.headline'),
+    },
+    tender_admin: {
+      page_name: 'Tender Admin',
+      headline: 'Tender Admin',
+      sub_headline: translate('proposal_amandement.moderator.headline'),
+    },
+    tender_ceo: {
+      page_name: translate('proposal_amandement.ceo.page_name'),
+      headline: translate('proposal_amandement.ceo.headline'),
+      sub_headline: translate('proposal_amandement.ceo.sub_headline'),
+    },
+    tender_cashier: {
+      page_name: 'Tender Cashier',
+      headline: 'Tender Cashier',
+      sub_headline: translate('proposal_amandement.moderator.headline'),
+    },
+    tender_client: {
+      page_name: 'Tender Client',
+      headline: 'Tender Client',
+      sub_headline: translate('proposal_amandement.moderator.headline'),
+    },
+    tender_consultant: {
+      page_name: 'Tender Consultant',
+      headline: 'Tender Consultant',
+      sub_headline: translate('proposal_amandement.moderator.headline'),
+    },
+    tender_finance: {
+      page_name: translate('proposal_amandement.moderator.headline'),
+      headline: translate('proposal_amandement.moderator.headline'),
+      sub_headline: translate('proposal_amandement.moderator.headline'),
+    },
+    tender_moderator: {
+      page_name: translate('proposal_amandement.moderator.page_name'),
+      headline: translate('proposal_amandement.moderator.headline'),
+      sub_headline: translate('proposal_amandement.moderator.sub_headline'),
+    },
+    tender_project_manager: {
+      page_name: 'Tender Project Manager',
+      headline: 'Tender Project Manager',
+      sub_headline: translate('proposal_amandement.moderator.headline'),
+    },
+    tender_project_supervisor: {
+      page_name: 'Tender Project Supervisor',
+      headline: 'Tender Project Supervisor',
+      sub_headline: translate('proposal_amandement.moderator.headline'),
+    },
   };
 
   return (
-    <Page title="Partner Amandement Request">
+    <Page title={valueMapper[role].page_name}>
       <Container>
         <ContentStyle>
           <Stack
@@ -110,11 +172,9 @@ export default function AmandementRequest() {
                 />
               </Button>
               <Box>
-                <Typography variant="h4">
-                  {translate('account_manager.heading.amandment_request')}
-                </Typography>
+                <Typography variant="h4">{valueMapper[role].headline}</Typography>
                 <Typography variant="subtitle1" component="p" sx={{ color: '#93A3B0' }}>
-                  {translate('account_manager.heading.subhead_amandment_request')}
+                  {valueMapper[role].sub_headline}
                 </Typography>
               </Box>
             </Box>
@@ -122,7 +182,7 @@ export default function AmandementRequest() {
           <Divider sx={{ mb: 4 }} />
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+              <FormProvider methods={methods}>
                 <RHFTextArea
                   name="notes"
                   label={translate('account_manager.partner_details.form.amndreq_label')}

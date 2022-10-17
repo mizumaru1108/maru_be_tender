@@ -21,6 +21,9 @@ const PaymentAdjustmenProjectSupervisor = Loadable(
 const PortalReportsProjectSupervisor = Loadable(lazy(() => import('pages/PortalReports')));
 const MessagesProjectSupervisor = Loadable(lazy(() => import('pages/project-supervisor/Messages')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
+const AmandementRequest = Loadable(
+  lazy(() => import('pages/amandement-request/AmandementRequest'))
+);
 
 const NonClientProfile = Loadable(
   lazy(() => import('sections/non-client-profile/NonClientProfile'))
@@ -53,6 +56,10 @@ export const projectSupervisorRoute = {
       children: [
         { path: '', element: <Searching /> },
         {
+          path: ':id/amandementRequest',
+          element: <AmandementRequest />,
+        },
+        {
           path: ':id/:actionType',
           children: [
             { path: 'main', element: <ProjectDetails /> },
@@ -73,6 +80,10 @@ export const projectSupervisorRoute = {
           children: [
             { path: '', element: <IncomingFundingRequestsProjectSupervisor /> },
             {
+              path: ':id/amandementRequest',
+              element: <AmandementRequest />,
+            },
+            {
               path: ':id/:actionType',
               children: [
                 { path: 'main', element: <ProjectDetails /> },
@@ -88,6 +99,10 @@ export const projectSupervisorRoute = {
           path: 'requests-in-process',
           children: [
             { path: '', element: <RequestsInProcessProjectSupervisor /> },
+            {
+              path: ':id/amandementRequest',
+              element: <AmandementRequest />,
+            },
             {
               path: ':id/:actionType',
               children: [
@@ -105,6 +120,10 @@ export const projectSupervisorRoute = {
           children: [
             { path: '', element: <PreviousFundingRequestsProjectSupervisor /> },
             {
+              path: ':id/amandementRequest',
+              element: <AmandementRequest />,
+            },
+            {
               path: ':id/:actionType',
               children: [
                 { path: 'main', element: <ProjectDetails /> },
@@ -120,6 +139,10 @@ export const projectSupervisorRoute = {
           path: 'payment-adjustment',
           children: [
             { path: '', element: <PaymentAdjustmenProjectSupervisor /> },
+            {
+              path: ':id/amandementRequest',
+              element: <AmandementRequest />,
+            },
             {
               path: ':id/:actionType',
               children: [
