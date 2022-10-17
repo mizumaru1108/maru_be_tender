@@ -12,13 +12,13 @@ export const ApproveProposalFormFieldsProjectManager = [
     xs: 12,
     placeholder: 'اكتب الاجراءات هنا',
   },
-  {
-    type: 'textArea',
-    name: 'notes',
-    label: 'notes',
-    xs: 12,
-    placeholder: 'notes',
-  },
+  // {
+  //   type: 'textArea',
+  //   name: 'notes',
+  //   label: 'notes',
+  //   xs: 12,
+  //   placeholder: 'notes',
+  // },
 ] as Array<FormSingleProps>;
 
 export const RejectProposalFormFieldsProjectManager = [
