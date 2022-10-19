@@ -80,31 +80,37 @@ export class TenderService {
       },
     });
 
-    console.log('user', user);
+    // console.log('user', user);
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 
-    const client = await this.prismaService.client_data.findFirstOrThrow({
+    const client = await this.prismaService.client_data.findFirst({
       where: {
         email: user.email,
       },
     });
+    // console.log('client', client);
+    if (!client) {
+      throw new HttpException('Client not found', HttpStatus.NOT_FOUND);
+    }
 
-    const result = await this.prismaService.client_data.update({
-      where: { id: client.id },
+    // there's enum on table edit_request_status, with id of "WAITING_FOR_EDITING_APPROVAL", and value of "Waiting for editing approval"
+    // replace / edit value on table client_data.client_status with that "WAITING_FOR_EDITING_APPROVAL" and "Waiting for editing approval"
+    const updateClient = await this.prismaService.client_data.update({
+      where: {
+        id: client.id,
+      },
       data: {
         client_status: {
-          update: {
+          connect: {
             id: 'WAITING_FOR_EDITING_APPROVAL',
-            title: 'Waiting for editing approval',
           },
         },
       },
     });
 
-    if (!result) {
+    if (!updateClient) {
       throw new Error('something went wrong when updating client data');
     }
-    console.log('result', result);
-    return result;
+    return updateClient;
   }
 }
