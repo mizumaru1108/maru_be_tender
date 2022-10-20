@@ -358,7 +358,7 @@ export class CampaignController {
     status: 201,
     description: 'The Campaign has been successfully created.',
   })
-  @Permissions(Permission.OE)
+  @Permissions(Permission.OE || Permission.NF )
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @Post('campaignCreate')
   async campaignCreate(
@@ -366,6 +366,7 @@ export class CampaignController {
     @Body() request: CampaignCreateDto,
   ): Promise<BaseResponse<CampaignCreateResponse>> {
     this.logger.debug('create new campaign ', JSON.stringify(request));
+    request.campaignName = request.title ? request.title : request.campaignName;
     const response = await this.campaignService.campaignCreate(
       user.id,
       request,

@@ -19,4 +19,8 @@ export enum Permission {
    * Used for GLOBAL EDIT (can edit and view all the data)
    */
   MO = 'manager_only',
+  /**
+   * Used for Giving Sadakah user (Organization)
+   */
+  NF = 'nonprofit_only',
 }

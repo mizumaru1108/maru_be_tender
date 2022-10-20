@@ -45,4 +45,20 @@ export class PermissionManagerController {
       `Successfully modified vendor permission for ${request.userId} to organization ${request.organizationId} !`,
     );
   }
+
+  @Permissions(Permission.MO)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Post('assign/nonprofit')
+  async assignNonprofit(
+    @Body() request: UpsertUserPermission,
+  ): Promise<BaseResponse<Relationship>> {
+    const response = await this.permissionManagerService.grantNonprofitPermission(
+      request,
+    );
+    return baseResponseHelper(
+      response,
+      HttpStatus.CREATED,
+      `Successfully modified nonprofit permission for ${request.userId} to organization ${request.organizationId} !`,
+    );
+  }
 }

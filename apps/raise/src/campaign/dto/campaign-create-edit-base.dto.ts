@@ -7,6 +7,7 @@ import {
   IsIn,
   IsArray,
   ValidateNested,
+  IsBoolean,
 } from 'class-validator';
 import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
 import { CreateMilestoneDto } from './create-milestone.dto';
@@ -22,12 +23,14 @@ export class CampaignCreateEditBaseDto {
   organizationId: string;
 
   @ApiProperty()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   @ValidateObjectIdDecorator()
-  projectId: string;
-
+  projectId?: string;
+  
   @ApiProperty()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   campaignName: string;
@@ -77,10 +80,34 @@ export class CampaignCreateEditBaseDto {
   @IsString()
   @IsNotEmpty()
   isPublished?: string;
-
+  
   @ApiProperty()
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateMilestoneDto)
   milestone: CreateMilestoneDto[];
+ 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  creatorUserId?: string;
+ 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  islamCharityType?: string;
+ 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  marketingPlanEnabled?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  marketingPlan?: string;
 }
