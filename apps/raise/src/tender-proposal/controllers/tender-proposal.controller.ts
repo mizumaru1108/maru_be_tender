@@ -1,9 +1,9 @@
 import { Body, Controller, Patch, Post, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt.guard';
-import { CurrentUser } from '../commons/decorators/current-user.decorator';
-import { ICurrentUser } from '../user/interfaces/current-user.interface';
-import { ChangeProposalStateDto } from './dtos/requests/change-proposal-state.dto';
-import { TenderProposalService } from './tender-proposal.service';
+import { JwtAuthGuard } from '../../auth/jwt.guard';
+import { CurrentUser } from '../../commons/decorators/current-user.decorator';
+import { ICurrentUser } from '../../user/interfaces/current-user.interface';
+import { ChangeProposalStateDto } from '../dtos/requests/change-proposal-state.dto';
+import { TenderProposalService } from '../services/tender-proposal.service';
 
 @Controller('tender-proposal')
 export class TenderProposalController {

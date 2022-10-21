@@ -15,4 +15,9 @@ export class ChangeProposalStateDto {
   @IsNotEmpty()
   @IsUUID()
   organization_id: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  track_name: string;
 }
