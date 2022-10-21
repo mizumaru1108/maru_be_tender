@@ -28,6 +28,8 @@ function BaseField({
   children,
   repeaterFields,
   options,
+  maxDate,
+  minDate,
 }: FormSingleProps) {
   const { translate } = useLocales();
   return (
@@ -44,7 +46,14 @@ function BaseField({
           {children}
         </RHFSelect>
       )}
-      {type === 'datePicker' && <RHFDatePicker name={name ?? ''} label={translate(label)} />}
+      {type === 'datePicker' && (
+        <RHFDatePicker
+          name={name ?? ''}
+          label={translate(label)}
+          minDate={minDate}
+          maxDate={maxDate}
+        />
+      )}
       {type === 'textField' && (
         <RHFTextField
           name={name ?? ''}

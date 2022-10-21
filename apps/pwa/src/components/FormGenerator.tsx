@@ -34,6 +34,8 @@ export interface FormSingleProps {
     label: string;
     value: any;
   }[];
+  maxDate?: string;
+  minDate?: string;
 }
 
 // ----------------------------------------------------------------------

@@ -9,7 +9,6 @@ const styles = {
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
     backgroundSize: 'inherit',
-    backgroundImage: `url(${BankImage})`,
     width: '100%',
     height: '180px',
     padding: '10px',
@@ -31,7 +30,17 @@ const BankImageComp = ({
   imageUrl,
 }: Props) => (
   <Stack direction="column" gap={1} sx={{ height: '270px' }} justifyContent="center">
-    <Paper style={styles.paperContainer}>
+    <Paper
+      style={{
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        backgroundSize: '100% 100%',
+        width: '100%',
+        height: '180px',
+        padding: '10px',
+        backgroundImage: `url(${imageUrl ? imageUrl : BankImage})`,
+      }}
+    >
       <Stack direction="column" sx={{ color: '#fff' }}>
         <Typography sx={{ fontSize: '10px', mb: '30px' }}>{bankName}</Typography>
         <Typography sx={{ fontSize: '15px', mb: '10px' }}>{bankAccountName}</Typography>

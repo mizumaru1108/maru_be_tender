@@ -36,6 +36,10 @@ import {
   DonationLogsDocument,
 } from '../donation/schema/donation_log.schema';
 import {
+  DonationLog,
+  DonationLogDocument,
+} from '../donation/schema/donation-log.schema';
+import {
   PaymentData,
   PaymentDataDocument,
 } from '../donation/schema/paymentData.schema';
@@ -63,6 +67,8 @@ export class PaymentStripeService {
     private anonymousModel: mongoose.Model<AnonymousDocument>,
     @InjectModel(DonationLogs.name)
     private donationLogsModel: mongoose.Model<DonationLogsDocument>,
+    @InjectModel(DonationLog.name)
+    private donationLogModel: mongoose.Model<DonationLogDocument>,
     @InjectModel(Notifications.name)
     private notificationsModel: mongoose.Model<NotificationsDocument>,
     @InjectModel(NotificationSettings.name)
@@ -295,7 +301,7 @@ export class PaymentStripeService {
       //insert data to donation_log
       let objectIdDonation = new ObjectId();
       let now: Date = new Date();
-      const getDonationLog = await new this.donationLogsModel({
+      const getDonationLog = await new this.donationLogModel({
         _id: objectIdDonation,
         nonprofitRealmId: ObjectId(payment.organizationId),
         donorUserId: isAnonymous ? '' : payment.donorId,
@@ -509,7 +515,7 @@ export class PaymentStripeService {
       }
 
       let donationId = paymentData.donationId;
-      const getDonationLog = await this.donationLogsModel.findOne(
+      const getDonationLog = await this.donationLogModel.findOne(
         {
           _id: donationId,
         },
@@ -551,7 +557,7 @@ export class PaymentStripeService {
 
       // Get Donor Data
       const donor = await this.userModel.findOne(
-        { _id: getDonationLog.donorUserId },
+        { _id: getDonationLog.donorId },
         {
           _id: 0,
           firstName: 1,
@@ -583,7 +589,7 @@ export class PaymentStripeService {
 
       let now: Date = new Date();
       if (paymentStatus == 'SUCCESS') {
-        const updateDonationLog = await this.donationLogsModel.updateOne(
+        const updateDonationLog = await this.donationLogModel.updateOne(
           { _id: donationId },
           { donationStatus: paymentStatus, updatedAt: now },
         );
@@ -1472,7 +1478,6 @@ export class PaymentStripeService {
       let isAnonymous = false;
       let donor = null;
       let currency = payment.currency;
-
       const ObjectId = require('mongoose').Types.ObjectId;
       // console.log('Log Stripe Reg=>', payment);
       if (
@@ -1622,14 +1627,16 @@ export class PaymentStripeService {
       //insert data to donation_log
       let objectIdDonation = new ObjectId();
       let now: Date = new Date();
-      const getDonationLog = await new this.donationLogsModel({
+      const getDonationLog = await new this.donationLogModel({
         _id: objectIdDonation,
-        nonprofitRealmId: ObjectId(payment.organizationId),
-        donorUserId: isAnonymous ? '' : payment.donorId,
+        // organizationId: ObjectId(payment.organizationId),
+        organizationId: payment.organizationId,
+        donorId: isAnonymous ? '' : payment.donorId,
         amount: Number(amount),
         transactionId: data['data']['payment_intent'],
         createdAt: now,
         updatedAt: now,
+        paymentGatewayId: "4",
         campaignId: ObjectId(payment.campaignId),
         currency: currency,
         donationStatus: 'PENDING',
@@ -1701,22 +1708,22 @@ export class PaymentStripeService {
     const status = payLoad.data.object.status;
     let now: Date = new Date();
     if (payment_status == 'paid') {
-      const getDonationLog = await this.donationLogsModel.findOne(
+      const getDonationLog = await this.donationLogModel.findOne(
         { transactionId: transactionId },
         {
           _id: 1,
           campaignId: 1,
           currency: 1,
           amount: 1,
-          donorUserId: 1,
-          nonprofitRealmId: 1,
+          donorId: 1,
+          organizationId: 1,
         },
       );
       if (!getDonationLog) {
         throw new HttpException(`Donation Log not found`, HttpStatus.NOT_FOUND);
       }
 
-      const { _id, campaignId, donorUserId, nonprofitRealmId } = getDonationLog;
+      const { _id, campaignId, donorId, organizationId } = getDonationLog;
 
       const getCampaign = await this.campaignModel.findOne(
         { _id: campaignId },
@@ -1726,7 +1733,7 @@ export class PaymentStripeService {
         throw new HttpException(`Campaign not found`, HttpStatus.NOT_FOUND);
       }
 
-      const donor = await this.userModel.findOne({ _id: donorUserId });
+      const donor = await this.userModel.findOne({ _id: donorId });
       // Get Anonymous Data
       let anonymousData;
       if (!donor) {
@@ -1743,7 +1750,7 @@ export class PaymentStripeService {
         );
       }
 
-      const updateDonationLog = await this.donationLogsModel.updateOne(
+      const updateDonationLog = await this.donationLogModel.updateOne(
         { _id: _id },
         { donationStatus: 'SUCCESS', updatedAt: now },
       );
@@ -1754,6 +1761,7 @@ export class PaymentStripeService {
       //update  amountProgress with current donation amount
       const amountStr = payLoad.data.object.amount_total.toString();
       console.log('Amount', amountStr);
+      console.log('Amount2', amountStr.substring(0, amountStr.length - 2));
 
       const lastAmount = (
         Number(getCampaign.amountProgress) +
@@ -1761,10 +1769,10 @@ export class PaymentStripeService {
       ).toString();
 
       const notifSettings = await this.notifSettingsModel.findOne({
-        organizationId: nonprofitRealmId,
+        organizationId: organizationId,
       });
       const getOrganization = await this.organizationModel.findOne({
-        _id: nonprofitRealmId,
+        _id: organizationId,
       });
 
       if (getOrganization && notifSettings) {
@@ -1848,7 +1856,7 @@ export class PaymentStripeService {
         );
 
         this.notificationsModel.create({
-          organizationId: nonprofitRealmId,
+          organizationId: organizationId,
           type: 'general',
           createdAt: new Date(),
           title: 'Campaign is completed',

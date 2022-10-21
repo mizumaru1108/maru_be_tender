@@ -1,5 +1,5 @@
 import { FormSingleProps } from 'components/FormGenerator';
-import { GOVERNORATES, REGIONS } from 'sections/auth/register/RegisterFormData';
+import { REGION } from '../../../../_mock/region';
 
 export const MainFormData = [
   {
@@ -25,7 +25,7 @@ export const MainFormData = [
     xs: 12,
     children: (
       <>
-        {REGIONS.map((item, index) => (
+        {Object.keys(REGION).map((item, index) => (
           <option key={index} value={item} style={{ backgroundColor: '#fff' }}>
             {item}
           </option>
@@ -40,6 +40,7 @@ export const MainFormData = [
     placeholder: 'funding_project_request_form1.project_applying_date.placeholder',
     md: 6,
     xs: 12,
+    minDate: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0],
   },
   {
     type: 'textField',
@@ -146,66 +147,6 @@ export const ProjectInfoData = [
   },
 ] as Array<FormSingleProps>;
 
-export const ConnectingInfoData = [
-  {
-    type: 'textField',
-    name: 'pm_name',
-    label: 'funding_project_request_form3.project_manager_name.label',
-    placeholder: 'funding_project_request_form3.project_manager_name.placeholder',
-    xs: 12,
-  },
-  {
-    type: 'textField',
-    name: 'pm_mobile',
-    label: 'funding_project_request_form3.mobile_number.label',
-    placeholder: 'funding_project_request_form3.mobile_number.placeholder',
-    md: 6,
-    xs: 12,
-  },
-  {
-    type: 'textField',
-    name: 'pm_email',
-    label: 'funding_project_request_form3.email.label',
-    placeholder: 'funding_project_request_form3.email.placeholder',
-    md: 6,
-    xs: 12,
-  },
-  {
-    type: 'select',
-    name: 'region',
-    label: 'funding_project_request_form3.region.label',
-    placeholder: 'funding_project_request_form3.region.placeholder',
-    md: 6,
-    xs: 12,
-    children: (
-      <>
-        {REGIONS.map((item, index) => (
-          <option key={index} value="item" style={{ backgroundColor: '#fff' }}>
-            {item}
-          </option>
-        ))}
-      </>
-    ),
-  },
-  {
-    type: 'select',
-    name: 'governorate',
-    label: 'funding_project_request_form3.city.label',
-    placeholder: 'funding_project_request_form3.city.placeholder',
-    md: 6,
-    xs: 12,
-    children: (
-      <>
-        {GOVERNORATES.map((item, index) => (
-          <option key={index} value="item" style={{ backgroundColor: '#fff' }}>
-            {item}
-          </option>
-        ))}
-      </>
-    ),
-  },
-] as Array<FormSingleProps>;
-
 export const ProjectBudgetData = [
   {
     type: 'textField',
@@ -271,6 +212,13 @@ export const AddBankData = [
     name: 'bank_name',
     label: 'funding_project_request_form6.bank_name.label',
     placeholder: 'funding_project_request_form6.bank_name.placeholder',
+    md: 12,
+    xs: 12,
+  },
+  {
+    type: 'uploadLabel',
+    name: '',
+    label: 'صورة بطاقة الحساب البنكي*',
     md: 12,
     xs: 12,
   },

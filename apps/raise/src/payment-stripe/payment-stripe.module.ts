@@ -21,6 +21,10 @@ import {
   DonationLogsSchema,
 } from '../donation/schema/donation_log.schema';
 import {
+  DonationLog,
+  DonationLogSchema,
+} from '../donation/schema/donation-log.schema';
+import {
   PaymentData,
   PaymentDataSchema,
 } from '../donation/schema/paymentData.schema';
@@ -46,6 +50,10 @@ import { PaymentStripeService } from './payment-stripe.service';
       {
         name: DonationLogs.name,
         schema: DonationLogsSchema,
+      },
+      {
+        name: DonationLog.name,
+        schema: DonationLogSchema,
       },
       {
         name: Donor.name,

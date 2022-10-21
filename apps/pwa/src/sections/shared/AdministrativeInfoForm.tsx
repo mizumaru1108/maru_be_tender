@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { Grid } from '@mui/material';
+import { Button, Grid, Stack } from '@mui/material';
 import { FormProvider } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -8,12 +8,13 @@ import { AdministrativeInfoData } from '../auth/register/RegisterFormData';
 import { AdministrativeValuesProps } from './types';
 
 type FormProps = {
-  children?: React.ReactNode;
+  onReturn: () => void;
   onSubmit: (data: any) => void;
   defaultValues: AdministrativeValuesProps;
+  done: boolean;
 };
 
-const AdministrativeInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
+const AdministrativeInfoForm = ({ onSubmit, defaultValues, onReturn, done }: FormProps) => {
   const RegisterSchema = Yup.object().shape({
     ceo_name: Yup.string().required('Executive Director is required'),
     ceo_mobile: Yup.string()
@@ -41,8 +42,10 @@ const AdministrativeInfoForm = ({ children, onSubmit, defaultValues }: FormProps
   const {
     handleSubmit,
     formState: { isSubmitting },
+    watch,
   } = methods;
 
+  const agree_on = watch('agree_on');
   const onSubmitForm = async (data: AdministrativeValuesProps) => {
     onSubmit(data);
   };
@@ -52,7 +55,33 @@ const AdministrativeInfoForm = ({ children, onSubmit, defaultValues }: FormProps
       <Grid container rowSpacing={4} columnSpacing={7}>
         <FormGenerator data={AdministrativeInfoData} />
         <Grid item md={12} xs={12}>
-          {children}
+          <Stack justifyContent="center" direction="row" gap={2}>
+            <Button
+              onClick={() => {
+                if (onReturn !== undefined) onReturn();
+              }}
+              sx={{
+                color: '#000',
+                size: 'large',
+                width: { xs: '100%', sm: '200px' },
+                hieght: { xs: '100%', sm: '50px' },
+              }}
+            >
+              رجوع
+            </Button>
+            <Button
+              type="submit"
+              sx={{
+                backgroundColor: 'background.paper',
+                color: '#fff',
+                width: { xs: '100%', sm: '200px' },
+                hieght: { xs: '100%', sm: '50px' },
+              }}
+              disabled={agree_on ? false : true}
+            >
+              {done ? 'تأكيد' : 'التالي'}
+            </Button>
+          </Stack>
         </Grid>
       </Grid>
     </FormProvider>

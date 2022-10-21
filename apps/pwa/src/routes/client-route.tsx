@@ -78,29 +78,23 @@ export const clientRoute = {
           ],
         },
         {
+          path: 'previous-funding-requests/:id/:actionType',
+          children: [
+            { path: 'main', element: <ProjectDetails /> },
+            { path: 'project-budget', element: <ProjectDetails /> },
+            { path: 'follow-ups', element: <ProjectDetails /> },
+            { path: 'payments', element: <ProjectDetails /> },
+          ],
+        },
+        {
           path: 'previous-funding-requests',
           element: (
             <CheakClientActivation>
               <PreviousFundingRequests />,
             </CheakClientActivation>
           ),
-          children: [
-            {
-              path: ':id/:actionType',
-              children: [
-                { path: 'main', element: <ProjectDetails /> },
-                { path: 'project-budget', element: <ProjectDetails /> },
-                { path: 'follow-ups', element: <ProjectDetails /> },
-                { path: 'payments', element: <ProjectDetails /> },
-              ],
-            },
-          ],
         },
-        { path: 'messages', element: <Messages /> },
-        {
-          path: 'contact-support',
-          element: <ContactSupport />,
-        },
+
         {
           path: 'current-project',
           element: (
@@ -108,17 +102,27 @@ export const clientRoute = {
               <PreviousFundingRequests />,
             </CheakClientActivation>
           ),
+        },
+        {
+          path: 'current-project/:id/:actionType',
           children: [
             {
-              path: ':id/:actionType',
-              children: [
-                { path: 'main', element: <ProjectDetails /> },
-                { path: 'project-budget', element: <ProjectDetails /> },
-                { path: 'follow-ups', element: <ProjectDetails /> },
-                { path: 'payments', element: <ProjectDetails /> },
-              ],
+              path: 'main',
+              element: (
+                <CheakClientActivation>
+                  <ProjectDetails />
+                </CheakClientActivation>
+              ),
             },
+            { path: 'project-budget', element: <ProjectDetails /> },
+            { path: 'follow-ups', element: <ProjectDetails /> },
+            { path: 'payments', element: <ProjectDetails /> },
           ],
+        },
+        { path: 'messages', element: <Messages /> },
+        {
+          path: 'contact-support',
+          element: <ContactSupport />,
         },
       ],
     },
