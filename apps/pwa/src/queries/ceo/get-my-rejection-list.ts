@@ -4,7 +4,7 @@ export const GetMyRejectionList = `
       proposal {
         projectNumber: id
         projectName: project_name
-        projectSection: project_kind_id
+        projectSection: project_track
         associationName: user{
           client_data {
             entity
