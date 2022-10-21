@@ -5,8 +5,9 @@ type PROPS = {
   onReturn: () => void;
   onSavingDraft: () => void;
   lastStep?: boolean;
+  step: number;
 };
-const ActionBox = ({ onReturn, onSavingDraft, lastStep }: PROPS) => (
+const ActionBox = ({ onReturn, onSavingDraft, lastStep, step }: PROPS) => (
   <Stack direction="row" justifyContent="center">
     <Box
       sx={{
@@ -38,6 +39,7 @@ const ActionBox = ({ onReturn, onSavingDraft, lastStep }: PROPS) => (
             borderColor: '#000',
           }}
           onClick={onSavingDraft}
+          disabled={step ? false : true}
         >
           حفظ كمسودة
         </Button>

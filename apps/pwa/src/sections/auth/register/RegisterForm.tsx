@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Step, StepLabel, Typography, Stepper, Box, alpha } from '@mui/material';
+import { Step, StepLabel, Typography, Stepper, Box, alpha, Stack, Link } from '@mui/material';
 import {
   MainForm,
   ConnectingInfoForm,
@@ -19,6 +19,7 @@ import {
 } from '../../shared/types';
 import ActionsBox from './ActionsBox';
 import FinalPage from './final-page';
+import { Link as RouterLink } from 'react-router-dom';
 // ----------------------------------------------------------------------
 
 const taps = [
@@ -76,7 +77,7 @@ export default function RegisterForm() {
   const { translate } = useLocales();
   const isMobile = useResponsive('down', 'sm');
   const [step, setStep] = useState(0);
-
+  const [done, setDone] = useState(false);
   const [registerState, setRegisterState] = useState(initialValue);
 
   const onSubmit1 = (data: MainValuesProps) => {
@@ -88,6 +89,7 @@ export default function RegisterForm() {
         ...data,
       },
     }));
+    if (done) setStep(5);
   };
 
   const onSubmit2 = (data: ConnectingValuesProps) => {
@@ -99,6 +101,7 @@ export default function RegisterForm() {
         ...data,
       },
     }));
+    if (done) setStep(5);
   };
 
   const onSubmit3 = (data: LicenseValuesProps) => {
@@ -110,6 +113,7 @@ export default function RegisterForm() {
         ...data,
       },
     }));
+    if (done) setStep(5);
   };
 
   const onSubmit4 = (data: AdministrativeValuesProps) => {
@@ -121,6 +125,7 @@ export default function RegisterForm() {
         ...data,
       },
     }));
+    if (done) setStep(5);
   };
 
   const onSubmit5 = (data: BankingValuesProps) => {
@@ -132,21 +137,31 @@ export default function RegisterForm() {
         ...data,
       },
     }));
+    setDone(true);
   };
-
   const onReturn = () => {
     if (step > 0) setStep((prevStep) => prevStep - 1);
   };
   return (
     <>
       {step !== 5 && (
-        <Typography
-          variant="h4"
-          gutterBottom
-          sx={{ fontFamily: 'Cairo', fontStyle: 'Bold', mt: 5 }}
-        >
-          {translate('create_new_account')}
-        </Typography>
+        <Stack direction="row" justifyContent="space-between">
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{ fontFamily: 'Cairo', fontStyle: 'Bold', mt: 5 }}
+          >
+            {translate('create_new_account')}
+          </Typography>
+          <Link
+            variant="subtitle2"
+            component={RouterLink}
+            to={'/auth/login'}
+            sx={{ textDecorationLine: 'underline', mt: 5 }}
+          >
+            تسجيل الدخول
+          </Link>
+        </Stack>
       )}
       {step !== 5 && (
         <Box
@@ -175,27 +190,30 @@ export default function RegisterForm() {
       )}
       {step === 0 && (
         <MainForm onSubmit={onSubmit1} defaultValues={registerState.form1}>
-          <ActionsBox onReturn={onReturn} />
+          <ActionsBox done={done} onReturn={onReturn} />
         </MainForm>
       )}
       {step === 1 && (
         <ConnectingInfoForm onSubmit={onSubmit2} defaultValues={registerState.form2}>
-          <ActionsBox onReturn={onReturn} />
+          <ActionsBox done={done} onReturn={onReturn} />
         </ConnectingInfoForm>
       )}
       {step === 2 && (
         <LicenseInfoForm onSubmit={onSubmit3} defaultValues={registerState.form3}>
-          <ActionsBox onReturn={onReturn} />
+          <ActionsBox done={done} onReturn={onReturn} />
         </LicenseInfoForm>
       )}
       {step === 3 && (
-        <AdministrativeInfoForm onSubmit={onSubmit4} defaultValues={registerState.form4}>
-          <ActionsBox onReturn={onReturn} />
-        </AdministrativeInfoForm>
+        <AdministrativeInfoForm
+          onReturn={onReturn}
+          onSubmit={onSubmit4}
+          defaultValues={registerState.form4}
+          done={done}
+        />
       )}
       {step === 4 && (
         <BankingInfoForm onSubmit={onSubmit5} defaultValues={registerState.form5}>
-          <ActionsBox onReturn={onReturn} />
+          <ActionsBox done={done} onReturn={onReturn} />
         </BankingInfoForm>
       )}
       {step === 5 && <FinalPage registerState={registerState} setStep={setStep} />}

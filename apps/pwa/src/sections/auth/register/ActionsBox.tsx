@@ -2,8 +2,9 @@ import { Button, Stack } from '@mui/material';
 
 type Props = {
   onReturn?: () => void;
+  done: boolean;
 };
-const ActionsBox = ({ onReturn }: Props) => (
+const ActionsBox = ({ onReturn, done }: Props) => (
   <Stack justifyContent="center" direction="row" gap={2}>
     <Button
       onClick={() => {
@@ -27,7 +28,7 @@ const ActionsBox = ({ onReturn }: Props) => (
         hieght: { xs: '100%', sm: '50px' },
       }}
     >
-      التالي
+      {done ? 'تأكيد' : 'التالي'}
     </Button>
   </Stack>
 );

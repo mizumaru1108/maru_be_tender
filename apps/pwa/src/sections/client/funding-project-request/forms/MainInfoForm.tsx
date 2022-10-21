@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Grid } from '@mui/material';
 import { FormProvider } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
@@ -26,9 +26,6 @@ type Props = {
 };
 
 const MainInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
   const RegisterSchema = Yup.object().shape({
     project_name: Yup.string().required('Project name required'),
     project_idea: Yup.string().required('Project Idea name required'),
@@ -36,20 +33,34 @@ const MainInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
     project_implement_date: Yup.string().required('Project applying date is required'),
     execution_time: Yup.string().required('Applying duration name required'),
     project_beneficiaries: Yup.string().required('Target group type required'),
-    letter_ofsupport_req: Yup.string().required('Letter support request is required'),
-    project_attachments: Yup.string().required('Project attachments is required'),
+    letter_ofsupport_req: Yup.object().shape({
+      url: Yup.string().required(),
+      size: Yup.number(),
+      type: Yup.string().required(),
+    }),
+    project_attachments: Yup.object().shape({
+      url: Yup.string().required(),
+      size: Yup.number(),
+      type: Yup.string().required(),
+    }),
   });
 
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(RegisterSchema),
-    defaultValues,
+    defaultValues: useMemo(() => defaultValues, [defaultValues]),
   });
 
   const {
     handleSubmit,
     formState: { isSubmitting },
+    reset,
   } = methods;
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    reset(defaultValues);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues]);
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container rowSpacing={4} columnSpacing={7}>

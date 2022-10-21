@@ -4,9 +4,6 @@ import { styled } from '@mui/material/styles';
 import { Box, Stack, Link, Container, Typography } from '@mui/material';
 // routes
 import { PATH_AUTH } from '../../routes/paths';
-// hooks
-import useAuth from '../../hooks/useAuth';
-
 // components
 import Page from '../../components/Page';
 import { ReactComponent as Logo } from '../../assets/logo.svg';
@@ -28,7 +25,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
   minHeight: '100vh',
   display: 'flex',
-  justifyContent: 'start',
+  justifyContent: 'center',
   flexDirection: 'column',
 }));
 
@@ -46,7 +43,7 @@ export default function Login() {
             maxWidth: '600px',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
-            backgroundSize: 'cover',
+            backgroundSize: '100% 100%',
             objectFit: 'none',
             position: 'relative',
           }}

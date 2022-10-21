@@ -116,6 +116,11 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
             name="date_of_esthablistmen"
             label={translate('register_form1.date_of_establishment.label')}
             placeholder={translate('register_form1.date_of_establishment.placeholder')}
+            InputProps={{
+              inputProps: {
+                max: new Date(new Date().setDate(new Date().getDate())).toISOString().split('T')[0],
+              },
+            }}
           />
         </Grid>
         <Grid item md={6} xs={12}>

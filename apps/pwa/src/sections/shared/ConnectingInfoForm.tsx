@@ -1,11 +1,13 @@
 import * as Yup from 'yup';
 import { Grid } from '@mui/material';
-import { FormProvider } from 'components/hook-form';
+import { FormProvider, RHFSelect, RHFTextField } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import FormGenerator from 'components/FormGenerator';
-import { ConnectingInfoData } from '../auth/register/RegisterFormData';
 import { ConnectingValuesProps } from './types';
+import { REGION } from '_mock/region';
+import useLocales from 'hooks/useLocales';
+import { RegionNames } from '../../@types/region';
+import RHFPassword from 'components/hook-form/RHFPassword';
 
 type FormProps = {
   children?: React.ReactNode;
@@ -14,6 +16,7 @@ type FormProps = {
 };
 
 const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
+  const { translate } = useLocales();
   const RegisterSchema = Yup.object().shape({
     region: Yup.string().required('Region name required'),
     governorate: Yup.string().required('City name required'),
@@ -44,16 +47,99 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
   const {
     handleSubmit,
     formState: { isSubmitting },
+    watch,
   } = methods;
 
   const onSubmitForm = async (data: ConnectingValuesProps) => {
     onSubmit(data);
   };
 
+  const region = watch('region') as RegionNames | '';
+
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7}>
-        <FormGenerator data={ConnectingInfoData} />
+        <Grid item md={6} xs={12}>
+          <RHFSelect
+            name="region"
+            label={translate('register_form2.region.label')}
+            placeholder={translate('register_form2.region.placeholder')}
+          >
+            <>
+              {Object.keys(REGION).map((item, index) => (
+                <option key={index} value={item} style={{ backgroundColor: '#fff' }}>
+                  {item}
+                </option>
+              ))}
+            </>
+          </RHFSelect>
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFSelect
+            name="governorate"
+            label={translate('register_form2.city.label')}
+            placeholder={translate('register_form2.city.placeholder')}
+          >
+            {region !== '' && (
+              <>
+                {REGION[`${region}`].map((item: any, index: any) => (
+                  <option key={index} value={item} style={{ backgroundColor: '#fff' }}>
+                    {item}
+                  </option>
+                ))}
+              </>
+            )}
+          </RHFSelect>
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFTextField
+            name="center_administration"
+            label={translate('register_form2.center.label')}
+            placeholder={translate('register_form2.region.placeholder')}
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFTextField
+            name="entity_mobile"
+            label={translate('register_form2.mobile_number.label')}
+            placeholder={translate('register_form2.mobile_number.placeholder')}
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFTextField
+            name="phone"
+            label={translate('register_form2.phone.label')}
+            placeholder={translate('register_form2.phone.placeholder')}
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFTextField
+            name="twitter_acount"
+            label={translate('register_form2.twitter.label')}
+            placeholder={translate('register_form2.twitter.placeholder')}
+          />
+        </Grid>
+        <Grid item md={12} xs={12}>
+          <RHFTextField
+            name="website"
+            label={translate('register_form2.website.label')}
+            placeholder={translate('register_form2.website.placeholder')}
+          />
+        </Grid>
+        <Grid item md={12} xs={12}>
+          <RHFTextField
+            name="email"
+            label={translate('register_form2.email.label')}
+            placeholder={translate('register_form2.email.placeholder')}
+          />
+        </Grid>
+        <Grid item md={12} xs={12}>
+          <RHFPassword
+            name="password"
+            label={translate('register_form2.password.label')}
+            placeholder={translate('register_form2.password.placeholder')}
+          />
+        </Grid>
         <Grid item md={12} xs={12} sx={{ mb: '70px' }}>
           {children}
         </Grid>

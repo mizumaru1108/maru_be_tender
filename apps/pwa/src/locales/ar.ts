@@ -137,12 +137,12 @@ const ar = {
     },
     city: {
       label: 'المحافظة*',
-      placeholder: 'الرجاء اختيار المحافظة*',
+      placeholder: 'الرجاء اختيار المحافظة',
       options: {},
     },
     center: {
       label: 'المركز الإدارة*',
-      placeholder: 'الرجاء اختيار المركز*',
+      placeholder: 'الرجاء اختيار المركز',
       options: {},
     },
     mobile_number: {
