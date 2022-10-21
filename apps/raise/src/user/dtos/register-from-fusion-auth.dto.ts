@@ -1,15 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-  IsString,
-  IsNotEmpty,
-  IsEnum,
-  IsEmpty,
-  IsOptional,
   IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
   ValidateNested,
 } from 'class-validator';
-import { RoleTenderEnum } from '../enums/role-enum';
 
 export class RegisterFromFusionAuthDto {
   @ApiProperty()

@@ -7552,6 +7552,7 @@ __metadata:
     mongoose: ^6.3.0
     mongoose-aggregate-paginate-v2: ^1.0.6
     mongoose-paginate-v2: ^1.7.0
+    nanoid: ^4.0.0
     nodemailer: ^6.7.3
     passport: ^0.5.2
     passport-jwt: ^4.0.0
