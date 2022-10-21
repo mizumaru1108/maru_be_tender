@@ -6,7 +6,7 @@ export interface Proposal {
   submitter_user_id: string;
   created_at: Date | string;
   updated_at: Date | string;
-  project_kind_id?: string;
+  project_track?: string;
   project_idea?: string;
   proejct_implement_date?: Date | null;
   project_location?: string | null;

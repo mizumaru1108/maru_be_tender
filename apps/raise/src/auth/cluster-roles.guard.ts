@@ -14,7 +14,7 @@ import { ICurrentUser } from '../user/interfaces/current-user.interface';
 @Injectable()
 export class ClusterRolesGuard implements CanActivate {
   /**
-   * RolesGuard constructor.
+   * RolesGuard constructor.https://acefile.co/f/72732734/ice-age-scrat-tales-s01e02-zonafilm-in-mp4
    * @param reflector The reflector service.
    */
   constructor(
@@ -26,7 +26,7 @@ export class ClusterRolesGuard implements CanActivate {
    */
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    let currentUser: ICurrentUser = request.user;
+    // let currentUser: ICurrentUser = request.user;
 
     // FIXME: Hendy's note:
     // FusionAuth (cluster)-level roles are read directly from the JWT,
@@ -34,12 +34,11 @@ export class ClusterRolesGuard implements CanActivate {
     // For organization-level roles, they're determined via Authzed,
     // which also in the initial authorization do not require database access,
     // but API call to Authzed instead.
-    request.user = currentUser;
     const type = this.reflector.get<string[]>('type', context.getHandler());
     if (!type) {
       return true;
     }
-    if (type.findIndex((value) => value == currentUser.type) > -1) {
+    if (type.findIndex((value) => value == request.user.type) > -1) {
       return true;
     } else {
       throw new ForbiddenException(

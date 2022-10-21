@@ -18,4 +18,8 @@ export enum AuthzedRelationship {
    * Vendor
    */
   VENDOR = 'vendor',
+  /**
+   * Nonprofit
+   */
+  NONPROFIT = 'nonprofit',
 }

@@ -1,5 +1,5 @@
 export interface ICurrentUser {
   id: string;
   email: string;
-  type?: string;
+  type: string | null;
 }

@@ -11,7 +11,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { RoleTenderEnum } from 'src/user/enums/role-enum';
+import { RoleTenderEnum } from '../../user/enums/role-enum';
 
 export class RegReqTenderDto {
   @ApiProperty()

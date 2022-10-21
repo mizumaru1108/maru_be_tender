@@ -147,7 +147,7 @@ export default function TableAMCustom({
             numSelected={selected.length}
             rowCount={tableData.length}
             onSelectAllRows={(checked) =>
-              onSelectAllRows(checked, tableData.map((row) => row?.partner_name) as string[])
+              onSelectAllRows(checked, tableData.map((row) => row?.id) as string[])
             }
             actions={
               <Tooltip title="Delete">
@@ -169,7 +169,7 @@ export default function TableAMCustom({
             rowCount={tableData.length}
             onSort={onSort}
             onSelectAllRows={(checked) =>
-              onSelectAllRows(checked, tableData.map((row) => row.partner_name) as string[])
+              onSelectAllRows(checked, tableData.map((row) => row.id) as string[])
             }
             sx={{
               minWidth: '100%',
@@ -197,8 +197,8 @@ export default function TableAMCustom({
                   <TableRowsData
                     key={key}
                     row={x}
-                    selected={selected.includes(x.partner_name as string)}
-                    onSelectRow={() => onSelectRow(x.partner_name as string)}
+                    selected={selected.includes(x.id as string)}
+                    onSelectRow={() => onSelectRow(x.id as string)}
                   />
                 ))}
           </TableBody>

@@ -3,9 +3,9 @@ import { useLocation, useParams } from 'react-router';
 import { SupervisorFloatingActionBar } from './supervisor';
 
 import { ProjectManagerFloatingActionBar } from './project-manager';
-import { ModeratoeCeoFloatingActionBar } from './moderator-ceo';
 import { ModeratorFloatingActionBar } from './moderator';
 import { FusionAuthRoles } from '../../../@types/commons';
+import { CeoFloatingActionBar } from './ceo';
 
 function FloatinActonBar({ proposalData }: any) {
   const { actionType } = useParams();
@@ -33,7 +33,7 @@ function FloatinActonBar({ proposalData }: any) {
         actionType === 'show-details' &&
         ['tender_ceo'].includes(role) &&
         proposalData.outter_status !== 'CANCELED' && (
-          <ModeratoeCeoFloatingActionBar organizationId={proposalData.user.id} />
+          <CeoFloatingActionBar organizationId={proposalData.user.id} />
         )}
       {activeTap &&
         ['main', 'project-budget'].includes(activeTap) &&

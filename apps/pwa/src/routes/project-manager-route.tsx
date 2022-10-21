@@ -24,6 +24,9 @@ const ProjectDetails = Loadable(lazy(() => import('pages/project-details/Project
 const AppointmentsWithPartners = Loadable(
   lazy(() => import('pages/project-manager/AppointmentsWithPartners'))
 );
+const AmandementRequest = Loadable(
+  lazy(() => import('pages/amandement-request/AmandementRequest'))
+);
 
 const NonClientProfile = Loadable(
   lazy(() => import('sections/non-client-profile/NonClientProfile'))
@@ -56,6 +59,10 @@ export const projectManagerRoute = {
       children: [
         { path: '', element: <Searching /> },
         {
+          path: ':id/amandementRequest',
+          element: <AmandementRequest />,
+        },
+        {
           path: ':id/:actionType',
           children: [
             { path: 'main', element: <ProjectDetails /> },
@@ -76,6 +83,10 @@ export const projectManagerRoute = {
           children: [
             { path: '', element: <IncomingFundingRequestsProjectManager /> },
             {
+              path: ':id/amandementRequest',
+              element: <AmandementRequest />,
+            },
+            {
               path: ':id/:actionType',
               children: [
                 { path: 'main', element: <ProjectDetails /> },
@@ -91,6 +102,10 @@ export const projectManagerRoute = {
           path: 'requests-in-process',
           children: [
             { path: '', element: <RequestsInProcessProjectManager /> },
+            {
+              path: ':id/amandementRequest',
+              element: <AmandementRequest />,
+            },
             {
               path: ':id/:actionType',
               children: [
@@ -108,6 +123,10 @@ export const projectManagerRoute = {
           children: [
             { path: '', element: <PreviousFundingRequestsProjectManager /> },
             {
+              path: ':id/amandementRequest',
+              element: <AmandementRequest />,
+            },
+            {
               path: ':id/:actionType',
               children: [
                 { path: 'main', element: <ProjectDetails /> },
@@ -123,6 +142,10 @@ export const projectManagerRoute = {
           path: 'exchange-permission',
           children: [
             { path: '', element: <ExchangePermissionProjectManager /> },
+            {
+              path: ':id/amandementRequest',
+              element: <AmandementRequest />,
+            },
             {
               path: ':id/:actionType',
               children: [

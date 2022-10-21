@@ -718,6 +718,30 @@ const en = {
       phone_number: 'Phone Number',
     },
   },
+
+  // amandement
+  proposal_amandement: {
+    moderator: {
+      page_name: "Moderator - Amandement's",
+      headline: 'Send an amendment request to the partner',
+      sub_headline:
+        'Select the fields you want to modify and write the appropriate notes to inform the partner of the things required of him',
+      forms: {
+        notes: 'Notes on Order',
+        notes_placeholder: 'Please write your feedback here',
+      },
+    },
+    ceo: {
+      page_name: "CEO - Amandement's",
+      headline: 'Submit an amendment request to the project manager',
+      sub_headline:
+        'Write the appropriate notes to inform the project manager of the matters required of him',
+      forms: {
+        notes: 'Notes on Order',
+        notes_placeholder: 'Please write your feedback here',
+      },
+    },
+  },
 };
 
 export default en;

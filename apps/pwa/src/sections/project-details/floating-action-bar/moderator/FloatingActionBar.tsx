@@ -22,6 +22,7 @@ function FloatingActionBar() {
   const { translate } = useLocales();
   const [modalState, setModalState] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+
   const navigate = useNavigate();
 
   // Logic here to get current user role
@@ -40,6 +41,7 @@ function FloatingActionBar() {
   const { fetching: accFetch, error: accError } = proposalAccepting;
   const { fetching: rejFetch, error: rejError } = proposalRejection;
   const [action, setAction] = useState<'accept' | 'reject'>('reject');
+  const amandementPath = location.pathname.split('show-details')[0] + `amandementRequest`;
 
   //create handleclose modal function
   const handleCloseModal = () => {
@@ -169,7 +171,14 @@ function FloatingActionBar() {
             )}
           </Stack>
 
-          <Button variant="contained" color="info" endIcon={<Iconify icon="eva:edit-2-outline" />}>
+          <Button
+            variant="contained"
+            color="info"
+            onClick={() => {
+              navigate(amandementPath);
+            }}
+            endIcon={<Iconify icon="eva:edit-2-outline" />}
+          >
             {translate('submit_amendment_request')}
           </Button>
         </Stack>

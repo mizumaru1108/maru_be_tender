@@ -28,7 +28,7 @@ export class AuthService {
     private readonly fusionAuthService: FusionAuthService,
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
-  ) { }
+  ) {}
 
   async fusionLogin(loginRequest: LoginRequestDto) {
     const loginResponse = await this.fusionAuthService.fusionAuthLogin(

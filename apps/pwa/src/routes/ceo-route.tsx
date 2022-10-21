@@ -4,13 +4,16 @@ import DashboardLayout from '../layouts/dashboard';
 import AuthGuard from 'guards/AuthGuard';
 import RoleBasedGuard from 'guards/RoleBasedGuard';
 import { Loadable } from './Loadable';
-import ProjectDetails from '../pages/project-details/ProjectDetails';
 
 const MainCeoPage = Loadable(lazy(() => import('pages/ceo/MainCeoPage')));
 const CeoMessagePage = Loadable(lazy(() => import('pages/ceo/CeoMessagePage')));
 const CeoProjectManagementPage = Loadable(lazy(() => import('pages/ceo/CeoProjectManagementPage')));
 const CeoRejectionListPage = Loadable(lazy(() => import('pages/ceo/CeoRejectionListPage')));
 const CeoPortalReportPage = Loadable(lazy(() => import('pages/PortalReports')));
+const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
+const AmandementRequest = Loadable(
+  lazy(() => import('pages/amandement-request/AmandementRequest'))
+);
 
 const NonClientProfile = Loadable(
   lazy(() => import('sections/non-client-profile/NonClientProfile'))
@@ -65,6 +68,10 @@ export const ceoRoute = {
               element: <MainCeoPage />,
             },
             {
+              path: ':id/amandementRequest',
+              element: <AmandementRequest />,
+            },
+            {
               path: ':id/:actionType',
               children: [
                 { path: 'main', element: <ProjectDetails /> },
@@ -83,6 +90,10 @@ export const ceoRoute = {
               element: <CeoProjectManagementPage />,
             },
             {
+              path: ':id/amandementRequest',
+              element: <AmandementRequest />,
+            },
+            {
               path: ':id/:actionType',
               children: [
                 { path: 'main', element: <ProjectDetails /> },
@@ -99,6 +110,10 @@ export const ceoRoute = {
             {
               path: '',
               element: <CeoRejectionListPage />,
+            },
+            {
+              path: ':id/amandementRequest',
+              element: <AmandementRequest />,
             },
             {
               path: ':id/:actionType',

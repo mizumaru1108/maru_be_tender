@@ -38,7 +38,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
       const user: ICurrentUser = {
         id: validToken.response.jwt.sub ?? '',
         email: validToken.response.jwt.email,
-        type: validToken.response.jwt.roles ?? [],
+        type: validToken.response.jwt.roles[0] ?? null,
       };
       // console.log(user);
       request.user = user;

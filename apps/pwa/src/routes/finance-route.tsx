@@ -13,6 +13,9 @@ const RequestsInProcessFinance = Loadable(lazy(() => import('pages/finance/Reque
 const PortalReportsFinance = Loadable(lazy(() => import('pages/PortalReports')));
 const MessagesFinance = Loadable(lazy(() => import('pages/finance/Messages')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
+const AmandementRequest = Loadable(
+  lazy(() => import('pages/amandement-request/AmandementRequest'))
+);
 
 const NonClientProfile = Loadable(
   lazy(() => import('sections/non-client-profile/NonClientProfile'))
@@ -65,6 +68,10 @@ export const financeRoute = {
           children: [
             { path: '', element: <IncomingExchangePermissionRequestsFinance /> },
             {
+              path: ':id/amandementRequest',
+              element: <AmandementRequest />,
+            },
+            {
               path: ':id/:actionType',
               children: [
                 { path: 'main', element: <ProjectDetails /> },
@@ -82,6 +89,10 @@ export const financeRoute = {
           path: 'requests-in-process',
           children: [
             { path: '', element: <RequestsInProcessFinance /> },
+            {
+              path: ':id/amandementRequest',
+              element: <AmandementRequest />,
+            },
             {
               path: ':id/:actionType',
               children: [
