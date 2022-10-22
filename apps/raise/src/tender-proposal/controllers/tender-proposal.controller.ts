@@ -1,7 +1,6 @@
 import { Body, Controller, Patch, Post, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../../auth/jwt.guard';
 import { CurrentUser } from '../../commons/decorators/current-user.decorator';
-import { BaseHashuraWebhookPayload } from '../../commons/interfaces/base-hashura-webhook-payload';
 import { ICurrentUser } from '../../user/interfaces/current-user.interface';
 import { ChangeProposalStateDto } from '../dtos/requests/change-proposal-state.dto';
 import { TenderProposalService } from '../services/tender-proposal.service';
