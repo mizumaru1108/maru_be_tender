@@ -34,7 +34,7 @@ export class TenderController {
     );
   }
 
-  @Post('post-edit-request')
+  @Post('edit-request-hook-handler')
   async postEditRequest(@Body() payload: BaseHashuraWebhookPayload) {
     console.log('payload', payload);
     console.log('payload data', JSON.stringify(payload.event.data));

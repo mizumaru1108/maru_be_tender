@@ -1,12 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { request } from 'express';
-import { nanoid } from 'nanoid';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ICurrentUser } from '../../user/interfaces/current-user.interface';
 import { ChangeProposalStateDto } from '../dtos/requests/change-proposal-state.dto';
 import { TenderProposalFlowService } from './tender-proposal-flow.service';
 import { TenderProposalLogService } from './tender-proposal-log.service';
-
+// import { nanoid } from 'nanoid';
 @Injectable()
 export class TenderProposalService {
   constructor(
@@ -28,7 +26,8 @@ export class TenderProposalService {
     );
 
     const proposalLogPayload = {
-      id: nanoid(),
+      // id require nano id (cant just import bescause es module on tsconfig)
+      id: require('nanoid').nanoid(),
       proposalId: request.proposal_id,
       reviewer_id: currentUser.id,
     };

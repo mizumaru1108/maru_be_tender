@@ -41,7 +41,6 @@ import { DonationModule } from './donation/donation.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { TenderModule } from './tender/tender.module';
 import { TenderProposalModule } from './tender-proposal/tender-proposal.module';
-import { TenderProposalFlowsModule } from './tender-proposal-flows/tender-proposal-flows.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -120,7 +119,6 @@ import { TenderProposalFlowsModule } from './tender-proposal-flows/tender-propos
     PrismaModule,
     TenderModule,
     TenderProposalModule,
-    TenderProposalFlowsModule,
   ],
   controllers: [],
 })
