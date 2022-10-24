@@ -1,9 +1,12 @@
+import { IsString } from 'class-validator';
 import { Types } from 'mongoose';
 import { ZakatLogDto } from 'src/zakat/dto/zakat_log.dto';
 
 export class PaymentRequestDto {
+  @IsString ()
   organizationId: Types.ObjectId;
   campaignId: Types.ObjectId;
+  @IsString ()
   donorId: Types.ObjectId;
   type: string;
   amount: number;
