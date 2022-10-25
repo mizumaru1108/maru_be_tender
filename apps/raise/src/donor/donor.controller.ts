@@ -19,6 +19,7 @@ import { CurrentUser } from '../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../commons/dtos/base-response';
 import { baseResponseHelper } from '../commons/helpers/base-response-helper';
 import { DonationLogsDocument } from '../donation/schema/donation_log.schema';
+import { DonationLogDocument } from '../donation/schema/donation-log.schema';
 import { PaytabsIpnWebhookResponsePayload } from '../libs/paytabs/dtos/response/paytabs-ipn-webhook-response-payload.dto';
 import { PaytabsService } from '../libs/paytabs/services/paytabs.service';
 import { rootLogger } from '../logger';
@@ -190,7 +191,7 @@ export class DonorController {
   async getTrxDonorList(
     @Query() filter: DonorListTrxDto,
     // ): Promise<PaginatedResponse<DonationLogDocument[]>> {
-  ): Promise<PaginatedResponse<DonationLogsDocument[]>> {
+  ): Promise<PaginatedResponse<DonationLogDocument[]>> {
     this.logger.debug('get All Donor Transaction');
     //return await this.donorService.getTrxDonorList(filter);
 

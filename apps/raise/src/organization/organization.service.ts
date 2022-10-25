@@ -295,7 +295,7 @@ export class OrganizationService {
     return await this.donationLogModel.aggregate([
       {
         $match: {
-          organizationId: new Types.ObjectId(organizationId),
+          organizationId: organizationId,
           donationStatus: 'SUCCESS',
           donorId: { $ne: null },
         },
@@ -303,7 +303,7 @@ export class OrganizationService {
       {
         $lookup: {
           from: 'donor',
-          localField: 'donorUserId',
+          localField: 'donorId',
           foreignField: 'ownerUserId',
           as: 'user',
         },
@@ -465,7 +465,7 @@ export class OrganizationService {
     const aggregateQuerry = this.donationLogModel.aggregate([
       {
         $match: {
-          organizationId: new Types.ObjectId(filter.organizationId),
+          organizationId: filter.organizationId,
           donationStatus: 'SUCCESS',
           donorId: { $ne: null },
         },
@@ -473,7 +473,7 @@ export class OrganizationService {
       {
         $lookup: {
           from: 'donor',
-          localField: 'donorUserId',
+          localField: 'donorId',
           foreignField: 'ownerUserId',
           as: 'user',
         },
@@ -738,7 +738,7 @@ export class OrganizationService {
     const donationList = await this.donationLogModel.aggregate([
       {
         $match: {
-          organizationId: new Types.ObjectId(organizationId),
+          organizationId: organizationId,
           donationStatus: 'SUCCESS',
           createdAt: getDateQuery(period),
         },
@@ -756,16 +756,16 @@ export class OrganizationService {
     const returningDonorAgg = await this.donationLogModel.aggregate([
       {
         $match: {
-          organizationId: new Types.ObjectId(organizationId),
+          organizationId: organizationId,
           donationStatus: 'SUCCESS',
-          donorId: { $ne: null },
+          // donorId: { $ne: null },
           createdAt: getDateQuery(period),
         },
       },
       {
         $lookup: {
           from: 'donor',
-          localField: 'donorUserId',
+          localField: 'donorId',
           foreignField: 'ownerUserId',
           as: 'user',
         },
@@ -777,7 +777,7 @@ export class OrganizationService {
       },
       {
         $group: {
-          _id: '$donorUserId',
+          _id: '$donorId',
           count: { $sum: 1 },
         },
       },
@@ -792,9 +792,9 @@ export class OrganizationService {
     const mostPopularProgramsDiagram = await this.donationLogModel.aggregate([
       {
         $match: {
-          organizationId: new Types.ObjectId(organizationId),
+          organizationId: organizationId,
           donationStatus: 'SUCCESS',
-          donorId: { $ne: null },
+          // donorId: { $ne: null },
           createdAt: getDateQuery(period),
         },
       },
@@ -835,9 +835,9 @@ export class OrganizationService {
     const totalDonationPerProgram = await this.donationLogModel.aggregate([
       {
         $match: {
-          organizationId: new Types.ObjectId(organizationId),
+          organizationId: organizationId,
           donationStatus: 'SUCCESS',
-          donorId: { $ne: null },
+          // donorId: { $ne: null },
           createdAt: getDateQuery(period),
         },
       },
@@ -913,16 +913,16 @@ export class OrganizationService {
     const donorList = await this.donationLogModel.aggregate([
       {
         $match: {
-          organizationId: new Types.ObjectId(organizationId),
+          organizationId: organizationId,
           donationStatus: 'SUCCESS',
-          donorId: { $ne: null },
+          // donorId: { $ne: null },
           createdAt: getDateQuery(period),
         },
       },
       {
         $lookup: {
           from: 'donor',
-          localField: 'donorUserId',
+          localField: 'donorId',
           foreignField: 'ownerUserId',
           as: 'user',
         },
@@ -934,7 +934,7 @@ export class OrganizationService {
       },
       {
         $group: {
-          _id: '$donorUserId',
+          _id: '$donorId',
           donorId: { $first: '$user._id' },
           firstName: { $first: '$user.firstName' },
           lastName: { $first: '$user.lastName' },
@@ -2713,47 +2713,45 @@ export class OrganizationService {
         ? filter.campaignId
         : '6299ed6a9f1ad428563563ed',
       donationStatus: 'SUCCESS',
-      donorUserId: donorId,
+      donorId: donorId,
       currency: filter.currency ? filter.currency : 'GBP',
-      nonprofitRealmId: filter.nonprofitRealmId
-        ? filter.nonprofitRealmId
-        : '62414373cf00cca3a830814a',
+      organizationId: organizationId,
     };
 
     const totalZakatCampaigns = await this.donationLogsModel
       .find({
-        campaignId: new Types.ObjectId(filterCampaigns.campaignId),
+        //campaignId: new Types.ObjectId(filterCampaigns.campaignId),
         donationStatus: filterCampaigns.donationStatus,
-        donorUserId: filterCampaigns.donorUserId,
+        donorUserId: filterCampaigns.donorId,
         currency: filterCampaigns.currency,
-        nonprofitRealmId: new Types.ObjectId(filterCampaigns.nonprofitRealmId),
+        nonprofitRealmId: new Types.ObjectId(filterCampaigns.organizationId),
       })
       .count();
 
-    const totalCampaigns = await this.donationLogsModel
+    const totalCampaigns = await this.donationLogModel
       .find({
-        campaignId: { $ne: new Types.ObjectId(filterCampaigns.campaignId) },
+        //campaignId: { $ne: new Types.ObjectId(filterCampaigns.campaignId) },
         donationStatus: filterCampaigns.donationStatus,
-        donorUserId: filterCampaigns.donorUserId,
+        donorId: filterCampaigns.donorId,
         currency: filterCampaigns.currency,
-        nonprofitRealmId: new Types.ObjectId(filterCampaigns.nonprofitRealmId),
+        organizationId: filterCampaigns.organizationId,
       })
       .count();
 
     const amountCampaigns = await this.donationLogModel.aggregate([
       {
         $match: {
-          campaignId: { $ne: new Types.ObjectId(filterCampaigns.campaignId) },
+          //campaignId: { $ne: new Types.ObjectId(filterCampaigns.campaignId) },
           donationStatus: 'SUCCESS',
           donorId: donorId,
           currency: filterCampaigns.currency,
-          organizationId: new Types.ObjectId(organizationId),
+          organizationId: organizationId,
         },
       },
       {
         $group: {
           // _id: '$campaignId',
-          _id: '$donorUserId',
+          _id: '$donorId',
           amountOfCampaigns: { $sum: '$amount' },
           currency: { $first: '$currency' },
         },
@@ -2763,7 +2761,7 @@ export class OrganizationService {
     const amountZakatCampaigns = await this.donationLogsModel.aggregate([
       {
         $match: {
-          campaignId: new Types.ObjectId(filterCampaigns.campaignId),
+          //campaignId: new Types.ObjectId(filterCampaigns.campaignId),
           donationStatus: 'SUCCESS',
           donorUserId: donorId,
           currency: filterCampaigns.currency,
@@ -2783,13 +2781,11 @@ export class OrganizationService {
     const totalDonationPerProgram = await this.donationLogModel.aggregate([
       {
         $match: {
-          organizationId: new Types.ObjectId(organizationId),
+          organizationId: organizationId,
           donationStatus: 'SUCCESS',
-          // donorUserId: { $ne: null },
           donorId: donorId,
-          // createdAt: getDateQuery(period),
           createdAt: getDateQuery(filter.priode),
-          campaignId: { $ne: new Types.ObjectId(filterCampaigns.campaignId) },
+          //campaignId: { $ne: new Types.ObjectId(filterCampaigns.campaignId) },
           currency: filterCampaigns.currency,
         },
       },
@@ -2844,7 +2840,7 @@ export class OrganizationService {
             donationStatus: 'SUCCESS',
             donorUserId: donorId,
             createdAt: getDateQuery(filter.priode),
-            campaignId: new Types.ObjectId(filterCampaigns.campaignId),
+            //campaignId: new Types.ObjectId(filterCampaigns.campaignId),
             currency: filterCampaigns.currency,
           },
         },
