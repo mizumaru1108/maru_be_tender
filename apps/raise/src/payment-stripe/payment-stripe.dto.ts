@@ -18,4 +18,6 @@ export class PaymentRequestDto {
   quantity: string;
   extraAmount: number;
   zakatLogs: Array<ZakatLogDto>;
+  isAnonymous?: boolean;
+  isEmailChecklist?: boolean;
 }

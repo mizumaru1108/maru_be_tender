@@ -234,7 +234,6 @@ export class ZakatService {
     //     }),
     //   };
     // }
-
     // const expenseList = await this.expenseModel.aggregate([
     //   { $match: { createdBy: organizationId } },
     //   {
@@ -290,7 +289,6 @@ export class ZakatService {
           preserveNullAndEmptyArrays: true,
         },
       },
-
       {
         $lookup: {
           from: 'anonymous',
