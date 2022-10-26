@@ -180,6 +180,7 @@ export class AuthService {
           twitter_acount: registerRequest.data.twitter_acount,
           website: registerRequest.data.website,
           bank_informations: registerRequest.data.bank_informations,
+          client_field: registerRequest.data.client_field,
         });
         return registeredUser;
       } else {

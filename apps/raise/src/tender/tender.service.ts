@@ -43,6 +43,12 @@ export class TenderService {
     let uploadedFileLinks: string = 'Uploaded file links: \n';
     try {
       const processFiles = files.map(async (file, index) => {
+        // if the optionalFolderPath = "profile-pics" exist the url will be
+        // /tmra/dev/organization/tender-management/userid/profile-pics/filename
+        // /tmra/dev/organization/tender-management/userid/bank-info/filename
+
+        // if u are not use the optionalFolderPath the url will be
+        // /tmra/dev/organization/tender-management/userid/filename
         const path = payload.optionalFolderPath
           ? `tmra/${this.appEnv}/organization/tender-management` +
             `/${payload.userId}/${payload.optionalFolderPath}`

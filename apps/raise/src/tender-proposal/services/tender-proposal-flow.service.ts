@@ -11,6 +11,9 @@ export class TenderProposalFlowService {
   }
 
   async getFlow(track_name: string): Promise<project_tracks> {
+    // default flow will have client and moderator as the first two step
+    // then the moderator will dtermine the track, after it's determined
+    // the flow will be determined by the track
     const flow = await this.prismaService.project_tracks.findFirstOrThrow({
       where: {
         id: track_name,

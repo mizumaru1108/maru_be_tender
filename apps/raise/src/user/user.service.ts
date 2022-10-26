@@ -116,6 +116,7 @@ export class UserService {
               twitter_acount: request.twitter_acount,
               num_of_employed_facility: request.num_of_employed_facility,
               phone: request.phone,
+              client_field: request.client_field,
             },
           },
           bank_information: {

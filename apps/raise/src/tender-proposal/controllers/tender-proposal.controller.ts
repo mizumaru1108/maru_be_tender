@@ -12,7 +12,8 @@ import { BaseResponse } from '../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
 import { ICurrentUser } from '../../user/interfaces/current-user.interface';
 import { ChangeProposalStateDto } from '../dtos/requests/change-proposal-state.dto';
-import { UpdateProposalDraftFourthStepDto } from '../dtos/requests/update-proposal-draft-fourth-step.dto';
+import { UpdateProposalDto } from '../dtos/requests/update-proposal.dto';
+
 import { UpdateProposalFourthStepResponseDto } from '../dtos/responses/update-proposal-fourth-step-response.dto';
 import { TenderProposalService } from '../services/tender-proposal.service';
 
@@ -34,17 +35,30 @@ export class TenderProposalController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch('update-fourth-step')
-  async updateFourthStep(
-    @Body() payload: UpdateProposalDraftFourthStepDto,
-  ): Promise<BaseResponse<UpdateProposalFourthStepResponseDto>> {
-    const updatedFourthStep = await this.tenderProposalService.updateFourthStep(
-      payload,
+  @Patch('update-proposal')
+  async updateProposal(
+    @CurrentUser() currentUser: ICurrentUser,
+    @Body() request: UpdateProposalDto,
+  ) {
+    // console.log('current user', currentUser);
+    const response = await this.tenderProposalService.updateProposal(
+      currentUser.id,
+      request,
     );
-    return baseResponseHelper(
-      updatedFourthStep,
-      HttpStatus.OK,
-      'Update fourth step success!',
-    );
+    console.log('response', response);
   }
+  // @UseGuards(JwtAuthGuard)
+  // @Patch('update-fourth-step')
+  // async updateFourthStep(
+  //   @Body() payload: UpdateProposalDraftFourthStepDto,
+  // ): Promise<BaseResponse<UpdateProposalFourthStepResponseDto>> {
+  //   const updatedFourthStep = await this.tenderProposalService.updateFourthStep(
+  //     payload,
+  //   );
+  //   return baseResponseHelper(
+  //     updatedFourthStep,
+  //     HttpStatus.OK,
+  //     'Update fourth step success!',
+  //   );
+  // }
 }

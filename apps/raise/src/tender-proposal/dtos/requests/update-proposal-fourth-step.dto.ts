@@ -9,12 +9,7 @@ import {
 } from 'class-validator';
 import { UpdateProjectBudgetDto } from './update-project-budget.dto';
 
-export class UpdateProposalDraftFourthStepDto {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  proposal_id: string;
-
+export class UpdateProposalFourthStepDto {
   @ApiPropertyOptional()
   @IsNumber()
   @IsNotEmpty()

@@ -1,213 +1,222 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma, proposal_item_budget } from '@prisma/client';
+import { v4 as uuidv4 } from 'uuid';
+import { AllowedFileType } from '../../commons/enums/allowed-filetype.enum';
+import { BunnyService } from '../../libs/bunny/services/bunny.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { ProposalItemBudget } from '../../tender/commons/types/proposal';
 import { ICurrentUser } from '../../user/interfaces/current-user.interface';
 import { ChangeProposalStateDto } from '../dtos/requests/change-proposal-state.dto';
-import { UpdateProposalDraftFourthStepDto } from '../dtos/requests/update-proposal-draft-fourth-step.dto';
-import { UpdateProposalFourthStepResponseDto } from '../dtos/responses/update-proposal-fourth-step-response.dto';
+import { UpdateProposalDto } from '../dtos/requests/update-proposal.dto';
 import { TenderProposalFlowService } from './tender-proposal-flow.service';
 import { TenderProposalLogService } from './tender-proposal-log.service';
-import { v4 as uuidv4 } from 'uuid';
 // import { nanoid } from 'nanoid';
 @Injectable()
 export class TenderProposalService {
   constructor(
     private readonly prismaService: PrismaService,
+    private readonly bunnyService: BunnyService,
     private readonly tenderProposalLogService: TenderProposalLogService,
     private readonly tenderProposalFlowService: TenderProposalFlowService,
   ) {}
 
-  // async updateFourthStep(
-  //   payload: UpdateProposalDraftFourthStepDto,
-  // ): Promise<UpdateProposalFourthStepResponseDto> {
-  //   // fetch the proposal item budget to get all exising item budget
-  //   const dataOnDb = await this.prismaService.proposal_item_budget.findMany({
-  //     where: {
-  //       proposal_id: payload.proposal_id,
-  //     },
-  //   });
+  async checkOldImageUrl(oldUrl: string, newUrl: string) {
+    // if there's any old attachment, and it not the same as the old one, delete it
+    if (oldUrl !== newUrl) {
+      console.log(
+        "the old image url is different from the new one, let's delete it",
+      );
+      // if it's including prefix, remove it
+      if (oldUrl.includes('https://media.tmra.io/')) {
+        oldUrl = oldUrl.replace('https://media.tmra.io/', '');
+      }
 
-  //   // tmp
-  //   const mapResult = {
-  //     tmpCreated: [] as ProposalItemBudget[],
-  //     created: [] as proposal_item_budget[],
-  //     updated: [] as proposal_item_budget[],
-  //     deleted: [] as string[],
-  //   };
+      // if there's any old data on db, check if it's exist on bunny storage
+      const isExist = await this.bunnyService.checkIfImageExists(oldUrl);
 
-  //   // map to determine which item budget is new data or old data
-  //   const requestData = payload.detail_project_budgets.map((request) => {
-  //     if (!request.id) {
-  //       const itemBudgets: ProposalItemBudget = {
-  //         id: require('nanoid').nanoid(),
-  //         proposal_id: payload.proposal_id,
-  //         amount: new Prisma.Decimal(request.amount),
-  //         clause: request.clause,
-  //         explanation: request.explanation,
-  //       };
-  //       mapResult.tmpCreated.push(itemBudgets);
-  //     }
-  //     request.amount = new Prisma.Decimal(request.amount);
-  //     // if the data has id then it means it exist on db so we have to check it latter
-  //     // wether it has been deleted or updated
-  //     return request as ProposalItemBudget;
-  //   });
+      // if it's exist, delete it
+      if (isExist) {
+        const deleteImages = await this.bunnyService.deleteImage(oldUrl);
+        if (!deleteImages) {
+          throw new Error(`Failed to delete at update proposal`);
+        }
+      }
+    }
+  }
 
-  //   // create new item budget if there is any
-  //   if (mapResult.tmpCreated.length > 0) {
-  //     try {
-  //       await this.prismaService.proposal_item_budget.createMany({
-  //         data: mapResult.tmpCreated as Prisma.proposal_item_budgetCreateManyInput[],
-  //       });
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }
+  async updateProposal(userId: string, updateProposal: UpdateProposalDto) {
+    // create payload for update proposal
+    const updateProposalPayload: Prisma.proposalUpdateInput = {};
 
-  //   // loop through the data on db to determine which item budget has been deleted/updated
-  //   if (dataOnDb.length > 0) {
-  //     for (const exisingData of dataOnDb) {
-  //       // if the request data.id is not found on db then it means it has been deleted
-  //       const index = requestData.findIndex(
-  //         (data) => data.id === exisingData.id,
-  //       );
+    // console.log('userid', userId);
 
-  //       // if the index is -1 then it means the data has been deleted
-  //       if (index === -1) mapResult.deleted.push(exisingData.id);
-
-  //       // if the index is not -1 && the stringified data is not equal to the stringified data on db
-  //       // then it means the data has been updated
-  //       if (
-  //         index !== -1 &&
-  //         JSON.stringify(requestData[index]) !== JSON.stringify(exisingData)
-  //       ) {
-  //         // use try catch to prevent error when updating and cut the loop
-  //         try {
-  //           const updatedProposal =
-  //             await this.prismaService.proposal_item_budget.update({
-  //               where: {
-  //                 id: requestData[index].id,
-  //               },
-  //               data: requestData[
-  //                 index
-  //               ] as Prisma.proposal_item_budgetUpdateInput,
-  //             });
-  //           mapResult.updated.push(updatedProposal);
-  //         } catch (error) {
-  //           throw new BadRequestException(error.message);
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   // delete the item budget if there is any
-  //   if (mapResult.deleted.length > 0) {
-  //     try {
-  //       await this.prismaService.proposal_item_budget.deleteMany({
-  //         where: {
-  //           id: {
-  //             in: mapResult.deleted,
-  //           },
-  //         },
-  //       });
-  //     } catch (error) {
-  //       throw new BadRequestException(error.message);
-  //     }
-  //   }
-
-  //   // update the proposal amount_required_fsupport if there is any
-  //   if (payload.amount_required_fsupport) {
-  //     try {
-  //       await this.prismaService.proposal.update({
-  //         where: {
-  //           id: payload.proposal_id,
-  //         },
-  //         data: {
-  //           amount_required_fsupport: new Prisma.Decimal(
-  //             payload.amount_required_fsupport,
-  //           ),
-  //         },
-  //       });
-  //     } catch (error) {
-  //       throw new BadRequestException(error.message);
-  //     }
-  //   }
-
-  //   const updateFourthStepResult: UpdateProposalFourthStepResponseDto = {
-  //     created: mapResult.created || null,
-  //     updated: mapResult.updated || null,
-  //     deleted: mapResult.deleted || null,
-  //   };
-
-  //   return updateFourthStepResult;
-  // }
-
-  async updateFourthStep(
-    payload: UpdateProposalDraftFourthStepDto,
-  ): Promise<UpdateProposalFourthStepResponseDto> {
-    // delete all previous item budget
-    const result = await this.prismaService.proposal_item_budget.deleteMany({
+    // find proposal by id
+    const proposal = await this.prismaService.proposal.findUniqueOrThrow({
       where: {
-        proposal_id: payload.proposal_id,
+        id: updateProposal.proposal_id,
       },
     });
+    console.log('old proposal', proposal);
 
-    let newItemBudgets: proposal_item_budget[] = [];
-    let itemBudgetCreated: number = 0;
+    // match proposal.submitter_user_id with current user id for permissions
+    if (proposal.submitter_user_id !== userId) {
+      throw new BadRequestException(
+        `You're not allowed to update this proposal`,
+      );
+    }
 
-    // create new item budget when there is any
-    if (payload.detail_project_budgets.length > 0) {
-      const itemBudgets = payload.detail_project_budgets.map((item_budget) => {
-        const itemBudget: proposal_item_budget = {
-          id: uuidv4(),
-          proposal_id: payload.proposal_id,
-          amount: new Prisma.Decimal(item_budget.amount),
-          clause: item_budget.clause,
-          explanation: item_budget.explanation,
-        };
-        newItemBudgets.push(itemBudget);
-        return itemBudget;
+    // check if there is any data to update on the form1
+    if (updateProposal.form1) {
+      const {
+        project_name,
+        project_location,
+        project_implement_date,
+        project_idea,
+        project_beneficiaries,
+        project_attachments,
+        letter_ofsupport_req,
+        execution_time,
+      } = updateProposal.form1;
+
+      project_name && (updateProposalPayload.project_name = project_name);
+      if (project_location) {
+        updateProposalPayload.project_location = project_location;
+      }
+      if (project_implement_date) {
+        updateProposalPayload.project_implement_date = project_implement_date;
+      }
+      project_idea && (updateProposalPayload.project_idea = project_idea);
+      execution_time && (updateProposalPayload.execution_time = execution_time);
+      // project_beneficiaries &&
+
+      // if there's any new upload request for replace the old one
+      if (project_attachments) {
+        // TODO: when the flow is changed u have to create a new func to upload
+        // it should be here
+
+        // if old proposal value exist
+        if (proposal.project_attachments) {
+          await this.checkOldImageUrl(
+            project_attachments.url,
+            proposal.project_attachments,
+          );
+        }
+
+        proposal.project_attachments = project_attachments.url;
+        proposal.project_attachments_size = project_attachments.size;
+        proposal.project_attachments_type = project_attachments.type;
+      }
+
+      if (letter_ofsupport_req) {
+        if (proposal.letter_ofsupport_req) {
+          await this.checkOldImageUrl(
+            letter_ofsupport_req.url,
+            proposal.letter_ofsupport_req,
+          );
+        }
+
+        proposal.letter_ofsupport_req = letter_ofsupport_req.url;
+        proposal.letter_ofsupport_req_size = letter_ofsupport_req.size;
+        proposal.letter_ofsupport_req_type = letter_ofsupport_req.type;
+      }
+    }
+
+    if (updateProposal.form2) {
+      const {
+        num_ofproject_binicficiaries,
+        project_goals,
+        project_outputs,
+        project_strengths,
+        project_risks,
+      } = updateProposal.form2;
+
+      if (num_ofproject_binicficiaries) {
+        updateProposalPayload.num_ofproject_binicficiaries =
+          num_ofproject_binicficiaries;
+      }
+      project_goals && (updateProposalPayload.project_goals = project_goals);
+      if (project_outputs) {
+        updateProposalPayload.project_outputs = project_outputs;
+      }
+      if (project_strengths) {
+        updateProposalPayload.project_strengths = project_strengths;
+      }
+      project_risks && (updateProposalPayload.project_risks = project_risks);
+    }
+
+    if (updateProposal.form3) {
+      const { pm_name, pm_mobile, pm_email, region, governorate } =
+        updateProposal.form3;
+
+      pm_name && (updateProposalPayload.pm_name = pm_name);
+      pm_mobile && (updateProposalPayload.pm_mobile = pm_mobile);
+      pm_email && (updateProposalPayload.pm_email = pm_email);
+      region && (updateProposalPayload.region = region);
+      governorate && (updateProposalPayload.governorate = governorate);
+    }
+
+    if (updateProposal.form4) {
+      // delete all previous item budget
+      await this.prismaService.proposal_item_budget.deleteMany({
+        where: {
+          proposal_id: updateProposal.proposal_id,
+        },
       });
 
-      try {
-        const createdItemBudget =
+      // create new item budget when there is any
+      if (updateProposal.form4.detail_project_budgets.length > 0) {
+        const itemBudgets = updateProposal.form4.detail_project_budgets.map(
+          (item_budget) => {
+            const itemBudget: proposal_item_budget = {
+              id: uuidv4(),
+              proposal_id: updateProposal.proposal_id,
+              amount: new Prisma.Decimal(item_budget.amount),
+              clause: item_budget.clause,
+              explanation: item_budget.explanation,
+            };
+            return itemBudget;
+          },
+        );
+
+        try {
           await this.prismaService.proposal_item_budget.createMany({
             data: itemBudgets,
           });
-        itemBudgetCreated = createdItemBudget.count;
-      } catch (error) {
-        throw new BadRequestException(error.message);
+        } catch (error) {
+          throw new BadRequestException(error.message);
+        }
+      }
+
+      if (updateProposal.form4.amount_required_fsupport) {
+        try {
+          await this.prismaService.proposal.update({
+            where: {
+              id: updateProposal.proposal_id,
+            },
+            data: {
+              amount_required_fsupport: new Prisma.Decimal(
+                updateProposal.form4.amount_required_fsupport,
+              ),
+            },
+          });
+        } catch (error) {
+          throw new BadRequestException(error.message);
+        }
       }
     }
 
-    let fsupport = 'no amount required fsuport update';
-    if (payload.amount_required_fsupport) {
-      try {
-        await this.prismaService.proposal.update({
-          where: {
-            id: payload.proposal_id,
-          },
-          data: {
-            amount_required_fsupport: new Prisma.Decimal(
-              payload.amount_required_fsupport,
-            ),
-          },
-        });
-        fsupport = `amount required fsuport updated to ${payload.amount_required_fsupport}`;
-      } catch (error) {
-        throw new BadRequestException(error.message);
-      }
+    // if updateProposalPayload !== {} then update the proposal
+    if (Object.keys(updateProposalPayload).length > 0) {
+      // update proposal
+      const updatedProposal = await this.prismaService.proposal.update({
+        where: {
+          id: updateProposal.proposal_id,
+        },
+        data: {
+          ...updateProposalPayload,
+        },
+      });
+      console.log('proposal updated', updatedProposal);
     }
-
-    const response: UpdateProposalFourthStepResponseDto = {
-      fsupportLog: fsupport,
-      created: newItemBudgets,
-      successfullyCreatedCount: itemBudgetCreated,
-      deletedCount: result.count,
-    };
-
-    return response;
   }
 
   async changeProposalState(

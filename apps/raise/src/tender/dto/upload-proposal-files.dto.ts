@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, IsNumber } from 'class-validator';
 
-export class CreateLetterOfSupportDto {
+export class UploadProposalFilesDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

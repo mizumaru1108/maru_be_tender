@@ -20,7 +20,7 @@ export class TenderController {
   constructor(private tenderService: TenderService) {}
 
   @UseInterceptors(AnyFilesInterceptor())
-  @Post('uploads')
+  @Post('uploads') // tender/uploads
   async upload(
     @Body() payload: UploadFilesDto,
     @UploadedFiles() file: MulterFile[],

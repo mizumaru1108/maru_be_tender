@@ -228,6 +228,11 @@ class basePayload {
   data_entry_name: string;
 
   @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  client_field: string;
+
+  @ApiProperty()
   @ValidateNested()
   @Type(() => bankData)
   bank_informations: bankData;

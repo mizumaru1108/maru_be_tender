@@ -22,31 +22,31 @@ model bank_information {
 
 model client_data {
   id                       String               @id(map: "users_pkey")
-  entity                   String?              @default(dbgenerated("now()")) @db.Char(255)
-  authority                String?              @db.Char(255)
+  entity                   String?              @default(dbgenerated("now()")) @db.Char
+  authority                String?              @db.Char
   headquarters             String?
   date_of_esthablistmen    DateTime?            @db.Date
   num_of_beneficiaries     Int?
   num_of_employed_facility Int?
   governorate              String?
-  region                   String?              @db.Char(255)
-  entity_mobile            String?              @db.Char(255)
-  center_administration    String?              @db.Char(255)
+  region                   String?              @db.Char
+  entity_mobile            String?              @db.Char
+  center_administration    String?              @db.Char
   twitter_acount           String?
-  phone                    String?              @db.Char(255)
+  phone                    String?              @db.Char
   website                  String?
-  email                    String?              @unique @db.Char(255)
+  email                    String?              @unique @db.Char
   password                 String?
-  license_number           String               @db.Char(255)
+  license_number           String               @db.Char
   license_expired          DateTime?            @db.Date
   license_issue_date       DateTime?            @db.Date
   license_file             String?
   board_ofdec_file         String?
-  ceo_mobile               String?              @db.Char(255)
-  ceo_name                 String?              @db.Char(255)
-  data_entry_mobile        String?              @db.Char(255)
-  data_entry_name          String?              @db.Char(255)
-  data_entry_mail          String?              @db.Char(255)
+  ceo_mobile               String?              @db.Char
+  ceo_name                 String?              @db.Char
+  data_entry_mobile        String?              @db.Char
+  data_entry_name          String?              @db.Char
+  data_entry_mail          String?              @db.Char
   created_at               DateTime?            @default(now()) @db.Timestamptz(6)
   updated_at               DateTime?            @default(now()) @db.Timestamptz(6)
   status                   String               @default("WAITING_FOR_ACTIVATION")
@@ -81,9 +81,9 @@ model employees_permissions {
 }
 
 model inquiry_type {
-  id        String      @id
-  tittle    String
-  contactus contactus[]
+  id         String       @id
+  tittle     String
+  contact_us contact_us[]
 }
 
 model license_number {
@@ -125,15 +125,15 @@ model payment {
 
 model proposal {
   id                           String                     @id
-  project_name                 String                     @db.Char(255)
+  project_name                 String                     @db.Char
   submitter_user_id            String
   created_at                   DateTime                   @default(now()) @db.Timestamptz(6)
   updated_at                   DateTime                   @default(now()) @db.Timestamptz(6)
-  project_track                String
+  project_track                String?
   project_idea                 String?
   project_implement_date       DateTime?                  @db.Date
   project_location             String?
-  execution_time               String?                    @db.Char(255)
+  execution_time               String?                    @db.Char
   project_attachments          String?
   letter_ofsupport_req         String?
   num_ofproject_binicficiaries Int?
@@ -141,14 +141,14 @@ model proposal {
   project_outputs              String?
   project_strengths            String?
   project_risks                String?
-  pm_name                      String?                    @db.Char(255)
-  pm_email                     String?                    @db.Char(255)
-  pm_mobile                    String?                    @db.Char(255)
+  pm_name                      String?                    @db.Char
+  pm_email                     String?                    @db.Char
+  pm_mobile                    String?                    @db.Char
   governorate                  String?
-  region                       String?                    @db.Char(255)
+  region                       String?                    @db.Char
   amount_required_fsupport     Decimal?                   @db.Decimal
   need_consultant              Boolean?                   @default(false)
-  step                         String?                    @default("ZERO") @db.Char(255)
+  step                         String?                    @default("ZERO") @db.Char
   whole_budget                 Decimal?                   @db.Decimal
   state                        String?                    @default("MODERATOR")
   inner_status                 String?                    @default("CREATED_BY_CLIENT")
@@ -160,8 +160,13 @@ model proposal {
   cashier_id                   String?                    @default("null")
   project_manager_id           String?                    @default("null")
   supervisor_id                String?                    @default("null")
+  track_position               Int?                       @default(1)
+  project_attachments_size     Int?
+  project_attachments_type     String?                    @db.VarChar
+  letter_ofsupport_req_size    Int?
+  letter_ofsupport_req_type    String?                    @db.VarChar
   proposal_beneficiaries       proposal_beneficiaries?    @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
-  project_tracks               project_tracks             @relation(fields: [project_track], references: [id], onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
+  project_tracks               project_tracks?            @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
   proposal_request             proposal_request?          @relation(fields: [outter_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_requested_fkey")
   user_type                    user_type?                 @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction)
   proposal_status              proposal_status?           @relation(fields: [inner_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_status_fkey")
@@ -247,8 +252,8 @@ model user {
   bank_information                                  bank_information[]
   client_data                                       client_data?
   client_log                                        client_log[]
-  contactus_contactus_receiver_idTouser             contactus[]             @relation("contactus_receiver_idTouser")
-  contactus_contactus_sender_idTouser               contactus[]             @relation("contactus_sender_idTouser")
+  contact_us_contact_us_receiver_idTouser           contact_us[]            @relation("contact_us_receiver_idTouser")
+  contact_us_contact_us_sender_idTouser             contact_us[]            @relation("contact_us_sender_idTouser")
   employees_permissions_employees_permissionsTouser employees_permissions[]
   message                                           message[]
   proposal                                          proposal[]
@@ -262,7 +267,7 @@ model user_type {
   id                                                                String                @id
   title                                                             String                @unique(map: "user_type_user_type_tittle_key")
   project_track_flows_project_track_flows_assigned_toTouser_type    project_track_flows[] @relation("project_track_flows_assigned_toTouser_type")
-  project_track_flows_project_track_flows_revert_officerTouser_type project_track_flows[] @relation("project_track_flows_revert_officerTouser_type")
+  project_track_flows_project_track_flows_reject_officerTouser_type project_track_flows[] @relation("project_track_flows_reject_officerTouser_type")
   proposal                                                          proposal[]
   proposal_assign                                                   proposal_assign[]
   proposal_log                                                      proposal_log[]
@@ -435,23 +440,6 @@ model propsal_bank_information {
   proposal            proposal         @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
 }
 
-model contactus {
-  id                                   String        @id(map: "contcatus_pkey")
-  sender_id                            String
-  receiver_id                          String
-  inquiry_type                         String?       @db.Char(255)
-  title                                String?       @db.Char(255)
-  project_name                         String?       @db.Char(255)
-  message                              String?
-  date_of_visit                        DateTime?     @db.Date
-  reason_visit                         String?
-  created_at                           DateTime?     @default(now()) @db.Timestamptz(6)
-  updated_at                           DateTime?     @default(now()) @db.Timestamptz(6)
-  inquiry_type_contactusToinquiry_type inquiry_type? @relation(fields: [inquiry_type], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "message_inquiry_type_fkey")
-  user_contactus_receiver_idTouser     user          @relation("contactus_receiver_idTouser", fields: [receiver_id], references: [id], onUpdate: Restrict, map: "message_receiver_id_fkey")
-  user_contactus_sender_idTouser       user          @relation("contactus_sender_idTouser", fields: [sender_id], references: [id], onUpdate: Restrict, map: "message_sender_id_fkey")
-}
-
 model correspondance_category {
   id        String      @id
   title     String      @unique
@@ -475,22 +463,27 @@ model edit_request_status {
 }
 
 model project_track_flows {
-  id                                                      String     @id(map: "proposal_track_flows_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  step_name                                               String     @db.VarChar
+  id                                                      String         @id(map: "proposal_track_flows_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   assigned_to                                             String
   step_position                                           Int
   belongs_to_track                                        String
-  revert_position                                         Int?
-  revert_officer                                          String?
-  user_type_project_track_flows_assigned_toTouser_type    user_type  @relation("project_track_flows_assigned_toTouser_type", fields: [assigned_to], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_track_flows_assigned_to_fkey")
-  user_type_project_track_flows_revert_officerTouser_type user_type? @relation("project_track_flows_revert_officerTouser_type", fields: [revert_officer], references: [id], onDelete: Cascade, map: "proposal_track_flows_revert_officer_fkey")
+  reject_position                                         Int?
+  reject_officer                                          String?
+  revised_position                                        Int?
+  revised_officer                                         String?
+  next_position                                           Int?
+  next_officer                                            String?
+  project_tracks                                          project_tracks @relation(fields: [belongs_to_track], references: [id], onDelete: Cascade)
+  user_type_project_track_flows_assigned_toTouser_type    user_type      @relation("project_track_flows_assigned_toTouser_type", fields: [assigned_to], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_track_flows_assigned_to_fkey")
+  user_type_project_track_flows_reject_officerTouser_type user_type?     @relation("project_track_flows_reject_officerTouser_type", fields: [reject_officer], references: [id], onDelete: Cascade, map: "proposal_track_flows_revert_officer_fkey")
 }
 
 model project_tracks {
-  id           String         @id(map: "project_kind_pkey") @unique(map: "project_kind_id_key")
-  title        String         @unique(map: "project_kind_title_key")
-  proposal     proposal[]
-  proposal_log proposal_log[]
+  id                  String                @id(map: "project_kind_pkey") @unique(map: "project_kind_id_key")
+  title               String                @unique(map: "project_kind_title_key")
+  project_track_flows project_track_flows[]
+  proposal            proposal[]
+  proposal_log        proposal_log[]
 }
 
 model room_chat {
@@ -504,6 +497,23 @@ model room_chat {
   user_room_chat_participant1Touser                          user                    @relation("room_chat_participant1Touser", fields: [participant1], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user_room_chat_participant2Touser                          user                    @relation("room_chat_participant2Touser", fields: [participant2], references: [id], onDelete: NoAction, onUpdate: NoAction)
   message                                                    message[]
+}
+
+model contact_us {
+  id                                    String        @id(map: "contcatus_pkey")
+  sender_id                             String
+  receiver_id                           String
+  inquiry_type                          String?       @db.Char(255)
+  title                                 String?       @db.Char(255)
+  project_name                          String?       @db.Char(255)
+  message                               String?
+  date_of_visit                         DateTime?     @db.Date
+  reason_visit                          String?
+  created_at                            DateTime?     @default(now()) @db.Timestamptz(6)
+  updated_at                            DateTime?     @default(now()) @db.Timestamptz(6)
+  inquiry_type_contact_usToinquiry_type inquiry_type? @relation(fields: [inquiry_type], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "message_inquiry_type_fkey")
+  user_contact_us_receiver_idTouser     user          @relation("contact_us_receiver_idTouser", fields: [receiver_id], references: [id], onUpdate: Restrict, map: "message_receiver_id_fkey")
+  user_contact_us_sender_idTouser       user          @relation("contact_us_sender_idTouser", fields: [sender_id], references: [id], onUpdate: Restrict, map: "message_sender_id_fkey")
 }
 
 // We could not retrieve columns for the underlying table. Either it has none or you are missing rights to see them. Please check your privileges.
