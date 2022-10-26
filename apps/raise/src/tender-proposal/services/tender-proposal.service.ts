@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { AllowedFileType } from '../../commons/enums/allowed-filetype.enum';
 import { BunnyService } from '../../libs/bunny/services/bunny.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import { UploadProposalFilesDto } from '../../tender/dto/upload-proposal-files.dto';
 import { ICurrentUser } from '../../user/interfaces/current-user.interface';
 import { ChangeProposalStateDto } from '../dtos/requests/change-proposal-state.dto';
 import { UpdateProposalDto } from '../dtos/requests/update-proposal.dto';
@@ -19,28 +20,56 @@ export class TenderProposalService {
     private readonly tenderProposalFlowService: TenderProposalFlowService,
   ) {}
 
-  async checkOldImageUrl(oldUrl: string, newUrl: string) {
+  async checkOldImageUrl(
+    oldValue: Prisma.JsonValue | null,
+    file: UploadProposalFilesDto,
+  ): Promise<boolean> {
     // if there's any old attachment, and it not the same as the old one, delete it
-    if (oldUrl !== newUrl) {
+    // if oldValue has key with name "file_url" and it's not the same as file.url
+    let isSame = true;
+    console.log('oldValue', oldValue);
+    console.log('file', file);
+
+    if (
+      oldValue &&
+      typeof oldValue === 'object' &&
+      'url' in oldValue &&
+      typeof oldValue['url'] === 'string' &&
+      oldValue['url'] !== file.url
+    ) {
+      // delete the old file
       console.log(
         "the old image url is different from the new one, let's delete it",
       );
-      // if it's including prefix, remove it
-      if (oldUrl.includes('https://media.tmra.io/')) {
-        oldUrl = oldUrl.replace('https://media.tmra.io/', '');
-      }
 
-      // if there's any old data on db, check if it's exist on bunny storage
-      const isExist = await this.bunnyService.checkIfImageExists(oldUrl);
+      console.log('oldValue', oldValue['url']);
+      console.log('file', file.url);
+      if (oldValue['url'] && oldValue['url'] !== file.url) {
+        if (oldValue['url'].includes('https://media.tmra.io/')) {
+          oldValue['url'] = oldValue['url'].replace(
+            'https://media.tmra.io/',
+            '',
+          );
+        }
+        console.log(oldValue['url']);
 
-      // if it's exist, delete it
-      if (isExist) {
-        const deleteImages = await this.bunnyService.deleteImage(oldUrl);
-        if (!deleteImages) {
-          throw new Error(`Failed to delete at update proposal`);
+        const isExist = await this.bunnyService.checkIfImageExists(
+          oldValue['url'],
+        );
+
+        if (isExist) {
+          const deleteImages = await this.bunnyService.deleteImage(
+            oldValue['url'],
+          );
+          if (!deleteImages) {
+            throw new Error(`Failed to delete at update proposal`);
+          }
         }
       }
+      isSame = false;
     }
+
+    return isSame;
   }
 
   async updateProposal(userId: string, updateProposal: UpdateProposalDto) {
@@ -55,14 +84,14 @@ export class TenderProposalService {
         id: updateProposal.proposal_id,
       },
     });
-    console.log('old proposal', proposal);
+    // console.log('old proposal', proposal);
 
     // match proposal.submitter_user_id with current user id for permissions
-    if (proposal.submitter_user_id !== userId) {
-      throw new BadRequestException(
-        `You're not allowed to update this proposal`,
-      );
-    }
+    // if (proposal.submitter_user_id !== userId) {
+    //   throw new BadRequestException(
+    //     `You're not allowed to update this proposal`,
+    //   );
+    // }
 
     // check if there is any data to update on the form1
     if (updateProposal.form1) {
@@ -91,32 +120,46 @@ export class TenderProposalService {
       // if there's any new upload request for replace the old one
       if (project_attachments) {
         // TODO: when the flow is changed u have to create a new func to upload
-        // it should be here
+        // it should be here latter on if fe decided to upload the file when submit button is pressed
 
         // if old proposal value exist
+        let isSame = true;
         if (proposal.project_attachments) {
-          await this.checkOldImageUrl(
-            project_attachments.url,
-            proposal.project_attachments,
+          const sameUrl = await this.checkOldImageUrl(
+            proposal.project_attachments, // old object value
+            project_attachments, // new object from request
           );
+          if (!sameUrl) isSame = false;
         }
 
-        proposal.project_attachments = project_attachments.url;
-        proposal.project_attachments_size = project_attachments.size;
-        proposal.project_attachments_type = project_attachments.type;
+        // changes to new one if it's not the same
+        if (!isSame) {
+          proposal.project_attachments = {
+            url: project_attachments.url,
+            type: project_attachments.type,
+            size: project_attachments.size,
+          };
+        }
       }
 
       if (letter_ofsupport_req) {
+        let isSame = true;
         if (proposal.letter_ofsupport_req) {
-          await this.checkOldImageUrl(
-            letter_ofsupport_req.url,
-            proposal.letter_ofsupport_req,
+          const sameUrl = await this.checkOldImageUrl(
+            proposal.project_attachments, // old object value
+            letter_ofsupport_req, // new object from request
           );
+          if (!sameUrl) isSame = false;
         }
 
-        proposal.letter_ofsupport_req = letter_ofsupport_req.url;
-        proposal.letter_ofsupport_req_size = letter_ofsupport_req.size;
-        proposal.letter_ofsupport_req_type = letter_ofsupport_req.type;
+        // changes to new one if it's not the same
+        if (!isSame) {
+          proposal.letter_ofsupport_req = {
+            url: letter_ofsupport_req.url,
+            type: letter_ofsupport_req.type,
+            size: letter_ofsupport_req.size,
+          };
+        }
       }
     }
 
@@ -215,7 +258,7 @@ export class TenderProposalService {
           ...updateProposalPayload,
         },
       });
-      console.log('proposal updated', updatedProposal);
+      // console.log('proposal updated', updatedProposal);
     }
   }
 

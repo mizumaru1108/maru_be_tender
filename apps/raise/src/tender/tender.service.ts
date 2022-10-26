@@ -67,7 +67,9 @@ export class TenderService {
         //   throw new BadRequestException('Failed to upload file!');
         // }
         // console.log('uploaded', uploaded);
-        if (uploaded) uploadedFileLinks += `[${index}] ${uploaded} \n`;
+        if (uploaded) {
+          uploadedFileLinks += `[${index}] ${uploaded} \n`;
+        }
       });
       await Promise.all(processFiles);
       return uploadedFileLinks;

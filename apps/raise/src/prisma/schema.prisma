@@ -50,7 +50,7 @@ model client_data {
   created_at               DateTime?            @default(now()) @db.Timestamptz(6)
   updated_at               DateTime?            @default(now()) @db.Timestamptz(6)
   status                   String               @default("WAITING_FOR_ACTIVATION")
-  client_field             String?              @db.Char
+  client_field             String?              @db.VarChar
   user                     user?                @relation(fields: [email], references: [email], onDelete: Cascade)
   client_status            client_status        @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
   client_log               client_log[]
@@ -134,8 +134,6 @@ model proposal {
   project_implement_date       DateTime?                  @db.Date
   project_location             String?
   execution_time               String?                    @db.Char
-  project_attachments          String?
-  letter_ofsupport_req         String?
   num_ofproject_binicficiaries Int?
   project_goals                String?
   project_outputs              String?
@@ -161,10 +159,8 @@ model proposal {
   project_manager_id           String?                    @default("null")
   supervisor_id                String?                    @default("null")
   track_position               Int?                       @default(1)
-  project_attachments_size     Int?
-  project_attachments_type     String?                    @db.VarChar
-  letter_ofsupport_req_size    Int?
-  letter_ofsupport_req_type    String?                    @db.VarChar
+  project_attachments          Json?
+  letter_ofsupport_req         Json?
   proposal_beneficiaries       proposal_beneficiaries?    @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
   project_tracks               project_tracks?            @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
   proposal_request             proposal_request?          @relation(fields: [outter_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_requested_fkey")
