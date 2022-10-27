@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Prisma, proposal_item_budget } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { AllowedFileType } from '../../commons/enums/allowed-filetype.enum';
@@ -24,48 +28,38 @@ export class TenderProposalService {
     oldValue: Prisma.JsonValue | null,
     file: UploadProposalFilesDto,
   ): Promise<boolean> {
-    // if there's any old attachment, and it not the same as the old one, delete it
-    // if oldValue has key with name "file_url" and it's not the same as file.url
     let isSame = true;
-    console.log('oldValue', oldValue);
-    console.log('file', file);
 
     if (
-      oldValue &&
-      typeof oldValue === 'object' &&
-      'url' in oldValue &&
-      typeof oldValue['url'] === 'string' &&
-      oldValue['url'] !== file.url
+      oldValue && // if old value is not null
+      typeof oldValue === 'object' && // if old value is object
+      'url' in oldValue && // if old value has url property
+      typeof oldValue['url'] === 'string' && // if old value url is string
+      oldValue['url'] !== file.url // if old value url is not equal to new url
     ) {
       // delete the old file
       console.log(
         "the old image url is different from the new one, let's delete it",
       );
 
-      console.log('oldValue', oldValue['url']);
-      console.log('file', file.url);
-      if (oldValue['url'] && oldValue['url'] !== file.url) {
-        if (oldValue['url'].includes('https://media.tmra.io/')) {
-          oldValue['url'] = oldValue['url'].replace(
-            'https://media.tmra.io/',
-            '',
-          );
-        }
-        console.log(oldValue['url']);
+      if (oldValue['url'].includes('https://media.tmra.io/')) {
+        oldValue['url'] = oldValue['url'].replace('https://media.tmra.io/', '');
+      }
+      // console.log(oldValue['url']);
 
-        const isExist = await this.bunnyService.checkIfImageExists(
+      const isExist = await this.bunnyService.checkIfImageExists(
+        oldValue['url'],
+      );
+
+      if (isExist) {
+        const deleteImages = await this.bunnyService.deleteImage(
           oldValue['url'],
         );
-
-        if (isExist) {
-          const deleteImages = await this.bunnyService.deleteImage(
-            oldValue['url'],
-          );
-          if (!deleteImages) {
-            throw new Error(`Failed to delete at update proposal`);
-          }
+        if (!deleteImages) {
+          throw new Error(`Failed to delete at update proposal`);
         }
       }
+
       isSame = false;
     }
 
@@ -134,7 +128,7 @@ export class TenderProposalService {
 
         // changes to new one if it's not the same
         if (!isSame) {
-          proposal.project_attachments = {
+          updateProposalPayload.project_attachments = {
             url: project_attachments.url,
             type: project_attachments.type,
             size: project_attachments.size,
@@ -154,7 +148,7 @@ export class TenderProposalService {
 
         // changes to new one if it's not the same
         if (!isSame) {
-          proposal.letter_ofsupport_req = {
+          updateProposalPayload.letter_ofsupport_req = {
             url: letter_ofsupport_req.url,
             type: letter_ofsupport_req.type,
             size: letter_ofsupport_req.size,
@@ -249,16 +243,19 @@ export class TenderProposalService {
 
     // if updateProposalPayload !== {} then update the proposal
     if (Object.keys(updateProposalPayload).length > 0) {
-      // update proposal
-      const updatedProposal = await this.prismaService.proposal.update({
-        where: {
-          id: updateProposal.proposal_id,
-        },
-        data: {
-          ...updateProposalPayload,
-        },
-      });
-      // console.log('proposal updated', updatedProposal);
+      try {
+        await this.prismaService.proposal.update({
+          where: {
+            id: updateProposal.proposal_id,
+          },
+          data: {
+            ...updateProposalPayload,
+          },
+        });
+      } catch (error) {
+        console.log(error);
+        throw new InternalServerErrorException(error.message);
+      }
     }
   }
 

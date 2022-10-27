@@ -131,7 +131,6 @@ export class BunnyService {
   }
 
   async deleteImage(path: string): Promise<boolean> {
-    console.log('path', path);
     const mediaUrl = this.urlMedia + '/' + path;
     const cdnUrl = this.cdnUrl + '/' + path;
     console.info(`Deleting ${cdnUrl} from storage ...`);
@@ -141,7 +140,7 @@ export class BunnyService {
       headers: {
         AccessKey: this.accessKey,
       },
-      url: cdnUrl,
+      url: mediaUrl,
     };
 
     try {
