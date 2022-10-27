@@ -11,6 +11,7 @@ import { UpdateProposalFirstStepDto } from './update-proposal-first-step.dto';
 import { UpdateProposalFourthStepDto } from './update-proposal-fourth-step.dto';
 import { UpdateProposalSecondStepDto } from './update-proposal-second-step.dto';
 import { UpdateProposalThirdStepDto } from './update-proposal-third-step.dto';
+import { UpdateProposalFifthStepDto } from "./update-proposal-fifth-step.dto";
 
 export class UpdateProposalDto {
   @ApiProperty()
@@ -48,8 +49,8 @@ export class UpdateProposalDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  // @IsNotEmptyObject()
-  // @Type(() => CreateProposalFifthStepDto)
-  // @ValidateNested()
-  form5: any;
+  @IsNotEmptyObject()
+  @Type(() => UpdateProposalFifthStepDto)
+  @ValidateNested()
+  form5: UpdateProposalFifthStepDto;
 }

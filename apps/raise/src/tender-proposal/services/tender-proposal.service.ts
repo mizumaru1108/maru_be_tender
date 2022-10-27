@@ -3,7 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { Prisma, proposal_item_budget } from '@prisma/client';
+import { Prisma, proposal, proposal_item_budget } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { AllowedFileType } from '../../commons/enums/allowed-filetype.enum';
 import { BunnyService } from '../../libs/bunny/services/bunny.service';
@@ -12,6 +12,7 @@ import { UploadProposalFilesDto } from '../../tender/dto/upload-proposal-files.d
 import { ICurrentUser } from '../../user/interfaces/current-user.interface';
 import { ChangeProposalStateDto } from '../dtos/requests/change-proposal-state.dto';
 import { UpdateProposalDto } from '../dtos/requests/update-proposal.dto';
+import { UpdateProposalResponseDto } from '../dtos/responses/update-proposal-response.dto';
 import { TenderProposalFlowService } from './tender-proposal-flow.service';
 import { TenderProposalLogService } from './tender-proposal-log.service';
 // import { nanoid } from 'nanoid';
@@ -66,11 +67,13 @@ export class TenderProposalService {
     return isSame;
   }
 
-  async updateProposal(userId: string, updateProposal: UpdateProposalDto) {
+  async updateProposal(
+    userId: string,
+    updateProposal: UpdateProposalDto,
+  ): Promise<UpdateProposalResponseDto> {
     // create payload for update proposal
     const updateProposalPayload: Prisma.proposalUpdateInput = {};
-
-    // console.log('userid', userId);
+    let message = 'Proposal updated successfully';
 
     // find proposal by id
     const proposal = await this.prismaService.proposal.findUniqueOrThrow({
@@ -78,7 +81,6 @@ export class TenderProposalService {
         id: updateProposal.proposal_id,
       },
     });
-    // console.log('old proposal', proposal);
 
     // match proposal.submitter_user_id with current user id for permissions
     // if (proposal.submitter_user_id !== userId) {
@@ -155,6 +157,8 @@ export class TenderProposalService {
           };
         }
       }
+
+      message = message + ` some changes from1 has been applied.`;
     }
 
     if (updateProposal.form2) {
@@ -178,6 +182,7 @@ export class TenderProposalService {
         updateProposalPayload.project_strengths = project_strengths;
       }
       project_risks && (updateProposalPayload.project_risks = project_risks);
+      message = message + ` some changes from2 has been applied.`;
     }
 
     if (updateProposal.form3) {
@@ -189,6 +194,7 @@ export class TenderProposalService {
       pm_email && (updateProposalPayload.pm_email = pm_email);
       region && (updateProposalPayload.region = region);
       governorate && (updateProposalPayload.governorate = governorate);
+      message = message + ` some changes from3 has been applied.`;
     }
 
     if (updateProposal.form4) {
@@ -219,7 +225,7 @@ export class TenderProposalService {
             data: itemBudgets,
           });
         } catch (error) {
-          throw new BadRequestException(error.message);
+          throw new InternalServerErrorException(error.message);
         }
       }
 
@@ -236,15 +242,64 @@ export class TenderProposalService {
             },
           });
         } catch (error) {
-          throw new BadRequestException(error.message);
+          throw new InternalServerErrorException(error.message);
         }
       }
+      message = message + ` some changes from4 has been applied.`;
     }
 
+    if (updateProposal.form5) {
+      if (updateProposal.form5.proposal_bank_information_id) {
+        // find on bank_informations, if exist update, if didnt exist create
+        const proposalBankInformation =
+          await this.prismaService.propsal_bank_information.findFirst({
+            where: {
+              proposal_id: proposal.id,
+            },
+          });
+
+        // if its exist update it
+        if (proposalBankInformation) {
+          try {
+            await this.prismaService.propsal_bank_information.update({
+              where: {
+                id: proposalBankInformation.id,
+              },
+              data: {
+                bank_information_id:
+                  updateProposal.form5.proposal_bank_information_id,
+              },
+            });
+          } catch (error) {
+            throw new InternalServerErrorException(error.message);
+          }
+        }
+
+        // if it's not exist create it
+        if (!proposalBankInformation) {
+          try {
+            await this.prismaService.propsal_bank_information.create({
+              data: {
+                id: uuidv4(),
+                proposal_id: proposal.id,
+                bank_information_id:
+                  updateProposal.form5.proposal_bank_information_id,
+              },
+            });
+          } catch (error) {
+            console.log(error);
+            throw new InternalServerErrorException(error.message);
+          }
+        }
+      }
+      message = message + ` some changes from5 has been applied.`;
+    }
+
+    let update: proposal | null = null;
     // if updateProposalPayload !== {} then update the proposal
     if (Object.keys(updateProposalPayload).length > 0) {
       try {
-        await this.prismaService.proposal.update({
+        const updatedProposal = await this.prismaService.proposal.update({
           where: {
             id: updateProposal.proposal_id,
           },
@@ -252,11 +307,21 @@ export class TenderProposalService {
             ...updateProposalPayload,
           },
         });
+        update = updatedProposal;
       } catch (error) {
         console.log(error);
         throw new InternalServerErrorException(error.message);
       }
     }
+    if (!update) message = 'No changes made to proposal';
+
+    let response: UpdateProposalResponseDto = {
+      currentProposal: proposal,
+      updatedProposal: update,
+      details: message,
+    };
+
+    return response;
   }
 
   async changeProposalState(

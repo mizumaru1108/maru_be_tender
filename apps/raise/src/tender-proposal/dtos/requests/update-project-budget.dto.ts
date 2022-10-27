@@ -1,6 +1,6 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Decimal } from '@prisma/client/runtime';
-import { IsString, IsNotEmpty, IsNumber, Min } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
 
 export class UpdateProjectBudgetDto {
   @ApiProperty()
