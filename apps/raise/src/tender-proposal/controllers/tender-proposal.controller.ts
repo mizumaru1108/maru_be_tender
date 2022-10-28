@@ -19,12 +19,30 @@ export class TenderProposalController {
    * the status of proposal will be change, and the log will be created
    */
   @UseGuards(JwtAuthGuard)
-  @Patch('current-change-state')
+  @Patch('change-state')
   changeProposalState(
     @CurrentUser() currentUser: ICurrentUser,
     @Body() request: ChangeProposalStateDto,
   ) {
     return this.tenderProposalService.changeProposalState(currentUser, request);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('update-draft')
+  async updateDraft(
+    @CurrentUser() currentUser: ICurrentUser,
+    @Body() request: UpdateProposalDto,
+  ): Promise<BaseResponse<UpdateProposalResponseDto>> {
+    // console.log('current user', currentUser);
+    const updateResponse = await this.tenderProposalService.updateProposal(
+      currentUser.id,
+      request,
+    );
+    return baseResponseHelper(
+      updateResponse,
+      HttpStatus.OK,
+      'Proposal updated successfully',
+    );
   }
 
   @UseGuards(JwtAuthGuard)

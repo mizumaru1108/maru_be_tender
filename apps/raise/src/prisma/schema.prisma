@@ -22,31 +22,31 @@ model bank_information {
 
 model client_data {
   id                       String               @id(map: "users_pkey")
-  entity                   String?              @default(dbgenerated("now()")) @db.Char
-  authority                String?              @db.Char
-  headquarters             String?
+  entity                   String?              @db.VarChar
+  authority                String?              @db.VarChar
+  headquarters             String?              @db.VarChar
   date_of_esthablistmen    DateTime?            @db.Date
   num_of_beneficiaries     Int?
   num_of_employed_facility Int?
   governorate              String?
   region                   String?              @db.Char
-  entity_mobile            String?              @db.Char
-  center_administration    String?              @db.Char
-  twitter_acount           String?
-  phone                    String?              @db.Char
-  website                  String?
-  email                    String?              @unique @db.Char
-  password                 String?
-  license_number           String               @db.Char
+  entity_mobile            String?              @db.VarChar
+  center_administration    String?              @db.VarChar
+  twitter_acount           String?              @db.VarChar
+  phone                    String?              @db.VarChar
+  website                  String?              @db.VarChar
+  email                    String?              @unique @db.VarChar
+  password                 String?              @db.VarChar
+  license_number           String               @db.VarChar
   license_expired          DateTime?            @db.Date
   license_issue_date       DateTime?            @db.Date
   license_file             String?
   board_ofdec_file         String?
-  ceo_mobile               String?              @db.Char
-  ceo_name                 String?              @db.Char
-  data_entry_mobile        String?              @db.Char
-  data_entry_name          String?              @db.Char
-  data_entry_mail          String?              @db.Char
+  ceo_mobile               String?              @db.VarChar
+  ceo_name                 String?              @db.VarChar
+  data_entry_mobile        String?              @db.VarChar
+  data_entry_name          String?              @db.VarChar
+  data_entry_mail          String?              @db.VarChar
   created_at               DateTime?            @default(now()) @db.Timestamptz(6)
   updated_at               DateTime?            @default(now()) @db.Timestamptz(6)
   status                   String               @default("WAITING_FOR_ACTIVATION")
@@ -129,7 +129,7 @@ model proposal {
   submitter_user_id            String
   created_at                   DateTime                   @default(now()) @db.Timestamptz(6)
   updated_at                   DateTime                   @default(now()) @db.Timestamptz(6)
-  project_track                String?
+  project_track                String?                    @default("DEFAULT_TRACK")
   project_idea                 String?
   project_implement_date       DateTime?                  @db.Date
   project_location             String?
@@ -161,6 +161,8 @@ model proposal {
   track_position               Int?                       @default(1)
   project_attachments          Json?
   letter_ofsupport_req         Json?
+  on_revision                  Boolean?                   @default(false)
+  on_consulting                Boolean?                   @default(false)
   proposal_beneficiaries       proposal_beneficiaries?    @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
   project_tracks               project_tracks?            @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
   proposal_request             proposal_request?          @relation(fields: [outter_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_requested_fkey")
@@ -260,13 +262,15 @@ model user {
 }
 
 model user_type {
-  id                                                                String                @id
-  title                                                             String                @unique(map: "user_type_user_type_tittle_key")
-  project_track_flows_project_track_flows_assigned_toTouser_type    project_track_flows[] @relation("project_track_flows_assigned_toTouser_type")
-  project_track_flows_project_track_flows_reject_officerTouser_type project_track_flows[] @relation("project_track_flows_reject_officerTouser_type")
-  proposal                                                          proposal[]
-  proposal_assign                                                   proposal_assign[]
-  proposal_log                                                      proposal_log[]
+  id                                                                 String                @id
+  title                                                              String                @unique(map: "user_type_user_type_tittle_key")
+  project_track_flows_project_track_flows_next_officerTouser_type    project_track_flows[] @relation("project_track_flows_next_officerTouser_type")
+  project_track_flows_project_track_flows_revised_officerTouser_type project_track_flows[] @relation("project_track_flows_revised_officerTouser_type")
+  project_track_flows_project_track_flows_assigned_toTouser_type     project_track_flows[] @relation("project_track_flows_assigned_toTouser_type")
+  project_track_flows_project_track_flows_reject_officerTouser_type  project_track_flows[] @relation("project_track_flows_reject_officerTouser_type")
+  proposal                                                           proposal[]
+  proposal_assign                                                    proposal_assign[]
+  proposal_log                                                       proposal_log[]
 }
 
 model proposal_assign {
@@ -446,8 +450,8 @@ model edit_request {
   id                  String              @id
   field_name          String              @db.Char
   approval_status     String              @default("WAITING_FOR_APPROVAL")
-  old_value           String
-  new_value           String
+  old_value           String?             @db.VarChar
+  new_value           String              @db.VarChar
   user_id             String
   edit_request_status edit_request_status @relation(fields: [approval_status], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
@@ -459,19 +463,21 @@ model edit_request_status {
 }
 
 model project_track_flows {
-  id                                                      String         @id(map: "proposal_track_flows_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  assigned_to                                             String
-  step_position                                           Int
-  belongs_to_track                                        String
-  reject_position                                         Int?
-  reject_officer                                          String?
-  revised_position                                        Int?
-  revised_officer                                         String?
-  next_position                                           Int?
-  next_officer                                            String?
-  project_tracks                                          project_tracks @relation(fields: [belongs_to_track], references: [id], onDelete: Cascade)
-  user_type_project_track_flows_assigned_toTouser_type    user_type      @relation("project_track_flows_assigned_toTouser_type", fields: [assigned_to], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_track_flows_assigned_to_fkey")
-  user_type_project_track_flows_reject_officerTouser_type user_type?     @relation("project_track_flows_reject_officerTouser_type", fields: [reject_officer], references: [id], onDelete: Cascade, map: "proposal_track_flows_revert_officer_fkey")
+  id                                                       String          @id(map: "proposal_track_flows_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  assigned_to                                              String
+  step_position                                            Int?
+  belongs_to_track                                         String?
+  reject_position                                          Int?
+  reject_officer                                           String?
+  revised_position                                         Int?
+  revised_officer                                          String?
+  next_position                                            Int?
+  next_officer                                             String?
+  project_tracks                                           project_tracks? @relation(fields: [belongs_to_track], references: [id], onDelete: Cascade)
+  user_type_project_track_flows_next_officerTouser_type    user_type?      @relation("project_track_flows_next_officerTouser_type", fields: [next_officer], references: [id], onDelete: Cascade)
+  user_type_project_track_flows_revised_officerTouser_type user_type?      @relation("project_track_flows_revised_officerTouser_type", fields: [revised_officer], references: [id], onDelete: Cascade)
+  user_type_project_track_flows_assigned_toTouser_type     user_type       @relation("project_track_flows_assigned_toTouser_type", fields: [assigned_to], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_track_flows_assigned_to_fkey")
+  user_type_project_track_flows_reject_officerTouser_type  user_type?      @relation("project_track_flows_reject_officerTouser_type", fields: [reject_officer], references: [id], onDelete: Cascade, map: "proposal_track_flows_revert_officer_fkey")
 }
 
 model project_tracks {

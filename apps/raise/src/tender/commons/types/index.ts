@@ -35,7 +35,7 @@ export type TenderAppRole =
   | 'PROJECT_MANAGER'
   | 'PROJECT_SUPERVISOR';
 
-export const roleMappers = {
+export const appRolesMappers = {
   cluster_admin: '',
   tender_accounts_manager: 'accounts-manager',
   tender_admin: 'admin',
@@ -47,4 +47,18 @@ export const roleMappers = {
   tender_moderator: 'moderator',
   tender_project_manager: 'project-manager',
   tender_project_supervisor: 'project-supervisor',
+};
+
+export const appRoleMappers = {
+  cluster_admin: '',
+  tender_accounts_manager: 'ACCOUNTS_MANAGER',
+  tender_admin: 'ADMIN',
+  tender_ceo: 'CEO',
+  tender_cashier: 'CASHIER',
+  tender_client: 'CLIENT',
+  tender_consultant: 'CONSULTANT',
+  tender_finance: 'FINANCE',
+  tender_moderator: 'MODERATOR',
+  tender_project_manager: 'PROJECT_MANAGER',
+  tender_project_supervisor: 'PROJECT_SUPERVISOR',
 };

@@ -2,8 +2,15 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { Prisma, proposal, proposal_item_budget } from '@prisma/client';
+import {
+  Prisma,
+  project_track_flows,
+  proposal,
+  proposal_item_budget,
+} from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { AllowedFileType } from '../../commons/enums/allowed-filetype.enum';
 import { BunnyService } from '../../libs/bunny/services/bunny.service';
@@ -15,7 +22,13 @@ import { UpdateProposalDto } from '../dtos/requests/update-proposal.dto';
 import { UpdateProposalResponseDto } from '../dtos/responses/update-proposal-response.dto';
 import { TenderProposalFlowService } from './tender-proposal-flow.service';
 import { TenderProposalLogService } from './tender-proposal-log.service';
-// import { nanoid } from 'nanoid';
+import { nanoid } from 'nanoid';
+import {
+  appRoleMappers,
+  TenderAppRole,
+  TenderAppRoles,
+  TenderFusionAuthRoles,
+} from '../../tender/commons/types';
 @Injectable()
 export class TenderProposalService {
   constructor(
@@ -324,26 +337,78 @@ export class TenderProposalService {
     return response;
   }
 
+  async fetchTrack(
+    position: number,
+    track_name: string,
+  ): Promise<project_track_flows> {
+    const track = await this.prismaService.project_track_flows.findFirst({
+      where: {
+        step_position: position,
+        belongs_to_track: track_name,
+      },
+    });
+    if (!track) {
+      throw new NotFoundException(
+        `Track with position ${position} and track name ${track_name} not found`,
+      );
+    }
+    return track;
+  }
+
   async changeProposalState(
     currentUser: ICurrentUser,
     request: ChangeProposalStateDto,
   ) {
     // console.log('currentUser', currentUser);
-    // console.log('request', request);
+    // console.log('request', request);\
+
+    const currentRoles = currentUser.type as TenderFusionAuthRoles;
+    if (!currentRoles)
+      throw new UnauthorizedException(
+        'You are not authorized to perform this action',
+      );
+    console.log('roles', currentRoles);
+    const appRoles = appRoleMappers[currentRoles] as TenderAppRole;
+    console.log('app roles', appRoles);
+
+    // get proposal by id
+    const proposal = await this.prismaService.proposal.findUniqueOrThrow({
+      where: {
+        id: request.proposal_id,
+      },
+    });
+    console.log('proposal', proposal);
+
+    if (appRoles === 'MODERATOR') {
+      if (request.action === 'approve') {
+        // find track
+        const track = await this.fetchTrack(
+          proposal.track_position!,
+          proposal.project_track!,
+        );
+
+        // update proposal track position and state
+        const updatedProposal = await this.prismaService.proposal.update({
+          where: {
+            id: proposal.id,
+          },
+          data: {
+            track_position: proposal.track_position! + 1,
+            state: track.assigned_to,
+          },
+        });
+      }
+    }
 
     // get the flow to determine where is the next step
-    const flow = await this.tenderProposalFlowService.getFlow(
-      request.track_name,
-    );
-
-    const proposalLogPayload = {
-      // id require nano id (cant just import bescause es module on tsconfig)
-      id: require('nanoid').nanoid(),
-      proposalId: request.proposal_id,
-      reviewer_id: currentUser.id,
-    };
-    const result = await this.prismaService.project_tracks.findMany();
-    console.log('result', result);
-    return result;
+    // const proposalLogPayload = {
+    //   // id require nano id (cant just import bescause es module on tsconfig)
+    //   id: nano(),
+    //   proposalId: request.proposal_id,
+    //   reviewer_id: currentUser.id,
+    // };
+    // const result = await this.prismaService.project_tracks.findMany();
+    // console.log('result', result);
+    // return result;
   }
 }
