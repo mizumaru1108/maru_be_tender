@@ -429,10 +429,10 @@ model payment_status {
 }
 
 model propsal_bank_information {
-  id                  Int              @id @default(autoincrement())
+  id                  String           @id
   bank_information_id String           @db.Uuid
   proposal_id         String
-  bank_information    bank_information @relation(fields: [bank_information_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  bank_information    bank_information @relation(fields: [bank_information_id], references: [id], onDelete: Cascade)
   proposal            proposal         @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
 }
 

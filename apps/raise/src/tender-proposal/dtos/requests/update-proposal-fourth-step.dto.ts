@@ -1,10 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsNotEmpty,
   IsNumber,
   IsOptional,
-  IsString,
   ValidateNested,
 } from 'class-validator';
 import { UpdateProjectBudgetDto } from './update-project-budget.dto';
@@ -17,7 +17,8 @@ export class UpdateProposalFourthStepDto {
   amount_required_fsupport?: number;
 
   @ApiProperty()
-  @Type(() => UpdateProjectBudgetDto)
+  @IsArray()
   @ValidateNested({ each: true })
+  @Type(() => UpdateProjectBudgetDto)
   detail_project_budgets: UpdateProjectBudgetDto[];
 }
