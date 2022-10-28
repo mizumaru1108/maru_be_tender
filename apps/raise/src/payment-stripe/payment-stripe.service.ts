@@ -1747,6 +1747,7 @@ export class PaymentStripeService {
     const payment_status = payLoad.data.object.payment_status;
     const transactionId = payLoad.data.object.payment_intent;
     const status = payLoad.data.object.status;
+    const ObjectId = require('mongoose').Types.ObjectId;
     let getDonationLog;
     let now: Date = new Date();
     let logsData = true;
@@ -1762,9 +1763,10 @@ export class PaymentStripeService {
           donorId: 1,
           organizationId: 1,
         },
-      );
-      donorId = getDonationLog?.donorId;
-      organizationId = getDonationLog?.organizationId;
+        );
+        organizationId = new ObjectId(getDonationLog?.organizationId);
+        donorId = getDonationLog?.donorId;
+        campaignId = new ObjectId(getDonationLog?.campaignId);
       if (!getDonationLog) {
         getDonationLog = await this.donationLogsModel.findOne(
           { transactionId: transactionId },
@@ -1777,17 +1779,17 @@ export class PaymentStripeService {
             nonprofitRealmId: 1,
           },
         );
-        donorId = getDonationLog?.donorUserId;
         organizationId = getDonationLog?.nonprofitRealmId;
+        donorId = getDonationLog?.donorUserId;
+        campaignId = getDonationLog?.campaignId;
         logsData = false;
       } 
       
-      if(getDonationLog && !logsData) {
+      if(!getDonationLog && !logsData) {
         throw new HttpException(`Donation Log not found`, HttpStatus.NOT_FOUND);
       }
       
       ids = getDonationLog?._id;
-      campaignId = getDonationLog?.campaignId;
 
       const getCampaign = await this.campaignModel.findOne(
         { _id: campaignId },
@@ -1848,19 +1850,18 @@ export class PaymentStripeService {
       ).toString();
 
       const notifSettings = await this.notifSettingsModel.findOne({
-        organizationId: organizationId,
+        organizationId: ObjectId(organizationId),
       });
       const getOrganization = await this.organizationModel.findOne({
         _id: organizationId,
       });
 
-      console.info("get Organzation", organizationId);
-      console.info("get Notif", notifSettings, "getOrgs", getOrganization);
+      console.info("Get Notif Organization", notifSettings, "Get Organization", getOrganization);
 
       if (getOrganization && notifSettings) {
         this.logger.debug(`notification settings ${notifSettings.id}`);
         const subject = `New Donation For ${getCampaign.title}`;
-        const donorName = donor
+        const donorName = donor && !anonymousData
           ? `${donor.firstname} ${donor.lastname}`
           : anonymousData
           ? anonymousData.anonymous
@@ -1871,7 +1872,7 @@ export class PaymentStripeService {
           const emailData = {
             // donor: 'Donor',
             donor: donorName,
-            title: getCampaign.title,
+            title: getCampaign.title || getCampaign.campaignName,
             currency: getDonationLog.currency || '',
             amount: getDonationLog.amount || '',
           };
@@ -1885,12 +1886,12 @@ export class PaymentStripeService {
           );
           const emailDonor = {
             donor: donorName,
-            title: getCampaign.title,
+            title: getCampaign.title || getCampaign.campaignName,
             currency: getDonationLog.currency,
             amount: getDonationLog.amount,
           };
 
-          if (donor) {
+          if (donor && !anonymousData) {
             this.emailService.sendMailWTemplate(
               donor.email,
               subject,
@@ -1918,7 +1919,7 @@ export class PaymentStripeService {
       }
 
       const updateCampaign = await this.campaignModel.updateOne(
-        { _id: getDonationLog?.campaignId },
+        { _id: campaignId },
         {
           amountProgress: Number(lastAmount),
           updatedAt: now,
@@ -1953,7 +1954,7 @@ export class PaymentStripeService {
             const subject = 'Complete Donation';
             const emailData = {
               campaignId: getCampaign.id,
-              campaignName: getCampaign.title,
+              campaignName: getCampaign.title || getCampaign.campaignName,
             };
             this.emailService.sendMailWTemplate(
               getOrganization.contactEmail,
