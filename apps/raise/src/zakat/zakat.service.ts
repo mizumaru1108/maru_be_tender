@@ -366,7 +366,6 @@ export class ZakatService {
       {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
-          campaignId: new Types.ObjectId('6299ed6a9f1ad428563563ed'),
         },
       },
       {

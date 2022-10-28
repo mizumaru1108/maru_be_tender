@@ -175,15 +175,17 @@ export class DonorController {
 
   @Get('getDonationLogs')
   async getDonationLogs(
+    @Query('organizationId') organizationId: string,
     @Query('donorUserId') donorUserId: string,
-    @Query('sortDate') sortDate: string,
     @Query('sortStatus') sortStatus: string,
+    @Query('sortDate') sortDate: string,
   ) {
     this.logger.debug('find donation logs by donor...');
     return await this.donorService.getDonationLogs(
+      organizationId,
       donorUserId,
-      sortDate,
       sortStatus,
+      sortDate
     );
   }
 
