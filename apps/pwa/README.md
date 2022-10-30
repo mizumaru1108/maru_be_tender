@@ -1,5 +1,7 @@
 # Minimal TypeScript v3.5.0 react-scripts_TS
 
+`force-build-test`
+
 .
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
