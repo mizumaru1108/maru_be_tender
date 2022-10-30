@@ -39,7 +39,7 @@ export const ApproveProposalFormFields = [
     children: (
       <>
         <option value="supervisor1" style={{ backgroundColor: '#fff' }}>
-          الشمرف 1
+          المشرف 1
         </option>
         <option value="supervisor2" style={{ backgroundColor: '#fff' }}>
           المشرف 2

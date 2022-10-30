@@ -10,6 +10,10 @@ export const Taps = {
         value: 'project-budget',
       },
       {
+        title: 'project_details.actions.project_timeline',
+        value: 'project-timeline',
+      },
+      {
         title: 'project_details.actions.follow_ups',
         value: 'follow-ups',
       },

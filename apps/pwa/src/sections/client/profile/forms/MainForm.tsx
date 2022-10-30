@@ -5,8 +5,9 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import RHFDatePicker from 'components/hook-form/RHFDatePicker';
 import useLocales from 'hooks/useLocales';
-import { MainValuesProps } from './types';
+import { MainValuesProps } from '../../../../@types/register';
 import { REGIONS } from 'sections/auth/register/RegisterFormData';
+import { useEffect, useMemo } from 'react';
 
 type FormProps = {
   children?: React.ReactNode;
@@ -19,7 +20,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
     entity: Yup.string().required('Entity is required'),
     client_field: Yup.string().required('Client Field Area is required'),
     authority: Yup.string().required('Authority is required'),
-    date_of_esthablistmen: Yup.date().default(null).required('Date Of Establishment is required'),
+    date_of_esthablistmen: Yup.string().default(null).required('Date Of Establishment is required'),
     headquarters: Yup.string().required('Headquarters is required'),
     num_of_employed_facility: Yup.number()
       .positive()
@@ -33,19 +34,24 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
 
   const methods = useForm<MainValuesProps>({
     resolver: yupResolver(RegisterSchema),
-    defaultValues,
+    defaultValues: useMemo(() => defaultValues, [defaultValues]),
   });
 
   const {
     watch,
     handleSubmit,
     formState: { isSubmitting },
-    getValues,
+    reset,
   } = methods;
 
   const onSubmitForm = async (data: MainValuesProps) => {
     onSubmit(data);
   };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    reset(defaultValues);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues]);
   const client_field = watch('client_field');
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
@@ -116,11 +122,11 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
             name="date_of_esthablistmen"
             label={translate('register_form1.date_of_establishment.label')}
             placeholder={translate('register_form1.date_of_establishment.placeholder')}
-            InputProps={{
-              inputProps: {
-                max: new Date(new Date().setDate(new Date().getDate())).toISOString().split('T')[0],
-              },
-            }}
+            // InputProps={{
+            //   inputProps: {
+            //     max: new Date(new Date().setDate(new Date().getDate())).toISOString().split('T')[0],
+            //   },
+            // }}
           />
         </Grid>
         <Grid item md={6} xs={12}>

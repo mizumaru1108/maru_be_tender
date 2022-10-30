@@ -38,7 +38,7 @@ const BankImageComp = ({
         width: '100%',
         height: '180px',
         padding: '10px',
-        backgroundImage: `url(${imageUrl ? imageUrl : BankImage})`,
+        backgroundImage: `url(${BankImage})`,
       }}
     >
       <Stack direction="column" sx={{ color: '#fff' }}>
@@ -51,6 +51,8 @@ const BankImageComp = ({
       <Button
         component={Link}
         href={imageUrl}
+        target="_blank"
+        rel="noopener noreferrer"
         download="صورة بطاقة الحساب البنكي"
         sx={{
           flex: 1,

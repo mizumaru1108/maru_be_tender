@@ -11,7 +11,7 @@ import UnActivatedAccount from './UnActivatedAccount';
 function DashboardPage() {
   const { user } = useAuth();
   const { id } = user!;
-  const [result, reexecuteQuery] = useQuery({
+  const [result] = useQuery({
     query: checkClientStatus,
     variables: { id },
   });

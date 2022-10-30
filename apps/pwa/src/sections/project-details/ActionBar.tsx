@@ -31,6 +31,9 @@ function ActionBar() {
             height: '50px',
             alignItems: 'center',
             borderRadius: '10px',
+            ':hover': {
+              backgroundColor: '#fff',
+            },
           }}
           onClick={() => {
             handleOnClick(item?.value);

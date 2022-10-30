@@ -782,6 +782,7 @@ const ar = {
       },
     },
   },
+  client_appointments: 'المواعيد مع المؤسسة',
 };
 
 export default ar;

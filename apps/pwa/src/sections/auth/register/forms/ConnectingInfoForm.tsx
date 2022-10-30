@@ -3,11 +3,12 @@ import { Grid } from '@mui/material';
 import { FormProvider, RHFSelect, RHFTextField } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ConnectingValuesProps } from './types';
+import { ConnectingValuesProps } from '../../../../@types/register';
 import { REGION } from '_mock/region';
 import useLocales from 'hooks/useLocales';
-import { RegionNames } from '../../@types/region';
+import { RegionNames } from '../../../../@types/region';
 import RHFPassword from 'components/hook-form/RHFPassword';
+import { useEffect, useMemo } from 'react';
 
 type FormProps = {
   children?: React.ReactNode;
@@ -41,19 +42,25 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
 
   const methods = useForm<ConnectingValuesProps>({
     resolver: yupResolver(RegisterSchema),
-    defaultValues,
+    defaultValues: useMemo(() => defaultValues, [defaultValues]),
   });
 
   const {
     handleSubmit,
     formState: { isSubmitting },
     watch,
+    reset,
   } = methods;
 
   const onSubmitForm = async (data: ConnectingValuesProps) => {
     onSubmit(data);
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    reset(defaultValues);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues]);
   const region = watch('region') as RegionNames | '';
 
   return (

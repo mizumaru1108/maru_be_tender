@@ -31,9 +31,15 @@ export const ListItemStyle = styled(ListItemButton, {
   color: '#fff',
   borderRadius: theme.shape.borderRadius,
   height: NAVBAR.DASHBOARD_ITEM_ROOT_HEIGHT,
+  ':hover': {
+    backgroundColor: '#fff',
+  },
   // Active item
   ...(active && {
     backgroundColor: '#0E8478',
+    ':hover': {
+      backgroundColor: '#13B2A2',
+    },
   }),
   // Active item
   ...(active &&
@@ -72,14 +78,14 @@ export const ListItemTextStyle = styled(ListItemText, {
 
 // ----------------------------------------------------------------------
 
-export const ListItemIconStyle = styled(ListItemIcon)({
+export const ListItemIconStyle = styled(ListItemIcon)((prpos) => ({
   width: ICON.NAVBAR_ITEM,
   height: ICON.NAVBAR_ITEM,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   '& svg': { width: '100%', height: '100%' },
-});
+}));
 
 // ----------------------------------------------------------------------
 

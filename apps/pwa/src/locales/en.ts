@@ -742,6 +742,7 @@ const en = {
       },
     },
   },
+  client_appointments: 'Appointments with the company',
 };
 
 export default en;

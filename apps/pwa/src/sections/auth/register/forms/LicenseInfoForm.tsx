@@ -3,9 +3,10 @@ import { Grid } from '@mui/material';
 import { FormProvider, RHFDatePicker, RHFTextField } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { LicenseValuesProps } from './types';
+import { LicenseValuesProps } from '../../../../@types/register';
 import useLocales from 'hooks/useLocales';
 import BaseField from 'components/hook-form/BaseField';
+import { useEffect, useMemo } from 'react';
 
 type FormProps = {
   children?: React.ReactNode;
@@ -33,14 +34,20 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
 
   const methods = useForm<LicenseValuesProps>({
     resolver: yupResolver(RegisterSchema),
-    defaultValues,
+    defaultValues: useMemo(() => defaultValues, [defaultValues]),
   });
 
-  const { handleSubmit } = methods;
+  const { handleSubmit, reset } = methods;
 
   const onSubmitForm = async (data: LicenseValuesProps) => {
     onSubmit(data);
   };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    reset(defaultValues);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues]);
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>

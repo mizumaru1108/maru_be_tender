@@ -21,10 +21,7 @@ function DraftProject() {
   const [_, deleteDrPro] = useMutation(deleteDraftProposal);
   const { data, fetching, error } = result;
 
-  const props = data?.proposal[0] ?? null;
-  useEffect(() => {
-    console.log('');
-  }, []);
+  const props = data?.data[0] ?? null;
 
   if (fetching) {
     return <>...Loading</>;
@@ -33,8 +30,7 @@ function DraftProject() {
 
   const delelteDraft = async (id: string) => {
     const res = await deleteDrPro({ id });
-    // if(delete_proposal_by_pk) snackBar(succes)
-    // else snackBar(error)
+    reexecuteQuery();
   };
 
   const completeDraftProposal = (id: string) => {
@@ -44,7 +40,7 @@ function DraftProject() {
     <Container>
       <Typography variant="h4">مشاريع محفوظة كمسودة</Typography>
       <Grid container sx={{ pt: 2 }} spacing={5}>
-        {data.proposal.map(
+        {data.data.map(
           (
             item: { id: string; project_name: string; project_idea: string; created_at: string },
             index: any

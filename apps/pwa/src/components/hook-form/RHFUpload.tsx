@@ -84,6 +84,13 @@ export function RHFUploadSingleFile({ name, placeholder, ...other }: Props) {
     [id, name, setValue]
   );
 
+  const onRemove = () => {
+    setValue(name, {
+      url: '',
+      type: '',
+      size: '',
+    });
+  };
   return (
     <Controller
       name={name}
@@ -105,6 +112,7 @@ export function RHFUploadSingleFile({ name, placeholder, ...other }: Props) {
             {...other}
             onDrop={handleDrop}
             uploading={uploading}
+            onRemove={onRemove}
           />
         );
       }}

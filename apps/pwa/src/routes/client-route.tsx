@@ -18,6 +18,8 @@ const MainClientPage = Loadable(lazy(() => import('pages/client/MainClientPage')
 const ClientProfile = Loadable(lazy(() => import('pages/client/ClientProfile')));
 const ClientProfileEdit = Loadable(lazy(() => import('pages/client/ClientProfileEdit')));
 const Searching = Loadable(lazy(() => import('pages/searching')));
+const Appointments = Loadable(lazy(() => import('pages/client/Appointments')));
+
 export const clientRoute = {
   path: 'client',
   element: (
@@ -117,12 +119,17 @@ export const clientRoute = {
             { path: 'project-budget', element: <ProjectDetails /> },
             { path: 'follow-ups', element: <ProjectDetails /> },
             { path: 'payments', element: <ProjectDetails /> },
+            { path: 'project-timeline', element: <ProjectDetails /> },
           ],
         },
         { path: 'messages', element: <Messages /> },
         {
           path: 'contact-support',
           element: <ContactSupport />,
+        },
+        {
+          path: 'appointments',
+          element: <Appointments />,
         },
       ],
     },

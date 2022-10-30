@@ -39,14 +39,9 @@ function CurrentProject() {
                 <SvgIconStyle src={`/icons/empty-project.svg`} />
               </Box>
               <Typography sx={{ textAlign: 'center' }}>لا يوجد اي مشاريع حالية</Typography>
-              <Typography sx={{ textAlign: 'center' }}>
-                لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور
-                أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا .
-              </Typography>
               <Button
-                sx={{ textAlign: 'center', margin: '0 auto' }}
+                sx={{ textAlign: 'center', margin: '0 auto', textDecorationLine: 'underline' }}
                 onClick={() => {
-                  // navigate(-1);
                   navigate('/client/dashboard/funding-project-request');
                 }}
               >

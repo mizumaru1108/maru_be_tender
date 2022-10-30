@@ -36,12 +36,62 @@ export type ProjectCardProps = {
     | 'exchange-permission'; // it refers to the url that I came from and the url that I have to go to
 };
 
+export type ProjectCardPropsBE = {
+  id: string;
+  inquiryStatus?: 'canceled' | 'completed' | 'pending';
+  project_name?: string;
+  created_at?: Date;
+  project_idea?: string;
+  payments?: any;
+  inner_status?: string;
+  cardFooterButtonAction:
+    | 'show-project' // Without the action bar at the end of the page.
+    | 'show-details' // With the action bar at the end if the page.
+    | 'completing-exchange-permission' // With the action bar at the end if the page.
+    | 'draft'; // Without the action bar at the end of the page, but with the ability to continue or remove the project.
+  destination?:
+    | 'previous-funding-requests'
+    | 'incoming-funding-requests'
+    | 'requests-in-process'
+    | 'incoming-exchange-permission-requests'
+    | 'current-project'
+    | 'payment-adjustment'
+    | 'exchange-permission'; // it refers to the url that I came from and the url that I have to go to
+  mutate: () => void;
+};
+
+export type CardTablePropsBE = {
+  title: string;
+  resource?: any;
+  limitShowCard?: number;
+  taps?: { key: string; options: Array<{ label: string; value: string }> };
+  dateFilter?: boolean;
+  alphabeticalOrder?: boolean;
+  pagination?: boolean;
+  filters?: filterInterface[];
+  cardFooterButtonAction:
+    | 'show-project' // Without the action bar at the end of the page.
+    | 'show-details' // With the action bar at the end if the page.
+    | 'completing-exchange-permission' // With the action bar at the end if the page.
+    | 'draft'; // Without the action bar at the end of the page, but with the ability to continue or remove the project.
+  destination?:
+    | 'previous-funding-requests'
+    | 'incoming-funding-requests'
+    | 'requests-in-process'
+    | 'incoming-exchange-permission-requests'
+    | 'current-project'
+    | 'payment-adjustment'
+    | 'exchange-permission'; // it refers to the url that I came from and the url that I have to go to
+  staticFilters?: any;
+};
+
 export type filterInterface = {
   name: string;
   options: { label: string; value: string }[];
 };
 
 export type CardTableProps = {
+  resource?: any;
   title: string;
   limitShowCard?: number;
   data: ProjectCardProps[];

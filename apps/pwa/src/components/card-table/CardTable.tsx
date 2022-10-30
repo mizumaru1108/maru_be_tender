@@ -5,8 +5,10 @@ import { CardTableProps } from './types';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FilterModal from './FilterModal';
+import { useQuery } from 'urql';
 
 function CardTable({
+  resource,
   title,
   data,
   dateFilter,
@@ -17,12 +19,13 @@ function CardTable({
   taps,
   cardFooterButtonAction,
 }: CardTableProps) {
+  // const [result, reexecuteQuery] = useQuery(resource);
   const [page, setPage] = useState(1);
   // The params that will be used with the query later on
   const [params, setParams] = useState({
     limit: limitShowCard ? limitShowCard : 6,
     offset: 0,
-    order_by: { email: 'asc' },
+    order_by: {},
   });
 
   // For the filter Modal

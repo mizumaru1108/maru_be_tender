@@ -45,8 +45,8 @@ const FundingProjectRequestForm = () => {
   });
   const { fetching, data, error } = result;
 
-  const [updateDraftResult, updateDraft] = useMutation(updateDraftProposal);
-  const [createProposalResult, createProposal] = useMutation(CreateProposel);
+  const [, updateDraft] = useMutation(updateDraftProposal);
+  const [, createProposal] = useMutation(CreateProposel);
 
   const defaultValues = {
     form1: {
@@ -155,14 +155,11 @@ const FundingProjectRequestForm = () => {
       ...prevRegisterState,
       form5: { ...prevRegisterState.form5, ...proposal_bank_informations },
     }));
-    const { project_attachments, letter_ofsupport_req, ...restOfForm1 } = requestState.form1;
     if (id) {
       const res = await updateDraft({
         id,
         update: {
-          ...restOfForm1,
-          project_attachments: project_attachments.url,
-          letter_ofsupport_req: letter_ofsupport_req.url,
+          ...requestState.form1,
           ...requestState.form2,
           ...requestState.form3,
           amount_required_fsupport: requestState.form4.amount_required_fsupport,
@@ -174,17 +171,17 @@ const FundingProjectRequestForm = () => {
       if (res.error === undefined) navigate(-1);
     } else {
       const res = await createProposal({
-        ...restOfForm1,
-        project_attachments: project_attachments.url,
-        letter_ofsupport_req: letter_ofsupport_req.url,
-        ...requestState.form2,
-        ...requestState.form3,
-        amount_required_fsupport: requestState.form4.amount_required_fsupport,
-        proposal_item_budgets: requestState.form4.detail_project_budgets,
-        proposal_bank_informations: proposal_bank_informations.proposal_bank_informations,
-        submitter_user_id: user?.id,
-        id: nanoid(),
-        step: 'ZERO',
+        createdProposel: {
+          ...requestState.form1,
+          ...requestState.form2,
+          ...requestState.form3,
+          amount_required_fsupport: requestState.form4.amount_required_fsupport,
+          proposal_item_budgets: requestState.form4.detail_project_budgets,
+          proposal_bank_informations: proposal_bank_informations.proposal_bank_informations,
+          submitter_user_id: user?.id,
+          id: nanoid(),
+          step: 'ZERO',
+        },
       });
       if (res.error === undefined) navigate(-1);
     }
@@ -192,13 +189,8 @@ const FundingProjectRequestForm = () => {
 
   // on saving function and also update a draft one
   const onSavingDraft = async () => {
-    const { project_attachments, letter_ofsupport_req, ...restOfForm1 } = requestState.form1;
     const createdProposel = {
-      ...(step >= 1 && {
-        ...restOfForm1,
-        project_attachments: project_attachments.url,
-        letter_ofsupport_req: letter_ofsupport_req.url,
-      }),
+      ...(step >= 1 && { ...requestState.form1 }),
       ...(step >= 2 && { ...requestState.form2 }),
       ...(step >= 3 && { ...requestState.form3 }),
       ...(step >= 4 && {

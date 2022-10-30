@@ -4,8 +4,8 @@ import { FormProvider } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import FormGenerator from 'components/FormGenerator';
-import { BankingInfoData } from '../auth/register/RegisterFormData';
-import { BankingValuesProps } from './types';
+import { BankingInfoData } from '../RegisterFormData';
+import { BankingValuesProps } from '../../../../@types/register';
 
 type FormProps = {
   children?: React.ReactNode;

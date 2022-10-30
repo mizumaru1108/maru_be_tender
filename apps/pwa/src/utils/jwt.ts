@@ -29,6 +29,11 @@ const handleTokenExpired = (exp: number) => {
   clearTimeout(expiredTimer);
 
   expiredTimer = setTimeout(() => {
+    // TODO
+    // Exchange the refreshToken to get a new one
+    // const newToken1 = await client.exchangeRefreshTokenForJWT({
+    //   refreshToken: response.response.refreshToken,
+    // });
     alert('Token expired');
 
     localStorage.removeItem('accessToken');
@@ -37,17 +42,17 @@ const handleTokenExpired = (exp: number) => {
   }, timeLeft);
 };
 
-const setSession = (accessToken: string | null) => {
-  if (accessToken) {
+const setSession = (accessToken: string | null, refreshToken: string | null) => {
+  if (accessToken && refreshToken) {
     localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
     axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
-
     // This function below will handle when token is expired
     const { exp } = jwtDecode<{ exp: number }>(accessToken); // ~3 days by minimals server
-    handleTokenExpired(exp);
+    // handleTokenExpired(exp);
   } else {
-    localStorage.removeItem('accessToken');
-    delete axios.defaults.headers.common.Authorization;
+    // localStorage.removeItem('accessToken');
+    // delete axios.defaults.headers.common.Authorization;
   }
 };
 

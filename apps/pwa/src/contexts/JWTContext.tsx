@@ -4,8 +4,8 @@ import axios from '../utils/axios';
 import { isValidToken, setSession } from '../utils/jwt';
 // @types
 import { ActionMap, AuthState, AuthUser, JWTContextType } from '../@types/auth';
-import { FusionAuthClient } from '@fusionauth/typescript-client';
 import { FUSIONAUTH_API } from 'config';
+import { fusionAuthClient } from 'utils/fusionAuth';
 // ----------------------------------------------------------------------
 
 enum Types {
@@ -80,11 +80,6 @@ type AuthProviderProps = {
 
 function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(JWTReducer, initialState);
-  const client = new FusionAuthClient(
-    FUSIONAUTH_API.clientKey!,
-    FUSIONAUTH_API.apiUrl!,
-    FUSIONAUTH_API.tenantId!
-  );
 
   // FusionAuthClient
 
@@ -92,10 +87,11 @@ function AuthProvider({ children }: AuthProviderProps) {
     const initialize = async () => {
       try {
         const accessToken = localStorage.getItem('accessToken');
+        const refreshToken = localStorage.getItem('refreshToken');
 
         if (accessToken && isValidToken(accessToken)) {
-          setSession(accessToken);
-          const user = await client.retrieveUserUsingJWT(accessToken);
+          setSession(accessToken, refreshToken);
+          const user = await fusionAuthClient.retrieveUserUsingJWT(accessToken);
           dispatch({
             type: Types.Initial,
             payload: {
@@ -113,7 +109,6 @@ function AuthProvider({ children }: AuthProviderProps) {
           });
         }
       } catch (err) {
-        console.error(err);
         dispatch({
           type: Types.Initial,
           payload: {
@@ -129,18 +124,14 @@ function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    const response = await client.login({
+    const response = await fusionAuthClient.login({
       loginId: email,
       password: password,
       applicationId: FUSIONAUTH_API.appId,
     });
+    const { token: accessToken, user, refreshToken } = response.response;
 
-    const { token: accessToken, user } = response.response;
-    // const newToken1 = await client.exchangeRefreshTokenForJWT({
-    //   refreshToken: response.response.refreshToken,
-    // });
-
-    setSession(accessToken!);
+    setSession(accessToken!, refreshToken!);
 
     dispatch({
       type: Types.Login,
@@ -150,25 +141,16 @@ function AuthProvider({ children }: AuthProviderProps) {
     });
   };
 
-  const register = async (email: string, password: string, firstName: string, lastName: string) => {
-    // const response = await axios.post('/api/account/register', {
-    //   email,
-    //   password,
-    //   firstName,
-    //   lastName,
-    // });
-    // const { accessToken, user } = response.data;
-    // localStorage.setItem('accessToken', accessToken);
-    // dispatch({
-    //   type: Types.Register,
-    //   payload: {
-    //     user,
-    //   },
-    // });
-  };
+  const register = async (
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string
+  ) => {};
 
   const logout = async () => {
-    setSession(null);
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     dispatch({ type: Types.Logout });
   };
 

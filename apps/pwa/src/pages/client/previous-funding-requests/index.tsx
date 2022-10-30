@@ -1,8 +1,8 @@
 import { Container } from '@mui/material';
 import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
-import CardTable from 'components/card-table/CardTable';
-import { CardTableDataPrevious } from '../mock-data';
+import CardTableBE from 'components/card-table/CardTableBE';
+import { gettingPreviousProposals } from 'queries/client/gettingPreviousProposals';
 
 function PreviousFundingRequests() {
   const ContentStyle = styled('div')(({ theme }) => ({
@@ -18,12 +18,19 @@ function PreviousFundingRequests() {
     <Page title="Previous Funding Requests">
       <Container>
         <ContentStyle>
-          <CardTable
-            data={CardTableDataPrevious} // For testing, later on we will send the query to it
+          <CardTableBE
+            resource={gettingPreviousProposals}
             title="طلبات دعم سابقة"
             dateFilter={true}
-            taps={['كل المشاريع', 'مشاريع منتهية', 'مشاريع معلقة']}
             cardFooterButtonAction="show-details"
+            taps={{
+              key: 'outter_status',
+              options: [
+                { label: 'كل المشاريع', value: 'COMPLETED' },
+                { label: 'مشاريع منتهية', value: 'COMPLETED' },
+                { label: 'مشاريع معلقة', value: 'PENDING' },
+              ],
+            }}
           />
         </ContentStyle>
       </Container>

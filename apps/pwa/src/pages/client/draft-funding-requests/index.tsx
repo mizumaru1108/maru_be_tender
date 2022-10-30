@@ -1,8 +1,8 @@
 import { Container } from '@mui/material';
 import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
-import CardTable from 'components/card-table/CardTable';
-import { CardTableData } from '../mock-data';
+import { gettingSavedProjects } from 'queries/client/gettingSavedProjects';
+import CardTableBE from 'components/card-table/CardTableBE';
 
 function DraftsFundingRequest() {
   const ContentStyle = styled('div')(({ theme }) => ({
@@ -17,11 +17,10 @@ function DraftsFundingRequest() {
     <Page title="Draft Funding Requests">
       <Container>
         <ContentStyle>
-          <CardTable
-            data={CardTableData} // For testing, later on we will send the query to it
+          <CardTableBE
+            resource={gettingSavedProjects}
             title="طلبات دعم مسودة"
-            dateFilter={true} // optional
-            taps={['كل المشاريع', 'مشاريع منتهية', 'مشاريع معلقة']} // optional
+            alphabeticalOrder={true}
             cardFooterButtonAction="draft" // The most important param
           />
         </ContentStyle>

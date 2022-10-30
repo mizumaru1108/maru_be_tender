@@ -1,4 +1,5 @@
 // @mui
+import { useTheme } from '@mui/material/styles';
 import { Box, Tooltip, ListItemButtonProps } from '@mui/material';
 // hooks
 import useLocales from '../../../hooks/useLocales';
@@ -16,7 +17,7 @@ type Props = NavItemProps & ListItemButtonProps;
 
 export default function NavItem({ item, depth, active, open, isCollapse, ...other }: Props) {
   const { translate } = useLocales();
-
+  const theme = useTheme();
   const { title, icon, info, children, disabled, caption } = item;
 
   const renderContent = (
@@ -38,10 +39,12 @@ export default function NavItem({ item, depth, active, open, isCollapse, ...othe
         primaryTypographyProps={{
           noWrap: true,
           variant: active ? 'subtitle2' : 'body2',
+          ...(active && { color: theme.palette.primary.contrastText }),
         }}
         secondaryTypographyProps={{
           noWrap: true,
           variant: 'caption',
+          ...(active && { color: theme.palette.primary.contrastText }),
         }}
       />
 
@@ -90,6 +93,7 @@ export function DotIcon({ active }: DotIconProps) {
           ...(active && {
             transform: 'scale(2)',
             bgcolor: 'primary.main',
+            color: '#fff',
           }),
         }}
       />

@@ -45,6 +45,7 @@ const ICONS = {
     previous_funding_requests: getIcon('previous-request'),
     messages: getIcon('message-bar'),
     support: getIcon('contact-us'),
+    client_appointments: getIcon('client_appointments'),
   },
   tender_consultant: {
     main: getIcon('main'),
@@ -163,6 +164,11 @@ const navConfig = {
           title: 'contact_support',
           path: PATH_CLIENT.contact_support,
           icon: ICONS.tender_client.support,
+        },
+        {
+          title: 'client_appointments',
+          path: PATH_CLIENT.client_appointments,
+          icon: ICONS.tender_client.client_appointments,
         },
       ],
     },

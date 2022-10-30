@@ -4,17 +4,16 @@ import { FormProvider } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import FormGenerator from 'components/FormGenerator';
-import { AdministrativeInfoData } from '../auth/register/RegisterFormData';
-import { AdministrativeValuesProps } from './types';
+import { AdministrativeInfoData } from '../form-data';
+import { AdministrativeValuesProps } from '../../../../@types/register';
 
 type FormProps = {
-  onReturn: () => void;
   onSubmit: (data: any) => void;
-  defaultValues: AdministrativeValuesProps;
-  done: boolean;
+  defaultValues: any;
+  children?: React.ReactNode;
 };
 
-const AdministrativeInfoForm = ({ onSubmit, defaultValues, onReturn, done }: FormProps) => {
+const AdministrativeInfoForm = ({ onSubmit, defaultValues, children }: FormProps) => {
   const RegisterSchema = Yup.object().shape({
     ceo_name: Yup.string().required('Executive Director is required'),
     ceo_mobile: Yup.string()
@@ -31,7 +30,6 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, onReturn, done }: For
         `The Data Entry Mobile must be written in the exact way of +9665xxxxxxxx`
       ),
     data_entry_mail: Yup.string().email().required('Entery Data Email is required'),
-    agree_on: Yup.boolean().required('Agreeing_On is required'),
   });
 
   const methods = useForm<AdministrativeValuesProps>({
@@ -55,33 +53,7 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, onReturn, done }: For
       <Grid container rowSpacing={4} columnSpacing={7}>
         <FormGenerator data={AdministrativeInfoData} />
         <Grid item md={12} xs={12}>
-          <Stack justifyContent="center" direction="row" gap={2}>
-            <Button
-              onClick={() => {
-                if (onReturn !== undefined) onReturn();
-              }}
-              sx={{
-                color: '#000',
-                size: 'large',
-                width: { xs: '100%', sm: '200px' },
-                hieght: { xs: '100%', sm: '50px' },
-              }}
-            >
-              رجوع
-            </Button>
-            <Button
-              type="submit"
-              sx={{
-                backgroundColor: 'background.paper',
-                color: '#fff',
-                width: { xs: '100%', sm: '200px' },
-                hieght: { xs: '100%', sm: '50px' },
-              }}
-              disabled={agree_on ? false : true}
-            >
-              {done ? 'تأكيد' : 'التالي'}
-            </Button>
-          </Stack>
+          {children}
         </Grid>
       </Grid>
     </FormProvider>

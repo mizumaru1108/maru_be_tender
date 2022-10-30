@@ -12,3 +12,8 @@ export interface ProposalApprovePayload extends ProposalRejectPayload {
   path: string;
   supervisors: string;
 }
+
+export interface ProposalModeratorApprovePayload {
+  path: string;
+  supervisors: string;
+}

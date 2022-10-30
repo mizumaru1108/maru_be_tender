@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Step, StepLabel, Typography, Stepper, Box, alpha, Stack, Link } from '@mui/material';
 import {
-  MainForm,
   ConnectingInfoForm,
+  MainForm,
   LicenseInfoForm,
   AdministrativeInfoForm,
   BankingInfoForm,
-} from '../../shared';
+} from './forms';
 import useResponsive from 'hooks/useResponsive';
 import useLocales from 'hooks/useLocales';
 import {
@@ -16,7 +16,7 @@ import {
   ConnectingValuesProps,
   LicenseValuesProps,
   MainValuesProps,
-} from '../../shared/types';
+} from '../../../@types/register';
 import ActionsBox from './ActionsBox';
 import FinalPage from './final-page';
 import { Link as RouterLink } from 'react-router-dom';
@@ -97,7 +97,7 @@ export default function RegisterForm() {
     setRegisterState((prevRegisterState: AccountValuesProps) => ({
       ...prevRegisterState,
       form2: {
-        ...prevRegisterState.form1,
+        ...prevRegisterState.form2,
         ...data,
       },
     }));
@@ -109,7 +109,7 @@ export default function RegisterForm() {
     setRegisterState((prevRegisterState: AccountValuesProps) => ({
       ...prevRegisterState,
       form3: {
-        ...prevRegisterState.form1,
+        ...prevRegisterState.form3,
         ...data,
       },
     }));
@@ -121,7 +121,7 @@ export default function RegisterForm() {
     setRegisterState((prevRegisterState: AccountValuesProps) => ({
       ...prevRegisterState,
       form4: {
-        ...prevRegisterState.form1,
+        ...prevRegisterState.form4,
         ...data,
       },
     }));
@@ -139,6 +139,7 @@ export default function RegisterForm() {
     }));
     setDone(true);
   };
+
   const onReturn = () => {
     if (step > 0) setStep((prevStep) => prevStep - 1);
   };

@@ -1,7 +1,7 @@
 import { Container } from '@mui/material';
 import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
-import ClientProfileEditForm from 'sections/client/profile';
+import { ClientProfileEditForm } from 'sections/client/profile';
 
 function ClientProfileEdit() {
   const ContentStyle = styled('div')(({ theme }) => ({

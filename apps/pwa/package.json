@@ -44,6 +44,7 @@
     "@react-pdf/renderer": "^2.3.0",
     "@reduxjs/toolkit": "^1.8.3",
     "@turf/bbox": "^6.5.0",
+    "@urql/exchange-auth": "^1.0.0",
     "@urql/preact": "^3.0.2",
     "amazon-cognito-identity-js": "^5.2.9",
     "apexcharts": "^3.35.3",

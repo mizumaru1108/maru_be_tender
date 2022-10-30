@@ -49,6 +49,7 @@ export const PATH_CLIENT = {
   previous_funding_requests: path(ROOTS_CLIENT, '/dashboard/previous-funding-requests'),
   messages: path(ROOTS_CLIENT, '/dashboard/messages'),
   contact_support: path(ROOTS_CLIENT, '/dashboard/contact-support'),
+  client_appointments: path(ROOTS_CLIENT, '/dashboard/appointments'),
 };
 
 export const PATH_CONSULTANT = {

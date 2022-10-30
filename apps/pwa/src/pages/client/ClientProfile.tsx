@@ -2,9 +2,12 @@ import { Button, Divider, Grid, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Box, Container } from '@mui/system';
 import Page from 'components/Page';
+import useAuth from 'hooks/useAuth';
 import useResponsive from 'hooks/useResponsive';
+import { getProfileData } from 'queries/client/getProfileData';
 import { useNavigate } from 'react-router';
 import BankImageComp from 'sections/shared/BankImageComp';
+import { useQuery } from 'urql';
 
 const mockData = {
   project_name: 'اسم الشريك - جمعية الدعوة والإرشاد وتوعية الجاليات',
@@ -21,8 +24,13 @@ const mockData = {
   license_file: 'image.',
 };
 function ClientProfile() {
-  // TODO get the fields
-  // getClientProfile
+  const { user } = useAuth();
+  const [result, _] = useQuery({
+    query: getProfileData,
+    variables: { id: user?.id },
+  });
+  const { data, fetching, error } = result;
+
   const navigate = useNavigate();
   const isMobile = useResponsive('down', 'sm');
   const ContentStyle = styled('div')(({ theme }) => ({
@@ -34,13 +42,49 @@ function ClientProfile() {
     gap: 20,
   }));
 
+  if (fetching) return <>Loading ....</>;
+  if (error) return <>{error.message}</>;
+  const {
+    user_by_pk: {
+      client_data: [
+        {
+          headquarters,
+          authority,
+          center_administration,
+          ceo_mobile,
+          ceo_name,
+          data_entry_mail,
+          data_entry_mobile,
+          data_entry_name,
+          date_of_esthablistmen,
+          email,
+          entity,
+          governorate,
+          license_expired,
+          license_file,
+          license_issue_date,
+          license_number,
+          num_of_beneficiaries,
+          num_of_employed_facility,
+          phone,
+          region,
+          twitter_acount,
+          website,
+        },
+      ],
+      bank_informations,
+    },
+    proposal_aggregate: {
+      aggregate: { count: completed_projects },
+    },
+  } = data!;
   return (
     <Page title="My Profile">
       <Container>
         <ContentStyle>
           <Stack direction="row" justifyContent="space-between">
             <Stack direction="column" sx={{ mb: '5px' }}>
-              <Typography variant="h5">{mockData.project_name}</Typography>
+              <Typography variant="h5">{entity}</Typography>
               <Typography variant="h6" sx={{ color: '#1E1E1E' }}>
                 {mockData.minister_type}
               </Typography>
@@ -93,17 +137,17 @@ function ClientProfile() {
               <Stack direction="row" gap={3} justifyContent="space-between" sx={{ mb: '15px' }}>
                 <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>عدد المستفيدين من خدمات الجهة:</Typography>
-                  <Typography sx={{ mb: '15px' }}>{mockData.number_of_beni}</Typography>
+                  <Typography sx={{ mb: '15px' }}>{num_of_beneficiaries}</Typography>
                   <Typography sx={{ fontSize: '12px' }}>المقر</Typography>
-                  <Typography>{mockData.headquarters}</Typography>
+                  <Typography>{headquarters}</Typography>
                 </Stack>
 
                 <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>عدد موظفين بدوام كلي للمنشأة:</Typography>
-                  <Typography sx={{ mb: '15px' }}>{mockData.number_of_employees}</Typography>
+                  <Typography sx={{ mb: '15px' }}>{num_of_employed_facility}</Typography>
                   <Typography>{mockData.number_of_beni}</Typography>
                   <Typography sx={{ fontSize: '12px' }}>تاريخ التأسيس:</Typography>
-                  <Typography>{mockData.establishment_date}</Typography>
+                  <Typography>{date_of_esthablistmen}</Typography>
                 </Stack>
               </Stack>
               <Typography variant="h6" sx={{ color: '#1E1E1E', mb: '15px' }}>
@@ -112,27 +156,27 @@ function ClientProfile() {
               <Stack direction="row" gap={3} justifyContent="space-between" sx={{ mb: '15px' }}>
                 <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>المنطقة:</Typography>
-                  <Typography sx={{ mb: '15px' }}>اسم المنطقة</Typography>
+                  <Typography sx={{ mb: '15px' }}>{region}</Typography>
                   <Typography sx={{ fontSize: '12px' }}>الموقع الإلكتروني:</Typography>
-                  <Typography sx={{ mb: '15px' }}>الموقع الإلكتروني</Typography>
+                  <Typography sx={{ mb: '15px' }}>{website}</Typography>
                   <Typography sx={{ fontSize: '12px' }}>القرية (الهجرة):</Typography>
                   <Typography sx={{ mb: '15px' }}>القرية (الهجرة)</Typography>
                 </Stack>
 
                 <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>المحافظة:</Typography>
-                  <Typography sx={{ mb: '15px' }}>المحافظة:</Typography>
+                  <Typography sx={{ mb: '15px' }}>{governorate}</Typography>
                   <Typography sx={{ fontSize: '12px' }}>حساب تويتر:</Typography>
-                  <Typography sx={{ mb: '15px' }}>حساب تويتر:</Typography>
+                  <Typography sx={{ mb: '15px' }}>{twitter_acount}</Typography>
                   <Typography sx={{ fontSize: '12px' }}>الجوال</Typography>
-                  <Typography sx={{ mb: '15px' }}>الهاتف</Typography>
+                  <Typography sx={{ mb: '15px' }}>{phone}</Typography>
                 </Stack>
 
                 <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>المركز (الإدارة):</Typography>
                   <Typography sx={{ mb: '15px' }}>المركز (الإدارة):</Typography>
                   <Typography sx={{ fontSize: '12px' }}>البريد الإلكتروني:</Typography>
-                  <Typography sx={{ mb: '15px' }}>البريد الإلكتروني:</Typography>
+                  <Typography sx={{ mb: '15px' }}>{email}</Typography>
                   <Typography sx={{ fontSize: '12px' }}>الهاتف</Typography>
                   <Typography sx={{ mb: '15px' }}>الهاتف</Typography>
                 </Stack>
@@ -143,42 +187,37 @@ function ClientProfile() {
               <Stack direction="row" gap={3} justifyContent="space-between" sx={{ mb: '15px' }}>
                 <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>جوال المدير التنفيذي:</Typography>
-                  <Typography sx={{ mb: '15px' }}>جوال مدخل البيانات:</Typography>
+                  <Typography sx={{ mb: '15px' }}>{ceo_mobile}</Typography>
                   <Typography sx={{ fontSize: '12px' }}>جوال مدخل البيانات:</Typography>
-                  <Typography sx={{ mb: '15px' }}>بريد مدخل البيانات:</Typography>
+                  <Typography sx={{ mb: '15px' }}>{data_entry_mobile}</Typography>
                   <Typography sx={{ fontSize: '12px' }}>بريد مدخل البيانات:</Typography>
-                  <Typography sx={{ mb: '15px' }}>جوال مدخل البيانات:</Typography>
+                  <Typography sx={{ mb: '15px' }}>{data_entry_mail}</Typography>
                 </Stack>
 
                 <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>اسم المدير التنفيذي:</Typography>
-                  <Typography sx={{ mb: '15px' }}>اسم المدير التنفيذي:</Typography>
+                  <Typography sx={{ mb: '15px' }}>{ceo_name}</Typography>
                   <Typography sx={{ fontSize: '12px' }}>اسم مدخل البيانات:</Typography>
-                  <Typography sx={{ mb: '15px' }}>اسم مدخل البيانات:</Typography>
+                  <Typography sx={{ mb: '15px' }}>{data_entry_name}</Typography>
                 </Stack>
               </Stack>
 
               <Typography variant="h6" sx={{ color: '#1E1E1E', mb: '15px' }}>
                 المعلومات البنكية
               </Typography>
-              <Stack direction="row" justifyContent="space-between" gap={4}>
-                <Stack direction="column" flex={3}>
-                  <BankImageComp
-                    enableButton={true}
-                    bankName={'test'}
-                    accountNumber={'000 999 888 777 666'}
-                    bankAccountName={'test'}
-                  />
-                </Stack>
-                <Stack direction="column" flex={3}>
-                  <BankImageComp
-                    enableButton={true}
-                    bankName={'test'}
-                    accountNumber={'000 999 888 777 666'}
-                    bankAccountName={'test'}
-                  />
-                </Stack>
-              </Stack>
+              <Grid container spacing={5}>
+                {bank_informations.map((item: any, index: any) => (
+                  <Grid item key={index} md={6} xs={12}>
+                    <BankImageComp
+                      enableButton={true}
+                      imageUrl={item.card_image}
+                      bankName={item.bank_name}
+                      accountNumber={item.bank_account_number}
+                      bankAccountName={item.bank_account_name}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
             </Grid>
             <Grid item md={5}>
               <Box
@@ -202,7 +241,7 @@ function ClientProfile() {
                 >
                   <Typography sx={{ textAlign: 'center' }}>المشاريع المنجزة</Typography>
                   <Typography variant="h6" sx={{ textAlign: 'center', color: 'text.tertiary' }}>
-                    {mockData.number_of_done_projects}
+                    {completed_projects}
                   </Typography>
                 </Box>
 
@@ -224,19 +263,23 @@ function ClientProfile() {
 
                   <Stack direction="column" gap={1} justifyContent="start" sx={{ mb: '10px' }}>
                     <Typography sx={{ color: '#93A3B0' }}>رقم الترخيص:</Typography>
-                    <Typography>{mockData.license_number}</Typography>
+                    <Typography>{license_number}</Typography>
                   </Stack>
                   <Stack direction="column" gap={1} justifyContent="start" sx={{ mb: '10px' }}>
                     <Typography sx={{ color: '#93A3B0' }}>تاريخ انتهاء الترخيص:</Typography>
-                    <Typography>{mockData.license_expiry_date}</Typography>
+                    <Typography>{license_expired}</Typography>
                   </Stack>
                   <Stack direction="column" gap={1} justifyContent="start" sx={{ mb: '10px' }}>
                     <Typography sx={{ color: '#93A3B0' }}>تاريخ اصدار الترخيص:</Typography>
-                    <Typography>{mockData.license_issue_date}</Typography>
+                    <Typography>{license_issue_date}</Typography>
                   </Stack>
                   <Stack direction="column" gap={1} justifyContent="start" sx={{ mb: '10px' }}>
                     <Typography sx={{ color: '#93A3B0' }}>ملف الترخيص:</Typography>
-                    <Typography>{mockData.license_file}</Typography>
+                    <Typography>
+                      <a target="_blank" rel="noopener noreferrer" href={license_file}>
+                        اضغط هنا لرؤية ملف الترخيص
+                      </a>
+                    </Typography>
                   </Stack>
                 </Box>
               </Box>

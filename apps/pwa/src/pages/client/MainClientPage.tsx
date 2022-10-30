@@ -6,7 +6,7 @@ import DashboardPage from 'sections/client/dashboard';
 function MainClientPage() {
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
-    minHeight: '100vh',
+    minHeight: '100%',
     display: 'flex',
     justifyContent: 'start',
     flexDirection: 'column',

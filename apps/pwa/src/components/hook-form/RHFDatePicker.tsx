@@ -26,7 +26,7 @@ export default function RHFDatePicker({ name, maxDate, minDate, ...other }: Prop
           type="date"
           fullWidth
           InputLabelProps={{ shrink: true }}
-          InputProps={{ inputProps: { max: maxDate ?? '', min: minDate ?? '' } }}
+          // InputProps={{ inputProps: { max: maxDate ?? '', min: minDate ?? '' } }}
           SelectProps={{ native: true }}
           error={!!error}
           helperText={error?.message}
