@@ -47,6 +47,10 @@ import {
   PaymentGateway,
   PaymentGatewayDocument,
 } from '../donation/schema/paymentGateway.schema';
+import {
+  ZakatLog,
+  ZakatLogDocument,
+} from '../zakat/schemas/zakat_log.schema';
 import { Anonymous, AnonymousDocument } from '../donor/schema/anonymous.schema';
 @Injectable()
 export class PaymentStripeService {
@@ -75,6 +79,8 @@ export class PaymentStripeService {
     private notifSettingsModel: mongoose.Model<NotificationSettingsDocument>,
     @InjectModel(User.name)
     private readonly userModel: mongoose.Model<UserDocument>,
+    @InjectModel(ZakatLog.name)
+    private readonly zakatModel: mongoose.Model<ZakatLogDocument>,
     private readonly emailService: EmailService,
   ) {}
 
@@ -93,11 +99,10 @@ export class PaymentStripeService {
       // let donorId = '';
       let isAnonymous = false;
       let donor = null;
-      // let donorName = '';
+      let donorName = '';
       let currency = payment.currency;
 
       const ObjectId = require('mongoose').Types.ObjectId;
-      console.log('Log Stripe Reg=>', payment);
       if (
         !payment.organizationId ||
         !payment.campaignId ||
@@ -192,7 +197,6 @@ export class PaymentStripeService {
         };
       }
       // }
-
       //console.log('debug', payment.organizationId);
       const getSecretKey = await this.paymentGatewayModel.findOne(
         { organizationId: ObjectId(payment.organizationId) },
@@ -223,7 +227,6 @@ export class PaymentStripeService {
           donor = await this.userModel.findOne({
             _id: payment.donorId,
           });
-          // if (donor) donorName = `${donor.firstname} ${donor.lastname ?? ''}`;
         } else {
           donor = await this.donorModel.findOne({
             _id: payment.donorId,
@@ -248,19 +251,17 @@ export class PaymentStripeService {
               isAnonymous = true;
             }
           }
-
           span.setAttribute('donor.firstName', donor?.firstName ?? '');
-
+          // donorName = `${donor?.firstName ? donor?.lastName : ''} ${donor?.lastName ? donor?.lastName : ''}`;
           // if (donor) donorName = `${donor.firstName} ${donor.lastName ?? ''}`;
         }
       }
 
+      // if(donor && donor?.firstName );
       // const paymentJson = JSON.parse(JSON.stringify(payment));
       const params = new URLSearchParams();
       if (donor) {
         params.append('customer_email', donor.email);
-        // params.append('customer', {'email': donor.email, name: donorName});
-        // params.append('customer_name', donorName);
       }
       params.append('success_url', payment.success_url);
       params.append('cancel_url', payment.cancel_url);
@@ -297,7 +298,6 @@ export class PaymentStripeService {
       const amount = amountStr.substring(0, amountStr.length - 2);
 
       //console.log('amount unit', amount);
-
       //insert data to donation_log
       let objectIdDonation = new ObjectId();
       let now: Date = new Date();
@@ -1505,7 +1505,7 @@ export class PaymentStripeService {
       const getOrganization = await this.organizationModel.findOne({
         _id: payment.organizationId,
       });
-      console.log('currency', getOrganization?.defaultCurrency);
+      // console.log('currency', getOrganization?.defaultCurrency);
       if (!getOrganization) {
         throw new HttpException(
           `request rejected organizationId not found`,
@@ -1526,16 +1526,16 @@ export class PaymentStripeService {
           `request rejected campaignId not found`,
           HttpStatus.NOT_FOUND,
         );
-      } else if (
-        parseFloat(getCampaign.amountProgress.toString()) + payment.amount >
-        parseFloat(getCampaign.amountTarget.toString())
-      ) {
-        throw new HttpException(
-          `Amount is larger than the limit of the target ${getCampaign.amountTarget}`,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
+      } 
+      // else if (
+      //   parseFloat(getCampaign.amountProgress.toString()) + payment.amount >
+      //   parseFloat(getCampaign.amountTarget.toString())
+      // ) {
+      //   throw new HttpException(
+      //     `Amount is larger than the limit of the target ${getCampaign.amountTarget}`,
+      //     HttpStatus.BAD_REQUEST,
+      //   );
+      // }
       //console.log('debug', payment.organizationId);
       const getSecretKey = await this.paymentGatewayModel.findOne(
         { organizationId: ObjectId(payment.organizationId) },
@@ -1624,24 +1624,62 @@ export class PaymentStripeService {
           break;
       }
 
-      //insert data to donation_log
       let objectIdDonation = new ObjectId();
       let now: Date = new Date();
-      const getDonationLog = await new this.donationLogModel({
-        _id: objectIdDonation,
-        // organizationId: ObjectId(payment.organizationId),
-        organizationId: payment.organizationId,
-        donorId: isAnonymous ? '' : payment.donorId,
-        amount: Number(amount),
-        transactionId: data['data']['payment_intent'],
-        createdAt: now,
-        updatedAt: now,
-        paymentGatewayId: "4",
-        campaignId: ObjectId(payment.campaignId),
-        currency: currency,
-        donationStatus: 'PENDING',
-      }).save();
+      let getDonationLog;
+      if(getCampaign.campaignType && getCampaign.campaignType === "zakat" && payment.zakatLogs){
+        //insert data to donation_log for zakat transaction
+        getDonationLog = await new this.donationLogsModel({
+          _id: objectIdDonation,
+          nonprofitRealmId: new ObjectId(payment.organizationId),
+          donorUserId: isAnonymous ? '' : payment.donorId,
+          amount: Number(amount),
+          transactionId: data['data']['payment_intent'],
+          createdAt: now,
+          updatedAt: now,
+          paymentGatewayId: "4",
+          campaignId: ObjectId(payment.campaignId),
+          currency: currency,
+          donationStatus: 'PENDING',
+        }).save();
 
+        if (Array.isArray(payment.zakatLogs)) {
+          //insert data to zakatlogs
+          for (let i = 0; i < payment.zakatLogs.length; i++) {
+            const zakatLogs = payment.zakatLogs[i];
+            const details = Array.isArray(zakatLogs.details) ? zakatLogs : [];
+            await new this.zakatModel({
+              _id: new ObjectId(),
+              donationLogId: objectIdDonation,
+              type: zakatLogs.type,
+              currency: zakatLogs.currency,
+              totalAmount: Number(zakatLogs.totalAmount),
+              unit: zakatLogs.unit,
+              numberOfUnits: zakatLogs.numberOfUnits,
+              details: details,
+              createdAt: now,
+            }).save();
+          }
+        }
+        console.info("Create LOG_");
+      } else {
+        //insert data to donationLog for campaign transaction
+        getDonationLog = await new this.donationLogModel({
+          _id: objectIdDonation,
+          organizationId: payment.organizationId,
+          donorId: isAnonymous ? '' : payment.donorId,
+          amount: Number(amount),
+          transactionId: data['data']['payment_intent'],
+          createdAt: now,
+          updatedAt: now,
+          paymentGatewayId: "4",
+          campaignId: ObjectId(payment.campaignId),
+          currency: currency,
+          donationStatus: 'PENDING',
+        }).save();
+        console.info("Create LOG");
+      }
+      
       if (!getDonationLog) {
         throw new BadRequestException(`donation failed to save in mongodb`);
       }
@@ -1651,7 +1689,10 @@ export class PaymentStripeService {
       if (isAnonymous) {
         await this.anonymousModel.findOneAndUpdate(
           { _id: payment.donorId },
-          { donationLogId: objectIdDonation },
+          { donationLogId: objectIdDonation, 
+            isEmailChecklist: payment.isEmailChecklist,
+            anonymous: payment.isAnonymous,
+          },
         );
       }
       const insertPaymentData = await new this.paymentDataModel({
@@ -1706,9 +1747,13 @@ export class PaymentStripeService {
     const payment_status = payLoad.data.object.payment_status;
     const transactionId = payLoad.data.object.payment_intent;
     const status = payLoad.data.object.status;
+    const ObjectId = require('mongoose').Types.ObjectId;
+    let getDonationLog;
     let now: Date = new Date();
+    let logsData = true;
+    let ids, campaignId, donorId, organizationId ;
     if (payment_status == 'paid') {
-      const getDonationLog = await this.donationLogModel.findOne(
+     getDonationLog = await this.donationLogModel.findOne(
         { transactionId: transactionId },
         {
           _id: 1,
@@ -1718,12 +1763,33 @@ export class PaymentStripeService {
           donorId: 1,
           organizationId: 1,
         },
-      );
+        );
+        organizationId = new ObjectId(getDonationLog?.organizationId);
+        donorId = getDonationLog?.donorId;
+        campaignId = new ObjectId(getDonationLog?.campaignId);
       if (!getDonationLog) {
+        getDonationLog = await this.donationLogsModel.findOne(
+          { transactionId: transactionId },
+          {
+            _id: 1,
+            campaignId: 1,
+            currency: 1,
+            amount: 1,
+            donorUserId: 1,
+            nonprofitRealmId: 1,
+          },
+        );
+        organizationId = getDonationLog?.nonprofitRealmId;
+        donorId = getDonationLog?.donorUserId;
+        campaignId = getDonationLog?.campaignId;
+        logsData = false;
+      } 
+      
+      if(!getDonationLog && !logsData) {
         throw new HttpException(`Donation Log not found`, HttpStatus.NOT_FOUND);
       }
-
-      const { _id, campaignId, donorId, organizationId } = getDonationLog;
+      
+      ids = getDonationLog?._id;
 
       const getCampaign = await this.campaignModel.findOne(
         { _id: campaignId },
@@ -1736,9 +1802,10 @@ export class PaymentStripeService {
       const donor = await this.userModel.findOne({ _id: donorId });
       // Get Anonymous Data
       let anonymousData;
+      
       if (!donor) {
         anonymousData = await this.anonymousModel.findOne(
-          { donationLogId: _id },
+          { donationLogId: ids },
           {
             _id: 0,
             isEmailChecklist: 1,
@@ -1749,15 +1816,29 @@ export class PaymentStripeService {
           },
         );
       }
-
-      const updateDonationLog = await this.donationLogModel.updateOne(
-        { _id: _id },
-        { donationStatus: 'SUCCESS', updatedAt: now },
+     
+      const getLog = await this.donationLogModel.findOne(
+        {transactionId: transactionId},
+        {_id:1}
       );
-      if (!updateDonationLog) {
+    
+      if(getLog){
+        await this.donationLogModel.updateOne(
+        { transactionId: transactionId },
+        { donationStatus: 'SUCCESS', updatedAt: now },
+        );
+        logsData = false;
+      } else {
+        await this.donationLogsModel.updateOne(
+          { transactionId: transactionId },
+          { donationStatus: 'SUCCESS', updatedAt: now },
+          );
+          logsData = false;
+      }
+      if (logsData) {
         throw new BadRequestException(`donation failed to save in mongodb`);
       }
-
+     
       //update  amountProgress with current donation amount
       const amountStr = payLoad.data.object.amount_total.toString();
       console.log('Amount', amountStr);
@@ -1769,29 +1850,31 @@ export class PaymentStripeService {
       ).toString();
 
       const notifSettings = await this.notifSettingsModel.findOne({
-        organizationId: organizationId,
+        organizationId: ObjectId(organizationId),
       });
       const getOrganization = await this.organizationModel.findOne({
         _id: organizationId,
       });
 
+      console.info("Get Notif Organization", notifSettings, "Get Organization", getOrganization);
+
       if (getOrganization && notifSettings) {
         this.logger.debug(`notification settings ${notifSettings.id}`);
         const subject = `New Donation For ${getCampaign.title}`;
-        const donorName = donor
+        const donorName = donor && !anonymousData
           ? `${donor.firstname} ${donor.lastname}`
           : anonymousData
           ? anonymousData.anonymous
             ? 'anonymous'
             : `${anonymousData.firstName} ${anonymousData.lastName}`
           : 'anonymous';
-        if (notifSettings.newDonation) {
+        if (notifSettings.newDonation && getDonationLog) {
           const emailData = {
             // donor: 'Donor',
             donor: donorName,
-            title: getCampaign.title,
-            currency: getDonationLog.currency,
-            amount: getDonationLog.amount,
+            title: getCampaign.title || getCampaign.campaignName,
+            currency: getDonationLog.currency || '',
+            amount: getDonationLog.amount || '',
           };
           this.emailService.sendMailWTemplate(
             getOrganization.contactEmail,
@@ -1803,12 +1886,12 @@ export class PaymentStripeService {
           );
           const emailDonor = {
             donor: donorName,
-            title: getCampaign.title,
+            title: getCampaign.title || getCampaign.campaignName,
             currency: getDonationLog.currency,
             amount: getDonationLog.amount,
           };
 
-          if (donor) {
+          if (donor && !anonymousData) {
             this.emailService.sendMailWTemplate(
               donor.email,
               subject,
@@ -1836,7 +1919,7 @@ export class PaymentStripeService {
       }
 
       const updateCampaign = await this.campaignModel.updateOne(
-        { _id: getDonationLog.campaignId },
+        { _id: campaignId },
         {
           amountProgress: Number(lastAmount),
           updatedAt: now,
@@ -1871,7 +1954,7 @@ export class PaymentStripeService {
             const subject = 'Complete Donation';
             const emailData = {
               campaignId: getCampaign.id,
-              campaignName: getCampaign.title,
+              campaignName: getCampaign.title || getCampaign.campaignName,
             };
             this.emailService.sendMailWTemplate(
               getOrganization.contactEmail,
@@ -1888,13 +1971,19 @@ export class PaymentStripeService {
     }
 
     if (status == 'expired') {
-      const updateDonationLog = await this.donationLogsModel.updateOne(
+      const updateDonationLog = await this.donationLogModel.updateOne(
         { transactionId: transactionId },
         { donationStatus: 'FAILED', updatedAt: now },
       );
       if (!updateDonationLog) {
-        throw new BadRequestException(`donation failed to save in mongodb`);
+        await this.donationLogsModel.updateOne(
+          { transactionId: transactionId },
+          { donationStatus: 'FAILED', updatedAt: now },
+        );
+      } else {
+        throw new BadRequestException(`donation failed to save in mongodb`);        
       }
+
       return {
         statusCode: 200,
         headers: {

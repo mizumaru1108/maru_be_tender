@@ -228,4 +228,9 @@ export class RegisterFromFusionAuthTenderDto {
   @ValidateNested()
   @Type(() => bankData)
   bank_informations: bankData;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  client_field: string;
 }

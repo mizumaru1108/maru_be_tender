@@ -32,6 +32,10 @@ import {
   DonationLogs,
   DonationLogsSchema,
 } from '../donation/schema/donation_log.schema';
+import {
+  DonationLog,
+  DonationLogSchema,
+} from '../donation/schema/donation-log.schema';
 
 @Module({
   imports: [
@@ -47,6 +51,10 @@ import {
       {
         name: DonationLogs.name,
         schema: DonationLogsSchema,
+      },
+      {
+        name: DonationLog.name,
+        schema: DonationLogSchema,
       },
       {
         name: Donor.name,

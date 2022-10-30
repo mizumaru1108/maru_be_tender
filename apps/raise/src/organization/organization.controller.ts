@@ -40,6 +40,7 @@ import { AppearanceNavigation } from './schema/nonprofit_appearance_navigation.s
 import { baseResponseHelper } from 'src/commons/helpers/base-response-helper';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { DonationLogsDocument } from '../donation/schema/donation_log.schema';
+import { DonationLogDocument } from '../donation/schema/donation-log.schema';
 
 @ApiTags('orgs')
 @Controller('orgs')
@@ -112,7 +113,7 @@ export class OrganizationController {
   @Get('donor')
   async getDonorsList(
     @Query() filter: DonorsFilterDto,
-  ): Promise<PaginatedResponse<DonationLogsDocument[]>> {
+  ): Promise<PaginatedResponse<DonationLogDocument[]>> {
     this.logger.debug('fetching donors list...');
 
     const donorsList = await this.organizationService.getDonorsList(filter);

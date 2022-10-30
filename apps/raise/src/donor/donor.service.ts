@@ -105,7 +105,7 @@ export class DonorService {
     private donationLogModel: Model<DonationLogDocument>,
     @InjectModel(DonationLog.name)
     private campaignAggregatePaginateModel: AggregatePaginateModel<DonationLogDocument>,
-    @InjectModel(DonationLog.name)
+    @InjectModel(DonationLogs.name)
     private donorLogsAggregatePaginateModel: AggregatePaginateModel<DonationLogsDocument>,
     @InjectModel(DonationLogs.name)
     private donationLogsModel: Model<DonationLogsDocument>,
@@ -1287,73 +1287,89 @@ export class DonorService {
   }
 
   async getDonationLogs(
+    organizationId: string,
     donorUserId: string,
-    sortDate: string,
     sortStatus: string,
+    sortDate: string
   ) {
     this.logger.debug('Get Donation logs...');
+
     let sortData = {};
-    if (sortDate) {
-      sortData = {
-        createdAt: sortDate == 'asc' ? 1 : -1,
-      };
-    } else if (sortStatus) {
-      sortData = {
-        donationStatus: sortStatus == 'asc' ? 1 : -1,
-        createdAt: -1,
-      };
-    } else {
-      sortData = {
-        createdAt: -1,
-      };
+    const status = sortStatus == 'asc' ? 1 : -1;
+    const date = sortDate == 'asc' ? 1 : -1;
+    
+    sortData = {
+      donationStatus: status,
+      createdAt: date
     }
-    const donationLogList = await this.donationLogsModel.aggregate([
-      {
-        $match: { donorUserId: donorUserId },
-      },
-      {
-        $lookup: {
-          from: 'campaign',
-          localField: 'campaignId',
-          foreignField: '_id',
-          as: 'campaign',
-        },
-      },
-      {
-        $unwind: {
-          path: '$campaign',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $lookup: {
-          from: 'organization',
-          localField: 'nonprofitRealmId',
-          foreignField: '_id',
-          as: 'organization',
-        },
-      },
-      {
-        $unwind: {
-          path: '$organization',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $group: {
-          _id: '$_id',
-          createdAt: { $first: '$createdAt' },
-          donationStatus: { $first: '$donationStatus' },
-          amount: { $first: '$amount' },
-          campaignName: { $first: '$campaign.campaignName' },
-          campaignType: { $first: '$campaign.campaignType' },
-          organizationName: { $first: '$organization.name' },
-        },
-      },
-      {
-        $sort: sortData,
-      },
-    ]);
+  
+    const orgsId = organizationId ? organizationId : '62414373cf00cca3a830814a';
+    const getDonationLog = await this.donationLogModel.find({
+     donorId: donorUserId,
+     organizationId: orgsId, 
+    });
+    if(!getDonationLog){
+      throw new NotFoundException('not found transaction for this userId');
+    }
+
+    const donationLogList = await this.donationLogModel.aggregate(
+  [{
+    $match: { 
+      donorId: donorUserId , 
+      organizationId: orgsId 
+      }
+  },
+  
+  {
+    $addFields: {"campaignId": { $toObjectId: "$campaignId" }}
+  },
+  {
+    $lookup: {
+      from: 'campaign',
+      localField: 'campaignId',
+      foreignField: '_id',
+      as: 'campaign',
+    }
+  },
+  {
+    $unwind: {
+      path: '$campaign',
+      preserveNullAndEmptyArrays: true,
+    }
+  },
+  {
+    $addFields: {"orgsId": { $toObjectId: "$organizationId" }}
+  },
+  {
+    $lookup: {
+      from: 'organization',
+      localField: 'orgsId',
+      foreignField: '_id',
+      as: 'organization',
+    }
+  },
+  {
+    $unwind: {
+       path: '$organization',
+       preserveNullAndEmptyArrays: true,
+     }
+  },
+  {
+    $group:{
+        _id: '$_id',
+        createdAt: { $first: '$createdAt' },
+        donationStatus: { $first: '$donationStatus' },
+        amount: { $first: '$amount' },
+        campaignName: { $first: '$campaign.campaignName' },
+        campaignType: { $first: '$campaign.campaignType' },
+        organizationName: { $first: '$organization.name' },
+     }
+  },
+  {
+    $sort: sortData
+  },
+
+]);
     return donationLogList;
   }
 
@@ -1368,17 +1384,17 @@ export class DonorService {
       throw new NotFoundException(`donorUserId must be valid`);
     }
 
-    const totalDonation = await this.donationLogsModel.aggregate([
+    const totalDonation = await this.donationLogModel.aggregate([
       {
         $match: {
           donationStatus: 'SUCCESS',
-          donorUserId,
+          donorId: donorUserId,
           currencyCode: currency,
         },
       },
       {
         $group: {
-          _id: '$donorUserId',
+          _id: '$donorId',
           totalPersonDonation: {
             $sum: {
               $toDouble: '$amount',
@@ -1396,7 +1412,7 @@ export class DonorService {
       },
     ]);
 
-    const totalFundDonation = await this.donationLogsModel.aggregate([
+    const totalFundDonation = await this.donationLogModel.aggregate([
       {
         $match: { donationStatus: 'SUCCESS', currencyCode: currency },
       },
@@ -1480,7 +1496,7 @@ export class DonorService {
       },
       {
         $match: {
-          donationStatus: 'success',
+          donationStatus: 'SUCCESS',
           donorId: donorId,
         },
       },
@@ -1551,7 +1567,7 @@ export class DonorService {
     const donationList = await this.donationLogModel.aggregate([
       {
         $match: {
-          donorId: new Types.ObjectId(donorId),
+          donorId: donorId,
           donationStatus: 'SUCCESS',
           createdAt: getDateQuery('week'),
         },
@@ -1569,7 +1585,7 @@ export class DonorService {
     const returningDonorAgg = await this.donationLogModel.aggregate([
       {
         $match: {
-          donorId: new Types.ObjectId(donorId),
+          donorId: donorId,
           donationStatus: 'SUCCESS',
           donorUserId: { $ne: null },
           createdAt: getDateQuery('week'),
@@ -1605,9 +1621,9 @@ export class DonorService {
     const mostPopularProgramsDiagram = await this.donationLogModel.aggregate([
       {
         $match: {
-          donorId: new Types.ObjectId(donorId),
+          donorId: donorId,
           donationStatus: 'SUCCESS',
-          donorUserId: { $ne: null },
+          // donorId: { $ne: null },
           createdAt: getDateQuery('week'),
         },
       },
@@ -1648,9 +1664,9 @@ export class DonorService {
     const totalDonationPerProgram = await this.donationLogModel.aggregate([
       {
         $match: {
-          donorId: new Types.ObjectId(donorId),
+          donorId: donorId,
           donationStatus: 'SUCCESS',
-          donorUserId: { $ne: null },
+          // donorUserId: { $ne: null },
           createdAt: getDateQuery('week'),
         },
       },
@@ -1751,7 +1767,7 @@ export class DonorService {
   // async getTrxDonorList(filter: DonorListTrxDto): Promise<AggregatePaginateResult<DonationLogDocument>> {
   async getTrxDonorList(
     filter: DonorListTrxDto,
-  ): Promise<AggregatePaginateResult<DonationLogsDocument>> {
+  ): Promise<AggregatePaginateResult<DonationLogDocument>> {
     this.logger.debug(
       `getTransactions Donors organizationId=${filter.organizationId}`,
     );
@@ -1795,7 +1811,7 @@ export class DonorService {
       ? filter.exZktList
       : '6299ed6a9f1ad428563563ed';
     //const aggregateQuerry = this.donationLogsModel.aggregate();
-    const aggregateQuerry = this.donationLogsModel.aggregate([
+    const aggregateQuerry = this.donationLogModel.aggregate([
       // const aggregateQuerry = this.donationLogModel.aggregate([
       {
         $match: {
@@ -1807,7 +1823,7 @@ export class DonorService {
       {
         $lookup: {
           from: 'user',
-          localField: 'donorUserId',
+          localField: 'donorId',
           foreignField: '_id',
           as: 'user',
         },
@@ -1879,8 +1895,7 @@ export class DonorService {
     ]);
 
     const donorTrxList =
-      // await this.campaignAggregatePaginateModel.aggregatePaginate(
-      await this.donorLogsAggregatePaginateModel.aggregatePaginate(
+      await this.campaignAggregatePaginateModel.aggregatePaginate(
         aggregateQuerry,
         {
           page,
@@ -1888,7 +1903,6 @@ export class DonorService {
           sort: sortData,
         },
       );
-    console.log('Ini logs ==>', donorTrxList);
     return donorTrxList;
   }
 

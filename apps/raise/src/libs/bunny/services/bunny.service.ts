@@ -140,7 +140,7 @@ export class BunnyService {
       headers: {
         AccessKey: this.accessKey,
       },
-      url: cdnUrl,
+      url: mediaUrl,
     };
 
     try {
@@ -156,6 +156,7 @@ export class BunnyService {
       }
       return true;
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException(`Error deleting image!`);
     }
   }
