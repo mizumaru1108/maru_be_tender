@@ -2,7 +2,7 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 6
+  version: 5
   cacheKey: 8
 
 "@ampproject/remapping@npm:^2.1.0":
@@ -649,7 +649,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-proposal-private-property-in-object@npm:^7.16.0, @babel/plugin-proposal-private-property-in-object@npm:^7.18.6":
+"@babel/plugin-proposal-private-property-in-object@npm:^7.18.6":
   version: 7.18.6
   resolution: "@babel/plugin-proposal-private-property-in-object@npm:7.18.6"
   dependencies:
@@ -7390,6 +7390,7 @@ __metadata:
     "@types/react-slick": ^0.23.10
     "@typescript-eslint/eslint-plugin": ^5.30.3
     "@typescript-eslint/parser": ^5.30.3
+    "@urql/exchange-auth": ^1.0.0
     "@urql/preact": ^3.0.2
     amazon-cognito-identity-js: ^5.2.9
     apexcharts: ^3.35.3
@@ -8938,6 +8939,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@urql/core@npm:>=3.0.0":
+  version: 3.0.4
+  resolution: "@urql/core@npm:3.0.4"
+  dependencies:
+    "@graphql-typed-document-node/core": ^3.1.1
+    wonka: ^6.0.0
+  peerDependencies:
+    graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+  checksum: ca4b6117d5ea9a1c0dce09afb127572db709d6caf65f4c7d8bfe1b8a24602288e761bce4bcaaf6b27dfa554bb2c46e6a4aba92b2ca9d2ca966b8e99a3f19dcce
+  languageName: node
+  linkType: hard
+
 "@urql/core@npm:^3.0.3":
   version: 3.0.3
   resolution: "@urql/core@npm:3.0.3"
@@ -8947,6 +8960,18 @@ __metadata:
   peerDependencies:
     graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
   checksum: 5bc972422fc733e815d82f84b10daef05288d31c2b4958555ea982bd83dd42ec939165c66cc94eeed447c45b8798242971b3682714c7df21c25d6f9bad53303c
+  languageName: node
+  linkType: hard
+
+"@urql/exchange-auth@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@urql/exchange-auth@npm:1.0.0"
+  dependencies:
+    "@urql/core": ">=3.0.0"
+    wonka: ^6.0.0
+  peerDependencies:
+    graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+  checksum: ce621e4f873745167bc58679fe3f1a0033e57b7fa8b57a1f4022de89ccaeff2c280e1ad637a6e398a0cf45923c76e03bc97283e9069b0b07dc42f895bb0ccb66
   languageName: node
   linkType: hard
 
@@ -26816,11 +26841,11 @@ __metadata:
 
 "typescript@patch:typescript@4.7.4#~builtin<compat/typescript>, typescript@patch:typescript@^4.7.4#~builtin<compat/typescript>":
   version: 4.7.4
-  resolution: "typescript@patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=a1c5e5"
+  resolution: "typescript@patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=ddd1e8"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 9096d8f6c16cb80ef3bf96fcbbd055bf1c4a43bd14f3b7be45a9fbe7ada46ec977f604d5feed3263b4f2aa7d4c7477ce5f9cd87de0d6feedec69a983f3a4f93e
+  checksum: 96d3030cb01143570567cb4f3a616b10df65f658f0e74e853e77a089a6a954e35c800be7db8b9bfe9a1ae05d9c2897e281359f65e4caa1caf266368e1c4febd3
   languageName: node
   linkType: hard
 
