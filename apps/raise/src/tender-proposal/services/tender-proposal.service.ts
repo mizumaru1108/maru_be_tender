@@ -18,6 +18,7 @@ import {
   TenderAppRole,
   TenderFusionAuthRoles,
 } from '../../tender/commons/types';
+import { compareUrl } from '../../tender/commons/utils/compare-jsonb-imageurl';
 import { UploadProposalFilesDto } from '../../tender/dto/upload-proposal-files.dto';
 import { ICurrentUser } from '../../user/interfaces/current-user.interface';
 import { ChangeProposalStateDto } from '../dtos/requests/change-proposal-state.dto';
@@ -33,48 +34,6 @@ export class TenderProposalService {
     private readonly tenderProposalLogService: TenderProposalLogService,
     private readonly tenderProposalFlowService: TenderProposalFlowService,
   ) {}
-
-  async checkOldImageUrl(
-    oldValue: Prisma.JsonValue | null,
-    file: UploadProposalFilesDto,
-  ): Promise<boolean> {
-    let isSame = true;
-
-    if (
-      oldValue && // if old value is not null
-      typeof oldValue === 'object' && // if old value is object
-      'url' in oldValue && // if old value has url property
-      typeof oldValue['url'] === 'string' && // if old value url is string
-      oldValue['url'] !== file.url // if old value url is not equal to new url
-    ) {
-      // delete the old file
-      console.log(
-        "the old image url is different from the new one, let's delete it",
-      );
-
-      if (oldValue['url'].includes('https://media.tmra.io/')) {
-        oldValue['url'] = oldValue['url'].replace('https://media.tmra.io/', '');
-      }
-      // console.log(oldValue['url']);
-
-      const isExist = await this.bunnyService.checkIfImageExists(
-        oldValue['url'],
-      );
-
-      if (isExist) {
-        const deleteImages = await this.bunnyService.deleteImage(
-          oldValue['url'],
-        );
-        if (!deleteImages) {
-          throw new Error(`Failed to delete at update proposal`);
-        }
-      }
-
-      isSame = false;
-    }
-
-    return isSame;
-  }
 
   async updateProposal(
     userId: string,
@@ -136,7 +95,7 @@ export class TenderProposalService {
         // if old proposal value exist
         let isSame = true;
         if (proposal.project_attachments) {
-          const sameUrl = await this.checkOldImageUrl(
+          const sameUrl = await compareUrl(
             proposal.project_attachments, // old object value
             project_attachments, // new object from request
           );
@@ -156,7 +115,7 @@ export class TenderProposalService {
       if (letter_ofsupport_req) {
         let isSame = true;
         if (proposal.letter_ofsupport_req) {
-          const sameUrl = await this.checkOldImageUrl(
+          const sameUrl = await compareUrl(
             proposal.project_attachments, // old object value
             letter_ofsupport_req, // new object from request
           );
