@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -12,9 +11,13 @@ import {
   proposal_item_budget,
 } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
-import { AllowedFileType } from '../../commons/enums/allowed-filetype.enum';
 import { BunnyService } from '../../libs/bunny/services/bunny.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import {
+  appRoleMappers,
+  TenderAppRole,
+  TenderFusionAuthRoles,
+} from '../../tender/commons/types';
 import { UploadProposalFilesDto } from '../../tender/dto/upload-proposal-files.dto';
 import { ICurrentUser } from '../../user/interfaces/current-user.interface';
 import { ChangeProposalStateDto } from '../dtos/requests/change-proposal-state.dto';
@@ -22,13 +25,6 @@ import { UpdateProposalDto } from '../dtos/requests/update-proposal.dto';
 import { UpdateProposalResponseDto } from '../dtos/responses/update-proposal-response.dto';
 import { TenderProposalFlowService } from './tender-proposal-flow.service';
 import { TenderProposalLogService } from './tender-proposal-log.service';
-import { nanoid } from 'nanoid';
-import {
-  appRoleMappers,
-  TenderAppRole,
-  TenderAppRoles,
-  TenderFusionAuthRoles,
-} from '../../tender/commons/types';
 @Injectable()
 export class TenderProposalService {
   constructor(
@@ -124,7 +120,13 @@ export class TenderProposalService {
       }
       project_idea && (updateProposalPayload.project_idea = project_idea);
       execution_time && (updateProposalPayload.execution_time = execution_time);
-      // project_beneficiaries &&
+      if (project_beneficiaries) {
+        updateProposalPayload.proposal_beneficiaries = {
+          connect: {
+            id: project_beneficiaries,
+          },
+        };
+      }
 
       // if there's any new upload request for replace the old one
       if (project_attachments) {

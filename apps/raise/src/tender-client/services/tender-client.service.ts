@@ -73,9 +73,14 @@ export class TenderClientService {
         console.log(error);
         throw new InternalServerErrorException('Failed to create edit request');
       }
-      console.log(newEditRequest);
+      // console.log(newEditRequest);
     } else {
       message = 'No changes requested';
+    }
+
+    if (editRequest.bank_information) {
+      // TODO: loop the request, find by id if exist then update, if not exist then create.
+      // if exist then update, if not exist then create.
     }
 
     denactiveAccount = requestChangeCount > 0;

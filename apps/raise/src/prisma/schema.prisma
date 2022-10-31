@@ -12,9 +12,9 @@ model bank_information {
   bank_account_name        String?                    @db.Char(255)
   bank_account_number      String?                    @db.Char(255)
   bank_name                String?                    @db.Char(255)
-  card_image               String?
   proposal_id              String?
   id                       String                     @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  card_image               Json?
   proposal                 proposal?                  @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
   user                     user                       @relation(fields: [user_id], references: [id], onDelete: Cascade)
   propsal_bank_information propsal_bank_information[]
