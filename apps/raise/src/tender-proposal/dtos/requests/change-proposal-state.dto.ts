@@ -10,8 +10,8 @@ export class ChangeProposalStateDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @IsIn(['approve', 'reject', 'ask_for_revision'], {
-    message: 'status must be approve, reject or ask_for_revision',
+  @IsIn(['approve', 'reject', 'edit_request'], {
+    message: 'status must be approve, reject or edit_request',
   })
   action: string;
 
@@ -22,7 +22,7 @@ export class ChangeProposalStateDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  user_id: string;
+  organization_user_id?: string;
 
   /**
    * for moderator acceptance
@@ -31,13 +31,19 @@ export class ChangeProposalStateDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  track_name: string;
+  track_name?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  notes?: string;
+  notes?: string | undefined;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  procedures?: string | undefined;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  amandements?: any | undefined;
 
   /**
    * Organization / Client / PartnerId (bacicly the same, translational problem)

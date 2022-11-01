@@ -130,7 +130,7 @@ model proposal {
   submitter_user_id                                            String
   created_at                                                   DateTime                   @default(now()) @db.Timestamptz(6)
   updated_at                                                   DateTime                   @default(now()) @db.Timestamptz(6)
-  project_track                                                String?                    @default("DEFAULT_TRACK")
+  project_track                                                String                     @default("DEFAULT_TRACK")
   project_idea                                                 String?
   project_implement_date                                       DateTime?                  @db.Date
   project_location                                             String?
@@ -159,14 +159,14 @@ model proposal {
   cashier_id                                                   String?                    @default("null")
   project_manager_id                                           String?                    @default("null")
   supervisor_id                                                String?                    @default("null")
-  track_position                                               Int?                       @default(1)
+  track_position                                               Int                        @default(1)
   project_attachments                                          Json?
   letter_ofsupport_req                                         Json?
   on_revision                                                  Boolean?                   @default(false)
   on_consulting                                                Boolean?                   @default(false)
   proposal_bank_id                                             String?                    @db.Uuid
   proposal_beneficiaries                                       proposal_beneficiaries?    @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
-  project_tracks                                               project_tracks?            @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
+  project_tracks                                               project_tracks             @relation(fields: [project_track], references: [id], onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
   bank_information_bank_informationToproposal_proposal_bank_id bank_information?          @relation("bank_informationToproposal_proposal_bank_id", fields: [proposal_bank_id], references: [id], onDelete: Cascade)
   proposal_request                                             proposal_request?          @relation(fields: [outter_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_requested_fkey")
   user_type                                                    user_type?                 @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -205,27 +205,28 @@ model proposal_item_budget {
 }
 
 model proposal_log {
-  id              String          @id
-  proposal_id     String
-  created_at      DateTime        @default(now()) @db.Timestamptz(6)
-  updated_at      DateTime        @default(now()) @db.Timestamptz(6)
-  reviewer_id     String
-  inner_status    String
-  state           String
-  organization_id String
-  moderators      String?         @db.Char
-  path            String?         @db.Char
-  notes           String?
-  procedures      String?
-  send_amandement Json?
-  outter_status   String?
-  project_kind    String?
-  user_type       user_type       @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_assign_fkey")
-  proposal_state  proposal_state? @relation(fields: [outter_status], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  project_tracks  project_tracks? @relation(fields: [project_kind], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  proposal        proposal        @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
-  proposal_status proposal_status @relation(fields: [inner_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_status_fkey")
-  user            user            @relation(fields: [reviewer_id], references: [id], onUpdate: Restrict, map: "proposal_log_user_id_fkey")
+  id                                     String           @id
+  proposal_id                            String
+  created_at                             DateTime         @default(now()) @db.Timestamptz(6)
+  updated_at                             DateTime         @default(now()) @db.Timestamptz(6)
+  reviewer_id                            String
+  inner_status                           String?
+  state                                  String
+  client_user_id                         String
+  moderators                             String?          @db.Char
+  path                                   String?          @db.Char
+  notes                                  String?
+  procedures                             String?
+  send_amandement                        Json?
+  outter_status                          String?
+  project_kind                           String?
+  user_type                              user_type        @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_assign_fkey")
+  user_proposal_log_client_user_idTouser user             @relation("proposal_log_client_user_idTouser", fields: [client_user_id], references: [id], onDelete: Cascade)
+  proposal_state                         proposal_state?  @relation(fields: [outter_status], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  project_tracks                         project_tracks?  @relation(fields: [project_kind], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proposal                               proposal         @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
+  proposal_status                        proposal_status? @relation(fields: [inner_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_status_fkey")
+  user                                   user             @relation(fields: [reviewer_id], references: [id], onUpdate: Restrict, map: "proposal_log_user_id_fkey")
 }
 
 model proposal_state {
@@ -261,6 +262,7 @@ model user {
   message                                           message[]
   proposal                                          proposal[]
   proposal_follow_up                                proposal_follow_up[]
+  proposal_log_proposal_log_client_user_idTouser    proposal_log[]          @relation("proposal_log_client_user_idTouser")
   proposal_log                                      proposal_log[]
   room_chat_room_chat_participant1Touser            room_chat[]             @relation("room_chat_participant1Touser")
   room_chat_room_chat_participant2Touser            room_chat[]             @relation("room_chat_participant2Touser")
@@ -479,6 +481,7 @@ model project_track_flows {
   revised_officer                                          String?
   next_position                                            Int?
   next_officer                                             String?
+  is_final_step                                            Boolean?        @default(false)
   project_tracks                                           project_tracks? @relation(fields: [belongs_to_track], references: [id], onDelete: Cascade)
   user_type_project_track_flows_next_officerTouser_type    user_type?      @relation("project_track_flows_next_officerTouser_type", fields: [next_officer], references: [id], onDelete: Cascade)
   user_type_project_track_flows_revised_officerTouser_type user_type?      @relation("project_track_flows_revised_officerTouser_type", fields: [revised_officer], references: [id], onDelete: Cascade)
