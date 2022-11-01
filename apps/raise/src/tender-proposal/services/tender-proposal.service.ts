@@ -232,6 +232,10 @@ export class TenderProposalService {
       message = message + ` some changes from5 has been applied.`;
     }
 
+    if (updateProposal.step) {
+      updateProposalPayload.step = updateProposal.step;
+    }
+
     let update: proposal | null = null;
     // if updateProposalPayload !== {} then update the proposal
     if (Object.keys(updateProposalPayload).length > 0) {
