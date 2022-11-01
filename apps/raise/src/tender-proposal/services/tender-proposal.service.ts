@@ -287,8 +287,8 @@ export class TenderProposalService {
     currentUser: ICurrentUser,
     request: ChangeProposalStateDto,
   ) {
-    // console.log('currentUser', currentUser);
-    // console.log('request', request);
+    console.log('currentUser', currentUser);
+    console.log('request', request);
 
     const currentRoles = currentUser.type as TenderFusionAuthRoles;
     if (!currentRoles)
