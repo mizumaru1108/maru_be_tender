@@ -1,11 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsIn,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsUUID,
-} from 'class-validator';
+import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class ChangeProposalStateDto {
   @ApiProperty()
@@ -22,13 +16,28 @@ export class ChangeProposalStateDto {
   action: string;
 
   /**
-   * Required when moderator acceptance
+   * for moderator acceptance
    */
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  tracks_name?: string;
+  user_id: string;
+
+  /**
+   * for moderator acceptance
+   */
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  track_name: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  notes?: string;
 
   /**
    * Organization / Client / PartnerId (bacicly the same, translational problem)

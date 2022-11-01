@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -40,7 +41,8 @@ export class TenderProposalService {
     updateProposal: UpdateProposalDto,
   ): Promise<UpdateProposalResponseDto> {
     // create payload for update proposal
-    const updateProposalPayload: Prisma.proposalUpdateInput = {};
+    // const updateProposalPayload: Prisma.proposalUpdateInput = {}; // idk why proposal_bank_id didn't exist on the type.
+    const updateProposalPayload: any = {};
     let message = 'Proposal updated successfully';
 
     // find proposal by id
@@ -224,47 +226,8 @@ export class TenderProposalService {
 
     if (updateProposal.form5) {
       if (updateProposal.form5.proposal_bank_information_id) {
-        // find on bank_informations, if exist update, if didnt exist create
-        const proposalBankInformation =
-          await this.prismaService.propsal_bank_information.findFirst({
-            where: {
-              proposal_id: proposal.id,
-            },
-          });
-
-        // if its exist update it
-        if (proposalBankInformation) {
-          try {
-            await this.prismaService.propsal_bank_information.update({
-              where: {
-                id: proposalBankInformation.id,
-              },
-              data: {
-                bank_information_id:
-                  updateProposal.form5.proposal_bank_information_id,
-              },
-            });
-          } catch (error) {
-            throw new InternalServerErrorException(error.message);
-          }
-        }
-
-        // if it's not exist create it
-        if (!proposalBankInformation) {
-          try {
-            await this.prismaService.propsal_bank_information.create({
-              data: {
-                id: uuidv4(),
-                proposal_id: proposal.id,
-                bank_information_id:
-                  updateProposal.form5.proposal_bank_information_id,
-              },
-            });
-          } catch (error) {
-            console.log(error);
-            throw new InternalServerErrorException(error.message);
-          }
-        }
+        updateProposalPayload.proposal_bank_id =
+          updateProposal.form5.proposal_bank_information_id;
       }
       message = message + ` some changes from5 has been applied.`;
     }
@@ -321,7 +284,7 @@ export class TenderProposalService {
     request: ChangeProposalStateDto,
   ) {
     // console.log('currentUser', currentUser);
-    // console.log('request', request);\
+    // console.log('request', request);
 
     const currentRoles = currentUser.type as TenderFusionAuthRoles;
     if (!currentRoles)
@@ -338,26 +301,41 @@ export class TenderProposalService {
         id: request.proposal_id,
       },
     });
-    console.log('proposal', proposal);
+    // console.log('proposal', proposal);
 
     if (appRoles === 'MODERATOR') {
       if (request.action === 'approve') {
-        // find track
-        const track = await this.fetchTrack(
-          proposal.track_position!,
-          proposal.project_track!,
-        );
+        if (
+          // if it still on default track
+          proposal.track_position === 1 &&
+          proposal.project_track === 'DEFAULT_TRACK'
+        ) {
+          if (!request.user_id) {
+            throw new BadRequestException('Supervisor is required');
+          }
+          if (!request.track_name) {
+            throw new BadRequestException('Track name is required');
+          }
 
-        // update proposal track position and state
-        const updatedProposal = await this.prismaService.proposal.update({
-          where: {
-            id: proposal.id,
-          },
-          data: {
-            track_position: proposal.track_position! + 1,
-            state: track.assigned_to,
-          },
-        });
+          // find the next track for the proposal
+          const nextTrack = await this.fetchTrack(
+            proposal.track_position + 1,
+            request.track_name,
+          );
+          console.log('track', nextTrack);
+
+          // update proposal track position and state
+          const updatedProposal = await this.prismaService.proposal.update({
+            where: {
+              id: proposal.id,
+            },
+            data: {
+              track_position: proposal.track_position + 1,
+              state: nextTrack.assigned_to,
+              project_track: request.track_name,
+            },
+          });
+        }
       }
     }
 
