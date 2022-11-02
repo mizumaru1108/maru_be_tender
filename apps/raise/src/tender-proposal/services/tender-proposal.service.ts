@@ -20,6 +20,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import {
   appRoleMappers,
   TenderAppRole,
+  TenderAppRoles,
   TenderFusionAuthRoles,
 } from '../../tender/commons/types';
 import { InnerStatus, OutterStatus } from '../../tender/commons/types/proposal';
@@ -271,34 +272,59 @@ export class TenderProposalService {
   }
 
   async fetchTrack(
-    position: number,
+    state: TenderAppRole,
     track_name: string,
+    defaultTrack: boolean,
   ): Promise<project_track_flows> {
-    // get next track
-    const nextTrack = await this.prismaService.project_track_flows.findFirst({
-      where: {
-        step_position: position,
-        belongs_to_track: track_name,
-      },
-    });
-
-    // if there is no nextTrack position then try to fetch the previous track, if it's final track then return the final track
-    if (!nextTrack) {
-      const previousTrack =
+    if (defaultTrack) {
+      const currentTrack =
         await this.prismaService.project_track_flows.findFirst({
           where: {
-            step_position: position - 1,
+            assigned_to: state,
+            belongs_to_track: 'DEFAULT_TRACK',
+          },
+        });
+
+      if (!currentTrack) throw new NotFoundException('Track not found');
+
+      const nextTrack = await this.prismaService.project_track_flows.findFirst({
+        where: {
+          step_position: currentTrack.step_position! + 1,
+          belongs_to_track: track_name,
+        },
+      });
+      if (!nextTrack) throw new NotFoundException('Track not found');
+      return nextTrack;
+    } else {
+      // TODO: FIX it latter
+      console.log('state', state);
+      console.log('track name', track_name);
+
+      const currentTrack =
+        await this.prismaService.project_track_flows.findFirst({
+          where: {
+            assigned_to: state,
             belongs_to_track: track_name,
           },
         });
-      if (!previousTrack) {
+
+      if (!currentTrack)
         throw new NotFoundException(
-          `Track with position ${position} and track name ${track_name} not found`,
+          `There's no ${state} roles in ${track_name} track`,
         );
-      }
-      return previousTrack;
+
+      const nextTrack = await this.prismaService.project_track_flows.findFirst({
+        where: {
+          step_position: currentTrack.step_position! + 1,
+          belongs_to_track: track_name,
+        },
+      });
+      if (!nextTrack)
+        throw new NotFoundException(
+          `Next track not found after ${state} roles in ${track_name} track`,
+        );
+      return nextTrack;
     }
-    return nextTrack;
   }
 
   async createLog(
@@ -338,38 +364,39 @@ export class TenderProposalService {
     currentProposal: proposal,
     request: ChangeProposalStateDto,
   ): Promise<ChangeProposalStateResponseDto> {
-    const { organization_user_id, notes, procedures, track_name } = request;
+    const { supervisor_user_id, notes, procedures, track_name } = request;
 
     let proposal: proposal = currentProposal;
     let log: proposal_log | null = null;
 
-    if (currentProposal.track_position === 1) {
+    if (proposal.project_track === 'DEFAULT_TRACK') {
       if (!track_name) throw new BadRequestException('track_name is required!');
-      if (!organization_user_id) {
-        throw new BadRequestException('responsible officer is required!');
+      if (!supervisor_user_id) {
+        throw new BadRequestException(
+          'responsible officer (Supervisor) is required!',
+        );
       }
+      const nextTrack = await this.fetchTrack('MODERATOR', track_name, true);
+      // console.log('next', nextTrack);
 
-      const nextTrackPosition = currentProposal.track_position + 1;
-      const nextTrack = await this.fetchTrack(nextTrackPosition, track_name);
-
-      // update the track proposal from default to the defined track by the moderator
-      await this.prismaService.proposal.update({
+      // update the track proposal from default to the defined track by the moderator, also asign to the next state.
+      const updatedProposal = await this.prismaService.proposal.update({
         where: {
-          id: currentProposal.id,
+          id: proposal.id,
         },
         data: {
-          track_position:
-            nextTrack.is_final_step === true
-              ? currentProposal.track_position
-              : nextTrackPosition,
-          project_track: request.track_name,
+          inner_status: 'ACCEPTED_BY_MODERATOR',
+          outter_status: 'ONGOING',
+          state: nextTrack.assigned_to, // move the state to the next responsible officer.
+          project_track: request.track_name, // change the track name.
         },
       });
+      proposal = updatedProposal;
 
       // create logs
       const createdLog = await this.createLog(
         currentProposal.id,
-        organization_user_id,
+        supervisor_user_id,
         currentProposal.submitter_user_id,
         nextTrack.assigned_to,
         request.track_name!,
@@ -379,8 +406,42 @@ export class TenderProposalService {
         procedures,
       );
       log = createdLog;
+    } else {
+      const nextTrack = await this.fetchTrack(
+        'MODERATOR',
+        proposal.project_track,
+        false,
+      );
+      console.log('next', nextTrack);
+
+      // update the track proposal from default to the defined track by the moderator, aslo asign to the next state.
+      const updatedProposal = await this.prismaService.proposal.update({
+        where: {
+          id: proposal.id,
+        },
+        data: {
+          inner_status: 'ACCEPTED_BY_MODERATOR',
+          outter_status: 'ONGOING',
+          state: nextTrack.assigned_to, // move the state to the next responsible officer.
+        },
+      });
+      proposal = updatedProposal;
+
+      // create logs
+      const createdLog = await this.createLog(
+        currentProposal.id,
+        proposal.supervisor_id!, //should be there since it's already determined by the moderator (has track)
+        currentProposal.submitter_user_id,
+        nextTrack.assigned_to,
+        proposal.project_track,
+        'ACCEPTED_BY_MODERATOR',
+        'ONGOING',
+        notes,
+        procedures,
+      );
+      log = createdLog;
     }
-    //TODO: ELSE
+
     return {
       proposal,
       log,
@@ -392,6 +453,94 @@ export class TenderProposalService {
     request: ChangeProposalStateDto,
   ) {
     //
+  }
+
+  async handleProjectSupervisorApprove(
+    currentProposal: proposal,
+    request: ChangeProposalStateDto,
+  ): Promise<ChangeProposalStateResponseDto> {
+    let proposal: proposal = currentProposal;
+    let log: proposal_log | null = null;
+
+    console.log('current proposal', proposal);
+    const nextTrack = await this.fetchTrack(
+      'PROJECT_SUPERVISOR',
+      proposal.project_track,
+      false,
+    );
+    console.log('next', nextTrack);
+
+    // 3 is default for project supervisor set paymentsetup.
+    // if the next track is 4, then the proposal shouldn't have a paymentsetup
+    // if (nextTrack.step_position === 4) {
+    //   if (!request.setupPaymentPayload) {
+    //     throw new BadRequestException('setupPaymentPayload is required!');
+    //   }
+
+    //   const {
+    //     clause,
+    //     clasification_field,
+    //     support_type,
+    //     closing_report,
+    //     need_picture,
+    //     does_an_agreement,
+    //     support_amount,
+    //     number_of_payments,
+    //     procedures,
+    //     notes,
+    //     support_outputs,
+    //   } = request.setupPaymentPayload;
+
+    //   // await this.prismaService.supervisor.create({
+    //   //   data: {
+    //   //     id: nanoid(),
+    //   //     proposal_id: proposal.id,
+    //   //     user_id: proposal.supervisor_id!, // should be there since it's already determined by the moderator (has track)
+    //   //     clause,
+    //   //     clasification_field,
+    //   //     support_type,
+    //   //     closing_report,
+    //   //     need_picture,
+    //   //     does_an_agreement,
+    //   //     support_amount,
+    //   //     number_of_payments,
+    //   //     procedures,
+    //   //     notes,
+    //   //     support_outputs,
+    //   //   },
+    //   // });
+
+    //   // const updatedProposal = await this.prismaService.proposal.update({
+    //   //   where: {
+    //   //     id: proposal.id,
+    //   //   },
+    //   //   data: {
+    //   //     inner_status: 'ACCEPTED_BY_PROJECT_SUPERVISOR',
+    //   //     outter_status: 'ONGOING',
+    //   //     state: nextTrack.assigned_to, // move the state to the next responsible officer.
+    //   //   },
+    //   // });
+    //   // proposal = updatedProposal;
+
+    //   // // create logs
+    //   // const createdLog = await this.createLog(
+    //   //   currentProposal.id,
+    //   //   proposal.supervisor_id!, //should be there since it's already determined by the moderator (has track)
+    //   //   currentProposal.submitter_user_id,
+    //   //   nextTrack.assigned_to,
+    //   //   proposal.project_track,
+    //   //   'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
+    //   //   'ONGOING',
+    //   //   notes,
+    //   //   procedures,
+    //   // );
+    //   // log = createdLog;
+    // }
+
+    return {
+      proposal,
+      log,
+    };
   }
 
   async changeProposalState(
@@ -446,12 +595,21 @@ export class TenderProposalService {
     //   );
     // }
 
-    let updatedProposal: proposal = proposal;
-    let createdLogs: proposal_log | null = null;
+    // let updatedProposal: proposal = proposal;
+    // let createdLogs: proposal_log | null = null;
     // the track (will be next track decided by the action)
+    console.log('appRoles', appRoles);
     if (request.action === 'approve') {
       if (appRoles === 'MODERATOR') {
-        await this.handleModeratorApprove(proposal, request);
+        const result = await this.handleModeratorApprove(proposal, request);
+        return result;
+      }
+      if (appRoles === 'PROJECT_SUPERVISOR') {
+        const result = await this.handleProjectSupervisorApprove(
+          proposal,
+          request,
+        );
+        return result;
       }
     }
 

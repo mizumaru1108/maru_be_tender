@@ -1,5 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsIn,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { SetupPaymentPayloadDto } from './setup-payment-payload.dto';
 
 export class ChangeProposalStateDto {
   @ApiProperty()
@@ -22,7 +30,7 @@ export class ChangeProposalStateDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  organization_user_id?: string;
+  supervisor_user_id?: string;
 
   /**
    * for moderator acceptance
@@ -44,6 +52,12 @@ export class ChangeProposalStateDto {
   @ApiPropertyOptional()
   @IsOptional()
   amandements?: any | undefined;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => SetupPaymentPayloadDto)
+  @ValidateNested()
+  setupPaymentPayload?: SetupPaymentPayloadDto;
 
   /**
    * Organization / Client / PartnerId (bacicly the same, translational problem)

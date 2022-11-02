@@ -159,7 +159,6 @@ model proposal {
   cashier_id                                                   String?                    @default("null")
   project_manager_id                                           String?                    @default("null")
   supervisor_id                                                String?                    @default("null")
-  track_position                                               Int                        @default(1)
   project_attachments                                          Json?
   letter_ofsupport_req                                         Json?
   on_revision                                                  Boolean?                   @default(false)
@@ -270,15 +269,12 @@ model user {
 }
 
 model user_type {
-  id                                                                 String                @id
-  title                                                              String                @unique(map: "user_type_user_type_tittle_key")
-  project_track_flows_project_track_flows_next_officerTouser_type    project_track_flows[] @relation("project_track_flows_next_officerTouser_type")
-  project_track_flows_project_track_flows_revised_officerTouser_type project_track_flows[] @relation("project_track_flows_revised_officerTouser_type")
-  project_track_flows_project_track_flows_assigned_toTouser_type     project_track_flows[] @relation("project_track_flows_assigned_toTouser_type")
-  project_track_flows_project_track_flows_reject_officerTouser_type  project_track_flows[] @relation("project_track_flows_reject_officerTouser_type")
-  proposal                                                           proposal[]
-  proposal_assign                                                    proposal_assign[]
-  proposal_log                                                       proposal_log[]
+  id                                                             String                @id
+  title                                                          String                @unique(map: "user_type_user_type_tittle_key")
+  project_track_flows_project_track_flows_assigned_toTouser_type project_track_flows[] @relation("project_track_flows_assigned_toTouser_type")
+  proposal                                                       proposal[]
+  proposal_assign                                                proposal_assign[]
+  proposal_log                                                   proposal_log[]
 }
 
 model proposal_assign {
@@ -471,22 +467,14 @@ model edit_request_status {
 }
 
 model project_track_flows {
-  id                                                       String          @id(map: "proposal_track_flows_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  assigned_to                                              String
-  step_position                                            Int?
-  belongs_to_track                                         String?
-  reject_position                                          Int?
-  reject_officer                                           String?
-  revised_position                                         Int?
-  revised_officer                                          String?
-  next_position                                            Int?
-  next_officer                                             String?
-  is_final_step                                            Boolean?        @default(false)
-  project_tracks                                           project_tracks? @relation(fields: [belongs_to_track], references: [id], onDelete: Cascade)
-  user_type_project_track_flows_next_officerTouser_type    user_type?      @relation("project_track_flows_next_officerTouser_type", fields: [next_officer], references: [id], onDelete: Cascade)
-  user_type_project_track_flows_revised_officerTouser_type user_type?      @relation("project_track_flows_revised_officerTouser_type", fields: [revised_officer], references: [id], onDelete: Cascade)
-  user_type_project_track_flows_assigned_toTouser_type     user_type       @relation("project_track_flows_assigned_toTouser_type", fields: [assigned_to], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_track_flows_assigned_to_fkey")
-  user_type_project_track_flows_reject_officerTouser_type  user_type?      @relation("project_track_flows_reject_officerTouser_type", fields: [reject_officer], references: [id], onDelete: Cascade, map: "proposal_track_flows_revert_officer_fkey")
+  id                                                   String          @id(map: "proposal_track_flows_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  assigned_to                                          String
+  step_position                                        Int?
+  belongs_to_track                                     String?
+  is_final_step                                        Boolean?        @default(false)
+  action                                               String?         @db.VarChar
+  project_tracks                                       project_tracks? @relation(fields: [belongs_to_track], references: [id], onDelete: Cascade)
+  user_type_project_track_flows_assigned_toTouser_type user_type       @relation("project_track_flows_assigned_toTouser_type", fields: [assigned_to], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_track_flows_assigned_to_fkey")
 }
 
 model project_tracks {
