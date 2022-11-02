@@ -60,17 +60,15 @@ export class SetupPaymentPayloadDto {
   @IsNotEmpty()
   number_of_payments: number;
 
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  procedures?: string;
+  procedures: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  notes?: string;
+  notes: string;
 
   @ApiProperty()
   @IsString()

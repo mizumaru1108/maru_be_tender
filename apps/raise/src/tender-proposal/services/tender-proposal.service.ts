@@ -42,6 +42,7 @@ export class TenderProposalService {
     private readonly tenderProposalFlowService: TenderProposalFlowService,
   ) {}
 
+  // for draft / edit request
   async updateProposal(
     userId: string,
     updateProposal: UpdateProposalDto,
@@ -385,6 +386,7 @@ export class TenderProposalService {
           id: proposal.id,
         },
         data: {
+          supervisor_id: supervisor_user_id,
           inner_status: 'ACCEPTED_BY_MODERATOR',
           outter_status: 'ONGOING',
           state: nextTrack.assigned_to, // move the state to the next responsible officer.
@@ -448,13 +450,6 @@ export class TenderProposalService {
     };
   }
 
-  async handleModeratorReject(
-    proposal: proposal,
-    request: ChangeProposalStateDto,
-  ) {
-    //
-  }
-
   async handleProjectSupervisorApprove(
     currentProposal: proposal,
     request: ChangeProposalStateDto,
@@ -462,80 +457,81 @@ export class TenderProposalService {
     let proposal: proposal = currentProposal;
     let log: proposal_log | null = null;
 
-    console.log('current proposal', proposal);
     const nextTrack = await this.fetchTrack(
       'PROJECT_SUPERVISOR',
       proposal.project_track,
       false,
     );
-    console.log('next', nextTrack);
+    // console.log('next', nextTrack);
 
-    // 3 is default for project supervisor set paymentsetup.
-    // if the next track is 4, then the proposal shouldn't have a paymentsetup
-    // if (nextTrack.step_position === 4) {
-    //   if (!request.setupPaymentPayload) {
-    //     throw new BadRequestException('setupPaymentPayload is required!');
-    //   }
+    // 2 is default for project supervisor set paymentsetup.
+    // if the next track is 3, then the proposal shouldn't have a paymentsetup
+    if (nextTrack.step_position === 3) {
+      if (!request.setupPaymentPayload) {
+        throw new BadRequestException('setupPaymentPayload is required!');
+      }
 
-    //   const {
-    //     clause,
-    //     clasification_field,
-    //     support_type,
-    //     closing_report,
-    //     need_picture,
-    //     does_an_agreement,
-    //     support_amount,
-    //     number_of_payments,
-    //     procedures,
-    //     notes,
-    //     support_outputs,
-    //   } = request.setupPaymentPayload;
+      const {
+        clause,
+        clasification_field,
+        support_type,
+        closing_report,
+        need_picture,
+        does_an_agreement,
+        support_amount,
+        number_of_payments,
+        procedures,
+        notes,
+        support_outputs,
+      } = request.setupPaymentPayload;
 
-    //   // await this.prismaService.supervisor.create({
-    //   //   data: {
-    //   //     id: nanoid(),
-    //   //     proposal_id: proposal.id,
-    //   //     user_id: proposal.supervisor_id!, // should be there since it's already determined by the moderator (has track)
-    //   //     clause,
-    //   //     clasification_field,
-    //   //     support_type,
-    //   //     closing_report,
-    //   //     need_picture,
-    //   //     does_an_agreement,
-    //   //     support_amount,
-    //   //     number_of_payments,
-    //   //     procedures,
-    //   //     notes,
-    //   //     support_outputs,
-    //   //   },
-    //   // });
+      await this.prismaService.supervisor.create({
+        data: {
+          id: nanoid(),
+          proposal_id: proposal.id,
+          user_id: proposal.supervisor_id!, // should be there since it's already determined by the moderator (has track)
+          clause,
+          clasification_field,
+          support_type,
+          closing_report,
+          need_picture,
+          does_an_agreement,
+          support_amount,
+          number_of_payments,
+          procedures,
+          notes,
+          support_outputs,
+        },
+      });
 
-    //   // const updatedProposal = await this.prismaService.proposal.update({
-    //   //   where: {
-    //   //     id: proposal.id,
-    //   //   },
-    //   //   data: {
-    //   //     inner_status: 'ACCEPTED_BY_PROJECT_SUPERVISOR',
-    //   //     outter_status: 'ONGOING',
-    //   //     state: nextTrack.assigned_to, // move the state to the next responsible officer.
-    //   //   },
-    //   // });
-    //   // proposal = updatedProposal;
+      const updatedProposal = await this.prismaService.proposal.update({
+        where: {
+          id: proposal.id,
+        },
+        data: {
+          inner_status: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
+          outter_status: 'ONGOING',
+          state: nextTrack.assigned_to, // move the state to the next responsible officer.
+        },
+      });
+      proposal = updatedProposal;
 
-    //   // // create logs
-    //   // const createdLog = await this.createLog(
-    //   //   currentProposal.id,
-    //   //   proposal.supervisor_id!, //should be there since it's already determined by the moderator (has track)
-    //   //   currentProposal.submitter_user_id,
-    //   //   nextTrack.assigned_to,
-    //   //   proposal.project_track,
-    //   //   'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
-    //   //   'ONGOING',
-    //   //   notes,
-    //   //   procedures,
-    //   // );
-    //   // log = createdLog;
-    // }
+      // create logs
+      const createdLog = await this.createLog(
+        currentProposal.id,
+        proposal.supervisor_id!, //should be there since it's already determined by the moderator (has track)
+        currentProposal.submitter_user_id,
+        nextTrack.assigned_to,
+        proposal.project_track,
+        'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
+        'ONGOING',
+        notes,
+        procedures,
+      );
+      log = createdLog;
+    }
+
+    // if its not defining payment setup, then apply diffrent logic like approve reject / something else.
 
     return {
       proposal,
@@ -543,13 +539,159 @@ export class TenderProposalService {
     };
   }
 
+  async handleProjectManagerApprove(
+    currentProposal: proposal,
+    request: ChangeProposalStateDto,
+  ): Promise<ChangeProposalStateResponseDto> {
+    let proposal: proposal = currentProposal;
+    let log: proposal_log | null = null;
+
+    if (!request.notes) throw new BadRequestException('notes is required!');
+
+    const nextTrack = await this.fetchTrack(
+      'PROJECT_MANAGER',
+      currentProposal.project_track,
+      false,
+    );
+    console.log('next', nextTrack);
+
+    const updatedProposal = await this.prismaService.proposal.update({
+      where: {
+        id: proposal.id,
+      },
+      data: {
+        inner_status: 'ACCEPTED_BY_PROJECT_MANAGER',
+        outter_status: 'ONGOING',
+        state: nextTrack.assigned_to, // move the state to the next responsible officer.
+      },
+    });
+    proposal = updatedProposal;
+
+    // create logs
+    const createdLog = await this.createLog(
+      currentProposal.id,
+      proposal.supervisor_id!, //should be there since it's already determined by the moderator (has track)
+      currentProposal.submitter_user_id,
+      nextTrack.assigned_to,
+      proposal.project_track,
+      'ACCEPTED_BY_PROJECT_MANAGER',
+      'ONGOING',
+      request.notes,
+    );
+    log = createdLog;
+
+    return {
+      proposal,
+      log,
+    };
+  }
+
+  async handleCeoApprove(
+    currentProposal: proposal,
+    request: ChangeProposalStateDto,
+  ): Promise<ChangeProposalStateResponseDto> {
+    let proposal: proposal = currentProposal;
+    let log: proposal_log | null = null;
+
+    const nextTrack = await this.fetchTrack(
+      'CEO',
+      currentProposal.project_track,
+      false,
+    );
+    console.log('next', nextTrack);
+
+    const updatedProposal = await this.prismaService.proposal.update({
+      where: {
+        id: proposal.id,
+      },
+      data: {
+        inner_status: 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
+        outter_status: 'ONGOING',
+        state: nextTrack.assigned_to, // move the state to the next responsible officer.
+      },
+    });
+    proposal = updatedProposal;
+
+    // create logs
+    const createdLog = await this.createLog(
+      currentProposal.id,
+      proposal.supervisor_id!, //should be there since it's already determined by the moderator (has track)
+      currentProposal.submitter_user_id,
+      nextTrack.assigned_to,
+      proposal.project_track,
+      'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
+      'ONGOING',
+    );
+    log = createdLog;
+
+    return {
+      proposal,
+      log,
+    };
+  }
+
+  async handleModeratorReject(
+    proposal: proposal,
+    request: ChangeProposalStateDto,
+  ) {}
+
+  async handleProjectSupervisorReject(
+    proposal: proposal,
+    request: ChangeProposalStateDto,
+  ) {}
+
+  async handleProjectManagerReject(
+    proposal: proposal,
+    request: ChangeProposalStateDto,
+  ) {}
+
+  // async handleCeoReject(
+  //   currentProposal: proposal,
+  //   request: ChangeProposalStateDto,
+  // ): Promise<ChangeProposalStateResponseDto> {
+  //   let proposal: proposal = currentProposal;
+  //   let log: proposal_log | null = null;
+
+  //   if (!request.notes) throw new BadRequestException('notes is required!');
+  //   if (!request.procedures) {
+  //     throw new BadRequestException('procedures is required!');
+  //   }
+
+  //   // the proposal flow gonna stop
+  //   const updatedProposal = await this.prismaService.proposal.update({
+  //     where: {
+  //       id: proposal.id,
+  //     },
+  //     data: {
+  //       inner_status: 'REJECTED_BY_CEO_WITH_COMMENT',
+  //       outter_status: 'CANCELLED',
+  //       state: 'CEO',
+  //     },
+  //   });
+  //   proposal = updatedProposal;
+
+  //   // create logs
+  //   const createdLog = await this.createLog(
+  //     currentProposal.id,
+  //     proposal.supervisor_id!, //should be there since it's already determined by the moderator (has track)
+  //     currentProposal.submitter_user_id,
+  //     'CEO',
+  //     currentProposal.project_track,
+  //     'REJECTED_BY_CEO_WITH_COMMENT',
+  //     'CANCELED',
+  //   );
+  //   log = createdLog;
+
+  //   return {
+  //     proposal,
+  //     log,
+  //   };
+  // }
+
   async changeProposalState(
     currentUser: ICurrentUser,
     request: ChangeProposalStateDto,
   ) {
-    // console.log('currentUser', currentUser);
-    // console.log('request', request);
-
     const currentRoles = currentUser.type as TenderFusionAuthRoles;
     if (!currentRoles)
       throw new UnauthorizedException(
@@ -559,7 +701,6 @@ export class TenderProposalService {
     const appRoles = appRoleMappers[currentRoles] as TenderAppRole;
     // console.log('app roles', appRoles);
 
-    // get proposal by id
     const proposal = await this.prismaService.proposal.findUnique({
       where: {
         id: request.proposal_id,
@@ -595,9 +736,6 @@ export class TenderProposalService {
     //   );
     // }
 
-    // let updatedProposal: proposal = proposal;
-    // let createdLogs: proposal_log | null = null;
-    // the track (will be next track decided by the action)
     console.log('appRoles', appRoles);
     if (request.action === 'approve') {
       if (appRoles === 'MODERATOR') {
@@ -611,6 +749,17 @@ export class TenderProposalService {
         );
         return result;
       }
+      if (appRoles === 'PROJECT_MANAGER') {
+        const result = await this.handleProjectManagerApprove(
+          proposal,
+          request,
+        );
+        return result;
+      }
+      if (appRoles === 'CEO') {
+        const result = await this.handleCeoApprove(proposal, request);
+        return result;
+      }
     }
 
     // if the action is edit_request the track will be stopped, and the proposal will be sent to the Supervisor
@@ -620,7 +769,51 @@ export class TenderProposalService {
     if (request.action === 'reject') {
       //Project_Manager/CEO/Consultant if rejected by those roles the flow will stop (outter_status will be cancelled)
       if (['PROJECT_MANAGER', 'CEO', 'CONSULTANT'].includes(appRoles)) {
-        proposal.outter_status = 'cancelled';
+        let inner = '';
+        if (!request.notes) throw new BadRequestException('notes is required!');
+        if (appRoles === 'PROJECT_MANAGER') {
+          inner = 'REJECTED_BY_PROJECT_MANAGER_WITH_COMMENT';
+        }
+        if (appRoles === 'CEO') {
+          if (!request.procedures) {
+            throw new BadRequestException('procedures is required!');
+          }
+          inner = 'REJECTED_BY_CEO_WITH_COMMENT';
+        }
+        if (appRoles === 'CONSULTANT') {
+          if (!request.procedures) {
+            throw new BadRequestException('procedures is required!');
+          }
+          inner = 'REJECTED_BY_CONSULTANT';
+        }
+
+        const updatedProposal = await this.prismaService.proposal.update({
+          where: {
+            id: proposal.id,
+          },
+          data: {
+            inner_status: inner,
+            outter_status: 'CANCELLED',
+            state: appRoles,
+          },
+        });
+
+        const createdLog = await this.createLog(
+          proposal.id,
+          proposal.supervisor_id!, //should be there since it's already determined by the moderator (has track)
+          proposal.submitter_user_id,
+          appRoles,
+          proposal.project_track,
+          inner as InnerStatus,
+          'CANCELED',
+          request.notes,
+          request.procedures,
+        );
+
+        return {
+          proposal: updatedProposal,
+          log: createdLog,
+        };
       }
 
       // if rejected by any other role the flow will go to the next track
