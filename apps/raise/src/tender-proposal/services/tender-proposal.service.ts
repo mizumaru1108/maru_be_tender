@@ -6,7 +6,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import {
-  client_data,
   Prisma,
   project_track_flows,
   proposal,
@@ -20,12 +19,10 @@ import { PrismaService } from '../../prisma/prisma.service';
 import {
   appRoleMappers,
   TenderAppRole,
-  TenderAppRoles,
   TenderFusionAuthRoles,
 } from '../../tender/commons/types';
 import { InnerStatus, OutterStatus } from '../../tender/commons/types/proposal';
 import { compareUrl } from '../../tender/commons/utils/compare-jsonb-imageurl';
-import { UploadProposalFilesDto } from '../../tender/dto/upload-proposal-files.dto';
 import { ICurrentUser } from '../../user/interfaces/current-user.interface';
 import { ChangeProposalStateDto } from '../dtos/requests/change-proposal-state.dto';
 import { UpdateProposalDto } from '../dtos/requests/update-proposal.dto';
@@ -297,7 +294,6 @@ export class TenderProposalService {
       if (!nextTrack) throw new NotFoundException('Track not found');
       return nextTrack;
     } else {
-      // TODO: FIX it latter
       console.log('state', state);
       console.log('track name', track_name);
 
@@ -311,7 +307,7 @@ export class TenderProposalService {
 
       if (!currentTrack)
         throw new NotFoundException(
-          `There's no ${state} roles in ${track_name} track`,
+          `There's no ${state} roles in ${track_name} track, please check your ${track_name} flow`,
         );
 
       const nextTrack = await this.prismaService.project_track_flows.findFirst({
@@ -322,7 +318,7 @@ export class TenderProposalService {
       });
       if (!nextTrack)
         throw new NotFoundException(
-          `Next track not found after ${state} roles in ${track_name} track`,
+          `Next track not found after step number ${currentTrack.step_position}, in ${track_name} track`,
         );
       return nextTrack;
     }
@@ -586,9 +582,58 @@ export class TenderProposalService {
     };
   }
 
-  async handleCeoApprove(
+  async handleConsultantApprove(
     currentProposal: proposal,
     request: ChangeProposalStateDto,
+  ): Promise<ChangeProposalStateResponseDto> {
+    let proposal: proposal = currentProposal;
+    let log: proposal_log | null = null;
+
+    if (!request.notes) throw new BadRequestException('notes is required!');
+    if (!request.procedures)
+      throw new BadRequestException('procedures is required!');
+
+    const nextTrack = await this.fetchTrack(
+      'CONSULTANT',
+      currentProposal.project_track,
+      false,
+    );
+    console.log('next', nextTrack);
+
+    const updatedProposal = await this.prismaService.proposal.update({
+      where: {
+        id: proposal.id,
+      },
+      data: {
+        inner_status: 'ACCEPTED_BY_CONSULTANT',
+        outter_status: 'ONGOING',
+        state: nextTrack.assigned_to, // move the state to the next responsible officer.
+      },
+    });
+    proposal = updatedProposal;
+
+    // create logs
+    const createdLog = await this.createLog(
+      currentProposal.id,
+      proposal.supervisor_id!, //should be there since it's already determined by the moderator (has track)
+      currentProposal.submitter_user_id,
+      nextTrack.assigned_to,
+      proposal.project_track,
+      'ACCEPTED_BY_CONSULTANT',
+      'ONGOING',
+      request.notes,
+      request.procedures,
+    );
+    log = createdLog;
+
+    return {
+      proposal,
+      log,
+    };
+  }
+
+  async handleCeoApprove(
+    currentProposal: proposal,
   ): Promise<ChangeProposalStateResponseDto> {
     let proposal: proposal = currentProposal;
     let log: proposal_log | null = null;
@@ -640,54 +685,6 @@ export class TenderProposalService {
     request: ChangeProposalStateDto,
   ) {}
 
-  async handleProjectManagerReject(
-    proposal: proposal,
-    request: ChangeProposalStateDto,
-  ) {}
-
-  // async handleCeoReject(
-  //   currentProposal: proposal,
-  //   request: ChangeProposalStateDto,
-  // ): Promise<ChangeProposalStateResponseDto> {
-  //   let proposal: proposal = currentProposal;
-  //   let log: proposal_log | null = null;
-
-  //   if (!request.notes) throw new BadRequestException('notes is required!');
-  //   if (!request.procedures) {
-  //     throw new BadRequestException('procedures is required!');
-  //   }
-
-  //   // the proposal flow gonna stop
-  //   const updatedProposal = await this.prismaService.proposal.update({
-  //     where: {
-  //       id: proposal.id,
-  //     },
-  //     data: {
-  //       inner_status: 'REJECTED_BY_CEO_WITH_COMMENT',
-  //       outter_status: 'CANCELLED',
-  //       state: 'CEO',
-  //     },
-  //   });
-  //   proposal = updatedProposal;
-
-  //   // create logs
-  //   const createdLog = await this.createLog(
-  //     currentProposal.id,
-  //     proposal.supervisor_id!, //should be there since it's already determined by the moderator (has track)
-  //     currentProposal.submitter_user_id,
-  //     'CEO',
-  //     currentProposal.project_track,
-  //     'REJECTED_BY_CEO_WITH_COMMENT',
-  //     'CANCELED',
-  //   );
-  //   log = createdLog;
-
-  //   return {
-  //     proposal,
-  //     log,
-  //   };
-  // }
-
   async changeProposalState(
     currentUser: ICurrentUser,
     request: ChangeProposalStateDto,
@@ -712,31 +709,6 @@ export class TenderProposalService {
       );
     }
 
-    // // get user from submitter_user_id on proposal
-    // const clientUserData = await this.prismaService.user.findUnique({
-    //   where: {
-    //     id: proposal.submitter_user_id,
-    //   },
-    // });
-    // if (!clientUserData) {
-    //   throw new NotFoundException(
-    //     `Submitter ${proposal.submitter_user_id} not found`,
-    //   );
-    // }
-
-    // // get client_data from clientUserData
-    // const clientData = await this.prismaService.client_data.findUnique({
-    //   where: {
-    //     email: clientUserData.email,
-    //   },
-    // });
-    // if (!clientData) {
-    //   throw new NotFoundException(
-    //     `Client with email ${clientUserData.email} not found`,
-    //   );
-    // }
-
-    console.log('appRoles', appRoles);
     if (request.action === 'approve') {
       if (appRoles === 'MODERATOR') {
         const result = await this.handleModeratorApprove(proposal, request);
@@ -757,13 +729,43 @@ export class TenderProposalService {
         return result;
       }
       if (appRoles === 'CEO') {
-        const result = await this.handleCeoApprove(proposal, request);
+        const result = await this.handleCeoApprove(proposal);
+        return result;
+      }
+      if (appRoles === 'CONSULTANT') {
+        const result = await this.handleConsultantApprove(proposal, request);
         return result;
       }
     }
 
     // if the action is edit_request the track will be stopped, and the proposal will be sent to the Supervisor
     if (request.action === 'edit_request') {
+      // update state to PROJECT_SUPERVISOR, and inner_status to WAITING_FOR_EDIT_REQUEST_APPROVAL_FROM_SUPERVISOR
+      const updatedProposal = await this.prismaService.proposal.update({
+        where: {
+          id: proposal.id,
+        },
+        data: {
+          inner_status: 'WAITING_FOR_EDIT_REQUEST_APPROVAL_FROM_SUPERVISOR',
+          outter_status: 'PENDING',
+          state: 'PROJECT_SUPERVISOR',
+        },
+      });
+
+      const createdLog = await this.createLog(
+        proposal.id,
+        proposal.supervisor_id!, //should be there since it's already determined by the moderator (has track)
+        proposal.submitter_user_id,
+        'PROJECT_SUPERVISOR',
+        proposal.project_track,
+        'WAITING_FOR_EDIT_REQUEST_APPROVAL_FROM_SUPERVISOR',
+        'PENDING',
+      );
+
+      return {
+        proposal: updatedProposal,
+        log: createdLog,
+      };
     }
 
     if (request.action === 'reject') {
