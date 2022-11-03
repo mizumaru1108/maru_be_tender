@@ -358,6 +358,7 @@ export class TenderProposalService {
   }
 
   async handleModeratorApprove(
+    currentUser: ICurrentUser,
     currentProposal: proposal,
     request: ChangeProposalStateDto,
   ): Promise<ChangeProposalStateResponseDto> {
@@ -394,7 +395,7 @@ export class TenderProposalService {
       // create logs
       const createdLog = await this.createLog(
         currentProposal.id,
-        supervisor_user_id,
+        currentUser.id,
         currentProposal.submitter_user_id,
         nextTrack.assigned_to,
         request.track_name!,
@@ -428,7 +429,7 @@ export class TenderProposalService {
       // create logs
       const createdLog = await this.createLog(
         currentProposal.id,
-        proposal.supervisor_id!, //should be there since it's already determined by the moderator (has track)
+        currentUser.id, //should be there since it's already determined by the moderator (has track)
         currentProposal.submitter_user_id,
         nextTrack.assigned_to,
         proposal.project_track,
@@ -447,6 +448,7 @@ export class TenderProposalService {
   }
 
   async handleProjectSupervisorApprove(
+    currentUser: ICurrentUser,
     currentProposal: proposal,
     request: ChangeProposalStateDto,
   ): Promise<ChangeProposalStateResponseDto> {
@@ -515,7 +517,7 @@ export class TenderProposalService {
       // create logs
       const createdLog = await this.createLog(
         currentProposal.id,
-        proposal.supervisor_id!, //should be there since it's already determined by the moderator (has track)
+        currentUser.id, //should be there since it's already determined by the moderator (has track)
         currentProposal.submitter_user_id,
         nextTrack.assigned_to,
         proposal.project_track,
@@ -536,6 +538,7 @@ export class TenderProposalService {
   }
 
   async handleProjectManagerApprove(
+    currentUser: ICurrentUser,
     currentProposal: proposal,
     request: ChangeProposalStateDto,
   ): Promise<ChangeProposalStateResponseDto> {
@@ -566,7 +569,7 @@ export class TenderProposalService {
     // create logs
     const createdLog = await this.createLog(
       currentProposal.id,
-      proposal.supervisor_id!, //should be there since it's already determined by the moderator (has track)
+      currentUser.id,
       currentProposal.submitter_user_id,
       nextTrack.assigned_to,
       proposal.project_track,
@@ -583,6 +586,7 @@ export class TenderProposalService {
   }
 
   async handleConsultantApprove(
+    currentUser: ICurrentUser,
     currentProposal: proposal,
     request: ChangeProposalStateDto,
   ): Promise<ChangeProposalStateResponseDto> {
@@ -615,7 +619,7 @@ export class TenderProposalService {
     // create logs
     const createdLog = await this.createLog(
       currentProposal.id,
-      proposal.supervisor_id!, //should be there since it's already determined by the moderator (has track)
+      currentUser.id, //should be there since it's already determined by the moderator (has track)
       currentProposal.submitter_user_id,
       nextTrack.assigned_to,
       proposal.project_track,
@@ -633,6 +637,7 @@ export class TenderProposalService {
   }
 
   async handleCeoApprove(
+    currentUser: ICurrentUser,
     currentProposal: proposal,
   ): Promise<ChangeProposalStateResponseDto> {
     let proposal: proposal = currentProposal;
@@ -660,7 +665,7 @@ export class TenderProposalService {
     // create logs
     const createdLog = await this.createLog(
       currentProposal.id,
-      proposal.supervisor_id!, //should be there since it's already determined by the moderator (has track)
+      currentUser.id,
       currentProposal.submitter_user_id,
       nextTrack.assigned_to,
       proposal.project_track,
@@ -676,14 +681,90 @@ export class TenderProposalService {
   }
 
   async handleModeratorReject(
-    proposal: proposal,
+    currentUser: ICurrentUser,
+    currentProposal: proposal,
     request: ChangeProposalStateDto,
-  ) {}
+  ) {
+    if (!request.notes) throw new BadRequestException('notes is required!');
+
+    const nextTrack = await this.fetchTrack(
+      'MODERATOR',
+      currentProposal.project_track,
+      false,
+    );
+    console.log('next', nextTrack);
+
+    const updatedProposal = await this.prismaService.proposal.update({
+      where: {
+        id: currentProposal.id,
+      },
+      data: {
+        inner_status: 'REJECTED_BY_MODERATOR',
+        outter_status: 'ONGOING',
+        state: nextTrack.assigned_to,
+      },
+    });
+
+    // create logs
+    const createdLog = await this.createLog(
+      currentProposal.id,
+      currentUser.id,
+      currentProposal.submitter_user_id,
+      nextTrack.assigned_to,
+      currentProposal.project_track,
+      'REJECTED_BY_MODERATOR',
+      'ONGOING',
+      request.notes,
+    );
+
+    return {
+      proposal: updatedProposal,
+      log: createdLog,
+    };
+  }
 
   async handleProjectSupervisorReject(
-    proposal: proposal,
+    currentUser: ICurrentUser,
+    currentProposal: proposal,
     request: ChangeProposalStateDto,
-  ) {}
+  ) {
+    if (!request.notes) throw new BadRequestException('notes is required!');
+
+    const nextTrack = await this.fetchTrack(
+      'PROJECT_SUPERVISOR',
+      currentProposal.project_track,
+      false,
+    );
+    console.log('next', nextTrack);
+
+    const updatedProposal = await this.prismaService.proposal.update({
+      where: {
+        id: currentProposal.id,
+      },
+      data: {
+        inner_status: 'REJECTED_BY_SUPERVISOR_WITH_COMMENT',
+        outter_status: 'ONGOING',
+        state: nextTrack.assigned_to,
+      },
+    });
+
+    // create logs
+    const createdLog = await this.createLog(
+      currentProposal.id,
+      currentUser.id,
+      currentProposal.submitter_user_id,
+      nextTrack.assigned_to,
+      currentProposal.project_track,
+      'REJECTED_BY_SUPERVISOR_WITH_COMMENT',
+      'ONGOING',
+      request.notes,
+    );
+
+    return {
+      proposal: updatedProposal,
+      log: createdLog,
+    };
+  }
 
   async changeProposalState(
     currentUser: ICurrentUser,
@@ -709,13 +790,20 @@ export class TenderProposalService {
       );
     }
 
+    //'MODERATOR', 'PROJECT_SUPERVISOR', 'PROJECT_MANAGER', 'CEO', 'CONSULTANT'
+    // 'ACCOUNTS_MANAGER' 'ADMIN'  'CASHIER' 'CLIENT'  'FINANCE';
     if (request.action === 'approve') {
       if (appRoles === 'MODERATOR') {
-        const result = await this.handleModeratorApprove(proposal, request);
+        const result = await this.handleModeratorApprove(
+          currentUser,
+          proposal,
+          request,
+        );
         return result;
       }
       if (appRoles === 'PROJECT_SUPERVISOR') {
         const result = await this.handleProjectSupervisorApprove(
+          currentUser,
           proposal,
           request,
         );
@@ -723,17 +811,22 @@ export class TenderProposalService {
       }
       if (appRoles === 'PROJECT_MANAGER') {
         const result = await this.handleProjectManagerApprove(
+          currentUser,
           proposal,
           request,
         );
         return result;
       }
       if (appRoles === 'CEO') {
-        const result = await this.handleCeoApprove(proposal);
+        const result = await this.handleCeoApprove(currentUser, proposal);
         return result;
       }
       if (appRoles === 'CONSULTANT') {
-        const result = await this.handleConsultantApprove(proposal, request);
+        const result = await this.handleConsultantApprove(
+          currentUser,
+          proposal,
+          request,
+        );
         return result;
       }
     }
@@ -768,7 +861,26 @@ export class TenderProposalService {
       };
     }
 
+    //'MODERATOR', 'PROJECT_SUPERVISOR', 'PROJECT_MANAGER', 'CEO', 'CONSULTANT'
     if (request.action === 'reject') {
+      // Moderator, PROJECT_SUPERVISOR
+      if (appRoles === 'MODERATOR') {
+        const result = await this.handleModeratorReject(
+          currentUser,
+          proposal,
+          request,
+        );
+        return result;
+      }
+      if (appRoles === 'PROJECT_SUPERVISOR') {
+        const result = await this.handleProjectSupervisorReject(
+          currentUser,
+          proposal,
+          request,
+        );
+        return result;
+      }
+
       //Project_Manager/CEO/Consultant if rejected by those roles the flow will stop (outter_status will be cancelled)
       if (['PROJECT_MANAGER', 'CEO', 'CONSULTANT'].includes(appRoles)) {
         let inner = '';
@@ -802,7 +914,7 @@ export class TenderProposalService {
 
         const createdLog = await this.createLog(
           proposal.id,
-          proposal.supervisor_id!, //should be there since it's already determined by the moderator (has track)
+          currentUser.id,
           proposal.submitter_user_id,
           appRoles,
           proposal.project_track,
