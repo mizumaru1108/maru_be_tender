@@ -52,6 +52,8 @@ model client_data {
   updated_at               DateTime?            @default(now()) @db.Timestamptz(6)
   status                   String               @default("WAITING_FOR_ACTIVATION")
   client_field             String?              @db.VarChar
+  user_id                  String?
+  vat                      Boolean?
   user                     user?                @relation(fields: [email], references: [email], onDelete: Cascade)
   client_status            client_status        @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
   client_log               client_log[]
@@ -349,6 +351,9 @@ model supervisor {
   notes               String
   support_outputs     String?
   clause              String?
+  vat                 Boolean?
+  vat_percentage      Int?
+  inclu_or_exclu      Boolean?
   proposal            proposal @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
 }
 
