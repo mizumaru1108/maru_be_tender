@@ -335,6 +335,19 @@ export class TenderProposalService {
     notes?: string | undefined,
     procedures?: string | undefined,
   ): Promise<proposal_log> {
+    let conditional = {};
+    if (notes) {
+      conditional = {
+        ...conditional,
+        notes: notes,
+      };
+    }
+    if (procedures) {
+      conditional = {
+        ...conditional,
+        procedures: procedures,
+      };
+    }
     try {
       const createdLogs = await this.prismaService.proposal_log.create({
         data: {
@@ -346,8 +359,7 @@ export class TenderProposalService {
           project_kind,
           inner_status: inner_status ? inner_status : null,
           outter_status,
-          notes: notes ? notes : null,
-          procedures: procedures ? procedures : null,
+          ...conditional,
         },
       });
       return createdLogs;
@@ -392,19 +404,24 @@ export class TenderProposalService {
       });
       proposal = updatedProposal;
 
-      // create logs
-      const createdLog = await this.createLog(
-        currentProposal.id,
-        currentUser.id,
+      console.log('reviewr id', currentUser.id);
+      console.log(
+        'submitter / client_userid',
         currentProposal.submitter_user_id,
-        nextTrack.assigned_to,
-        request.track_name!,
-        'ACCEPTED_BY_MODERATOR',
-        'ONGOING',
-        notes,
-        procedures,
       );
-      log = createdLog;
+      // create logs
+      // const createdLog = await this.createLog(
+      //   currentProposal.id,
+      //   currentUser.id,
+      //   currentProposal.submitter_user_id,
+      //   nextTrack.assigned_to,
+      //   updatedProposal.project_track,
+      //   'ACCEPTED_BY_MODERATOR',
+      //   'ONGOING',
+      //   notes,
+      //   procedures,
+      // );
+      // log = createdLog;
     } else {
       const nextTrack = await this.fetchTrack(
         'MODERATOR',

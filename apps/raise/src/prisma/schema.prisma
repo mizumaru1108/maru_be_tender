@@ -522,6 +522,9 @@ model appointment {
   user_id                            String
   reject_reason                      String
   is_fixed                           Boolean
+  start_time                         String?  @db.VarChar
+  end_time                           String?  @db.VarChar
+  meeting_url                        String?  @db.VarChar
   user_appointment_employee_idTouser user     @relation("appointment_employee_idTouser", fields: [employee_id], references: [id], onDelete: Cascade)
   user_appointment_user_idTouser     user     @relation("appointment_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
 }

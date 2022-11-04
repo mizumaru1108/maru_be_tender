@@ -29,7 +29,7 @@ export class TenderAppointmentController {
   @Get('search-client')
   async searchClient(
     @Query() searchParams: SearchClientFilterRequest,
-  ): Promise<ManualPaginatedResponse<client_data[]>> {
+  ): Promise<ManualPaginatedResponse<any>> {
     const result = await this.tenderAppointmentService.searchClient(
       searchParams,
     );

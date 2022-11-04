@@ -27,9 +27,7 @@ export class TenderAppointmentService {
     return result;
   }
 
-  async searchClient(
-    searchParams: SearchClientFilterRequest,
-  ): Promise<client_data[]> {
+  async searchClient(searchParams: SearchClientFilterRequest): Promise<any> {
     const { clientName, page = 1, limit = 10 } = searchParams;
     const offset = (page - 1) * limit;
     let query = {};
@@ -44,13 +42,58 @@ export class TenderAppointmentService {
       };
     }
     // prisma run query on client_data table where like clientName%
+    //me: why this query return null value at the user copilot ?
+    //copilot:
     const result = await this.prismaService.client_data.findMany({
       where: {
         ...query,
       },
+      select: {
+        id: true,
+        entity: true,
+        email: true,
+        user: {
+          select: {
+            schedule: {
+              select: {
+                id: true,
+                day: true,
+                start_time: true,
+                end_time: true,
+              },
+            },
+          },
+        },
+      },
       skip: offset,
       take: limit,
     });
+    // const result = await this.prismaService.user.findMany({
+    //   where: {
+    //     client_data: {
+    //       ...query,
+    //     },
+    //   },
+    //   select: {
+    //     id: true,
+    //     email: true,
+    //     client_data: {
+    //       select: {
+    //         id: true,
+    //         entity: true,
+    //       },
+    //     },
+    //     schedule: {
+    //       select: {
+    //         day: true,
+    //         start_time: true,
+    //         end_time: true,
+    //       },
+    //     },
+    //   },
+    //   skip: offset,
+    //   take: limit,
+    // });
 
     return result;
   }
