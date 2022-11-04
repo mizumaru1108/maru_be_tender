@@ -74,4 +74,16 @@ export class SetupPaymentPayloadDto {
   @IsString()
   @IsNotEmpty()
   support_outputs: string;
+
+  @ApiProperty()
+  @IsBoolean()
+  vat: boolean;
+
+  @ApiProperty()
+  @IsNumber()
+  vat_percentage: number;
+
+  @ApiProperty()
+  @IsBoolean()
+  inclu_or_exclu: boolean;
 }

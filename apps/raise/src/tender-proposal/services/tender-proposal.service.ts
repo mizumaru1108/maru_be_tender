@@ -498,6 +498,9 @@ export class TenderProposalService {
         procedures,
         notes,
         support_outputs,
+        vat,
+        vat_percentage,
+        inclu_or_exclu,
       } = request.setupPaymentPayload;
 
       await this.prismaService.supervisor.create({
@@ -516,6 +519,9 @@ export class TenderProposalService {
           procedures,
           notes,
           support_outputs,
+          vat,
+          vat_percentage,
+          inclu_or_exclu,
         },
       });
 

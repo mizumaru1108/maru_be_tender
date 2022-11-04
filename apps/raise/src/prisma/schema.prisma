@@ -22,42 +22,43 @@ model bank_information {
 }
 
 model client_data {
-  id                       String               @id(map: "users_pkey")
-  entity                   String?              @db.VarChar
-  authority                String?              @db.VarChar
-  headquarters             String?              @db.VarChar
-  date_of_esthablistmen    DateTime?            @db.Date
-  num_of_beneficiaries     Int?
-  num_of_employed_facility Int?
-  governorate              String?
-  region                   String?              @db.Char
-  entity_mobile            String?              @db.VarChar
-  center_administration    String?              @db.VarChar
-  twitter_acount           String?              @db.VarChar
-  phone                    String?              @db.VarChar
-  website                  String?              @db.VarChar
-  email                    String?              @unique @db.VarChar
-  password                 String?              @db.VarChar
-  license_number           String               @db.VarChar
-  license_expired          DateTime?            @db.Date
-  license_issue_date       DateTime?            @db.Date
-  license_file             String?
-  board_ofdec_file         String?
-  ceo_mobile               String?              @db.VarChar
-  ceo_name                 String?              @db.VarChar
-  data_entry_mobile        String?              @db.VarChar
-  data_entry_name          String?              @db.VarChar
-  data_entry_mail          String?              @db.VarChar
-  created_at               DateTime?            @default(now()) @db.Timestamptz(6)
-  updated_at               DateTime?            @default(now()) @db.Timestamptz(6)
-  status                   String               @default("WAITING_FOR_ACTIVATION")
-  client_field             String?              @db.VarChar
-  user_id                  String?
-  vat                      Boolean?
-  user                     user?                @relation(fields: [email], references: [email], onDelete: Cascade)
-  client_status            client_status        @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  client_log               client_log[]
-  proposal_follow_up       proposal_follow_up[]
+  id                             String               @id(map: "users_pkey")
+  entity                         String?              @db.VarChar
+  authority                      String?              @db.VarChar
+  headquarters                   String?              @db.VarChar
+  date_of_esthablistmen          DateTime?            @db.Date
+  num_of_beneficiaries           Int?
+  num_of_employed_facility       Int?
+  governorate                    String?
+  region                         String?              @db.Char
+  entity_mobile                  String?              @db.VarChar
+  center_administration          String?              @db.VarChar
+  twitter_acount                 String?              @db.VarChar
+  phone                          String?              @db.VarChar
+  website                        String?              @db.VarChar
+  email                          String?              @unique @db.VarChar
+  password                       String?              @db.VarChar
+  license_number                 String               @db.VarChar
+  license_expired                DateTime?            @db.Date
+  license_issue_date             DateTime?            @db.Date
+  license_file                   String?
+  board_ofdec_file               String?
+  ceo_mobile                     String?              @db.VarChar
+  ceo_name                       String?              @db.VarChar
+  data_entry_mobile              String?              @db.VarChar
+  data_entry_name                String?              @db.VarChar
+  data_entry_mail                String?              @db.VarChar
+  created_at                     DateTime?            @default(now()) @db.Timestamptz(6)
+  updated_at                     DateTime?            @default(now()) @db.Timestamptz(6)
+  status                         String               @default("WAITING_FOR_ACTIVATION")
+  client_field                   String?              @db.VarChar
+  user_id                        String?
+  vat                            Boolean?
+  user                           user?                @relation(fields: [email], references: [email], onDelete: Cascade)
+  client_status                  client_status        @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_client_data_user_idTouser user?                @relation("client_data_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
+  client_log                     client_log[]
+  proposal_follow_up             proposal_follow_up[]
 }
 
 model employees_permissions {
@@ -256,6 +257,7 @@ model user {
   appointment_appointment_user_idTouser             appointment[]           @relation("appointment_user_idTouser")
   bank_information                                  bank_information[]
   client_data                                       client_data?
+  client_data_client_data_user_idTouser             client_data[]           @relation("client_data_user_idTouser")
   client_log                                        client_log[]
   contact_us_contact_us_receiver_idTouser           contact_us[]            @relation("contact_us_receiver_idTouser")
   contact_us_contact_us_sender_idTouser             contact_us[]            @relation("contact_us_sender_idTouser")
