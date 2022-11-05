@@ -16,6 +16,24 @@ import { compareUrl } from '../../tender/commons/utils/compare-jsonb-imageurl';
 export class TenderClientService {
   constructor(private readonly prismaService: PrismaService) {}
 
+  async getUserTrack(userId: string): Promise<string> {
+    const track = await this.prismaService.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        employee_path: true,
+      },
+    });
+    if (!track) throw new NotFoundException('User not found');
+    if (!track.employee_path) {
+      throw new NotFoundException(
+        "Current user doesn't have any track specified!",
+      );
+    }
+    return track.employee_path;
+  }
+
   async createEditRequest(
     user: ICurrentUser,
     editRequest: ClientEditRequestDto,
