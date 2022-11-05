@@ -20,6 +20,11 @@ import { RegisterFromFusionAuthTenderDto } from 'src/user/dtos';
 import { LoginRequestDto } from '../../../auth/dtos/login-request.dto';
 import { RegisterRequestDto } from '../../../auth/dtos/register-request.dto';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
+import { CreateEmployeeDto } from '../../../tender-employee/dtos/requests/create-employee.dto';
+import {
+  appRoleToFusionAuthRoles,
+  TenderAppRole,
+} from '../../../tender/commons/types';
 
 /**
  * Nest Fusion Auth Service
@@ -220,6 +225,66 @@ export class FusionAuthService {
       lastName: '',
       // mobilePhone: dtReg.mobile_number!
       mobilePhone: registerRequest.data.phone,
+    };
+
+    const registration: IFusionAuthUserRegistration = {
+      applicationId: this.fusionAuthAppId,
+      roles: role,
+    };
+
+    const registrationRequest: IFusionAuthRegistrationRequest = {
+      user,
+      registration,
+    };
+
+    const options: AxiosRequestConfig<any> = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.fusionAuthAdminKey,
+        'X-FusionAuth-TenantId': this.fusionAuthTenantId,
+      },
+      data: registrationRequest,
+      url: registerUrl,
+    };
+
+    try {
+      const data = await axios(options);
+      return data.data;
+    } catch (error) {
+      this.logger.debug('Error', error);
+      if (error.response.status < 500) {
+        console.log(error.response.data);
+        throw new BadRequestException(
+          `Registration Failed, either user is exist or something else!, more details: ${
+            error.response.data.fieldErrors
+              ? JSON.stringify(error.response.data.fieldErrors)
+              : JSON.stringify(error.response.data)
+          }`,
+        );
+      } else {
+        console.log(error);
+        throw new Error('Something went wrong!');
+      }
+    }
+  }
+
+  async fusionAuthTenderRegister(registerRequest: CreateEmployeeDto) {
+    const baseUrl = this.fusionAuthUrl;
+    const registerUrl = baseUrl + '/api/user/registration/';
+
+    // change the tender app role to fusion auth roles
+    const role: string[] = registerRequest.user_roles
+      ? [appRoleToFusionAuthRoles[registerRequest.user_roles as TenderAppRole]]
+      : ['tender_client'];
+
+    const user: IFusionAuthUser = {
+      email: registerRequest.email,
+      password: registerRequest.password,
+      firstName: registerRequest.employee_name,
+      lastName: '',
+      mobilePhone: registerRequest.mobile_number,
+      active: registerRequest.activate_user,
     };
 
     const registration: IFusionAuthUserRegistration = {

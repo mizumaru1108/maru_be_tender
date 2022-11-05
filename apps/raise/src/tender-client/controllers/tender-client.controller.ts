@@ -23,7 +23,7 @@ export class TenderClientController {
   @Get('current-user-track')
   async getCurrentUserTrack(
     @CurrentUser() user: ICurrentUser,
-  ): Promise<BaseResponse<string>> {
+  ): Promise<BaseResponse<string | null>> {
     const track = await this.tenderClientService.getUserTrack(user.id);
     return baseResponseHelper(
       track,
