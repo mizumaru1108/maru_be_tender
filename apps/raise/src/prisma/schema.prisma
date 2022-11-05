@@ -22,43 +22,42 @@ model bank_information {
 }
 
 model client_data {
-  id                             String               @id(map: "users_pkey")
-  entity                         String?              @db.VarChar
-  authority                      String?              @db.VarChar
-  headquarters                   String?              @db.VarChar
-  date_of_esthablistmen          DateTime?            @db.Date
+  id                             String        @id(map: "users_pkey")
+  entity                         String?       @db.VarChar
+  authority                      String?       @db.VarChar
+  headquarters                   String?       @db.VarChar
+  date_of_esthablistmen          DateTime?     @db.Date
   num_of_beneficiaries           Int?
   num_of_employed_facility       Int?
   governorate                    String?
-  region                         String?              @db.Char
-  entity_mobile                  String?              @db.VarChar
-  center_administration          String?              @db.VarChar
-  twitter_acount                 String?              @db.VarChar
-  phone                          String?              @db.VarChar
-  website                        String?              @db.VarChar
-  email                          String?              @unique @db.VarChar
-  password                       String?              @db.VarChar
-  license_number                 String               @db.VarChar
-  license_expired                DateTime?            @db.Date
-  license_issue_date             DateTime?            @db.Date
+  region                         String?       @db.Char
+  entity_mobile                  String?       @db.VarChar
+  center_administration          String?       @db.VarChar
+  twitter_acount                 String?       @db.VarChar
+  phone                          String?       @db.VarChar
+  website                        String?       @db.VarChar
+  email                          String?       @unique @db.VarChar
+  password                       String?       @db.VarChar
+  license_number                 String        @db.VarChar
+  license_expired                DateTime?     @db.Date
+  license_issue_date             DateTime?     @db.Date
   license_file                   String?
   board_ofdec_file               String?
-  ceo_mobile                     String?              @db.VarChar
-  ceo_name                       String?              @db.VarChar
-  data_entry_mobile              String?              @db.VarChar
-  data_entry_name                String?              @db.VarChar
-  data_entry_mail                String?              @db.VarChar
-  created_at                     DateTime?            @default(now()) @db.Timestamptz(6)
-  updated_at                     DateTime?            @default(now()) @db.Timestamptz(6)
-  status                         String               @default("WAITING_FOR_ACTIVATION")
-  client_field                   String?              @db.VarChar
+  ceo_mobile                     String?       @db.VarChar
+  ceo_name                       String?       @db.VarChar
+  data_entry_mobile              String?       @db.VarChar
+  data_entry_name                String?       @db.VarChar
+  data_entry_mail                String?       @db.VarChar
+  created_at                     DateTime?     @default(now()) @db.Timestamptz(6)
+  updated_at                     DateTime?     @default(now()) @db.Timestamptz(6)
+  status                         String        @default("WAITING_FOR_ACTIVATION")
+  client_field                   String?       @db.VarChar
   user_id                        String?
   vat                            Boolean?
-  user                           user?                @relation(fields: [email], references: [email], onDelete: Cascade)
-  client_status                  client_status        @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user_client_data_user_idTouser user?                @relation("client_data_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
+  user                           user?         @relation(fields: [email], references: [email], onDelete: Cascade)
+  client_status                  client_status @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_client_data_user_idTouser user?         @relation("client_data_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
   client_log                     client_log[]
-  proposal_follow_up             proposal_follow_up[]
 }
 
 model employees_permissions {
@@ -243,33 +242,36 @@ model region {
 }
 
 model user {
-  id                                                String                  @id @unique
-  employee_name                                     String?                 @db.Char(255)
-  mobile_number                                     String?                 @db.Char(255)
-  email                                             String                  @unique @db.Char(255)
-  updated_at                                        DateTime?               @default(now()) @db.Timestamptz(6)
-  created_at                                        DateTime?               @default(now()) @db.Timestamptz(6)
-  is_active                                         Boolean?                @default(true)
-  employee_path                                     String?                 @db.Char(255)
-  user_type_id                                      String?
-  last_login                                        DateTime?               @default(now()) @db.Timestamptz(6)
-  appointment_appointment_employee_idTouser         appointment[]           @relation("appointment_employee_idTouser")
-  appointment_appointment_user_idTouser             appointment[]           @relation("appointment_user_idTouser")
-  bank_information                                  bank_information[]
-  client_data                                       client_data?
-  client_data_client_data_user_idTouser             client_data[]           @relation("client_data_user_idTouser")
-  client_log                                        client_log[]
-  contact_us_contact_us_receiver_idTouser           contact_us[]            @relation("contact_us_receiver_idTouser")
-  contact_us_contact_us_sender_idTouser             contact_us[]            @relation("contact_us_sender_idTouser")
-  employees_permissions_employees_permissionsTouser employees_permissions[]
-  message                                           message[]
-  proposal                                          proposal[]
-  proposal_follow_up                                proposal_follow_up[]
-  proposal_log_proposal_log_client_user_idTouser    proposal_log[]          @relation("proposal_log_client_user_idTouser")
-  proposal_log                                      proposal_log[]
-  room_chat_room_chat_participant1Touser            room_chat[]             @relation("room_chat_participant1Touser")
-  room_chat_room_chat_participant2Touser            room_chat[]             @relation("room_chat_participant2Touser")
-  schedule                                          schedule[]
+  id                                                      String                  @id @unique
+  employee_name                                           String?                 @db.Char(255)
+  mobile_number                                           String?                 @db.Char(255)
+  email                                                   String                  @unique @db.Char(255)
+  updated_at                                              DateTime?               @default(now()) @db.Timestamptz(6)
+  created_at                                              DateTime?               @default(now()) @db.Timestamptz(6)
+  is_active                                               Boolean?                @default(true)
+  employee_path                                           String?                 @db.Char(255)
+  user_type_id                                            String?
+  last_login                                              DateTime?               @default(now()) @db.Timestamptz(6)
+  project_tracks                                          project_tracks?         @relation(fields: [employee_path], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_type                                               user_type?              @relation(fields: [user_type_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  appointment_appointment_employee_idTouser               appointment[]           @relation("appointment_employee_idTouser")
+  appointment_appointment_user_idTouser                   appointment[]           @relation("appointment_user_idTouser")
+  bank_information                                        bank_information[]
+  client_data                                             client_data?
+  client_data_client_data_user_idTouser                   client_data[]           @relation("client_data_user_idTouser")
+  client_log                                              client_log[]
+  contact_us_contact_us_receiver_idTouser                 contact_us[]            @relation("contact_us_receiver_idTouser")
+  contact_us_contact_us_sender_idTouser                   contact_us[]            @relation("contact_us_sender_idTouser")
+  employees_permissions_employees_permissionsTouser       employees_permissions[]
+  message                                                 message[]
+  proposal                                                proposal[]
+  proposal_follow_up_proposal_follow_up_employee_idTouser proposal_follow_up[]    @relation("proposal_follow_up_employee_idTouser")
+  proposal_follow_up_proposal_follow_up_user_idTouser     proposal_follow_up[]    @relation("proposal_follow_up_user_idTouser")
+  proposal_log_proposal_log_client_user_idTouser          proposal_log[]          @relation("proposal_log_client_user_idTouser")
+  proposal_log                                            proposal_log[]
+  room_chat_room_chat_participant1Touser                  room_chat[]             @relation("room_chat_participant1Touser")
+  room_chat_room_chat_participant2Touser                  room_chat[]             @relation("room_chat_participant2Touser")
+  schedule                                                schedule[]
 }
 
 model user_type {
@@ -279,6 +281,7 @@ model user_type {
   proposal                                                       proposal[]
   proposal_assign                                                proposal_assign[]
   proposal_log                                                   proposal_log[]
+  user                                                           user[]
 }
 
 model proposal_assign {
@@ -292,17 +295,17 @@ model proposal_assign {
 }
 
 model proposal_follow_up {
-  id                 String       @id
-  proposal_id        String
-  notes              String
-  path_file          String       @db.Char(255)
-  created_at         DateTime?    @default(now()) @db.Timestamptz(6)
-  updated_at         DateTime?    @default(now()) @db.Timestamptz(6)
-  reviewer_email     String?      @db.Char
-  organization_email String?      @db.Char
-  client_data        client_data? @relation(fields: [organization_email], references: [email], onDelete: NoAction, onUpdate: NoAction)
-  proposal           proposal     @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
-  user               user?        @relation(fields: [reviewer_email], references: [email], onDelete: NoAction, onUpdate: NoAction)
+  id                                        String    @id
+  proposal_id                               String
+  created_at                                DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at                                DateTime? @default(now()) @db.Timestamptz(6)
+  file                                      Json?
+  action                                    String?
+  user_id                                   String?
+  employee_id                               String?
+  user_proposal_follow_up_employee_idTouser user?     @relation("proposal_follow_up_employee_idTouser", fields: [employee_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proposal                                  proposal  @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
+  user_proposal_follow_up_user_idTouser     user?     @relation("proposal_follow_up_user_idTouser", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model proposal_status {
@@ -490,6 +493,7 @@ model project_tracks {
   project_track_flows project_track_flows[]
   proposal            proposal[]
   proposal_log        proposal_log[]
+  user                user[]
 }
 
 model room_chat {
