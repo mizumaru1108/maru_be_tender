@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsBoolean,
   IsEmail,
   IsNotEmpty,
   IsOptional,
@@ -233,4 +234,9 @@ export class RegisterFromFusionAuthTenderDto {
   @IsNotEmpty()
   @IsString()
   client_field: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsBoolean()
+  vat: boolean;
 }

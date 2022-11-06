@@ -1,13 +1,6 @@
-import {
-  BadRequestException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
-import { extname } from 'path';
-import { Http } from 'winston/lib/winston/transports';
 import { AllowedFileType } from '../commons/enums/allowed-filetype.enum';
 import { envLoadErrorHelper } from '../commons/helpers/env-loaderror-helper';
 import { BaseHashuraWebhookPayload } from '../commons/interfaces/base-hashura-webhook-payload';

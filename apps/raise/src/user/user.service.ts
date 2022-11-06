@@ -117,6 +117,8 @@ export class UserService {
               num_of_employed_facility: request.num_of_employed_facility,
               phone: request.phone,
               client_field: request.client_field,
+              user_id: request.id_,
+              vat: request.vat,
             },
           },
           bank_information: {

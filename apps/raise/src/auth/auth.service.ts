@@ -181,6 +181,7 @@ export class AuthService {
           website: registerRequest.data.website,
           bank_informations: registerRequest.data.bank_informations,
           client_field: registerRequest.data.client_field,
+          vat: registerRequest.data.vat,
         });
         return registeredUser;
       } else {

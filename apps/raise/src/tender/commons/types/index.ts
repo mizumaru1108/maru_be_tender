@@ -62,3 +62,16 @@ export const appRoleMappers = {
   tender_project_manager: 'PROJECT_MANAGER',
   tender_project_supervisor: 'PROJECT_SUPERVISOR',
 };
+
+export const appRoleToFusionAuthRoles = {
+  ACCOUNTS_MANAGER: 'tender_accounts_manager',
+  ADMIN: 'tender_admin',
+  CEO: 'tender_ceo',
+  CASHIER: 'tender_cashier',
+  CLIENT: 'tender_client',
+  CONSULTANT: 'tender_consultant',
+  FINANCE: 'tender_finance',
+  MODERATOR: 'tender_moderator',
+  PROJECT_MANAGER: 'tender_project_manager',
+  PROJECT_SUPERVISOR: 'tender_project_supervisor',
+};

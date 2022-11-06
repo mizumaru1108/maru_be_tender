@@ -47,3 +47,14 @@ yarn push:qc
 yarn push:staging
 yarn push:prod
 ```
+
+
+## Prisma related error
+
+if you get any error regarding prisma, you can pull the latest change on the prisma schema
+with db pull and generate for the typing
+
+```bash
+npx prisma db pull --schema src/prisma/schema.prisma
+npx prisma generate --schema src/prisma/schema.prisma
+```

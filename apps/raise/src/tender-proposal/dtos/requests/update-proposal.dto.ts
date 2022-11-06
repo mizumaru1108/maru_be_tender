@@ -6,18 +6,28 @@ import {
   IsOptional,
   IsString,
   ValidateNested,
+  IsIn,
 } from 'class-validator';
 import { UpdateProposalFirstStepDto } from './update-proposal-first-step.dto';
 import { UpdateProposalFourthStepDto } from './update-proposal-fourth-step.dto';
 import { UpdateProposalSecondStepDto } from './update-proposal-second-step.dto';
 import { UpdateProposalThirdStepDto } from './update-proposal-third-step.dto';
-import { UpdateProposalFifthStepDto } from "./update-proposal-fifth-step.dto";
+import { UpdateProposalFifthStepDto } from './update-proposal-fifth-step.dto';
 
 export class UpdateProposalDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
   proposal_id: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  @IsIn(['ZERO', 'FIRST', 'SECOND', 'THIRD', 'FOURTH', 'FIFTH'], {
+    message:
+      'Value of step should be ZERO, FIRST, SECOND, THIRD, FOURTH or FIFTH',
+  })
+  step: string;
 
   @ApiPropertyOptional()
   @IsOptional()

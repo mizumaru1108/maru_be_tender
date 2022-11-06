@@ -42,6 +42,9 @@ import { PrismaModule } from './prisma/prisma.module';
 import { TenderModule } from './tender/tender.module';
 import { TenderProposalModule } from './tender-proposal/tender-proposal.module';
 import { TenderClientModule } from './tender-client/tender-client.module';
+import { TenderAppointmentModule } from './tender-appointment/tender-appointment.module';
+import { TenderAuthModule } from './tender-auth/tender-auth.module';
+import { TenderEmployeeModule } from './tender-employee/tender-employee.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -121,6 +124,9 @@ import { TenderClientModule } from './tender-client/tender-client.module';
     TenderModule,
     TenderProposalModule,
     TenderClientModule,
+    TenderAppointmentModule,
+    TenderAuthModule,
+    TenderEmployeeModule,
   ],
   controllers: [],
 })
