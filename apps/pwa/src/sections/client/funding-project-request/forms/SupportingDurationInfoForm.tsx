@@ -69,6 +69,7 @@ const SupportingDurationInfoForm = ({
   };
   useEffect(() => {
     reexxecuteUserBankInformation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isCreatedOne]);
 
   if (fetching) return <>...Loading</>;

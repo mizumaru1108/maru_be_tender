@@ -46,6 +46,7 @@ function ProposalAcceptingForm({ children, onSubmit }: ProposalFormProps) {
       console.log(data.project_tracks);
       // setValue('path');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetching]);
 
   if (fetching) return <>... Loading</>;
