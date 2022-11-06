@@ -58,10 +58,14 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7}>
         <Grid item md={12} xs={12}>
-          <RHFTextField name="entity" label={'اسم العميل'} placeholder={'الرجاء أدخل اسم العميل'} />
+          <RHFTextField
+            name="entity"
+            label={translate('register_form1.entity.label')}
+            placeholder={translate('register_form1.entity.placeholder')}
+          />
         </Grid>
         <Grid item md={12} xs={12}>
-          <RHFSelect name="client_field" label={'مجال الجهة'}>
+          <RHFSelect name="client_field" label={translate('register_form1.entity_area.label')}>
             <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
               {translate('register_form1.entity_area.placeholder')}
             </option>

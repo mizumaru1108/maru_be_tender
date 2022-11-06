@@ -28,4 +28,7 @@ export interface ProposalApprovePayloadSupervisor {
   procedures: string;
   notes: string;
   type_of_support: string;
+  vat: boolean;
+  vat_percentage: number;
+  inclu_or_exclu: boolean;
 }

@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Stack, Typography } from '@mui/material';
+import { Button, Grid, Stack, styled, Typography } from '@mui/material';
 import { FormProvider } from 'components/hook-form';
 import RHFTextArea from 'components/hook-form/RHFTextArea';
 import React from 'react';
@@ -7,6 +7,13 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ModalDialog from 'components/modal-dialog';
 import { LoadingButton } from '@mui/lab';
+// MuiFormControl-root
+const FormStyle = styled('div')(({ theme }) => ({
+  '&.MuiGrid-container .MuiGrid-item .MuiFormControl-root .MuiFormHelperText- .Mui-error': {
+    margin: '0px 0px 0px 0px !important',
+    backgroundColor: '#fff !important',
+  },
+}));
 type FormValuesProps = {
   notes: string;
 };
@@ -47,47 +54,51 @@ function RescheduleRequest({ open, handleClose }: any) {
         </Stack>
       }
       content={
-        <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-          <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '8px' }}>
-            <Grid item md={12} xs={12}>
-              <RHFTextArea name="notes" label="اكتب ملاحظاتك هنا" placeholder="اكتب ملاحظاتك هنا" />
-            </Grid>
-            <Grid item md={12} xs={12} sx={{ mb: '70px' }}>
-              <Stack justifyContent="center" direction="row" gap={2}>
-                <Button
-                  onClick={() => {
-                    console.log('asdkmasdlkmasd');
-                  }}
-                  sx={{
-                    color: '#000',
-                    size: 'large',
-                    width: { xs: '100%', sm: '200px' },
-                    hieght: { xs: '100%', sm: '50px' },
-                    ':hover': {
-                      backgroundColor: '#fff',
-                    },
-                  }}
-                >
-                  رجوع
-                </Button>
-                <Button
-                  onClick={() => {
-                    console.log('asdkmasdlkmasd');
-                  }}
-                  sx={{
-                    backgroundColor: 'background.paper',
-                    color: '#fff',
-                    size: 'large',
-                    width: { xs: '100%', sm: '200px' },
-                    hieght: { xs: '100%', sm: '50px' },
-                    ':hover': {
-                      backgroundColor: '#13B2A2',
-                    },
-                  }}
-                >
-                  ارسال
-                </Button>
-                {/* <LoadingButton
+        <FormStyle className="formstyle">
+          <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+            <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '8px' }}>
+              <Grid item md={12} xs={12}>
+                <RHFTextArea
+                  name="notes"
+                  label="اكتب ملاحظاتك هنا"
+                  placeholder="اكتب ملاحظاتك هنا"
+                />
+              </Grid>
+              <Grid item md={12} xs={12} sx={{ mb: '70px' }}>
+                <Stack justifyContent="center" direction="row" gap={2}>
+                  <Button
+                    onClick={handleClose}
+                    sx={{
+                      color: '#000',
+                      size: 'large',
+                      width: { xs: '100%', sm: '200px' },
+                      hieght: { xs: '100%', sm: '50px' },
+                      ':hover': {
+                        backgroundColor: '#fff',
+                      },
+                    }}
+                  >
+                    رجوع
+                  </Button>
+                  <Button
+                    type="submit"
+                    onClick={() => {
+                      console.log('asdkmasdlkmasd');
+                    }}
+                    sx={{
+                      backgroundColor: 'background.paper',
+                      color: '#fff',
+                      size: 'large',
+                      width: { xs: '100%', sm: '200px' },
+                      hieght: { xs: '100%', sm: '50px' },
+                      ':hover': {
+                        backgroundColor: '#13B2A2',
+                      },
+                    }}
+                  >
+                    ارسال
+                  </Button>
+                  {/* <LoadingButton
                   // loading={isLoading}
                   // loadingIndicator={
                   //   <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -120,10 +131,11 @@ function RescheduleRequest({ open, handleClose }: any) {
                   )}
                   {action === 'accept' ? 'Accept' : 'Reject'}
                 </LoadingButton> */}
-              </Stack>
+                </Stack>
+              </Grid>
             </Grid>
-          </Grid>
-        </FormProvider>
+          </FormProvider>
+        </FormStyle>
       }
       styleContent={{ padding: '1em', backgroundColor: '#fff' }}
     />

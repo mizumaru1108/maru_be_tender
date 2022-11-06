@@ -13,7 +13,7 @@ function ProjectDetails() {
     gap: 20,
   }));
   return (
-    <Page title="Previous Funding Requests">
+    <Page title="Project Details">
       <Container>
         <ContentStyle>
           <ProjectDetailsMainPage />

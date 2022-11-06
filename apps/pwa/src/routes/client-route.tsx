@@ -19,7 +19,7 @@ const ClientProfile = Loadable(lazy(() => import('pages/client/ClientProfile')))
 const ClientProfileEdit = Loadable(lazy(() => import('pages/client/ClientProfileEdit')));
 const Searching = Loadable(lazy(() => import('pages/searching')));
 const Appointments = Loadable(lazy(() => import('pages/client/Appointments')));
-
+const AdjustYourTime = Loadable(lazy(() => import('pages/client/AdjustYourTime')));
 export const clientRoute = {
   path: 'client',
   element: (
@@ -129,7 +129,10 @@ export const clientRoute = {
         },
         {
           path: 'appointments',
-          element: <Appointments />,
+          children: [
+            { path: '', element: <Appointments /> },
+            { path: 'adjust-your-time', element: <AdjustYourTime /> },
+          ],
         },
       ],
     },

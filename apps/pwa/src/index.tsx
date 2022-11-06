@@ -51,9 +51,14 @@ import { AuthProvider } from './contexts/JWTContext';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
-
+import DateFnsUtils from '@date-io/date-fns';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 // ----------------------------------------------------------------------
 
+import { ar } from 'date-fns/locale';
+import { Provider } from 'urql';
+import CreateClient from 'CreateClient';
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 root.render(
@@ -61,15 +66,19 @@ root.render(
     <HelmetProvider>
       <ReduxProvider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <SettingsProvider>
-              <CollapseDrawerProvider>
-                <BrowserRouter>
-                  <App />
-                </BrowserRouter>
-              </CollapseDrawerProvider>
-            </SettingsProvider>
-          </LocalizationProvider>
+          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ar}>
+            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={ar}>
+              <SettingsProvider>
+                <CollapseDrawerProvider>
+                  <BrowserRouter>
+                    <CreateClient>
+                      <App />
+                    </CreateClient>
+                  </BrowserRouter>
+                </CollapseDrawerProvider>
+              </SettingsProvider>
+            </LocalizationProvider>
+          </MuiPickersUtilsProvider>
         </PersistGate>
       </ReduxProvider>
     </HelmetProvider>

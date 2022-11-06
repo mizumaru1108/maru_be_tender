@@ -86,7 +86,7 @@ function MeetingBox({ id, date, client_name }: MeetingData) {
             backgroundColor: '#fff',
             color: '#0E8478',
             borderRadius: '10px',
-            '&:hover': { backgroundColor: '#1482FE' },
+            '&:hover': { backgroundColor: '#fff' },
             px: '15px',
             py: '0px',
             height: '45px',

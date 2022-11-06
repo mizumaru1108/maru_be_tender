@@ -35,6 +35,7 @@ const NonClientProfileEdit = Loadable(
   lazy(() => import('sections/non-client-profile/NonClientProfileEdit'))
 );
 const Searching = Loadable(lazy(() => import('pages/searching')));
+const BookingAMeeting = Loadable(lazy(() => import('pages/project-manager/BookingAMeeting')));
 
 export const projectManagerRoute = {
   path: 'project-manager',
@@ -161,7 +162,13 @@ export const projectManagerRoute = {
         },
         { path: 'portal-reports', element: <PortalReportsProjectManager /> },
         { path: 'messages', element: <MessagesProjectManager /> },
-        { path: 'appointments-with-partners', element: <AppointmentsWithPartners /> },
+        {
+          path: 'appointments-with-partners',
+          children: [
+            { path: '', element: <AppointmentsWithPartners /> },
+            { path: 'booking', element: <BookingAMeeting /> },
+          ],
+        },
       ],
     },
   ],

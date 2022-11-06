@@ -21,6 +21,7 @@ const FormActionBox = ({ action, isLoading, onReturn }: Props) => {
           size: 'large',
           width: { xs: '100%', sm: '200px' },
           hieght: { xs: '100%', sm: '50px' },
+          ':hover': { backgroundColor: '#fff' },
         }}
       >
         {translate('close')}

@@ -154,8 +154,12 @@ function FloatingActionBar() {
             </Button>
             <Button
               variant="contained"
-              color="error"
-              sx={{ my: { xs: '1.3em', md: '0' }, mr: { md: '1em' } }}
+              sx={{
+                my: { xs: '1.3em', md: '0' },
+                mr: { md: '1em' },
+                backgroundColor: '#FF4842',
+                ':hover': { backgroundColor: '#FF170F' },
+              }}
               onClick={() => {
                 setAction('reject');
                 handleOpenModal();
@@ -165,7 +169,11 @@ function FloatingActionBar() {
             </Button>
 
             {currentRoles === 'tender_moderator' && (
-              <Button variant="outlined" color="primary" sx={{ my: { xs: '1.3em', md: '0' } }}>
+              <Button
+                variant="outlined"
+                color="primary"
+                sx={{ my: { xs: '1.3em', md: '0' }, ':hover': { backgroundColor: '#fff' } }}
+              >
                 {translate('send_message_to_partner')}
               </Button>
             )}
@@ -173,10 +181,10 @@ function FloatingActionBar() {
 
           <Button
             variant="contained"
-            color="info"
             onClick={() => {
               navigate(amandementPath);
             }}
+            sx={{ backgroundColor: '#0169DE', ':hover': { backgroundColor: '#1482FE' } }}
             endIcon={<Iconify icon="eva:edit-2-outline" />}
           >
             {translate('submit_amendment_request')}

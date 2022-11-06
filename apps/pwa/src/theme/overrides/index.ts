@@ -43,6 +43,7 @@ import ToggleButton from './ToggleButton';
 import ControlLabel from './ControlLabel';
 import LoadingButton from './LoadingButton';
 import TextField from './TextField';
+import MuiCalendarPicker from './MuiCalendarPicker';
 // ----------------------------------------------------------------------
 
 export default function ComponentsOverrides(theme: Theme) {
@@ -89,6 +90,7 @@ export default function ComponentsOverrides(theme: Theme) {
     Autocomplete(theme),
     ControlLabel(theme),
     ToggleButton(theme),
-    LoadingButton(theme)
+    LoadingButton(theme),
+    MuiCalendarPicker(theme)
   );
 }

@@ -82,12 +82,12 @@ const ar = {
   register_third_tap: 'معلومات الترخيص',
   register_fourth_tap: 'بيانات الإدارية',
   register_fifth_tap: 'معلومات البنكية',
-  email_label: 'البريد الإلكتروني / رقم التصريح',
+  email_label: 'البريد الإلكتروني',
   password_label: 'كلمة السر',
   remember_me: 'تذكرني',
   forget_the_password: 'نسيت كلمة المرور',
   login: 'تسجيل الدخول',
-  the_login_message: 'الرجاء إدخال عنوان البريد الإلكتروني أو رقم التصريح الخاص بك',
+  the_login_message: 'الرجاء إدخال عنوان البريد الإلكتروني',
   dont_have_account: 'ليس لديك حساب في المنصة',
   register_one: 'قم بإنشاء حساب من هنا',
   add_new_line: 'إنشاء سطر جديد',
@@ -98,9 +98,14 @@ const ar = {
   pending: 'الطلب معلق',
   completed: 'الطلب مكتمل',
   canceled: 'الطلب ملفى',
+  create_a_new_support_request: 'إنشاء طلب دعم جديد',
   register_form1: {
+    entity: {
+      label: 'اسم العميل*',
+      placeholder: 'الرجاء أدخل اسم العميل',
+    },
     entity_area: {
-      label: 'مجال الجهة',
+      label: 'مجال الجهة*',
       placeholder: 'الرجاء اختيار مجال الجهة',
       options: {
         sub_entity_area: 'رئيسي',
@@ -108,24 +113,24 @@ const ar = {
       },
     },
     authority: {
-      label: 'الجهة المشرفة',
+      label: 'الجهة المشرفة*',
       placeholder: 'الرجاء اختيار الجهة المشرفة',
     },
     date_of_establishment: {
-      label: 'تاريخ التأسيس',
+      label: 'تاريخ التأسيس*',
       placeholder: 'الرجاء اختيار تحديد تاريخ التأسيس',
     },
     headquarters: {
-      label: 'المقر',
+      label: 'المقر*',
       placeholder: 'الرجاء اختيار نوع المقر',
       options: {},
     },
     number_of_employees: {
-      label: 'عدد موظفين بدوام كلي للمنشأة',
+      label: 'عدد موظفين بدوام كلي للمنشأة*',
       placeholder: 'عدد موظفين المنشأة',
     },
     number_of_beneficiaries: {
-      label: 'عدد المستفيدين من خدمات الجهة',
+      label: 'عدد المستفيدين من خدمات الجهة*',
       placeholder: 'عدد المستفيدين من خدمات الجهة',
     },
   },
@@ -147,12 +152,12 @@ const ar = {
     },
     mobile_number: {
       label: 'جوال الجهة*',
-      placeholder: 'الرجاء كتابة الرقم                                         963932569875+',
+      placeholder: 'الرجاء كتابة الرقم, مثال: 966511111111+',
       options: {},
     },
     phone: {
       label: 'الهاتف*',
-      placeholder: 'الرجاء كتابة رقم الهاتف                               963932569875+',
+      placeholder: 'الرجاء كتابة رقم الهاتف, مثال: 966511111111+',
     },
     twitter: {
       label: 'حساب تويتر',
@@ -219,8 +224,8 @@ const ar = {
   },
   register_form5: {
     bank_account_number: {
-      label: 'رقم الحساب البنكي*',
-      placeholder: 'رقم الحساب البنكي',
+      label: 'أيبان الحساب البنكي*',
+      placeholder: 'أيبان الحساب البنكي',
     },
     bank_account_name: {
       label: 'اسم الحساب البنكي*',
@@ -783,6 +788,35 @@ const ar = {
     },
   },
   client_appointments: 'المواعيد مع المؤسسة',
+  day: 'يوم',
+  from: 'من',
+  to: 'إلى',
+  choose_suitable_time: 'الرجاء اختيار الساعة المناسبة',
+  sunday: 'الأحد',
+  monday: 'الاثنين',
+  tuesday: 'الثلاثاء',
+  wednesday: 'الأربعاء',
+  thursday: 'الخميس',
+  friday: 'الجمعة',
+  saturday: 'السبت',
+  pick_your_availabe_time: 'اضبط وقت تواجدك',
+  choose_your_week_hours: 'حدد ساعاتك الأسبوعية',
+  show_clients_project_detail: 'عرض التفاصيل',
+  appointments_with_clients: 'المواعيد مع الشركاء',
+  booking_for_a_meeting: 'حجز موعد مقابلة',
+  todays_meetings: 'اجتماعات اليوم',
+  upcoming_meetings: 'اجتماعات قادمة',
+  appointments_with_organization: 'المواعيد مع المؤسسة',
+  adding_the_available_time: 'اضافة مواعيد تواجدك',
+  edeting_the_available_time: 'تعديل مواعيد تواجدك',
+  appointments: 'الاجتماعات',
+  requests_for_meeting: 'طلبات للاجتماع',
+  please_choose_entity_field: 'الرجاء اختار مجال الجهة',
+  entity_field_main: 'رئيسي',
+  entity_field_sub_main: 'فرعي',
+  please_choose_the_name_of_the_client: 'الرجاء اختيار اسم الشريك',
+  write_name_to_search: 'اكتب اسم للبحث عنه',
+  booking_an_appointment: 'حجز موعد',
 };
 
 export default ar;

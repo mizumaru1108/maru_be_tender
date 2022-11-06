@@ -10,8 +10,6 @@ import { ChartStyle } from './components/chart';
 import NotistackProvider from './components/NotistackProvider';
 import { ProgressBarStyle } from './components/ProgressBar';
 import ScrollToTop from './components/ScrollToTop';
-import { Provider } from 'urql';
-import { client } from 'utils/urql';
 // ----------------------------------------------------------------------
 
 export default function App() {
@@ -20,12 +18,10 @@ export default function App() {
       <ThemeProvider>
         <ThemeSettings>
           <NotistackProvider>
-            <Provider value={client}>
-              <ProgressBarStyle />
-              <ChartStyle />
-              <ScrollToTop />
-              <Router />
-            </Provider>
+            <ProgressBarStyle />
+            <ChartStyle />
+            <ScrollToTop />
+            <Router />
           </NotistackProvider>
         </ThemeSettings>
       </ThemeProvider>

@@ -17,6 +17,7 @@ import { useLocation, useNavigate } from 'react-router';
 import useAuth from 'hooks/useAuth';
 import { getDraftProposal } from 'queries/client/getDraftProposal';
 import { updateDraftProposal } from 'queries/client/updateDraftProposal';
+import axios from 'axios';
 
 const steps = [
   'funding_project_request_form1.step',
@@ -79,12 +80,7 @@ const FundingProjectRequestForm = () => {
         ],
       },
     },
-    form5: {
-      agree_on: false,
-      proposal_bank_informations: {
-        data: [{ bank_information_id: '' }],
-      },
-    },
+    proposal_bank_id: '',
   };
 
   const [requestState, setRequestState] = useState(defaultValues);
@@ -129,6 +125,7 @@ const FundingProjectRequestForm = () => {
 
   // on submit for the fourth step
   const onSubmitform4 = (data: any) => {
+    console.log(data);
     setStep((prevStep) => prevStep + 1);
     setRequestState((prevRegisterState: any) => ({
       ...prevRegisterState,
@@ -144,18 +141,13 @@ const FundingProjectRequestForm = () => {
 
   // on submit for creating a new project
   const onSubmit = async (data: any) => {
-    const proposal_bank_informations = {
-      proposal_bank_informations: {
-        data: data.proposal_bank_informations.map((item: any, index: any) => ({
-          bank_information_id: item.bank_information_id,
-        })),
-      },
-    };
+    console.log(data);
     setRequestState((prevRegisterState: any) => ({
       ...prevRegisterState,
-      form5: { ...prevRegisterState.form5, ...proposal_bank_informations },
+      proposal_bank_id: data,
     }));
     if (id) {
+      console.log('asdkansdoansdioansoidnaio');
       const res = await updateDraft({
         id,
         update: {
@@ -164,7 +156,7 @@ const FundingProjectRequestForm = () => {
           ...requestState.form3,
           amount_required_fsupport: requestState.form4.amount_required_fsupport,
           proposal_item_budgets: requestState.form4.detail_project_budgets,
-          proposal_bank_informations: proposal_bank_informations.proposal_bank_informations,
+          proposal_bank_id: data,
           step: 'ZERO',
         },
       });
@@ -177,7 +169,7 @@ const FundingProjectRequestForm = () => {
           ...requestState.form3,
           amount_required_fsupport: requestState.form4.amount_required_fsupport,
           proposal_item_budgets: requestState.form4.detail_project_budgets,
-          proposal_bank_informations: proposal_bank_informations.proposal_bank_informations,
+          proposal_bank_id: data,
           submitter_user_id: user?.id,
           id: nanoid(),
           step: 'ZERO',
@@ -203,11 +195,32 @@ const FundingProjectRequestForm = () => {
       step: STEP[step - 1],
     };
     if (id) {
-      const res = await updateDraft({
-        id,
-        update: createdProposel,
-      });
-      if (res.error === undefined) navigate(-1);
+      const res = axios.post(
+        'https://api-staging.tmra.io/v2/raise/tender-proposal/update-draft',
+        {
+          ...(step >= 1 && { form: requestState.form1 }),
+          ...(step >= 2 && { form2: requestState.form2 }),
+          ...(step >= 3 && { form3: requestState.form3 }),
+          ...(step >= 4 && {
+            amount_required_fsupport: requestState.form4.amount_required_fsupport,
+            proposal_item_budgets: requestState.form4.detail_project_budgets,
+          }),
+        },
+        {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          },
+        }
+      );
+      console.log(res);
+      // const res = await updateDraft({
+      //   id,
+      //   update: createdProposel,
+      // });
+      // if (res.error === undefined) navigate(-1);
     } else {
       const res = await createProposal({
         createdProposel,
@@ -379,7 +392,7 @@ const FundingProjectRequestForm = () => {
             onReturn={onReturn}
             onSavingDraft={onSavingDraft}
             onSubmit={onSubmit}
-            defaultValues={requestState?.form5}
+            defaultValues={requestState?.proposal_bank_id}
           >
             <ActionBox
               step={step}
