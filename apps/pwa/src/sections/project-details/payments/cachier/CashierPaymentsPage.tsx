@@ -36,7 +36,7 @@ function CashierPaymentsPage({ data, mutate }: any) {
       cheque: {
         id: nanoid(),
         payment_id: paymentSent.id,
-        transfer_receipt: data.transactionReceipt,
+        transfer_receipt: data.transactionReceipt.url,
         deposit_date: data.depositDate,
         number: data.checkTransferNumber,
       },

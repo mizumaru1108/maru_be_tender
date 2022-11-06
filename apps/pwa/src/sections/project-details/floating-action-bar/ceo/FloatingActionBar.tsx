@@ -66,11 +66,11 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
         id: nanoid(), // generate by nano id
         proposal_id: pid, // from the proposal it self
         reviewer_id: userId, // user id of current user
-        organization_id: organizationId, // user id on the proposal data
+        client_user_id: organizationId, // user id on the proposal data
         inner_status: 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
         outter_status: 'ONGOING',
         state: 'PROJECT_SUPERVISOR',
-      } as ceoProposalLogPayload,
+      } as any,
       proposalId: pid,
       updateProposalStatusAndStatePayloads: {
         inner_status: 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION' as InnerStatus,

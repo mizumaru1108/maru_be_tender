@@ -197,9 +197,10 @@ function FloatingActionBar({ organizationId, data }: any) {
         content={
           action === 'accept' ? (
             <ProposalAcceptingForm
-              onSubmit={(data) => {
+              onSubmit={(data: any) => {
                 handleApproval(data);
               }}
+              data={data}
             >
               <FormActionBox
                 action="accept"

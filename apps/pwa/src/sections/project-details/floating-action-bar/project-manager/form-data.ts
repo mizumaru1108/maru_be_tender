@@ -7,18 +7,11 @@ import { FormSingleProps } from 'components/FormGenerator';
 export const ApproveProposalFormFieldsProjectManager = [
   {
     type: 'textArea',
-    name: 'procedures',
-    label: 'procedures',
+    name: 'notes',
+    label: 'الملاحظات',
     xs: 12,
-    placeholder: 'اكتب الاجراءات هنا',
+    placeholder: 'اكتب الملاحظات هنا',
   },
-  // {
-  //   type: 'textArea',
-  //   name: 'notes',
-  //   label: 'notes',
-  //   xs: 12,
-  //   placeholder: 'notes',
-  // },
 ] as Array<FormSingleProps>;
 
 export const RejectProposalFormFieldsProjectManager = [

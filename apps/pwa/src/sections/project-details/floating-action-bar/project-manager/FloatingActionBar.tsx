@@ -45,7 +45,7 @@ function FloatingActionBar({ organizationId }: any) {
     accept({
       proposalId: id,
       approveProposalPayloads: {
-        inner_status: 'ACCEPTED',
+        inner_status: 'ACCEPTED_BY_PROJECT_MANAGER',
         outter_status: 'PENDING',
         state: 'CEO',
       },

@@ -9,7 +9,7 @@ import { ApproveProposalFormFieldsSupervisor } from './form-data';
 import { ProposalApprovePayloadSupervisor, ProposalFormProps } from '../types';
 import BaseField from 'components/hook-form/BaseField';
 
-function ProposalAcceptingForm({ children, onSubmit }: ProposalFormProps) {
+function ProposalAcceptingForm({ children, onSubmit, data }: any) {
   const validationSchema = Yup.object().shape({
     clause: Yup.string().required('Procedures is required!'),
     clasification_field: Yup.string().required('Procedures is required!'),
@@ -56,10 +56,10 @@ function ProposalAcceptingForm({ children, onSubmit }: ProposalFormProps) {
   } = methods;
 
   const onSubmitForm = async (data: ProposalApprovePayloadSupervisor) => {
-    console.log(data);
     onSubmit(data);
   };
   const vat = watch('vat');
+  const support_type = watch('support_type');
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
@@ -191,12 +191,22 @@ function ProposalAcceptingForm({ children, onSubmit }: ProposalFormProps) {
           </Grid>
         )}
         <Grid item md={6} xs={12}>
-          <BaseField
-            type="textField"
-            name="support_amount"
-            label="مبلغ الدعم*"
-            placeholder="مبلغ الدعم"
-          />
+          {support_type === 'true' ? (
+            <BaseField
+              type="textField"
+              name="support_amount"
+              label="مبلغ الدعم*"
+              placeholder="مبلغ الدعم"
+            />
+          ) : (
+            <BaseField
+              type="textField"
+              name="support_amount"
+              label="مبلغ الدعم*"
+              placeholder="مبلغ الدعم"
+              disabled
+            />
+          )}
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField

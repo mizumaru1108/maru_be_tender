@@ -150,7 +150,7 @@ const ar = {
       options: {},
     },
     center: {
-      label: 'المركز الإدارة*',
+      label: 'مركز الإدارة*',
       placeholder: 'الرجاء اختيار المركز',
       options: {},
     },
