@@ -8,6 +8,7 @@ import useLocales from 'hooks/useLocales';
 import { REGIONS } from 'sections/auth/register/RegisterFormData';
 import { useEffect, useMemo } from 'react';
 import { MainValuesProps } from '../../../../@types/register';
+import BaseField from 'components/hook-form/BaseField';
 
 type FormProps = {
   children?: React.ReactNode;
@@ -30,6 +31,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
       .positive()
       .integer()
       .required('Number Of Beneficiaries is required'),
+    vat: Yup.boolean().required(),
   });
 
   const methods = useForm<MainValuesProps>({
@@ -160,6 +162,13 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
             name="num_of_beneficiaries"
             label={translate('register_form1.number_of_beneficiaries.label')}
             placeholder={translate('register_form1.number_of_beneficiaries.placeholder')}
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <BaseField
+            type="checkbox"
+            name="vat"
+            label={translate('register_form1.vat.placeholder')}
           />
         </Grid>
         <Grid item md={12} xs={12}>

@@ -100,6 +100,10 @@ const ar = {
   canceled: 'الطلب ملفى',
   create_a_new_support_request: 'إنشاء طلب دعم جديد',
   register_form1: {
+    vat: {
+      label: 'ضريبة القيمة المضافة',
+      placeholder: 'هل توافق على ضريبة القيمة المضافة',
+    },
     entity: {
       label: 'اسم العميل*',
       placeholder: 'الرجاء أدخل اسم العميل',

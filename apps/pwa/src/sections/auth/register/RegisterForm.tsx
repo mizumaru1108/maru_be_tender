@@ -39,6 +39,7 @@ const initialValue = {
     headquarters: '',
     num_of_employed_facility: undefined,
     num_of_beneficiaries: undefined,
+    vat: false,
   },
   form2: {
     region: '',

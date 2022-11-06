@@ -52,7 +52,8 @@ function FloatingActionBar() {
     setModalState(true);
   };
 
-  const handleApproval = async () => {
+  const handleApproval = async (data: any) => {
+    console.log(data);
     await accept({
       proposalId: pid,
       approveProposalPayloads: {
@@ -69,9 +70,10 @@ function FloatingActionBar() {
             : currentRoles === 'tender_moderator'
             ? 'PROJECT_SUPERVISOR'
             : `${a}`, // the next step when accepted
+        project_track: data.path,
+        ...(data.supervisors !== 'all' && { supervisor_id: data.supervisors }),
       },
     });
-
     if (!accFetch) {
       enqueueSnackbar(translate('proposal_approved'), {
         variant: 'success',
@@ -205,7 +207,7 @@ function FloatingActionBar() {
               onSubmit={(data: any) => {
                 console.log('form callback', data);
                 console.log('just a dummy not create log yet');
-                handleApproval();
+                handleApproval(data);
               }}
             >
               <FormActionBox

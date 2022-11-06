@@ -3,8 +3,9 @@ import { Grid } from '@mui/material';
 import FormGenerator from 'components/FormGenerator';
 import { FormProvider } from 'components/hook-form';
 import BaseField from 'components/hook-form/BaseField';
+import { getAllSupervisorsForSpecificTrack } from 'queries/Moderator/getAllSupervisorsForSpecificTrack';
 import { getAlTheTracks } from 'queries/Moderator/getAllTheTracks';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery } from 'urql';
 import * as Yup from 'yup';
@@ -12,8 +13,7 @@ import { ApproveProposalFormFields } from './form-data';
 import { ProposalFormProps, ProposalModeratorApprovePayload } from './types';
 
 function ProposalAcceptingForm({ children, onSubmit }: ProposalFormProps) {
-  const [result, mutate] = useQuery({ query: getAlTheTracks });
-  const { data, fetching, error } = result;
+  const [supervisors, setSupervisors] = useState([]);
   const validationSchema = Yup.object().shape({
     path: Yup.string().required('Path is required!'),
     supervisors: Yup.string().required('Supervisors is required!'),
@@ -35,25 +35,32 @@ function ProposalAcceptingForm({ children, onSubmit }: ProposalFormProps) {
     handleSubmit,
     formState: { isSubmitting },
     setValue,
+    watch,
   } = methods;
 
   const onSubmitForm = async (data: ProposalModeratorApprovePayload) => {
     onSubmit(data);
   };
+  const path = watch('path');
+  const shouldPause = path === '';
+  const [result, mutate] = useQuery({
+    query: getAllSupervisorsForSpecificTrack,
+    variables: { employee_path: path },
+    pause: shouldPause,
+  });
+  const { data, fetching, error } = result;
 
   useEffect(() => {
-    if (data?.project_tracks) {
-      console.log(data.project_tracks);
+    if (data?.users) {
+      setSupervisors(data.users);
       // setValue('path');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetching]);
 
-  if (fetching) return <>... Loading</>;
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={3} columnSpacing={7} sx={{ mt: '10px' }}>
-        {/* <FormGenerator data={ApproveProposalFormFields} /> */}
         <Grid item md={6} xs={12}>
           <BaseField
             type="select"
@@ -62,16 +69,16 @@ function ProposalAcceptingForm({ children, onSubmit }: ProposalFormProps) {
             placeholder="المسار"
             children={
               <>
-                <option value="مشروع يخص المساجد" style={{ backgroundColor: '#fff' }}>
+                <option value="MOSQUES" style={{ backgroundColor: '#fff' }}>
                   مشروع يخص المساجد
                 </option>
-                <option value="مشروع يخص المنح الميسر" style={{ backgroundColor: '#fff' }}>
+                <option value="CONCESSIONAL_GRANTS" style={{ backgroundColor: '#fff' }}>
                   مشروع يخص المنح الميسر
                 </option>
-                <option value="مشروع يخص المبادرات" style={{ backgroundColor: '#fff' }}>
+                <option value="INITIATIVES" style={{ backgroundColor: '#fff' }}>
                   مشروع يخص المبادرات
                 </option>
-                <option value="test" style={{ backgroundColor: '#fff' }}>
+                <option value="BAPTISMS" style={{ backgroundColor: '#fff' }}>
                   مشروع يخص تعميدات
                 </option>
               </>
@@ -86,15 +93,15 @@ function ProposalAcceptingForm({ children, onSubmit }: ProposalFormProps) {
             placeholder="المشرفين"
             children={
               <>
-                <option value="supervisor1" style={{ backgroundColor: '#fff' }}>
-                  المشرف 1
+                <option value="all" style={{ backgroundColor: '#fff' }}>
+                  كل المشرفين
                 </option>
-                <option value="supervisor2" style={{ backgroundColor: '#fff' }}>
-                  المشرف 2
-                </option>
-                <option value="supervisor3" style={{ backgroundColor: '#fff' }}>
-                  المشرف 3
-                </option>
+                {data?.users &&
+                  data.users.map((item: any, index: any) => (
+                    <option key={index} value={item?.id} style={{ backgroundColor: '#fff' }}>
+                      {item.name}
+                    </option>
+                  ))}
               </>
             }
           />
