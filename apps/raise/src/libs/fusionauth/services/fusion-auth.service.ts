@@ -269,7 +269,7 @@ export class FusionAuthService {
     }
   }
 
-  async fusionAuthTenderRegister(registerRequest: CreateEmployeeDto) {
+  async fusionAuthTenderRegisterUser(registerRequest: CreateEmployeeDto) {
     const baseUrl = this.fusionAuthUrl;
     const registerUrl = baseUrl + '/api/user/registration/';
 

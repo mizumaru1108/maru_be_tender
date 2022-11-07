@@ -38,7 +38,7 @@ export class TenderEmployeeService {
     }
 
     const fusionAuthResult =
-      await this.fusionAuthService.fusionAuthTenderRegister(request);
+      await this.fusionAuthService.fusionAuthTenderRegisterUser(request);
 
     // if you want to make a type for register result
     // see trough mr danang soluvas note, theres' fustion auth register result type there for details.

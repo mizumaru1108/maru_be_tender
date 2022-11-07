@@ -6,5 +6,6 @@ import { TenderClientService } from './services/tender-client.service';
 @Module({
   controllers: [TenderClientController],
   providers: [TenderClientService],
+  exports: [TenderClientService],
 })
 export class TenderClientModule {}

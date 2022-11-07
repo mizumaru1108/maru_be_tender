@@ -1,11 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsString,
   IsNotEmpty,
   IsBoolean,
   IsEmail,
-  IsIn,
+  IsOptional,
 } from 'class-validator';
 
 export class CreateEmployeeDto {
@@ -30,49 +29,20 @@ export class CreateEmployeeDto {
   @IsEmail()
   email: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsBoolean()
-  activate_user: boolean;
+  activate_user?: boolean;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  employee_path: string;
+  employee_path?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  user_roles: string;
-
-  // @ApiProperty()
-  // @IsString()
-  // @IsIn(
-  //   [
-  //     'ACCOUNTS_MANAGER',
-  //     'ADMIN',
-  //     'CEO',
-  //     'CASHIER',
-  //     'CLIENT',
-  //     'CONSULTANT',
-  //     'FINANCE',
-  //     'MODERATOR',
-  //     'PROJECT_MANAGER',
-  //     'PROJECT_SUPERVISOR',
-  //   ],
-  //   {
-  //     message:
-  //       'Roles should be or ACCOUNTS_MANAGER or ADMIN or CEO or CASHIER or CLIENT or CONSULTANT or FINANCE or MODERATOR or PROJECT_MANAGER or PROJECT_SUPERVISOR',
-  //   },
-  // )
-  // user_roles:
-  //   | 'ACCOUNTS_MANAGER'
-  //   | 'ADMIN'
-  //   | 'CEO'
-  //   | 'CASHIER'
-  //   | 'CLIENT'
-  //   | 'CONSULTANT'
-  //   | 'FINANCE'
-  //   | 'MODERATOR'
-  //   | 'PROJECT_MANAGER'
-  //   | 'PROJECT_SUPERVISOR';
+  user_roles?: string;
 }

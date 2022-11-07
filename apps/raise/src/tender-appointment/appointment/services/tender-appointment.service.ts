@@ -50,48 +50,50 @@ export class TenderAppointmentService {
       },
       select: {
         id: true,
+        email: true,
         entity: true,
         // alias user_client_data_user_idTouser to user
-        // user_client_data_user_idTouser: {
-        //   select: {
-        //     schedule: {
-        //       select: {
-        //         id: true,
-        //         day: true,
-        //         start_time: true,
-        //         end_time: true,
-        //       },
-        //     },
-        //   },
-        // },
-      },
-      skip: offset,
-      take: limit,
-    });
-    const result2 = await this.prismaService.user.findMany({
-      where: {
-        client_data: {
-          ...query,
-        },
-      },
-      select: {
-        id: true,
-        client_data: {
+        user_client_data_user_idTouser: {
           select: {
-            entity: true,
-          },
-        },
-        schedule: {
-          select: {
-            day: true,
-            start_time: true,
-            end_time: true,
+            id: true,
+            schedule: {
+              select: {
+                id: true,
+                day: true,
+                start_time: true,
+                end_time: true,
+              },
+            },
           },
         },
       },
       skip: offset,
       take: limit,
     });
+    // const result = await this.prismaService.user.findMany({
+    //   where: {
+    //     client_data: {
+    //       ...query,
+    //     },
+    //   },
+    //   select: {
+    //     id: true,
+    //     client_data: {
+    //       select: {
+    //         entity: true,
+    //       },
+    //     },
+    //     schedule: {
+    //       select: {
+    //         day: true,
+    //         start_time: true,
+    //         end_time: true,
+    //       },
+    //     },
+    //   },
+    //   skip: offset,
+    //   take: limit,
+    // });
 
     return result;
   }

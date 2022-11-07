@@ -10,7 +10,6 @@ import {
   LoginResponseDto,
   RegisterRequestDto,
   RegisterTendersDto,
-  RegReqTenderDto,
 } from './dtos';
 
 @Controller('auth')

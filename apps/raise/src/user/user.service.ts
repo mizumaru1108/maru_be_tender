@@ -90,7 +90,7 @@ export class UserService {
           employee_name: request.employee_name,
           email: request.email,
           mobile_number: request.phone,
-          client_data: {
+          client_data_client_data_user_idTouser: {
             create: {
               id: request.id!,
               license_number: request.license_number!,
@@ -117,7 +117,6 @@ export class UserService {
               num_of_employed_facility: request.num_of_employed_facility,
               phone: request.phone,
               client_field: request.client_field,
-              user_id: request.id_,
               vat: request.vat,
             },
           },

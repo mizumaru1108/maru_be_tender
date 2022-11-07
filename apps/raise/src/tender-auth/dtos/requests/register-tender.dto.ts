@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -10,86 +10,30 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-
-export class RegReqTenderDto {
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  id: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  employee_name: string;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  mobile_number: string;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  user_type_id: string;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsArray()
-  roles: Array<string>;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  employee_path: string;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsArray()
-  @IsNotEmpty()
-  employees_permissions: string[];
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  email: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  password: string;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsBoolean()
-  is_active: boolean;
-}
+import { UploadProposalFilesDto } from '../../../tender/dto/upload-proposal-files.dto';
 
 class bankData {
   @ApiProperty()
   @IsString()
-  @IsOptional()
   bank_account_name: string;
 
   @ApiProperty()
   @IsString()
-  @IsOptional()
   bank_account_number: string;
 
   @ApiProperty()
   @IsString()
-  @IsOptional()
   bank_name: string;
 
   @ApiProperty()
-  @IsString()
-  @IsOptional()
-  card_image: any;
+  @IsNotEmpty()
+  @Type(() => UploadProposalFilesDto)
+  @ValidateNested()
+  card_image: UploadProposalFilesDto;
 }
-class basePayload {
+
+// for registering
+class registerClient {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -114,16 +58,21 @@ class basePayload {
   @IsNotEmpty()
   employee_name: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
   @IsNotEmpty()
-  employee_path: string;
+  employee_path?: string;
 
   @ApiProperty()
   @IsNotEmpty()
   authority: string;
 
   @ApiProperty()
-  board_ofdec_file: any;
+  @IsNotEmpty()
+  @Type(() => UploadProposalFilesDto)
+  @ValidateNested()
+  board_ofdec_file: UploadProposalFilesDto;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -164,7 +113,9 @@ class basePayload {
 
   @ApiProperty()
   @IsNotEmpty()
-  license_file: any;
+  @Type(() => UploadProposalFilesDto)
+  @ValidateNested()
+  license_file: UploadProposalFilesDto;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -226,16 +177,18 @@ class basePayload {
   vat: boolean;
 
   @ApiProperty()
-  @ValidateNested()
+  @IsArray()
   @Type(() => bankData)
-  bank_informations: bankData;
+  @IsNotEmpty({ each: true })
+  @ValidateNested({ each: true })
+  bank_informations: bankData[];
 }
 
-export class RegisterTendersDto {
+export class RegisterTenderDto {
   @ApiProperty()
   @ValidateNested()
-  @Type(() => basePayload)
-  data: basePayload;
+  @Type(() => registerClient)
+  data: registerClient;
 
   @ApiProperty()
   @IsArray()

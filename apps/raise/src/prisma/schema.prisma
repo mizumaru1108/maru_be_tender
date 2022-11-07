@@ -41,8 +41,6 @@ model client_data {
   license_number                 String        @db.VarChar
   license_expired                DateTime?     @db.Date
   license_issue_date             DateTime?     @db.Date
-  license_file                   String?
-  board_ofdec_file               String?
   ceo_mobile                     String?       @db.VarChar
   ceo_name                       String?       @db.VarChar
   data_entry_mobile              String?       @db.VarChar
@@ -54,6 +52,8 @@ model client_data {
   client_field                   String?       @db.VarChar
   user_id                        String?
   vat                            Boolean?
+  license_file                   Json?
+  board_ofdec_file               Json?
   user                           user?         @relation(fields: [email], references: [email], onDelete: Cascade)
   client_status                  client_status @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user_client_data_user_idTouser user?         @relation("client_data_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
@@ -323,8 +323,8 @@ model client_log {
   created_at               DateTime      @default(now()) @db.Timestamptz(6)
   updated_at               DateTime      @default(now()) @db.Timestamptz(6)
   status                   String
-  client_data              client_data   @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user                     user          @relation(fields: [reviewer_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  client_data              client_data   @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  user                     user          @relation(fields: [reviewer_id], references: [id], onDelete: Cascade)
   client_status            client_status @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
