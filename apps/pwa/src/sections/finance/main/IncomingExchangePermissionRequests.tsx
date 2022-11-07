@@ -1,6 +1,7 @@
 import { Typography, Grid } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
 import { ProjectCardProps } from 'components/card-table/types';
+import useAuth from 'hooks/useAuth';
 import { gettingAllTheAcceptedProposalsByCeoAndIssuedBySupervisor } from 'queries/finance/gettingAllTheAcceptedProposalsByCeoAndIssuedBySupervisor';
 import { useQuery } from 'urql';
 
@@ -54,8 +55,11 @@ const data = [
 ] as ProjectCardProps[];
 
 function IncomingExchangePermissionRequests() {
+  const { user } = useAuth();
+  const employee_path = user?.employee_path;
   const [result, reexecuteQuery] = useQuery({
     query: gettingAllTheAcceptedProposalsByCeoAndIssuedBySupervisor,
+    variables: { project_track: employee_path.trim() },
   });
   const { data, fetching, error } = result;
   if (fetching) {

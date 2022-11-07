@@ -32,7 +32,8 @@ function ActionBar() {
             alignItems: 'center',
             borderRadius: '10px',
             ':hover': {
-              backgroundColor: '#fff',
+              backgroundColor:
+                item.value === locationArray[locationArray.length - 1] ? '#13B2A2' : '#fff',
             },
           }}
           onClick={() => {

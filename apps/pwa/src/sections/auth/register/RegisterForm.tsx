@@ -39,6 +39,7 @@ const initialValue = {
     headquarters: '',
     num_of_employed_facility: undefined,
     num_of_beneficiaries: undefined,
+    vat: false,
   },
   form2: {
     region: '',
@@ -158,9 +159,9 @@ export default function RegisterForm() {
             variant="subtitle2"
             component={RouterLink}
             to={'/auth/login'}
-            sx={{ textDecorationLine: 'underline', mt: 5 }}
+            sx={{ textDecorationLine: 'underline', mt: 5, alignSelf: 'center' }}
           >
-            تسجيل الدخول
+            {translate('login')}
           </Link>
         </Stack>
       )}

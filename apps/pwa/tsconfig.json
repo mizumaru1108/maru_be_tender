@@ -26,7 +26,7 @@
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.tsx", "src/utils/urql.js",
+    "src/**/*.tsx", "src/utils/urql.ts",
   ],
   "exclude": [
     "node_modules"

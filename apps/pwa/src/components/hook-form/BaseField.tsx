@@ -30,6 +30,7 @@ function BaseField({
   options,
   maxDate,
   minDate,
+  ...other
 }: FormSingleProps) {
   const { translate } = useLocales();
   return (
@@ -59,6 +60,7 @@ function BaseField({
           name={name ?? ''}
           label={translate(label)}
           placeholder={translate(placeholder)}
+          {...other}
         />
       )}
       {type === 'uploadLabel' && <LabelStyle>{translate(label)}</LabelStyle>}

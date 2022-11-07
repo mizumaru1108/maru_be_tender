@@ -5,17 +5,21 @@ import { FormProvider } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { UploadReceiptFormFields } from './form-data';
-import { ProposalApprovePayload, ProposalFormProps, UploadReceiptPayload } from './type';
+import { ProposalFormProps, UploadReceiptPayload } from './type';
 
 function UploadingForm({ children, onSubmit }: ProposalFormProps) {
   const validationSchema = Yup.object().shape({
-    transactionReceipt: Yup.string().required('Transaction Receipt is required!'),
+    transactionReceipt: Yup.object().shape({
+      url: Yup.string(),
+      size: Yup.number(),
+      type: Yup.string(),
+    }),
     checkTransferNumber: Yup.string().required('Check Transfer Number is required!'),
     depositDate: Yup.string().required('Deposit Date is required!'),
   });
 
   const defaultValues = {
-    transactionReceipt: undefined,
+    transactionReceipt: { url: '', size: undefined, type: 'image/jpeg' },
     depositDate: '',
     checkTransferNumber: '',
   };

@@ -1,9 +1,10 @@
 import { Box, Grid, Typography } from '@mui/material';
 import { nanoid } from 'nanoid';
+import { getTheSpentBudgetForSpecificProposal } from 'queries/project-supervisor/getTheSpentBudgetForSpecificProposal';
 import { insertPayments } from 'queries/project-supervisor/insertPayments';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { useMutation } from 'urql';
+import { useMutation, useQuery } from 'urql';
 import ActionSetBox from './ActionSetBox';
 import PaymentsSetForm from './PaymentsSetForm';
 import PaymentsTable from './PaymentsTable';
@@ -17,6 +18,12 @@ function SupervisorPaymentsPage({ data, mutate }: any) {
       payment_date: '',
     })),
   };
+
+  const [result] = useQuery({
+    query: getTheSpentBudgetForSpecificProposal,
+    variables: { proposal_id },
+  });
+  const { data: spentBudget, fetching, error } = result;
   // insertPayments
   const [_, insertPay] = useMutation(insertPayments);
 
@@ -42,6 +49,7 @@ function SupervisorPaymentsPage({ data, mutate }: any) {
       }
     });
   };
+  if (fetching) return <>... Loading</>;
   return (
     <Grid container spacing={3} sx={{ mt: '8px' }}>
       <Grid item md={12}>
@@ -100,7 +108,9 @@ function SupervisorPaymentsPage({ data, mutate }: any) {
           <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
             المبلغ المصروف
           </Typography>
-          <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>20.000 ريال</Typography>
+          <Typography
+            sx={{ color: 'text.tertiary', fontWeight: 700 }}
+          >{`${spentBudget.payment_aggregate.aggregate.spent_budget} ريال`}</Typography>
         </Box>{' '}
       </Grid>
       <Grid item md={12}>

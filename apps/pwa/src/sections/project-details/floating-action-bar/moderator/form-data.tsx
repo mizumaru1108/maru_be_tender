@@ -43,27 +43,20 @@ export const ApproveProposalFormFields = [
         </option>
         <option value="supervisor2" style={{ backgroundColor: '#fff' }}>
           المشرف 2
-        </option>{' '}
+        </option>
         <option value="supervisor3" style={{ backgroundColor: '#fff' }}>
           المشرف 3
         </option>
       </>
     ),
   },
-  // {
-  //   type: 'textArea',
-  //   name: 'procedures',
-  //   label: 'الإجراءات',
-  //   xs: 12,
-  //   placeholder: 'الإجراءات',
-  // },
-  // {
-  //   type: 'textArea',
-  //   name: 'supportOutputs',
-  //   label: 'المخرجات الداعمة',
-  //   xs: 12,
-  //   placeholder: 'المخرجات الداعمة',
-  // },
+  {
+    type: 'textArea',
+    name: 'notes',
+    label: 'الملاحظات',
+    xs: 12,
+    placeholder: 'الرجاء كتابة الملاحظات',
+  },
 ] as Array<FormSingleProps>;
 
 export const RejectProposalFormFields = [

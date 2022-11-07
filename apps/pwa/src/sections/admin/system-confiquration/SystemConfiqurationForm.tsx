@@ -6,13 +6,14 @@ import FormGenerator from 'components/FormGenerator';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { SystemConfiqurationData } from './form-data';
 import { useNavigate } from 'react-router';
+import { FileProp } from 'components/upload';
 
 type FormValuesProps = {
   enterprise_name: string;
   enterprise_email: string;
   telephone_fix: string;
   mobile_phone: string;
-  enterprise_logo: string;
+  enterprise_logo: FileProp;
 };
 
 export default function SystemConfiqurationForm() {
@@ -31,7 +32,7 @@ export default function SystemConfiqurationForm() {
     enterprise_email: '',
     mobile_phone: '',
     bank_account_card_image: '',
-    enterprise_logo: '',
+    enterprise_logo: { url: '', size: undefined, type: 'image/jpeg' },
   };
 
   const methods = useForm<FormValuesProps>({

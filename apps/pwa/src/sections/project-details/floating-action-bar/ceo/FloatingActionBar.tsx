@@ -66,11 +66,11 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
         id: nanoid(), // generate by nano id
         proposal_id: pid, // from the proposal it self
         reviewer_id: userId, // user id of current user
-        organization_id: organizationId, // user id on the proposal data
+        client_user_id: organizationId, // user id on the proposal data
         inner_status: 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
         outter_status: 'ONGOING',
         state: 'PROJECT_SUPERVISOR',
-      } as ceoProposalLogPayload,
+      } as any,
       proposalId: pid,
       updateProposalStatusAndStatePayloads: {
         inner_status: 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION' as InnerStatus,
@@ -168,8 +168,12 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
             </Button>
             <Button
               variant="contained"
-              color="error"
-              sx={{ my: { xs: '1.3em', md: '0' }, mr: { md: '1em' } }}
+              sx={{
+                my: { xs: '1.3em', md: '0' },
+                mr: { md: '1em' },
+                backgroundColor: '#FF4842',
+                ':hover': { backgroundColor: '#FF170F' },
+              }}
               onClick={() => {
                 setAction('reject');
                 handleOpenModal();
@@ -181,10 +185,10 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
 
           <Button
             variant="contained"
-            color="info"
             onClick={() => {
               navigate(amandementPath);
             }}
+            sx={{ backgroundColor: '#0169DE', ':hover': { backgroundColor: '#1482FE' } }}
             endIcon={<Iconify icon="eva:edit-2-outline" />}
           >
             {translate('submit_amendment_request')}

@@ -54,6 +54,7 @@ const ProjectBudgetForm = ({ onSubmit, children, defaultValues }: Props) => {
   } = methods;
 
   const handleOnSubmit = (data: FormValuesProps) => {
+    console.log(data);
     const initialValue = 0;
     const sumWithInitial = data.detail_project_budgets.reduce(
       (previousValue, currentValue) => previousValue + currentValue.amount,

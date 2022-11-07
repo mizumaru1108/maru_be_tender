@@ -3,6 +3,12 @@ import { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import AppointmentsTap from './appointments-tabel/AppointmentsTap';
 import AppointmentsRequests from './appointments-requests/AppointmentsRequests';
+import { useNavigate } from 'react-router';
+import useAuth from 'hooks/useAuth';
+import { query } from 'firebase/firestore';
+import { getScheduleByUser } from 'queries/client/getScheduleByUser';
+import { useQuery } from 'urql';
+import useLocales from 'hooks/useLocales';
 interface TabPanelProps {
   children?: React.ReactNode;
   dir?: string;
@@ -34,24 +40,37 @@ const ContentStyle = styled('div')(({ theme }) => ({
 }));
 
 function Appointments() {
+  const { translate } = useLocales();
+  const { user } = useAuth();
+  const id = user?.id;
+  const [result, mutate] = useQuery({ query: getScheduleByUser, variables: { id } });
+  const { data, fetching, error } = result;
   const theme = useTheme();
+  const navigate = useNavigate();
   const [value, setValue] = useState(0);
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+  if (error) return <>Ooops, some errors have been occured</>;
+  if (fetching) return <>...Loading</>;
+  console.log(data);
   return (
     <Grid container spacing={5}>
       <Grid item md={12} xs={12}>
         <Stack direction="row" justifyContent="space-between">
-          <Typography variant="h4">المواعيد مع المؤسسة</Typography>
-          {value === 0 && (
+          <Typography variant="h4">{translate('appointments_with_organization')}</Typography>
+          {value === 0 && data?.schedule?.length === 0 && (
             <Button
               sx={{ color: '#fff', backgroundColor: 'background.paper', py: '15px', px: '25px' }}
+              onClick={() => {
+                console.log('asdlkasmdlk');
+                navigate('/client/dashboard/appointments/adjust-your-time');
+              }}
             >
-              اضافة مواعيد تواجدك
+              {translate('adding_the_available_time')}
             </Button>
           )}
-          {value === 1 && (
+          {(value === 1 || data.schedule?.length !== 0) && (
             <Button
               sx={{
                 color: '#fff',
@@ -60,8 +79,13 @@ function Appointments() {
                 px: '25px',
                 ':hover': { backgroundColor: '#1482FE' },
               }}
+              onClick={() => {
+                navigate('/client/dashboard/appointments/adjust-your-time', {
+                  state: data.schedule,
+                });
+              }}
             >
-              تعديل مواعيد تواجدك
+              {translate('edeting_the_available_time')}
             </Button>
           )}
         </Stack>
@@ -83,7 +107,7 @@ function Appointments() {
               label={
                 <Grid container>
                   <Grid item md={10} xs={12}>
-                    <Typography>الاجتماعات</Typography>
+                    <Typography>{translate('appointments')}</Typography>
                   </Grid>
                   <Grid item md={2} xs={12}>
                     <Box
@@ -117,7 +141,7 @@ function Appointments() {
               label={
                 <Grid container>
                   <Grid item md={10} xs={12}>
-                    <Typography>طلبات للاجتماع</Typography>
+                    <Typography>{translate('requests_for_meeting')}</Typography>
                   </Grid>
                   <Grid item md={2} xs={12}>
                     <Box

@@ -138,9 +138,12 @@ function FloatingActionBar({ organizationId, data }: any) {
                 {translate('accept_project')}
               </Button>
               <Button
-                sx={{ flex: 1 }}
+                sx={{
+                  flex: 1,
+                  backgroundColor: '#FF4842',
+                  ':hover': { backgroundColor: '#FF170F' },
+                }}
                 variant="contained"
-                color="error"
                 onClick={() => {
                   setAction('reject');
                   handleOpenModal();
@@ -167,10 +170,13 @@ function FloatingActionBar({ organizationId, data }: any) {
               </Button>
               <Button
                 variant="contained"
-                color="info"
                 endIcon={<Iconify icon="eva:edit-2-outline" />}
                 onClick={() => setAction('edit_request')}
-                sx={{ flex: 1 }}
+                sx={{
+                  flex: 1,
+                  backgroundColor: '#0169DE',
+                  ':hover': { backgroundColor: '#1482FE' },
+                }}
               >
                 {translate('partner_details.submit_amendment_request')}
               </Button>
@@ -191,9 +197,10 @@ function FloatingActionBar({ organizationId, data }: any) {
         content={
           action === 'accept' ? (
             <ProposalAcceptingForm
-              onSubmit={(data) => {
+              onSubmit={(data: any) => {
                 handleApproval(data);
               }}
+              data={data}
             >
               <FormActionBox
                 action="accept"

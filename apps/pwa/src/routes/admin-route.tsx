@@ -16,6 +16,7 @@ const MobileSettings = Loadable(lazy(() => import('pages/admin/MobileSettings'))
 const SystemMessages = Loadable(lazy(() => import('pages/admin/SystemMessages')));
 const SystemConfiguration = Loadable(lazy(() => import('pages/admin/SystemConfiguration')));
 const UsersAndPermissions = Loadable(lazy(() => import('pages/admin/UsersAndPermissions')));
+const UsersAndPermissionsAdd = Loadable(lazy(() => import('pages/admin/UsersAndPermissionsAdd')));
 const Authority = Loadable(lazy(() => import('pages/admin/Authority')));
 const EntityArea = Loadable(lazy(() => import('pages/admin/EntityArea')));
 const RegionsProjectLocation = Loadable(lazy(() => import('pages/admin/RegionsProjectLocation')));
@@ -66,7 +67,13 @@ export const adminRoute = {
         { path: 'mobile-settings', element: <MobileSettings /> },
         { path: 'system-messages', element: <SystemMessages /> },
         { path: 'system-configuration', element: <SystemConfiguration /> },
-        { path: 'users-and-permissions', element: <UsersAndPermissions /> },
+        {
+          path: 'users-and-permissions',
+          children: [
+            { path: '', element: <UsersAndPermissions /> },
+            { path: 'add', element: <UsersAndPermissionsAdd /> },
+          ],
+        },
         { path: 'authority', element: <Authority /> },
         { path: 'entity-area', element: <EntityArea /> },
         { path: 'regions-project-location', element: <RegionsProjectLocation /> },

@@ -6,7 +6,7 @@ import { useQuery } from 'urql';
 import ActionBar from './ActionBar';
 import ExchangeDetails from './ExchangeDetails';
 import FloatinActonBar from './floating-action-bar/FloatinActonBar';
-import FollowUps from './FollowUps';
+import { FollowUps } from './follow-ups';
 import MainPage from './MainPage';
 import Payments from './Payments';
 import ProjectBudget from './ProjectBudget';

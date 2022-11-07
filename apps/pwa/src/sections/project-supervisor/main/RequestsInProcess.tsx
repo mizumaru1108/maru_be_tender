@@ -6,9 +6,10 @@ import { useQuery } from 'urql';
 
 function RequestsInProcess() {
   const { user } = useAuth();
+  const employee_path = user?.employee_path;
   const [result, reexecuteQuery] = useQuery({
     query: gettingMyRequestedProcess,
-    variables: { supervisor_id: user?.id },
+    variables: { supervisor_id: user?.id, project_track: employee_path.trim() },
   });
   const { data, fetching, error } = result;
   if (fetching) {

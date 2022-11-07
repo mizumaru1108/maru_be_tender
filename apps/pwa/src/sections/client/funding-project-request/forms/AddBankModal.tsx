@@ -30,11 +30,10 @@ type FormValuesProps = {
   bank_account_card_image: FileProp;
 };
 
-export default function AddBankModal({ open, handleClose }: any) {
+export default function AddBankModal({ open, handleClose, setIsCreatedOne }: any) {
   const rootRef = React.useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const id = user?.id;
-  // addNewBankInformation
   const [_, addingNewBankInfo] = useMutation(addNewBankInformation);
   const RegisterSchema = Yup.object().shape({
     bank_account_number: Yup.string().required('Project goals required'),
@@ -68,7 +67,6 @@ export default function AddBankModal({ open, handleClose }: any) {
   } = methods;
 
   const onSubmit = async (data: FormValuesProps) => {
-    console.log(data);
     const res = await addingNewBankInfo({
       payload: {
         bank_account_name: data.bank_account_name,
@@ -78,6 +76,7 @@ export default function AddBankModal({ open, handleClose }: any) {
         user_id: id,
       },
     });
+    setIsCreatedOne(true);
     handleClose();
   };
   return (

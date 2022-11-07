@@ -12,7 +12,7 @@ function MainPage() {
     rowGap: 42,
   }));
   return (
-    <Page title="Manager Dashboard">
+    <Page title="Admin | Main Page">
       <Container>
         <ContentStyle>
           <Main />

@@ -1,11 +1,15 @@
 import { Typography, Grid, Box } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
+import useAuth from 'hooks/useAuth';
 import { gettingIncomingRequests } from 'queries/project-manager/gettingIncomingRequests';
 import { useQuery } from 'urql';
 
 function IncomingFundingRequests() {
+  const { user } = useAuth();
+  const employee_path = user?.employee_path;
   const [result, reexecuteQuery] = useQuery({
     query: gettingIncomingRequests,
+    variables: { project_track: employee_path.trim() },
   });
   const { data, fetching, error } = result;
   if (fetching) {

@@ -51,6 +51,7 @@ export type MainValuesProps = {
   headquarters: string;
   num_of_employed_facility: number | undefined;
   num_of_beneficiaries: number | undefined;
+  vat: boolean;
 };
 
 export type AccountValuesProps = {

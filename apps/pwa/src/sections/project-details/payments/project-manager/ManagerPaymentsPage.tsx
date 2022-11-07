@@ -71,19 +71,19 @@ function ManagerPaymentsPage({ data, mutate }: any) {
   return (
     <Grid container spacing={3} sx={{ mt: '8px' }}>
       {paymentToApprove.id !== '' && (
-        <Grid item md={12}>
+        <Grid item md={12} xs={12}>
           <Stack direction="column" gap={2}>
-            <Typography variant="h5">معلومات إذن الصرف الثالث</Typography>
+            <Typography variant="h5">{`معلومات إذن الصرف`}</Typography>
             <Stack direction="row" gap={2}>
               <Stack direction="column" flex={2}>
-                <Typography>الإبيان: SA4234234324</Typography>
-                <Typography>
+                <Typography>{`الأيبان ${data.user.bank_informations[0].bank_account_number}`}</Typography>
+                {/* <Typography>
                   لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود
                   تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم
                   فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو لابورأس نيسي يت أليكيوب أكس أيا كوممودو
                   كونسيكيوات
-                </Typography>
-                <Stack direction="row">
+                </Typography> */}
+                {/* <Stack direction="row">
                   <Button
                     sx={{
                       backgroundColor: 'transparent',
@@ -108,16 +108,14 @@ function ManagerPaymentsPage({ data, mutate }: any) {
                   >
                     عرض خطاب الدعم
                   </Button>
-                </Stack>
+                </Stack> */}
               </Stack>
-              <Stack direction="row" flex={1} gap={2} sx={{ alignItems: 'center' }}>
+              <Stack direction="row" gap={2} sx={{ alignItems: 'center' }}>
                 <Button
                   sx={{
                     backgroundColor: '#FF4842',
                     color: '#fff',
                     ':hover': { backgroundColor: '#FF170F' },
-                    height: '40%',
-                    flex: 1,
                   }}
                   startIcon={<CloseIcon />}
                   onClick={handleRejectPayment}
@@ -128,8 +126,6 @@ function ManagerPaymentsPage({ data, mutate }: any) {
                   sx={{
                     backgroundColor: '#0E8478',
                     color: '#fff',
-                    height: '40%',
-                    flex: 1,
                   }}
                   startIcon={<CheckIcon />}
                   onClick={handleApprovalPayment}

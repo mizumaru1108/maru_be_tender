@@ -12,7 +12,7 @@ export interface ProposalApprovePayload extends ProposalRejectPayload {
 }
 
 export interface UploadReceiptPayload {
-  transactionReceipt: File[];
+  transactionReceipt: { url: string; size: number | undefined; type: string };
   depositDate: string;
   checkTransferNumber: string;
 }

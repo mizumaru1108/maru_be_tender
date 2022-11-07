@@ -13,7 +13,7 @@ function MainPage() {
     gap: 20,
   }));
   return (
-    <Page title="Previous Funding Requests">
+    <Page title="The Finance | Main Page">
       <Container>
         <ContentStyle>
           <Main />
