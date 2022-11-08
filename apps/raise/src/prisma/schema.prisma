@@ -55,7 +55,7 @@ model client_data {
   license_file                   Json?
   board_ofdec_file               Json?
   client_status                  client_status? @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user_client_data_user_idTouser user           @relation("client_data_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
+  user                              user           @relation("client_data_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
   client_log                     client_log[]
 }
 
@@ -256,7 +256,7 @@ model user {
   appointment_appointment_employee_idTouser               appointment[]           @relation("appointment_employee_idTouser")
   appointment_appointment_user_idTouser                   appointment[]           @relation("appointment_user_idTouser")
   bank_information                                        bank_information[]
-  client_data_client_data_user_idTouser                   client_data?            @relation("client_data_user_idTouser")
+  client_data                                             client_data?            @relation("client_data_user_idTouser")
   client_log                                              client_log[]
   contact_us_contact_us_receiver_idTouser                 contact_us[]            @relation("contact_us_receiver_idTouser")
   contact_us_contact_us_sender_idTouser                   contact_us[]            @relation("contact_us_sender_idTouser")

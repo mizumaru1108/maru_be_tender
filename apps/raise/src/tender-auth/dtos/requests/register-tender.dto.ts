@@ -191,8 +191,4 @@ export class RegisterTenderDto {
   @ValidateNested()
   @Type(() => registerClient)
   data: registerClient;
-
-  @ApiProperty()
-  @IsArray()
-  roles: Array<string>;
 }

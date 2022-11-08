@@ -90,7 +90,7 @@ export class UserService {
           employee_name: request.employee_name,
           email: request.email,
           mobile_number: request.phone,
-          client_data_client_data_user_idTouser: {
+          client_data: {
             create: {
               id: request.id!,
               license_number: request.license_number!,

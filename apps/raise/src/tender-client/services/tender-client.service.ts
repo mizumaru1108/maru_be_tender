@@ -47,7 +47,7 @@ export class TenderClientService {
           mobile_number: request.data.phone,
           user_type_id: 'CLIENT',
           employee_path: request.data.employee_path || null,
-          client_data_client_data_user_idTouser: {
+          client_data: {
             create: {
               id: nanoid(),
               license_number: request.data.license_number,

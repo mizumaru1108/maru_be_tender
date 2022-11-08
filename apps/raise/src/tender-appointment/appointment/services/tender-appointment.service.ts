@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { client_data } from '@prisma/client';
+
 import { PrismaService } from '../../../prisma/prisma.service';
 import { SearchClientFilterRequest } from '../dtos/requests/search-client-filter-request.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class TenderAppointmentService {
@@ -30,70 +31,44 @@ export class TenderAppointmentService {
   async searchClient(searchParams: SearchClientFilterRequest): Promise<any> {
     const { clientName, page = 1, limit = 10 } = searchParams;
     const offset = (page - 1) * limit;
-    let query = {};
+
+    let query: Prisma.userWhereInput = {};
 
     if (clientName) {
       query = {
         ...query,
-        entity: {
-          startsWith: clientName,
-          mode: 'insensitive',
+        client_data: {
+          entity: {
+            startsWith: clientName,
+            mode: 'insensitive',
+          },
         },
       };
     }
-    // prisma run query on client_data table where like clientName%
-    //me: why this query return null value at the user copilot ?
-    //copilot:
-    const result = await this.prismaService.client_data.findMany({
+
+    const result = await this.prismaService.user.findMany({
       where: {
         ...query,
       },
       select: {
         id: true,
         email: true,
-        entity: true,
-        // alias user_client_data_user_idTouser to user
-        user_client_data_user_idTouser: {
+        client_data: {
           select: {
-            id: true,
-            schedule: {
-              select: {
-                id: true,
-                day: true,
-                start_time: true,
-                end_time: true,
-              },
-            },
+            entity: true,
+          },
+        },
+        schedule: {
+          select: {
+            day: true,
+            start_time: true,
+            end_time: true,
           },
         },
       },
       skip: offset,
       take: limit,
     });
-    // const result = await this.prismaService.user.findMany({
-    //   where: {
-    //     client_data: {
-    //       ...query,
-    //     },
-    //   },
-    //   select: {
-    //     id: true,
-    //     client_data: {
-    //       select: {
-    //         entity: true,
-    //       },
-    //     },
-    //     schedule: {
-    //       select: {
-    //         day: true,
-    //         start_time: true,
-    //         end_time: true,
-    //       },
-    //     },
-    //   },
-    //   skip: offset,
-    //   take: limit,
-    // });
 
     return result;
   }
