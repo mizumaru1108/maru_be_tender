@@ -1,8 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { LoginRequestDto } from '../../auth/dtos';
 import { FusionAuthService } from '../../libs/fusionauth/services/fusion-auth.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { TenderClientService } from '../../tender-client/services/tender-client.service';
 import { RegisterTenderDto } from '../dtos/requests/register-tender.dto';
+import { TenderLoginResponseDto } from '../dtos/responses/tender-login-response.dto';
 
 @Injectable()
 export class TenderAuthService {
@@ -11,6 +13,42 @@ export class TenderAuthService {
     private readonly fusionAuthService: FusionAuthService,
     private readonly tenderClientService: TenderClientService,
   ) {}
+
+  async login(loginRequest: LoginRequestDto): Promise<TenderLoginResponseDto> {
+    const fusionAuthResponse = await this.fusionAuthService.fusionAuthLogin(
+      loginRequest,
+    );
+
+    if (
+      !fusionAuthResponse.response.user ||
+      !fusionAuthResponse.response.user.id
+    ) {
+      throw new BadRequestException(
+        'Failed to get the user after fusion auth login!',
+      );
+    }
+
+    const userData = await this.prismaService.user.findUnique({
+      where: {
+        id: fusionAuthResponse.response.user.id,
+      },
+    });
+    if (!userData) {
+      throw new BadRequestException('User record not found in database');
+    }
+
+    const clientData = await this.prismaService.client_data.findUnique({
+      where: {
+        user_id: fusionAuthResponse.response.user.id,
+      },
+    });
+
+    return {
+      fusionAuthResponse,
+      userData,
+      clientData,
+    };
+  }
 
   async register(registerRequest: RegisterTenderDto) {
     const emailData = await this.prismaService.user.findUnique({

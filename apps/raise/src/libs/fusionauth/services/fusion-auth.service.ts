@@ -284,7 +284,6 @@ export class FusionAuthService {
       firstName: registerRequest.employee_name,
       lastName: '',
       mobilePhone: registerRequest.mobile_number,
-      active: registerRequest.activate_user,
     };
 
     const registration: IFusionAuthUserRegistration = {
