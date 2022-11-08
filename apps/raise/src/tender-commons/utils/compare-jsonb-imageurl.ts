@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { UploadProposalFilesDto } from '../../dto/upload-proposal-files.dto';
+import { UploadProposalFilesDto } from '../dto/upload-proposal-files.dto';
 
 export async function compareUrl(
   oldValue: Prisma.JsonValue | null,

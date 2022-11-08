@@ -12,9 +12,8 @@ import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfac
 import { BaseResponse } from '../commons/dtos/base-response';
 import { baseResponseHelper } from '../commons/helpers/base-response-helper';
 import { BaseHashuraWebhookPayload } from '../commons/interfaces/base-hashura-webhook-payload';
-import { UploadFilesDto } from './dto/upload-files.dto';
+import { UploadFilesDto } from '../tender-commons/dto/upload-files.dto';
 import { TenderService } from './tender.service';
-
 @Controller('tender')
 export class TenderController {
   constructor(private tenderService: TenderService) {}

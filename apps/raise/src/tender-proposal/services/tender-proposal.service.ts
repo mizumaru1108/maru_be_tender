@@ -17,12 +17,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { BunnyService } from '../../libs/bunny/services/bunny.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import {
-  appRoleMappers,
   TenderAppRole,
   TenderFusionAuthRoles,
-} from '../../tender/commons/types';
-import { InnerStatus, OutterStatus } from '../../tender/commons/types/proposal';
-import { compareUrl } from '../../tender/commons/utils/compare-jsonb-imageurl';
+  appRoleMappers,
+} from '../../tender-commons/types';
+import { InnerStatus, OutterStatus } from '../../tender-commons/types/proposal';
+import { compareUrl } from '../../tender-commons/utils/compare-jsonb-imageurl';
+
 import { ICurrentUser } from '../../user/interfaces/current-user.interface';
 import { ChangeProposalStateDto } from '../dtos/requests/change-proposal-state.dto';
 import { UpdateProposalDto } from '../dtos/requests/update-proposal.dto';

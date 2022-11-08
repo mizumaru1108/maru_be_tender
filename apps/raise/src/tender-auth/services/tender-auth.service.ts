@@ -1,5 +1,4 @@
-import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
-import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { FusionAuthService } from '../../libs/fusionauth/services/fusion-auth.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { TenderClientService } from '../../tender-client/services/tender-client.service';
@@ -38,6 +37,15 @@ export class TenderAuthService {
         throw new BadRequestException(
           'Invalid employee path!, Path is not found!',
         );
+      }
+    }
+
+    if (registerRequest.data.status) {
+      const status = await this.prismaService.client_status.findUnique({
+        where: { id: registerRequest.data.status },
+      });
+      if (!status) {
+        throw new BadRequestException('Invalid status!, Status is not found!');
       }
     }
 

@@ -10,9 +10,9 @@ import { ClientEditRequestDto } from '../dtos/requests/client-edit-request.dto';
 
 import { edit_request, Prisma, user } from '@prisma/client';
 import { RegisterTenderDto } from '../../tender-auth/dtos/requests/register-tender.dto';
-import { compareUrl } from '../../tender/commons/utils/compare-jsonb-imageurl';
 import { ClientEditRequestResponseDto } from '../dtos/responses/client-edit-request.response.dto';
 import moment from 'moment';
+import { compareUrl } from '../../tender-commons/utils/compare-jsonb-imageurl';
 
 @Injectable()
 export class TenderClientService {
@@ -89,6 +89,7 @@ export class TenderClientService {
               phone: request.data.phone,
               client_field: request.data.client_field,
               vat: request.data.vat,
+              status: request.data.status || null,
             },
           },
 

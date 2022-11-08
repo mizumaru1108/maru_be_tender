@@ -9,10 +9,9 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { client_data } from '@prisma/client';
 import { JwtAuthGuard } from '../../../auth/jwt.guard';
-import { ManualPaginatedResponse } from '../../../tender/commons/helpers/manual-paginated-response.dto';
-import { manualPaginationHelper } from '../../../tender/commons/helpers/manual-pagination-helper';
+import { ManualPaginatedResponse } from '../../../tender-commons/helpers/manual-paginated-response.dto';
+import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import { SearchClientFilterRequest } from '../dtos/requests/search-client-filter-request.dto';
 import { TenderAppointmentService } from '../services/tender-appointment.service';
 

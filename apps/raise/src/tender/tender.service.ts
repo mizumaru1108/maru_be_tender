@@ -6,7 +6,7 @@ import { envLoadErrorHelper } from '../commons/helpers/env-loaderror-helper';
 import { BaseHashuraWebhookPayload } from '../commons/interfaces/base-hashura-webhook-payload';
 import { BunnyService } from '../libs/bunny/services/bunny.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { UploadFilesDto } from './dto/upload-files.dto';
+import { UploadFilesDto } from '../tender-commons/dto/upload-files.dto';
 
 @Injectable()
 export class TenderService {

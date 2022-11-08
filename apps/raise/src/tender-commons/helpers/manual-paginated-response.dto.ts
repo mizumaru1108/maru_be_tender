@@ -1,4 +1,4 @@
-import { BaseResponse } from '../../../commons/dtos/base-response';
+import { BaseResponse } from '../../commons/dtos/base-response';
 
 export class ManualPaginatedResponse<T> extends BaseResponse<T> {
   public total?: number;

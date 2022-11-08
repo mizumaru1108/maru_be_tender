@@ -20,11 +20,11 @@ import { RegisterFromFusionAuthTenderDto } from 'src/user/dtos';
 import { LoginRequestDto } from '../../../auth/dtos/login-request.dto';
 import { RegisterRequestDto } from '../../../auth/dtos/register-request.dto';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
-import { CreateEmployeeDto } from '../../../tender-employee/dtos/requests/create-employee.dto';
 import {
   appRoleToFusionAuthRoles,
   TenderAppRole,
-} from '../../../tender/commons/types';
+} from '../../../tender-commons/types';
+import { CreateEmployeeDto } from '../../../tender-employee/dtos/requests/create-employee.dto';
 
 /**
  * Nest Fusion Auth Service

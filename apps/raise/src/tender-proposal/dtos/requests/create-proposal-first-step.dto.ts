@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsString, IsNotEmpty, ValidateNested } from 'class-validator';
-import { UploadProposalFilesDto } from '../../../tender/dto/upload-proposal-files.dto';
+import { UploadProposalFilesDto } from '../../../tender-commons/dto/upload-proposal-files.dto';
 
 // form1: {
 //   project_name: '',
