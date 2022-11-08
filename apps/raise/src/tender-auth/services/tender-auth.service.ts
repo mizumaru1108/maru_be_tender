@@ -30,13 +30,15 @@ export class TenderAuthService {
       throw new BadRequestException('License number already exist!');
     }
 
-    const track = await this.prismaService.project_tracks.findUnique({
-      where: { id: registerRequest.data.employee_path },
-    });
-    if (!track) {
-      throw new BadRequestException(
-        'Invalid employee path!, Path is not found!',
-      );
+    if (registerRequest.data.employee_path) {
+      const track = await this.prismaService.project_tracks.findUnique({
+        where: { id: registerRequest.data.employee_path },
+      });
+      if (!track) {
+        throw new BadRequestException(
+          'Invalid employee path!, Path is not found!',
+        );
+      }
     }
 
     // create user on fusion auth
