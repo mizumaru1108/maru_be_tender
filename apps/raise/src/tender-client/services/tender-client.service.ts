@@ -49,7 +49,7 @@ export class TenderClientService {
           employee_path: request.data.employee_path || null,
           client_data_client_data_user_idTouser: {
             create: {
-              id: request.data.id,
+              id: nanoid(),
               license_number: request.data.license_number,
               authority: request.data.authority,
               board_ofdec_file: {

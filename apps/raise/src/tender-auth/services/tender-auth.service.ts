@@ -22,17 +22,12 @@ export class TenderAuthService {
       throw new BadRequestException('Email already exist');
     }
 
-    const clientData = await this.prismaService.client_data.findFirst({
-      where: {
-        OR: [
-          { id: registerRequest.data.id },
-          { license_number: registerRequest.data.license_number },
-        ],
-      },
+    const lisceneNumber = await this.prismaService.client_data.findFirst({
+      where: { license_number: registerRequest.data.license_number },
     });
 
-    if (clientData) {
-      throw new BadRequestException('License number or id already exist!');
+    if (lisceneNumber) {
+      throw new BadRequestException('License number already exist!');
     }
 
     const track = await this.prismaService.project_tracks.findUnique({

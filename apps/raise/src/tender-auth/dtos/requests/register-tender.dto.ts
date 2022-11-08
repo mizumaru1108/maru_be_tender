@@ -35,11 +35,6 @@ class bankData {
 // for registering
 class registerClient {
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  id: string;
-
-  @ApiProperty()
   @IsEmail()
   @IsNotEmpty()
   email: string;
