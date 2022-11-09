@@ -6,6 +6,7 @@ import {
   IsEmail,
   IsOptional,
 } from 'class-validator';
+import { ValidateKsaPhoneNumber } from '../../../tender-commons/decorators/validate-ksa-phone-number.decorator';
 
 export class CreateEmployeeDto {
   @ApiProperty()
@@ -21,6 +22,7 @@ export class CreateEmployeeDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  @ValidateKsaPhoneNumber()
   mobile_number: string;
 
   @ApiProperty()
@@ -40,9 +42,8 @@ export class CreateEmployeeDto {
   @IsNotEmpty()
   employee_path?: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  user_roles?: string;
+  user_roles: string;
 }

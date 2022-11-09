@@ -13,6 +13,11 @@ export class TenderEmployeeService {
 
   /** Create user and client for tender completed data */
   async createEmployee(request: CreateEmployeeDto): Promise<user> {
+    // admin only created by the system.
+    if (request.user_roles === 'ADMIN') {
+      throw new BadRequestException('Admin roles is Forbidden!');
+    }
+
     if (request.employee_path) {
       const track = await this.prismaService.project_tracks.findUnique({
         where: { id: request.employee_path },
@@ -29,6 +34,18 @@ export class TenderEmployeeService {
     });
     if (!availableRoles) {
       throw new BadRequestException('Invalid user roles!, Roles is not found!');
+    }
+
+    if (
+      ['CEO', 'FINANCE', 'CASHIER', 'MODERATOR'].includes(availableRoles.id)
+    ) {
+      // count user with same roles if more than 1 throw error
+      const count = await this.prismaService.user.count({
+        where: { user_type_id: availableRoles.id },
+      });
+      if (count > 0) {
+        throw new BadRequestException(`Only 1 ${availableRoles.id} allowed!`);
+      }
     }
 
     const emailData = await this.prismaService.user.findUnique({
@@ -60,6 +77,14 @@ export class TenderEmployeeService {
         employee_path: request.employee_path || null,
         user_type_id: request.user_roles || null,
       },
+    });
+    return result;
+  }
+
+  async deleteEmployee(id: string): Promise<user> {
+    await this.fusionAuthService.fusionAuthDeleteUser(id);
+    const result = await this.prismaService.user.delete({
+      where: { id },
     });
     return result;
   }

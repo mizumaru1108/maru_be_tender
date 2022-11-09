@@ -19,7 +19,7 @@ export class TenderAuthController {
     return baseResponseHelper(
       createdClient,
       HttpStatus.CREATED,
-      'Client has been registered successfully!',
+      'Client has been logged in successfully!',
     );
   }
 

@@ -50,6 +50,7 @@ export class TenderAuthService {
     };
   }
 
+  /* create user with client data */
   async register(registerRequest: RegisterTenderDto) {
     const emailData = await this.prismaService.user.findUnique({
       where: { email: registerRequest.data.email },
@@ -94,6 +95,7 @@ export class TenderAuthService {
         employee_name: registerRequest.data.employee_name,
         password: registerRequest.data.password,
         mobile_number: registerRequest.data.phone,
+        user_roles: 'tender_client',
       });
 
     // if you want to make a type for register result

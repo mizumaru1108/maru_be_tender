@@ -60,21 +60,4 @@ export class AuthController {
   ) {
     return await this.authService.registerUser(name, email, password);
   }
-
-  @ApiOperation({ summary: 'Register user with fusion auth' })
-  @ApiResponse({
-    status: 201,
-    description: 'User has been registered successfully!',
-  })
-  @Post('fusion/regTender')
-  async fusionRegisterTender(@Body() registerRequest: RegisterTendersDto) {
-    const registeredUser = await this.authService.fusionRegisterTender(
-      registerRequest,
-    );
-    return baseResponseHelper(
-      registeredUser,
-      HttpStatus.CREATED,
-      'Create User Success!',
-    );
-  }
 }
