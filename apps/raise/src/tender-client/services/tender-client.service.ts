@@ -37,8 +37,6 @@ export class TenderClientService {
     request: RegisterTenderDto,
   ): Promise<user> {
     try {
-      // bank_information create many input from request.data.bank_informations
-
       const result = await this.prismaService.user.create({
         data: {
           id: idFromFusionAuth,

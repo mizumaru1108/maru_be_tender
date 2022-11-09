@@ -3,32 +3,41 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { SearchClientFilterRequest } from '../dtos/requests/search-client-filter-request.dto';
 import { Prisma } from '@prisma/client';
+import { SearchClientAppointmentResponseDto } from '../dtos/responses/search-client-appointment-response.dto';
 
 @Injectable()
 export class TenderAppointmentService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async countClient(searchParams: SearchClientFilterRequest): Promise<number> {
+  async searchClientAppointmentCount(
+    searchParams: SearchClientFilterRequest,
+  ): Promise<number> {
     const { clientName } = searchParams;
-    let query = {};
+    let query: Prisma.userWhereInput = {};
     if (clientName) {
       query = {
         ...query,
-        entity: {
-          startsWith: clientName,
-          mode: 'insensitive',
+        client_data: {
+          entity: {
+            startsWith: clientName,
+            mode: 'insensitive',
+          },
         },
       };
     }
+
     const result = await this.prismaService.client_data.count({
       where: {
         ...query,
       },
     });
+
     return result;
   }
 
-  async searchClient(searchParams: SearchClientFilterRequest): Promise<any> {
+  async searchClientAppointment(
+    searchParams: SearchClientFilterRequest,
+  ): Promise<SearchClientAppointmentResponseDto[]> {
     const { clientName, page = 1, limit = 10 } = searchParams;
     const offset = (page - 1) * limit;
 
@@ -55,6 +64,7 @@ export class TenderAppointmentService {
         email: true,
         client_data: {
           select: {
+            id: true,
             entity: true,
           },
         },

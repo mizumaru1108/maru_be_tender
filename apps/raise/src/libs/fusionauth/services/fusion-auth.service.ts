@@ -3,26 +3,23 @@ import FusionAuthClient, {
   RegistrationRequest as IFusionAuthRegistrationRequest,
   User as IFusionAuthUser,
   UserRegistration as IFusionAuthUserRegistration,
-  ValidateResponse,
+  ValidateResponse
 } from '@fusionauth/typescript-client';
 import ClientResponse from '@fusionauth/typescript-client/build/src/ClientResponse';
 import {
-  BadRequestException,
-  ConsoleLogger,
-  Injectable,
-  UnauthorizedException,
+  BadRequestException, Injectable,
+  UnauthorizedException
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
 import { RegisterTendersDto, RegReqTenderDto } from 'src/auth/dtos';
 import { rootLogger } from 'src/logger';
-import { RegisterFromFusionAuthTenderDto } from 'src/user/dtos';
 import { LoginRequestDto } from '../../../auth/dtos/login-request.dto';
 import { RegisterRequestDto } from '../../../auth/dtos/register-request.dto';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import {
   appRoleToFusionAuthRoles,
-  TenderAppRole,
+  TenderAppRole
 } from '../../../tender-commons/types';
 import { CreateEmployeeDto } from '../../../tender-employee/dtos/requests/create-employee.dto';
 

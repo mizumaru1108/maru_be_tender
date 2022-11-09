@@ -13,6 +13,7 @@ import { JwtAuthGuard } from '../../../auth/jwt.guard';
 import { ManualPaginatedResponse } from '../../../tender-commons/helpers/manual-paginated-response.dto';
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import { SearchClientFilterRequest } from '../dtos/requests/search-client-filter-request.dto';
+import { SearchClientAppointmentResponseDto } from '../dtos/responses/search-client-appointment-response.dto';
 import { TenderAppointmentService } from '../services/tender-appointment.service';
 
 @Controller('tender-appointment')
@@ -28,13 +29,16 @@ export class TenderAppointmentController {
   @Get('search-client')
   async searchClient(
     @Query() searchParams: SearchClientFilterRequest,
-  ): Promise<ManualPaginatedResponse<any>> {
-    const result = await this.tenderAppointmentService.searchClient(
+  ): Promise<ManualPaginatedResponse<SearchClientAppointmentResponseDto[]>> {
+    const result = await this.tenderAppointmentService.searchClientAppointment(
       searchParams,
     );
-    const totalData = await this.tenderAppointmentService.countClient(
-      searchParams,
-    );
+
+    const totalData =
+      await this.tenderAppointmentService.searchClientAppointmentCount(
+        searchParams,
+      );
+
     return manualPaginationHelper(
       result,
       totalData,

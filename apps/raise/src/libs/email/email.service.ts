@@ -8,6 +8,52 @@ export class EmailService {
 
   constructor(private mailerService: MailerService) {}
 
+  async sendMail(
+    to: string,
+    subject: string,
+    data: {},
+    from?: string,
+  ): Promise<boolean> {
+    this.logger.debug(`Sending email to ${to}`);
+    try {
+      const resp = await this.mailerService.sendMail({
+        to: to,
+        subject: subject,
+        context: data,
+        from: from ? from : 'hello@tmra.io',
+      });
+      console.log(resp);
+    } catch (error) {
+      this.logger.error(error);
+      return false;
+    }
+    return true;
+  }
+
+  async sendMailWAttachment(
+    to: string,
+    subject: string,
+    data: {},
+    attachment: any, // array of objects
+    from?: string,
+  ): Promise<boolean> {
+    this.logger.debug(`Sending email to ${to}`);
+    try {
+      const resp = await this.mailerService.sendMail({
+        to: to,
+        subject: subject,
+        context: data,
+        attachments: attachment,
+        from: from ? from : 'hello@tmra.io',
+      });
+      console.log(resp);
+    } catch (error) {
+      this.logger.error(error);
+      return false;
+    }
+    return true;
+  }
+
   /**
    * SendMail Services,
    * used to send email to user,
@@ -53,7 +99,7 @@ export class EmailService {
    * @param from sender address of the email, (default: "hello@tamra.io")
    * @returns {Promise<boolean>} returns true if email is sent successfully
    */
-  async sendMailWAttachment(
+  async sendMailWTemplateAndAttachment(
     to: string,
     subject: string,
     template: string,

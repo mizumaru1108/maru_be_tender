@@ -22,41 +22,41 @@ model bank_information {
 }
 
 model client_data {
-  id                             String         @id(map: "users_pkey")
-  entity                         String?        @db.VarChar
-  authority                      String?        @db.VarChar
-  headquarters                   String?        @db.VarChar
-  date_of_esthablistmen          DateTime?      @db.Date
-  num_of_beneficiaries           Int?
-  num_of_employed_facility       Int?
-  governorate                    String?
-  region                         String?        @db.VarChar
-  entity_mobile                  String?        @db.VarChar
-  center_administration          String?        @db.VarChar
-  twitter_acount                 String?        @db.VarChar
-  phone                          String?        @db.VarChar
-  website                        String?        @db.VarChar
-  email                          String?        @unique @db.VarChar
-  password                       String?        @db.VarChar
-  license_number                 String         @db.VarChar
-  license_expired                DateTime?      @db.Date
-  license_issue_date             DateTime?      @db.Date
-  ceo_mobile                     String?        @db.VarChar
-  ceo_name                       String?        @db.VarChar
-  data_entry_mobile              String?        @db.VarChar
-  data_entry_name                String?        @db.VarChar
-  data_entry_mail                String?        @db.VarChar
-  created_at                     DateTime?      @default(now()) @db.Timestamptz(6)
-  updated_at                     DateTime?      @default(now()) @db.Timestamptz(6)
-  status                         String?        @default("WAITING_FOR_ACTIVATION")
-  client_field                   String?        @db.VarChar
-  user_id                        String         @unique
-  vat                            Boolean?
-  license_file                   Json?
-  board_ofdec_file               Json?
-  client_status                  client_status? @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user                              user           @relation("client_data_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
-  client_log                     client_log[]
+  id                       String         @id(map: "users_pkey")
+  entity                   String?        @db.VarChar
+  authority                String?        @db.VarChar
+  headquarters             String?        @db.VarChar
+  date_of_esthablistmen    DateTime?      @db.Date
+  num_of_beneficiaries     Int?
+  num_of_employed_facility Int?
+  governorate              String?
+  region                   String?        @db.VarChar
+  entity_mobile            String?        @db.VarChar
+  center_administration    String?        @db.VarChar
+  twitter_acount           String?        @db.VarChar
+  phone                    String?        @db.VarChar
+  website                  String?        @db.VarChar
+  email                    String?        @unique @db.VarChar
+  password                 String?        @db.VarChar
+  license_number           String         @db.VarChar
+  license_expired          DateTime?      @db.Date
+  license_issue_date       DateTime?      @db.Date
+  ceo_mobile               String?        @db.VarChar
+  ceo_name                 String?        @db.VarChar
+  data_entry_mobile        String?        @db.VarChar
+  data_entry_name          String?        @db.VarChar
+  data_entry_mail          String?        @db.VarChar
+  created_at               DateTime?      @default(now()) @db.Timestamptz(6)
+  updated_at               DateTime?      @default(now()) @db.Timestamptz(6)
+  status                   String?        @default("WAITING_FOR_ACTIVATION")
+  client_field             String?        @db.VarChar
+  user_id                  String         @unique
+  vat                      Boolean?
+  license_file             Json?
+  board_ofdec_file         Json?
+  client_status            client_status? @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user                     user           @relation("client_data_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
+  client_log               client_log[]
 }
 
 model employees_permissions {
@@ -260,6 +260,10 @@ model user {
   client_log                                              client_log[]
   contact_us_contact_us_receiver_idTouser                 contact_us[]            @relation("contact_us_receiver_idTouser")
   contact_us_contact_us_sender_idTouser                   contact_us[]            @relation("contact_us_sender_idTouser")
+  email_data_email_data_receiver_idTouser                 email_data[]            @relation("email_data_receiver_idTouser")
+  email_data_email_data_sender_idTouser                   email_data[]            @relation("email_data_sender_idTouser")
+  email_datas_email_datas_receiver_idTouser               email_datas[]           @relation("email_datas_receiver_idTouser")
+  email_datas_email_datas_sender_idTouser                 email_datas[]           @relation("email_datas_sender_idTouser")
   employees_permissions_employees_permissionsTouser       employees_permissions[]
   message                                                 message[]
   proposal                                                proposal[]
@@ -547,7 +551,31 @@ model schedule {
   user       user   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
-// We could not retrieve columns for the underlying table. Either it has none or you are missing rights to see them. Please check your privileges.
-// model log_trx {
-// 
-// }
+model email_data {
+  id                                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sender_id                         String
+  receiver_id                       String
+  sender_email                      String   @db.VarChar
+  receiver_email                    String   @db.VarChar
+  title                             String   @db.VarChar
+  content                           String   @db.VarChar
+  attachments                       Json
+  created_at                        DateTime @default(now()) @db.Timestamptz(6)
+  updated_at                        DateTime @default(now()) @db.Timestamptz(6)
+  user_email_data_receiver_idTouser user     @relation("email_data_receiver_idTouser", fields: [receiver_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_email_data_sender_idTouser   user     @relation("email_data_sender_idTouser", fields: [sender_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model email_datas {
+  id                                 String    @id(map: "email_history_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title                              String    @db.VarChar
+  content                            String
+  sender_email                       String    @db.VarChar
+  receiver_email                     String    @db.VarChar
+  sender_id                          String
+  receiver_id                        String
+  created_at                         DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at                         DateTime? @default(now()) @db.Timestamptz(6)
+  user_email_datas_receiver_idTouser user      @relation("email_datas_receiver_idTouser", fields: [receiver_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_email_datas_sender_idTouser   user      @relation("email_datas_sender_idTouser", fields: [sender_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}

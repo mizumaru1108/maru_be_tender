@@ -66,7 +66,7 @@ export class ContactsService {
         //     name: message.name,
         //   },
         // });
-        await this.emailService.sendMailWAttachment( 
+        await this.emailService.sendMailWTemplateAndAttachment(
           organizationData.contactEmail,
           //message.email,
           'Donor has sent you an Email',
@@ -89,8 +89,7 @@ export class ContactsService {
         //   },
         // );
 
-
-        await this.emailService.sendMailWAttachment( 
+        await this.emailService.sendMailWTemplateAndAttachment(
           message.email,
           'Thanks for letting us know',
           'donor',
@@ -100,11 +99,10 @@ export class ContactsService {
             help_message: message.help_message,
           },
           message.files,
-          organizationData.contactEmail
+          organizationData.contactEmail,
           // 'hello@tmra.io',
         );
 
-        
         this.notificationsModel.create({
           organizationId: new Types.ObjectId(organizationId),
           type: 'general',
@@ -114,7 +112,7 @@ export class ContactsService {
           icon: 'message',
           markAsRead: false,
         });
-        
+
         success = true;
         statusCode = 200;
         txtMessage = 'Your email has been sent';

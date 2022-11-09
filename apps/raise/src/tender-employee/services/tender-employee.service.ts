@@ -13,13 +13,15 @@ export class TenderEmployeeService {
 
   /** Create user and client for tender completed data */
   async createEmployee(request: CreateEmployeeDto): Promise<user> {
-    const track = await this.prismaService.project_tracks.findUnique({
-      where: { id: request.employee_path },
-    });
-    if (!track) {
-      throw new BadRequestException(
-        'Invalid employee path!, Path is not found!',
-      );
+    if (request.employee_path) {
+      const track = await this.prismaService.project_tracks.findUnique({
+        where: { id: request.employee_path },
+      });
+      if (!track) {
+        throw new BadRequestException(
+          'Invalid employee path!, Path is not found!',
+        );
+      }
     }
 
     const availableRoles = await this.prismaService.user_type.findUnique({

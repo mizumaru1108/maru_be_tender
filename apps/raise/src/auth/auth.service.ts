@@ -18,6 +18,7 @@ import {
   RegReqTenderDto,
 } from './dtos';
 import { PrismaService } from '../prisma/prisma.service';
+import { link } from 'fs';
 
 @Injectable()
 export class AuthService {
