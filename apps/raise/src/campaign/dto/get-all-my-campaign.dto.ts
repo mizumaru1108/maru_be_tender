@@ -30,6 +30,8 @@ export class GetAllMyCampaignFilterDto extends BaseFilterRequest {
   @IsIn([
     'campaignName',
     'campaignType',
+    'contentLanguage',
+    'createdAt',
     'updatedAt',
     'status',
     'milestoneCount',

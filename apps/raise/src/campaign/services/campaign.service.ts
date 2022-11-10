@@ -1132,6 +1132,7 @@ export class CampaignService {
     if (sortBy) {
       if (sortBy === 'campaignName') sort = { campaignName: method };
       if (sortBy === 'campaignType') sort = { campaignType: method };
+      if (sortBy === 'createdAt') sort = { createdAt: method };
       if (sortBy === 'updatedAt') sort = { updatedAt: method };
       if (sortBy === 'status') sort = { status: method };
       if (sortBy === 'milestoneCount') sort = { milestoneCount: method };
@@ -1146,6 +1147,13 @@ export class CampaignService {
         $project: {
           campaignName: 1,
           campaignType: 1,
+          title: 1,
+          description: 1,
+          isPublished: 1,
+          amountProgress: 1,
+          amountTarget: 1,
+          coverImage: 1,
+          contentLanguage: 1,
           updatedAt: 1,
           createdAt: 1,
           status: 1,
@@ -1170,6 +1178,13 @@ export class CampaignService {
           _id: '$_id',
           campaignName: { $first: '$campaignName' },
           campaignType: { $first: '$campaignType' },
+          title: { $first: '$title' },
+          description: { $first: '$description' },
+          isPublished: { $first: '$isPublished' },
+          amountProgress: { $first: '$amountProgress' },
+          amountTarget: { $first: '$amountTarget' },
+          coverImage: { $first: '$coverImage' },
+          contentLanguage: { $first: '$contentLanguage' },
           updatedAt: { $first: '$updatedAt' },
           createdAt: { $first: '$createdAt' },
           status: { $first: '$campaignVendorLog.status' },
