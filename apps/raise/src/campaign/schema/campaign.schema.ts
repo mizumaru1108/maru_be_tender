@@ -167,6 +167,15 @@ export class Campaign {
   @Prop({ default: [] })
   milestone: CampaignMilestone[];
 
+  @Prop({ default: [] })
+  contentLanguage: {
+    language: string,
+    value: string,
+    active: boolean,
+    title: string,
+    description: string,
+  }[]
+
   /**
    * Map from create request to campaign document,
    * Progress should be 0 by default (not from request) later on updated by webhook,

@@ -76,6 +76,7 @@ export class CampaignService {
     const campaignScheme = Campaign.mapFromRequest(baseCampaignScheme, request);
     campaignScheme.creatorUserId = creatorId;
     campaignScheme.createdAt = dayjs().toISOString();
+    campaignScheme.contentLanguage = request.contentLanguage;
 
     let tmpPath: string[] = []; // for implementing db transaction later on
     try {
