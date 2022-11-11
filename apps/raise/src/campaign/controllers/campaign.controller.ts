@@ -188,6 +188,44 @@ export class CampaignController {
   }
 
   /**
+   *
+   */
+   @ApiOperation({
+    summary: 'Get all my campaign (organizationId)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: `Successfully fetch all campaign`,
+  })
+  @Get('findAllCampaigns')
+  async getCampaignsByOrganizationId(
+    @Param('orgzanizationId') organizationId: string,
+    @Query() request: GetAllMyCampaignFilterDto,
+  ): Promise<PaginatedResponse<CampaignDocument[]>> {
+    
+    const campaignList = await this.campaignService.getCampaignsByOrganizationId(
+      organizationId,
+      request,
+    )
+
+    const response = paginationHelper(
+      campaignList.docs,
+      campaignList.totalDocs,
+      campaignList.limit,
+      campaignList.page,
+      campaignList.totalPages,
+      campaignList.pagingCounter,
+      campaignList.hasPrevPage,
+      campaignList.hasNextPage,
+      campaignList.prevPage,
+      campaignList.nextPage,
+      HttpStatus.OK,
+      `Successfully fetch all campaign on organizationId '${organizationId}'`,
+    );
+    return response;
+  }
+
+  /**
    * Story Campaign Donor on Operator Dashboard
    * Ref: https://www.notion.so/hendyirawan/Campaign-Donor-on-Operator-Dashboard-307544af9290495c85964371e72810c1
    */
