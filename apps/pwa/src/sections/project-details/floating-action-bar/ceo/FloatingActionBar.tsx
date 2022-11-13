@@ -68,14 +68,14 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
         reviewer_id: userId, // user id of current user
         client_user_id: organizationId, // user id on the proposal data
         inner_status: 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
-        outter_status: 'ONGOING',
+        outter_status: 'PENDING',
         state: 'PROJECT_SUPERVISOR',
       } as any,
       proposalId: pid,
       updateProposalStatusAndStatePayloads: {
         inner_status: 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION' as InnerStatus,
         outter_status: 'ONGOING',
-        state: `${roles.toUpperCase() as AppRole}`,
+        state: `PROJECT_SUPERVISOR`,
       } as updateProposalStatusAndState,
     });
 

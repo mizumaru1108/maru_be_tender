@@ -3,8 +3,12 @@ import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
 import { CardTable } from 'components/card-table';
 import { data } from './mockData';
+import CardTableBE from 'components/card-table/CardTableBE';
+import { gettingMyRequestedProcess } from 'queries/project-supervisor/gettingMyRequestedProcess';
+import useAuth from 'hooks/useAuth';
 
 function RequestsInProcess() {
+  const { user } = useAuth();
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -14,17 +18,35 @@ function RequestsInProcess() {
     gap: 20,
   }));
   return (
-    <Page title="Previous Funding Requests">
+    <Page title="Requests In Process | Supervisor">
       <Container>
         <ContentStyle>
-          <CardTable
-            data={data} // For testing, later on we will send the query to it
+          <CardTableBE
+            resource={gettingMyRequestedProcess}
             title="طلبات قيد الإجراء"
             cardFooterButtonAction="show-details"
             alphabeticalOrder={true}
             filters={[
-              { name: 'اسم الجهة المشرفة*', options: [{ label: 'اسم الجهة المشرفة*', value: '' }] },
+              {
+                name: 'entity',
+                title: 'اسم الجهة المشرفة',
+                // The options will be fitcehed before passing them
+                options: [
+                  { label: 'اسم المستخدم الأول', value: 'Essam Kayal' },
+                  { label: 'اسم المستخدم الثاني', value: 'hisham' },
+                  { label: 'اسم المستخدم الثالت', value: 'danang' },
+                  { label: 'اسم المستخدم الرابع', value: 'yamen' },
+                  { label: 'اسم المستخدم الخامس', value: 'hamdi' },
+                ],
+                generate_filter: (value: string) => ({
+                  user: { client_data: { entity: { _eq: value } } },
+                }),
+              },
             ]}
+            baseFilters={{
+              filter1: { supervisor_id: { _eq: user?.id } },
+            }}
+            destination={'requests-in-process'}
           />
         </ContentStyle>
       </Container>

@@ -22,6 +22,13 @@ function DraftsFundingRequest() {
             title="طلبات دعم مسودة"
             alphabeticalOrder={true}
             cardFooterButtonAction="draft" // The most important param
+            baseFilters={{
+              step: {
+                step: {
+                  _neq: 'ZERO',
+                },
+              },
+            }}
           />
         </ContentStyle>
       </Container>

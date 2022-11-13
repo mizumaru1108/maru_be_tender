@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Stack, Typography } from '@mui/material';
+import { Box, Button, Grid, Link, Stack, Typography } from '@mui/material';
 import { updatePayment } from 'queries/project-supervisor/updatePayment';
 import React, { useEffect, useState } from 'react';
 import { useMutation } from 'urql';
@@ -60,7 +60,6 @@ function PaymentsTable({ payments, children }: { payments: PaymentProps[]; child
       }
     }
   }, [beenIssued, payments]);
-  console.log(currentIssuedPayament);
   return (
     <>
       {payments.map((item: any, index: any) => (
@@ -88,17 +87,15 @@ function PaymentsTable({ payments, children }: { payments: PaymentProps[]; child
             {item.status === 'DONE' ? (
               <Grid item md={6} sx={{ textAlign: '-webkit-center' }}>
                 <Button
+                  component={Link}
+                  href={item.cheques[0].transfer_receipt}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download="صورة بطاقة الحساب البنكي"
                   sx={{
                     backgroundColor: 'transparent',
-                    color: '#93A3B0',
+                    color: '#000',
                     textDecorationLine: 'underline',
-                    height: '100%',
-                    border: `1px solid #93A3B0`,
-                    ':hover': { backgroundColor: '#b8b7b4', textDecorationLine: 'underline' },
-                    width: '40%',
-                  }}
-                  onClick={() => {
-                    console.log('asdasd');
                   }}
                 >
                   استعراض ايصال التحويل

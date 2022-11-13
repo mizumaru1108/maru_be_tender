@@ -1,27 +1,24 @@
 import { Box, Button, Grid, Stack, Typography, Container } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
 import SvgIconStyle from 'components/SvgIconStyle';
-import useAuth from 'hooks/useAuth';
-import { gettingCurrentProject } from 'queries/client/gettingCurrentProject';
+import { getProposals } from 'queries/commons/getProposal';
 import { useNavigate } from 'react-router';
 import { useQuery } from 'urql';
 
 function CurrentProject() {
-  const { user } = useAuth();
-  const { id } = user!;
-  const [result, reexecuteQuery] = useQuery({
-    query: gettingCurrentProject,
-    variables: { id },
+  const [result] = useQuery({
+    query: getProposals,
+    variables: {
+      limit: 1,
+      offset: 0,
+    },
   });
   const { data, fetching, error } = result;
   const navigate = useNavigate();
 
-  const props = data?.proposal[0] ?? null;
-  console.log(props);
-  if (fetching) {
-    return <>...Loading</>;
-  }
-  if (!props) {
+  const props = data?.data[0] ?? null;
+  if (fetching) return <>...Loading</>;
+  if (!props)
     return (
       <Container>
         <Typography variant="h4">المشاريع الحالية</Typography>
@@ -52,7 +49,6 @@ function CurrentProject() {
         </Grid>
       </Container>
     );
-  }
   return (
     <Container>
       <Grid container columnSpacing={7} rowSpacing={5}>
@@ -64,7 +60,6 @@ function CurrentProject() {
               title={{ id: `${props.id}` }}
               content={{
                 projectName: props.project_name,
-                // createdAt: new Date(props.created_at),
                 projectStatus: props.outter_status,
                 projectDetails: props.project_idea,
               }}

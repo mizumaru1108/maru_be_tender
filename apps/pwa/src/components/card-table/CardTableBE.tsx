@@ -1,14 +1,19 @@
-import { Box, Button, Grid, Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Box, Button, Grid, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { CardTablePropsBE } from './types';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import FilterModal from './FilterModal';
 import { useQuery } from 'urql';
 import { useTheme } from '@mui/material/styles';
-import useAuth from 'hooks/useAuth';
 import ProjectTableBE from './ProjectCardBE';
 import CardTableNoData from './CardTableNoData';
+import LoadingPage from './LoadingPage';
+import FilterModalBE from './FilterModalBE';
+import { whereFilterGenerator } from 'utils/whereFilterGenerator';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import DateFilterBE from './DateFilterBE';
+import TapTableFilterBE from './TapTableFilterBE';
 
 function CardTableBE({
   title,
@@ -22,43 +27,28 @@ function CardTableBE({
   cardFooterButtonAction,
   destination,
   staticFilters = {},
+  baseFilters = {},
 }: CardTablePropsBE) {
-  const theme = useTheme();
-  const { user } = useAuth();
-  const id = user?.id;
   const [page, setPage] = useState(1);
-  const [activeTap, setActiveTap] = useState(0);
+  const [alphabeticalOrderState, setAlphabeticalOrderState] = useState<string | null>(null);
+  const [filtersStateObjectArray, setFiltersStateObjectArray] = useState(baseFilters);
   // The params that will be used with the query later on
   const [params, setParams] = useState({
     limit: limitShowCard ? limitShowCard : 6,
     offset: 0,
-    order_by: {},
-    ...(taps && { tap_filter: taps.options[0].value }),
+    order_by: { created_at: 'asc' },
+    where: whereFilterGenerator(
+      Object.keys(filtersStateObjectArray).map((item, index) => filtersStateObjectArray[item])
+    ),
   });
 
   const [result, mutate] = useQuery({
     query: resource,
-    variables: { ...params, id, ...staticFilters },
+    variables: { ...params, ...staticFilters },
   });
   const { data, fetching, error } = result;
-  // For the number of projects that are showed in a single page
-  const handleLimitChange = (event: any) => {
-    setParams((prevParams) => ({
-      ...prevParams,
-      limit: event.target.value as any,
-    }));
-  };
 
-  const handleTapChange = (event: React.SyntheticEvent, newValue: number) => {
-    console.log(newValue);
-    setActiveTap(newValue);
-    setParams((prevParams) => ({
-      ...prevParams,
-      tap_filter: taps?.options[newValue].value,
-    }));
-  };
   const [open, setOpen] = useState(false);
-  const [ascOrder, setAscOrder] = useState(false);
   // For the Filter Modal
   const handleOpenFilter = () => setOpen(true);
   const handleCloseFilter = () => setOpen(false);
@@ -72,68 +62,85 @@ function CardTableBE({
     (page - 1) * params.limit + params.limit
   );
 
+  // For the number of projects that are showed in a single page
+  const handleLimitChange = (event: any) => {
+    setParams((prevParams) => ({
+      ...prevParams,
+      limit: event.target.value as any,
+    }));
+  };
+
+  const alphabeticalOrderHandleChange = (event: React.MouseEvent<HTMLElement>) => {
+    setParams((prevParams) => ({
+      ...prevParams,
+      order_by: {
+        ...prevParams.order_by,
+        project_name: alphabeticalOrderState === 'asc' ? 'desc' : 'asc',
+      },
+    }));
+    setAlphabeticalOrderState(alphabeticalOrderState === 'asc' ? 'desc' : 'asc');
+  };
   // Later on we will use useEffect for re-render the page after every change for the data
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [params, page, data]);
-  console.log(data);
+
   return (
     <Grid container rowSpacing={3} columnSpacing={2}>
-      <FilterModal open={open} handleClose={handleCloseFilter} filters={filters} />
+      <FilterModalBE
+        open={open}
+        handleClose={handleCloseFilter}
+        filters={filters}
+        setFiltersStateObjectArray={setFiltersStateObjectArray}
+        filtersStateObjectArray={filtersStateObjectArray}
+        setParams={setParams}
+      />
       <Grid item md={12} xs={12}>
         <Typography variant="h4">{title}</Typography>
       </Grid>
 
       <Grid item md={6} xs={12}>
         {taps && (
-          <Tabs
-            indicatorColor="primary"
-            textColor="inherit"
-            value={activeTap}
-            onChange={handleTapChange}
-          >
-            {taps.options.map((item, index) => (
-              <Tab
-                key={index}
-                label={item.label}
-                sx={{
-                  borderRadius: 0,
-                  px: 3,
-                  '&.MuiTab-root:not(:last-of-type)': {
-                    marginRight: 0,
-                  },
-                  '&.Mui-selected': {
-                    backgroundColor: theme.palette.primary.main,
-                    color: theme.palette.primary.contrastText,
-                  },
-                }}
-              />
-            ))}
-          </Tabs>
+          <TapTableFilterBE
+            setParams={setParams}
+            taps={taps}
+            filtersStateObjectArray={filtersStateObjectArray}
+            setFiltersStateObjectArray={setFiltersStateObjectArray}
+          />
         )}
       </Grid>
       <Grid item md={6} xs={12}>
         <Stack direction="row" justifyContent="end" gap={1}>
           {/* Date Filter */}
           {dateFilter && (
-            <Stack direction="row" flex={0.5}>
-              <TextField type="date" />
-              <Box sx={{ padding: '15px' }}>-</Box>
-              <TextField type="date" />
-            </Stack>
+            <DateFilterBE
+              filtersStateObjectArray={filtersStateObjectArray}
+              setFiltersStateObjectArray={setFiltersStateObjectArray}
+              setParams={setParams}
+            />
           )}
           {/* Alpha-betical Order Filter */}
           {alphabeticalOrder && (
             <Stack direction="row" gap={1}>
               <Typography sx={{ textAlign: 'center', my: 'auto' }}>ترتيب حسب:</Typography>
-              <Button endIcon={<img src="/icons/asc-order-icon.svg" alt="" />}>
+              <Button
+                endIcon={
+                  alphabeticalOrderState === 'desc' ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />
+                }
+                sx={{ color: '#000' }}
+                onClick={alphabeticalOrderHandleChange}
+              >
                 اسم المشروع من أ الى ي
               </Button>
             </Stack>
           )}
           {filters && (
             <Button
-              sx={{ color: '#fff', backgroundColor: '#000' }}
+              sx={{
+                color: '#fff',
+                backgroundColor: '#000000',
+                ':hover': { backgroundColor: '#1E1E1E' },
+              }}
               startIcon={<img alt="" src="/icons/filter-icon.svg" />}
               onClick={handleOpenFilter}
             >
@@ -142,7 +149,7 @@ function CardTableBE({
           )}
         </Stack>
       </Grid>
-      {fetching && <>... Loading</>}
+      {fetching && <LoadingPage />}
       {!data ||
         (data?.data?.length === 0 && (
           <Grid item md={12} xs={12}>

@@ -1,6 +1,5 @@
-import { Tabs, Tab, Box, IconButton, Stack, Typography } from '@mui/material';
+import { Box, IconButton, Stack, Typography } from '@mui/material';
 import { getOneProposal } from 'queries/commons/getOneProposal';
-import { useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useQuery } from 'urql';
 import ActionBar from './ActionBar';
@@ -28,13 +27,12 @@ function ProjectDetailsMainPage() {
   if (fetching) return <>...Loading</>; // later on Skelton
   if (error) return <>{error.graphQLErrors}</>;
   if (data.proposal_by_pk === null) return <>There is no data for this tap ... </>;
-
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Stack direction="row">
         <IconButton
           onClick={() => {
-            navigate(-1);
+            navigate(`/${location.pathname.split('/')[1]}/dashboard/app`);
           }}
         >
           <svg

@@ -8,7 +8,6 @@ import { ManagerPaymentsPage } from './payments/project-manager';
 import { SupervisorPaymentsPage } from './payments/supervisor';
 
 function Payments({ data, mutate }: any) {
-  console.log(data);
   const { user } = useAuth();
   const role = user?.registrations[0].roles[0] as FusionAuthRoles;
   /**
@@ -35,29 +34,20 @@ function Payments({ data, mutate }: any) {
 
   // if the inner_status !== ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION
   // return <>The Payments haven't been set yet</>
-  if (data.inner_status === 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION') {
+  if (
+    [
+      'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
+      'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
+    ].includes(data.inner_status) &&
+    role === 'tender_project_supervisor'
+  )
+    return <SupervisorPaymentsPage data={data} mutate={mutate} />;
+  if (data.inner_status === 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR') {
     return (
       <div>
-        {/*  inside everything is gonna be controlled */}
-        {role === 'tender_project_supervisor' && (
-          <SupervisorPaymentsPage data={data} mutate={mutate} />
-        )}
-
-        {/* proposal.payments !== null
-            and inside we will look at everysingle payment's status.
-        */}
         {role === 'tender_project_manager' && <ManagerPaymentsPage data={data} mutate={mutate} />}
-        {role === 'tender_finance' && <FinancePaymentsTable data={data} />}
+        {role === 'tender_finance' && <FinancePaymentsTable data={data} mutate={mutate} />}
         {role === 'tender_cashier' && <CachierPaymentsTable data={data} mutate={mutate} />}
-
-        {/* proposal.payments !== null
-            and inside we will look at everysingle payment's status.
-        */}
-        {/* <FinancePaymentsTable /> */}
-        {/* proposal.payments !== null
-            and inside we will look at everysingle payment's status.
-        */}
-        {/* <CachierPaymentsTable /> */}
       </div>
     );
   }

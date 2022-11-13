@@ -25,7 +25,12 @@ type Props = {
   onDeleteRow: VoidFunction;
 };
 
-export default function UsersAndPermissionsTableRow({ row, selected, onSelectRow }: Props) {
+export default function UsersAndPermissionsTableRow({
+  row,
+  selected,
+  onSelectRow,
+  onDeleteRow,
+}: Props) {
   const { name, email, id, activation, permissions } = row;
 
   return (
@@ -134,7 +139,7 @@ export default function UsersAndPermissionsTableRow({ row, selected, onSelectRow
               height: '45px',
               fontSize: '12px',
             }}
-            onClick={() => console.log('asdlamsdkl')}
+            onClick={onDeleteRow}
           >
             حذف
           </Button>

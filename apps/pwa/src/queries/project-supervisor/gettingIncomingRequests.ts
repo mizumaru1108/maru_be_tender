@@ -1,5 +1,5 @@
-export const gettingIncomingRequests = `query MyQuery($limit: Int = 4, $project_track: project_tracks_enum = "") {
-  proposal(where: {state: {_eq: PROJECT_SUPERVISOR}, _and: {supervisor_id: {_eq: "null"}, _and: {project_track: {_eq: $project_track}}}}, limit: $limit, order_by: {created_at: asc}) {
+export const gettingIncomingRequests = `query MyQuery($limit: Int = 10, $order_by: [proposal_order_by!] = {}, $offset: Int = 0, $where: proposal_bool_exp = {}) {
+  data: proposal(limit: $limit, order_by: $order_by, offset: $offset, where: $where) {
     id
     created_at
     project_idea

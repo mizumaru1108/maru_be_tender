@@ -1,21 +1,14 @@
 import { Container } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import CardTable from 'components/card-table/CardTable';
+import CardTableBE from 'components/card-table/CardTableBE';
 import Page from 'components/Page';
-import { useEffect, useState } from 'react';
-import { useQuery } from 'urql';
-import { filterInterface, ProjectCardProps } from '../../../components/card-table/types';
+import { gettingIncomingRequests } from 'queries/Moderator/gettingIncomingRequests';
+import { useState } from 'react';
+import { ProjectCardProps } from '../../../components/card-table/types';
 import useLocales from '../../../hooks/useLocales';
-import { incomingRequest } from '../../../queries/Moderator/supportRequest';
 
 function IncomingSupportRequests() {
-  const [supportRequest, setSupportRequest] = useState<ProjectCardProps[]>([]);
-  const { currentLang, translate } = useLocales();
-  const [incoming, fetchIncoming] = useQuery({
-    query: incomingRequest,
-  });
-
-  const { data: incomingData, fetching: fetchingIncoming, error: errorIncoming } = incoming;
+  const { translate } = useLocales();
 
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
@@ -26,55 +19,37 @@ function IncomingSupportRequests() {
     gap: 20,
   }));
 
-  const filter: filterInterface = {
-    name: 'filter',
-    options: [
-      {
-        label: 'filter12',
-        value: 'filter12',
-      },
-      {
-        label: 'filter22',
-        value: 'filter22',
-      },
-    ],
-  };
-
-  useEffect(() => {
-    const previousSupport: ProjectCardProps[] = [];
-    if (incomingData) {
-      // map incomingData then push to previousSupport with const function
-      const prev = incomingData.proposal.map((item: any) => ({
-        title: {
-          id: item.id,
-        },
-        content: {
-          projectName: item.project_name,
-          employee: item.user.employee_name,
-          sentSection: item.state,
-        },
-        footer: {
-          createdAt: item.created_at,
-        },
-        cardFooterButtonAction: 'show-details',
-      }));
-      previousSupport.push(...prev);
-      setSupportRequest(previousSupport);
-      console.log('hasil set state : ', previousSupport);
-    }
-  }, [incomingData]);
-
   return (
-    <Page title="Previous Funding Requests">
+    <Page title="Incoming Support Requests | Moderator">
       <Container>
         <ContentStyle>
-          <CardTable
-            data={supportRequest} // For testing, later on we will send the query to it
+          <CardTableBE
+            resource={gettingIncomingRequests}
             title={translate('incoming_support_requests')}
-            alphabeticalOrder={true} // optional
-            filters={[filter]} // optional
-            // taps={['كل المشاريع', 'مشاريع منتهية', 'مشاريع معلقة']}
             cardFooterButtonAction="show-details"
+            destination="requests-in-process"
+            alphabeticalOrder={true}
+            filters={[
+              {
+                name: 'entity',
+                title: 'اسم الجهة المشرفة',
+                // The options will be fitcehed before passing them
+                options: [
+                  { label: 'اسم المستخدم الأول', value: 'Essam Kayal' },
+                  { label: 'اسم المستخدم الثاني', value: 'hisham' },
+                  { label: 'اسم المستخدم الثالت', value: 'danang' },
+                  { label: 'اسم المستخدم الرابع', value: 'yamen' },
+                  { label: 'اسم المستخدم الخامس', value: 'hamdi' },
+                ],
+                generate_filter: (value: string) => ({
+                  user: { client_data: { entity: { _eq: value } } },
+                }),
+              },
+            ]}
+            baseFilters={{
+              project_state: { state: { _in: ['MODERATOR'] } },
+              outter_status: { outter_status: { _in: ['PENDING', 'ONGOING'] } },
+            }}
           />
         </ContentStyle>
       </Container>

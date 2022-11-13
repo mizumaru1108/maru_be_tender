@@ -5,7 +5,7 @@ function MainPage({ data }: any) {
   const {
     project_location,
     project_implement_date,
-    user: { client_data, bank_informations },
+    user: { client_data, bank_informations, email, mobile_number },
     num_ofproject_binicficiaries,
     project_beneficiaries,
     execution_time,
@@ -66,8 +66,10 @@ function MainPage({ data }: any) {
           <Stack direction="row" justifyContent="space-between" gap={3}>
             <Button
               component={Link}
-              href={letter_ofsupport_req}
+              href={letter_ofsupport_req.url}
               download="ملف خطاب طلب الدعم"
+              target="_blank"
+              rel="noopener noreferrer"
               sx={{
                 flex: 1,
                 '&:hover': { backgroundColor: '#00000014' },
@@ -95,7 +97,9 @@ function MainPage({ data }: any) {
                       ملف خطاب طلب الدعم
                     </Typography>
                     <Typography gutterBottom sx={{ fontSize: '13px' }}>
-                      126KB
+                      {letter_ofsupport_req.size !== undefined
+                        ? `${letter_ofsupport_req.size.toFixed(2)}KB`
+                        : '126KB'}
                     </Typography>
                   </Stack>
                 </Stack>
@@ -108,8 +112,10 @@ function MainPage({ data }: any) {
             </Button>
             <Button
               component={Link}
-              href={project_attachments}
+              href={project_attachments.url}
               download="ملف مرفقات المشروع"
+              target="_blank"
+              rel="noopener noreferrer"
               sx={{
                 flex: 1,
                 '&:hover': { backgroundColor: '#00000014' },
@@ -137,7 +143,9 @@ function MainPage({ data }: any) {
                       ملف مرفقات المشروع
                     </Typography>
                     <Typography gutterBottom sx={{ fontSize: '13px' }}>
-                      126KB
+                      {project_attachments.size !== undefined
+                        ? `${project_attachments.size.toFixed(2)}KB`
+                        : '126KB'}
                     </Typography>
                   </Stack>
                 </Stack>
@@ -156,19 +164,19 @@ function MainPage({ data }: any) {
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                 البريد الإلكتروني:
               </Typography>
-              <Typography sx={{ mb: '15px' }}>{client_data[0].email}</Typography>
+              <Typography sx={{ mb: '15px' }}>{email}</Typography>
             </Stack>
             <Stack direction="column">
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                 رقم الجوال:
               </Typography>
-              <Typography sx={{ mb: '15px' }}>{client_data[0].phone}</Typography>
+              <Typography sx={{ mb: '15px' }}>{mobile_number}</Typography>
             </Stack>
             <Stack direction="column">
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                 المحافظة:
               </Typography>
-              <Typography sx={{ mb: '15px' }}>{client_data[0].governorate}</Typography>
+              <Typography sx={{ mb: '15px' }}>{client_data.governorate}</Typography>
             </Stack>
             <Box sx={{ backgroundColor: '#fff', py: '30px', pl: '10px', mb: '15px' }}>
               <Stack direction="column">
@@ -187,6 +195,8 @@ function MainPage({ data }: any) {
                 bankName={bank_informations[0]?.bank_name}
                 accountNumber={bank_informations[0]?.bank_account_number}
                 bankAccountName={bank_informations[0]?.bank_account_name}
+                imageUrl={bank_informations[0].card_image.url}
+                size={bank_informations[0].card_image.size}
               />
             </Stack>
           </Stack>

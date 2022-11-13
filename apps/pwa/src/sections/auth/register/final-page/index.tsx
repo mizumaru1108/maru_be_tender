@@ -1,5 +1,4 @@
 import { Stack, Typography, Container, Button } from '@mui/material';
-import { nanoid } from 'nanoid';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import axios from 'axios';
@@ -14,6 +13,7 @@ import ConnectionInfo from './ConnectionInfo';
 import LicenseInfo from './LicenseInfo';
 import AdministrativeInfo from './AdministrativeInfo';
 import BankInformation from './BankInformation';
+import { TMRA_RAISE_URL } from 'config';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -39,37 +39,32 @@ function FinalPage({
     setOpen(false);
   };
   const hanelSubmit = async () => {
+    console.log(registerState);
     setIsSending(true);
     const { form1, form2, form3, form4, form5 } = registerState;
     try {
-      const { data } = await axios.post(
-        'https://api-staging.tmra.io/v2/raise/auth/fusion/regTender',
-        {
-          data: {
-            id: nanoid(),
-            employee_name: registerState.form2.email,
-            employee_path: registerState.form2.email,
-            bank_informations: [
-              {
-                bank_account_number: form5.bank_account_number,
-                bank_account_name: form5.bank_account_name,
-                bank_name: form5.bank_name,
-                card_image: form5.card_image.url,
-              },
-            ],
-            status: 'WAITING_FOR_ACTIVATION',
-            ...form1,
-            ...form2,
-            license_number: form3.license_number,
-            license_issue_date: form3.license_issue_date,
-            license_expired: form3.license_expired,
-            license_file: form3.license_file.url,
-            board_ofdec_file: form3.board_ofdec_file ? form3.board_ofdec_file.url : '',
-            ...form4,
-          },
-          roles: ['tender_client'],
-        }
-      );
+      const { data } = await axios.post(`${TMRA_RAISE_URL}/tender-auth/register`, {
+        data: {
+          employee_name: registerState.form1.entity,
+          // employee_path: ,
+          bank_informations: [
+            {
+              bank_account_number: form5.bank_account_number,
+              bank_account_name: form5.bank_account_name,
+              bank_name: form5.bank_name,
+              card_image: form5.card_image,
+            },
+          ],
+          ...form1,
+          ...form2,
+          license_number: form3.license_number,
+          license_issue_date: form3.license_issue_date,
+          license_expired: form3.license_expired,
+          license_file: form3.license_file,
+          board_ofdec_file: form3.board_ofdec_file,
+          ...form4,
+        },
+      });
       await login(registerState.form2.email, registerState.form2.password);
       navigate('/');
     } catch (error) {

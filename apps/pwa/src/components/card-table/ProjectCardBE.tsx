@@ -8,6 +8,7 @@ import {
   Divider,
   Box,
   Grid,
+  Chip,
 } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 import { useLocation, useNavigate } from 'react-router';
@@ -22,9 +23,9 @@ import { FusionAuthRoles } from '../../@types/commons';
 import { deleteDraftProposal } from 'queries/client/deleteDraftProposal';
 
 const inquiryStatusStyle = {
-  canceled: { color: '#FF4842', backgroundColor: '#FF484229' },
-  completed: { color: '#0E8478', backgroundColor: '#0E847829' },
-  pending: { color: '#FFC107', backgroundColor: '#FFC10729' },
+  CANCELED: { color: '#FF4842', backgroundColor: '#FF484229', title: 'الطلب ملغي' },
+  COMPLETED: { color: '#0E8478', backgroundColor: '#0E847829', title: 'الطلب مكتمل' },
+  PENDING: { color: '#FFC107', backgroundColor: '#FFC10729', title: 'الطلب معلّق' },
 };
 
 const cardFooterButtonActionLocal = {
@@ -54,11 +55,14 @@ const ProjectCardBE = ({
   created_at,
   project_idea,
   payments,
-  inner_status,
+  outter_status: status,
   cardFooterButtonAction,
   destination, // it refers to the url that I came from and the url that I have to go to
   mutate,
 }: ProjectCardPropsBE) => {
+  const daysSinceCreated = Math.ceil(
+    (new Date().getTime() - created_at.getTime()) / (1000 * 3600 * 24)
+  );
   const { user } = useAuth();
   const role = user?.registrations[0].roles[0] as FusionAuthRoles;
   const navigate = useNavigate();
@@ -68,17 +72,15 @@ const ProjectCardBE = ({
   const [, deleteDrPro] = useMutation(deleteDraftProposal);
 
   const onDeleteDraftClick = async () => {
-    const res = await deleteDrPro({ id });
+    await deleteDrPro({ id });
     mutate();
   };
 
   const onContinuingDraftClick = () => {
-    console.log('onContinuingDraftClick');
     navigate('/client/dashboard/funding-project-request', { state: { id } });
   };
 
   const handleOnClick = async () => {
-    console.log(role);
     if (
       [
         'tender_finance',
@@ -118,26 +120,22 @@ const ProjectCardBE = ({
           >
             {id}
           </Typography>
-          {inquiryStatus && (
-            <Box
+          {cardFooterButtonAction === 'draft' && (
+            <Chip
+              label={'مسودة'}
+              sx={{ fontWeight: 900, backgroundColor: '#1E1E1E29', borderRadius: '10px' }}
+            />
+          )}
+          {destination === 'previous-funding-requests' && status && (
+            <Chip
+              label={inquiryStatusStyle[status].title}
               sx={{
+                fontWeight: 500,
+                backgroundColor: inquiryStatusStyle[status].backgroundColor,
+                color: inquiryStatusStyle[status].color,
                 borderRadius: '10px',
-                backgroundColor: inquiryStatusStyle[inquiryStatus].backgroundColor,
-                p: '5px',
               }}
-            >
-              <Typography
-                variant="h6"
-                gutterBottom
-                sx={{
-                  color: inquiryStatusStyle[inquiryStatus].color,
-                  fontSize: '15px !important',
-                  mb: '0px',
-                }}
-              >
-                {translate(inquiryStatus)}
-              </Typography>
-            </Box>
+            />
           )}
         </Stack>
 
@@ -147,7 +145,7 @@ const ProjectCardBE = ({
         >
           {project_name}
         </Typography>
-        {project_idea && (
+        {project_idea && cardFooterButtonAction !== 'draft' && (
           <>
             <Typography
               variant="h6"
@@ -186,7 +184,7 @@ const ProjectCardBE = ({
               ))}
             </Grid>
           )}
-          <Grid item md={12}>
+          <Grid item md={6} xs={6}>
             <Stack direction="row" justifyContent="space-between">
               <Stack direction="column">
                 <Typography
@@ -209,6 +207,32 @@ const ProjectCardBE = ({
                       '5 ساعات'}
                 </Typography>
               </Stack>
+              {destination === 'previous-funding-requests' && (
+                <Chip
+                  label={`${daysSinceCreated} أيام`}
+                  sx={{
+                    alignSelf: 'center',
+                    fontWeight: 500,
+                    backgroundColor:
+                      daysSinceCreated < 3
+                        ? '#0E84782E'
+                        : daysSinceCreated < 5
+                        ? '#FFC10729'
+                        : '#FF484229',
+                    color:
+                      daysSinceCreated < 3
+                        ? '#0E8478'
+                        : daysSinceCreated < 5
+                        ? '#FFC107'
+                        : '#FF4842',
+                    borderRadius: '10px',
+                  }}
+                />
+              )}
+            </Stack>
+          </Grid>
+          <Grid item md={6} xs={6}>
+            <Stack direction="row" justifyContent="end" gap={2}>
               {cardFooterButtonAction === 'draft' ? (
                 <Stack direction="row" gap={2}>
                   <Button

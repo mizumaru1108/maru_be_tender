@@ -1,13 +1,12 @@
 // @ts-nocheck
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Grid } from '@mui/material';
-import FormGenerator from 'components/FormGenerator';
-import { FormProvider, RHFSelect } from 'components/hook-form';
+import { FormProvider } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
-import { ApproveProposalFormFieldsSupervisor } from './form-data';
-import { ProposalApprovePayloadSupervisor, ProposalFormProps } from '../types';
+import { ProposalApprovePayloadSupervisor } from '../types';
 import BaseField from 'components/hook-form/BaseField';
+import { useEffect } from 'react';
 
 function ProposalAcceptingForm({ children, onSubmit, data }: any) {
   const validationSchema = Yup.object().shape({
@@ -53,6 +52,8 @@ function ProposalAcceptingForm({ children, onSubmit, data }: any) {
     handleSubmit,
     formState: { isSubmitting },
     watch,
+    setValue,
+    unregister,
   } = methods;
 
   const onSubmitForm = async (data: ProposalApprovePayloadSupervisor) => {
@@ -60,6 +61,11 @@ function ProposalAcceptingForm({ children, onSubmit, data }: any) {
   };
   const vat = watch('vat');
   const support_type = watch('support_type');
+  useEffect(() => {
+    if (support_type === 'true') unregister('support_amount', { keepValue: false });
+    if (support_type === 'false') setValue('support_amount', data.amount_required_fsupport);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [support_type]);
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
