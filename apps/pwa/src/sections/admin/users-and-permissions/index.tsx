@@ -101,7 +101,7 @@ export default function UsersAndPermissionsTable() {
     console.log(id);
     try {
       const res = await axios.post(
-        `${TMRA_RAISE_URL}/tender-employee/delete`,
+        `${TMRA_RAISE_URL}/tender-user/delete`,
         { user_id: id },
         {
           headers: {
