@@ -39,7 +39,7 @@ export class TenderUserController {
     return baseResponseHelper(
       response,
       HttpStatus.CREATED,
-      'User created successfully!',
+      'User deleted successfully!',
     );
   }
 }

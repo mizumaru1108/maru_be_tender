@@ -247,7 +247,7 @@ model user {
   user_type_id                                            String?
   last_login                                              DateTime?               @default(now()) @db.Timestamptz(6)
   employee_track                                          project_tracks?         @relation(fields: [employee_path], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user_type                                               user_type?              @relation(fields: [user_type_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  user_type                                               user_type?              @relation(fields: [user_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   appointment_appointment_employee_idTouser               appointment[]           @relation("appointment_employee_idTouser")
   appointment_appointment_user_idTouser                   appointment[]           @relation("appointment_user_idTouser")
   bank_information                                        bank_information[]
@@ -298,9 +298,9 @@ model proposal_follow_up {
   action                                    String?
   user_id                                   String?
   employee_id                               String?
-  user_proposal_follow_up_employee_idTouser user?     @relation("proposal_follow_up_employee_idTouser", fields: [employee_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_proposal_follow_up_employee_idTouser user?     @relation("proposal_follow_up_employee_idTouser", fields: [employee_id], references: [id], onDelete: Cascade)
   proposal                                  proposal  @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
-  user_proposal_follow_up_user_idTouser     user?     @relation("proposal_follow_up_user_idTouser", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_proposal_follow_up_user_idTouser     user?     @relation("proposal_follow_up_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model proposal_status {

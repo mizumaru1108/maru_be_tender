@@ -26,9 +26,9 @@ export class TenderUserService {
       throw new BadRequestException('Roles is Forbidden to create!');
     }
 
-    if (request.employee_path) {
+    if (employee_path) {
       const track = await this.tenderUserRepository.validateTrack(
-        request.employee_path,
+        employee_path,
       );
       if (!track) {
         throw new BadRequestException(
@@ -83,17 +83,20 @@ export class TenderUserService {
       employee_name,
       mobile_number,
       is_active: activate_user,
-      employee_track: {
-        connect: {
-          id: employee_path,
-        },
-      },
       user_type: {
         connect: {
           id: availableRoles.id,
         },
       },
     };
+
+    if (employee_path) {
+      createUserPayload.employee_track = {
+        connect: {
+          id: employee_path,
+        },
+      };
+    }
 
     const createdUser = await this.tenderUserRepository.createUser(
       createUserPayload,
