@@ -5,8 +5,6 @@ import { ActionMap, AuthState, AuthUser, JWTContextType } from '../@types/auth';
 import { FUSIONAUTH_API } from 'config';
 import { fusionAuthClient } from 'utils/fusionAuth';
 import axios from 'axios';
-import { data } from 'sections/project-manager/appintments-with-partner/mockData';
-// ----------------------------------------------------------------------
 
 enum Types {
   Initial = 'INITIALIZE',
@@ -57,14 +55,12 @@ const JWTReducer = (state: AuthState, action: JWTActions) => {
         isAuthenticated: false,
         user: null,
       };
-
     case 'REGISTER':
       return {
         ...state,
         isAuthenticated: true,
         user: action.payload.user,
       };
-
     default:
       return state;
   }

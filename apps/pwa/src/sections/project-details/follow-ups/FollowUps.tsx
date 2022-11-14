@@ -12,10 +12,14 @@ function FollowUps() {
   const { id } = useParams();
   const [result, mutate] = useQuery({
     query: getFollowUps,
-    variables: { proposal_id: id },
+    variables: {
+      where: {
+        proposal_id: { _eq: id },
+        _and: { user_id: { _is_null: false } },
+      },
+    },
   });
   const { data, fetching, error } = result;
-  const theme = useTheme();
 
   useEffect(() => {}, [data]);
   if (fetching) return <>... Loading</>;

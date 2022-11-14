@@ -157,10 +157,6 @@ export const Taps = {
         title: 'project_details.actions.payments',
         value: 'payments',
       },
-      {
-        title: 'project_details.actions.exchange_details',
-        value: 'exchange-details',
-      },
     ],
   },
   tender_cashier: {

@@ -9,6 +9,7 @@ import { FollowUps } from './follow-ups';
 import MainPage from './MainPage';
 import Payments from './Payments';
 import ProjectBudget from './ProjectBudget';
+import { ProjectPath } from './project-path';
 import TimeLine from './TimeLine';
 
 function ProjectDetailsMainPage() {
@@ -19,7 +20,6 @@ function ProjectDetailsMainPage() {
   });
   const { data, fetching, error } = result;
 
-  // Language
   const location = useLocation();
   const navigate = useNavigate();
   const activeTap = location.pathname.split('/').at(-1);
@@ -123,7 +123,7 @@ function ProjectDetailsMainPage() {
         <ExchangeDetails data={data.proposal_by_pk} mutate={reexecuteGetOne} />
       )}
       {activeTap === 'project-timeline' && <TimeLine />}
-
+      {activeTap === 'project-path' && <ProjectPath data={data.proposal_by_pk} />}
       <FloatinActonBar proposalData={data.proposal_by_pk} />
     </Box>
   );
