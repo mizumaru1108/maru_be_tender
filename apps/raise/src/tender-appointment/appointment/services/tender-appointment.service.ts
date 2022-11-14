@@ -13,12 +13,12 @@ export class TenderAppointmentService {
 
   async create() {
     const result = await this.googleCalendarService.createEvent(
-      'summary test',
-      'description test',
+      'testing events',
+      'testing events descriptions',
       new Date().toISOString(), // start
       new Date(new Date().getTime() + 60 * 60 * 1000).toISOString(), // end 1 hour later
       'Asia/Bangkok',
-      ['rdanang.dev@gmail.com', 'ridhoiyoy962013@gmail.com'],
+      ['rdanang.dev@gmail.com', 'haitsam.umar@gmail.com'],
     );
     return result;
   }
