@@ -41,10 +41,9 @@ import { DonationModule } from './donation/donation.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { TenderModule } from './tender/tender.module';
 import { TenderProposalModule } from './tender-proposal/tender-proposal.module';
-import { TenderClientModule } from './tender-client/tender-client.module';
 import { TenderAppointmentModule } from './tender-appointment/tender-appointment.module';
 import { TenderAuthModule } from './tender-auth/tender-auth.module';
-import { TenderEmployeeModule } from './tender-employee/tender-employee.module';
+import { TenderUserModule } from './tender-user/tender-user.module';
 import { TenderEmailModule } from './tender-email/tender-email.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
@@ -124,10 +123,9 @@ import { TenderEmailModule } from './tender-email/tender-email.module';
     PrismaModule,
     TenderModule,
     TenderProposalModule,
-    TenderClientModule,
     TenderAppointmentModule,
     TenderAuthModule,
-    TenderEmployeeModule,
+    TenderUserModule,
     TenderEmailModule,
   ],
   controllers: [],

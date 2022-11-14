@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
-import { TenderClientModule } from '../tender-client/tender-client.module';
+
+import { TenderUserModule } from '../tender-user/tender-user.module';
 import { TenderAuthController } from './controllers/tender-auth.controller';
 import { TenderAuthService } from './services/tender-auth.service';
 
 @Module({
   controllers: [TenderAuthController],
   providers: [TenderAuthService],
-  imports: [TenderClientModule],
+  imports: [TenderUserModule],
 })
 export class TenderAuthModule {}

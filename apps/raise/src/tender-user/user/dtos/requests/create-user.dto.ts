@@ -6,9 +6,9 @@ import {
   IsEmail,
   IsOptional,
 } from 'class-validator';
-import { ValidateKsaPhoneNumber } from '../../../tender-commons/decorators/validate-ksa-phone-number.decorator';
+import { ValidateKsaPhoneNumber } from '../../../../tender-commons/decorators/validate-ksa-phone-number.decorator';
 
-export class CreateEmployeeDto {
+export class TenderCreateUserDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

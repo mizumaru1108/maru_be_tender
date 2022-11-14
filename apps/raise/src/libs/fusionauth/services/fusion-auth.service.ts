@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
-import { RegisterTendersDto, RegReqTenderDto } from 'src/auth/dtos';
 import { rootLogger } from 'src/logger';
 import { LoginRequestDto } from '../../../auth/dtos/login-request.dto';
 import { RegisterRequestDto } from '../../../auth/dtos/register-request.dto';
@@ -22,7 +21,7 @@ import {
   appRoleToFusionAuthRoles,
   TenderAppRole,
 } from '../../../tender-commons/types';
-import { CreateEmployeeDto } from '../../../tender-employee/dtos/requests/create-employee.dto';
+import { TenderCreateUserDto } from '../../../tender-user/user/dtos/requests/create-user.dto';
 
 /**
  * Nest Fusion Auth Service
@@ -162,7 +161,7 @@ export class FusionAuthService {
     }
   }
 
-  async fusionAuthTenderRegisterUser(registerRequest: CreateEmployeeDto) {
+  async fusionAuthTenderRegisterUser(registerRequest: TenderCreateUserDto) {
     const baseUrl = this.fusionAuthUrl;
     const registerUrl = baseUrl + '/api/user/registration/';
 
