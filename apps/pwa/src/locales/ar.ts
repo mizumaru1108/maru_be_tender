@@ -831,6 +831,7 @@ const ar = {
   pendingRequest: 'مشاريع معلقة',
   rejectedRequest: 'مشاريع مرفوضة',
   totalRequest: 'عدد مشاريع الكلي',
+  login_message_error: 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
 };
 
 export default ar;

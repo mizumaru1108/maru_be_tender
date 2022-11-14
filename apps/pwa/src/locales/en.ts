@@ -783,6 +783,7 @@ const en = {
   pendingRequest: 'Pending Projects',
   rejectedRequest: 'Rejected Projects',
   totalRequest: 'Total Projects',
+  login_message_error: 'This email or password is not correct',
 };
 
 export default en;
