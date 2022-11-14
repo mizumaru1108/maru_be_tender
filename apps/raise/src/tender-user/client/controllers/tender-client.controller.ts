@@ -20,6 +20,19 @@ export class TenderClientController {
   constructor(private readonly tenderClientService: TenderClientService) {}
 
   @UseGuards(JwtAuthGuard)
+  @Get('current-user-track')
+  async getCurrentUserTrack(
+    @CurrentUser() user: ICurrentUser,
+  ): Promise<BaseResponse<string | null>> {
+    const track = await this.tenderClientService.getUserTrack(user.id);
+    return baseResponseHelper(
+      track,
+      HttpStatus.OK,
+      'Successfully fetch current user track',
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Patch('edit-request')
   async createEditRequest(
     @CurrentUser() user: ICurrentUser,

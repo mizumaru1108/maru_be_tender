@@ -22,18 +22,22 @@ export class TenderClientService {
     private tenderUserRepository: TenderUserRepository,
   ) {}
 
-  // async getUserTrack(userId: string): Promise<string | null> {
-  //   const track = await this.prismaService.user.findUnique({
-  //     where: {
-  //       id: userId,
-  //     },
-  //     select: {
-  //       employee_path: true,
-  //     },
-  //   });
-  //   if (!track) throw new NotFoundException('User not found');
-  //   return track.employee_path;
-  // }
+  async getUserTrack(userId: string): Promise<string | null> {
+    try {
+      const track = await this.prismaService.user.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          employee_path: true,
+        },
+      });
+      return track?.employee_path || null;
+    } catch (error) {
+      console.trace(error);
+      throw new InternalServerErrorException(error);
+    }
+  }
 
   // create user and it's relation to client_data table by user_id in client_data table
   async createUserAndClient(
