@@ -72,7 +72,7 @@ function AddNewUser() {
     const { employee_path, ...restData } = data;
     try {
       const res = await axios.post(
-        `${TMRA_RAISE_URL}/tender-employee/create`,
+        `${TMRA_RAISE_URL}/tender-user/create`,
         { ...restData, ...(data.employee_path !== 'GENERAL' && { employee_path }) },
         {
           headers: {
