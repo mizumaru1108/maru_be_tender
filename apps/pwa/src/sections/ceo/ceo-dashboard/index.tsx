@@ -8,7 +8,7 @@ import Mosques from './Mosques';
 import DashboardProjectManagement from './ProjectManagement';
 const dailyStatistic = [
   {
-    subtitle: 'الميزانية الكلية للمسار',
+    subtitle: 'الميزانية الكلية للمؤسسة',
     type: {
       label: 'section_portal_reports.riyals',
       value: '1,000,000',
@@ -51,7 +51,7 @@ function CeoDashboard() {
         <Grid item md={12}>
           <Grid container spacing={4}>
             <Grid item md={12} xs={12}>
-              <Typography variant="h4">ميزانية المسار</Typography>
+              <Typography variant="h4">الميزانية الكلية للمؤسسة</Typography>
             </Grid>
             <Grid item md={12} xs={12}>
               <TrackBudget data={dailyStatistic} />

@@ -53,7 +53,7 @@ function FollowUps() {
           position: 'sticky',
         }}
       >
-        <FollowUpsAction mutate={mutate} />
+        {/* <FollowUpsAction mutate={mutate} /> */}
       </Grid>
     </Grid>
   );

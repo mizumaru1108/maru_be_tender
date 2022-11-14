@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ProjectBudgetData } from '../Forms-Data';
 import FormGenerator from 'components/FormGenerator';
+import useLocales from 'hooks/useLocales';
 type FormValuesProps = {
   amount_required_fsupport: number;
   detail_project_budgets: {
@@ -22,6 +23,7 @@ type Props = {
 };
 
 const ProjectBudgetForm = ({ onSubmit, children, defaultValues }: Props) => {
+  const { translate } = useLocales();
   const [budgetError, setBudgetError] = useState(false);
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -70,9 +72,7 @@ const ProjectBudgetForm = ({ onSubmit, children, defaultValues }: Props) => {
       <Grid container rowSpacing={4} columnSpacing={2}>
         {budgetError && (
           <Grid item md={12}>
-            <Alert severity="error">
-              The sum of the budget's items should be the exact same as the whole budget
-            </Alert>
+            <Alert severity="error">{translate('budget_error_message')}</Alert>
           </Grid>
         )}
         <FormGenerator data={ProjectBudgetData} />

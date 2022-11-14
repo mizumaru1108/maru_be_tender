@@ -48,6 +48,7 @@ function Payments({ data, mutate }: any) {
         {role === 'tender_project_manager' && <ManagerPaymentsPage data={data} mutate={mutate} />}
         {role === 'tender_finance' && <FinancePaymentsTable data={data} mutate={mutate} />}
         {role === 'tender_cashier' && <CachierPaymentsTable data={data} mutate={mutate} />}
+        {role === 'tender_client' && <CachierPaymentsTable data={data} mutate={mutate} />}
       </div>
     );
   }

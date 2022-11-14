@@ -59,6 +59,7 @@ const FundingProjectRequestForm = () => {
       project_beneficiaries: '',
       letter_ofsupport_req: { url: '', size: undefined, type: '' },
       project_attachments: { url: '', size: undefined, type: '' },
+      project_beneficiaries_specific_type: '',
     },
     form2: {
       num_ofproject_binicficiaries: undefined,
@@ -141,13 +142,14 @@ const FundingProjectRequestForm = () => {
 
   // on submit for creating a new project
   const onSubmit = async (data: any) => {
-    console.log(data);
+    const { project_beneficiaries_specific_type, ...restData } = requestState.form1;
+
+    console.log(restData);
     setRequestState((prevRegisterState: any) => ({
       ...prevRegisterState,
       proposal_bank_id: data,
     }));
     if (id) {
-      console.log('asdkansdoansdioansoidnaio');
       const res = await updateDraft({
         id,
         update: {
@@ -164,7 +166,7 @@ const FundingProjectRequestForm = () => {
     } else {
       const res = await createProposal({
         createdProposel: {
-          ...requestState.form1,
+          ...restData,
           ...requestState.form2,
           ...requestState.form3,
           amount_required_fsupport: requestState.form4.amount_required_fsupport,

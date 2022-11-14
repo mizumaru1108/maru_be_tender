@@ -41,7 +41,8 @@ function TrackBudget({ data }: Props) {
             </Box>
             {item.subtitle && (
               <Typography variant="subtitle2" sx={{ color: theme.palette.grey[500] }}>
-                {translate(item.subtitle)}
+                {item.subtitle}
+                {/* {translate(item.subtitle)} */}
               </Typography>
             )}
             {item.type && (

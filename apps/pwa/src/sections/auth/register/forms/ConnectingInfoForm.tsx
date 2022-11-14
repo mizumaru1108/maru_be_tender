@@ -21,7 +21,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
   const RegisterSchema = Yup.object().shape({
     region: Yup.string().required('Region name required'),
     governorate: Yup.string().required('City name required'),
-    center_administration: Yup.string().required('Center is required'),
+    center_administration: Yup.string(),
     entity_mobile: Yup.string()
       .required('Mobile Number is required')
       .matches(
@@ -136,7 +136,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
         <Grid item md={12} xs={12}>
           <RHFTextField
             name="email"
-            label={translate('register_form2.email.label')}
+            label="البريد الإلكتروني للجهة*"
             placeholder={translate('register_form2.email.placeholder')}
           />
         </Grid>

@@ -101,7 +101,7 @@ function CurrentProject() {
                 >
                   <img src={`/icons/rial-currency.svg`} alt="" />
                   <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
-                    الميزانية المطلوبة
+                    الميزانية المصروفة
                   </Typography>
                   <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
                     {`${props.amount_required_fsupport} ريال`}

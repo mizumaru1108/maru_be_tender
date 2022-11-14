@@ -11,6 +11,7 @@ import Payments from './Payments';
 import ProjectBudget from './ProjectBudget';
 import { ProjectPath } from './project-path';
 import TimeLine from './TimeLine';
+import FollowUpsAction from './follow-ups/FollowUpsAction';
 
 function ProjectDetailsMainPage() {
   const { id } = useParams();
@@ -70,44 +71,48 @@ function ProjectDetailsMainPage() {
           ${new Date(data.proposal_by_pk.created_at).getMinutes()}`}
           </Typography>
         </Stack>
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-          sx={{
-            borderRadius: '10px',
-            backgroundColor: '#0E847829',
-            px: '15px',
-          }}
-        >
-          <Typography
-            variant="h6"
+        <Stack direction="column" gap={2}>
+          <FollowUpsAction mutate={reexecuteGetOne} />
+
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
             sx={{
-              color: '#0E8478',
+              borderRadius: '10px',
+              backgroundColor: '#0E847829',
+              px: '15px',
             }}
           >
-            {'State : ' + data.proposal_by_pk.state || 'حالة المشروع'}
-          </Typography>
-          <Typography
-            sx={{
-              color: {
-                COMPLETED: '#0E8478',
-                ONGOING: '#0E8478',
-                PENDING: '#000',
-                CANCELED: '#EB5757',
-              }[
-                data.proposal_by_pk.outter_status as
-                  | 'COMPLETED'
-                  | 'PENDING'
-                  | 'CANCELED'
-                  | 'ONGOING'
-              ],
-            }}
-          >
-            {'status : ' + data.proposal_by_pk.outter_status || 'status'}
-          </Typography>
-        </Box>
+            <Typography
+              variant="h6"
+              sx={{
+                color: '#0E8478',
+              }}
+            >
+              {'State : ' + data.proposal_by_pk.state || 'حالة المشروع'}
+            </Typography>
+            <Typography
+              sx={{
+                color: {
+                  COMPLETED: '#0E8478',
+                  ONGOING: '#0E8478',
+                  PENDING: '#000',
+                  CANCELED: '#EB5757',
+                }[
+                  data.proposal_by_pk.outter_status as
+                    | 'COMPLETED'
+                    | 'PENDING'
+                    | 'CANCELED'
+                    | 'ONGOING'
+                ],
+              }}
+            >
+              {'status : ' + data.proposal_by_pk.outter_status || 'status'}
+            </Typography>
+          </Box>
+        </Stack>
       </Stack>
       <ActionBar />
       {activeTap === 'main' && <MainPage data={data.proposal_by_pk} />}

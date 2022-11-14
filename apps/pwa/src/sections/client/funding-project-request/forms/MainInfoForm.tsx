@@ -17,6 +17,7 @@ type FormValuesProps = {
   project_beneficiaries: string;
   letter_ofsupport_req: CustomFile | string | null;
   project_attachments: CustomFile | string | null;
+  project_beneficiaries_specific_type: string;
 };
 
 type Props = {
@@ -43,6 +44,7 @@ const MainInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
       size: Yup.number(),
       type: Yup.string().required(),
     }),
+    project_beneficiaries_specific_type: Yup.string(),
   });
 
   const methods = useForm<FormValuesProps>({

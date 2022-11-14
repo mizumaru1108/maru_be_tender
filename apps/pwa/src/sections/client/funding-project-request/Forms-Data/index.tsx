@@ -81,6 +81,13 @@ export const MainFormData = [
     ),
   },
   {
+    type: 'textField',
+    name: 'project_beneficiaries_specific_type',
+    label: 'نوع الفئة المستهدفة الخارجية',
+    placeholder: 'الرجاء كتابة نوع الفئة المستهدفة',
+    xs: 12,
+  },
+  {
     type: 'uploadLabel',
     label: 'funding_project_request_form1.letter_support_request.label',
     md: 12,

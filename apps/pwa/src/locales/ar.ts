@@ -86,7 +86,7 @@ const ar = {
   register_second_tap: 'معلومات الاتصال',
   register_third_tap: 'معلومات الترخيص',
   register_fourth_tap: 'بيانات الإدارية',
-  register_fifth_tap: 'معلومات البنكية',
+  register_fifth_tap: 'المعلومات البنكية',
   email_label: 'البريد الإلكتروني',
   password_label: 'كلمة السر',
   remember_me: 'تذكرني',
@@ -155,7 +155,7 @@ const ar = {
       options: {},
     },
     center: {
-      label: 'مركز الإدارة*',
+      label: 'مركز الإدارة',
       placeholder: 'الرجاء اختيار المركز',
       options: {},
     },
@@ -188,7 +188,7 @@ const ar = {
   register_form3: {
     license_number: {
       label: 'رقم الترخيص*',
-      placeholder: 'الرجاء اختيار الجهة المشرفة',
+      placeholder: 'الرجاء كتابة رقم الترخيص',
     },
     license_issue_date: {
       label: 'تاريخ اصدار الترخيص*',
@@ -234,7 +234,7 @@ const ar = {
   register_form5: {
     bank_account_number: {
       label: 'أيبان الحساب البنكي*',
-      placeholder: 'أيبان الحساب البنكي',
+      placeholder: 'SAXX-XXXX-XXXX-XXXX-XXXX-XXXX',
     },
     bank_account_name: {
       label: 'اسم الحساب البنكي*',
@@ -257,7 +257,7 @@ const ar = {
     },
     project_idea: {
       label: 'فكرة المشروع*',
-      placeholder: 'الرجاء كتابة عدد المستفيدين من المشروع',
+      placeholder: 'الرجاء كتابة فكرة المشروع',
     },
     project_applying_place: {
       label: 'مكان تنفيذ المشروع*',
@@ -346,7 +346,7 @@ const ar = {
     },
   },
   funding_project_request_form5: {
-    step: 'معلومات الدعم والمدة',
+    step: 'معلومات الحساب البنكي',
     amount_required_for_support: {
       label: 'المبلغ المطلوب للدعم*',
       placeholder: 'الرجاء كتابة المبلغ المطلوب للدعم',
@@ -832,6 +832,7 @@ const ar = {
   rejectedRequest: 'مشاريع مرفوضة',
   totalRequest: 'عدد مشاريع الكلي',
   login_message_error: 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
+  budget_error_message: 'مجموع الميزانية يجب أن يكون مساوٍ للرقم المطلوب',
 };
 
 export default ar;

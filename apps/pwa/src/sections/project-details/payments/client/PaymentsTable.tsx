@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Stack, Typography, Link } from '@mui/material';
+import { Box, Button, Grid, Link, Stack, Typography } from '@mui/material';
 import { updatePayment } from 'queries/project-supervisor/updatePayment';
 import React, { useEffect, useState } from 'react';
 import { useMutation } from 'urql';
@@ -35,6 +35,31 @@ type PaymentProps = {
     | 'DONE';
 };
 function PaymentsTable({ payments, children }: { payments: PaymentProps[]; children?: any }) {
+  const [currentIssuedPayament, setCurrentIssuedPayament] = useState(0);
+  const [beenIssued, setBeenIssued] = useState(false);
+  const [_, updatePay] = useMutation(updatePayment);
+  const handleIssuePayment = (data: PaymentProps) => {
+    const payload = { id: data.id, newState: { status: 'ISSUED_BY_SUPERVISOR' } };
+    updatePay(payload).then((result) => {
+      if (!result.error) {
+        alert('The payment has been issued');
+        setBeenIssued(true);
+      }
+      if (result.error) {
+        alert(`oobs there is an error occured ${result.error}`);
+      }
+    });
+  };
+  useEffect(() => {
+    console.log(payments);
+    for (var i = 0; i < payments.length; i++) {
+      if (payments[i].status === 'SET_BY_SUPERVISOR') {
+        console.log(i);
+        setCurrentIssuedPayament(i);
+        break;
+      }
+    }
+  }, [beenIssued, payments]);
   return (
     <>
       {payments.map((item: any, index: any) => (
@@ -59,23 +84,8 @@ function PaymentsTable({ payments, children }: { payments: PaymentProps[]; child
                 </Typography>
               </Stack>
             </Grid>
-            {item.status !== 'SET_BY_SUPERVISOR' ? (
-              <Grid item md={3} sx={{ textAlign: '-webkit-center', pt: '14px' }}>
-                <Typography
-                  sx={{
-                    color: '#0E8478',
-                  }}
-                >
-                  تم اصدار إذن الصرف بنجاح
-                </Typography>
-              </Grid>
-            ) : (
-              <Grid item md={3}>
-                <Box>{''}</Box>
-              </Grid>
-            )}
             {item.status === 'DONE' ? (
-              <Grid item md={3} sx={{ textAlign: '-webkit-center' }}>
+              <Grid item md={6} sx={{ textAlign: '-webkit-center' }}>
                 <Button
                   component={Link}
                   href={item.cheques[0].transfer_receipt}
@@ -92,13 +102,14 @@ function PaymentsTable({ payments, children }: { payments: PaymentProps[]; child
                 </Button>
               </Grid>
             ) : (
-              <Grid item md={3}>
+              <Grid item md={6}>
                 <Box>{''}</Box>
               </Grid>
             )}
           </Grid>
         </Grid>
       ))}
+      {children}
     </>
   );
 }

@@ -25,7 +25,7 @@ function RequestsInProcess() {
   const props = data?.data ?? [];
   if (!props || props.length === 0) return <></>;
   return (
-    <Grid>
+    <Grid container spacing={3}>
       <Grid item md={12} xs={12}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="h4" sx={{ mb: '20px' }}>
@@ -49,7 +49,7 @@ function RequestsInProcess() {
         </Stack>
       </Grid>
       {props.map((item: any, index: any) => (
-        <Grid item md={6} key={index}>
+        <Grid item md={6} xs={6} key={index}>
           <ProjectCard
             title={{ id: item.id }}
             content={{

@@ -4,5 +4,6 @@ export const getProposals = `query getProposals($limit: Int = 4, $offset: Int = 
     created_at
     project_idea
     project_name
+    amount_required_fsupport
   }
 }`;

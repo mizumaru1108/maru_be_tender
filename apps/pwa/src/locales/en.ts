@@ -146,7 +146,7 @@ const en = {
       options: {},
     },
     center: {
-      label: 'مركز الإدارة*',
+      label: 'مركز الإدارة',
       placeholder: 'الرجاء اختيار المركز*',
       options: {},
     },
@@ -784,6 +784,8 @@ const en = {
   rejectedRequest: 'Rejected Projects',
   totalRequest: 'Total Projects',
   login_message_error: 'This email or password is not correct',
+  budget_error_message:
+    "The sum of the budget's items should be the exact same as the whole budget",
 };
 
 export default en;
