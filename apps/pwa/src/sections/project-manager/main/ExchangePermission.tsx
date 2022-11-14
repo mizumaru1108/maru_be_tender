@@ -1,70 +1,28 @@
 import { Typography, Grid, Box } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
-import { ProjectCardProps } from 'components/card-table/types';
 import useAuth from 'hooks/useAuth';
-import { gettingPaymentAdjustment } from 'queries/project-manager/gettingPaymentAdjustment';
+import { getProposals } from 'queries/commons/getProposal';
 import { useQuery } from 'urql';
-
-const data = [
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
-      sentSection: 'مسار المساجد',
-      employee: 'اسم الموظف - مدير المشروع',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      payments: [
-        { name: 'الدفعة الأولى', status: true },
-        { name: 'الدفعة الثانية', status: true },
-        { name: 'الدفعة الثالثة', status: true },
-        { name: 'الدفعة الرابعة', status: false },
-        { name: 'الدفعة الخامسة', status: false },
-        { name: 'الدفعة السادسة', status: false },
-        { name: 'الدفعة السابعة', status: false },
-      ],
-    },
-  },
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
-      sentSection: 'مسار المساجد',
-      employee: 'اسم الموظف - مدير المشروع',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-      payments: [
-        { name: 'الدفعة الأولى', status: true },
-        { name: 'الدفعة الثانية', status: true },
-        { name: 'الدفعة الثالثة', status: true },
-        { name: 'الدفعة الرابعة', status: false },
-        { name: 'الدفعة الخامسة', status: false },
-        { name: 'الدفعة السادسة', status: false },
-        { name: 'الدفعة السابعة', status: false },
-      ],
-    },
-  },
-] as ProjectCardProps[];
 
 function ExchangePermission() {
   const { user } = useAuth();
-  const [result, reexecuteQuery] = useQuery({
-    query: gettingPaymentAdjustment,
-    variables: { project_manager_id: user?.id },
+  const [result] = useQuery({
+    query: getProposals,
+    variables: {
+      order_by: { created_at: 'asc' },
+      limit: 4,
+      offset: 0,
+      where: {
+        project_manager_id: { _eq: user?.id },
+        _and: { inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' } },
+      },
+    },
   });
   const { data, fetching, error } = result;
   if (fetching) {
     return <>...Loading</>;
   }
-  const props = data?.proposal ?? [];
+  const props = data?.data ?? [];
   if (!props || props.length === 0) return <></>;
   return (
     <Box sx={{ mt: '20px' }}>

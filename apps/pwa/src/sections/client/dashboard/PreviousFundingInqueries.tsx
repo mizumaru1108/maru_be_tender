@@ -1,22 +1,19 @@
-import { Container, Typography, Box, Grid } from '@mui/material';
 import * as React from 'react';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
+import { Container, Typography, Box, Grid, Stack, Button, Tabs, Tab } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
 import { useQuery } from 'urql';
 import { getClientProjects } from 'queries/client/getClientProjects';
-import useAuth from 'hooks/useAuth';
+import { useNavigate } from 'react-router';
 
 function PreviousFundingInqueries() {
-  const [tap, setTap] = React.useState('all_projects');
-  const [previousInq, setPreviousInq] = React.useState([]);
-  const { user } = useAuth();
-  const id = user?.id;
-  const [result, _] = useQuery({
+  const navigate = useNavigate();
+  const [result] = useQuery({
     query: getClientProjects,
-    variables: { id },
   });
   const { data, fetching, error } = result;
+  const [tap, setTap] = React.useState('all_projects');
+  const [previousInq, setPreviousInq] = React.useState([]);
+
   const handleChange = (event: React.SyntheticEvent, newTap: string) => {
     setTap(newTap);
   };
@@ -28,8 +25,6 @@ function PreviousFundingInqueries() {
       },
       content: {
         projectName: item.project_name,
-        // createdAt: new Date(item.created_at),
-        // projectStatus: item.outter_status,
         projectDetails: item.project_idea,
       },
       footer: {
@@ -57,7 +52,24 @@ function PreviousFundingInqueries() {
   if (error) return <>{error.graphQLErrors}</>;
   return (
     <Container>
-      <Typography variant="h4">طلبات دعم سابقة</Typography>
+      <Stack direction="row" justifyContent="space-between">
+        <Typography variant="h4">طلبات دعم سابقة</Typography>
+        <Button
+          sx={{
+            backgroundColor: 'transparent',
+            color: '#93A3B0',
+            textDecoration: 'underline',
+            ':hover': {
+              backgroundColor: 'transparent',
+            },
+          }}
+          onClick={() => {
+            navigate('/client/dashboard/previous-funding-requests');
+          }}
+        >
+          عرض الكل
+        </Button>
+      </Stack>
       <Box sx={{ width: '50%', mb: '10px' }}>
         <Tabs
           onChange={handleChange}

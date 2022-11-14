@@ -54,7 +54,7 @@ function FloatingActionBar({ organizationId, data }: any) {
     await accept({
       proposalId: id,
       approveProposalPayloads: {
-        inner_status: 'ACCEPTED',
+        inner_status: 'ACCEPTED_BY_SUPERVISOR',
         outter_status: 'PENDING',
         state: 'PROJECT_MANAGER',
         number_of_payments: values.number_of_payments,

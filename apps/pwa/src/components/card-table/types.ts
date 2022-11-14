@@ -40,10 +40,10 @@ export type ProjectCardPropsBE = {
   id: string;
   inquiryStatus?: 'canceled' | 'completed' | 'pending';
   project_name?: string;
-  created_at?: Date;
+  created_at: Date;
   project_idea?: string;
   payments?: any;
-  inner_status?: string;
+  outter_status?: 'CANCELED' | 'COMPLETED' | 'PENDING';
   cardFooterButtonAction:
     | 'show-project' // Without the action bar at the end of the page.
     | 'show-details' // With the action bar at the end if the page.
@@ -64,11 +64,17 @@ export type CardTablePropsBE = {
   title: string;
   resource?: any;
   limitShowCard?: number;
-  taps?: { key: string; options: Array<{ label: string; value: string }> };
+  taps?: {
+    key: string;
+    options: Array<{
+      label: string;
+      value: any;
+    }>;
+  };
   dateFilter?: boolean;
   alphabeticalOrder?: boolean;
   pagination?: boolean;
-  filters?: filterInterface[];
+  filters?: filterInterfaceBE[];
   cardFooterButtonAction:
     | 'show-project' // Without the action bar at the end of the page.
     | 'show-details' // With the action bar at the end if the page.
@@ -83,11 +89,39 @@ export type CardTablePropsBE = {
     | 'payment-adjustment'
     | 'exchange-permission'; // it refers to the url that I came from and the url that I have to go to
   staticFilters?: any;
+  baseFilters?: any;
 };
 
+interface GenerateFilterReturning {
+  [key: string]: string | GenerateFilterReturning;
+}
 export type filterInterface = {
   name: string;
   options: { label: string; value: string }[];
+};
+
+export type filterInterfaceBE = {
+  name: string;
+  title: string;
+  options: { label: string; value: string }[];
+  generate_filter: (value: string) => GenerateFilterReturning;
+};
+
+export type CardTableBEProps = {
+  resource?: any;
+  title: string;
+  limitShowCard?: number;
+  data: ProjectCardProps[];
+  dateFilter?: boolean;
+  alphabeticalOrder?: boolean;
+  pagination?: boolean;
+  filters?: filterInterfaceBE[];
+  taps?: string[];
+  cardFooterButtonAction:
+    | 'show-project' // Without the action bar at the end of the page.
+    | 'show-details' // With the action bar at the end if the page.
+    | 'completing-exchange-permission' // With the action bar at the end if the page.
+    | 'draft'; // Without the action bar at the end of the page, but with the ability to continue or remove the project.
 };
 
 export type CardTableProps = {

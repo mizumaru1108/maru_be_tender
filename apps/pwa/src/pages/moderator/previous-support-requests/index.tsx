@@ -1,23 +1,12 @@
 import { Container } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import axios from 'axios';
-import CardTable from 'components/card-table/CardTable';
+import CardTableBE from 'components/card-table/CardTableBE';
 import Page from 'components/Page';
-import { useEffect, useState } from 'react';
-import { useQuery } from 'urql';
-import { filterInterface, ProjectCardProps } from '../../../components/card-table/types';
-import { HASURA_ADMIN_SECRET, HASURA_GRAPHQL_URL } from '../../../config';
-import { previousRequest } from '../../../queries/Moderator/supportRequest';
-import { CardTablePreviousSupportRequests } from '../mock-data';
+import useLocales from 'hooks/useLocales';
+import { gettingPreviousRequests } from 'queries/Moderator/gettingPreviousRequests';
 
 function PreviousSupportRequests() {
-  const [supportRequests, setSupportRequests] = useState<ProjectCardProps[]>([]);
-
-  const [incoming, fetchIncoming] = useQuery({
-    query: previousRequest,
-  });
-
-  const { data: incomingData, fetching: fetchingIncoming, error: errorIncoming } = incoming;
+  const { translate } = useLocales();
 
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
@@ -28,53 +17,46 @@ function PreviousSupportRequests() {
     gap: 20,
   }));
 
-  const filter: filterInterface = {
-    name: 'filter',
-    options: [
-      {
-        label: 'filter',
-        value: 'a to z',
-      },
-    ],
-  };
-
-  useEffect(() => {
-    const previousSupport = [];
-    if (incomingData) {
-      const prev = incomingData.proposal.map((item: any) => ({
-        title: {
-          id: item.id,
-          inquiryStatus:
-            item.outter_status.toLowerCase() === 'ongoing'
-              ? 'completed'
-              : item.outter_status.toLowerCase(),
-        },
-        content: {
-          projectName: item.project_name,
-          employee: item.user.employee_name,
-          sentSection: item.state,
-        },
-        footer: {
-          createdAt: item.created_at,
-        },
-      })) as ProjectCardProps[];
-      previousSupport.push(...prev);
-      setSupportRequests(previousSupport);
-      console.log('hasil set state : ', previousSupport);
-    }
-  }, [incomingData]);
-
   return (
-    <Page title="Previous Support Requests">
+    <Page title="Previous Support Requests | Moderator">
       <Container>
         <ContentStyle>
-          <CardTable
-            data={supportRequests} // For testing, later on we will send the query to it
-            title="طلبات الدعم السابقة"
-            filters={[filter]} // optional
-            dateFilter={true}
-            // taps={['كل المشاريع', 'مشاريع منتهية', 'مشاريع معلقة']}
+          <CardTableBE
+            resource={gettingPreviousRequests}
+            title={'طلبات الدعم السابقة'}
             cardFooterButtonAction="show-project"
+            destination="previous-funding-requests"
+            dateFilter={true}
+            filters={[
+              {
+                name: 'status',
+                title: 'الرجاء اختيار حالة المشروع',
+                // The options will be fitcehed before passing them
+                options: [
+                  { label: 'معلقة', value: 'PENDING' },
+                  { label: 'مكتملة', value: 'COMPLETED' },
+                  { label: 'ملغاة', value: 'CANCELED' },
+                ],
+                generate_filter: (value: string) => ({
+                  outter_status: { _eq: value },
+                }),
+              },
+              {
+                name: 'entity',
+                title: 'اسم الجهة المشرفة',
+                // The options will be fitcehed before passing them
+                options: [
+                  { label: 'اسم المستخدم الأول', value: 'Essam Kayal' },
+                  { label: 'اسم المستخدم الثاني', value: 'hisham' },
+                  { label: 'اسم المستخدم الثالت', value: 'danang' },
+                  { label: 'اسم المستخدم الرابع', value: 'yamen' },
+                  { label: 'اسم المستخدم الخامس', value: 'hamdi' },
+                ],
+                generate_filter: (value: string) => ({
+                  user: { client_data: { entity: { _eq: value } } },
+                }),
+              },
+            ]}
           />
         </ContentStyle>
       </Container>

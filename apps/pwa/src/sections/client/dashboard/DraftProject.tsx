@@ -1,22 +1,28 @@
-import { Container, Typography, Box, Button, Grid, Stack } from '@mui/material';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import Divider from '@mui/material/Divider';
-import useAuth from 'hooks/useAuth';
+import {
+  Container,
+  Typography,
+  Button,
+  Grid,
+  Stack,
+  Card,
+  CardActions,
+  CardContent,
+  Divider,
+} from '@mui/material';
 import { deleteDraftProposal } from 'queries/client/deleteDraftProposal';
-import { gettingSavedProjects } from 'queries/client/gettingSavedProjects';
-import { useEffect } from 'react';
+import { getProposals } from 'queries/commons/getProposal';
 import { useNavigate } from 'react-router';
 import { useMutation, useQuery } from 'urql';
 
 function DraftProject() {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { id } = user!;
   const [result, reexecuteQuery] = useQuery({
-    query: gettingSavedProjects,
-    variables: { id },
+    query: getProposals,
+    variables: {
+      limit: 4,
+      offset: 0,
+      where: { step: { _neq: 'ZERO' } },
+    },
   });
   const [_, deleteDrPro] = useMutation(deleteDraftProposal);
   const { data, fetching, error } = result;
@@ -38,7 +44,24 @@ function DraftProject() {
   };
   return (
     <Container>
-      <Typography variant="h4">مشاريع محفوظة كمسودة</Typography>
+      <Stack direction="row" justifyContent="space-between">
+        <Typography variant="h4">مشاريع محفوظة كمسودة</Typography>
+        <Button
+          sx={{
+            backgroundColor: 'transparent',
+            color: '#93A3B0',
+            textDecoration: 'underline',
+            ':hover': {
+              backgroundColor: 'transparent',
+            },
+          }}
+          onClick={() => {
+            navigate('/client/dashboard/draft-funding-requests');
+          }}
+        >
+          عرض الكل
+        </Button>
+      </Stack>
       <Grid container sx={{ pt: 2 }} spacing={5}>
         {data.data.map(
           (

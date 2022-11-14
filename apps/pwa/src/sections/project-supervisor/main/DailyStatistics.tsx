@@ -2,7 +2,7 @@ import { Box, Grid, Typography } from '@mui/material';
 
 function DailyStatistics() {
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={2}>
       <Grid item md={12}>
         <Typography variant="h4">احصائيات يومية</Typography>
       </Grid>

@@ -18,6 +18,8 @@ import {
   RegReqTenderDto,
 } from './dtos';
 import { PrismaService } from '../prisma/prisma.service';
+import { link } from 'fs';
+import { SendEmailDto } from '../libs/email/dtos/requests/send-email.dto';
 
 @Injectable()
 export class AuthService {
@@ -80,124 +82,25 @@ export class AuthService {
       throw new BadRequestException("Organization doesn't exist");
     }
 
-    //!TODO: create hbs template for email
-    const isSend = await this.emailService.sendMailWTemplate(
-      // 'rdanang.dev@gmail.com', // change to your email to test, ex: rdanang.dev@gmail.com, default value is registeredUser.email
-      registeredUser.email, // change to your email to test, ex: rdanang.dev@gmail.com, default value is registeredUser.email
-      `Welcome to ${orgName}!`,
-      'user/valiate-email',
-      {
+    const sendEmailParam: SendEmailDto = {
+      to: registeredUser.email, // change to your email to test, ex: rdanang.dev@gmail.com, default value is registeredUser.email
+      subject: 'email verification',
+      mailType: 'template',
+      templatePath: 'user/valiate-email',
+      templateContext: {
         fullName: registeredUser.firstname + ' ' + registeredUser.lastname,
         email: registeredUser.email,
-        banner,
-        orgName,
+        banner: banner,
+        orgName: orgName,
       },
-      'hello@tmra.io', // we can make it dynamic when new aws ses identity available
-    );
+      from: 'hello@tmra.io', // we can make it dynamic when new AWS SESW identity available
+    };
+
+    const isSend = await this.emailService.sendMail(sendEmailParam);
     if (!isSend) {
       throw new BadRequestException('An error occured while sending email');
     }
     return registeredUser;
-  }
-
-  async fusionRegTender(registerRequest: RegReqTenderDto) {
-    const result = await this.fusionAuthService.fusionAuthRegTender(
-      registerRequest,
-    );
-    const registeredUser = await this.usersService.regFromFusionTender({
-      id: result.user.id,
-      employee_name: result.user.firstName,
-      email: result.user.email,
-      mobile_number: result.user.mobilePhone,
-      user_type_id: registerRequest.user_type_id,
-      is_active: registerRequest.is_active,
-      employees_permissions: registerRequest.employees_permissions,
-    });
-    return registeredUser;
-  }
-
-  async fusionRegisterTender(registerRequest: RegisterTendersDto) {
-    const emailData = await this.prisma.user.findUnique({
-      where: { email: registerRequest.data.email },
-    });
-
-    if (emailData) {
-      throw new HttpException('Email already exist', 400);
-    }
-    const licenseNumber = await this.prisma.client_data.findFirst({
-      where: {
-        id: registerRequest.data.id,
-      },
-    });
-
-    if (licenseNumber) {
-      throw new HttpException('license Number or id already exist', 400);
-    }
-
-    const result = await this.fusionAuthService.fusionAuthRegisterTender(
-      registerRequest,
-    );
-
-    let registeredUser;
-    try {
-      if (result && result.user.id) {
-        registeredUser = await this.usersService.registerFromFusionTender({
-          id_: result.user.id,
-          id: registerRequest.data.id,
-          authority: registerRequest.data.authority,
-          board_ofdec_file: registerRequest.data.board_ofdec_file,
-          center_administration: registerRequest.data.center_administration,
-          ceo_mobile: registerRequest.data.ceo_mobile,
-          ceo_name: registerRequest.data.ceo_name,
-          data_entry_mail: registerRequest.data.data_entry_mail,
-          data_entry_mobile: registerRequest.data.data_entry_mobile,
-          email: registerRequest.data.email,
-          employee_name: registerRequest.data.employee_name,
-          employee_path: registerRequest.data.employee_path,
-          entity: registerRequest.data.entity,
-          entity_mobile: registerRequest.data.entity_mobile,
-          governorate: registerRequest.data.governorate,
-          headquarters: registerRequest.data.headquarters,
-          license_expired: moment(
-            registerRequest.data.license_expired,
-          ).toISOString(), // Date
-          license_file: registerRequest.data.license_file,
-          license_issue_date: moment(
-            registerRequest.data.license_issue_date,
-          ).toISOString(), // Date
-          license_number: registerRequest.data.license_number,
-          num_of_beneficiaries: registerRequest.data.num_of_beneficiaries,
-          num_of_employed_facility:
-            registerRequest.data.num_of_employed_facility,
-          data_entry_name: registerRequest.data.data_entry_name,
-          date_of_esthablistmen: moment(
-            registerRequest.data.date_of_esthablistmen,
-          ).toISOString(), // Date
-          password: '',
-          phone: registerRequest.data.phone,
-          region: registerRequest.data.region,
-          status: registerRequest.data.status,
-          twitter_acount: registerRequest.data.twitter_acount,
-          website: registerRequest.data.website,
-          bank_informations: registerRequest.data.bank_informations,
-          client_field: registerRequest.data.client_field,
-          vat: registerRequest.data.vat,
-        });
-        return registeredUser;
-      } else {
-        return {
-          messageCode: 400,
-          message: 'An error occured while sending data',
-        };
-      }
-    } catch (error) {
-      console.log('error', error);
-      console.log('error=', error.response);
-      return {
-        messageCode: 400,
-        message: error.response,
-      };
-    }
   }
 
   async registerUser(name: string, email: string, password: string) {

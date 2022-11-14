@@ -26,11 +26,24 @@ function PreviousFundingRequests() {
             taps={{
               key: 'outter_status',
               options: [
-                { label: 'كل المشاريع', value: 'COMPLETED' },
-                { label: 'مشاريع منتهية', value: 'COMPLETED' },
-                { label: 'مشاريع معلقة', value: 'PENDING' },
+                {
+                  label: 'كل المشاريع',
+                  value: { outter_status: { _in: ['COMPLETED', 'PENDING'] } },
+                },
+                {
+                  label: 'مشاريع منتهية',
+                  value: { outter_status: { _in: ['COMPLETED'] } },
+                },
+                {
+                  label: 'مشاريع معلقة',
+                  value: { outter_status: { _in: ['PENDING'] } },
+                },
               ],
             }}
+            baseFilters={{
+              step: { step: { _eq: 'ZERO' } },
+            }}
+            destination={'previous-funding-requests'}
           />
         </ContentStyle>
       </Container>

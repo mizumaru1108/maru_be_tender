@@ -5,6 +5,7 @@ import { useQuery } from 'urql';
 import ClientCarousel from './ClientCarousel';
 import CurrentProject from './CurrentProject';
 import DraftProject from './DraftProject';
+import LoadingPage from './LoadingPage';
 import PreviousFundingInqueries from './PreviousFundingInqueries';
 import UnActivatedAccount from './UnActivatedAccount';
 
@@ -16,7 +17,7 @@ function DashboardPage() {
     variables: { id },
   });
   const { data, fetching, error } = result;
-  if (fetching) return <p>Loading...</p>;
+  if (fetching) return <LoadingPage />;
   if (error) return <p>Oh no... {error.message}</p>;
   if (data?.user_by_pk?.client_data[0]?.status === 'WAITING_FOR_ACTIVATION')
     return <UnActivatedAccount />;

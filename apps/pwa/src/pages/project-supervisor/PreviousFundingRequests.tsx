@@ -3,6 +3,8 @@ import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
 import { CardTable } from 'components/card-table';
 import { data1 } from './mockData';
+import CardTableBE from 'components/card-table/CardTableBE';
+import { gettingPreviousRequests } from 'queries/project-supervisor/gettingPreviousRequests';
 
 function PreviousFundingRequests() {
   const ContentStyle = styled('div')(({ theme }) => ({
@@ -17,15 +19,42 @@ function PreviousFundingRequests() {
     <Page title="طلبات الدعم سابقة">
       <Container>
         <ContentStyle>
-          <CardTable
-            data={data1} // For testing, later on we will send the query to it
+          <CardTableBE
+            resource={gettingPreviousRequests}
             title="طلبات الدعم سابقة"
-            cardFooterButtonAction="show-project"
+            cardFooterButtonAction="show-details"
             dateFilter={true}
             filters={[
-              { name: 'اسم الجهة المشرفة*', options: [{ label: 'اسم الجهة المشرفة*', value: '' }] },
+              {
+                name: 'entity',
+                title: 'اسم الجهة المشرفة',
+                // The options will be fitcehed before passing them
+                options: [
+                  { label: 'اسم المستخدم الأول', value: 'Essam Kayal' },
+                  { label: 'اسم المستخدم الثاني', value: 'hisham' },
+                  { label: 'اسم المستخدم الثالت', value: 'danang' },
+                  { label: 'اسم المستخدم الرابع', value: 'yamen' },
+                  { label: 'اسم المستخدم الخامس', value: 'hamdi' },
+                ],
+                generate_filter: (value: string) => ({
+                  user: { client_data: { entity: { _eq: value } } },
+                }),
+              },
+              {
+                name: 'status',
+                title: 'الرجاء اختيار حالة المشروع',
+                // The options will be fitcehed before passing them
+                options: [
+                  { label: 'معلقة', value: 'PENDING' },
+                  { label: 'مكتملة', value: 'COMPLETED' },
+                  { label: 'ملغاة', value: 'CANCELED' },
+                ],
+                generate_filter: (value: string) => ({
+                  outter_status: { _eq: value },
+                }),
+              },
             ]}
-            taps={['اسم الجمعية المختارة', 'اسم الجمعية المختارة', 'حالة المشروع المختارة']}
+            destination={'previous-funding-requests'}
           />
         </ContentStyle>
       </Container>

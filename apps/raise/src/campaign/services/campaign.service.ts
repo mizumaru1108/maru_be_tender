@@ -76,6 +76,7 @@ export class CampaignService {
     const campaignScheme = Campaign.mapFromRequest(baseCampaignScheme, request);
     campaignScheme.creatorUserId = creatorId;
     campaignScheme.createdAt = dayjs().toISOString();
+    campaignScheme.contentLanguage = request.contentLanguage;
 
     let tmpPath: string[] = []; // for implementing db transaction later on
     try {
@@ -435,6 +436,104 @@ export class CampaignService {
       },
       { $sort: { _id: -1, creaatedAt: 1 } },
     ]);
+
+    return campaignList;
+  }
+
+  /**
+   * Get All Campaign without token / permission by Organization ID
+   */
+
+  async getCampaignsByOrganizationId(
+    organizationId: string,
+    request: GetAllMyCampaignFilterDto
+    ): Promise<AggregatePaginateResult<CampaignDocument>> {
+    const { limit = 10, page = 1, sortBy, sortMethod } = request;
+    const filter: FilterQuery<CampaignDocument> = {
+      organizationId: organizationId
+    };
+
+    filter.isDeleted = { $regex: 'n', $options: 'i' };
+    filter.organizationId = new Types.ObjectId(request.organizationId);
+    request.campaignType && (filter.campaignType = request.campaignType);
+    request.campaignId && (filter._id = new Types.ObjectId(request.campaignId));
+
+    // default get the latest first
+    const method: 1 | -1 = sortMethod === 'asc' ? 1 : -1;
+    let sort: Record<string, 1 | -1> = {};
+    if (sortBy) {
+      if (sortBy === 'campaignName') sort = { campaignName: method };
+      if (sortBy === 'campaignType') sort = { campaignType: method };
+      if (sortBy === 'createdAt') sort = { createdAt: method };
+      if (sortBy === 'updatedAt') sort = { updatedAt: method };
+      if (sortBy === 'status') sort = { status: method };
+      if (sortBy === 'milestoneCount') sort = { milestoneCount: method };
+    } else {
+      sort = { updatedAt: method };
+    }
+
+    // objective, get CampaignName, Type, Last Update, Condition, Milestone (count).
+    const aggregateQuerry = this.campaignModel.aggregate([
+      { $match: filter },
+      {
+        $project: {
+          campaignName: 1,
+          campaignType: 1,
+          title: 1,
+          description: 1,
+          isPublished: 1,
+          amountProgress: 1,
+          amountTarget: 1,
+          coverImage: 1,
+          contentLanguage: 1,
+          updatedAt: 1,
+          createdAt: 1,
+          status: 1,
+          milestoneCount: { $size: '$milestone' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'campaignVendorLog',
+          localField: '_id',
+          foreignField: 'campaignId',
+          as: 'campaignVendorLog',
+        },
+      },
+      {
+        $unwind: {
+          path: '$campaignVendorLog',
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          campaignName: { $first: '$campaignName' },
+          campaignType: { $first: '$campaignType' },
+          title: { $first: '$title' },
+          description: { $first: '$description' },
+          isPublished: { $first: '$isPublished' },
+          amountProgress: { $first: '$amountProgress' },
+          amountTarget: { $first: '$amountTarget' },
+          coverImage: { $first: '$coverImage' },
+          contentLanguage: { $first: '$contentLanguage' },
+          updatedAt: { $first: '$updatedAt' },
+          createdAt: { $first: '$createdAt' },
+          status: { $first: '$campaignVendorLog.status' },
+          milestoneCount: { $first: '$milestoneCount' },
+        },
+      },
+      { $sort: sort },
+    ]);
+
+    const campaignList =
+      await this.campaignAggregatePaginateModel.aggregatePaginate(
+        aggregateQuerry,
+        {
+          page,
+          limit,
+        },
+      );
 
     return campaignList;
   }
@@ -1131,6 +1230,7 @@ export class CampaignService {
     if (sortBy) {
       if (sortBy === 'campaignName') sort = { campaignName: method };
       if (sortBy === 'campaignType') sort = { campaignType: method };
+      if (sortBy === 'createdAt') sort = { createdAt: method };
       if (sortBy === 'updatedAt') sort = { updatedAt: method };
       if (sortBy === 'status') sort = { status: method };
       if (sortBy === 'milestoneCount') sort = { milestoneCount: method };
@@ -1145,6 +1245,13 @@ export class CampaignService {
         $project: {
           campaignName: 1,
           campaignType: 1,
+          title: 1,
+          description: 1,
+          isPublished: 1,
+          amountProgress: 1,
+          amountTarget: 1,
+          coverImage: 1,
+          contentLanguage: 1,
           updatedAt: 1,
           createdAt: 1,
           status: 1,
@@ -1169,6 +1276,13 @@ export class CampaignService {
           _id: '$_id',
           campaignName: { $first: '$campaignName' },
           campaignType: { $first: '$campaignType' },
+          title: { $first: '$title' },
+          description: { $first: '$description' },
+          isPublished: { $first: '$isPublished' },
+          amountProgress: { $first: '$amountProgress' },
+          amountTarget: { $first: '$amountTarget' },
+          coverImage: { $first: '$coverImage' },
+          contentLanguage: { $first: '$contentLanguage' },
           updatedAt: { $first: '$updatedAt' },
           createdAt: { $first: '$createdAt' },
           status: { $first: '$campaignVendorLog.status' },

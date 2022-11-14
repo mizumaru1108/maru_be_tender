@@ -10,9 +10,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../auth/jwt.guard';
+import { FindManyResult } from '../../../tender-commons/dto/find-many-result.dto';
 import { ManualPaginatedResponse } from '../../../tender-commons/helpers/manual-paginated-response.dto';
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import { SearchClientFilterRequest } from '../dtos/requests/search-client-filter-request.dto';
+import { SearchClientAppointmentResponseDto } from '../dtos/responses/search-client-appointment-response.dto';
 import { TenderAppointmentService } from '../services/tender-appointment.service';
 
 @Controller('tender-appointment')
@@ -21,43 +23,25 @@ export class TenderAppointmentController {
     private readonly tenderAppointmentService: TenderAppointmentService,
   ) {}
 
-  @Post()
-  create() {}
+  @Post('test')
+  async create() {
+    await this.tenderAppointmentService.create();
+  }
 
   @UseGuards(JwtAuthGuard)
   @Get('search-client')
-  async searchClient(
-    @Query() searchParams: SearchClientFilterRequest,
-  ): Promise<ManualPaginatedResponse<any>> {
-    const result = await this.tenderAppointmentService.searchClient(
+  async searchClient(@Query() searchParams: SearchClientFilterRequest) {
+    const result = await this.tenderAppointmentService.searchClientByName(
       searchParams,
     );
-    const totalData = await this.tenderAppointmentService.countClient(
-      searchParams,
-    );
+
     return manualPaginationHelper(
-      result,
-      totalData,
+      result.data,
+      result.total,
       searchParams.page || 1,
       searchParams.limit || 10,
       HttpStatus.OK,
       'Success',
     );
   }
-
-  @Get()
-  findAll() {
-    return this.tenderAppointmentService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tenderAppointmentService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string) {}
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {}
 }

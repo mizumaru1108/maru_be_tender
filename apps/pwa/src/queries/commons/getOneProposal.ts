@@ -6,9 +6,9 @@ export const getOneProposal = `query MyQuery($id: String!) {
     user {
       id
       employee_name
+      email
+      mobile_number
       client_data {
-        email
-        phone
         region
         governorate
       }
@@ -48,6 +48,13 @@ export const getOneProposal = `query MyQuery($id: String!) {
       payment_date
       status
       order
+      cheques {
+        id
+        number
+        payment_id
+        transfer_receipt
+        deposit_date
+      }
     }
     number_of_payments
     proposal_item_budgets(where: {proposal_id: {_eq: $id}}) {
@@ -65,4 +72,5 @@ export const getOneProposal = `query MyQuery($id: String!) {
     }
   }
 }
+
 `;

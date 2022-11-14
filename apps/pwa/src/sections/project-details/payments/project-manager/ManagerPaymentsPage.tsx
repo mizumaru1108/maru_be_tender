@@ -43,6 +43,37 @@ function ManagerPaymentsPage({ data, mutate }: any) {
             horizontal: 'right',
           },
         });
+        mutate();
+      }
+      if (result.error) {
+        enqueueSnackbar(result.error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'right',
+          },
+        });
+      }
+    });
+  };
+  const handleRejectPayment = () => {
+    const payload = {
+      id: paymentToApprove.id,
+      newState: { status: 'SET_BY_SUPERVISOR' },
+    };
+    updatePay(payload).then((result) => {
+      if (!result.error) {
+        enqueueSnackbar('The payment has been Rejected', {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'right',
+          },
+        });
         setPaymentToApprove({
           id: '',
           order: undefined,
@@ -65,9 +96,6 @@ function ManagerPaymentsPage({ data, mutate }: any) {
       }
     });
   };
-  const handleRejectPayment = () => {
-    console.log('handleRejectPayment');
-  };
   return (
     <Grid container spacing={3} sx={{ mt: '8px' }}>
       {paymentToApprove.id !== '' && (
@@ -77,38 +105,6 @@ function ManagerPaymentsPage({ data, mutate }: any) {
             <Stack direction="row" gap={2}>
               <Stack direction="column" flex={2}>
                 <Typography>{`الأيبان ${data.user.bank_informations[0].bank_account_number}`}</Typography>
-                {/* <Typography>
-                  لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود
-                  تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم
-                  فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو لابورأس نيسي يت أليكيوب أكس أيا كوممودو
-                  كونسيكيوات
-                </Typography> */}
-                {/* <Stack direction="row">
-                  <Button
-                    sx={{
-                      backgroundColor: 'transparent',
-                      color: '#93A3B0',
-                      textDecorationLine: 'underline',
-                      height: '100%',
-                      ':hover': { backgroundColor: '#b8b7b4', textDecorationLine: 'underline' },
-                      width: '40%',
-                    }}
-                  >
-                    عرض إذن الصرف
-                  </Button>
-                  <Button
-                    sx={{
-                      backgroundColor: 'transparent',
-                      color: '#93A3B0',
-                      textDecorationLine: 'underline',
-                      height: '100%',
-                      ':hover': { backgroundColor: '#b8b7b4', textDecorationLine: 'underline' },
-                      width: '40%',
-                    }}
-                  >
-                    عرض خطاب الدعم
-                  </Button>
-                </Stack> */}
               </Stack>
               <Stack direction="row" gap={2} sx={{ alignItems: 'center' }}>
                 <Button

@@ -1,21 +1,26 @@
 import { Typography, Grid, Box } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
-import useAuth from 'hooks/useAuth';
-import { gettingIncomingRequests } from 'queries/project-manager/gettingIncomingRequests';
+import { getProposals } from 'queries/commons/getProposal';
 import { useQuery } from 'urql';
 
 function IncomingFundingRequests() {
-  const { user } = useAuth();
-  const employee_path = user?.employee_path;
-  const [result, reexecuteQuery] = useQuery({
-    query: gettingIncomingRequests,
-    variables: { project_track: employee_path.trim() },
+  const [result] = useQuery({
+    query: getProposals,
+    variables: {
+      order_by: { created_at: 'asc' },
+      limit: 4,
+      offset: 0,
+      where: {
+        project_manager_id: { _eq: 'null' },
+        _and: { inner_status: { _eq: 'ACCEPTED_BY_SUPERVISOR' } },
+      },
+    },
   });
   const { data, fetching, error } = result;
   if (fetching) {
     return <>...Loading</>;
   }
-  const props = data?.proposal ?? [];
+  const props = data?.data ?? [];
   if (!props || props.length === 0) return <></>;
   return (
     <Box sx={{ mt: '20px' }}>

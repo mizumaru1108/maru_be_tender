@@ -60,7 +60,7 @@ export default function LoginForm() {
       await login(data.email, data.password);
     } catch (error) {
       reset();
-      setError('afterSubmit', { ...error, message: 'This email or password is not correct' });
+      setError('afterSubmit', { ...error, message: translate('login_message_error') });
     }
   };
 

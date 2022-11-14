@@ -6,6 +6,11 @@
 // ----------------------------------------------------------------------
 
 const en = {
+  pages: {
+    client: {
+      main: 'Main Client Dashboard',
+    },
+  },
   commons: {
     track_type: {
       all_tracks: 'All Tracks',
@@ -773,6 +778,12 @@ const en = {
   please_choose_the_name_of_the_client: 'Please Choose The Name Of The Client',
   write_name_to_search: 'Write Name To Search For',
   booking_an_appointment: 'Booking an Appointment',
+  acceptableRequest: 'Accepted Projects',
+  incomingNewRequest: 'Incoming New Projects',
+  pendingRequest: 'Pending Projects',
+  rejectedRequest: 'Rejected Projects',
+  totalRequest: 'Total Projects',
+  login_message_error: 'This email or password is not correct',
 };
 
 export default en;

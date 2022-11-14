@@ -1,48 +1,27 @@
-export const acceptableRequest = `
-query acceptableRequest {
-  proposal_aggregate(where: {outter_status: {_in: COMPLETED}}) {
+export const moderatorStatistics = `query moderatorStatistics {
+  acceptableRequest: proposal_aggregate(where: {outter_status: {_in: COMPLETED}}) {
     aggregate {
       count(columns: outter_status)
     }
   }
-}
-`;
-export const rejectedRequest = `
-query rejectedRequest {
-  proposal_aggregate(where: {outter_status: {_in: CANCELED}}) {
+  rejectedRequest: proposal_aggregate(where: {outter_status: {_in: CANCELED}}) {
     aggregate {
       count(columns: outter_status)
     }
   }
-}
-`;
-
-export const pendingRequest = `
-query pendingRequest {
-  proposal_aggregate(where: {outter_status: {_in: ONGOING}}) {
+  pendingRequest: proposal_aggregate(where: {outter_status: {_in: ONGOING}}) {
     aggregate {
       count(columns: project_name)
     }
   }
-}
-`;
-export const incomingNewRequest = `
-query incomingNewRequest {
-  proposal_aggregate(where: {outter_status: {_in: PENDING}}) {
+  incomingNewRequest: proposal_aggregate(where: {outter_status: {_in: PENDING}}) {
     aggregate {
       count(columns: outter_status)
     }
   }
-}
-`;
-export const totalRequest = `
-  query totalRequest {
-    proposal_aggregate(where: {outter_status: {}}) {
-      aggregate {
-        count(columns: outter_status)
-      }
+  totalRequest: proposal_aggregate(where: {outter_status: {}}) {
+    aggregate {
+      count(columns: outter_status)
     }
   }
-`;
-
-// You can summerize all the queries in only one
+}`;

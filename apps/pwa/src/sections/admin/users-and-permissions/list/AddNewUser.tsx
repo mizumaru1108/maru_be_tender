@@ -10,6 +10,7 @@ import { useSnackbar } from 'notistack';
 import * as React from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import { TMRA_RAISE_URL } from 'config';
 
 type FormValuesProps = {
   employee_name: string;
@@ -30,14 +31,17 @@ function AddNewUser() {
 
   const [error, setError] = React.useState<string>('');
 
-  const [sucessOpen, setSucessOpen] = React.useState(false);
-
-  const { enqueueSnackbar } = useSnackbar();
+  const [sucessCreateOpen, setSucessCreateOpen] = React.useState(false);
 
   const NewEmployeeSchema = Yup.object().shape({
     employee_name: Yup.string().required('Employee Name required'),
     email: Yup.string().required('Email is required'),
-    mobile_number: Yup.string().required('Mobile Number strengths is required'),
+    mobile_number: Yup.string()
+      .required('Mobile Number is required')
+      .matches(
+        /^\+9665[0-9]{8}$/,
+        `The Mobile Number must be written in the exact way of +9665xxxxxxxx`
+      ),
     password: Yup.string().required('password is required'),
     user_roles: Yup.string().required('User Roles is required'),
     employee_path: Yup.string().required('Employee Path is required'),
@@ -65,24 +69,23 @@ function AddNewUser() {
   } = methods;
 
   const onSubmit = async (data: FormValuesProps) => {
-    console.log(data);
+    const { employee_path, ...restData } = data;
     try {
       const res = await axios.post(
-        'https://api-staging.tmra.io/v2/raise/tender-employee/create',
-        data,
+        `${TMRA_RAISE_URL}/tender-user/create`,
+        { ...restData, ...(data.employee_path !== 'GENERAL' && { employee_path }) },
         {
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },
         }
       );
-      setSucessOpen(true);
+      setSucessCreateOpen(true);
       navigate('/admin/dashboard/users-and-permissions');
     } catch (error) {
-      setError(error.message);
+      setError(error.response.data.message);
       setErrorOpen(true);
     }
   };
@@ -91,7 +94,7 @@ function AddNewUser() {
     if (reason === 'clickaway') {
       return;
     }
-    setSucessOpen(false);
+    setSucessCreateOpen(false);
     setErrorOpen(false);
   };
 
@@ -99,7 +102,7 @@ function AddNewUser() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Snackbar
-        open={sucessOpen}
+        open={sucessCreateOpen}
         autoHideDuration={6000}
         onClose={handleClose}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -108,6 +111,7 @@ function AddNewUser() {
           تم إنشاء الحساب بنجاح
         </Alert>
       </Snackbar>
+
       <Snackbar
         open={errorOpen}
         autoHideDuration={6000}
@@ -189,6 +193,9 @@ function AddNewUser() {
                 placeholder="الرجاء اختيار اسم الجهة"
               >
                 <>
+                  <option value={'GENERAL'} style={{ backgroundColor: '#fff' }}>
+                    عام
+                  </option>
                   <option value={'MOSQUES'} style={{ backgroundColor: '#fff' }}>
                     مسار المساجد
                   </option>

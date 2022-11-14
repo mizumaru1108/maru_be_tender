@@ -5,8 +5,6 @@ import { ActionMap, AuthState, AuthUser, JWTContextType } from '../@types/auth';
 import { FUSIONAUTH_API } from 'config';
 import { fusionAuthClient } from 'utils/fusionAuth';
 import axios from 'axios';
-import { data } from 'sections/project-manager/appintments-with-partner/mockData';
-// ----------------------------------------------------------------------
 
 enum Types {
   Initial = 'INITIALIZE',
@@ -57,14 +55,12 @@ const JWTReducer = (state: AuthState, action: JWTActions) => {
         isAuthenticated: false,
         user: null,
       };
-
     case 'REGISTER':
       return {
         ...state,
         isAuthenticated: true,
         user: action.payload.user,
       };
-
     default:
       return state;
   }
@@ -92,15 +88,15 @@ function AuthProvider({ children }: AuthProviderProps) {
         if (accessToken && isValidToken(accessToken)) {
           setSession(accessToken, refreshToken);
           const user = await fusionAuthClient.retrieveUserUsingJWT(accessToken);
-          const sectionResponse = await axios.get(
-            'https://api-staging.tmra.io/v2/raise/tender-client/current-user-track',
-            { headers: { Authorization: `Bearer ${accessToken}` } }
-          );
+          // const sectionResponse = await axios.get(
+          //   'https://api-staging.tmra.io/v2/raise/tender-client/current-user-track',
+          //   { headers: { Authorization: `Bearer ${accessToken}` } }
+          // );
           dispatch({
             type: Types.Initial,
             payload: {
               isAuthenticated: true,
-              user: { ...user.response.user!, employee_path: sectionResponse.data.data },
+              user: { ...user.response.user! },
             },
           });
         } else {
@@ -137,14 +133,14 @@ function AuthProvider({ children }: AuthProviderProps) {
 
     setSession(accessToken!, refreshToken!);
 
-    const sectionResponse = await axios.get(
-      'https://api-staging.tmra.io/v2/raise/tender-client/current-user-track',
-      { headers: { Authorization: `Bearer ${accessToken}` } }
-    );
+    // const sectionResponse = await axios.get(
+    //   'https://api-staging.tmra.io/v2/raise/tender-client/current-user-track',
+    //   { headers: { Authorization: `Bearer ${accessToken}` } }
+    // );
     dispatch({
       type: Types.Login,
       payload: {
-        user: { ...user, employee_path: sectionResponse.data.data },
+        user: { ...user },
       },
     });
   };

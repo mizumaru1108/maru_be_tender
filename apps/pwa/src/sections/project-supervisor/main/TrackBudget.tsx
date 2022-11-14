@@ -2,7 +2,7 @@ import { Box, Grid, Typography } from '@mui/material';
 
 function TrackBudget() {
   return (
-    <Grid container spacing={3} sx={{ mt: '1px' }}>
+    <Grid container spacing={2}>
       <Grid item md={12}>
         <Typography variant="h4">ميزانية المسار</Typography>
       </Grid>

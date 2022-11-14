@@ -42,8 +42,8 @@ export class CampaignCreateEditBaseDto {
   title?: string;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  // @IsString()
+  // @IsNotEmpty()
   description: string;
 
   @ApiProperty()

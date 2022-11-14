@@ -1,11 +1,32 @@
 import { Box, Button, Grid, useTheme } from '@mui/material';
 import Iconify from 'components/Iconify';
-import React from 'react';
+import React, { useState } from 'react';
+import ActionPopup from './follow-ups-popups/ActionPopup';
+import FilePopup from './follow-ups-popups/FilePopup';
 
-function FollowUpsAction() {
+type Props = {
+  mutate: () => void;
+};
+function FollowUpsAction({ mutate }: Props) {
   const theme = useTheme();
+  const [actoinOpen, setActionOpen] = useState(false);
+  const [fileOpen, setFileOpen] = useState(false);
+  const handleActionClose = () => {
+    setActionOpen(false);
+  };
+  const handleActionOpen = () => {
+    setActionOpen(true);
+  };
+  const handleFileClose = () => {
+    setFileOpen(false);
+  };
+  const handleFileOpen = () => {
+    setFileOpen(true);
+  };
   return (
     <Grid container>
+      <ActionPopup open={actoinOpen} handleClose={handleActionClose} mutate={mutate} />
+      <FilePopup open={fileOpen} handleClose={handleFileClose} mutate={mutate} />
       <Grid item md={4} xs={12}>
         <Box>{''}</Box>
       </Grid>
@@ -15,7 +36,6 @@ function FollowUpsAction() {
             px: '40px',
             py: '15px',
             backgroundColor: 'white',
-            // p: 3,
             width: '100%',
             border: `1px solid ${theme.palette.grey[400]}`,
             display: 'flex',
@@ -24,10 +44,7 @@ function FollowUpsAction() {
           }}
         >
           <Button
-            onClick={() => {
-              alert('comment');
-              // handleAction('comment');
-            }}
+            onClick={handleActionOpen}
             sx={{
               backgroundColor: '#fff',
               color: '#000',
@@ -38,10 +55,7 @@ function FollowUpsAction() {
             إضافة تعليق
           </Button>
           <Button
-            onClick={() => {
-              alert('file');
-              // handleAction('file');
-            }}
+            onClick={handleFileOpen}
             sx={{
               backgroundColor: '#fff',
               color: '#000',

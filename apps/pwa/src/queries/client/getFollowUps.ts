@@ -1,5 +1,5 @@
-export const getFollowUps = `query MyQuery($proposal_id: String = "") {
-  proposal_follow_up(where: {proposal_id: {_eq: $proposal_id}}) {
+export const getFollowUps = `query MyQuery($where: proposal_follow_up_bool_exp = {}) {
+  proposal_follow_up(where: $where) {
     id
     action
     file
@@ -11,5 +11,4 @@ export const getFollowUps = `query MyQuery($proposal_id: String = "") {
     created_at
   }
 }
-
 `;

@@ -20,6 +20,7 @@ type Props = {
   bankAccountName?: string;
   accountNumber?: string | number;
   imageUrl?: string;
+  size?: number;
 };
 
 const BankImageComp = ({
@@ -28,6 +29,7 @@ const BankImageComp = ({
   bankAccountName,
   accountNumber,
   imageUrl,
+  size,
 }: Props) => (
   <Stack direction="column" gap={1} sx={{ height: '270px' }} justifyContent="center">
     <Paper
@@ -81,7 +83,7 @@ const BankImageComp = ({
                 صورة بطاقة الحساب البنكي
               </Typography>
               <Typography gutterBottom sx={{ fontSize: '13px' }}>
-                126KB
+                {`${size !== undefined ? size.toFixed(2) : 145}KB`}
               </Typography>
             </Stack>
           </Stack>

@@ -1,5 +1,5 @@
-export const gettingPreviousProposals = `query MyQuery($id: String = "", $limit: Int = 10, $offset: Int = 0, $order_by: [proposal_order_by!] = {}, $tap_filter: proposal_request_enum = COMPLETED) {
-  data: proposal(where: {submitter_user_id: {_eq: $id}, outter_status: {_eq: $tap_filter}}, limit: $limit, offset: $offset, order_by: $order_by) {
+export const gettingPreviousProposals = `query MyQuery($limit: Int = 10, $offset: Int = 0, $order_by: [proposal_order_by!] = {}, $where: proposal_bool_exp = {}) {
+  data: proposal(limit: $limit, offset: $offset, order_by: $order_by, where: $where) {
     id
     outter_status
     project_name

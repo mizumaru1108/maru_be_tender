@@ -1,6 +1,5 @@
-import { Tabs, Tab, Box, IconButton, Stack, Typography } from '@mui/material';
+import { Box, IconButton, Stack, Typography } from '@mui/material';
 import { getOneProposal } from 'queries/commons/getOneProposal';
-import { useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useQuery } from 'urql';
 import ActionBar from './ActionBar';
@@ -10,6 +9,7 @@ import { FollowUps } from './follow-ups';
 import MainPage from './MainPage';
 import Payments from './Payments';
 import ProjectBudget from './ProjectBudget';
+import { ProjectPath } from './project-path';
 import TimeLine from './TimeLine';
 
 function ProjectDetailsMainPage() {
@@ -20,7 +20,6 @@ function ProjectDetailsMainPage() {
   });
   const { data, fetching, error } = result;
 
-  // Language
   const location = useLocation();
   const navigate = useNavigate();
   const activeTap = location.pathname.split('/').at(-1);
@@ -28,13 +27,12 @@ function ProjectDetailsMainPage() {
   if (fetching) return <>...Loading</>; // later on Skelton
   if (error) return <>{error.graphQLErrors}</>;
   if (data.proposal_by_pk === null) return <>There is no data for this tap ... </>;
-
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Stack direction="row">
         <IconButton
           onClick={() => {
-            navigate(-1);
+            navigate(`/${location.pathname.split('/')[1]}/dashboard/app`);
           }}
         >
           <svg
@@ -125,7 +123,7 @@ function ProjectDetailsMainPage() {
         <ExchangeDetails data={data.proposal_by_pk} mutate={reexecuteGetOne} />
       )}
       {activeTap === 'project-timeline' && <TimeLine />}
-
+      {activeTap === 'project-path' && <ProjectPath data={data.proposal_by_pk} />}
       <FloatinActonBar proposalData={data.proposal_by_pk} />
     </Box>
   );

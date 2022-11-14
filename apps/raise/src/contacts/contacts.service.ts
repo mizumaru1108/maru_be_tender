@@ -14,6 +14,7 @@ import {
   NotificationsDocument,
 } from 'src/organization/schema/notifications.schema';
 import { EmailService } from '../libs/email/email.service';
+import { SendEmailDto } from '../libs/email/dtos/requests/send-email.dto';
 
 @Injectable()
 export class ContactsService {
@@ -39,72 +40,38 @@ export class ContactsService {
       const organizationData = await this.organizationModel.findOne(filter, {});
       //console.log(organizationData);
       if (organizationData) {
-        // const resp = await this.mailerService.sendMail({
-        //   // to: organizationData['contactEmail'],
-        //   // to: 'hello.givingsadaqah@mailinator.com', // organizationData['contactEmail'],
-        //   to: message.email, // organizationData['contactEmail'],
-        //   subject: 'Donor has sent you an Email',
-        //   template: 'email',
-        //   context: {
-        //     name: message.name,
-        //     email: message.email,
-        //     help_message: message.help_message,
-        //   },
-        //   attachments: message.files,
-        // });
-        // console.log(resp);
-        // success = true;
-        // statusCode = 200;
-        // txtMessage = 'Your email has been sent';
-
-        // await this.mailerService.sendMail({
-        //   // to: organizationData['contactEmail'],
-        //   to: message.email, // organizationData['contactEmail'],
-        //   subject: 'Thanks for letting us know',
-        //   template: 'donor',
-        //   context: {
-        //     name: message.name,
-        //   },
-        // });
-        await this.emailService.sendMailWAttachment( 
-          organizationData.contactEmail,
-          //message.email,
-          'Donor has sent you an Email',
-          'email',
-          {
+        const donorSendEmailParams: SendEmailDto = {
+          to: organizationData.contactEmail, // change to your email to test, ex: rdanang.dev@gmail.com, default value is registeredUser.email
+          subject: 'Donor has sent you an Email',
+          mailType: 'template',
+          templatePath: 'email',
+          templateContext: {
             name: message.name,
             email: message.email,
             help_message: message.help_message,
           },
-          message.files,
-          organizationData.contactEmail,
-        );
+          attachments: [...message.files],
+          from: 'hello@tmra.io', // we can make it dynamic when new AWS SESW identity available
+        };
 
-        // await this.emailService.sendMail(
-        //   message.email,
-        //   'Thanks for letting us know',
-        //   'donor',
-        //   {
-        //     name: message.name,
-        //   },
-        // );
+        await this.emailService.sendMail(donorSendEmailParams);
 
-
-        await this.emailService.sendMailWAttachment( 
-          message.email,
-          'Thanks for letting us know',
-          'donor',
-          {
+        const letUsKnowParams: SendEmailDto = {
+          to: message.email, // change to your email to test, ex: rdanang.dev@gmail.com, default value is registeredUser.email
+          subject: 'Thanks for letting us know',
+          mailType: 'template',
+          templatePath: 'donor',
+          templateContext: {
             name: message.name,
             email: message.email,
             help_message: message.help_message,
           },
-          message.files,
-          organizationData.contactEmail
-          // 'hello@tmra.io',
-        );
+          attachments: [...message.files],
+          from: 'hello@tmra.io', // we can make it dynamic when new AWS SESW identity available
+        };
 
-        
+        await this.emailService.sendMail(letUsKnowParams);
+
         this.notificationsModel.create({
           organizationId: new Types.ObjectId(organizationId),
           type: 'general',
@@ -114,7 +81,7 @@ export class ContactsService {
           icon: 'message',
           markAsRead: false,
         });
-        
+
         success = true;
         statusCode = 200;
         txtMessage = 'Your email has been sent';

@@ -15,6 +15,8 @@ import {
   TablePagination,
   Typography,
   Stack,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
@@ -34,65 +36,9 @@ import UsersAndPermissionsToolbar from './list/UsersAndPermissionsToolbar';
 import UsersAndPermissionsTableRow from './list/UsersAndPermissionsTableRow';
 import { useQuery } from 'urql';
 import { getAllTheEmployees } from 'queries/admin/getAllTheEmployees';
+import { TMRA_RAISE_URL } from 'config';
+import axios from 'axios';
 
-const mockData = [
-  {
-    id: '1',
-    name: 'الاسم الاول الكنية',
-    email: 'test.test@gmail.com',
-    permissions: ['supervisor', 'project-manager'],
-    activation: false,
-  },
-  {
-    id: '2',
-    name: 'الاسم الاول الكنية',
-    email: 'test.test@gmail.com',
-    permissions: ['supervisor', 'project-manager'],
-    activation: true,
-  },
-  {
-    id: '3',
-    name: 'الاسم الاول الكنية',
-    email: 'test.test@gmail.com',
-    permissions: ['supervisor', 'project-manager'],
-    activation: false,
-  },
-  {
-    id: '4',
-    name: 'الاسم الاول الكنية',
-    email: 'test.test@gmail.com',
-    permissions: ['supervisor', 'project-manager'],
-    activation: true,
-  },
-  {
-    id: '5',
-    name: 'الاسم الاول الكنية',
-    email: 'test.test@gmail.com',
-    permissions: ['supervisor', 'project-manager'],
-    activation: true,
-  },
-  {
-    id: '6',
-    name: 'الاسم الاول الكنية',
-    email: 'test.test@gmail.com',
-    permissions: ['supervisor', 'project-manager'],
-    activation: true,
-  },
-  {
-    id: '7',
-    name: 'الاسم الاول الكنية',
-    email: 'test.test@gmail.com',
-    permissions: ['supervisor', 'project-manager'],
-    activation: false,
-  },
-  {
-    id: '8',
-    name: 'الاسم الاول الكنية',
-    email: 'test.test@gmail.com',
-    permissions: ['supervisor', 'project-manager'],
-    activation: true,
-  },
-];
 const TABLE_HEAD = [
   { id: 'name', label: 'الاسم', align: 'left' },
   { id: 'email', label: 'ايميل', align: 'left' },
@@ -122,6 +68,12 @@ export default function UsersAndPermissionsTable() {
 
   const { themeStretch } = useSettings();
 
+  const [actionError, setActionError] = useState<string>('');
+
+  const [errorOpen, setErrorOpen] = useState(false);
+
+  const [sucessDeleteOpen, setSucessDeleteOpen] = useState(false);
+
   const navigate = useNavigate();
 
   const [result, mutate] = useQuery({ query: getAllTheEmployees });
@@ -145,10 +97,36 @@ export default function UsersAndPermissionsTable() {
     setFilterRole(event.target.value);
   };
 
-  const handleDeleteRow = (id: string) => {
-    const deleteRow = tableData.filter((row) => row.id !== id);
-    setSelected([]);
-    setTableData(deleteRow);
+  const handleDeleteRow = async (id: string) => {
+    console.log(id);
+    try {
+      const res = await axios.post(
+        `${TMRA_RAISE_URL}/tender-user/delete`,
+        { user_id: id },
+        {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          },
+        }
+      );
+      const deleteRow = tableData.filter((row) => row.id !== id);
+      setSelected([]);
+      setTableData(deleteRow);
+      setSucessDeleteOpen(true);
+    } catch (error) {
+      setActionError(error.response.data.message);
+      setErrorOpen(true);
+    }
+  };
+
+  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSucessDeleteOpen(false);
+    setErrorOpen(false);
   };
 
   const handleDeleteRows = (selected: string[]) => {
@@ -190,6 +168,16 @@ export default function UsersAndPermissionsTable() {
   if (error) return <>...Opss, something went wrong</>;
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
+      <Snackbar
+        open={sucessDeleteOpen}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+          تم حذف المستخدم بنجاح
+        </Alert>
+      </Snackbar>
       <Stack direction="row" justifyContent="space-between" sx={{ mb: '40px' }}>
         <Box sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
           <Typography variant="h4" gutterBottom sx={{ fontFamily: 'Cairo', fontStyle: 'Bold' }}>

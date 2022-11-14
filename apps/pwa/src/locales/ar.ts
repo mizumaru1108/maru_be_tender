@@ -6,6 +6,11 @@
 // ----------------------------------------------------------------------
 
 const ar = {
+  pages: {
+    client: {
+      main: 'صفحة الزبون العامة',
+    },
+  },
   commons: {
     track_type: {
       all_tracks: 'جميع المسارات',
@@ -821,6 +826,12 @@ const ar = {
   please_choose_the_name_of_the_client: 'الرجاء اختيار اسم الشريك',
   write_name_to_search: 'اكتب اسم للبحث عنه',
   booking_an_appointment: 'حجز موعد',
+  acceptableRequest: 'مشاريع مقبولة',
+  incomingNewRequest: 'مشاريع جديدة واردة',
+  pendingRequest: 'مشاريع معلقة',
+  rejectedRequest: 'مشاريع مرفوضة',
+  totalRequest: 'عدد مشاريع الكلي',
+  login_message_error: 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
 };
 
 export default ar;

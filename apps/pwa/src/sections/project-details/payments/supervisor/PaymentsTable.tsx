@@ -1,9 +1,9 @@
-import { Box, Button, Grid, Stack, Typography } from '@mui/material';
+import { Box, Button, Grid, Link, Stack, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { updatePayment } from 'queries/project-supervisor/updatePayment';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation } from 'urql';
-
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // The general page after the payments are set
 /**
  * payments = [
@@ -23,6 +23,9 @@ const PaymentsNames = [
   'الدفعة الخامسة',
   'الدفعة السادسة',
   'الدفعة السابعة',
+  'الدفعة الثامنة',
+  'الدفعة التاسعة',
+  'الدفعة العاشرة',
 ];
 type PaymentProps = {
   payment_date: string;
@@ -76,7 +79,6 @@ function PaymentsTable({ payments, children }: { payments: PaymentProps[]; child
       }
     }
   }, [beenIssued, payments]);
-  console.log(currentIssuedPayament);
   return (
     <>
       {payments.map((item: any, index: any) => (
@@ -128,13 +130,15 @@ function PaymentsTable({ payments, children }: { payments: PaymentProps[]; child
             {item.status === 'DONE' ? (
               <Grid item md={2}>
                 <Button
+                  component={Link}
+                  href={item.cheques[0].transfer_receipt}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download="صورة بطاقة الحساب البنكي"
                   sx={{
                     backgroundColor: 'transparent',
                     color: '#000',
                     textDecorationLine: 'underline',
-                  }}
-                  onClick={() => {
-                    console.log('asdasd');
                   }}
                 >
                   استعراض ايصال التحويل

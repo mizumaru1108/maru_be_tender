@@ -5,6 +5,7 @@ import { EmailModule } from '../libs/email/email.module';
 import { FusionAuthModule } from '../libs/fusionauth/fusion-auth.module';
 import { PaytabsModule } from '../libs/paytabs/paytabs.module';
 import { StripeModule } from '../libs/stripe/stripe.module';
+import { GoogleCalendarModule } from '../libs/google-calendar/google-calendar.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { StripeModule } from '../libs/stripe/stripe.module';
     EmailModule,
     PaytabsModule,
     StripeModule,
+    GoogleCalendarModule,
   ],
 })
 export class SharedModule {}
