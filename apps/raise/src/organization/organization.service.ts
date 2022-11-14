@@ -76,6 +76,7 @@ import {
   DonationLog,
   DonationLogDocument,
 } from '../donation/schema/donation-log.schema';
+import { SendEmailDto } from '../libs/email/dtos/requests/send-email.dto';
 
 @Injectable()
 export class OrganizationService {
@@ -181,13 +182,20 @@ export class OrganizationService {
     }
 
     const emailData = { name: orgUpdated.name };
-    await this.emailService.sendMailWTemplate(
-      orgUpdated.contactEmail,
-      'Giving Sadaqah Updates',
-      'account_update',
-      emailData,
-      'hello@tmra.io', // optional, you can delete it, when new identity is provided, we can use other identity ex: ommar.net
-    );
+
+    const emailParams: SendEmailDto = {
+      to: orgUpdated.contactEmail, // change to your email to test, ex: rdanang.dev@gmail.com, default value is registeredUser.email
+      subject: 'Giving Sadaqah Updates',
+      mailType: 'template',
+      templatePath: 'account_update',
+      templateContext: {
+        name: orgUpdated.name,
+      },
+      from: 'hello@tmra.io', // we can make it dynamic when new AWS SESW identity available
+    };
+
+    await this.emailService.sendMail(emailParams);
+
     return {
       statusCode: 200,
       organization: orgUpdated,

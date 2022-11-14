@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import {
   Prisma,
-  project_track_flows,
   proposal,
   proposal_item_budget,
   proposal_log,
@@ -17,11 +16,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { BunnyService } from '../../libs/bunny/services/bunny.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import {
+  appRoleMappers,
   TenderAppRole,
   TenderFusionAuthRoles,
-  appRoleMappers,
 } from '../../tender-commons/types';
-import { InnerStatus, OutterStatus } from '../../tender-commons/types/proposal';
+import { InnerStatus } from '../../tender-commons/types/proposal';
 import { compareUrl } from '../../tender-commons/utils/compare-jsonb-imageurl';
 
 import { ICurrentUser } from '../../user/interfaces/current-user.interface';
@@ -270,106 +269,6 @@ export class TenderProposalService {
     return response;
   }
 
-  async fetchTrack(
-    state: TenderAppRole,
-    track_name: string,
-    defaultTrack: boolean,
-  ): Promise<project_track_flows> {
-    if (defaultTrack) {
-      const currentTrack =
-        await this.prismaService.project_track_flows.findFirst({
-          where: {
-            assigned_to: state,
-            belongs_to_track: 'DEFAULT_TRACK',
-          },
-        });
-
-      if (!currentTrack) throw new NotFoundException('Track not found');
-
-      const nextTrack = await this.prismaService.project_track_flows.findFirst({
-        where: {
-          step_position: currentTrack.step_position! + 1,
-          belongs_to_track: track_name,
-        },
-      });
-      if (!nextTrack) throw new NotFoundException('Track not found');
-      return nextTrack;
-    } else {
-      console.log('state', state);
-      console.log('track name', track_name);
-
-      const currentTrack =
-        await this.prismaService.project_track_flows.findFirst({
-          where: {
-            assigned_to: state,
-            belongs_to_track: track_name,
-          },
-        });
-
-      if (!currentTrack)
-        throw new NotFoundException(
-          `There's no ${state} roles in ${track_name} track, please check your ${track_name} flow`,
-        );
-
-      const nextTrack = await this.prismaService.project_track_flows.findFirst({
-        where: {
-          step_position: currentTrack.step_position! + 1,
-          belongs_to_track: track_name,
-        },
-      });
-      if (!nextTrack)
-        throw new NotFoundException(
-          `Next track not found after step number ${currentTrack.step_position}, in ${track_name} track`,
-        );
-      return nextTrack;
-    }
-  }
-
-  async createLog(
-    proposal_id: string,
-    reviewer_id: string,
-    client_user_id: string,
-    state: string,
-    project_kind: string,
-    inner_status: InnerStatus | null,
-    outter_status: OutterStatus | null,
-    notes?: string | undefined,
-    procedures?: string | undefined,
-  ): Promise<proposal_log> {
-    let conditional = {};
-    if (notes) {
-      conditional = {
-        ...conditional,
-        notes: notes,
-      };
-    }
-    if (procedures) {
-      conditional = {
-        ...conditional,
-        procedures: procedures,
-      };
-    }
-    try {
-      const createdLogs = await this.prismaService.proposal_log.create({
-        data: {
-          id: nanoid(),
-          proposal_id,
-          reviewer_id,
-          client_user_id,
-          state,
-          project_kind,
-          inner_status: inner_status ? inner_status : null,
-          outter_status,
-          ...conditional,
-        },
-      });
-      return createdLogs;
-    } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException(error.message);
-    }
-  }
-
   async handleModeratorApprove(
     currentUser: ICurrentUser,
     currentProposal: proposal,
@@ -387,8 +286,11 @@ export class TenderProposalService {
           'responsible officer (Supervisor) is required!',
         );
       }
-      const nextTrack = await this.fetchTrack('MODERATOR', track_name, true);
-      // console.log('next', nextTrack);
+      const nextTrack = await this.tenderProposalFlowService.fetchTrack(
+        'MODERATOR',
+        track_name,
+        true,
+      );
 
       // update the track proposal from default to the defined track by the moderator, also asign to the next state.
       const updatedProposal = await this.prismaService.proposal.update({
@@ -411,7 +313,7 @@ export class TenderProposalService {
         currentProposal.submitter_user_id,
       );
       // create logs
-      // const createdLog = await this.createLog(
+      // const createdLog = await this.tenderProposalLogService.createLog(
       //   currentProposal.id,
       //   currentUser.id,
       //   currentProposal.submitter_user_id,
@@ -424,7 +326,7 @@ export class TenderProposalService {
       // );
       // log = createdLog;
     } else {
-      const nextTrack = await this.fetchTrack(
+      const nextTrack = await this.tenderProposalFlowService.fetchTrack(
         'MODERATOR',
         proposal.project_track,
         false,
@@ -445,7 +347,7 @@ export class TenderProposalService {
       proposal = updatedProposal;
 
       // create logs
-      const createdLog = await this.createLog(
+      const createdLog = await this.tenderProposalLogService.createLog(
         currentProposal.id,
         currentUser.id, //should be there since it's already determined by the moderator (has track)
         currentProposal.submitter_user_id,
@@ -473,7 +375,7 @@ export class TenderProposalService {
     let proposal: proposal = currentProposal;
     let log: proposal_log | null = null;
 
-    const nextTrack = await this.fetchTrack(
+    const nextTrack = await this.tenderProposalFlowService.fetchTrack(
       'PROJECT_SUPERVISOR',
       proposal.project_track,
       false,
@@ -539,7 +441,7 @@ export class TenderProposalService {
       proposal = updatedProposal;
 
       // create logs
-      const createdLog = await this.createLog(
+      const createdLog = await this.tenderProposalLogService.createLog(
         currentProposal.id,
         currentUser.id, //should be there since it's already determined by the moderator (has track)
         currentProposal.submitter_user_id,
@@ -571,7 +473,7 @@ export class TenderProposalService {
 
     if (!request.notes) throw new BadRequestException('notes is required!');
 
-    const nextTrack = await this.fetchTrack(
+    const nextTrack = await this.tenderProposalFlowService.fetchTrack(
       'PROJECT_MANAGER',
       currentProposal.project_track,
       false,
@@ -591,7 +493,7 @@ export class TenderProposalService {
     proposal = updatedProposal;
 
     // create logs
-    const createdLog = await this.createLog(
+    const createdLog = await this.tenderProposalLogService.createLog(
       currentProposal.id,
       currentUser.id,
       currentProposal.submitter_user_id,
@@ -621,7 +523,7 @@ export class TenderProposalService {
     if (!request.procedures)
       throw new BadRequestException('procedures is required!');
 
-    const nextTrack = await this.fetchTrack(
+    const nextTrack = await this.tenderProposalFlowService.fetchTrack(
       'CONSULTANT',
       currentProposal.project_track,
       false,
@@ -641,7 +543,7 @@ export class TenderProposalService {
     proposal = updatedProposal;
 
     // create logs
-    const createdLog = await this.createLog(
+    const createdLog = await this.tenderProposalLogService.createLog(
       currentProposal.id,
       currentUser.id, //should be there since it's already determined by the moderator (has track)
       currentProposal.submitter_user_id,
@@ -667,7 +569,7 @@ export class TenderProposalService {
     let proposal: proposal = currentProposal;
     let log: proposal_log | null = null;
 
-    const nextTrack = await this.fetchTrack(
+    const nextTrack = await this.tenderProposalFlowService.fetchTrack(
       'CEO',
       currentProposal.project_track,
       false,
@@ -687,7 +589,7 @@ export class TenderProposalService {
     proposal = updatedProposal;
 
     // create logs
-    const createdLog = await this.createLog(
+    const createdLog = await this.tenderProposalLogService.createLog(
       currentProposal.id,
       currentUser.id,
       currentProposal.submitter_user_id,
@@ -711,7 +613,7 @@ export class TenderProposalService {
   ) {
     if (!request.notes) throw new BadRequestException('notes is required!');
 
-    const nextTrack = await this.fetchTrack(
+    const nextTrack = await this.tenderProposalFlowService.fetchTrack(
       'MODERATOR',
       currentProposal.project_track,
       false,
@@ -730,7 +632,7 @@ export class TenderProposalService {
     });
 
     // create logs
-    const createdLog = await this.createLog(
+    const createdLog = await this.tenderProposalLogService.createLog(
       currentProposal.id,
       currentUser.id,
       currentProposal.submitter_user_id,
@@ -754,7 +656,7 @@ export class TenderProposalService {
   ) {
     if (!request.notes) throw new BadRequestException('notes is required!');
 
-    const nextTrack = await this.fetchTrack(
+    const nextTrack = await this.tenderProposalFlowService.fetchTrack(
       'PROJECT_SUPERVISOR',
       currentProposal.project_track,
       false,
@@ -773,7 +675,7 @@ export class TenderProposalService {
     });
 
     // create logs
-    const createdLog = await this.createLog(
+    const createdLog = await this.tenderProposalLogService.createLog(
       currentProposal.id,
       currentUser.id,
       currentProposal.submitter_user_id,
@@ -869,7 +771,7 @@ export class TenderProposalService {
         },
       });
 
-      const createdLog = await this.createLog(
+      const createdLog = await this.tenderProposalLogService.createLog(
         proposal.id,
         proposal.supervisor_id!, //should be there since it's already determined by the moderator (has track)
         proposal.submitter_user_id,
@@ -936,7 +838,7 @@ export class TenderProposalService {
           },
         });
 
-        const createdLog = await this.createLog(
+        const createdLog = await this.tenderProposalLogService.createLog(
           proposal.id,
           currentUser.id,
           proposal.submitter_user_id,

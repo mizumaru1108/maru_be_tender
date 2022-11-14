@@ -4,114 +4,131 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { nanoid } from 'nanoid';
-import { PrismaService } from '../../prisma/prisma.service';
-import { ICurrentUser } from '../../user/interfaces/current-user.interface';
+import { PrismaService } from '../../../prisma/prisma.service';
+import { ICurrentUser } from '../../../user/interfaces/current-user.interface';
 import { ClientEditRequestDto } from '../dtos/requests/client-edit-request.dto';
 
 import { edit_request, Prisma, user } from '@prisma/client';
-import { RegisterTenderDto } from '../../tender-auth/dtos/requests/register-tender.dto';
+import { RegisterTenderDto } from '../../../tender-auth/dtos/requests/register-tender.dto';
 import { ClientEditRequestResponseDto } from '../dtos/responses/client-edit-request.response.dto';
 import moment from 'moment';
-import { compareUrl } from '../../tender-commons/utils/compare-jsonb-imageurl';
+import { compareUrl } from '../../../tender-commons/utils/compare-jsonb-imageurl';
+import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
 
 @Injectable()
 export class TenderClientService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private tenderUserRepository: TenderUserRepository,
+  ) {}
 
-  async getUserTrack(userId: string): Promise<string | null> {
-    const track = await this.prismaService.user.findUnique({
-      where: {
-        id: userId,
-      },
-      select: {
-        employee_path: true,
-      },
-    });
-    if (!track) throw new NotFoundException('User not found');
-    return track.employee_path;
-  }
+  // async getUserTrack(userId: string): Promise<string | null> {
+  //   const track = await this.prismaService.user.findUnique({
+  //     where: {
+  //       id: userId,
+  //     },
+  //     select: {
+  //       employee_path: true,
+  //     },
+  //   });
+  //   if (!track) throw new NotFoundException('User not found');
+  //   return track.employee_path;
+  // }
 
   // create user and it's relation to client_data table by user_id in client_data table
   async createUserAndClient(
     idFromFusionAuth: string,
     request: RegisterTenderDto,
   ): Promise<user> {
-    try {
-      const result = await this.prismaService.user.create({
-        data: {
-          id: idFromFusionAuth,
-          employee_name: request.data.employee_name,
-          email: request.data.email,
-          mobile_number: request.data.phone,
-          user_type_id: 'CLIENT',
-          employee_path: request.data.employee_path || null,
-          client_data: {
-            create: {
-              id: nanoid(),
-              license_number: request.data.license_number,
-              authority: request.data.authority,
-              board_ofdec_file: {
-                url: request.data.board_ofdec_file.url,
-                type: request.data.board_ofdec_file.type,
-                size: request.data.board_ofdec_file.size,
-              },
-              center_administration: request.data.center_administration,
-              ceo_mobile: request.data.ceo_mobile,
-              data_entry_mail: request.data.data_entry_mail,
-              data_entry_name: request.data.data_entry_name,
-              data_entry_mobile: request.data.data_entry_mobile,
-              ceo_name: request.data.ceo_name,
-              entity_mobile: request.data.entity_mobile,
-              governorate: request.data.governorate,
-              region: request.data.region,
-              headquarters: request.data.headquarters,
-              entity: request.data.entity,
-              license_file: {
-                url: request.data.license_file.url,
-                type: request.data.license_file.type,
-                size: request.data.license_file.size,
-              },
-              date_of_esthablistmen: moment(
-                request.data.date_of_esthablistmen,
-              ).toISOString(),
-              license_expired: moment(
-                request.data.license_expired,
-              ).toISOString(),
-              license_issue_date: moment(
-                request.data.license_issue_date,
-              ).toISOString(),
-              num_of_beneficiaries: request.data.num_of_beneficiaries,
-              website: request.data.website,
-              twitter_acount: request.data.twitter_acount,
-              num_of_employed_facility: request.data.num_of_employed_facility,
-              phone: request.data.phone,
-              client_field: request.data.client_field,
-              vat: request.data.vat,
-              status: request.data.status || null,
-            },
-          },
-
-          bank_information: {
-            createMany: {
-              data: request.data.bank_informations.map((bank) => ({
-                bank_name: bank.bank_name || null,
-                bank_account_number: bank.bank_account_number || null,
-                bank_account_name: bank.bank_account_name || null,
-                card_image: {
-                  url: bank.card_image.url,
-                  type: bank.card_image.type,
-                  size: bank.card_image.size,
-                },
-              })),
-            },
-          },
+    // base user information
+    const userCreatePayload: Prisma.userCreateInput = {
+      id: idFromFusionAuth,
+      employee_name: request.data.employee_name,
+      email: request.data.email,
+      mobile_number: request.data.phone,
+      user_type: {
+        connect: {
+          id: 'CLIENT',
         },
-      });
-      return result;
-    } catch (error) {
-      console.log(error);
-      throw new Error('something went wrong!');
+      },
+    };
+
+    // path of the user
+    if (request.data.employee_path) {
+      userCreatePayload.employee_track = {
+        connect: {
+          id: request.data.employee_path,
+        },
+      };
     }
+
+    // client data
+    userCreatePayload.client_data = {
+      create: {
+        id: nanoid(),
+        license_number: request.data.license_number,
+        authority: request.data.authority,
+        board_ofdec_file: {
+          url: request.data.board_ofdec_file.url,
+          type: request.data.board_ofdec_file.type,
+          size: request.data.board_ofdec_file.size,
+        },
+        center_administration: request.data.center_administration,
+        ceo_mobile: request.data.ceo_mobile,
+        data_entry_mail: request.data.data_entry_mail,
+        data_entry_name: request.data.data_entry_name,
+        data_entry_mobile: request.data.data_entry_mobile,
+        ceo_name: request.data.ceo_name,
+        entity_mobile: request.data.entity_mobile,
+        governorate: request.data.governorate,
+        region: request.data.region,
+        headquarters: request.data.headquarters,
+        entity: request.data.entity,
+        license_file: {
+          url: request.data.license_file.url,
+          type: request.data.license_file.type,
+          size: request.data.license_file.size,
+        },
+        date_of_esthablistmen: moment(
+          request.data.date_of_esthablistmen,
+        ).toISOString(),
+        license_expired: moment(request.data.license_expired).toISOString(),
+        license_issue_date: moment(
+          request.data.license_issue_date,
+        ).toISOString(),
+        num_of_beneficiaries: request.data.num_of_beneficiaries,
+        website: request.data.website,
+        twitter_acount: request.data.twitter_acount,
+        num_of_employed_facility: request.data.num_of_employed_facility,
+        phone: request.data.phone,
+        client_field: request.data.client_field,
+        vat: request.data.vat,
+        status: request.data.status || null,
+      },
+    };
+
+    // bank informations
+    if (request.data.bank_informations.length > 0) {
+      userCreatePayload.bank_information = {
+        createMany: {
+          data: request.data.bank_informations.map((bank) => ({
+            bank_name: bank.bank_name || null,
+            bank_account_number: bank.bank_account_number || null,
+            bank_account_name: bank.bank_account_name || null,
+            card_image: {
+              url: bank.card_image.url,
+              type: bank.card_image.type,
+              size: bank.card_image.size,
+            },
+          })),
+        },
+      };
+    }
+
+    const createdUser = await this.tenderUserRepository.createUser(
+      userCreatePayload,
+    );
+    return createdUser;
   }
 
   async createEditRequest(

@@ -19,6 +19,7 @@ import {
 } from './dtos';
 import { PrismaService } from '../prisma/prisma.service';
 import { link } from 'fs';
+import { SendEmailDto } from '../libs/email/dtos/requests/send-email.dto';
 
 @Injectable()
 export class AuthService {
@@ -81,20 +82,21 @@ export class AuthService {
       throw new BadRequestException("Organization doesn't exist");
     }
 
-    //!TODO: create hbs template for email
-    const isSend = await this.emailService.sendMailWTemplate(
-      // 'rdanang.dev@gmail.com', // change to your email to test, ex: rdanang.dev@gmail.com, default value is registeredUser.email
-      registeredUser.email, // change to your email to test, ex: rdanang.dev@gmail.com, default value is registeredUser.email
-      `Welcome to ${orgName}!`,
-      'user/valiate-email',
-      {
+    const sendEmailParam: SendEmailDto = {
+      to: registeredUser.email, // change to your email to test, ex: rdanang.dev@gmail.com, default value is registeredUser.email
+      subject: 'email verification',
+      mailType: 'template',
+      templatePath: 'user/valiate-email',
+      templateContext: {
         fullName: registeredUser.firstname + ' ' + registeredUser.lastname,
         email: registeredUser.email,
-        banner,
-        orgName,
+        banner: banner,
+        orgName: orgName,
       },
-      'hello@tmra.io', // we can make it dynamic when new aws ses identity available
-    );
+      from: 'hello@tmra.io', // we can make it dynamic when new AWS SESW identity available
+    };
+
+    const isSend = await this.emailService.sendMail(sendEmailParam);
     if (!isSend) {
       throw new BadRequestException('An error occured while sending email');
     }

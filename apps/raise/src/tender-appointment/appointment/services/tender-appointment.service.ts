@@ -1,102 +1,32 @@
 import { Injectable } from '@nestjs/common';
+import { GoogleCalendarService } from '../../../libs/google-calendar/google-calendar.service';
 
-import { PrismaService } from '../../../prisma/prisma.service';
 import { SearchClientFilterRequest } from '../dtos/requests/search-client-filter-request.dto';
-import { Prisma } from '@prisma/client';
-import { SearchClientAppointmentResponseDto } from '../dtos/responses/search-client-appointment-response.dto';
+import { TenderAppointmentRepository } from '../repositories/tender-appointment.repository';
 
 @Injectable()
 export class TenderAppointmentService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly tenderAppointmentRepository: TenderAppointmentRepository,
+    private readonly googleCalendarService: GoogleCalendarService,
+  ) {}
 
-  async searchClientAppointmentCount(
-    searchParams: SearchClientFilterRequest,
-  ): Promise<number> {
-    const { clientName } = searchParams;
-    let query: Prisma.userWhereInput = {};
-    if (clientName) {
-      query = {
-        ...query,
-        client_data: {
-          entity: {
-            startsWith: clientName,
-            mode: 'insensitive',
-          },
-        },
-      };
-    }
-
-    const result = await this.prismaService.client_data.count({
-      where: {
-        ...query,
-      },
-    });
-
+  async create() {
+    const result = await this.googleCalendarService.createEvent(
+      'summary test',
+      'description test',
+      new Date().toISOString(), // start
+      new Date(new Date().getTime() + 60 * 60 * 1000).toISOString(), // end 1 hour later
+      'Asia/Bangkok',
+      ['rdanang.dev@gmail.com', 'ridhoiyoy962013@gmail.com'],
+    );
     return result;
   }
 
-  async searchClientAppointment(
-    searchParams: SearchClientFilterRequest,
-  ): Promise<SearchClientAppointmentResponseDto[]> {
-    const { clientName, page = 1, limit = 10 } = searchParams;
-    const offset = (page - 1) * limit;
-
-    let query: Prisma.userWhereInput = {};
-
-    if (clientName) {
-      query = {
-        ...query,
-        client_data: {
-          entity: {
-            startsWith: clientName,
-            mode: 'insensitive',
-          },
-        },
-      };
-    }
-
-    const result = await this.prismaService.user.findMany({
-      where: {
-        ...query,
-      },
-      select: {
-        id: true,
-        email: true,
-        client_data: {
-          select: {
-            id: true,
-            entity: true,
-          },
-        },
-        schedule: {
-          select: {
-            day: true,
-            start_time: true,
-            end_time: true,
-          },
-        },
-      },
-      skip: offset,
-      take: limit,
-    });
-
+  async searchClientByName(searchParams: SearchClientFilterRequest) {
+    const result = await this.tenderAppointmentRepository.searchClientByName(
+      searchParams,
+    );
     return result;
-  }
-  create() {
-    return 'This action adds a new tenderAppointment';
-  }
-
-  findAll() {
-    return `This action returns all tenderAppointment`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} tenderAppointment`;
-  }
-
-  update() {}
-
-  remove(id: number) {
-    return `This action removes a #${id} tenderAppointment`;
   }
 }

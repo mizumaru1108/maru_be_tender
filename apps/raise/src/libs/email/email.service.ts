@@ -1,69 +1,143 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { rootLogger } from '../../logger';
-import { MailerService } from '@nestjs-modules/mailer';
+import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer';
+import { SendEmailDto } from './dtos/requests/send-email.dto';
 
+/**
+ * Send email Services
+ * @author Rdanang (Iyoy)
+ */
 @Injectable()
 export class EmailService {
   private logger = rootLogger.child({ logger: EmailService.name });
 
   constructor(private mailerService: MailerService) {}
 
-  async sendMail(
-    to: string,
-    subject: string,
-    data: {},
-    from?: string,
-  ): Promise<boolean> {
+  /**
+   * SendMail Services,
+   * used to send email to user with attachment,
+   */
+  async sendMail(sendMailDto: SendEmailDto) {
+    const {
+      to,
+      mailType,
+      cc,
+      subject,
+      from,
+      content,
+      templatePath,
+      templateContext,
+      attachments,
+    } = sendMailDto;
     this.logger.debug(`Sending email to ${to}`);
-    try {
-      const resp = await this.mailerService.sendMail({
-        to: to,
-        subject: subject,
-        context: data,
-        from: from ? from : 'hello@tmra.io',
-      });
-      console.log(resp);
-    } catch (error) {
-      this.logger.error(error);
-      return false;
-    }
-    return true;
-  }
 
-  async sendMailWAttachment(
-    to: string,
-    subject: string,
-    data: {},
-    attachment: any, // array of objects
-    from?: string,
-  ): Promise<boolean> {
-    this.logger.debug(`Sending email to ${to}`);
-    try {
-      const resp = await this.mailerService.sendMail({
-        to: to,
-        subject: subject,
-        context: data,
-        attachments: attachment,
-        from: from ? from : 'hello@tmra.io',
-      });
-      console.log(resp);
-    } catch (error) {
-      this.logger.error(error);
-      return false;
+    const param: ISendMailOptions = {
+      to: to,
+      from: from ? from : 'hello@tmra.io',
+    };
+
+    if (mailType === 'plain') {
+      if (!content) {
+        throw new BadRequestException('content is required for plain mail');
+      }
+      param.html = `<div>${content}</div>`;
     }
-    return true;
+
+    if (mailType === 'template') {
+      if (!templatePath) {
+        throw new BadRequestException(
+          'templatePath is required for template mail',
+        );
+      }
+      if (templatePath && !templateContext) {
+        throw new BadRequestException(
+          'templateContext is required for template mail',
+        );
+      }
+      param.context = templateContext;
+      param.template = templatePath;
+    }
+
+    if (subject) param.subject = subject;
+    if (cc) param.cc = cc;
+    if (attachments) param.attachments = attachments;
+
+    try {
+      const emailLogs = await this.mailerService.sendMail(param);
+      console.log(emailLogs);
+      return emailLogs;
+    } catch (error) {
+      console.trace(error);
+      // if error is instance of bad request exception
+      if (error instanceof BadRequestException) {
+        throw error;
+      } else {
+        throw new InternalServerErrorException(
+          'Something when wrong when sending email!',
+        );
+      }
+    }
   }
 
   /**
    * SendMail Services,
-   * used to send email to user,
-   * @param to email address of the user
-   * @param subject subject of the email
-   * @param template hbs template of the email
-   * @param data data to be passed to the template
-   * @param from sender address of the email, (default: "hello@tamra.io")
-   * @returns {Promise<boolean>} returns true if email is sent successfully
+   * without await TOOD: need to be refactored with REDIS for queue
    */
+  SendMailAsync(sendMailDto: SendEmailDto) {
+    const {
+      to,
+      mailType,
+      cc,
+      subject,
+      from,
+      content,
+      templatePath,
+      templateContext,
+      attachments,
+    } = sendMailDto;
+    this.logger.debug(`Sending email to ${to}`);
+
+    const param: ISendMailOptions = {
+      to: to,
+      from: from ? from : 'hello@tmra.io',
+    };
+
+    if (mailType === 'plain') {
+      if (!content) {
+        throw new BadRequestException('content is required for plain mail');
+      }
+      param.html = `<div>${content}</div>`;
+    }
+
+    if (mailType === 'template') {
+      if (!templatePath) {
+        throw new BadRequestException(
+          'templatePath is required for template mail',
+        );
+      }
+      if (templatePath && !templateContext) {
+        throw new BadRequestException(
+          'templateContext is required for template mail',
+        );
+      }
+      param.context = templateContext;
+      param.template = templatePath;
+    }
+
+    if (subject) param.subject = subject;
+    if (cc) param.cc = cc;
+    if (attachments) param.attachments = attachments;
+
+    // TODO: CONNECT TO REDIS FOR QUEUE
+    const emailLogs = this.mailerService.sendMail(param);
+    return emailLogs;
+  }
+
+  /* DEPRECATED */
   async sendMailWTemplate(
     to: string,
     subject: string,
@@ -88,17 +162,7 @@ export class EmailService {
     return true;
   }
 
-  /**
-   * SendMail Services,
-   * used to send email to user with attachment,
-   * @param to email address of the user
-   * @param subject subject of the email
-   * @param template hbs template of the email
-   * @param data data to be passed to the template
-   * @param attachment attachment to be sent with the email (array of objects)
-   * @param from sender address of the email, (default: "hello@tamra.io")
-   * @returns {Promise<boolean>} returns true if email is sent successfully
-   */
+  /* DEPRECATED */
   async sendMailWTemplateAndAttachment(
     to: string,
     subject: string,

@@ -88,11 +88,6 @@ model inquiry_type {
   contact_us contact_us[]
 }
 
-model license_number {
-  id    String  @id(map: "permit_num_pkey")
-  title String?
-}
-
 model message {
   message_id       String     @id
   room_id          String?
@@ -205,28 +200,28 @@ model proposal_item_budget {
 }
 
 model proposal_log {
-  id                                     String           @id
-  proposal_id                            String
-  created_at                             DateTime         @default(now()) @db.Timestamptz(6)
-  updated_at                             DateTime         @default(now()) @db.Timestamptz(6)
-  reviewer_id                            String
-  inner_status                           String?
-  state                                  String
-  client_user_id                         String
-  moderators                             String?          @db.Char
-  path                                   String?          @db.Char
-  notes                                  String?
-  procedures                             String?
-  send_amandement                        Json?
-  outter_status                          String?
-  project_kind                           String?
-  user_type                              user_type        @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_assign_fkey")
-  user_proposal_log_client_user_idTouser user             @relation("proposal_log_client_user_idTouser", fields: [client_user_id], references: [id], onDelete: Cascade)
-  proposal_state                         proposal_state?  @relation(fields: [outter_status], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  project_tracks                         project_tracks?  @relation(fields: [project_kind], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  proposal                               proposal         @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
-  proposal_status                        proposal_status? @relation(fields: [inner_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_status_fkey")
-  user                                   user             @relation(fields: [reviewer_id], references: [id], onUpdate: Restrict, map: "proposal_log_user_id_fkey")
+  id               String           @id
+  proposal_id      String
+  created_at       DateTime         @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime         @default(now()) @db.Timestamptz(6)
+  reviewer_id      String
+  inner_status     String?
+  state            String
+  client_user_id   String
+  moderators       String?          @db.Char
+  path             String?          @db.Char
+  notes            String?
+  procedures       String?
+  send_amandement  Json?
+  outter_status    String?
+  project_kind     String?
+  user_type        user_type        @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_assign_fkey")
+  client_user_data user             @relation("proposal_log_client_user_idTouser", fields: [client_user_id], references: [id], onDelete: Cascade)
+  proposal_state   proposal_state?  @relation(fields: [outter_status], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  track            project_tracks?  @relation(fields: [project_kind], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proposal         proposal         @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
+  proposal_status  proposal_status? @relation(fields: [inner_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_status_fkey")
+  reviewer         user             @relation(fields: [reviewer_id], references: [id], onUpdate: Restrict, map: "proposal_log_user_id_fkey")
 }
 
 model proposal_state {
@@ -251,7 +246,7 @@ model user {
   employee_path                                           String?                 @db.VarChar
   user_type_id                                            String?
   last_login                                              DateTime?               @default(now()) @db.Timestamptz(6)
-  project_tracks                                          project_tracks?         @relation(fields: [employee_path], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  employee_track                                          project_tracks?         @relation(fields: [employee_path], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user_type                                               user_type?              @relation(fields: [user_type_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
   appointment_appointment_employee_idTouser               appointment[]           @relation("appointment_employee_idTouser")
   appointment_appointment_user_idTouser                   appointment[]           @relation("appointment_user_idTouser")
@@ -260,10 +255,8 @@ model user {
   client_log                                              client_log[]
   contact_us_contact_us_receiver_idTouser                 contact_us[]            @relation("contact_us_receiver_idTouser")
   contact_us_contact_us_sender_idTouser                   contact_us[]            @relation("contact_us_sender_idTouser")
-  email_data_email_data_receiver_idTouser                 email_data[]            @relation("email_data_receiver_idTouser")
-  email_data_email_data_sender_idTouser                   email_data[]            @relation("email_data_sender_idTouser")
-  email_datas_email_datas_receiver_idTouser               email_datas[]           @relation("email_datas_receiver_idTouser")
-  email_datas_email_datas_sender_idTouser                 email_datas[]           @relation("email_datas_sender_idTouser")
+  email_record_email_record_receiver_idTouser             email_record[]          @relation("email_record_receiver_idTouser")
+  email_record_email_record_sender_idTouser               email_record[]          @relation("email_record_sender_idTouser")
   employees_permissions_employees_permissionsTouser       employees_permissions[]
   message                                                 message[]
   proposal                                                proposal[]
@@ -464,7 +457,7 @@ model correspondance_category {
 
 model edit_request {
   id                  String              @id
-  field_name          String              @db.Char
+  field_name          String              @db.VarChar
   approval_status     String              @default("WAITING_FOR_APPROVAL")
   old_value           String?             @db.VarChar
   new_value           String              @db.VarChar
@@ -551,31 +544,14 @@ model schedule {
   user       user   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
-model email_data {
-  id                                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  sender_id                         String
-  receiver_id                       String
-  sender_email                      String   @db.VarChar
-  receiver_email                    String   @db.VarChar
-  title                             String   @db.VarChar
-  content                           String   @db.VarChar
-  attachments                       Json
-  created_at                        DateTime @default(now()) @db.Timestamptz(6)
-  updated_at                        DateTime @default(now()) @db.Timestamptz(6)
-  user_email_data_receiver_idTouser user     @relation("email_data_receiver_idTouser", fields: [receiver_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user_email_data_sender_idTouser   user     @relation("email_data_sender_idTouser", fields: [sender_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model email_datas {
-  id                                 String    @id(map: "email_history_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title                              String    @db.VarChar
-  content                            String
-  sender_email                       String    @db.VarChar
-  receiver_email                     String    @db.VarChar
-  sender_id                          String
-  receiver_id                        String
-  created_at                         DateTime? @default(now()) @db.Timestamptz(6)
-  updated_at                         DateTime? @default(now()) @db.Timestamptz(6)
-  user_email_datas_receiver_idTouser user      @relation("email_datas_receiver_idTouser", fields: [receiver_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user_email_datas_sender_idTouser   user      @relation("email_datas_sender_idTouser", fields: [sender_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model email_record {
+  id          String    @id(map: "email_history_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String    @db.VarChar
+  content     String
+  sender_id   String
+  receiver_id String
+  created_at  DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime? @default(now()) @db.Timestamptz(6)
+  receiver    user      @relation("email_record_receiver_idTouser", fields: [receiver_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "email_datas_receiver_id_fkey")
+  sender      user      @relation("email_record_sender_idTouser", fields: [sender_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "email_datas_sender_id_fkey")
 }
