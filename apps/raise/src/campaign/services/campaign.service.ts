@@ -248,6 +248,8 @@ export class CampaignService {
       }
     }
 
+    updateCampaignData.contentLanguage = request.contentLanguage;
+
     //update campaign
     const updatedCampaign = await updateCampaignData.save();
     if (!updatedCampaign) {
@@ -485,6 +487,9 @@ export class CampaignService {
           amountProgress: 1,
           amountTarget: 1,
           coverImage: 1,
+          image1: 1,
+          image2: 1,
+          image3: 1,
           contentLanguage: 1,
           updatedAt: 1,
           createdAt: 1,
@@ -516,6 +521,9 @@ export class CampaignService {
           amountProgress: { $first: '$amountProgress' },
           amountTarget: { $first: '$amountTarget' },
           coverImage: { $first: '$coverImage' },
+          image1: { $first: '$image1' },
+          image2: { $first: '$image2' },
+          image3: { $first: '$image3' },
           contentLanguage: { $first: '$contentLanguage' },
           updatedAt: { $first: '$updatedAt' },
           createdAt: { $first: '$createdAt' },
