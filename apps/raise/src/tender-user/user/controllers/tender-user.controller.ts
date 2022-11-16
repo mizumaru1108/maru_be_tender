@@ -5,6 +5,7 @@ import { ClusterRolesGuard } from '../../../auth/cluster-roles.guard';
 import { JwtAuthGuard } from '../../../auth/jwt.guard';
 import { BaseResponse } from '../../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
+import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
 import { TenderCreateUserDto } from '../dtos/requests/create-user.dto';
 
 import { TenderDeleteUserDto } from '../dtos/requests/delete-user.dto';
@@ -14,8 +15,8 @@ import { TenderUserService } from '../services/tender-user.service';
 export class TenderUserController {
   constructor(private readonly tenderUserService: TenderUserService) {}
 
-  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
-  @ClusterRoles('tender_admin')
+  // @UseGuards(TenderJwtGuard)
+  // @ClusterRoles('tender_admin')
   @Post('create')
   async createUser(
     @Body() request: TenderCreateUserDto,
@@ -28,8 +29,8 @@ export class TenderUserController {
     );
   }
 
-  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
-  @ClusterRoles('tender_admin')
+  // @UseGuards(JwtAuthGuard, ClusterRolesGuard)
+  // @ClusterRoles('tender_admin')
   @Post('delete')
   async deleteUser(
     @Body() request: TenderDeleteUserDto,

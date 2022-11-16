@@ -90,7 +90,7 @@ export class TenderAuthService {
         employee_name: registerRequest.data.employee_name,
         password: registerRequest.data.password,
         mobile_number: registerRequest.data.phone,
-        user_roles: 'CLIENT',
+        user_roles: ['CLIENT'],
       });
 
     // if you want to make a type for register result

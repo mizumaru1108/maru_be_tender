@@ -22,9 +22,9 @@ export class TenderUserService {
     } = request;
 
     // admin only created by the system.
-    if (user_roles === 'ADMIN') {
-      throw new BadRequestException('Roles is Forbidden to create!');
-    }
+    // if (user_roles === 'ADMIN') {
+    //   throw new BadRequestException('Roles is Forbidden to create!');
+    // }
 
     if (employee_path) {
       const track = await this.tenderUserRepository.validateTrack(
@@ -37,22 +37,26 @@ export class TenderUserService {
       }
     }
 
-    const availableRoles = await this.tenderUserRepository.validateRoles(
-      user_roles,
-    );
-    if (!availableRoles) {
-      throw new BadRequestException('Invalid user roles!, Roles is not found!');
+    for (let i = 0; i < user_roles.length; i++) {
+      const availableRoles = await this.tenderUserRepository.validateRoles(
+        user_roles[i],
+      );
+      if (!availableRoles) {
+        throw new BadRequestException(
+          `Invalid user roles!, Roles [${user_roles[i]}] is not found!`,
+        );
+      }
     }
 
-    if (
-      ['CEO', 'FINANCE', 'CASHIER', 'MODERATOR'].includes(availableRoles.id)
-    ) {
-      // count user with same roles if more than 1 throw error
-      const count = await this.tenderUserRepository.countExistingRoles(
-        availableRoles.id,
-      );
-      if (count > 0) {
-        throw new BadRequestException(`Only 1 ${availableRoles.id} allowed!`);
+    if (user_roles.length === 1) {
+      if (['CEO', 'FINANCE', 'CASHIER', 'MODERATOR'].includes(user_roles[0])) {
+        // count user with same roles if more than 1 throw error
+        const count = await this.tenderUserRepository.countExistingRoles(
+          user_roles[0],
+        );
+        if (count > 0) {
+          throw new BadRequestException(`Only 1 ${user_roles[0]} allowed!`);
+        }
       }
     }
 
@@ -83,11 +87,12 @@ export class TenderUserService {
       employee_name,
       mobile_number,
       is_active: activate_user,
-      user_type: {
-        connect: {
-          id: availableRoles.id,
-        },
-      },
+      user_role: user_roles,
+      // user_type: {
+      //   connect: {
+      //     id: availableRoles.id,
+      //   },
+      // },
     };
 
     if (employee_path) {

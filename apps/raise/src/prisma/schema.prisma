@@ -90,12 +90,12 @@ model inquiry_type {
 
 model message {
   message_id       String     @id
-  room_id          String?
   message_owner_id String?
   content          String?
-  read_status      Boolean?
   created_at       DateTime?  @default(now()) @db.Timestamptz(6)
   updated_at       DateTime?  @default(now()) @db.Timestamptz(6)
+  read_status      Boolean?
+  room_id          String?
   user             user?      @relation(fields: [message_owner_id], references: [id], onDelete: Cascade)
   room_chat        room_chat? @relation(fields: [room_id], references: [room_id], onDelete: NoAction, onUpdate: NoAction)
 }
@@ -122,44 +122,44 @@ model payment {
 
 model proposal {
   id                                                           String                     @id
-  project_name                                                 String                     @db.Char
+  project_name                                                 String                     @db.Char(1)
   submitter_user_id                                            String
   created_at                                                   DateTime                   @default(now()) @db.Timestamptz(6)
   updated_at                                                   DateTime                   @default(now()) @db.Timestamptz(6)
-  project_track                                                String                     @default("DEFAULT_TRACK")
   project_idea                                                 String?
   project_implement_date                                       DateTime?                  @db.Date
   project_location                                             String?
-  execution_time                                               String?                    @db.Char
+  execution_time                                               String?                    @db.Char(1)
   num_ofproject_binicficiaries                                 Int?
   project_goals                                                String?
   project_outputs                                              String?
   project_strengths                                            String?
   project_risks                                                String?
-  pm_name                                                      String?                    @db.Char
-  pm_email                                                     String?                    @db.Char
-  pm_mobile                                                    String?                    @db.Char
+  pm_name                                                      String?                    @db.Char(1)
+  pm_email                                                     String?                    @db.Char(1)
+  pm_mobile                                                    String?                    @db.Char(1)
   governorate                                                  String?
-  region                                                       String?                    @db.Char
+  region                                                       String?                    @db.Char(1)
   amount_required_fsupport                                     Decimal?                   @db.Decimal
   need_consultant                                              Boolean?                   @default(false)
-  step                                                         String?                    @default("ZERO") @db.Char
+  step                                                         String?                    @default("ZERO") @db.Char(1)
   whole_budget                                                 Decimal?                   @db.Decimal
   state                                                        String?                    @default("MODERATOR")
-  inner_status                                                 String?                    @default("CREATED_BY_CLIENT")
   previously_add_bank                                          String[]
+  inner_status                                                 String?                    @default("CREATED_BY_CLIENT")
   outter_status                                                String?                    @default("PENDING")
-  project_beneficiaries                                        String?                    @db.Char
+  project_beneficiaries                                        String?                    @db.Char(1)
   number_of_payments                                           Decimal?                   @db.Decimal
   finance_id                                                   String?                    @default("null")
   cashier_id                                                   String?                    @default("null")
   project_manager_id                                           String?                    @default("null")
   supervisor_id                                                String?                    @default("null")
+  on_consulting                                                Boolean?                   @default(false)
+  on_revision                                                  Boolean?                   @default(false)
+  project_track                                                String                     @default("DEFAULT_TRACK")
+  proposal_bank_id                                             String?                    @db.Uuid
   project_attachments                                          Json?
   letter_ofsupport_req                                         Json?
-  on_revision                                                  Boolean?                   @default(false)
-  on_consulting                                                Boolean?                   @default(false)
-  proposal_bank_id                                             String?                    @db.Uuid
   partial_support_amount                                       Decimal?                   @db.Decimal
   proposal_beneficiaries                                       proposal_beneficiaries?    @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
   project_tracks                                               project_tracks             @relation(fields: [project_track], references: [id], onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
@@ -208,14 +208,14 @@ model proposal_log {
   reviewer_id      String
   inner_status     String?
   state            String
-  client_user_id   String
-  moderators       String?          @db.Char
-  path             String?          @db.Char
+  moderators       String?          @db.Char(1)
+  path             String?          @db.Char(1)
   notes            String?
   procedures       String?
   send_amandement  Json?
   outter_status    String?
   project_kind     String?
+  client_user_id   String
   user_type        user_type        @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_assign_fkey")
   client_user_data user             @relation("proposal_log_client_user_idTouser", fields: [client_user_id], references: [id], onDelete: Cascade)
   proposal_state   proposal_state?  @relation(fields: [outter_status], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -241,14 +241,14 @@ model user {
   employee_name                                           String?                 @db.VarChar
   mobile_number                                           String?                 @db.VarChar
   email                                                   String                  @unique @db.VarChar
+  user_type_id                                            String?
   updated_at                                              DateTime?               @default(now()) @db.Timestamptz(6)
   created_at                                              DateTime?               @default(now()) @db.Timestamptz(6)
   is_active                                               Boolean?                @default(true)
   employee_path                                           String?                 @db.VarChar
-  user_type_id                                            String?
   last_login                                              DateTime?               @default(now()) @db.Timestamptz(6)
+  user_role                                               Json?
   employee_track                                          project_tracks?         @relation(fields: [employee_path], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user_type                                               user_type?              @relation(fields: [user_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   appointment_appointment_employee_idTouser               appointment[]           @relation("appointment_employee_idTouser")
   appointment_appointment_user_idTouser                   appointment[]           @relation("appointment_user_idTouser")
   bank_information                                        bank_information[]
@@ -277,7 +277,6 @@ model user_type {
   proposal                                                       proposal[]
   proposal_assign                                                proposal_assign[]
   proposal_log                                                   proposal_log[]
-  user                                                           user[]
 }
 
 model proposal_assign {
@@ -293,12 +292,12 @@ model proposal_assign {
 model proposal_follow_up {
   id                                        String    @id
   proposal_id                               String
-  created_at                                DateTime? @default(now()) @db.Timestamptz(6)
-  updated_at                                DateTime? @default(now()) @db.Timestamptz(6)
-  file                                      Json?
   action                                    String?
-  user_id                                   String?
+  created_at                                DateTime? @default(now()) @db.Timestamptz(6)
   employee_id                               String?
+  file                                      Json?
+  updated_at                                DateTime? @default(now()) @db.Timestamptz(6)
+  user_id                                   String?
   user_proposal_follow_up_employee_idTouser user?     @relation("proposal_follow_up_employee_idTouser", fields: [employee_id], references: [id], onDelete: Cascade)
   proposal                                  proposal  @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
   user_proposal_follow_up_user_idTouser     user?     @relation("proposal_follow_up_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
@@ -341,7 +340,7 @@ model supervisor {
   id                  String   @id
   user_id             String
   proposal_id         String
-  clasification_field String   @db.Char
+  clasification_field String   @db.Char(1)
   closing_report      Boolean
   support_type        Boolean
   does_an_agreement   Boolean
@@ -352,9 +351,9 @@ model supervisor {
   notes               String
   support_outputs     String?
   clause              String?
+  inclu_or_exclu      Boolean?
   vat                 Boolean?
   vat_percentage      Int?
-  inclu_or_exclu      Boolean?
   proposal            proposal @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
 }
 
@@ -495,8 +494,8 @@ model project_tracks {
 model room_chat {
   room_id                                                    String                  @id
   correspondance_category                                    String
-  participant1                                               String                  @db.Char
-  participant2                                               String                  @db.Char
+  participant1                                               String                  @db.Char(1)
+  participant2                                               String                  @db.Char(1)
   created_at                                                 DateTime                @default(now()) @db.Timestamptz(6)
   updated_at                                                 DateTime                @default(now()) @db.Timestamptz(6)
   correspondance_category_correspondance_categoryToroom_chat correspondance_category @relation(fields: [correspondance_category], references: [id], onDelete: NoAction, onUpdate: NoAction)

@@ -165,10 +165,15 @@ export class FusionAuthService {
     const baseUrl = this.fusionAuthUrl;
     const registerUrl = baseUrl + '/api/user/registration/';
 
+    let role: string[] = ['tender_client'];
+
     // change the tender app role to fusion auth roles
-    const role: string[] = registerRequest.user_roles
-      ? [appRoleToFusionAuthRoles[registerRequest.user_roles as TenderAppRole]]
-      : ['tender_client'];
+    if (registerRequest.user_roles) {
+      let tmpRoles: string[] = registerRequest.user_roles.map(
+        (role) => appRoleToFusionAuthRoles[role as TenderAppRole],
+      );
+      role = tmpRoles;
+    }
 
     const user: IFusionAuthUser = {
       email: registerRequest.email,

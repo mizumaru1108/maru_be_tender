@@ -50,11 +50,11 @@ export class TenderClientService {
       employee_name: request.data.employee_name,
       email: request.data.email,
       mobile_number: request.data.phone,
-      user_type: {
-        connect: {
-          id: 'CLIENT',
-        },
-      },
+      // user_type: {
+      //   connect: {
+      //     id: 'CLIENT',
+      //   },
+      // },
     };
 
     // path of the user
