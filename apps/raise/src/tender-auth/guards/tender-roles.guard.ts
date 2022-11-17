@@ -26,11 +26,14 @@ export class TenderRolesGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
-    const type = this.reflector.get<string[]>('type', context.getHandler());
-    if (!type) {
-      return true;
-    }
-    if (type.findIndex((value) => value == request.user.type) > -1) {
+    const allowedRoles = this.reflector.get<string[]>(
+      'roles',
+      context.getHandler(),
+    );
+
+    // see if if one of the request.user.type[] is in the type[] array
+    // ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some
+    if (allowedRoles.some((allowed) => request.user.type.includes(allowed))) {
       return true;
     } else {
       throw new ForbiddenException(

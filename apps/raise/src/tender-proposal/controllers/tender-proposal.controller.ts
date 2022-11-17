@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   HttpStatus,
@@ -8,19 +7,21 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { ClusterRoles } from '../../auth/cluster-roles.decorator';
-import { ClusterRolesGuard } from '../../auth/cluster-roles.guard';
 import { JwtAuthGuard } from '../../auth/jwt.guard';
 import { CurrentUser } from '../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
+import { TenderRoles } from '../../tender-auth/decorators/tender-roles.decorator';
+import { TenderJwtGuard } from '../../tender-auth/guards/tender-jwt.guard';
 import { ICurrentUser } from '../../user/interfaces/current-user.interface';
-import { ChangeProposalStateDto } from '../dtos/requests/change-proposal-state.dto';
 import { CreateProposalPaymentDto } from '../dtos/requests/payment/create-payment.dto';
+import { ChangeProposalStateDto } from '../dtos/requests/proposal/change-proposal-state.dto';
 import { UpdateProposalDto } from '../dtos/requests/update-proposal.dto';
 import { UpdateProposalResponseDto } from '../dtos/responses/update-proposal-response.dto';
 import { TenderProposalPaymentService } from '../services/tender-proposal-payment.service';
 
+import { TenderRolesGuard } from '../../tender-auth/guards/tender-roles.guard';
+import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
 import { TenderProposalService } from '../services/tender-proposal.service';
 
 @Controller('tender-proposal')
@@ -30,11 +31,11 @@ export class TenderProposalController {
     private readonly tenderProposalPaymentService: TenderProposalPaymentService,
   ) {}
 
-  @UseGuards(JwtAuthGuard, ClusterRolesGuard)
-  @ClusterRoles('tender_project_supervisor')
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_project_supervisor')
   @Post('insert-payment')
   async validatePayment(
-    @CurrentUser() currentUser: ICurrentUser,
+    @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: CreateProposalPaymentDto,
   ): Promise<BaseResponse<Prisma.paymentCreateManyInput[]>> {
     const createdPayment =
@@ -52,23 +53,41 @@ export class TenderProposalController {
   /**
    * this endpoint is for changing the state of the proposal,
    * the status of proposal will be change, and the log will be created
+   * (DYNAMIC) DEPRECATED for now
    */
   @UseGuards(JwtAuthGuard)
+  @Patch('changeState')
+  dchangeProposalState(
+    @CurrentUser() currentUser: ICurrentUser,
+    @Body() request: ChangeProposalStateDto,
+  ) {
+    return this.tenderProposalService.dchangeProposalState(
+      currentUser,
+      request,
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles(
+    'tender_moderator',
+    'tender_project_supervisor',
+    'tender_project_manager',
+    'tender_ceo',
+  )
   @Patch('change-state')
   changeProposalState(
-    @CurrentUser() currentUser: ICurrentUser,
+    @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: ChangeProposalStateDto,
   ) {
     return this.tenderProposalService.changeProposalState(currentUser, request);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(TenderJwtGuard)
   @Patch('update-draft')
   async updateDraft(
-    @CurrentUser() currentUser: ICurrentUser,
+    @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: UpdateProposalDto,
   ): Promise<BaseResponse<UpdateProposalResponseDto>> {
-    // console.log('current user', currentUser);
     const updateResponse = await this.tenderProposalService.updateProposal(
       currentUser.id,
       request,
@@ -80,7 +99,7 @@ export class TenderProposalController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(TenderJwtGuard)
   @Patch('update-proposal')
   async updateProposal(
     @CurrentUser() currentUser: ICurrentUser,

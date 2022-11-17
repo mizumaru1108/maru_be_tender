@@ -52,14 +52,36 @@ export class TenderAuthService {
 
   /* create user with client data */
   async register(registerRequest: RegisterTenderDto) {
+    // destruct data.phone from registerRequest as clientPhone
+    const {
+      data: {
+        phone: clientPhone,
+        ceo_mobile: ceoMobile,
+        data_entry_mobile: dataEntryMobile,
+      },
+    } = registerRequest;
+
+    // find either client / user by email or phone
     const findDuplicated = await this.tenderUserRepository.findUser({
       OR: [
         { email: registerRequest.data.email },
-        { mobile_number: registerRequest.data.phone },
+        { mobile_number: clientPhone },
       ],
     });
     if (findDuplicated) {
       throw new BadRequestException('Email or Mobile Number already exist!');
+    }
+
+    if (dataEntryMobile === clientPhone) {
+      throw new BadRequestException(
+        'Data Entry Mobile cannot be same as Client Mobile!',
+      );
+    }
+
+    if (clientPhone === ceoMobile) {
+      throw new BadRequestException(
+        'Phone number and CEO mobile number cannot be the same!',
+      );
     }
 
     const lisceneNumber = await this.tenderClientRepository.findClient({
@@ -89,7 +111,7 @@ export class TenderAuthService {
         email: registerRequest.data.email,
         employee_name: registerRequest.data.employee_name,
         password: registerRequest.data.password,
-        mobile_number: registerRequest.data.phone,
+        mobile_number: clientPhone,
         user_roles: ['CLIENT'],
       });
 

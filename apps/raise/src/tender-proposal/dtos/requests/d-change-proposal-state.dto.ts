@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { SetupPaymentPayloadDto } from './setup-payment-payload.dto';
 
-export class ChangeProposalStateDto {
+export class DChangeProposalStateDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

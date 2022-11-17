@@ -11,7 +11,6 @@ import { ClientEditRequestDto } from '../dtos/requests/client-edit-request.dto';
 import { edit_request, Prisma, user } from '@prisma/client';
 import { RegisterTenderDto } from '../../../tender-auth/dtos/requests/register-tender.dto';
 import { ClientEditRequestResponseDto } from '../dtos/responses/client-edit-request.response.dto';
-import moment from 'moment';
 import { compareUrl } from '../../../tender-commons/utils/compare-jsonb-imageurl';
 import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
 
@@ -50,11 +49,7 @@ export class TenderClientService {
       employee_name: request.data.employee_name,
       email: request.data.email,
       mobile_number: request.data.phone,
-      // user_type: {
-      //   connect: {
-      //     id: 'CLIENT',
-      //   },
-      // },
+      user_role: ['CLIENT'],
     };
 
     // path of the user
@@ -93,13 +88,9 @@ export class TenderClientService {
           type: request.data.license_file.type,
           size: request.data.license_file.size,
         },
-        date_of_esthablistmen: moment(
-          request.data.date_of_esthablistmen,
-        ).toISOString(),
-        license_expired: moment(request.data.license_expired).toISOString(),
-        license_issue_date: moment(
-          request.data.license_issue_date,
-        ).toISOString(),
+        date_of_esthablistmen: new Date(request.data.date_of_esthablistmen),
+        license_expired: new Date(request.data.license_expired),
+        license_issue_date: new Date(request.data.license_issue_date),
         num_of_beneficiaries: request.data.num_of_beneficiaries,
         website: request.data.website,
         twitter_acount: request.data.twitter_acount,
@@ -199,8 +190,6 @@ export class TenderClientService {
     }
 
     if (editRequest.bank_information) {
-      // TODO: loop the request, find by id if exist then update, if not exist then create with
-      // if exist then update, if not exist then create.
       try {
         await Promise.all(
           editRequest.bank_information.map(async (bankInfo) => {

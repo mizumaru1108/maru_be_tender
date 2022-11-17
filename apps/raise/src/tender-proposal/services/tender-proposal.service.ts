@@ -22,9 +22,10 @@ import {
 } from '../../tender-commons/types';
 import { InnerStatus } from '../../tender-commons/types/proposal';
 import { compareUrl } from '../../tender-commons/utils/compare-jsonb-imageurl';
+import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
 
 import { ICurrentUser } from '../../user/interfaces/current-user.interface';
-import { ChangeProposalStateDto } from '../dtos/requests/change-proposal-state.dto';
+import { ChangeProposalStateDto } from '../dtos/requests/proposal/change-proposal-state.dto';
 import { UpdateProposalDto } from '../dtos/requests/update-proposal.dto';
 import { ChangeProposalStateResponseDto } from '../dtos/responses/change-proposal-state-response.dto';
 import { UpdateProposalResponseDto } from '../dtos/responses/update-proposal-response.dto';
@@ -692,7 +693,8 @@ export class TenderProposalService {
     };
   }
 
-  async changeProposalState(
+  // dynamic (deprecated for now)
+  async dchangeProposalState(
     currentUser: ICurrentUser,
     request: ChangeProposalStateDto,
   ) {
@@ -858,5 +860,24 @@ export class TenderProposalService {
 
       // if rejected by any other role the flow will go to the next track
     }
+  }
+
+  async changeProposalState(
+    currentUser: TenderCurrentUser,
+    request: ChangeProposalStateDto,
+  ) {
+    const proposal = await this.prismaService.proposal.findUnique({
+      where: {
+        id: request.proposal_id,
+      },
+    });
+    if (!proposal) {
+      throw new NotFoundException(
+        `Proposal with id ${request.proposal_id} not found`,
+      );
+    }
+
+    // 'ACCOUNTS_MANAGER' 'ADMIN'  'CASHIER' 'CLIENT'  'FINANCE';
+    //'MODERATOR', 'PROJECT_SUPERVISOR', 'PROJECT_MANAGER', 'CEO', 'CONSULTANT'
   }
 }
