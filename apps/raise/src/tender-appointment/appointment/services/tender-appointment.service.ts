@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { GoogleCalendarService } from '../../../libs/google-calendar/google-calendar.service';
+import { GoogleCalendarOAuthService } from '../../../libs/google-calendar/google-calendar-oauth.service';
+import { GoogleCalendarServiceAccountService } from '../../../libs/google-calendar/google-calendar-service-account.service';
 
 import { SearchClientFilterRequest } from '../dtos/requests/search-client-filter-request.dto';
 import { TenderAppointmentRepository } from '../repositories/tender-appointment.repository';
@@ -8,11 +9,12 @@ import { TenderAppointmentRepository } from '../repositories/tender-appointment.
 export class TenderAppointmentService {
   constructor(
     private readonly tenderAppointmentRepository: TenderAppointmentRepository,
-    private readonly googleCalendarService: GoogleCalendarService,
+    private readonly googleCalendarOAuthService: GoogleCalendarOAuthService,
+    private readonly googleCalendarServiceAccountService: GoogleCalendarServiceAccountService,
   ) {}
 
   async create() {
-    const result = await this.googleCalendarService.createEvent(
+    const result = await this.googleCalendarServiceAccountService.createEvent(
       'testing events',
       'testing events descriptions',
       new Date().toISOString(), // start
@@ -22,6 +24,13 @@ export class TenderAppointmentService {
     );
     return result;
   }
+
+  // via oauth
+  // async create() {
+  //   const result = await this.googleCalendarOAuthService.getToken();
+  //   console.log(result);
+  //   return 'api hit and sucess';
+  // }
 
   async searchClientByName(searchParams: SearchClientFilterRequest) {
     const result = await this.tenderAppointmentRepository.searchClientByName(

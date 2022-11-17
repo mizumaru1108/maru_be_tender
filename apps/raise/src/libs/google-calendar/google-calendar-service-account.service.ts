@@ -1,15 +1,21 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 // import { envLoadErrorHelper } from '../../commons/helpers/env-loaderror-helper';
-import path from 'path';
 import { calendar_v3, google } from 'googleapis';
+import { nanoid } from 'nanoid';
+import path from 'path';
 import Calendar = calendar_v3.Calendar;
 import Schema$Event = calendar_v3.Schema$Event;
 
 @Injectable()
-export class GoogleCalendarService {
-  private readonly logger = new Logger(GoogleCalendarService.name);
-  private SCOPE = ['https://www.googleapis.com/auth/calendar'];
+export class GoogleCalendarServiceAccountService {
+  private readonly logger = new Logger(
+    GoogleCalendarServiceAccountService.name,
+  );
+  private SCOPE = [
+    'https://www.googleapis.com/auth/calendar',
+    'https://www.googleapis.com/auth/calendar.events',
+  ];
   private gJwtClient;
   private gClendar: Calendar;
   private gAuth;
@@ -20,37 +26,18 @@ export class GoogleCalendarService {
 
   constructor(private readonly configService: ConfigService) {
     const project_id = this.configService.get('GAPI_PROJECT_ID');
-    // if (!project_id) envLoadErrorHelper('GAPI_PROJECT_ID');
-
     const private_key_id = this.configService.get('GAPI_PRIVATE_KEY_ID');
-    // if (!private_key_id) envLoadErrorHelper('GAPI_PRIVATE_KEY_ID');
-
     const private_key = this.configService.get('GAPI_PRIVATE_KEY');
-    // if (!private_key) envLoadErrorHelper('GAPI_PRIVATE_KEY');
-
     const client_email = this.configService.get('GAPI_CLIENT_EMAIL');
-    // if (!client_email) envLoadErrorHelper('GAPI_CLIENT_EMAIL');
-
     const client_id = this.configService.get('GAPI_CLIENT_ID');
-    // if (!client_id) envLoadErrorHelper('GAPI_CLIENT_ID');
-
     const auth_uri = this.configService.get('GAPI_AUTH_URI');
-    // if (!auth_uri) envLoadErrorHelper('GAPI_AUTH_URI');
-
     const token_uri = this.configService.get('GAPI_TOKEN_URI');
-    // if (!token_uri) envLoadErrorHelper('GAPI_TOKEN_URI');
-
     const auth_provider_x509_cert_url = this.configService.get(
       'GAPI_AUTH_PROVIDER_X509_CERT_URL',
     );
-    // if (!auth_provider_x509_cert_url)
-    // envLoadErrorHelper('GAPI_AUTH_PROVIDER_X509_CERT_URL');
-
     // const client_x509_cert_url = this.configService.get(
     //   'GAPI_CLIENT_X509_CERT_URL',
     // );
-    // if (!client_x509_cert_url) envLoadErrorHelper('GAPI_CLIENT_X509_CERT_URL');
-
     // const project_number = this.configService.get('GAPI_PROJECT_NUMBER');
 
     if (client_email && private_key) {
@@ -80,6 +67,14 @@ export class GoogleCalendarService {
     }
   }
 
+  async getToken() {
+    if (this.gAuth) {
+      const auth = this.gAuth;
+      const token = await auth.getClient();
+      console.log(token);
+    }
+  }
+
   async createEvent(
     summary: string,
     description: string,
@@ -91,6 +86,7 @@ export class GoogleCalendarService {
     if (this.gClendar && this.gAuth) {
       const calendar = this.gClendar;
       const auth = this.gAuth;
+
       const event: Schema$Event = {
         summary,
         description,
@@ -102,22 +98,36 @@ export class GoogleCalendarService {
           dateTime: end,
           timeZone,
         },
+        // attendees: [
+        //   {
+        //     email: attendees[0],
+        //   },
+        //   {
+        //     email: attendees[1],
+        //   },
+        // ],
+        conferenceData: {
+          createRequest: {
+            requestId: nanoid(),
+            // conferenceSolutionKey: {
+            //   type: 'hangoutsMeet',
+            // },
+          },
+        },
       };
 
-      const result = calendar.events.insert(
-        {
+      try {
+        console.log('event', event);
+        const result = await calendar.events.insert({
           auth,
           calendarId: 'primary',
           requestBody: event,
-        },
-        (err: any, res: any) => {
-          if (err) {
-            this.logger.error(err);
-            return;
-          }
-          this.logger.log(res);
-        },
-      );
+          conferenceDataVersion: 1,
+        });
+        console.log(result);
+      } catch (err) {
+        console.log(err);
+      }
     }
   }
 }

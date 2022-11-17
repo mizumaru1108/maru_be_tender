@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -7,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../auth/jwt.guard';
@@ -26,6 +28,13 @@ export class TenderAppointmentController {
   @Post('test')
   async create() {
     await this.tenderAppointmentService.create();
+  }
+
+  @Get('google-callback')
+  async googleCallback(@Body() body: any, @Req() req: any) {
+    console.log('req', req);
+    console.log('body', body);
+    console.log('google callback hit');
   }
 
   @UseGuards(JwtAuthGuard)
