@@ -450,11 +450,12 @@ export class CampaignService {
     organizationId: string,
     request: GetAllMyCampaignFilterDto
     ): Promise<AggregatePaginateResult<CampaignDocument>> {
-    const { limit = 10, page = 1, sortBy, sortMethod } = request;
+    const { limit = 10, page = 1, sortBy, sortMethod, isPublished } = request;
     const filter: FilterQuery<CampaignDocument> = {
       organizationId: organizationId
     };
 
+    filter.isPublished = isPublished;
     filter.isDeleted = { $regex: 'n', $options: 'i' };
     filter.organizationId = new Types.ObjectId(request.organizationId);
     request.campaignType && (filter.campaignType = request.campaignType);
