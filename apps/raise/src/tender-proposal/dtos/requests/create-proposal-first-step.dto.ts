@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsString, IsNotEmpty, ValidateNested } from 'class-validator';
-import { UploadProposalFilesDto } from '../../../tender-commons/dto/upload-proposal-files.dto';
+import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
 
 // form1: {
 //   project_name: '',
@@ -47,13 +47,13 @@ export class CreateProposalFirstStepDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @Type(() => UploadProposalFilesDto)
+  @Type(() => UploadFilesJsonbDto)
   @ValidateNested()
-  letter_ofsupport_req: UploadProposalFilesDto;
+  letter_ofsupport_req: UploadFilesJsonbDto;
 
   @ApiProperty()
   @IsNotEmpty()
-  @Type(() => UploadProposalFilesDto)
+  @Type(() => UploadFilesJsonbDto)
   @ValidateNested()
-  project_attachments: UploadProposalFilesDto;
+  project_attachments: UploadFilesJsonbDto;
 }

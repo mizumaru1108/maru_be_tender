@@ -6,13 +6,17 @@ import {
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { nanoid } from 'nanoid';
+import { PrismaService } from '../../prisma/prisma.service';
+import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
 import { CreateProposalPaymentDto } from '../dtos/requests/payment/create-payment.dto';
+import { UpdatePaymentDto } from '../dtos/requests/payment/update-payment.dto';
 import { TenderProposalPaymentRepository } from '../repositories/tender-proposal-payment.repository';
 import { TenderProposalRepository } from '../repositories/tender-proposal.repository';
 
 @Injectable()
 export class TenderProposalPaymentService {
   constructor(
+    private readonly prismaService: PrismaService,
     private readonly tenderProposalRepository: TenderProposalRepository,
     private readonly tenderProposalPaymentRepository: TenderProposalPaymentRepository,
   ) {}
@@ -31,18 +35,18 @@ export class TenderProposalPaymentService {
 
     if (currentUserId !== proposal.supervisor_id) {
       throw new ForbiddenException(
-        'You are not allowed to perform this action!',
+        'You are not the responsible supervisor of this proposal!',
       );
     }
 
     if (!proposal.number_of_payments) {
-      throw new BadRequestException('Proposal number of payments is not set');
+      throw new BadRequestException('Proposal number of payments is not set!');
     }
 
     // validate the length of the payment
     if (payments.length !== Number(proposal.number_of_payments)) {
       throw new BadRequestException(
-        'Number of payment is not equal to the defined payment on proposal',
+        'Number of payment is not equal to the defined payment on proposal!',
       );
     }
 
@@ -64,5 +68,91 @@ export class TenderProposalPaymentService {
     );
 
     return createPaymentPayload.data as Prisma.paymentCreateManyInput[];
+  }
+
+  async updatePayment(
+    currentUser: TenderCurrentUser,
+    request: UpdatePaymentDto,
+  ) {
+    const { id: userId, choosenRole } = currentUser;
+    const { payment_id, action, cheque } = request;
+
+    const payment = await this.tenderProposalPaymentRepository.findPaymentById(
+      payment_id,
+    );
+    if (!payment) throw new NotFoundException('Payment not found');
+
+    const proposal = await this.tenderProposalRepository.fetchProposalById(
+      payment.proposal_id,
+    );
+    if (!proposal) {
+      throw new NotFoundException('No proposal data found on this payment');
+    }
+
+    const ownershipErrorThrow = () => {
+      throw new ForbiddenException(
+        'You are not the person in charge for this proposal!',
+      );
+    };
+
+    let status:
+      | 'SET_BY_SUPERVISOR'
+      | 'ISSUED_BY_SUPERVISOR'
+      | 'ACCEPTED_BY_PROJECT_MANAGER'
+      | 'ACCEPTED_BY_FINANCE'
+      | 'DONE'
+      | null = null;
+
+    let chequeData: Prisma.chequeCreateInput | null = null;
+
+    if (choosenRole === 'tender_project_manager') {
+      if (proposal.project_manager_id !== userId) ownershipErrorThrow();
+      if (action === 'accept') status = 'ACCEPTED_BY_PROJECT_MANAGER';
+      if (action === 'reject') status = 'SET_BY_SUPERVISOR';
+    }
+
+    if (choosenRole === 'tender_finance') {
+      if (proposal.finance_id !== userId) ownershipErrorThrow();
+      if (action === 'accept') status = 'ACCEPTED_BY_FINANCE';
+      // !TODO: if (action is edit) do something, still abmigous, need to discuss.
+    }
+
+    if (choosenRole === 'tender_project_supervisor') {
+      if (proposal.supervisor_id !== userId) ownershipErrorThrow();
+      if (action === 'issue') status = 'ISSUED_BY_SUPERVISOR';
+    }
+
+    if (choosenRole === 'tender_cashier') {
+      if (proposal.cashier_id !== userId) ownershipErrorThrow();
+      if (!cheque) throw new BadRequestException('Cheque data is required!');
+      chequeData = {
+        id: nanoid(),
+        deposit_date: new Date(cheque.deposit_date),
+        number: cheque.number,
+        transfer_receipt: {
+          url: cheque.transfer_receipt.url,
+          size: cheque.transfer_receipt.size,
+          type: cheque.transfer_receipt.type,
+        },
+        payment: {
+          connect: {
+            id: payment_id,
+          },
+        },
+      };
+      if (action === 'upload_receipt') {
+        status = 'DONE';
+      }
+    }
+
+    // !TODO:
+    // connect to tender proposal payment payload, update payment, proposal also insert cheque(conditionally)
+    // do it with transaction!
+    // const response = await this.tenderProposalPaymentRepository.updatePayment(
+    //  the paymentid,
+    //  the status,
+    //  the proposalId,
+    //  the cheque data (optional),
+    // );
   }
 }

@@ -23,6 +23,7 @@ import { TenderProposalPaymentService } from '../services/tender-proposal-paymen
 import { TenderRolesGuard } from '../../tender-auth/guards/tender-roles.guard';
 import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
 import { TenderProposalService } from '../services/tender-proposal.service';
+import { UpdatePaymentDto } from '../dtos/requests/payment/update-payment.dto';
 
 @Controller('tender-proposal')
 export class TenderProposalController {
@@ -34,7 +35,7 @@ export class TenderProposalController {
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_project_supervisor')
   @Post('insert-payment')
-  async validatePayment(
+  async insertPayment(
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: CreateProposalPaymentDto,
   ): Promise<BaseResponse<Prisma.paymentCreateManyInput[]>> {
@@ -48,6 +49,25 @@ export class TenderProposalController {
       HttpStatus.CREATED,
       'Payment created successfully',
     );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles(
+    'tender_cashier',
+    'tender_finance',
+    'tender_project_manager',
+    'tender_project_supervisor',
+  )
+  @Patch('update-payment')
+  async updatePayment(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() request: UpdatePaymentDto,
+  ) {
+    const updatedPayment =
+      await this.tenderProposalPaymentService.updatePayment(
+        currentUser,
+        request,
+      );
   }
 
   /**

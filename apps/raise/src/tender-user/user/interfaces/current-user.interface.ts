@@ -1,5 +1,8 @@
+import { TenderFusionAuthRoles } from '../../../tender-commons/types';
+
 export interface TenderCurrentUser {
   id: string;
   email: string;
-  type: string[] | null;
+  type: TenderFusionAuthRoles[];
+  choosenRole: TenderFusionAuthRoles;
 }

@@ -13,7 +13,7 @@ import { Reflector } from '@nestjs/core';
 @Injectable()
 export class TenderRolesGuard implements CanActivate {
   /**
-   * RolesGuard constructor.https://acefile.co/f/72732734/ice-age-scrat-tales-s01e02-zonafilm-in-mp4
+   * RolesGuard constructor.
    * @param reflector The reflector service.
    */
   constructor(
@@ -31,9 +31,24 @@ export class TenderRolesGuard implements CanActivate {
       context.getHandler(),
     );
 
+    // act as multiple roles
     // see if if one of the request.user.type[] is in the type[] array
     // ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some
-    if (allowedRoles.some((allowed) => request.user.type.includes(allowed))) {
+    // if (allowedRoles.some((allowed) => request.user.choosenRole.includes(allowed))) {
+    //   return true;
+    // } else {
+    //   throw new ForbiddenException(
+    //     "You don't have the required permissions to access this route",
+    //   );
+    // }
+
+    // indexOf vs findIndex performance
+    // act as single role
+    // https://stackoverflow.com/questions/41443029/difference-between-indexof-and-findindex-function-of-array
+
+    // indexof vs includes performance
+    // https://stackoverflow.com/questions/47659972/array-indexof-vs-includes-perfomance-depending-on-browser-and-needle-positio
+    if (allowedRoles.indexOf(request.user.choosenRole) > -1) {
       return true;
     } else {
       throw new ForbiddenException(

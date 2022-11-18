@@ -1,9 +1,9 @@
 import { Prisma } from '@prisma/client';
-import { UploadProposalFilesDto } from '../dto/upload-proposal-files.dto';
+import { UploadFilesJsonbDto } from '../dto/upload-files-jsonb.dto';
 
 export async function compareUrl(
   oldValue: Prisma.JsonValue | null,
-  file: UploadProposalFilesDto,
+  file: UploadFilesJsonbDto,
 ): Promise<boolean> {
   let isSame = true;
 

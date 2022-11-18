@@ -108,47 +108,47 @@ model organization {
 model payment {
   id                 String          @id
   payment_amount     Decimal?        @db.Decimal
-  proposal_id        String?
+  proposal_id        String
   payment_date       DateTime?       @db.Date
   status             String?         @default("SET_BY_SUPERVISOR")
   number_of_payments Decimal?        @db.Decimal
   order              Decimal?        @db.Decimal
   created_at         DateTime?       @default(now()) @db.Timestamptz(6)
   updated_at         DateTime?       @default(now()) @db.Timestamptz(6)
-  proposal           proposal?       @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
+  proposal           proposal        @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
   payment_status     payment_status? @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
   cheque             cheque[]
 }
 
 model proposal {
   id                                                           String                     @id
-  project_name                                                 String                     @db.Char(1)
+  project_name                                                 String                     @db.VarChar
   submitter_user_id                                            String
   created_at                                                   DateTime                   @default(now()) @db.Timestamptz(6)
   updated_at                                                   DateTime                   @default(now()) @db.Timestamptz(6)
   project_idea                                                 String?
   project_implement_date                                       DateTime?                  @db.Date
   project_location                                             String?
-  execution_time                                               String?                    @db.Char(1)
+  execution_time                                               String?                    @db.VarChar
   num_ofproject_binicficiaries                                 Int?
   project_goals                                                String?
   project_outputs                                              String?
   project_strengths                                            String?
   project_risks                                                String?
-  pm_name                                                      String?                    @db.Char(1)
-  pm_email                                                     String?                    @db.Char(1)
-  pm_mobile                                                    String?                    @db.Char(1)
+  pm_name                                                      String?                    @db.VarChar
+  pm_email                                                     String?                    @db.VarChar
+  pm_mobile                                                    String?                    @db.VarChar
   governorate                                                  String?
-  region                                                       String?                    @db.Char(1)
+  region                                                       String?                    @db.VarChar
   amount_required_fsupport                                     Decimal?                   @db.Decimal
   need_consultant                                              Boolean?                   @default(false)
-  step                                                         String?                    @default("ZERO") @db.Char(1)
+  step                                                         String?                    @default("ZERO")
   whole_budget                                                 Decimal?                   @db.Decimal
   state                                                        String?                    @default("MODERATOR")
   previously_add_bank                                          String[]
   inner_status                                                 String?                    @default("CREATED_BY_CLIENT")
   outter_status                                                String?                    @default("PENDING")
-  project_beneficiaries                                        String?                    @db.Char(1)
+  project_beneficiaries                                        String?                    @db.VarChar
   number_of_payments                                           Decimal?                   @db.Decimal
   finance_id                                                   String?                    @default("null")
   cashier_id                                                   String?                    @default("null")
@@ -247,7 +247,7 @@ model user {
   is_active                                               Boolean?                @default(true)
   employee_path                                           String?                 @db.VarChar
   last_login                                              DateTime?               @default(now()) @db.Timestamptz(6)
-  user_role                                               Json?
+  user_role                                               String[]
   employee_track                                          project_tracks?         @relation(fields: [employee_path], references: [id], onDelete: NoAction, onUpdate: NoAction)
   appointment_appointment_employee_idTouser               appointment[]           @relation("appointment_employee_idTouser")
   appointment_appointment_user_idTouser                   appointment[]           @relation("appointment_user_idTouser")
@@ -372,9 +372,9 @@ model proposal_step {
 model cheque {
   id               String   @id
   payment_id       String
-  transfer_receipt String   @db.Char
   deposit_date     DateTime @db.Date
   number           String   @db.VarChar
+  transfer_receipt Json
   payment          payment  @relation(fields: [payment_id], references: [id], onDelete: Cascade)
 }
 
