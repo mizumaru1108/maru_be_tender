@@ -248,6 +248,8 @@ export class CampaignService {
       }
     }
 
+    updateCampaignData.contentLanguage = request.contentLanguage;
+
     //update campaign
     const updatedCampaign = await updateCampaignData.save();
     if (!updatedCampaign) {
@@ -448,11 +450,12 @@ export class CampaignService {
     organizationId: string,
     request: GetAllMyCampaignFilterDto
     ): Promise<AggregatePaginateResult<CampaignDocument>> {
-    const { limit = 10, page = 1, sortBy, sortMethod } = request;
+    const { limit = 10, page = 1, sortBy, sortMethod, isPublished } = request;
     const filter: FilterQuery<CampaignDocument> = {
       organizationId: organizationId
     };
 
+    filter.isPublished = isPublished;
     filter.isDeleted = { $regex: 'n', $options: 'i' };
     filter.organizationId = new Types.ObjectId(request.organizationId);
     request.campaignType && (filter.campaignType = request.campaignType);
@@ -485,10 +488,15 @@ export class CampaignService {
           amountProgress: 1,
           amountTarget: 1,
           coverImage: 1,
+          image1: 1,
+          image2: 1,
+          image3: 1,
           contentLanguage: 1,
           updatedAt: 1,
           createdAt: 1,
           status: 1,
+          currencyCode: 1,
+          organizationId: 1,
           milestoneCount: { $size: '$milestone' },
         },
       },
@@ -516,10 +524,15 @@ export class CampaignService {
           amountProgress: { $first: '$amountProgress' },
           amountTarget: { $first: '$amountTarget' },
           coverImage: { $first: '$coverImage' },
+          image1: { $first: '$image1' },
+          image2: { $first: '$image2' },
+          image3: { $first: '$image3' },
           contentLanguage: { $first: '$contentLanguage' },
           updatedAt: { $first: '$updatedAt' },
           createdAt: { $first: '$createdAt' },
           status: { $first: '$campaignVendorLog.status' },
+          currencyCode: { $first: '$currencyCode' },
+          organizationId: { $first: '$organizationId' },
           milestoneCount: { $first: '$milestoneCount' },
         },
       },

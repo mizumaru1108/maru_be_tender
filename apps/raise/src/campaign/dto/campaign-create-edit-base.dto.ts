@@ -108,6 +108,6 @@ export class CampaignCreateEditBaseDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
+  // @IsNotEmpty()
   marketingPlan?: string;
 }

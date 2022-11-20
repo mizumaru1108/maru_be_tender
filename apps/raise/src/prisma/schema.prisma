@@ -110,7 +110,7 @@ model payment {
   payment_amount     Decimal?        @db.Decimal
   proposal_id        String?
   payment_date       DateTime?       @db.Date
-  status             String?
+  status             String?         @default("SET_BY_SUPERVISOR")
   number_of_payments Decimal?        @db.Decimal
   order              Decimal?        @db.Decimal
   created_at         DateTime?       @default(now()) @db.Timestamptz(6)
@@ -160,6 +160,7 @@ model proposal {
   on_revision                                                  Boolean?                   @default(false)
   on_consulting                                                Boolean?                   @default(false)
   proposal_bank_id                                             String?                    @db.Uuid
+  partial_support_amount                                       Decimal?                   @db.Decimal
   proposal_beneficiaries                                       proposal_beneficiaries?    @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
   project_tracks                                               project_tracks             @relation(fields: [project_track], references: [id], onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
   bank_information_bank_informationToproposal_proposal_bank_id bank_information?          @relation("bank_informationToproposal_proposal_bank_id", fields: [proposal_bank_id], references: [id], onDelete: Cascade)
@@ -554,4 +555,19 @@ model email_record {
   updated_at  DateTime? @default(now()) @db.Timestamptz(6)
   receiver    user      @relation("email_record_receiver_idTouser", fields: [receiver_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "email_datas_receiver_id_fkey")
   sender      user      @relation("email_record_sender_idTouser", fields: [sender_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "email_datas_sender_id_fkey")
+}
+
+model authority {
+  id    String @id
+  title String @db.VarChar
+}
+
+model banks {
+  id    String @id
+  title String @db.VarChar
+}
+
+model beneficiaries {
+  id    String @id
+  title String @db.VarChar
 }
