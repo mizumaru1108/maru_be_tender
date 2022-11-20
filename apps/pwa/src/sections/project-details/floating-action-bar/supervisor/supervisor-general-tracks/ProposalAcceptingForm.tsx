@@ -4,7 +4,7 @@ import { Grid } from '@mui/material';
 import { FormProvider } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
-import { ProposalApprovePayloadSupervisor } from '../types';
+import { ProposalApprovePayloadSupervisor } from '../../types';
 import BaseField from 'components/hook-form/BaseField';
 import { useEffect } from 'react';
 

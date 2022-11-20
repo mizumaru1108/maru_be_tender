@@ -36,13 +36,14 @@ function BaseField({
   return (
     <>
       {type === 'radioGroup' && (
-        <RHFRadioGroup name={name ?? ''} options={options!} label={translate(label)} />
+        <RHFRadioGroup name={name ?? ''} options={options!} label={translate(label)} {...other} />
       )}
       {type === 'select' && (
         <RHFSelect
           name={name ?? ''}
           label={translate(label)}
           placeholder={translate(placeholder) ?? ''}
+          {...other}
         >
           {children}
         </RHFSelect>
@@ -53,6 +54,7 @@ function BaseField({
           label={translate(label)}
           minDate={minDate}
           maxDate={maxDate}
+          {...other}
         />
       )}
       {type === 'textField' && (
@@ -64,15 +66,16 @@ function BaseField({
         />
       )}
       {type === 'uploadLabel' && <LabelStyle>{translate(label)}</LabelStyle>}
-      {type === 'checkbox' && <RHFCheckbox name={name ?? ''} label={translate(label)} />}
+      {type === 'checkbox' && <RHFCheckbox name={name ?? ''} label={translate(label)} {...other} />}
       {type === 'upload' && (
-        <RHFUploadSingleFile name={name ?? ''} placeholder={translate(placeholder)} />
+        <RHFUploadSingleFile name={name ?? ''} placeholder={translate(placeholder)} {...other} />
       )}
       {type === 'textArea' && (
         <RHFTextArea
           name={name ?? ''}
           label={translate(label)}
           placeholder={translate(placeholder)}
+          {...other}
         />
       )}
       {type === 'repeater' && (
@@ -81,6 +84,7 @@ function BaseField({
           repeaterFields={repeaterFields}
           enableAddButton={enableAddButton}
           enableRemoveButton={enableRemoveButton}
+          {...other}
         />
       )}
       {type === 'repeaterLabel' && <Typography variant="h4">{label}</Typography>}
@@ -89,6 +93,7 @@ function BaseField({
           name={name ?? ''}
           label={translate(label)}
           placeholder={translate(placeholder)}
+          {...other}
         />
       )}
     </>

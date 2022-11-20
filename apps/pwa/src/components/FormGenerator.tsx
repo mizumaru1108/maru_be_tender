@@ -36,6 +36,7 @@ export interface FormSingleProps {
   }[];
   maxDate?: string;
   minDate?: string;
+  disabled?: boolean;
 }
 
 // ----------------------------------------------------------------------

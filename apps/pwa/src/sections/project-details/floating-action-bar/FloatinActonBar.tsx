@@ -6,6 +6,7 @@ import { ProjectManagerFloatingActionBar } from './project-manager';
 import { ModeratorFloatingActionBar } from './moderator';
 import { FusionAuthRoles } from '../../../@types/commons';
 import { CeoFloatingActionBar } from './ceo';
+import { ConsultantFloatingActionBar } from './consultant';
 
 function FloatinActonBar({ proposalData }: any) {
   const { actionType } = useParams();
@@ -39,6 +40,10 @@ function FloatinActonBar({ proposalData }: any) {
         ['main', 'project-budget'].includes(activeTap) &&
         actionType === 'show-details' &&
         ['tender_moderator'].includes(role) && <ModeratorFloatingActionBar />}
+      {activeTap &&
+        ['main', 'supervisor-revision'].includes(activeTap) &&
+        actionType === 'show-details' &&
+        ['tender_consultant'].includes(role) && <ConsultantFloatingActionBar />}
     </>
   );
 }

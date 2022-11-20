@@ -1,8 +1,6 @@
 import { Container } from '@mui/material';
 import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
-import { CardTable } from 'components/card-table';
-import { data } from './mockData';
 import CardTableBE from 'components/card-table/CardTableBE';
 import { gettingIncomingRequests } from 'queries/project-supervisor/gettingIncomingRequests';
 

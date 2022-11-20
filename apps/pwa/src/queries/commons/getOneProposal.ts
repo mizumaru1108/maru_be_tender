@@ -11,6 +11,8 @@ export const getOneProposal = `query MyQuery($id: String!) {
       client_data {
         region
         governorate
+        date_of_esthablistmen
+        num_of_beneficiaries
       }
       bank_informations {
         id
