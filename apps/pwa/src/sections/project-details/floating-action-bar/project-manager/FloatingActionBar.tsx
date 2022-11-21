@@ -12,7 +12,7 @@ import ProposalRejectingForm from './ProposalRejectingForm';
 import { rejectProposal } from 'queries/commons/rejectProposal';
 import { approveProposal } from 'queries/commons/approveProposal';
 import { CreateProposalLog } from 'queries/commons/createProposalLog';
-import { useMutation } from 'urql';
+import { useMutation, useQuery } from 'urql';
 import useAuth from 'hooks/useAuth';
 import * as React from 'react';
 import Menu from '@mui/material/Menu';
@@ -24,6 +24,19 @@ import { nanoid } from 'nanoid';
 function FloatingActionBar({ organizationId }: any) {
   const { id } = useParams();
   const { user } = useAuth();
+  const employee_id = user?.id;
+  const [result] = useQuery({
+    query: `query MyQuery($id: String = "") {
+      user: user_by_pk(id: $id) {
+        track: employee_path
+      }
+    }
+    `,
+    variables: {
+      id: employee_id,
+    },
+  });
+  const { data, fetching, error } = result;
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const [proposalRejection, reject] = useMutation(rejectProposal);
@@ -85,7 +98,6 @@ function FloatingActionBar({ organizationId }: any) {
       console.log(accError);
     }
   };
-
   const handleApprovalConu = (values: any) => {
     accept({
       proposalId: id,
@@ -178,6 +190,8 @@ function FloatingActionBar({ organizationId }: any) {
     setAnchorEl(null);
   };
 
+  if (fetching) return <>... Loading</>;
+  if (error) return <>... Ops somthing went wrong</>;
   return (
     <>
       <Box
@@ -225,7 +239,14 @@ function FloatingActionBar({ organizationId }: any) {
                 aria-controls={open ? 'demo-positioned-menu' : undefined}
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
+                onClick={
+                  data.user.track === 'CONCESSIONAL_GRANTS'
+                    ? handleClick
+                    : () => {
+                        handleOpenModal();
+                        setAction('accept');
+                      }
+                }
                 variant="contained"
                 color="primary"
                 endIcon={<CheckIcon />}

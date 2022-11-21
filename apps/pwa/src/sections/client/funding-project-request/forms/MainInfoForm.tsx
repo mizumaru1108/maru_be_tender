@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import FormGenerator from 'components/FormGenerator';
 import { MainFormData } from '../Forms-Data';
 import { CustomFile } from 'components/upload';
+import useLocales from 'hooks/useLocales';
 
 type FormValuesProps = {
   project_name: string;
@@ -27,7 +28,8 @@ type Props = {
 };
 
 const MainInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
-  const RegisterSchema = Yup.object().shape({
+  const { translate } = useLocales();
+  const CreatingProposalForm1 = Yup.object().shape({
     project_name: Yup.string().required('Project name required'),
     project_idea: Yup.string().required('Project Idea name required'),
     project_location: Yup.string().required('Project location place is required'),
@@ -48,7 +50,7 @@ const MainInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
   });
 
   const methods = useForm<FormValuesProps>({
-    resolver: yupResolver(RegisterSchema),
+    resolver: yupResolver(CreatingProposalForm1),
     defaultValues: useMemo(() => defaultValues, [defaultValues]),
   });
 

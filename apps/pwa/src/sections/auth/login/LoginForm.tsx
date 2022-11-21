@@ -26,8 +26,10 @@ export default function LoginForm() {
   const [open, setOpen] = useState(false);
 
   const LoginSchema = Yup.object().shape({
-    email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-    password: Yup.string().required('Password is required'),
+    email: Yup.string()
+      .email(translate('errors.login.email.message'))
+      .required(translate('errors.login.email.required')),
+    password: Yup.string().required(translate('errors.login.password.required')),
   });
 
   const defaultValues = {

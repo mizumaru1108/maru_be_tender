@@ -7,8 +7,128 @@
 
 const ar = {
   pages: {
+    auth: {
+      login: 'صفحة تسجيل الدخول',
+      register: 'صفحة إنشاء الحساب',
+    },
     client: {
       main: 'صفحة الزبون العامة',
+    },
+  },
+  errors: {
+    login: {
+      email: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      password: {
+        message: '',
+        required: 'كلمة المرور مطلوبة',
+      },
+    },
+    register: {
+      entity: {
+        message: '',
+        required: 'اسم الجهة مطلوب',
+      },
+      client_field: {
+        message: '',
+        required: 'مجال الجهة مطلوب',
+      },
+      authority: {
+        message: '',
+        required: 'الجهة المشرفة مطلوب',
+      },
+      date_of_esthablistmen: {
+        message: '',
+        required: 'تاريخ التأسيس مطلوب',
+      },
+      headquarters: {
+        message: '',
+        required: 'المقر مطلوب',
+      },
+      num_of_employed_facility: {
+        message: '',
+        required: 'عدد الموظفين بدوام كامل مطلوب',
+      },
+      num_of_beneficiaries: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+      region: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+      governorate: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+      center_administration: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+      entity_mobile: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+      phone: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+      twitter_acount: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+      website: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+      email: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+      password: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+    },
+    cre_proposal: {
+      project_name: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'اسم المشروع مطلوب',
+      },
+      project_idea: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'فكرة المشروع مطلوب',
+      },
+      project_location: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      project_implement_date: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      execution_time: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      project_beneficiaries: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      letter_ofsupport_req: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      project_attachments: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      project_beneficiaries_specific_type: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
     },
   },
   commons: {
@@ -93,7 +213,7 @@ const ar = {
   forget_the_password: 'نسيت كلمة المرور',
   login: 'تسجيل الدخول',
   the_login_message: 'الرجاء إدخال عنوان البريد الإلكتروني',
-  dont_have_account: 'ليس لديك حساب في المنصة',
+  dont_have_account: 'ليس لديك حساب في المنصة؟',
   register_one: 'قم بإنشاء حساب من هنا',
   add_new_line: 'إنشاء سطر جديد',
   create_new_account: ' إنشاء حساب جديد',
@@ -105,13 +225,13 @@ const ar = {
   canceled: 'الطلب ملفى',
   create_a_new_support_request: 'إنشاء طلب دعم جديد',
   register_form1: {
+    entity: {
+      label: 'اسم الجهة*',
+      placeholder: 'الرجاء أدخل اسم الجهة',
+    },
     vat: {
       label: 'ضريبة القيمة المضافة',
       placeholder: 'هل توافق على ضريبة القيمة المضافة',
-    },
-    entity: {
-      label: 'اسم العميل*',
-      placeholder: 'الرجاء أدخل اسم العميل',
     },
     entity_area: {
       label: 'مجال الجهة*',
@@ -132,7 +252,7 @@ const ar = {
     headquarters: {
       label: 'المقر*',
       placeholder: 'الرجاء اختيار نوع المقر',
-      options: {},
+      options: { rent: 'أجار', own: 'ملك' },
     },
     number_of_employees: {
       label: 'عدد موظفين بدوام كلي للمنشأة*',

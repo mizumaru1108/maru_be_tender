@@ -28,7 +28,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 export default function Register() {
   const { translate } = useLocales();
   return (
-    <Page title="Register">
+    <Page title={translate('pages.auth.register')}>
       <RootStyle>
         <Box
           sx={{
