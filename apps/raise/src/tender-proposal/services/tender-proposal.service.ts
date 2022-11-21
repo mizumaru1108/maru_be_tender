@@ -871,6 +871,7 @@ export class TenderProposalService {
         id: request.proposal_id,
       },
     });
+    
     if (!proposal) {
       throw new NotFoundException(
         `Proposal with id ${request.proposal_id} not found`,

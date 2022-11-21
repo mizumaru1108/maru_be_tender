@@ -1,12 +1,8 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
-import { payment, Prisma, proposal_log } from '@prisma/client';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { cheque, payment, Prisma } from '@prisma/client';
 import { rootLogger } from '../../logger';
 import { PrismaService } from '../../prisma/prisma.service';
+import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
 
 @Injectable()
 export class TenderProposalPaymentRepository {
@@ -15,14 +11,15 @@ export class TenderProposalPaymentRepository {
   });
   constructor(private readonly prismaService: PrismaService) {}
 
-  async findPaymentById(id: string) {
+  async findPaymentById(id: string): Promise<payment | null> {
+    this.logger.debug(`finding payment by id of ${id}... `);
     try {
       return await this.prismaService.payment.findUnique({
         where: { id },
       });
     } catch (error) {
-      this.logger.error(error);
-      throw new InternalServerErrorException(error);
+      const prismaError = prismaErrorThrower(error, 'finding payment');
+      throw prismaError;
     }
   }
 
@@ -30,6 +27,7 @@ export class TenderProposalPaymentRepository {
     paymentId: string,
     paymentStatus: string | null,
   ): Promise<payment | null> {
+    this.logger.debug(`updating payment by id of ${paymentId}...`);
     try {
       return await this.prismaService.payment.update({
         where: {
@@ -40,20 +38,21 @@ export class TenderProposalPaymentRepository {
         },
       });
     } catch (error) {
-      this.logger.error(error);
-      throw new InternalServerErrorException(error);
+      const prismaError = prismaErrorThrower(error, 'updating payment status!');
+      throw prismaError;
     }
   }
 
   async createManyPayment(createManyPayload: Prisma.paymentCreateManyArgs) {
+    this.logger.debug(`creating many payment...`);
     try {
       const result = await this.prismaService.payment.createMany(
         createManyPayload,
       );
       return result;
     } catch (error) {
-      this.logger.error(error);
-      throw new InternalServerErrorException(error);
+      const prismaError = prismaErrorThrower(error, 'creating many payment!');
+      throw prismaError;
     }
   }
 
@@ -61,7 +60,8 @@ export class TenderProposalPaymentRepository {
     paymentId: string,
     status: string | null,
     chequeData?: Prisma.chequeCreateInput | null,
-  ) {
+  ): Promise<payment | [payment, cheque]> {
+    this.logger.debug(`updating payment by id of ${paymentId}...`);
     if (chequeData) {
       try {
         const result = await this.prismaService.$transaction([
@@ -79,17 +79,11 @@ export class TenderProposalPaymentRepository {
         ]);
         return result;
       } catch (error) {
-        console.log(error);
-        this.logger.error(error);
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          throw new InternalServerErrorException(
-            `Something went wrong, when updating payment's status, (Prisma: ${error.code})`,
-          );
-        } else {
-          throw new InternalServerErrorException(
-            "Something went wrong, when updating payment's status",
-          );
-        }
+        const prismaError = prismaErrorThrower(
+          error,
+          'updating payment status!',
+        );
+        throw prismaError;
       }
     } else {
       try {
@@ -103,17 +97,11 @@ export class TenderProposalPaymentRepository {
         });
         return result;
       } catch (error) {
-        this.logger.error(error);
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          throw new InternalServerErrorException(
-            'Prisma Eror Code: ' + error.code,
-            error.message,
-          );
-        } else {
-          throw new InternalServerErrorException(
-            "Something went wrong, when updating payment's status",
-          );
-        }
+        const prismaError = prismaErrorThrower(
+          error,
+          'updating payment status!',
+        );
+        throw prismaError;
       }
     }
   }

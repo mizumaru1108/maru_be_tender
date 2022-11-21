@@ -106,14 +106,14 @@ export class GoogleCalendarServiceAccountService {
         //     email: attendees[1],
         //   },
         // ],
-        conferenceData: {
-          createRequest: {
-            requestId: nanoid(),
-            // conferenceSolutionKey: {
-            //   type: 'hangoutsMeet',
-            // },
-          },
-        },
+        // conferenceData: {
+        //   createRequest: {
+        //     requestId: nanoid(),
+        //     conferenceSolutionKey: {
+        //       type: 'hangoutsMeet',
+        //     },
+        //   },
+        // },
       };
 
       try {
@@ -122,9 +122,10 @@ export class GoogleCalendarServiceAccountService {
           auth,
           calendarId: 'primary',
           requestBody: event,
-          conferenceDataVersion: 1,
+          // conferenceDataVersion: 1,
         });
         console.log(result);
+        return result;
       } catch (err) {
         console.log(err);
       }

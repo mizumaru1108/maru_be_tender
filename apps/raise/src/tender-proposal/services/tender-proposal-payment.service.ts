@@ -6,7 +6,8 @@ import {
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { nanoid } from 'nanoid';
-import { PrismaService } from '../../prisma/prisma.service';
+import { actionValidator } from '../../tender-commons/utils/action-validator';
+import { ownershipErrorThrow } from '../../tender-commons/utils/proposal-ownership-error-thrower';
 import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
 import { CreateProposalPaymentDto } from '../dtos/requests/payment/create-payment.dto';
 import { UpdatePaymentDto } from '../dtos/requests/payment/update-payment.dto';
@@ -89,22 +90,22 @@ export class TenderProposalPaymentService {
       throw new NotFoundException('No proposal data found on this payment');
     }
 
-    const actionValidator = (
-      allowedAction: string[],
-      currentAction: string,
-    ) => {
-      if (allowedAction.indexOf(currentAction) === -1) {
-        throw new BadRequestException(
-          `You are not allowed to perform ${currentAction} `,
-        );
-      }
-    };
+    // const actionValidator = (
+    //   allowedAction: string[],
+    //   currentAction: string,
+    // ) => {
+    //   if (allowedAction.indexOf(currentAction) === -1) {
+    //     throw new BadRequestException(
+    //       `You are not allowed to perform ${currentAction} `,
+    //     );
+    //   }
+    // };
 
-    const ownershipErrorThrow = () => {
-      throw new ForbiddenException(
-        'You are not the person in charge for this proposal!',
-      );
-    };
+    // const ownershipErrorThrow = () => {
+    //   throw new ForbiddenException(
+    //     'You are not the person in charge for this proposal!',
+    //   );
+    // };
 
     let status:
       | 'SET_BY_SUPERVISOR'
