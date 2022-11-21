@@ -21,7 +21,7 @@ function ConsultantFloatingActionBar() {
         approveProposalPayloads: {
           inner_status: 'ACCEPTED_BY_CONSULTANT',
           outter_status: 'PENDING',
-          state: 'PROJECT_MANAGER',
+          state: 'CEO',
         },
       });
       navigate('/consultant/dashboard/app');
@@ -33,8 +33,8 @@ function ConsultantFloatingActionBar() {
         proposalId: proposal_id,
         approveProposalPayloads: {
           inner_status: 'REJECTED_BY_CONSULTANT',
-          outter_status: 'CANCELED',
-          state: 'CLIENT',
+          outter_status: 'PENDING',
+          state: 'PROJECT_MANAGER',
         },
       });
       navigate('/consultant/dashboard/app');

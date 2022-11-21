@@ -19,6 +19,9 @@ type FormDataProps = {
   procedures: string;
   notes: string;
   type_of_support: string;
+  support_goals: string;
+  clasue_cons: string;
+  accreditation_type: string;
 };
 
 function FirstForm({ children, onSubmit, defaultValues, data }: any) {
@@ -31,12 +34,14 @@ function FirstForm({ children, onSubmit, defaultValues, data }: any) {
     does_an_agreement: Yup.boolean().required('Procedures is required!'),
     support_amount: Yup.number().required('Procedures is required!'),
     number_of_payments: Yup.number().required('Procedures is required!'),
-    procedures: Yup.string().required('Procedures is required!'),
-    notes: Yup.string().required('Procedures is required!'),
+    notes: Yup.string(),
     support_outputs: Yup.string().required('Procedures is required!'),
-    vat: Yup.boolean(),
+    vat: Yup.boolean().required('vat is required!'),
     vat_percentage: Yup.number(),
     inclu_or_exclu: Yup.boolean(),
+    accreditation_type: Yup.string().required('Procedures is required!'),
+    support_goals: Yup.string().required('Procedures is required!'),
+    clasue_cons: Yup.string().required('Procedures is required!'),
   });
 
   const methods = useForm<FormDataProps>({
@@ -59,8 +64,8 @@ function FirstForm({ children, onSubmit, defaultValues, data }: any) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues]);
 
-  const onSubmitForm = async (formData: ProposalApprovePayloadSupervisor) => {
-    onSubmit(formData);
+  const onSubmitForm = async (data: any) => {
+    onSubmit(data);
   };
   const vat = watch('vat');
   const support_type = watch('support_type');
@@ -108,16 +113,7 @@ function FirstForm({ children, onSubmit, defaultValues, data }: any) {
             children={
               <>
                 <option value="test" style={{ backgroundColor: '#fff' }}>
-                  test
-                </option>
-                <option value="test" style={{ backgroundColor: '#fff' }}>
-                  test
-                </option>
-                <option value="test" style={{ backgroundColor: '#fff' }}>
-                  test
-                </option>
-                <option value="test" style={{ backgroundColor: '#fff' }}>
-                  test
+                  عام
                 </option>
               </>
             }
@@ -228,22 +224,63 @@ function FirstForm({ children, onSubmit, defaultValues, data }: any) {
             placeholder="دفعة واحدة"
           />
         </Grid>
+        <Grid item md={6} xs={12}>
+          <BaseField
+            type="select"
+            name="accreditation_type"
+            label="نوع الاعتماد*"
+            placeholder="الرجاء اختيار نوع الاعتماد"
+            children={
+              <>
+                <option value="test" style={{ backgroundColor: '#fff' }}>
+                  خطة
+                </option>
+                <option value="test" style={{ backgroundColor: '#fff' }}>
+                  لا وارد
+                </option>
+              </>
+            }
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <BaseField
+            type="select"
+            name="support_goals"
+            label="اهداف الدعم*"
+            placeholder="الرجاء اختيار أهداف الدعم هنا"
+            children={
+              <>
+                <option value="test" style={{ backgroundColor: '#fff' }}>
+                  عام
+                </option>
+              </>
+            }
+          />
+        </Grid>
         <Grid item md={12} xs={12}>
           <BaseField
-            type="textArea"
-            name="procedures"
-            label="الإجراءات*"
-            placeholder="اكتب الاجراءات هنا"
+            type="select"
+            name="clasue_cons"
+            label="البند"
+            placeholder="الرجاء اختيار البند"
+            children={
+              <>
+                <option value="test" style={{ backgroundColor: '#fff' }}>
+                  عام
+                </option>
+              </>
+            }
           />
         </Grid>
         <Grid item md={12} xs={12}>
           <BaseField
             type="textArea"
             name="notes"
-            label="ملاحظات على المشروع*"
+            label="ملاحظات على المشروع"
             placeholder="اكتب ملاحظاتك هنا"
           />
         </Grid>
+
         <Grid item md={12} xs={12}>
           <BaseField
             type="textArea"
@@ -252,6 +289,7 @@ function FirstForm({ children, onSubmit, defaultValues, data }: any) {
             placeholder="اكتب هنا"
           />
         </Grid>
+        {/* <FormGenerator data={Appr oveProposalFormFieldsSupervisor} /> */}
         <Grid item md={12} xs={12} sx={{ mb: '70px' }}>
           {children}
         </Grid>

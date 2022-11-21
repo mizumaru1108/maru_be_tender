@@ -30,7 +30,7 @@ function ActionBox({ action, isLoading, onReturn, step, onBack }: Props) {
           hieght: { xs: '100%', sm: '50px' },
         }}
       >
-        Close
+        إغلاق
       </Button>
       <LoadingButton
         loading={isLoading}

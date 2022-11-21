@@ -14,6 +14,9 @@ import { approveProposal } from 'queries/commons/approveProposal';
 import { CreateProposalLog } from 'queries/commons/createProposalLog';
 import { useMutation } from 'urql';
 import useAuth from 'hooks/useAuth';
+import * as React from 'react';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 import { useSnackbar } from 'notistack';
 import { nanoid } from 'nanoid';
@@ -31,7 +34,7 @@ function FloatingActionBar({ organizationId }: any) {
   const { translate } = useLocales();
   const theme = useTheme();
   const [action, setAction] = useState<
-    'accept' | 'reject' | 'edit_request' | 'send_client_message'
+    'accept' | 'reject' | 'edit_request' | 'send_client_message' | 'accept_cons'
   >('reject');
   const [modalState, setModalState] = useState(false);
   const handleOpenModal = () => {
@@ -83,6 +86,47 @@ function FloatingActionBar({ organizationId }: any) {
     }
   };
 
+  const handleApprovalConu = (values: any) => {
+    accept({
+      proposalId: id,
+      approveProposalPayloads: {
+        inner_status: 'ACCEPTED_AND_NEED_CONSULTANT',
+        outter_status: 'PENDING',
+        state: 'CONSULTANT',
+      },
+    });
+
+    if (!accFetch) {
+      enqueueSnackbar(translate('proposal_approved'), {
+        variant: 'success',
+      });
+      createLog({
+        proposalLogPayload: {
+          id: nanoid(),
+          reviewer_id: user?.id,
+          proposal_id: id,
+          organization_id: organizationId, // from clientid
+          status: 'ACCEPTED',
+          assign: 'CEO',
+          notes: values.notes,
+          procedures: values.procedures,
+        },
+      });
+      navigate('/project-manager/dashboard/app');
+    }
+    if (accError) {
+      enqueueSnackbar(accError.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+      });
+      console.log(accError);
+    }
+  };
   const handleRejected = (values: any) => {
     reject({
       proposalId: id,
@@ -123,6 +167,15 @@ function FloatingActionBar({ organizationId }: any) {
       });
       console.log(rejError);
     }
+  };
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   return (
@@ -168,17 +221,50 @@ function FloatingActionBar({ organizationId }: any) {
                 {translate('reject_project')}
               </Button>
               <Button
-                onClick={() => {
-                  setAction('accept');
-                  handleOpenModal();
-                }}
+                id="demo-positioned-button"
+                aria-controls={open ? 'demo-positioned-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+                onClick={handleClick}
                 variant="contained"
                 color="primary"
                 endIcon={<CheckIcon />}
                 sx={{ flex: 1, '&:hover': { backgroundColor: '#13B2A2' } }}
               >
-                {translate('accept_project')}
+                قبول المشروع
               </Button>
+              <Menu
+                id="demo-positioned-menu"
+                aria-labelledby="demo-positioned-button"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+              >
+                <MenuItem
+                  onClick={() => {
+                    setAction('accept');
+                    handleOpenModal();
+                  }}
+                >
+                  قبول المشروع وارساله للمدير التنفيذي
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setAction('accept_cons');
+                    handleOpenModal();
+                  }}
+                >
+                  قبول المشروع وعرضه على لجنة المستشارين
+                </MenuItem>
+              </Menu>
               <Button
                 variant="outlined"
                 color="inherit"
@@ -209,6 +295,22 @@ function FloatingActionBar({ organizationId }: any) {
                 console.log('form callback', values);
                 console.log('just a dummy not create log yet');
                 handleApproval(values);
+              }}
+            >
+              <FormActionBox
+                action="accept"
+                isLoading={false}
+                onReturn={() => {
+                  setModalState(false);
+                }}
+              />
+            </ProposalAcceptingForm>
+          ) : action === 'accept_cons' ? (
+            <ProposalAcceptingForm
+              onSubmit={(values) => {
+                console.log('form callback', values);
+                console.log('just a dummy not create log yet');
+                handleApprovalConu(values);
               }}
             >
               <FormActionBox
