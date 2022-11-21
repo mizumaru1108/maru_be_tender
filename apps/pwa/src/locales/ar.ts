@@ -94,40 +94,98 @@ const ar = {
     },
     cre_proposal: {
       project_name: {
-        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        message: '',
         required: 'اسم المشروع مطلوب',
       },
       project_idea: {
-        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
-        required: 'فكرة المشروع مطلوب',
+        message: '',
+        required: 'فكرة المشروع مطلوبة',
       },
       project_location: {
-        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
-        required: 'البريد الالكتروني مطلوب',
+        message: '',
+        required: 'مكان تنفيذ المشروع مطلوب',
       },
       project_implement_date: {
-        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
-        required: 'البريد الالكتروني مطلوب',
+        message: '',
+        required: 'تاريخ تنفيذ المشروع',
       },
       execution_time: {
-        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
-        required: 'البريد الالكتروني مطلوب',
+        message: '',
+        required: 'مدة التنفيذ مطلوبة',
       },
       project_beneficiaries: {
-        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
-        required: 'البريد الالكتروني مطلوب',
+        message: '',
+        required: 'نوع الفئة المستهدفة مطلوبة',
       },
       letter_ofsupport_req: {
-        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
-        required: 'البريد الالكتروني مطلوب',
+        message: '',
+        required: 'خطاب طلب الدعم مطلوب',
       },
       project_attachments: {
-        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
-        required: 'البريد الالكتروني مطلوب',
+        message: '',
+        required: 'مرفقات المشروع مطلوبة',
       },
       project_beneficiaries_specific_type: {
-        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
-        required: 'البريد الالكتروني مطلوب',
+        message: '',
+        required: 'نوع الفئة المستهدفة الخارجية مطلوبة عندما تكون الفئة المستهدفة هي خارجية',
+      },
+      num_ofproject_binicficiaries: {
+        message: '',
+        required: 'عدد المستفيدين من المشروع مطلوب',
+      },
+      project_goals: {
+        message: '',
+        required: 'أهداف المشروع مطلوبة',
+      },
+      project_outputs: {
+        message: '',
+        required: 'مخرجات المشروع مطلوبة',
+      },
+      project_strengths: {
+        message: '',
+        required: 'نقاط القوة للمشروع مطلوبة',
+      },
+      project_risks: {
+        message: '',
+        required: 'مخطار المشوع مطلوبة',
+      },
+      pm_name: {
+        message: '',
+        required: 'اسم مدير المشروع مطلوب',
+      },
+      pm_mobile: {
+        message: 'الرقم يجب أن يكون مكتوب بصيغة ممائلة لهذه الصيفة +9665XXXXXXXX',
+        required: 'رقم الجوال مطلوب',
+      },
+      pm_email: {
+        message: '',
+        required: 'الايميل مطلوب',
+      },
+      region: {
+        message: '',
+        required: 'المنطفة مطلوبة',
+      },
+      governorate: {
+        message: '',
+        required: 'المحافظة مطلوبة',
+      },
+      amount_required_fsupport: {
+        message: '',
+        required: 'المبلغ المطلوب للدعم مطلوب',
+      },
+      detail_project_budgets: {
+        clause: {
+          message: '',
+          required: 'البند مطلوب',
+        },
+        explanation: {
+          message: '',
+          required: 'الشرح مطلوب',
+        },
+        amount: {
+          message: 'المبلغ يجب أن يكون رقم موجب يدون أية فواصل',
+          required: 'القيمة مطلوبة',
+        },
       },
     },
   },
@@ -953,6 +1011,7 @@ const ar = {
   totalRequest: 'عدد مشاريع الكلي',
   login_message_error: 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
   budget_error_message: 'مجموع الميزانية يجب أن يكون مساوٍ للرقم المطلوب',
+  banking_error_message: 'الرجاء اختيار بطاقة بنك للمتابعة',
 };
 
 export default ar;

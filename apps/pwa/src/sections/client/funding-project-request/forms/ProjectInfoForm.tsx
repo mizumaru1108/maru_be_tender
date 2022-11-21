@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import FormGenerator from 'components/FormGenerator';
 import { ProjectInfoData } from '../Forms-Data';
+import useLocales from 'hooks/useLocales';
 type FormValuesProps = {
   num_ofproject_binicficiaries: number;
   project_goals: string;
@@ -20,16 +21,23 @@ type Props = {
   defaultValues: any;
 };
 const ProjectInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
-  const RegisterSchema = Yup.object().shape({
-    num_ofproject_binicficiaries: Yup.number().required('Number of project beneficiaries required'),
-    project_goals: Yup.string().required('Project goals required'),
-    project_outputs: Yup.string().required('Project outputs is required'),
-    project_strengths: Yup.string().required('Project strengths is required'),
-    project_risks: Yup.string().required('Project risk is required'),
+  const { translate } = useLocales();
+  const CreatingProposalForm2 = Yup.object().shape({
+    num_ofproject_binicficiaries: Yup.number().required(
+      translate('errors.cre_proposal.num_ofproject_binicficiaries.required')
+    ),
+    project_goals: Yup.string().required(translate('errors.cre_proposal.project_goals.required')),
+    project_outputs: Yup.string().required(
+      translate('errors.cre_proposal.project_outputs.required')
+    ),
+    project_strengths: Yup.string().required(
+      translate('errors.cre_proposal.project_strengths.required')
+    ),
+    project_risks: Yup.string().required(translate('errors.cre_proposal.project_risks.required')),
   });
 
   const methods = useForm<FormValuesProps>({
-    resolver: yupResolver(RegisterSchema),
+    resolver: yupResolver(CreatingProposalForm2),
     defaultValues: useMemo(() => defaultValues, [defaultValues]),
   });
 

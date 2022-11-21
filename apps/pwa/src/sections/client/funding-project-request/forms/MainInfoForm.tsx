@@ -30,12 +30,18 @@ type Props = {
 const MainInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
   const { translate } = useLocales();
   const CreatingProposalForm1 = Yup.object().shape({
-    project_name: Yup.string().required('Project name required'),
-    project_idea: Yup.string().required('Project Idea name required'),
-    project_location: Yup.string().required('Project location place is required'),
-    project_implement_date: Yup.string().required('Project applying date is required'),
-    execution_time: Yup.string().required('Applying duration name required'),
-    project_beneficiaries: Yup.string().required('Target group type required'),
+    project_name: Yup.string().required(translate('errors.cre_proposal.project_name.required')),
+    project_idea: Yup.string().required(translate('errors.cre_proposal.project_idea.required')),
+    project_location: Yup.string().required(
+      translate('errors.cre_proposal.project_location.required')
+    ),
+    project_implement_date: Yup.string().required(
+      translate('errors.cre_proposal.project_implement_date.required')
+    ),
+    execution_time: Yup.string().required(translate('errors.cre_proposal.execution_time.required')),
+    project_beneficiaries: Yup.string().required(
+      translate('errors.cre_proposal.project_beneficiaries.required')
+    ),
     letter_ofsupport_req: Yup.object().shape({
       url: Yup.string().required(),
       size: Yup.number(),
@@ -46,7 +52,12 @@ const MainInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
       size: Yup.number(),
       type: Yup.string().required(),
     }),
-    project_beneficiaries_specific_type: Yup.string(),
+    project_beneficiaries_specific_type: Yup.string().when('project_beneficiaries', {
+      is: 'GENERAL',
+      then: Yup.string().required(
+        translate('errors.cre_proposal.project_beneficiaries_specific_type.required')
+      ),
+    }),
   });
 
   const methods = useForm<FormValuesProps>({

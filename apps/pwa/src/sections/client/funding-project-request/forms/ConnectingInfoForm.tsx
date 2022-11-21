@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import BaseField from 'components/hook-form/BaseField';
 import { REGION } from '_mock/region';
 import { RegionNames } from '../../../../@types/region';
+import useLocales from 'hooks/useLocales';
 type FormValuesProps = {
   pm_name: string;
   pm_mobile: string;
@@ -22,26 +23,24 @@ type Props = {
 };
 
 const ConnectingInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
+  const { translate } = useLocales();
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  const RegisterSchema = Yup.object().shape({
-    pm_name: Yup.string().required('Project manager name is required'),
+  const CreatingProposalForm3 = Yup.object().shape({
+    pm_name: Yup.string().required(translate('errors.cre_proposal.pm_name.required')),
     pm_mobile: Yup.string()
-      .matches(
-        /^\+9665[0-9]{8}$/,
-        `The CEO Mobile must be written in the exact way of +9665xxxxxxxx`
-      )
-      .required('Mobile number is required'),
+      .matches(/^\+9665[0-9]{8}$/, translate('errors.cre_proposal.pm_mobile.message'))
+      .required(translate('errors.cre_proposal.pm_mobile.required')),
     pm_email: Yup.string()
       .email('Email must be a valid email address')
-      .required('Email is required'),
-    region: Yup.string().required('Region is required'),
-    governorate: Yup.string().required('City is required'),
+      .required(translate('errors.cre_proposal.pm_email.required')),
+    region: Yup.string().required(translate('errors.cre_proposal.region.required')),
+    governorate: Yup.string().required(translate('errors.cre_proposal.governorate.required')),
   });
 
   const methods = useForm<FormValuesProps>({
-    resolver: yupResolver(RegisterSchema),
+    resolver: yupResolver(CreatingProposalForm3),
     defaultValues,
   });
   const {
