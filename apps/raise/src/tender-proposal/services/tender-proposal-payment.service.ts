@@ -10,13 +10,13 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
 import { CreateProposalPaymentDto } from '../dtos/requests/payment/create-payment.dto';
 import { UpdatePaymentDto } from '../dtos/requests/payment/update-payment.dto';
+import { UpdatePaymentResponseDto } from '../dtos/responses/payment/update-payment-response.dto';
 import { TenderProposalPaymentRepository } from '../repositories/tender-proposal-payment.repository';
 import { TenderProposalRepository } from '../repositories/tender-proposal.repository';
 
 @Injectable()
 export class TenderProposalPaymentService {
   constructor(
-    private readonly prismaService: PrismaService,
     private readonly tenderProposalRepository: TenderProposalRepository,
     private readonly tenderProposalPaymentRepository: TenderProposalPaymentRepository,
   ) {}
@@ -73,7 +73,7 @@ export class TenderProposalPaymentService {
   async updatePayment(
     currentUser: TenderCurrentUser,
     request: UpdatePaymentDto,
-  ) {
+  ): Promise<UpdatePaymentResponseDto> {
     const { id: userId, choosenRole } = currentUser;
     const { payment_id, action, cheque } = request;
 
@@ -88,6 +88,17 @@ export class TenderProposalPaymentService {
     if (!proposal) {
       throw new NotFoundException('No proposal data found on this payment');
     }
+
+    const actionValidator = (
+      allowedAction: string[],
+      currentAction: string,
+    ) => {
+      if (allowedAction.indexOf(currentAction) === -1) {
+        throw new BadRequestException(
+          `You are not allowed to perform ${currentAction} `,
+        );
+      }
+    };
 
     const ownershipErrorThrow = () => {
       throw new ForbiddenException(
@@ -107,27 +118,32 @@ export class TenderProposalPaymentService {
 
     if (choosenRole === 'tender_project_manager') {
       if (proposal.project_manager_id !== userId) ownershipErrorThrow();
+      actionValidator(['accept', 'reject'], action);
       if (action === 'accept') status = 'ACCEPTED_BY_PROJECT_MANAGER';
       if (action === 'reject') status = 'SET_BY_SUPERVISOR';
     }
 
     if (choosenRole === 'tender_finance') {
       if (proposal.finance_id !== userId) ownershipErrorThrow();
+      actionValidator(['accept'], action);
       if (action === 'accept') status = 'ACCEPTED_BY_FINANCE';
       // !TODO: if (action is edit) do something, still abmigous, need to discuss.
     }
 
     if (choosenRole === 'tender_project_supervisor') {
       if (proposal.supervisor_id !== userId) ownershipErrorThrow();
+      actionValidator(['issue'], action);
       if (action === 'issue') status = 'ISSUED_BY_SUPERVISOR';
     }
 
     if (choosenRole === 'tender_cashier') {
       if (proposal.cashier_id !== userId) ownershipErrorThrow();
+      actionValidator(['upload_receipt'], action);
       if (!cheque) throw new BadRequestException('Cheque data is required!');
+      if (action === 'upload_receipt') status = 'DONE';
       chequeData = {
         id: nanoid(),
-        deposit_date: new Date(cheque.deposit_date),
+        deposit_date: cheque.deposit_date,
         number: cheque.number,
         transfer_receipt: {
           url: cheque.transfer_receipt.url,
@@ -140,19 +156,26 @@ export class TenderProposalPaymentService {
           },
         },
       };
-      if (action === 'upload_receipt') {
-        status = 'DONE';
-      }
     }
 
-    // !TODO:
-    // connect to tender proposal payment payload, update payment, proposal also insert cheque(conditionally)
-    // do it with transaction!
-    // const response = await this.tenderProposalPaymentRepository.updatePayment(
-    //  the paymentid,
-    //  the status,
-    //  the proposalId,
-    //  the cheque data (optional),
-    // );
+    const response = await this.tenderProposalPaymentRepository.updatePayment(
+      payment_id,
+      status,
+      chequeData,
+    );
+
+    // if the type of response is [payment, cheque]
+    if (Array.isArray(response)) {
+      const [payment, cheque] = response;
+      return {
+        updatedPayment: payment,
+        createdCheque: cheque,
+      };
+    }
+
+    // if type of response is payment
+    return {
+      updatedPayment: response,
+    };
   }
 }

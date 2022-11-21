@@ -13,7 +13,7 @@ export class TenderAppointmentService {
     private readonly googleCalendarServiceAccountService: GoogleCalendarServiceAccountService,
   ) {}
 
-  async create() {
+  async serviceAccount() {
     const result = await this.googleCalendarServiceAccountService.createEvent(
       'testing events',
       'testing events descriptions',
@@ -26,11 +26,11 @@ export class TenderAppointmentService {
   }
 
   // via oauth
-  // async create() {
-  //   const result = await this.googleCalendarOAuthService.getToken();
-  //   console.log(result);
-  //   return 'api hit and sucess';
-  // }
+  async oauth() {
+    const result = await this.googleCalendarOAuthService.getToken();
+    console.log(result);
+    return 'api hit and sucess';
+  }
 
   async searchClientByName(searchParams: SearchClientFilterRequest) {
     const result = await this.tenderAppointmentRepository.searchClientByName(

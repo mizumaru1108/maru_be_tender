@@ -58,13 +58,4 @@ export class ChangeProposalStateDto {
   @Type(() => SetupPaymentPayloadDto)
   @ValidateNested()
   setupPaymentPayload?: SetupPaymentPayloadDto;
-
-  /**
-   * Organization / Client / PartnerId (bacicly the same, translational problem)
-   */
-  // @ApiProperty()
-  // @IsString()
-  // @IsNotEmpty()
-  // @IsUUID()
-  // organization_id: string;
 }

@@ -24,6 +24,7 @@ import { TenderRolesGuard } from '../../tender-auth/guards/tender-roles.guard';
 import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
 import { TenderProposalService } from '../services/tender-proposal.service';
 import { UpdatePaymentDto } from '../dtos/requests/payment/update-payment.dto';
+import { UpdatePaymentResponseDto } from '../dtos/responses/payment/update-payment-response.dto';
 
 @Controller('tender-proposal')
 export class TenderProposalController {
@@ -62,12 +63,17 @@ export class TenderProposalController {
   async updatePayment(
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: UpdatePaymentDto,
-  ) {
+  ): Promise<BaseResponse<UpdatePaymentResponseDto>> {
     const updatedPayment =
       await this.tenderProposalPaymentService.updatePayment(
         currentUser,
         request,
       );
+    return baseResponseHelper(
+      updatedPayment,
+      HttpStatus.OK,
+      'Payment updated successfully',
+    );
   }
 
   /**
@@ -87,6 +93,9 @@ export class TenderProposalController {
     );
   }
 
+  /**
+   * changing proposal state (acc/reject, create logs)
+   */
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles(
     'tender_moderator',

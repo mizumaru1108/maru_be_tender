@@ -25,9 +25,14 @@ export class TenderAppointmentController {
     private readonly tenderAppointmentService: TenderAppointmentService,
   ) {}
 
-  @Post('test')
-  async create() {
-    await this.tenderAppointmentService.create();
+  @Post('test-oauth')
+  async oauthTest() {
+    await this.tenderAppointmentService.oauth();
+  }
+
+  @Post('test-service-account')
+  async serviceAccount() {
+    await this.tenderAppointmentService.serviceAccount();
   }
 
   @Get('google-callback')

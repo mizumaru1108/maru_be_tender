@@ -57,15 +57,64 @@ export class TenderProposalPaymentRepository {
     }
   }
 
-  async insertCheque(chequeData: Prisma.chequeCreateInput) {
-    try {
-      const result = await this.prismaService.cheque.create({
-        data: chequeData,
-      });
-      return result;
-    } catch (error) {
-      this.logger.error(error);
-      throw new InternalServerErrorException(error);
+  async updatePayment(
+    paymentId: string,
+    status: string | null,
+    chequeData?: Prisma.chequeCreateInput | null,
+  ) {
+    if (chequeData) {
+      try {
+        const result = await this.prismaService.$transaction([
+          this.prismaService.payment.update({
+            where: {
+              id: paymentId,
+            },
+            data: {
+              status,
+            },
+          }),
+          this.prismaService.cheque.create({
+            data: chequeData,
+          }),
+        ]);
+        return result;
+      } catch (error) {
+        console.log(error);
+        this.logger.error(error);
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          throw new InternalServerErrorException(
+            `Something went wrong, when updating payment's status, (Prisma: ${error.code})`,
+          );
+        } else {
+          throw new InternalServerErrorException(
+            "Something went wrong, when updating payment's status",
+          );
+        }
+      }
+    } else {
+      try {
+        const result = await this.prismaService.payment.update({
+          where: {
+            id: paymentId,
+          },
+          data: {
+            status,
+          },
+        });
+        return result;
+      } catch (error) {
+        this.logger.error(error);
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          throw new InternalServerErrorException(
+            'Prisma Eror Code: ' + error.code,
+            error.message,
+          );
+        } else {
+          throw new InternalServerErrorException(
+            "Something went wrong, when updating payment's status",
+          );
+        }
+      }
     }
   }
 }

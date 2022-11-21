@@ -1,19 +1,20 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsString,
   IsNotEmpty,
   IsIn,
   IsOptional,
-  IsDateString,
   ValidateNested,
+  IsDate,
 } from 'class-validator';
 import { UploadFilesJsonbDto } from '../../../../tender-commons/dto/upload-files-jsonb.dto';
 
 class CreateChequeDto {
   @ApiProperty()
-  @IsDateString()
   @IsNotEmpty()
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
   deposit_date: Date;
 
   @ApiProperty()
@@ -23,7 +24,7 @@ class CreateChequeDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @ValidateNested({ each: true })
+  @ValidateNested()
   @Type(() => UploadFilesJsonbDto)
   transfer_receipt: UploadFilesJsonbDto;
 }
@@ -44,6 +45,7 @@ export class UpdatePaymentDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsNotEmpty()
+  @ValidateNested()
   @Type(() => CreateChequeDto)
   cheque: CreateChequeDto;
 }
