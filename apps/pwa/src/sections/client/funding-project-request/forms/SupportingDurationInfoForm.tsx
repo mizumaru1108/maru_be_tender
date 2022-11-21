@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { useEffect, useState } from 'react';
-import { Box, Button, Checkbox, Grid, Stack, Typography } from '@mui/material';
+import { Alert, Box, Button, Checkbox, Grid, Stack, Typography } from '@mui/material';
 import { FormProvider, RHFCheckbox } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -12,6 +12,7 @@ import useAuth from 'hooks/useAuth';
 import { useQuery } from 'urql';
 import { FileProp } from 'components/upload';
 import { ReactComponent as MovingBack } from '../../../../assets/move-back-icon.svg';
+import useLocales from 'hooks/useLocales';
 
 type FormValuesProps = {
   agree_on: boolean;
@@ -45,6 +46,7 @@ const SupportingDurationInfoForm = ({
   //  TODO: Fetch the user's Bank Information and assign them to the state that we have here
   //        without sending or assiging them to the general state, and keeping that for the next button
   const { user } = useAuth();
+  const { translate } = useLocales();
   const [agreeOn, setAgreeOn] = useState(false);
   const id = user?.id;
   const [result, reexxecuteUserBankInformation] = useQuery({
@@ -57,10 +59,12 @@ const SupportingDurationInfoForm = ({
   const handleClose = () => setOpen(false);
   const [isCreatedOne, setIsCreatedOne] = useState<Boolean>(false);
 
+  const [oprnError, setOpenError] = useState(false);
   const onBankInfoSubmit = () => {
-    console.log(data.bank_information[0].user.bank_informations[selectedCard as number]);
-    console.log('onBankInfoSubmit');
-    onSubmit(data.bank_information[0].user.bank_informations[selectedCard as number].id);
+    if (!selectedCard) {
+      setOpenError(true);
+      window.scrollTo(0, 0);
+    } else onSubmit(data.bank_information[0].user.bank_informations[selectedCard as number].id);
   };
 
   const [selectedCard, setSelectedCard] = useState<number>();
@@ -76,6 +80,11 @@ const SupportingDurationInfoForm = ({
   if (error) return <>Something went wrong, please go back one step</>;
   return (
     <Grid container rowSpacing={4} columnSpacing={7}>
+      {oprnError && (
+        <Grid item md={12}>
+          <Alert severity="error">{translate('banking_error_message')}</Alert>
+        </Grid>
+      )}
       {data.bank_information[0].user.bank_informations.map((item: any, index: number) => (
         <Grid
           item

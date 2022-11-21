@@ -13,7 +13,6 @@ type FormDataProps = {
     explanation: string;
     amount: number | undefined;
   }[];
-  clause: string;
 };
 
 function FifthForm({ children, onSubmit, defaultValues }: any) {
@@ -25,7 +24,6 @@ function FifthForm({ children, onSubmit, defaultValues }: any) {
         amount: Yup.number().integer().required(),
       })
     ),
-    clause: Yup.string().required(),
   });
 
   const methods = useForm<FormDataProps>({

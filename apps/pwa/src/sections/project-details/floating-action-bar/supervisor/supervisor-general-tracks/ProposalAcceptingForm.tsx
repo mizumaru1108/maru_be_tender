@@ -19,7 +19,7 @@ function ProposalAcceptingForm({ children, onSubmit, data }: any) {
     support_amount: Yup.number().required('Procedures is required!'),
     number_of_payments: Yup.number().required('Procedures is required!'),
     procedures: Yup.string().required('Procedures is required!'),
-    notes: Yup.string().required('Procedures is required!'),
+    notes: Yup.string(),
     support_outputs: Yup.string().required('Procedures is required!'),
     vat: Yup.boolean(),
     vat_percentage: Yup.number(),

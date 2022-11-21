@@ -289,12 +289,4 @@ export const FifthFormData = [
     enableAddButton: true,
     enableRemoveButton: true,
   },
-  {
-    type: 'textField',
-    name: 'clause',
-    label: 'البند*',
-    placeholder: 'البند',
-    md: 6,
-    xs: 6,
-  },
 ] as Array<FormSingleProps>;

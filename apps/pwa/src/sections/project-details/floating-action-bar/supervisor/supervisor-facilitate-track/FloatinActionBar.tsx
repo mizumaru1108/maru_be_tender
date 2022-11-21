@@ -60,12 +60,14 @@ function FloatinActionBar({ organizationId, data }: any) {
       does_an_agreement: undefined,
       support_amount: undefined,
       number_of_payments: undefined,
-      procedures: '',
       notes: '',
       support_outputs: '',
       vat: undefined,
       vat_percentage: undefined,
       inclu_or_exclu: undefined,
+      support_goals: '',
+      clasue_cons: '',
+      accreditation_type: '',
     },
     form2: {
       organizationName: data?.user?.employee_name,
@@ -106,7 +108,6 @@ function FloatinActionBar({ organizationId, data }: any) {
           amount: undefined,
         },
       ],
-      clause: '',
     },
   };
 
@@ -166,7 +167,7 @@ function FloatinActionBar({ organizationId, data }: any) {
     setConsultantForm((prevValue: any) => ({
       ...prevValue,
       recommended_support: { data: data.recommended_support },
-      clause: data.clause,
+      clause: formValues.form1.clasue_cons,
     }));
     try {
       await insertConsultantForm({
@@ -180,7 +181,7 @@ function FloatinActionBar({ organizationId, data }: any) {
               id: nanoid(),
             })),
           },
-          clause: data.clause,
+          clause: formValues.form1.clasue_cons,
           proposal_id,
           supervisor_id,
           id: nanoid(),
@@ -197,9 +198,9 @@ function FloatinActionBar({ organizationId, data }: any) {
       await accept({
         proposalId: proposal_id,
         approveProposalPayloads: {
-          inner_status: 'ACCEPTED_AND_NEED_CONSULTANT',
+          inner_status: 'ACCEPTED_BY_SUPERVISOR',
           outter_status: 'PENDING',
-          state: 'CONSULTANT',
+          state: 'PROJECT_MANAGER',
           number_of_payments: formValues.form1.number_of_payments,
         },
       });

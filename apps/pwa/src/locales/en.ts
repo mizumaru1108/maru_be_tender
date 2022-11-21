@@ -7,8 +7,92 @@
 
 const en = {
   pages: {
+    auth: {
+      login: 'Login Page',
+      register: 'Register Page',
+    },
     client: {
       main: 'Main Client Dashboard',
+    },
+  },
+  errors: {
+    login: {
+      email: {
+        message: 'Email must be a valid email address',
+        required: 'Email is required',
+      },
+      password: {
+        message: '',
+        required: 'Password is required',
+      },
+    },
+    register: {
+      entity: {
+        message: '',
+        required: 'Entity is required',
+      },
+      client_field: {
+        message: '',
+        required: 'Client Field Area is required',
+      },
+      authority: {
+        message: '',
+        required: 'Authority is required',
+      },
+      date_of_esthablistmen: {
+        message: '',
+        required: 'Date Of Establishment is required',
+      },
+      headquarters: {
+        message: '',
+        required: 'Headquarters is required',
+      },
+      num_of_employed_facility: {
+        message: '',
+        required: 'Number Of Employees is required',
+      },
+      num_of_beneficiaries: {
+        message: '',
+        required: 'Number Of Beneficiaries is required',
+      },
+    },
+    cre_proposal: {
+      project_name: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      project_idea: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      project_location: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      project_implement_date: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      execution_time: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      project_beneficiaries: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      letter_ofsupport_req: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      project_attachments: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      project_beneficiaries_specific_type: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
     },
   },
   commons: {
@@ -82,20 +166,20 @@ const en = {
   previous_funding_requests: 'Previous funding requests',
   messages: 'Messages',
   contact_support: 'Contact Support',
-  register_first_tap: 'المعلومات الرئيسية',
-  register_second_tap: 'معلومات الاتصال',
-  register_third_tap: 'معلومات الترخيص',
-  register_fourth_tap: 'بيانات الإدارية',
-  register_fifth_tap: 'معلومات البنكية',
+  register_first_tap: 'Main info',
+  register_second_tap: 'Contact info',
+  register_third_tap: 'License info',
+  register_fourth_tap: 'Administrative data',
+  register_fifth_tap: 'Banking info',
   email_label: 'E-mail',
   password_label: 'The password',
-  remember_me: 'تذكرني',
-  forget_the_password: 'نسيت كلمة المرور',
-  login: 'تسجيل الدخول',
+  remember_me: 'remember me',
+  forget_the_password: 'forget the password',
+  login: 'Login',
   create_new_account: 'Create a new account',
   the_login_message: 'Please enter your email address to login.',
-  dont_have_account: 'ليس لديك حساب في المنصة',
-  register_one: 'قم بإنشاء حساب من هنا',
+  dont_have_account: "You don't have an account?",
+  register_one: 'register from here',
   show_details: 'Studying The Project',
   show_project: 'استعراض المشروع',
   completing_exchange_permission: 'إتمام إذن الصرف',
@@ -104,34 +188,45 @@ const en = {
   canceled: 'Request Canceled',
   create_a_new_support_request: 'Create a new support request',
   register_form1: {
+    vat: {
+      label: 'ضريبة القيمة المضافة',
+      placeholder: 'Do you agree to VAT',
+    },
+    entity: {
+      label: "Entity's name*",
+      placeholder: "Please write the Entity's name",
+    },
     entity_area: {
-      label: 'مجال الجهة',
-      placeholder: 'الرجاء اختيار مجال الجهة',
+      label: 'Entity area*',
+      placeholder: 'Please choose the Entity Area',
       options: {
-        sub_entity_area: 'رئيسي',
-        main_entity_area: 'فرعي',
+        sub_entity_area: 'main',
+        main_entity_area: 'sub-main',
       },
     },
     authority: {
-      label: 'الجهة المشرفة',
-      placeholder: 'الرجاء اختيار الجهة المشرفة',
+      label: 'Authority*',
+      placeholder: 'Please choose the Authority',
+      options: {
+        other: '',
+      },
     },
     date_of_establishment: {
-      label: 'تاريخ التأسيس',
+      label: 'Date of Establishment*',
       placeholder: 'الرجاء اختيار تحديد تاريخ التأسيس',
     },
     headquarters: {
-      label: 'المقر',
-      placeholder: 'الرجاء اختيار نوع المقر',
-      options: {},
+      label: 'Headquarters*',
+      placeholder: 'Please enter the Headquarters',
+      options: { rent: 'Rent', own: 'Owning' },
     },
     number_of_employees: {
-      label: 'عدد موظفين بدوام كلي للمنشأة',
-      placeholder: 'عدد موظفين المنشأة',
+      label: 'Number of full-time employees*',
+      placeholder: 'The number of employees of the facility',
     },
     number_of_beneficiaries: {
-      label: 'عدد المستفيدين من خدمات الجهة',
-      placeholder: 'عدد المستفيدين من خدمات الجهة',
+      label: "Number of beneficiaries of the entity's services*",
+      placeholder: "Number of beneficiaries of the entity's services",
     },
   },
   register_form2: {
