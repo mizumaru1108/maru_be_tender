@@ -161,6 +161,7 @@ model proposal {
   on_consulting                                                Boolean?                   @default(false)
   proposal_bank_id                                             String?                    @db.Uuid
   partial_support_amount                                       Decimal?                   @db.Decimal
+  project_beneficiaries_specific_type                          String?
   proposal_beneficiaries                                       proposal_beneficiaries?    @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
   project_tracks                                               project_tracks             @relation(fields: [project_track], references: [id], onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
   bank_information_bank_informationToproposal_proposal_bank_id bank_information?          @relation("bank_informationToproposal_proposal_bank_id", fields: [proposal_bank_id], references: [id], onDelete: Cascade)
@@ -255,7 +256,7 @@ model user {
   bank_information                                        bank_information[]
   client_data                                             client_data?            @relation("client_data_user_idTouser")
   client_log                                              client_log[]
-  consultant_form                                         consultant_form?
+  consultant_form                                         consultant_form[]
   contact_us_contact_us_receiver_idTouser                 contact_us[]            @relation("contact_us_receiver_idTouser")
   contact_us_contact_us_sender_idTouser                   contact_us[]            @relation("contact_us_sender_idTouser")
   email_record_email_record_receiver_idTouser             email_record[]          @relation("email_record_receiver_idTouser")
@@ -587,7 +588,7 @@ model consultant_form {
   remote_or_insite               Boolean
   clause                         String
   proposal_id                    String                           @unique
-  supervisor_id                  String                           @unique
+  supervisor_id                  String
   id                             String                           @id
   proposal                       proposal                         @relation(fields: [proposal_id], references: [id], onUpdate: Restrict)
   user                           user                             @relation(fields: [supervisor_id], references: [id], onUpdate: Restrict)

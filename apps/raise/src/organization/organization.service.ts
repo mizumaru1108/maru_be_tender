@@ -215,7 +215,7 @@ export class OrganizationService {
     }
 
     const appearance = await this.appearanceModel.findOne({
-      ownerUserId: organization.ownerUserId,
+      _id: organizationId,
     });
     if (!appearance) {
       return {
@@ -276,7 +276,7 @@ export class OrganizationService {
     }
 
     const appearanceUpdated = await this.appearanceModel.findOneAndUpdate(
-      { ownerUserId: organization.ownerUserId },
+      { _id: organizationId },
       appearance,
       { new: true },
     );
@@ -292,6 +292,7 @@ export class OrganizationService {
         message: 'Failed',
       };
     }
+
     return {
       statusCode: 200,
       appearance: appearanceUpdated,
