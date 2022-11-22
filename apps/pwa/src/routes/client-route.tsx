@@ -3,7 +3,6 @@ import { Navigate } from 'react-router-dom';
 import DashboardLayout from '../layouts/dashboard';
 import AuthGuard from 'guards/AuthGuard';
 import RoleBasedGuard from 'guards/RoleBasedGuard';
-import CheakClientActivation from 'guards/CheakClientActivation';
 import { Loadable } from './Loadable';
 
 const FundingProjectRequest = Loadable(lazy(() => import('pages/client/FundingProjectRequest')));
@@ -60,22 +59,14 @@ export const clientRoute = {
         { path: 'app', element: <MainClientPage /> },
         {
           path: 'funding-project-request',
-          element: (
-            <CheakClientActivation>
-              <FundingProjectRequest />,
-            </CheakClientActivation>
-          ),
+          element: <FundingProjectRequest />,
         },
         {
           path: 'draft-funding-requests',
           children: [
             {
               path: '',
-              element: (
-                <CheakClientActivation>
-                  <DraftFundingRequests />
-                </CheakClientActivation>
-              ),
+              element: <DraftFundingRequests />,
             },
           ],
         },
@@ -90,31 +81,19 @@ export const clientRoute = {
         },
         {
           path: 'previous-funding-requests',
-          element: (
-            <CheakClientActivation>
-              <PreviousFundingRequests />,
-            </CheakClientActivation>
-          ),
+          element: <PreviousFundingRequests />,
         },
 
         {
           path: 'current-project',
-          element: (
-            <CheakClientActivation>
-              <PreviousFundingRequests />,
-            </CheakClientActivation>
-          ),
+          element: <PreviousFundingRequests />,
         },
         {
           path: 'current-project/:id/:actionType',
           children: [
             {
               path: 'main',
-              element: (
-                <CheakClientActivation>
-                  <ProjectDetails />
-                </CheakClientActivation>
-              ),
+              element: <ProjectDetails />,
             },
             { path: 'project-budget', element: <ProjectDetails /> },
             { path: 'follow-ups', element: <ProjectDetails /> },

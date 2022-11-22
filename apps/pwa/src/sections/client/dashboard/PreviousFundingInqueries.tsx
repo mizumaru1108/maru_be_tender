@@ -1,16 +1,10 @@
 import * as React from 'react';
 import { Container, Typography, Box, Grid, Stack, Button, Tabs, Tab } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
-import { useQuery } from 'urql';
-import { getClientProjects } from 'queries/client/getClientProjects';
 import { useNavigate } from 'react-router';
 
-function PreviousFundingInqueries() {
+function PreviousFundingInqueries({ completed_client_projects, pending_client_projects }: any) {
   const navigate = useNavigate();
-  const [result] = useQuery({
-    query: getClientProjects,
-  });
-  const { data, fetching, error } = result;
   const [tap, setTap] = React.useState('all_projects');
   const [previousInq, setPreviousInq] = React.useState([]);
 
@@ -33,23 +27,16 @@ function PreviousFundingInqueries() {
     }));
 
   React.useEffect(() => {
-    if (data) {
-      const { pending_client_projects, completed_client_projects } = data;
-      const filterdData = processData(
-        tap === 'pending_projects'
-          ? pending_client_projects
-          : tap === 'completed_projects'
-          ? completed_client_projects
-          : pending_client_projects.concat(completed_client_projects)
-      );
-      setPreviousInq(filterdData);
-    }
-  }, [data, tap]);
+    const filterdData = processData(
+      tap === 'pending_projects'
+        ? pending_client_projects
+        : tap === 'completed_projects'
+        ? completed_client_projects
+        : pending_client_projects.concat(completed_client_projects)
+    );
+    setPreviousInq(filterdData);
+  }, [completed_client_projects, pending_client_projects, tap]);
 
-  if (fetching) {
-    return <>...Loading</>;
-  }
-  if (error) return <>{error.graphQLErrors}</>;
   return (
     <Container>
       <Stack direction="row" justifyContent="space-between">
@@ -82,6 +69,7 @@ function PreviousFundingInqueries() {
           <Tab label="مشاريع معلقة" value="pending_projects" />
         </Tabs>
       </Box>
+
       {previousInq.length > 0 ? (
         <Grid container rowSpacing={3} columnSpacing={3}>
           {previousInq.map((item: any, index: any) => (

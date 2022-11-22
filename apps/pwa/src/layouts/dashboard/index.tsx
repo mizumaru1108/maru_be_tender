@@ -13,6 +13,7 @@ import { HEADER, NAVBAR } from '../../config';
 import DashboardHeader from './header';
 import NavbarVertical from './navbar/NavbarVertical';
 import NavbarHorizontal from './navbar/NavbarHorizontal';
+import CheakClientActivation from 'guards/CheakClientActivation';
 
 // ----------------------------------------------------------------------
 
@@ -97,7 +98,9 @@ export default function DashboardLayout() {
       <NavbarVertical isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
 
       <MainStyle>
-        <Outlet />
+        <CheakClientActivation>
+          <Outlet />
+        </CheakClientActivation>
       </MainStyle>
     </Box>
   );

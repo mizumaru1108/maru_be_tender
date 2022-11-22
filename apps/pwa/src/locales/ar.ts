@@ -510,6 +510,10 @@ const ar = {
   },
   funding_project_request_form4: {
     step: 'الموازنة التفصيلية للمشروع',
+    amount_required_fsupport: {
+      label: 'المبلغ المطلوب للدعم*',
+      placeholder: 'الرجاء كتابة المبلغ المطلوب للدعم',
+    },
     item: {
       label: 'البند*',
       placeholder: 'الرجاء كتابة اسم البند',
@@ -533,7 +537,7 @@ const ar = {
       label: 'بنوك مضافة سابقا*',
     },
     add_new_bank_details: {
-      label: 'اضافة تفاصيل بنك جديد',
+      label: 'اضافة حساب بنكي جديد',
     },
     agree_on: {
       label: 'أقر بصحة المعلومات الواردة في هذا النموذج وأتقدم بطلب دعم المشروع',
@@ -553,10 +557,15 @@ const ar = {
       placeholder: 'اسم البنك',
     },
     bank_account_card_image: {
-      label: 'صورة بطاقة الحساب البنكي',
+      label: 'صورة بطاقة الحساب البنكي*',
       placeholder: 'صورة بطاقة الحساب البنكي',
     },
   },
+  next: 'التالي',
+  going_back_one_step: 'رجوع',
+  saving_as_draft: 'حفظ كمسودة',
+  send: 'إرسال',
+  add: 'إضافة',
   contact_support_form: {
     inquiry_type: {
       label: 'نوع الاستفسار',
@@ -1012,6 +1021,7 @@ const ar = {
   login_message_error: 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
   budget_error_message: 'مجموع الميزانية يجب أن يكون مساوٍ للرقم المطلوب',
   banking_error_message: 'الرجاء اختيار بطاقة بنك للمتابعة',
+  sign_out: 'تسجيل الخروج',
 };
 
 export default ar;

@@ -68,7 +68,6 @@ const ProjectCard = ({
   const { translate } = useLocales();
   moment().locale('ar');
   const [_, updateAsigning] = useMutation(asignProposalToAUser);
-  console.log(cardFooterButtonAction);
 
   const onDeleteDraftClick = () => {
     console.log('onDeleteDraftClick');

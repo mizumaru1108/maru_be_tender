@@ -83,7 +83,7 @@ const BankImageComp = ({
                 صورة بطاقة الحساب البنكي
               </Typography>
               <Typography gutterBottom sx={{ fontSize: '13px' }}>
-                {`${size !== undefined ? size.toFixed(2) : 145}KB`}
+                {`${size !== undefined ? size.toFixed(1) : 145}KB`}
               </Typography>
             </Stack>
           </Stack>

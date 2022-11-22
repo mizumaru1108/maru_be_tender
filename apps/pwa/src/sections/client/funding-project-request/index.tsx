@@ -144,7 +144,6 @@ const FundingProjectRequestForm = () => {
   const onSubmit = async (data: any) => {
     const { project_beneficiaries_specific_type, ...restData } = requestState.form1;
 
-    console.log(restData);
     setRequestState((prevRegisterState: any) => ({
       ...prevRegisterState,
       proposal_bank_id: data,
@@ -362,7 +361,7 @@ const FundingProjectRequestForm = () => {
         }}
       >
         <Typography
-          variant="h4"
+          variant="h5"
           sx={{ fontFamily: 'Cairo', fontStyle: 'Bold', fontSize: '16px', mb: '20px' }}
         >
           {translate(steps[step])}

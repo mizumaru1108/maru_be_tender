@@ -42,6 +42,7 @@ function PreviousFundingRequests() {
             }}
             baseFilters={{
               step: { step: { _eq: 'ZERO' } },
+              outter_status: { outter_status: { _neq: 'ONGOING' } },
             }}
             destination={'previous-funding-requests'}
           />

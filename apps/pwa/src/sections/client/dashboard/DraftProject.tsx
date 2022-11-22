@@ -14,34 +14,22 @@ import { getProposals } from 'queries/commons/getProposal';
 import { useNavigate } from 'react-router';
 import { useMutation, useQuery } from 'urql';
 
-function DraftProject() {
+function DraftProject({ draft_projects, mutate }: any) {
   const navigate = useNavigate();
-  const [result, reexecuteQuery] = useQuery({
-    query: getProposals,
-    variables: {
-      limit: 4,
-      offset: 0,
-      where: { step: { _neq: 'ZERO' } },
-    },
-  });
   const [_, deleteDrPro] = useMutation(deleteDraftProposal);
-  const { data, fetching, error } = result;
-
-  const props = data?.data[0] ?? null;
-
-  if (fetching) {
-    return <>...Loading</>;
-  }
-  if (!props) return <></>;
 
   const delelteDraft = async (id: string) => {
-    const res = await deleteDrPro({ id });
-    reexecuteQuery();
+    try {
+      await deleteDrPro({ id });
+      mutate();
+    } catch (error) {
+      console.log(error);
+    }
   };
-
   const completeDraftProposal = (id: string) => {
     navigate('/client/dashboard/funding-project-request', { state: { id } });
   };
+
   return (
     <Container>
       <Stack direction="row" justifyContent="space-between">
@@ -63,7 +51,7 @@ function DraftProject() {
         </Button>
       </Stack>
       <Grid container sx={{ pt: 2 }} spacing={5}>
-        {data.data.map(
+        {draft_projects.map(
           (
             item: { id: string; project_name: string; project_idea: string; created_at: string },
             index: any
