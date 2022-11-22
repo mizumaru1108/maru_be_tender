@@ -1,11 +1,10 @@
 import { Body, Controller, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { user } from '@prisma/client';
-import { ClusterRoles } from '../../../auth/cluster-roles.decorator';
-import { ClusterRolesGuard } from '../../../auth/cluster-roles.guard';
-import { JwtAuthGuard } from '../../../auth/jwt.guard';
 import { BaseResponse } from '../../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
+import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
 import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
+import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
 import { TenderCreateUserDto } from '../dtos/requests/create-user.dto';
 
 import { TenderDeleteUserDto } from '../dtos/requests/delete-user.dto';
@@ -15,13 +14,13 @@ import { TenderUserService } from '../services/tender-user.service';
 export class TenderUserController {
   constructor(private readonly tenderUserService: TenderUserService) {}
 
-  // @UseGuards(TenderJwtGuard)
-  // @ClusterRoles('tender_admin')
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
   @Post('create')
   async createUser(
     @Body() request: TenderCreateUserDto,
   ): Promise<BaseResponse<user>> {
-    const response = await this.tenderUserService.createEmployee(request);
+    const response = await this.tenderUserService.createUser(request);
     return baseResponseHelper(
       response,
       HttpStatus.CREATED,
@@ -29,14 +28,14 @@ export class TenderUserController {
     );
   }
 
-  // @UseGuards(JwtAuthGuard, ClusterRolesGuard)
-  // @ClusterRoles('tender_admin')
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
   @Post('delete')
   async deleteUser(
     @Body() request: TenderDeleteUserDto,
   ): Promise<BaseResponse<user>> {
     const { user_id } = request;
-    const response = await this.tenderUserService.deleteEmployee(user_id);
+    const response = await this.tenderUserService.deleteUser(user_id);
     return baseResponseHelper(
       response,
       HttpStatus.CREATED,

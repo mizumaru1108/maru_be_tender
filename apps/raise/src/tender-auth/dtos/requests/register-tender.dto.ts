@@ -1,8 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
+  IsDate,
   IsEmail,
   IsNotEmpty,
   IsNumber,
@@ -83,7 +84,9 @@ class registerClient {
 
   @ApiProperty()
   @IsNotEmpty()
-  date_of_esthablistmen: string;
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
+  date_of_esthablistmen: Date;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -106,7 +109,9 @@ class registerClient {
 
   @ApiProperty()
   @IsNotEmpty()
-  license_expired: string;
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
+  license_expired: Date;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -116,7 +121,9 @@ class registerClient {
 
   @ApiProperty()
   @IsNotEmpty()
-  license_issue_date: string;
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
+  license_issue_date: Date;
 
   @ApiProperty()
   @IsString()

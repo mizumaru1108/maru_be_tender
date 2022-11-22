@@ -1,13 +1,32 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Decimal } from '@prisma/client/runtime';
 import { Type } from 'class-transformer';
 import {
   IsArray,
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsString,
+  Min,
   ValidateNested,
 } from 'class-validator';
-import { UpdateProjectBudgetDto } from './update-project-budget.dto';
+
+class UpdateProjectBudgetDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  clause: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  explanation: string;
+
+  @ApiProperty()
+  @IsNumber()
+  @Min(1)
+  amount: number | Decimal;
+}
 
 export class UpdateProposalFourthStepDto {
   @ApiPropertyOptional()

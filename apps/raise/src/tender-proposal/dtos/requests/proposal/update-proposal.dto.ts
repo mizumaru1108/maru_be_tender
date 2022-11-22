@@ -8,11 +8,31 @@ import {
   ValidateNested,
   IsIn,
 } from 'class-validator';
-import { UpdateProposalFirstStepDto } from './update-proposal-first-step.dto';
+
 import { UpdateProposalFourthStepDto } from './update-proposal-fourth-step.dto';
-import { UpdateProposalSecondStepDto } from './update-proposal-second-step.dto';
-import { UpdateProposalThirdStepDto } from './update-proposal-third-step.dto';
-import { UpdateProposalFifthStepDto } from './update-proposal-fifth-step.dto';
+import { PartialType } from '@nestjs/swagger';
+import {
+  CreateProposalFifthStepDto,
+  CreateProposalFirstStepDto,
+  CreateProposalSecondStepDto,
+  CreateProposalThirdStepDto,
+} from './create-proposal.dto';
+
+class UpdateProposalFirstStepDto extends PartialType(
+  CreateProposalFirstStepDto,
+) {}
+
+export class UpdateProposalSecondStepDto extends PartialType(
+  CreateProposalSecondStepDto,
+) {}
+
+export class UpdateProposalThirdStepDto extends PartialType(
+  CreateProposalThirdStepDto,
+) {}
+
+export class UpdateProposalFifthStepDto extends PartialType(
+  CreateProposalFifthStepDto,
+) {}
 
 export class UpdateProposalDto {
   @ApiProperty()

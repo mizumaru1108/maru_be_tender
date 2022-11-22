@@ -50,6 +50,11 @@ export class TenderClientService {
       email: request.data.email,
       mobile_number: request.data.phone,
       user_role: ['CLIENT'],
+      user_status: {
+        connect: {
+          id: request.data.status ?? 'WAITING_FOR_ACTIVATION',
+        },
+      },
     };
 
     // path of the user
@@ -88,9 +93,9 @@ export class TenderClientService {
           type: request.data.license_file.type,
           size: request.data.license_file.size,
         },
-        date_of_esthablistmen: new Date(request.data.date_of_esthablistmen),
-        license_expired: new Date(request.data.license_expired),
-        license_issue_date: new Date(request.data.license_issue_date),
+        date_of_esthablistmen: request.data.date_of_esthablistmen,
+        license_expired: request.data.license_expired,
+        license_issue_date: request.data.license_issue_date,
         num_of_beneficiaries: request.data.num_of_beneficiaries,
         website: request.data.website,
         twitter_acount: request.data.twitter_acount,
@@ -98,7 +103,6 @@ export class TenderClientService {
         phone: request.data.phone,
         client_field: request.data.client_field,
         vat: request.data.vat,
-        status: request.data.status || null,
       },
     };
 
@@ -132,7 +136,7 @@ export class TenderClientService {
   ): Promise<ClientEditRequestResponseDto> {
     const clientData = await this.prismaService.client_data.findUnique({
       where: {
-        email: user.email,
+        user_id: user.id,
       },
     });
     if (!clientData) {
@@ -268,7 +272,7 @@ export class TenderClientService {
     if (denactiveAccount) {
       await this.prismaService.client_data.update({
         where: {
-          email: user.email,
+          user_id: user.id,
         },
         data: {
           status: 'WAITING_FOR_EDITING_APPROVAL',

@@ -1,25 +1,13 @@
-import {
-  BadRequestException,
-  ConsoleLogger,
-  HttpException,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import moment from 'moment';
 import { rootLogger } from 'src/logger';
 import { UserService } from 'src/user/user.service';
+import { SendEmailDto } from '../libs/email/dtos/requests/send-email.dto';
 import { EmailService } from '../libs/email/email.service';
 import { FusionAuthService } from '../libs/fusionauth/services/fusion-auth.service';
-import { User } from '../user/schema/user.schema';
-import {
-  LoginRequestDto,
-  RegisterRequestDto,
-  RegisterTendersDto,
-  RegReqTenderDto,
-} from './dtos';
 import { PrismaService } from '../prisma/prisma.service';
-import { link } from 'fs';
-import { SendEmailDto } from '../libs/email/dtos/requests/send-email.dto';
+import { User } from '../user/schema/user.schema';
+import { LoginRequestDto, RegisterRequestDto } from './dtos';
 
 @Injectable()
 export class AuthService {
@@ -29,7 +17,6 @@ export class AuthService {
     private readonly emailService: EmailService,
     private readonly fusionAuthService: FusionAuthService,
     private readonly jwtService: JwtService,
-    private readonly prisma: PrismaService,
   ) {}
 
   async fusionLogin(loginRequest: LoginRequestDto) {

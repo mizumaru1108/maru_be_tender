@@ -22,40 +22,39 @@ model bank_information {
 }
 
 model client_data {
-  id                       String         @id(map: "users_pkey")
-  entity                   String?        @db.VarChar
-  authority                String?        @db.VarChar
-  headquarters             String?        @db.VarChar
-  date_of_esthablistmen    DateTime?      @db.Date
+  id                       String       @id(map: "users_pkey")
+  entity                   String?      @db.VarChar
+  authority                String?      @db.VarChar
+  headquarters             String?      @db.VarChar
+  date_of_esthablistmen    DateTime?    @db.Date
   num_of_beneficiaries     Int?
   num_of_employed_facility Int?
   governorate              String?
-  region                   String?        @db.VarChar
-  entity_mobile            String?        @db.VarChar
-  center_administration    String?        @db.VarChar
-  twitter_acount           String?        @db.VarChar
-  phone                    String?        @db.VarChar
-  website                  String?        @db.VarChar
-  email                    String?        @unique @db.VarChar
-  password                 String?        @db.VarChar
-  license_number           String         @db.VarChar
-  license_expired          DateTime?      @db.Date
-  license_issue_date       DateTime?      @db.Date
-  ceo_mobile               String?        @db.VarChar
-  ceo_name                 String?        @db.VarChar
-  data_entry_mobile        String?        @db.VarChar
-  data_entry_name          String?        @db.VarChar
-  data_entry_mail          String?        @db.VarChar
-  created_at               DateTime?      @default(now()) @db.Timestamptz(6)
-  updated_at               DateTime?      @default(now()) @db.Timestamptz(6)
-  status                   String?        @default("WAITING_FOR_ACTIVATION")
-  client_field             String?        @db.VarChar
-  user_id                  String         @unique
+  region                   String?      @db.VarChar
+  entity_mobile            String?      @db.VarChar
+  center_administration    String?      @db.VarChar
+  twitter_acount           String?      @db.VarChar
+  phone                    String?      @db.VarChar
+  website                  String?      @db.VarChar
+  password                 String?      @db.VarChar
+  license_number           String       @db.VarChar
+  license_expired          DateTime?    @db.Date
+  license_issue_date       DateTime?    @db.Date
+  ceo_mobile               String?      @db.VarChar
+  ceo_name                 String?      @db.VarChar
+  data_entry_mobile        String?      @db.VarChar
+  data_entry_name          String?      @db.VarChar
+  data_entry_mail          String?      @db.VarChar
+  created_at               DateTime?    @default(now()) @db.Timestamptz(6)
+  updated_at               DateTime?    @default(now()) @db.Timestamptz(6)
+  status                   String?      @default("WAITING_FOR_ACTIVATION")
+  client_field             String?      @db.VarChar
+  user_id                  String       @unique
   vat                      Boolean?
   license_file             Json?
   board_ofdec_file         Json?
-  client_status            client_status? @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user                     user           @relation("client_data_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
+  user_status              user_status? @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user                     user         @relation("client_data_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
   client_log               client_log[]
 }
 
@@ -244,11 +243,13 @@ model user {
   user_type_id                                            String?
   updated_at                                              DateTime?               @default(now()) @db.Timestamptz(6)
   created_at                                              DateTime?               @default(now()) @db.Timestamptz(6)
-  is_active                                               Boolean?                @default(true)
+  is_active                                               Boolean?
   employee_path                                           String?                 @db.VarChar
   last_login                                              DateTime?               @default(now()) @db.Timestamptz(6)
   user_role                                               String[]
+  user_status_id                                          String?
   employee_track                                          project_tracks?         @relation(fields: [employee_path], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_status                                             user_status?            @relation(fields: [user_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   appointment_appointment_employee_idTouser               appointment[]           @relation("appointment_employee_idTouser")
   appointment_appointment_user_idTouser                   appointment[]           @relation("appointment_user_idTouser")
   bank_information                                        bank_information[]
@@ -311,23 +312,16 @@ model proposal_status {
 }
 
 model client_log {
-  id                       String        @id
+  id                       String      @id
   reviewer_id              String
   organization_id          String
   note_account_information String
-  created_at               DateTime      @default(now()) @db.Timestamptz(6)
-  updated_at               DateTime      @default(now()) @db.Timestamptz(6)
+  created_at               DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at               DateTime    @default(now()) @db.Timestamptz(6)
   status                   String
-  client_data              client_data   @relation(fields: [organization_id], references: [id], onDelete: Cascade)
-  user                     user          @relation(fields: [reviewer_id], references: [id], onDelete: Cascade)
-  client_status            client_status @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model client_status {
-  id          String        @id
-  title       String        @unique
-  client_data client_data[]
-  client_log  client_log[]
+  client_data              client_data @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  user                     user        @relation(fields: [reviewer_id], references: [id], onDelete: Cascade)
+  user_status              user_status @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model proposal_request {
@@ -569,4 +563,12 @@ model banks {
 model beneficiaries {
   id    String @id
   title String @db.VarChar
+}
+
+model user_status {
+  id          String        @id(map: "client_status_pkey")
+  title       String        @unique(map: "client_status_title_key")
+  client_data client_data[]
+  client_log  client_log[]
+  user        user[]
 }

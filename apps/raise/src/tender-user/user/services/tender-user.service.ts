@@ -11,7 +11,7 @@ export class TenderUserService {
     private tenderUserRepository: TenderUserRepository,
   ) {}
 
-  async createEmployee(request: TenderCreateUserDto): Promise<user> {
+  async createUser(request: TenderCreateUserDto): Promise<user> {
     const {
       email,
       employee_name,
@@ -22,9 +22,9 @@ export class TenderUserService {
     } = request;
 
     // admin only created by the system.
-    // if (user_roles === 'ADMIN') {
-    //   throw new BadRequestException('Roles is Forbidden to create!');
-    // }
+    if (user_roles.indexOf('ADMIN') > -1) {
+      throw new BadRequestException('Roles is Forbidden to create!');
+    }
 
     if (employee_path) {
       const track = await this.tenderUserRepository.validateTrack(
@@ -49,7 +49,9 @@ export class TenderUserService {
     }
 
     if (user_roles.length === 1) {
-      if (['CEO', 'FINANCE', 'CASHIER', 'MODERATOR'].includes(user_roles[0])) {
+      if (
+        ['CEO', 'FINANCE', 'CASHIER', 'MODERATOR'].indexOf(user_roles[0]) > -1
+      ) {
         // count user with same roles if more than 1 throw error
         const count = await this.tenderUserRepository.countExistingRoles(
           user_roles[0],
@@ -86,13 +88,12 @@ export class TenderUserService {
       email,
       employee_name,
       mobile_number,
-      is_active: activate_user,
       user_role: user_roles,
-      // user_type: {
-      //   connect: {
-      //     id: availableRoles.id,
-      //   },
-      // },
+      user_status: {
+        connect: {
+          id: activate_user ? 'ACTIVE_ACCOUNT' : 'WAITING_FOR_ACTIVATION',
+        },
+      },
     };
 
     if (employee_path) {
@@ -110,7 +111,7 @@ export class TenderUserService {
     return createdUser;
   }
 
-  async deleteEmployee(id: string): Promise<user> {
+  async deleteUser(id: string): Promise<user> {
     await this.fusionAuthService.fusionAuthDeleteUser(id);
     return await this.tenderUserRepository.deleteUser(id);
   }

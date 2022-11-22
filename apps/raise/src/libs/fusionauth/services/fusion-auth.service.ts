@@ -9,6 +9,7 @@ import ClientResponse from '@fusionauth/typescript-client/build/src/ClientRespon
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -135,29 +136,21 @@ export class FusionAuthService {
     try {
       const data = await axios(options);
       return data.data;
-    } catch (error) {
-      if (error.response.status < 500) {
-        console.log(error.response.data);
-        throw new BadRequestException(
-          `Registration Failed, either user is exist or something else!, more details: ${
-            error.response.data.fieldErrors
-              ? JSON.stringify(error.response.data.fieldErrors)
-              : JSON.stringify(error.response.data)
-          }`,
-        );
-      } else {
-        console.log(error);
-        throw new Error('Something went wrong!');
-      }
-    }
+    } catch (error) {}
   }
 
   async fusionAuthDeleteUser(userId: string) {
     try {
       await this.fusionAuthAdminClient.deleteUser(userId);
     } catch (error) {
-      console.trace(error);
-      throw new Error('Something went wrong!');
+      console.log(error);
+      if (error.statusCode === 404) {
+        throw new BadRequestException('User not found!');
+      } else {
+        throw new InternalServerErrorException(
+          'Something went wrong when deleting user from server!',
+        );
+      }
     }
   }
 

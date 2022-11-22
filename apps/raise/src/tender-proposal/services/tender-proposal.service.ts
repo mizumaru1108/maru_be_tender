@@ -13,7 +13,6 @@ import {
 } from '@prisma/client';
 import { nanoid } from 'nanoid';
 import { v4 as uuidv4 } from 'uuid';
-import { BunnyService } from '../../libs/bunny/services/bunny.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import {
   appRoleMappers,
@@ -26,16 +25,17 @@ import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-use
 
 import { ICurrentUser } from '../../user/interfaces/current-user.interface';
 import { ChangeProposalStateDto } from '../dtos/requests/proposal/change-proposal-state.dto';
-import { UpdateProposalDto } from '../dtos/requests/update-proposal.dto';
-import { ChangeProposalStateResponseDto } from '../dtos/responses/change-proposal-state-response.dto';
-import { UpdateProposalResponseDto } from '../dtos/responses/update-proposal-response.dto';
+import { UpdateProposalDto } from '../dtos/requests/proposal/update-proposal.dto';
+
+import { ChangeProposalStateResponseDto } from '../dtos/responses/proposal/change-proposal-state-response.dto';
+import { UpdateProposalResponseDto } from '../dtos/responses/proposal/update-proposal-response.dto';
+
 import { TenderProposalFlowService } from './tender-proposal-flow.service';
 import { TenderProposalLogService } from './tender-proposal-log.service';
 @Injectable()
 export class TenderProposalService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly bunnyService: BunnyService,
     private readonly tenderProposalLogService: TenderProposalLogService,
     private readonly tenderProposalFlowService: TenderProposalFlowService,
   ) {}
@@ -871,7 +871,7 @@ export class TenderProposalService {
         id: request.proposal_id,
       },
     });
-    
+
     if (!proposal) {
       throw new NotFoundException(
         `Proposal with id ${request.proposal_id} not found`,

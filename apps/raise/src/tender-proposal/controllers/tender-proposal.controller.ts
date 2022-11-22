@@ -16,8 +16,7 @@ import { TenderJwtGuard } from '../../tender-auth/guards/tender-jwt.guard';
 import { ICurrentUser } from '../../user/interfaces/current-user.interface';
 import { CreateProposalPaymentDto } from '../dtos/requests/payment/create-payment.dto';
 import { ChangeProposalStateDto } from '../dtos/requests/proposal/change-proposal-state.dto';
-import { UpdateProposalDto } from '../dtos/requests/update-proposal.dto';
-import { UpdateProposalResponseDto } from '../dtos/responses/update-proposal-response.dto';
+
 import { TenderProposalPaymentService } from '../services/tender-proposal-payment.service';
 
 import { TenderRolesGuard } from '../../tender-auth/guards/tender-roles.guard';
@@ -25,6 +24,8 @@ import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-use
 import { TenderProposalService } from '../services/tender-proposal.service';
 import { UpdatePaymentDto } from '../dtos/requests/payment/update-payment.dto';
 import { UpdatePaymentResponseDto } from '../dtos/responses/payment/update-payment-response.dto';
+import { UpdateProposalDto } from '../dtos/requests/proposal/update-proposal.dto';
+import { UpdateProposalResponseDto } from '../dtos/responses/proposal/update-proposal-response.dto';
 
 @Controller('tender-proposal')
 export class TenderProposalController {

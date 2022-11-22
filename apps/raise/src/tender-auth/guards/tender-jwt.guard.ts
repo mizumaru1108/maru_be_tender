@@ -32,7 +32,7 @@ export class TenderJwtGuard extends AuthGuard('jwt') implements CanActivate {
 
     // check if headers has "x-hasura-roles"
     if (!request.headers['x-hasura-roles']) {
-      throw new BadRequestException('x-harura-roles header is required!');
+      throw new BadRequestException('x-hasura-roles header is required!');
     }
 
     try {
