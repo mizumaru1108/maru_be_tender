@@ -90,23 +90,6 @@ export class TenderProposalPaymentService {
       throw new NotFoundException('No proposal data found on this payment');
     }
 
-    // const actionValidator = (
-    //   allowedAction: string[],
-    //   currentAction: string,
-    // ) => {
-    //   if (allowedAction.indexOf(currentAction) === -1) {
-    //     throw new BadRequestException(
-    //       `You are not allowed to perform ${currentAction} `,
-    //     );
-    //   }
-    // };
-
-    // const ownershipErrorThrow = () => {
-    //   throw new ForbiddenException(
-    //     'You are not the person in charge for this proposal!',
-    //   );
-    // };
-
     let status:
       | 'SET_BY_SUPERVISOR'
       | 'ISSUED_BY_SUPERVISOR'

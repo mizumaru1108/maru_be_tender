@@ -36,7 +36,11 @@ export class TenderUserRepository {
   async countExistingRoles(role: string): Promise<number> {
     try {
       return await this.prismaService.user.count({
-        where: { user_type_id: role },
+        where: {
+          user_role: {
+            has: role,
+          },
+        },
       });
     } catch (error) {
       const theEror = prismaErrorThrower(error, `deleting user!`);
