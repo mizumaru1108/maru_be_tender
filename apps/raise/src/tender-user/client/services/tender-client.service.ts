@@ -13,6 +13,7 @@ import { RegisterTenderDto } from '../../../tender-auth/dtos/requests/register-t
 import { ClientEditRequestResponseDto } from '../dtos/responses/client-edit-request.response.dto';
 import { compareUrl } from '../../../tender-commons/utils/compare-jsonb-imageurl';
 import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
+import { CreateUserResponseDto } from '../../user/dtos/responses/create-user-response.dto';
 
 @Injectable()
 export class TenderClientService {
@@ -42,17 +43,25 @@ export class TenderClientService {
   async createUserAndClient(
     idFromFusionAuth: string,
     request: RegisterTenderDto,
-  ): Promise<user> {
+  ): Promise<CreateUserResponseDto> {
     // base user information
     const userCreatePayload: Prisma.userCreateInput = {
       id: idFromFusionAuth,
       employee_name: request.data.employee_name,
       email: request.data.email,
       mobile_number: request.data.phone,
-      user_role: ['CLIENT'],
-      user_status: {
+      status: {
         connect: {
-          id: request.data.status ?? 'WAITING_FOR_ACTIVATION',
+          id: 'WAITING_FOR_ACTIVATION',
+        },
+      },
+      roles: {
+        create: {
+          user_type: {
+            connect: {
+              id: 'CLIENT',
+            },
+          },
         },
       },
     };
@@ -127,7 +136,10 @@ export class TenderClientService {
     const createdUser = await this.tenderUserRepository.createUser(
       userCreatePayload,
     );
-    return createdUser;
+
+    return {
+      createdUser: createdUser instanceof Array ? createdUser[0] : createdUser,
+    };
   }
 
   async createEditRequest(

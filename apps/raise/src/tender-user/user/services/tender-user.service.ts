@@ -3,6 +3,8 @@ import { Prisma, user } from '@prisma/client';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 import { TenderCreateUserDto } from '../dtos/requests/create-user.dto';
 import { TenderUserRepository } from '../repositories/tender-user.repository';
+import { v4 as uuidv4 } from 'uuid';
+import { CreateUserResponseDto } from '../dtos/responses/create-user-response.dto';
 
 @Injectable()
 export class TenderUserService {
@@ -11,7 +13,9 @@ export class TenderUserService {
     private tenderUserRepository: TenderUserRepository,
   ) {}
 
-  async createUser(request: TenderCreateUserDto): Promise<user> {
+  async createUser(
+    request: TenderCreateUserDto,
+  ): Promise<CreateUserResponseDto> {
     const {
       email,
       employee_name,
@@ -48,19 +52,23 @@ export class TenderUserService {
       }
     }
 
-    if (user_roles.length === 1) {
-      if (
-        ['CEO', 'FINANCE', 'CASHIER', 'MODERATOR'].indexOf(user_roles[0]) > -1
-      ) {
-        // count user with same roles if more than 1 throw error
-        const count = await this.tenderUserRepository.countExistingRoles(
-          user_roles[0],
-        );
-        if (count > 0) {
-          throw new BadRequestException(`Only 1 ${user_roles[0]} allowed!`);
-        }
-      }
-    }
+    // skip this validation first
+    // if (user_roles.length === 1) {
+    //   // if user_roles has ['CEO', 'FINANCE', 'CASHIER', 'MODERATOR'] inside it
+    //   if (
+    //     ['CEO', 'FINANCE', 'CASHIER', 'MODERATOR'].some((role) =>
+    //       user_roles.includes(role),
+    //     )
+    //   ) {
+    //     // count user with same roles if more than 1 throw error
+    //     const count = await this.tenderUserRepository.countExistingRoles(
+    //       user_roles,
+    //     );
+    //     if (count > 0) {
+    //       throw new BadRequestException(`Only 1 ${user_roles[0]} allowed!`);
+    //     }
+    //   }
+    // }
 
     const findDuplicated = await this.tenderUserRepository.findUser({
       OR: [{ email }, { mobile_number }],
@@ -88,8 +96,7 @@ export class TenderUserService {
       email,
       employee_name,
       mobile_number,
-      user_role: user_roles,
-      user_status: {
+      status: {
         connect: {
           id: activate_user ? 'ACTIVE_ACCOUNT' : 'WAITING_FOR_ACTIVATION',
         },
@@ -104,11 +111,30 @@ export class TenderUserService {
       };
     }
 
+    const createRolesData: Prisma.user_roleUncheckedCreateInput[] =
+      user_roles.map((role) => {
+        return {
+          id: uuidv4(),
+          user_id: fusionAuthResult.user.id as string,
+          user_type_id: role,
+        };
+      });
+
     const createdUser = await this.tenderUserRepository.createUser(
       createUserPayload,
+      createRolesData,
     );
 
-    return createdUser;
+    if (createdUser instanceof Array) {
+      return {
+        createdUser: createdUser[0],
+        createdRoles: createRolesData,
+      };
+    }
+
+    return {
+      createdUser,
+    };
   }
 
   async deleteUser(id: string): Promise<user> {

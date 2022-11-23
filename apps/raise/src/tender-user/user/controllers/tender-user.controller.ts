@@ -8,6 +8,7 @@ import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard
 import { TenderCreateUserDto } from '../dtos/requests/create-user.dto';
 
 import { TenderDeleteUserDto } from '../dtos/requests/delete-user.dto';
+import { CreateUserResponseDto } from '../dtos/responses/create-user-response.dto';
 import { TenderUserService } from '../services/tender-user.service';
 
 @Controller('tender-user')
@@ -19,7 +20,7 @@ export class TenderUserController {
   @Post('create')
   async createUser(
     @Body() request: TenderCreateUserDto,
-  ): Promise<BaseResponse<user>> {
+  ): Promise<BaseResponse<CreateUserResponseDto>> {
     const response = await this.tenderUserService.createUser(request);
     return baseResponseHelper(
       response,

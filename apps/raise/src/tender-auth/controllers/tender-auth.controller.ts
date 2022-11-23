@@ -3,6 +3,7 @@ import { user } from '@prisma/client';
 import { LoginRequestDto } from '../../auth/dtos';
 import { BaseResponse } from '../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
+import { CreateUserResponseDto } from '../../tender-user/user/dtos/responses/create-user-response.dto';
 import { RegisterTenderDto } from '../dtos/requests/register-tender.dto';
 import { TenderLoginResponseDto } from '../dtos/responses/tender-login-response.dto';
 import { TenderAuthService } from '../services/tender-auth.service';
@@ -26,7 +27,7 @@ export class TenderAuthController {
   @Post('register')
   async register(
     @Body() registerRequest: RegisterTenderDto,
-  ): Promise<BaseResponse<user>> {
+  ): Promise<BaseResponse<CreateUserResponseDto>> {
     const createdClient = await this.tenderAuthService.register(
       registerRequest,
     );

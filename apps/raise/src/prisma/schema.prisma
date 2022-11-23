@@ -244,10 +244,9 @@ model user {
   created_at                                              DateTime?               @default(now()) @db.Timestamptz(6)
   employee_path                                           String?                 @db.VarChar
   last_login                                              DateTime?               @default(now()) @db.Timestamptz(6)
-  user_role                                               String[]
-  user_status_id                                          String
+  status_id                                               String
   employee_track                                          project_tracks?         @relation(fields: [employee_path], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user_status                                             user_status             @relation(fields: [user_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  status                                                  user_status             @relation(fields: [status_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_user_status_id_fkey")
   appointment_appointment_employee_idTouser               appointment[]           @relation("appointment_employee_idTouser")
   appointment_appointment_user_idTouser                   appointment[]           @relation("appointment_user_idTouser")
   bank_information                                        bank_information[]
@@ -268,6 +267,7 @@ model user {
   room_chat_room_chat_participant1Touser                  room_chat[]             @relation("room_chat_participant1Touser")
   room_chat_room_chat_participant2Touser                  room_chat[]             @relation("room_chat_participant2Touser")
   schedule                                                schedule[]
+  roles                                                   user_role[]
 }
 
 model user_type {
@@ -277,6 +277,7 @@ model user_type {
   proposal                                                       proposal[]
   proposal_assign                                                proposal_assign[]
   proposal_log                                                   proposal_log[]
+  user_by_role                                                   user_role[]
 }
 
 model proposal_assign {
@@ -616,4 +617,12 @@ model user_status {
   title      String       @unique(map: "client_status_title_key")
   client_log client_log[]
   user       user[]
+}
+
+model user_role {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id      String
+  user_type_id String
+  user         user      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_type    user_type @relation(fields: [user_type_id], references: [id], onDelete: Cascade)
 }
