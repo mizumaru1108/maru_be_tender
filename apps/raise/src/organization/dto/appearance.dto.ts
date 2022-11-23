@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsBoolean,
 } from 'class-validator';
+import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
 
 export class AppearancenDto {
   @ApiPropertyOptional()
@@ -15,6 +16,7 @@ export class AppearancenDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  @ValidateObjectIdDecorator()
   ownerRealmId: string;
 
   @ApiPropertyOptional()
@@ -50,7 +52,7 @@ export class AppearancenDto {
 
   @ApiPropertyOptional()
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   whyShouldWe: string;
 
   @ApiPropertyOptional()
@@ -72,6 +74,7 @@ export class AppearancenDto {
   lText: string;
 
   @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   ourStory: string;
 
