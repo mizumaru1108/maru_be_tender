@@ -11,7 +11,7 @@ export class TenderUserService {
     private tenderUserRepository: TenderUserRepository,
   ) {}
 
-  async createEmployee(request: TenderCreateUserDto): Promise<user> {
+  async createUser(request: TenderCreateUserDto): Promise<user> {
     const {
       email,
       employee_name,
@@ -22,7 +22,7 @@ export class TenderUserService {
     } = request;
 
     // admin only created by the system.
-    if (user_roles === 'ADMIN') {
+    if (user_roles.indexOf('ADMIN') > -1) {
       throw new BadRequestException('Roles is Forbidden to create!');
     }
 
@@ -37,22 +37,28 @@ export class TenderUserService {
       }
     }
 
-    const availableRoles = await this.tenderUserRepository.validateRoles(
-      user_roles,
-    );
-    if (!availableRoles) {
-      throw new BadRequestException('Invalid user roles!, Roles is not found!');
+    for (let i = 0; i < user_roles.length; i++) {
+      const availableRoles = await this.tenderUserRepository.validateRoles(
+        user_roles[i],
+      );
+      if (!availableRoles) {
+        throw new BadRequestException(
+          `Invalid user roles!, Roles [${user_roles[i]}] is not found!`,
+        );
+      }
     }
 
-    if (
-      ['CEO', 'FINANCE', 'CASHIER', 'MODERATOR'].includes(availableRoles.id)
-    ) {
-      // count user with same roles if more than 1 throw error
-      const count = await this.tenderUserRepository.countExistingRoles(
-        availableRoles.id,
-      );
-      if (count > 0) {
-        throw new BadRequestException(`Only 1 ${availableRoles.id} allowed!`);
+    if (user_roles.length === 1) {
+      if (
+        ['CEO', 'FINANCE', 'CASHIER', 'MODERATOR'].indexOf(user_roles[0]) > -1
+      ) {
+        // count user with same roles if more than 1 throw error
+        const count = await this.tenderUserRepository.countExistingRoles(
+          user_roles[0],
+        );
+        if (count > 0) {
+          throw new BadRequestException(`Only 1 ${user_roles[0]} allowed!`);
+        }
       }
     }
 
@@ -82,10 +88,10 @@ export class TenderUserService {
       email,
       employee_name,
       mobile_number,
-      is_active: activate_user,
-      user_type: {
+      user_role: user_roles,
+      user_status: {
         connect: {
-          id: availableRoles.id,
+          id: activate_user ? 'ACTIVE_ACCOUNT' : 'WAITING_FOR_ACTIVATION',
         },
       },
     };
@@ -105,7 +111,7 @@ export class TenderUserService {
     return createdUser;
   }
 
-  async deleteEmployee(id: string): Promise<user> {
+  async deleteUser(id: string): Promise<user> {
     await this.fusionAuthService.fusionAuthDeleteUser(id);
     return await this.tenderUserRepository.deleteUser(id);
   }

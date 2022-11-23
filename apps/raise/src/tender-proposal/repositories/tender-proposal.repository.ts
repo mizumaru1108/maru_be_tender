@@ -1,11 +1,8 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { proposal } from '@prisma/client';
 import { rootLogger } from '../../logger';
 import { PrismaService } from '../../prisma/prisma.service';
+import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
 
 @Injectable()
 export class TenderProposalRepository {
@@ -22,8 +19,9 @@ export class TenderProposalRepository {
         },
       });
     } catch (error) {
-      this.logger.error(error);
-      throw new InternalServerErrorException(error);
+      console.log(error);
+      const prismaError = prismaErrorThrower(error, 'finding proposal');
+      throw prismaError;
     }
   }
 }

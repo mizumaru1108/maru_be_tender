@@ -1,20 +1,18 @@
 import {
+  Body,
   Controller,
-  Delete,
   Get,
   HttpStatus,
-  Param,
-  Patch,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../auth/jwt.guard';
-import { FindManyResult } from '../../../tender-commons/dto/find-many-result.dto';
-import { ManualPaginatedResponse } from '../../../tender-commons/helpers/manual-paginated-response.dto';
+import { GoogleAuthGuard } from '../../../tender-auth/guards/google-auth.guard';
+
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import { SearchClientFilterRequest } from '../dtos/requests/search-client-filter-request.dto';
-import { SearchClientAppointmentResponseDto } from '../dtos/responses/search-client-appointment-response.dto';
 import { TenderAppointmentService } from '../services/tender-appointment.service';
 
 @Controller('tender-appointment')
@@ -23,9 +21,29 @@ export class TenderAppointmentController {
     private readonly tenderAppointmentService: TenderAppointmentService,
   ) {}
 
-  @Post('test')
-  async create() {
-    await this.tenderAppointmentService.create();
+  @UseGuards(GoogleAuthGuard)
+  @Post('testing-google')
+  async testingAuth() {
+    console.log('testing auth');
+  }
+
+  @Post('create-appointment')
+  async oauthTest(@Body('code') code?: string) {
+    const appointmentLink =
+      await this.tenderAppointmentService.createAppointment(code);
+    return appointmentLink;
+  }
+
+  @Post('test-service-account')
+  async serviceAccount() {
+    await this.tenderAppointmentService.serviceAccount();
+  }
+
+  @Get('google-callback')
+  async googleCallback(@Query() query: any) {
+    console.log('query', query);
+    await this.tenderAppointmentService.createAppointment(query.code);
+    console.log('google callback hit');
   }
 
   @UseGuards(JwtAuthGuard)

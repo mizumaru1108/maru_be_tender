@@ -5,6 +5,7 @@ import {
   IsBoolean,
   IsEmail,
   IsOptional,
+  IsArray,
 } from 'class-validator';
 import { ValidateKsaPhoneNumber } from '../../../../tender-commons/decorators/validate-ksa-phone-number.decorator';
 
@@ -43,7 +44,8 @@ export class TenderCreateUserDto {
   employee_path?: string;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  user_roles: string;
+  @IsArray()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  user_roles: string[];
 }
