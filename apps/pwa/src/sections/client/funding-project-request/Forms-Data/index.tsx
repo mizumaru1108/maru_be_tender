@@ -158,8 +158,8 @@ export const ProjectBudgetData = [
   {
     type: 'textField',
     name: 'amount_required_fsupport',
-    label: 'المبلغ المطلوب للدعم*',
-    placeholder: 'الرجاء كتابة المبلغ المطلوب للدعم',
+    label: 'funding_project_request_form4.amount_required_fsupport.label',
+    placeholder: 'funding_project_request_form4.amount_required_fsupport.placeholder',
     md: 12,
     xs: 12,
   },
@@ -225,13 +225,13 @@ export const AddBankData = [
   {
     type: 'uploadLabel',
     name: '',
-    label: 'صورة بطاقة الحساب البنكي*',
+    label: 'funding_project_request_form6.bank_account_card_image.label',
     md: 12,
     xs: 12,
   },
   {
     type: 'upload',
-    name: 'bank_account_card_image',
+    name: 'card_image',
     label: 'funding_project_request_form6.bank_account_card_image.label',
     placeholder: 'funding_project_request_form6.bank_account_card_image.placeholder',
     md: 12,

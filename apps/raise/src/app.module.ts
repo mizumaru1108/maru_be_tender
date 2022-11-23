@@ -45,6 +45,7 @@ import { TenderAppointmentModule } from './tender-appointment/tender-appointment
 import { TenderAuthModule } from './tender-auth/tender-auth.module';
 import { TenderUserModule } from './tender-user/tender-user.module';
 import { TenderEmailModule } from './tender-email/tender-email.module';
+import { TenderTrackModule } from './tender-track/track.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -127,6 +128,7 @@ import { TenderEmailModule } from './tender-email/tender-email.module';
     TenderAuthModule,
     TenderUserModule,
     TenderEmailModule,
+    TenderTrackModule
   ],
   controllers: [],
 })

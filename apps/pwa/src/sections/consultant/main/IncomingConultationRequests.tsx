@@ -1,84 +1,68 @@
-import { Typography, Grid } from '@mui/material';
+import { Typography, Grid, Stack, Button } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
-import { ProjectCardProps } from 'components/card-table/types';
-
-const data = [
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
-      sentSection: 'لا يوجد',
-      employee: 'لا يوجد',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
-      sentSection: 'لا يوجد',
-      employee: 'لا يوجد',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
-      sentSection: 'لا يوجد',
-      employee: 'لا يوجد',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-  {
-    title: {
-      id: '768873',
-    },
-    content: {
-      projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
-      organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
-      sentSection: 'لا يوجد',
-      employee: 'لا يوجد',
-    },
-    footer: {
-      createdAt: new Date(2022, 8, 2, 15, 58),
-    },
-  },
-] as ProjectCardProps[];
+import { getProposals } from 'queries/commons/getProposal';
+import { useNavigate } from 'react-router';
+import { useQuery } from 'urql';
 
 function IncomingConultationRequests() {
+  const navigate = useNavigate();
+  const [result] = useQuery({
+    query: getProposals,
+    variables: {
+      limit: 4,
+      order_by: { created_at: 'desc' },
+      where: { inner_status: { _eq: 'ACCEPTED_AND_NEED_CONSULTANT' } },
+    },
+  });
+  const { data, fetching, error } = result;
+  if (fetching) {
+    return <>...Loading</>;
+  }
+  const props = data?.data ?? [];
+  if (!props || props.length === 0) return <></>;
   return (
-    <>
-      <Typography variant="h4" sx={{ mb: '20px' }}>
-        طلبات دعم سابقة
-      </Typography>
-      <Grid container rowSpacing={3} columnSpacing={3}>
-        {data.map((item, index) => (
-          <Grid item md={6} key={index}>
-            <ProjectCard
-              {...item}
-              cardFooterButtonAction="show-details"
-              destination="incoming-funding-requests"
-            />
-          </Grid>
-        ))}
+    <Grid container spacing={2}>
+      <Grid item md={12} xs={12}>
+        <Grid item md={12} xs={12}>
+          <Stack direction="row" justifyContent="space-between">
+            <Typography variant="h4" sx={{ mb: '20px' }}>
+              طلبات الاستشارة الواردة
+            </Typography>
+            <Button
+              sx={{
+                backgroundColor: 'transparent',
+                color: '#93A3B0',
+                textDecoration: 'underline',
+                ':hover': {
+                  backgroundColor: 'transparent',
+                },
+              }}
+              onClick={() => {
+                navigate('/consultant/dashboard/incoming-funding-requests');
+              }}
+            >
+              عرض الكل
+            </Button>
+          </Stack>
+        </Grid>
       </Grid>
-    </>
+      {props.map((item: any, index: any) => (
+        <Grid item md={6} key={index}>
+          <ProjectCard
+            title={{ id: item.id }}
+            content={{
+              projectName: item.project_name,
+              organizationName: item.project_name,
+              sentSection: 'Supervisor',
+              employee: 'Supervisor',
+            }}
+            footer={{ createdAt: new Date(item.created_at) }}
+            cardFooterButtonAction="show-details"
+            destination="incoming-funding-requests"
+          />
+        </Grid>
+      ))}
+    </Grid>
   );
 }
 

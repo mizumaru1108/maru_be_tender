@@ -1,5 +1,15 @@
 import { useState } from 'react';
-import { Step, StepLabel, Typography, Stepper, Box, alpha, Stack, Link } from '@mui/material';
+import {
+  Step,
+  StepLabel,
+  Typography,
+  Stepper,
+  Box,
+  alpha,
+  Stack,
+  Link,
+  Container,
+} from '@mui/material';
 import {
   ConnectingInfoForm,
   MainForm,
@@ -191,19 +201,25 @@ export default function RegisterForm() {
         </Box>
       )}
       {step === 0 && (
-        <MainForm onSubmit={onSubmit1} defaultValues={registerState.form1}>
-          <ActionsBox done={done} onReturn={onReturn} />
-        </MainForm>
+        <Container sx={{ padding: '10px' }}>
+          <MainForm onSubmit={onSubmit1} defaultValues={registerState.form1}>
+            <ActionsBox done={done} onReturn={onReturn} />
+          </MainForm>
+        </Container>
       )}
       {step === 1 && (
-        <ConnectingInfoForm onSubmit={onSubmit2} defaultValues={registerState.form2}>
-          <ActionsBox done={done} onReturn={onReturn} />
-        </ConnectingInfoForm>
+        <Container sx={{ padding: '10px' }}>
+          <ConnectingInfoForm onSubmit={onSubmit2} defaultValues={registerState.form2}>
+            <ActionsBox done={done} onReturn={onReturn} />
+          </ConnectingInfoForm>
+        </Container>
       )}
       {step === 2 && (
-        <LicenseInfoForm onSubmit={onSubmit3} defaultValues={registerState.form3}>
-          <ActionsBox done={done} onReturn={onReturn} />
-        </LicenseInfoForm>
+        <Container sx={{ padding: '10px' }}>
+          <LicenseInfoForm onSubmit={onSubmit3} defaultValues={registerState.form3}>
+            <ActionsBox done={done} onReturn={onReturn} />
+          </LicenseInfoForm>
+        </Container>
       )}
       {step === 3 && (
         <AdministrativeInfoForm

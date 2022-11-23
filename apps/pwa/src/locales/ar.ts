@@ -7,8 +7,186 @@
 
 const ar = {
   pages: {
+    auth: {
+      login: 'صفحة تسجيل الدخول',
+      register: 'صفحة إنشاء الحساب',
+    },
     client: {
       main: 'صفحة الزبون العامة',
+    },
+  },
+  errors: {
+    login: {
+      email: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      password: {
+        message: '',
+        required: 'كلمة المرور مطلوبة',
+      },
+    },
+    register: {
+      entity: {
+        message: '',
+        required: 'اسم الجهة مطلوب',
+      },
+      client_field: {
+        message: '',
+        required: 'مجال الجهة مطلوب',
+      },
+      authority: {
+        message: '',
+        required: 'الجهة المشرفة مطلوب',
+      },
+      date_of_esthablistmen: {
+        message: '',
+        required: 'تاريخ التأسيس مطلوب',
+      },
+      headquarters: {
+        message: '',
+        required: 'المقر مطلوب',
+      },
+      num_of_employed_facility: {
+        message: '',
+        required: 'عدد الموظفين بدوام كامل مطلوب',
+      },
+      num_of_beneficiaries: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+      region: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+      governorate: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+      center_administration: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+      entity_mobile: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+      phone: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+      twitter_acount: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+      website: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+      email: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+      password: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+    },
+    cre_proposal: {
+      project_name: {
+        message: '',
+        required: 'اسم المشروع مطلوب',
+      },
+      project_idea: {
+        message: '',
+        required: 'فكرة المشروع مطلوبة',
+      },
+      project_location: {
+        message: '',
+        required: 'مكان تنفيذ المشروع مطلوب',
+      },
+      project_implement_date: {
+        message: '',
+        required: 'تاريخ تنفيذ المشروع',
+      },
+      execution_time: {
+        message: '',
+        required: 'مدة التنفيذ مطلوبة',
+      },
+      project_beneficiaries: {
+        message: '',
+        required: 'نوع الفئة المستهدفة مطلوبة',
+      },
+      letter_ofsupport_req: {
+        message: '',
+        required: 'خطاب طلب الدعم مطلوب',
+      },
+      project_attachments: {
+        message: '',
+        required: 'مرفقات المشروع مطلوبة',
+      },
+      project_beneficiaries_specific_type: {
+        message: '',
+        required: 'نوع الفئة المستهدفة الخارجية مطلوبة عندما تكون الفئة المستهدفة هي خارجية',
+      },
+      num_ofproject_binicficiaries: {
+        message: '',
+        required: 'عدد المستفيدين من المشروع مطلوب',
+      },
+      project_goals: {
+        message: '',
+        required: 'أهداف المشروع مطلوبة',
+      },
+      project_outputs: {
+        message: '',
+        required: 'مخرجات المشروع مطلوبة',
+      },
+      project_strengths: {
+        message: '',
+        required: 'نقاط القوة للمشروع مطلوبة',
+      },
+      project_risks: {
+        message: '',
+        required: 'مخطار المشوع مطلوبة',
+      },
+      pm_name: {
+        message: '',
+        required: 'اسم مدير المشروع مطلوب',
+      },
+      pm_mobile: {
+        message: 'الرقم يجب أن يكون مكتوب بصيغة ممائلة لهذه الصيفة +9665XXXXXXXX',
+        required: 'رقم الجوال مطلوب',
+      },
+      pm_email: {
+        message: '',
+        required: 'الايميل مطلوب',
+      },
+      region: {
+        message: '',
+        required: 'المنطفة مطلوبة',
+      },
+      governorate: {
+        message: '',
+        required: 'المحافظة مطلوبة',
+      },
+      amount_required_fsupport: {
+        message: '',
+        required: 'المبلغ المطلوب للدعم مطلوب',
+      },
+      detail_project_budgets: {
+        clause: {
+          message: '',
+          required: 'البند مطلوب',
+        },
+        explanation: {
+          message: '',
+          required: 'الشرح مطلوب',
+        },
+        amount: {
+          message: 'المبلغ يجب أن يكون رقم موجب يدون أية فواصل',
+          required: 'القيمة مطلوبة',
+        },
+      },
     },
   },
   commons: {
@@ -93,7 +271,7 @@ const ar = {
   forget_the_password: 'نسيت كلمة المرور',
   login: 'تسجيل الدخول',
   the_login_message: 'الرجاء إدخال عنوان البريد الإلكتروني',
-  dont_have_account: 'ليس لديك حساب في المنصة',
+  dont_have_account: 'ليس لديك حساب في المنصة؟',
   register_one: 'قم بإنشاء حساب من هنا',
   add_new_line: 'إنشاء سطر جديد',
   create_new_account: ' إنشاء حساب جديد',
@@ -105,13 +283,13 @@ const ar = {
   canceled: 'الطلب ملفى',
   create_a_new_support_request: 'إنشاء طلب دعم جديد',
   register_form1: {
+    entity: {
+      label: 'اسم الجهة*',
+      placeholder: 'الرجاء أدخل اسم الجهة',
+    },
     vat: {
       label: 'ضريبة القيمة المضافة',
       placeholder: 'هل توافق على ضريبة القيمة المضافة',
-    },
-    entity: {
-      label: 'اسم العميل*',
-      placeholder: 'الرجاء أدخل اسم العميل',
     },
     entity_area: {
       label: 'مجال الجهة*',
@@ -132,7 +310,7 @@ const ar = {
     headquarters: {
       label: 'المقر*',
       placeholder: 'الرجاء اختيار نوع المقر',
-      options: {},
+      options: { rent: 'أجار', own: 'ملك' },
     },
     number_of_employees: {
       label: 'عدد موظفين بدوام كلي للمنشأة*',
@@ -332,6 +510,10 @@ const ar = {
   },
   funding_project_request_form4: {
     step: 'الموازنة التفصيلية للمشروع',
+    amount_required_fsupport: {
+      label: 'المبلغ المطلوب للدعم*',
+      placeholder: 'الرجاء كتابة المبلغ المطلوب للدعم',
+    },
     item: {
       label: 'البند*',
       placeholder: 'الرجاء كتابة اسم البند',
@@ -355,7 +537,7 @@ const ar = {
       label: 'بنوك مضافة سابقا*',
     },
     add_new_bank_details: {
-      label: 'اضافة تفاصيل بنك جديد',
+      label: 'اضافة حساب بنكي جديد',
     },
     agree_on: {
       label: 'أقر بصحة المعلومات الواردة في هذا النموذج وأتقدم بطلب دعم المشروع',
@@ -375,10 +557,15 @@ const ar = {
       placeholder: 'اسم البنك',
     },
     bank_account_card_image: {
-      label: 'صورة بطاقة الحساب البنكي',
+      label: 'صورة بطاقة الحساب البنكي*',
       placeholder: 'صورة بطاقة الحساب البنكي',
     },
   },
+  next: 'التالي',
+  going_back_one_step: 'رجوع',
+  saving_as_draft: 'حفظ كمسودة',
+  send: 'إرسال',
+  add: 'إضافة',
   contact_support_form: {
     inquiry_type: {
       label: 'نوع الاستفسار',
@@ -833,6 +1020,8 @@ const ar = {
   totalRequest: 'عدد مشاريع الكلي',
   login_message_error: 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
   budget_error_message: 'مجموع الميزانية يجب أن يكون مساوٍ للرقم المطلوب',
+  banking_error_message: 'الرجاء اختيار بطاقة بنك للمتابعة',
+  sign_out: 'تسجيل الخروج',
 };
 
 export default ar;

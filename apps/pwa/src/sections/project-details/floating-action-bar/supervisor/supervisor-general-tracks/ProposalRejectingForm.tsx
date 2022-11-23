@@ -4,7 +4,7 @@ import FormGenerator from 'components/FormGenerator';
 import { FormProvider } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
-import { ProposalApprovePayloadSupervisor, ProposalFormProps } from '../types';
+import { ProposalApprovePayloadSupervisor, ProposalFormProps } from '../../types';
 import { RejectProposalFormFieldsSupervisor } from './form-data';
 
 function ProposalRejectingForm({ children, onSubmit }: ProposalFormProps) {

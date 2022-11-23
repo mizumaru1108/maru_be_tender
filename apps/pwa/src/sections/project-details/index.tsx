@@ -12,6 +12,7 @@ import ProjectBudget from './ProjectBudget';
 import { ProjectPath } from './project-path';
 import TimeLine from './TimeLine';
 import FollowUpsAction from './follow-ups/FollowUpsAction';
+import SupervisorRevision from './SupervisorRevision';
 
 function ProjectDetailsMainPage() {
   const { id } = useParams();
@@ -129,6 +130,7 @@ function ProjectDetailsMainPage() {
       )}
       {activeTap === 'project-timeline' && <TimeLine />}
       {activeTap === 'project-path' && <ProjectPath data={data.proposal_by_pk} />}
+      {activeTap === 'supervisor-revision' && <SupervisorRevision />}
       <FloatinActonBar proposalData={data.proposal_by_pk} />
     </Box>
   );

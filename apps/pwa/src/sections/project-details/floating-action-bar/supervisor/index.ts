@@ -1,1 +1,1 @@
-export { default as SupervisorFloatingActionBar } from './FloatingActionBar';
+export { default as SupervisorFloatingActionBar } from './SupervisorFloatingActionBar';

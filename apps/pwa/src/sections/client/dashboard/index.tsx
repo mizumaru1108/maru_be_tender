@@ -1,40 +1,43 @@
 import { Grid } from '@mui/material';
-import useAuth from 'hooks/useAuth';
-import { checkClientStatus } from 'queries/client/checkClientStatus';
+import { clientMainPage } from 'queries/client/clientMainPage';
 import { useQuery } from 'urql';
 import ClientCarousel from './ClientCarousel';
-import CurrentProject from './CurrentProject';
+import CurrentProjects from './CurrentProjects';
 import DraftProject from './DraftProject';
 import LoadingPage from './LoadingPage';
 import PreviousFundingInqueries from './PreviousFundingInqueries';
-import UnActivatedAccount from './UnActivatedAccount';
 
 function DashboardPage() {
-  const { user } = useAuth();
-  const { id } = user!;
-  const [result] = useQuery({
-    query: checkClientStatus,
-    variables: { id },
+  const [result, mutate] = useQuery({
+    query: clientMainPage,
   });
   const { data, fetching, error } = result;
+
   if (fetching) return <LoadingPage />;
-  if (error) return <p>Oh no... {error.message}</p>;
-  if (data?.user_by_pk?.client_data[0]?.status === 'WAITING_FOR_ACTIVATION')
-    return <UnActivatedAccount />;
+  if (error) return <>... Opps, Something went wrong</>;
   return (
     <Grid container rowSpacing={8}>
       <Grid item md={12} xs={12}>
         <ClientCarousel />
       </Grid>
-      <Grid item md={12} xs={12}>
-        <CurrentProject />
-      </Grid>
-      <Grid item md={12} xs={12}>
-        <DraftProject />
-      </Grid>
-      <Grid item md={12} xs={12}>
-        <PreviousFundingInqueries />
-      </Grid>
+      {data && (
+        <>
+          <Grid item md={12} xs={12}>
+            <CurrentProjects current_projects={data.current_projects} />
+          </Grid>
+          {data.draft_projects.length !== 0 && (
+            <Grid item md={12} xs={12}>
+              <DraftProject draft_projects={data.draft_projects} mutate={mutate} />
+            </Grid>
+          )}
+          <Grid item md={12} xs={12}>
+            <PreviousFundingInqueries
+              completed_client_projects={data.completed_client_projects}
+              pending_client_projects={data.pending_client_projects}
+            />
+          </Grid>
+        </>
+      )}
     </Grid>
   );
 }

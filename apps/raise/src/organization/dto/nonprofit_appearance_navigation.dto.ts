@@ -7,6 +7,9 @@ import { PageNavigation, IsActive } from "../enums";
 const missionDto = z.object({
   mission: z.string().min(1),
   iconMission: z.string(ImagePayload),
+}) || z.object({
+  mission: z.string(),
+  iconMission: z.string(),
 })
 // const photoWhyUsUlDto = z.object({
 //   mission: z.string().min(1),
@@ -15,6 +18,9 @@ const missionDto = z.object({
 const whyUsDto = z.object({
   whyUs: z.string().min(1),
   iconWhyUs: z.string(ImagePayload),
+}) || z.object({
+  whyUs: z.string(),
+  iconWhyUs: z.string(),
 })
 
 
@@ -62,18 +68,33 @@ const vision = z.object({
 const companyValuesDto = z.object({
   companyValues: z.string().min(1),
   iconCompanyValues: z.string(ImagePayload),
+}) || z.object({
+  companyValues: z.string().min(1),
+  iconCompanyValues: z.string(),
 })
 const teamMemberAddUser = z.object({
   teamMemberAddUser: z.string().optional()
 });
 const news = z.object({
-  news: z.string().optional()
+  news: z.string().optional(),
+  photo: z.string(ImagePayload).optional(),
+  date: z.string().optional(),
+  description: z.string().optional(),
+}) ||  z.object({
+  news: z.string().optional(),
+  photo: z.string().optional(),
+  date: z.string().optional(),
+  description: z.string().optional(),
 });
 
 const featuresItemDto = z.object({
   featuresItemTitle: z.string().min(1),
   featuresItemDesc: z.string().min(1),
   iconFeaturesItem: z.string(ImagePayload),
+}) || z.object({
+  featuresItemTitle: z.string().min(1),
+  featuresItemDesc: z.string().min(1),
+  iconFeaturesItem: z.string(),
 })
 
 export const NonProfitAppearanceNavigationAboutUsDto = z.object({

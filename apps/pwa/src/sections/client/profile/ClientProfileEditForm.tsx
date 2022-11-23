@@ -97,10 +97,7 @@ function ClientProfileEditForm() {
   };
   useEffect(() => {
     if (data?.user_by_pk) {
-      const {
-        client_data: [client],
-        bank_informations,
-      } = data?.user_by_pk;
+      const { client_data: client, bank_informations, email } = data?.user_by_pk;
       const {
         client_field,
         entity,
@@ -117,7 +114,6 @@ function ClientProfileEditForm() {
         phone,
         twitter_acount,
         website,
-        email,
         password,
         // third form
         license_number,

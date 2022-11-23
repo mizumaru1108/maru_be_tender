@@ -1,5 +1,6 @@
 export const gettingUserDataForEdit = `query MyQuery($id: String = "") {
   user_by_pk(id: $id) {
+    email
     client_data {
       client_field
       entity

@@ -215,7 +215,7 @@ export class OrganizationService {
     }
 
     const appearance = await this.appearanceModel.findOne({
-      ownerUserId: organization.ownerUserId,
+      _id: organizationId,
     });
     if (!appearance) {
       return {
@@ -276,7 +276,7 @@ export class OrganizationService {
     }
 
     const appearanceUpdated = await this.appearanceModel.findOneAndUpdate(
-      { ownerUserId: organization.ownerUserId },
+      { _id: organizationId },
       appearance,
       { new: true },
     );
@@ -292,6 +292,7 @@ export class OrganizationService {
         message: 'Failed',
       };
     }
+
     return {
       statusCode: 200,
       appearance: appearanceUpdated,
@@ -1868,46 +1869,54 @@ export class OrganizationService {
       );
       const mission = JSON.parse(dataMission);
       for (let i = 0; i < mission.length; i++) {
-        const path = await this.bunnyService.generatePath(
-          editNonProfitAppearanceNavigationDto.organizationId!,
-          'landingpage-mission',
-          mission[i].fullName!,
-          mission[i].imageExtension!,
-          editNonProfitAppearanceNavigationDto.organizationId!,
-        );
         const base64Data = mission[i].base64Data;
-        const binary = Buffer.from(mission[i]!.base64Data!, 'base64');
-        if (!binary) {
-          const trimmedString = 56;
-          base64Data.length > 40
-            ? base64Data.substring(0, 40 - 3) + '...'
-            : base64Data.substring(0, length);
-          throw new BadRequestException(
-            `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
-          );
-        }
-        const imageUpload = await this.bunnyService.uploadImage(
-          path,
-          binary,
-          editNonProfitAppearanceNavigationDto.organizationId!,
-        );
 
-        if (imageUpload) {
-          if (mission[i].iconMission!) {
-            console.info(
-              'Old Mission image seems to be exist in the old record',
+        if (base64Data) {
+          const path = await this.bunnyService.generatePath(
+            editNonProfitAppearanceNavigationDto.organizationId!,
+            'landingpage-mission',
+            mission[i].fullName!,
+            mission[i].imageExtension!,
+            editNonProfitAppearanceNavigationDto.organizationId!,
+          );
+          const binary = Buffer.from(mission[i]!.base64Data!, 'base64');
+          if (!binary) {
+            const trimmedString = 56;
+            base64Data.length > 40
+              ? base64Data.substring(0, 40 - 3) + '...'
+              : base64Data.substring(0, length);
+            throw new BadRequestException(
+              `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
             );
-            const isExist = await this.bunnyService.checkIfImageExists(
-              mission[i].iconMission!,
-            );
-            if (isExist) {
-              await this.bunnyService.deleteImage(mission[i].iconMission!);
-            }
           }
-          console.info('Mission image has been replaced');
+          const imageUpload = await this.bunnyService.uploadImage(
+            path,
+            binary,
+            editNonProfitAppearanceNavigationDto.organizationId!,
+          );
+  
+          if (imageUpload) {
+            if (mission[i].iconMission!) {
+              console.info(
+                'Old Mission image seems to be exist in the old record',
+              );
+              const isExist = await this.bunnyService.checkIfImageExists(
+                mission[i].iconMission!,
+              );
+              if (isExist) {
+                await this.bunnyService.deleteImage(mission[i].iconMission!);
+              }
+            }
+            console.info('Mission image has been replaced');
+            missionPath.push({
+              mission: mission[i].mission!,
+              iconMission: path,
+            });
+          }
+        } else {
           missionPath.push({
             mission: mission[i].mission!,
-            iconMission: path,
+            iconMission: mission[i].iconMission!,
           });
         }
       }
@@ -1924,44 +1933,52 @@ export class OrganizationService {
       );
       const whyUs = JSON.parse(whyUsMission);
       for (let i = 0; i < whyUs.length; i++) {
-        const path = await this.bunnyService.generatePath(
-          editNonProfitAppearanceNavigationDto.organizationId!,
-          'landingpage-whyus',
-          whyUs[i].fullName!,
-          whyUs[i].imageExtension!,
-          editNonProfitAppearanceNavigationDto.organizationId!,
-        );
         const base64Data = whyUs[i].base64Data;
-        const binary = Buffer.from(whyUs[i]!.base64Data!, 'base64');
-        if (!binary) {
-          const trimmedString = 56;
-          base64Data.length > 40
-            ? base64Data.substring(0, 40 - 3) + '...'
-            : base64Data.substring(0, length);
-          throw new BadRequestException(
-            `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
+
+        if (base64Data) {
+          const path = await this.bunnyService.generatePath(
+            editNonProfitAppearanceNavigationDto.organizationId!,
+            'landingpage-whyus',
+            whyUs[i].fullName!,
+            whyUs[i].imageExtension!,
+            editNonProfitAppearanceNavigationDto.organizationId!,
           );
-        }
-        const imageUpload = await this.bunnyService.uploadImage(
-          path,
-          binary,
-          editNonProfitAppearanceNavigationDto.organizationId!,
-        );
-        whyUsPath.push({
-          whyUs: whyUs[i].whyUs!,
-          whyUsIcon: path,
-        });
-        if (imageUpload) {
-          if (whyUs[i].whyUsIcon!) {
-            console.info('Old WhyUs image seems to be exist in the old record');
-            const isExist = await this.bunnyService.checkIfImageExists(
-              whyUs[i].whyUsIcon!,
+          const binary = Buffer.from(whyUs[i]!.base64Data!, 'base64');
+          if (!binary) {
+            const trimmedString = 56;
+            base64Data.length > 40
+              ? base64Data.substring(0, 40 - 3) + '...'
+              : base64Data.substring(0, length);
+            throw new BadRequestException(
+              `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
             );
-            if (isExist) {
-              await this.bunnyService.deleteImage(whyUs[i].whyUsIcon!);
-            }
           }
-          console.info('WhyUs image has been replaced');
+          const imageUpload = await this.bunnyService.uploadImage(
+            path,
+            binary,
+            editNonProfitAppearanceNavigationDto.organizationId!,
+          );
+          whyUsPath.push({
+            whyUs: whyUs[i].whyUs!,
+            whyUsIcon: path,
+          });
+          if (imageUpload) {
+            if (whyUs[i].whyUsIcon!) {
+              console.info('Old WhyUs image seems to be exist in the old record');
+              const isExist = await this.bunnyService.checkIfImageExists(
+                whyUs[i].whyUsIcon!,
+              );
+              if (isExist) {
+                await this.bunnyService.deleteImage(whyUs[i].whyUsIcon!);
+              }
+            }
+            console.info('WhyUs image has been replaced');
+          }
+        } else {
+          whyUsPath.push({
+            whyUs: whyUs[i].whyUs!,
+            whyUsIcon: whyUs[i].whyUsIcon!,
+          });
         }
       }
     }
@@ -2124,12 +2141,14 @@ export class OrganizationService {
     editNonProfitAppearanceNavigationDto.whyUs = whyUsPath;
 
     this.logger.debug('Edit Landingpage Organization...');
+
     const landingPageUpdated =
       await this.appearanceNavigationModel.findOneAndUpdate(
         { organizationId: organizationId, page: 'LANDINGPAGE' },
         editNonProfitAppearanceNavigationDto,
         { new: true },
       );
+    // const landingPageUpdated: any = editNonProfitAppearanceNavigationDto
 
     if (!landingPageUpdated) {
       throw new BadRequestException({
@@ -2263,38 +2282,45 @@ export class OrganizationService {
       );
 
       const company = JSON.parse(dataCompany);
-      console.log('company Lenght', company);
 
       for (let i = 0; i < company.length; i++) {
-        const path = await this.bunnyService.generatePath(
-          editNonProfApprceNaviAboutUsDto.organizationId,
-          'aboutus-company',
-          company[i].fullName!,
-          company[i].imageExtension!,
-          editNonProfApprceNaviAboutUsDto.organizationId!,
-        );
         const base64Data = company[i].base64Data;
-        const binary = Buffer.from(company[i]!.base64Data!, 'base64');
-        if (!binary) {
-          const trimmedString = 56;
-          base64Data.length > 40
-            ? base64Data.substring(0, 40 - 3) + '...'
-            : base64Data.substring(0, length);
-          throw new BadRequestException(
-            `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
-          );
-        }
-        const imageUpload = await this.bunnyService.uploadImage(
-          path,
-          binary,
-          editNonProfApprceNaviAboutUsDto.organizationId,
-        );
 
-        if (imageUpload) {
-          console.info('company image has been created');
+        if (base64Data) {
+          const path = await this.bunnyService.generatePath(
+            editNonProfApprceNaviAboutUsDto.organizationId,
+            'aboutus-company',
+            company[i].fullName!,
+            company[i].imageExtension!,
+            editNonProfApprceNaviAboutUsDto.organizationId!,
+          );
+          const binary = Buffer.from(company[i]!.base64Data!, 'base64');
+          if (!binary) {
+            const trimmedString = 56;
+            base64Data.length > 40
+              ? base64Data.substring(0, 40 - 3) + '...'
+              : base64Data.substring(0, length);
+            throw new BadRequestException(
+              `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
+            );
+          }
+          const imageUpload = await this.bunnyService.uploadImage(
+            path,
+            binary,
+            editNonProfApprceNaviAboutUsDto.organizationId,
+          );
+  
+          if (imageUpload) {
+            console.info('company image has been created');
+            companyPath.push({
+              companyValues: company[i].companyValues!,
+              iconCompanyValues: path,
+            });
+          }
+        } else {
           companyPath.push({
             companyValues: company[i].companyValues!,
-            iconCompanyValues: path,
+            iconCompanyValues: company[i].iconCompanyValues!,
           });
         }
       }
@@ -2311,49 +2337,58 @@ export class OrganizationService {
       );
       const features = JSON.parse(dataFeatures);
       for (let i = 0; i < features.length; i++) {
-        const path = await this.bunnyService.generatePath(
-          editNonProfApprceNaviAboutUsDto.organizationId!,
-          'landingpage-aboutus',
-          features[i].fullName!,
-          features[i].imageExtension!,
-          editNonProfApprceNaviAboutUsDto.organizationId!,
-        );
         const base64Data = features[i].base64Data;
-        const binary = Buffer.from(features[i]!.base64Data!, 'base64');
-        if (!binary) {
-          const trimmedString = 56;
-          base64Data.length > 40
-            ? base64Data.substring(0, 40 - 3) + '...'
-            : base64Data.substring(0, length);
-          throw new BadRequestException(
-            `Image features ${i} is not a valid base64 data: ${trimmedString}`,
-          );
-        }
-        const imageUpload = await this.bunnyService.uploadImage(
-          path,
-          binary,
-          editNonProfApprceNaviAboutUsDto.organizationId!,
-        );
 
-        if (imageUpload) {
-          if (features[i].iconFeaturesItem!) {
-            console.info(
-              'Old Features image seems to be exist in the old record',
+        if (base64Data) {
+          const path = await this.bunnyService.generatePath(
+            editNonProfApprceNaviAboutUsDto.organizationId!,
+            'landingpage-aboutus',
+            features[i].fullName!,
+            features[i].imageExtension!,
+            editNonProfApprceNaviAboutUsDto.organizationId!,
+          );
+          const binary = Buffer.from(features[i]!.base64Data!, 'base64');
+          if (!binary) {
+            const trimmedString = 56;
+            base64Data.length > 40
+              ? base64Data.substring(0, 40 - 3) + '...'
+              : base64Data.substring(0, length);
+            throw new BadRequestException(
+              `Image features ${i} is not a valid base64 data: ${trimmedString}`,
             );
-            const isExist = await this.bunnyService.checkIfImageExists(
-              features[i].iconFeaturesItem!,
-            );
-            if (isExist) {
-              await this.bunnyService.deleteImage(
+          }
+          const imageUpload = await this.bunnyService.uploadImage(
+            path,
+            binary,
+            editNonProfApprceNaviAboutUsDto.organizationId!,
+          );
+  
+          if (imageUpload) {
+            if (features[i].iconFeaturesItem!) {
+              console.info(
+                'Old Features image seems to be exist in the old record',
+              );
+              const isExist = await this.bunnyService.checkIfImageExists(
                 features[i].iconFeaturesItem!,
               );
+              if (isExist) {
+                await this.bunnyService.deleteImage(
+                  features[i].iconFeaturesItem!,
+                );
+              }
             }
+            console.info('Features Item image has been replaced');
+            featuresPath.push({
+              featuresItemTitle: features[i].featuresItemTitle!,
+              featuresItemDesc: features[i].featuresItemDesc!,
+              iconFeaturesItem: path,
+            });
           }
-          console.info('Features Item image has been replaced');
+        } else {
           featuresPath.push({
             featuresItemTitle: features[i].featuresItemTitle!,
             featuresItemDesc: features[i].featuresItemDesc!,
-            iconFeaturesItem: path,
+            iconFeaturesItem: features[i].iconFeaturesItem!,
           });
         }
       }
@@ -2364,20 +2399,21 @@ export class OrganizationService {
     editNonProfApprceNaviAboutUsDto.updatedAt = now.toISOString();
     editNonProfApprceNaviAboutUsDto.companyValues = companyPath;
     editNonProfApprceNaviAboutUsDto.featuresItem = featuresPath;
-    const abouUsPageUpdated =
+    const aboutUsPageUpdated =
       await this.appearanceNavigationModel.findOneAndUpdate(
         { organizationId: organizationId, page: 'ABOUTUS' },
         editNonProfApprceNaviAboutUsDto,
         { new: true },
       );
+    // const abouUsPageUpdated: any = editNonProfApprceNaviAboutUsDto;
 
-    if (!abouUsPageUpdated) {
+    if (!aboutUsPageUpdated) {
       throw new BadRequestException({
         statusCode: 400,
         message: `Failed to update aboutUs`,
       });
     }
-    return abouUsPageUpdated;
+    return aboutUsPageUpdated;
   }
 
   async editBlog(
@@ -2399,46 +2435,56 @@ export class OrganizationService {
       const newsData = JSON.stringify(editNonProfitAppearanceNavBlogDto.news);
       const news = JSON.parse(newsData);
       for (let i = 0; i < news.length; i++) {
-        const path = await this.bunnyService.generatePath(
-          editNonProfitAppearanceNavBlogDto.organizationId!,
-          'landingpage-whyus',
-          news[i].fullName!,
-          news[i].imageExtension!,
-          editNonProfitAppearanceNavBlogDto.organizationId!,
-        );
         const base64Data = news[i].base64Data;
-        const binary = Buffer.from(news[i]!.base64Data!, 'base64');
-        if (!binary) {
-          const trimmedString = 56;
-          base64Data.length > 40
-            ? base64Data.substring(0, 40 - 3) + '...'
-            : base64Data.substring(0, length);
-          throw new BadRequestException(
-            `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
+
+        if (base64Data) {
+          const path = await this.bunnyService.generatePath(
+            editNonProfitAppearanceNavBlogDto.organizationId!,
+            'landingpage-whyus',
+            news[i].fullName!,
+            news[i].imageExtension!,
+            editNonProfitAppearanceNavBlogDto.organizationId!,
           );
-        }
-        const imageUpload = await this.bunnyService.uploadImage(
-          path,
-          binary,
-          editNonProfitAppearanceNavBlogDto.organizationId!,
-        );
-        newsPath.push({
-          news: news[i].news!,
-          photo: path,
-          description: news[i].description!,
-          date: news[i].date!,
-        });
-        if (imageUpload) {
-          if (news[i].newsIcon!) {
-            console.info('Old news image seems to be exist in the old record');
-            const isExist = await this.bunnyService.checkIfImageExists(
-              news[i].newsIcon!,
+          const binary = Buffer.from(news[i]!.base64Data!, 'base64');
+          if (!binary) {
+            const trimmedString = 56;
+            base64Data.length > 40
+              ? base64Data.substring(0, 40 - 3) + '...'
+              : base64Data.substring(0, length);
+            throw new BadRequestException(
+              `Image payload ${i} is not a valid base64 data: ${trimmedString}`,
             );
-            if (isExist) {
-              await this.bunnyService.deleteImage(news[i].newsIcon!);
-            }
           }
-          console.info('news image has been replaced');
+          const imageUpload = await this.bunnyService.uploadImage(
+            path,
+            binary,
+            editNonProfitAppearanceNavBlogDto.organizationId!,
+          );
+          newsPath.push({
+            news: news[i].news!,
+            photo: path,
+            description: news[i].description!,
+            date: news[i].date!,
+          });
+          if (imageUpload) {
+            if (news[i].newsIcon!) {
+              console.info('Old news image seems to be exist in the old record');
+              const isExist = await this.bunnyService.checkIfImageExists(
+                news[i].newsIcon!,
+              );
+              if (isExist) {
+                await this.bunnyService.deleteImage(news[i].newsIcon!);
+              }
+            }
+            console.info('news image has been replaced');
+          }
+        } else {
+          newsPath.push({
+            news: news[i].news!,
+            photo: news[i].photo!,
+            description: news[i].description!,
+            date: news[i].date!,
+          });
         }
       }
     }
@@ -2503,6 +2549,7 @@ export class OrganizationService {
       editNonProfitAppearanceNavBlogDto,
       { new: true },
     );
+    // const blogUpdated: any = editNonProfitAppearanceNavBlogDto;
 
     if (!blogUpdated) {
       throw new BadRequestException({
@@ -2510,6 +2557,7 @@ export class OrganizationService {
         message: `Failed to update blog`,
       });
     }
+
     return blogUpdated;
   }
 

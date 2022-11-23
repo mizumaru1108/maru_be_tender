@@ -1,7 +1,7 @@
 import { Box, Button, Grid, Stack, Typography, useTheme } from '@mui/material';
 import Iconify from 'components/Iconify';
 import useLocales from 'hooks/useLocales';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import ModalDialog from 'components/modal-dialog';
@@ -15,7 +15,6 @@ import { useSnackbar } from 'notistack';
 import { useMutation } from 'urql';
 import { rejectProposal } from 'queries/commons/rejectProposal';
 import { approveProposal } from 'queries/commons/approveProposal';
-import { CreateProposalLog } from 'queries/commons/createProposalLog';
 import { insertSupervisor } from 'queries/project-supervisor/insertSupervisor';
 
 function FloatingActionBar({ organizationId, data }: any) {

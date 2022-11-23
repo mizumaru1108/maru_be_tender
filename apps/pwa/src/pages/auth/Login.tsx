@@ -34,7 +34,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 export default function Login() {
   const { translate } = useLocales();
   return (
-    <Page title="Login">
+    <Page title={translate('pages.auth.login')}>
       <RootStyle>
         <Box
           sx={{
@@ -69,7 +69,7 @@ export default function Login() {
             </Typography>
             <LoginForm />
             <Typography variant="body2" align="center" sx={{ mt: 3 }}>
-              {translate('dont_have_account')}؟
+              {translate('dont_have_account')}
               <Link
                 variant="subtitle2"
                 component={RouterLink}

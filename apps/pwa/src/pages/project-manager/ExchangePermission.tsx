@@ -45,10 +45,10 @@ function ExchangePermission() {
             baseFilters={{
               filter1: {
                 project_manager_id: { _eq: user?.id },
-                _and: { inner_status: { _eq: 'ACCEPTED_BY_SUPERVISOR' } },
+                _and: { inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' } },
               },
             }}
-            destination={'incoming-funding-requests'}
+            destination={'exchange-permission'}
           />
           {/* <CardTable
             data={data2} // For testing, later on we will send the query to it

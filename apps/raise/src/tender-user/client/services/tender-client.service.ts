@@ -270,14 +270,14 @@ export class TenderClientService {
 
     denactiveAccount = requestChangeCount > 0;
     if (denactiveAccount) {
-      await this.prismaService.client_data.update({
-        where: {
-          user_id: user.id,
-        },
-        data: {
-          status: 'WAITING_FOR_EDITING_APPROVAL',
-        },
-      });
+      // await this.prismaService.client_data.update({
+      //   where: {
+      //     user_id: user.id,
+      //   },
+      //   data: {
+      //     status: 'WAITING_FOR_EDITING_APPROVAL',
+      //   },
+      // });
     }
 
     const response: ClientEditRequestResponseDto = {

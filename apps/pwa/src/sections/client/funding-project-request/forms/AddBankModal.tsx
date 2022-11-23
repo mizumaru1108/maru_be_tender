@@ -6,31 +6,21 @@ import { Grid, Stack, Modal, Box, Button, Typography } from '@mui/material';
 import FormGenerator from 'components/FormGenerator';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AddBankData } from '../Forms-Data';
-import { ReactComponent as MovingBack } from '../../../../assets/move-back-icon.svg';
 import { FileProp } from 'components/upload';
 import { useMutation } from 'urql';
 import { addNewBankInformation } from 'queries/client/addNewBankInformation';
 import useAuth from 'hooks/useAuth';
-import { nanoid } from 'nanoid';
-const style = {
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '52%',
-  transform: 'translate(-50%, -50%)',
-  width: 800,
-  bgcolor: '#fff',
-  border: '2px solid #000',
-  p: 4,
-};
+import useLocales from 'hooks/useLocales';
 
 type FormValuesProps = {
   bank_account_number: string;
   bank_account_name: string;
   bank_name: string;
-  bank_account_card_image: FileProp;
+  card_image: FileProp;
 };
 
 export default function AddBankModal({ open, handleClose, setIsCreatedOne }: any) {
+  const { translate } = useLocales();
   const rootRef = React.useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const id = user?.id;
@@ -39,7 +29,7 @@ export default function AddBankModal({ open, handleClose, setIsCreatedOne }: any
     bank_account_number: Yup.string().required('Project goals required'),
     bank_account_name: Yup.string().required('Project outputs is required'),
     bank_name: Yup.string().required('Project strengths is required'),
-    bank_account_card_image: Yup.object().shape({
+    card_image: Yup.object().shape({
       url: Yup.string().required(),
       size: Yup.number(),
       type: Yup.string().required(),
@@ -49,7 +39,7 @@ export default function AddBankModal({ open, handleClose, setIsCreatedOne }: any
     bank_account_number: '',
     bank_account_name: '',
     bank_name: '',
-    bank_account_card_image: {
+    card_image: {
       url: '',
       size: undefined,
       type: 'image/jpeg',
@@ -67,17 +57,18 @@ export default function AddBankModal({ open, handleClose, setIsCreatedOne }: any
   } = methods;
 
   const onSubmit = async (data: FormValuesProps) => {
-    const res = await addingNewBankInfo({
-      payload: {
-        bank_account_name: data.bank_account_name,
-        bank_account_number: data.bank_account_number,
-        bank_name: data.bank_name,
-        card_image: data.bank_account_card_image.url,
-        user_id: id,
-      },
-    });
-    setIsCreatedOne(true);
-    handleClose();
+    try {
+      await addingNewBankInfo({
+        payload: {
+          ...data,
+          user_id: id,
+        },
+      });
+      setIsCreatedOne(true);
+      handleClose();
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <Modal
@@ -104,7 +95,7 @@ export default function AddBankModal({ open, handleClose, setIsCreatedOne }: any
         }}
       >
         <Typography variant="h6" sx={{ mb: '50px' }}>
-          اضافة حساب بنكي جديد
+          {translate('funding_project_request_form5.add_new_bank_details.label')}
         </Typography>
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
           <Grid container rowSpacing={4} columnSpacing={7}>
@@ -120,7 +111,7 @@ export default function AddBankModal({ open, handleClose, setIsCreatedOne }: any
                       hieght: { xs: '100%', sm: '50px' },
                     }}
                   >
-                    رجوع
+                    {translate('going_back_one_step')}
                   </Button>
                   <Button
                     type="submit"
@@ -132,7 +123,7 @@ export default function AddBankModal({ open, handleClose, setIsCreatedOne }: any
                       hieght: { xs: '100%', sm: '50px' },
                     }}
                   >
-                    إضافة
+                    {translate('add')}
                   </Button>
                 </Stack>
               </Stack>

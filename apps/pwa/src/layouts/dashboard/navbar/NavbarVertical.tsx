@@ -18,6 +18,7 @@ import { ReactComponent as Logo } from '../../../assets/logo.svg';
 import navConfig from './NavConfig';
 import useAuth from 'hooks/useAuth';
 import { FusionAuthRoles } from '../../../@types/commons';
+import useLocales from 'hooks/useLocales';
 
 // ----------------------------------------------------------------------
 
@@ -39,7 +40,7 @@ type Props = {
 
 export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props) {
   const theme = useTheme();
-
+  const { translate } = useLocales();
   const { logout, user } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -93,7 +94,7 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
       >
         <Stack direction="row" gap={2}>
           <img src="/assets/icons/dashboard-navbar/log-out-icon.svg" alt="" />
-          <Typography color="#FF4842">تسجيل الخروج</Typography>
+          <Typography color="#FF4842">{translate('sign_out')}</Typography>
         </Stack>
       </Box>
     </Scrollbar>
@@ -114,7 +115,7 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
         <Drawer
           open={isOpenSidebar}
           onClose={onCloseSidebar}
-          PaperProps={{ sx: { width: NAVBAR.DASHBOARD_WIDTH } }}
+          PaperProps={{ sx: { width: NAVBAR.DASHBOARD_WIDTH, backgroundColor: '#fff' } }}
         >
           {renderContent}
         </Drawer>

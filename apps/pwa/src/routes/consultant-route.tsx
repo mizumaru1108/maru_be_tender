@@ -71,6 +71,7 @@ export const consultantRoute = {
                 { path: 'project-path', element: <ProjectDetails /> },
                 { path: 'project-timeline', element: <ProjectDetails /> },
                 { path: 'follow-ups', element: <ProjectDetails /> },
+                { path: 'supervisor-revision', element: <ProjectDetails /> },
               ],
             },
           ],

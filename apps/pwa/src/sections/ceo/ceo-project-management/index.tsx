@@ -30,7 +30,7 @@ function CeoProjectManagement() {
           projectNumber: (project.projectNumber as string) || 'N/A',
           projectName: (project.projectName as string) || 'N/A',
           projectSection: project.projectSection || 'N/A',
-          associationName: (project.associationName.client_data[0].entity as string) || 'N/A',
+          associationName: (project.associationName.client_data.entity as string) || 'N/A',
           createdAt: (project.createdAt as string) || 'N/A',
         }))
       );

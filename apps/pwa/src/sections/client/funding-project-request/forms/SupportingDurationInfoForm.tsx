@@ -1,28 +1,12 @@
-import * as Yup from 'yup';
 import { useEffect, useState } from 'react';
-import { Box, Button, Checkbox, Grid, Stack, Typography } from '@mui/material';
-import { FormProvider, RHFCheckbox } from 'components/hook-form';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { BankImage } from '../../../../assets';
+import { Alert, Box, Button, Checkbox, Grid, Stack, Typography } from '@mui/material';
 import BankImageComp from 'sections/shared/BankImageComp';
 import AddBankModal from './AddBankModal';
 import { getUserBankInformation } from 'queries/client/getUserBankInformation';
 import useAuth from 'hooks/useAuth';
 import { useQuery } from 'urql';
-import { FileProp } from 'components/upload';
 import { ReactComponent as MovingBack } from '../../../../assets/move-back-icon.svg';
-
-type FormValuesProps = {
-  agree_on: boolean;
-  proposal_bank_informations: {
-    bank_account_number: string;
-    card_image: FileProp;
-    bank_name: string;
-    bank_account_name: string;
-    bank_information_id: string;
-  }[];
-};
+import useLocales from 'hooks/useLocales';
 
 type Props = {
   onSubmit: (data: any) => void;
@@ -39,12 +23,9 @@ const SupportingDurationInfoForm = ({
   lastStep,
   step,
   onSubmit,
-  children,
-  defaultValues,
 }: Props) => {
-  //  TODO: Fetch the user's Bank Information and assign them to the state that we have here
-  //        without sending or assiging them to the general state, and keeping that for the next button
   const { user } = useAuth();
+  const { translate } = useLocales();
   const [agreeOn, setAgreeOn] = useState(false);
   const id = user?.id;
   const [result, reexxecuteUserBankInformation] = useQuery({
@@ -57,13 +38,15 @@ const SupportingDurationInfoForm = ({
   const handleClose = () => setOpen(false);
   const [isCreatedOne, setIsCreatedOne] = useState<Boolean>(false);
 
+  const [oprnError, setOpenError] = useState(false);
   const onBankInfoSubmit = () => {
-    console.log(data.bank_information[0].user.bank_informations[selectedCard as number]);
-    console.log('onBankInfoSubmit');
-    onSubmit(data.bank_information[0].user.bank_informations[selectedCard as number].id);
+    if (selectedCard === undefined) {
+      setOpenError(true);
+      window.scrollTo(0, 0);
+    } else onSubmit(selectedCard);
   };
 
-  const [selectedCard, setSelectedCard] = useState<number>();
+  const [selectedCard, setSelectedCard] = useState<string>('');
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAgreeOn(event.target.checked);
   };
@@ -76,7 +59,12 @@ const SupportingDurationInfoForm = ({
   if (error) return <>Something went wrong, please go back one step</>;
   return (
     <Grid container rowSpacing={4} columnSpacing={7}>
-      {data.bank_information[0].user.bank_informations.map((item: any, index: number) => (
+      {oprnError && (
+        <Grid item md={12}>
+          <Alert severity="error">{translate('banking_error_message')}</Alert>
+        </Grid>
+      )}
+      {data.bank_information.map((item: any, index: number) => (
         <Grid
           item
           md={6}
@@ -93,12 +81,12 @@ const SupportingDurationInfoForm = ({
             sx={{
               width: '100%',
               color: '#2b9d23',
-              ...(selectedCard === index && { border: `3px solid` }),
+              ...(selectedCard === item.id && { border: `3px solid` }),
               backgroundColor: '#fff',
               ':hover': { backgroundColor: '#fff' },
             }}
             onClick={() => {
-              setSelectedCard(index);
+              setSelectedCard(item.id);
             }}
           >
             <BankImageComp
@@ -106,7 +94,8 @@ const SupportingDurationInfoForm = ({
               accountNumber={item.bank_account_number}
               bankAccountName={item.bank_account_name}
               bankName={item.bank_name}
-              imageUrl={item.card_image}
+              imageUrl={item.card_image.url}
+              size={item.card_image.size}
             />
           </Box>
         </Grid>
@@ -114,7 +103,7 @@ const SupportingDurationInfoForm = ({
       <Grid item xs={12}>
         <Stack justifyContent="center">
           <Button sx={{ textDecoration: 'underline', margin: '0 auto' }} onClick={handleOpen}>
-            اضافة تفاصيل بنك جديد
+            {translate('funding_project_request_form5.add_new_bank_details.label')}
           </Button>
           <AddBankModal open={open} handleClose={handleClose} setIsCreatedOne={setIsCreatedOne} />
         </Stack>
@@ -122,7 +111,7 @@ const SupportingDurationInfoForm = ({
       <Grid item xs={12}>
         <Stack direction="row" sx={{ alignItems: 'center' }}>
           <Checkbox onChange={handleChange} />
-          <Typography>أقر بصحة المعلومات الواردة في هذا النموذج وأتقدم بطلب دعم المشروع</Typography>
+          <Typography>{translate('funding_project_request_form5.agree_on.label')}</Typography>
         </Stack>
       </Grid>
       <Grid item xs={12} sx={{ mt: '10px' }}>
@@ -130,7 +119,7 @@ const SupportingDurationInfoForm = ({
           <Box
             sx={{
               borderRadius: 2,
-              height: '90px',
+              height: '100%',
               backgroundColor: '#fff',
               padding: '24px',
             }}
@@ -145,7 +134,7 @@ const SupportingDurationInfoForm = ({
                   hieght: { xs: '100%', sm: '50px' },
                 }}
               >
-                رجوع
+                {translate('going_back_one_step')}
               </Button>
               <Box sx={{ width: '10px' }} />
               <Button
@@ -159,7 +148,7 @@ const SupportingDurationInfoForm = ({
                 onClick={onSavingDraft}
                 disabled={step ? false : true}
               >
-                حفظ كمسودة
+                {translate('saving_as_draft')}
               </Button>
               <Button
                 onClick={onBankInfoSubmit}
@@ -173,7 +162,7 @@ const SupportingDurationInfoForm = ({
                 }}
                 disabled={agreeOn ? false : true}
               >
-                {lastStep ? 'إرسال' : 'التالي'}
+                {lastStep ? translate('send') : translate('next')}
               </Button>
             </Stack>
           </Box>

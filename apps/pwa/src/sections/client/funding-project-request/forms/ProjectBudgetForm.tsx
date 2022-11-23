@@ -28,21 +28,28 @@ const ProjectBudgetForm = ({ onSubmit, children, defaultValues }: Props) => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  const RegisterSchema = Yup.object().shape({
+  const CreatingProposalForm4 = Yup.object().shape({
     amount_required_fsupport: Yup.number()
       .integer()
-      .required('amount_required_fsupport is requiered'),
+      .required(translate('errors.cre_proposal.amount_required_fsupport.required')),
     detail_project_budgets: Yup.array().of(
       Yup.object().shape({
-        clause: Yup.string().required(),
-        explanation: Yup.string().required(),
-        amount: Yup.number().integer().required(),
+        clause: Yup.string().required(
+          translate('errors.cre_proposal.detail_project_budgets.clause.required')
+        ),
+        explanation: Yup.string().required(
+          translate('errors.cre_proposal.detail_project_budgets.explanation.required')
+        ),
+        amount: Yup.number()
+          .typeError(translate('errors.cre_proposal.detail_project_budgets.amount.message'))
+          .integer()
+          .required(translate('errors.cre_proposal.detail_project_budgets.amount.required')),
       })
     ),
   });
 
   const methods = useForm<FormValuesProps>({
-    resolver: yupResolver(RegisterSchema),
+    resolver: yupResolver(CreatingProposalForm4),
     defaultValues: {
       amount_required_fsupport: defaultValues.amount_required_fsupport,
       detail_project_budgets: defaultValues.detail_project_budgets.data,
@@ -56,13 +63,13 @@ const ProjectBudgetForm = ({ onSubmit, children, defaultValues }: Props) => {
   } = methods;
 
   const handleOnSubmit = (data: FormValuesProps) => {
-    console.log(data);
     const initialValue = 0;
     const sumWithInitial = data.detail_project_budgets.reduce(
       (previousValue, currentValue) => previousValue + currentValue.amount,
       initialValue
     );
     if (sumWithInitial === data.amount_required_fsupport) {
+      window.scrollTo(0, 0);
       setBudgetError(false);
       onSubmit(data);
     } else setBudgetError(true);

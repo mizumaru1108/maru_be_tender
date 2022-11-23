@@ -7,8 +7,92 @@
 
 const en = {
   pages: {
+    auth: {
+      login: 'Login Page',
+      register: 'Register Page',
+    },
     client: {
       main: 'Main Client Dashboard',
+    },
+  },
+  errors: {
+    login: {
+      email: {
+        message: 'Email must be a valid email address',
+        required: 'Email is required',
+      },
+      password: {
+        message: '',
+        required: 'Password is required',
+      },
+    },
+    register: {
+      entity: {
+        message: '',
+        required: 'Entity is required',
+      },
+      client_field: {
+        message: '',
+        required: 'Client Field Area is required',
+      },
+      authority: {
+        message: '',
+        required: 'Authority is required',
+      },
+      date_of_esthablistmen: {
+        message: '',
+        required: 'Date Of Establishment is required',
+      },
+      headquarters: {
+        message: '',
+        required: 'Headquarters is required',
+      },
+      num_of_employed_facility: {
+        message: '',
+        required: 'Number Of Employees is required',
+      },
+      num_of_beneficiaries: {
+        message: '',
+        required: 'Number Of Beneficiaries is required',
+      },
+    },
+    cre_proposal: {
+      project_name: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      project_idea: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      project_location: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      project_implement_date: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      execution_time: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      project_beneficiaries: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      letter_ofsupport_req: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      project_attachments: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
+      project_beneficiaries_specific_type: {
+        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
+        required: 'البريد الالكتروني مطلوب',
+      },
     },
   },
   commons: {
@@ -82,20 +166,20 @@ const en = {
   previous_funding_requests: 'Previous funding requests',
   messages: 'Messages',
   contact_support: 'Contact Support',
-  register_first_tap: 'المعلومات الرئيسية',
-  register_second_tap: 'معلومات الاتصال',
-  register_third_tap: 'معلومات الترخيص',
-  register_fourth_tap: 'بيانات الإدارية',
-  register_fifth_tap: 'معلومات البنكية',
+  register_first_tap: 'Main info',
+  register_second_tap: 'Contact info',
+  register_third_tap: 'License info',
+  register_fourth_tap: 'Administrative data',
+  register_fifth_tap: 'Banking info',
   email_label: 'E-mail',
   password_label: 'The password',
-  remember_me: 'تذكرني',
-  forget_the_password: 'نسيت كلمة المرور',
-  login: 'تسجيل الدخول',
+  remember_me: 'remember me',
+  forget_the_password: 'forget the password',
+  login: 'Login',
   create_new_account: 'Create a new account',
   the_login_message: 'Please enter your email address to login.',
-  dont_have_account: 'ليس لديك حساب في المنصة',
-  register_one: 'قم بإنشاء حساب من هنا',
+  dont_have_account: "You don't have an account?",
+  register_one: 'register from here',
   show_details: 'Studying The Project',
   show_project: 'استعراض المشروع',
   completing_exchange_permission: 'إتمام إذن الصرف',
@@ -104,34 +188,45 @@ const en = {
   canceled: 'Request Canceled',
   create_a_new_support_request: 'Create a new support request',
   register_form1: {
+    vat: {
+      label: 'ضريبة القيمة المضافة',
+      placeholder: 'Do you agree to VAT',
+    },
+    entity: {
+      label: "Entity's name*",
+      placeholder: "Please write the Entity's name",
+    },
     entity_area: {
-      label: 'مجال الجهة',
-      placeholder: 'الرجاء اختيار مجال الجهة',
+      label: 'Entity area*',
+      placeholder: 'Please choose the Entity Area',
       options: {
-        sub_entity_area: 'رئيسي',
-        main_entity_area: 'فرعي',
+        sub_entity_area: 'main',
+        main_entity_area: 'sub-main',
       },
     },
     authority: {
-      label: 'الجهة المشرفة',
-      placeholder: 'الرجاء اختيار الجهة المشرفة',
+      label: 'Authority*',
+      placeholder: 'Please choose the Authority',
+      options: {
+        other: '',
+      },
     },
     date_of_establishment: {
-      label: 'تاريخ التأسيس',
+      label: 'Date of Establishment*',
       placeholder: 'الرجاء اختيار تحديد تاريخ التأسيس',
     },
     headquarters: {
-      label: 'المقر',
-      placeholder: 'الرجاء اختيار نوع المقر',
-      options: {},
+      label: 'Headquarters*',
+      placeholder: 'Please enter the Headquarters',
+      options: { rent: 'Rent', own: 'Owning' },
     },
     number_of_employees: {
-      label: 'عدد موظفين بدوام كلي للمنشأة',
-      placeholder: 'عدد موظفين المنشأة',
+      label: 'Number of full-time employees*',
+      placeholder: 'The number of employees of the facility',
     },
     number_of_beneficiaries: {
-      label: 'عدد المستفيدين من خدمات الجهة',
-      placeholder: 'عدد المستفيدين من خدمات الجهة',
+      label: "Number of beneficiaries of the entity's services*",
+      placeholder: "Number of beneficiaries of the entity's services",
     },
   },
   register_form2: {
@@ -242,97 +337,102 @@ const en = {
   funding_project_request_form1: {
     step: 'general information',
     project_name: {
-      label: 'اسم المشروع*',
-      placeholder: 'الرجاء كتابة اسم المشروع',
+      label: 'Project name*',
+      placeholder: 'Please write the Project name',
     },
     project_idea: {
-      label: 'فكرة المشروع*',
-      placeholder: 'الرجاء كتابة عدد المستفيدين من المشروع',
+      label: 'Project idea*',
+      placeholder: 'Please write the Project idea',
     },
     project_applying_place: {
-      label: 'مكان تنفيذ المشروع*',
-      placeholder: 'الرجاء اختيار مكان تنفيذ المشروع',
+      label: 'Project location*',
+      placeholder: 'Please select a project execution date',
     },
     project_applying_date: {
-      label: 'تاريخ تنفيذ المشروع*',
-      placeholder: 'الرجاء اختيار تاريخ تنفيذ المشروع',
+      label: 'Project implementation date*',
+      placeholder: 'Please select a project execution date',
     },
     applying_duration: {
-      label: 'مدة التنفيذ*',
-      placeholder: 'الرجاء تحديد مدة التنفيذ',
+      label: 'Execution time*',
+      placeholder: 'Please specify the execution period',
     },
     target_group_type: {
-      label: 'نوع الفئة المستهدفة*',
-      placeholder: 'الرجاء اختيار نوع الفئة المستهدفة',
+      label: 'Target group type*',
+      placeholder: 'Please choose the type of target group',
     },
     letter_support_request: {
-      label: 'خطاب طلب الدعم',
-      placeholder: 'خطاب الدعم',
+      label: 'Support request letter',
+      placeholder: 'Support request letter',
     },
     project_attachments: {
-      label: 'مرفقات المشروع',
-      placeholder: 'مرفقات المشروع',
+      label: 'Project Attachments',
+      placeholder: 'Project Attachments',
     },
   },
   funding_project_request_form2: {
     step: 'Detailed information about the project',
     number_of_project_beneficiaries: {
-      label: 'عدد المستفيدين من المشروع*',
-      placeholder: 'الرجاء كتابة عدد المستفيدين من المشروع',
+      label: 'The number of beneficiaries of the project*',
+      placeholder: 'Please write the number of beneficiaries of the project',
     },
     project_goals: {
-      label: 'أهداف المشروع*',
-      placeholder: 'الرجاء كتابة أهداف المشروع ',
+      label: 'Project goals*',
+      placeholder: 'Please write the objectives of the project',
     },
     project_outputs: {
-      label: 'مخرجات المشروع*',
-      placeholder: 'الرجاء كتابة مخرجات المشروع ',
+      label: 'Project outputs*',
+      placeholder: 'Please write the project output ',
     },
     project_strengths: {
-      label: 'نقاط القوة للمشروع*',
-      placeholder: 'الرجاء كتابة نقاط القوة للمشروع',
+      label: 'Project strengths*',
+      placeholder: 'Please write down the strengths of the project',
     },
     project_risk: {
-      label: 'مخاطر المشروع*',
-      placeholder: 'الرجاء كتابة مخاطر المشروع',
+      label: 'Project risk*',
+      placeholder: 'Please write the project risk',
     },
   },
+
   funding_project_request_form3: {
     step: 'contact information',
     project_manager_name: {
-      label: 'اسم مدير المشروع*',
-      placeholder: 'الرجاء كتابة اسم مدير المشروع',
+      label: 'Project manager name*',
+      placeholder: 'Please write the name of the project manager',
     },
     mobile_number: {
-      label: 'رقم الجوال*',
-      placeholder: 'الرجاء كتابة رقم الجوال',
+      label: 'Mobile number*',
+      placeholder: 'Please write your mobile number',
     },
     email: {
-      label: 'البريد الإلكتروني*',
-      placeholder: 'الرجاء كتابة البريد الإلكتروني',
+      label: 'E-mail*',
+      placeholder: 'Please write an email',
     },
     region: {
-      label: 'المنطقة*',
-      placeholder: 'الرجاء اختيار المنطقة',
+      label: 'Region*',
+      placeholder: 'Please select a region',
     },
     city: {
-      label: 'المحافظة*',
-      placeholder: 'الرجاء اختيار المحافظة',
+      label: 'Governorate*',
+      placeholder: 'Please select the governorate',
     },
   },
   funding_project_request_form4: {
     step: 'Support information and duration',
+    amount_required_fsupport: {
+      label: 'Amount required for support*',
+      placeholder: 'Please write the required amount for support',
+    },
     item: {
-      label: 'البند*',
-      placeholder: 'الرجاء كتابة اسم البند',
+      label: 'clause*',
+      placeholder: 'Please write the clause name',
     },
     explanation: {
-      label: 'الشرح*',
-      placeholder: 'الرجاء كتابة الشرح',
+      label: 'The explanation*',
+      placeholder: 'Please write the explanation',
     },
     amount: {
-      label: 'المبلغ*',
-      placeholder: 'المبلغ المطلوبة',
+      label: 'The amount*',
+      placeholder: 'The amount required',
     },
   },
   funding_project_request_form5: {
@@ -345,30 +445,36 @@ const en = {
       label: 'بنوك مضافة سابقا*',
     },
     add_new_bank_details: {
-      label: 'اضافة تفاصيل بنك جديد',
+      label: 'Add a new bank account',
     },
     agree_on: {
-      label: 'أقر بصحة المعلومات الواردة في هذا النموذج وأتقدم بطلب دعم المشروع',
+      label:
+        'I certify that the information on this form is correct or I submit a request to support the project',
     },
   },
   funding_project_request_form6: {
     bank_account_number: {
-      label: 'رقم الحساب البنكي*',
-      placeholder: 'رقم الحساب البنكي',
+      label: 'Bank account number*',
+      placeholder: 'Bank account number',
     },
     bank_account_name: {
-      label: 'اسم الحساب البنكي*',
-      placeholder: 'اسم الحساب البنكي',
+      label: 'Bank account name*',
+      placeholder: 'Bank account name',
     },
     bank_name: {
-      label: 'اسم البنك*',
-      placeholder: 'اسم البنك',
+      label: 'Bank name*',
+      placeholder: 'Bank name',
     },
     bank_account_card_image: {
-      label: 'صورة بطاقة الحساب البنكي',
-      placeholder: 'صورة بطاقة الحساب البنكي',
+      label: 'Bank account card image*',
+      placeholder: 'Bank account card image',
     },
   },
+  next: 'next',
+  going_back_one_step: 'back',
+  saving_as_draft: 'save as draft',
+  send: 'send',
+  add: 'Add',
   contact_support_form: {
     inquiry_type: {
       label: 'نوع الاستفسار',
@@ -786,6 +892,8 @@ const en = {
   login_message_error: 'This email or password is not correct',
   budget_error_message:
     "The sum of the budget's items should be the exact same as the whole budget",
+  banking_error_message: 'Please select a bank card to continue',
+  sign_out: 'Sign-out',
 };
 
 export default en;

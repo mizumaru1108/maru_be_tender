@@ -88,10 +88,6 @@ function AuthProvider({ children }: AuthProviderProps) {
         if (accessToken && isValidToken(accessToken)) {
           setSession(accessToken, refreshToken);
           const user = await fusionAuthClient.retrieveUserUsingJWT(accessToken);
-          // const sectionResponse = await axios.get(
-          //   'https://api-staging.tmra.io/v2/raise/tender-client/current-user-track',
-          //   { headers: { Authorization: `Bearer ${accessToken}` } }
-          // );
           dispatch({
             type: Types.Initial,
             payload: {
@@ -132,11 +128,6 @@ function AuthProvider({ children }: AuthProviderProps) {
     const { token: accessToken, user, refreshToken } = response.response;
 
     setSession(accessToken!, refreshToken!);
-
-    // const sectionResponse = await axios.get(
-    //   'https://api-staging.tmra.io/v2/raise/tender-client/current-user-track',
-    //   { headers: { Authorization: `Bearer ${accessToken}` } }
-    // );
     dispatch({
       type: Types.Login,
       payload: {
