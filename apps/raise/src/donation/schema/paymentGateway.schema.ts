@@ -1,3 +1,4 @@
+import * as mongoose from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
@@ -5,10 +6,11 @@ export type PaymentGatewayDocument = PaymentGateway & Document;
 
 @Schema({ collection: 'paymentGateway' })
 export class PaymentGateway {
-  @Prop({ type: () => Types.ObjectId })
-  public _id?: Types.ObjectId;
-  @Prop({ type: () => Types.ObjectId })
-  public organizationId?: Types.ObjectId;
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Organization',
+  })
+  public organizationId: Types.ObjectId;
   @Prop({ type: () => String })
   public name?: string;
   @Prop({ type: () => String })
@@ -27,6 +29,12 @@ export class PaymentGateway {
   public isDeleted?: string;
   @Prop({ type: () => String })
   public isActive?: string;
+  @Prop({ type: () => String })
+  public paymentMethod?: string;
+  @Prop({ type: () => String })
+  public isTestMode?: string;
+  @Prop({ type: () => String })
+  public isLiveMode?: string;
 }
 
 export const PaymentGatewaySchema =
