@@ -14,10 +14,9 @@ type GuestGuardProps = {
 };
 
 export default function GuestGuard({ children }: GuestGuardProps) {
-  const { isAuthenticated, isInitialized, user } = useAuth();
+  const { isAuthenticated, isInitialized, activeRole } = useAuth();
 
-  const role = user?.registrations[0].roles[0] as FusionAuthRoles;
-  console.log(role);
+  const role = activeRole!;
   if (isAuthenticated) {
     return <Navigate to={`/${role_url_map[`${role}`]}/dashboard/app`} />;
   }

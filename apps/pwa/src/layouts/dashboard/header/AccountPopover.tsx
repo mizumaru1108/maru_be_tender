@@ -9,8 +9,8 @@ import useAuth from '../../../hooks/useAuth';
 export default function AccountPopover() {
   const navigate = useNavigate();
   const isMobile = useResponsive('down', 'sm');
-  const { user } = useAuth();
-  const role = user?.registrations[0].roles[0] as FusionAuthRoles;
+  const { user, activeRole } = useAuth();
+  const role = activeRole!;
 
   return (
     <>

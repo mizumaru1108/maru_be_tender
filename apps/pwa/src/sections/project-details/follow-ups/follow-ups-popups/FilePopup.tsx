@@ -16,9 +16,9 @@ type Props = {
 function FilePopup({ open, handleClose, mutate }: Props) {
   const { id: proposal_id } = useParams();
   const [, createFollow] = useMutation(createNewFollowUp);
-  const { user } = useAuth();
+  const { user, activeRole } = useAuth();
   const id = user?.id;
-  const role = user?.registrations[0].roles[0] as FusionAuthRoles;
+  const role = activeRole!;
   const handleSubmit = async (data: any) => {
     if (role === 'tender_client') {
       try {

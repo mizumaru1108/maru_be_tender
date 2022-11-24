@@ -27,7 +27,7 @@ import navConfig from '../navbar/NavConfig';
 import useLocales from 'hooks/useLocales';
 
 import useAuth from 'hooks/useAuth';
-import { FusionAuthRoles, role_url_map } from '../../../@types/commons';
+import { role_url_map } from '../../../@types/commons';
 
 // ----------------------------------------------------------------------
 
@@ -117,10 +117,10 @@ function Searchbar() {
   const { pathname } = useLocation();
 
   const [open, setOpen] = useState(false);
-  const { user } = useAuth();
+  const { activeRole } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const role = user?.registrations[0].roles as FusionAuthRoles;
+  const role = activeRole!;
   const reduceItems = navConfig[`${role}`]
     .map((list) => handleLoop(list.items, list.subheader))
     .flat();

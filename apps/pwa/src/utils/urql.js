@@ -5,7 +5,7 @@ import { authExchange } from '@urql/exchange-auth';
 import { fusionAuthClient } from 'utils/fusionAuth';
 import jwtDecode from 'jwt-decode';
 
-export const makeClient = () =>
+export const makeClient = (activeRole) =>
   createClient({
     url: HASURA_GRAPHQL_URL,
     exchanges: [
@@ -29,6 +29,7 @@ export const makeClient = () =>
               ...fetchOptions,
               headers: {
                 ...fetchOptions.headers,
+                'x-hasura-role': activeRole,
                 Authorization: authState.token,
               },
             },

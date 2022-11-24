@@ -1,11 +1,9 @@
 import { Avatar, Box, Grid, Stack, Typography } from '@mui/material';
-import { FusionAuthRoles } from '../../../@types/commons';
 import useAuth from 'hooks/useAuth';
-import React from 'react';
 
 function FollowUpsText({ created_at, action, employee }: any) {
-  const { user } = useAuth();
-  const role = user?.registrations[0].roles[0] as FusionAuthRoles;
+  const { activeRole } = useAuth();
+  const role = activeRole!;
 
   if (role === 'tender_client')
     return (
@@ -71,7 +69,7 @@ function FollowUpsText({ created_at, action, employee }: any) {
         >
           <Stack direction="row" justifyContent="space-between">
             {employee ? (
-              <Typography color="#0E8478">{`${employee.employee_name} - ${employee.user_type_id}`}</Typography>
+              <Typography color="#0E8478">{`${employee.employee_name} - ${employee.roles.role}`}</Typography>
             ) : (
               <Typography color="#0E8478">المستخدم</Typography>
             )}

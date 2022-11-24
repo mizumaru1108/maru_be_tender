@@ -3,7 +3,6 @@ import { styled } from '@mui/material/styles';
 import Page from 'components/Page';
 import useAuth from 'hooks/useAuth';
 import { useState } from 'react';
-import { FusionAuthRoles } from '../../@types/commons';
 
 import MessageContent from './content/MessageContent';
 import MessageMenu from './menu/MessageMenu';
@@ -27,8 +26,8 @@ const ContentStyle = styled('div')(({ theme }) => ({
 }));
 
 function MessagesPage() {
-  const { user } = useAuth();
-  const role = user?.registrations[0].roles[0] as FusionAuthRoles;
+  const { activeRole } = useAuth();
+  const role = activeRole!;
   const [content, setContent] = useState<messageContent[]>([]);
   const [room, setRoom] = useState<string>();
   return (

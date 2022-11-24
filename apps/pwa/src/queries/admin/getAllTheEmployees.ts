@@ -1,10 +1,12 @@
-export const getAllTheEmployees = `query MyQuery {
-  users: user(where: {user_type_id: {_neq: CLIENT}, _and: {user_type_id: {_neq: ADMIN}}}) {
+export const getAllTheEmployees = `query getAllTheEmployees {
+  user(where: {roles: {user_type_id: {_neq: ADMIN}, _and: {user_type_id: {_neq: CLIENT}}}}) {
     id
     email
     name: employee_name
-    activation: is_active
-    permissions: user_type_id
+    activation: status_id
+    permissions: roles {
+      role: user_type_id
+    }
   }
 }
 `;

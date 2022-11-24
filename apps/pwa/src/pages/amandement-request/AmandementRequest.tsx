@@ -49,8 +49,8 @@ type ValueMapper = {
 export default function AmandementRequest() {
   const { currentLang, translate } = useLocales();
 
-  const { user } = useAuth();
-  const role = user?.registrations[0].roles[0] as string;
+  const { activeRole } = useAuth();
+  const role = activeRole!;
 
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();

@@ -1,4 +1,4 @@
-export const getFollowUps = `query MyQuery($where: proposal_follow_up_bool_exp = {}) {
+export const getFollowUps = `query getFollowUps($where: proposal_follow_up_bool_exp = {}) {
   proposal_follow_up(where: $where) {
     id
     action
@@ -6,9 +6,12 @@ export const getFollowUps = `query MyQuery($where: proposal_follow_up_bool_exp =
     user_id
     employee {
       employee_name
-      user_type_id
+      roles {
+        role: user_type_id
+      }
     }
     created_at
   }
 }
+
 `;

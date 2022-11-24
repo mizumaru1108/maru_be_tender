@@ -6,20 +6,16 @@ import {
   CardActions,
   CardContent,
   Divider,
-  Box,
   Grid,
   Chip,
 } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 import { useLocation, useNavigate } from 'react-router';
-import { ProjectCardProps, ProjectCardPropsBE } from './types';
-import 'moment/locale/es';
-import 'moment/locale/ar';
+import { ProjectCardPropsBE } from './types';
 import moment from 'moment';
 import useAuth from 'hooks/useAuth';
 import { asignProposalToAUser } from 'queries/commons/asignProposalToAUser';
 import { useMutation } from 'urql';
-import { FusionAuthRoles } from '../../@types/commons';
 import { deleteDraftProposal } from 'queries/client/deleteDraftProposal';
 
 const inquiryStatusStyle = {
@@ -64,8 +60,8 @@ const ProjectCardBE = ({
   const daysSinceCreated = Math.ceil(
     (new Date().getTime() - created_at.getTime()) / (1000 * 3600 * 24)
   );
-  const { user } = useAuth();
-  const role = user?.registrations[0].roles[0] as FusionAuthRoles;
+  const { user, activeRole } = useAuth();
+  const role = activeRole!;
   const navigate = useNavigate();
   const location = useLocation();
   const { translate } = useLocales();

@@ -1,10 +1,9 @@
 import { Avatar, Box, Button, Grid, Link, Stack, Typography } from '@mui/material';
-import { FusionAuthRoles } from '../../../@types/commons';
 import useAuth from 'hooks/useAuth';
 
 function FollowUpsFile({ created_at, file, employee }: any) {
-  const { user } = useAuth();
-  const role = user?.registrations[0].roles[0] as FusionAuthRoles;
+  const { activeRole } = useAuth();
+  const role = activeRole!;
   if (role === 'tender_client')
     return (
       <Grid container spacing={1}>
@@ -93,7 +92,7 @@ function FollowUpsFile({ created_at, file, employee }: any) {
       </Grid>
       <Grid item md={11.5}>
         {employee ? (
-          <Typography color="#0E8478">{`${employee.employee_name} - ${employee.user_type_id}`}</Typography>
+          <Typography color="#0E8478">{`${employee.employee_name} - ${employee.roles.role}`}</Typography>
         ) : (
           <Typography color="#0E8478">المستخدم</Typography>
         )}

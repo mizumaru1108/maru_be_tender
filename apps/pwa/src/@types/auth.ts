@@ -1,4 +1,5 @@
 import { UserCredential } from 'firebase/auth';
+import { FusionAuthRoles } from './commons';
 
 // ----------------------------------------------------------------------
 
@@ -19,16 +20,19 @@ export type AuthState = {
   isAuthenticated: boolean;
   isInitialized: boolean;
   user: AuthUser;
+  activeRole?: FusionAuthRoles;
 };
 
 export type JWTContextType = {
   isAuthenticated: boolean;
   isInitialized: boolean;
   user: AuthUser;
+  activeRole?: FusionAuthRoles;
   method: 'jwt';
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
   logout: () => Promise<void>;
+  changeActiveRole: (role: FusionAuthRoles) => void;
 };
 
 export type FirebaseContextType = {

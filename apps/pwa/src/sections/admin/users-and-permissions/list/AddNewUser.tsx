@@ -11,6 +11,7 @@ import * as React from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import { TMRA_RAISE_URL } from 'config';
+import useAuth from 'hooks/useAuth';
 
 type FormValuesProps = {
   employee_name: string;
@@ -27,6 +28,8 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props,
 });
 
 function AddNewUser() {
+  const { activeRole } = useAuth();
+
   const [errorOpen, setErrorOpen] = React.useState(false);
 
   const [error, setError] = React.useState<string>('');
@@ -43,7 +46,7 @@ function AddNewUser() {
         `The Mobile Number must be written in the exact way of +9665xxxxxxxx`
       ),
     password: Yup.string().required('password is required'),
-    user_roles: Yup.string().required('User Roles is required'),
+    user_roles: Yup.array().required('User Roles is required'),
     employee_path: Yup.string().required('Employee Path is required'),
     activate_user: Yup.boolean().required('Activate User is required'),
   });
@@ -79,6 +82,7 @@ function AddNewUser() {
             Accept: 'application/json',
             'Content-Type': 'application/json',
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+            'x-hasura-role': activeRole!,
           },
         }
       );
@@ -221,7 +225,7 @@ function AddNewUser() {
             </Grid>
             <Grid item md={12} xs={12}>
               <BaseField
-                type="radioGroup"
+                type="checkboxMulti"
                 name="user_roles"
                 label="صلاحيات الموظف"
                 placeholder="صلاحيات الموظف"

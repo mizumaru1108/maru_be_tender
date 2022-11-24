@@ -7,7 +7,7 @@ import { RHFUploadSingleFile } from './RHFUpload';
 import RHFRepeater from './RHFRepeater';
 import { FormSingleProps } from 'components/FormGenerator';
 import useLocales from 'hooks/useLocales';
-import { RHFCheckbox } from './RHFCheckbox';
+import { RHFCheckbox, RHFMultiCheckbox } from './RHFCheckbox';
 import RHFTextArea from './RHFTextArea';
 import RHFRadioGroup from './RHFRadioGroup';
 import RHFPassword from './RHFPassword';
@@ -94,6 +94,14 @@ function BaseField({
           label={translate(label)}
           placeholder={translate(placeholder)}
           {...other}
+        />
+      )}
+      {type === 'checkboxMulti' && (
+        <RHFMultiCheckbox
+          label={label ?? ''}
+          name={name ?? ''}
+          options={options!}
+          placeholder={translate(placeholder)}
         />
       )}
     </>

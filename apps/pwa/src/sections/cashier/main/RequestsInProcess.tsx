@@ -11,6 +11,7 @@ function RequestsInProcess() {
   const [result] = useQuery({
     query: getProposals,
     variables: {
+      limit: 10,
       where: {
         cashier_id: { _eq: user?.id },
         _and: { inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' } },

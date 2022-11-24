@@ -61,8 +61,8 @@ const ProjectCard = ({
   cardFooterButtonAction,
   destination, // it refers to the url that I came from and the url that I have to go to
 }: ProjectCardProps) => {
-  const { user } = useAuth();
-  const role = user?.registrations[0].roles[0] as FusionAuthRoles;
+  const { user, activeRole } = useAuth();
+  const role = activeRole!;
   const navigate = useNavigate();
   const location = useLocation();
   const { translate } = useLocales();
@@ -80,7 +80,6 @@ const ProjectCard = ({
   };
 
   const handleOnClick = async () => {
-    console.log(role);
     if (
       [
         'tender_finance',

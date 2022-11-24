@@ -4,15 +4,14 @@ import { SupervisorFloatingActionBar } from './supervisor';
 
 import { ProjectManagerFloatingActionBar } from './project-manager';
 import { ModeratorFloatingActionBar } from './moderator';
-import { FusionAuthRoles } from '../../../@types/commons';
 import { CeoFloatingActionBar } from './ceo';
 import { ConsultantFloatingActionBar } from './consultant';
 
 function FloatinActonBar({ proposalData }: any) {
   const { actionType } = useParams();
-  const { user } = useAuth();
+  const { activeRole } = useAuth();
   const location = useLocation();
-  const role = user?.registrations[0].roles[0] as FusionAuthRoles;
+  const role = activeRole!;
   const activeTap = location.pathname.split('/').at(-1);
 
   return (

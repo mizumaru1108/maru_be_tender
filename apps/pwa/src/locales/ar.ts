@@ -1022,6 +1022,17 @@ const ar = {
   budget_error_message: 'مجموع الميزانية يجب أن يكون مساوٍ للرقم المطلوب',
   banking_error_message: 'الرجاء اختيار بطاقة بنك للمتابعة',
   sign_out: 'تسجيل الخروج',
+  tender_accounts_manager: 'مدير الحسابات',
+  tender_admin: 'الأدمن',
+  tender_ceo: 'الرئيس التنفيذي',
+  tender_cashier: 'أمين الصندوق',
+  tender_client: 'المستخدم',
+  tender_consultant: 'المستشار',
+  tender_finance: 'المالية',
+  tender_moderator: 'مسؤول الفرز',
+  tender_project_manager: 'مدير المشروع',
+  tender_project_supervisor: 'مشرف المشروع',
+  account_permission: 'صلاحيات الحساب',
 };
 
 export default ar;

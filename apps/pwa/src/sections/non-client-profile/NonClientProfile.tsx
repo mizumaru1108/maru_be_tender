@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import { useQuery } from 'urql';
-import { FusionAuthRoles, role_url_map } from '../../@types/commons';
+import { role_url_map } from '../../@types/commons';
 import { UserProfileDetails } from '../../@types/user';
 
 import useAuth from '../../hooks/useAuth';
@@ -16,8 +16,8 @@ import { getNonClientDetails } from '../../queries/commons/getNonClientUserDetai
 
 export default function NonClientProfile() {
   const { translate } = useLocales();
-  const { user } = useAuth();
-  const role = user?.registrations[0].roles[0] as FusionAuthRoles;
+  const { user, activeRole } = useAuth();
+  const role = activeRole!;
   const [profile, setProfile] = useState<UserProfileDetails>({
     firstName: '',
     lastName: '',

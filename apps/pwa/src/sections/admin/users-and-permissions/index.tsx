@@ -98,7 +98,6 @@ export default function UsersAndPermissionsTable() {
   };
 
   const handleDeleteRow = async (id: string) => {
-    console.log(id);
     try {
       const res = await axios.post(
         `${TMRA_RAISE_URL}/tender-user/delete`,
@@ -147,11 +146,6 @@ export default function UsersAndPermissionsTable() {
     filterStatus,
   });
 
-  const [open, setOpen] = useState(false);
-  const handleAddeEmployee = () => {
-    alert('Navigate to Create Employee');
-  };
-
   const denseHeight = dense ? 52 : 72;
 
   const isNotFound =
@@ -160,8 +154,9 @@ export default function UsersAndPermissionsTable() {
     (!dataFiltered.length && !!filterStatus);
 
   useEffect(() => {
-    if (data?.users) {
-      setTableData(data.users);
+    console.log(data);
+    if (data?.user) {
+      setTableData(data.user);
     }
   }, [data]);
   if (fetching) return <>... Loading</>;

@@ -31,7 +31,7 @@ export default function UsersAndPermissionsTableRow({
   onSelectRow,
   onDeleteRow,
 }: Props) {
-  const { name, email, id, activation, permissions } = row;
+  const { name, email, activation, permissions } = row;
 
   return (
     <TableRow hover selected={selected}>
@@ -42,16 +42,14 @@ export default function UsersAndPermissionsTableRow({
       <TableCell align="left">{name}</TableCell>
       <TableCell align="left">{email}</TableCell>
       <TableCell align="left">
-        {/* waiting for editing the roles in the backend to be an array of roles and permissions */}
         <Stack direction="row" gap={1}>
-          <Chip label={permissions} />
-
-          {/* {permissions.map((item: string, index) => (
-          ))} */}
+          {permissions.map((item, index) => (
+            <Chip key={index} label={item.role} />
+          ))}
         </Stack>
       </TableCell>
       <TableCell align="left">
-        {activation ? (
+        {activation === 'ACTIVE_ACCOUNT' ? (
           <Typography color="green">نشط</Typography>
         ) : (
           <Typography color="red">معطل</Typography>

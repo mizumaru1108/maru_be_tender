@@ -4,11 +4,11 @@ import { Provider } from 'urql';
 import useAuth from 'hooks/useAuth';
 
 function CreateClient({ children }: any) {
-  const { isAuthenticated } = useAuth();
-  const client = makeClient();
+  const { isAuthenticated, activeRole } = useAuth();
+  const client = makeClient(activeRole);
   useEffect(() => {
     console.log('Hello My Friend');
-  }, [isAuthenticated]);
+  }, [isAuthenticated, activeRole]);
   return <Provider value={client}>{children}</Provider>;
 }
 

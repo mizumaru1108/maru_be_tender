@@ -17,7 +17,6 @@ import { ReactComponent as Logo } from '../../../assets/logo.svg';
 //
 import navConfig from './NavConfig';
 import useAuth from 'hooks/useAuth';
-import { FusionAuthRoles } from '../../../@types/commons';
 import useLocales from 'hooks/useLocales';
 
 // ----------------------------------------------------------------------
@@ -41,13 +40,12 @@ type Props = {
 export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props) {
   const theme = useTheme();
   const { translate } = useLocales();
-  const { logout, user } = useAuth();
+  const { logout, activeRole } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const isDesktop = useResponsive('up', 'lg');
 
-  const role = user?.registrations[0].roles as FusionAuthRoles;
-
+  const role = activeRole!;
   const { isCollapse, collapseClick, collapseHover, onHoverEnter, onHoverLeave } =
     useCollapseDrawer();
   useEffect(() => {

@@ -1,7 +1,15 @@
 // form
 import { useFormContext, Controller } from 'react-hook-form';
 // @mui
-import { Checkbox, FormControlLabel, FormGroup, FormControlLabelProps } from '@mui/material';
+import {
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+  FormControlLabelProps,
+  Grid,
+  Typography,
+} from '@mui/material';
+import { Stack } from '@mui/system';
 
 // ----------------------------------------------------------------------
 
@@ -30,13 +38,14 @@ export function RHFCheckbox({ name, ...other }: RHFCheckboxProps) {
 
 interface RHFMultiCheckboxProps extends Omit<FormControlLabelProps, 'control' | 'label'> {
   name: string;
+  label: string;
   options: {
     label: string;
     value: any;
   }[];
 }
 
-export function RHFMultiCheckbox({ name, options, ...other }: RHFMultiCheckboxProps) {
+export function RHFMultiCheckbox({ name, options, label, ...other }: RHFMultiCheckboxProps) {
   const { control } = useFormContext();
 
   return (
@@ -51,19 +60,26 @@ export function RHFMultiCheckbox({ name, options, ...other }: RHFMultiCheckboxPr
 
         return (
           <FormGroup>
-            {options.map((option) => (
-              <FormControlLabel
-                key={option.value}
-                control={
-                  <Checkbox
-                    checked={field.value.includes(option.value)}
-                    onChange={() => field.onChange(onSelected(option.value))}
+            <Grid container spacing={2}>
+              <Grid item md={12} xs={12}>
+                <Typography variant="h6">{label}</Typography>
+              </Grid>
+              {options.map((option, index) => (
+                <Grid item md={2} xs={2} key={index}>
+                  <FormControlLabel
+                    key={option.value}
+                    control={
+                      <Checkbox
+                        checked={field.value.includes(option.value)}
+                        onChange={() => field.onChange(onSelected(option.value))}
+                      />
+                    }
+                    label={option.label}
+                    {...other}
                   />
-                }
-                label={option.label}
-                {...other}
-              />
-            ))}
+                </Grid>
+              ))}
+            </Grid>
           </FormGroup>
         );
       }}

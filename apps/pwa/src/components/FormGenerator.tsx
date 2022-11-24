@@ -15,7 +15,8 @@ type FieldType =
   | 'checkbox'
   | 'radioGroup'
   | 'repeaterLabel'
-  | 'password';
+  | 'password'
+  | 'checkboxMulti';
 
 // ----------------------------------------------------------------------
 

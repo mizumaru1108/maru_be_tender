@@ -4,16 +4,15 @@ import { Box, Button } from '@mui/material';
 import useAuth from 'hooks/useAuth';
 
 import useLocales from 'hooks/useLocales';
-import { FusionAuthRoles } from '../../@types/commons';
 
 function ActionBar() {
   const { translate } = useLocales();
   const navigate = useNavigate();
   const location = useLocation();
   const locationArray = location.pathname.split('/');
-  const { user } = useAuth();
+  const { activeRole } = useAuth();
   const { actionType } = useParams();
-  const role = user?.registrations[0].roles[0] as FusionAuthRoles;
+  const role = activeRole!;
   const handleOnClick = (title: any) => {
     navigate(`${location.pathname.split('/').slice(0, -1).join('/')}/${title}`);
   };

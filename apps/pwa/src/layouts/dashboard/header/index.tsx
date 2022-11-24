@@ -18,6 +18,7 @@ import LanguagePopover from './LanguagePopover';
 // import ContactsPopover from './ContactsPopover';
 import NotificationsPopover from './NotificationsPopover';
 import MessagePopover from './MessagePopover';
+import SwitchRole from './SwitchRole';
 
 // ----------------------------------------------------------------------
 
@@ -87,6 +88,7 @@ export default function DashboardHeader({
 
         <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
           <AccountPopover />
+          <SwitchRole />
           <MessagePopover />
           <NotificationsPopover />
           <LanguagePopover />

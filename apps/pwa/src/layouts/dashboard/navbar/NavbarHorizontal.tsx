@@ -9,7 +9,6 @@ import { NavSectionHorizontal } from '../../../components/nav-section';
 //
 import navConfig from './NavConfig';
 import useAuth from 'hooks/useAuth';
-import { FusionAuthRoles } from '../../../@types/commons';
 
 // ----------------------------------------------------------------------
 
@@ -30,8 +29,8 @@ const RootStyle = styled(AppBar)(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 function NavbarHorizontal() {
-  const { user } = useAuth();
-  const role = user?.registrations[0].roles as FusionAuthRoles;
+  const { activeRole } = useAuth();
+  const role = activeRole!;
   return (
     <RootStyle>
       <Container maxWidth={false}>

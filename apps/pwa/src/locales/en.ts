@@ -1,5 +1,7 @@
 // ----------------------------------------------------------------------
 
+import { translateRect } from '@fullcalendar/common';
+
 // IF THIS TRANSLATION IS INCORRECT PLEASE IGNORE THIS AS THIS TRANSLATION IS FOR DEMO PURPOSES ONLY
 // We are happy if you can help improve the translation by sending an email to support@minimals.cc.
 
@@ -894,6 +896,17 @@ const en = {
     "The sum of the budget's items should be the exact same as the whole budget",
   banking_error_message: 'Please select a bank card to continue',
   sign_out: 'Sign-out',
+  tender_accounts_manager: 'Account Manager',
+  tender_admin: 'Admin',
+  tender_ceo: 'CEO',
+  tender_cashier: 'Cashier',
+  tender_client: 'Client',
+  tender_consultant: 'Consultant',
+  tender_finance: 'Finance',
+  tender_moderator: 'Moderator',
+  tender_project_manager: 'Project Manager',
+  tender_project_supervisor: 'Project Supervisor',
+  account_permission: 'Account Permissions',
 };
 
 export default en;
