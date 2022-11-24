@@ -30,9 +30,9 @@ export class TenderJwtGuard extends AuthGuard('jwt') implements CanActivate {
       throw new BadRequestException('Authorization header is required!');
     }
 
-    // check if headers has "x-hasura-roles"
-    if (!request.headers['x-hasura-roles']) {
-      throw new BadRequestException('x-hasura-roles header is required!');
+    // check if headers has "x-hasura-role"
+    if (!request.headers['x-hasura-role']) {
+      throw new BadRequestException('x-hasura-role header is required!');
     }
 
     try {
@@ -49,20 +49,20 @@ export class TenderJwtGuard extends AuthGuard('jwt') implements CanActivate {
       }
 
       if (
-        validToken.response.jwt.roles.indexOf(
-          request.headers['x-hasura-roles'],
+        validToken.response.jwt.role.indexOf(
+          request.headers['x-hasura-role'],
         ) === -1
       ) {
         throw new UnauthorizedException(
-          "Current user doesn't have the required roles to access this resource!",
+          "Current user doesn't have the required role to access this resource!",
         );
       }
 
       const user: TenderCurrentUser = {
         id: validToken.response.jwt.sub,
         email: validToken.response.jwt.email,
-        type: validToken.response.jwt.roles,
-        choosenRole: request.headers['x-hasura-roles'],
+        type: validToken.response.jwt.role,
+        choosenRole: request.headers['x-hasura-role'],
       };
 
       request.user = user;
