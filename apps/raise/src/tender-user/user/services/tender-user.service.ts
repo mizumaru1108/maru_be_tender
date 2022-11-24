@@ -3,6 +3,8 @@ import { Prisma, user } from '@prisma/client';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 import { TenderCreateUserDto } from '../dtos/requests/create-user.dto';
 import { TenderUserRepository } from '../repositories/tender-user.repository';
+import { v4 as uuidv4 } from 'uuid';
+import { CreateUserResponseDto } from '../dtos/responses/create-user-response.dto';
 
 @Injectable()
 export class TenderUserService {
@@ -11,7 +13,9 @@ export class TenderUserService {
     private tenderUserRepository: TenderUserRepository,
   ) {}
 
-  async createEmployee(request: TenderCreateUserDto): Promise<user> {
+  async createUser(
+    request: TenderCreateUserDto,
+  ): Promise<CreateUserResponseDto> {
     const {
       email,
       employee_name,
@@ -22,7 +26,7 @@ export class TenderUserService {
     } = request;
 
     // admin only created by the system.
-    if (user_roles === 'ADMIN') {
+    if (user_roles.indexOf('ADMIN') > -1) {
       throw new BadRequestException('Roles is Forbidden to create!');
     }
 
@@ -37,24 +41,34 @@ export class TenderUserService {
       }
     }
 
-    const availableRoles = await this.tenderUserRepository.validateRoles(
-      user_roles,
-    );
-    if (!availableRoles) {
-      throw new BadRequestException('Invalid user roles!, Roles is not found!');
-    }
-
-    if (
-      ['CEO', 'FINANCE', 'CASHIER', 'MODERATOR'].includes(availableRoles.id)
-    ) {
-      // count user with same roles if more than 1 throw error
-      const count = await this.tenderUserRepository.countExistingRoles(
-        availableRoles.id,
+    for (let i = 0; i < user_roles.length; i++) {
+      const availableRoles = await this.tenderUserRepository.validateRoles(
+        user_roles[i],
       );
-      if (count > 0) {
-        throw new BadRequestException(`Only 1 ${availableRoles.id} allowed!`);
+      if (!availableRoles) {
+        throw new BadRequestException(
+          `Invalid user roles!, Roles [${user_roles[i]}] is not found!`,
+        );
       }
     }
+
+    // skip this validation first
+    // if (user_roles.length === 1) {
+    //   // if user_roles has ['CEO', 'FINANCE', 'CASHIER', 'MODERATOR'] inside it
+    //   if (
+    //     ['CEO', 'FINANCE', 'CASHIER', 'MODERATOR'].some((role) =>
+    //       user_roles.includes(role),
+    //     )
+    //   ) {
+    //     // count user with same roles if more than 1 throw error
+    //     const count = await this.tenderUserRepository.countExistingRoles(
+    //       user_roles,
+    //     );
+    //     if (count > 0) {
+    //       throw new BadRequestException(`Only 1 ${user_roles[0]} allowed!`);
+    //     }
+    //   }
+    // }
 
     const findDuplicated = await this.tenderUserRepository.findUser({
       OR: [{ email }, { mobile_number }],
@@ -82,10 +96,9 @@ export class TenderUserService {
       email,
       employee_name,
       mobile_number,
-      is_active: activate_user,
-      user_type: {
+      status: {
         connect: {
-          id: availableRoles.id,
+          id: activate_user ? 'ACTIVE_ACCOUNT' : 'WAITING_FOR_ACTIVATION',
         },
       },
     };
@@ -98,14 +111,33 @@ export class TenderUserService {
       };
     }
 
+    const createRolesData: Prisma.user_roleUncheckedCreateInput[] =
+      user_roles.map((role) => {
+        return {
+          id: uuidv4(),
+          user_id: fusionAuthResult.user.id as string,
+          user_type_id: role,
+        };
+      });
+
     const createdUser = await this.tenderUserRepository.createUser(
       createUserPayload,
+      createRolesData,
     );
 
-    return createdUser;
+    if (createdUser instanceof Array) {
+      return {
+        createdUser: createdUser[0],
+        createdRoles: createRolesData,
+      };
+    }
+
+    return {
+      createdUser,
+    };
   }
 
-  async deleteEmployee(id: string): Promise<user> {
+  async deleteUser(id: string): Promise<user> {
     await this.fusionAuthService.fusionAuthDeleteUser(id);
     return await this.tenderUserRepository.deleteUser(id);
   }

@@ -11,9 +11,9 @@ import { ClientEditRequestDto } from '../dtos/requests/client-edit-request.dto';
 import { edit_request, Prisma, user } from '@prisma/client';
 import { RegisterTenderDto } from '../../../tender-auth/dtos/requests/register-tender.dto';
 import { ClientEditRequestResponseDto } from '../dtos/responses/client-edit-request.response.dto';
-import moment from 'moment';
 import { compareUrl } from '../../../tender-commons/utils/compare-jsonb-imageurl';
 import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
+import { CreateUserResponseDto } from '../../user/dtos/responses/create-user-response.dto';
 
 @Injectable()
 export class TenderClientService {
@@ -43,16 +43,25 @@ export class TenderClientService {
   async createUserAndClient(
     idFromFusionAuth: string,
     request: RegisterTenderDto,
-  ): Promise<user> {
+  ): Promise<CreateUserResponseDto> {
     // base user information
     const userCreatePayload: Prisma.userCreateInput = {
       id: idFromFusionAuth,
       employee_name: request.data.employee_name,
       email: request.data.email,
       mobile_number: request.data.phone,
-      user_type: {
+      status: {
         connect: {
-          id: 'CLIENT',
+          id: 'WAITING_FOR_ACTIVATION',
+        },
+      },
+      roles: {
+        create: {
+          user_type: {
+            connect: {
+              id: 'CLIENT',
+            },
+          },
         },
       },
     };
@@ -93,13 +102,9 @@ export class TenderClientService {
           type: request.data.license_file.type,
           size: request.data.license_file.size,
         },
-        date_of_esthablistmen: moment(
-          request.data.date_of_esthablistmen,
-        ).toISOString(),
-        license_expired: moment(request.data.license_expired).toISOString(),
-        license_issue_date: moment(
-          request.data.license_issue_date,
-        ).toISOString(),
+        date_of_esthablistmen: request.data.date_of_esthablistmen,
+        license_expired: request.data.license_expired,
+        license_issue_date: request.data.license_issue_date,
         num_of_beneficiaries: request.data.num_of_beneficiaries,
         website: request.data.website,
         twitter_acount: request.data.twitter_acount,
@@ -107,7 +112,6 @@ export class TenderClientService {
         phone: request.data.phone,
         client_field: request.data.client_field,
         vat: request.data.vat,
-        status: request.data.status || null,
       },
     };
 
@@ -132,7 +136,10 @@ export class TenderClientService {
     const createdUser = await this.tenderUserRepository.createUser(
       userCreatePayload,
     );
-    return createdUser;
+
+    return {
+      createdUser: createdUser instanceof Array ? createdUser[0] : createdUser,
+    };
   }
 
   async createEditRequest(
@@ -141,7 +148,7 @@ export class TenderClientService {
   ): Promise<ClientEditRequestResponseDto> {
     const clientData = await this.prismaService.client_data.findUnique({
       where: {
-        email: user.email,
+        user_id: user.id,
       },
     });
     if (!clientData) {
@@ -199,8 +206,6 @@ export class TenderClientService {
     }
 
     if (editRequest.bank_information) {
-      // TODO: loop the request, find by id if exist then update, if not exist then create with
-      // if exist then update, if not exist then create.
       try {
         await Promise.all(
           editRequest.bank_information.map(async (bankInfo) => {
@@ -277,14 +282,14 @@ export class TenderClientService {
 
     denactiveAccount = requestChangeCount > 0;
     if (denactiveAccount) {
-      await this.prismaService.client_data.update({
-        where: {
-          email: user.email,
-        },
-        data: {
-          status: 'WAITING_FOR_EDITING_APPROVAL',
-        },
-      });
+      // await this.prismaService.client_data.update({
+      //   where: {
+      //     user_id: user.id,
+      //   },
+      //   data: {
+      //     status: 'WAITING_FOR_EDITING_APPROVAL',
+      //   },
+      // });
     }
 
     const response: ClientEditRequestResponseDto = {

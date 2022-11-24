@@ -9,9 +9,9 @@ datasource db {
 
 model bank_information {
   user_id                                              String
-  bank_account_name                                    String?                    @db.Char(255)
-  bank_account_number                                  String?                    @db.Char(255)
-  bank_name                                            String?                    @db.Char(255)
+  bank_account_name                                    String?                    @db.VarChar
+  bank_account_number                                  String?                    @db.VarChar
+  bank_name                                            String?                    @db.VarChar
   proposal_id                                          String?
   id                                                   String                     @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   card_image                                           Json?
@@ -22,40 +22,37 @@ model bank_information {
 }
 
 model client_data {
-  id                       String         @id(map: "users_pkey")
-  entity                   String?        @db.VarChar
-  authority                String?        @db.VarChar
-  headquarters             String?        @db.VarChar
-  date_of_esthablistmen    DateTime?      @db.Date
+  id                       String       @id(map: "users_pkey")
+  entity                   String?      @db.VarChar
+  authority                String?      @db.VarChar
+  headquarters             String?      @db.VarChar
+  date_of_esthablistmen    DateTime?    @db.Date
   num_of_beneficiaries     Int?
   num_of_employed_facility Int?
   governorate              String?
-  region                   String?        @db.VarChar
-  entity_mobile            String?        @db.VarChar
-  center_administration    String?        @db.VarChar
-  twitter_acount           String?        @db.VarChar
-  phone                    String?        @db.VarChar
-  website                  String?        @db.VarChar
-  email                    String?        @unique @db.VarChar
-  password                 String?        @db.VarChar
-  license_number           String         @db.VarChar
-  license_expired          DateTime?      @db.Date
-  license_issue_date       DateTime?      @db.Date
-  ceo_mobile               String?        @db.VarChar
-  ceo_name                 String?        @db.VarChar
-  data_entry_mobile        String?        @db.VarChar
-  data_entry_name          String?        @db.VarChar
-  data_entry_mail          String?        @db.VarChar
-  created_at               DateTime?      @default(now()) @db.Timestamptz(6)
-  updated_at               DateTime?      @default(now()) @db.Timestamptz(6)
-  status                   String?        @default("WAITING_FOR_ACTIVATION")
-  client_field             String?        @db.VarChar
-  user_id                  String         @unique
+  region                   String?      @db.VarChar
+  entity_mobile            String?      @db.VarChar
+  center_administration    String?      @db.VarChar
+  twitter_acount           String?      @db.VarChar
+  phone                    String?      @db.VarChar
+  website                  String?      @db.VarChar
+  password                 String?      @db.VarChar
+  license_number           String       @db.VarChar
+  license_expired          DateTime?    @db.Date
+  license_issue_date       DateTime?    @db.Date
+  ceo_mobile               String?      @db.VarChar
+  ceo_name                 String?      @db.VarChar
+  data_entry_mobile        String?      @db.VarChar
+  data_entry_name          String?      @db.VarChar
+  data_entry_mail          String?      @db.VarChar
+  created_at               DateTime?    @default(now()) @db.Timestamptz(6)
+  updated_at               DateTime?    @default(now()) @db.Timestamptz(6)
+  client_field             String?      @db.VarChar
+  user_id                  String       @unique
   vat                      Boolean?
   license_file             Json?
   board_ofdec_file         Json?
-  client_status            client_status? @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user                     user           @relation("client_data_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
+  user                     user         @relation("client_data_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
   client_log               client_log[]
 }
 
@@ -108,78 +105,79 @@ model organization {
 model payment {
   id                 String          @id
   payment_amount     Decimal?        @db.Decimal
-  proposal_id        String?
+  proposal_id        String
   payment_date       DateTime?       @db.Date
   status             String?         @default("SET_BY_SUPERVISOR")
   number_of_payments Decimal?        @db.Decimal
   order              Decimal?        @db.Decimal
   created_at         DateTime?       @default(now()) @db.Timestamptz(6)
   updated_at         DateTime?       @default(now()) @db.Timestamptz(6)
-  proposal           proposal?       @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
+  proposal           proposal        @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
   payment_status     payment_status? @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
   cheque             cheque[]
 }
 
 model proposal {
-  id                                                           String                     @id
-  project_name                                                 String                     @db.VarChar
-  submitter_user_id                                            String
-  created_at                                                   DateTime                   @default(now()) @db.Timestamptz(6)
-  updated_at                                                   DateTime                   @default(now()) @db.Timestamptz(6)
-  project_track                                                String                     @default("DEFAULT_TRACK")
-  project_idea                                                 String?
-  project_implement_date                                       DateTime?                  @db.Date
-  project_location                                             String?
-  execution_time                                               String?                    @db.VarChar
-  num_ofproject_binicficiaries                                 Int?
-  project_goals                                                String?
-  project_outputs                                              String?
-  project_strengths                                            String?
-  project_risks                                                String?
-  pm_name                                                      String?                    @db.VarChar
-  pm_email                                                     String?                    @db.VarChar
-  pm_mobile                                                    String?                    @db.VarChar
-  governorate                                                  String?
-  region                                                       String?                    @db.VarChar
-  amount_required_fsupport                                     Decimal?                   @db.Decimal
-  need_consultant                                              Boolean?                   @default(false)
-  step                                                         String?                    @default("ZERO")
-  whole_budget                                                 Decimal?                   @db.Decimal
-  state                                                        String?                    @default("MODERATOR")
-  inner_status                                                 String?                    @default("CREATED_BY_CLIENT")
-  previously_add_bank                                          String[]
-  outter_status                                                String?                    @default("PENDING")
-  project_beneficiaries                                        String?                    @db.VarChar
-  number_of_payments                                           Decimal?                   @db.Decimal
-  finance_id                                                   String?                    @default("null")
-  cashier_id                                                   String?                    @default("null")
-  project_manager_id                                           String?                    @default("null")
-  supervisor_id                                                String?                    @default("null")
-  project_attachments                                          Json?
-  letter_ofsupport_req                                         Json?
-  on_revision                                                  Boolean?                   @default(false)
-  on_consulting                                                Boolean?                   @default(false)
-  proposal_bank_id                                             String?                    @db.Uuid
-  partial_support_amount                                       Decimal?                   @db.Decimal
-  proposal_beneficiaries                                       proposal_beneficiaries?    @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
-  project_tracks                                               project_tracks             @relation(fields: [project_track], references: [id], onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
-  bank_information_bank_informationToproposal_proposal_bank_id bank_information?          @relation("bank_informationToproposal_proposal_bank_id", fields: [proposal_bank_id], references: [id], onDelete: Cascade)
-  proposal_request                                             proposal_request?          @relation(fields: [outter_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_requested_fkey")
-  user_type                                                    user_type?                 @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  proposal_status                                              proposal_status?           @relation(fields: [inner_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_status_fkey")
-  proposal_step                                                proposal_step?             @relation(fields: [step], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user                                                         user                       @relation(fields: [submitter_user_id], references: [id], onDelete: Cascade)
-  bank_information                                             bank_information[]
-  consultant_form                                              consultant_form?
-  consultation_commite                                         consultation_commite[]
-  payment                                                      payment[]
-  proposal_assign                                              proposal_assign[]
-  proposal_comment                                             proposal_comment[]
-  proposal_follow_up                                           proposal_follow_up[]
-  proposal_item_budget                                         proposal_item_budget[]
-  proposal_log                                                 proposal_log[]
-  propsal_bank_information                                     propsal_bank_information[]
-  supervisor                                                   supervisor[]
+  id                                  String                     @id
+  project_name                        String                     @db.VarChar
+  submitter_user_id                   String
+  created_at                          DateTime                   @default(now()) @db.Timestamptz(6)
+  updated_at                          DateTime                   @default(now()) @db.Timestamptz(6)
+  project_track                       String                     @default("DEFAULT_TRACK")
+  project_idea                        String?
+  project_implement_date              DateTime?                  @db.Date
+  project_location                    String?
+  execution_time                      String?                    @db.VarChar
+  num_ofproject_binicficiaries        Int?
+  project_goals                       String?
+  project_outputs                     String?
+  project_strengths                   String?
+  project_risks                       String?
+  pm_name                             String?                    @db.VarChar
+  pm_email                            String?                    @db.VarChar
+  pm_mobile                           String?                    @db.VarChar
+  governorate                         String?
+  region                              String?                    @db.VarChar
+  amount_required_fsupport            Decimal?                   @db.Decimal
+  need_consultant                     Boolean?                   @default(false)
+  step                                String?                    @default("ZERO")
+  whole_budget                        Decimal?                   @db.Decimal
+  state                               String?                    @default("MODERATOR")
+  inner_status                        String?                    @default("CREATED_BY_CLIENT")
+  previously_add_bank                 String[]
+  outter_status                       String?                    @default("PENDING")
+  project_beneficiaries               String?                    @db.VarChar
+  number_of_payments                  Decimal?                   @db.Decimal
+  finance_id                          String?                    @default("null")
+  cashier_id                          String?                    @default("null")
+  project_manager_id                  String?                    @default("null")
+  supervisor_id                       String?                    @default("null")
+  project_attachments                 Json?
+  letter_ofsupport_req                Json?
+  on_revision                         Boolean?                   @default(false)
+  on_consulting                       Boolean?                   @default(false)
+  proposal_bank_id                    String?                    @db.Uuid
+  partial_support_amount              Decimal?                   @db.Decimal
+  project_beneficiaries_specific_type String?
+  proposal_beneficiaries              proposal_beneficiaries?    @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
+  project_tracks                      project_tracks             @relation(fields: [project_track], references: [id], onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
+  bank_information                    bank_information?          @relation("bank_informationToproposal_proposal_bank_id", fields: [proposal_bank_id], references: [id], onDelete: Cascade)
+  proposal_request                    proposal_request?          @relation(fields: [outter_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_requested_fkey")
+  user_type                           user_type?                 @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proposal_status                     proposal_status?           @relation(fields: [inner_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_status_fkey")
+  proposal_step                       proposal_step?             @relation(fields: [step], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user                                user                       @relation(fields: [submitter_user_id], references: [id], onDelete: Cascade)
+  bank_informations                   bank_information[]
+  consultant_form                     consultant_form?
+  consultation_commite                consultation_commite[]
+  payment                             payment[]
+  proposal_assign                     proposal_assign[]
+  proposal_comment                    proposal_comment[]
+  proposal_follow_up                  proposal_follow_up[]
+  proposal_item_budget                proposal_item_budget[]
+  proposal_log                        proposal_log[]
+  propsal_bank_informations           propsal_bank_information[]
+  supervisor                          supervisor[]
 }
 
 model proposal_comment {
@@ -244,18 +242,17 @@ model user {
   email                                                   String                  @unique @db.VarChar
   updated_at                                              DateTime?               @default(now()) @db.Timestamptz(6)
   created_at                                              DateTime?               @default(now()) @db.Timestamptz(6)
-  is_active                                               Boolean?                @default(true)
   employee_path                                           String?                 @db.VarChar
-  user_type_id                                            String?
   last_login                                              DateTime?               @default(now()) @db.Timestamptz(6)
+  status_id                                               String
   employee_track                                          project_tracks?         @relation(fields: [employee_path], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user_type                                               user_type?              @relation(fields: [user_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  status                                                  user_status             @relation(fields: [status_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_user_status_id_fkey")
   appointment_appointment_employee_idTouser               appointment[]           @relation("appointment_employee_idTouser")
   appointment_appointment_user_idTouser                   appointment[]           @relation("appointment_user_idTouser")
   bank_information                                        bank_information[]
   client_data                                             client_data?            @relation("client_data_user_idTouser")
   client_log                                              client_log[]
-  consultant_form                                         consultant_form?
+  consultant_form                                         consultant_form[]
   contact_us_contact_us_receiver_idTouser                 contact_us[]            @relation("contact_us_receiver_idTouser")
   contact_us_contact_us_sender_idTouser                   contact_us[]            @relation("contact_us_sender_idTouser")
   email_record_email_record_receiver_idTouser             email_record[]          @relation("email_record_receiver_idTouser")
@@ -270,6 +267,7 @@ model user {
   room_chat_room_chat_participant1Touser                  room_chat[]             @relation("room_chat_participant1Touser")
   room_chat_room_chat_participant2Touser                  room_chat[]             @relation("room_chat_participant2Touser")
   schedule                                                schedule[]
+  roles                                                   user_role[]
 }
 
 model user_type {
@@ -279,7 +277,7 @@ model user_type {
   proposal                                                       proposal[]
   proposal_assign                                                proposal_assign[]
   proposal_log                                                   proposal_log[]
-  user                                                           user[]
+  user_by_role                                                   user_role[]
 }
 
 model proposal_assign {
@@ -314,23 +312,16 @@ model proposal_status {
 }
 
 model client_log {
-  id                       String        @id
+  id                       String      @id
   reviewer_id              String
   organization_id          String
   note_account_information String
-  created_at               DateTime      @default(now()) @db.Timestamptz(6)
-  updated_at               DateTime      @default(now()) @db.Timestamptz(6)
+  created_at               DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at               DateTime    @default(now()) @db.Timestamptz(6)
   status                   String
-  client_data              client_data   @relation(fields: [organization_id], references: [id], onDelete: Cascade)
-  user                     user          @relation(fields: [reviewer_id], references: [id], onDelete: Cascade)
-  client_status            client_status @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model client_status {
-  id          String        @id
-  title       String        @unique
-  client_data client_data[]
-  client_log  client_log[]
+  client_data              client_data @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  user                     user        @relation(fields: [reviewer_id], references: [id], onDelete: Cascade)
+  user_status              user_status @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model proposal_request {
@@ -375,9 +366,9 @@ model proposal_step {
 model cheque {
   id               String   @id
   payment_id       String
-  transfer_receipt String   @db.Char
   deposit_date     DateTime @db.Date
   number           String   @db.VarChar
+  transfer_receipt Json
   payment          payment  @relation(fields: [payment_id], references: [id], onDelete: Cascade)
 }
 
@@ -385,17 +376,17 @@ model consultation_commite {
   id                         String                       @id(map: "supervisor_copy1_pkey")
   user_id                    String
   proposal_id                String
-  entity_name                String?                      @db.Char(1)
+  entity_name                String?                      @db.VarChar
   governorate                String?
   region                     String?
   chairman_of_director       String?
   establishment_date         DateTime?                    @db.Date
-  project_manager            String?                      @db.Char(1)
-  executive_director         String?                      @db.Char(1)
+  project_manager            String?                      @db.VarChar
+  executive_director         String?                      @db.VarChar
   the_most_promiment         String?
   proviously_supported       Boolean?
   num_of_benefiaries         Int?
-  project_name               String?                      @db.Char(1)
+  project_name               String?                      @db.VarChar
   project_idea               String?
   project_goals              String?
   add_val_project            String?
@@ -403,8 +394,8 @@ model consultation_commite {
   project_beneficiaries      String?
   project_sup_rationale      String?
   their_type                 String?
-  their_age                  String?                      @db.Char(1)
-  their_number               String?                      @db.Char(1)
+  their_age                  String?                      @db.VarChar
+  their_number               String?                      @db.VarChar
   duration_of_project        String?
   project_start_date         DateTime?                    @db.Date
   has_estabilish             Boolean?
@@ -511,9 +502,9 @@ model contact_us {
   id                                    String        @id(map: "contcatus_pkey")
   sender_id                             String
   receiver_id                           String
-  inquiry_type                          String?       @db.Char(255)
-  title                                 String?       @db.Char(255)
-  project_name                          String?       @db.Char(255)
+  inquiry_type                          String?       @db.VarChar
+  title                                 String?       @db.VarChar
+  project_name                          String?       @db.VarChar
   message                               String?
   date_of_visit                         DateTime?     @db.Date
   reason_visit                          String?
@@ -587,7 +578,7 @@ model consultant_form {
   remote_or_insite               Boolean
   clause                         String
   proposal_id                    String                           @unique
-  supervisor_id                  String                           @unique
+  supervisor_id                  String
   id                             String                           @id
   proposal                       proposal                         @relation(fields: [proposal_id], references: [id], onUpdate: Restrict)
   user                           user                             @relation(fields: [supervisor_id], references: [id], onUpdate: Restrict)
@@ -619,4 +610,19 @@ model track_section {
   track_section       track_section?  @relation("track_sectionTotrack_section", fields: [section_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
   track               track           @relation(fields: [track_id], references: [id], onUpdate: Restrict)
   other_track_section track_section[] @relation("track_sectionTotrack_section")
+}
+
+model user_status {
+  id         String       @id(map: "client_status_pkey")
+  title      String       @unique(map: "client_status_title_key")
+  client_log client_log[]
+  user       user[]
+}
+
+model user_role {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id      String
+  user_type_id String
+  user         user      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_type    user_type @relation(fields: [user_type_id], references: [id], onDelete: Cascade)
 }

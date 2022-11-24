@@ -1,14 +1,14 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { client_data, client_status, Prisma } from '@prisma/client';
+import { client_data, user_status, Prisma } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 
 @Injectable()
 export class TenderClientRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async validateStatus(status: string): Promise<client_status | null> {
+  async validateStatus(status: string): Promise<user_status | null> {
     try {
-      return await this.prismaService.client_status.findUnique({
+      return await this.prismaService.user_status.findUnique({
         where: { id: status },
       });
     } catch (error) {

@@ -92,7 +92,7 @@ export class OrganizationController {
     );
   }
 
-  @Patch('appearance/:appearanceId/update')
+  @Patch('appearance/:organizationId/update')
   async updateAppearance(
     @Param('organizationId') organizationId: string,
     @Body() appearanceDto: AppearancenDto,

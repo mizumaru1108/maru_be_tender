@@ -1,8 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
+  IsDate,
   IsEmail,
   IsNotEmpty,
   IsNumber,
@@ -10,7 +11,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { UploadProposalFilesDto } from '../../../tender-commons/dto/upload-proposal-files.dto';
+import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
 import { ValidateKsaPhoneNumber } from '../../../tender-commons/decorators/validate-ksa-phone-number.decorator';
 class bankData {
   @ApiProperty()
@@ -27,9 +28,9 @@ class bankData {
 
   @ApiProperty()
   @IsNotEmpty()
-  @Type(() => UploadProposalFilesDto)
+  @Type(() => UploadFilesJsonbDto)
   @ValidateNested()
-  card_image: UploadProposalFilesDto;
+  card_image: UploadFilesJsonbDto;
 }
 
 // for registering
@@ -65,9 +66,9 @@ class registerClient {
 
   @ApiProperty()
   @IsNotEmpty()
-  @Type(() => UploadProposalFilesDto)
+  @Type(() => UploadFilesJsonbDto)
   @ValidateNested()
-  board_ofdec_file: UploadProposalFilesDto;
+  board_ofdec_file: UploadFilesJsonbDto;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -83,7 +84,9 @@ class registerClient {
 
   @ApiProperty()
   @IsNotEmpty()
-  date_of_esthablistmen: string;
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
+  date_of_esthablistmen: Date;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -106,17 +109,21 @@ class registerClient {
 
   @ApiProperty()
   @IsNotEmpty()
-  license_expired: string;
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
+  license_expired: Date;
 
   @ApiProperty()
   @IsNotEmpty()
-  @Type(() => UploadProposalFilesDto)
+  @Type(() => UploadFilesJsonbDto)
   @ValidateNested()
-  license_file: UploadProposalFilesDto;
+  license_file: UploadFilesJsonbDto;
 
   @ApiProperty()
   @IsNotEmpty()
-  license_issue_date: string;
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
+  license_issue_date: Date;
 
   @ApiProperty()
   @IsString()

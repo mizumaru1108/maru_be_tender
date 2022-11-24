@@ -1,7 +1,9 @@
 import { Controller } from '@nestjs/common';
-import { GoogleCalendarService } from './google-calendar.service';
+import { GoogleCalendarOAuthService } from './google-calendar-oauth.service';
 
 @Controller('google-calendar')
 export class GoogleCalendarController {
-  constructor(private readonly googleCalendarService: GoogleCalendarService) {}
+  constructor(
+    private readonly googleCalendarOAuthService: GoogleCalendarOAuthService,
+  ) {}
 }

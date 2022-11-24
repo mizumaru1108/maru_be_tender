@@ -1,9 +1,11 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Prisma, project_tracks, user, user_type } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
-
+import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
+import { rootLogger } from '../../../logger';
 @Injectable()
 export class TenderUserRepository {
+  private logger = rootLogger.child({ logger: TenderUserRepository.name });
   constructor(private readonly prismaService: PrismaService) {}
 
   /**
@@ -15,10 +17,8 @@ export class TenderUserRepository {
         where: { id: trackName },
       });
     } catch (error) {
-      console.trace(error);
-      throw new InternalServerErrorException(
-        'Something when wrong when fetching track!',
-      );
+      const theEror = prismaErrorThrower(error, `deleting user!`);
+      throw theEror;
     }
   }
 
@@ -28,25 +28,23 @@ export class TenderUserRepository {
         where: { id: role },
       });
     } catch (error) {
-      console.trace(error);
-      throw new InternalServerErrorException(
-        'Something when wrong when fetching track!',
-      );
+      const theEror = prismaErrorThrower(error, `deleting user!`);
+      throw theEror;
     }
   }
 
-  async countExistingRoles(role: string): Promise<number> {
-    try {
-      return await this.prismaService.user.count({
-        where: { user_type_id: role },
-      });
-    } catch (error) {
-      console.trace(error);
-      throw new InternalServerErrorException(
-        'Something when wrong when counting user!',
-      );
-    }
-  }
+  // async countExistingRoles(roles: string[]): Promise<number> {
+  //   try {
+  //     return await this.prismaService.user_role.count({
+  //       where: {
+  //         user_type_id: role,
+  //       },
+  //     });
+  //   } catch (error) {
+  //     const theEror = prismaErrorThrower(error, `deleting user!`);
+  //     throw theEror;
+  //   }
+  // }
 
   async findUser(
     passedQuery?: Prisma.userWhereInput,
@@ -58,36 +56,60 @@ export class TenderUserRepository {
     try {
       return await this.prismaService.user.findFirst(findFirstArg);
     } catch (error) {
-      console.trace(error);
-      throw new InternalServerErrorException(
-        'Something when wrong when fetching user data!',
-      );
+      const theEror = prismaErrorThrower(error, `deleting user!`);
+      throw theEror;
     }
   }
 
-  async createUser(data: Prisma.userCreateInput): Promise<user> {
+  async createUser(
+    userData: Prisma.userCreateInput,
+    rolesData?: Prisma.user_roleUncheckedCreateInput[],
+  ) {
+    this.logger.debug(
+      `Invoke create user with payload: ${JSON.stringify(userData)}`,
+    );
     try {
-      return await this.prismaService.user.create({
-        data,
-      });
+      if (rolesData) {
+        return await this.prismaService.$transaction([
+          this.prismaService.user.create({
+            data: userData,
+          }),
+          this.prismaService.user_role.createMany({
+            data: rolesData,
+          }),
+        ]);
+      } else {
+        return await this.prismaService.user.create({
+          data: userData,
+        });
+      }
     } catch (error) {
-      console.trace(error);
-      throw new InternalServerErrorException(
-        'Something when wrong when creating user data!',
-      );
+      const theEror = prismaErrorThrower(error, `creating user!`);
+      throw theEror;
     }
   }
 
   async deleteUser(userId: string) {
+    this.logger.debug(`Deleting user with id: ${userId}`);
     try {
       return await this.prismaService.user.delete({
         where: { id: userId },
       });
     } catch (error) {
-      console.trace(error);
-      throw new InternalServerErrorException(
-        'Something when wrong when deleting user data!',
-      );
+      const theEror = prismaErrorThrower(error, `deleting user!`);
+      throw theEror;
+    }
+  }
+
+  async test(userId: string) {
+    this.logger.debug(`Deleting user with id: ${userId}`);
+    try {
+      return await this.prismaService.user.findFirst({
+        where: { id: userId },
+      });
+    } catch (error) {
+      const theEror = prismaErrorThrower(error, `deleting user!`);
+      throw theEror;
     }
   }
 }

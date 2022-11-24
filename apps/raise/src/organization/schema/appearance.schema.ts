@@ -10,6 +10,10 @@ export class Appearance {
   @Prop()
   ownerUserId: string;
   @Prop()
+  primaryColor: string;
+  @Prop()
+  secondaryColor: string;
+  @Prop()
   ownerRealmId: string;
   @Prop()
   ourStory: string;
@@ -55,6 +59,8 @@ export class Appearance {
   accent: string;
   @Prop()
   lButton: string;
+  @Prop()
+  lText: string;
 }
 
 export const AppearanceSchema = SchemaFactory.createForClass(Appearance);

@@ -86,7 +86,7 @@ export class TenderService {
 
     const client = await this.prismaService.client_data.findFirst({
       where: {
-        email: user.email,
+        user_id: user.id,
       },
     });
     // console.log('client', client);
@@ -101,11 +101,11 @@ export class TenderService {
         id: client.id,
       },
       data: {
-        client_status: {
-          connect: {
-            id: 'WAITING_FOR_EDITING_APPROVAL',
-          },
-        },
+        // client_status: {
+        //   connect: {
+        //     id: 'WAITING_FOR_EDITING_APPROVAL',
+        //   },
+        // },
       },
     });
 

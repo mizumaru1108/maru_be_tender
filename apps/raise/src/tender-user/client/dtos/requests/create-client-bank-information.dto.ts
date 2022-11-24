@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
-import { UploadProposalFilesDto } from '../../../../tender-commons/dto/upload-proposal-files.dto';
+import { UploadFilesJsonbDto } from '../../../../tender-commons/dto/upload-files-jsonb.dto';
 
 export class CreateClientBankInformation {
   @ApiProperty()
@@ -27,5 +27,5 @@ export class CreateClientBankInformation {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  card_image: UploadProposalFilesDto;
+  card_image: UploadFilesJsonbDto;
 }
