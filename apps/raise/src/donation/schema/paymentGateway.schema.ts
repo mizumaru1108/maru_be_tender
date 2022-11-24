@@ -22,6 +22,8 @@ export class PaymentGateway {
   @Prop({ type: () => String })
   public serverKey?: string;
   @Prop({ type: () => String })
+  public clientKey?: string;
+  @Prop({ type: () => String })
   public createdAt?: string;
   @Prop({ type: () => String })
   public updatedAt?: string;
@@ -31,6 +33,8 @@ export class PaymentGateway {
   public isActive?: string;
   @Prop({ type: () => String })
   public paymentMethod?: string;
+  @Prop({ type: () => String })
+  public profileName?: string;
   @Prop({ type: () => String })
   public isTestMode?: string;
   @Prop({ type: () => String })
