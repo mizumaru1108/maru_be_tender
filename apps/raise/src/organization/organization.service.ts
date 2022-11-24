@@ -601,9 +601,7 @@ export class OrganizationService {
     this.logger.debug(`getPaymentGatewayList organizationId=${organizationId}`);
     return await this.paymentGatewayModel.findOne(
       {
-        organizationId: new Types.ObjectId(organizationId),
-        isDeleted: 'N',
-        isActive: 'Y',
+        organizationId: new Types.ObjectId(organizationId)
       },
     );
   }
