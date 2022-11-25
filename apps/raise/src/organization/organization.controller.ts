@@ -140,6 +140,19 @@ export class OrganizationController {
     return await this.organizationService.getPaymentGatewayList(organizationId);
   }
 
+  @Patch(':organizationId/paymentGateway')
+  async updatePaymentGateway(
+    @Param('organizationId') organizationId: string,
+    @Body() paymentGatewayDto: PaymentGateWayDto,
+  ) {
+    this.logger.debug('add new payment gateway...');
+
+    return await this.organizationService.updatePaymentGateway(
+      organizationId,
+      paymentGatewayDto,
+    )
+  }
+
   @Post(':organizationId/paymentGateway')
   async addPaymentGateway(
     @Param('organizationId') organizationId: string,

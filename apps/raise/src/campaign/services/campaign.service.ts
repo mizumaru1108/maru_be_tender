@@ -455,7 +455,8 @@ export class CampaignService {
       organizationId: organizationId
     };
 
-    filter.isPublished = isPublished;
+    if (isPublished) filter.isPublished = isPublished;
+
     filter.isDeleted = { $regex: 'n', $options: 'i' };
     filter.organizationId = new Types.ObjectId(request.organizationId);
     request.campaignType && (filter.campaignType = request.campaignType);

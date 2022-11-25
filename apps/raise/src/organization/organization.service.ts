@@ -599,14 +599,52 @@ export class OrganizationService {
 
   async getPaymentGatewayList(organizationId: string) {
     this.logger.debug(`getPaymentGatewayList organizationId=${organizationId}`);
-    return await this.paymentGatewayModel.find(
+    return await this.paymentGatewayModel.findOne(
       {
-        organizationId: new Types.ObjectId(organizationId),
-        isDeleted: 'N',
-        isActive: 'Y',
+        organizationId: new Types.ObjectId(organizationId)
       },
-      'name defaultCurrency',
     );
+  }
+
+  async updatePaymentGateway(
+    organizationId: string,
+    paymentGatewayDto: PaymentGateWayDto,
+  ) {
+    this.logger.debug('Get Organization...');
+
+    const organization = await this.organizationModel.findOne({
+      _id: new Types.ObjectId(organizationId),
+    });
+
+    if (!organization) {
+      return {
+        statusCode: 404,
+        message: 'Organization not found',
+      };
+    }
+
+    let now: Date = new Date();
+
+    paymentGatewayDto.name = paymentGatewayDto.name.toUpperCase();
+    paymentGatewayDto.updatedAt = now.toISOString();
+    
+    const paymentGatewayUpdate = await this.paymentGatewayModel.findOneAndUpdate(
+      { organizationId: new Types.ObjectId(organizationId) },
+      paymentGatewayDto,
+      { new: true },
+    )
+
+    if (!paymentGatewayUpdate) {
+      return {
+        statusCode: 400,
+        message: 'Failed update Payment Gateway',
+      };
+    }
+
+    return {
+      statusCode: 200,
+      paymentGateway: paymentGatewayUpdate,
+    };
   }
 
   async addNewPaymentGateWay(
@@ -617,6 +655,7 @@ export class OrganizationService {
     const organization = await this.organizationModel.findOne({
       _id: new Types.ObjectId(organizationId),
     });
+
     if (!organization) {
       return {
         statusCode: 404,
@@ -641,8 +680,8 @@ export class OrganizationService {
       paymentGatewayDto,
     );
     let now: Date = new Date();
-    paymentGatewayDto.createdAt = now;
-    paymentGatewayDto.updatedAt = now;
+    paymentGatewayDto.createdAt = now.toISOString();
+    paymentGatewayDto.updatedAt = now.toISOString();
     paymentGatewayDto.organizationId = new Types.ObjectId(organizationId);
     paymentGatewayCreated.save();
 
