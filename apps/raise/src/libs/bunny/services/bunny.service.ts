@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Logger,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
 import axios, { AxiosRequestConfig } from 'axios';
@@ -15,6 +19,7 @@ import { validateFileSize } from '../../../commons/utils/validate-file-size';
  */
 @Injectable()
 export class BunnyService {
+  private readonly logger = new Logger(BunnyService.name);
   private appEnv: string;
   private urlMedia: string;
   private accessKey: string;
@@ -66,7 +71,7 @@ export class BunnyService {
   async checkIfImageExists(path: string): Promise<boolean> {
     const mediaUrl = this.urlMedia + '/' + path;
 
-    console.info(
+    this.logger.log(
       `Checking if image exists at ${mediaUrl} at bunny storage ...`,
     );
 
@@ -81,10 +86,14 @@ export class BunnyService {
 
     try {
       const response = await axios(options);
-      console.info('Check Result: %s %s', response.status, response.statusText);
+      this.logger.log(
+        'Check Result: %s %s',
+        response.status,
+        response.statusText,
+      );
       return true;
     } catch (error) {
-      console.info(
+      this.logger.log(
         'Check Result: %s',
         JSON.stringify(error.response.data, null, 2),
       );
@@ -110,11 +119,11 @@ export class BunnyService {
     };
 
     try {
-      console.info(
+      this.logger.log(
         `Uploading to Bunny: ${mediaUrl} (${binary.length} bytes)...`,
       );
       const response = await axios(options);
-      console.info(
+      this.logger.log(
         'Uploaded %s (%d bytes) to Bunny: %s %s %s',
         mediaUrl,
         binary.length,
@@ -133,7 +142,7 @@ export class BunnyService {
   async deleteImage(path: string): Promise<boolean> {
     const mediaUrl = this.urlMedia + '/' + path;
     const cdnUrl = this.cdnUrl + '/' + path;
-    console.info(`Deleting ${cdnUrl} from storage ...`);
+    this.logger.log(`Deleting ${cdnUrl} from storage ...`);
 
     const options: AxiosRequestConfig<any> = {
       method: 'DELETE',
@@ -146,7 +155,7 @@ export class BunnyService {
     try {
       const response = await axios(options);
       if (response.data.HttpCode === 200) {
-        console.info(
+        this.logger.log(
           'Deleted %s from Bunny: %s %s %s',
           mediaUrl,
           response.status,
@@ -156,7 +165,7 @@ export class BunnyService {
       }
       return true;
     } catch (error) {
-      console.log(error);
+      this.logger.error(`Error deleting image ${path}: ${error}`, error);
       throw new InternalServerErrorException(`Error deleting image!`);
     }
   }
@@ -176,13 +185,12 @@ export class BunnyService {
       ? uploadFileNameParser(file.originalname)
       : file.originalname;
 
-    console.log('fileName befor path: ', fileName);
+    this.logger.log('fileName before path: ', fileName);
 
     if (path) {
       fileName = path + '/' + fileName;
     }
-    console.log('path', path);
-    console.log('fileName after path: ', fileName);
+    this.logger.log(`path=${path} fileName after path=${fileName}`);
 
     const mediaUrl = this.urlMedia + '/' + fileName;
 
@@ -197,11 +205,11 @@ export class BunnyService {
     };
 
     try {
-      console.info(
+      this.logger.log(
         `Uploading to Bunny: ${mediaUrl} (${file.buffer.length} bytes)...`,
       );
       const response = await axios(options);
-      console.info(
+      this.logger.log(
         'Uploaded %s (%d bytes) to Bunny: %s %s %s',
         mediaUrl,
         file.buffer.length,
@@ -211,6 +219,7 @@ export class BunnyService {
       );
       return fileName;
     } catch (error) {
+      this.logger.error(`Error uploading image file to Bunny ${mediaUrl} (${file.buffer.length} bytes) while creating ${serviceName}`, error);
       throw new InternalServerErrorException(
         `Error uploading image file to Bunny ${mediaUrl} (${file.buffer.length} bytes) while creating ${serviceName}`,
       );

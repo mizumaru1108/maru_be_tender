@@ -1,4 +1,5 @@
 import {
+  Logger,
   BadRequestException,
   CanActivate,
   ExecutionContext,
@@ -11,6 +12,8 @@ import { ICurrentUser } from '../user/interfaces/current-user.interface';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
+  private readonly logger = new Logger(JwtAuthGuard.name);
+
   constructor(private fusionAuthService: FusionAuthService) {
     super();
   }
@@ -43,7 +46,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
       // console.log(user);
       request.user = user;
     } catch (e) {
-      console.log(e);
+      this.logger.warn('Session expired', e);
       throw new UnauthorizedException('Session Expired!');
     }
     return true;

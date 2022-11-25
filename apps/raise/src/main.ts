@@ -69,8 +69,6 @@ async function bootstrap() {
     }),
   );
 
-  console.log(config.get<string>('APP_ENV'));
-
   if (config.get<string>('APP_ENV') === 'dev') {
     const config = new DocumentBuilder()
       .setTitle('Tmra Raise')
