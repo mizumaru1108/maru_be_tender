@@ -34,7 +34,12 @@ export async function initTraces() {
     : DiagLogLevel.INFO;
   diag.setLogger(new DiagConsoleLogger(), logLevel);
   if (tracesEnabled) {
-    console.info(`OpenTelemetry Traces enabled`);
+    console.info(
+      JSON.stringify({
+        'log.level': 'info',
+        message: `OpenTelemetry Traces enabled`,
+      }),
+    );
     let spanProcessor: SpanProcessor | undefined = undefined;
     // const provider = new NodeTracerProvider({
     //   resource: new Resource({
@@ -52,7 +57,10 @@ export async function initTraces() {
         url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
       });
       console.info(
-        `OpenTelemetry Traces > OTLP Exporter > OTLP traces endpoint: ${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}`,
+        JSON.stringify({
+          'log.level': 'info',
+          message: `OpenTelemetry Traces > OTLP Exporter > OTLP traces endpoint: ${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}`,
+        }),
       );
       spanProcessor = new BatchSpanProcessor(otlpExporter);
       // provider.addSpanProcessor(spanProcessor);
@@ -60,7 +68,12 @@ export async function initTraces() {
       // export spans to console (useful for debugging)
       // let consoleExporter: ConsoleSpanExporter | undefined = undefined;
       const consoleExporter = new ConsoleSpanExporter();
-      console.info('OpenTelemetry Traces > Console span processor enabled');
+      console.info(
+        JSON.stringify({
+          'log.level': 'info',
+          message: 'OpenTelemetry Traces > Console span processor enabled',
+        }),
+      );
       spanProcessor = new SimpleSpanProcessor(consoleExporter);
       // provider.addSpanProcessor(spanProcessor);
     }
@@ -95,24 +108,49 @@ export async function initTraces() {
 
       try {
         await sdk.start();
-        console.info('OpenTelemetry Traces initialized');
+        console.info(
+          JSON.stringify({
+            'log.level': 'info',
+            message: 'OpenTelemetry Traces initialized',
+          }),
+        );
       } catch (error) {
-        console.error('Error initializing OpenTelemetry Traces', error);
+        console.error(
+          JSON.stringify({
+            'log.level': 'error',
+            message: 'Error initializing OpenTelemetry Traces: ' + error,
+          }),
+        );
       }
 
       process.on('SIGTERM', async () => {
         try {
           sdk.shutdown();
-          console.info('OpenTelemetry Traces terminated');
+          console.info(
+            JSON.stringify({
+              'log.level': 'info',
+              message: 'OpenTelemetry Traces terminated',
+            }),
+          );
         } catch (error) {
-          console.error('Error terminating OpenTelemetry Traces', error);
+          console.error(
+            JSON.stringify({
+              'log.level': 'error',
+              message: 'Error terminating OpenTelemetry Traces: ' + error,
+            }),
+          );
         } finally {
           process.exit(0);
         }
       });
     }
   } else {
-    console.info('OpenTelemetry Traces disabled');
+    console.info(
+      JSON.stringify({
+        'log.level': 'info',
+        message: 'OpenTelemetry Traces disabled',
+      }),
+    );
   }
 }
 

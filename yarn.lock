@@ -7791,6 +7791,7 @@ __metadata:
     mongoose-aggregate-paginate-v2: ^1.0.6
     mongoose-paginate-v2: ^1.7.0
     nanoid: ^3.0.0
+    nest-winston: ^1.8.0
     nodemailer: ^6.7.3
     passport: ^0.6.0
     passport-google-oauth20: ^2.0.0
@@ -20440,6 +20441,18 @@ __metadata:
   version: 2.6.2
   resolution: "neo-async@npm:2.6.2"
   checksum: deac9f8d00eda7b2e5cd1b2549e26e10a0faa70adaa6fdadca701cc55f49ee9018e427f424bac0c790b7c7e2d3068db97f3093f1093975f2acb8f8818b936ed9
+  languageName: node
+  linkType: hard
+
+"nest-winston@npm:^1.8.0":
+  version: 1.8.0
+  resolution: "nest-winston@npm:1.8.0"
+  dependencies:
+    fast-safe-stringify: ^2.1.1
+  peerDependencies:
+    "@nestjs/common": ^5.0.0 || ^6.6.0 || ^7.0.0 || ^8.0.0 || ^9.0.0
+    winston: ^3.0.0
+  checksum: 7837eea05d68af3b4b6b6a1771adbf915086f4b6dff03c0131be1b0800b562e6fde7ef580a5e626f5a3ab92996845889230ac037432fe1d0e14a61da93668314
   languageName: node
   linkType: hard
 
