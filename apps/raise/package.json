@@ -1,7 +1,7 @@
 {
   "name": "@tmra/raise",
   "description": "",
-  "version": "0.0.1",
+  "version": "3.0.0",
   "author": "",
   "dependencies": {
     "@authzed/authzed-node": "^0.5.0",
