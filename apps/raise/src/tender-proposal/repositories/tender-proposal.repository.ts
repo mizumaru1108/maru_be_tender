@@ -50,16 +50,39 @@ export class TenderProposalRepository {
   async updateProposal(
     proposalId: string,
     proposalPayload: Prisma.proposalUpdateInput,
+    itemBudgetPayloads?: proposal_item_budget[] | null,
   ) {
     try {
-      return await this.prismaService.proposal.update({
-        where: {
-          id: proposalId,
-        },
-        data: proposalPayload,
-      });
+      if (itemBudgetPayloads) {
+        return await this.prismaService.$transaction([
+          // delete all previous item budget
+          this.prismaService.proposal_item_budget.deleteMany({
+            where: {
+              proposal_id: proposalId,
+            },
+          }),
+          // create a new one
+          this.prismaService.proposal_item_budget.createMany({
+            data: itemBudgetPayloads,
+          }),
+          // update the proposal
+          this.prismaService.proposal.update({
+            where: {
+              id: proposalId,
+            },
+            data: proposalPayload,
+          }),
+        ]);
+      } else {
+        return await this.prismaService.proposal.update({
+          where: {
+            id: proposalId,
+          },
+          data: proposalPayload,
+        });
+      }
     } catch (error) {
-      const prismaError = prismaErrorThrower(error, 'finding proposal');
+      const prismaError = prismaErrorThrower(error, 'updating proposal');
       throw prismaError;
     }
   }

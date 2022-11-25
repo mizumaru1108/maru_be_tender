@@ -84,11 +84,17 @@ export class FusionAuthService {
 
   async fusionAuthLogin(
     loginRequest: LoginRequestDto,
+    emailShouldBeVerified?: boolean,
   ): Promise<ClientResponse<LoginResponse>> {
-    loginRequest.applicationId = this.fusionAuthAppId;
     try {
       const result: ClientResponse<LoginResponse> =
-        await this.fusionAuthClient.login(loginRequest);
+        await this.fusionAuthClient.login({
+          loginId: loginRequest.loginId,
+          password: loginRequest.password,
+          applicationId: this.fusionAuthAppId,
+        });
+      // console.log(result);
+      // !TODO: if result.statusCode = 204 the user hasn't validate their email. (STILL TO DO), using param emailShouldBeVerified.
       return result;
     } catch (error) {
       if (error.statusCode < 500) {

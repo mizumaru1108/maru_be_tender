@@ -48,7 +48,8 @@ export class TenderProposalService {
     updateProposal: UpdateProposalDto,
   ): Promise<UpdateProposalResponseDto> {
     // create payload for update proposal
-    const updateProposalPayload: Prisma.proposalUpdateInput = {}; // idk why proposal_bank_id didn't exist on the type.
+    const updateProposalPayload: Prisma.proposalUpdateInput = {};
+    let itemBudgets: proposal_item_budget[] | null = null;
     // const updateProposalPayload: any = {};
     let message = 'Proposal updated successfully';
 
@@ -182,8 +183,8 @@ export class TenderProposalService {
 
     if (updateProposal.form4) {
       // proposal item budgets payload.
-      const itemBudgets: proposal_item_budget[] =
-        updateProposal.form4.detail_project_budgets.map((item_budget) => {
+      itemBudgets = updateProposal.form4.detail_project_budgets.map(
+        (item_budget) => {
           const itemBudget = {
             id: uuidv4(),
             proposal_id: updateProposal.proposal_id,
@@ -192,7 +193,8 @@ export class TenderProposalService {
             explanation: item_budget.explanation,
           };
           return itemBudget;
-        });
+        },
+      );
 
       if (updateProposal.form4.amount_required_fsupport) {
         updateProposalPayload.amount_required_fsupport = new Prisma.Decimal(
@@ -200,10 +202,6 @@ export class TenderProposalService {
         );
       }
 
-      await this.tenderProposalRepository.updateStepFour(
-        updateProposal.proposal_id,
-        itemBudgets,
-      );
       message = message + ` some changes from4 has been applied.`;
     }
 
@@ -234,8 +232,14 @@ export class TenderProposalService {
         await this.tenderProposalRepository.updateProposal(
           updateProposal.proposal_id,
           updateProposalPayload,
+          itemBudgets,
         );
-      update = updatedProposal;
+
+      if (Array.isArray(updatedProposal)) {
+        update = updatedProposal[2];
+      } else {
+        update = updatedProposal;
+      }
     }
     if (!update) message = 'No changes made to proposal';
 

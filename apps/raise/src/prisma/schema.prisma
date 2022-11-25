@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 datasource db {
@@ -334,7 +335,7 @@ model supervisor {
   id                  String   @id
   user_id             String
   proposal_id         String
-  clasification_field String   @db.Char
+  clasification_field String   @db.VarChar
   closing_report      Boolean
   support_type        Boolean
   does_an_agreement   Boolean
@@ -625,4 +626,8 @@ model user_role {
   user_type_id String
   user         user      @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_type    user_type @relation(fields: [user_type_id], references: [id], onDelete: Cascade)
+}
+
+model only_test {
+  id String @id @db.Uuid
 }
