@@ -59,7 +59,7 @@ COPY apps/pwa/package.json ./apps/pwa/
 # COPY apps/notion-api/dist/ ./apps/notion-api/dist/
 # This package
 COPY apps/raise/package.json ./apps/raise/
-# COPY apps/raise/node_modules/ ./apps/raise/node_modules/
+COPY apps/raise/node_modules/ ./apps/raise/node_modules/
 # COPY apps/raise/tsconfig.json ./apps/raise/
 # COPY apps/raise/nest-cli.json ./apps/raise/
 COPY apps/raise/dist/ ./apps/raise/dist/
