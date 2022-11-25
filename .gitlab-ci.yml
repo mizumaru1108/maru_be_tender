@@ -92,6 +92,7 @@ sonarqube-check:
       # - apps/pwa/dist/
       - apps/raise/dist/
       - node_modules/
+      - apps/raise/node_modules/
       # - next-i18next.config.js
       # - next.config.js
       # - public/
