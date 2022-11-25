@@ -13,6 +13,7 @@ import { sanitizeString } from '../../../commons/utils/sanitize-string';
 import { uploadFileNameParser } from '../../../commons/utils/upload-filename-parser';
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
 import { validateFileSize } from '../../../commons/utils/validate-file-size';
+
 /**
  * Nest Bunny Module
  * @author RDanang (Iyoy!)
@@ -219,7 +220,10 @@ export class BunnyService {
       );
       return fileName;
     } catch (error) {
-      this.logger.error(`Error uploading image file to Bunny ${mediaUrl} (${file.buffer.length} bytes) while creating ${serviceName}`, error);
+      this.logger.error(
+        `Error uploading image file to Bunny ${mediaUrl} (${file.buffer.length} bytes) while creating ${serviceName}`,
+        error,
+      );
       throw new InternalServerErrorException(
         `Error uploading image file to Bunny ${mediaUrl} (${file.buffer.length} bytes) while creating ${serviceName}`,
       );

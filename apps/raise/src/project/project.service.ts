@@ -16,7 +16,7 @@ import {
 } from 'mongoose';
 import { validateObjectId } from '../commons/utils/validateObjectId';
 import { BunnyService } from '../libs/bunny/services/bunny.service';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
 import { RoleEnum } from '../user/enums/role-enum';
 import { User, UserDocument } from '../user/schema/user.schema';
@@ -110,7 +110,9 @@ const baseProjectGrouping = {
 };
 @Injectable()
 export class ProjectService {
-  private logger = rootLogger.child({ logger: ProjectService.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': ProjectService.name,
+  });
 
   constructor(
     private bunnyService: BunnyService,

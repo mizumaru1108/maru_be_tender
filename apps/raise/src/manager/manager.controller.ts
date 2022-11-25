@@ -1,12 +1,14 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { ManagerService } from './manager.service';
 
 @ApiTags('manager')
 @Controller('manager')
 export class ManagerController {
-  private logger = rootLogger.child({ logger: ManagerController.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': ManagerController.name,
+  });
 
   constructor(private managerService: ManagerService) {}
 

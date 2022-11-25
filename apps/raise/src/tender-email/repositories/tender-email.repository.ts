@@ -1,13 +1,15 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { email_record, Prisma } from '@prisma/client';
-import { rootLogger } from '../../logger';
+import { ROOT_LOGGER } from '../../libs/root-logger';
 import { PrismaService } from '../../prisma/prisma.service';
 import { FindManyResult } from '../../tender-commons/dto/find-many-result.dto';
 import { EmailFilterRequest } from '../dtos/requests/email-filter-request.dto';
 
 @Injectable()
 export class TenderEmailRepository {
-  private logger = rootLogger.child({ logger: TenderEmailRepository.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': TenderEmailRepository.name,
+  });
   constructor(private readonly prismaService: PrismaService) {}
 
   /* save email record */

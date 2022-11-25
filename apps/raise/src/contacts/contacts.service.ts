@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { MailerService } from '@nestjs-modules/mailer';
 import { MessageDto } from './message.dto';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { Types } from 'mongoose';
 import {
   Organization,
@@ -18,7 +18,9 @@ import { SendEmailDto } from '../libs/email/dtos/requests/send-email.dto';
 
 @Injectable()
 export class ContactsService {
-  private logger = rootLogger.child({ logger: ContactsService.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': ContactsService.name,
+  });
 
   constructor(
     @InjectModel(Organization.name)

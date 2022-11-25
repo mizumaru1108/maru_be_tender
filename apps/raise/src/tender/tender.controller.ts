@@ -14,8 +14,14 @@ import { baseResponseHelper } from '../commons/helpers/base-response-helper';
 import { BaseHashuraWebhookPayload } from '../commons/interfaces/base-hashura-webhook-payload';
 import { UploadFilesDto } from '../tender-commons/dto/upload-files.dto';
 import { TenderService } from './tender.service';
+import { ROOT_LOGGER } from '../libs/root-logger';
+
 @Controller('tender')
 export class TenderController {
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': TenderController.name,
+  });
+
   constructor(private tenderService: TenderService) {}
 
   @UseInterceptors(AnyFilesInterceptor())
@@ -35,9 +41,9 @@ export class TenderController {
 
   @Post('edit-request-hook-handler')
   async postEditRequest(@Body() payload: BaseHashuraWebhookPayload) {
-    console.log('payload', payload);
-    console.log('payload data', JSON.stringify(payload.event.data));
+    this.logger.info('payload: ' + { payload: JSON.stringify(payload) });
+    this.logger.info('payload data: ' + JSON.stringify(payload.event.data));
     const response = await this.tenderService.postCreateEditingRequest(payload);
-    console.log(response);
+    this.logger.info('Response: ', { response: JSON.stringify(response) });
   }
 }

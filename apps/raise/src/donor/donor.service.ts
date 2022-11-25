@@ -48,7 +48,7 @@ import { PaytabsTranType } from '../libs/paytabs/enums/paytabs-tran-type.enum';
 import { PaytabsPaymentRequestPayloadModel } from '../libs/paytabs/models/paytabs-payment-request-payload.model';
 import { PaytabsService } from '../libs/paytabs/services/paytabs.service';
 import { StripeService } from '../libs/stripe/services/stripe.service';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { Project, ProjectDocument } from '../project/schema/project.schema';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import {
@@ -87,7 +87,9 @@ import { Volunteer, VolunteerDocument } from './schema/volunteer.schema';
 
 @Injectable()
 export class DonorService {
-  private logger = rootLogger.child({ logger: DonorService.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': DonorService.name,
+  });
 
   constructor(
     @InjectConnection() private readonly connection: Connection, // mongodb DB transaction
@@ -1290,86 +1292,85 @@ export class DonorService {
     organizationId: string,
     donorUserId: string,
     sortStatus: string,
-    sortDate: string
+    sortDate: string,
   ) {
     this.logger.debug('Get Donation logs...');
 
     let sortData = {};
     const status = sortStatus == 'asc' ? 1 : -1;
     const date = sortDate == 'asc' ? 1 : -1;
-    
+
     sortData = {
       donationStatus: status,
-      createdAt: date
-    }
-  
+      createdAt: date,
+    };
+
     const orgsId = organizationId ? organizationId : '62414373cf00cca3a830814a';
     const getDonationLog = await this.donationLogModel.find({
-     donorId: donorUserId,
-     organizationId: orgsId, 
+      donorId: donorUserId,
+      organizationId: orgsId,
     });
-    if(!getDonationLog){
+    if (!getDonationLog) {
       throw new NotFoundException('not found transaction for this userId');
     }
 
-    const donationLogList = await this.donationLogModel.aggregate(
-  [{
-    $match: { 
-      donorId: donorUserId , 
-      organizationId: orgsId 
-      }
-  },
-  
-  {
-    $addFields: {"campaignId": { $toObjectId: "$campaignId" }}
-  },
-  {
-    $lookup: {
-      from: 'campaign',
-      localField: 'campaignId',
-      foreignField: '_id',
-      as: 'campaign',
-    }
-  },
-  {
-    $unwind: {
-      path: '$campaign',
-      preserveNullAndEmptyArrays: true,
-    }
-  },
-  {
-    $addFields: {"orgsId": { $toObjectId: "$organizationId" }}
-  },
-  {
-    $lookup: {
-      from: 'organization',
-      localField: 'orgsId',
-      foreignField: '_id',
-      as: 'organization',
-    }
-  },
-  {
-    $unwind: {
-       path: '$organization',
-       preserveNullAndEmptyArrays: true,
-     }
-  },
-  {
-    $group:{
-        _id: '$_id',
-        createdAt: { $first: '$createdAt' },
-        donationStatus: { $first: '$donationStatus' },
-        amount: { $first: '$amount' },
-        campaignName: { $first: '$campaign.campaignName' },
-        campaignType: { $first: '$campaign.campaignType' },
-        organizationName: { $first: '$organization.name' },
-     }
-  },
-  {
-    $sort: sortData
-  },
+    const donationLogList = await this.donationLogModel.aggregate([
+      {
+        $match: {
+          donorId: donorUserId,
+          organizationId: orgsId,
+        },
+      },
 
-]);
+      {
+        $addFields: { campaignId: { $toObjectId: '$campaignId' } },
+      },
+      {
+        $lookup: {
+          from: 'campaign',
+          localField: 'campaignId',
+          foreignField: '_id',
+          as: 'campaign',
+        },
+      },
+      {
+        $unwind: {
+          path: '$campaign',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: { orgsId: { $toObjectId: '$organizationId' } },
+      },
+      {
+        $lookup: {
+          from: 'organization',
+          localField: 'orgsId',
+          foreignField: '_id',
+          as: 'organization',
+        },
+      },
+      {
+        $unwind: {
+          path: '$organization',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          createdAt: { $first: '$createdAt' },
+          donationStatus: { $first: '$donationStatus' },
+          amount: { $first: '$amount' },
+          campaignName: { $first: '$campaign.campaignName' },
+          campaignType: { $first: '$campaign.campaignType' },
+          organizationName: { $first: '$organization.name' },
+        },
+      },
+      {
+        $sort: sortData,
+      },
+    ]);
     return donationLogList;
   }
 

@@ -1,12 +1,14 @@
 import { Query, Controller, Get, Post, Body } from '@nestjs/common';
 import { PaymentRequestDto } from 'src/payment-stripe/payment-stripe.dto';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { ExpenseDto } from './dto/expense.dto';
 import { ZakatService } from './zakat.service';
 
 @Controller('zakat')
 export class ZakatController {
-  private logger = rootLogger.child({ logger: ZakatController.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': ZakatController.name,
+  });
 
   constructor(private zakatService: ZakatService) {}
 

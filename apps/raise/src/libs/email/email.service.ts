@@ -3,7 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { rootLogger } from '../../logger';
+import { ROOT_LOGGER } from '../../libs/root-logger';
 import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer';
 import { SendEmailDto } from './dtos/requests/send-email.dto';
 
@@ -13,7 +13,9 @@ import { SendEmailDto } from './dtos/requests/send-email.dto';
  */
 @Injectable()
 export class EmailService {
-  private logger = rootLogger.child({ logger: EmailService.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': EmailService.name,
+  });
 
   constructor(private mailerService: MailerService) {}
 

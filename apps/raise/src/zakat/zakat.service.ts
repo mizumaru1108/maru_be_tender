@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
 import { Model, Types } from 'mongoose';
 import axios, { AxiosRequestConfig } from 'axios';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { CreateMetalPriceDto } from './dto';
 
 import {
@@ -41,7 +41,9 @@ import { Anonymous, AnonymousDocument } from '../donor/schema/anonymous.schema';
 
 @Injectable()
 export class ZakatService {
-  private logger = rootLogger.child({ logger: ZakatService.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': ZakatService.name,
+  });
   constructor(
     @InjectModel(MetalPrice.name)
     private metalPriceModel: Model<MetalPriceDocument>,

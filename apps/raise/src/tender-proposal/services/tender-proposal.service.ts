@@ -33,8 +33,14 @@ import { TenderProposalRepository } from '../repositories/tender-proposal.reposi
 
 import { TenderProposalFlowService } from './tender-proposal-flow.service';
 import { TenderProposalLogService } from './tender-proposal-log.service';
+import { ROOT_LOGGER } from '../../libs/root-logger';
+
 @Injectable()
 export class TenderProposalService {
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': TenderProposalService.name,
+  });
+
   constructor(
     private readonly prismaService: PrismaService,
     private readonly tenderProposalRepository: TenderProposalRepository,
@@ -290,8 +296,8 @@ export class TenderProposalService {
       });
       proposal = updatedProposal;
 
-      console.log('reviewr id', currentUser.id);
-      console.log(
+      this.logger.info('reviewr id', currentUser.id);
+      this.logger.info(
         'submitter / client_userid',
         currentProposal.submitter_user_id,
       );
@@ -314,7 +320,7 @@ export class TenderProposalService {
         proposal.project_track,
         false,
       );
-      console.log('next', nextTrack);
+      this.logger.info('next', nextTrack);
 
       // update the track proposal from default to the defined track by the moderator, aslo asign to the next state.
       const updatedProposal = await this.prismaService.proposal.update({
@@ -363,7 +369,7 @@ export class TenderProposalService {
       proposal.project_track,
       false,
     );
-    // console.log('next', nextTrack);
+    // this.logger.info('next', nextTrack);
 
     // 2 is default for project supervisor set paymentsetup.
     // if the next track is 3, then the proposal shouldn't have a paymentsetup
@@ -461,7 +467,7 @@ export class TenderProposalService {
       currentProposal.project_track,
       false,
     );
-    console.log('next', nextTrack);
+    this.logger.info('next', nextTrack);
 
     const updatedProposal = await this.prismaService.proposal.update({
       where: {
@@ -511,7 +517,7 @@ export class TenderProposalService {
       currentProposal.project_track,
       false,
     );
-    console.log('next', nextTrack);
+    this.logger.info('next', nextTrack);
 
     const updatedProposal = await this.prismaService.proposal.update({
       where: {
@@ -557,7 +563,7 @@ export class TenderProposalService {
       currentProposal.project_track,
       false,
     );
-    console.log('next', nextTrack);
+    this.logger.info('next', nextTrack);
 
     const updatedProposal = await this.prismaService.proposal.update({
       where: {
@@ -601,7 +607,7 @@ export class TenderProposalService {
       currentProposal.project_track,
       false,
     );
-    console.log('next', nextTrack);
+    this.logger.info('next', nextTrack);
 
     const updatedProposal = await this.prismaService.proposal.update({
       where: {
@@ -644,7 +650,7 @@ export class TenderProposalService {
       currentProposal.project_track,
       false,
     );
-    console.log('next', nextTrack);
+    this.logger.info('next', nextTrack);
 
     const updatedProposal = await this.prismaService.proposal.update({
       where: {
@@ -685,9 +691,9 @@ export class TenderProposalService {
       throw new UnauthorizedException(
         'You are not authorized to perform this action',
       );
-    // console.log('roles', currentRoles);
+    // this.logger.info('roles', currentRoles);
     const appRoles = appRoleMappers[currentRoles] as TenderAppRole;
-    // console.log('app roles', appRoles);
+    // this.logger.info('app roles', appRoles);
 
     const proposal = await this.prismaService.proposal.findUnique({
       where: {

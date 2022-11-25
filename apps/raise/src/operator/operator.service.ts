@@ -11,7 +11,7 @@ import {
   PaginateOptions,
   Types,
 } from 'mongoose';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { ChartDataDto, ChartDetailData } from './dto/chart-data.dto';
 import { GetAllOperatorResponse } from './dto/get-all-operator.response';
 import { OperatorChartDataDto } from './dto/operator-chart-data.dto';
@@ -25,7 +25,9 @@ import { Operator, OperatorDocument } from './schema/operator.schema';
 
 @Injectable()
 export class OperatorService {
-  private logger = rootLogger.child({ logger: OperatorService.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': OperatorService.name,
+  });
 
   constructor(
     @InjectModel(OperatorChartData.name)

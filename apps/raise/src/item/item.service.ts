@@ -10,7 +10,7 @@ import { Model, Types } from 'mongoose';
 import { CreateItemDto } from './dto';
 import { ConfigService } from '@nestjs/config';
 import { Item, ItemDocument } from './item.schema';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { Operator, OperatorDocument } from '../operator/schema/operator.schema';
 import axios, { AxiosRequestConfig } from 'axios';
 import dayjs from 'dayjs';
@@ -21,7 +21,7 @@ import { BunnyService } from '../libs/bunny/services/bunny.service';
 
 @Injectable()
 export class ItemService {
-  private logger = rootLogger.child({ logger: ItemService.name });
+  private readonly logger = ROOT_LOGGER.child({ logger: ItemService.name });
 
   constructor(
     @InjectModel(Item.name)
@@ -133,11 +133,11 @@ export class ItemService {
       };
 
       try {
-        console.info(
+        this.logger.info(
           `Uploading to Bunny: ${urlMedia} (${binary.length} bytes)...`,
         );
         const response = await axios(options);
-        console.info(
+        this.logger.info(
           'Uploaded %s (%d bytes) to Bunny: %s %s %s',
           urlMedia,
           binary.length,
@@ -436,7 +436,7 @@ export class ItemService {
           /* if current campaign has old image, and the upload process has been done */
           if (i === 0 && imageUpload) {
             if (updateItemData.coverImage) {
-              console.info(
+              this.logger.info(
                 'Old cover image seems to be exist in the old record',
               );
               const isExist = await this.bunnyService.checkIfImageExists(
@@ -446,13 +446,15 @@ export class ItemService {
                 await this.bunnyService.deleteImage(updateItemData.coverImage);
               }
             }
-            console.info('Cover image has been replaced');
+            this.logger.info('Cover image has been replaced');
             updateItemData.coverImage = path;
           }
 
           if (i === 1 && imageUpload) {
             if (updateItemData.image1) {
-              console.info('Old image 1 seems to be exist in the old record');
+              this.logger.info(
+                'Old image 1 seems to be exist in the old record',
+              );
               const isExist = await this.bunnyService.checkIfImageExists(
                 updateItemData.image1,
               );
@@ -460,13 +462,15 @@ export class ItemService {
                 await this.bunnyService.deleteImage(updateItemData.image1);
               }
             }
-            console.info('Image 1 has been replaced');
+            this.logger.info('Image 1 has been replaced');
             updateItemData.image1 = path;
           }
 
           if (i === 2 && imageUpload) {
             if (updateItemData.image2) {
-              console.info('Old image 2 seems to be exist in the old record');
+              this.logger.info(
+                'Old image 2 seems to be exist in the old record',
+              );
               const isExist = await this.bunnyService.checkIfImageExists(
                 updateItemData.image2,
               );
@@ -474,13 +478,15 @@ export class ItemService {
                 await this.bunnyService.deleteImage(updateItemData.image2);
               }
             }
-            console.info('Image 2 has been replaced');
+            this.logger.info('Image 2 has been replaced');
             updateItemData.image2 = path;
           }
 
           if (i === 3 && imageUpload) {
             if (updateItemData.image3) {
-              console.info('Old image 3 seems to be exist in the old record');
+              this.logger.info(
+                'Old image 3 seems to be exist in the old record',
+              );
               const isExist = await this.bunnyService.checkIfImageExists(
                 updateItemData.image3,
               );
@@ -488,7 +494,7 @@ export class ItemService {
                 await this.bunnyService.deleteImage(updateItemData.image3);
               }
             }
-            console.info('Image 3 has been replaced');
+            this.logger.info('Image 3 has been replaced');
             updateItemData.image3 = path;
           }
         }

@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
-import { rootLogger } from 'src/logger';
+import { ROOT_LOGGER } from 'src/libs/root-logger';
 import { LoginRequestDto } from '../../../auth/dtos/login-request.dto';
 import { RegisterRequestDto } from '../../../auth/dtos/register-request.dto';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
@@ -30,7 +30,9 @@ import { TenderCreateUserDto } from '../../../tender-user/user/dtos/requests/cre
  */
 @Injectable()
 export class FusionAuthService {
-  private logger = rootLogger.child({ logger: FusionAuthService.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': FusionAuthService.name,
+  });
   private fusionAuthClient: FusionAuthClient;
   private fusionAuthAdminClient: FusionAuthClient;
   private fusionAuthAppId: string;

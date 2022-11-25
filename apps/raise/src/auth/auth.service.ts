@@ -1,6 +1,6 @@
 import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { rootLogger } from 'src/logger';
+import { ROOT_LOGGER } from 'src/libs/root-logger';
 import { UserService } from 'src/user/user.service';
 import { SendEmailDto } from '../libs/email/dtos/requests/send-email.dto';
 import { EmailService } from '../libs/email/email.service';
@@ -11,7 +11,9 @@ import { LoginRequestDto, RegisterRequestDto } from './dtos';
 
 @Injectable()
 export class AuthService {
-  private logger = rootLogger.child({ logger: AuthService.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': AuthService.name,
+  });
   constructor(
     private readonly usersService: UserService,
     private readonly emailService: EmailService,

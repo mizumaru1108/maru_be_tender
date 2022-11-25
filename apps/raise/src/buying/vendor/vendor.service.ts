@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { rootLogger } from '../../logger';
+import { ROOT_LOGGER } from '../../libs/root-logger';
 import {
   CampaignVendorLog,
   CampaignVendorLogDocument,
@@ -17,7 +17,9 @@ import { VendorChartDataDto } from './dto/vendor-chart-data.dto';
 
 @Injectable()
 export class VendorService {
-  private logger = rootLogger.child({ logger: VendorService.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': VendorService.name,
+  });
 
   constructor(
     @InjectModel(Vendor.name)

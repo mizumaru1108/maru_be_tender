@@ -26,7 +26,7 @@ import {
 } from '../../buying/vendor/vendor.schema';
 import { validateObjectId } from '../../commons/utils/validateObjectId';
 import { BunnyService } from '../../libs/bunny/services/bunny.service';
-import { rootLogger } from '../../logger';
+import { ROOT_LOGGER } from '../../libs/root-logger';
 import {
   Operator,
   OperatorDocument,
@@ -50,7 +50,9 @@ import { CampaignStatus } from '../enums/campaign-status.enum';
 import { Campaign, CampaignDocument } from '../schema/campaign.schema';
 @Injectable()
 export class CampaignService {
-  private logger = rootLogger.child({ logger: CampaignService.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': CampaignService.name,
+  });
   constructor(
     @InjectModel(Campaign.name)
     private campaignModel: Model<CampaignDocument>,
@@ -448,11 +450,11 @@ export class CampaignService {
 
   async getCampaignsByOrganizationId(
     organizationId: string,
-    request: GetAllMyCampaignFilterDto
-    ): Promise<AggregatePaginateResult<CampaignDocument>> {
+    request: GetAllMyCampaignFilterDto,
+  ): Promise<AggregatePaginateResult<CampaignDocument>> {
     const { limit = 10, page = 1, sortBy, sortMethod, isPublished } = request;
     const filter: FilterQuery<CampaignDocument> = {
-      organizationId: organizationId
+      organizationId: organizationId,
     };
 
     if (isPublished) filter.isPublished = isPublished;

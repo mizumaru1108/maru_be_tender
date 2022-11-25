@@ -43,7 +43,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
         email: validToken.response.jwt.email,
         type: validToken.response.jwt.roles[0] ?? null,
       };
-      // console.log(user);
+      // this.logger.info(`User: ${user}`);
       request.user = user;
     } catch (e) {
       this.logger.warn('Session expired', e);

@@ -8,7 +8,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import axios, { AxiosRequestConfig } from 'axios';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { Campaign, CampaignDocument } from '../campaign/schema/campaign.schema';
 
 import {
@@ -50,9 +50,12 @@ import {
 import { ZakatLog, ZakatLogDocument } from '../zakat/schemas/zakat_log.schema';
 import { Anonymous, AnonymousDocument } from '../donor/schema/anonymous.schema';
 import { SendEmailDto } from '../libs/email/dtos/requests/send-email.dto';
+
 @Injectable()
 export class PaymentStripeService {
-  private logger = rootLogger.child({ logger: PaymentStripeService.name });
+  private readonly logger = ROOT_LOGGER.child({
+    logger: PaymentStripeService.name,
+  });
 
   constructor(
     @InjectModel(PaymentData.name)
@@ -1662,7 +1665,7 @@ export class PaymentStripeService {
             }).save();
           }
         }
-        console.info('Create LOG_');
+        this.logger.info('Create LOG_');
       } else {
         //insert data to donationLog for campaign transaction
         getDonationLog = await new this.donationLogModel({
@@ -1678,7 +1681,7 @@ export class PaymentStripeService {
           currency: currency,
           donationStatus: 'PENDING',
         }).save();
-        console.info('Create LOG');
+        this.logger.info('Create LOG');
       }
 
       if (!getDonationLog) {
@@ -1858,7 +1861,7 @@ export class PaymentStripeService {
         _id: organizationId,
       });
 
-      console.info(
+      this.logger.info(
         'Get Notif Organization',
         notifSettings,
         'Get Organization',

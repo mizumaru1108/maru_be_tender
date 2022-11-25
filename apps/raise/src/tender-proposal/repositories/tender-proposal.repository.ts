@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, proposal, proposal_item_budget } from '@prisma/client';
-import { rootLogger } from '../../logger';
+import { ROOT_LOGGER } from '../../libs/root-logger';
 import { PrismaService } from '../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
 @Injectable()
 export class TenderProposalRepository {
-  private logger = rootLogger.child({
+  private readonly logger = ROOT_LOGGER.child({
     logger: TenderProposalRepository.name,
   });
   constructor(private readonly prismaService: PrismaService) {}
