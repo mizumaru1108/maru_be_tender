@@ -4,7 +4,9 @@ import {
   HttpStatus,
   Patch,
   Post,
+  Req,
   UseGuards,
+  Get
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { JwtAuthGuard } from '../../auth/jwt.guard';
@@ -26,6 +28,7 @@ import { UpdatePaymentDto } from '../dtos/requests/payment/update-payment.dto';
 import { UpdatePaymentResponseDto } from '../dtos/responses/payment/update-payment-response.dto';
 import { UpdateProposalDto } from '../dtos/requests/proposal/update-proposal.dto';
 import { UpdateProposalResponseDto } from '../dtos/responses/proposal/update-proposal-response.dto';
+import { UpdateProposalByCmsUsers } from '../dtos/updateProposalByCmsUsers.dto';
 
 @Controller('tender-proposal')
 export class TenderProposalController {
@@ -138,6 +141,26 @@ export class TenderProposalController {
     const updateResponse = await this.tenderProposalService.updateProposal(
       currentUser.id,
       request,
+    );
+    return baseResponseHelper(
+      updateResponse,
+      HttpStatus.OK,
+      'Proposal updated successfully',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard)
+  @Patch('test')
+  async updateProposalByCmsUsers(
+    @CurrentUser() currentUser: ICurrentUser,
+    @Body() body: UpdateProposalByCmsUsers,
+    @Req() request: any
+    ) {
+    const updateResponse = await this.tenderProposalService.updateProposalByCmsUsers(
+      currentUser.id,
+      body,
+      request.query.id,
+      request.headers['x-hasura-role']
     );
     return baseResponseHelper(
       updateResponse,

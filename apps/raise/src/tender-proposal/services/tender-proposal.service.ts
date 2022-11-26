@@ -34,6 +34,8 @@ import { TenderProposalRepository } from '../repositories/tender-proposal.reposi
 import { TenderProposalFlowService } from './tender-proposal-flow.service';
 import { TenderProposalLogService } from './tender-proposal-log.service';
 import { ROOT_LOGGER } from '../../libs/root-logger';
+import { ProposalAdminRole } from '../enum/adminRoles.enum';
+import { InnerStatusEnum } from '../enum/innerStatus.enum';
 
 @Injectable()
 export class TenderProposalService {
@@ -868,5 +870,102 @@ export class TenderProposalService {
 
     // 'ACCOUNTS_MANAGER' 'ADMIN'  'CASHIER' 'CLIENT'  'FINANCE';
     //'MODERATOR', 'PROJECT_SUPERVISOR', 'PROJECT_MANAGER', 'CEO', 'CONSULTANT'
+  }
+  async updateProposalByCmsUsers(userId: string, body: any, id: string, role: string){
+   const { action } = body; 
+   let proposal:any;  
+    if(role === ProposalAdminRole.MODERATOR){
+      if(action === 'accepted'){
+         proposal = await this.updateProposalStatus(id, InnerStatusEnum.ACCEPTED_BY_MODERATOR, body.track_id);
+         await this.createProposalLog(body, InnerStatusEnum.ACCEPTED_BY_MODERATOR, proposal, userId, 'MODERATOR');
+      }else if(action === 'rejected'){
+         proposal = await this.updateProposalStatus(id, InnerStatusEnum.REJECTED_BY_MODERATOR);
+         await this.createProposalLog(body, InnerStatusEnum.REJECTED_BY_MODERATOR, proposal, userId, 'MODERATOR');
+      }
+    }else if(role === ProposalAdminRole.PROJECT_SUPERVISOR){
+      if(action === 'accepted'){        
+         proposal = await this.updateProposalStatus(id, InnerStatusEnum.ACCEPTED_BY_SUPERVISOR, body.track_id);         
+         await this.createProposalLog(body, InnerStatusEnum.ACCEPTED_BY_MODERATOR, proposal, userId, 'PROJECT_SUPERVISOR');
+         const track = await this.prismaService.track.findUnique({where:{ id: proposal.track_id as string}})
+         if(!track) throw new NotFoundException('this proposal does not belonge to track')
+        if(track.name === 'مسار المنح العام'){          
+          const recommended_support_consultant = body.consultant_form.recommended_support_consultant;
+          delete body.consultant_form.recommended_support_consultant;
+         const consultantForm = await this.prismaService.consultant_form.create({
+            data:{
+            ...body.consultant_form,
+            proposal_id:proposal.id,
+            supervisor_id:userId
+          }})
+          for(let i=0; i< recommended_support_consultant.length; i++ ){
+            recommended_support_consultant[i].consultant_form_id = consultantForm.id
+          }
+          await this.prismaService.recommended_support_consultant.createMany({data:recommended_support_consultant})
+        }
+        else {
+          await this.prismaService.supervisor_form.create({data:{...body.supervisor_form, proposal_id:proposal.id, supervisor_id:userId}})
+        }
+      }else if(action === 'rejected'){
+         proposal = await this.updateProposalStatus(id, InnerStatusEnum.REJECTED_BY_SUPERVISOR);
+         await this.createProposalLog(body, InnerStatusEnum.ACCEPTED_BY_MODERATOR, proposal, userId, 'PROJECT_SUPERVISOR');
+      }
+    }else if(role === ProposalAdminRole.PROJECT_MANAGER){
+      if(action === 'accepted'){
+         proposal = await this.updateProposalStatus(id, InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER);
+         await this.createProposalLog(body, InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER, proposal, userId, 'PROJECT_MANAGER');
+      }else if(action === 'rejected'){
+         proposal = await this.updateProposalStatus(id, InnerStatusEnum.REJECTED_BY_PROJECT_MANAGER);
+         await this.createProposalLog(body, InnerStatusEnum.REJECTED_BY_PROJECT_MANAGER, proposal, userId, 'PROJECT_MANAGER');
+      }else if(action === 'acceptAndAskForConsultaion'){
+         proposal = await this.updateProposalStatus(id, InnerStatusEnum.ACCEPTED_AND_NEED_CONSULTANT);
+         await this.createProposalLog(body, InnerStatusEnum.ACCEPTED_AND_NEED_CONSULTANT, proposal, userId, 'PROJECT_MANAGER');
+      }
+    }else if(role === ProposalAdminRole.CONSULTANT){
+      if(action === 'accepted'){
+         proposal = await this.updateProposalStatus(id, InnerStatusEnum.ACCEPTED_BY_CONSULTANT);
+         await this.createProposalLog(body, InnerStatusEnum.ACCEPTED_BY_CONSULTANT, proposal, userId, 'CONSULTANT');
+      }else if(action === 'rejected'){
+         proposal = await this.updateProposalStatus(id, InnerStatusEnum.REJECTED_BY_CONSULTANT);
+         await this.createProposalLog(body, InnerStatusEnum.ACCEPTED_BY_CONSULTANT, proposal, userId, 'CONSULTANT');
+      }
+    }else if(role === ProposalAdminRole.CEO){
+      if(action === 'accepted'){
+         proposal = await this.updateProposalStatus(id, InnerStatusEnum.ACCEPTED_BY_CEO);
+         await this.createProposalLog(body, InnerStatusEnum.ACCEPTED_BY_CEO, proposal, userId, 'CEO');
+      }else if(action === 'rejected'){
+         proposal = await this.updateProposalStatus(id, InnerStatusEnum.REJECTED_BY_CEO)
+         await this.createProposalLog(body, InnerStatusEnum.REJECTED_BY_CEO, proposal, userId, 'CEO');
+      }
+    }else{
+      throw new UnauthorizedException(
+        "Current user doesn't have the required role to access this resource!",
+      );
+    }
+    return proposal;
+  }
+
+  async updateProposalStatus(id: string, inner_status: string, track_id?: string){
+    return this.prismaService.proposal.update({
+      where:{
+        id
+      },
+      data: {
+        inner_status,
+        track_id
+      }
+    });
+  }
+  async createProposalLog(body: any, inner_status: string, proposal: proposal, reviewer_id: string, state: string){
+    await this.prismaService.proposal_log.create({
+      data:{
+        id: body.log_id,
+        proposal_id: proposal.id,
+        notes: body.notes || null,
+        inner_status,
+        reviewer_id,
+        state,
+        client_user_id: proposal.submitter_user_id
+      }
+    })
   }
 }
