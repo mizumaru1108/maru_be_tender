@@ -36,6 +36,7 @@ import { TenderProposalLogService } from './tender-proposal-log.service';
 import { ROOT_LOGGER } from '../../libs/root-logger';
 import { ProposalAdminRole } from '../enum/adminRoles.enum';
 import { InnerStatusEnum } from '../enum/innerStatus.enum';
+import { OuterStatusEnum } from '../enum/outerStatus.enum';
 
 @Injectable()
 export class TenderProposalService {
@@ -879,7 +880,7 @@ export class TenderProposalService {
          proposal = await this.updateProposalStatus(id, InnerStatusEnum.ACCEPTED_BY_MODERATOR, body.track_id);
          await this.createProposalLog(body, InnerStatusEnum.ACCEPTED_BY_MODERATOR, proposal, userId, 'MODERATOR');
       }else if(action === 'rejected'){
-         proposal = await this.updateProposalStatus(id, InnerStatusEnum.REJECTED_BY_MODERATOR);
+         proposal = await this.updateProposalStatus(id, InnerStatusEnum.REJECTED_BY_MODERATOR, undefined, OuterStatusEnum.CANCELED);
          await this.createProposalLog(body, InnerStatusEnum.REJECTED_BY_MODERATOR, proposal, userId, 'MODERATOR');
       }
     }else if(role === ProposalAdminRole.PROJECT_SUPERVISOR){
@@ -906,7 +907,7 @@ export class TenderProposalService {
           await this.prismaService.supervisor_form.create({data:{...body.supervisor_form, proposal_id:proposal.id, supervisor_id:userId}})
         }
       }else if(action === 'rejected'){
-         proposal = await this.updateProposalStatus(id, InnerStatusEnum.REJECTED_BY_SUPERVISOR);
+         proposal = await this.updateProposalStatus(id, InnerStatusEnum.REJECTED_BY_SUPERVISOR, undefined, OuterStatusEnum.CANCELED);
          await this.createProposalLog(body, InnerStatusEnum.ACCEPTED_BY_MODERATOR, proposal, userId, 'PROJECT_SUPERVISOR');
       }
     }else if(role === ProposalAdminRole.PROJECT_MANAGER){
@@ -914,7 +915,7 @@ export class TenderProposalService {
          proposal = await this.updateProposalStatus(id, InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER);
          await this.createProposalLog(body, InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER, proposal, userId, 'PROJECT_MANAGER');
       }else if(action === 'rejected'){
-         proposal = await this.updateProposalStatus(id, InnerStatusEnum.REJECTED_BY_PROJECT_MANAGER);
+         proposal = await this.updateProposalStatus(id, InnerStatusEnum.REJECTED_BY_PROJECT_MANAGER, undefined, OuterStatusEnum.CANCELED);
          await this.createProposalLog(body, InnerStatusEnum.REJECTED_BY_PROJECT_MANAGER, proposal, userId, 'PROJECT_MANAGER');
       }else if(action === 'acceptAndAskForConsultaion'){
          proposal = await this.updateProposalStatus(id, InnerStatusEnum.ACCEPTED_AND_NEED_CONSULTANT);
@@ -933,7 +934,7 @@ export class TenderProposalService {
          proposal = await this.updateProposalStatus(id, InnerStatusEnum.ACCEPTED_BY_CEO);
          await this.createProposalLog(body, InnerStatusEnum.ACCEPTED_BY_CEO, proposal, userId, 'CEO');
       }else if(action === 'rejected'){
-         proposal = await this.updateProposalStatus(id, InnerStatusEnum.REJECTED_BY_CEO)
+         proposal = await this.updateProposalStatus(id, InnerStatusEnum.REJECTED_BY_CEO, undefined, OuterStatusEnum.CANCELED)
          await this.createProposalLog(body, InnerStatusEnum.REJECTED_BY_CEO, proposal, userId, 'CEO');
       }
     }else{
@@ -944,14 +945,15 @@ export class TenderProposalService {
     return proposal;
   }
 
-  async updateProposalStatus(id: string, inner_status: string, track_id?: string){
+  async updateProposalStatus(id: string, inner_status: string, track_id?: string, outter_status?: string){
     return this.prismaService.proposal.update({
       where:{
         id
       },
       data: {
         inner_status,
-        track_id
+        track_id,
+        outter_status
       }
     });
   }
