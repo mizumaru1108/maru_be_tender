@@ -43,7 +43,8 @@ const ActionBox = ({ onReturn, onSavingDraft, lastStep, step }: PROPS) => {
               borderColor: '#000',
             }}
             onClick={onSavingDraft}
-            disabled={step ? false : true}
+            // disabled={step ? false : true}
+            disabled
           >
             {translate('saving_as_draft')}
           </Button>

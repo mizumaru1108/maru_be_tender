@@ -1,4 +1,5 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
+import useLocales from 'hooks/useLocales';
 import useResponsive from 'hooks/useResponsive';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
@@ -11,7 +12,7 @@ export default function AccountPopover() {
   const isMobile = useResponsive('down', 'sm');
   const { user, activeRole } = useAuth();
   const role = activeRole!;
-
+  const { translate } = useLocales();
   return (
     <>
       {isMobile ? (
@@ -44,6 +45,7 @@ export default function AccountPopover() {
             height: '50px',
             backgroundColor: 'rgba(147, 163, 176, 0.16)',
             borderRadius: '12px',
+            ':hover': { backgroundColor: 'rgba(147, 220, 176, 0.16)' },
           }}
         >
           <Stack direction="row" spacing={2}>
@@ -63,13 +65,9 @@ export default function AccountPopover() {
                   fontSize: '12px',
                 }}
               >
-                {/* جمعية الدعوة والإرشاد وتوعية الجاليات */}
-                {role_url_map[`${role}`] ?? 'User Roles'}
+                {user?.firstName}
               </Typography>
-              <Typography sx={{ color: '#1E1E1E', fontSize: '14px' }}>
-                {/* حساب شريك */}
-                {user?.fullName ?? "User's name"}
-              </Typography>
+              <Typography sx={{ color: '#1E1E1E', fontSize: '14px' }}>{translate(role)}</Typography>
             </Stack>
           </Stack>
         </Box>

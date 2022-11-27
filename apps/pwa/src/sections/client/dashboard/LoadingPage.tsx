@@ -17,7 +17,7 @@ function LoadingPage() {
           <Grid container columnSpacing={7} rowSpacing={5}>
             <Grid item md={8} xs={12}>
               <Stack gap={3}>
-                <Typography variant="h4">المشروع الحالي</Typography>
+                <Typography variant="h4">المشاريع الحالية</Typography>
                 <Skeleton
                   variant="rectangular"
                   height="200px"

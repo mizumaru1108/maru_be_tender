@@ -6,6 +6,7 @@ import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
+import { approveProposal } from 'queries/commons/approveProposal';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useMutation } from 'urql';
@@ -45,7 +46,7 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
   const pid = location.pathname.split('/')[4];
 
   const [proposalRejection, reject] = useMutation(rejectProposalWLog);
-  const [proposalAccepting, accept] = useMutation(approveProposalWLog);
+  const [proposalAccepting, accept] = useMutation(approveProposal);
   const { fetching: accFetch, error: accError } = proposalAccepting;
   const { fetching: rejFetch, error: rejError } = proposalRejection;
   const [action, setAction] = useState<'accept' | 'reject'>('reject');
@@ -62,21 +63,12 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
 
   const handleApproval = async () => {
     await accept({
-      proposalLogPayload: {
-        id: nanoid(), // generate by nano id
-        proposal_id: pid, // from the proposal it self
-        reviewer_id: userId, // user id of current user
-        client_user_id: organizationId, // user id on the proposal data
-        inner_status: 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
-        outter_status: 'PENDING',
-        state: 'PROJECT_SUPERVISOR',
-      } as any,
-      proposalId: pid,
-      updateProposalStatusAndStatePayloads: {
+      approveProposalPayloads: {
         inner_status: 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION' as InnerStatus,
         outter_status: 'ONGOING',
         state: `PROJECT_SUPERVISOR`,
-      } as updateProposalStatusAndState,
+      },
+      proposalId: pid,
     });
 
     if (!accFetch) {

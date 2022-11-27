@@ -907,6 +907,17 @@ const en = {
   tender_project_manager: 'Project Manager',
   tender_project_supervisor: 'Project Supervisor',
   account_permission: 'Account Permissions',
+  permissions: {
+    CEO: 'CEO',
+    PROJECT_MANAGER: 'Project Manager',
+    PROJECT_SUPERVISOR: 'Project Supervisor',
+    CONSULTANT: 'Consultant',
+    FINANCE: 'Finance',
+    CASHIER: 'Cashier',
+    MODERATOR: 'Moderator',
+    ACCOUNTS_MANAGER: 'Accounts Manager',
+    ADMIN: 'Super Admin',
+  },
 };
 
 export default en;

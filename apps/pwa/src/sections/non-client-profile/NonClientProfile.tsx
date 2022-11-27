@@ -50,8 +50,6 @@ export default function NonClientProfile() {
   const { data, fetching, error } = result;
 
   useEffect(() => {
-    console.log('data', data);
-    console.log('user', user);
     setProfile({
       firstName: user?.fullName || 'N/A',
       lastName: user?.lastName || 'N/A',
@@ -109,6 +107,7 @@ export default function NonClientProfile() {
                 fontSize: isMobile ? '10px' : '15px',
               }}
               onClick={() => navigate('/client/my-profile/edit')}
+              disabled
             >
               {translate('user_profile.label.edit_button')}
             </Button>

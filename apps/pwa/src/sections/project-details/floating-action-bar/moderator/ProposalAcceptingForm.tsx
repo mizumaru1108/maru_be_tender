@@ -106,7 +106,7 @@ function ProposalAcceptingForm({ children, onSubmit }: ProposalFormProps) {
             }
           />
         </Grid>
-        <Grid item md={12}>
+        <Grid item md={12} xs={12}>
           <BaseField
             type="textArea"
             name="notes"

@@ -5,13 +5,15 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigate } from 'react-router';
 import * as Yup from 'yup';
 import { FormProvider } from 'components/hook-form';
-import axios from 'axios';
-import { useSnackbar } from 'notistack';
 import * as React from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
-import { TMRA_RAISE_URL } from 'config';
 import useAuth from 'hooks/useAuth';
+import axiosInstance from 'utils/axios';
+import { LoadingButton } from '@mui/lab';
+import { PERMISSIONS } from '_mock/permissions';
+import { translateRect } from '@fullcalendar/common';
+import useLocales from 'hooks/useLocales';
 
 type FormValuesProps = {
   employee_name: string;
@@ -23,18 +25,28 @@ type FormValuesProps = {
   activate_user: boolean;
 };
 
+interface SnackBar {
+  open: boolean;
+  message: string;
+  severity: 'success' | 'error';
+}
+
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
 function AddNewUser() {
+  const { translate } = useLocales();
+
   const { activeRole } = useAuth();
 
-  const [errorOpen, setErrorOpen] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
-  const [error, setError] = React.useState<string>('');
-
-  const [sucessCreateOpen, setSucessCreateOpen] = React.useState(false);
+  const [openSnackBar, setOpenSnackBar] = React.useState<SnackBar>({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
 
   const NewEmployeeSchema = Yup.object().shape({
     employee_name: Yup.string().required('Employee Name required'),
@@ -74,56 +86,46 @@ function AddNewUser() {
   const onSubmit = async (data: FormValuesProps) => {
     const { employee_path, ...restData } = data;
     try {
-      const res = await axios.post(
-        `${TMRA_RAISE_URL}/tender-user/create`,
-        { ...restData, ...(data.employee_path !== 'GENERAL' && { employee_path }) },
+      setIsLoading(true);
+      await axiosInstance.post(
+        '/tender-user/create',
         {
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-            'x-hasura-role': activeRole!,
-          },
-        }
+          ...restData,
+          ...(data.employee_path !== 'GENERAL' && { employee_path }),
+        },
+        { headers: { 'x-hasura-role': activeRole! } }
       );
-      setSucessCreateOpen(true);
+      setIsLoading(false);
+      setOpenSnackBar({ open: true, message: 'تم إنشاء الحساب', severity: 'success' });
       navigate('/admin/dashboard/users-and-permissions');
     } catch (error) {
-      setError(error.response.data.message);
-      setErrorOpen(true);
+      setIsLoading(false);
+      setOpenSnackBar({ open: true, message: error.message, severity: 'error' });
     }
   };
 
-  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+  const handleCloseSnackBar = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }
-    setSucessCreateOpen(false);
-    setErrorOpen(false);
+    setOpenSnackBar({ open: false, message: '', severity: 'success' });
   };
 
   const navigate = useNavigate();
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Snackbar
-        open={sucessCreateOpen}
+        open={openSnackBar.open}
         autoHideDuration={6000}
-        onClose={handleClose}
+        onClose={handleCloseSnackBar}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-          تم إنشاء الحساب بنجاح
-        </Alert>
-      </Snackbar>
-
-      <Snackbar
-        open={errorOpen}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-          {error}
+        <Alert
+          onClose={handleCloseSnackBar}
+          severity={openSnackBar.severity}
+          sx={{ width: '100%' }}
+        >
+          {openSnackBar.message}
         </Alert>
       </Snackbar>
       <IconButton
@@ -229,17 +231,10 @@ function AddNewUser() {
                 name="user_roles"
                 label="صلاحيات الموظف"
                 placeholder="صلاحيات الموظف"
-                options={[
-                  { label: 'الرئيس', value: 'CEO' },
-                  { label: 'مدير إدارة', value: 'PROJECT_MANAGER' },
-                  { label: 'مشرف المشاريع', value: 'PROJECT_SUPERVISOR' },
-                  { label: 'لجنة المستشارين', value: 'CONSULTANT' },
-                  { label: 'محاسب', value: 'FINANCE' },
-                  { label: 'أمين صندوق', value: 'CASHIER' },
-                  { label: 'مسؤول الفرز', value: 'MODERATOR' },
-                  { label: 'إدارة الشركاء (مشرف الحسابات)', value: 'ACCOUNTS_MANAGER' },
-                  { label: 'سوبر ادمن', value: 'ADMIN' },
-                ]}
+                options={PERMISSIONS.map((item, index) => ({
+                  label: translate(`permissions.${item}`),
+                  value: item,
+                }))}
               />
             </Grid>
             <Grid item md={12} xs={12}>
@@ -266,7 +261,7 @@ function AddNewUser() {
                       رجوع
                     </Button>
                     <Box sx={{ width: '10px' }} />
-                    <Button
+                    <LoadingButton
                       type="submit"
                       variant="outlined"
                       sx={{
@@ -276,9 +271,10 @@ function AddNewUser() {
                         hieght: { xs: '100%', sm: '50px' },
                         '&:hover': { backgroundColor: '#0E8478' },
                       }}
+                      loading={isLoading}
                     >
                       إنشاء
-                    </Button>
+                    </LoadingButton>
                   </Stack>
                 </Box>
               </Stack>

@@ -1,19 +1,7 @@
-import { useState } from 'react';
-// @mui
-import { useTheme } from '@mui/material/styles';
-import {
-  Avatar,
-  Checkbox,
-  TableRow,
-  TableCell,
-  Typography,
-  Stack,
-  Button,
-  Chip,
-} from '@mui/material';
+import { Avatar, Checkbox, TableRow, TableCell, Typography, Stack, Chip } from '@mui/material';
 import Label from '../../../../components/Label';
-import Iconify from '../../../../components/Iconify';
 import { UsersAndPermissionsInterface } from './types';
+import { LoadingButton } from '@mui/lab';
 
 // ----------------------------------------------------------------------
 
@@ -23,6 +11,7 @@ type Props = {
   onEditRow: VoidFunction;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
+  isDeleting: { id: string; loading: boolean };
 };
 
 export default function UsersAndPermissionsTableRow({
@@ -30,6 +19,7 @@ export default function UsersAndPermissionsTableRow({
   selected,
   onSelectRow,
   onDeleteRow,
+  isDeleting,
 }: Props) {
   const { name, email, activation, permissions } = row;
 
@@ -57,7 +47,7 @@ export default function UsersAndPermissionsTableRow({
       </TableCell>
       <TableCell align="left">
         <Stack direction="row" gap={2}>
-          <Button
+          <LoadingButton
             startIcon={
               <div>
                 <svg
@@ -94,8 +84,8 @@ export default function UsersAndPermissionsTableRow({
             onClick={() => console.log('asdlamsdkl')}
           >
             تعديل
-          </Button>
-          <Button
+          </LoadingButton>
+          <LoadingButton
             startIcon={
               <div>
                 <svg
@@ -138,9 +128,10 @@ export default function UsersAndPermissionsTableRow({
               fontSize: '12px',
             }}
             onClick={onDeleteRow}
+            loading={isDeleting.id === row.id ? isDeleting.loading : false}
           >
             حذف
-          </Button>
+          </LoadingButton>
         </Stack>
       </TableCell>
     </TableRow>

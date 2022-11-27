@@ -9,6 +9,7 @@ import { REGIONS } from 'sections/auth/register/RegisterFormData';
 import { useEffect, useMemo } from 'react';
 import { MainValuesProps } from '../../../../@types/register';
 import BaseField from 'components/hook-form/BaseField';
+import { AUTHORITY } from '_mock/authority';
 
 type FormProps = {
   children?: React.ReactNode;
@@ -85,67 +86,16 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
           <>
             {client_field === 'main' && (
               <Grid item md={12} xs={12}>
-                <RHFSelect name="authority" label={translate('register_form1.authority.label')}>
-                  <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
-                    {translate('register_form1.authority.placeholder')}
-                  </option>
-                  <option value="0" style={{ backgroundColor: '#fff' }}>
-                    أخرى
-                  </option>
-                  <option value="1" style={{ backgroundColor: '#fff' }}>
-                    وزارة النقل
-                  </option>
-                  <option value="2" style={{ backgroundColor: '#fff' }}>
-                    وزارة الاقتصاد والتخطيط
-                  </option>
-                  <option value="3" style={{ backgroundColor: '#fff' }}>
-                    وزارة الاتصالات وتقنية المعلومات
-                  </option>
-                  <option value="4" style={{ backgroundColor: '#fff' }}>
-                    وزارة التعليم
-                  </option>
-                  <option value="5" style={{ backgroundColor: '#fff' }}>
-                    وزارة الداخلية
-                  </option>
-                  <option value="6" style={{ backgroundColor: '#fff' }}>
-                    وزارة العدل
-                  </option>
-                  <option value="7" style={{ backgroundColor: '#fff' }}>
-                    وزارة التجارة والاستثمار
-                  </option>
-                  <option value="7" style={{ backgroundColor: '#fff' }}>
-                    وزارة الإعلام
-                  </option>
-                  <option value="7" style={{ backgroundColor: '#fff' }}>
-                    وزارة الطاقة
-                  </option>
-                  <option value="7" style={{ backgroundColor: '#fff' }}>
-                    وزارة السياحة
-                  </option>
-                  <option value="7" style={{ backgroundColor: '#fff' }}>
-                    الهئية العامة للأوقاف
-                  </option>
-                  <option value="7" style={{ backgroundColor: '#fff' }}>
-                    وزارة الصحة
-                  </option>
-                  <option value="7" style={{ backgroundColor: '#fff' }}>
-                    وزارة الرياضة
-                  </option>
-                  <option value="7" style={{ backgroundColor: '#fff' }}>
-                    وزارة الشؤون البلدية والقروية والإسكان
-                  </option>
-                  <option value="7" style={{ backgroundColor: '#fff' }}>
-                    وزارة البيئة والمياه والزراعة
-                  </option>
-                  <option value="7" style={{ backgroundColor: '#fff' }}>
-                    الهئية العامة للمعارض والمؤتمرات
-                  </option>
-                  <option value="7" style={{ backgroundColor: '#fff' }}>
-                    وزارة الصناعة والثروة المعدنية
-                  </option>
-                  <option value="7" style={{ backgroundColor: '#fff' }}>
-                    الهئيئة السعودية للبيانات والذكاء الاصطناعي
-                  </option>
+                <RHFSelect
+                  name="authority"
+                  label={translate('register_form1.authority.label')}
+                  placeholder={translate('register_form1.authority.placeholder')}
+                >
+                  {AUTHORITY.map((item, index) => (
+                    <option value={item} style={{ backgroundColor: '#fff' }} key={index}>
+                      {item}
+                    </option>
+                  ))}
                 </RHFSelect>
               </Grid>
             )}
@@ -185,7 +135,6 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
                   {translate(item)}
                 </option>
               ))}
-              .options
             </>
           </RHFSelect>
         </Grid>

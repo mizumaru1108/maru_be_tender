@@ -18,6 +18,7 @@ import useAuth from 'hooks/useAuth';
 import { getDraftProposal } from 'queries/client/getDraftProposal';
 import { updateDraftProposal } from 'queries/client/updateDraftProposal';
 import axios from 'axios';
+import axiosInstance from 'utils/axios';
 
 const steps = [
   'funding_project_request_form1.step',
@@ -196,26 +197,35 @@ const FundingProjectRequestForm = () => {
       step: STEP[step - 1],
     };
     if (id) {
-      const res = axios.post(
-        'https://api-staging.tmra.io/v2/raise/tender-proposal/update-draft',
-        {
-          ...(step >= 1 && { form: requestState.form1 }),
-          ...(step >= 2 && { form2: requestState.form2 }),
-          ...(step >= 3 && { form3: requestState.form3 }),
-          ...(step >= 4 && {
-            amount_required_fsupport: requestState.form4.amount_required_fsupport,
-            proposal_item_budgets: requestState.form4.detail_project_budgets,
-          }),
-        },
-        {
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-          },
-        }
-      );
+      const res = await axiosInstance.post('/tender-proposal/update-draft', {
+        ...(step >= 1 && { form: requestState.form1 }),
+        ...(step >= 2 && { form2: requestState.form2 }),
+        ...(step >= 3 && { form3: requestState.form3 }),
+        ...(step >= 4 && {
+          amount_required_fsupport: requestState.form4.amount_required_fsupport,
+          proposal_item_budgets: requestState.form4.detail_project_budgets,
+        }),
+      });
+      // const res = axios.post(
+      //   'https://api-staging.tmra.io/v2/raise/tender-proposal/update-draft',
+      // {
+      //   ...(step >= 1 && { form: requestState.form1 }),
+      //   ...(step >= 2 && { form2: requestState.form2 }),
+      //   ...(step >= 3 && { form3: requestState.form3 }),
+      //   ...(step >= 4 && {
+      //     amount_required_fsupport: requestState.form4.amount_required_fsupport,
+      //     proposal_item_budgets: requestState.form4.detail_project_budgets,
+      //   }),
+      // },
+      //   {
+      //     headers: {
+      //       Accept: 'application/json',
+      //       'Content-Type': 'application/json',
+      //       'X-Requested-With': 'XMLHttpRequest',
+      //       Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      //     },
+      //   }
+      // );
       console.log(res);
       // const res = await updateDraft({
       //   id,

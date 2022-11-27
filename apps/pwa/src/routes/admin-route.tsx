@@ -33,6 +33,9 @@ const NonClientProfile = Loadable(
 const NonClientProfileEdit = Loadable(
   lazy(() => import('sections/non-client-profile/NonClientProfileEdit'))
 );
+const SectionTracks = Loadable(
+  lazy(() => import('sections/admin/track-budget/section-track/SectionTracks'))
+);
 
 export const adminRoute = {
   path: 'admin',
@@ -58,7 +61,13 @@ export const adminRoute = {
         { element: <Navigate to="/cashier/dashboard/app" replace />, index: true },
         { path: 'app', element: <Main /> },
         { path: 'transaction-progression', element: <TransactionProgression /> },
-        { path: 'tracks-budget', element: <TracksBudget /> },
+        {
+          path: 'tracks-budget',
+          children: [
+            { path: '', element: <TracksBudget /> },
+            { path: ':id/show', element: <SectionTracks /> },
+          ],
+        },
         { path: 'gregorian-year', element: <GregorianYear /> },
         {
           path: 'application-and-admission-settings',

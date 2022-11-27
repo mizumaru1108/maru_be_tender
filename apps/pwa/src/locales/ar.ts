@@ -1033,6 +1033,17 @@ const ar = {
   tender_project_manager: 'مدير المشروع',
   tender_project_supervisor: 'مشرف المشروع',
   account_permission: 'صلاحيات الحساب',
+  permissions: {
+    CEO: 'الرئيس',
+    PROJECT_MANAGER: 'مدير الإدارة',
+    PROJECT_SUPERVISOR: 'مشرف المشاريع',
+    CONSULTANT: 'لجنة المستشارين',
+    FINANCE: 'محاسب',
+    CASHIER: 'أمين صندوق',
+    MODERATOR: 'مسؤول الفرز',
+    ACCOUNTS_MANAGER: 'إدارة الشركاء (مشرف الحسابات)',
+    ADMIN: 'سوبر ادمن',
+  },
 };
 
 export default ar;

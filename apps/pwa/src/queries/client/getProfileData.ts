@@ -12,7 +12,6 @@ export const getProfileData = `query MyQuery($id: String = "") {
       center_administration
       website
       twitter_acount
-      email
       phone
       ceo_mobile
       ceo_name

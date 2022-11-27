@@ -1,5 +1,5 @@
 import { paramCase } from 'change-case';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // @mui
 import {
@@ -38,6 +38,8 @@ import { useQuery } from 'urql';
 import { getAllTheEmployees } from 'queries/admin/getAllTheEmployees';
 import { TMRA_RAISE_URL } from 'config';
 import axios from 'axios';
+import axiosInstance from 'utils/axios';
+import useAuth from 'hooks/useAuth';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'الاسم', align: 'left' },
@@ -47,6 +49,11 @@ const TABLE_HEAD = [
   { id: 'events', label: 'احداث', align: 'left' },
 ];
 
+interface SnackBar {
+  open: boolean;
+  message: string;
+  severity: 'success' | 'error';
+}
 export default function UsersAndPermissionsTable() {
   const {
     dense,
@@ -66,13 +73,19 @@ export default function UsersAndPermissionsTable() {
     onChangeRowsPerPage,
   } = useTable();
 
+  const { activeRole } = useAuth();
+
+  const [openSnackBar, setOpenSnackBar] = React.useState<SnackBar>({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
   const { themeStretch } = useSettings();
 
-  const [actionError, setActionError] = useState<string>('');
-
-  const [errorOpen, setErrorOpen] = useState(false);
-
-  const [sucessDeleteOpen, setSucessDeleteOpen] = useState(false);
+  const [isDeleting, setIsDeletig] = React.useState<{ id: string; loading: boolean }>({
+    id: '',
+    loading: false,
+  });
 
   const navigate = useNavigate();
 
@@ -99,33 +112,28 @@ export default function UsersAndPermissionsTable() {
 
   const handleDeleteRow = async (id: string) => {
     try {
-      const res = await axios.post(
-        `${TMRA_RAISE_URL}/tender-user/delete`,
+      setIsDeletig({ loading: true, id });
+      await axiosInstance.post(
+        '/tender-user/delete',
         { user_id: id },
-        {
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-          },
-        }
+        { headers: { 'x-hasura-role': activeRole! } }
       );
       const deleteRow = tableData.filter((row) => row.id !== id);
+      setIsDeletig({ loading: false, id: '' });
       setSelected([]);
+      setOpenSnackBar({ open: true, message: 'تم حذف المستخدم بنجاح', severity: 'success' });
       setTableData(deleteRow);
-      setSucessDeleteOpen(true);
     } catch (error) {
-      setActionError(error.response.data.message);
-      setErrorOpen(true);
+      setIsDeletig({ loading: false, id: '' });
+      setOpenSnackBar({ open: true, message: error.message, severity: 'error' });
     }
   };
 
-  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+  const handleCloseSnackBar = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }
-    setSucessDeleteOpen(false);
-    setErrorOpen(false);
+    setOpenSnackBar({ open: false, message: '', severity: 'success' });
   };
 
   const handleDeleteRows = (selected: string[]) => {
@@ -154,7 +162,6 @@ export default function UsersAndPermissionsTable() {
     (!dataFiltered.length && !!filterStatus);
 
   useEffect(() => {
-    console.log(data);
     if (data?.user) {
       setTableData(data.user);
     }
@@ -164,13 +171,17 @@ export default function UsersAndPermissionsTable() {
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
       <Snackbar
-        open={sucessDeleteOpen}
+        open={openSnackBar.open}
         autoHideDuration={6000}
-        onClose={handleClose}
+        onClose={handleCloseSnackBar}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-          تم حذف المستخدم بنجاح
+        <Alert
+          onClose={handleCloseSnackBar}
+          severity={openSnackBar.severity}
+          sx={{ width: '100%' }}
+        >
+          {openSnackBar.message}
         </Alert>
       </Snackbar>
       <Stack direction="row" justifyContent="space-between" sx={{ mb: '40px' }}>
@@ -248,6 +259,7 @@ export default function UsersAndPermissionsTable() {
                       onSelectRow={() => onSelectRow(row.id)}
                       onDeleteRow={() => handleDeleteRow(row.id)}
                       onEditRow={() => handleEditRow(row.name)}
+                      isDeleting={isDeleting}
                     />
                   ))}
 
@@ -293,7 +305,6 @@ function applySortFilter({
   filterStatus: string;
   filterRole: string;
 }) {
-  console.log(tableData);
   const stabilizedThis = tableData.map((el, index) => [el, index] as const);
 
   stabilizedThis.sort((a, b) => {

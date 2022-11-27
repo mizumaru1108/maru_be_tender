@@ -40,7 +40,8 @@ const SupportingDurationInfoForm = ({
 
   const [oprnError, setOpenError] = useState(false);
   const onBankInfoSubmit = () => {
-    if (selectedCard === undefined) {
+    console.log(selectedCard);
+    if (selectedCard === '') {
       setOpenError(true);
       window.scrollTo(0, 0);
     } else onSubmit(selectedCard);
@@ -146,7 +147,8 @@ const SupportingDurationInfoForm = ({
                   borderColor: '#000',
                 }}
                 onClick={onSavingDraft}
-                disabled={step ? false : true}
+                // disabled={step ? false : true}
+                disabled
               >
                 {translate('saving_as_draft')}
               </Button>
