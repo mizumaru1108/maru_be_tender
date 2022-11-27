@@ -27,7 +27,6 @@ function FloatingActionBar() {
 
   // Logic here to get current user role
   const currentRoles = user?.registrations[0].roles[0] as FusionAuthRoles;
-
   // var for insert into navigate in handel Approval and Rejected
   const p = currentRoles.split('_')[1];
 
@@ -53,23 +52,12 @@ function FloatingActionBar() {
   };
 
   const handleApproval = async (data: any) => {
-    console.log(data);
     await accept({
       proposalId: pid,
       approveProposalPayloads: {
-        inner_status:
-          currentRoles === 'tender_ceo'
-            ? 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION'
-            : currentRoles === 'tender_moderator'
-            ? 'ACCEPTED_BY_MODERATOR'
-            : `${a}`, // the next step when accepted
+        inner_status: 'ACCEPTED_BY_MODERATOR',
         outter_status: 'ONGOING',
-        state:
-          currentRoles === 'tender_ceo'
-            ? 'PROJECT_SUPERVISOR'
-            : currentRoles === 'tender_moderator'
-            ? 'PROJECT_SUPERVISOR'
-            : `${a}`, // the next step when accepted
+        state: 'PROJECT_SUPERVISOR',
         project_track: data.path,
         ...(data.supervisors !== 'all' && { supervisor_id: data.supervisors }),
       },
@@ -78,7 +66,7 @@ function FloatingActionBar() {
       enqueueSnackbar(translate('proposal_approved'), {
         variant: 'success',
       });
-      navigate(`/${p}/dashboard/app`);
+      navigate(`/moderator/dashboard/app`);
     }
     if (accError) {
       enqueueSnackbar(accError.message, {
@@ -90,7 +78,6 @@ function FloatingActionBar() {
           horizontal: 'right',
         },
       });
-      console.log(accError);
     }
   };
 
@@ -100,12 +87,7 @@ function FloatingActionBar() {
       rejectProposalPayloads: {
         inner_status: 'REJECTED',
         outter_status: 'CANCELED',
-        state:
-          currentRoles === 'tender_moderator'
-            ? 'CLIENT'
-            : currentRoles === 'tender_ceo'
-            ? 'CLIENT'
-            : `${a}`,
+        state: 'CLIENT',
       },
     });
 
@@ -113,7 +95,7 @@ function FloatingActionBar() {
       enqueueSnackbar(translate('proposal_rejected'), {
         variant: 'success',
       });
-      navigate(`/${p}/dashboard/app`);
+      navigate(`/moderator/dashboard/app`);
     }
     if (rejError) {
       enqueueSnackbar(rejError.message, {
@@ -125,7 +107,6 @@ function FloatingActionBar() {
           horizontal: 'right',
         },
       });
-      console.log(rejError);
     }
   };
   return (

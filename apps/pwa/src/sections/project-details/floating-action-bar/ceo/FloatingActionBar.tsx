@@ -75,7 +75,7 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
       enqueueSnackbar(translate('proposal_approved'), {
         variant: 'success',
       });
-      navigate(`/${roles}/dashboard/app`);
+      navigate(`/ceo/dashboard/app`);
     }
     if (accError) {
       enqueueSnackbar(accError.message, {
@@ -117,7 +117,7 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
       enqueueSnackbar(translate('proposal_rejected'), {
         variant: 'success',
       });
-      navigate(`/${roles}/dashboard/app`);
+      navigate(`/ceo/dashboard/app`);
     }
     if (rejError) {
       enqueueSnackbar(rejError.message, {
