@@ -6,12 +6,14 @@ import {
 } from '@nestjs/common';
 import { track, track_section, Prisma } from '@prisma/client';
 import _ from 'lodash';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class TenderTrackRepository {
-  private logger = rootLogger.child({ logger: TenderTrackRepository.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': TenderTrackRepository.name,
+  });
   constructor(private readonly prismaService: PrismaService) {}
 
   /* save trackSection and increment Parents budget */
@@ -115,10 +117,8 @@ export class TenderTrackRepository {
       let idx = 0;
       while (idx < sections.length)
         if (sections[idx].section_id)
-          this.buildTree(
-            sections,
-            sections.splice(idx, 1)[0],
-          ); // if have parent then remove it from the array to relocate it to the right place
+          this.buildTree(sections, sections.splice(idx, 1)[0]);
+        // if have parent then remove it from the array to relocate it to the right place
         else idx++; // if doesn't have parent then is root and move it to the next object
     }
   }

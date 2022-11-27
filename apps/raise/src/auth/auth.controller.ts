@@ -1,16 +1,11 @@
-import { Controller, Post, Body, HttpStatus } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { BaseResponse } from '../commons/dtos/base-response';
 import { baseResponseHelper } from '../commons/helpers/base-response-helper';
 import { User } from '../user/schema/user.schema';
 
 import { AuthService } from './auth.service';
-import {
-  LoginRequestDto,
-  LoginResponseDto,
-  RegisterRequestDto,
-  RegisterTendersDto,
-} from './dtos';
+import { LoginRequestDto, LoginResponseDto, RegisterRequestDto } from './dtos';
 
 @Controller('auth')
 export class AuthController {

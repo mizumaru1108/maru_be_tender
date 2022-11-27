@@ -22,7 +22,7 @@ import { DonationLogsDocument } from '../donation/schema/donation_log.schema';
 import { DonationLogDocument } from '../donation/schema/donation-log.schema';
 import { PaytabsIpnWebhookResponsePayload } from '../libs/paytabs/dtos/response/paytabs-ipn-webhook-response-payload.dto';
 import { PaytabsService } from '../libs/paytabs/services/paytabs.service';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { DonorService } from './donor.service';
 import {
@@ -41,7 +41,9 @@ import { Donor } from './schema/donor.schema';
 @ApiTags('donor')
 @Controller('donor')
 export class DonorController {
-  private logger = rootLogger.child({ logger: DonorController.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': DonorController.name,
+  });
 
   constructor(
     private donorService: DonorService,
@@ -185,7 +187,7 @@ export class DonorController {
       organizationId,
       donorUserId,
       sortStatus,
-      sortDate
+      sortDate,
     );
   }
 

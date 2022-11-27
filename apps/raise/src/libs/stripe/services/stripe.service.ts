@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { rootLogger } from '../../../logger';
+import { ROOT_LOGGER } from 'src/libs/root-logger';
 import Stripe from 'stripe';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
 
 @Injectable()
 export class StripeService {
-  private logger = rootLogger.child({ logger: StripeService.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': StripeService.name,
+  });
   // private stripe;
 
   constructor(private configService: ConfigService) {

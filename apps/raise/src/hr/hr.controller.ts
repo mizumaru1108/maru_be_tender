@@ -8,14 +8,16 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { CreateHrDto } from './dto/create-hr.dto';
 import { UpdateHrDto } from './dto/update-hr.dto';
 import { HrService } from './hr.service';
 @ApiTags('hr')
 @Controller('hr')
 export class HrController {
-  private logger = rootLogger.child({ logger: HrController.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': HrController.name,
+  });
   constructor(private hrService: HrService) {}
 
   @ApiOperation({ summary: 'Create Hr Data' })

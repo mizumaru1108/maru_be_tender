@@ -5,12 +5,13 @@ import { CreateTicketDto } from './dto';
 import { Ticket, TicketDocument } from './ticket.schema';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
-import { rootLogger } from '../logger';
-
+import { ROOT_LOGGER } from '../libs/root-logger';
 
 @Injectable()
 export class TicketService {
-  private logger = rootLogger.child({ logger: TicketService.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': TicketService.name,
+  });
 
   constructor(
     @InjectModel(Ticket.name)
@@ -25,7 +26,7 @@ export class TicketService {
     return createdTicket.save();
   }
 
-  async getListAll(){
+  async getListAll() {
     this.logger.debug('Get ticket list ...');
     const data = await this.ticketModel.aggregate([
       {
@@ -33,8 +34,8 @@ export class TicketService {
           from: 'ticketLog',
           localField: 'ticketId',
           foreignField: 'ticketId',
-          as: 'ticketLog'
-        }
+          as: 'ticketLog',
+        },
       },
       {
         $unwind: {
@@ -50,7 +51,7 @@ export class TicketService {
           updatedAt: { $first: '$ticketLog.updatedAt' },
           status: { $first: '$ticketLog.status' },
         },
-      }
+      },
     ]);
     // const data = [
     //             {

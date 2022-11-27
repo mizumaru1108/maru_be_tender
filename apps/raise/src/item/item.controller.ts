@@ -10,7 +10,7 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BaseResponse } from '../commons/dtos/base-response';
 import { baseResponseHelper } from '../commons/helpers/base-response-helper';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { CreateItemDto } from './dto';
 import { ItemSetDeletedFlagDto } from './dto/item-set-flag-deleted';
 import { UpdateItemDto } from './dto/update-item.dto';
@@ -20,7 +20,9 @@ import { ItemService } from './item.service';
 @ApiTags('item')
 @Controller('item')
 export class ItemController {
-  private logger = rootLogger.child({ logger: ItemController.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': ItemController.name,
+  });
   constructor(private itemService: ItemService) {}
 
   @ApiOperation({ summary: 'Get All Items viewed by manager' })

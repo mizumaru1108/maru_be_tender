@@ -7,15 +7,17 @@ import {
   Patch,
   Param,
 } from '@nestjs/common';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { BasketProjectDto, BasketDto } from './dto';
 import { WidgetsService } from './widgets.service';
 
 @Controller('widgets')
 export class WidgetsController {
-  private logger = rootLogger.child({ logger: WidgetsController.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': WidgetsController.name,
+  });
 
-  constructor(private widgetsService: WidgetsService) { }
+  constructor(private widgetsService: WidgetsService) {}
 
   @Get('basket/list')
   async getBasketList(@Query('donorId') donorId: string) {
@@ -56,5 +58,4 @@ export class WidgetsController {
   //   this.logger.debug('fetching basket list...');
   //   return await this.widgetsService.getBasketProjectList(donorId);
   // }
-
 }

@@ -6,14 +6,16 @@ import {
   CampaignDocument,
 } from 'src/campaign/schema/campaign.schema';
 import { Donor, DonorDocument } from 'src/donor/schema/donor.schema';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { ProjectService } from '../project/project.service';
 import { BasketDto, BasketProjectDto } from './dto';
 import { Basket, BasketDocument } from './schemas/basket.schema';
 
 @Injectable()
 export class WidgetsService {
-  private logger = rootLogger.child({ logger: WidgetsService.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': WidgetsService.name,
+  });
   constructor(
     @InjectModel(Basket.name)
     private basketModel: Model<BasketDocument>,

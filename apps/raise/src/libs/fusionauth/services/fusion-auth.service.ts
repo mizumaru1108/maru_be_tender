@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
-import { rootLogger } from 'src/logger';
+import { ROOT_LOGGER } from 'src/libs/root-logger';
 import { LoginRequestDto } from '../../../auth/dtos/login-request.dto';
 import { RegisterRequestDto } from '../../../auth/dtos/register-request.dto';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
@@ -30,7 +30,9 @@ import { TenderCreateUserDto } from '../../../tender-user/user/dtos/requests/cre
  */
 @Injectable()
 export class FusionAuthService {
-  private logger = rootLogger.child({ logger: FusionAuthService.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': FusionAuthService.name,
+  });
   private fusionAuthClient: FusionAuthClient;
   private fusionAuthAdminClient: FusionAuthClient;
   private fusionAuthAppId: string;
@@ -84,11 +86,17 @@ export class FusionAuthService {
 
   async fusionAuthLogin(
     loginRequest: LoginRequestDto,
+    emailShouldBeVerified?: boolean,
   ): Promise<ClientResponse<LoginResponse>> {
-    loginRequest.applicationId = this.fusionAuthAppId;
     try {
       const result: ClientResponse<LoginResponse> =
-        await this.fusionAuthClient.login(loginRequest);
+        await this.fusionAuthClient.login({
+          loginId: loginRequest.loginId,
+          password: loginRequest.password,
+          applicationId: this.fusionAuthAppId,
+        });
+      // console.log(result);
+      // !TODO: if result.statusCode = 204 the user hasn't validate their email. (STILL TO DO), using param emailShouldBeVerified.
       return result;
     } catch (error) {
       if (error.statusCode < 500) {

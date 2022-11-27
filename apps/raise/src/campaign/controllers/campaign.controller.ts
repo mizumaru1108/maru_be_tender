@@ -22,7 +22,7 @@ import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
 import { paginationHelper } from '../../commons/helpers/pagination-helper';
 import { DonorService } from '../../donor/donor.service';
 import { Permission } from '../../libs/authzed/enums/permission.enum';
-import { rootLogger } from '../../logger';
+import { ROOT_LOGGER } from '../../libs/root-logger';
 import { ICurrentUser } from '../../user/interfaces/current-user.interface';
 import { CampaignApplyVendorDto } from '../dto/apply-vendor.dto';
 import { ApproveCampaignResponseDto } from '../dto/approve-campaign-response.dto';
@@ -45,7 +45,9 @@ import { CreateCampaignDto } from '../dto/create-campaign.dto';
 @ApiTags('campaign')
 @Controller('campaign')
 export class CampaignController {
-  private logger = rootLogger.child({ logger: CampaignController.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': CampaignController.name,
+  });
 
   constructor(
     private donorService: DonorService,
@@ -190,7 +192,7 @@ export class CampaignController {
   /**
    *
    */
-   @ApiOperation({
+  @ApiOperation({
     summary: 'Get all my campaign (organizationId)',
   })
   @ApiResponse({
@@ -202,11 +204,11 @@ export class CampaignController {
     @Param('orgzanizationId') organizationId: string,
     @Query() request: GetAllMyCampaignFilterDto,
   ): Promise<PaginatedResponse<CampaignDocument[]>> {
-    
-    const campaignList = await this.campaignService.getCampaignsByOrganizationId(
-      organizationId,
-      request,
-    )
+    const campaignList =
+      await this.campaignService.getCampaignsByOrganizationId(
+        organizationId,
+        request,
+      );
 
     const response = paginationHelper(
       campaignList.docs,
@@ -396,7 +398,7 @@ export class CampaignController {
     status: 201,
     description: 'The Campaign has been successfully created.',
   })
-  @Permissions(Permission.OE || Permission.NF )
+  @Permissions(Permission.OE || Permission.NF)
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @Post('campaignCreate')
   async campaignCreate(

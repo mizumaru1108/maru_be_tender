@@ -5,9 +5,14 @@ import { TenderCreateUserDto } from '../dtos/requests/create-user.dto';
 import { TenderUserRepository } from '../repositories/tender-user.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateUserResponseDto } from '../dtos/responses/create-user-response.dto';
+import { ROOT_LOGGER } from '../../../libs/root-logger';
 
 @Injectable()
 export class TenderUserService {
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': TenderUserService.name,
+  });
+
   constructor(
     private readonly fusionAuthService: FusionAuthService,
     private tenderUserRepository: TenderUserRepository,

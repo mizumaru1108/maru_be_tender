@@ -46,6 +46,8 @@ import { TenderAuthModule } from './tender-auth/tender-auth.module';
 import { TenderUserModule } from './tender-user/tender-user.module';
 import { TenderEmailModule } from './tender-email/tender-email.module';
 import { TenderTrackModule } from './tender-track/track.module';
+import { GsAuthModule } from './gs-auth/gs-auth.module';
+import { GsUserModule } from './gs-user/gs-user.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -128,7 +130,9 @@ import { TenderTrackModule } from './tender-track/track.module';
     TenderAuthModule,
     TenderUserModule,
     TenderEmailModule,
-    TenderTrackModule
+    TenderTrackModule,
+    GsAuthModule,
+    GsUserModule
   ],
   controllers: [],
 })

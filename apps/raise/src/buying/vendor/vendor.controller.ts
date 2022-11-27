@@ -1,12 +1,14 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { VendorService } from './vendor.service';
-import { rootLogger } from '../../logger';
+import { ROOT_LOGGER } from '../../libs/root-logger';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('vendor')
 @Controller('vendor')
 export class VendorController {
-  private logger = rootLogger.child({ logger: VendorController.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': VendorController.name,
+  });
 
   constructor(private vendorService: VendorService) {}
 

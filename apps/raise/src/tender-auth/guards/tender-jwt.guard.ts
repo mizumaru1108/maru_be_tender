@@ -48,8 +48,11 @@ export class TenderJwtGuard extends AuthGuard('jwt') implements CanActivate {
         throw new UnauthorizedException('Invalid token!');
       }
 
+      // console.log(request.headers['x-hasura-role']);
+      // console.log(validToken);
+
       if (
-        validToken.response.jwt.role.indexOf(
+        validToken.response.jwt.roles.indexOf(
           request.headers['x-hasura-role'],
         ) === -1
       ) {

@@ -2,10 +2,13 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Prisma, project_tracks, user, user_type } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
-import { rootLogger } from '../../../logger';
+import { ROOT_LOGGER } from '../../../libs/root-logger';
+
 @Injectable()
 export class TenderUserRepository {
-  private logger = rootLogger.child({ logger: TenderUserRepository.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': TenderUserRepository.name,
+  });
   constructor(private readonly prismaService: PrismaService) {}
 
   /**

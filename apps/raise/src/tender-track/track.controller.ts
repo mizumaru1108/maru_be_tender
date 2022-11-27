@@ -68,7 +68,7 @@ export class TenderTrackController {
     return baseResponseHelper(
       trackSections,
       HttpStatus.OK,
-      'Tender Track Section deleted successfully',
+      'Tender Track Sections',
     );
   }
 }

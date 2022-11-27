@@ -12,7 +12,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OrganizationDto } from './dto/organization.dto';
 import { AppearancenDto } from './dto/appearance.dto';
@@ -45,7 +45,9 @@ import { DonationLogDocument } from '../donation/schema/donation-log.schema';
 @ApiTags('orgs')
 @Controller('orgs')
 export class OrganizationController {
-  private logger = rootLogger.child({ logger: OrganizationController.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': OrganizationController.name,
+  });
 
   constructor(private organizationService: OrganizationService) {}
 
@@ -138,6 +140,19 @@ export class OrganizationController {
   async getPaymentGatewayList(@Param('organizationId') organizationId: string) {
     this.logger.debug('fetching payment gateway list...');
     return await this.organizationService.getPaymentGatewayList(organizationId);
+  }
+
+  @Patch(':organizationId/paymentGateway')
+  async updatePaymentGateway(
+    @Param('organizationId') organizationId: string,
+    @Body() paymentGatewayDto: PaymentGateWayDto,
+  ) {
+    this.logger.debug('add new payment gateway...');
+
+    return await this.organizationService.updatePaymentGateway(
+      organizationId,
+      paymentGatewayDto,
+    );
   }
 
   @Post(':organizationId/paymentGateway')

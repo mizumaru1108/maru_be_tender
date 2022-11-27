@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 datasource db {
@@ -145,7 +146,7 @@ model proposal {
   state                               String?                    @default("MODERATOR")
   inner_status                        String?                    @default("CREATED_BY_CLIENT")
   previously_add_bank                 String[]
-  outter_status                       String?                    @default("PENDING")
+  outter_status                       String?                    @default("ONGOING")
   project_beneficiaries               String?                    @db.VarChar
   number_of_payments                  Decimal?                   @db.Decimal
   finance_id                          String?                    @default("null")
@@ -159,6 +160,7 @@ model proposal {
   proposal_bank_id                    String?                    @db.Uuid
   partial_support_amount              Decimal?                   @db.Decimal
   project_beneficiaries_specific_type String?
+  track_id                            String?                    @db.VarChar
   proposal_beneficiaries              proposal_beneficiaries?    @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
   project_tracks                      project_tracks             @relation(fields: [project_track], references: [id], onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
   bank_information                    bank_information?          @relation("bank_informationToproposal_proposal_bank_id", fields: [proposal_bank_id], references: [id], onDelete: Cascade)
@@ -178,6 +180,7 @@ model proposal {
   proposal_log                        proposal_log[]
   propsal_bank_informations           propsal_bank_information[]
   supervisor                          supervisor[]
+  supervisor_form                     supervisor_form[]
 }
 
 model proposal_comment {
@@ -334,7 +337,7 @@ model supervisor {
   id                  String   @id
   user_id             String
   proposal_id         String
-  clasification_field String   @db.Char
+  clasification_field String   @db.VarChar
   closing_report      Boolean
   support_type        Boolean
   does_an_agreement   Boolean
@@ -625,4 +628,27 @@ model user_role {
   user_type_id String
   user         user      @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_type    user_type @relation(fields: [user_type_id], references: [id], onDelete: Cascade)
+}
+
+model only_test {
+  id String @id @db.Uuid
+}
+
+model supervisor_form {
+  id                            String   @id @db.VarChar
+  clause                        String   @db.VarChar
+  classification_field          String   @db.VarChar
+  support_type                  String   @db.VarChar
+  closing_report                Boolean
+  need_pictures                 Boolean
+  need_an_agreement             Boolean
+  support_amount                Decimal  @db.Decimal
+  num_of_payments               Decimal  @db.Decimal
+  support_outputs               String   @db.VarChar
+  need_vat                      Boolean
+  percentage_of_vat             Decimal  @db.Decimal
+  inclusive_or_exclusive_of_vat Boolean
+  proposal_id                   String   @db.VarChar
+  supervisor_id                 String   @db.VarChar
+  proposal                      proposal @relation(fields: [proposal_id], references: [id], onUpdate: Restrict)
 }

@@ -1,12 +1,14 @@
 import { Controller, Get, Post } from '@nestjs/common';
 import { ReferralService } from './referral.service';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('referral')
 @Controller('referral')
 export class ReferralController {
-  private logger = rootLogger.child({ logger: ReferralController.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': ReferralController.name,
+  });
 
   constructor(private referralService: ReferralService) {}
 

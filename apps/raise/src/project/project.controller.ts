@@ -20,7 +20,7 @@ import { PaginatedResponse } from '../commons/dtos/paginated-response.dto';
 import { baseResponseHelper } from '../commons/helpers/base-response-helper';
 import { paginationHelper } from '../commons/helpers/pagination-helper';
 import { Permission } from '../libs/authzed/enums/permission.enum';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { ICurrentUser } from '../user/interfaces/current-user.interface';
 import { ProjectCreateDto } from './dto/project-create.dto';
 import { ProjectDeleteParamsDto } from './dto/project-delete-params.dto';
@@ -34,7 +34,9 @@ import { Project, ProjectDocument } from './schema/project.schema';
 @ApiTags('project')
 @Controller('project')
 export class ProjectController {
-  private logger = rootLogger.child({ logger: ProjectController.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': ProjectController.name,
+  });
   constructor(private projectService: ProjectService) {}
 
   @ApiOperation({ summary: 'Get list of my projects' })

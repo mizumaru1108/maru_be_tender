@@ -1,5 +1,5 @@
 import { Body, Controller, Post, Get } from '@nestjs/common';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateTicketDto } from './dto';
 import { TicketService } from './ticket.service';
@@ -7,7 +7,9 @@ import { TicketService } from './ticket.service';
 @ApiTags('ticket')
 @Controller('ticket')
 export class TicketController {
-  private logger = rootLogger.child({ logger: TicketController.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': TicketController.name,
+  });
 
   constructor(private ticketService: TicketService) {}
 
@@ -28,5 +30,4 @@ export class TicketController {
     this.logger.debug(`Get all tickets`);
     return await this.ticketService.getListAll();
   }
-
 }

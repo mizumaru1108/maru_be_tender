@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { RoleEnum } from '../user/enums/role-enum';
 import { OperatorService } from './operator.service';
 import { OperatorFilterRequest } from './dto/operator-filter-request';
@@ -20,7 +20,9 @@ import { JwtAuthGuard } from '../auth/jwt.guard';
 @ApiTags('operator')
 @Controller('operator')
 export class OperatorController {
-  private logger = rootLogger.child({ logger: OperatorController.name });
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': OperatorController.name,
+  });
 
   constructor(private operatorService: OperatorService) {}
 

@@ -11,7 +11,7 @@ import {
   Model,
   Types,
 } from 'mongoose';
-import { rootLogger } from '../logger';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { FusionAuthClient } from '@fusionauth/typescript-client';
 import { ConfigService } from '@nestjs/config';
 
@@ -80,7 +80,9 @@ import { SendEmailDto } from '../libs/email/dtos/requests/send-email.dto';
 
 @Injectable()
 export class OrganizationService {
-  private logger = rootLogger.child({ logger: OrganizationService.name });
+  private readonly logger = ROOT_LOGGER.child({
+    logger: OrganizationService.name,
+  });
 
   constructor(
     private readonly emailService: EmailService,
@@ -599,14 +601,51 @@ export class OrganizationService {
 
   async getPaymentGatewayList(organizationId: string) {
     this.logger.debug(`getPaymentGatewayList organizationId=${organizationId}`);
-    return await this.paymentGatewayModel.find(
-      {
-        organizationId: new Types.ObjectId(organizationId),
-        isDeleted: 'N',
-        isActive: 'Y',
-      },
-      'name defaultCurrency',
-    );
+    return await this.paymentGatewayModel.findOne({
+      organizationId: new Types.ObjectId(organizationId),
+    });
+  }
+
+  async updatePaymentGateway(
+    organizationId: string,
+    paymentGatewayDto: PaymentGateWayDto,
+  ) {
+    this.logger.debug('Get Organization...');
+
+    const organization = await this.organizationModel.findOne({
+      _id: new Types.ObjectId(organizationId),
+    });
+
+    if (!organization) {
+      return {
+        statusCode: 404,
+        message: 'Organization not found',
+      };
+    }
+
+    let now: Date = new Date();
+
+    paymentGatewayDto.name = paymentGatewayDto.name.toUpperCase();
+    paymentGatewayDto.updatedAt = now.toISOString();
+
+    const paymentGatewayUpdate =
+      await this.paymentGatewayModel.findOneAndUpdate(
+        { organizationId: new Types.ObjectId(organizationId) },
+        paymentGatewayDto,
+        { new: true },
+      );
+
+    if (!paymentGatewayUpdate) {
+      return {
+        statusCode: 400,
+        message: 'Failed update Payment Gateway',
+      };
+    }
+
+    return {
+      statusCode: 200,
+      paymentGateway: paymentGatewayUpdate,
+    };
   }
 
   async addNewPaymentGateWay(
@@ -617,6 +656,7 @@ export class OrganizationService {
     const organization = await this.organizationModel.findOne({
       _id: new Types.ObjectId(organizationId),
     });
+
     if (!organization) {
       return {
         statusCode: 404,
@@ -641,8 +681,8 @@ export class OrganizationService {
       paymentGatewayDto,
     );
     let now: Date = new Date();
-    paymentGatewayDto.createdAt = now;
-    paymentGatewayDto.updatedAt = now;
+    paymentGatewayDto.createdAt = now.toISOString();
+    paymentGatewayDto.updatedAt = now.toISOString();
     paymentGatewayDto.organizationId = new Types.ObjectId(organizationId);
     paymentGatewayCreated.save();
 
@@ -1329,7 +1369,7 @@ export class OrganizationService {
             whyUs: whyUs[i].whyUs!,
             whyUsIcon: path,
           });
-          console.info('WhyUs image has been created');
+          this.logger.info('WhyUs image has been created');
         }
       }
     }
@@ -1364,7 +1404,7 @@ export class OrganizationService {
           nonProfitAppearanceNavigationDto.organizationId!,
         );
         if (imageUpload) {
-          console.info('Thumbnail image has been created', path);
+          this.logger.info('Thumbnail image has been created', path);
           nonProfitAppearanceNavigationDto.photoThumbnail = path;
         }
       }
@@ -1401,7 +1441,7 @@ export class OrganizationService {
         );
 
         if (imageUpload) {
-          console.info('Thumbnail image has been created', path);
+          this.logger.info('Thumbnail image has been created', path);
           nonProfitAppearanceNavigationDto.photoWhyUs = path;
         }
       }
@@ -1439,7 +1479,7 @@ export class OrganizationService {
         );
 
         if (imageUpload) {
-          console.info('PhotoOfActivity image has been created', path);
+          this.logger.info('PhotoOfActivity image has been created', path);
           nonProfitAppearanceNavigationDto.photoOfActivity = path;
         }
       }
@@ -1503,7 +1543,7 @@ export class OrganizationService {
             nonProfitAppearanceNavigationAboutUsDto.organizationId!,
           );
         } catch (error) {
-          console.info('Have found same problem', error);
+          this.logger.info('Have found same problem', error);
         }
 
         const base64Data = photoThumbnail.base64Data!;
@@ -1511,7 +1551,7 @@ export class OrganizationService {
         try {
           binary = Buffer.from(photoThumbnail.base64Data!, 'base64');
         } catch (error) {
-          console.info('Have found same problem', error);
+          this.logger.info('Have found same problem', error);
         }
         if (!binary) {
           const trimmedString = 56;
@@ -1531,11 +1571,11 @@ export class OrganizationService {
             nonProfitAppearanceNavigationAboutUsDto.organizationId!,
           );
         } catch (error) {
-          console.info('Have found same problem', error);
+          this.logger.info('Have found same problem', error);
         }
 
         if (imageUpload) {
-          console.info('photoThumbnail image has been created', path);
+          this.logger.info('photoThumbnail image has been created', path);
           nonProfitAppearanceNavigationAboutUsDto.photoThumbnail = path;
         }
       }
@@ -1558,7 +1598,7 @@ export class OrganizationService {
             nonProfitAppearanceNavigationAboutUsDto.organizationId!,
           );
         } catch (error) {
-          console.info('Have found same problem', error);
+          this.logger.info('Have found same problem', error);
         }
 
         const base64Data = iconForValues.base64Data!;
@@ -1567,7 +1607,7 @@ export class OrganizationService {
         try {
           binary = Buffer.from(iconForValues.base64Data!, 'base64');
         } catch (error) {
-          console.info('Have found same problem', error);
+          this.logger.info('Have found same problem', error);
         }
 
         if (!binary) {
@@ -1587,10 +1627,10 @@ export class OrganizationService {
             nonProfitAppearanceNavigationAboutUsDto.organizationId!,
           );
         } catch (error) {
-          console.info('Have found same problem', error);
+          this.logger.info('Have found same problem', error);
         }
         if (imageUpload) {
-          console.info('iconForValues image has been created', path);
+          this.logger.info('iconForValues image has been created', path);
           nonProfitAppearanceNavigationAboutUsDto.iconForValues = path;
         }
       }
@@ -1632,7 +1672,7 @@ export class OrganizationService {
         );
 
         if (imageUpload) {
-          console.info('company image has been created');
+          this.logger.info('company image has been created');
           companyPath.push({
             companyValues: company[i].companyValues!,
             iconCompanyValues: path,
@@ -1677,7 +1717,7 @@ export class OrganizationService {
         );
 
         if (imageUpload) {
-          console.info('Features Item image has been upload');
+          this.logger.info('Features Item image has been upload');
           featuresPath.push({
             featuresItemTitle: features[i].featuresItemTitle!,
             featuresItemDesc: features[i].featuresItemDesc!,
@@ -1702,7 +1742,7 @@ export class OrganizationService {
         nonProfitAppearanceNavigationAboutUsDto,
       );
     } catch (error) {
-      console.info('Have found same problem', error);
+      this.logger.info('Have found same problem', error);
     }
 
     return {
@@ -1770,7 +1810,9 @@ export class OrganizationService {
         });
         if (imageUpload) {
           if (news[i].newsIcon!) {
-            console.info('Old news image seems to be exist in the old record');
+            this.logger.info(
+              'Old news image seems to be exist in the old record',
+            );
             const isExist = await this.bunnyService.checkIfImageExists(
               news[i].newsIcon!,
             );
@@ -1778,7 +1820,7 @@ export class OrganizationService {
               await this.bunnyService.deleteImage(news[i].newsIcon!);
             }
           }
-          console.info('news image has been replaced');
+          this.logger.info('news image has been replaced');
         }
       }
     }
@@ -1815,7 +1857,7 @@ export class OrganizationService {
 
         if (imageUpload) {
           if (nonProfitAppearanceNavBlogDto.photoThumbnail!) {
-            console.info(
+            this.logger.info(
               'Old photoThumbnail image seems to be exist in the old record',
             );
             const isExist = await this.bunnyService.checkIfImageExists(
@@ -1827,7 +1869,7 @@ export class OrganizationService {
               );
             }
           }
-          console.info('photoThumbnail image has been replaced', path);
+          this.logger.info('photoThumbnail image has been replaced', path);
           nonProfitAppearanceNavBlogDto.photoThumbnail = path;
         }
       }
@@ -1894,10 +1936,10 @@ export class OrganizationService {
             binary,
             editNonProfitAppearanceNavigationDto.organizationId!,
           );
-  
+
           if (imageUpload) {
             if (mission[i].iconMission!) {
-              console.info(
+              this.logger.info(
                 'Old Mission image seems to be exist in the old record',
               );
               const isExist = await this.bunnyService.checkIfImageExists(
@@ -1907,7 +1949,7 @@ export class OrganizationService {
                 await this.bunnyService.deleteImage(mission[i].iconMission!);
               }
             }
-            console.info('Mission image has been replaced');
+            this.logger.info('Mission image has been replaced');
             missionPath.push({
               mission: mission[i].mission!,
               iconMission: path,
@@ -1964,7 +2006,9 @@ export class OrganizationService {
           });
           if (imageUpload) {
             if (whyUs[i].whyUsIcon!) {
-              console.info('Old WhyUs image seems to be exist in the old record');
+              this.logger.info(
+                'Old WhyUs image seems to be exist in the old record',
+              );
               const isExist = await this.bunnyService.checkIfImageExists(
                 whyUs[i].whyUsIcon!,
               );
@@ -1972,7 +2016,7 @@ export class OrganizationService {
                 await this.bunnyService.deleteImage(whyUs[i].whyUsIcon!);
               }
             }
-            console.info('WhyUs image has been replaced');
+            this.logger.info('WhyUs image has been replaced');
           }
         } else {
           whyUsPath.push({
@@ -2015,7 +2059,7 @@ export class OrganizationService {
         );
         if (imageUpload) {
           if (editNonProfitAppearanceNavigationDto.photoThumbnail!) {
-            console.info(
+            this.logger.info(
               'Old Thumbnail image seems to be exist in the old record',
             );
             const isExist = await this.bunnyService.checkIfImageExists(
@@ -2027,7 +2071,7 @@ export class OrganizationService {
               );
             }
           }
-          console.info('Thumbnail image has been replaced', path);
+          this.logger.info('Thumbnail image has been replaced', path);
           editNonProfitAppearanceNavigationDto.photoThumbnail = path;
         }
       }
@@ -2065,7 +2109,7 @@ export class OrganizationService {
 
         if (imageUpload) {
           if (editNonProfitAppearanceNavigationDto.photoWhyUs!) {
-            console.info(
+            this.logger.info(
               'Old why us image seems to be exist in the old record',
             );
             const isExist = await this.bunnyService.checkIfImageExists(
@@ -2077,7 +2121,7 @@ export class OrganizationService {
               );
             }
           }
-          console.info('Why Us image has been replaced', path);
+          this.logger.info('Why Us image has been replaced', path);
           editNonProfitAppearanceNavigationDto.photoWhyUs = path;
         }
       }
@@ -2116,7 +2160,7 @@ export class OrganizationService {
 
         if (imageUpload) {
           if (editNonProfitAppearanceNavigationDto.photoOfActivity!) {
-            console.info(
+            this.logger.info(
               'Old photoOfActivity image seems to be exist in the old record',
             );
             const isExist = await this.bunnyService.checkIfImageExists(
@@ -2128,7 +2172,7 @@ export class OrganizationService {
               );
             }
           }
-          console.info('PhotoOfActivity image has been replaced', path);
+          this.logger.info('PhotoOfActivity image has been replaced', path);
           editNonProfitAppearanceNavigationDto.photoOfActivity = path;
         }
       }
@@ -2203,7 +2247,7 @@ export class OrganizationService {
 
         if (imageUpload) {
           if (editNonProfApprceNaviAboutUsDto.photoThumbnail!) {
-            console.info(
+            this.logger.info(
               'Old photoThumbnail image seems to be exist in the old record',
             );
             const isExist = await this.bunnyService.checkIfImageExists(
@@ -2215,7 +2259,7 @@ export class OrganizationService {
               );
             }
           }
-          console.info('photoThumbnail image has been replaced', path);
+          this.logger.info('photoThumbnail image has been replaced', path);
           editNonProfApprceNaviAboutUsDto.photoThumbnail = path;
         }
       }
@@ -2253,7 +2297,7 @@ export class OrganizationService {
 
         if (imageUpload) {
           if (editNonProfApprceNaviAboutUsDto.iconForValues!) {
-            console.info(
+            this.logger.info(
               'Old iconForValues image seems to be exist in the old record',
             );
             const isExist = await this.bunnyService.checkIfImageExists(
@@ -2265,7 +2309,7 @@ export class OrganizationService {
               );
             }
           }
-          console.info('iconForValues image has been replaced', path);
+          this.logger.info('iconForValues image has been replaced', path);
           editNonProfApprceNaviAboutUsDto.iconForValues = path;
         }
       }
@@ -2309,9 +2353,9 @@ export class OrganizationService {
             binary,
             editNonProfApprceNaviAboutUsDto.organizationId,
           );
-  
+
           if (imageUpload) {
-            console.info('company image has been created');
+            this.logger.info('company image has been created');
             companyPath.push({
               companyValues: company[i].companyValues!,
               iconCompanyValues: path,
@@ -2362,10 +2406,10 @@ export class OrganizationService {
             binary,
             editNonProfApprceNaviAboutUsDto.organizationId!,
           );
-  
+
           if (imageUpload) {
             if (features[i].iconFeaturesItem!) {
-              console.info(
+              this.logger.info(
                 'Old Features image seems to be exist in the old record',
               );
               const isExist = await this.bunnyService.checkIfImageExists(
@@ -2377,7 +2421,7 @@ export class OrganizationService {
                 );
               }
             }
-            console.info('Features Item image has been replaced');
+            this.logger.info('Features Item image has been replaced');
             featuresPath.push({
               featuresItemTitle: features[i].featuresItemTitle!,
               featuresItemDesc: features[i].featuresItemDesc!,
@@ -2468,7 +2512,9 @@ export class OrganizationService {
           });
           if (imageUpload) {
             if (news[i].newsIcon!) {
-              console.info('Old news image seems to be exist in the old record');
+              this.logger.info(
+                'Old news image seems to be exist in the old record',
+              );
               const isExist = await this.bunnyService.checkIfImageExists(
                 news[i].newsIcon!,
               );
@@ -2476,7 +2522,7 @@ export class OrganizationService {
                 await this.bunnyService.deleteImage(news[i].newsIcon!);
               }
             }
-            console.info('news image has been replaced');
+            this.logger.info('news image has been replaced');
           }
         } else {
           newsPath.push({
@@ -2522,7 +2568,7 @@ export class OrganizationService {
 
         if (imageUpload) {
           if (editNonProfitAppearanceNavBlogDto.photoThumbnail!) {
-            console.info(
+            this.logger.info(
               'Old photoThumbnail image seems to be exist in the old record',
             );
             const isExist = await this.bunnyService.checkIfImageExists(
@@ -2534,7 +2580,7 @@ export class OrganizationService {
               );
             }
           }
-          console.info('photoThumbnail image has been replaced', path);
+          this.logger.info('photoThumbnail image has been replaced', path);
           editNonProfitAppearanceNavBlogDto.photoThumbnail = path;
         }
       }
