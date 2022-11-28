@@ -7,7 +7,7 @@ import CardTableBE from 'components/card-table/CardTableBE';
 function DraftsFundingRequest() {
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
-    minHeight: '100vh',
+    maxHeight: '100vh',
     display: 'flex',
     justifyContent: 'start',
     flexDirection: 'column',

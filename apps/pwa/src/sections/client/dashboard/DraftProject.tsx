@@ -9,13 +9,16 @@ import {
   CardContent,
   Divider,
 } from '@mui/material';
+import useLocales from 'hooks/useLocales';
 import { deleteDraftProposal } from 'queries/client/deleteDraftProposal';
-import { getProposals } from 'queries/commons/getProposal';
 import { useNavigate } from 'react-router';
-import { useMutation, useQuery } from 'urql';
+import { useMutation } from 'urql';
 
 function DraftProject({ draft_projects, mutate }: any) {
+  const { translate } = useLocales();
+
   const navigate = useNavigate();
+
   const [_, deleteDrPro] = useMutation(deleteDraftProposal);
 
   const delelteDraft = async (id: string) => {
@@ -33,7 +36,7 @@ function DraftProject({ draft_projects, mutate }: any) {
   return (
     <Container>
       <Stack direction="row" justifyContent="space-between">
-        <Typography variant="h4">مشاريع محفوظة كمسودة</Typography>
+        <Typography variant="h4">{translate('content.client.main_page.draft_projects')}</Typography>
         <Button
           sx={{
             backgroundColor: 'transparent',
@@ -47,7 +50,7 @@ function DraftProject({ draft_projects, mutate }: any) {
             navigate('/client/dashboard/draft-funding-requests');
           }}
         >
-          عرض الكل
+          {translate('view_all')}
         </Button>
       </Stack>
       <Grid container sx={{ pt: 2 }} spacing={5}>
@@ -68,7 +71,7 @@ function DraftProject({ draft_projects, mutate }: any) {
                     {item.project_name}
                   </Typography>
                   <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
-                    فكرة المشروع
+                    {translate('content.client.main_page.project_idea')}
                   </Typography>
                   <Typography sx={{ mb: 1.5 }} color="#1E1E1E">
                     {item.project_idea}
@@ -84,7 +87,7 @@ function DraftProject({ draft_projects, mutate }: any) {
                       gutterBottom
                       sx={{ fontSize: '10px !important' }}
                     >
-                      الإنشاء منذ
+                      {translate('content.client.main_page.created_at')}
                     </Typography>
                     <Typography
                       variant="h6"
@@ -92,7 +95,9 @@ function DraftProject({ draft_projects, mutate }: any) {
                       gutterBottom
                       sx={{ fontSize: '15px !important' }}
                     >
-                      {`${new Date().getDate() - new Date(item.created_at).getDate()} يوم`}
+                      {`${new Date().getDate() - new Date(item.created_at).getDate()} ${translate(
+                        'content.client.main_page.day'
+                      )}`}
                     </Typography>
                   </Stack>
                   <Stack direction="row" gap={2}>
@@ -103,7 +108,7 @@ function DraftProject({ draft_projects, mutate }: any) {
                         delelteDraft(item.id);
                       }}
                     >
-                      حذف المسودة
+                      {translate('content.client.main_page.delete_draft')}
                     </Button>
                     <Button
                       sx={{ background: '#0E8478', color: '#fff' }}
@@ -111,7 +116,7 @@ function DraftProject({ draft_projects, mutate }: any) {
                         completeDraftProposal(item.id);
                       }}
                     >
-                      إكمل الطلب
+                      {translate('content.client.main_page.complete_the_project')}
                     </Button>
                   </Stack>
                 </CardActions>

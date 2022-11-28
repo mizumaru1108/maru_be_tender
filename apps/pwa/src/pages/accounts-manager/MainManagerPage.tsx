@@ -85,9 +85,6 @@ function MainManagerPage() {
 
   const [resultInfoUpdateQuery, reexecuteInfoUpdateRequest] = useQuery({
     query: tableInfoUpdateRequest,
-    variables: {
-      reviewer_id: user?.id,
-    },
   });
 
   const {
@@ -106,31 +103,35 @@ function MainManagerPage() {
       data: [],
     };
 
+    // done
     if (numberOfRequestData) {
       newDataInsight.data.push({
         title: 'account_manager.card.number_of_request',
-        value: numberOfRequestData?.client_data_aggregate?.aggregate?.count,
+        value: numberOfRequestData?.user_aggregate?.aggregate?.count,
       });
     }
 
+    // done
     if (activePartnerData) {
       newDataInsight.data.push({
         title: 'account_manager.card.active_partners',
-        value: activePartnerData?.client_data_aggregate?.aggregate?.count,
+        value: activePartnerData?.user_aggregate?.aggregate?.count,
       });
     }
 
+    // done
     if (rejectedPartnerData) {
       newDataInsight.data.push({
         title: 'account_manager.card.rejected_partners',
-        value: rejectedPartnerData?.client_data_aggregate?.aggregate?.count,
+        value: rejectedPartnerData?.user_aggregate?.aggregate?.count,
       });
     }
 
+    // done
     if (suspendedPartnerData) {
       newDataInsight.data.push({
         title: 'account_manager.card.suspended_partners',
-        value: suspendedPartnerData?.client_data_aggregate?.aggregate?.count,
+        value: suspendedPartnerData?.user_aggregate?.aggregate?.count,
       });
     }
 
@@ -139,11 +140,11 @@ function MainManagerPage() {
     }
 
     if (resultNewRequest) {
-      const resultDataNR = resultNewRequest?.client_data.map((v: any) => ({
+      const resultDataNR = resultNewRequest?.user.map((v: any) => ({
         id: v.id,
-        partner_name: v.entity,
-        createdAt: v.created_at,
-        account_status: v.status,
+        partner_name: v.client_data.entity,
+        createdAt: v.client_data.created_at,
+        account_status: 'WAITING_FOR_ACTIVATION',
         events: v.id,
       }));
 
@@ -151,25 +152,19 @@ function MainManagerPage() {
     }
 
     if (resultInfoUpdate) {
-      const resultDataInfoUpdate = resultInfoUpdate?.client_log?.map((vcl: any) => {
+      const resultDataInfoUpdate = resultInfoUpdate?.user?.map((vcl: any) => {
         const vcd = vcl.client_data;
 
         return {
           id: vcd.id,
-          partner_name: vcd.entity,
-          createdAt: vcd.created_at,
-          account_status: vcd.status,
+          partner_name: vcd.client_data.entity,
+          createdAt: vcd.client_data.created_at,
+          account_status: 'REVISED_ACCOUNT',
           events: vcd.id,
           update_status: true,
         };
       });
 
-      // const resultFilter = resultDataInfoUpdate.filter(
-      //   (v: { id: any }, i: any, a: any[]) =>
-      //     a.findIndex((t: { id: string }) => t.id === v.id) === i
-      // );
-
-      // setInfoUpdateRequest(resultFilter);
       setInfoUpdateRequest(resultDataInfoUpdate);
     }
   }, [

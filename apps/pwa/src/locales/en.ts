@@ -17,6 +17,29 @@ const en = {
       main: 'Main Client Dashboard',
     },
   },
+  content: {
+    client: {
+      main_page: {
+        current_projects: 'Current Projects',
+        no_current_projects: 'There are no current projects',
+        apply_new_support_request: 'Submit a new support request',
+        current_budget: 'Current Budget',
+        required_budget: 'Required Budget',
+        spent_budget: 'Spent Budget',
+        draft_projects: 'Draft saved projects',
+        project_idea: 'Project Idea',
+        complete_the_project: 'Complete the order',
+        delete_draft: 'Delete draft',
+        created_at: 'Created since',
+        day: 'Day',
+        previous_support_request: 'Previous support requests',
+        no_projects: 'There are no projects',
+        all_projects: 'All Projects',
+        completed_projects: 'Completed Projects',
+        pending_projects: 'Pending Projects',
+      },
+    },
+  },
   errors: {
     login: {
       email: {
@@ -60,40 +83,98 @@ const en = {
     },
     cre_proposal: {
       project_name: {
-        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
-        required: 'البريد الالكتروني مطلوب',
+        message: '',
+        required: 'Project name is required',
       },
       project_idea: {
-        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
-        required: 'البريد الالكتروني مطلوب',
+        message: '',
+        required: 'Project idea required',
       },
       project_location: {
-        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
-        required: 'البريد الالكتروني مطلوب',
+        message: '',
+        required: 'The location of the project is required',
       },
       project_implement_date: {
-        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
-        required: 'البريد الالكتروني مطلوب',
+        message: '',
+        required: 'Project implementation date is required',
       },
       execution_time: {
-        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
-        required: 'البريد الالكتروني مطلوب',
+        message: '',
+        required: 'Execution time is required',
       },
       project_beneficiaries: {
-        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
-        required: 'البريد الالكتروني مطلوب',
+        message: '',
+        required: 'The type of target group is required',
       },
       letter_ofsupport_req: {
-        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
-        required: 'البريد الالكتروني مطلوب',
+        message: '',
+        required: 'The letter of support is required',
       },
       project_attachments: {
-        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
-        required: 'البريد الالكتروني مطلوب',
+        message: '',
+        required: 'Project attachments are required',
       },
       project_beneficiaries_specific_type: {
-        message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
-        required: 'البريد الالكتروني مطلوب',
+        message: '',
+        required: 'The type of external target group is required when the target group is external',
+      },
+      num_ofproject_binicficiaries: {
+        message: 'The number of beneficiaries of the project must be a positive number',
+        required: 'The number of beneficiaries of the project is required',
+      },
+      project_goals: {
+        message: '',
+        required: 'Project goals are required',
+      },
+      project_outputs: {
+        message: '',
+        required: 'Project outputs are required',
+      },
+      project_strengths: {
+        message: '',
+        required: 'The strengths of the project are required',
+      },
+      project_risks: {
+        message: '',
+        required: 'Project Risk Required',
+      },
+      pm_name: {
+        message: '',
+        required: 'Project manager name is required',
+      },
+      pm_mobile: {
+        message: 'The number must be written in an equivalent form to this form +9665XXXXXXXX',
+        required: 'Mobile number is required',
+      },
+      pm_email: {
+        message: '',
+        required: 'Email is required',
+      },
+      region: {
+        message: '',
+        required: 'Region is required',
+      },
+      governorate: {
+        message: '',
+        required: 'Governorate is required',
+      },
+      amount_required_fsupport: {
+        message: '',
+        required: 'Amount required for support is required',
+      },
+      detail_project_budgets: {
+        clause: {
+          message: '',
+          required: 'Clause is required',
+        },
+        explanation: {
+          message: '',
+          required: 'Explanation is required',
+        },
+        amount: {
+          message: 'Amount must be a positive number with no commas',
+          required: 'Amount is required',
+        },
       },
     },
   },
@@ -394,7 +475,6 @@ const en = {
       placeholder: 'Please write the project risk',
     },
   },
-
   funding_project_request_form3: {
     step: 'contact information',
     project_manager_name: {
@@ -747,7 +827,7 @@ const en = {
   },
   proposal_approved: 'Proposal Approved!',
   proposal_rejected: 'Proposal Rejected!',
-
+  view_all: 'view all',
   // PORTAL REPORTS
   ceo_portal_reports: {
     bar_chart: {

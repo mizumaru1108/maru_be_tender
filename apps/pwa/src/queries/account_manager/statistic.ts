@@ -1,35 +1,36 @@
 export const numberOfRequests = `
 query numberOfRequests {
-  client_data_aggregate(where: {status: {_in: [WAITING_FOR_ACTIVATION, REVISED_ACCOUNT]}}) {
+  user_aggregate(where: {roles: {user_type_id: {_eq: CLIENT}}, _and: {status_id: {_eq: WAITING_FOR_ACTIVATION}}}) {
     aggregate {
-      count(columns: status)
+      count(columns: created_at)
     }
   }
 }`;
 
 export const activePartners = `
 query activePartners {
-  client_data_aggregate(where: {status: {_eq: ACTIVE_ACCOUNT}}) {
+  user_aggregate(where: {roles: {user_type_id: {_eq: CLIENT}}, _and: {status_id: {_eq: ACTIVE_ACCOUNT}}}) {
     aggregate {
-      count(columns: status)
+      count(columns: created_at)
     }
   }
 }`;
 
 export const rejectedPartners = `
 query rejectedPartners {
-  client_data_aggregate(where: {status: {_eq: CANCELED_ACCOUNT}}) {
+  user_aggregate(where: {roles: {user_type_id: {_eq: CLIENT}}, _and: {status_id: {_eq: CANCELED_ACCOUNT}}}) {
     aggregate {
-      count(columns: status)
+      count(columns: created_at)
     }
   }
-}`;
+}
+`;
 
 export const suspendedPartners = `
 query suspendedPartners {
-  client_data_aggregate(where: {status: {_eq: SUSPENDED_ACCOUNT}}) {
+  user_aggregate(where: {roles: {user_type_id: {_eq: CLIENT}}, _and: {status_id: {_eq: SUSPENDED_ACCOUNT}}}) {
     aggregate {
-      count(columns: status)
+      count(columns: created_at)
     }
   }
 }`;

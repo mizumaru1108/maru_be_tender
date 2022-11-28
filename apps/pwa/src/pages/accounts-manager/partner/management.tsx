@@ -13,29 +13,6 @@ import { IPropsTablesList } from 'components/table/type';
 
 // -------------------------------------------------------------------------------
 
-const CLIENT_STATUS = [
-  {
-    label: 'partner_management.button.all_partners',
-    value: 'ALL_CLIENT',
-  },
-  {
-    label: 'partner_management.button.new_partners',
-    value: 'WAITING_FOR_ACTIVATION',
-  },
-  {
-    label: 'partner_management.button.active_partners',
-    value: 'ACTIVE_ACCOUNT',
-  },
-  {
-    label: 'partner_management.button.rejected_partners',
-    value: 'REVISED_ACCOUNT',
-  },
-  {
-    label: 'partner_management.button.suspended_partners',
-    value: 'SUSPENDED_ACCOUNT',
-  },
-];
-
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
   minHeight: '100vh',
@@ -65,11 +42,11 @@ function PartnerManagementPage() {
 
   useEffect(() => {
     if (!fetchingAllClientRequest && resultAllClientRequest) {
-      const resultAllClientData = resultAllClientRequest?.client_data.map((v: any) => ({
+      const resultAllClientData = resultAllClientRequest?.user.map((v: any) => ({
         id: v.id,
-        partner_name: v.entity,
-        createdAt: v.created_at,
-        account_status: v.status,
+        partner_name: v.client_data.entity,
+        createdAt: v.client_data.created_at,
+        account_status: v.status_id,
         events: v.id,
       }));
 
@@ -77,29 +54,15 @@ function PartnerManagementPage() {
     }
   }, [fetchingAllClientRequest, resultAllClientRequest, activeButton]);
 
+  if (fetchingAllClientRequest)
+    return <Skeleton variant="rectangular" sx={{ height: 250, borderRadius: 2 }} />;
+
   return (
     <Page title="Partner Management">
       <Container>
         <ContentStyle>
-          {fetchingAllClientRequest && (
-            <Skeleton variant="rectangular" sx={{ height: 250, borderRadius: 2 }} />
-          )}
           {clientData && (
             <>
-              {/* <Grid container spacing={3} alignItems="center" justifyContent="flex-start">
-                {CLIENT_STATUS.map((v, i) => (
-                  <Grid item key={i}>
-                    <Button
-                      variant="contained"
-                      onClick={() => {
-                        setActiveButton(v.label);
-                      }}
-                    >
-                      {v.label}
-                    </Button>
-                  </Grid>
-                ))}
-              </Grid> */}
               <TableAMCustom
                 data={clientData}
                 headline="account_manager.heading.partner_management"

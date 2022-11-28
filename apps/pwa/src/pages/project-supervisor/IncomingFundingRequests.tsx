@@ -40,7 +40,7 @@ function IncomingFundingRequests() {
               },
             ]}
             baseFilters={{
-              filter1: { supervisor_id: { _eq: 'null' } },
+              filter1: { supervisor_id: { _is_null: true } },
             }}
             destination={'incoming-funding-requests'}
           />

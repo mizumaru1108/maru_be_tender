@@ -51,15 +51,6 @@ function RequestsInProcess() {
             }}
             destination={'incoming-funding-requests'}
           />
-          {/* <CardTable
-            data={data} // For testing, later on we will send the query to it
-            title="طلبات قيد الإجراء"
-            cardFooterButtonAction="show-details"
-            alphabeticalOrder={true}
-            filters={[
-              { name: 'اسم الجهة المشرفة*', options: [{ label: 'اسم الجهة المشرفة*', value: '' }] },
-            ]}
-          /> */}
         </ContentStyle>
       </Container>
     </Page>

@@ -2,10 +2,15 @@ import * as React from 'react';
 import { Container, Typography, Box, Grid, Stack, Button, Tabs, Tab } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
 import { useNavigate } from 'react-router';
+import useLocales from 'hooks/useLocales';
 
 function PreviousFundingInqueries({ completed_client_projects, pending_client_projects }: any) {
   const navigate = useNavigate();
+
+  const { translate } = useLocales();
+
   const [tap, setTap] = React.useState('all_projects');
+
   const [previousInq, setPreviousInq] = React.useState([]);
 
   const handleChange = (event: React.SyntheticEvent, newTap: string) => {
@@ -40,7 +45,9 @@ function PreviousFundingInqueries({ completed_client_projects, pending_client_pr
   return (
     <Container>
       <Stack direction="row" justifyContent="space-between">
-        <Typography variant="h4">طلبات دعم سابقة</Typography>
+        <Typography variant="h4">
+          {translate('content.client.main_page.previous_support_request')}
+        </Typography>
         <Button
           sx={{
             backgroundColor: 'transparent',
@@ -54,7 +61,7 @@ function PreviousFundingInqueries({ completed_client_projects, pending_client_pr
             navigate('/client/dashboard/previous-funding-requests');
           }}
         >
-          عرض الكل
+          {translate('view_all')}
         </Button>
       </Stack>
       <Box sx={{ width: '50%', mb: '10px' }}>
@@ -64,9 +71,15 @@ function PreviousFundingInqueries({ completed_client_projects, pending_client_pr
           aria-label="Tabs where selection follows focus"
           selectionFollowsFocus
         >
-          <Tab label="كل المشاريع" value="all_projects" />
-          <Tab label="مشاريع منتهية" value="completed_projects" />
-          <Tab label="مشاريع معلقة" value="pending_projects" />
+          <Tab label={translate('content.client.main_page.all_projects')} value="all_projects" />
+          <Tab
+            label={translate('content.client.main_page.completed_projects')}
+            value="completed_projects"
+          />
+          <Tab
+            label={translate('content.client.main_page.pending_projects')}
+            value="pending_projects"
+          />
         </Tabs>
       </Box>
 
@@ -91,7 +104,7 @@ function PreviousFundingInqueries({ completed_client_projects, pending_client_pr
           justifyContent="center"
           style={{ minHeight: '40vh' }}
         >
-          <Typography>{`لا يوجد مشاريع ${tap}`}</Typography>
+          <Typography>{translate('content.client.main_page.no_projects')}</Typography>
         </Grid>
       )}
     </Container>

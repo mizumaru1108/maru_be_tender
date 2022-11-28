@@ -1,13 +1,15 @@
 export const getAllClient = `
-  query getAllClient {
+query getAllClient {
+  user(where: {roles: {user_type_id: {_eq: CLIENT}}}) {
+    id
     client_data {
       created_at
       entity
-      id
-      status
       updated_at
     }
+    status_id
   }
+}
 `;
 
 export const getNewClient = `

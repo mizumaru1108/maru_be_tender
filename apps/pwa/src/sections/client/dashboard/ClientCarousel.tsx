@@ -1,8 +1,7 @@
 import Slider from 'react-slick';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { useTheme } from '@mui/material/styles';
-import SvgIconStyle from 'components/SvgIconStyle';
-import { Box, Button, Grid, Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { CarouselArrows, CarouselDots } from 'components/carousel';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -28,13 +27,13 @@ function ClientCarousel() {
     autoplay: true,
     slidesToShow: 1,
     slidesToScroll: 1,
-    rtl: Boolean(theme.direction === 'rtl'),
+    rtl: Boolean(theme.direction === 'ltr'),
+    ltr: Boolean(theme.direction === 'rtl'),
     ...CarouselDots({ rounded: true, zIndex: 9 }),
   };
 
   const LINES_TO_SHOW = 1;
 
-  // src: https://stackoverflow.com/a/13924997/8062659
   const useStyles = makeStyles({
     multiLineEllipsis: {
       overflow: 'hidden',
@@ -78,7 +77,7 @@ function ClientCarousel() {
                 px: 1,
                 textAlign: 'center',
                 backgroundColor: 'rgba(147, 163, 176, 0.16)',
-                height: '180px',
+                height: '100',
                 borderRadius: '20px',
               }}
             >
@@ -87,7 +86,7 @@ function ClientCarousel() {
                 justifyContent="space-around"
                 sx={{ p: '10px 25px 10px 25px', w: '100%', h: '100%' }}
               >
-                <Box flex={1}>
+                <Box flex={1} sx={{ alignSelf: 'center' }}>
                   <img src={`/icons/mosque-carousel-icon.svg`} alt="" />
                 </Box>
                 <Stack direction="column" gap={1} justifyContent="center" flex={4}>
@@ -105,14 +104,6 @@ function ClientCarousel() {
                   >
                     {item.secondField}
                   </Typography>
-                  {/* {item.thirdField && (
-                    <Stack justifyContent="space-between" direction="row">
-                      <Box>{''}</Box>
-                      <Button className={classes.multiLineEllipsis} sx={{ color: '#1E1E1E' }}>
-                        {item.thirdField}
-                      </Button>
-                    </Stack>
-                  )} */}
                 </Stack>
               </Stack>
             </Box>

@@ -162,7 +162,7 @@ const FundingProjectRequestForm = () => {
           step: 'ZERO',
         },
       });
-      if (res.error === undefined) navigate(-1);
+      if (res.error === undefined) navigate('/client/dashboard/app');
     } else {
       const res = await createProposal({
         createdProposel: {
@@ -177,7 +177,7 @@ const FundingProjectRequestForm = () => {
           step: 'ZERO',
         },
       });
-      if (res.error === undefined) navigate(-1);
+      if (res.error === undefined) navigate('/client/dashboard/app');
     }
   };
 

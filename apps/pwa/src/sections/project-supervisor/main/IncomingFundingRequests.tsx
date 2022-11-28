@@ -12,7 +12,7 @@ function IncomingFundingRequests() {
       limit: 4,
       order_by: { created_at: 'desc' },
       where: {
-        supervisor_id: { _eq: 'null' },
+        supervisor_id: { _is_null: true },
         _and: { inner_status: { _eq: 'ACCEPTED_BY_MODERATOR' } },
       },
     },

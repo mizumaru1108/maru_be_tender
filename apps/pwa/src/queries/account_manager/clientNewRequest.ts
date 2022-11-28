@@ -1,20 +1,20 @@
 export const tableNewRequest = `
-  query tableNewRequest {
-    client_data(where: {status: {_eq: WAITING_FOR_ACTIVATION}}) {
-      status
-      id
-      created_at
+query tableNewRequest {
+  user(where: {roles: {user_type_id: {_eq: CLIENT}}, status_id: {_eq: WAITING_FOR_ACTIVATION}}) {
+    id
+    client_data {
       entity
+      created_at
     }
   }
+}
 `;
 
 export const tableInfoUpdateRequest = `
-query tableInfoUpdateRequest($reviewer_id: String!){
-  client_log(where: {reviewer_id: {_eq: $reviewer_id}, status: {_eq: REVISED_ACCOUNT}}) {
+query tableInfoUpdateRequest {
+  user(where: {roles: {user_type_id: {_eq: CLIENT}}, status_id: {_eq: REVISED_ACCOUNT}}) {
+    id
     client_data {
-      status
-      id
       entity
       created_at
     }

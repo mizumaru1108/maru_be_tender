@@ -45,7 +45,7 @@ function IncomingFundingRequests() {
             ]}
             baseFilters={{
               filter1: {
-                project_manager_id: { _eq: 'null' },
+                project_manager_id: { _is_null: true },
                 _and: {
                   inner_status: { _in: ['ACCEPTED_BY_SUPERVISOR', 'ACCEPTED_BY_CONSULTANT'] },
                 },

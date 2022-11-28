@@ -23,7 +23,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function Page500() {
+export default function Page500({ error }: { error?: string }) {
   return (
     <Page title="500 Internal Server Error">
       <Container component={MotionContainer}>
@@ -36,7 +36,7 @@ export default function Page500() {
 
           <m.div variants={varBounce().in}>
             <Typography sx={{ color: 'text.secondary' }}>
-              There was an error, please try again later.
+              {error ? error : 'There was an error, please try again later.'}
             </Typography>
           </m.div>
 

@@ -6,8 +6,8 @@ import { gettingPreviousProposals } from 'queries/client/gettingPreviousProposal
 
 function PreviousFundingRequests() {
   const ContentStyle = styled('div')(({ theme }) => ({
-    maxWidth: '100%',
-    minHeight: '100vh',
+    maxWidth: '100vw',
+    maxHeight: '100vh',
     display: 'flex',
     justifyContent: 'start',
     flexDirection: 'column',

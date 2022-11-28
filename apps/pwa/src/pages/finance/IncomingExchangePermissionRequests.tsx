@@ -42,7 +42,7 @@ function IncomingExchangePermissionRequests() {
             ]}
             baseFilters={{
               inner_status: { inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' } },
-              finance_id: { finance_id: { _eq: 'null' } },
+              finance_id: { finance_id: { _is_null: true } },
             }}
             cardFooterButtonAction="completing-exchange-permission"
           />

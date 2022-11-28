@@ -30,9 +30,6 @@ function InfoUpdateRequestPage() {
 
   const [resultInfoUpdateQuery, reexecuteInfoUpdateRequest] = useQuery({
     query: tableInfoUpdateRequest,
-    variables: {
-      reviewer_id: user?.id,
-    },
   });
 
   const {
@@ -43,14 +40,14 @@ function InfoUpdateRequestPage() {
 
   useEffect(() => {
     if (resultInfoUpdate) {
-      const resultDataInfoUpdate = resultInfoUpdate?.client_log?.map((vcl: any) => {
+      const resultDataInfoUpdate = resultInfoUpdate?.user?.map((vcl: any) => {
         const vcd = vcl.client_data;
 
         return {
           id: vcd.id,
-          partner_name: vcd.entity,
-          createdAt: vcd.created_at,
-          account_status: vcd.status,
+          partner_name: vcd.client_data.entity,
+          createdAt: vcd.client_data.created_at,
+          account_status: 'REVISED_ACCOUNT',
           events: vcd.id,
           update_status: true,
         };

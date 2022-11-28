@@ -15,6 +15,29 @@ const ar = {
       main: 'صفحة الزبون العامة',
     },
   },
+  content: {
+    client: {
+      main_page: {
+        current_projects: 'المشاريع الحالية',
+        no_current_projects: 'لا يوجد اي مشاريع حالية',
+        apply_new_support_request: 'تقديم طلب دعم جديد',
+        current_budget: 'الميزانية الحالية',
+        required_budget: 'الميزانية المطلوبة',
+        spent_budget: 'الميزانية المصروفة',
+        draft_projects: 'مشاريع محفوظة كمسودة',
+        project_idea: 'فكرة المشروع',
+        complete_the_project: 'أكمل الطلب',
+        delete_draft: 'حذف المسودة',
+        created_at: 'الإنشاء منذ',
+        day: 'يوم',
+        previous_support_request: 'مشاريع الدعم السابقة',
+        no_projects: 'لا يوجد مشاريع',
+        all_projects: 'كل المشاريع',
+        completed_projects: 'المشاريع المنتهية',
+        pending_projects: 'المشاريع المعلقة',
+      },
+    },
+  },
   errors: {
     login: {
       email: {
@@ -107,7 +130,7 @@ const ar = {
       },
       project_implement_date: {
         message: '',
-        required: 'تاريخ تنفيذ المشروع',
+        required: 'تاريخ تنفيذ المشروع مطلوب',
       },
       execution_time: {
         message: '',
@@ -130,7 +153,7 @@ const ar = {
         required: 'نوع الفئة المستهدفة الخارجية مطلوبة عندما تكون الفئة المستهدفة هي خارجية',
       },
       num_ofproject_binicficiaries: {
-        message: '',
+        message: 'عدد المستفيدين من المشروع يجب أن يكون رقم موجب',
         required: 'عدد المستفيدين من المشروع مطلوب',
       },
       project_goals: {
@@ -147,14 +170,14 @@ const ar = {
       },
       project_risks: {
         message: '',
-        required: 'مخطار المشوع مطلوبة',
+        required: 'مخاطر المشروع مطلوبة',
       },
       pm_name: {
         message: '',
         required: 'اسم مدير المشروع مطلوب',
       },
       pm_mobile: {
-        message: 'الرقم يجب أن يكون مكتوب بصيغة ممائلة لهذه الصيفة +9665XXXXXXXX',
+        message: 'الرقم يجب أن يكون مكتوب بصيغة ممائلة لهذه الصيغة +9665XXXXXXXX',
         required: 'رقم الجوال مطلوب',
       },
       pm_email: {
@@ -163,7 +186,7 @@ const ar = {
       },
       region: {
         message: '',
-        required: 'المنطفة مطلوبة',
+        required: 'المنطقة مطلوبة',
       },
       governorate: {
         message: '',

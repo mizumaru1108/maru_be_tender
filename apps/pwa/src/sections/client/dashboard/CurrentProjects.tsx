@@ -1,16 +1,19 @@
 import { Box, Button, Grid, Stack, Typography, Container } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
 import SvgIconStyle from 'components/SvgIconStyle';
-import { getProposals } from 'queries/commons/getProposal';
+import useLocales from 'hooks/useLocales';
 import { useNavigate } from 'react-router';
-import { useQuery } from 'urql';
 
 function CurrentProjects({ current_projects }: any) {
   const navigate = useNavigate();
+
+  const { translate } = useLocales();
   if (current_projects.length === 0)
     return (
       <Container>
-        <Typography variant="h4">المشاريع الحالية</Typography>
+        <Typography variant="h4">
+          {translate('content.client.main_page.current_projects')}
+        </Typography>
         <Grid
           container
           spacing={0}
@@ -24,14 +27,16 @@ function CurrentProjects({ current_projects }: any) {
               <Box sx={{ textAlign: 'center' }}>
                 <SvgIconStyle src={`/icons/empty-project.svg`} />
               </Box>
-              <Typography sx={{ textAlign: 'center' }}>لا يوجد اي مشاريع حالية</Typography>
+              <Typography sx={{ textAlign: 'center' }}>
+                {translate('content.client.main_page.no_current_projects')}
+              </Typography>
               <Button
                 sx={{ textAlign: 'center', margin: '0 auto', textDecorationLine: 'underline' }}
                 onClick={() => {
-                  navigate('/client/dashboard/funding-project-request');
+                  navigate('/client.main_page/dashboard/funding-project-request');
                 }}
               >
-                تقديم طلب دعم جديد
+                {translate('content.client.main_page.apply_new_support_request')}
               </Button>
             </Stack>
           </Box>
@@ -42,7 +47,9 @@ function CurrentProjects({ current_projects }: any) {
     <Container>
       <Grid container columnSpacing={7} rowSpacing={5}>
         <Grid item md={12} xs={12}>
-          <Typography variant="h4">المشاريع الحالية</Typography>
+          <Typography variant="h4">
+            {translate('content.client.main_page.current_projects')}
+          </Typography>
         </Grid>
         {current_projects.map((item: any, index: any) => (
           <Grid item md={12} xs={12} key={index}>
@@ -62,7 +69,9 @@ function CurrentProjects({ current_projects }: any) {
               </Grid>
               <Grid item md={4} xs={12} rowSpacing={7}>
                 <Stack gap={3}>
-                  <Typography variant="h4">الميزانية الحالية</Typography>
+                  <Typography variant="h4">
+                    {translate('content.client.main_page.current_budget')}
+                  </Typography>
                   <Stack direction="column" gap={3}>
                     <Stack direction="row" gap={1}>
                       <Box
@@ -76,7 +85,7 @@ function CurrentProjects({ current_projects }: any) {
                       >
                         <img src={`/icons/rial-currency.svg`} alt="" />
                         <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
-                          الميزانية المطلوبة
+                          {translate('content.client.main_page.required_budget')}
                         </Typography>
                         <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
                           {`${item.amount_required_fsupport} ريال`}
@@ -93,7 +102,7 @@ function CurrentProjects({ current_projects }: any) {
                       >
                         <img src={`/icons/rial-currency.svg`} alt="" />
                         <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
-                          الميزانية المصروفة
+                          {translate('content.client.main_page.spent_budget')}
                         </Typography>
                         <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
                           {`${item.amount_required_fsupport} ريال`}

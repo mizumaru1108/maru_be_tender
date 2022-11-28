@@ -1,8 +1,6 @@
 import { Container } from '@mui/material';
 import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
-import { CardTable } from 'components/card-table';
-import { data1 } from './mockData';
 import CardTableBE from 'components/card-table/CardTableBE';
 import { getProposals } from 'queries/commons/getProposal';
 
@@ -57,7 +55,7 @@ function PreviousFundingRequests() {
             ]}
             baseFilters={{
               filter1: {
-                project_manager_id: { _eq: 'null' },
+                project_manager_id: { _is_null: true },
               },
             }}
           />

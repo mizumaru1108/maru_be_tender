@@ -1,4 +1,5 @@
 import { Grid } from '@mui/material';
+import Page500 from 'pages/Page500';
 import { clientMainPage } from 'queries/client/clientMainPage';
 import { useQuery } from 'urql';
 import ClientCarousel from './ClientCarousel';
@@ -14,7 +15,7 @@ function DashboardPage() {
   const { data, fetching, error } = result;
 
   if (fetching) return <LoadingPage />;
-  if (error) return <>... Opps, Something went wrong</>;
+  if (error) return <Page500 error={error.message} />;
   return (
     <Grid container rowSpacing={8}>
       <Grid item md={12} xs={12}>

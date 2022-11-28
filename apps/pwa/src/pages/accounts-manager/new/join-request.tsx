@@ -39,11 +39,11 @@ function NewJoinRequestPage() {
 
   useEffect(() => {
     if (resultNewRequest) {
-      const resultDataNR = resultNewRequest?.client_data.map((v: any) => ({
+      const resultDataNR = resultNewRequest?.user.map((v: any) => ({
         id: v.id,
-        partner_name: v.entity,
-        createdAt: v.created_at,
-        account_status: v.status,
+        partner_name: v.client_data.entity,
+        createdAt: v.client_data.created_at,
+        account_status: 'WAITING_FOR_ACTIVATION',
         events: v.id,
       }));
 

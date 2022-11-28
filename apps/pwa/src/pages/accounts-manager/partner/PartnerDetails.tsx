@@ -65,10 +65,12 @@ function AccountPartnerDetails() {
     },
   });
 
+  const [dynamicState, setDynamicState] = useState('');
+
   const { data, fetching, error } = resultDetailsClient;
 
   // Partner Details Data
-  const [partnerDetails, setPartnerDetails] = useState<PartnerDetailsProps | null>(null);
+  const [partnerDetails, setPartnerDetails] = useState<any>(null);
 
   // Activate | Suspended Client
   const [activateResult, activateClient] = useMutation(changeClientStatus);
@@ -80,17 +82,14 @@ function AccountPartnerDetails() {
     setIsSubimitting(true);
 
     const resActivate = await activateClient({
-      pk_columns: {
-        id: id,
-      },
+      id: params.partnerId,
       _set: {
-        status: 'ACTIVE_ACCOUNT',
+        status_id: 'ACTIVE_ACCOUNT',
       },
     });
 
-    console.log('resActivate', resActivate);
-
     if (resActivate) {
+      setDynamicState('ACTIVE_ACCOUNT');
       setIsSubimitting(false);
       enqueueSnackbar(
         `${translate('account_manager.partner_details.notification.activate_account')}`,
@@ -105,17 +104,14 @@ function AccountPartnerDetails() {
     setIsSubimitting(true);
 
     const resSuspended = await suspendedClient({
-      pk_columns: {
-        id: id,
-      },
+      id: params.partnerId,
       _set: {
-        status: 'SUSPENDED_ACCOUNT',
+        status_id: 'SUSPENDED_ACCOUNT',
       },
     });
 
-    console.log('resSuspended', resSuspended);
-
     if (resSuspended) {
+      setDynamicState('SUSPENDED_ACCOUNT');
       setIsSubimitting(false);
       enqueueSnackbar(
         `${translate('account_manager.partner_details.notification.disabled_account')}`,
@@ -130,17 +126,14 @@ function AccountPartnerDetails() {
     setIsSubimitting(true);
 
     const resDeleted = await deleteClient({
+      id: params.partnerId,
       _set: {
-        status: 'CANCELED_ACCOUNT',
-      },
-      email: {
-        _eq: email,
+        status_id: 'CANCELED_ACCOUNT',
       },
     });
 
-    console.log('resDeleted', resDeleted);
-
     if (resDeleted) {
+      setDynamicState('CANCELED_ACCOUNT');
       setIsSubimitting(false);
       enqueueSnackbar(
         `${translate('account_manager.partner_details.notification.deleted_account')}`,
@@ -153,7 +146,8 @@ function AccountPartnerDetails() {
 
   useEffect(() => {
     if (data) {
-      setPartnerDetails(data?.client_data_by_pk);
+      setPartnerDetails(data?.user_by_pk);
+      setDynamicState(data?.user_by_pk?.status_id);
     }
   }, [data]);
 
@@ -190,28 +184,30 @@ function AccountPartnerDetails() {
                     />
                   </Button>
                   <Box>
-                    <Typography variant="h4">{partnerDetails?.entity ?? '-'}</Typography>
+                    <Typography variant="h4">
+                      {partnerDetails?.client_data.entity ?? '-'}
+                    </Typography>
                   </Box>
                 </Box>
                 <Label
                   variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
                   color={
-                    ((!partnerDetails?.status ||
-                      partnerDetails?.status === 'WAITING_FOR_ACTIVATION' ||
-                      partnerDetails?.status === 'REVISED_ACCOUNT') &&
+                    ((!dynamicState ||
+                      dynamicState === 'WAITING_FOR_ACTIVATION' ||
+                      dynamicState === 'REVISED_ACCOUNT') &&
                       'warning') ||
-                    (partnerDetails?.status === 'ACTIVE_ACCOUNT' && 'success') ||
+                    (dynamicState === 'ACTIVE_ACCOUNT' && 'success') ||
                     'error'
                   }
                   sx={{ textTransform: 'capitalize', fontSize: 14, py: 2.5, px: 4 }}
                 >
-                  {(partnerDetails?.status === 'ACTIVE_ACCOUNT' &&
+                  {(dynamicState === 'ACTIVE_ACCOUNT' &&
                     translate('account_manager.table.td.label_active_account')) ||
-                    ((partnerDetails?.status === 'WAITING_FOR_ACTIVATION' ||
-                      partnerDetails?.status === 'REVISED_ACCOUNT') &&
+                    ((dynamicState === 'WAITING_FOR_ACTIVATION' ||
+                      dynamicState === 'REVISED_ACCOUNT') &&
                       translate('account_manager.table.td.label_waiting_activation')) ||
-                    (partnerDetails?.status !== 'waiting' &&
-                      partnerDetails?.status !== 'approved' &&
+                    (dynamicState !== 'waiting' &&
+                      dynamicState !== 'approved' &&
                       translate('account_manager.table.td.label_canceled_account'))}
                 </Label>
               </Stack>
@@ -232,7 +228,7 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.num_of_employed_facility ?? '-'}
+                        {partnerDetails?.client_data.num_of_employed_facility ?? '-'}
                       </Typography>
                     </Box>
                     <Box>
@@ -244,7 +240,7 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.num_of_beneficiaries ?? '-'}
+                        {partnerDetails?.client_data.num_of_beneficiaries ?? '-'}
                       </Typography>
                     </Box>
                     <Box>
@@ -256,7 +252,7 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.date_of_esthablistmen ?? '-'}
+                        {partnerDetails?.client_data.date_of_esthablistmen ?? '-'}
                       </Typography>
                     </Box>
                     <Box>
@@ -268,7 +264,7 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.headquarters ?? '-'}
+                        {partnerDetails?.client_data.headquarters ?? '-'}
                       </Typography>
                     </Box>
                   </Stack>
@@ -292,7 +288,7 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.license_number ?? '-'}
+                        {partnerDetails?.client_data.license_number ?? '-'}
                       </Typography>
                     </Box>
                     <Box>
@@ -304,7 +300,7 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.entity ?? '-'}
+                        {partnerDetails?.client_data.entity ?? '-'}
                       </Typography>
                     </Box>
                     <Box>
@@ -316,7 +312,7 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.license_expired ?? '-'}
+                        {partnerDetails?.client_data.license_expired ?? '-'}
                       </Typography>
                     </Box>
                     <Box>
@@ -328,7 +324,7 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.license_issue_date ?? '-'}
+                        {partnerDetails?.client_data.license_issue_date ?? '-'}
                       </Typography>
                     </Box>
                     <Box>
@@ -340,7 +336,7 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.license_file ?? '-'}
+                        {partnerDetails?.client_data.license_file.url ?? '-'}
                       </Typography>
                     </Box>
                   </Stack>
@@ -364,7 +360,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.ceo_name}
+                          {partnerDetails?.client_data.ceo_name}
                         </Typography>
                       </Box>
                     </Grid>
@@ -378,7 +374,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.ceo_mobile}
+                          {partnerDetails?.client_data.ceo_mobile}
                         </Typography>
                       </Box>
                     </Grid>
@@ -392,7 +388,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.data_entry_name ?? '-'}
+                          {partnerDetails?.client_data.data_entry_name ?? '-'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -406,7 +402,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.data_entry_mobile ?? '-'}
+                          {partnerDetails?.client_data?.data_entry_mobile ?? '-'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -420,7 +416,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.data_entry_mail ?? '-'}
+                          {partnerDetails?.client_data.data_entry_mail ?? '-'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -444,7 +440,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.center_administration ?? '-'}
+                          {partnerDetails?.client_data.center_administration ?? '-'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -458,7 +454,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.governorate ?? '-'}
+                          {partnerDetails?.client_data.governorate ?? '-'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -500,7 +496,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.twitter_acount ?? '-'}
+                          {partnerDetails?.client_data?.twitter_acount ?? '-'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -514,7 +510,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.website ?? '-'}
+                          {partnerDetails?.client_data?.website ?? '-'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -528,7 +524,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.phone ?? '-'}
+                          {partnerDetails?.client_data.phone ?? '-'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -542,16 +538,17 @@ function AccountPartnerDetails() {
                     {translate('account_manager.partner_details.bank_information')}
                   </Typography>
                   <Grid container spacing={{ xs: 2 }} component="div">
-                    {partnerDetails?.user &&
-                    partnerDetails?.user?.bank_informations &&
-                    partnerDetails?.user?.bank_informations.length ? (
-                      partnerDetails?.user?.bank_informations.map((v, i) => (
+                    {partnerDetails?.bank_informations &&
+                    partnerDetails?.bank_informations.length ? (
+                      partnerDetails?.bank_informations.map((v: any, i: any) => (
                         <Grid item xs={12} md={6} key={i}>
                           <BankImageComp
                             enableButton={true}
                             bankName={`${v.bank_name}`}
                             accountNumber={`${v.bank_account_number}`}
                             bankAccountName={`${v.bank_account_name}`}
+                            imageUrl={v?.card_image?.url}
+                            size={v?.card_image?.size}
                           />
                         </Grid>
                       ))
@@ -576,7 +573,7 @@ function AccountPartnerDetails() {
               >
                 <Grid container spacing={2} alignItems="center" justifyContent="space-around">
                   <Grid item>
-                    {partnerDetails?.status === 'ACTIVE_ACCOUNT' ? (
+                    {dynamicState === 'ACTIVE_ACCOUNT' ? (
                       <Button
                         onClick={() => handeSuspendedAccount(partnerDetails?.id!)}
                         variant="contained"
@@ -587,7 +584,7 @@ function AccountPartnerDetails() {
                       </Button>
                     ) : (
                       <Button
-                        onClick={() => handleActivateAccount(partnerDetails?.id!)}
+                        onClick={() => handleActivateAccount(params.partnerId!)}
                         variant="contained"
                         color="primary"
                         disabled={isSubmitting}
@@ -601,6 +598,7 @@ function AccountPartnerDetails() {
                       variant="contained"
                       color="error"
                       onClick={() => handleDeleteAccount(user?.email)}
+                      disabled={dynamicState === 'CANCELED_ACCOUNT' ? true : false}
                     >
                       {translate('account_manager.partner_details.btn_deleted_account')}
                     </Button>

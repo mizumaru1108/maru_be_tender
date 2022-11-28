@@ -23,9 +23,9 @@ type Props = {
 const ProjectInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
   const { translate } = useLocales();
   const CreatingProposalForm2 = Yup.object().shape({
-    num_ofproject_binicficiaries: Yup.number().required(
-      translate('errors.cre_proposal.num_ofproject_binicficiaries.required')
-    ),
+    num_ofproject_binicficiaries: Yup.number()
+      .typeError(translate('errors.cre_proposal.num_ofproject_binicficiaries.message'))
+      .required(translate('errors.cre_proposal.num_ofproject_binicficiaries.required')),
     project_goals: Yup.string().required(translate('errors.cre_proposal.project_goals.required')),
     project_outputs: Yup.string().required(
       translate('errors.cre_proposal.project_outputs.required')

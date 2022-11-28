@@ -6,7 +6,7 @@ import useLocales from 'hooks/useLocales';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
-  minHeight: '100vh',
+  maxHeight: '100%',
   display: 'flex',
   justifyContent: 'start',
   flexDirection: 'column',
