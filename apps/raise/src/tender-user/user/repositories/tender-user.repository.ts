@@ -1,15 +1,25 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Prisma, project_tracks, user, user_type } from '@prisma/client';
+import {
+  prisma,
+  Prisma,
+  project_tracks,
+  user,
+  user_type,
+} from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
+import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 
 @Injectable()
 export class TenderUserRepository {
   private readonly logger = ROOT_LOGGER.child({
     'log.logger': TenderUserRepository.name,
   });
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly fusionAuthService: FusionAuthService,
+  ) {}
 
   /**
    * validate if the track exist on the database
@@ -65,7 +75,7 @@ export class TenderUserRepository {
   }
 
   async createUser(
-    userData: Prisma.userCreateInput,
+    userData: Prisma.userCreateInput | Prisma.userUncheckedCreateInput,
     rolesData?: Prisma.user_roleUncheckedCreateInput[],
   ) {
     this.logger.debug(
@@ -99,18 +109,32 @@ export class TenderUserRepository {
         where: { id: userId },
       });
     } catch (error) {
-      const theEror = prismaErrorThrower(error, `deleting user!`);
-      throw theEror;
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          this.logger.log('warn', `User with id: ${userId} not found`);
+          return false; // gonna be still works if the user is not found.
+        }
+      } else {
+        this.logger.error('Something went wrong when deleting user', error);
+        const theEror = prismaErrorThrower(error, `deleting user!`);
+        throw theEror;
+      }
     }
   }
 
-  async test(userId: string) {
-    this.logger.debug(`Deleting user with id: ${userId}`);
+  async deleteUserWFusionAuth(userId: string) {
+    this.logger.log('log', `Deleting user with id: ${userId}`);
     try {
-      return await this.prismaService.user.findFirst({
-        where: { id: userId },
+      const result = await this.prismaService.$transaction(async (prisma) => {
+        const prismaResult = await this.deleteUser(userId);
+        const fusionResult = await this.fusionAuthService.fusionAuthDeleteUser(
+          userId,
+        );
+        return { fusionResult, prismaResult };
       });
+      return result;
     } catch (error) {
+      this.logger.error('Something went wrong when deleting user', error);
       const theEror = prismaErrorThrower(error, `deleting user!`);
       throw theEror;
     }

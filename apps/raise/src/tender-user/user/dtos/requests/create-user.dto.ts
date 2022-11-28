@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
 import {
   IsString,
   IsNotEmpty,
@@ -35,7 +36,7 @@ export class TenderCreateUserDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsBoolean()
-  activate_user?: boolean;
+  active_user?: boolean;
 
   @ApiPropertyOptional()
   @IsOptional()
