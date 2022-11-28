@@ -150,11 +150,22 @@ export class FusionAuthService {
   async fusionAuthDeleteUser(userId: string) {
     try {
       await this.fusionAuthAdminClient.deleteUser(userId);
+      return true;
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       if (error.statusCode === 404) {
-        throw new BadRequestException('User not found!');
+        this.logger.log(
+          'warn',
+          "Delete user performed but user doesn't exist!",
+          error,
+        );
+        return false;
       } else {
+        this.logger.log(
+          'error',
+          "Something went wrong when deleting user, from fusion auth's side!",
+          error,
+        );
         throw new InternalServerErrorException(
           'Something went wrong when deleting user from server!',
         );

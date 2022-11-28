@@ -34,9 +34,11 @@ export class TenderUserController {
   @Post('delete')
   async deleteUser(
     @Body() request: TenderDeleteUserDto,
-  ): Promise<BaseResponse<user>> {
+  ): Promise<BaseResponse<any>> {
     const { user_id } = request;
-    const response = await this.tenderUserService.deleteUser(user_id);
+    const response = await this.tenderUserService.deleteUserWFusionAuth(
+      user_id,
+    );
     return baseResponseHelper(
       response,
       HttpStatus.CREATED,

@@ -6,7 +6,6 @@ import {
 import { Prisma } from '@prisma/client';
 
 export function prismaErrorThrower(error: any, errorMessage: string) {
-  console.log(error);
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
     return new InternalServerErrorException(
       `Something went wrong at ${errorMessage}, (Prisma: ${error.code})`,

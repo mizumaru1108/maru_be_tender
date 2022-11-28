@@ -21,11 +21,12 @@ export class TenderUserService {
   async createUser(
     request: TenderCreateUserDto,
   ): Promise<CreateUserResponseDto> {
+    console.log('request', request);
     const {
       email,
       employee_name,
       mobile_number,
-      activate_user,
+      active_user,
       employee_path,
       user_roles,
     } = request;
@@ -96,6 +97,7 @@ export class TenderUserService {
     }
 
     // map as a create input
+    let status = active_user ? 'ACTIVE_ACCOUNT' : 'WAITING_FOR_ACTIVATION';
     const createUserPayload: Prisma.userCreateInput = {
       id: fusionAuthResult.user.id,
       email,
@@ -103,7 +105,7 @@ export class TenderUserService {
       mobile_number,
       status: {
         connect: {
-          id: activate_user ? 'ACTIVE_ACCOUNT' : 'WAITING_FOR_ACTIVATION',
+          id: status,
         },
       },
     };
@@ -142,8 +144,27 @@ export class TenderUserService {
     };
   }
 
-  async deleteUser(id: string): Promise<user> {
-    await this.fusionAuthService.fusionAuthDeleteUser(id);
-    return await this.tenderUserRepository.deleteUser(id);
+  async deleteUserWFusionAuth(id: string) {
+    const deleteResult = await this.tenderUserRepository.deleteUserWFusionAuth(
+      id,
+    );
+    let logs = '';
+    let deletedUser: user | null = null;
+    console.log('delete result', deleteResult);
+    logs =
+      deleteResult.fusionResult === true
+        ? "Fusion Auth's user deleted!"
+        : 'Delete user performed successfully but user did not exist on fusion auth!';
+    logs = deleteResult.prismaResult
+      ? (logs += ", and Tender's user deleted!")
+      : (logs +=
+          ', and Delete user performed successfully but user did not exist on tender db!');
+    if (typeof deleteResult.prismaResult === 'object') {
+      deletedUser = deleteResult.prismaResult;
+    }
+    return {
+      logs,
+      deletedUser,
+    };
   }
 }
