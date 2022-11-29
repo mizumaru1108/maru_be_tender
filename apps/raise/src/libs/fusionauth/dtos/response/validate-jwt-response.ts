@@ -1,3 +1,5 @@
+export declare type UUID = string;
+
 export interface ValidateJwtResponse {
   statusCode: number;
   jwt?: {
@@ -15,4 +17,18 @@ export interface ValidateJwtResponse {
     roles: string[];
     tid: string;
   };
+}
+
+export interface IVerifyEmailDto {
+  email: string;
+  domainUrl?: string;
+  organizationId?: string;
+  organizationEmail?: string;
+  verificationId?: string;
+  userId: UUID
+}
+
+export interface IQueryAxiosVerify {
+  applicationId: string;
+  email: string;
 }

@@ -4,8 +4,9 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsUUID,
 } from 'class-validator';
+import { isString } from 'lodash';
+import { ValidateObjectIdDecorator } from 'src/commons/decorators/validate-object-id.decorator';
 
 export class GSRegisterRequestDto {
   @ApiProperty()
@@ -29,11 +30,24 @@ export class GSRegisterRequestDto {
   @IsNotEmpty()
   password: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  @ValidateObjectIdDecorator()
+  organizationId: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @IsUUID()
-  organizationId: string;
+  organizationEmail?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  domainUrl?: string;
+
 
   @ApiPropertyOptional()
   @IsOptional()

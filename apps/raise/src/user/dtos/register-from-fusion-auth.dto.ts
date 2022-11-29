@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
@@ -8,6 +8,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { ValidateObjectIdDecorator } from 'src/commons/decorators/validate-object-id.decorator';
 
 export class RegisterFromFusionAuthDto {
   @ApiProperty()
@@ -41,6 +42,12 @@ export class RegisterFromFusionAuthDto {
 
   @ApiProperty()
   mobile?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @ValidateObjectIdDecorator()
+  organizationId?: string;
 }
 
 export class RegFromFusionAuthTenderDto {
