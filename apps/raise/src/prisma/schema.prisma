@@ -50,7 +50,6 @@ model client_data {
   updated_at               DateTime?    @default(now()) @db.Timestamptz(6)
   client_field             String?      @db.VarChar
   user_id                  String       @unique
-  vat                      Boolean?
   license_file             Json?
   board_ofdec_file         Json?
   user                     user         @relation("client_data_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
@@ -149,10 +148,10 @@ model proposal {
   outter_status                       String?                    @default("ONGOING")
   project_beneficiaries               String?                    @db.VarChar
   number_of_payments                  Decimal?                   @db.Decimal
-  finance_id                          String?                    @default("null")
-  cashier_id                          String?                    @default("null")
-  project_manager_id                  String?                    @default("null")
-  supervisor_id                       String?                    @default("null")
+  finance_id                          String?
+  cashier_id                          String?
+  project_manager_id                  String?
+  supervisor_id                       String?
   project_attachments                 Json?
   letter_ofsupport_req                Json?
   on_revision                         Boolean?                   @default(false)
@@ -211,8 +210,8 @@ model proposal_log {
   inner_status     String?
   state            String
   client_user_id   String
-  moderators       String?          @db.Char
-  path             String?          @db.Char
+  moderators       String?          @db.Char(1)
+  path             String?          @db.Char(1)
   notes            String?
   procedures       String?
   send_amandement  Json?
@@ -491,8 +490,8 @@ model project_tracks {
 model room_chat {
   room_id                                                    String                  @id
   correspondance_category                                    String
-  participant1                                               String                  @db.Char
-  participant2                                               String                  @db.Char
+  participant1                                               String                  @db.Char(1)
+  participant2                                               String                  @db.Char(1)
   created_at                                                 DateTime                @default(now()) @db.Timestamptz(6)
   updated_at                                                 DateTime                @default(now()) @db.Timestamptz(6)
   correspondance_category_correspondance_categoryToroom_chat correspondance_category @relation(fields: [correspondance_category], references: [id], onDelete: NoAction, onUpdate: NoAction)

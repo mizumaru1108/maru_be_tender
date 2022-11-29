@@ -97,7 +97,7 @@ class registerClient {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @ValidateKsaPhoneNumber9661()
+  @ValidateKsaPhoneNumber9665()
   entity_mobile: string;
 
   @ApiProperty()
@@ -129,7 +129,7 @@ class registerClient {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @ValidateKsaPhoneNumber9661()
+  @ValidateKsaPhoneNumber9665()
   data_entry_mobile: string;
 
   @ApiProperty()
@@ -146,7 +146,7 @@ class registerClient {
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  @ValidateKsaPhoneNumber9665()
+  @ValidateKsaPhoneNumber9661()
   phone?: string;
 
   @ApiProperty()
@@ -181,11 +181,6 @@ class registerClient {
   @IsNotEmpty()
   @IsString()
   client_field: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsBoolean()
-  vat: boolean;
 
   @ApiProperty()
   @IsArray()
