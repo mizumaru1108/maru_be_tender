@@ -578,7 +578,6 @@ model consultant_form {
   target_group_age               Int
   been_made_before               Boolean
   remote_or_insite               Boolean
-  clause                         String
   proposal_id                    String                           @unique
   supervisor_id                  String
   id                             String                           @id

@@ -22,7 +22,7 @@ export function ValidateKsaPhoneNumber9665(
           if (validationOptions && validationOptions.each) {
             if (!value.match(/^\+9665[0-9]{8}$/)) {
               throw new BadRequestException(
-                `${args.property} (${value}) is an invalid KSA phone number!`,
+                `${args.property} (${value}) is an invalid (+9665) KSA phone number!`,
               );
             }
           } else {
@@ -34,7 +34,7 @@ export function ValidateKsaPhoneNumber9665(
             }
             if (!value.match(/^\+9665[0-9]{8}$/)) {
               throw new BadRequestException(
-                `${args.property} (${value}) is an invalid KSA phone number!`,
+                `${args.property} (${value}) is an invalid (+9665) KSA phone number!`,
               );
             }
           }

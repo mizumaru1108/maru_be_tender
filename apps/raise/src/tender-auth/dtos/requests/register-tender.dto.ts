@@ -2,7 +2,6 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
-  IsBoolean,
   IsDate,
   IsEmail,
   IsNotEmpty,
@@ -11,9 +10,9 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
 import { ValidateKsaPhoneNumber9661 } from '../../../tender-commons/decorators/validate-ksa-phone-number-9661.decorator';
 import { ValidateKsaPhoneNumber9665 } from '../../../tender-commons/decorators/validate-ksa-phone-number-9665.decorator';
+import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
 class bankData {
   @ApiProperty()
   @IsString()
@@ -76,7 +75,9 @@ class registerClient {
   center_administration: string;
 
   @ApiProperty()
+  @IsString()
   @IsNotEmpty()
+  @ValidateKsaPhoneNumber9665()
   ceo_mobile: string;
 
   @ApiProperty()

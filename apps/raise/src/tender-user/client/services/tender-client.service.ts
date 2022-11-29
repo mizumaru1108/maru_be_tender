@@ -51,7 +51,7 @@ export class TenderClientService {
       id: idFromFusionAuth,
       employee_name: request.data.employee_name,
       email: request.data.email,
-      mobile_number: request.data.phone,
+      mobile_number: request.data.entity_mobile,
       status: {
         connect: {
           id: 'WAITING_FOR_ACTIVATION',

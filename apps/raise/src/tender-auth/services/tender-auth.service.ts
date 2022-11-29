@@ -53,13 +53,12 @@ export class TenderAuthService {
     // destruct data.phone from registerRequest as clientPhone
     const {
       data: {
-        phone: clientPhone,
         ceo_mobile: ceoMobile,
         data_entry_mobile: dataEntryMobile,
+        entity_mobile: clientPhone,
         email,
         employee_path,
         status,
-        license_number,
       },
     } = registerRequest;
 
@@ -86,13 +85,6 @@ export class TenderAuthService {
       throw new BadRequestException(
         'Phone number and CEO mobile number cannot be the same!',
       );
-    }
-
-    const isDuplicatedLiscene = await this.tenderClientRepository.findClient({
-      license_number,
-    });
-    if (isDuplicatedLiscene) {
-      throw new BadRequestException('License number already exist!');
     }
 
     if (employee_path) {

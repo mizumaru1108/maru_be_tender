@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
+import { nanoid } from 'nanoid';
 import { ROOT_LOGGER } from 'src/libs/root-logger';
 import { LoginRequestDto } from '../../../auth/dtos/login-request.dto';
 import { RegisterRequestDto } from '../../../auth/dtos/register-request.dto';
@@ -193,7 +194,6 @@ export class FusionAuthService {
 
     const user: IFusionAuthUser = {
       email: registerRequest.email,
-      username: registerRequest.employee_name,
       password: registerRequest.password,
       firstName: registerRequest.employee_name,
       lastName: '',
