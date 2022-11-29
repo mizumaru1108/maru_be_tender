@@ -7,8 +7,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { ValidateKsaPhoneNumber9665 } from '../../../../tender-commons/decorators/validate-ksa-phone-number-9665.decorator';
-
+import { ValidateKsaPhoneNumber9661 } from '../../../../tender-commons/decorators/validate-ksa-phone-number-9661.decorator';
 export class TenderCreateUserDto {
   @ApiProperty()
   @IsString()
@@ -23,7 +22,7 @@ export class TenderCreateUserDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @ValidateKsaPhoneNumber9665()
+  @ValidateKsaPhoneNumber9661()
   mobile_number?: string;
 
   @ApiProperty()
