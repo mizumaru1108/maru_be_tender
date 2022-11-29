@@ -113,7 +113,6 @@ export class TenderClientService {
         num_of_employed_facility: request.data.num_of_employed_facility,
         phone: request.data.phone,
         client_field: request.data.client_field,
-        vat: request.data.vat,
       },
     };
 

@@ -183,11 +183,6 @@ class registerClient {
   client_field: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsBoolean()
-  vat: boolean;
-
-  @ApiProperty()
   @IsArray()
   @Type(() => bankData)
   @IsNotEmpty({ each: true })
