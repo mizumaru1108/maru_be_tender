@@ -366,8 +366,8 @@ const ar = {
       options: {},
     },
     phone: {
-      label: 'الهاتف*',
-      placeholder: 'الرجاء كتابة رقم الهاتف, مثال: 966511111111+',
+      label: 'الهاتف',
+      placeholder: 'الرجاء كتابة رقم الهاتف, مثال: 9661xxxxxxxx+',
     },
     twitter: {
       label: 'حساب تويتر',
@@ -568,7 +568,7 @@ const ar = {
   },
   funding_project_request_form6: {
     bank_account_number: {
-      label: 'رقم الحساب البنكي*',
+      label: 'أيبان الحساب البنكي*',
       placeholder: 'رقم الحساب البنكي',
     },
     bank_account_name: {

@@ -35,7 +35,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
       .positive()
       .integer()
       .required(translate('errors.register.num_of_beneficiaries.required')),
-    vat: Yup.boolean().required(),
+    // vat: Yup.boolean().required(),
   });
 
   const methods = useForm<MainValuesProps>({
@@ -152,13 +152,13 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
             placeholder={translate('register_form1.number_of_beneficiaries.placeholder')}
           />
         </Grid>
-        <Grid item md={6} xs={12}>
+        {/* <Grid item md={6} xs={12}>
           <BaseField
             type="checkbox"
             name="vat"
             label={translate('register_form1.vat.placeholder')}
           />
-        </Grid>
+        </Grid> */}
         <Grid item md={12} xs={12}>
           {children}
         </Grid>

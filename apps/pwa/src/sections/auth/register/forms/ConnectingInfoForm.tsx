@@ -18,27 +18,44 @@ type FormProps = {
 
 const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
   const { translate } = useLocales();
-  const RegisterSchema = Yup.object().shape({
-    region: Yup.string().required('Region name required'),
-    governorate: Yup.string().required('City name required'),
-    center_administration: Yup.string(),
-    entity_mobile: Yup.string()
-      .required('Mobile Number is required')
-      .matches(
-        /^\+9665[0-9]{8}$/,
-        `The Entity Mobile must be written in the exact way of +9665xxxxxxxx`
-      ),
-    phone: Yup.string()
-      .required('Phone Number required')
-      .matches(
-        /^\+9665[0-9]{8}$/,
-        `The Entity Mobile must be written in the exact way of +9665xxxxxxxx`
-      ),
-    twitter_acount: Yup.string(),
-    website: Yup.string(),
-    email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-    password: Yup.string().required('Password is required'),
-  });
+  const RegisterSchema = Yup.object().shape(
+    {
+      region: Yup.string().required('Region name required'),
+      governorate: Yup.string().required('City name required'),
+      center_administration: Yup.string(),
+      entity_mobile: Yup.string()
+        .required('Mobile Number is required')
+        .matches(
+          /^\+9665[0-9]{8}$/,
+          `The Entity Mobile must be written in the exact way of +9665xxxxxxxx`
+        ),
+      phone: Yup.string()
+        .nullable()
+        .notRequired()
+        .when('phone', {
+          is: (value: string) => {
+            console.log(value?.length);
+            return value?.length;
+          },
+          then: (rule) =>
+            rule.matches(
+              /^\+9661[0-9]{8}$/,
+              `The Entity Mobile must be written in the exact way of +9661xxxxxxxx`
+            ),
+        }),
+
+      twitter_acount: Yup.string(),
+      website: Yup.string(),
+      email: Yup.string()
+        .email('Email must be a valid email address')
+        .required('Email is required'),
+      password: Yup.string().required('Password is required'),
+    },
+    [
+      // Add Cyclic deps here because when require itself
+      ['phone', 'phone'],
+    ]
+  );
 
   const methods = useForm<ConnectingValuesProps>({
     resolver: yupResolver(RegisterSchema),

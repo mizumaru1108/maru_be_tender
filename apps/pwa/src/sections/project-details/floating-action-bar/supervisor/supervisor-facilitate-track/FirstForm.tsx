@@ -88,16 +88,16 @@ function FirstForm({ children, onSubmit, defaultValues, data }: any) {
             placeholder="الرجاء اختيار البند"
             children={
               <>
-                <option value="test" style={{ backgroundColor: '#fff' }}>
+                <option value="مشروع يخص المساجد" style={{ backgroundColor: '#fff' }}>
                   مشروع يخص المساجد
                 </option>
-                <option value="test" style={{ backgroundColor: '#fff' }}>
+                <option value="مشروع يخص المنح الميسر" style={{ backgroundColor: '#fff' }}>
                   مشروع يخص المنح الميسر
                 </option>
-                <option value="test" style={{ backgroundColor: '#fff' }}>
+                <option value="مشروع يخص المبادرات" style={{ backgroundColor: '#fff' }}>
                   مشروع يخص المبادرات
                 </option>
-                <option value="test" style={{ backgroundColor: '#fff' }}>
+                <option value="مشروع يخص تعميدات" style={{ backgroundColor: '#fff' }}>
                   مشروع يخص تعميدات
                 </option>
               </>

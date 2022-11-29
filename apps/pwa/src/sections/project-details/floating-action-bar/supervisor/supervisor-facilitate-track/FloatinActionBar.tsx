@@ -32,7 +32,13 @@ type ConsultantForm = {
   recommended_support: Array<{ clause: string; explanation: string; amount: number }>;
   clause: string;
 };
-const steps = ['first step', 'second step', 'third step', 'forth step', 'fifth step'];
+const steps = [
+  'معلومات الدعم',
+  'معلومات الجهة',
+  'تفاصيل المشروع',
+  'موازنة المشروع',
+  'التوصية بالدعم من المشرف',
+];
 
 function FloatinActionBar({ organizationId, data }: any) {
   const navigate = useNavigate();

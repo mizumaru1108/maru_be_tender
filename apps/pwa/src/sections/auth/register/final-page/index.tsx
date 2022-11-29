@@ -39,7 +39,6 @@ function FinalPage({
     setOpen(false);
   };
   const hanelSubmit = async () => {
-    console.log(registerState);
     setIsSending(true);
     const { form1, form2, form3, form4, form5 } = registerState;
     try {
