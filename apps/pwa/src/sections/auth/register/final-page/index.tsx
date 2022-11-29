@@ -41,6 +41,7 @@ function FinalPage({
   const hanelSubmit = async () => {
     setIsSending(true);
     const { form1, form2, form3, form4, form5 } = registerState;
+    const { phone, ...restForm2 } = form2;
     try {
       const { data } = await axios.post(`${TMRA_RAISE_URL}/tender-auth/register`, {
         data: {
@@ -55,7 +56,8 @@ function FinalPage({
             },
           ],
           ...form1,
-          ...form2,
+          ...restForm2,
+          ...(phone !== '' && { phone }),
           license_number: form3.license_number,
           license_issue_date: form3.license_issue_date,
           license_expired: form3.license_expired,

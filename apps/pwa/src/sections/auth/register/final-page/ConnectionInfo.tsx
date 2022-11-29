@@ -68,7 +68,7 @@ function ConnectionInfo({
       <Stack direction="row" justifyContent="space-between">
         <Stack direction="column" flex={1}>
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>الهاتف:</Typography>
-          <Typography sx={{ fontSize: '18px' }}>{data.phone}</Typography>
+          <Typography sx={{ fontSize: '18px' }}>{data?.phone}</Typography>
         </Stack>
         <Stack direction="column" flex={1}>
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>حساب تويتر:</Typography>
