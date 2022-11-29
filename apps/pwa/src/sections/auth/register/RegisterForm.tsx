@@ -66,8 +66,8 @@ const initialValue = {
     license_number: '',
     license_issue_date: '',
     license_expired: '',
-    license_file: { size: undefined, url: '', type: '' },
-    board_ofdec_file: { size: undefined, url: '', type: '' },
+    license_file: { size: undefined, url: '', type: 'image/jpg' },
+    board_ofdec_file: { size: undefined, url: '', type: 'image/jpg' },
   },
   form4: {
     agree_on: false,

@@ -11,9 +11,10 @@ import {
   UploadMultiFileProps,
 } from '../upload';
 import { useCallback, useState } from 'react';
-import axiosInstance from 'utils/axios';
 import { getFileURL } from 'utils/getFileURL';
 import useAuth from 'hooks/useAuth';
+import axios from 'axios';
+import { TMRA_RAISE_URL } from 'config';
 // ----------------------------------------------------------------------
 
 interface Props extends Omit<UploadProps, 'file'> {
@@ -60,6 +61,7 @@ export function RHFUploadSingleFile({ name, placeholder, ...other }: Props) {
   const id = user?.id;
   const handleDrop = useCallback(
     async (acceptedFiles: File[]) => {
+      console.log('asdasdasd');
       const file = acceptedFiles[0];
       const userId = id;
       const formdata = new FormData();
@@ -67,7 +69,7 @@ export function RHFUploadSingleFile({ name, placeholder, ...other }: Props) {
       formdata.append('userId', userId);
       try {
         setUploading(true);
-        const response = await axiosInstance.post('/tender/uploads', formdata);
+        const response = await axios.post(`${TMRA_RAISE_URL}/tender/uploads`, formdata);
         if (response.data) {
           setValue(name, {
             url: getFileURL(response.data.data),
@@ -78,7 +80,7 @@ export function RHFUploadSingleFile({ name, placeholder, ...other }: Props) {
         }
       } catch (e) {
         setUploading(false);
-        alert(e.message);
+        alert(e.data.mesage);
       }
     },
     [id, name, setValue]
