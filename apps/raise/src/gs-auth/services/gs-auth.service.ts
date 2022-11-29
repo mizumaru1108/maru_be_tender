@@ -27,14 +27,41 @@ export class GsAuthService {
     };
   }
 
-  async register(loginRequest: GSRegisterRequestDto) {
-    console.log('masuk');
-    const fusionRes = await this.fusionAuthService.fusionAuthRegister(
-      loginRequest,
+  async register(registerRequest: GSRegisterRequestDto) {
+    const fusionAuthRes = await this.fusionAuthService.fusionAuthRegister(
+      registerRequest,
     );
 
-    // const duplicatedUser = await this.gsUserService.findOne({
+    if (!fusionAuthRes || !fusionAuthRes.user || !fusionAuthRes.user.id) {
+      throw new BadRequestException('Failed to fetch user!');
+    }
+    
+    const registeredUser = await this.gsUserService.registerFromFusion({
+      _id: fusionAuthRes.user.id,
+      firstname: fusionAuthRes.user.firstName,
+      lastname: fusionAuthRes.user.lastName,
+      email: fusionAuthRes.user.email,
+      country: registerRequest.country,
+      state: registerRequest.state,
+      address: registerRequest.address,
+      mobile: registerRequest.mobile,
+      organizationId: registerRequest.organizationId
+    });
 
-    // })
+    const verifyEmail = await this.fusionAuthService.fusionEmailVerification({
+      email: fusionAuthRes.user.email,
+      userId: fusionAuthRes.user.id,
+      organizationId: registerRequest.organizationId,
+      organizationEmail: registerRequest.organizationEmail,
+      domainUrl: registerRequest.domainUrl
+    })
+
+    return {
+      user: registeredUser,
+      verificationId: verifyEmail.verificationId,
+      url: registerRequest.domainUrl,
+      token: fusionAuthRes.token,
+      refreshToken: fusionAuthRes.refreshToken,
+    }
   }
 }
