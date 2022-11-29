@@ -27,7 +27,7 @@ export class TenderUserService {
       email,
       employee_name,
       mobile_number,
-      active_user,
+      activate_user,
       employee_path,
       user_roles,
     } = request;
@@ -100,7 +100,7 @@ export class TenderUserService {
     }
 
     // map as a create input
-    let status = active_user ? 'ACTIVE_ACCOUNT' : 'WAITING_FOR_ACTIVATION';
+    let status = activate_user ? 'ACTIVE_ACCOUNT' : 'WAITING_FOR_ACTIVATION';
     const createUserPayload: Prisma.userCreateInput = {
       id: fusionAuthResult.user.id,
       email,

@@ -5,7 +5,9 @@ import {
   ValidationOptions,
 } from 'class-validator';
 
-export function ValidateKsaPhoneNumber(validationOptions?: ValidationOptions) {
+export function ValidateKsaPhoneNumber9661(
+  validationOptions?: ValidationOptions,
+) {
   return (object: any, propertyName: string) => {
     registerDecorator({
       name: 'ValidateKsaPhoneNumber',
@@ -18,7 +20,7 @@ export function ValidateKsaPhoneNumber(validationOptions?: ValidationOptions) {
           // options each is true so we can use it with {each: true}
           // if the value is [] then it will be splitted
           if (validationOptions && validationOptions.each) {
-            if (!value.match(/^\+9665[0-9]{8}$/)) {
+            if (!value.match(/^\+9661[0-9]{8}$/)) {
               throw new BadRequestException(
                 `${args.property} (${value}) is an invalid KSA phone number!`,
               );
@@ -30,7 +32,7 @@ export function ValidateKsaPhoneNumber(validationOptions?: ValidationOptions) {
                 `${propertyName} must be a string!`,
               );
             }
-            if (!value.match(/^\+9665[0-9]{8}$/)) {
+            if (!value.match(/^\+9661[0-9]{8}$/)) {
               throw new BadRequestException(
                 `${args.property} (${value}) is an invalid KSA phone number!`,
               );

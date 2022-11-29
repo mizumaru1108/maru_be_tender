@@ -24,7 +24,10 @@ import {
   TenderAppRole,
 } from '../../../tender-commons/types';
 import { TenderCreateUserDto } from '../../../tender-user/user/dtos/requests/create-user.dto';
-import { IVerifyEmailDto, IQueryAxiosVerify } from '../dtos/response/validate-jwt-response';
+import {
+  IVerifyEmailDto,
+  IQueryAxiosVerify,
+} from '../dtos/response/validate-jwt-response';
 
 /**
  * Nest Fusion Auth Service
@@ -190,11 +193,15 @@ export class FusionAuthService {
 
     const user: IFusionAuthUser = {
       email: registerRequest.email,
+      username: registerRequest.employee_name,
       password: registerRequest.password,
       firstName: registerRequest.employee_name,
       lastName: '',
-      mobilePhone: registerRequest.mobile_number,
     };
+
+    if (registerRequest.mobile_number) {
+      user.mobilePhone = registerRequest.mobile_number;
+    }
 
     const registration: IFusionAuthUserRegistration = {
       applicationId: this.fusionAuthAppId,
@@ -251,21 +258,21 @@ export class FusionAuthService {
     const baseUrl = this.fusionAuthUrl;
     const verifyUrl = baseUrl + '/api/user/verify-email';
     const sendEmailUrl = baseUrl + '/api/email/send/';
-    const gsEmailTemplateId = '99732b56-521f-4da7-8792-bf97a3c13988'
-  
+    const gsEmailTemplateId = '99732b56-521f-4da7-8792-bf97a3c13988';
+
     const queryVerify: IQueryAxiosVerify = {
       applicationId: this.fusionAuthAppId,
-      email: requestVerify.email
-    }
-  
+      email: requestVerify.email,
+    };
+
     let variableSendEmail: SendRequest = {
       requestData: {
         domainUrl: requestVerify.domainUrl,
         organizationEmail: requestVerify.organizationEmail,
       },
-      userIds: [ requestVerify.userId ]
-    }
-  
+      userIds: [requestVerify.userId],
+    };
+
     const optionsVerify: AxiosRequestConfig<any> = {
       method: 'PUT',
       headers: {
@@ -276,18 +283,20 @@ export class FusionAuthService {
       params: queryVerify,
       url: verifyUrl,
     };
-  
+
     try {
       const { data } = await axios(optionsVerify);
-      
+
       if (data && data.verificationId) {
         let actVerifyUrl: string;
-        variableSendEmail.requestData!.verificationId = data.verificationId
-  
-        requestVerify && requestVerify?.organizationId === '62414373cf00cca3a830814a'
-          ? actVerifyUrl = sendEmailUrl + gsEmailTemplateId
-          : actVerifyUrl = sendEmailUrl + 'f1044dc5-02a3-4c73-942b-407639fe77ae'
-  
+        variableSendEmail.requestData!.verificationId = data.verificationId;
+
+        requestVerify &&
+        requestVerify?.organizationId === '62414373cf00cca3a830814a'
+          ? (actVerifyUrl = sendEmailUrl + gsEmailTemplateId)
+          : (actVerifyUrl =
+              sendEmailUrl + 'f1044dc5-02a3-4c73-942b-407639fe77ae');
+
         const optionsSendEmail: AxiosRequestConfig<any> = {
           method: 'POST',
           headers: {
@@ -296,13 +305,13 @@ export class FusionAuthService {
             'X-FusionAuth-TenantId': this.fusionAuthTenantId,
           },
           data: variableSendEmail,
-          url: actVerifyUrl
-        }
-  
-        const resSendEmail = await axios(optionsSendEmail)
-  
+          url: actVerifyUrl,
+        };
+
+        const resSendEmail = await axios(optionsSendEmail);
+
         if (resSendEmail.status === 202) {
-          return data
+          return data;
         }
       }
     } catch (error) {
