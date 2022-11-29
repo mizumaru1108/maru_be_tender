@@ -152,7 +152,6 @@ export class FusionAuthService {
       await this.fusionAuthAdminClient.deleteUser(userId);
       return true;
     } catch (error) {
-      // console.log(error);
       if (error.statusCode === 404) {
         this.logger.log(
           'warn',
@@ -216,22 +215,31 @@ export class FusionAuthService {
       url: registerUrl,
     };
 
+    this.logger.log(
+      'info',
+      `trying to register user (${registerRequest.email}) to fusion auth`,
+    );
     try {
       const data = await axios(options);
       return data.data;
     } catch (error) {
-      this.logger.debug('Error', error);
-      if (error.response.status < 500) {
-        console.log(error.response.data);
+      if (
+        error.response.data &&
+        error.response.data.fieldErrors &&
+        error.response.status < 500
+      ) {
+        this.logger.error('FusionAuth Error:', error.response.data);
         throw new BadRequestException(
-          `Registration Failed, either user is exist or something else!, more details: ${
-            error.response.data.fieldErrors
-              ? JSON.stringify(error.response.data.fieldErrors)
-              : JSON.stringify(error.response.data)
+          `Registration failed on cloud app, field error (${[
+            Object.keys(error.response.data.fieldErrors)[0],
+          ]}) : ${
+            error.response.data.fieldErrors[
+              Object.keys(error.response.data.fieldErrors)[0]
+            ][0].message
           }`,
         );
       } else {
-        console.log(error);
+        this.logger.error('FusionAuth Error:', error);
         throw new Error('Something went wrong!');
       }
     }

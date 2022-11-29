@@ -71,7 +71,9 @@ export class TenderAuthService {
       ],
     });
     if (findDuplicated) {
-      throw new BadRequestException('Email or Mobile Number already exist!');
+      throw new BadRequestException(
+        'Email or Mobile Number already exist in our app!',
+      );
     }
 
     if (dataEntryMobile === clientPhone) {

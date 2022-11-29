@@ -21,7 +21,8 @@ export class TenderUserService {
   async createUser(
     request: TenderCreateUserDto,
   ): Promise<CreateUserResponseDto> {
-    console.log('request', request);
+    this.logger.log('info', 'creating user, payload:', request);
+
     const {
       email,
       employee_name,
@@ -81,7 +82,9 @@ export class TenderUserService {
     });
 
     if (findDuplicated) {
-      throw new BadRequestException('Email or Mobile Number already exist!');
+      throw new BadRequestException(
+        'Email or Mobile Number already exist in our app!',
+      );
     }
 
     // create fusion auth user.
