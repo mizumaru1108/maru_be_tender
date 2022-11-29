@@ -1,14 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
 import {
-  IsString,
-  IsNotEmpty,
+  IsArray,
   IsBoolean,
   IsEmail,
+  IsNotEmpty,
   IsOptional,
-  IsArray,
+  IsString,
 } from 'class-validator';
-import { ValidateKsaPhoneNumber } from '../../../../tender-commons/decorators/validate-ksa-phone-number.decorator';
+import { ValidateKsaPhoneNumber9665 } from '../../../../tender-commons/decorators/validate-ksa-phone-number-9665.decorator';
 
 export class TenderCreateUserDto {
   @ApiProperty()
@@ -24,8 +23,8 @@ export class TenderCreateUserDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @ValidateKsaPhoneNumber()
-  mobile_number: string;
+  @ValidateKsaPhoneNumber9665()
+  mobile_number?: string;
 
   @ApiProperty()
   @IsString()
@@ -36,7 +35,7 @@ export class TenderCreateUserDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsBoolean()
-  active_user?: boolean;
+  activate_user?: boolean;
 
   @ApiPropertyOptional()
   @IsOptional()
