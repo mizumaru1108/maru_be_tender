@@ -8,16 +8,19 @@ import { RejectProposalFormFields } from './form-data';
 
 import { ProposalApprovePayload, ProposalFormProps } from './types';
 
+type FormData = {
+  notes: string;
+};
 function ProposalRejectingForm({ children, onSubmit }: ProposalFormProps) {
   const validationSchema = Yup.object().shape({
-    procedures: Yup.string().required('Procedures is required!'),
+    notes: Yup.string(),
   });
 
   const defaultValues = {
-    procedures: '',
+    notes: '',
   };
 
-  const methods = useForm<ProposalApprovePayload>({
+  const methods = useForm<FormData>({
     resolver: yupResolver(validationSchema),
     defaultValues,
   });

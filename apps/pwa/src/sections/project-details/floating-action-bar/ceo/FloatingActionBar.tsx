@@ -97,7 +97,7 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
     await reject({
       proposalId: pid,
       updateProposalStatusAndStatePayloads: {
-        inner_status: 'REJECTED_BY_CEO_WITH_COMMENT' as InnerStatus,
+        inner_status: 'REJECTED_BY_CEO' as InnerStatus,
         outter_status: 'CANCELED',
         state: 'PROJECT_SUPERVISOR',
       } as updateProposalStatusAndState,

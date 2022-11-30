@@ -20,7 +20,7 @@ const FormActionBox = ({ action, isLoading, onReturn }: Props) => (
         hieght: { xs: '100%', sm: '50px' },
       }}
     >
-      Close
+      إغلاق
     </Button>
     <LoadingButton
       loading={isLoading}
@@ -49,7 +49,7 @@ const FormActionBox = ({ action, isLoading, onReturn }: Props) => (
       disabled={isLoading}
     >
       {isLoading && <CircularProgress size={23} sx={{ color: 'white' }} thickness={10} />}
-      {action === 'accept' ? 'Accept' : 'Reject'}
+      {action === 'accept' ? 'قبول' : 'رفض'}
     </LoadingButton>
   </Stack>
 );

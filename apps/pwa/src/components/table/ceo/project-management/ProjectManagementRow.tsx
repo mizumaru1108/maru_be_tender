@@ -39,12 +39,12 @@ export default function ProjectManagementTableRow({
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
           {/* it should be the entity */}
-          {row.associationName ? translate(row.associationName) : '-'}
+          {row.associationName ? stringTruncate(row.associationName, 23) : '-'}
         </Typography>
       </TableCell>
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
-          {row.projectSection ? stringTruncate(row.projectSection, 23) : '-'}
+          {row.projectSection ? translate(row.projectSection) : '-'}
         </Typography>
       </TableCell>
       <TableCell>

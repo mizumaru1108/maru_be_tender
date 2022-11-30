@@ -13,7 +13,7 @@ function IncomingExchangePermissionRequests() {
       limit: 4,
       where: {
         inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' },
-        _and: { finance_id: { _eq: 'null' } },
+        _and: { finance_id: { _is_null: true } },
       },
     },
   });

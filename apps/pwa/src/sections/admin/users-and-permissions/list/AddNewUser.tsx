@@ -84,14 +84,12 @@ function AddNewUser() {
   } = methods;
 
   const onSubmit = async (data: FormValuesProps) => {
-    const { employee_path, ...restData } = data;
     try {
       setIsLoading(true);
       await axiosInstance.post(
         '/tender-user/create',
         {
-          ...restData,
-          ...(data.employee_path !== 'GENERAL' && { employee_path }),
+          ...data,
         },
         { headers: { 'x-hasura-role': activeRole! } }
       );
