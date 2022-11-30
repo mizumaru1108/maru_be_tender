@@ -25,6 +25,7 @@ import {
   TenderAppRole,
 } from '../../../tender-commons/types';
 import { TenderCreateUserDto } from '../../../tender-user/user/dtos/requests/create-user.dto';
+import { TenderCreateUserFusionAuthDto } from '../../../tender-user/user/dtos/requests/tender-create-user-fusion-auth.dto';
 import {
   IVerifyEmailDto,
   IQueryAxiosVerify,
@@ -178,7 +179,9 @@ export class FusionAuthService {
     }
   }
 
-  async fusionAuthTenderRegisterUser(registerRequest: TenderCreateUserDto) {
+  async fusionAuthTenderRegisterUser(
+    registerRequest: TenderCreateUserFusionAuthDto,
+  ) {
     const baseUrl = this.fusionAuthUrl;
     const registerUrl = baseUrl + '/api/user/registration/';
 

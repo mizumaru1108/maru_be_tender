@@ -1,13 +1,6 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsArray,
-  IsBoolean,
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
-export class TenderCreateUserDto {
+import { ApiProperty } from '@nestjs/swagger';
+import { IsArray, IsEmail, IsNotEmpty, IsString } from 'class-validator';
+export class TenderCreateUserFusionAuthDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -28,15 +21,6 @@ export class TenderCreateUserDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
-
-  @ApiProperty()
-  @IsBoolean()
-  activate_user: boolean;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  employee_path: string;
 
   @ApiProperty()
   @IsArray()

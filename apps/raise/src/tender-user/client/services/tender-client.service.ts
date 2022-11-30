@@ -15,6 +15,7 @@ import { compareUrl } from '../../../tender-commons/utils/compare-jsonb-imageurl
 import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
 import { CreateUserResponseDto } from '../../user/dtos/responses/create-user-response.dto';
 import { TenderClientRepository } from '../repositories/tender-client.repository';
+import { CreateEditRequestMapper } from '../mappers/edit_request.mapper';
 
 @Injectable()
 export class TenderClientService {
@@ -147,9 +148,9 @@ export class TenderClientService {
     user: ICurrentUser,
     editRequest: ClientEditRequestDto,
   ): Promise<ClientEditRequestResponseDto> {
-    const clientData = await this.tenderClientRepository.findClient({
-      user_id: user.id,
-    });
+    const clientData = await this.tenderClientRepository.findClientAndUser(
+      user.id,
+    );
     if (!clientData) throw new NotFoundException('Client data not found!');
 
     const baseEditRequest = {
@@ -158,41 +159,17 @@ export class TenderClientService {
     };
 
     let message = 'Edit Request success';
-    let requestChangeCount = 0;
 
-    const newEditRequest: edit_request[] = [];
+    let newEditRequest: edit_request[] = [];
     // let denactiveAccount: boolean = false; // for conditional deactivation
 
     if (editRequest.newValues) {
-      const newValues = editRequest.newValues as Record<string, any>;
-      const oldValues = clientData as Record<string, any>;
-
-      // if newValue has at least one key
-      for (const [key, value] of Object.entries(newValues)) {
-        // TODO: do logic to denactive account when some spesific field is changed
-        // example: when email is changed / when phone number is changed, denactive the account
-        // denactiveAccount = key === 'email' || key === 'phone_number';
-        if (key in oldValues && value !== oldValues[key]) {
-          const editRequest: edit_request = {
-            id: nanoid(),
-            field_name: key,
-            old_value: oldValues[key].toString(),
-            new_value: value.toString(),
-            field_type: typeof oldValues[key],
-            ...baseEditRequest,
-          };
-          newEditRequest.push(editRequest);
-          requestChangeCount++;
-          message = message + `${key} change requested`;
-        }
-      }
+      newEditRequest = CreateEditRequestMapper(
+        user.id,
+        clientData,
+        editRequest,
+      );
     }
-
-    await this.tenderClientRepository.createUpdateRequest(
-      user.id,
-      newEditRequest,
-      true, // for now just denactive the account after it's request for changes
-    );
 
     if (newEditRequest.length === 0) message = 'No changes requested';
 

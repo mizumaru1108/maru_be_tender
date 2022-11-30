@@ -1,20 +1,15 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import {
-  client_data,
-  user_status,
-  Prisma,
-  user,
-  edit_request,
-} from '@prisma/client';
+import { client_data, edit_request, Prisma, user_status } from '@prisma/client';
+import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { TransactionalPrismaClient } from '../../../tender-commons/types/interactive-prisma-trans';
-import { compareUrl } from '../../../tender-commons/utils/compare-jsonb-imageurl';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
-import { ClientEditRequestDto } from '../dtos/requests/client-edit-request.dto';
-import { CreateClientBankInformation } from '../dtos/requests/create-client-bank-information.dto';
 
 @Injectable()
 export class TenderClientRepository {
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': TenderClientRepository.name,
+  });
+
   constructor(private readonly prismaService: PrismaService) {}
 
   async validateStatus(status: string): Promise<user_status | null> {
@@ -23,27 +18,44 @@ export class TenderClientRepository {
         where: { id: status },
       });
     } catch (error) {
-      console.trace(error);
-      throw new InternalServerErrorException(
-        'Something when wrong when fetching client status!',
-      );
+      this.logger.error('validateStatus error:', error);
+      const theEror = prismaErrorThrower(error, `find client and user!`);
+      throw theEror;
     }
   }
 
   async findClient(
     passedQuery?: Prisma.client_dataWhereInput,
     selectQuery?: Prisma.client_dataSelect | null | undefined,
+    includeQuery?: Prisma.client_dataInclude | null | undefined,
   ): Promise<client_data | null> {
     const findFirstArg: Prisma.client_dataFindFirstArgs = {};
     if (passedQuery) findFirstArg.where = passedQuery;
     if (selectQuery) findFirstArg.select = selectQuery;
+    if (includeQuery) findFirstArg.include = includeQuery;
     try {
       return await this.prismaService.client_data.findFirst(findFirstArg);
     } catch (error) {
-      console.trace(error);
-      throw new InternalServerErrorException(
-        'Something when wrong when fetching client data!',
-      );
+      this.logger.error('findClient error:', error);
+      const theEror = prismaErrorThrower(error, `find client and user!`);
+      throw theEror;
+    }
+  }
+
+  async findClientAndUser(userId: string) {
+    try {
+      return await this.prismaService.client_data.findFirst({
+        where: {
+          user_id: userId,
+        },
+        include: {
+          user: true,
+        },
+      });
+    } catch (error) {
+      this.logger.error('findClientAndUser error:', error);
+      const theEror = prismaErrorThrower(error, `find client and user!`);
+      throw theEror;
     }
   }
 
@@ -172,6 +184,7 @@ export class TenderClientRepository {
         return editRequest;
       });
     } catch (error) {
+      this.logger.error('createUpdateRequest error:', error);
       const theEror = prismaErrorThrower(error, `update client info!`);
       throw theEror;
     }

@@ -458,7 +458,7 @@ model edit_request {
   old_value           String?             @db.VarChar
   new_value           String?             @db.VarChar
   user_id             String
-  field_type          String?             @db.VarChar
+  field_type          String              @db.VarChar
   edit_request_status edit_request_status @relation(fields: [approval_status], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
@@ -582,8 +582,8 @@ model consultant_form {
   proposal_id                    String                           @unique
   supervisor_id                  String
   id                             String                           @id
-  proposal                       proposal                         @relation(fields: [proposal_id], references: [id], onUpdate: Restrict)
-  user                           user                             @relation(fields: [supervisor_id], references: [id], onUpdate: Restrict)
+  proposal                       proposal                         @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
+  user                           user                             @relation(fields: [supervisor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   recommended_support_consultant recommended_support_consultant[]
 }
 
@@ -593,7 +593,7 @@ model recommended_support_consultant {
   amount             Int
   id                 String           @id
   consultant_form_id String?
-  consultant_form    consultant_form? @relation(fields: [consultant_form_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  consultant_form    consultant_form? @relation(fields: [consultant_form_id], references: [id], onDelete: Cascade)
 }
 
 model track {
@@ -649,5 +649,5 @@ model supervisor_form {
   inclusive_or_exclusive_of_vat Boolean
   proposal_id                   String   @db.VarChar
   supervisor_id                 String   @db.VarChar
-  proposal                      proposal @relation(fields: [proposal_id], references: [id], onUpdate: Restrict)
+  proposal                      proposal @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
 }

@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { Prisma, user } from '@prisma/client';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 import { TenderCreateUserDto } from '../dtos/requests/create-user.dto';
@@ -37,15 +41,11 @@ export class TenderUserService {
       throw new BadRequestException('Roles is Forbidden to create!');
     }
 
-    if (employee_path) {
-      const track = await this.tenderUserRepository.validateTrack(
-        employee_path,
+    const track = await this.tenderUserRepository.validateTrack(employee_path);
+    if (!track) {
+      throw new BadRequestException(
+        'Invalid employee path!, Path is not found!',
       );
-      if (!track) {
-        throw new BadRequestException(
-          'Invalid employee path!, Path is not found!',
-        );
-      }
     }
 
     for (let i = 0; i < user_roles.length; i++) {
@@ -77,14 +77,18 @@ export class TenderUserService {
     //   }
     // }
 
-    const findDuplicated = await this.tenderUserRepository.findUser({
-      OR: [{ email }, { mobile_number }],
+    const emailExist = await this.tenderUserRepository.findUser({
+      email,
     });
+    if (emailExist) {
+      throw new ConflictException('Email already exist in our app!');
+    }
 
-    if (findDuplicated) {
-      throw new BadRequestException(
-        'Email or Mobile Number already exist in our app!',
-      );
+    const phoneExist = await this.tenderUserRepository.findUser({
+      mobile_number,
+    });
+    if (phoneExist) {
+      throw new ConflictException('Phone already exist in our app!');
     }
 
     // create fusion auth user.
@@ -111,15 +115,12 @@ export class TenderUserService {
           id: status,
         },
       },
-    };
-
-    if (employee_path) {
-      createUserPayload.employee_track = {
+      employee_track: {
         connect: {
           id: employee_path,
         },
-      };
-    }
+      },
+    };
 
     const createRolesData: Prisma.user_roleUncheckedCreateInput[] =
       user_roles.map((role) => {

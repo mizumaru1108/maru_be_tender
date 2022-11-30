@@ -43,6 +43,10 @@ export class TenderClientController {
       editRequest,
     );
 
-    return baseResponseHelper(response, HttpStatus.OK, 'Edit Request success!');
+    return baseResponseHelper(
+      response,
+      HttpStatus.OK,
+      'Asking for changes successfully applied!',
+    );
   }
 }
