@@ -69,23 +69,19 @@ export default function RejectionListTable({
     },
     {
       value: 'Mosques Department',
-      title: translate('commons.track_type.mosques_track'),
-    },
-    {
-      value: 'Facilitated Scholarship Track',
-      title: translate('commons.track_type.scholarships_track'),
+      title: 'مسار المساجد',
     },
     {
       value: 'Initiatives Track',
-      title: translate('commons.track_type.initiatives_track'),
+      title: 'مسار المنح العام',
     },
     {
       value: 'Baptismal Path',
-      title: translate('commons.track_type.baptism_track'),
+      title: 'مسار التعميدات',
     },
     {
       value: "Syeikh's Path",
-      title: translate('commons.track_type.syeikh_track'),
+      title: 'مسار تعميدات الشيخ',
     },
   ];
 

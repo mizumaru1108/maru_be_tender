@@ -22,10 +22,10 @@ export const ApproveProposalFormFields = [
 
 export const RejectProposalFormFields = [
   {
-    type: 'textField',
-    name: 'procedures',
-    label: 'procedures',
+    type: 'textArea',
+    name: 'notes',
+    label: 'ملاحظات',
     xs: 12,
-    placeholder: 'procedures',
+    placeholder: 'الرجاء كتابة الملاحظات',
   },
 ] as Array<FormSingleProps>;

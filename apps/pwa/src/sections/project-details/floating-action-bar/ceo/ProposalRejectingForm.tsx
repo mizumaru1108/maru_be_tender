@@ -6,18 +6,21 @@ import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { RejectProposalFormFields } from './form-data';
 
-import { ProposalRejectPayload, ProposalFormProps } from './types';
+import { ProposalFormProps } from './types';
 
+type InputForm = {
+  notes: string;
+};
 function ProposalRejectingForm({ children, onSubmit }: ProposalFormProps) {
   const validationSchema = Yup.object().shape({
-    procedures: Yup.string().required('Procedures is required!'),
+    notes: Yup.string(),
   });
 
   const defaultValues = {
-    procedures: '',
+    notes: '',
   };
 
-  const methods = useForm<ProposalRejectPayload>({
+  const methods = useForm<InputForm>({
     resolver: yupResolver(validationSchema),
     defaultValues,
   });
@@ -27,7 +30,7 @@ function ProposalRejectingForm({ children, onSubmit }: ProposalFormProps) {
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmitForm = async (data: ProposalRejectPayload) => {
+  const onSubmitForm = async (data: any) => {
     onSubmit(data);
   };
 
