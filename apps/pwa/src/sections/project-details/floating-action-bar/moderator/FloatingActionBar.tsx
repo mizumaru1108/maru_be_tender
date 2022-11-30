@@ -202,8 +202,6 @@ function FloatingActionBar() {
           ) : (
             <ProposalRejectingForm
               onSubmit={(value: any) => {
-                console.log('form callback', value);
-                console.log('just a dummy not create log yet');
                 handleRejected();
               }}
             >

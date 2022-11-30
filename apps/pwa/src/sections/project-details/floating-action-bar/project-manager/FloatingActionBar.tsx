@@ -345,8 +345,6 @@ function FloatingActionBar({ organizationId }: any) {
           ) : (
             <ProposalRejectingForm
               onSubmit={(values: any) => {
-                console.log('form callback', values);
-                console.log('just a dummy not create log yet');
                 handleRejected(values);
               }}
             >
