@@ -11,7 +11,7 @@ function IncomingFundingRequests() {
       limit: 4,
       offset: 0,
       where: {
-        project_manager_id: { _eq: 'null' },
+        project_manager_id: { _is_null: true },
         _and: { inner_status: { _in: ['ACCEPTED_BY_SUPERVISOR', 'REJECTED_BY_CONSULTANT'] } },
       },
     },

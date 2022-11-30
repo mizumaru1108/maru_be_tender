@@ -21,7 +21,7 @@ const ApproveModal = ({ action, isLoading, onReturn, onSubmited }: Props) => (
         hieght: { xs: '100%', sm: '50px' },
       }}
     >
-      Close
+      إغلاق
     </Button>
     <LoadingButton
       loading={isLoading}
@@ -52,7 +52,7 @@ const ApproveModal = ({ action, isLoading, onReturn, onSubmited }: Props) => (
       }}
     >
       {isLoading && <CircularProgress size={23} sx={{ color: 'white' }} thickness={10} />}
-      {action === 'accept' ? 'Accept' : 'Reject'}
+      {action === 'accept' ? 'فبول' : 'رفض'}
     </LoadingButton>
   </Stack>
 );

@@ -110,7 +110,7 @@ function AuthProvider({ children }: AuthProviderProps) {
               activeRole: user.response.user.registrations[0].roles[0],
             },
           });
-        } else {
+        } else if (accessToken && refreshToken) {
           const result = await fusionAuthClient.exchangeRefreshTokenForJWT({
             refreshToken: refreshToken ?? '',
           });
@@ -137,6 +137,14 @@ function AuthProvider({ children }: AuthProviderProps) {
               },
             });
           }
+        } else {
+          dispatch({
+            type: Types.Initial,
+            payload: {
+              isAuthenticated: false,
+              user: null,
+            },
+          });
         }
       } catch (err) {
         dispatch({
