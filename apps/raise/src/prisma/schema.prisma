@@ -456,8 +456,9 @@ model edit_request {
   field_name          String              @db.VarChar
   approval_status     String              @default("WAITING_FOR_APPROVAL")
   old_value           String?             @db.VarChar
-  new_value           String              @db.VarChar
+  new_value           String?             @db.VarChar
   user_id             String
+  field_type          String?             @db.VarChar
   edit_request_status edit_request_status @relation(fields: [approval_status], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
@@ -578,7 +579,6 @@ model consultant_form {
   target_group_age               Int
   been_made_before               Boolean
   remote_or_insite               Boolean
-  clause                         String
   proposal_id                    String                           @unique
   supervisor_id                  String
   id                             String                           @id

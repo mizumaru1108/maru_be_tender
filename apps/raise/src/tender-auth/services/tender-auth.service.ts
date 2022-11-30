@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { LoginRequestDto } from '../../auth/dtos';
 import { FusionAuthService } from '../../libs/fusionauth/services/fusion-auth.service';
 import { TenderClientRepository } from '../../tender-user/client/repositories/tender-client.repository';
@@ -50,30 +54,29 @@ export class TenderAuthService {
 
   /* create user with client data */
   async register(registerRequest: RegisterTenderDto) {
-    // destruct data.phone from registerRequest as clientPhone
     const {
       data: {
-        phone: clientPhone,
         ceo_mobile: ceoMobile,
         data_entry_mobile: dataEntryMobile,
+        entity_mobile: clientPhone,
         email,
         employee_path,
         status,
-        license_number,
       },
     } = registerRequest;
 
-    // find either client / user by email or phone
-    const findDuplicated = await this.tenderUserRepository.findUser({
-      OR: [
-        { email: registerRequest.data.email },
-        { mobile_number: clientPhone },
-      ],
+    const emailExist = await this.tenderUserRepository.findUser({
+      email: registerRequest.data.email,
     });
-    if (findDuplicated) {
-      throw new BadRequestException(
-        'Email or Mobile Number already exist in our app!',
-      );
+    if (emailExist) {
+      throw new ConflictException('Email already exist in our app!');
+    }
+
+    const phoneExist = await this.tenderUserRepository.findUser({
+      mobile_number: clientPhone,
+    });
+    if (phoneExist) {
+      throw new ConflictException('Phone already exist in our app!');
     }
 
     if (dataEntryMobile === clientPhone) {
@@ -88,26 +91,19 @@ export class TenderAuthService {
       );
     }
 
-    const isDuplicatedLiscene = await this.tenderClientRepository.findClient({
-      license_number,
-    });
-    if (isDuplicatedLiscene) {
-      throw new BadRequestException('License number already exist!');
-    }
-
     if (employee_path) {
-      const track = await this.tenderUserRepository.validateTrack(
+      const pathExist = await this.tenderUserRepository.validateTrack(
         employee_path,
       );
-      if (!track) throw new BadRequestException('Invalid Employee Path!');
+      if (!pathExist) throw new BadRequestException('Invalid Employee Path!');
     }
 
     if (status) {
-      const duplicatedStatus = await this.tenderClientRepository.validateStatus(
+      const statusExist = await this.tenderClientRepository.validateStatus(
         status,
       );
-      if (!duplicatedStatus) {
-        throw new BadRequestException('Invalid client status');
+      if (!statusExist) {
+        throw new BadRequestException('Invalid client status!');
       }
     }
 

@@ -10,8 +10,8 @@ export class ClientEditRequestDto {
   @ValidateNested()
   newValues: ClientEditRequestFieldDto;
 
-  @ApiProperty()
-  @Type(() => CreateClientBankInformation)
-  @ValidateNested({ each: true })
-  bank_information: CreateClientBankInformation[];
+  // @ApiProperty()
+  // @Type(() => CreateClientBankInformation)
+  // @ValidateNested({ each: true })
+  // bank_information: CreateClientBankInformation[];
 }
