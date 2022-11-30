@@ -205,7 +205,7 @@ function FloatinActionBar({ organizationId, data }: any) {
         proposalId: proposal_id,
         approveProposalPayloads: {
           inner_status: 'ACCEPTED_BY_SUPERVISOR',
-          outter_status: 'PENDING',
+          outter_status: 'ONGOING',
           state: 'PROJECT_MANAGER',
           number_of_payments: formValues.form1.number_of_payments,
         },

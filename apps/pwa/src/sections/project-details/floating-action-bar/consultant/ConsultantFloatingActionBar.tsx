@@ -20,7 +20,7 @@ function ConsultantFloatingActionBar() {
         proposalId: proposal_id,
         approveProposalPayloads: {
           inner_status: 'ACCEPTED_BY_CONSULTANT',
-          outter_status: 'PENDING',
+          outter_status: 'ONGOING',
           state: 'CEO',
         },
       });
@@ -33,7 +33,7 @@ function ConsultantFloatingActionBar() {
         proposalId: proposal_id,
         approveProposalPayloads: {
           inner_status: 'REJECTED_BY_CONSULTANT',
-          outter_status: 'PENDING',
+          outter_status: 'ONGOING',
           state: 'PROJECT_MANAGER',
         },
       });

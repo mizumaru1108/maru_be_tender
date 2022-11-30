@@ -17,7 +17,7 @@ function ProposalAcceptingForm({ children, onSubmit }: ProposalFormProps) {
   const validationSchema = Yup.object().shape({
     path: Yup.string().required('Path is required!'),
     supervisors: Yup.string().required('Supervisors is required!'),
-    notes: Yup.string().required('Notes field is required!'),
+    notes: Yup.string(),
   });
 
   const defaultValues = {

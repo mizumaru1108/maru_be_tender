@@ -87,7 +87,7 @@ function FloatingActionBar() {
       rejectProposalPayloads: {
         inner_status: 'REJECTED',
         outter_status: 'CANCELED',
-        state: 'CLIENT',
+        state: 'MODERATOR',
       },
     });
 

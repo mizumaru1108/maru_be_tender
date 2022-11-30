@@ -54,7 +54,7 @@ function FloatingActionBar({ organizationId, data }: any) {
       proposalId: id,
       approveProposalPayloads: {
         inner_status: 'ACCEPTED_BY_SUPERVISOR',
-        outter_status: 'PENDING',
+        outter_status: 'ONGOING',
         state: 'PROJECT_MANAGER',
         number_of_payments: values.number_of_payments,
       },
@@ -85,8 +85,8 @@ function FloatingActionBar({ organizationId, data }: any) {
       proposalId: id,
       rejectProposalPayloads: {
         inner_status: 'REJECTED',
-        outter_status: 'PENDING',
-        state: 'PROJECT_MANAGER',
+        outter_status: 'CANCELED',
+        state: 'PROJECT_SUPERVISOR',
       },
     });
     if (!rejFetch) {

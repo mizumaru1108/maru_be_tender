@@ -10,13 +10,3 @@ export const approveProposal = `
     }
   }
 `;
-
-// GRAPHQL QUERY EXAMPLE
-// {
-//   "approveProposalPayloads": {
-//     "inner_status": "ACCEPTED",
-//     "outter_status": "PENDING",
-//     "state": "PROJECT_SUPERVISOR"
-//   },
-//   "proposalId": "7s9nC_CaeZ6fM3pWi5oTj"
-// }

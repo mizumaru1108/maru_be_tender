@@ -43,19 +43,17 @@ function PaymentAdjustment() {
             ]}
             baseFilters={{
               filter1: { supervisor_id: { _eq: user?.id } },
-              filter2: { inner_status: { _eq: 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION' } },
+              filter2: {
+                inner_status: {
+                  _eq: [
+                    'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
+                    'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
+                  ],
+                },
+              },
             }}
-            destination={'exchange-permission'}
+            destination={'payment-adjustment'}
           />
-          {/* <CardTable
-            data={data2} // For testing, later on we will send the query to it
-            title="ضبط الدفعات"
-            cardFooterButtonAction="completing-exchange-permission"
-            alphabeticalOrder={true}
-            filters={[
-              { name: 'اسم الجهة المشرفة*', options: [{ label: 'اسم الجهة المشرفة*', value: '' }] },
-            ]}
-          /> */}
         </ContentStyle>
       </Container>
     </Page>

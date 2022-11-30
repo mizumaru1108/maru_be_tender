@@ -95,21 +95,11 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
 
   const handleRejected = async (procedures: string) => {
     await reject({
-      proposalLogPayload: {
-        id: nanoid(), // generate by nano id
-        proposal_id: pid, // from the proposal it self
-        reviewer_id: userId, // user id of current user
-        organization_id: organizationId, // user id on the proposal data
-        inner_status: 'REJECTED_BY_CEO_WITH_COMMENT',
-        outter_status: 'CANCELED',
-        state: 'CEO',
-        procedures,
-      } as ceoProposalLogPayload,
       proposalId: pid,
       updateProposalStatusAndStatePayloads: {
         inner_status: 'REJECTED_BY_CEO_WITH_COMMENT' as InnerStatus,
         outter_status: 'CANCELED',
-        state: `${roles.toUpperCase() as AppRole}`,
+        state: 'PROJECT_SUPERVISOR',
       } as updateProposalStatusAndState,
     });
 
@@ -192,7 +182,7 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
         title={
           <Stack display="flex">
             <Typography variant="h6" fontWeight="bold" color="#000000">
-              {action === 'accept' ? 'Project Accept Form' : 'Project Reject Form'}
+              {action === 'accept' ? 'قبول المشروع' : 'رفض المشروع'}
             </Typography>
           </Stack>
         }

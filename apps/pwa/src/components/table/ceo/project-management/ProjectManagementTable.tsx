@@ -78,14 +78,6 @@ export default function ProjectManagementTable({
       value: 'Initiatives Track',
       title: 'مسار التعميدات', //translate('table_filter.button_group.initiatives_track'),
     },
-    // {
-    //   value: 'Baptismal Path',
-    //   title: translate('table_filter.button_group.baptism_track'),
-    // },
-    // {
-    //   value: "Syeikh's Path",
-    //   title: translate('table_filter.button_group.syeikh_track'),
-    // },
   ];
 
   const sortOptions = [

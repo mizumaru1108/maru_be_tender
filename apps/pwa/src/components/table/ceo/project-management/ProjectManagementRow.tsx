@@ -28,27 +28,27 @@ export default function ProjectManagementTableRow({
       </TableCell>
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
         <Typography variant="subtitle2" noWrap>
-          {row.projectNumber ?? 'N/A'}
+          {row.projectNumber ?? '-'}
         </Typography>
       </TableCell>
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
-          {row.projectName ? stringTruncate(row.projectName, 23) : 'N/A'}
+          {row.projectName ? stringTruncate(row.projectName, 23) : '-'}
         </Typography>
       </TableCell>
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
           {/* it should be the entity */}
-          {row.associationName ? stringTruncate(row.associationName, 23) : 'N/A'}
+          {row.associationName ? translate(row.associationName) : '-'}
         </Typography>
       </TableCell>
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
-          {row.projectSection ? stringTruncate(row.projectSection, 23) : 'N/A'}
+          {row.projectSection ? stringTruncate(row.projectSection, 23) : '-'}
         </Typography>
       </TableCell>
       <TableCell>
-        {row.createdAt ? moment(row.createdAt).format('DD.MM.YYYY, HH:MM a') : 'N/A'}
+        {row.createdAt ? moment(row.createdAt).format('DD.MM.YYYY, HH:MM a') : '-'}
       </TableCell>
       <TableCell align="left">
         <Button
@@ -59,7 +59,6 @@ export default function ProjectManagementTableRow({
                 `/${x[1] + '/' + x[2] + '/' + destination}/${row.projectNumber}/show-details/main`
               );
             } else {
-              console.log('destination is not defined');
               console.log(
                 `navigate to ${location.pathname}/${row.projectNumber}/show-details/main`
               );

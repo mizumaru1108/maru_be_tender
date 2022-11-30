@@ -42,7 +42,7 @@ function SupervisorPaymentsPage({ data, mutate }: any) {
       proposalId: proposal_id,
       approveProposalPayloads: {
         inner_status: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
-        outter_status: 'PENDING',
+        outter_status: 'ONGOING',
         state: 'PROJECT_MANAGER',
       },
     }).then((result) => {
