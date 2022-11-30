@@ -138,16 +138,9 @@ export const ApproveProposalFormFieldsSupervisor = [
 export const RejectProposalFormFieldsSupervisor = [
   {
     type: 'textArea',
-    name: 'procedures',
-    label: 'ملاحظات على المشروع*',
+    name: 'notes',
+    label: 'الملاحظات',
     xs: 12,
     placeholder: 'اكتب ملاحظاتك هنا',
-  },
-  {
-    type: 'textArea',
-    name: 'notes',
-    label: 'الإجراءات*',
-    xs: 12,
-    placeholder: 'اكتب الاجراءات هنا',
   },
 ] as Array<FormSingleProps>;

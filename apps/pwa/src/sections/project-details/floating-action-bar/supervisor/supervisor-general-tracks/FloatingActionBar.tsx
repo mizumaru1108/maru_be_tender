@@ -42,14 +42,14 @@ function FloatingActionBar({ organizationId, data }: any) {
   };
 
   const handleApproval = async (values: any) => {
-    await insertSupervisorAcceptance({
-      supervisorAcceptance: {
-        ...values,
-        id: nanoid(),
-        proposal_id: id,
-        user_id: organizationId,
-      },
-    });
+    // await insertSupervisorAcceptance({
+    //   supervisorAcceptance: {
+    //     ...values,
+    //     id: nanoid(),
+    //     proposal_id: id,
+    //     user_id: organizationId,
+    //   },
+    // });
     await accept({
       proposalId: id,
       approveProposalPayloads: {
@@ -76,7 +76,6 @@ function FloatingActionBar({ organizationId, data }: any) {
           horizontal: 'right',
         },
       });
-      console.log(accError);
     }
   };
 

@@ -12,7 +12,7 @@ interface ProposalApprovedProhectManager {
 }
 function ProposalAcceptingForm({ children, onSubmit }: ProposalFormProps) {
   const validationSchema = Yup.object().shape({
-    notes: Yup.string().required('Notes is required!'),
+    notes: Yup.string(),
   });
 
   const defaultValues = {

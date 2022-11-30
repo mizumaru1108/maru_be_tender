@@ -10,17 +10,16 @@ import { useEffect } from 'react';
 
 function ProposalAcceptingForm({ children, onSubmit, data }: any) {
   const validationSchema = Yup.object().shape({
-    clause: Yup.string().required('Procedures is required!'),
-    clasification_field: Yup.string().required('Procedures is required!'),
-    support_type: Yup.boolean().required('Procedures is required!'),
-    closing_report: Yup.boolean().required('Procedures is required!'),
-    need_picture: Yup.boolean().required('Procedures is required!'),
-    does_an_agreement: Yup.boolean().required('Procedures is required!'),
-    support_amount: Yup.number().required('Procedures is required!'),
-    number_of_payments: Yup.number().required('Procedures is required!'),
-    procedures: Yup.string().required('Procedures is required!'),
+    clause: Yup.string().required('clause is required!'),
+    clasification_field: Yup.string().required('clasification_field is required!'),
+    support_type: Yup.boolean().required('support_type is required!'),
+    closing_report: Yup.boolean().required('closing_report is required!'),
+    need_picture: Yup.boolean().required('need_picture is required!'),
+    does_an_agreement: Yup.boolean().required('does_an_agreement is required!'),
+    support_amount: Yup.number().required('support_amount is required!'),
+    number_of_payments: Yup.number().required('number_of_payments is required!'),
     notes: Yup.string(),
-    support_outputs: Yup.string().required('Procedures is required!'),
+    support_outputs: Yup.string().required('support_outputs is required!'),
     vat: Yup.boolean(),
     vat_percentage: Yup.number(),
     inclu_or_exclu: Yup.boolean(),
@@ -35,7 +34,6 @@ function ProposalAcceptingForm({ children, onSubmit, data }: any) {
     does_an_agreement: undefined,
     support_amount: undefined,
     number_of_payments: undefined,
-    procedures: '',
     notes: '',
     support_outputs: '',
     vat: undefined,
@@ -225,16 +223,8 @@ function ProposalAcceptingForm({ children, onSubmit, data }: any) {
         <Grid item md={12} xs={12}>
           <BaseField
             type="textArea"
-            name="procedures"
-            label="الإجراءات*"
-            placeholder="اكتب الاجراءات هنا"
-          />
-        </Grid>
-        <Grid item md={12} xs={12}>
-          <BaseField
-            type="textArea"
             name="notes"
-            label="ملاحظات على المشروع*"
+            label="ملاحظات على المشروع"
             placeholder="اكتب ملاحظاتك هنا"
           />
         </Grid>

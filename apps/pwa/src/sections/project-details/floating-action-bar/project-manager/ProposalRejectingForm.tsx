@@ -7,18 +7,20 @@ import * as Yup from 'yup';
 import { ProposalApprovePayloadSupervisor, ProposalFormProps } from '../types';
 import { RejectProposalFormFieldsProjectManager } from './form-data';
 
+type InputForm = {
+  notes: string;
+};
+
 function ProposalRejectingForm({ children, onSubmit }: ProposalFormProps) {
   const validationSchema = Yup.object().shape({
-    procedures: Yup.string().required('Procedures is required!'),
-    notes: Yup.string().required('Procedures is required!'),
+    notes: Yup.string(),
   });
 
   const defaultValues = {
-    procedures: '',
     notes: '',
   };
 
-  const methods = useForm<ProposalApprovePayloadSupervisor>({
+  const methods = useForm<InputForm>({
     resolver: yupResolver(validationSchema),
     defaultValues,
   });
@@ -28,7 +30,7 @@ function ProposalRejectingForm({ children, onSubmit }: ProposalFormProps) {
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmitForm = async (data: ProposalApprovePayloadSupervisor) => {
+  const onSubmitForm = async (data: any) => {
     onSubmit(data);
   };
 

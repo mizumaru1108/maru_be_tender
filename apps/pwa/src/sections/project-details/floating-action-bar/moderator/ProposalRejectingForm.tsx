@@ -30,7 +30,7 @@ function ProposalRejectingForm({ children, onSubmit }: ProposalFormProps) {
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmitForm = async (data: ProposalApprovePayload) => {
+  const onSubmitForm = async (data: any) => {
     onSubmit(data);
   };
 
