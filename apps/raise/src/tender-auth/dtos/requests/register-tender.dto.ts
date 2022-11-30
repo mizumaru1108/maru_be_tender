@@ -12,6 +12,7 @@ import {
 } from 'class-validator';
 import { ValidateKsaPhoneNumber9661 } from '../../../tender-commons/decorators/validate-ksa-phone-number-9661.decorator';
 import { ValidateKsaPhoneNumber9665 } from '../../../tender-commons/decorators/validate-ksa-phone-number-9665.decorator';
+
 import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
 class bankData {
   @ApiProperty()
@@ -70,9 +71,11 @@ class registerClient {
   @ValidateNested()
   board_ofdec_file: UploadFilesJsonbDto;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
   @IsNotEmpty()
-  center_administration: string;
+  center_administration?: string;
 
   @ApiProperty()
   @IsString()

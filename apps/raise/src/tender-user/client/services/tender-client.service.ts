@@ -88,7 +88,7 @@ export class TenderClientService {
           type: request.data.board_ofdec_file.type,
           size: request.data.board_ofdec_file.size,
         },
-        center_administration: request.data.center_administration,
+        center_administration: request.data.center_administration || null,
         ceo_mobile: request.data.ceo_mobile,
         data_entry_mail: request.data.data_entry_mail,
         data_entry_name: request.data.data_entry_name,
@@ -161,7 +161,7 @@ export class TenderClientService {
     let requestChangeCount = 0;
 
     const newEditRequest: edit_request[] = [];
-    let denactiveAccount: boolean = false;
+    // let denactiveAccount: boolean = false; // for conditional deactivation
 
     if (editRequest.newValues) {
       const newValues = editRequest.newValues as Record<string, any>;
@@ -171,13 +171,14 @@ export class TenderClientService {
       for (const [key, value] of Object.entries(newValues)) {
         // TODO: do logic to denactive account when some spesific field is changed
         // example: when email is changed / when phone number is changed, denactive the account
-        denactiveAccount = key === 'email' || key === 'phone_number';
+        // denactiveAccount = key === 'email' || key === 'phone_number';
         if (key in oldValues && value !== oldValues[key]) {
           const editRequest: edit_request = {
             id: nanoid(),
             field_name: key,
             old_value: oldValues[key].toString(),
             new_value: value.toString(),
+            field_type: typeof oldValues[key],
             ...baseEditRequest,
           };
           newEditRequest.push(editRequest);
@@ -187,11 +188,10 @@ export class TenderClientService {
       }
     }
 
-    await this.tenderClientRepository.updateClient(
+    await this.tenderClientRepository.createUpdateRequest(
       user.id,
       newEditRequest,
-      editRequest.bank_information,
-      denactiveAccount,
+      true, // for now just denactive the account after it's request for changes
     );
 
     if (newEditRequest.length === 0) message = 'No changes requested';
