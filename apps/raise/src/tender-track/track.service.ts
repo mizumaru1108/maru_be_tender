@@ -11,7 +11,7 @@ export class TenderTrackService {
 
   @UseGuards(JwtAuthGuard)
   async createTrackSection(request: TracSectionkDto): Promise<track_section> {
-    const { id, name, budget, track_id, section_id } = request;
+    const { id, name, budget, track_id, section_id, is_leaf } = request;
 
     const trackRecordPayload: Prisma.track_sectionCreateArgs = {
       data: {
@@ -20,6 +20,7 @@ export class TenderTrackService {
         budget,
         track_id,
         section_id,
+        is_leaf
       },
     };
 
@@ -34,7 +35,7 @@ export class TenderTrackService {
     request: UpdateTrackSection,
     id: string,
   ): Promise<track_section> {
-    const { name, budget, track_id, section_id } = request;
+    const { name, budget, track_id, section_id, is_leaf } = request;
 
     const updateTrackSectionRecordPayload: Prisma.track_sectionUpdateArgs = {
       data: {
@@ -43,6 +44,7 @@ export class TenderTrackService {
         budget,
         track_id,
         section_id,
+        is_leaf
       },
       where: {},
     };

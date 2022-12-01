@@ -10,6 +10,7 @@ import {
   proposal,
   proposal_item_budget,
   proposal_log,
+  user
 } from '@prisma/client';
 import { nanoid } from 'nanoid';
 import { v4 as uuidv4 } from 'uuid';
@@ -37,6 +38,7 @@ import { ROOT_LOGGER } from '../../libs/root-logger';
 import { ProposalAdminRole } from '../enum/adminRoles.enum';
 import { InnerStatusEnum } from '../enum/innerStatus.enum';
 import { OuterStatusEnum } from '../enum/outerStatus.enum';
+import { ProposalAction } from '../enum/proposalAction.enum';
 
 @Injectable()
 export class TenderProposalService {
@@ -872,102 +874,337 @@ export class TenderProposalService {
     // 'ACCOUNTS_MANAGER' 'ADMIN'  'CASHIER' 'CLIENT'  'FINANCE';
     //'MODERATOR', 'PROJECT_SUPERVISOR', 'PROJECT_MANAGER', 'CEO', 'CONSULTANT'
   }
-  async updateProposalByCmsUsers(userId: string, body: any, id: string, role: string){
-   const { action } = body; 
-   let proposal:any;  
-    if(role === ProposalAdminRole.MODERATOR){
-      if(action === 'accepted'){
-         proposal = await this.updateProposalStatus(id, InnerStatusEnum.ACCEPTED_BY_MODERATOR, body.track_id);
-         await this.createProposalLog(body, InnerStatusEnum.ACCEPTED_BY_MODERATOR, proposal, userId, 'MODERATOR');
-      }else if(action === 'rejected'){
-         proposal = await this.updateProposalStatus(id, InnerStatusEnum.REJECTED_BY_MODERATOR, undefined, OuterStatusEnum.CANCELED);
-         await this.createProposalLog(body, InnerStatusEnum.REJECTED_BY_MODERATOR, proposal, userId, 'MODERATOR');
-      }
-    }else if(role === ProposalAdminRole.PROJECT_SUPERVISOR){
-      if(action === 'accepted'){        
-         proposal = await this.updateProposalStatus(id, InnerStatusEnum.ACCEPTED_BY_SUPERVISOR, body.track_id);         
-         await this.createProposalLog(body, InnerStatusEnum.ACCEPTED_BY_MODERATOR, proposal, userId, 'PROJECT_SUPERVISOR');
-         const track = await this.prismaService.track.findUnique({where:{ id: proposal.track_id as string}})
-         if(!track) throw new NotFoundException('this proposal does not belonge to track')
-        if(track.name === 'مسار المنح العام'){          
-          const recommended_support_consultant = body.consultant_form.recommended_support_consultant;
-          delete body.consultant_form.recommended_support_consultant;
-         const consultantForm = await this.prismaService.consultant_form.create({
-            data:{
-            ...body.consultant_form,
-            proposal_id:proposal.id,
-            supervisor_id:userId
-          }})
-          for(let i=0; i< recommended_support_consultant.length; i++ ){
-            recommended_support_consultant[i].consultant_form_id = consultantForm.id
-          }
-          await this.prismaService.recommended_support_consultant.createMany({data:recommended_support_consultant})
-        }
-        else {
-          await this.prismaService.supervisor_form.create({data:{...body.supervisor_form, proposal_id:proposal.id, supervisor_id:userId}})
-        }
-      }else if(action === 'rejected'){
-         proposal = await this.updateProposalStatus(id, InnerStatusEnum.REJECTED_BY_SUPERVISOR, undefined, OuterStatusEnum.CANCELED);
-         await this.createProposalLog(body, InnerStatusEnum.ACCEPTED_BY_MODERATOR, proposal, userId, 'PROJECT_SUPERVISOR');
-      }
-    }else if(role === ProposalAdminRole.PROJECT_MANAGER){
-      if(action === 'accepted'){
-         proposal = await this.updateProposalStatus(id, InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER);
-         await this.createProposalLog(body, InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER, proposal, userId, 'PROJECT_MANAGER');
-      }else if(action === 'rejected'){
-         proposal = await this.updateProposalStatus(id, InnerStatusEnum.REJECTED_BY_PROJECT_MANAGER, undefined, OuterStatusEnum.CANCELED);
-         await this.createProposalLog(body, InnerStatusEnum.REJECTED_BY_PROJECT_MANAGER, proposal, userId, 'PROJECT_MANAGER');
-      }else if(action === 'acceptAndAskForConsultaion'){
-         proposal = await this.updateProposalStatus(id, InnerStatusEnum.ACCEPTED_AND_NEED_CONSULTANT);
-         await this.createProposalLog(body, InnerStatusEnum.ACCEPTED_AND_NEED_CONSULTANT, proposal, userId, 'PROJECT_MANAGER');
-      }
-    }else if(role === ProposalAdminRole.CONSULTANT){
-      if(action === 'accepted'){
-         proposal = await this.updateProposalStatus(id, InnerStatusEnum.ACCEPTED_BY_CONSULTANT);
-         await this.createProposalLog(body, InnerStatusEnum.ACCEPTED_BY_CONSULTANT, proposal, userId, 'CONSULTANT');
-      }else if(action === 'rejected'){
-         proposal = await this.updateProposalStatus(id, InnerStatusEnum.REJECTED_BY_CONSULTANT);
-         await this.createProposalLog(body, InnerStatusEnum.ACCEPTED_BY_CONSULTANT, proposal, userId, 'CONSULTANT');
-      }
-    }else if(role === ProposalAdminRole.CEO){
-      if(action === 'accepted'){
-         proposal = await this.updateProposalStatus(id, InnerStatusEnum.ACCEPTED_BY_CEO);
-         await this.createProposalLog(body, InnerStatusEnum.ACCEPTED_BY_CEO, proposal, userId, 'CEO');
-      }else if(action === 'rejected'){
-         proposal = await this.updateProposalStatus(id, InnerStatusEnum.REJECTED_BY_CEO, undefined, OuterStatusEnum.CANCELED)
-         await this.createProposalLog(body, InnerStatusEnum.REJECTED_BY_CEO, proposal, userId, 'CEO');
-      }
-    }else{
+  async updateProposalByCmsUsers(
+    user: user,
+    body: any,
+    id: string,
+    role: string,
+  ) {
+    const { action } = body;
+    if (action === ProposalAction.ACCEPT) {
+      return this.acceptProposal(id, body, role, user);
+    } else if (action === ProposalAction.REJECT) {
+      return this.rejectProposal(id, body, role, user);
+    } else if (action === ProposalAction.STEP_BACK) {
+      return this.proposalStepBack(id, body, role, user);
+    } else if (
+      action === ProposalAction.ACCEPT_AND_ASK_FOR_CONSULTION &&
+      role === ProposalAdminRole.PROJECT_MANAGER
+    ) {
+      const proposal = await this.updateProposalStatus(
+        id,
+        InnerStatusEnum.ACCEPTED_AND_NEED_CONSULTANT,
+      );
+      await this.createProposalLog(
+        body,
+        role,
+        proposal,
+        user.id,
+        `ProposalWasAccepteddBy@${user.employee_name}`,
+        ProposalAction.ACCEPT_AND_ASK_FOR_CONSULTION,
+      );
+      return proposal;
+    } else {
+      throw new UnauthorizedException('There is no such action to do!');
+    }
+  }
+
+  async proposalStepBack(id: string, body: any, role: string, user: user) {
+    let proposal;
+    if (role === ProposalAdminRole.PROJECT_SUPERVISOR) {
+      proposal = await this.updateProposalStatus(
+        id,
+        InnerStatusEnum.CREATED_BY_CLIENT,
+        undefined,
+        OuterStatusEnum.ONGOING,
+      );
+      await this.createProposalLog(
+        body,
+        role,
+        proposal,
+        user.id,
+        `ProposalWasRolledBackBy@${user.employee_name}`,
+        ProposalAction.STEP_BACK,
+      );
+    } else if (role === ProposalAdminRole.PROJECT_MANAGER) {
+      proposal = await this.updateProposalStatus(
+        id,
+        InnerStatusEnum.ACCEPTED_BY_MODERATOR,
+        undefined,
+        OuterStatusEnum.ONGOING,
+      );
+      await this.createProposalLog(
+        body,
+        role,
+        proposal,
+        user.id,
+        `ProposalWasRolledBackBy@${user.employee_name}`,
+        ProposalAction.STEP_BACK,
+      );
+    } else if (role === ProposalAdminRole.CEO) {
+      proposal = await this.updateProposalStatus(
+        id,
+        InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER,
+        undefined,
+        OuterStatusEnum.ONGOING,
+      );
+      await this.createProposalLog(
+        body,
+        role,
+        proposal,
+        user.id,
+        `ProposalWasRolledBackBy@${user.employee_name}`,
+        ProposalAction.STEP_BACK,
+      );
+    } else {
       throw new UnauthorizedException(
-        "Current user doesn't have the required role to access this resource!",
+        "User doesn't have the required role to access this resource!",
       );
     }
     return proposal;
   }
 
-  async updateProposalStatus(id: string, inner_status: string, track_id?: string, outter_status?: string){
+  async rejectProposal(id: string, body: any, role: string, user: user) {
+    let proposal;
+    if (role === ProposalAdminRole.MODERATOR) {
+      proposal = await this.updateProposalStatus(
+        id,
+        InnerStatusEnum.REJECTED_BY_MODERATOR,
+        undefined,
+        OuterStatusEnum.CANCELED,
+      );
+      await this.createProposalLog(
+        body,
+        role,
+        proposal,
+        user.id,
+        `ProposalWasRejectedBy@${user.employee_name}`,
+        ProposalAction.REJECT,
+      );
+    } else if (role === ProposalAdminRole.PROJECT_SUPERVISOR) {
+      proposal = await this.updateProposalStatus(
+        id,
+        InnerStatusEnum.REJECTED_BY_SUPERVISOR,
+        undefined,
+        OuterStatusEnum.CANCELED,
+      );
+      await this.createProposalLog(
+        body,
+        role,
+        proposal,
+        user.id,
+        `ProposalWasRejectedBy@${user.employee_name}`,
+        ProposalAction.REJECT,
+      );
+    } else if (role === ProposalAdminRole.PROJECT_MANAGER) {
+      proposal = await this.updateProposalStatus(
+        id,
+        InnerStatusEnum.REJECTED_BY_PROJECT_MANAGER,
+        undefined,
+        OuterStatusEnum.CANCELED,
+      );
+      await this.createProposalLog(
+        body,
+        role,
+        proposal,
+        user.id,
+        `ProposalWasRejectedBy@${user.employee_name}`,
+        ProposalAction.REJECT,
+      );
+    } else if (role === ProposalAdminRole.CONSULTANT) {
+      proposal = await this.updateProposalStatus(
+        id,
+        InnerStatusEnum.REJECTED_BY_CONSULTANT,
+      );
+      await this.createProposalLog(
+        body,
+        role,
+        proposal,
+        user.id,
+        `ProposalWasRejectedBy@${user.employee_name}`,
+        ProposalAction.REJECT,
+      );
+    } else if (role === ProposalAdminRole.CEO) {
+      proposal = await this.updateProposalStatus(
+        id,
+        InnerStatusEnum.REJECTED_BY_CEO,
+        undefined,
+        OuterStatusEnum.CANCELED,
+      );
+      await this.createProposalLog(
+        body,
+        role,
+        proposal,
+        user.id,
+        `ProposalWasRejectedBy@${user.employee_name}`,
+        ProposalAction.REJECT,
+      );
+    } else {
+      throw new UnauthorizedException(
+        "User doesn't have the required role to access this resource!",
+      );
+    }
+    return proposal;
+  }
+
+  async acceptProposal(id: string, body: any, role: string, user: user) {
+    let proposal;
+    if (role === ProposalAdminRole.MODERATOR) {
+      proposal = await this.updateProposalStatus(
+        id,
+        InnerStatusEnum.ACCEPTED_BY_MODERATOR,
+        body.track_id,
+      );
+      await this.createProposalLog(
+        body,
+        role,
+        proposal,
+        user.id,
+        `ProposalWasAcceptedBy@${user.employee_name}`,
+        ProposalAction.ACCEPT,
+      );
+    } else if (role === ProposalAdminRole.PROJECT_SUPERVISOR) {
+      proposal = await this.updateProposalStatus(
+        id,
+        InnerStatusEnum.ACCEPTED_BY_SUPERVISOR,
+        body.track_id,
+      );
+      await this.createProposalLog(
+        body,
+        role,
+        proposal,
+        user.id,
+        `ProposalWasAcceptedBy@${user.employee_name}`,
+        ProposalAction.ACCEPT,
+      );
+      const track = await this.prismaService.track.findUnique({
+        where: { id: proposal.track_id as string },
+      });
+      if (!track)
+        throw new NotFoundException('this proposal does not belonge to track');
+      if (track.name === 'مسار المنح العام') {
+        const recommended_support_consultant =
+          body.consultant_form.recommended_support_consultant;
+        delete body.consultant_form.recommended_support_consultant;
+        const consultantForm = await this.prismaService.consultant_form.create({
+          data: {
+            ...body.consultant_form,
+            proposal_id: proposal.id,
+            supervisor_id: user.id,
+          },
+        });
+        for (let i = 0; i < recommended_support_consultant.length; i++) {
+          recommended_support_consultant[i].consultant_form_id =
+            consultantForm.id;
+        }
+        await this.prismaService.recommended_support_consultant.createMany({
+          data: recommended_support_consultant,
+        });
+      } else {
+        await this.prismaService.supervisor_form.create({
+          data: {
+            ...body.supervisor_form,
+            proposal_id: proposal.id,
+            supervisor_id: user.id,
+          },
+        });
+      }
+    } else if (role === ProposalAdminRole.PROJECT_MANAGER) {
+      proposal = await this.updateProposalStatus(
+        id,
+        InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER,
+      );
+      await this.createProposalLog(
+        body,
+        role,
+        proposal,
+        user.id,
+        `ProposalWasAcceptedBy@${user.employee_name}`,
+        ProposalAction.ACCEPT,
+      );
+    } else if (role === ProposalAdminRole.CONSULTANT) {
+      proposal = await this.updateProposalStatus(
+        id,
+        InnerStatusEnum.ACCEPTED_BY_CONSULTANT,
+      );
+      await this.createProposalLog(
+        body,
+        role,
+        proposal,
+        user.id,
+        `ProposalWasAcceptedBy@${user.employee_name}`,
+        ProposalAction.ACCEPT,
+      );
+      const projectManager = await this.prismaService.user.findUnique({where:{
+        id: proposal.project_manager_id as string
+      }}) as user;
+      if(!projectManager)
+        throw new NotFoundException('there is no project manager in this proposal')
+      await this.createProposalLog(
+        body,
+        role,
+        proposal,
+        projectManager.id,
+        `ProposalWasAcceptedBy@${projectManager.employee_name}`,
+        ProposalAction.ACCEPT,
+      );
+    } else if (role === ProposalAdminRole.CEO) {
+      proposal = await this.updateProposalStatus(
+        id,
+        InnerStatusEnum.ACCEPTED_BY_CEO,
+      );
+      await this.createProposalLog(
+        body,
+        role,
+        proposal,
+        user.id,
+        `ProposalWasAcceptedBy@${user.employee_name}`,
+        ProposalAction.ACCEPT,
+      );
+    } else {
+      throw new UnauthorizedException(
+        "User doesn't have the required role to access this resource!",
+      );
+    }
+    return proposal;
+  }
+
+  async updateProposalStatus(
+    id: string,
+    inner_status: string,
+    track_id?: string,
+    outter_status?: string,
+  ) {
     return this.prismaService.proposal.update({
-      where:{
-        id
+      where: {
+        id,
       },
       data: {
         inner_status,
         track_id,
-        outter_status
-      }
+        outter_status,
+      },
     });
   }
-  async createProposalLog(body: any, inner_status: string, proposal: proposal, reviewer_id: string, state: string){
+  async createProposalLog(
+    body: any,
+    user_role: string,
+    proposal: proposal,
+    reviewer_id: string,
+    message: string,
+    action: string
+  ) {
     await this.prismaService.proposal_log.create({
-      data:{
+      data: {
         id: body.log_id,
         proposal_id: proposal.id,
-        notes: body.notes || null,
-        inner_status,
+        ...(body.notes && {notes: body.notes}),
+        message,
         reviewer_id,
-        state,
-        client_user_id: proposal.submitter_user_id
-      }
-    })
+        user_role,
+        client_user_id: proposal.submitter_user_id,
+        action
+      },
+    });
   }
 }

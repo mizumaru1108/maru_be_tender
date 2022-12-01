@@ -29,7 +29,9 @@ import { UpdatePaymentResponseDto } from '../dtos/responses/payment/update-payme
 import { UpdateProposalDto } from '../dtos/requests/proposal/update-proposal.dto';
 import { UpdateProposalResponseDto } from '../dtos/responses/proposal/update-proposal-response.dto';
 import { UpdateProposalByCmsUsers } from '../dtos/updateProposalByCmsUsers.dto';
-
+import {
+  user
+} from '@prisma/client';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(
@@ -150,14 +152,14 @@ export class TenderProposalController {
   }
 
   @UseGuards(TenderJwtGuard)
-  @Patch('test')
+  @Patch('proposal-action')
   async updateProposalByCmsUsers(
-    @CurrentUser() currentUser: ICurrentUser,
+    @CurrentUser() currentUser: user,
     @Body() body: UpdateProposalByCmsUsers,
     @Req() request: any
     ) {
     const updateResponse = await this.tenderProposalService.updateProposalByCmsUsers(
-      currentUser.id,
+      currentUser,
       body,
       request.query.id,
       request.headers['x-hasura-role']

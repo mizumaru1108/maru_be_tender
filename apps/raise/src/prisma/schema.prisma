@@ -168,6 +168,7 @@ model proposal {
   proposal_status                     proposal_status?           @relation(fields: [inner_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_status_fkey")
   proposal_step                       proposal_step?             @relation(fields: [step], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user                                user                       @relation(fields: [submitter_user_id], references: [id], onDelete: Cascade)
+  track                               track?                     @relation(fields: [track_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
   bank_informations                   bank_information[]
   consultant_form                     consultant_form?
   consultation_commite                consultation_commite[]
@@ -217,6 +218,9 @@ model proposal_log {
   send_amandement  Json?
   outter_status    String?
   project_kind     String?
+  action           String?          @db.VarChar
+  message          String?          @db.VarChar
+  user_role        String?          @db.VarChar
   user_type        user_type        @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_assign_fkey")
   client_user_data user             @relation("proposal_log_client_user_idTouser", fields: [client_user_id], references: [id], onDelete: Cascade)
   proposal_state   proposal_state?  @relation(fields: [outter_status], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -600,6 +604,7 @@ model track {
   name          String          @unique @db.VarChar
   budget        Float           @db.Real
   id            String          @id @db.VarChar
+  proposal      proposal[]
   track_section track_section[]
 }
 
@@ -609,6 +614,7 @@ model track_section {
   budget              Float           @db.Real
   track_id            String          @db.VarChar
   section_id          String?         @db.VarChar
+  is_leaf             Boolean?        @default(false)
   track_section       track_section?  @relation("track_sectionTotrack_section", fields: [section_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
   track               track           @relation(fields: [track_id], references: [id], onUpdate: Restrict)
   other_track_section track_section[] @relation("track_sectionTotrack_section")

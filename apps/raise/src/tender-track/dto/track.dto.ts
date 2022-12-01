@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
 import { BaseFilterRequest } from '../../commons/dtos/base-filter-request.dto';
 
 export class TracSectionkDto extends BaseFilterRequest {
@@ -27,4 +27,9 @@ export class TracSectionkDto extends BaseFilterRequest {
   @IsOptional()
   @IsUUID()
   section_id?: string;
+
+  @ApiPropertyOptional()
+  @IsBoolean()
+  @IsOptional()
+  is_leaf?: boolean;
 }
