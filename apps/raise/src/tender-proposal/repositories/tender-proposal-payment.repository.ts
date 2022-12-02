@@ -18,8 +18,13 @@ export class TenderProposalPaymentRepository {
         where: { id },
       });
     } catch (error) {
-      const prismaError = prismaErrorThrower(error, 'finding payment');
-      throw prismaError;
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalPaymentRepository.name,
+        'findPaymentById error details: ',
+        'finding payment!',
+      );
+      throw theError;
     }
   }
 
@@ -38,8 +43,13 @@ export class TenderProposalPaymentRepository {
         },
       });
     } catch (error) {
-      const prismaError = prismaErrorThrower(error, 'updating payment status!');
-      throw prismaError;
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalPaymentRepository.name,
+        'updatePaymentStatus error details: ',
+        'updating payment status!',
+      );
+      throw theError;
     }
   }
 
@@ -51,8 +61,13 @@ export class TenderProposalPaymentRepository {
       );
       return result;
     } catch (error) {
-      const prismaError = prismaErrorThrower(error, 'creating many payment!');
-      throw prismaError;
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalPaymentRepository.name,
+        'createManyPayment error details: ',
+        'creating payment!',
+      );
+      throw theError;
     }
   }
 
@@ -60,34 +75,11 @@ export class TenderProposalPaymentRepository {
     paymentId: string,
     status: string | null,
     chequeData?: Prisma.chequeCreateInput | null,
-  ): Promise<payment | [payment, cheque]> {
+  ) {
     this.logger.debug(`updating payment by id of ${paymentId}...`);
-    if (chequeData) {
-      try {
-        const result = await this.prismaService.$transaction([
-          this.prismaService.payment.update({
-            where: {
-              id: paymentId,
-            },
-            data: {
-              status,
-            },
-          }),
-          this.prismaService.cheque.create({
-            data: chequeData,
-          }),
-        ]);
-        return result;
-      } catch (error) {
-        const prismaError = prismaErrorThrower(
-          error,
-          'updating payment status!',
-        );
-        throw prismaError;
-      }
-    } else {
-      try {
-        const result = await this.prismaService.payment.update({
+    try {
+      return await this.prismaService.$transaction(async (prisma) => {
+        const payment = await prisma.payment.update({
           where: {
             id: paymentId,
           },
@@ -95,14 +87,27 @@ export class TenderProposalPaymentRepository {
             status,
           },
         });
-        return result;
-      } catch (error) {
-        const prismaError = prismaErrorThrower(
-          error,
-          'updating payment status!',
-        );
-        throw prismaError;
-      }
+
+        let cheque: cheque | null = null;
+        if (chequeData) {
+          cheque = await prisma.cheque.create({
+            data: chequeData,
+          });
+        }
+
+        return {
+          payment,
+          cheque,
+        };
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalPaymentRepository.name,
+        'createManyPayment error details: ',
+        'updating payment status!',
+      );
+      throw theError;
     }
   }
 }

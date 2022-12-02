@@ -10,6 +10,7 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
+import { UserStatus } from '../types/user_status';
 
 @Injectable()
 export class TenderUserRepository {
@@ -30,8 +31,13 @@ export class TenderUserRepository {
         where: { id: trackName },
       });
     } catch (error) {
-      const theEror = prismaErrorThrower(error, `deleting user!`);
-      throw theEror;
+      const theError = prismaErrorThrower(
+        error,
+        TenderUserRepository.name,
+        'validateTrack Error:',
+        `validating track!`,
+      );
+      throw theError;
     }
   }
 
@@ -41,8 +47,13 @@ export class TenderUserRepository {
         where: { id: role },
       });
     } catch (error) {
-      const theEror = prismaErrorThrower(error, `deleting user!`);
-      throw theEror;
+      const theError = prismaErrorThrower(
+        error,
+        TenderUserRepository.name,
+        'validateRoles Error:',
+        `validating roles!`,
+      );
+      throw theError;
     }
   }
 
@@ -54,8 +65,8 @@ export class TenderUserRepository {
   //       },
   //     });
   //   } catch (error) {
-  //     const theEror = prismaErrorThrower(error, `deleting user!`);
-  //     throw theEror;
+  //     const theError = prismaErrorThrower(error, `deleting user!`);
+  //     throw theError;
   //   }
   // }
 
@@ -69,8 +80,46 @@ export class TenderUserRepository {
     try {
       return await this.prismaService.user.findFirst(findFirstArg);
     } catch (error) {
-      const theEror = prismaErrorThrower(error, `deleting user!`);
-      throw theEror;
+      const theError = prismaErrorThrower(
+        error,
+        TenderUserRepository.name,
+        'findUser Error:',
+        `finding user!`,
+      );
+      throw theError;
+    }
+  }
+
+  async changeUserStatus(
+    userId: string,
+    status: any,
+    prismaSession?: Prisma.TransactionClient,
+  ) {
+    this.logger.log('info', `Changing user ${userId} status to ${status}`);
+    try {
+      if (prismaSession) {
+        return await prismaSession.user.update({
+          where: { id: userId },
+          data: {
+            status_id: status,
+          },
+        });
+      } else {
+        return await this.prismaService.user.update({
+          where: { id: userId },
+          data: {
+            status_id: status,
+          },
+        });
+      }
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderUserRepository.name,
+        'changeUserStatus Error:',
+        `changing user status!`,
+      );
+      throw theError;
     }
   }
 
@@ -97,33 +146,43 @@ export class TenderUserRepository {
         });
       }
     } catch (error) {
-      const theEror = prismaErrorThrower(error, `creating user!`);
-      throw theEror;
+      const theError = prismaErrorThrower(
+        error,
+        TenderUserRepository.name,
+        'createUser error:',
+        `creating user!`,
+      );
+      throw theError;
     }
   }
 
-  async deleteUser(userId: string) {
+  async deleteUser(userId: string): Promise<user | null> {
     this.logger.debug(`Deleting user with id: ${userId}`);
     try {
       return await this.prismaService.user.delete({
         where: { id: userId },
       });
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          this.logger.log('warn', `User with id: ${userId} not found`);
-          return false; // gonna be still works if the user is not found.
-        }
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        this.logger.log('warn', `User with id: ${userId} not found`);
+        return null; // gonna be still works if the user is not found.
       } else {
-        this.logger.error('Something went wrong when deleting user', error);
-        const theEror = prismaErrorThrower(error, `deleting user!`);
-        throw theEror;
+        const theError = prismaErrorThrower(
+          error,
+          TenderUserRepository.name,
+          'deleteUser Error:',
+          `deleting user!`,
+        );
+        throw theError;
       }
     }
   }
 
   async deleteUserWFusionAuth(userId: string) {
-    this.logger.log('log', `Deleting user with id: ${userId}`);
+    this.logger.log('info', `Deleting user with id: ${userId}`);
     try {
       const result = await this.prismaService.$transaction(async (prisma) => {
         const prismaResult = await this.deleteUser(userId);
@@ -134,9 +193,13 @@ export class TenderUserRepository {
       });
       return result;
     } catch (error) {
-      this.logger.error('Something went wrong when deleting user', error);
-      const theEror = prismaErrorThrower(error, `deleting user!`);
-      throw theEror;
+      const theError = prismaErrorThrower(
+        error,
+        TenderUserRepository.name,
+        'deleteUserWFusionAuth Error:',
+        `deleting user!`,
+      );
+      throw theError;
     }
   }
 }

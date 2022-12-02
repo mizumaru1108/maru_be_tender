@@ -1,8 +1,9 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { client_data, edit_request, Prisma, user_status } from '@prisma/client';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
+import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
 
 @Injectable()
 export class TenderClientRepository {
@@ -10,7 +11,10 @@ export class TenderClientRepository {
     'log.logger': TenderClientRepository.name,
   });
 
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly tenderUserRepository: TenderUserRepository,
+  ) {}
 
   async validateStatus(status: string): Promise<user_status | null> {
     try {
@@ -18,9 +22,13 @@ export class TenderClientRepository {
         where: { id: status },
       });
     } catch (error) {
-      this.logger.error('validateStatus error:', error);
-      const theEror = prismaErrorThrower(error, `find client and user!`);
-      throw theEror;
+      const theError = prismaErrorThrower(
+        error,
+        TenderClientRepository.name,
+        'validateStatus error details: ',
+        'find client and user!',
+      );
+      throw theError;
     }
   }
 
@@ -36,9 +44,13 @@ export class TenderClientRepository {
     try {
       return await this.prismaService.client_data.findFirst(findFirstArg);
     } catch (error) {
-      this.logger.error('findClient error:', error);
-      const theEror = prismaErrorThrower(error, `find client and user!`);
-      throw theEror;
+      const theError = prismaErrorThrower(
+        error,
+        TenderClientRepository.name,
+        'findClient error details: ',
+        'finding client',
+      );
+      throw theError;
     }
   }
 
@@ -53,9 +65,13 @@ export class TenderClientRepository {
         },
       });
     } catch (error) {
-      this.logger.error('findClientAndUser error:', error);
-      const theEror = prismaErrorThrower(error, `find client and user!`);
-      throw theEror;
+      const theError = prismaErrorThrower(
+        error,
+        TenderClientRepository.name,
+        'findClientAndUser error details: ',
+        'find client and user!',
+      );
+      throw theError;
     }
   }
 
@@ -159,7 +175,7 @@ export class TenderClientRepository {
 
   async createUpdateRequest(
     clientUserId: string,
-    editRequest: edit_request[],
+    editRequest: Prisma.edit_requestCreateInput[],
     denactiveAccount: boolean,
   ) {
     try {
@@ -171,22 +187,199 @@ export class TenderClientRepository {
         }
 
         if (denactiveAccount) {
-          await prisma.user.update({
-            where: {
-              id: clientUserId,
-            },
-            data: {
-              status_id: 'WAITING_FOR_EDITING_APPROVAL',
-            },
-          });
+          await this.tenderUserRepository.changeUserStatus(
+            clientUserId,
+            'WAITING_FOR_EDITING_APPROVAL',
+          );
         }
 
         return editRequest;
       });
     } catch (error) {
-      this.logger.error('createUpdateRequest error:', error);
-      const theEror = prismaErrorThrower(error, `update client info!`);
-      throw theEror;
+      const theError = prismaErrorThrower(
+        error,
+        TenderClientRepository.name,
+        'createUpdateRequest error details: ',
+        'requiesting field change!',
+      );
+      throw theError;
+    }
+  }
+
+  async findUpdateRequestById(id: string) {
+    try {
+      return await this.prismaService.edit_request.findUnique({
+        where: {
+          id,
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderClientRepository.name,
+        'validateStatus error details: ',
+        'find client and user!',
+      );
+      throw theError;
+    }
+  }
+
+  async getRemainingUpdateRequestCount(
+    userId: string,
+    prismaSession?: Prisma.TransactionClient,
+  ) {
+    try {
+      if (prismaSession) {
+        return await prismaSession.edit_request.count({
+          where: {
+            user_id: userId,
+            approval_status: {
+              equals: 'WAITING_FOR_APPROVAL',
+            },
+          },
+        });
+      } else {
+        return await this.prismaService.edit_request.count({
+          where: {
+            user_id: userId,
+            approval_status: {
+              equals: 'WAITING_FOR_APPROVAL',
+            },
+          },
+        });
+      }
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderClientRepository.name,
+        'getRemainingUpdateRequestCount error details: ',
+        'fetching remaining update request count!',
+      );
+      throw theError;
+    }
+  }
+
+  async changeEditRequestStatus(
+    requestId: string,
+    reviewerId: string,
+    status: string,
+    prismaSession?: Prisma.TransactionClient,
+  ) {
+    this.logger.log(
+      'info',
+      `changing edit request status to ${status}, using prisma session: ${
+        prismaSession ? true : false
+      }`,
+    );
+    try {
+      if (prismaSession) {
+        return await prismaSession.edit_request.update({
+          where: {
+            id: requestId,
+          },
+          data: {
+            approval_status: {
+              set: status,
+            },
+            reviewer_id: reviewerId,
+          },
+        });
+      } else {
+        return await this.prismaService.edit_request.update({
+          where: {
+            id: requestId,
+          },
+          data: {
+            approval_status: {
+              set: status,
+            },
+            reviewer_id: reviewerId,
+          },
+        });
+      }
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderClientRepository.name,
+        'changeEditRequestStatus error details: ',
+        'changing edit request status!',
+      );
+      throw theError;
+    }
+  }
+
+  async updateClientField(
+    userId: string,
+    fieldName: string,
+    fieldValue: number | string | boolean | Date | Object,
+    prismaSession?: Prisma.TransactionClient,
+  ) {
+    this.logger.log(
+      'info',
+      `updating client field ${fieldName} with value ${fieldValue}, using session: ${
+        prismaSession ? true : false
+      }`,
+    );
+    try {
+      if (prismaSession) {
+        return await prismaSession.client_data.update({
+          where: {
+            user_id: userId,
+          },
+          data: {
+            [fieldName]: fieldValue,
+          },
+        });
+      } else {
+        return await this.prismaService.client_data.update({
+          where: {
+            user_id: userId,
+          },
+          data: {
+            [fieldName]: fieldValue,
+          },
+        });
+      }
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderClientRepository.name,
+        'updateClientField error details: ',
+        'updating client field!',
+      );
+      throw theError;
+    }
+  }
+
+  async appoveUpdateRequest(
+    currentEditRequest: edit_request,
+    reviewerId: string,
+    parsedValue: number | string | boolean | Date | Object,
+  ) {
+    try {
+      return await this.prismaService.$transaction(async (prisma) => {
+        await this.updateClientField(
+          currentEditRequest.user_id,
+          currentEditRequest.field_name,
+          parsedValue,
+          prisma,
+        );
+
+        await this.changeEditRequestStatus(
+          currentEditRequest.id,
+          reviewerId,
+          'APPROVED',
+          prisma,
+        );
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderClientRepository.name,
+        'appoveUpdateRequest error details: ',
+        'approving update request!',
+      );
+      throw theError;
     }
   }
 }

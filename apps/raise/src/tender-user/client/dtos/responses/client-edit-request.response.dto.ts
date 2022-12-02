@@ -1,10 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { edit_request } from '@prisma/client';
-
+import { Prisma } from '@prisma/client';
 export class ClientEditRequestResponseDto {
   @ApiProperty()
-  detail: string;
+  logs: string;
 
   @ApiProperty()
-  createdEditRequest: edit_request[] | [];
+  createdEditRequest: Prisma.edit_requestCreateInput[] | [];
 }

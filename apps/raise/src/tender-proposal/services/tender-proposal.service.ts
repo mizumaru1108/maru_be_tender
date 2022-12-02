@@ -10,7 +10,7 @@ import {
   proposal,
   proposal_item_budget,
   proposal_log,
-  user
+  user,
 } from '@prisma/client';
 import { nanoid } from 'nanoid';
 import { v4 as uuidv4 } from 'uuid';
@@ -392,7 +392,6 @@ export class TenderProposalService {
         does_an_agreement,
         support_amount,
         number_of_payments,
-        procedures,
         notes,
         support_outputs,
         vat,
@@ -413,7 +412,6 @@ export class TenderProposalService {
           does_an_agreement,
           support_amount,
           number_of_payments,
-          procedures,
           notes,
           support_outputs,
           vat,
@@ -444,7 +442,6 @@ export class TenderProposalService {
         'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
         'ONGOING',
         notes,
-        procedures,
       );
       log = createdLog;
     }
@@ -1135,11 +1132,15 @@ export class TenderProposalService {
         `ProposalWasAcceptedBy@${user.employee_name}`,
         ProposalAction.ACCEPT,
       );
-      const projectManager = await this.prismaService.user.findUnique({where:{
-        id: proposal.project_manager_id as string
-      }}) as user;
-      if(!projectManager)
-        throw new NotFoundException('there is no project manager in this proposal')
+      const projectManager = (await this.prismaService.user.findUnique({
+        where: {
+          id: proposal.project_manager_id as string,
+        },
+      })) as user;
+      if (!projectManager)
+        throw new NotFoundException(
+          'there is no project manager in this proposal',
+        );
       await this.createProposalLog(
         body,
         role,
@@ -1192,18 +1193,18 @@ export class TenderProposalService {
     proposal: proposal,
     reviewer_id: string,
     message: string,
-    action: string
+    action: string,
   ) {
     await this.prismaService.proposal_log.create({
       data: {
         id: body.log_id,
         proposal_id: proposal.id,
-        ...(body.notes && {notes: body.notes}),
+        ...(body.notes && { notes: body.notes }),
         message,
         reviewer_id,
         user_role,
         client_user_id: proposal.submitter_user_id,
-        action
+        action,
       },
     });
   }

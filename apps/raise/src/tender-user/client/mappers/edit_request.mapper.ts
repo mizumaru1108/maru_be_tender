@@ -1,4 +1,5 @@
-import { client_data, edit_request, user } from '@prisma/client';
+import { client_data, user } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { nanoid } from 'nanoid';
 import { ClientEditRequestDto } from '../dtos/requests/client-edit-request.dto';
 
@@ -9,7 +10,6 @@ export function CreateEditRequestMapper(
   },
   request: ClientEditRequestDto,
 ) {
-  // destruct newValues.entity as entity from request
   const {
     newValues: {
       entity,
@@ -40,22 +40,21 @@ export function CreateEditRequestMapper(
       client_field,
     },
   } = request;
-  const editRequest: edit_request[] = [];
+  // const editRequest: edit_request[] = [];
+  const editRequest: Prisma.edit_requestCreateInput[] = [];
 
   const baseEditRequest = {
     approval_status: 'WAITING_FOR_APPROVAL',
     user_id: userId,
   };
 
-  let log: string;
-  let changeCount: number = 0;
+  let logs: string = '';
 
   const addLog = (fieldName: string) => {
-    log += `${fieldName}, has been asked for change`;
-    changeCount++;
+    logs += ` [field ${fieldName} change requested] `;
   };
 
-  if (entity) {
+  if (entity && entity !== clientData.entity) {
     editRequest.push({
       id: nanoid(),
       field_name: 'entity',
@@ -67,7 +66,7 @@ export function CreateEditRequestMapper(
     addLog('entity');
   }
 
-  if (authority) {
+  if (authority && authority !== clientData.authority) {
     editRequest.push({
       id: nanoid(),
       field_name: 'authority',
@@ -79,7 +78,7 @@ export function CreateEditRequestMapper(
     addLog('authority');
   }
 
-  if (headquarters) {
+  if (headquarters && headquarters !== clientData.headquarters) {
     editRequest.push({
       id: nanoid(),
       field_name: 'headquarters',
@@ -91,7 +90,10 @@ export function CreateEditRequestMapper(
     addLog('headquarters');
   }
 
-  if (date_of_esthablistmen) {
+  if (
+    date_of_esthablistmen &&
+    date_of_esthablistmen !== clientData.date_of_esthablistmen
+  ) {
     editRequest.push({
       id: nanoid(),
       field_name: 'date_of_esthablistmen',
@@ -105,7 +107,10 @@ export function CreateEditRequestMapper(
     addLog('date_of_esthablistmen');
   }
 
-  if (num_of_beneficiaries) {
+  if (
+    num_of_beneficiaries &&
+    num_of_beneficiaries !== clientData.num_of_beneficiaries
+  ) {
     editRequest.push({
       id: nanoid(),
       field_name: 'num_of_beneficiaries',
@@ -119,7 +124,10 @@ export function CreateEditRequestMapper(
     addLog('num_of_beneficiaries');
   }
 
-  if (num_of_employed_facility) {
+  if (
+    num_of_employed_facility &&
+    num_of_employed_facility !== clientData.num_of_employed_facility
+  ) {
     editRequest.push({
       id: nanoid(),
       field_name: 'num_of_employed_facility',
@@ -133,7 +141,7 @@ export function CreateEditRequestMapper(
     addLog('num_of_employed_facility');
   }
 
-  if (governorate) {
+  if (governorate && governorate !== clientData.governorate) {
     editRequest.push({
       id: nanoid(),
       field_name: 'governorate',
@@ -145,7 +153,7 @@ export function CreateEditRequestMapper(
     addLog('governorate');
   }
 
-  if (region) {
+  if (region && region !== clientData.region) {
     editRequest.push({
       id: nanoid(),
       field_name: 'region',
@@ -157,7 +165,7 @@ export function CreateEditRequestMapper(
     addLog('region');
   }
 
-  if (entity_mobile) {
+  if (entity_mobile && entity_mobile !== clientData.entity_mobile) {
     editRequest.push({
       id: nanoid(),
       field_name: 'entity_mobile',
@@ -169,7 +177,10 @@ export function CreateEditRequestMapper(
     addLog('entity_mobile');
   }
 
-  if (center_administration) {
+  if (
+    center_administration &&
+    center_administration !== clientData.center_administration
+  ) {
     editRequest.push({
       id: nanoid(),
       field_name: 'center_administration',
@@ -181,7 +192,7 @@ export function CreateEditRequestMapper(
     addLog('center_administration');
   }
 
-  if (twitter_acount) {
+  if (twitter_acount && twitter_acount !== clientData.twitter_acount) {
     editRequest.push({
       id: nanoid(),
       field_name: 'twitter_acount',
@@ -193,7 +204,7 @@ export function CreateEditRequestMapper(
     addLog('twitter_acount');
   }
 
-  if (phone) {
+  if (phone && phone !== clientData.phone) {
     editRequest.push({
       id: nanoid(),
       field_name: 'phone',
@@ -205,7 +216,7 @@ export function CreateEditRequestMapper(
     addLog('phone');
   }
 
-  if (website) {
+  if (website && website !== clientData.website) {
     editRequest.push({
       id: nanoid(),
       field_name: 'website',
@@ -217,7 +228,7 @@ export function CreateEditRequestMapper(
     addLog('website');
   }
 
-  if (email) {
+  if (email && email !== clientData.user.email) {
     editRequest.push({
       id: nanoid(),
       field_name: 'email',
@@ -229,7 +240,7 @@ export function CreateEditRequestMapper(
     addLog('email');
   }
 
-  if (password) {
+  if (password && password !== clientData.password) {
     editRequest.push({
       id: nanoid(),
       field_name: 'password',
@@ -241,7 +252,7 @@ export function CreateEditRequestMapper(
     addLog('password');
   }
 
-  if (license_number) {
+  if (license_number && license_number !== clientData.license_number) {
     editRequest.push({
       id: nanoid(),
       field_name: 'license_number',
@@ -253,7 +264,7 @@ export function CreateEditRequestMapper(
     addLog('license_number');
   }
 
-  if (license_expired) {
+  if (license_expired && license_expired !== clientData.license_expired) {
     editRequest.push({
       id: nanoid(),
       field_name: 'license_expired',
@@ -267,7 +278,10 @@ export function CreateEditRequestMapper(
     addLog('license_expired');
   }
 
-  if (license_issue_date) {
+  if (
+    license_issue_date &&
+    license_issue_date !== clientData.license_issue_date
+  ) {
     editRequest.push({
       id: nanoid(),
       field_name: 'license_issue_date',
@@ -280,24 +294,30 @@ export function CreateEditRequestMapper(
     });
   }
 
-  if (license_file) {
+  if (
+    license_file &&
+    JSON.stringify(license_file) !== clientData.license_file
+  ) {
     editRequest.push({
       id: nanoid(),
       field_name: 'license_file',
       old_value: '',
       new_value: JSON.stringify(license_file),
-      field_type: 'file',
+      field_type: 'object',
       ...baseEditRequest,
     });
   }
 
-  if (board_ofdec_file) {
+  if (
+    board_ofdec_file &&
+    JSON.stringify(board_ofdec_file) !== clientData.board_ofdec_file
+  ) {
     editRequest.push({
       id: nanoid(),
       field_name: 'board_ofdec_file',
       old_value: '',
       new_value: JSON.stringify(board_ofdec_file),
-      field_type: 'file',
+      field_type: 'object',
       ...baseEditRequest,
     });
   }
@@ -368,5 +388,8 @@ export function CreateEditRequestMapper(
     });
   }
 
-  return editRequest;
+  return {
+    editRequest,
+    logs,
+  };
 }
