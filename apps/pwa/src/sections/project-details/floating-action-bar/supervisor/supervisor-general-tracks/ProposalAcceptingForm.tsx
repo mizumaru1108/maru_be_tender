@@ -236,8 +236,7 @@ function ProposalAcceptingForm({ children, onSubmit, data }: any) {
             placeholder="اكتب هنا"
           />
         </Grid>
-        {/* <FormGenerator data={Appr oveProposalFormFieldsSupervisor} /> */}
-        <Grid item md={12} xs={12} sx={{ mb: '70px' }}>
+        <Grid item md={12} xs={12}>
           {children}
         </Grid>
       </Grid>

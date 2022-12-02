@@ -4,42 +4,39 @@ import ModalDialog from 'components/modal-dialog';
 
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
+import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
-import { approveProposal } from 'queries/commons/approveProposal';
-import { rejectProposal } from 'queries/commons/rejectProposal';
+import { updateProposalByModerator } from 'queries/Moderator/updateProposalByModerator';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useMutation } from 'urql';
-import { FusionAuthRoles } from '../../../../@types/commons';
 import FormActionBox from './FormActionBox';
 import ProposalAcceptingForm from './ProposalAcceptingForm';
 import ProposalRejectingForm from './ProposalRejectingForm';
 
 function FloatingActionBar() {
   const { user } = useAuth();
+
   const theme = useTheme();
+
   const location = useLocation();
+
   const { translate } = useLocales();
+
   const [modalState, setModalState] = useState(false);
+
   const { enqueueSnackbar } = useSnackbar();
 
   const navigate = useNavigate();
 
-  // Logic here to get current user role
-  const currentRoles = user?.registrations[0].roles[0] as FusionAuthRoles;
-  // var for insert into navigate in handel Approval and Rejected
-  const p = currentRoles.split('_')[1];
-
   const pid = location.pathname.split('/')[4];
 
-  // var for else on state in approveProposalPayloads
-  const a = p.toUpperCase();
+  const [, update] = useMutation(updateProposalByModerator);
 
-  const [proposalRejection, reject] = useMutation(rejectProposal);
-  const [proposalAccepting, accept] = useMutation(approveProposal);
-  const { fetching: accFetch, error: accError } = proposalAccepting;
-  const { fetching: rejFetch, error: rejError } = proposalRejection;
+  const [loadingState, setLoadingState] = useState({ isLoading: false, action: '' });
+
   const [action, setAction] = useState<'accept' | 'reject'>('reject');
+
   const amandementPath = location.pathname.split('show-details')[0] + `amandementRequest`;
 
   //create handleclose modal function
@@ -52,62 +49,78 @@ function FloatingActionBar() {
   };
 
   const handleApproval = async (data: any) => {
-    await accept({
-      proposalId: pid,
-      approveProposalPayloads: {
+    setLoadingState({ action: 'accept', isLoading: true });
+    update({
+      proposal_id: pid,
+      new_values: {
         inner_status: 'ACCEPTED_BY_MODERATOR',
         outter_status: 'ONGOING',
         state: 'PROJECT_SUPERVISOR',
         project_track: data.path,
         ...(data.supervisors !== 'all' && { supervisor_id: data.supervisors }),
       },
-    });
-    if (!accFetch) {
-      enqueueSnackbar(translate('proposal_approved'), {
-        variant: 'success',
-      });
-      navigate(`/moderator/dashboard/app`);
-    }
-    if (accError) {
-      enqueueSnackbar(accError.message, {
-        variant: 'error',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
-      });
-    }
-  };
-
-  const handleRejected = async () => {
-    await reject({
-      proposalId: pid,
-      rejectProposalPayloads: {
-        inner_status: 'REJECTED',
-        outter_status: 'CANCELED',
+      log: {
+        id: nanoid(),
+        proposal_id: pid,
+        reviewer_id: user?.id!,
+        action: 'accept',
+        message: 'تم قبول المشروع من قبل مسوؤل الفرز',
+        notes: data.notes,
+        user_role: 'MODERATOR',
         state: 'MODERATOR',
       },
+    }).then((res) => {
+      setLoadingState({ action: 'accept', isLoading: false });
+      if (res.error) {
+        enqueueSnackbar(res.error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+      } else {
+        enqueueSnackbar(translate('proposal_accept'), {
+          variant: 'success',
+        });
+        navigate(`/moderator/dashboard/app`);
+      }
     });
+  };
 
-    if (!rejFetch) {
-      enqueueSnackbar(translate('proposal_rejected'), {
-        variant: 'success',
-      });
-      navigate(`/moderator/dashboard/app`);
-    }
-    if (rejError) {
-      enqueueSnackbar(rejError.message, {
-        variant: 'error',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
-      });
-    }
+  const handleRejected = async (data: any) => {
+    setLoadingState({ action: 'reject', isLoading: true });
+    update({
+      proposal_id: pid,
+      new_values: {
+        inner_status: 'REJECTED_BY_MODERATOR',
+        outter_status: 'CANCELED',
+        state: 'MODERATOR',
+        project_track: data.path,
+      },
+      log: {
+        id: nanoid(),
+        proposal_id: pid,
+        reviewer_id: user?.id!,
+        action: 'reject',
+        message: 'تم رفض المشروع من قبل مسوؤل الفرز',
+        notes: data.notes,
+        user_role: 'MODERATOR',
+        state: 'MODERATOR',
+      },
+    }).then((res) => {
+      setLoadingState({ action: 'reject', isLoading: false });
+      if (res.error) {
+        enqueueSnackbar(res.error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+      } else {
+        enqueueSnackbar(translate('proposal_rejected'), {
+          variant: 'success',
+        });
+        navigate(`/moderator/dashboard/app`);
+      }
+    });
   };
   return (
     <>
@@ -151,15 +164,13 @@ function FloatingActionBar() {
               {translate('project_rejected')}
             </Button>
 
-            {currentRoles === 'tender_moderator' && (
-              <Button
-                variant="outlined"
-                color="primary"
-                sx={{ my: { xs: '1.3em', md: '0' }, ':hover': { backgroundColor: '#fff' } }}
-              >
-                {translate('send_message_to_partner')}
-              </Button>
-            )}
+            <Button
+              variant="outlined"
+              color="primary"
+              sx={{ my: { xs: '1.3em', md: '0' }, ':hover': { backgroundColor: '#fff' } }}
+            >
+              {translate('send_message_to_partner')}
+            </Button>
           </Stack>
 
           <Button
@@ -193,21 +204,17 @@ function FloatingActionBar() {
             >
               <FormActionBox
                 action="accept"
-                isLoading={accFetch}
+                isLoading={loadingState.action === 'accept' ? loadingState.isLoading : false}
                 onReturn={() => {
                   setModalState(false);
                 }}
               />
             </ProposalAcceptingForm>
           ) : (
-            <ProposalRejectingForm
-              onSubmit={(value: any) => {
-                handleRejected();
-              }}
-            >
+            <ProposalRejectingForm onSubmit={handleRejected}>
               <FormActionBox
                 action="reject"
-                isLoading={rejFetch}
+                isLoading={loadingState.action === 'reject' ? loadingState.isLoading : false}
                 onReturn={() => {
                   setModalState(false);
                 }}

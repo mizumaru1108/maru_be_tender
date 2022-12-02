@@ -24,7 +24,7 @@ export const RejectProposalFormFields = [
   {
     type: 'textArea',
     name: 'notes',
-    label: 'ملاحظات',
+    label: 'ملاحظات على المشروع',
     xs: 12,
     placeholder: 'الرجاء كتابة الملاحظات',
   },

@@ -1,10 +1,21 @@
-import { Box, Button, Grid, Stack, Step, StepLabel, Stepper, useTheme } from '@mui/material';
+import {
+  Box,
+  Button,
+  Grid,
+  Menu,
+  MenuItem,
+  Stack,
+  Step,
+  StepLabel,
+  Stepper,
+  useTheme,
+} from '@mui/material';
 import Iconify from 'components/Iconify';
 import useLocales from 'hooks/useLocales';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import ModalDialog from 'components/modal-dialog';
-import React, { useState } from 'react';
+import React from 'react';
 import FirstForm from './FirstForm';
 import SecondForm from './SecondForm';
 import ThirdForm from './ThirdForm';
@@ -15,8 +26,9 @@ import { nanoid } from 'nanoid';
 import { useMutation } from 'urql';
 import { useNavigate, useParams } from 'react-router';
 import useAuth from 'hooks/useAuth';
-import { approveProposal } from 'queries/commons/approveProposal';
-import { insertSupervisor } from 'queries/project-supervisor/insertSupervisor';
+import { useSnackbar } from 'notistack';
+import { ProposalAcceptBySupervisorFacilitateGrant } from 'queries/project-supervisor/ProposalAcceptBySupervisorFacilitateGrant';
+import { ProposalRejectBySupervisor } from 'queries/project-supervisor/ProposalAcceptBySupervisor';
 
 type ConsultantForm = {
   chairman_of_board_of_directors: string;
@@ -48,13 +60,15 @@ function FloatinActionBar({ organizationId, data }: any) {
   const [step, setStep] = React.useState(0);
   const { translate } = useLocales();
   const theme = useTheme();
-  const [action, setAction] = useState<
+  const [action, setAction] = React.useState<
     'accept' | 'reject' | 'edit_request' | 'send_client_message'
   >('reject');
 
-  const [proposalAccepting, accept] = useMutation(approveProposal);
-  const [supervisorAcceptance, insertSupervisorAcceptance] = useMutation(insertSupervisor);
-  const [modalState, setModalState] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [, accept] = useMutation(ProposalAcceptBySupervisorFacilitateGrant);
+
+  const [, stepBack] = useMutation(ProposalRejectBySupervisor);
 
   const defaultValues = {
     form1: {
@@ -117,16 +131,24 @@ function FloatinActionBar({ organizationId, data }: any) {
     },
   };
 
-  const [_, insertConsultantForm] =
-    useMutation(`mutation InsertConsultantForm($objects: [consultant_form_insert_input!] = {}) {
-    insert_consultant_form(objects: $objects) {
-      affected_rows
-    }
-  }
-  `);
-
   const [consultantForm, setConsultantForm] = React.useState<ConsultantForm>();
+
   const [formValues, setFormValues] = React.useState(defaultValues);
+
+  const [modalState, setModalState] = React.useState(false);
+
+  const [loadingState, setLoadingState] = React.useState({ isLoading: false, action: '' });
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const onBack = () => {
     setStep(step - 1);
@@ -170,52 +192,98 @@ function FloatinActionBar({ organizationId, data }: any) {
     setStep(step + 1);
   };
   const handleSubmitFifthForm = async (data: any) => {
-    setConsultantForm((prevValue: any) => ({
-      ...prevValue,
-      recommended_support: { data: data.recommended_support },
-      clause: formValues.form1.clasue_cons,
-    }));
-    try {
-      await insertConsultantForm({
-        objects: {
-          ...consultantForm,
-          recommended_support: {
-            data: data.recommended_support.map((item: any, index: any) => ({
-              clause: item.clause,
-              amount: item.amount,
-              explanation: item.explanation,
-              id: nanoid(),
-            })),
-          },
-          clause: formValues.form1.clasue_cons,
-          proposal_id,
-          supervisor_id,
-          id: nanoid(),
+    const { clasue_cons, support_goals, accreditation_type, ...rest } = formValues.form1;
+    setLoadingState({ action: 'accept', isLoading: true });
+    accept({
+      log: {
+        id: nanoid(),
+        proposal_id,
+        reviewer_id: supervisor_id,
+        action: 'accept',
+        message: 'تم قبول المشروع من قبل مشرف المشاريع ',
+        notes: data.notes,
+        user_role: 'PROJECT_SUPERVISOR',
+        state: 'PROJECT_SUPERVISOR',
+      },
+      new_values: {
+        inner_status: 'ACCEPTED_BY_SUPERVISOR',
+        outter_status: 'ONGOING',
+        state: 'PROJECT_MANAGER',
+        number_of_payments: formValues.form1.number_of_payments,
+      },
+      proposal_id,
+      supervisor_form: {
+        ...rest,
+        id: nanoid(),
+        proposal_id,
+        user_id: organizationId,
+        // ...data,
+      },
+      consultant_form: {
+        ...consultantForm,
+        recommended_support: {
+          data: data.recommended_support.map((item: any, index: any) => ({
+            clause: item.clause,
+            amount: item.amount,
+            explanation: item.explanation,
+            id: nanoid(),
+          })),
         },
-      });
-      await insertSupervisorAcceptance({
-        supervisorAcceptance: {
-          ...formValues.form1,
-          id: nanoid(),
-          proposal_id,
-          user_id: organizationId,
-        },
-      });
-      await accept({
-        proposalId: proposal_id,
-        approveProposalPayloads: {
-          inner_status: 'ACCEPTED_BY_SUPERVISOR',
-          outter_status: 'ONGOING',
-          state: 'PROJECT_MANAGER',
-          number_of_payments: formValues.form1.number_of_payments,
-        },
-      });
-      navigate('/project-supervisor/dashboard/app');
-    } catch (error) {
-      console.log(error);
-    }
+        clause: clasue_cons,
+        proposal_id,
+        supervisor_id,
+        id: nanoid(),
+      },
+    }).then((res) => {
+      setLoadingState({ action: 'accept', isLoading: false });
+      if (res.error) {
+        enqueueSnackbar(res.error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+      } else {
+        enqueueSnackbar(translate('proposal_accept'), {
+          variant: 'success',
+        });
+        navigate(`/project-supervisor/dashboard/app`);
+      }
+    });
   };
-
+  const stepBackProposal = () => {
+    stepBack({
+      proposal_id,
+      new_values: {
+        inner_status: 'CREATED_BY_CLIENT',
+        outter_status: 'ONGOING',
+        state: 'MODERATOR',
+        supervisor_id: null,
+        project_track: null,
+      },
+      log: {
+        id: nanoid(),
+        proposal_id,
+        reviewer_id: user?.id!,
+        action: 'step_back',
+        message: 'تم إرجاع المشروع خطوة للوراء',
+        user_role: 'PROJECT_SUPERVISOR',
+        state: 'PROJECT_SUPERVISOR',
+      },
+    }).then((res) => {
+      if (res.error) {
+        enqueueSnackbar(res.error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+      } else {
+        enqueueSnackbar('تم إرجاع المعاملة لمسوؤل الفرز بنجاح', {
+          variant: 'success',
+        });
+        navigate(`/project-supervisor/dashboard/app`);
+      }
+    });
+  };
   return (
     <>
       <Box
@@ -272,13 +340,18 @@ function FloatinActionBar({ organizationId, data }: any) {
                 endIcon={<Iconify icon="eva:message-circle-outline" />}
                 onClick={() => setAction('send_client_message')}
                 sx={{ flex: 1 }}
+                disabled={true}
               >
                 {translate('partner_details.send_messages')}
               </Button>
               <Button
+                id="demo-positioned-button"
+                aria-controls={open ? 'demo-positioned-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
                 variant="contained"
                 endIcon={<Iconify icon="eva:edit-2-outline" />}
-                onClick={() => setAction('edit_request')}
+                onClick={handleClick}
                 sx={{
                   flex: 1,
                   backgroundColor: '#0169DE',
@@ -287,6 +360,24 @@ function FloatinActionBar({ organizationId, data }: any) {
               >
                 {translate('partner_details.submit_amendment_request')}
               </Button>
+              <Menu
+                id="demo-positioned-menu"
+                aria-labelledby="demo-positioned-button"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+              >
+                <MenuItem disabled={true}>ارسال طلب تعديل الى المشرف</MenuItem>
+                <MenuItem onClick={stepBackProposal}>ارجاع المعاملة الى (للي قبله)</MenuItem>
+              </Menu>
             </Stack>
           </Grid>
         </Grid>

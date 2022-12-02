@@ -15,6 +15,8 @@ export const HOST_API = process.env.REACT_APP_HOST_API_KEY || '';
 
 export const TMRA_RAISE_URL = process.env.REACT_APP_TMRA_RAISE_URL;
 
+export const UPDATE_PROPOSAL_FROM_BACKEND = process.env.REACT_APP_UPDATE_PROPOSAL_FROM_BACKEND;
+
 export const FIREBASE_API = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,

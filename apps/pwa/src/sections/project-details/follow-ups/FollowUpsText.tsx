@@ -1,8 +1,10 @@
 import { Avatar, Box, Grid, Stack, Typography } from '@mui/material';
 import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
 
 function FollowUpsText({ created_at, action, employee }: any) {
   const { activeRole } = useAuth();
+  const { translate } = useLocales();
   const role = activeRole!;
 
   if (role === 'tender_client')
@@ -69,7 +71,9 @@ function FollowUpsText({ created_at, action, employee }: any) {
         >
           <Stack direction="row" justifyContent="space-between">
             {employee ? (
-              <Typography color="#0E8478">{`${employee.employee_name} - ${employee.roles.role}`}</Typography>
+              <Typography color="#0E8478">{`${employee.employee_name} - ${translate(
+                `permissions.${employee.roles[0].role}`
+              )}`}</Typography>
             ) : (
               <Typography color="#0E8478">المستخدم</Typography>
             )}

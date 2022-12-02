@@ -1,6 +1,6 @@
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, CircularProgress, Stack, Typography } from '@mui/material';
-import useLocales from '../../../../hooks/useLocales';
+import { Button, Stack } from '@mui/material';
+import useLocales from 'hooks/useLocales';
 
 type Props = {
   action: 'accept' | 'reject';
@@ -28,31 +28,17 @@ const FormActionBox = ({ action, isLoading, onReturn }: Props) => {
       </Button>
       <LoadingButton
         loading={isLoading}
-        loadingIndicator={
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <CircularProgress size={20} sx={{ color: 'white' }} thickness={4} />
-            <Typography sx={{ color: 'white', fontSize: '1em', ml: 1 }}>Saving...</Typography>
-          </Box>
-        }
         type="submit"
         variant="contained"
         fullWidth
         sx={{
-          backgroundColor: action === 'accept' ? 'background.paper' : '#FF0000',
+          backgroundColor: action === 'accept' ? 'background.paper' : '#FF170F',
           color: '#fff',
           width: { xs: '100%', sm: '200px' },
           hieght: { xs: '100%', sm: '50px' },
-          // when button is disabled, reduce opacity to 0.5
-          '&.Mui-disabled': {
-            backgroundColor: action === 'accept' ? 'background.paper' : '#FF0000',
-            color: '#fff',
-            opacity: 0.48,
-          },
-          '&:hover': { backgroundColor: action === 'reject' ? '#FF170' : '#13B2A2' },
+          '&:hover': { backgroundColor: action === 'reject' ? '#FF4842' : '#13B2A2' },
         }}
-        disabled={isLoading}
       >
-        {isLoading && <CircularProgress size={23} sx={{ color: 'white' }} thickness={10} />}
         {action === 'accept' ? translate('accept') : translate('reject')}
       </LoadingButton>
     </Stack>
