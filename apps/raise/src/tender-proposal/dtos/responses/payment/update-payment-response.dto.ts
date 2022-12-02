@@ -6,5 +6,5 @@ export class UpdatePaymentResponseDto {
   updatedPayment: payment;
 
   @ApiPropertyOptional()
-  createdCheque?: cheque;
+  createdCheque?: cheque | null;
 }

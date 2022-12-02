@@ -18,9 +18,13 @@ export class TenderProposalRepository {
         },
       });
     } catch (error) {
-      console.log(error);
-      const prismaError = prismaErrorThrower(error, 'finding proposal');
-      throw prismaError;
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalRepository.name,
+        'fetchProposalById error details: ',
+        'finding proposal!',
+      );
+      throw theError;
     }
   }
 
@@ -42,8 +46,13 @@ export class TenderProposalRepository {
         }),
       ]);
     } catch (error) {
-      const prismaError = prismaErrorThrower(error, 'finding proposal');
-      throw prismaError;
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalRepository.name,
+        'updateStepFour error details: ',
+        'updating proposal step four!',
+      );
+      throw theError;
     }
   }
 
@@ -82,8 +91,13 @@ export class TenderProposalRepository {
         });
       }
     } catch (error) {
-      const prismaError = prismaErrorThrower(error, 'updating proposal');
-      throw prismaError;
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalRepository.name,
+        'updateProposal error details: ',
+        'updating proposal!',
+      );
+      throw theError;
     }
   }
 }

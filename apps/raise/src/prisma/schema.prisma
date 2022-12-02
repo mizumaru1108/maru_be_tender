@@ -203,37 +203,24 @@ model proposal_item_budget {
 }
 
 model proposal_log {
-  id               String           @id
-  proposal_id      String
-  created_at       DateTime         @default(now()) @db.Timestamptz(6)
-  updated_at       DateTime         @default(now()) @db.Timestamptz(6)
-  reviewer_id      String
-  inner_status     String?
-  state            String
-  client_user_id   String
-  moderators       String?          @db.Char(1)
-  path             String?          @db.Char(1)
-  notes            String?
-  procedures       String?
-  send_amandement  Json?
-  outter_status    String?
-  project_kind     String?
-  action           String?          @db.VarChar
-  message          String?          @db.VarChar
-  user_role        String?          @db.VarChar
-  user_type        user_type        @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_assign_fkey")
-  client_user_data user             @relation("proposal_log_client_user_idTouser", fields: [client_user_id], references: [id], onDelete: Cascade)
-  proposal_state   proposal_state?  @relation(fields: [outter_status], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  track            project_tracks?  @relation(fields: [project_kind], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  proposal         proposal         @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
-  proposal_status  proposal_status? @relation(fields: [inner_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_status_fkey")
-  reviewer         user             @relation(fields: [reviewer_id], references: [id], onUpdate: Restrict, map: "proposal_log_user_id_fkey")
+  id          String    @id
+  proposal_id String
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime  @default(now()) @db.Timestamptz(6)
+  reviewer_id String
+  state       String
+  notes       String?
+  action      String?   @db.VarChar
+  message     String?   @db.VarChar
+  user_role   String?   @db.VarChar
+  user_type   user_type @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_assign_fkey")
+  proposal    proposal  @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
+  reviewer    user      @relation(fields: [reviewer_id], references: [id], onUpdate: Restrict, map: "proposal_log_user_id_fkey")
 }
 
 model proposal_state {
-  id           String         @id
-  title        String         @unique
-  proposal_log proposal_log[]
+  id    String @id
+  title String @unique
 }
 
 model region {
@@ -268,7 +255,6 @@ model user {
   proposal                                                proposal[]
   proposal_follow_up_proposal_follow_up_employee_idTouser proposal_follow_up[]    @relation("proposal_follow_up_employee_idTouser")
   proposal_follow_up_proposal_follow_up_user_idTouser     proposal_follow_up[]    @relation("proposal_follow_up_user_idTouser")
-  proposal_log_proposal_log_client_user_idTouser          proposal_log[]          @relation("proposal_log_client_user_idTouser")
   proposal_log                                            proposal_log[]
   room_chat_room_chat_participant1Touser                  room_chat[]             @relation("room_chat_participant1Touser")
   room_chat_room_chat_participant2Touser                  room_chat[]             @relation("room_chat_participant2Touser")
@@ -311,10 +297,9 @@ model proposal_follow_up {
 }
 
 model proposal_status {
-  id           String         @id
-  title        String         @unique
-  proposal     proposal[]
-  proposal_log proposal_log[]
+  id       String     @id
+  title    String     @unique
+  proposal proposal[]
 }
 
 model client_log {
@@ -347,7 +332,6 @@ model supervisor {
   need_picture        Boolean
   number_of_payments  Decimal  @db.Decimal
   support_amount      Decimal  @db.Decimal
-  procedures          String
   notes               String
   support_outputs     String?
   clause              String?
@@ -460,9 +444,12 @@ model edit_request {
   field_name          String              @db.VarChar
   approval_status     String              @default("WAITING_FOR_APPROVAL")
   old_value           String?             @db.VarChar
-  new_value           String?             @db.VarChar
+  new_value           String              @db.VarChar
   user_id             String
   field_type          String              @db.VarChar
+  reviewer_id         String?
+  created_at          DateTime?           @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime?           @default(now()) @db.Timestamptz(6)
   edit_request_status edit_request_status @relation(fields: [approval_status], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
@@ -488,7 +475,6 @@ model project_tracks {
   title               String                @unique(map: "project_kind_title_key")
   project_track_flows project_track_flows[]
   proposal            proposal[]
-  proposal_log        proposal_log[]
   user                user[]
 }
 
@@ -586,6 +572,7 @@ model consultant_form {
   proposal_id                    String                           @unique
   supervisor_id                  String
   id                             String                           @id
+  clause                         String?
   proposal                       proposal                         @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
   user                           user                             @relation(fields: [supervisor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   recommended_support_consultant recommended_support_consultant[]
@@ -641,19 +628,20 @@ model only_test {
 
 model supervisor_form {
   id                            String   @id @db.VarChar
-  clause                        String   @db.VarChar
+  notes                         String   @db.VarChar
   classification_field          String   @db.VarChar
   support_type                  String   @db.VarChar
   closing_report                Boolean
-  need_pictures                 Boolean
-  need_an_agreement             Boolean
+  need_picture                  Boolean
+  does_an_agreement             Boolean
   support_amount                Decimal  @db.Decimal
   num_of_payments               Decimal  @db.Decimal
   support_outputs               String   @db.VarChar
-  need_vat                      Boolean
+  vat                           Boolean
   percentage_of_vat             Decimal  @db.Decimal
   inclusive_or_exclusive_of_vat Boolean
   proposal_id                   String   @db.VarChar
   supervisor_id                 String   @db.VarChar
+  clause                        String?
   proposal                      proposal @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
 }

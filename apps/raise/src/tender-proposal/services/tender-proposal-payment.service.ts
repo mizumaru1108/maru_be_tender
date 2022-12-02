@@ -148,18 +148,9 @@ export class TenderProposalPaymentService {
       chequeData,
     );
 
-    // if the type of response is [payment, cheque]
-    if (Array.isArray(response)) {
-      const [payment, cheque] = response;
-      return {
-        updatedPayment: payment,
-        createdCheque: cheque,
-      };
-    }
-
-    // if type of response is payment
     return {
-      updatedPayment: response,
+      updatedPayment: response.payment,
+      createdCheque: response.cheque,
     };
   }
 }

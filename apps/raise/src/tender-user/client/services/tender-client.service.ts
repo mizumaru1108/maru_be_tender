@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -16,6 +17,11 @@ import { TenderUserRepository } from '../../user/repositories/tender-user.reposi
 import { CreateUserResponseDto } from '../../user/dtos/responses/create-user-response.dto';
 import { TenderClientRepository } from '../repositories/tender-client.repository';
 import { CreateEditRequestMapper } from '../mappers/edit_request.mapper';
+import {
+  ApproveEditRequestDto,
+  BatchApproveEditRequestDto,
+} from '../dtos/requests/approve-edit-request.dto';
+import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 
 @Injectable()
 export class TenderClientService {
@@ -153,31 +159,129 @@ export class TenderClientService {
     );
     if (!clientData) throw new NotFoundException('Client data not found!');
 
-    const baseEditRequest = {
-      approval_status: 'WAITING_FOR_APPROVAL',
-      user_id: user.id,
-    };
+    let logs = 'Edit Request success';
 
-    let message = 'Edit Request success';
+    let newEditRequest: Prisma.edit_requestCreateInput[] | [] = [];
 
-    let newEditRequest: edit_request[] = [];
+    if (clientData.user.status_id !== 'ACTIVE_ACCOUNT') {
+      throw new BadRequestException(
+        'User have to be ACTIVE to perform an edit request!',
+      );
+    }
+
+    // for refactor later on maybe(?) :D
     // let denactiveAccount: boolean = false; // for conditional deactivation
+    // for (const [key, value] of Object.entries(newValues)) {
+    //   // TODO: do logic to denactive account when some spesific field is changed
+    //   // example: when email is changed / when phone number is changed, denactive the account
+    //   // denactiveAccount = key === 'email' || key === 'phone_number';
+    //   if (key in oldValues && value !== oldValues[key]) {
+    //     const editRequest: edit_request = {
+    //       id: nanoid(),
+    //       field_name: key,
+    //       old_value: oldValues[key].toString(),
+    //       new_value: value.toString(),
+    //       field_type: typeof oldValues[key],
+    //       ...baseEditRequest,
+    //     };
+    //     newEditRequest.push(editRequest);
+    //     requestChangeCount++;
+    //     message = message + `${key} change requested`;
+    //   }
+    // }
 
     if (editRequest.newValues) {
-      newEditRequest = CreateEditRequestMapper(
+      const mapResult = CreateEditRequestMapper(
         user.id,
         clientData,
         editRequest,
       );
+      logs = `your account will be deactivate until account manager responded, ${mapResult.editRequest.length} field has been asked for chages, details: ${mapResult.logs}`;
+      newEditRequest = mapResult.editRequest;
+
+      await this.tenderClientRepository.createUpdateRequest(
+        user.id,
+        newEditRequest,
+        true,
+      );
     }
 
-    if (newEditRequest.length === 0) message = 'No changes requested';
+    if (newEditRequest.length === 0) logs = 'No changes requested';
 
     const response: ClientEditRequestResponseDto = {
-      detail: message,
+      logs: logs,
       createdEditRequest: newEditRequest,
     };
 
     return response;
   }
+
+  valueParser(type: string, newValue: string) {
+    if (type === 'number') return Number(newValue);
+    if (type === 'object') return JSON.parse(newValue);
+    if (type === 'date') return new Date(newValue);
+    return newValue;
+  }
+
+  // single accept
+  async acceptEditRequest(reviewerId: string, request: ApproveEditRequestDto) {
+    // check if the request is exist and not approved yet
+    const editRequest = await this.tenderClientRepository.findUpdateRequestById(
+      request.requestId,
+    );
+    if (!editRequest) throw new NotFoundException('Edit request not found!');
+
+    // check if the request is already approved
+    if (editRequest.approval_status === 'APPROVED') {
+      throw new BadRequestException('Edit request already approved!');
+    }
+
+    // check the field type
+    const {
+      field_type: fieldType,
+      new_value: newValue,
+      field_name: fieldName,
+    } = editRequest;
+
+    // parse the new value to the correct type based on the field type
+    const parsedValue = this.valueParser(fieldType, newValue);
+
+    // approve the request, and change the field
+    console.log('field name', fieldName);
+    if (
+      ['password', 'email', 'entity_mobile', 'bank_information'].indexOf(
+        fieldName,
+      ) === -1
+    ) {
+      console.log('on if');
+      await this.tenderClientRepository.appoveUpdateRequest(
+        editRequest,
+        reviewerId,
+        parsedValue,
+      );
+    } else {
+      console.log('on else');
+      // TODO: if it password, email, phone number / bank apply custom logic.
+    }
+
+    // count the remaining request
+    const remainingProposal =
+      await this.tenderClientRepository.getRemainingUpdateRequestCount(
+        editRequest.user_id,
+      );
+    console.log('remainingProposal', remainingProposal);
+
+    if (remainingProposal === 0) {
+      await this.tenderUserRepository.changeUserStatus(
+        editRequest.user_id,
+        'ACTIVE_ACCOUNT',
+      );
+    }
+  }
+
+  // batch accept
+  async acceptEditRequests(
+    reviewerId: string,
+    request: BatchApproveEditRequestDto,
+  ) {}
 }
