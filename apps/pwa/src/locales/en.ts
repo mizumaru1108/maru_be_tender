@@ -202,7 +202,6 @@ const en = {
   MOSQUES: 'Mosques Track',
   CONCESSIONAL_GRANTS: 'Concessional Grants',
   INITIATIVES: 'Initiatives Track',
-  DEFAULT_TRACK: 'Default Track',
   GENERAL: 'General Track',
   app: `app`,
   user: `user`,

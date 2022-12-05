@@ -31,7 +31,7 @@ function ProjectDetailsMainPage() {
   if (data.proposal_by_pk === null) return <>There is no data for this tap ... </>;
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Stack direction="row">
+      <Stack direction="row" justifyContent="space-between">
         <IconButton
           onClick={() => {
             navigate(`/${location.pathname.split('/')[1]}/dashboard/app`);
@@ -58,6 +58,7 @@ function ProjectDetailsMainPage() {
             />
           </svg>
         </IconButton>
+        <FollowUpsAction mutate={reexecuteGetOne} />
       </Stack>
       <Stack direction="row" justifyContent="space-between">
         <Stack direction="column" gap={1}>
@@ -73,8 +74,6 @@ function ProjectDetailsMainPage() {
           </Typography>
         </Stack>
         <Stack direction="column" gap={2}>
-          <FollowUpsAction mutate={reexecuteGetOne} />
-
           <Box
             display="flex"
             flexDirection="column"

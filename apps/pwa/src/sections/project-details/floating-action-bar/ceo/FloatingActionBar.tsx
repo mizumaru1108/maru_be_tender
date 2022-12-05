@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography, useTheme } from '@mui/material';
+import { Box, Button, Menu, MenuItem, Stack, Typography, useTheme } from '@mui/material';
 import Iconify from 'components/Iconify';
 import ModalDialog from 'components/modal-dialog';
 
@@ -6,30 +6,19 @@ import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
-import { approveProposal } from 'queries/commons/approveProposal';
+import { updateProposalByCEO } from 'queries/ceo/updateProposalByCEO';
 import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import { useMutation } from 'urql';
-import {
-  AppRole,
-  FusionAuthRoles,
-  InnerStatus,
-  role_url_map,
-  updateProposalStatusAndState,
-} from '../../../../@types/commons';
-import { approveProposalWLog } from '../../../../queries/commons/approveProposalWithLog';
-import { rejectProposalWLog } from '../../../../queries/commons/rejectProposalWithLog';
+import { FusionAuthRoles, InnerStatus, role_url_map } from '../../../../@types/commons';
 import ApproveModal from './ApproveModal';
 import FormActionBox from './FormActionBox';
 import ProposalRejectingForm from './ProposalRejectingForm';
-import {
-  ceoProposalLogPayload,
-  ModeratoeCeoFloatingActionBarProps,
-  ProposalRejectPayload,
-} from './types';
+import { ModeratoeCeoFloatingActionBarProps, ProposalRejectPayload } from './types';
 
 function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProps) {
   const { user } = useAuth();
+  const { id: proposal_id } = useParams();
   const theme = useTheme();
   const location = useLocation();
   const { translate } = useLocales();
@@ -37,90 +26,131 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
-  // Logic here to get current user role
-  const currentRoles = user?.registrations[0].roles[0] as FusionAuthRoles;
-  const userId = user?.id;
+  const [loadingState, setLoadingState] = useState({ action: '', isLoading: false });
 
-  const roles = role_url_map[`${currentRoles}`];
+  const [, update] = useMutation(updateProposalByCEO);
 
-  const pid = location.pathname.split('/')[4];
-
-  const [proposalRejection, reject] = useMutation(rejectProposalWLog);
-  const [proposalAccepting, accept] = useMutation(approveProposal);
-  const { fetching: accFetch, error: accError } = proposalAccepting;
-  const { fetching: rejFetch, error: rejError } = proposalRejection;
   const [action, setAction] = useState<'accept' | 'reject'>('reject');
+
   const amandementPath = location.pathname.split('show-details')[0] + `amandementRequest`;
 
-  //create handleclose modal function
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   const handleCloseModal = () => {
     setModalState(false);
   };
-
   const handleOpenModal = () => {
     setModalState(true);
   };
-
-  const handleApproval = async () => {
-    await accept({
-      approveProposalPayloads: {
-        inner_status: 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION' as InnerStatus,
+  const handleApproval = async (data: any) => {
+    setLoadingState({ action: 'accept', isLoading: true });
+    update({
+      proposal_id,
+      new_values: {
+        inner_status: 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
         outter_status: 'ONGOING',
-        state: `PROJECT_SUPERVISOR`,
+        state: `CEO`,
       },
-      proposalId: pid,
+      log: {
+        id: nanoid(),
+        proposal_id,
+        reviewer_id: user?.id!,
+        action: 'accept',
+        notes: data.notes,
+        message: 'تم قبول المشروع من قبل الرئيس التنفيذي ',
+        user_role: 'CEO',
+        state: 'CEO',
+      },
+    }).then((res) => {
+      setLoadingState({ action: '', isLoading: false });
+      if (res.error) {
+        enqueueSnackbar(res.error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+      } else {
+        enqueueSnackbar(translate('proposal_accept'), {
+          variant: 'success',
+        });
+        navigate(`/ceo/dashboard/app`);
+      }
     });
-
-    if (!accFetch) {
-      enqueueSnackbar(translate('proposal_approved'), {
-        variant: 'success',
-      });
-      navigate(`/ceo/dashboard/app`);
-    }
-    if (accError) {
-      enqueueSnackbar(accError.message, {
-        variant: 'error',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
-      });
-      console.log(accError);
-    }
-
-    setModalState(false);
   };
-
-  const handleRejected = async (procedures: string) => {
-    await reject({
-      proposalId: pid,
-      updateProposalStatusAndStatePayloads: {
-        inner_status: 'REJECTED_BY_CEO' as InnerStatus,
+  const handleRejected = async (data: any) => {
+    setLoadingState({ action: 'reject', isLoading: true });
+    update({
+      proposal_id,
+      new_values: {
+        inner_status: 'REJECTED_BY_CEO',
         outter_status: 'CANCELED',
-        state: 'PROJECT_SUPERVISOR',
-      } as updateProposalStatusAndState,
+        state: 'CEO',
+      },
+      log: {
+        id: nanoid(),
+        proposal_id,
+        reviewer_id: user?.id!,
+        action: 'reject',
+        notes: data.notes,
+        message: 'تم قبول المشروع من قبل الرئيس التنفيذي ',
+        user_role: 'CEO',
+        state: 'CEO',
+      },
+    }).then((res) => {
+      setLoadingState({ action: '', isLoading: false });
+      if (res.error) {
+        enqueueSnackbar(res.error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+      } else {
+        enqueueSnackbar(translate('proposal_accept'), {
+          variant: 'success',
+        });
+        navigate(`/ceo/dashboard/app`);
+      }
     });
-
-    if (!rejFetch) {
-      enqueueSnackbar(translate('proposal_rejected'), {
-        variant: 'success',
-      });
-      navigate(`/ceo/dashboard/app`);
-    }
-    if (rejError) {
-      enqueueSnackbar(rejError.message, {
-        variant: 'error',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
-      });
-      console.log(rejError);
-    }
+  };
+  const stepBackProposal = () => {
+    update({
+      proposal_id,
+      new_values: {
+        inner_status: 'ACCEPTED_BY_SUPERVISOR',
+        outter_status: 'ONGOING',
+        state: 'PROJECT_MANAGER',
+      },
+      log: {
+        id: nanoid(),
+        proposal_id,
+        reviewer_id: user?.id!,
+        action: 'step_back',
+        message: 'تم إرجاع المشروع خطوة للوراء',
+        user_role: 'CEO',
+        state: 'CEO',
+      },
+    }).then((res) => {
+      if (res.error) {
+        enqueueSnackbar(res.error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+      } else {
+        enqueueSnackbar('تم إرجاع المعاملة لمدير المشروع', {
+          variant: 'success',
+        });
+        navigate(`/ceo/dashboard/app`);
+      }
+    });
   };
   return (
     <>
@@ -167,14 +197,36 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
 
           <Button
             variant="contained"
-            onClick={() => {
-              navigate(amandementPath);
-            }}
+            onClick={handleClick}
             sx={{ backgroundColor: '#0169DE', ':hover': { backgroundColor: '#1482FE' } }}
             endIcon={<Iconify icon="eva:edit-2-outline" />}
           >
             {translate('submit_amendment_request')}
           </Button>
+          <Menu
+            id="demo-positioned-menu"
+            aria-labelledby="demo-positioned-button"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+          >
+            <MenuItem
+              onClick={() => {
+                navigate(amandementPath);
+              }}
+            >
+              ارسال طلب تعديل الى المشرف
+            </MenuItem>
+            <MenuItem onClick={stepBackProposal}>ارجاع المعاملة الى (للي قبله)</MenuItem>
+          </Menu>
         </Stack>
       </Box>
 
@@ -191,24 +243,18 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
             <>
               <ApproveModal
                 action="accept"
-                isLoading={accFetch}
+                isLoading={loadingState.action === 'accept' ? loadingState.isLoading : false}
                 onReturn={() => {
                   setModalState(false);
                 }}
-                onSubmited={() => {
-                  handleApproval();
-                }}
+                onSubmited={handleApproval}
               />
             </>
           ) : (
-            <ProposalRejectingForm
-              onSubmit={(value: ProposalRejectPayload) => {
-                handleRejected(value.procedures);
-              }}
-            >
+            <ProposalRejectingForm onSubmit={handleRejected}>
               <FormActionBox
                 action="reject"
-                isLoading={rejFetch}
+                isLoading={loadingState.action === 'reject' ? loadingState.isLoading : false}
                 onReturn={() => {
                   setModalState(false);
                 }}

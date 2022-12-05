@@ -236,7 +236,6 @@ const ar = {
   MOSQUES: 'قسم المساجد',
   CONCESSIONAL_GRANTS: 'قسم المنح الميسر',
   INITIATIVES: 'قسم المبادرات',
-  DEFAULT_TRACK: 'القسم الافتراضي',
   GENERAL: 'القسم العام',
   app: `تطبيق`,
   user: `المستعمل`,
@@ -918,7 +917,7 @@ const ar = {
       mosque_track_budget: 'ميزانية مسار المساجد',
       concessional_track_budget: 'ميزانية مسار المنح الميسر',
       initiatives_track_budget: 'ميزانية مسار المبادرات',
-      complexity_track_budget: 'ميزانية مسار التعقيدات',
+      complexity_track_budget: 'ميزانية مسار التعميدات',
     },
     form: {
       date_picker: {

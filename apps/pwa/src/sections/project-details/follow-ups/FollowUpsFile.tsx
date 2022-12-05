@@ -1,13 +1,15 @@
 import { Avatar, Box, Button, Grid, Link, Stack, Typography } from '@mui/material';
 import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
 
 function FollowUpsFile({ created_at, file, employee }: any) {
   const { activeRole } = useAuth();
+  const { translate } = useLocales();
   const role = activeRole!;
   if (role === 'tender_client')
     return (
       <Grid container spacing={1}>
-        <Grid item md={11}>
+        <Grid item md={11} xs={12}>
           <Stack direction="row" gap={1}>
             <Button
               component={Link}
@@ -92,7 +94,9 @@ function FollowUpsFile({ created_at, file, employee }: any) {
       </Grid>
       <Grid item md={11.5}>
         {employee ? (
-          <Typography color="#0E8478">{`${employee.employee_name} - ${employee.roles.role}`}</Typography>
+          <Typography color="#0E8478">{`${employee.employee_name} - ${translate(
+            `permissions.${employee.roles[0].role}`
+          )}`}</Typography>
         ) : (
           <Typography color="#0E8478">المستخدم</Typography>
         )}

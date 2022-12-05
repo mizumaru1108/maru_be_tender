@@ -1,44 +1,85 @@
 import { Box, Stack, useTheme, Button } from '@mui/material';
 import Iconify from 'components/Iconify';
+import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
-import { approveProposal } from 'queries/commons/approveProposal';
-import React from 'react';
+import { nanoid } from 'nanoid';
+import { AcceptProposalByConsultant } from 'queries/consultant/AcceptProposalByConsultant';
 import { useNavigate, useParams } from 'react-router';
 import { useMutation } from 'urql';
+import { useSnackbar } from 'notistack';
 
 function ConsultantFloatingActionBar() {
+  const { enqueueSnackbar } = useSnackbar();
+  const { user } = useAuth();
   const { translate } = useLocales();
   const navigate = useNavigate();
   const { id: proposal_id } = useParams();
-  const [acceptRes, accept] = useMutation(approveProposal);
-  const [rejRes, reject] = useMutation(approveProposal);
+  const [, update] = useMutation(AcceptProposalByConsultant);
   const theme = useTheme();
 
   const handleAccept = async () => {
-    try {
-      await accept({
-        proposalId: proposal_id,
-        approveProposalPayloads: {
-          inner_status: 'ACCEPTED_BY_CONSULTANT',
-          outter_status: 'ONGOING',
-          state: 'CEO',
-        },
-      });
-      navigate('/consultant/dashboard/app');
-    } catch (error) {}
+    update({
+      proposal_id,
+      new_values: {
+        inner_status: 'ACCEPTED_BY_CONSULTANT',
+        outter_status: 'ONGOING',
+        state: 'CEO',
+      },
+      log: {
+        id: nanoid(),
+        proposal_id,
+        reviewer_id: user?.id!,
+        action: 'accept',
+        message: 'تم قبول المشروع من قبل مدير المشاريع ',
+        user_role: 'PROJECT_SUPERVISOR',
+        state: 'PROJECT_SUPERVISOR',
+      },
+    }).then((res) => {
+      if (res.error) {
+        enqueueSnackbar(res.error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+      } else {
+        enqueueSnackbar(translate('proposal_accept'), {
+          variant: 'success',
+        });
+        navigate(`/project-manager/dashboard/app`);
+      }
+    });
   };
   const handleReject = async () => {
-    try {
-      await reject({
-        proposalId: proposal_id,
-        approveProposalPayloads: {
-          inner_status: 'REJECTED_BY_CONSULTANT',
-          outter_status: 'ONGOING',
-          state: 'PROJECT_MANAGER',
-        },
-      });
-      navigate('/consultant/dashboard/app');
-    } catch (error) {}
+    update({
+      proposal_id,
+      new_values: {
+        inner_status: 'REJECTED_BY_CONSULTANT',
+        outter_status: 'ONGOING',
+        state: 'PROJECT_MANAGER',
+      },
+      log: {
+        id: nanoid(),
+        proposal_id,
+        reviewer_id: user?.id!,
+        action: 'accept',
+        message: 'تم قبول المشروع من قبل مدير المشاريع ',
+        user_role: 'PROJECT_SUPERVISOR',
+        state: 'PROJECT_SUPERVISOR',
+      },
+    }).then((res) => {
+      if (res.error) {
+        enqueueSnackbar(res.error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+      } else {
+        enqueueSnackbar(translate('proposal_accept'), {
+          variant: 'success',
+        });
+        navigate(`/consultant/dashboard/app`);
+      }
+    });
   };
   return (
     <Box

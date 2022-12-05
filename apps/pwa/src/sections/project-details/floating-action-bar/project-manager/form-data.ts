@@ -8,7 +8,7 @@ export const ApproveProposalFormFieldsProjectManager = [
   {
     type: 'textArea',
     name: 'notes',
-    label: 'الملاحظات',
+    label: 'ملاحظات على المشروع',
     xs: 12,
     placeholder: 'اكتب الملاحظات هنا',
   },

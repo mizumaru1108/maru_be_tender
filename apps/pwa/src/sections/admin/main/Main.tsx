@@ -22,7 +22,7 @@ const data = [
     reservedBudget: '400.000',
   },
   {
-    title: 'ميزانية مسار التعقيدات',
+    title: 'ميزانية مسار التعميدات',
     totalBudget: '1.000.000',
     spentBudget: '400.000',
     reservedBudget: '400.000',

@@ -16,8 +16,6 @@ function ActionBar() {
   const handleOnClick = (title: any) => {
     navigate(`${location.pathname.split('/').slice(0, -1).join('/')}/${title}`);
   };
-  console.log(role);
-  console.log(Taps[`${role}`][`${actionType}`]);
   return (
     <Box
       sx={{ padding: '10px', backgroundColor: '#fff', display: 'flex', direction: 'row', gap: 2 }}
