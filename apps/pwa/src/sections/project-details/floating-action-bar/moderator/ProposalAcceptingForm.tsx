@@ -36,6 +36,7 @@ function ProposalAcceptingForm({ children, onSubmit }: ProposalFormProps) {
     formState: { isSubmitting },
     setValue,
     watch,
+    resetField,
   } = methods;
 
   const onSubmitForm = async (data: ProposalModeratorApprovePayload) => {
@@ -51,6 +52,7 @@ function ProposalAcceptingForm({ children, onSubmit }: ProposalFormProps) {
   const { data, fetching, error } = result;
 
   useEffect(() => {
+    resetField('supervisors');
     if (data?.users) {
       setSupervisors(data.users);
       // setValue('path');
@@ -90,7 +92,7 @@ function ProposalAcceptingForm({ children, onSubmit }: ProposalFormProps) {
             type="select"
             name="supervisors"
             label="المشرفين"
-            placeholder="المشرفين"
+            placeholder="الرجاء تحديد المشرف"
             children={
               <>
                 <option value="all" style={{ backgroundColor: '#fff' }}>
@@ -104,6 +106,7 @@ function ProposalAcceptingForm({ children, onSubmit }: ProposalFormProps) {
                   ))}
               </>
             }
+            disabled={fetching}
           />
         </Grid>
         <Grid item md={12} xs={12}>

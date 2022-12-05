@@ -20,7 +20,13 @@ function ActionBar() {
     <Box
       sx={{ padding: '10px', backgroundColor: '#fff', display: 'flex', direction: 'row', gap: 2 }}
     >
-      {Taps[`${role}`][`${actionType}`].map((item, index) => (
+      {Taps[`${role}`][
+        `${
+          actionType === 'show-details' || actionType === 'completing-exchange-permission'
+            ? actionType
+            : 'show-details'
+        }`
+      ].map((item, index) => (
         <Button
           key={index}
           sx={{

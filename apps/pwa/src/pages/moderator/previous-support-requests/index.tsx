@@ -57,6 +57,9 @@ function PreviousSupportRequests() {
                 }),
               },
             ]}
+            baseFilters={{
+              outter_status: { outter_status: { _neq: 'ONGOING' } },
+            }}
           />
         </ContentStyle>
       </Container>

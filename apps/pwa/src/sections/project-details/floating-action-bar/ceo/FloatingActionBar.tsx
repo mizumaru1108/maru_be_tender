@@ -225,7 +225,7 @@ function FloatingActionBar({ organizationId }: ModeratoeCeoFloatingActionBarProp
             >
               ارسال طلب تعديل الى المشرف
             </MenuItem>
-            <MenuItem onClick={stepBackProposal}>ارجاع المعاملة الى (للي قبله)</MenuItem>
+            <MenuItem onClick={stepBackProposal}>ارجاع المعاملة الى مدير الإدارة</MenuItem>
           </Menu>
         </Stack>
       </Box>

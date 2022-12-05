@@ -250,7 +250,7 @@ function FloatingActionBar({ organizationId }: any) {
               }}
             >
               <MenuItem disabled={true}>ارسال طلب تعديل الى المشرف</MenuItem>
-              <MenuItem onClick={stepBackProposal}>ارجاع المعاملة الى (للي قبله)</MenuItem>
+              <MenuItem onClick={stepBackProposal}>ارجاع المعاملة الى مشرف المشاريع</MenuItem>
             </Menu>
           </Grid>
           {data.user.track !== 'CONCESSIONAL_GRANTS' && (
@@ -260,18 +260,6 @@ function FloatingActionBar({ organizationId }: any) {
           )}
           <Grid item md={data.user.track === 'CONCESSIONAL_GRANTS' ? 7 : 4} xs={12}>
             <Stack direction="row" gap={2} justifyContent="space-around">
-              <Button
-                sx={{ flex: 1, '&:hover': { backgroundColor: '#FF170F' } }}
-                variant="contained"
-                color="error"
-                onClick={() => {
-                  setAction('reject');
-                  handleOpenModal();
-                }}
-                endIcon={<ClearIcon />}
-              >
-                {translate('reject_project')}
-              </Button>
               <Button
                 onClick={() => {
                   setAction('accept');
@@ -283,6 +271,18 @@ function FloatingActionBar({ organizationId }: any) {
                 sx={{ flex: 1, '&:hover': { backgroundColor: '#13B2A2' } }}
               >
                 قبول المشروع
+              </Button>
+              <Button
+                sx={{ flex: 1, '&:hover': { backgroundColor: '#FF170F' } }}
+                variant="contained"
+                color="error"
+                onClick={() => {
+                  setAction('reject');
+                  handleOpenModal();
+                }}
+                endIcon={<ClearIcon />}
+              >
+                {translate('reject_project')}
               </Button>
               {data.user.track === 'CONCESSIONAL_GRANTS' && (
                 <Button
