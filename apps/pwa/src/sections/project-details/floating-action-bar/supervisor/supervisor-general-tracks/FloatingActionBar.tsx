@@ -250,7 +250,7 @@ function FloatingActionBar({ organizationId, data }: any) {
                 }}
               >
                 <MenuItem disabled={true}>ارسال طلب تعديل الى المشرف</MenuItem>
-                <MenuItem onClick={stepBackProposal}>ارجاع المعاملة الى (للي قبله)</MenuItem>
+                <MenuItem onClick={stepBackProposal}>ارجاع المعاملة الى مسؤول الفرز</MenuItem>
               </Menu>
             </Stack>
           </Grid>

@@ -181,17 +181,19 @@ const ProjectCardBE = ({
               ))}
             </Grid>
           )}
+          <Grid item md={12} xs={12} sx={{ marginBottom: '-10px' }}>
+            <Typography
+              variant="h6"
+              color="#93A3B0"
+              gutterBottom
+              sx={{ fontSize: '10px !important' }}
+            >
+              تاريخ الإنشاء
+            </Typography>
+          </Grid>
           <Grid item md={6} xs={6}>
             <Stack direction="row" justifyContent="space-between">
               <Stack direction="column">
-                <Typography
-                  variant="h6"
-                  color="#93A3B0"
-                  gutterBottom
-                  sx={{ fontSize: '10px !important' }}
-                >
-                  تاريخ الإنشاء
-                </Typography>
                 <Typography
                   variant="h6"
                   color="#1E1E1E"
@@ -204,28 +206,22 @@ const ProjectCardBE = ({
                       '5 ساعات'}
                 </Typography>
               </Stack>
-              {destination === 'previous-funding-requests' && (
-                <Chip
-                  label={`${daysSinceCreated} أيام`}
-                  sx={{
-                    alignSelf: 'center',
-                    fontWeight: 500,
-                    backgroundColor:
-                      daysSinceCreated < 3
-                        ? '#0E84782E'
-                        : daysSinceCreated < 5
-                        ? '#FFC10729'
-                        : '#FF484229',
-                    color:
-                      daysSinceCreated < 3
-                        ? '#0E8478'
-                        : daysSinceCreated < 5
-                        ? '#FFC107'
-                        : '#FF4842',
-                    borderRadius: '10px',
-                  }}
-                />
-              )}
+              <Chip
+                label={`${daysSinceCreated} أيام`}
+                sx={{
+                  alignSelf: 'end',
+                  fontWeight: 500,
+                  backgroundColor:
+                    daysSinceCreated < 3
+                      ? '#0E84782E'
+                      : daysSinceCreated < 5
+                      ? '#FFC10729'
+                      : '#FF484229',
+                  color:
+                    daysSinceCreated < 3 ? '#0E8478' : daysSinceCreated < 5 ? '#FFC107' : '#FF4842',
+                  borderRadius: '10px',
+                }}
+              />
             </Stack>
           </Grid>
           <Grid item md={6} xs={6}>

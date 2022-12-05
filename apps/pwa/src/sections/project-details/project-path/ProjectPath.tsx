@@ -44,45 +44,6 @@ type Log = {
   action: 'accept' | 'reject' | 'pending' | 'accept_and_need_consultant' | 'one_step_back';
   user_role: Role;
 };
-const _mock = [
-  {
-    action: 'accept',
-    message: 'accept by moderator',
-    notes:
-      'لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج أليايت,سيت دو أيوسمود تيمبور أنكايديديونتيوت لابوري ات دولار ماجنا أليكيوا . يوت انيم أد مينيم فينايم,كيواس نوستريد أكسير سيتاشن يللأمكو لابورأس نيسي يت أليكيوب أكس أيا كوممودو كونسيكيوات . ديواس أيوتي أريري دولار إن ريبريهينديرأيت فوليوبتاتي فيلايت أيسسي كايلليوم دولار أيو فيجايت نيولا باراياتيور.',
-    user_role: 'MODERATOR',
-  },
-  {
-    action: 'accept',
-    message: 'accept by cashier',
-    notes: '',
-    user_role: 'CASHIER',
-  },
-  {
-    action: 'accept',
-    message: 'accept by ceo',
-    notes: '',
-    user_role: 'CEO',
-  },
-  {
-    action: 'accept',
-    message: 'accept by project manager',
-    notes: '',
-    user_role: 'PROJECT_MANAGER',
-  },
-  {
-    action: 'accept',
-    message: 'accept by project supervisor',
-    notes: '',
-    user_role: 'PROJECT_SUPERVISOR',
-  },
-  {
-    action: 'accept',
-    message: 'accept by finance',
-    notes: '',
-    user_role: 'FINANCE',
-  },
-] as Array<Log>;
 function ProjectPath({ data }: any) {
   const [userTypeId, setUserTypeId] = React.useState(data?.state);
   const { translate } = useLocales();

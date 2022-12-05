@@ -82,7 +82,7 @@ function MainManagerPage() {
                         sentSection: 'Moderator',
                         employee: 'Moderator',
                       }}
-                      footer={{ createdAt: new Date(item.createdAt) }}
+                      footer={{ createdAt: new Date(item.created_at) }}
                       cardFooterButtonAction="show-details"
                       destination="requests-in-process"
                     />
