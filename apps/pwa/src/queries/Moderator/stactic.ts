@@ -9,12 +9,12 @@ export const moderatorStatistics = `query moderatorStatistics {
       count(columns: outter_status)
     }
   }
-  pendingRequest: proposal_aggregate(where: {outter_status: {_in: ONGOING}}) {
+  pendingRequest: proposal_aggregate(where: {outter_status: {_in: PENDING}}) {
     aggregate {
       count(columns: project_name)
     }
   }
-  incomingNewRequest: proposal_aggregate(where: {outter_status: {_in: PENDING}}) {
+  incomingNewRequest: proposal_aggregate(where: {outter_status: {_in: ONGOING}}) {
     aggregate {
       count(columns: outter_status)
     }

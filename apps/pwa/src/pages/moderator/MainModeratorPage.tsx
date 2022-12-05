@@ -28,7 +28,12 @@ function MainManagerPage() {
 
   const [incoming] = useQuery({
     query: getProposals,
-    variables: { where: { outter_status: { _eq: 'ONGOING' } } },
+    variables: {
+      where: {
+        outter_status: { _eq: 'ONGOING' },
+        _and: { inner_status: { _eq: 'CREATED_BY_CLIENT' } },
+      },
+    },
   });
   const { data: incomingData, fetching: incomingFetching, error: incomingError } = incoming;
 

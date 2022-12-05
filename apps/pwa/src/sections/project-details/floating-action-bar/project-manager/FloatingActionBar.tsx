@@ -145,7 +145,7 @@ function FloatingActionBar({ organizationId }: any) {
         id: nanoid(),
         proposal_id,
         reviewer_id: user?.id!,
-        action: 'accept',
+        action: 'rejected',
         message: 'تم رفض المشروع من قبل مدير المشاريع',
         notes: values.notes,
         user_role: 'PROJECT_MANAGER',
