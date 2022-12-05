@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { Prisma, user } from '@prisma/client';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
@@ -10,6 +11,9 @@ import { TenderUserRepository } from '../repositories/tender-user.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateUserResponseDto } from '../dtos/responses/create-user-response.dto';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
+import { UpdateUserDto } from '../dtos/requests/update-user.dto';
+import { UpdateUserPayload } from '../interfaces/update-user-payload.interface';
+import { updateUserMapper } from '../mappers/update-user.mapper';
 
 @Injectable()
 export class TenderUserService {
@@ -170,5 +174,26 @@ export class TenderUserService {
       logs,
       deletedUser,
     };
+  }
+
+  async updateProfile(userId: string, request: UpdateUserDto) {
+    let updateUserPayload: UpdateUserPayload = {};
+
+    const currentUser = await this.tenderUserRepository.findUserById(userId);
+    if (!currentUser) throw new NotFoundException("User doesn't exist!");
+
+    if (request.password && !request.current_password) {
+      throw new BadRequestException(
+        'Current password should be provided when changing password',
+      );
+    }
+    updateUserPayload = updateUserMapper(currentUser, request);
+
+    const updatedUser = await this.tenderUserRepository.updateUser(
+      userId,
+      updateUserPayload,
+    );
+
+    return updatedUser;
   }
 }

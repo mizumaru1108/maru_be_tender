@@ -12,8 +12,9 @@ import { envLoadErrorHelper } from '../../commons/helpers/env-loaderror-helper';
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (config: ConfigService) => {
-        const transporterUrl = config.get<string>('MAILER_TRANSPORT_URL')!;
-        if (!transporterUrl) envLoadErrorHelper('MAILER_TRANSPORT_URL');
+        const transporterUrl = config.get(
+          'nodeMailerConfig.transportUrl',
+        ) as string;
 
         return {
           transport: transporterUrl,

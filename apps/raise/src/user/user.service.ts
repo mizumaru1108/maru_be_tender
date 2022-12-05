@@ -180,6 +180,4 @@ export class UserService {
       };
     }
   }
-
-  async verifyEmailAuthZed(verfUserId: string) {}
 }

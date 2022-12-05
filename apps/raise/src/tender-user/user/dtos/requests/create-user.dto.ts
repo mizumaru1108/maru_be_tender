@@ -4,7 +4,6 @@ import {
   IsBoolean,
   IsEmail,
   IsNotEmpty,
-  IsOptional,
   IsString,
 } from 'class-validator';
 export class TenderCreateUserDto {

@@ -11,6 +11,7 @@ import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-t
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 import { UserStatus } from '../types/user_status';
+import { UpdateUserPayload } from '../interfaces/update-user-payload.interface';
 
 @Injectable()
 export class TenderUserRepository {
@@ -69,6 +70,26 @@ export class TenderUserRepository {
   //     throw theError;
   //   }
   // }
+
+  async findUserById(userId: string) {
+    this.logger.debug(`Finding user with id: ${userId}`);
+    try {
+      return await this.prismaService.user.findUnique({
+        where: { id: userId },
+        include: {
+          roles: true,
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderUserRepository.name,
+        'findUserById Error:',
+        `finding user!`,
+      );
+      throw theError;
+    }
+  }
 
   async findUser(
     passedQuery?: Prisma.userWhereInput,
@@ -198,6 +219,37 @@ export class TenderUserRepository {
         TenderUserRepository.name,
         'deleteUserWFusionAuth Error:',
         `deleting user!`,
+      );
+      throw theError;
+    }
+  }
+
+  async updateUser(userId: string, request: UpdateUserPayload) {
+    this.logger.debug(`Updating user with id: ${userId}`);
+    try {
+      return await this.prismaService.$transaction(async (prisma) => {
+        const prismaResult = await prisma.user.update({
+          where: { id: userId },
+          data: {
+            employee_name: request.employee_name,
+            email: request.email,
+            address: request.address,
+            mobile_number: request.mobile_number,
+          },
+        });
+
+        const fusionResult = await this.fusionAuthService.fusionAuthUpdateUser(
+          userId,
+          request,
+        );
+        return { prismaResult, fusionResult };
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderUserRepository.name,
+        'updateUser Error:',
+        `updating user!`,
       );
       throw theError;
     }

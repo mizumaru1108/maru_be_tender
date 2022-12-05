@@ -1,7 +1,9 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { cheque, payment, Prisma } from '@prisma/client';
+import { nanoid } from 'nanoid';
 import { ROOT_LOGGER } from '../../libs/root-logger';
 import { PrismaService } from '../../prisma/prisma.service';
+import { TenderAppRole } from '../../tender-commons/types';
 import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
 
 @Injectable()
@@ -74,6 +76,8 @@ export class TenderProposalPaymentRepository {
   async updatePayment(
     paymentId: string,
     status: string | null,
+    reviewerId: string,
+    choosenRole: TenderAppRole,
     chequeData?: Prisma.chequeCreateInput | null,
   ) {
     this.logger.debug(`updating payment by id of ${paymentId}...`);
@@ -95,9 +99,20 @@ export class TenderProposalPaymentRepository {
           });
         }
 
+        const logs = await prisma.proposal_log.create({
+          data: {
+            id: nanoid(),
+            proposal_id: payment.proposal_id,
+            action: status,
+            reviewer_id: reviewerId,
+            state: choosenRole,
+          },
+        });
+
         return {
           payment,
           cheque,
+          logs,
         };
       });
     } catch (error) {

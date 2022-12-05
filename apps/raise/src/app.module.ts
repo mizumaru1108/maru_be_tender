@@ -48,6 +48,12 @@ import { TenderEmailModule } from './tender-email/tender-email.module';
 import { TenderTrackModule } from './tender-track/track.module';
 import { GsAuthModule } from './gs-auth/gs-auth.module';
 import { GsUserModule } from './gs-user/gs-user.module';
+/* Environtment Config */
+import { fusionAuthConfig } from './commons/configs/fusion-auth-config';
+import { bunnyConfig } from './commons/configs/bunny-config';
+import { nodeMailerConfig } from './commons/configs/nodemailer-config';
+// import { metalApiConfig } from './commons/configs/metail-api-config';
+// import { gapiConfig } from './commons/configs/gapi-config';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -73,7 +79,16 @@ import { GsUserModule } from './gs-user/gs-user.module';
     //   applicationName: 'tmra-raise',
     // }),
     ScheduleModule.forRoot(),
+
     ConfigModule.forRoot({
+      // load: [
+      //   fusionAuthConfig,
+      //   bunnyConfig,
+      //   nodeMailerConfig,
+      //   // metalApiConfig,
+      //   // gapiConfig,
+      // ],
+      load: [fusionAuthConfig, bunnyConfig, nodeMailerConfig],
       isGlobal: true,
     }),
 
@@ -132,7 +147,7 @@ import { GsUserModule } from './gs-user/gs-user.module';
     TenderEmailModule,
     TenderTrackModule,
     GsAuthModule,
-    GsUserModule
+    GsUserModule,
   ],
   controllers: [],
 })

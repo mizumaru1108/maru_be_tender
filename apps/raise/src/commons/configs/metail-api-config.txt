@@ -1,0 +1,43 @@
+NOT QUIET USED YET SO TEMPORARY SAVED AS TXT
+
+import { registerAs } from '@nestjs/config';
+import * as Joi from 'joi';
+import { baseJoiRequiredString } from '../utils/joi-required-string';
+import { baseJoiRequiredUrl } from '../utils/joi-required-url';
+/**
+ * Bunny Config (.env loader)
+ * @author RDanang(iyoy)
+ */
+interface IMetalApiConfig {
+  url: string;
+  accessKey: string;
+  authKey: string;
+}
+
+export const metalApiConfig = registerAs(
+  'metalApiConfig',
+  (): IMetalApiConfig => {
+    const values = {
+      url: process.env.METAL_API_URL,
+      accessKey: process.env.METAL_ACCESS_KEY,
+      authKey: process.env.METAL_AUTH_KEY,
+    };
+
+    const schema = Joi.object<IMetalApiConfig>({
+      url: baseJoiRequiredUrl('METAL_API_URL'),
+      accessKey: baseJoiRequiredString('METAL_ACCESS_KEY'),
+      authKey: baseJoiRequiredString('METAL_AUTH_KEY'),
+    });
+
+    const { error, value } = schema.validate(values, {
+      abortEarly: false,
+    });
+    if (error) {
+      throw new Error(
+        `An error occurred while validating the environment variables for FusionAuth: ${error.message}`,
+      );
+    }
+
+    return value;
+  },
+);

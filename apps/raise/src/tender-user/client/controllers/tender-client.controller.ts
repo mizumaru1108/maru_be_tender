@@ -68,7 +68,7 @@ export class TenderClientController {
     );
 
     return baseResponseHelper(
-      response,
+      response.logs,
       HttpStatus.OK,
       'Asking for changes successfully applied!',
     );

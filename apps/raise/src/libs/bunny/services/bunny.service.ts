@@ -22,8 +22,8 @@ import { validateFileSize } from '../../../commons/utils/validate-file-size';
 export class BunnyService {
   private readonly logger = new Logger(BunnyService.name);
   private appEnv: string;
-  private urlMedia: string;
-  private accessKey: string;
+  private storageUrlMedia: string;
+  private storageAccessKey: string;
   private cdnUrl: string;
 
   constructor(private configService: ConfigService) {
@@ -31,19 +31,15 @@ export class BunnyService {
     if (!environment) envLoadErrorHelper('APP_ENV');
     this.appEnv = environment;
 
-    const bunnyMediaUrl = this.configService.get('BUNNY_STORAGE_URL_MEDIA');
-    if (!bunnyMediaUrl) envLoadErrorHelper('BUNNY_STORAGE_URL_MEDIA');
-    this.urlMedia = bunnyMediaUrl;
+    this.storageUrlMedia = this.configService.get(
+      'bunnyConfig.storageUrlMedia',
+    ) as string;
 
-    const bunnyAccessKey = this.configService.get(
-      'BUNNY_STORAGE_ACCESS_KEY_MEDIA',
-    );
-    if (!bunnyAccessKey) envLoadErrorHelper('BUNNY_STORAGE_ACCESS_KEY_MEDIA');
-    this.accessKey = bunnyAccessKey;
+    this.storageAccessKey = this.configService.get(
+      'bunnyConfig.storageAccessKey',
+    ) as string;
 
-    const bunnyCdnUrl = this.configService.get('BUNNY_CDN_URL_MEDIA');
-    if (!bunnyCdnUrl) envLoadErrorHelper('BUNNY_CDN_URL_MEDIA');
-    this.cdnUrl = bunnyCdnUrl;
+    this.cdnUrl = this.configService.get('bunnyConfig.cdnUrl') as string;
   }
 
   async generatePath(
@@ -70,9 +66,10 @@ export class BunnyService {
   }
 
   async checkIfImageExists(path: string): Promise<boolean> {
-    const mediaUrl = this.urlMedia + '/' + path;
+    const mediaUrl = this.storageUrlMedia + '/' + path;
 
     this.logger.log(
+      'info',
       `Checking if image exists at ${mediaUrl} at bunny storage ...`,
     );
 
@@ -80,7 +77,7 @@ export class BunnyService {
       method: 'GET',
       headers: {
         Accept: '*/*',
-        AccessKey: this.accessKey,
+        AccessKey: this.storageAccessKey,
       },
       url: mediaUrl,
     };
@@ -107,13 +104,13 @@ export class BunnyService {
     binary: Buffer,
     serviceName: string,
   ): Promise<boolean> {
-    const mediaUrl = this.urlMedia + '/' + path;
+    const mediaUrl = this.storageUrlMedia + '/' + path;
 
     const options: AxiosRequestConfig<any> = {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/octet-stream',
-        AccessKey: this.accessKey,
+        AccessKey: this.storageAccessKey,
       },
       data: binary,
       url: mediaUrl,
@@ -141,14 +138,14 @@ export class BunnyService {
   }
 
   async deleteImage(path: string): Promise<boolean> {
-    const mediaUrl = this.urlMedia + '/' + path;
+    const mediaUrl = this.storageUrlMedia + '/' + path;
     const cdnUrl = this.cdnUrl + '/' + path;
     this.logger.log(`Deleting ${cdnUrl} from storage ...`);
 
     const options: AxiosRequestConfig<any> = {
       method: 'DELETE',
       headers: {
-        AccessKey: this.accessKey,
+        AccessKey: this.storageAccessKey,
       },
       url: mediaUrl,
     };
@@ -193,13 +190,13 @@ export class BunnyService {
     }
     this.logger.log(`path=${path} fileName after path=${fileName}`);
 
-    const mediaUrl = this.urlMedia + '/' + fileName;
+    const mediaUrl = this.storageUrlMedia + '/' + fileName;
 
     const options: AxiosRequestConfig<any> = {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/octet-stream',
-        AccessKey: this.accessKey,
+        AccessKey: this.storageAccessKey,
       },
       data: file.buffer,
       url: mediaUrl,

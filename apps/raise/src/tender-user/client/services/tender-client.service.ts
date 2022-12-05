@@ -21,7 +21,7 @@ import {
   ApproveEditRequestDto,
   BatchApproveEditRequestDto,
 } from '../dtos/requests/approve-edit-request.dto';
-import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
+import { CreateClientMapper } from '../mappers/create-client.mapper';
 
 @Injectable()
 export class TenderClientService {
@@ -53,93 +53,7 @@ export class TenderClientService {
     idFromFusionAuth: string,
     request: RegisterTenderDto,
   ): Promise<CreateUserResponseDto> {
-    // base user information
-    const userCreatePayload: Prisma.userCreateInput = {
-      id: idFromFusionAuth,
-      employee_name: request.data.employee_name,
-      email: request.data.email,
-      mobile_number: request.data.entity_mobile,
-      status: {
-        connect: {
-          id: 'WAITING_FOR_ACTIVATION',
-        },
-      },
-      roles: {
-        create: {
-          user_type: {
-            connect: {
-              id: 'CLIENT',
-            },
-          },
-        },
-      },
-    };
-
-    // path of the user
-    if (request.data.employee_path) {
-      userCreatePayload.employee_track = {
-        connect: {
-          id: request.data.employee_path,
-        },
-      };
-    }
-
-    // client data
-    userCreatePayload.client_data = {
-      create: {
-        id: nanoid(),
-        license_number: request.data.license_number,
-        authority: request.data.authority,
-        board_ofdec_file: {
-          url: request.data.board_ofdec_file.url,
-          type: request.data.board_ofdec_file.type,
-          size: request.data.board_ofdec_file.size,
-        },
-        center_administration: request.data.center_administration || null,
-        ceo_mobile: request.data.ceo_mobile,
-        data_entry_mail: request.data.data_entry_mail,
-        data_entry_name: request.data.data_entry_name,
-        data_entry_mobile: request.data.data_entry_mobile,
-        ceo_name: request.data.ceo_name,
-        entity_mobile: request.data.entity_mobile,
-        governorate: request.data.governorate,
-        region: request.data.region,
-        headquarters: request.data.headquarters,
-        entity: request.data.entity,
-        license_file: {
-          url: request.data.license_file.url,
-          type: request.data.license_file.type,
-          size: request.data.license_file.size,
-        },
-        date_of_esthablistmen: request.data.date_of_esthablistmen,
-        license_expired: request.data.license_expired,
-        license_issue_date: request.data.license_issue_date,
-        num_of_beneficiaries: request.data.num_of_beneficiaries,
-        website: request.data.website,
-        twitter_acount: request.data.twitter_acount,
-        num_of_employed_facility: request.data.num_of_employed_facility,
-        phone: request.data.phone,
-        client_field: request.data.client_field,
-      },
-    };
-
-    // bank informations
-    if (request.data.bank_informations.length > 0) {
-      userCreatePayload.bank_information = {
-        createMany: {
-          data: request.data.bank_informations.map((bank) => ({
-            bank_name: bank.bank_name || null,
-            bank_account_number: bank.bank_account_number || null,
-            bank_account_name: bank.bank_account_name || null,
-            card_image: {
-              url: bank.card_image.url,
-              type: bank.card_image.type,
-              size: bank.card_image.size,
-            },
-          })),
-        },
-      };
-    }
+    const userCreatePayload = CreateClientMapper(idFromFusionAuth, request);
 
     const createdUser = await this.tenderUserRepository.createUser(
       userCreatePayload,
@@ -169,27 +83,6 @@ export class TenderClientService {
       );
     }
 
-    // for refactor later on maybe(?) :D
-    // let denactiveAccount: boolean = false; // for conditional deactivation
-    // for (const [key, value] of Object.entries(newValues)) {
-    //   // TODO: do logic to denactive account when some spesific field is changed
-    //   // example: when email is changed / when phone number is changed, denactive the account
-    //   // denactiveAccount = key === 'email' || key === 'phone_number';
-    //   if (key in oldValues && value !== oldValues[key]) {
-    //     const editRequest: edit_request = {
-    //       id: nanoid(),
-    //       field_name: key,
-    //       old_value: oldValues[key].toString(),
-    //       new_value: value.toString(),
-    //       field_type: typeof oldValues[key],
-    //       ...baseEditRequest,
-    //     };
-    //     newEditRequest.push(editRequest);
-    //     requestChangeCount++;
-    //     message = message + `${key} change requested`;
-    //   }
-    // }
-
     if (editRequest.newValues) {
       const mapResult = CreateEditRequestMapper(
         user.id,
@@ -210,7 +103,6 @@ export class TenderClientService {
 
     const response: ClientEditRequestResponseDto = {
       logs: logs,
-      createdEditRequest: newEditRequest,
     };
 
     return response;
@@ -223,7 +115,7 @@ export class TenderClientService {
     return newValue;
   }
 
-  // single accept
+  // single accept for edit request
   async acceptEditRequest(reviewerId: string, request: ApproveEditRequestDto) {
     // check if the request is exist and not approved yet
     const editRequest = await this.tenderClientRepository.findUpdateRequestById(
@@ -231,10 +123,16 @@ export class TenderClientService {
     );
     if (!editRequest) throw new NotFoundException('Edit request not found!');
 
-    // check if the request is already approved
+    // check if the request is already approved / rejected
     if (editRequest.approval_status === 'APPROVED') {
       throw new BadRequestException('Edit request already approved!');
     }
+    if (editRequest.approval_status === 'REJECTED') {
+      throw new BadRequestException('Edit request already rejected!');
+    }
+
+    let logs: string = '';
+    let itemsLeft: string[] = [];
 
     // check the field type
     const {
@@ -246,14 +144,16 @@ export class TenderClientService {
     // parse the new value to the correct type based on the field type
     const parsedValue = this.valueParser(fieldType, newValue);
 
-    // approve the request, and change the field
-    console.log('field name', fieldName);
+    // approve the request, and change the field value
     if (
-      ['password', 'email', 'entity_mobile', 'bank_information'].indexOf(
-        fieldName,
-      ) === -1
+      [
+        'password',
+        'email',
+        'entity_mobile',
+        'employee_name',
+        'bank_information',
+      ].indexOf(fieldName) === -1
     ) {
-      console.log('on if');
       await this.tenderClientRepository.appoveUpdateRequest(
         editRequest,
         reviewerId,
@@ -269,19 +169,106 @@ export class TenderClientService {
       await this.tenderClientRepository.getRemainingUpdateRequestCount(
         editRequest.user_id,
       );
-    console.log('remainingProposal', remainingProposal);
 
-    if (remainingProposal === 0) {
+    if (remainingProposal.length === 0) {
       await this.tenderUserRepository.changeUserStatus(
         editRequest.user_id,
         'ACTIVE_ACCOUNT',
       );
+      logs = 'All edit request has been approved, your account is active now!';
     }
+
+    if (remainingProposal.length > 0) {
+      itemsLeft = remainingProposal.map((item: edit_request) => {
+        return ` [${item.field_name}]`;
+      });
+
+      logs = `Edit request has been approved, you have ${remainingProposal.length} request(s) remaining,  your account is still inactive!`;
+    }
+
+    return {
+      logs,
+      itemsLeft,
+    };
   }
 
-  // batch accept
+  // batch accept for edit request
   async acceptEditRequests(
     reviewerId: string,
     request: BatchApproveEditRequestDto,
-  ) {}
+  ) {
+    // check if the request is exist and not approved yet
+    const editRequest = await this.tenderClientRepository.findUpdateRequestById(
+      request.userId,
+    );
+    if (!editRequest) throw new NotFoundException('Edit request not found!');
+
+    // check if the request is already approved / rejected
+    if (editRequest.approval_status === 'APPROVED') {
+      throw new BadRequestException('Edit request already approved!');
+    }
+    if (editRequest.approval_status === 'REJECTED') {
+      throw new BadRequestException('Edit request already rejected!');
+    }
+
+    let logs: string = '';
+    let itemsLeft: string[] = [];
+
+    // check the field type
+    const {
+      field_type: fieldType,
+      new_value: newValue,
+      field_name: fieldName,
+    } = editRequest;
+
+    // parse the new value to the correct type based on the field type
+    const parsedValue = this.valueParser(fieldType, newValue);
+
+    // approve the request, and change the field value
+    if (
+      [
+        'password',
+        'email',
+        'entity_mobile',
+        'employee_name',
+        'bank_information',
+      ].indexOf(fieldName) === -1
+    ) {
+      await this.tenderClientRepository.appoveUpdateRequest(
+        editRequest,
+        reviewerId,
+        parsedValue,
+      );
+    } else {
+      console.log('on else');
+      // TODO: if it password, email, phone number / bank apply custom logic.
+    }
+
+    // count the remaining request
+    const remainingProposal =
+      await this.tenderClientRepository.getRemainingUpdateRequestCount(
+        editRequest.user_id,
+      );
+
+    if (remainingProposal.length === 0) {
+      await this.tenderUserRepository.changeUserStatus(
+        editRequest.user_id,
+        'ACTIVE_ACCOUNT',
+      );
+      logs = 'All edit request has been approved, your account is active now!';
+    }
+
+    if (remainingProposal.length > 0) {
+      itemsLeft = remainingProposal.map((item: edit_request) => {
+        return ` [${item.field_name}]`;
+      });
+
+      logs = `Edit request has been approved, you have ${remainingProposal.length} request(s) remaining,  your account is still inactive!`;
+    }
+
+    return {
+      logs,
+      itemsLeft,
+    };
+  }
 }

@@ -14,6 +14,7 @@ import { UpdatePaymentDto } from '../dtos/requests/payment/update-payment.dto';
 import { UpdatePaymentResponseDto } from '../dtos/responses/payment/update-payment-response.dto';
 import { TenderProposalPaymentRepository } from '../repositories/tender-proposal-payment.repository';
 import { TenderProposalRepository } from '../repositories/tender-proposal.repository';
+import { appRoleMappers, TenderAppRole } from '../../tender-commons/types';
 
 @Injectable()
 export class TenderProposalPaymentService {
@@ -145,12 +146,15 @@ export class TenderProposalPaymentService {
     const response = await this.tenderProposalPaymentRepository.updatePayment(
       payment_id,
       status,
+      currentUser.id,
+      appRoleMappers[choosenRole] as TenderAppRole,
       chequeData,
     );
 
     return {
       updatedPayment: response.payment,
       createdCheque: response.cheque,
+      createdLogs: response.logs,
     };
   }
 }

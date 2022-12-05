@@ -238,6 +238,7 @@ model user {
   employee_path                                           String?                 @db.VarChar
   last_login                                              DateTime?               @default(now()) @db.Timestamptz(6)
   status_id                                               String
+  address                                                 String?
   employee_track                                          project_tracks?         @relation(fields: [employee_path], references: [id], onDelete: NoAction, onUpdate: NoAction)
   status                                                  user_status             @relation(fields: [status_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_user_status_id_fkey")
   appointment_appointment_employee_idTouser               appointment[]           @relation("appointment_employee_idTouser")

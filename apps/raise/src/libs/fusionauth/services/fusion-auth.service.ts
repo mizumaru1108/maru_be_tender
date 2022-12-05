@@ -1,10 +1,11 @@
 import FusionAuthClient, {
   LoginResponse,
   RegistrationRequest as IFusionAuthRegistrationRequest,
+  SendRequest,
   User as IFusionAuthUser,
   UserRegistration as IFusionAuthUserRegistration,
   ValidateResponse,
-  SendRequest,
+  ChangePasswordRequest as IFusionAuthChangePasswordRequest,
 } from '@fusionauth/typescript-client';
 import ClientResponse from '@fusionauth/typescript-client/build/src/ClientResponse';
 import {
@@ -15,20 +16,19 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
-import { nanoid } from 'nanoid';
 import { ROOT_LOGGER } from 'src/libs/root-logger';
 import { LoginRequestDto } from '../../../auth/dtos/login-request.dto';
 import { RegisterRequestDto } from '../../../auth/dtos/register-request.dto';
-import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
+// import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import {
   appRoleToFusionAuthRoles,
   TenderAppRole,
 } from '../../../tender-commons/types';
-import { TenderCreateUserDto } from '../../../tender-user/user/dtos/requests/create-user.dto';
 import { TenderCreateUserFusionAuthDto } from '../../../tender-user/user/dtos/requests/tender-create-user-fusion-auth.dto';
+import { UpdateUserPayload } from '../../../tender-user/user/interfaces/update-user-payload.interface';
 import {
-  IVerifyEmailDto,
   IQueryAxiosVerify,
+  IVerifyEmailDto,
 } from '../dtos/response/validate-jwt-response';
 
 /**
@@ -40,48 +40,45 @@ export class FusionAuthService {
   private readonly logger = ROOT_LOGGER.child({
     'log.logger': FusionAuthService.name,
   });
+
   private fusionAuthClient: FusionAuthClient;
   private fusionAuthAdminClient: FusionAuthClient;
   private fusionAuthAppId: string;
   private fusionAuthUrl: string;
   private fusionAuthTenantId: string;
   private fusionAuthAdminKey: string;
+
   constructor(private configService: ConfigService) {
-    const fusionAuthClientKey = this.configService.get<string>(
-      'FUSIONAUTH_CLIENT_KEY',
-    )!;
-    if (!fusionAuthClientKey) envLoadErrorHelper('FUSIONAUTH_CLIENT_KEY');
+    const fusionAuthClientKey = this.configService.get(
+      'fusionAuthConfig.clientKey',
+    ) as string;
 
-    const fusionAuthAdminKey = this.configService.get<string>(
-      'FUSIONAUTH_ADMIN_KEY',
-    )!;
-    if (!fusionAuthAdminKey) envLoadErrorHelper('FUSIONAUTH_ADMIN_KEY');
-    this.fusionAuthAdminKey = fusionAuthAdminKey;
+    this.fusionAuthAdminKey = this.configService.get(
+      'fusionAuthConfig.adminKey',
+    ) as string;
 
-    const fusionAuthUrl = this.configService.get<string>('FUSIONAUTH_URL')!;
-    if (!fusionAuthUrl) envLoadErrorHelper('FUSIONAUTH_URL');
-    this.fusionAuthUrl = fusionAuthUrl;
+    this.fusionAuthUrl = this.configService.get(
+      'fusionAuthConfig.baseUrl',
+    ) as string;
 
-    const fusionAuthTenantId = this.configService.get<string>(
-      'FUSIONAUTH_TENANT_ID',
-    )!;
-    if (!fusionAuthTenantId) envLoadErrorHelper('FUSIONAUTH_TENANT_ID');
-    this.fusionAuthTenantId = fusionAuthTenantId;
+    this.fusionAuthTenantId = this.configService.get(
+      'fusionAuthConfig.tenantId',
+    ) as string;
 
-    const appId = this.configService.get<string>('FUSIONAUTH_APP_ID')!;
-    if (!appId) envLoadErrorHelper('FUSIONAUTH_APP_ID');
-    this.fusionAuthAppId = appId;
+    this.fusionAuthAppId = this.configService.get(
+      'fusionAuthConfig.appId',
+    ) as string;
 
     this.fusionAuthClient = new FusionAuthClient(
       fusionAuthClientKey,
-      fusionAuthUrl,
-      fusionAuthTenantId,
+      this.fusionAuthUrl,
+      this.fusionAuthTenantId,
     );
 
     this.fusionAuthAdminClient = new FusionAuthClient(
-      fusionAuthAdminKey,
-      fusionAuthUrl,
-      fusionAuthTenantId,
+      this.fusionAuthAdminKey,
+      this.fusionAuthUrl,
+      this.fusionAuthTenantId,
     );
   }
 
@@ -332,6 +329,56 @@ export class FusionAuthService {
         console.log(error);
         throw new Error('Something went wrong!');
       }
+    }
+  }
+
+  async fusionAuthChangePassword(
+    email: string,
+    currentPassword: string,
+    newPassword: string,
+  ) {
+    const request: IFusionAuthChangePasswordRequest = {
+      applicationId: this.fusionAuthAppId,
+      loginId: email,
+      currentPassword: currentPassword,
+      password: newPassword,
+    };
+
+    try {
+      await this.fusionAuthAdminClient.changePasswordByIdentity(request);
+      return true;
+    } catch (err) {
+      this.logger.error('Fusion Auth Change Password: ', err);
+      return false;
+      // return {
+      // statusCode: err.statusCode,
+      // body: {
+      //   message: err.exception
+      //     ? err.exception
+      //     : `Sorry. The request contains an invalid or expired passwordId. You may need to request another one to be sent.`,
+      // },
+      // };
+    }
+  }
+
+  async fusionAuthUpdateUser(userId: string, updateRequest: UpdateUserPayload) {
+    this.logger.log('info', `updating user (${userId}) on FusionAuth`);
+
+    const user: IFusionAuthUser = {
+      firstName: updateRequest.employee_name as string | undefined,
+      password: updateRequest.password as string | undefined,
+      email: updateRequest.email as string | undefined,
+      mobilePhone: updateRequest.mobile_number as string | undefined,
+    };
+
+    try {
+      await this.fusionAuthAdminClient.patchUser(userId, {
+        user,
+      });
+      return true;
+    } catch (err) {
+      this.logger.error('Fusion Auth Update User Error: ', err);
+      return false;
     }
   }
 }

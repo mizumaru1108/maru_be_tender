@@ -40,7 +40,28 @@ export function CreateEditRequestMapper(
       client_field,
     },
   } = request;
-  // const editRequest: edit_request[] = [];
+
+  // for refactor later on maybe(?) :D
+  // let denactiveAccount: boolean = false; // for conditional deactivation
+  // for (const [key, value] of Object.entries(newValues)) {
+  //   // TODO: do logic to denactive account when some spesific field is changed
+  //   // example: when email is changed / when phone number is changed, denactive the account
+  //   // denactiveAccount = key === 'email' || key === 'phone_number';
+  //   if (key in oldValues && value !== oldValues[key]) {
+  //     const editRequest: edit_request = {
+  //       id: nanoid(),
+  //       field_name: key,
+  //       old_value: oldValues[key].toString(),
+  //       new_value: value.toString(),
+  //       field_type: typeof oldValues[key],
+  //       ...baseEditRequest,
+  //     };
+  //     newEditRequest.push(editRequest);
+  //     requestChangeCount++;
+  //     message = message + `${key} change requested`;
+  //   }
+  // }
+
   const editRequest: Prisma.edit_requestCreateInput[] = [];
 
   const baseEditRequest = {

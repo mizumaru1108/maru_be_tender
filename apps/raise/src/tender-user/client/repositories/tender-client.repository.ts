@@ -224,13 +224,37 @@ export class TenderClientRepository {
     }
   }
 
+  async findUpdateRequestByUserId(userId: string): Promise<edit_request[]> {
+    try {
+      return await this.prismaService.edit_request.findMany({
+        where: {
+          user_id: userId,
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderClientRepository.name,
+        'findUpdateRequestByUserId error details: ',
+        'finding update requests!',
+      );
+      throw theError;
+    }
+  }
+
   async getRemainingUpdateRequestCount(
     userId: string,
     prismaSession?: Prisma.TransactionClient,
   ) {
+    this.logger.log(
+      'info',
+      `get remaining edit request for user (${userId}), with prisma session: ${
+        prismaSession ? true : false
+      }`,
+    );
     try {
       if (prismaSession) {
-        return await prismaSession.edit_request.count({
+        return await prismaSession.edit_request.findMany({
           where: {
             user_id: userId,
             approval_status: {
@@ -239,7 +263,7 @@ export class TenderClientRepository {
           },
         });
       } else {
-        return await this.prismaService.edit_request.count({
+        return await this.prismaService.edit_request.findMany({
           where: {
             user_id: userId,
             approval_status: {

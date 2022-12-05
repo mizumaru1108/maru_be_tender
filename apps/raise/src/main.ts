@@ -32,7 +32,6 @@ async function bootstrap() {
   app.enableCors({
     allowedHeaders: ['Content-Type', 'Authorization', 'x-hasura-role'],
     origin: [
-      'http://127.0.0.1:4040', // ngrok testing
       'http://localhost:3000',
       'http://localhost:8081',
       // HTTP
@@ -46,7 +45,6 @@ async function bootstrap() {
       'http://app-dev.tmra.io', // Tender Dev
       'http://app-staging.tmra.io', // Tender Staging
       // HTTPS
-      'https://b00f-2001-448a-2083-d889-dfa1-9100-90-1774.ap.ngrok.io', // ngrok testing
       'https://dev.tmra.io', // TMRA Dev
       'https://staging.tmra.io', // TMRA staging
       'https://www.tmra.io', // TMRA production
