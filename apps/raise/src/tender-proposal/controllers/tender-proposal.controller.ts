@@ -6,7 +6,7 @@ import {
   Post,
   Req,
   UseGuards,
-  Get
+  Get,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { JwtAuthGuard } from '../../auth/jwt.guard';
@@ -29,9 +29,7 @@ import { UpdatePaymentResponseDto } from '../dtos/responses/payment/update-payme
 import { UpdateProposalDto } from '../dtos/requests/proposal/update-proposal.dto';
 import { UpdateProposalResponseDto } from '../dtos/responses/proposal/update-proposal-response.dto';
 import { UpdateProposalByCmsUsers } from '../dtos/updateProposalByCmsUsers.dto';
-import {
-  user
-} from '@prisma/client';
+import { user } from '@prisma/client';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(
@@ -87,17 +85,17 @@ export class TenderProposalController {
    * the status of proposal will be change, and the log will be created
    * (DYNAMIC) DEPRECATED for now
    */
-  @UseGuards(JwtAuthGuard)
-  @Patch('changeState')
-  dchangeProposalState(
-    @CurrentUser() currentUser: ICurrentUser,
-    @Body() request: ChangeProposalStateDto,
-  ) {
-    return this.tenderProposalService.dchangeProposalState(
-      currentUser,
-      request,
-    );
-  }
+  // @UseGuards(JwtAuthGuard)
+  // @Patch('changeState')
+  // dchangeProposalState(
+  //   @CurrentUser() currentUser: ICurrentUser,
+  //   @Body() request: ChangeProposalStateDto,
+  // ) {
+  //   return this.tenderProposalService.dchangeProposalState(
+  //     currentUser,
+  //     request,
+  //   );
+  // }
 
   /**
    * changing proposal state (acc/reject, create logs)
@@ -156,14 +154,15 @@ export class TenderProposalController {
   async updateProposalByCmsUsers(
     @CurrentUser() currentUser: user,
     @Body() body: UpdateProposalByCmsUsers,
-    @Req() request: any
-    ) {
-    const updateResponse = await this.tenderProposalService.updateProposalByCmsUsers(
-      currentUser,
-      body,
-      request.query.id,
-      request.headers['x-hasura-role']
-    );
+    @Req() request: any,
+  ) {
+    const updateResponse =
+      await this.tenderProposalService.updateProposalByCmsUsers(
+        currentUser,
+        body,
+        request.query.id,
+        request.headers['x-hasura-role'],
+      );
     return baseResponseHelper(
       updateResponse,
       HttpStatus.OK,
