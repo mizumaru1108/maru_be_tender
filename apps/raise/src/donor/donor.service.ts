@@ -1365,6 +1365,7 @@ export class DonorService {
           campaignName: { $first: '$campaign.campaignName' },
           campaignType: { $first: '$campaign.campaignType' },
           organizationName: { $first: '$organization.name' },
+          contentLanguage: { $first: '$campaign.contentLanguage' },
         },
       },
       {
