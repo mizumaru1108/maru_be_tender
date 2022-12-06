@@ -11,6 +11,7 @@ import * as mongoose from 'mongoose';
 import axios, { AxiosRequestConfig } from 'axios';
 import { ROOT_LOGGER } from '../libs/root-logger';
 import { Campaign, CampaignDocument } from '../campaign/schema/campaign.schema';
+import { DonationType } from '../donor/enum/donation-type.enum'
 
 import {
   Organization,
@@ -928,6 +929,7 @@ export class PaymentStripeService {
       updatedAt: now,
       currency: currency,
       donationStatus: 'PENDING',
+      type: DonationType.CART
     }).save();
 
     if (!getDonationLog) {
@@ -956,6 +958,7 @@ export class PaymentStripeService {
           updatedAt: now,
           currency: currency,
           donationStatus: 'PENDING',
+          type: DonationType.CART
         }).save();
 
         if (!createDonationCampaign) {
@@ -1571,10 +1574,10 @@ export class PaymentStripeService {
           transactionId: data['data']['payment_intent'],
           createdAt: now,
           updatedAt: now,
-          paymentGatewayId: '4',
           campaignId: ObjectId(payment.campaignId),
           currency: currency,
           donationStatus: 'PENDING',
+          type: DonationType.ZAKAT
         }).save();
 
         if (Array.isArray(payment.zakatLogs)) {
@@ -1606,10 +1609,10 @@ export class PaymentStripeService {
           transactionId: data['data']['payment_intent'],
           createdAt: now,
           updatedAt: now,
-          paymentGatewayId: '4',
           campaignId: ObjectId(payment.campaignId),
           currency: currency,
           donationStatus: 'PENDING',
+          type: DonationType.CAMPAIGN
         }).save();
         this.logger.info('Create LOG');
       }

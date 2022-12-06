@@ -3,4 +3,6 @@ export enum DonationType {
   ITEM = 'item',
   PROJECT = 'project',
   MIXED = 'mixed',
+  CART = 'cart',
+  ZAKAT = 'zakat'
 }
