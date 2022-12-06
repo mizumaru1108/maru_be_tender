@@ -1306,13 +1306,6 @@ export class DonorService {
     };
 
     const orgsId = organizationId ? organizationId : '62414373cf00cca3a830814a';
-    const getDonationLog = await this.donationLogModel.find({
-      donorId: donorUserId,
-      organizationId: orgsId,
-    });
-    if (!getDonationLog) {
-      throw new NotFoundException('not found transaction for this userId');
-    }
 
     const donationLogList = await this.donationLogModel.aggregate([
       {
@@ -1321,7 +1314,6 @@ export class DonorService {
           organizationId: orgsId,
         },
       },
-
       {
         $addFields: { campaignId: { $toObjectId: '$campaignId' } },
       },
@@ -1362,17 +1354,38 @@ export class DonorService {
           createdAt: { $first: '$createdAt' },
           donationStatus: { $first: '$donationStatus' },
           amount: { $first: '$amount' },
+          campaign: { $first: '$campaign' },
           campaignName: { $first: '$campaign.campaignName' },
           campaignType: { $first: '$campaign.campaignType' },
           organizationName: { $first: '$organization.name' },
-          contentLanguage: { $first: '$campaign.contentLanguage' },
+          contentLanguage: { $first: '$campaign.contentLanguage' }
         },
       },
       {
         $sort: sortData,
       },
     ]);
-    return donationLogList;
+
+    if (!donationLogList) {
+      throw new NotFoundException('not found transaction for this userId');
+    }
+
+    const filterDonationList = donationLogList
+      .filter(el => !!el.campaign)
+      .map(v => {
+        return {
+          _id: v._id,
+          createdAt: v.createdAt,
+          donationStatus: v.donationStatus,
+          amount: v.amount,
+          campaignName: v.campaignName,
+          campaignType: v.campaignType,
+          organizationName: v.organizationName,
+          contentLanguage: v.contentLanguage
+        }
+      });
+
+    return filterDonationList;
   }
 
   @ApiOperation({ summary: 'Get Total donationbyId' })

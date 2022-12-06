@@ -929,7 +929,8 @@ export class PaymentStripeService {
       updatedAt: now,
       currency: currency,
       donationStatus: 'PENDING',
-      type: DonationType.CART
+      type: DonationType.CART,
+      organizationId: payment.organizationId,
     }).save();
 
     if (!getDonationLog) {
@@ -958,7 +959,8 @@ export class PaymentStripeService {
           updatedAt: now,
           currency: currency,
           donationStatus: 'PENDING',
-          type: DonationType.CART
+          type: DonationType.CART,
+          organizationId: payment.organizationId,
         }).save();
 
         if (!createDonationCampaign) {
@@ -1577,7 +1579,8 @@ export class PaymentStripeService {
           campaignId: ObjectId(payment.campaignId),
           currency: currency,
           donationStatus: 'PENDING',
-          type: DonationType.ZAKAT
+          type: DonationType.ZAKAT,
+          organizationId: payment.organizationId,
         }).save();
 
         if (Array.isArray(payment.zakatLogs)) {
