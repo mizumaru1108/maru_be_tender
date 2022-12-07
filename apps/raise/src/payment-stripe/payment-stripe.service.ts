@@ -973,25 +973,6 @@ export class PaymentStripeService {
             { donationLogId: createDonationCampaign._id },
           );
         }
-  
-        const updateCampaign = await this.campaignModel.updateOne(
-          { _id: elCampaign._id },
-          {
-            amountProgress: Number(subtotal),
-            updatedAt: now.toISOString(),
-          },
-        );
-  
-        if (!updateCampaign) {
-          throw new HttpException(`Update campaign ${elCampaign._id} failed to save in mongodb`, HttpStatus.BAD_REQUEST);
-        } else if (Number(elCampaign.amountTarget) == Number(subtotal)) {
-          await this.campaignModel.updateOne(
-            { _id: elCampaign._id },
-            {
-              isFinished: 'Y',
-            },
-          );
-        }
       }
     }
 
@@ -1830,20 +1811,20 @@ export class PaymentStripeService {
             : 'anonymous';
 
         if (notifSettings.newDonation && getDonationLog) {
-          const emailData = {
-            donor: donorName,
-            title: getCampaign?.title || getCampaign?.campaignName,
-            currency: payloadCurrency || '',
-            amount: amount_total.substring(0, amount_total.length - 2) || '',
-          };
+          // const emailData = {
+          //   donor: donorName,
+          //   title: getCampaign?.title || getCampaign?.campaignName,
+          //   currency: payloadCurrency || '',
+          //   amount: amount_total.substring(0, amount_total.length - 2) || '',
+          // };
 
-          this.emailService.sendMailWTemplate(
-            getOrganization.contactEmail,
-            subject,
-            'org/new_donation',
-            emailData,
-            getOrganization.contactEmail,
-          );
+          // this.emailService.sendMailWTemplate(
+          //   getOrganization.contactEmail,
+          //   subject,
+          //   'org/new_donation',
+          //   emailData,
+          //   getOrganization.contactEmail,
+          // );
 
           const emailDonor = {
             donor: donorName,
