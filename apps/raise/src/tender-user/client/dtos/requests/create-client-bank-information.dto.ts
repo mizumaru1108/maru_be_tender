@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNotEmpty, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { UploadFilesJsonbDto } from '../../../../tender-commons/dto/upload-files-jsonb.dto';
 
 export class CreateClientBankInformation {
@@ -26,6 +27,7 @@ export class CreateClientBankInformation {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsString()
+  @ValidateNested()
+  @Type(() => UploadFilesJsonbDto)
   card_image: UploadFilesJsonbDto;
 }

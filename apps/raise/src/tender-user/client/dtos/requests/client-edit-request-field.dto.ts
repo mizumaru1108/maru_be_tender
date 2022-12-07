@@ -59,11 +59,11 @@ export class ClientEditRequestFieldDto {
   @IsString()
   region?: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsNotEmpty()
-  @IsString()
-  entity_mobile?: string;
+  // @ApiPropertyOptional()
+  // @IsOptional()
+  // @IsNotEmpty()
+  // @IsString()
+  // entity_mobile?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -89,11 +89,12 @@ export class ClientEditRequestFieldDto {
   @IsString()
   website?: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsNotEmpty()
-  @IsString()
-  email?: string;
+  // @ApiPropertyOptional()
+  // @IsOptional()
+  // @IsNotEmpty()
+  // @IsEmail()
+  // @IsString()
+  // email?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

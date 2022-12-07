@@ -182,18 +182,38 @@ export class TenderUserService {
     const currentUser = await this.tenderUserRepository.findUserById(userId);
     if (!currentUser) throw new NotFoundException("User doesn't exist!");
 
-    if (request.password && !request.current_password) {
-      throw new BadRequestException(
-        'Current password should be provided when changing password',
-      );
-    }
+    // if (request.password && !request.current_password) {
+    //   throw new BadRequestException(
+    //     'Current password should be provided when changing password',
+    //   );
+    // }
     updateUserPayload = updateUserMapper(currentUser, request);
 
-    const updatedUser = await this.tenderUserRepository.updateUser(
+    const queryResult = await this.tenderUserRepository.updateUserWFusionAuth(
       userId,
       updateUserPayload,
     );
 
-    return updatedUser;
+    let logs = '';
+    let updatedUser: user | null = null;
+    // console.log('delete result', queryResult);
+
+    logs = queryResult.prismaResult
+      ? 'User profile updated on our app!'
+      : 'Something went wrong when updating user profile on our app!';
+    logs =
+      queryResult.fusionResult === true
+        ? (logs += ', User profile updated on our cloud app!')
+        : (logs +=
+            ', User update performed successfully but user didnt updated on coud app!');
+
+    if (typeof queryResult.prismaResult === 'object') {
+      updatedUser = queryResult.prismaResult;
+    }
+
+    return {
+      updatedUser: updatedUser,
+      logs,
+    };
   }
 }
