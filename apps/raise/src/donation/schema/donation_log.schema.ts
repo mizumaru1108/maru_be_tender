@@ -20,6 +20,8 @@ export class DonationLogs {
   donor?: string;
   @Prop({ type: String, ref: 'User' })
   donorUserId?: string;
+  @Prop()
+  organizationId?: string;
   @Prop({ type: () => String })
   public type?: string;
   @Prop({ type: () => String })

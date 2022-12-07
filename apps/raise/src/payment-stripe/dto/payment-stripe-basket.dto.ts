@@ -1,16 +1,25 @@
+import { IsString } from 'class-validator';
 import { IsArray } from "class-validator";
 import { Types } from "mongoose";
 
 export class PaymentRequestCartDto {
+  @IsString ()
   organizationId: Types.ObjectId;
+  @IsString ()
   donorId: Types.ObjectId;
   type: string;
+  total_amount: number;
   currency: string;
   success_url: string;
   cancel_url: string;
-  extraAmount: number;
-  totalAmaount: number;
   price: string;
+  quantity: string;
+  isAnonymous?: boolean;
+  isEmailChecklist?: boolean;
   @IsArray()
-  data_basket: string[];
+  data_basket: {
+    _id: string;
+    organizationId: Types.ObjectId;
+    amount: number
+  }[];
 }

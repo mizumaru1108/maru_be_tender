@@ -96,7 +96,7 @@ CLASS-TRANSFORMER: https://github.com/typestack/class-transformer/#readme
 - enums
 
 - helpers\
-Function that commonly used for building response / throw errors and etc.\
+Function that commonly used for building response / throw errors and etc.
 
 - utils\
 Commonly used funcions.

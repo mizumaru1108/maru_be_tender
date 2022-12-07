@@ -44,6 +44,13 @@ export class TenderAppointmentController {
     console.log('query', query);
     await this.tenderAppointmentService.createAppointment(query.code);
     console.log('google callback hit');
+    // return 'google callback hit';
+    // return auto close the opened window
+    return `
+      <script>
+        window.close();
+      </script>
+    `;
   }
 
   @UseGuards(JwtAuthGuard)

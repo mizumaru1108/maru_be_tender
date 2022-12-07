@@ -176,6 +176,43 @@ export class FusionAuthService {
     }
   }
 
+  // always get 401 when using this method idk why, already check the key and tenant id, and the url is correct.
+  // async fusionAuthDeleteUsers(userIds: string[]) {
+  //   const baseUrl = this.fusionAuthUrl;
+  //   const deleteBulkUrl = baseUrl + '/api/user/bulk';
+
+  //   console.log('url', deleteBulkUrl);
+
+  //   const payload = {
+  //     hardDelete: true,
+  //     userIds: [...userIds],
+  //   };
+
+  //   console.log('payload', payload);
+  //   console.log('Authorization', this.fusionAuthAdminKey);
+  //   console.log('X-FusionAuth-TenantId', this.fusionAuthTenantId);
+  //   // Authorization: this.fusionAuthAdminKey,
+
+  //   const options: AxiosRequestConfig<any> = {
+  //     method: 'DELETE',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       Authorization: this.fusionAuthAdminKey,
+  //       'X-FusionAuth-TenantId': this.fusionAuthTenantId,
+  //     },
+  //     url: deleteBulkUrl,
+  //     data: payload,
+  //   };
+
+  //   try {
+  //     const data = await axios(options);
+  //     console.log(data);
+  //   } catch (error) {
+  //     // console.log(error);
+  //     console.log(error.response.data);
+  //   }
+  // }
+
   async fusionAuthTenderRegisterUser(
     registerRequest: TenderCreateUserFusionAuthDto,
   ) {
@@ -350,14 +387,6 @@ export class FusionAuthService {
     } catch (err) {
       this.logger.error('Fusion Auth Change Password: ', err);
       return false;
-      // return {
-      // statusCode: err.statusCode,
-      // body: {
-      //   message: err.exception
-      //     ? err.exception
-      //     : `Sorry. The request contains an invalid or expired passwordId. You may need to request another one to be sent.`,
-      // },
-      // };
     }
   }
 
@@ -367,8 +396,9 @@ export class FusionAuthService {
     const user: IFusionAuthUser = {
       firstName: updateRequest.employee_name as string | undefined,
       password: updateRequest.password as string | undefined,
-      email: updateRequest.email as string | undefined,
-      mobilePhone: updateRequest.mobile_number as string | undefined,
+      // will be enabled later on when email and phone can be updated
+      // email: updateRequest.email as string | undefined,
+      // mobilePhone: updateRequest.mobile_number as string | undefined,
     };
 
     try {

@@ -80,7 +80,7 @@ export class TenderUserController {
     return baseResponseHelper(
       updateResult,
       HttpStatus.CREATED,
-      'User deleted successfully!',
+      'User updated successfully!',
     );
   }
 }

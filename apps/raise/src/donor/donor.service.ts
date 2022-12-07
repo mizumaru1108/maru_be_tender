@@ -1306,13 +1306,6 @@ export class DonorService {
     };
 
     const orgsId = organizationId ? organizationId : '62414373cf00cca3a830814a';
-    const getDonationLog = await this.donationLogModel.find({
-      donorId: donorUserId,
-      organizationId: orgsId,
-    });
-    if (!getDonationLog) {
-      throw new NotFoundException('not found transaction for this userId');
-    }
 
     const donationLogList = await this.donationLogModel.aggregate([
       {
@@ -1321,7 +1314,6 @@ export class DonorService {
           organizationId: orgsId,
         },
       },
-
       {
         $addFields: { campaignId: { $toObjectId: '$campaignId' } },
       },
@@ -1362,16 +1354,119 @@ export class DonorService {
           createdAt: { $first: '$createdAt' },
           donationStatus: { $first: '$donationStatus' },
           amount: { $first: '$amount' },
+          campaign: { $first: '$campaign' },
           campaignName: { $first: '$campaign.campaignName' },
           campaignType: { $first: '$campaign.campaignType' },
           organizationName: { $first: '$organization.name' },
+          contentLanguage: { $first: '$campaign.contentLanguage' }
         },
       },
       {
         $sort: sortData,
       },
     ]);
-    return donationLogList;
+
+    if (!donationLogList) {
+      throw new NotFoundException('transaction not found for this userId');
+    }
+
+    const donationLogsCart = await this.donationLogsModel.aggregate([
+      {
+        $match: {
+          donorUserId: donorUserId,
+          organizationId: orgsId,
+          type: 'cart'
+        },
+      },
+      {
+        $addFields: { campaignId: { $toObjectId: '$campaignId' } },
+      },
+      {
+        $lookup: {
+          from: 'campaign',
+          localField: 'campaignId',
+          foreignField: '_id',
+          as: 'campaign',
+        },
+      },
+      {
+        $unwind: {
+          path: '$campaign',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: { orgsId: { $toObjectId: '$organizationId' } },
+      },
+      {
+        $lookup: {
+          from: 'organization',
+          localField: 'orgsId',
+          foreignField: '_id',
+          as: 'organization',
+        },
+      },
+      {
+        $unwind: {
+          path: '$organization',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          createdAt: { $first: '$createdAt' },
+          donationStatus: { $first: '$donationStatus' },
+          amount: { $first: '$amount' },
+          campaign: { $first: '$campaign' },
+          campaignName: { $first: '$campaign.campaignName' },
+          campaignType: { $first: '$campaign.campaignType' },
+          organizationName: { $first: '$organization.name' },
+          contentLanguage: { $first: '$campaign.contentLanguage' }
+        },
+      },
+      {
+        $sort: sortData,
+      },
+    ])
+
+    if (!donationLogsCart) {
+      throw new NotFoundException('transaction not found for this userId');
+    }
+
+    const filterDonationList = donationLogList
+      .filter(el => !!el.campaign)
+      .map(v => {
+        return {
+          _id: v._id,
+          createdAt: v.createdAt,
+          donationStatus: v.donationStatus,
+          amount: v.amount,
+          campaignName: v.campaignName,
+          campaignType: v.campaignType,
+          organizationName: v.organizationName,
+          contentLanguage: v.contentLanguage
+        }
+      });
+
+    const filterDonationCartList = donationLogsCart
+      .filter(el => !!el.campaign)
+        .map(v => {
+          return {
+            _id: v._id,
+            createdAt: v.createdAt,
+            donationStatus: v.donationStatus,
+            amount: v.amount,
+            campaignName: v.campaignName,
+            campaignType: v.campaignType,
+            organizationName: v.organizationName,
+            contentLanguage: v.contentLanguage
+          }
+        });
+    
+    const allDonationsUser = filterDonationList.concat(filterDonationCartList)
+
+    return allDonationsUser;
   }
 
   @ApiOperation({ summary: 'Get Total donationbyId' })

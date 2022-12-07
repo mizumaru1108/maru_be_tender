@@ -113,7 +113,7 @@ export class TenderUserRepository {
 
   async changeUserStatus(
     userId: string,
-    status: any,
+    status: UserStatus,
     prismaSession?: Prisma.TransactionClient,
   ) {
     this.logger.log('info', `Changing user ${userId} status to ${status}`);
@@ -224,7 +224,51 @@ export class TenderUserRepository {
     }
   }
 
-  async updateUser(userId: string, request: UpdateUserPayload) {
+  async updateUserFieldByKeyValuePair(
+    userId: string,
+    updatePayload: Record<string, any>,
+    prismaSession?: Prisma.TransactionClient,
+  ) {
+    // log the key and the value
+    Object.keys(updatePayload).forEach((key) => {
+      this.logger.log(
+        'info',
+        `updating client field ${key} with value ${updatePayload[key]}`,
+      );
+    });
+
+    try {
+      if (prismaSession) {
+        return await prismaSession.user.update({
+          where: {
+            id: userId,
+          },
+          data: {
+            ...updatePayload,
+          },
+        });
+      } else {
+        return await this.prismaService.user.update({
+          where: {
+            id: userId,
+          },
+          data: {
+            ...updatePayload,
+          },
+        });
+      }
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderUserRepository.name,
+        'updateUserFieldByKeyValuePair error details: ',
+        'updating client field!',
+      );
+      throw theError;
+    }
+  }
+
+  async updateUserWFusionAuth(userId: string, request: UpdateUserPayload) {
     this.logger.debug(`Updating user with id: ${userId}`);
     try {
       return await this.prismaService.$transaction(async (prisma) => {
@@ -232,9 +276,9 @@ export class TenderUserRepository {
           where: { id: userId },
           data: {
             employee_name: request.employee_name,
-            email: request.email,
+            // email: request.email,
             address: request.address,
-            mobile_number: request.mobile_number,
+            // mobile_number: request.mobile_number,
           },
         });
 
@@ -248,8 +292,88 @@ export class TenderUserRepository {
       const theError = prismaErrorThrower(
         error,
         TenderUserRepository.name,
-        'updateUser Error:',
+        'updateUserWFusionAuth Error:',
         `updating user!`,
+      );
+      throw theError;
+    }
+  }
+
+  async createUserBankAccount(
+    userId: string,
+    bankAccounts: Prisma.bank_informationCreateInput,
+    prismaSession?: Prisma.TransactionClient,
+  ) {
+    this.logger.log(
+      'info',
+      `Creating bank account for user with id: ${userId}, with payload: ${JSON.stringify(
+        bankAccounts,
+      )}`,
+    );
+    try {
+      if (prismaSession) {
+        return await prismaSession.bank_information.create({
+          data: {
+            ...bankAccounts,
+          },
+        });
+      } else {
+        return await this.prismaService.bank_information.create({
+          data: {
+            ...bankAccounts,
+          },
+        });
+      }
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderUserRepository.name,
+        'createManyUserBankAccounts Error:',
+        `creating many bank accounts for user!`,
+      );
+      throw theError;
+    }
+  }
+
+  async updateBankAccount(
+    bankAccountId: string,
+    updatePayload: Record<string, any>,
+    prismaSession?: Prisma.TransactionClient,
+  ) {
+    // log the key and the value
+    Object.keys(updatePayload).forEach((key) => {
+      this.logger.log(
+        'info',
+        `updating bank account field ${key} with value ${updatePayload[key]}`,
+      );
+    });
+
+    try {
+      if (prismaSession) {
+        return await prismaSession.bank_information.update({
+          where: {
+            id: bankAccountId,
+          },
+          data: {
+            ...updatePayload,
+          },
+        });
+      } else {
+        return await this.prismaService.bank_information.update({
+          where: {
+            id: bankAccountId,
+          },
+          data: {
+            ...updatePayload,
+          },
+        });
+      }
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderUserRepository.name,
+        'updateBankAccount error details: ',
+        'updating bank account field!',
       );
       throw theError;
     }

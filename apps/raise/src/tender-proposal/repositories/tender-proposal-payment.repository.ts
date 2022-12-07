@@ -82,39 +82,42 @@ export class TenderProposalPaymentRepository {
   ) {
     this.logger.debug(`updating payment by id of ${paymentId}...`);
     try {
-      return await this.prismaService.$transaction(async (prisma) => {
-        const payment = await prisma.payment.update({
-          where: {
-            id: paymentId,
-          },
-          data: {
-            status,
-          },
-        });
-
-        let cheque: cheque | null = null;
-        if (chequeData) {
-          cheque = await prisma.cheque.create({
-            data: chequeData,
+      return await this.prismaService.$transaction(
+        async (prisma) => {
+          const payment = await prisma.payment.update({
+            where: {
+              id: paymentId,
+            },
+            data: {
+              status,
+            },
           });
-        }
 
-        const logs = await prisma.proposal_log.create({
-          data: {
-            id: nanoid(),
-            proposal_id: payment.proposal_id,
-            action: status,
-            reviewer_id: reviewerId,
-            state: choosenRole,
-          },
-        });
+          let cheque: cheque | null = null;
+          if (chequeData) {
+            cheque = await prisma.cheque.create({
+              data: chequeData,
+            });
+          }
 
-        return {
-          payment,
-          cheque,
-          logs,
-        };
-      });
+          const logs = await prisma.proposal_log.create({
+            data: {
+              id: nanoid(),
+              proposal_id: payment.proposal_id,
+              action: status,
+              reviewer_id: reviewerId,
+              state: choosenRole,
+            },
+          });
+
+          return {
+            payment,
+            cheque,
+            logs,
+          };
+        },
+        { maxWait: 5000, timeout: 15000 },
+      );
     } catch (error) {
       const theError = prismaErrorThrower(
         error,

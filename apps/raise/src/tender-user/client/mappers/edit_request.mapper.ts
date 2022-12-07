@@ -2,6 +2,7 @@ import { client_data, user } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { nanoid } from 'nanoid';
 import { ClientEditRequestDto } from '../dtos/requests/client-edit-request.dto';
+import { addLog } from '../utils/add-logs';
 
 export function CreateEditRequestMapper(
   userId: string,
@@ -9,6 +10,11 @@ export function CreateEditRequestMapper(
     user: user;
   },
   request: ClientEditRequestDto,
+  logs: string,
+  baseEditRequest: {
+    approval_status: string;
+    user_id: string;
+  },
 ) {
   const {
     newValues: {
@@ -20,12 +26,12 @@ export function CreateEditRequestMapper(
       num_of_employed_facility,
       governorate,
       region,
-      entity_mobile,
+      // entity_mobile,
       center_administration,
       twitter_acount,
       phone,
       website,
-      email,
+      // email,
       password,
       license_number,
       license_expired,
@@ -64,17 +70,6 @@ export function CreateEditRequestMapper(
 
   const editRequest: Prisma.edit_requestCreateInput[] = [];
 
-  const baseEditRequest = {
-    approval_status: 'WAITING_FOR_APPROVAL',
-    user_id: userId,
-  };
-
-  let logs: string = '';
-
-  const addLog = (fieldName: string) => {
-    logs += ` [field ${fieldName} change requested] `;
-  };
-
   if (entity && entity !== clientData.entity) {
     editRequest.push({
       id: nanoid(),
@@ -84,7 +79,7 @@ export function CreateEditRequestMapper(
       field_type: 'string',
       ...baseEditRequest,
     });
-    addLog('entity');
+    addLog('entity', logs);
   }
 
   if (authority && authority !== clientData.authority) {
@@ -96,7 +91,7 @@ export function CreateEditRequestMapper(
       field_type: 'string',
       ...baseEditRequest,
     });
-    addLog('authority');
+    addLog('authority', logs);
   }
 
   if (headquarters && headquarters !== clientData.headquarters) {
@@ -108,7 +103,7 @@ export function CreateEditRequestMapper(
       field_type: 'string',
       ...baseEditRequest,
     });
-    addLog('headquarters');
+    addLog('headquarters', logs);
   }
 
   if (
@@ -125,7 +120,7 @@ export function CreateEditRequestMapper(
       field_type: 'date',
       ...baseEditRequest,
     });
-    addLog('date_of_esthablistmen');
+    addLog('date_of_esthablistmen', logs);
   }
 
   if (
@@ -142,7 +137,7 @@ export function CreateEditRequestMapper(
       field_type: 'number',
       ...baseEditRequest,
     });
-    addLog('num_of_beneficiaries');
+    addLog('num_of_beneficiaries', logs);
   }
 
   if (
@@ -159,7 +154,7 @@ export function CreateEditRequestMapper(
       field_type: 'number',
       ...baseEditRequest,
     });
-    addLog('num_of_employed_facility');
+    addLog('num_of_employed_facility', logs);
   }
 
   if (governorate && governorate !== clientData.governorate) {
@@ -171,7 +166,7 @@ export function CreateEditRequestMapper(
       field_type: 'string',
       ...baseEditRequest,
     });
-    addLog('governorate');
+    addLog('governorate', logs);
   }
 
   if (region && region !== clientData.region) {
@@ -183,20 +178,20 @@ export function CreateEditRequestMapper(
       field_type: 'string',
       ...baseEditRequest,
     });
-    addLog('region');
+    addLog('region', logs);
   }
 
-  if (entity_mobile && entity_mobile !== clientData.entity_mobile) {
-    editRequest.push({
-      id: nanoid(),
-      field_name: 'entity_mobile',
-      old_value: clientData.entity_mobile,
-      new_value: entity_mobile,
-      field_type: 'string',
-      ...baseEditRequest,
-    });
-    addLog('entity_mobile');
-  }
+  // if (entity_mobile && entity_mobile !== clientData.entity_mobile) {
+  //   editRequest.push({
+  //     id: nanoid(),
+  //     field_name: 'entity_mobile',
+  //     old_value: clientData.entity_mobile,
+  //     new_value: entity_mobile,
+  //     field_type: 'string',
+  //     ...baseEditRequest,
+  //   });
+  //   addLog('entity_mobile', logs);
+  // }
 
   if (
     center_administration &&
@@ -210,7 +205,7 @@ export function CreateEditRequestMapper(
       field_type: 'string',
       ...baseEditRequest,
     });
-    addLog('center_administration');
+    addLog('center_administration', logs);
   }
 
   if (twitter_acount && twitter_acount !== clientData.twitter_acount) {
@@ -222,7 +217,7 @@ export function CreateEditRequestMapper(
       field_type: 'string',
       ...baseEditRequest,
     });
-    addLog('twitter_acount');
+    addLog('twitter_acount', logs);
   }
 
   if (phone && phone !== clientData.phone) {
@@ -234,7 +229,7 @@ export function CreateEditRequestMapper(
       field_type: 'string',
       ...baseEditRequest,
     });
-    addLog('phone');
+    addLog('phone', logs);
   }
 
   if (website && website !== clientData.website) {
@@ -246,22 +241,22 @@ export function CreateEditRequestMapper(
       field_type: 'string',
       ...baseEditRequest,
     });
-    addLog('website');
+    addLog('website', logs);
   }
 
-  if (email && email !== clientData.user.email) {
-    editRequest.push({
-      id: nanoid(),
-      field_name: 'email',
-      old_value: clientData.user.email,
-      new_value: email,
-      field_type: 'string',
-      ...baseEditRequest,
-    });
-    addLog('email');
-  }
+  // if (email && email !== clientData.user.email) {
+  //   editRequest.push({
+  //     id: nanoid(),
+  //     field_name: 'email',
+  //     old_value: clientData.user.email,
+  //     new_value: email,
+  //     field_type: 'string',
+  //     ...baseEditRequest,
+  //   });
+  //   addLog('email', logs);
+  // }
 
-  if (password && password !== clientData.password) {
+  if (password) {
     editRequest.push({
       id: nanoid(),
       field_name: 'password',
@@ -270,7 +265,7 @@ export function CreateEditRequestMapper(
       field_type: 'string',
       ...baseEditRequest,
     });
-    addLog('password');
+    addLog('password', logs);
   }
 
   if (license_number && license_number !== clientData.license_number) {
@@ -282,7 +277,7 @@ export function CreateEditRequestMapper(
       field_type: 'string',
       ...baseEditRequest,
     });
-    addLog('license_number');
+    addLog('license_number', logs);
   }
 
   if (license_expired && license_expired !== clientData.license_expired) {
@@ -296,7 +291,7 @@ export function CreateEditRequestMapper(
       field_type: 'date',
       ...baseEditRequest,
     });
-    addLog('license_expired');
+    addLog('license_expired', logs);
   }
 
   if (
@@ -313,6 +308,7 @@ export function CreateEditRequestMapper(
       field_type: 'date',
       ...baseEditRequest,
     });
+    addLog('license_issue_date', logs);
   }
 
   if (
@@ -327,6 +323,7 @@ export function CreateEditRequestMapper(
       field_type: 'object',
       ...baseEditRequest,
     });
+    addLog('license_file', logs);
   }
 
   if (
@@ -341,6 +338,7 @@ export function CreateEditRequestMapper(
       field_type: 'object',
       ...baseEditRequest,
     });
+    addLog('board_ofdec_file', logs);
   }
 
   if (ceo_mobile) {
@@ -352,6 +350,7 @@ export function CreateEditRequestMapper(
       field_type: 'string',
       ...baseEditRequest,
     });
+    addLog('ceo_mobile', logs);
   }
 
   if (ceo_name) {
@@ -363,6 +362,7 @@ export function CreateEditRequestMapper(
       field_type: 'string',
       ...baseEditRequest,
     });
+    addLog('ceo_name', logs);
   }
 
   if (data_entry_mobile) {
@@ -374,6 +374,7 @@ export function CreateEditRequestMapper(
       field_type: 'string',
       ...baseEditRequest,
     });
+    addLog('data_entry_mobile', logs);
   }
 
   if (data_entry_name) {
@@ -385,6 +386,7 @@ export function CreateEditRequestMapper(
       field_type: 'string',
       ...baseEditRequest,
     });
+    addLog('data_entry_name', logs);
   }
 
   if (data_entry_mail) {
@@ -396,6 +398,7 @@ export function CreateEditRequestMapper(
       field_type: 'string',
       ...baseEditRequest,
     });
+    addLog('data_entry_mail', logs);
   }
 
   if (client_field) {
@@ -407,6 +410,7 @@ export function CreateEditRequestMapper(
       field_type: 'string',
       ...baseEditRequest,
     });
+    addLog('client_field', logs);
   }
 
   return {
