@@ -232,10 +232,10 @@ function FirstForm({ children, onSubmit, defaultValues, data }: any) {
             placeholder="الرجاء اختيار نوع الاعتماد"
             children={
               <>
-                <option value="test" style={{ backgroundColor: '#fff' }}>
+                <option value="خطة" style={{ backgroundColor: '#fff' }}>
                   خطة
                 </option>
-                <option value="test" style={{ backgroundColor: '#fff' }}>
+                <option value="لا وارد" style={{ backgroundColor: '#fff' }}>
                   لا وارد
                 </option>
               </>
