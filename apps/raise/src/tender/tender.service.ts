@@ -22,7 +22,8 @@ export class TenderService {
   }
 
   async uploadFiles(payload: UploadFilesDto, files: MulterFile[]) {
-    const maxSize: number = 1024 * 1024 * 1; // 1MB
+    // const maxSize: number = 1024 * 1024 * 1; // 1MB
+    const maxSize: number = 1024 * 1024 * 512;
     const allowedType: AllowedFileType[] = [
       AllowedFileType.JPG,
       AllowedFileType.JPEG,
