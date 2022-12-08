@@ -50,13 +50,14 @@ export class GsUserService {
 
     const donor = new this.donorModel({
       ownerUserId: request._id,
-      firstname: request.firstname,
+      firstName: request.firstname,
       email: request.email,
-      lastname: request.lastname,
+      lastName: request.lastname,
       mobile: request.mobile,
       country: request.country,
       state: request.state,
       address: request.address,
+      organizationId: request.organizationId,
     });
 
     await donor.save();

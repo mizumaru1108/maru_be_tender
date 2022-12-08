@@ -1811,21 +1811,6 @@ export class PaymentStripeService {
             : 'anonymous';
 
         if (notifSettings.newDonation && getDonationLog) {
-          // const emailData = {
-          //   donor: donorName,
-          //   title: getCampaign?.title || getCampaign?.campaignName,
-          //   currency: payloadCurrency || '',
-          //   amount: amount_total.substring(0, amount_total.length - 2) || '',
-          // };
-
-          // this.emailService.sendMailWTemplate(
-          //   getOrganization.contactEmail,
-          //   subject,
-          //   'org/new_donation',
-          //   emailData,
-          //   getOrganization.contactEmail,
-          // );
-
           const emailDonor = {
             donor: donorName,
             title: getCampaign?.title || getCampaign?.campaignName,
@@ -1841,10 +1826,8 @@ export class PaymentStripeService {
               emailDonor,
               getOrganization.contactEmail
             );
-          }
-
-          if (anonymousData) {
-            if (anonymousData.isEmailChecklist || !anonymousData.anonymous) {
+          } else if (anonymousData) {
+            if (anonymousData.isEmailChecklist || anonymousData.anonymous) {
               this.emailService.sendMailWTemplate(
                 anonymousData.email,
                 subject,

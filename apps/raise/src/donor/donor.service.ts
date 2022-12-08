@@ -1451,18 +1451,18 @@ export class DonorService {
 
     const filterDonationCartList = donationLogsCart
       .filter(el => !!el.campaign)
-        .map(v => {
-          return {
-            _id: v._id,
-            createdAt: v.createdAt,
-            donationStatus: v.donationStatus,
-            amount: v.amount,
-            campaignName: v.campaignName,
-            campaignType: v.campaignType,
-            organizationName: v.organizationName,
-            contentLanguage: v.contentLanguage
-          }
-        });
+      .map(v => {
+        return {
+          _id: v._id,
+          createdAt: v.createdAt,
+          donationStatus: v.donationStatus,
+          amount: v.amount,
+          campaignName: v.campaignName,
+          campaignType: v.campaignType,
+          organizationName: v.organizationName,
+          contentLanguage: v.contentLanguage
+        }
+      });
     
     const allDonationsUser = filterDonationList.concat(filterDonationCartList)
 
