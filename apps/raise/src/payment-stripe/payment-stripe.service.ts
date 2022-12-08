@@ -699,7 +699,10 @@ export class PaymentStripeService {
               message: 'failed update campaign data',
             }),
           };
-        } else if (Number(getCampaign.amountTarget) == Number(lastAmount)) {
+        } else if (
+          (Number(getCampaign.amountTarget) == Number(lastAmount)) ||
+          (Number(lastAmount) > Number(getCampaign.amountTarget))
+        ) {
           await this.campaignModel.updateOne(
             { _id: getDonationLog.campaignId },
             {
@@ -1295,7 +1298,10 @@ export class PaymentStripeService {
                   message: 'failed update campaign data',
                 }),
               };
-            } else if (Number(getCampaign.amountTarget) == Number(lastAmount)) {
+            } else if (
+              (Number(getCampaign.amountTarget) == Number(lastAmount)) ||
+              (Number(lastAmount) > Number(getCampaign.amountTarget))
+            ) {
               await this.campaignModel.updateOne(
                 { _id: getDonationLog.campaignId },
                 {
@@ -1872,7 +1878,10 @@ export class PaymentStripeService {
             },
           );
 
-          if ((Number(itemPayment?.amountTarget) == Number(subtotalAmount))) {
+          if (
+            (Number(itemPayment?.amountTarget) == Number(subtotalAmount)) ||
+            (Number(subtotalAmount) > Number(itemPayment?.amountTarget))
+          ) {
             await this.campaignModel.updateOne(
               { _id: itemPayment._id },
               {
@@ -1934,7 +1943,10 @@ export class PaymentStripeService {
           throw new BadRequestException(
             `update campaign failed to save in mongodb`,
           );
-        } else if (Number(getCampaign?.amountTarget) == Number(lastAmount)) {
+        } else if (
+          (Number(getCampaign?.amountTarget) == Number(lastAmount)) ||
+          (Number(lastAmount) > Number(getCampaign?.amountTarget))
+        ) {
           await this.campaignModel.updateOne(
             { _id: campaignId },
             {

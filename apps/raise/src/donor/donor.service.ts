@@ -224,8 +224,8 @@ export class DonorService {
   ): Promise<DonationLog> {
     const log = new this.donationLogModel(donorPaymentSubmitDto);
     log.donationLogId = uuidv4();
-    log.createdAt = moment().toISOString();
-    log.updatedAt = moment().toISOString();
+    log.createdAt = new Date();
+    log.updatedAt = new Date();
     return log.save();
   }
 
@@ -752,7 +752,7 @@ export class DonorService {
 
     donationLog.donationStatus = status;
     donationLog.ipAddress = payload.customer_details?.ip || '';
-    donationLog.updatedAt = moment().toISOString();
+    donationLog.updatedAt = new Date();
 
     this.logger.debug('updating donation log');
     const updateDonationLog = await donationLog.save();
@@ -1040,7 +1040,7 @@ export class DonorService {
 
     donationLog.donationStatus = status;
     donationLog.ipAddress = request.customer_details?.ip || '';
-    donationLog.updatedAt = moment().toISOString();
+    donationLog.updatedAt = new Date();
 
     console.log('updating donation log');
     const updateDonationLog = await donationLog.save();
