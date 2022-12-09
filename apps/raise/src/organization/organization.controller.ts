@@ -171,11 +171,15 @@ export class OrganizationController {
   async getInsightSummary(
     @Query('organizationId') organizationId: string,
     @Query('period') period: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
   ) {
     this.logger.debug('get insight summary...');
     return await this.organizationService.getInsightSummary(
       organizationId,
       period,
+      startDate,
+      endDate
     );
   }
 
