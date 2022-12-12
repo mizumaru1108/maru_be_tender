@@ -6,12 +6,18 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { ApiOperation } from '@nestjs/swagger';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
 import moment from 'moment';
+import { OrganizationDto } from '../organization/dto/organization.dto';
+import {
+  Organization,
+  OrganizationDocument,
+} from '../organization/schema/organization.schema';
 import {
   AggregatePaginateModel,
   AggregatePaginateResult,
@@ -99,6 +105,8 @@ export class DonorService {
     private configService: ConfigService, // no need to import in donor module (modular utils)
     @InjectModel(Donor.name)
     private donorModel: Model<DonorDocument>,
+    @InjectModel(Organization.name)
+    private organizationModel: Model<OrganizationDocument>,
     @InjectModel(Donor.name)
     private donorAggregatePaginateModel: AggregatePaginateModel<DonorDocument>,
     @InjectModel(Volunteer.name)
@@ -1312,6 +1320,7 @@ export class DonorService {
         $match: {
           donorId: donorUserId,
           organizationId: orgsId,
+          campaignId: { $ne: null },
         },
       },
       {
@@ -1362,19 +1371,21 @@ export class DonorService {
         },
       },
       {
+        $project: {
+          campaign: 0,
+        }
+      },
+      {
         $sort: sortData,
       },
     ]);
-
-    if (!donationLogList) {
-      throw new NotFoundException('transaction not found for this userId');
-    }
 
     const donationLogsCart = await this.donationLogsModel.aggregate([
       {
         $match: {
           donorUserId: donorUserId,
           organizationId: orgsId,
+          campaignId: { $ne: null },
           type: 'cart'
         },
       },
@@ -1426,47 +1437,87 @@ export class DonorService {
         },
       },
       {
+        $project: {
+          campaign: 0,
+        }
+      },
+      {
         $sort: sortData,
       },
-    ])
+    ]);
 
-    if (!donationLogsCart) {
-      throw new NotFoundException('transaction not found for this userId');
-    }
-
-    const filterDonationList = donationLogList
-      .filter(el => !!el.campaign)
-      .map(v => {
-        return {
-          _id: v._id,
-          createdAt: v.createdAt,
-          donationStatus: v.donationStatus,
-          amount: v.amount,
-          campaignName: v.campaignName,
-          campaignType: v.campaignType,
-          organizationName: v.organizationName,
-          contentLanguage: v.contentLanguage
+    const zakatDonationLogs = await this.donationLogsModel.aggregate([
+      {
+        $match: {
+          donorUserId: donorUserId,
+          nonprofitRealmId: new Types.ObjectId(orgsId),
+          campaignId: new Types.ObjectId('6299ed6a9f1ad428563563ed'),
+        },
+      },
+      {
+        $addFields: { campaignId: { $toObjectId: '$campaignId' } },
+      },
+      {
+        $lookup: {
+          from: 'campaign',
+          localField: 'campaignId',
+          foreignField: '_id',
+          as: 'campaign',
+        },
+      },
+      {
+        $unwind: {
+          path: '$campaign',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: { orgsId: { $toObjectId: '$organizationId' } },
+      },
+      {
+        $lookup: {
+          from: 'organization',
+          localField: 'orgsId',
+          foreignField: '_id',
+          as: 'organization',
+        },
+      },
+      {
+        $unwind: {
+          path: '$organization',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          createdAt: { $first: '$createdAt' },
+          donationStatus: { $first: '$donationStatus' },
+          amount: { $first: '$amount' },
+          campaign: { $first: '$campaign' },
+          campaignName: { $first: '$campaign.campaignName' },
+          campaignType: { $first: '$campaign.campaignType' },
+          organizationName: { $first: '$organization.name' },
+          contentLanguage: { $first: '$campaign.contentLanguage' }
+        },
+      },
+      {
+        $project: {
+          campaign: 0,
         }
-      });
-
-    const filterDonationCartList = donationLogsCart
-      .filter(el => !!el.campaign)
-      .map(v => {
-        return {
-          _id: v._id,
-          createdAt: v.createdAt,
-          donationStatus: v.donationStatus,
-          amount: v.amount,
-          campaignName: v.campaignName,
-          campaignType: v.campaignType,
-          organizationName: v.organizationName,
-          contentLanguage: v.contentLanguage
-        }
-      });
+      },
+      {
+        $sort: sortData,
+      },
+    ]);
     
-    const allDonationsUser = filterDonationList.concat(filterDonationCartList)
+    const allDonationsUser = donationLogList.concat(donationLogsCart);
 
-    return allDonationsUser;
+    const allGroupDonations = allDonationsUser
+      .concat(zakatDonationLogs)
+      .sort((objA, objB) => moment(objB.date).valueOf() - moment(objA.date).valueOf());
+
+    return allGroupDonations;
   }
 
   @ApiOperation({ summary: 'Get Total donationbyId' })
@@ -2100,5 +2151,654 @@ export class DonorService {
       },
     );
     return donorList;
+  }
+
+  /**
+   * Get Insight Donor Dashboard
+   */
+
+  async insightSummaryDonors (
+    donorId: string,
+    organizationId: string,
+    period: string,
+    startDate?: string,
+    endDate?: string
+  ) {
+
+    // Initiate for donation Campaigns
+    let
+      total_campaign_program: number = 0,
+      total_campaign_amount: number = 0,
+      total_donation_period: {
+        frequenceType: string;
+        categories: string[];
+        data: {
+          name: string;
+          data: number[];
+        }[] | [];
+      } | null = null;
+
+    // Initiate for donation Campaigns
+    let
+      total_zakat_donation: number = 0,
+      total_zakat_amount: number = 0,
+      total_zakat_period: {
+        frequenceType: string;
+        categories: string[];
+        data: {
+          name: string;
+          data: number[];
+        }[] | [];
+      } | null = null;
+
+    if (!donorId) throw new BadRequestException('Request rejected donorId must be fill');
+
+    const getOrganization = await this.organizationModel.findOne({
+      _id: organizationId,
+    });
+
+    if (!period) period = 'today';
+
+    if (
+      period === 'custom' &&
+      (!startDate || !endDate)
+    ) {
+      throw new BadRequestException('Request rejected must fill start date or end date');
+    };
+
+    if (!getOrganization) throw new BadRequestException('Request rejected organizationId not found');
+
+    const getDateQuery = (filterBy: string) => {
+      switch (filterBy) {
+        case 'year':
+          const thisYear = new Date();
+          thisYear.setDate(1);
+          thisYear.setMonth(1);
+          return {
+            $exists: true,
+            $gt: thisYear,
+            $lt: moment().toDate(),
+          };
+        case '12months':
+          const twelveMonthsAgo: Date = moment().subtract(12, 'M').toDate();
+          return {
+            $exists: true,
+            $gt: twelveMonthsAgo,
+            $lt: moment().toDate(),
+          };
+        case '90days':
+          const ninetyDaysAgo: Date = moment().subtract(90, 'd').toDate();
+          return {
+            $exists: true,
+            $gt: ninetyDaysAgo,
+            $lt: moment().toDate(),
+          };
+        case '30days':
+          const thirtyDaysAgo: Date = moment().subtract(30, 'd').toDate();
+          return {
+            $exists: true,
+            $gt: thirtyDaysAgo,
+            $lt: moment().toDate(),
+          };
+        case '28days':
+          const twentyEightDaysAgo: Date = moment().subtract(28, 'd').toDate();
+
+          return {
+            $exists: true,
+            $gt: twentyEightDaysAgo,
+            $lt: moment().toDate(),
+          };
+        case 'yesterday':
+          const startAt: Date = moment().startOf('day').toDate();
+          const endAt: Date = moment(startAt).subtract(1, 'd').toDate();
+
+          return {
+            $exists: true,
+            $gt: endAt,
+            $lt: startAt,
+          };
+        case 'today':
+          const today: Date = moment().startOf('day').toDate();
+
+          return {
+            $exists: true,
+            $gt: today,
+            $lt: moment().toDate()
+          };
+        case 'custom':
+          return {
+            $exists: true,
+            $gt: moment(startDate!).toDate(),
+            $lt: moment(endDate!).toDate(),
+          }
+        default:
+          const sevenDaysAgo: Date = moment().subtract(7, 'd').toDate();
+
+          return {
+            $gt: sevenDaysAgo,
+            $lt: moment().toDate(),
+          };
+      }
+    };
+
+    // For Campaigns
+    const donationList = await this.donationLogModel.aggregate([
+      {
+        $match: {
+          organizationId: organizationId,
+          donationStatus: 'SUCCESS',
+          donorId: donorId,
+          campaignId: { $ne: null },
+          createdAt: getDateQuery(period),
+        }
+      },
+      {
+        $project: {
+          date: { $dateToString: { date: '$createdAt' } },
+          campaignId: { $toObjectId: '$campaignId' },
+          amount: 1,
+          donorId: 1,
+        }
+      },
+      {
+        $lookup: {
+          from: 'campaign',
+          localField: 'campaignId',
+          foreignField: '_id',
+          as: 'campaign',
+        },
+      },
+      {
+        $unwind: {
+          path: '$campaign',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'donor',
+          localField: 'donorId',
+          foreignField: 'ownerUserId',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'anonymous',
+          localField: '_id',
+          foreignField: 'donationLogId',
+          as: 'user_anonymous',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user_anonymous',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $group: {
+          _id: { createdAt: '$date' },
+          totalDonor: { $sum: 1 },
+          totalAmount: { $sum: '$amount' },
+          campaignId: { $first: '$campaign._id' },
+          campaignName: { $first: '$campaign.title' },
+          campaignType: { $first: '$campaign.campaignType' },
+          campaignProgress: { $first: '$campaign.amountProgress' },
+          campaignTarget: { $first: '$campaign.amountTarget' },
+          user: { $first: '$user' },
+          user_anonymous: { $first: '$user_anonymous' },
+        }
+      },
+      {
+        $addFields: {
+          date: '$_id.createdAt',
+          donor: {
+            _id: {
+              $cond: [
+                { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+                '$user_anonymous._id',
+                '$user._id',
+              ],
+            },
+            name: {
+              $cond: [
+                { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+                '$user_anonymous.firstName',
+                '$user.firstName',
+              ],
+            },
+            country: {
+              $cond: [
+                { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+                '$user_anonymous.country',
+                '$user.country',
+              ],
+            },
+          },
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          user: 0,
+          campaign: 0,
+          user_anonymous: 0,
+        }
+      },
+      { $sort: { createdAt: -1 } }
+    ]);
+
+    const donationLogsCartList = await this.donationLogsModel.aggregate([
+      {
+        $match: {
+          nonprofitRealmId: new Types.ObjectId(organizationId),
+          donationStatus: 'SUCCESS',
+          donorUserId: donorId,
+          campaignId: { $ne: null },
+          type: 'cart',
+          createdAt: getDateQuery(period),
+        }
+      },
+      {
+        $project: {
+          date: { $dateToString: { date: '$createdAt' } },
+          amount: 1,
+          campaignId: 1,
+          donorUserId: 1,
+        }
+      },
+      {
+        $lookup: {
+          from: 'campaign',
+          localField: 'campaignId',
+          foreignField: '_id',
+          as: 'campaign',
+        },
+      },
+      {
+        $unwind: {
+          path: '$campaign',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'donor',
+          localField: 'donorUserId',
+          foreignField: 'ownerUserId',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'anonymous',
+          localField: '_id',
+          foreignField: 'donationLogId',
+          as: 'user_anonymous',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user_anonymous',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $group: {
+          _id: { createdAt: '$date' },
+          totalDonor: { $sum: 1 },
+          totalAmount: { $sum: '$amount' },
+          campaignId: { $first: '$campaign._id' },
+          campaignName: { $first: '$campaign.title' },
+          campaignType: { $first: '$campaign.campaignType' },
+          campaignProgress: { $first: '$campaign.amountProgress' },
+          campaignTarget: { $first: '$campaign.amountTarget' },
+          user: { $first: '$user' },
+          user_anonymous: { $first: '$user_anonymous' },
+        }
+      },
+      {
+        $addFields: {
+          date: '$_id.createdAt',
+          donor: {
+            _id: {
+              $cond: [
+                { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+                '$user_anonymous._id',
+                '$user._id',
+              ],
+            },
+            name: {
+              $cond: [
+                { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+                '$user_anonymous.firstName',
+                '$user.firstName',
+              ],
+            },
+            country: {
+              $cond: [
+                { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+                '$user_anonymous.country',
+                '$user.country',
+              ],
+            },
+          },
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          user: 0,
+          campaign: 0,
+          user_anonymous: 0,
+        }
+      },
+      { $sort: { createdAt: -1 } }
+    ]);
+
+    // For Zakat
+    const zakatLogs = await this.donationLogsModel.aggregate([
+      {
+        $match: {
+          donationStatus: 'SUCCESS',
+          donorUserId: donorId,
+          campaignId: new Types.ObjectId('6299ed6a9f1ad428563563ed'),
+          createdAt: getDateQuery(period),
+        }
+      },
+      {
+        $project: {
+          date: { $dateToString: { date: '$createdAt' } },
+          amount: 1,
+          campaignId: 1,
+          donorUserId: 1,
+        }
+      },
+      {
+        $lookup: {
+          from: 'campaign',
+          localField: 'campaignId',
+          foreignField: '_id',
+          as: 'campaign',
+        },
+      },
+      {
+        $unwind: {
+          path: '$campaign',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'donor',
+          localField: 'donorUserId',
+          foreignField: 'ownerUserId',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'anonymous',
+          localField: '_id',
+          foreignField: 'donationLogId',
+          as: 'user_anonymous',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user_anonymous',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $group: {
+          _id: { createdAt: '$date' },
+          totalDonor: { $sum: 1 },
+          totalAmount: { $sum: '$amount' },
+          campaignId: { $first: '$campaign._id' },
+          campaignName: { $first: '$campaign.title' },
+          campaignType: { $first: '$campaign.campaignType' },
+          campaignProgress: { $first: '$campaign.amountProgress' },
+          campaignTarget: { $first: '$campaign.amountTarget' },
+          user: { $first: '$user' },
+          user_anonymous: { $first: '$user_anonymous' },
+        }
+      },
+      {
+        $addFields: {
+          date: '$_id.createdAt',
+          donor: {
+            _id: {
+              $cond: [
+                { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+                '$user_anonymous._id',
+                '$user._id',
+              ],
+            },
+            name: {
+              $cond: [
+                { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+                '$user_anonymous.firstName',
+                '$user.firstName',
+              ],
+            },
+            country: {
+              $cond: [
+                { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+                '$user_anonymous.country',
+                '$user.country',
+              ],
+            },
+          },
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          user: 0,
+          campaign: 0,
+          user_anonymous: 0,
+        }
+      },
+      { $sort: { createdAt: -1 } }
+    ]);
+
+    // Return all donations campaign
+    const allDonationLogs =
+      donationList.concat(donationLogsCartList)
+      .sort((objA, objB) => moment(objB.date).valueOf() - moment(objA.date).valueOf());
+
+    // Return all zakat log by userId
+    const allZakatLogUser = zakatLogs.sort((objA, objB) => moment(objB.date).valueOf() - moment(objA.date).valueOf());
+    
+    if (allDonationLogs.length) {
+      // Return program campaign
+      const allProgramsCampaign = allDonationLogs.map(el => {
+        return {
+          campaignId: el.campaignId.toString(),
+          campaignName: el.campaignName,
+          campaignType: el.campaignType,
+          campaignProgress: el.campaignProgress.toString(),
+          campaignTarget: el.campaignTarget.toString(),
+        }
+      });
+
+      total_campaign_program = allProgramsCampaign
+        .filter((v, i, a) => a.findIndex(v2 => (v2.campaignId === v.campaignId)) === i).length;
+
+      // Return total amount program
+      total_campaign_amount = allDonationLogs
+        .map(v => v.totalAmount)
+        .reduce((amountA, amountB) => amountA + amountB);
+
+      // Return line chart data
+      const categories = allDonationLogs.map(el => el.date);
+      const objReduceDonation = allDonationLogs.reduce((results, org) => {
+        (results[org.campaignName] = results[org.campaignName] || []).push(org);
+  
+        return results;
+      }, {});
+
+      const campaignCategories = allProgramsCampaign
+        .filter((v, i, a) => a.findIndex(v2 => (v2.campaignId === v.campaignId)) === i);
+
+      const getLineCartData = campaignCategories.map(v => {
+        const totalAmount = objReduceDonation[v.campaignName]
+          .map((el: { totalAmount: number; }) => el.totalAmount);
+        
+        return {
+          name: v.campaignName,
+          data: totalAmount
+        }
+      });
+
+      const lineChartDatas = getLineCartData.map((value, i) => {
+        const catLength = categories.length;
+        const prev = getLineCartData[i - 1]?.data.length;
+        const current = getLineCartData[i]?.data.length;
+        const next = getLineCartData[i + 1]?.data.length;
+
+        const newData: any[] = [ ...value.data ];
+
+        if (i === 0) {
+          for (let index = 0; index < catLength - current; index++) {
+            newData.push(0);
+          };
+        } else if (value.name === campaignCategories[campaignCategories.length - 1].campaignName) {
+          for (let index = 0; index < catLength - current; index++) {
+            newData.unshift(0);
+          };
+        } else if (prev && next) {
+          for (let index = 0; index < prev; index++) {
+            newData.unshift(0);
+          };
+
+          for (let index = 0; index < next; index++) {
+            newData.push(0);
+          };
+        }
+
+        return {
+          name: value.name,
+          data: newData,
+        }
+      });
+
+      total_donation_period = {
+        frequenceType: String(moment().year()),
+        categories,
+        data: lineChartDatas
+      }
+    }
+
+    if (allZakatLogUser.length) {
+      // Get total zakat donation length
+      total_zakat_donation = allZakatLogUser.length;
+
+      // Return total amount program
+      total_zakat_amount = allZakatLogUser
+        .map(v => v.totalAmount)
+        .reduce((amountA, amountB) => amountA + amountB);
+
+      // Return line chart data
+      const zakatCategories = allZakatLogUser.map(el => el.date);
+      const objReduceDonation = allZakatLogUser.reduce((results, org) => {
+        (results[org.campaignName] = results[org.campaignName] || []).push(org);
+  
+        return results;
+      }, {});
+
+      const zakatCampaign = allZakatLogUser
+        .map(el => {
+          return {
+            campaignId: el.campaignId.toString(),
+            campaignName: el.campaignName,
+            campaignType: el.campaignType,
+            campaignProgress: el.campaignProgress.toString(),
+            campaignTarget: el.campaignTarget.toString(),
+          }
+        })
+        .filter((v, i, a) => a.findIndex(v2 => (v2.campaignId === v.campaignId)) === i);
+
+      const getLineCartData = zakatCampaign.map(v => {
+        const totalAmount = objReduceDonation[v.campaignName]
+          .map((el: { totalAmount: number; }) => el.totalAmount);
+        
+        return {
+          name: v.campaignName,
+          data: totalAmount
+        }
+      });
+
+      const lineChartZakats = getLineCartData.map((value, i) => {
+        const catLength = zakatCategories.length;
+        const prev = getLineCartData[i - 1]?.data.length;
+        const current = getLineCartData[i]?.data.length;
+        const next = getLineCartData[i + 1]?.data.length;
+
+        const newData: any[] = [ ...value.data ];
+
+        if (i === 0) {
+          for (let index = 0; index < catLength - current; index++) {
+            newData.push(0);
+          };
+        } else if (value.name === zakatCategories[zakatCategories.length - 1].campaignName) {
+          for (let index = 0; index < catLength - current; index++) {
+            newData.unshift(0);
+          };
+        } else if (prev && next) {
+          for (let index = 0; index < prev; index++) {
+            newData.unshift(0);
+          };
+
+          for (let index = 0; index < next; index++) {
+            newData.push(0);
+          };
+        }
+
+        return {
+          name: value.name,
+          data: newData,
+        }
+      });
+
+      total_zakat_period = {
+        frequenceType: String(moment().year()),
+        categories: zakatCategories,
+        data: lineChartZakats
+      }
+    }
+
+    return {
+      campaigns: {
+        total_campaign_program,
+        total_campaign_amount,
+        total_donation_period,
+      },
+      zakat: {
+        total_zakat_donation,
+        total_zakat_amount,
+        total_zakat_period
+      },
+    }
   }
 }

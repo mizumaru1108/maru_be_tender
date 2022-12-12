@@ -804,21 +804,21 @@ export class OrganizationService {
           thisYear.setMonth(1);
           return {
             $exists: true,
-            $gte: thisYear,
+            $gt: thisYear,
             $lt: moment().toDate(),
           };
         case '12months':
           const twelveMonthsAgo: Date = moment().subtract(12, 'M').toDate();
           return {
             $exists: true,
-            $gte: twelveMonthsAgo,
+            $gt: twelveMonthsAgo,
             $lt: moment().toDate(),
           };
         case '90days':
           const ninetyDaysAgo: Date = moment().subtract(90, 'd').toDate();
           return {
             $exists: true,
-            $gte: ninetyDaysAgo,
+            $gt: ninetyDaysAgo,
             $lt: moment().toDate(),
           };
         case '30days':
@@ -842,7 +842,7 @@ export class OrganizationService {
 
           return {
             $exists: true,
-            $gte: endAt,
+            $gt: endAt,
             $lt: startAt,
           };
         case 'today':
@@ -850,19 +850,19 @@ export class OrganizationService {
 
           return {
             $exists: true,
-            $gte: today,
+            $gt: today,
           };
         case 'custom':
           return {
             $exists: true,
-            $gte: moment(endDate!).toDate(),
-            $lt: moment(startDate!).toDate(),
+            $gt: moment(startDate!).toDate(),
+            $lt: moment(endDate!).toDate(),
           }
         default:
           const sevenDaysAgo: Date = moment().subtract(7, 'd').toDate();
 
           return {
-            $gte: sevenDaysAgo,
+            $gt: sevenDaysAgo,
             $lt: moment().toDate(),
           };
       }
@@ -1176,7 +1176,7 @@ export class OrganizationService {
         name: v.campaignName,
         data: totalAmount
       }
-    });    
+    });
 
     const lineChartDatas = getLineCartData.map((value, i) => {
       const catLength = categories.length;
