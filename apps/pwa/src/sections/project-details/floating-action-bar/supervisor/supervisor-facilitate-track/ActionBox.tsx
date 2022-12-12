@@ -12,13 +12,15 @@ type Props = {
 function ActionBox({ action, isLoading, onReturn, step, onBack }: Props) {
   return (
     <Stack justifyContent="center" direction="row" gap={2}>
-      <Button
-        sx={{ backgtroundColor: '#fff', color: '#000', ':hover': { backgroundColor: '#fff' } }}
-        disabled={step === 0 ? true : false}
-        onClick={onBack}
-      >
-        رجوغ
-      </Button>
+      {action === 'accept' && (
+        <Button
+          sx={{ backgtroundColor: '#fff', color: '#000', ':hover': { backgroundColor: '#fff' } }}
+          disabled={step === 0 ? true : false}
+          onClick={onBack}
+        >
+          رجوع
+        </Button>
+      )}
       <Button
         onClick={() => {
           if (onReturn !== undefined) onReturn();

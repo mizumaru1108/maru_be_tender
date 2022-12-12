@@ -23,6 +23,7 @@ const RootStyle = styled('div')(({ theme }) => ({
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
+  width: '100%',
   minHeight: '100vh',
   display: 'flex',
   justifyContent: 'center',

@@ -66,7 +66,10 @@ export default function ModalDialog({
         </DialogTitle>
       )}
       <DialogContent sx={styleContent}>{content}</DialogContent>
-      <DialogActions style={{ padding: !showCancelBtn && !actionBtn ? 0 : 24 }} sx={styleContent}>
+      <DialogActions
+        style={{ padding: !showCancelBtn && !actionBtn ? 0 : 24, justifyContent: 'center' }}
+        sx={styleContent}
+      >
         {showCancelBtn && (
           <Button variant="outlined" size="medium" color="inherit" onClick={() => onClose()}>
             Cancel

@@ -45,7 +45,7 @@ function ConsultantFloatingActionBar() {
         enqueueSnackbar(translate('proposal_accept'), {
           variant: 'success',
         });
-        navigate(`/project-manager/dashboard/app`);
+        navigate(`/consultant/dashboard/app`);
       }
     });
   };

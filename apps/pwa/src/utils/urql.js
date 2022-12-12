@@ -1,5 +1,5 @@
 import { HASURA_GRAPHQL_URL } from 'config';
-import { createClient, dedupExchange, cacheExchange, fetchExchange } from 'urql';
+import { createClient, dedupExchange, fetchExchange } from 'urql';
 import { makeOperation } from '@urql/core';
 import { authExchange } from '@urql/exchange-auth';
 import { fusionAuthClient } from 'utils/fusionAuth';

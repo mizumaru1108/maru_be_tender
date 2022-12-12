@@ -29,6 +29,8 @@ import useAuth from 'hooks/useAuth';
 import { useSnackbar } from 'notistack';
 import { ProposalAcceptBySupervisorFacilitateGrant } from 'queries/project-supervisor/ProposalAcceptBySupervisorFacilitateGrant';
 import { ProposalRejectBySupervisor } from 'queries/project-supervisor/ProposalAcceptBySupervisor';
+import ProposalRejectingForm from './ProposalRejectingForm';
+import { ProposalRejectBySupervisorFacilitateGrant } from 'queries/project-supervisor/ProposalRejectBySupervisorFacilitateGrant';
 
 type ConsultantForm = {
   chairman_of_board_of_directors: string;
@@ -61,14 +63,16 @@ function FloatinActionBar({ organizationId, data }: any) {
   const { translate } = useLocales();
   const theme = useTheme();
   const [action, setAction] = React.useState<
-    'accept' | 'reject' | 'edit_request' | 'send_client_message'
-  >('reject');
+    'accept' | 'reject' | 'edit_request' | 'send_client_message' | ''
+  >('');
 
   const { enqueueSnackbar } = useSnackbar();
 
   const [, accept] = useMutation(ProposalAcceptBySupervisorFacilitateGrant);
 
   const [, stepBack] = useMutation(ProposalRejectBySupervisor);
+
+  const [, reject] = useMutation(ProposalRejectBySupervisorFacilitateGrant);
 
   const defaultValues = {
     form1: {
@@ -284,6 +288,42 @@ function FloatinActionBar({ organizationId, data }: any) {
       }
     });
   };
+
+  const rejectProject = (values: any) => {
+    setLoadingState({ action: 'reject', isLoading: true });
+    reject({
+      proposal_id,
+      new_values: {
+        inner_status: 'REJECTED_BY_SUPERVISOR',
+        outter_status: 'CANCELED',
+        state: 'PROJECT_SUPERVISOR',
+      },
+      log: {
+        id: nanoid(),
+        proposal_id,
+        reviewer_id: user?.id!,
+        action: 'reject',
+        message: 'تم رفض المشروع من قبل مشرف المشاريع',
+        notes: values.notes,
+        user_role: 'PROJECT_SUPERVISOR',
+        state: 'PROJECT_SUPERVISOR',
+      },
+    }).then((res) => {
+      setLoadingState({ action: 'reject', isLoading: false });
+      if (res.error) {
+        enqueueSnackbar(res.error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+      } else {
+        enqueueSnackbar(translate('proposal_accept'), {
+          variant: 'success',
+        });
+        navigate(`/project-supervisor/dashboard/app`);
+      }
+    });
+  };
   return (
     <>
       <Box
@@ -383,9 +423,24 @@ function FloatinActionBar({ organizationId, data }: any) {
         </Grid>
       </Box>
 
+      {/* {action === 'reject' && (
+        <ProposalRejectingForm
+          onSubmit={(data: any) => {
+            console.log(data);
+          }}
+        />
+      )} */}
       <ModalDialog
         maxWidth="md"
-        title={step === 0 ? 'قبول المشروع' : 'البيانات التي تعرض على لجنة المنح'}
+        title={
+          action === 'accept'
+            ? step === 0
+              ? 'قبول المشروع'
+              : 'البيانات التي تعرض على لجنة المنح'
+            : action === 'reject'
+            ? 'رفض المشروع'
+            : ''
+        }
         isOpen={modalState}
         content={
           <>
@@ -458,6 +513,17 @@ function FloatinActionBar({ organizationId, data }: any) {
                   </FifthForm>
                 )}
               </>
+            )}
+            {action === 'reject' && (
+              <ProposalRejectingForm onSubmit={rejectProject}>
+                <ActionBox
+                  action="reject"
+                  isLoading={false}
+                  onReturn={handleCloseModal}
+                  step={step}
+                  onBack={onBack}
+                />
+              </ProposalRejectingForm>
             )}
           </>
         }
