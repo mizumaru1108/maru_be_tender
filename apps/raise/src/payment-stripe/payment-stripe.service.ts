@@ -699,7 +699,10 @@ export class PaymentStripeService {
               message: 'failed update campaign data',
             }),
           };
-        } else if (Number(getCampaign.amountTarget) == Number(lastAmount)) {
+        } else if (
+          (Number(getCampaign.amountTarget) == Number(lastAmount)) ||
+          (Number(lastAmount) > Number(getCampaign.amountTarget))
+        ) {
           await this.campaignModel.updateOne(
             { _id: getDonationLog.campaignId },
             {
@@ -1295,7 +1298,10 @@ export class PaymentStripeService {
                   message: 'failed update campaign data',
                 }),
               };
-            } else if (Number(getCampaign.amountTarget) == Number(lastAmount)) {
+            } else if (
+              (Number(getCampaign.amountTarget) == Number(lastAmount)) ||
+              (Number(lastAmount) > Number(getCampaign.amountTarget))
+            ) {
               await this.campaignModel.updateOne(
                 { _id: getDonationLog.campaignId },
                 {
@@ -1811,21 +1817,6 @@ export class PaymentStripeService {
             : 'anonymous';
 
         if (notifSettings.newDonation && getDonationLog) {
-          // const emailData = {
-          //   donor: donorName,
-          //   title: getCampaign?.title || getCampaign?.campaignName,
-          //   currency: payloadCurrency || '',
-          //   amount: amount_total.substring(0, amount_total.length - 2) || '',
-          // };
-
-          // this.emailService.sendMailWTemplate(
-          //   getOrganization.contactEmail,
-          //   subject,
-          //   'org/new_donation',
-          //   emailData,
-          //   getOrganization.contactEmail,
-          // );
-
           const emailDonor = {
             donor: donorName,
             title: getCampaign?.title || getCampaign?.campaignName,
@@ -1841,10 +1832,8 @@ export class PaymentStripeService {
               emailDonor,
               getOrganization.contactEmail
             );
-          }
-
-          if (anonymousData) {
-            if (anonymousData.isEmailChecklist || !anonymousData.anonymous) {
+          } else if (anonymousData) {
+            if (anonymousData.isEmailChecklist || anonymousData.anonymous) {
               this.emailService.sendMailWTemplate(
                 anonymousData.email,
                 subject,
@@ -1889,7 +1878,10 @@ export class PaymentStripeService {
             },
           );
 
-          if ((Number(itemPayment?.amountTarget) == Number(subtotalAmount))) {
+          if (
+            (Number(itemPayment?.amountTarget) == Number(subtotalAmount)) ||
+            (Number(subtotalAmount) > Number(itemPayment?.amountTarget))
+          ) {
             await this.campaignModel.updateOne(
               { _id: itemPayment._id },
               {
@@ -1951,7 +1943,10 @@ export class PaymentStripeService {
           throw new BadRequestException(
             `update campaign failed to save in mongodb`,
           );
-        } else if (Number(getCampaign?.amountTarget) == Number(lastAmount)) {
+        } else if (
+          (Number(getCampaign?.amountTarget) == Number(lastAmount)) ||
+          (Number(lastAmount) > Number(getCampaign?.amountTarget))
+        ) {
           await this.campaignModel.updateOne(
             { _id: campaignId },
             {

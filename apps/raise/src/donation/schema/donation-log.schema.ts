@@ -72,11 +72,11 @@ export class DonationLog {
   @Prop()
   ipAddress: string;
 
-  @Prop()
-  createdAt: string;
+  @Prop({ type: () => Date})
+  createdAt: Date;
 
-  @Prop()
-  updatedAt: string;
+  @Prop({ type: () => Date })
+  updatedAt: Date;
 }
 
 export const DonationLogSchema = SchemaFactory.createForClass(DonationLog)
