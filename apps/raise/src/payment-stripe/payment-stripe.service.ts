@@ -982,12 +982,12 @@ export class PaymentStripeService {
     // Insert Data to Payment Data
     let objectIdPayment = new ObjectId();
     
-    if (isAnonymous) {
-      await this.anonymousModel.findOneAndUpdate(
-        { _id: payment.donorId },
-        { donationLogId: objectIdDonation },
-      );
-    }
+    // if (isAnonymous) {
+    //   await this.anonymousModel.findOneAndUpdate(
+    //     { _id: payment.donorId },
+    //     { donationLogId: objectIdDonation },
+    //   );
+    // }
 
     const insertPaymentData = await new this.paymentDataModel({
       _id: objectIdPayment,

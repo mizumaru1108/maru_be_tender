@@ -1120,7 +1120,7 @@ export class OrganizationService {
     }, {});
 
     const donor_list = getDonorData
-    .map(el => {      
+    .map(el => {
       return {
         _id: el._id.toString(),
         name: el.name,
