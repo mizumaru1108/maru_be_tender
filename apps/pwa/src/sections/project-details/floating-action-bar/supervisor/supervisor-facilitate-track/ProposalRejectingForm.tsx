@@ -46,16 +46,9 @@ function ProposalRejectingForm({ children, onSubmit }: ProposalFormProps) {
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
         <FormGenerator data={RejectProposalFormFieldsSupervisor} />
-        <Grid item md={12} xs={12} sx={{ mb: '70px' }}>
-          <Stack direction="row" justifyContent="space-around">
-            <Button
-              sx={{ backgroundColor: '#fff', color: '#000', ':hover': { backgroundColor: '#fff' } }}
-            >
-              إغلاق
-            </Button>
-            <Button>رفض</Button>
-          </Stack>
-        </Grid>
+      </Grid>
+      <Grid item md={12} xs={12} sx={{ mt: '10px' }}>
+        {children}
       </Grid>
     </FormProvider>
   );

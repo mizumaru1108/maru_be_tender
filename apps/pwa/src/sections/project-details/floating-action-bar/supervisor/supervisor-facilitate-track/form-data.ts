@@ -212,8 +212,9 @@ export const ThirdFormData = [
     name: 'remote_or_insite',
     label: 'عن بُعد أو حضوري؟',
     options: [
-      { label: 'نعم', value: false },
-      { label: 'لا', value: true },
+      { label: 'حضوري', value: false },
+      { label: 'اونلاين', value: true },
+      { label: 'كلاهما', value: true },
     ],
     md: 6,
     xs: 12,

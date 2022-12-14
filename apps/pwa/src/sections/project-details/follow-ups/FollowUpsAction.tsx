@@ -36,7 +36,7 @@ function FollowUpsAction({ mutate }: Props) {
         }}
         startIcon={<Iconify icon="eva:edit-2-outline" />}
       >
-        إضافة تعليق
+        إضافة إجراء
       </Button>
       <Button
         onClick={handleFileOpen}

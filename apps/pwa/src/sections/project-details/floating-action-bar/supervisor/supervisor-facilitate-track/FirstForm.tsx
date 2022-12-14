@@ -235,8 +235,8 @@ function FirstForm({ children, onSubmit, defaultValues, data }: any) {
                 <option value="خطة" style={{ backgroundColor: '#fff' }}>
                   خطة
                 </option>
-                <option value="لا وارد" style={{ backgroundColor: '#fff' }}>
-                  لا وارد
+                <option value="وارد" style={{ backgroundColor: '#fff' }}>
+                  وارد
                 </option>
               </>
             }

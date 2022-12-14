@@ -37,6 +37,9 @@ import {
   DonationLogSchema,
 } from '../donation/schema/donation-log.schema';
 
+//
+import { ZakatLog, ZakatLogSchema } from '../zakat/schemas/zakat_log.schema';
+
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -87,6 +90,10 @@ import {
       {
         name: AppearancePage.name,
         schema: AppearancePageSchema,
+      },
+      {
+        name: ZakatLog.name,
+        schema: ZakatLogSchema,
       },
     ]),
   ],
