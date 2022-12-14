@@ -54,6 +54,8 @@ import { bunnyConfig } from './commons/configs/bunny-config';
 import { nodeMailerConfig } from './commons/configs/nodemailer-config';
 // import { metalApiConfig } from './commons/configs/metail-api-config';
 // import { gapiConfig } from './commons/configs/gapi-config';
+import { TenderCommentsModule } from './tender-comments/tender-comments.module';
+import { TenderMessagesModule } from './tender-messages/tender-messages.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -148,6 +150,8 @@ import { nodeMailerConfig } from './commons/configs/nodemailer-config';
     TenderTrackModule,
     GsAuthModule,
     GsUserModule,
+    TenderCommentsModule,
+    TenderMessagesModule,
   ],
   controllers: [],
 })

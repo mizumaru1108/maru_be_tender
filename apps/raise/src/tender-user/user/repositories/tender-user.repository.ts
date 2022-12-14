@@ -111,6 +111,24 @@ export class TenderUserRepository {
     }
   }
 
+  async findUserByTrack(track: string): Promise<user[] | []> {
+    try {
+      return await this.prismaService.user.findMany({
+        where: {
+          employee_path: track,
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderUserRepository.name,
+        'findUserByTrack Error:',
+        `finding user by track!`,
+      );
+      throw theError;
+    }
+  }
+
   async changeUserStatus(
     userId: string,
     status: UserStatus,

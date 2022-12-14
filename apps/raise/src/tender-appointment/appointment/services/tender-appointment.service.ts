@@ -5,6 +5,7 @@ import { GoogleCalendarServiceAccountService } from '../../../libs/google-calend
 import { SearchClientFilterRequest } from '../dtos/requests/search-client-filter-request.dto';
 import { TenderAppointmentRepository } from '../repositories/tender-appointment.repository';
 import { OAuth2Client } from 'google-auth-library';
+import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 
 @Injectable()
 export class TenderAppointmentService {
@@ -33,7 +34,7 @@ export class TenderAppointmentService {
     return result;
   }
 
-  async createAppointment(code?: string) {
+  async createAppointment(code?: string, currentUser?: TenderCurrentUser) {
     const result = await this.googleCalendarOAuthService.authorize(code);
     // if type of result is OAuth2Client
     if (result instanceof OAuth2Client) {
