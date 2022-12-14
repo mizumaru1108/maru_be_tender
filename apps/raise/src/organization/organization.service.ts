@@ -80,6 +80,9 @@ import {
 import { SendEmailDto } from '../libs/email/dtos/requests/send-email.dto';
 import moment from 'moment';
 
+//
+import { ZakatLog, ZakatLogDocument } from 'src/zakat/schemas/zakat_log.schema';
+
 @Injectable()
 export class OrganizationService {
   private readonly logger = ROOT_LOGGER.child({
@@ -118,6 +121,8 @@ export class OrganizationService {
     private donationLogModel: Model<DonationLogDocument>,
     @InjectModel(DonationLog.name)
     private donationLogAggregatePaginateModel: AggregatePaginateModel<DonationLogDocument>,
+    @InjectModel(ZakatLog.name)
+    private zakatLogModel: Model<ZakatLogDocument>,
   ) {}
 
   async findAll() {
@@ -781,6 +786,43 @@ export class OrganizationService {
     endDate?: string
   ) {
     this.logger.debug(`getInsightSummary organizationId=${organizationId}`);
+    
+    // Variable return insight campaign
+    let
+      total_donation: number = 0,
+      total_donor: number = 0,
+      total_returning_donor: number = 0,
+      total_program: number = 0,
+      donor_list: {
+        _id: string;
+        name: string;
+        country: string;
+        total: number;
+      }[] = [],
+      most_popular_programs: {
+        campaignId: string;
+        campaignName: string;
+        campaignType: string;
+        campaignProgress: string;
+        campaignTarget: string;
+        count: number;
+      }[] = [],
+      total_donation_period: {
+        frequenceType: number,
+        categories: string[],
+        data: {
+          name: string;
+          data: number[];
+        }[] | [];
+      } | null = null;
+
+    // Variable return insight zakat
+    let zakat_logs: {
+      type: string;
+      totalAmount: number;
+      count: number;
+    }[] = []
+    
     const getOrganization = await this.organizationModel.findOne({
       _id: organizationId,
     });
@@ -998,6 +1040,7 @@ export class OrganizationService {
           amount: 1,
           campaignId: 1,
           donorUserId: 1,
+          lengthDonorId: { $strLenCP: '$donorUserId' }
         }
       },
       {
@@ -1029,10 +1072,33 @@ export class OrganizationService {
         },
       },
       {
+        $addFields: {
+          donorIdAnonymous: {
+            $cond: [
+              { $eq: [ '$lengthDonorId', 24 ] },
+              { $toObjectId: '$donorUserId' },
+              '$donorUserId'
+            ]
+          }
+        }
+      },
+      {
         $lookup: {
           from: 'anonymous',
-          localField: '_id',
-          foreignField: 'donationLogId',
+          let: {
+            donorId: '$donorIdAnonymous'
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $or: [
+                    { $eq: [ '$$donorId', '$_id' ] },
+                  ],
+                },
+              }
+            },
+          ],
           as: 'user_anonymous',
         },
       },
@@ -1095,133 +1161,228 @@ export class OrganizationService {
       { $sort: { createdAt: -1 } }
     ]);
 
+    // Get Zakat Transaction
+    const zakatDateFilter = await this.donationLogsModel.aggregate([
+      {
+        $match: {
+          donationStatus: 'SUCCESS',
+          donorUserId: { $ne: null },
+          campaignId: new Types.ObjectId('6299ed6a9f1ad428563563ed'),
+          createdAt: getDateQuery(period),
+        }
+      },
+      {
+        $project: {
+          date: { $dateToString: { date: '$createdAt' } },
+          amount: 1,
+          campaignId: 1,
+          donorUserId: 1,
+        }
+      },
+      {
+        $group: {
+          _id: { createdAt: '$date' },
+          donationId: { $first: '$_id' },
+          totalDonor: { $sum: 1 },
+          totalAmount: { $sum: '$amount' },
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+        }
+      },
+      { $sort: { createdAt: -1 } }
+    ]);
+
+    const listZakatDID = zakatDateFilter.map(el => el.donationId);
+
+    const zakatLogs = await this.zakatLogModel.aggregate([
+      {
+        $match: {
+          donationLogId: { $in: listZakatDID }
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          donationLogId: 1,
+          type: 1,
+          currency: 1,
+          totalAmount: 1,
+          unit: 1
+        }
+      },
+    ]);
+
     // Return all donations
     const allDonationLogs =
       donationList.concat(donationLogsCartList)
       .sort((objA, objB) => moment(objB.date).valueOf() - moment(objA.date).valueOf());
 
-    if (!allDonationLogs.length) {
-      throw new HttpException('Data is empty', HttpStatus.RESET_CONTENT);
-    }
-
-    // Return total donation amount
-    const total_donation = allDonationLogs
+    // throw new HttpException('Data is empty', HttpStatus.RESET_CONTENT);
+    if (allDonationLogs.length) {
+      // Return total donation amount
+      total_donation = allDonationLogs
       .map(v => v.totalAmount)
       .reduce((amountA, amountB) => amountA + amountB);
 
-    // Return total donor
-    const getDonorData = allDonationLogs.map(v => v.donor);
+      // Return total donor
+      const getDonorData = allDonationLogs.map(v => v.donor);
+      total_donor = getDonorData.length;
+      total_returning_donor = getDonorData.length;
 
-    const objReduceList = getDonorData.reduce((acc ,val) => {
-      return {
-        ...acc,
-        [val._id]: (acc[val._id] || 0) + 1,
-      }
-    }, {});
-
-    const donor_list = getDonorData
-    .map(el => {
-      return {
-        _id: el._id.toString(),
-        name: el.name,
-        country: el.country,
-        total: objReduceList[el._id.toString()],
-      }
-    })
-    .filter((v, i, a) => a.findIndex(v2 => (v2._id === v._id)) === i);
-    
-
-    // Return program campaign
-    const allProgramsCampaign = allDonationLogs.map(el => {
-      return {
-        campaignId: el.campaignId.toString(),
-        campaignName: el.campaignName,
-        campaignType: el.campaignType,
-        campaignProgress: el.campaignProgress.toString(),
-        campaignTarget: el.campaignTarget.toString(),
-      }
-    })
-    
-    const total_program = allProgramsCampaign.filter((v, i, a) => a.findIndex(v2 => (v2.campaignId === v.campaignId)) === i);
-    const objReduceProgram = allDonationLogs.reduce((acc ,val) => {
-      return {
-        ...acc,
-        [val.campaignId]: (acc[val.campaignId] || 0) + 1,
-      }
-    }, {});
-
-    const most_popular_programs = total_program.map(v => {
-      return {
-        ...v,
-        count: objReduceProgram[v.campaignId],
-      }
-    })
-
-    // Return total_donatoin_period 
-    const categories = allDonationLogs.map(el => el.date);
-    const objReduceDonation = allDonationLogs.reduce((results, org) => {
-      (results[org.campaignName] = results[org.campaignName] || []).push(org);
-
-      return results;
-    }, {});
-
-    const campaignCategories = allProgramsCampaign
-      .filter((v, i, a) => a.findIndex(v2 => (v2.campaignId === v.campaignId)) === i);
-
-    const getLineCartData = campaignCategories.map(v => {
-      const totalAmount = objReduceDonation[v.campaignName]
-        .map((el: { totalAmount: number; }) => el.totalAmount);
+      const objReduceList = getDonorData.reduce((acc ,val) => {
+        return {
+          ...acc,
+          [val._id]: (acc[val._id] || 0) + 1,
+        }
+      }, {});
+  
+      donor_list = getDonorData
+      .map(el => {
+        return {
+          _id: el._id.toString(),
+          name: el.name,
+          country: el.country,
+          total: objReduceList[el._id.toString()],
+        }
+      })
+      .filter((v, i, a) => a.findIndex(v2 => (v2._id === v._id)) === i);
       
-      return {
-        name: v.campaignName,
-        data: totalAmount
-      }
-    });
+  
+      // Return program campaign
+      const allProgramsCampaign = allDonationLogs.map(el => {
+        return {
+          campaignId: el.campaignId.toString(),
+          campaignName: el.campaignName,
+          campaignType: el.campaignType,
+          campaignProgress: el.campaignProgress.toString(),
+          campaignTarget: el.campaignTarget.toString(),
+        }
+      })
+      
+      const getTotal_program = allProgramsCampaign.filter((v, i, a) => a.findIndex(v2 => (v2.campaignId === v.campaignId)) === i);
+      total_program = getTotal_program.length;
+  
+      const objReduceProgram = allDonationLogs.reduce((acc ,val) => {
+        return {
+          ...acc,
+          [val.campaignId]: (acc[val.campaignId] || 0) + 1,
+        }
+      }, {});
+  
+      most_popular_programs = getTotal_program.map(v => {
+        return {
+          ...v,
+          count: objReduceProgram[v.campaignId],
+        }
+      })
+  
+      // Return total_donatoin_period 
+      const categories = allDonationLogs.map(el => el.date);
+      const objReduceDonation = allDonationLogs.reduce((results, org) => {
+        (results[org.campaignName] = results[org.campaignName] || []).push(org);
+  
+        return results;
+      }, {});
+  
+      const campaignCategories = allProgramsCampaign
+        .filter((v, i, a) => a.findIndex(v2 => (v2.campaignId === v.campaignId)) === i);
+  
+      const getLineCartData = campaignCategories.map(v => {
+        const totalAmount = objReduceDonation[v.campaignName]
+          .map((el: { totalAmount: number; }) => el.totalAmount);
+        
+        return {
+          name: v.campaignName,
+          data: totalAmount
+        }
+      });
+  
+      const lineChartDatas = getLineCartData.map((value, i) => {
+        const catLength = categories.length;
+        const prev = getLineCartData[i - 1]?.data.length;
+        const current = getLineCartData[i]?.data.length;
+        const next = getLineCartData[i + 1]?.data.length;
+  
+        const newData: any[] = [ ...value.data ];
+  
+        if (i === 0) {
+          for (let index = 0; index < catLength - current; index++) {
+            newData.push(0);
+          };
+        } else if (value.name === campaignCategories[campaignCategories.length - 1].campaignName) {
+          for (let index = 0; index < catLength - current; index++) {
+            newData.unshift(0);
+          };
+        } else if (prev && next) {
+          for (let index = 0; index < prev; index++) {
+            newData.unshift(0);
+          };
+  
+          for (let index = 0; index < next; index++) {
+            newData.push(0);
+          };
+        }
+  
+        return {
+          name: value.name,
+          data: newData,
+        }
+      })
 
-    const lineChartDatas = getLineCartData.map((value, i) => {
-      const catLength = categories.length;
-      const prev = getLineCartData[i - 1]?.data.length;
-      const current = getLineCartData[i]?.data.length;
-      const next = getLineCartData[i + 1]?.data.length;
-
-      const newData: any[] = [ ...value.data ];
-
-      if (i === 0) {
-        for (let index = 0; index < catLength - current; index++) {
-          newData.push(0);
-        };
-      } else if (value.name === campaignCategories[campaignCategories.length - 1].campaignName) {
-        for (let index = 0; index < catLength - current; index++) {
-          newData.unshift(0);
-        };
-      } else if (prev && next) {
-        for (let index = 0; index < prev; index++) {
-          newData.unshift(0);
-        };
-
-        for (let index = 0; index < next; index++) {
-          newData.push(0);
-        };
-      }
-
-      return {
-        name: value.name,
-        data: newData,
-      }
-    })
-
-    return {
-      total_donation,
-      total_donor: getDonorData.length,
-      total_returning_donor: getDonorData.length,
-      total_program: total_program.length,
-      donor_list,
-      most_popular_programs,
-      total_donation_period: {
+      total_donation_period = {
         frequenceType: moment().year(),
         categories,
         data: lineChartDatas
       }
+    };
+
+    if (zakatLogs.length) {
+      const objTypeZakat = zakatLogs.reduce((acc ,val) => {
+        return {
+          ...acc,
+          [val.type]: (acc[val.type] || 0) + 1,
+        }
+      }, {});
+
+      const newZ = zakatLogs.reduce((r, a) => {
+        r[a.type] = r[a.type] || [];
+        r[a.type].push(a);
+
+        return r;
+      }, {});
+
+      const keys = Object.keys(objTypeZakat);
+      const res = [];
+
+      for(let i = 0; i < keys.length; i++){
+        const totalAmountType = newZ[keys[i]]
+          .map((el: { totalAmount: any; }) => el.totalAmount)
+          .reduce((a: number, b: number) => a + b)
+        
+        res.push({
+          type: keys[i],
+          totalAmount: totalAmountType,
+          count: objTypeZakat[keys[i]]
+        });
+      };
+
+      zakat_logs = res;
+    }
+
+    return {
+      campaigns: {
+        total_donation,
+        total_donor,
+        total_returning_donor,
+        total_program,
+        donor_list,
+        most_popular_programs,
+        total_donation_period,
+      },
+      zakat_logs
     };
   }
 
