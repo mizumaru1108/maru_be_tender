@@ -1,4 +1,4 @@
-import { Body } from '@nestjs/common';
+import { Body, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import {
   ConnectedSocket,
   OnGatewayConnection,
@@ -8,19 +8,17 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { user } from '@prisma/client';
+import { Prisma, user } from '@prisma/client';
 import { Server, Socket } from 'socket.io';
 import { FusionAuthService } from '../libs/fusionauth/services/fusion-auth.service';
+import { ROOT_LOGGER } from '../libs/root-logger';
 import { PrismaService } from '../prisma/prisma.service';
 import { SocketAuthMiddleware } from '../tender-auth/guards/socket-auth-middleware';
-// import { SocketAuthMiddleware } from '../tender-auth/guards/socket-auth-middleware';
-// import { SocketAuthGuard } from '../tender-auth/guards/socket-auth.guard';
 import { IIncomingMessageSummary } from '../tender-messages/interfaces/incomming-message';
 
 export interface AuthSocket extends Socket {
   user: user;
 }
-
 @WebSocketGateway({
   cors: {
     origin: [
@@ -40,6 +38,10 @@ export interface AuthSocket extends Socket {
 export class TenderEventsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': TenderEventsGateway.name,
+  });
+
   constructor(
     private readonly fusionAuthService: FusionAuthService,
     private readonly prismaService: PrismaService,
@@ -49,19 +51,41 @@ export class TenderEventsGateway
   server: Socket;
 
   @SubscribeMessage('incoming_message')
-  async emitIncomingMessage(
-    @ConnectedSocket() client: AuthSocket,
-    @Body() summary: IIncomingMessageSummary,
-  ) {
-    client.send('test', summary);
+  async emitIncomingMessage(@Body() summary: IIncomingMessageSummary) {
+    this.logger.log(
+      'info',
+      `Emitting incoming message to ${summary.receiverEmployeeName}`,
+    );
+    this.server.to(summary.receiverId).emit('incoming_message', summary);
   }
 
   handleConnection(client: AuthSocket) {
-    console.log('client connect', client.id, client.user);
+    client.join(client.user.id);
+    this.logger.log(
+      'info',
+      `User ${client.user.employee_name} has been connected to app!`,
+    );
   }
 
   async handleDisconnect(client: AuthSocket) {
-    console.log('client disconnect', client.id, client.user);
+    const userUpdatePayload: Prisma.userUpdateInput = {
+      is_online: false,
+      last_login: new Date().toISOString(),
+    };
+
+    await this.prismaService.user.update({
+      where: {
+        id: client.user.id,
+      },
+      data: userUpdatePayload,
+    });
+
+    client.leave(client.user.id);
+    client.disconnect(true);
+    this.logger.log(
+      'info',
+      `User ${client.user.employee_name} has been disconnected from the app!`,
+    );
   }
 
   afterInit(server: Server) {

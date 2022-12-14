@@ -18,7 +18,12 @@ export const SocketAuthMiddleware = (
     console.log('starting socket auth middleware');
 
     if (!socket.handshake.query.accessToken) {
-      throw new WsException('Access token is required!');
+      // throw new WsException('Access token is required!');
+      // throw new BadRequestException('Access token is required!');
+      next({
+        name: 'Unauthorized',
+        message: 'Access token is required!',
+      });
     }
 
     let jwtToken = socket.handshake.query.accessToken as string;
@@ -33,7 +38,12 @@ export const SocketAuthMiddleware = (
         !validToken.response.jwt ||
         !validToken.response.jwt.sub
       ) {
-        throw new WsException('Invalid token!');
+        // throw new WsException('Invalid token!');
+        // throw new UnauthorizedException('Invalid token!');
+        next({
+          name: 'Unauthorized',
+          message: 'Invalid token!',
+        });
       }
 
       const user = await prismaService.user.findFirst({
@@ -43,17 +53,19 @@ export const SocketAuthMiddleware = (
       });
 
       if (!user) {
-        throw new WsException('User is not found on this app!');
+        next({
+          name: 'NotFound',
+          message: 'User is not found on this app!',
+        });
       }
 
       const userUpdatePayload: Prisma.userUpdateInput = {
         is_online: true,
-        last_login: new Date().toISOString(),
       };
 
       const logginedUser = await prismaService.user.update({
         where: {
-          id: user.id,
+          id: user!.id!,
         },
         data: userUpdatePayload,
       });
@@ -62,13 +74,21 @@ export const SocketAuthMiddleware = (
         socket.user = logginedUser;
         next();
       } else {
-        throw new WsException('Failed to update user login status!');
+        // throw new WsException('Failed to update user login status!');
+        next({
+          name: 'Unauthorized',
+          message: 'Failed to update user login status!',
+        });
       }
     } catch (error) {
       console.log('error on catch', error);
-      throw new WsException(
-        'Something went wrong when trying to listen to the sockets!',
-      );
+      // throw new WsException(
+      //   'Something went wrong when trying to listen to the sockets!',
+      // );
+      next({
+        name: 'Unknown',
+        message: 'Something went wrong when trying to listen to the sockets!',
+      });
     }
   };
 };
