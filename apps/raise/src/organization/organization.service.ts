@@ -179,36 +179,37 @@ export class OrganizationService {
       { new: true },
     );
 
-    if (orgUpdated && organization.aboutPicture) {
-      this.updateUserProfile(orgUpdated.ownerUserId, organization.aboutPicture);
-    }
-
     if (!orgUpdated) {
-      return {
-        statusCode: 400,
-        message: 'Failed',
-      };
+      throw new BadRequestException('Update failed');
     }
 
-    const emailData = { name: orgUpdated.name };
-
-    const emailParams: SendEmailDto = {
-      to: orgUpdated.contactEmail, // change to your email to test, ex: rdanang.dev@gmail.com, default value is registeredUser.email
-      subject: 'Giving Sadaqah Updates',
-      mailType: 'template',
-      templatePath: 'account_update',
-      templateContext: {
-        name: orgUpdated.name,
-      },
-      from: 'hello@tmra.io', // we can make it dynamic when new AWS SESW identity available
-    };
-
-    await this.emailService.sendMail(emailParams);
-
-    return {
-      statusCode: 200,
-      organization: orgUpdated,
-    };
+    try {
+      if (orgUpdated && organization.aboutPicture) {
+        this.updateUserProfile(orgUpdated.ownerUserId, organization.aboutPicture);
+      }
+  
+      const emailData = { name: orgUpdated.name };
+  
+      const emailParams: SendEmailDto = {
+        to: orgUpdated.contactEmail, // change to your email to test, ex: rdanang.dev@gmail.com, default value is registeredUser.email
+        subject: 'Giving Sadaqah Updates',
+        mailType: 'template',
+        templatePath: 'account_update',
+        templateContext: {
+          name: orgUpdated.name,
+        },
+        from: 'hello@tmra.io', // we can make it dynamic when new AWS SESW identity available
+      };
+  
+      await this.emailService.sendMail(emailParams);
+  
+      return {
+        statusCode: 200,
+        organization: orgUpdated,
+      };
+    } catch (error) {
+      throw new HttpException(`${error}`, HttpStatus.BAD_REQUEST)
+    }
   }
 
   async getAppearance(organizationId: string) {
