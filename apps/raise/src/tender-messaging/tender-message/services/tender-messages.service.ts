@@ -1,14 +1,15 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { message, Prisma, room_chat, user_role } from '@prisma/client';
-import { TenderFusionAuthRoles } from '../../tender-commons/types';
-import { TenderEventsGateway } from '../../tender-events-gateway/tender-events.gateway';
-import { TenderUserRepository } from '../../tender-user/user/repositories/tender-user.repository';
+import { message, room_chat } from '@prisma/client';
+import { FindManyResult } from '../../../tender-commons/dto/find-many-result.dto';
+import { TenderFusionAuthRoles } from '../../../tender-commons/types';
+import { TenderEventsGateway } from '../../../tender-events-gateway/tender-events.gateway';
+import { TenderUserRepository } from '../../../tender-user/user/repositories/tender-user.repository';
+import { TenderRoomChatRepository } from '../../tender-room-chat/repositories/tender-room-chat.repository';
 import { CreateMessageDto } from '../dtos/requests/create-message.dto';
 import { SearchMessageFilterRequest } from '../dtos/requests/search-message-filter-request.dto';
 import { IIncomingMessageSummary } from '../interfaces/incomming-message';
 import { createMessageMapper } from '../mappers/create-message.mapper';
 import { TenderMessagesRepository } from '../repositories/tender-messages.repository';
-import { TenderRoomChatRepository } from '../repositories/tender-room-chat.repository';
 
 @Injectable()
 export class TenderMessagesService {
@@ -132,19 +133,13 @@ export class TenderMessagesService {
     return message;
   }
 
-  async findMessages(userId: string, filter: SearchMessageFilterRequest) {
+  async findMessages(
+    userId: string,
+    filter: SearchMessageFilterRequest,
+  ): Promise<FindManyResult<message[]>> {
     const response = await this.tenderMessagesRepository.findMessages(
       userId,
       filter,
-    );
-    return response;
-  }
-
-  async fetchLastChat(userId: string, limit: number, page: number) {
-    const response = await this.tenderMessagesRepository.fetchLastChat(
-      userId,
-      limit,
-      page,
     );
     return response;
   }

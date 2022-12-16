@@ -55,7 +55,7 @@ import { nodeMailerConfig } from './commons/configs/nodemailer-config';
 // import { metalApiConfig } from './commons/configs/metail-api-config';
 // import { gapiConfig } from './commons/configs/gapi-config';
 import { TenderCommentsModule } from './tender-comments/tender-comments.module';
-import { TenderMessagesModule } from './tender-messages/tender-messages.module';
+import { TenderMessagesModule } from './tender-messaging/tender-messages.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {

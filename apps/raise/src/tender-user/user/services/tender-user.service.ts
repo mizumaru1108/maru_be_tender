@@ -14,6 +14,8 @@ import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { UpdateUserDto } from '../dtos/requests/update-user.dto';
 import { UpdateUserPayload } from '../interfaces/update-user-payload.interface';
 import { updateUserMapper } from '../mappers/update-user.mapper';
+import { SearchUserFilterRequest } from '../dtos/requests/search-user-filter-request.dto';
+import { FindManyResult } from '../../../tender-commons/dto/find-many-result.dto';
 
 @Injectable()
 export class TenderUserService {
@@ -215,5 +217,34 @@ export class TenderUserService {
       updatedUser: updatedUser,
       logs,
     };
+  }
+
+  async findUsers(
+    filter: SearchUserFilterRequest,
+  ): Promise<FindManyResult<user[]>> {
+    const { sorting_field, hide_internal, hide_external } = filter;
+    if (
+      sorting_field &&
+      [
+        'employee_name',
+        'employee_path',
+        'email',
+        'created_at',
+        'updated_at',
+      ].indexOf(sorting_field) === -1
+    ) {
+      throw new BadRequestException(
+        `Sorting field by ${sorting_field} is not allowed!`,
+      );
+    }
+
+    if (hide_internal === '1' && hide_external === '1') {
+      throw new BadRequestException(
+        "You can't hide both internal and external user!",
+      );
+    }
+
+    const response = await this.tenderUserRepository.findUsers(filter);
+    return response;
   }
 }

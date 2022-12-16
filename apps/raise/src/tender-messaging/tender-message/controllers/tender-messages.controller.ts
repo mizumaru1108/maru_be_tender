@@ -1,13 +1,22 @@
-import { Body, Controller, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { message } from '@prisma/client';
-import { CurrentUser } from '../../commons/decorators/current-user.decorator';
-import { BaseResponse } from '../../commons/dtos/base-response';
-import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
-import { TenderRoles } from '../../tender-auth/decorators/tender-roles.decorator';
-import { TenderJwtGuard } from '../../tender-auth/guards/tender-jwt.guard';
-import { TenderRolesGuard } from '../../tender-auth/guards/tender-roles.guard';
-import { manualPaginationHelper } from '../../tender-commons/helpers/manual-pagination-helper';
-import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
+import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
+import { BaseResponse } from '../../../commons/dtos/base-response';
+import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
+import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
+import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
+import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
+import { ManualPaginatedResponse } from '../../../tender-commons/helpers/manual-paginated-response.dto';
+import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
+import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import { CreateMessageDto } from '../dtos/requests/create-message.dto';
 import { SearchMessageFilterRequest } from '../dtos/requests/search-message-filter-request.dto';
 import { TenderMessagesService } from '../services/tender-messages.service';
@@ -46,10 +55,13 @@ export class TenderMessagesController {
   }
 
   @UseGuards(TenderJwtGuard)
+  @Get('find')
   async findMessages(
     @CurrentUser() currentUser: TenderCurrentUser,
-    @Body() filter: SearchMessageFilterRequest,
-  ): Promise<any> {
+    @Query() filter: SearchMessageFilterRequest,
+  ): Promise<
+    ManualPaginatedResponse<message[] | [] | message[][] | undefined>
+  > {
     const res = await this.tenderMessagesService.findMessages(
       currentUser.id,
       filter,
@@ -60,28 +72,6 @@ export class TenderMessagesController {
       res.total,
       filter.page || 1,
       filter.limit || 10,
-      HttpStatus.OK,
-      'Success',
-    );
-  }
-
-  @UseGuards(TenderJwtGuard)
-  async fetchLastChat(
-    @CurrentUser() currentUser: TenderCurrentUser,
-    @Body('limit') limit: number,
-    @Body('page') page: number,
-  ): Promise<any> {
-    const res = await this.tenderMessagesService.fetchLastChat(
-      currentUser.id,
-      limit,
-      page,
-    );
-
-    return manualPaginationHelper(
-      res.data,
-      res.total,
-      page || 1,
-      limit || 10,
       HttpStatus.OK,
       'Success',
     );

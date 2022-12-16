@@ -1,4 +1,4 @@
-import { UploadFilesJsonbDto } from '../../tender-commons/dto/upload-files-jsonb.dto';
+import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
 import { MessageType } from '../types';
 
 export interface IIncomingMessageSummary {

@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { ROOT_LOGGER } from '../../libs/root-logger';
-import { PrismaService } from '../../prisma/prisma.service';
-import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
+
 import { v4 as uuidv4 } from 'uuid';
-import { CorrespondanceType } from '../types';
+import { CorrespondanceType } from '../../tender-message/types';
+import { Prisma } from '@prisma/client';
+import { ROOT_LOGGER } from '../../../libs/root-logger';
+import { PrismaService } from '../../../prisma/prisma.service';
+import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 
 @Injectable()
 export class TenderRoomChatRepository {
@@ -72,6 +74,63 @@ export class TenderRoomChatRepository {
         TenderRoomChatRepository.name,
         'createRoomChat Error:',
         `creating room chat between you and your partner!`,
+      );
+      throw theError;
+    }
+  }
+
+  async fetchLastChat(userId: string, limit: number, page: number) {
+    const offset = (page - 1) * limit;
+    let query: Prisma.room_chatWhereInput = {};
+
+    query = {
+      OR: [
+        {
+          participant1_user_id: {
+            equals: userId,
+          },
+        },
+        {
+          participant2_user_id: {
+            equals: userId,
+          },
+        },
+      ],
+    };
+
+    try {
+      const messages = await this.prismaService.room_chat.findMany({
+        where: {
+          ...query,
+        },
+        select: {
+          message: {
+            orderBy: {
+              created_at: 'desc',
+            },
+            take: 1,
+          },
+        },
+        take: limit,
+        skip: offset,
+      });
+
+      const count = await this.prismaService.room_chat.count({
+        where: {
+          ...query,
+        },
+      });
+
+      return {
+        data: messages,
+        total: count,
+      };
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderRoomChatRepository.name,
+        'fetchLastChat Error:',
+        `finding the last message on your room chat!`,
       );
       throw theError;
     }

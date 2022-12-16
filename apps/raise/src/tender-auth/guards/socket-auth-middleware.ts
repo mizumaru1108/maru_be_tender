@@ -50,6 +50,18 @@ export const SocketAuthMiddleware = (
         where: {
           id: validToken.response.jwt!.sub!,
         },
+        include: {
+          room_chat_as_participant1: {
+            select: {
+              id: true,
+            },
+          },
+          room_chat_as_participant2: {
+            select: {
+              id: true,
+            },
+          },
+        },
       });
 
       if (!user) {
@@ -68,7 +80,21 @@ export const SocketAuthMiddleware = (
           id: user!.id!,
         },
         data: userUpdatePayload,
+        include: {
+          room_chat_as_participant1: {
+            select: {
+              id: true,
+            },
+          },
+          room_chat_as_participant2: {
+            select: {
+              id: true,
+            },
+          },
+        },
       });
+
+      console.log('logginedUser', logginedUser);
 
       if (logginedUser) {
         socket.user = logginedUser;

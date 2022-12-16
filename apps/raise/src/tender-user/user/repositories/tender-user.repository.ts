@@ -12,6 +12,8 @@ import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 import { UserStatus } from '../types/user_status';
 import { UpdateUserPayload } from '../interfaces/update-user-payload.interface';
+import { SearchUserFilterRequest } from '../dtos/requests/search-user-filter-request.dto';
+import { FindManyResult } from '../../../tender-commons/dto/find-many-result.dto';
 
 @Injectable()
 export class TenderUserRepository {
@@ -111,11 +113,144 @@ export class TenderUserRepository {
     }
   }
 
-  async findUserByTrack(track: string): Promise<user[] | []> {
+  async findUsers(
+    filter: SearchUserFilterRequest,
+  ): Promise<FindManyResult<user[]>> {
+    const {
+      employee_name,
+      employee_path,
+      email,
+      page = 1,
+      limit = 10,
+      sort = 'desc',
+      sorting_field,
+      hide_external = '0',
+      hide_internal = '0',
+    } = filter;
+
+    console.log('filter', filter);
+
+    const offset = (page - 1) * limit;
+
+    let query: Prisma.userWhereInput = {};
+
+    if (employee_name) {
+      query = {
+        ...query,
+        employee_name: {
+          contains: employee_name,
+          mode: 'insensitive',
+        },
+      };
+    }
+
+    if (employee_path) {
+      query = {
+        ...query,
+        employee_path: {
+          equals: employee_path,
+          mode: 'insensitive',
+        },
+      };
+    }
+
+    if (email) {
+      query = {
+        ...query,
+        email: {
+          contains: email,
+          mode: 'insensitive',
+        },
+      };
+    }
+
+    if (hide_external && hide_external === '1') {
+      query = {
+        ...query,
+        // only show roles.user_type_id[] should be not contain "tender_client"
+        roles: {
+          every: {
+            user_type_id: {
+              not: 'CLIENT',
+            },
+          },
+        },
+      };
+    }
+
+    // revers of hide_external, if hide_internal is true, then only show roles.user_type_id[] should be contain "tender_client"
+    if (hide_internal && hide_internal === '1') {
+      query = {
+        ...query,
+        roles: {
+          some: {
+            user_type_id: {
+              equals: 'CLIENT',
+            },
+          },
+        },
+      };
+    }
+
+    // if key sorting_fields exist on <T> then sort by it
+    const order_by: Prisma.userOrderByWithRelationInput = {};
+    const field = sorting_field as keyof Prisma.userOrderByWithRelationInput;
+    if (sorting_field) {
+      order_by[field] = sort;
+    } else {
+      order_by.updated_at = sort;
+    }
+
+    try {
+      const users = await this.prismaService.user.findMany({
+        where: {
+          ...query,
+        },
+        include: {
+          roles: {
+            select: {
+              user_type_id: true,
+            },
+          },
+        },
+        skip: offset,
+        take: limit,
+        orderBy: order_by,
+      });
+
+      const count = await this.prismaService.user.count({
+        where: {
+          ...query,
+        },
+      });
+
+      return {
+        data: users,
+        total: count,
+      };
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderUserRepository.name,
+        'findUsers Error:',
+        `finding users!`,
+      );
+      throw theError;
+    }
+  }
+
+  async findUserByTrack(track: string) {
     try {
       return await this.prismaService.user.findMany({
         where: {
           employee_path: track,
+        },
+        include: {
+          roles: {
+            select: {
+              user_type_id: true,
+            },
+          },
         },
       });
     } catch (error) {

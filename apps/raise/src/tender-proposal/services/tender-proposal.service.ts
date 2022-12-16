@@ -1209,4 +1209,8 @@ export class TenderProposalService {
       },
     });
   }
+
+  async fetchTrack(limit: number, page: number) {
+    return await this.tenderProposalRepository.fetchTrack(limit, page);
+  }
 }

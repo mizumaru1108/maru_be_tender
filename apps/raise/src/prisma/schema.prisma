@@ -285,8 +285,8 @@ model user {
   proposal_follow_up_proposal_follow_up_employee_idTouser proposal_follow_up[]    @relation("proposal_follow_up_employee_idTouser")
   proposal_follow_up_proposal_follow_up_user_idTouser     proposal_follow_up[]    @relation("proposal_follow_up_user_idTouser")
   proposal_log                                            proposal_log[]
-  room_chat_room_chat_participant1_user_idTouser          room_chat[]             @relation("room_chat_participant1_user_idTouser")
-  room_chat_room_chat_participant2_user_idTouser          room_chat[]             @relation("room_chat_participant2_user_idTouser")
+  room_chat_as_participant1                               room_chat[]             @relation("room_chat_participant1_user_idTouser")
+  room_chat_as_participant2                               room_chat[]             @relation("room_chat_participant2_user_idTouser")
   schedule                                                schedule[]
   roles                                                   user_role[]
 }
