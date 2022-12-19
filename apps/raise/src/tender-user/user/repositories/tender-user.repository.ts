@@ -128,8 +128,6 @@ export class TenderUserRepository {
       hide_internal = '0',
     } = filter;
 
-    console.log('filter', filter);
-
     const offset = (page - 1) * limit;
 
     let query: Prisma.userWhereInput = {};
