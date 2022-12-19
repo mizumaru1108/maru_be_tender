@@ -56,6 +56,7 @@ import { nodeMailerConfig } from './commons/configs/nodemailer-config';
 // import { gapiConfig } from './commons/configs/gapi-config';
 import { TenderCommentsModule } from './tender-comments/tender-comments.module';
 import { TenderMessagesModule } from './tender-messaging/tender-messages.module';
+import { TenderStatisticsModule } from './tender-statistics/statistics.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -152,6 +153,7 @@ import { TenderMessagesModule } from './tender-messaging/tender-messages.module'
     GsUserModule,
     TenderCommentsModule,
     TenderMessagesModule,
+    TenderStatisticsModule
   ],
   controllers: [],
 })
