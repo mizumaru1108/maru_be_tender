@@ -11,7 +11,7 @@ export interface IIncomingMessageSummary {
   receiverRolesAs: string;
   receiverEmployeeName: string | null;
   roomChatId: string;
-  correspondanceType: string;
+  correspondenceType: string;
   meesageType: MessageType;
   content: string | null;
   attachment: UploadFilesJsonbDto | null;

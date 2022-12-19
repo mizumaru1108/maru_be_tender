@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, IsNotEmpty } from 'class-validator';
+import { IsOptional, IsString, IsNotEmpty, IsIn } from 'class-validator';
 import { BaseFilterRequest } from '../../../../commons/dtos/base-filter-request.dto';
 
 export class SearchMessageFilterRequest extends BaseFilterRequest {
@@ -26,4 +26,11 @@ export class SearchMessageFilterRequest extends BaseFilterRequest {
   @IsString()
   @IsNotEmpty()
   room_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @IsIn(['1', '0'], { message: 'group_message must be 1 or 0' })
+  group_message?: string;
 }

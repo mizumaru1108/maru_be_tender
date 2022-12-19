@@ -94,7 +94,7 @@ export const SocketAuthMiddleware = (
         },
       });
 
-      console.log('logginedUser', logginedUser);
+      // console.log('logginedUser', logginedUser);
 
       if (logginedUser) {
         socket.user = logginedUser;

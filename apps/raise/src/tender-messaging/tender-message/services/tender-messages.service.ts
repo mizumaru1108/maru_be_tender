@@ -81,7 +81,7 @@ export class TenderMessagesService {
       correspondanceType === 'EXTERNAL'
     ) {
       throw new BadRequestException(
-        'You cant only send message to Internal Correspondance (other administrative account)!',
+        'You can only send message to Internal Correspondance (other administrative account)!',
       );
     }
 
@@ -91,6 +91,9 @@ export class TenderMessagesService {
       await this.tenderRoomChatRepository.findOurRoomChat(senderId, partner_id);
 
     if (!existingRoomChat) {
+      if (userRole === 'tender_client') {
+        throw new BadRequestException("You can't start a new message!");
+      }
       const newRoomChat = await this.tenderRoomChatRepository.createRoomChat(
         senderId,
         partner_id,
@@ -121,7 +124,7 @@ export class TenderMessagesService {
       receiverRolesAs: partnerSelectedRole,
       receiverEmployeeName: partner.employee_name || null,
       roomChatId: roomChat.id,
-      correspondanceType: correspondanceType,
+      correspondenceType: correspondanceType,
       meesageType: contentType,
       content: content || null,
       attachment: attachment || null,
@@ -133,10 +136,16 @@ export class TenderMessagesService {
     return message;
   }
 
-  async findMessages(
-    userId: string,
-    filter: SearchMessageFilterRequest,
-  ): Promise<FindManyResult<message[]>> {
+  async findMessages(userId: string, filter: SearchMessageFilterRequest) {
+    const { sorting_field } = filter;
+    if (
+      sorting_field &&
+      ['created_at', 'updated_at'].indexOf(sorting_field) === -1
+    ) {
+      throw new BadRequestException(
+        `Sorting field by ${sorting_field} is not allowed!`,
+      );
+    }
     const response = await this.tenderMessagesRepository.findMessages(
       userId,
       filter,

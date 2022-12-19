@@ -25,18 +25,7 @@ import { TenderMessagesService } from '../services/tender-messages.service';
 export class TenderMessagesController {
   constructor(private readonly tenderMessagesService: TenderMessagesService) {}
 
-  @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles(
-    'tender_admin',
-    'tender_ceo',
-    'tender_consultant',
-    'tender_accounts_manager',
-    'tender_project_supervisor',
-    'tender_project_manager',
-    'tender_moderator',
-    'tender_finance',
-    'tender_cashier',
-  )
+  @UseGuards(TenderJwtGuard)
   @Post('send')
   async send(
     @CurrentUser() currentUser: TenderCurrentUser,
@@ -59,9 +48,7 @@ export class TenderMessagesController {
   async findMessages(
     @CurrentUser() currentUser: TenderCurrentUser,
     @Query() filter: SearchMessageFilterRequest,
-  ): Promise<
-    ManualPaginatedResponse<message[] | [] | message[][] | undefined>
-  > {
+  ): Promise<ManualPaginatedResponse<any>> {
     const res = await this.tenderMessagesService.findMessages(
       currentUser.id,
       filter,
