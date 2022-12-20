@@ -187,6 +187,7 @@ model proposal {
   target_group_age                    Int?
   been_made_before                    Boolean?
   remote_or_insite                    Boolean?
+  old_inner_status                    String?                    @db.VarChar
   proposal_beneficiaries              proposal_beneficiaries?    @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
   project_tracks                      project_tracks?            @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
   bank_information                    bank_information?          @relation("bank_informationToproposal_proposal_bank_id", fields: [proposal_bank_id], references: [id], onDelete: Cascade)
