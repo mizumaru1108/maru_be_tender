@@ -79,14 +79,15 @@ export class TenderEventsGateway
   @WebSocketServer()
   server: Socket;
 
-  // @SubscribeMessage('incoming_message')
-  async emitIncomingMessage(@Body() summary: IIncomingMessageSummary) {
-    // call here
+  @SubscribeMessage('incoming_message')
+  listenIncomingMessage(
+    @ConnectedSocket() client: AuthSocket,
+    @Body() summary: IIncomingMessageSummary,
+  ) {
     this.logger.log(
       'info',
-      `Emitting incoming message to ${summary.receiverEmployeeName}`,
+      `incoming message from ${summary.senderEmployeeName} on room ${summary.roomChatId}`,
     );
-    this.server.to(summary.roomChatId).emit('incoming_message', summary);
   }
 
   @SubscribeMessage('send_message')
@@ -94,17 +95,23 @@ export class TenderEventsGateway
     @ConnectedSocket() connectedsocket: AuthSocket,
     @MessageBody() messagebody: CreateMessageDto,
   ) {
-    console.log('send message is emited');
-    console.log('socket user', connectedsocket.user);
-    console.log('messagebody', messagebody);
+    // console.log('send message is emited');
+    // console.log('socket user', connectedsocket.user);
+    // console.log('messagebody', messagebody);
     const userSelectedRole =
       messagebody.current_user_selected_role as TenderFusionAuthRoles;
 
-    await this.tenderMessagesService.send(
+    const response = await this.tenderMessagesService.send(
       connectedsocket.user.id,
       userSelectedRole,
       messagebody,
     );
+
+    this.logger.log(
+      'info',
+      `User ${connectedsocket.user.employee_name} has sent a message to room ${response.roomChatId}`,
+    );
+    this.server.to(response.roomChatId).emit('incoming_message', response);
   }
 
   @SubscribeMessage('exception')

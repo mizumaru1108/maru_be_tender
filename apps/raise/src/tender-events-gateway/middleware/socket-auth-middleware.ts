@@ -61,8 +61,8 @@ export const SocketAuthMiddleware = (
         next(new WsUnauthorizedException('User is not found on this app!'));
       }
 
-      const userUpdatePayload: any = {
-        is_online: 'asdfasdf',
+      const userUpdatePayload: Prisma.userUpdateInput = {
+        is_online: true,
       };
 
       const logginedUser = await prismaService.user.update({
