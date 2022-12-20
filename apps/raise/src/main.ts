@@ -34,6 +34,8 @@ async function bootstrap() {
     origin: [
       'http://localhost:3000',
       'http://localhost:8081',
+      // 'http://localhost:4040',
+      // "https://77a9-2001-448a-2082-be2a-6548-a870-bb02-ceb8.ap.ngrok.io",
       // HTTP
       'http://dev.tmra.io', // TMRA Dev
       'http://staging.tmra.io', // TMRA staging

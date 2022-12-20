@@ -131,7 +131,7 @@ export class TenderMessagesService {
     };
 
     /* emit event on socket */
-    await this.eventGateway.emitIncomingMessage(summary);
+    await this.eventGateway.emitIncomingMessage(summary); // emit to sender
 
     return message;
   }

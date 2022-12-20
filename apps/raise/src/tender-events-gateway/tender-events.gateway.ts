@@ -1,5 +1,7 @@
 import { Body } from '@nestjs/common';
 import {
+  ConnectedSocket,
+  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
@@ -26,20 +28,23 @@ export interface AuthSocket extends Socket {
   };
 }
 @WebSocketGateway({
-  cors: {
-    origin: [
-      'http://localhost:3000', // dev purposes
-      /* http */
-      'http://app-dev.tmra.io',
-      'http://app-staging.tmra.io',
-      'http://gaith.hcharity.org',
-      /* https */
-      'https://app-dev.tmra.io',
-      'https://app-staging.tmra.io',
-      'https://gaith.hcharity.org',
-    ],
-    credentials: true,
-  },
+  // cors: {
+  //   origin: [
+  //     'http://localhost:3000', // dev purposes
+  //     'https://77a9-2001-448a-2082-be2a-6548-a870-bb02-ceb8.ap.ngrok.io',
+  //     'http://localhost:4040',
+  //     /* http */
+  //     'http://app-dev.tmra.io',
+  //     'http://app-staging.tmra.io',
+  //     'http://gaith.hcharity.org',
+  //     /* https */
+  //     'https://app-dev.tmra.io',
+  //     'https://app-staging.tmra.io',
+  //     'https://gaith.hcharity.org',
+  //   ],
+  //   // credentials: true,
+  // },
+  cors: '*',
 })
 export class TenderEventsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
@@ -50,19 +55,30 @@ export class TenderEventsGateway
 
   constructor(
     private readonly fusionAuthService: FusionAuthService,
-    private readonly prismaService: PrismaService,
+    private readonly prismaService: PrismaService, /// message service here
   ) {}
 
   @WebSocketServer()
   server: Socket;
 
-  @SubscribeMessage('incoming_message')
+  // @SubscribeMessage('incoming_message')
   async emitIncomingMessage(@Body() summary: IIncomingMessageSummary) {
+    // call here
     this.logger.log(
       'info',
       `Emitting incoming message to ${summary.receiverEmployeeName}`,
     );
     this.server.to(summary.roomChatId).emit('incoming_message', summary);
+  }
+
+  @SubscribeMessage('send_message')
+  async emitSendMessage(
+    client: AuthSocket,
+    @Body() body: any,
+    @ConnectedSocket() connectedsocket: Socket,
+    @MessageBody() messagebody: any,
+  ) {
+    console.log('send message is emited');
   }
 
   handleConnection(client: AuthSocket) {
