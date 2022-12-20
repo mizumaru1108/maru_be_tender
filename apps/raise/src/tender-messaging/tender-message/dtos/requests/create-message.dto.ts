@@ -1,10 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
-  IsString,
-  IsNotEmpty,
   IsIn,
-  IsUUID,
+  IsNotEmpty,
   IsOptional,
+  IsString,
+  IsUUID,
   ValidateNested,
 } from 'class-validator';
 import { UploadFilesJsonbDto } from '../../../../tender-commons/dto/upload-files-jsonb.dto';
@@ -26,7 +27,7 @@ export class CreateMessageDto {
   @IsIn(['INTERNAL', 'EXTERNAL'], {
     message: 'Correspondance type must be either INTERNAL or EXTERNAL',
   })
-  correspondance_type_id: 'INTERNAL' | 'EXTERNAL';
+  correspondence_type_id: 'INTERNAL' | 'EXTERNAL';
 
   /**
    * if content type is TEXT this field is required
@@ -44,6 +45,7 @@ export class CreateMessageDto {
   @IsOptional()
   @IsNotEmpty()
   @ValidateNested()
+  @Type(() => UploadFilesJsonbDto)
   attachment?: UploadFilesJsonbDto;
 
   /**
@@ -77,4 +79,9 @@ export class CreateMessageDto {
   @IsString()
   @IsNotEmpty()
   partner_selected_role: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  current_user_selected_role: string;
 }

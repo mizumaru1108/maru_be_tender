@@ -5,17 +5,18 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma, user } from '@prisma/client';
-import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
-import { TenderCreateUserDto } from '../dtos/requests/create-user.dto';
-import { TenderUserRepository } from '../repositories/tender-user.repository';
 import { v4 as uuidv4 } from 'uuid';
-import { CreateUserResponseDto } from '../dtos/responses/create-user-response.dto';
+import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
+import { FindManyResult } from '../../../tender-commons/dto/find-many-result.dto';
+import { TenderCreateUserDto } from '../dtos/requests/create-user.dto';
+import { SearchUserFilterRequest } from '../dtos/requests/search-user-filter-request.dto';
 import { UpdateUserDto } from '../dtos/requests/update-user.dto';
+import { CreateUserResponseDto } from '../dtos/responses/create-user-response.dto';
+import { TenderCurrentUser } from '../interfaces/current-user.interface';
 import { UpdateUserPayload } from '../interfaces/update-user-payload.interface';
 import { updateUserMapper } from '../mappers/update-user.mapper';
-import { SearchUserFilterRequest } from '../dtos/requests/search-user-filter-request.dto';
-import { FindManyResult } from '../../../tender-commons/dto/find-many-result.dto';
+import { TenderUserRepository } from '../repositories/tender-user.repository';
 
 @Injectable()
 export class TenderUserService {
@@ -220,6 +221,7 @@ export class TenderUserService {
   }
 
   async findUsers(
+    currentUser: TenderCurrentUser,
     filter: SearchUserFilterRequest,
   ): Promise<FindManyResult<user[]>> {
     const { sorting_field, hide_internal, hide_external } = filter;
@@ -244,7 +246,14 @@ export class TenderUserService {
       );
     }
 
-    const response = await this.tenderUserRepository.findUsers(filter);
+    /* if loggined user is account manager, it will show all user, if not, only active user will shown */
+    const findOnlyActive =
+      currentUser.choosenRole === 'tender_accounts_manager' ? false : true;
+
+    const response = await this.tenderUserRepository.findUsers(
+      filter,
+      findOnlyActive,
+    );
     return response;
   }
 }

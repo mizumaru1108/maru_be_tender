@@ -18,5 +18,6 @@ import { TenderRoomChatService } from './tender-room-chat/services/tender-room-c
     TenderRoomChatRepository,
   ],
   imports: [TenderUserModule],
+  exports: [TenderMessagesService, TenderRoomChatService],
 })
 export class TenderMessagesModule {}

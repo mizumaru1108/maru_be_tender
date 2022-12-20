@@ -1,19 +1,13 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import {
-  prisma,
-  Prisma,
-  project_tracks,
-  user,
-  user_type,
-} from '@prisma/client';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
-import { ROOT_LOGGER } from '../../../libs/root-logger';
+import { Injectable } from '@nestjs/common';
+import { Prisma, project_tracks, user, user_type } from '@prisma/client';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
-import { UserStatus } from '../types/user_status';
-import { UpdateUserPayload } from '../interfaces/update-user-payload.interface';
-import { SearchUserFilterRequest } from '../dtos/requests/search-user-filter-request.dto';
+import { ROOT_LOGGER } from '../../../libs/root-logger';
+import { PrismaService } from '../../../prisma/prisma.service';
 import { FindManyResult } from '../../../tender-commons/dto/find-many-result.dto';
+import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
+import { SearchUserFilterRequest } from '../dtos/requests/search-user-filter-request.dto';
+import { UpdateUserPayload } from '../interfaces/update-user-payload.interface';
+import { UserStatus } from '../types/user_status';
 
 @Injectable()
 export class TenderUserRepository {
@@ -115,6 +109,7 @@ export class TenderUserRepository {
 
   async findUsers(
     filter: SearchUserFilterRequest,
+    findOnlyActive: boolean,
   ): Promise<FindManyResult<user[]>> {
     const {
       employee_name,
@@ -145,9 +140,9 @@ export class TenderUserRepository {
     if (employee_path) {
       query = {
         ...query,
+        // why ? because GENERAL will show, on what ever the path is
         employee_path: {
-          equals: employee_path,
-          mode: 'insensitive',
+          in: [employee_path, 'GENERAL'],
         },
       };
     }
@@ -186,6 +181,15 @@ export class TenderUserRepository {
               equals: 'CLIENT',
             },
           },
+        },
+      };
+    }
+
+    if (findOnlyActive) {
+      query = {
+        ...query,
+        status_id: {
+          equals: 'ACTIVE_ACCOUNT',
         },
       };
     }

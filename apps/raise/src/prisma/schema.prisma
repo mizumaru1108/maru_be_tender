@@ -188,6 +188,9 @@ model proposal {
   been_made_before                    Boolean?
   remote_or_insite                    Boolean?
   old_inner_status                    String?                    @db.VarChar
+  support_goal_id                     String?
+  accreditation_type_id               String?
+  accreditation_type                  accreditation_type?        @relation(fields: [accreditation_type_id], references: [id])
   proposal_beneficiaries              proposal_beneficiaries?    @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
   project_tracks                      project_tracks?            @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
   bank_information                    bank_information?          @relation("bank_informationToproposal_proposal_bank_id", fields: [proposal_bank_id], references: [id], onDelete: Cascade)
@@ -196,7 +199,8 @@ model proposal {
   proposal_status                     proposal_status?           @relation(fields: [inner_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_status_fkey")
   proposal_step                       proposal_step?             @relation(fields: [step], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user                                user                       @relation(fields: [submitter_user_id], references: [id], onDelete: Cascade)
-  track                               track?                     @relation(fields: [track_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  support_goal                        support_goal?              @relation(fields: [support_goal_id], references: [id])
+  track                               track?                     @relation(fields: [track_id], references: [id], onUpdate: NoAction)
   bank_informations                   bank_information[]
   consultant_form                     consultant_form?
   payment                             payment[]
@@ -368,6 +372,7 @@ model supervisor {
   vat                 Boolean?
   vat_percentage      Int?
   inclu_or_exclu      Boolean?
+  support_goals       String?
   proposal            proposal @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
 }
 
@@ -625,7 +630,22 @@ model content_type {
   message message[]
 }
 
-model support_goals {
-  id    String @id
-  title String
+model accreditation_type {
+  id       String     @id
+  title    String     @unique
+  proposal proposal[]
+}
+
+model project_timeline {
+  id          String   @id
+  name        String   @db.VarChar
+  start_date  DateTime @db.Date
+  end_date    DateTime @db.Date
+  proposal_id String
+}
+
+model support_goal {
+  id       String     @id
+  title    String?    @unique
+  proposal proposal[]
 }

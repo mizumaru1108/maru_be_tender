@@ -1,8 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { message, room_chat } from '@prisma/client';
-import { FindManyResult } from '../../../tender-commons/dto/find-many-result.dto';
+import { room_chat } from '@prisma/client';
 import { TenderFusionAuthRoles } from '../../../tender-commons/types';
-import { TenderEventsGateway } from '../../../tender-events-gateway/tender-events.gateway';
+
 import { TenderUserRepository } from '../../../tender-user/user/repositories/tender-user.repository';
 import { TenderRoomChatRepository } from '../../tender-room-chat/repositories/tender-room-chat.repository';
 import { CreateMessageDto } from '../dtos/requests/create-message.dto';
@@ -17,17 +16,16 @@ export class TenderMessagesService {
     private readonly tenderMessagesRepository: TenderMessagesRepository,
     private readonly tenderRoomChatRepository: TenderRoomChatRepository,
     private readonly tenderUserRepository: TenderUserRepository,
-    private eventGateway: TenderEventsGateway,
   ) {}
 
   async send(
     senderId: string,
     userRole: TenderFusionAuthRoles,
     request: CreateMessageDto,
-  ): Promise<message> {
+  ): Promise<IIncomingMessageSummary> {
     const {
       partner_id,
-      correspondance_type_id: correspondanceType,
+      correspondence_type_id: correspondanceType,
       content_type_id: contentType,
       content,
       attachment,
@@ -127,13 +125,13 @@ export class TenderMessagesService {
       correspondenceType: correspondanceType,
       meesageType: contentType,
       content: content || null,
-      attachment: attachment || null,
+      attachment: null,
     };
 
     /* emit event on socket */
-    await this.eventGateway.emitIncomingMessage(summary); // emit to sender
+    // await this.eventGateway.emitIncomingMessage(summary); // emit to sender
 
-    return message;
+    return summary;
   }
 
   async findMessages(userId: string, filter: SearchMessageFilterRequest) {

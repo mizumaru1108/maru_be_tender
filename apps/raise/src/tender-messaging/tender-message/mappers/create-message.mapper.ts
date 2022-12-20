@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
-import { CreateMessageDto } from '../dtos/requests/create-message.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { CreateMessageDto } from '../dtos/requests/create-message.dto';
 
 export const createMessageMapper = (
   senderId: string,
@@ -10,7 +10,7 @@ export const createMessageMapper = (
   const {
     content_type_id: contentType,
     content,
-    attachment,
+    // attachment,
     content_title,
     reply_id,
   } = request;
@@ -36,11 +36,12 @@ export const createMessageMapper = (
 
   if (contentType === 'TEXT') {
     createMessagePaylaod.content = content;
-  } else {
-    createMessagePaylaod.attachment = attachment as
-      | Prisma.InputJsonValue
-      | undefined;
   }
+  //  else {
+  //   createMessagePaylaod.attachment = attachment as
+  //     | Prisma.InputJsonValue
+  //     | undefined;
+  // }
 
   if (content_title) createMessagePaylaod.content_title = content_title;
 

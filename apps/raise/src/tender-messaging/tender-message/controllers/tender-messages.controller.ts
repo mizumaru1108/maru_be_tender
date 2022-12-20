@@ -7,18 +7,16 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { message } from '@prisma/client';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
-import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
 import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
-import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
 import { ManualPaginatedResponse } from '../../../tender-commons/helpers/manual-paginated-response.dto';
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import { CreateMessageDto } from '../dtos/requests/create-message.dto';
 import { SearchMessageFilterRequest } from '../dtos/requests/search-message-filter-request.dto';
+import { IIncomingMessageSummary } from '../interfaces/incomming-message';
 import { TenderMessagesService } from '../services/tender-messages.service';
 
 @Controller('tender/messages')
@@ -30,7 +28,7 @@ export class TenderMessagesController {
   async send(
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: CreateMessageDto,
-  ): Promise<BaseResponse<message>> {
+  ): Promise<BaseResponse<IIncomingMessageSummary>> {
     const res = await this.tenderMessagesService.send(
       currentUser.id,
       currentUser.choosenRole,

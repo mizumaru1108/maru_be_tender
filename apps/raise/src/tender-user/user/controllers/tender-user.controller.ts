@@ -47,9 +47,13 @@ export class TenderUserController {
   @UseGuards(TenderJwtGuard)
   @Get('find-users')
   async findUsers(
+    @CurrentUser() currentUser: TenderCurrentUser,
     @Query() filter: SearchUserFilterRequest,
   ): Promise<ManualPaginatedResponse<user[] | [] | user[][] | undefined>> {
-    const response = await this.tenderUserService.findUsers(filter);
+    const response = await this.tenderUserService.findUsers(
+      currentUser,
+      filter,
+    );
 
     return manualPaginationHelper(
       response.data,
