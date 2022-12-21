@@ -31,7 +31,7 @@ function MessagesPage() {
   const [content, setContent] = useState<messageContent[]>([]);
   const [room, setRoom] = useState<string>();
   return (
-    <Page title="Previous Funding Requests">
+    <Page title="Message Page">
       <ContentStyle>
         <Grid container columns={15} spacing={3} direction="row">
           <Grid item xs={7} padding={2}>
@@ -41,7 +41,6 @@ function MessagesPage() {
               accountType={role}
               roomId={(id) => {
                 setRoom(id);
-                console.log('room', room);
               }}
             />
           </Grid>

@@ -39,6 +39,15 @@ const en = {
         pending_projects: 'Pending Projects',
       },
     },
+    messages: {
+      btn: {
+        create_new_message: 'Create a New Message',
+      },
+      empty_user_data: 'Employee list is empty, please choose another tracks in list!',
+      text_field: {
+        placeholder_list_tracks: 'Choose the path type for Employee'
+      }
+    }
   },
   errors: {
     login: {

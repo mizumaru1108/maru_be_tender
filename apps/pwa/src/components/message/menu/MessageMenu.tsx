@@ -1,4 +1,5 @@
-import { Box, Stack, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Stack, Tab, Tabs, Typography, Button, useTheme } from '@mui/material';
+import Iconify from 'components/Iconify';
 import { useState } from 'react';
 import useLocales from '../../../hooks/useLocales';
 import ModalDialog from '../../modal-dialog';
@@ -11,6 +12,7 @@ import MessageMenuHeader from './MessageMenuHeader';
 import MessageMenuItem from './MessageMenuItem';
 
 const MessageMenu = ({ internalData, externalData, accountType, roomId }: IMenu) => {
+  const theme = useTheme();
   const { translate } = useLocales();
   const [modalState, setModalState] = useState(false);
   const [open, setOpen] = useState(false);
@@ -44,9 +46,7 @@ const MessageMenu = ({ internalData, externalData, accountType, roomId }: IMenu)
         {...other}
       >
         {value === index && (
-          <Box sx={{ p: 3 }}>
-            <Typography>{children}</Typography>
-          </Box>
+          <Box>{children}</Box>
         )}
       </div>
     );
@@ -59,13 +59,8 @@ const MessageMenu = ({ internalData, externalData, accountType, roomId }: IMenu)
   }
 
   return (
-    <Stack display="flex" spacing={1} sx={{ margin: 2.5 }} gap="20px">
+    <Stack display="flex" spacing={3} sx={{ margin: 2.5 }}>
       <MessageMenuHeader onClickFilter={() => setOpen(true)} />
-      {/* <FilterModalMessage
-        open={open}
-        handleClose={handleCloseFilter}
-        filters={filterProjectTrack}
-      /> */}
       <FilterModalMessage
         open={open}
         handleClose={handleCloseFilter}
@@ -75,6 +70,25 @@ const MessageMenu = ({ internalData, externalData, accountType, roomId }: IMenu)
         supervisors={filterSupervisor}
         projectTracks={filterProjectTrack}
       />
+
+      {[
+        'tender_project_manager',
+        'tender_accounts_manager',
+        'tender_project_supervisor',
+        'tender_moderator',
+        'tender_consultant',
+        'tender_ceo',
+        'tender_finance',
+        'tender_cashier',
+        'tender_client',
+        'tender_admin',
+      ].includes(accountType) && (
+        <MessageMenuButton
+          onClick={() => {
+            setModalState(true);
+          }}
+        />
+      )}
 
       {[
         'tender_moderator',
@@ -113,23 +127,6 @@ const MessageMenu = ({ internalData, externalData, accountType, roomId }: IMenu)
       )}
 
       {[
-        'tender_project_manager',
-        'tender_accounts_manager',
-        'tender_project_supervisor',
-        'tender_moderator',
-        'tender_consultant',
-        'tender_ceo',
-        'tender_finance',
-        'tender_cashier',
-      ].includes(accountType) && (
-        <MessageMenuButton
-          onClick={() => {
-            setModalState(true);
-          }}
-        />
-      )}
-
-      {[
         'tender_moderator',
         'tender_accounts_manager',
         'tender_project_supervisor',
@@ -165,7 +162,7 @@ const MessageMenu = ({ internalData, externalData, accountType, roomId }: IMenu)
         'tender_finance',
         'tender_cashier',
       ].includes(accountType) && (
-        <Box sx={{ overflowX: 'hidden', height: '550px' }}>
+        <Box sx={{ overflowX: 'hidden' }}>
           <MessageMenuItem data={internalData} getRoomId={(value) => roomId(value)} />
         </Box>
       )}
@@ -179,18 +176,19 @@ const MessageMenu = ({ internalData, externalData, accountType, roomId }: IMenu)
           </Stack>
         }
         content={
-          <Stack display="flex" spacing={1} sx={{ margin: 2.5 }} height={400}>
+          <Box sx={{ mx: 1.5 }}>
             <NewMessageModalForm
               onSubmit={(value: any) => {
                 console.log('form callback', value);
                 handleAddNewMessage();
               }}
             />
-          </Stack>
+          </Box>
         }
         isOpen={modalState}
         onClose={handleCloseModal}
-        styleContent={{ padding: '1em', backgroundColor: '#fff' }}
+        styleContent={{ padding: 2.25, backgroundColor: '#fff' }}
+        maxWidth="md"
       />
     </Stack>
   );

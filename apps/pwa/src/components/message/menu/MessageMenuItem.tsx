@@ -25,7 +25,7 @@ export default function MessageMenuItem({ data, getRoomId }: IMessageMenuItem) {
       {data.map((item, index) => (
         <Stack
           direction="row"
-          gap="8px"
+          spacing={1}
           key={index}
           sx={{
             padding: 2,

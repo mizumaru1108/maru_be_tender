@@ -37,6 +37,15 @@ const ar = {
         pending_projects: 'المشاريع المعلقة',
       },
     },
+    messages: {
+      btn: {
+        create_new_message: 'أنشئ رسالة جديدة'
+      },
+      empty_user_data: 'قائمة الموظفين فارغة ، يرجى اختيار مسارات أخرى في القائمة',
+      text_field: {
+        placeholder_list_tracks: 'اختر نوع المسار للموظف'
+      }
+    }
   },
   errors: {
     login: {

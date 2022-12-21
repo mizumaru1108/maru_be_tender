@@ -9,30 +9,21 @@ type Props = {
 export default function MessageMenuButton({ onClick }: Props) {
   const { translate } = useLocales();
   return (
-    <Stack alignItems="flex-end" sx={{ mt: '0 !important' }}>
+    <Stack alignItems="flex-start">
       <Button
+        variant="contained"
+        size="medium"
         onClick={() => {
           if (onClick !== undefined) onClick();
         }}
-        sx={{
-          backgroundColor: '#0E8478',
-          color: '#fff',
-          borderRadius: 2,
-          padding: 2,
-          width: '162px',
-          height: '51px',
-        }}
-        endIcon={<Iconify icon={'bi:chat-square-text'} color="#fff" width={24} height={24} />}
       >
-        <Typography
-          sx={{
-            fontWeight: 600,
-            fontSize: '10px',
-            color: '#fff',
-          }}
-        >
-          {translate('new_message_modal.title')}
-        </Typography>
+        <Iconify
+          icon={'bi:chat-square-text'}
+          width={16}
+          height={16}
+          sx={{ mr: 1 }}
+        />
+        {translate('new_message_modal.title')}
       </Button>
     </Stack>
   );

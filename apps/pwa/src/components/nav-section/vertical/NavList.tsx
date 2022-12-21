@@ -47,6 +47,9 @@ export default function NavList({
               fontFamily: 'Cairo',
               fontStyle: 'Regular',
               fontSize: '14px',
+              ...(active && {
+                color: '#fff',
+              }),
             }}
             item={data}
             depth={depth}
@@ -57,7 +60,13 @@ export default function NavList({
         </Link>
       ) : (
         <NavItem
-          sx={{ color: '#000', fontSize: '14px' }}
+          sx={{
+            color: '#000',
+            fontSize: '14px',
+            ...(active && {
+              color: '#fff',
+            })
+          }}
           item={data}
           depth={depth}
           open={open}

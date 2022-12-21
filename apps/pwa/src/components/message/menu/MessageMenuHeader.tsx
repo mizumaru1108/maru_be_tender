@@ -23,35 +23,15 @@ export default function MessageMenuHeader({ onClickFilter }: Props) {
         },
       }}
     >
-      {/* <Stack
-        display="flex"
-        direction="row"
-        onClick={() => alert('Clicked')}
+      <Typography
         sx={{
-          width: '82px',
-          height: '38px',
-          borderRadius: '8px',
-          color: '#000',
-          backgroundColor: '#fff',
-          border: '1px solid #000',
-          '&:hover': {
-            cursor: 'pointer',
-          },
+          fontFamily: 'Cairo',
+          fontWeight: 700,
+          fontSize: '24px',
         }}
-        justifyContent="center"
-        alignItems="center"
       >
-        <Iconify icon={'clarity:filter-line'} color="#000" width={16} height={16} />
-        <Typography
-          sx={{
-            fontSize: '12px',
-            color: '#1E1E1E',
-            paddingLeft: '4px',
-          }}
-        >
-          {translate('commons.filter_button_label')}
-        </Typography>
-      </Stack> */}
+        {translate('message')}
+      </Typography>
       <Button
         sx={{ color: '#000', backgroundColor: '#fff', width: '82px', p: 1 }}
         variant="outlined"
@@ -62,15 +42,6 @@ export default function MessageMenuHeader({ onClickFilter }: Props) {
       >
         {translate('commons.filter_button_label')}
       </Button>
-      <Typography
-        sx={{
-          fontFamily: 'Cairo',
-          fontWeight: 700,
-          fontSize: '24px',
-        }}
-      >
-        {translate('message')}
-      </Typography>
     </Stack>
   );
 }
