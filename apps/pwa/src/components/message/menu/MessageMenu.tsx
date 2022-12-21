@@ -80,8 +80,6 @@ const MessageMenu = ({ internalData, externalData, accountType, roomId }: IMenu)
         'tender_ceo',
         'tender_finance',
         'tender_cashier',
-        'tender_client',
-        'tender_admin',
       ].includes(accountType) && (
         <MessageMenuButton
           onClick={() => {
