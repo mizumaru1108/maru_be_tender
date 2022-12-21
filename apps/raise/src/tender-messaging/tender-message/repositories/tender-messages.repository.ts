@@ -1,22 +1,41 @@
-import { Injectable } from '@nestjs/common';
-import { message, Prisma } from '@prisma/client';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { message, Prisma, user } from '@prisma/client';
+import moment from 'moment';
+import { BunnyService } from '../../../libs/bunny/services/bunny.service';
+import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { FindManyResult } from '../../../tender-commons/dto/find-many-result.dto';
+import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { SearchMessageFilterRequest } from '../dtos/requests/search-message-filter-request.dto';
-import _ from 'lodash';
-import moment from 'moment';
-import { MessageGroup } from '../interfaces/message-group';
 import { SearchMessageResponseDto } from '../dtos/responses/search-message-response.dto';
+import { MessageGroup } from '../interfaces/message-group';
 
 @Injectable()
 export class TenderMessagesRepository {
-  constructor(private readonly prismaService: PrismaService) {}
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': TenderMessagesRepository.name,
+  });
 
-  async createMessage(payload: Prisma.messageCreateInput): Promise<message> {
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly bunnyService: BunnyService,
+  ) {}
+
+  async createMessage(payload: Prisma.messageCreateInput): Promise<
+    message & {
+      sender: user | null;
+      receiver: user | null;
+    }
+  > {
     try {
       return await this.prismaService.message.create({
         data: payload,
+        include: {
+          sender: true,
+          receiver: true,
+        },
       });
     } catch (error) {
       const theError = prismaErrorThrower(
@@ -24,6 +43,78 @@ export class TenderMessagesRepository {
         TenderMessagesRepository.name,
         'createMessage Error:',
         `creating new message!`,
+      );
+      throw theError;
+    }
+  }
+
+  async createMessageWithAttachment(
+    payload: Prisma.messageCreateInput,
+    attachment: TenderFilePayload,
+    buffer: Buffer,
+    path: string,
+  ): Promise<
+    message & {
+      sender: user | null;
+      receiver: user | null;
+    }
+  > {
+    let uploadedFileUrl: string = ''; // temporary variable to store the uploaded file url (for revert if transaction failed)
+
+    try {
+      return await this.prismaService.$transaction(async (prisma) => {
+        const imageUrl = await this.bunnyService.uploadFileBase64(
+          attachment.fullName,
+          buffer,
+          path,
+          'Tender send message with attachment',
+        );
+        if (imageUrl) {
+          uploadedFileUrl = imageUrl;
+          payload.attachment = {
+            url: imageUrl,
+            type: attachment.fileExtension,
+            size: buffer.length,
+          };
+        }
+
+        if (!imageUrl) {
+          throw new BadRequestException(
+            `Failed to uploading file (${attachment.fullName}) to our server!`,
+          );
+        }
+
+        const message = await prisma.message.create({
+          data: payload,
+          include: {
+            sender: true,
+            receiver: true,
+          },
+        });
+
+        return message;
+      });
+    } catch (error) {
+      // deleting the uploaded file if the message data was failed to store to the prisma, but the file was uploaded
+      if (
+        error instanceof Prisma.PrismaClientValidationError ||
+        error instanceof Prisma.PrismaClientKnownRequestError ||
+        error instanceof Prisma.PrismaClientRustPanicError ||
+        error instanceof Prisma.PrismaClientInitializationError ||
+        error instanceof Prisma.PrismaClientUnknownRequestError ||
+        (error instanceof Prisma.NotFoundError && uploadedFileUrl !== '')
+      ) {
+        this.logger.log(
+          'info',
+          `Data was failed to store to the prisma!, but the file was uploaded, deleting the uploaded file!`,
+        );
+        await this.bunnyService.deleteMedia(uploadedFileUrl, true);
+      }
+      const theError = prismaErrorThrower(
+        error,
+        TenderMessagesRepository.name,
+        'createMessageWithAttachment Error:',
+        `creating new message with attachment!`,
       );
       throw theError;
     }
@@ -118,6 +209,10 @@ export class TenderMessagesRepository {
       const messages = await this.prismaService.message.findMany({
         where: {
           ...query,
+        },
+        include: {
+          sender: true,
+          receiver: true,
         },
         skip: offset,
         take: limit,

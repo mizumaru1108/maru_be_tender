@@ -79,25 +79,22 @@ export class TenderEventsGateway
   @WebSocketServer()
   server: Socket;
 
-  @SubscribeMessage('incoming_message')
+  @SubscribeMessage('incoming_message') // listen to event 'incoming_message'
   listenIncomingMessage(
     @ConnectedSocket() client: AuthSocket,
     @Body() summary: IIncomingMessageSummary,
   ) {
     this.logger.log(
       'info',
-      `incoming message from ${summary.senderEmployeeName} on room ${summary.roomChatId}`,
+      `${summary.senderEmployeeName} on room ${summary.roomChatId}`,
     );
   }
 
-  @SubscribeMessage('send_message')
+  @SubscribeMessage('send_message') // listen to event 'send_message' even tho it is emit event
   async emitSendMessage(
     @ConnectedSocket() connectedsocket: AuthSocket,
     @MessageBody() messagebody: CreateMessageDto,
   ) {
-    // console.log('send message is emited');
-    // console.log('socket user', connectedsocket.user);
-    // console.log('messagebody', messagebody);
     const userSelectedRole =
       messagebody.current_user_selected_role as TenderFusionAuthRoles;
 
@@ -107,11 +104,17 @@ export class TenderEventsGateway
       messagebody,
     );
 
-    this.logger.log(
-      'info',
-      `User ${connectedsocket.user.employee_name} has sent a message to room ${response.roomChatId}`,
-    );
     this.server.to(response.roomChatId).emit('incoming_message', response);
+  }
+
+  @SubscribeMessage('toggle_read_status')
+  async emitToggleReadStatus(
+    @ConnectedSocket() client: AuthSocket,
+    @MessageBody() body: any,
+  ) {
+    // console.log('new exception catched');
+    // console.log('from user', client.user.employee_name);
+    // console.log('body', body);
   }
 
   @SubscribeMessage('exception')
@@ -119,9 +122,9 @@ export class TenderEventsGateway
     @ConnectedSocket() client: AuthSocket,
     @MessageBody() body: any,
   ) {
-    console.log('new exception catched');
-    console.log('from user', client.user.employee_name);
-    console.log('body', body);
+    // console.log('new exception catched');
+    // console.log('from user', client.user.employee_name);
+    // console.log('body', body);
   }
 
   /* default func from nestjs for handle on connnect (OnGatewayConnection) */

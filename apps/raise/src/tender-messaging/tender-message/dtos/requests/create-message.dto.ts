@@ -8,16 +8,15 @@ import {
   IsUUID,
   ValidateNested,
 } from 'class-validator';
-import { UploadFilesJsonbDto } from '../../../../tender-commons/dto/upload-files-jsonb.dto';
+import { TenderFilePayload } from '../../../../tender-commons/dto/tender-file-payload.dto';
 import { MessageType } from '../../types';
 
 export class CreateMessageDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @IsIn(['TEXT', 'IMAGE', 'VIDEO', 'VOICE_NOTE', 'FILE'], {
-    message:
-      'Content type must be either TEXT, IMAGE, VIDEO, VOICE_NOTE or FILE',
+  @IsIn(['TEXT', 'IMAGE', 'VIDEO', 'AUDIO', 'FILE'], {
+    message: 'Content type must be either TEXT, IMAGE, VIDEO, AUDIO or FILE',
   })
   content_type_id: MessageType;
 
@@ -25,7 +24,7 @@ export class CreateMessageDto {
   @IsString()
   @IsNotEmpty()
   @IsIn(['INTERNAL', 'EXTERNAL'], {
-    message: 'Correspondance type must be either INTERNAL or EXTERNAL',
+    message: 'correspondence_type_id type must be either INTERNAL or EXTERNAL',
   })
   correspondence_type_id: 'INTERNAL' | 'EXTERNAL';
 
@@ -43,10 +42,9 @@ export class CreateMessageDto {
    */
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @ValidateNested()
-  @Type(() => UploadFilesJsonbDto)
-  attachment?: UploadFilesJsonbDto;
+  @Type(() => TenderFilePayload)
+  attachment?: TenderFilePayload;
 
   /**
    * the title of the attachment.

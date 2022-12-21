@@ -268,8 +268,9 @@ export class ProjectService {
               image.oldUrl,
             );
             if (isExist) {
-              const deleteImages = await this.bunnyService.deleteImage(
+              const deleteImages = await this.bunnyService.deleteMedia(
                 image.oldUrl,
+                false,
               );
               if (!deleteImages) {
                 throw new Error(`Failed to delete at updatedImage[${index}]`);

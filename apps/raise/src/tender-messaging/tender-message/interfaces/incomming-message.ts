@@ -2,6 +2,7 @@ import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-js
 import { MessageType } from '../types';
 
 export interface IIncomingMessageSummary {
+  messageId: string;
   senderId: string;
   senderRoles: string[];
   senderRolesAs: string;

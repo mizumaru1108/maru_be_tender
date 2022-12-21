@@ -58,6 +58,7 @@ import { TenderCommentsModule } from './tender-comments/tender-comments.module';
 import { TenderEventsModule } from './tender-events-gateway/tender-events.module';
 import { TenderMessagesModule } from './tender-messaging/tender-messages.module';
 import { TenderStatisticsModule } from './tender-statistics/statistics.module';
+import { TenderNotificationModule } from './tender-notification/tender-notification.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -156,6 +157,7 @@ import { TenderStatisticsModule } from './tender-statistics/statistics.module';
     TenderMessagesModule,
     TenderStatisticsModule,
     TenderEventsModule,
+    TenderNotificationModule,
   ],
   controllers: [],
 })

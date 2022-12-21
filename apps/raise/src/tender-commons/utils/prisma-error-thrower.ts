@@ -19,7 +19,7 @@ import { ROOT_LOGGER } from '../../libs/root-logger';
  * @author RDanang(Iyoy)
  */
 export function prismaErrorThrower(
-  error: any,
+  error: Error,
   serviceName: string,
   loggerMessage: string,
   errorThrowMessage: string,
@@ -27,11 +27,34 @@ export function prismaErrorThrower(
   let logger = ROOT_LOGGER.child({
     'log.logger': serviceName,
   });
-  logger.error(loggerMessage, error);
 
-  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+  if (
+    error instanceof Prisma.PrismaClientValidationError ||
+    error instanceof Prisma.PrismaClientKnownRequestError ||
+    error instanceof Prisma.PrismaClientRustPanicError ||
+    error instanceof Prisma.PrismaClientInitializationError ||
+    error instanceof Prisma.PrismaClientUnknownRequestError ||
+    error instanceof Prisma.NotFoundError
+  ) {
+    let instance: string = '';
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      instance = 'PrismaClientKnownRequestError';
+    }
+    if (error instanceof Prisma.PrismaClientRustPanicError) {
+      instance = 'PrismaClientRustPanicError';
+    }
+    if (error instanceof Prisma.PrismaClientInitializationError) {
+      instance = 'PrismaClientInitializationError';
+    }
+    if (error instanceof Prisma.PrismaClientUnknownRequestError) {
+      instance = 'PrismaClientUnknownRequestError';
+    }
+    if (error instanceof Prisma.NotFoundError) {
+      instance = 'NotFoundError';
+    }
+    logger.error(`(Source: Prisma[${instance}]), Error:`, error);
     return new InternalServerErrorException(
-      `Something went wrong at ${errorThrowMessage}, (Prisma: ${error.code})`,
+      `Something went wrong at '${errorThrowMessage}'`,
     );
   } else if (
     error instanceof BadRequestException ||
@@ -39,8 +62,10 @@ export function prismaErrorThrower(
     error instanceof ConflictException ||
     error instanceof NotFoundException
   ) {
+    logger.error(loggerMessage, error);
     return error;
   } else {
+    logger.error(loggerMessage, error);
     return new InternalServerErrorException(
       `Something went wrong at '${errorThrowMessage}'`,
     );

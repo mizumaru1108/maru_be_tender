@@ -19,7 +19,7 @@ export class WsExceptionFilter implements ExceptionFilter {
     if (exception instanceof BadRequestException) {
       const exceptionData = exception.getResponse();
 
-      console.log('exceptionData', exceptionData);
+      // console.log('exceptionData', exceptionData);
 
       // type of exceptionData is object | string.
       const errorMessage =

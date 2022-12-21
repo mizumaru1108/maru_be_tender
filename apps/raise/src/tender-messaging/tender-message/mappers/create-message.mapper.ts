@@ -10,9 +10,11 @@ export const createMessageMapper = (
   const {
     content_type_id: contentType,
     content,
-    // attachment,
     content_title,
     reply_id,
+    partner_id,
+    partner_selected_role,
+    current_user_selected_role,
   } = request;
 
   const createMessagePaylaod: Prisma.messageCreateInput = {
@@ -22,11 +24,18 @@ export const createMessageMapper = (
         id: contentType,
       },
     },
-    user: {
+    sender: {
       connect: {
         id: senderId,
       },
     },
+    sender_role_as: current_user_selected_role,
+    receiver: {
+      connect: {
+        id: partner_id,
+      },
+    },
+    receiver_role_as: partner_selected_role,
     room_chat: {
       connect: {
         id: roomChatId,
@@ -37,11 +46,6 @@ export const createMessageMapper = (
   if (contentType === 'TEXT') {
     createMessagePaylaod.content = content;
   }
-  //  else {
-  //   createMessagePaylaod.attachment = attachment as
-  //     | Prisma.InputJsonValue
-  //     | undefined;
-  // }
 
   if (content_title) createMessagePaylaod.content_title = content_title;
 

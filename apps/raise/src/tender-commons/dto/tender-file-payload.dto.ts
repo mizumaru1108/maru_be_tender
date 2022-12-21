@@ -5,9 +5,10 @@ import {
   Matches,
   IsOptional,
   IsDataURI,
+  IsMimeType,
 } from 'class-validator';
 
-export class PayloadImage {
+export class TenderFilePayload {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -24,8 +25,6 @@ export class PayloadImage {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @Matches(/^[.][^.]+/, {
-    message: 'Must start with "."',
-  })
-  imageExtension: string;
+  @IsMimeType()
+  fileExtension: string;
 }

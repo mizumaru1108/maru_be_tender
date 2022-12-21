@@ -27,7 +27,10 @@ export async function compareUrl(
     const isExist = await this.bunnyService.checkIfImageExists(oldValue['url']);
 
     if (isExist) {
-      const deleteImages = await this.bunnyService.deleteImage(oldValue['url']);
+      const deleteImages = await this.bunnyService.deleteMedia(
+        oldValue['url'],
+        false,
+      );
       if (!deleteImages) {
         throw new Error(`Failed to delete at update proposal`);
       }

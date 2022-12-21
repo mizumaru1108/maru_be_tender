@@ -1,5 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { room_chat } from '@prisma/client';
+import { ConfigService } from '@nestjs/config';
+import { message, Prisma, room_chat, user } from '@prisma/client';
+import { AllowedFileType } from '../../../commons/enums/allowed-filetype.enum';
+import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
+import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
+import { validateFileSize } from '../../../commons/utils/validate-file-size';
+import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { TenderFusionAuthRoles } from '../../../tender-commons/types';
 
 import { TenderUserRepository } from '../../../tender-user/user/repositories/tender-user.repository';
@@ -12,11 +18,17 @@ import { TenderMessagesRepository } from '../repositories/tender-messages.reposi
 
 @Injectable()
 export class TenderMessagesService {
+  private readonly appEnv: string;
   constructor(
     private readonly tenderMessagesRepository: TenderMessagesRepository,
     private readonly tenderRoomChatRepository: TenderRoomChatRepository,
     private readonly tenderUserRepository: TenderUserRepository,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    const environment = this.configService.get('APP_ENV');
+    if (!environment) envLoadErrorHelper('APP_ENV');
+    this.appEnv = environment;
+  }
 
   async send(
     senderId: string,
@@ -102,17 +114,86 @@ export class TenderMessagesService {
       roomChat = existingRoomChat;
     }
 
-    const createMessagePaylaod = createMessageMapper(
+    const createMessagePayload = createMessageMapper(
       senderId,
       roomChat.id,
       request,
     );
 
-    const message = await this.tenderMessagesRepository.createMessage(
-      createMessagePaylaod,
-    );
+    let createdMessage:
+      | (message & {
+          sender: user | null;
+          receiver: user | null;
+        })
+      | null = null;
+
+    if (contentType === 'TEXT') {
+      const message = await this.tenderMessagesRepository.createMessage(
+        createMessagePayload,
+      );
+      createdMessage = message;
+    }
+
+    if (attachment && contentType !== 'TEXT') {
+      const maxSize: number = 1024 * 1024 * 512; // 512MB
+      const allowedType: AllowedFileType[] = [];
+
+      // 'TEXT', 'IMAGE', 'VIDEO', 'AUDIO', 'FILE'
+      if (contentType === 'IMAGE') {
+        allowedType.push(AllowedFileType.JPG);
+        allowedType.push(AllowedFileType.JPEG);
+        allowedType.push(AllowedFileType.PNG);
+      } else if (contentType === 'VIDEO') {
+        allowedType.push(AllowedFileType.MP4);
+        allowedType.push(AllowedFileType.MOV);
+      } else if (contentType === 'AUDIO') {
+        allowedType.push(AllowedFileType.MP3);
+        allowedType.push(AllowedFileType.WAV);
+      } else if (contentType === 'FILE') {
+        allowedType.push(AllowedFileType.JPG);
+        allowedType.push(AllowedFileType.JPEG);
+        allowedType.push(AllowedFileType.PNG);
+        allowedType.push(AllowedFileType.MP4);
+        allowedType.push(AllowedFileType.MOV);
+        allowedType.push(AllowedFileType.MP3);
+        allowedType.push(AllowedFileType.WAV);
+        allowedType.push(AllowedFileType.PDF);
+        allowedType.push(AllowedFileType.DOC);
+        allowedType.push(AllowedFileType.DOCX);
+        allowedType.push(AllowedFileType.XLS);
+        allowedType.push(AllowedFileType.XLSX);
+        allowedType.push(AllowedFileType.PPT);
+        allowedType.push(AllowedFileType.PPTX);
+      }
+
+      let fileName =
+        attachment.fullName +
+        new Date().getTime() +
+        '.' +
+        attachment.fileExtension.split('/')[1];
+
+      let path = `tmra/${this.appEnv}/organization/tender-management/room-chat-attachment/${roomChat.id}/${fileName}`;
+
+      validateAllowedExtension(attachment.fileExtension, allowedType);
+      validateFileSize(attachment.base64Data.length, maxSize);
+
+      const buffer = Buffer.from(
+        attachment.base64Data.replace(/^data:.*;base64,/, ''),
+        'base64',
+      );
+
+      const message =
+        await this.tenderMessagesRepository.createMessageWithAttachment(
+          createMessagePayload,
+          attachment,
+          buffer,
+          path,
+        );
+      createdMessage = message;
+    }
 
     const summary: IIncomingMessageSummary = {
+      messageId: createdMessage ? createdMessage.id : '', // it shouldnt be "", but if the request fail it wont get here, so it will be exist for sure
       senderId: sender.id,
       senderRoles: sender.roles.map((role) => role.user_type_id),
       senderRolesAs: userRole,
@@ -124,12 +205,19 @@ export class TenderMessagesService {
       roomChatId: roomChat.id,
       correspondenceType: correspondanceType,
       meesageType: contentType,
-      content: content || null,
-      attachment: null,
+      content:
+        createdMessage && createdMessage.content
+          ? createdMessage.content
+          : null,
+      attachment:
+        createdMessage && createdMessage.attachment
+          ? (createdMessage.attachment as {
+              url: string;
+              size: number;
+              type: string;
+            })
+          : null,
     };
-
-    /* emit event on socket */
-    // await this.eventGateway.emitIncomingMessage(summary); // emit to sender
 
     return summary;
   }
