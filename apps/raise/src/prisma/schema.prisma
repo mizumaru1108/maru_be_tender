@@ -264,41 +264,40 @@ model region {
 }
 
 model user {
-  id                                                      String                  @id @unique
-  employee_name                                           String?                 @db.VarChar
-  mobile_number                                           String?                 @db.VarChar
-  email                                                   String                  @unique @db.VarChar
-  updated_at                                              DateTime?               @default(now()) @db.Timestamptz(6)
-  created_at                                              DateTime?               @default(now()) @db.Timestamptz(6)
-  employee_path                                           String?                 @db.VarChar
-  last_login                                              DateTime?               @default(now()) @db.Timestamptz(6)
-  status_id                                               String
-  address                                                 String?
-  google_session                                          Json?
-  is_online                                               Boolean?
-  employee_track                                          project_tracks?         @relation(fields: [employee_path], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  status                                                  user_status             @relation(fields: [status_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_user_status_id_fkey")
-  appointment_appointment_employee_idTouser               appointment[]           @relation("appointment_employee_idTouser")
-  appointment_appointment_user_idTouser                   appointment[]           @relation("appointment_user_idTouser")
-  bank_information                                        bank_information[]
-  client_data                                             client_data?            @relation("client_data_user_idTouser")
-  client_log                                              client_log[]
-  consultant_form                                         consultant_form[]
-  contact_us_contact_us_receiver_idTouser                 contact_us[]            @relation("contact_us_receiver_idTouser")
-  contact_us_contact_us_sender_idTouser                   contact_us[]            @relation("contact_us_sender_idTouser")
-  email_record_email_record_receiver_idTouser             email_record[]          @relation("email_record_receiver_idTouser")
-  email_record_email_record_sender_idTouser               email_record[]          @relation("email_record_sender_idTouser")
-  employees_permissions_employees_permissionsTouser       employees_permissions[]
-  message_messageTouser                                   message[]
-  message_message_receiver_idTouser                       message[]               @relation("message_receiver_idTouser")
-  proposal                                                proposal[]
-  proposal_follow_up_proposal_follow_up_employee_idTouser proposal_follow_up[]    @relation("proposal_follow_up_employee_idTouser")
-  proposal_follow_up_proposal_follow_up_user_idTouser     proposal_follow_up[]    @relation("proposal_follow_up_user_idTouser")
-  proposal_log                                            proposal_log[]
-  room_chat_as_participant1                               room_chat[]             @relation("room_chat_participant1_user_idTouser")
-  room_chat_as_participant2                               room_chat[]             @relation("room_chat_participant2_user_idTouser")
-  schedule                                                schedule[]
-  roles                                                   user_role[]
+  id                                                  String                  @id @unique
+  employee_name                                       String?                 @db.VarChar
+  mobile_number                                       String?                 @db.VarChar
+  email                                               String                  @unique @db.VarChar
+  updated_at                                          DateTime?               @default(now()) @db.Timestamptz(6)
+  created_at                                          DateTime?               @default(now()) @db.Timestamptz(6)
+  employee_path                                       String?                 @db.VarChar
+  last_login                                          DateTime?               @default(now()) @db.Timestamptz(6)
+  status_id                                           String
+  address                                             String?
+  google_session                                      Json?
+  is_online                                           Boolean?
+  employee_track                                      project_tracks?         @relation(fields: [employee_path], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  status                                              user_status             @relation(fields: [status_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_user_status_id_fkey")
+  appointment_appointment_employee_idTouser           appointment[]           @relation("appointment_employee_idTouser")
+  appointment_appointment_user_idTouser               appointment[]           @relation("appointment_user_idTouser")
+  bank_information                                    bank_information[]
+  client_data                                         client_data?            @relation("client_data_user_idTouser")
+  client_log                                          client_log[]
+  consultant_form                                     consultant_form[]
+  contact_us_contact_us_receiver_idTouser             contact_us[]            @relation("contact_us_receiver_idTouser")
+  contact_us_contact_us_sender_idTouser               contact_us[]            @relation("contact_us_sender_idTouser")
+  email_record_email_record_receiver_idTouser         email_record[]          @relation("email_record_receiver_idTouser")
+  email_record_email_record_sender_idTouser           email_record[]          @relation("email_record_sender_idTouser")
+  employees_permissions_employees_permissionsTouser   employees_permissions[]
+  message_messageTouser                               message[]
+  message_message_receiver_idTouser                   message[]               @relation("message_receiver_idTouser")
+  proposal                                            proposal[]
+  proposal_follow_up_proposal_follow_up_user_idTouser proposal_follow_up[]    @relation("proposal_follow_up_user_idTouser")
+  proposal_log                                        proposal_log[]
+  room_chat_as_participant1                           room_chat[]             @relation("room_chat_participant1_user_idTouser")
+  room_chat_as_participant2                           room_chat[]             @relation("room_chat_participant2_user_idTouser")
+  schedule                                            schedule[]
+  roles                                               user_role[]
 }
 
 model user_type {
@@ -322,17 +321,15 @@ model proposal_assign {
 }
 
 model proposal_follow_up {
-  id                                        String    @id
-  proposal_id                               String
-  created_at                                DateTime? @default(now()) @db.Timestamptz(6)
-  updated_at                                DateTime? @default(now()) @db.Timestamptz(6)
-  file                                      Json?
-  action                                    String?
-  user_id                                   String?
-  employee_id                               String?
-  user_proposal_follow_up_employee_idTouser user?     @relation("proposal_follow_up_employee_idTouser", fields: [employee_id], references: [id], onDelete: Cascade)
-  proposal                                  proposal  @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
-  user_proposal_follow_up_user_idTouser     user?     @relation("proposal_follow_up_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
+  id                                    String    @id
+  proposal_id                           String
+  created_at                            DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at                            DateTime? @default(now()) @db.Timestamptz(6)
+  file                                  Json?
+  action                                String?
+  user_id                               String?
+  proposal                              proposal  @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
+  user_proposal_follow_up_user_idTouser user?     @relation("proposal_follow_up_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model proposal_status {

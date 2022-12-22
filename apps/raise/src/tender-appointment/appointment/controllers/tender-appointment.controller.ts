@@ -28,11 +28,6 @@ export class TenderAppointmentController {
     private readonly tenderAppointmentService: TenderAppointmentService,
   ) {}
 
-  @Post('testing-google-2')
-  async testingaja() {
-    console.log('testing auth');
-  }
-
   @UseGuards(TenderJwtGuard)
   @Post('create-appointment')
   async createAppointment(
