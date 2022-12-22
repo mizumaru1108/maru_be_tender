@@ -79,7 +79,9 @@ export class TenderRoomChatRepository {
     }
   }
 
-  async fetchLastChat(userId: string, limit: number, page: number) {
+  async fetchLastChat(userId: string, limit?: number, page?: number) {
+    page = page || 1;
+    limit = limit || 10;
     const offset = (page - 1) * limit;
     let query: Prisma.room_chatWhereInput = {};
 
@@ -113,6 +115,9 @@ export class TenderRoomChatRepository {
         },
         take: limit,
         skip: offset,
+        orderBy: {
+          created_at: 'desc',
+        },
       });
 
       const count = await this.prismaService.room_chat.count({

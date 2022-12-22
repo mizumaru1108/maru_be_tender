@@ -276,4 +276,28 @@ export class TenderMessagesRepository {
       throw theError;
     }
   }
+
+  async readAllMessagesByRoomId(roomId: string): Promise<boolean> {
+    try {
+      await this.prismaService.message.updateMany({
+        where: {
+          room_id: {
+            equals: roomId,
+          },
+        },
+        data: {
+          read_status: true,
+        },
+      });
+      return true;
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderMessagesRepository.name,
+        'readAllMessagesByRoomId Error:',
+        `reading all messages by room id!`,
+      );
+      throw theError;
+    }
+  }
 }

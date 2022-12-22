@@ -58,9 +58,9 @@ export class TenderRoomChatController {
   @Get('get-last-chat')
   async fetchLastChat(
     @CurrentUser() currentUser: TenderCurrentUser,
-    @Query() { limit = 10, page = 1 }: BaseFilterRequest,
+    @Query() { limit, page }: BaseFilterRequest,
   ): Promise<any> {
-    const res = await this.tenderRoomChatService.fetchLastChat(
+    const res = await this.tenderRoomChatService.fetchMyLastChat(
       currentUser.id,
       limit,
       page,

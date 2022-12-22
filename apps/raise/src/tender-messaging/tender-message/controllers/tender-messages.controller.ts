@@ -4,6 +4,7 @@ import {
   Get,
   HttpStatus,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -16,6 +17,7 @@ import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-p
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import { CreateMessageDto } from '../dtos/requests/create-message.dto';
 import { SearchMessageFilterRequest } from '../dtos/requests/search-message-filter-request.dto';
+import { ToogleReadMessageDto } from '../dtos/requests/toogle-read-message.dto';
 import { IIncomingMessageSummary } from '../interfaces/incomming-message';
 import { TenderMessagesService } from '../services/tender-messages.service';
 
@@ -59,6 +61,21 @@ export class TenderMessagesController {
       filter.limit || 10,
       HttpStatus.OK,
       'Success',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard)
+  @Put('toogle-read')
+  async toogleRead(
+    @Body() request: ToogleReadMessageDto,
+  ): Promise<BaseResponse<boolean>> {
+    const res = await this.tenderMessagesService.readAllMessageByRoomId(
+      request.roomId,
+    );
+    return baseResponseHelper(
+      res,
+      HttpStatus.CREATED,
+      'Message sent successfully!',
     );
   }
 }

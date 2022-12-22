@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { TenderUserModule } from '../tender-user/tender-user.module';
 import { TenderAppointmentController } from './appointment/controllers/tender-appointment.controller';
 import { TenderAppointmentRepository } from './appointment/repositories/tender-appointment.repository';
 import { TenderAppointmentService } from './appointment/services/tender-appointment.service';
@@ -14,5 +15,6 @@ import { TenderScheduleService } from './schedule/services/tender-schedule.servi
     TenderScheduleService,
     TenderScheduleRepository,
   ],
+  imports: [TenderUserModule],
 })
 export class TenderAppointmentModule {}

@@ -238,4 +238,8 @@ export class TenderMessagesService {
     );
     return response;
   }
+
+  async readAllMessageByRoomId(roomId: string): Promise<boolean> {
+    return await this.tenderMessagesRepository.readAllMessagesByRoomId(roomId);
+  }
 }

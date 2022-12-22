@@ -41,7 +41,9 @@ export class TenderRoomChatService {
     };
   }
 
-  async fetchLastChat(userId: string, limit: number, page: number) {
+  async fetchMyLastChat(userId: string, limit?: number, page?: number) {
+    limit = limit || 10;
+    page = page || 1;
     const response = await this.tenderRoomChatRepository.fetchLastChat(
       userId,
       limit,
