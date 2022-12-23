@@ -41,7 +41,7 @@ const ContentStyleMessage = styled('div')(({ theme }) => ({
 }));
 
 function MessagesPage() {
-  const { activeRole } = useAuth();
+  const { activeRole, user } = useAuth();
   const role = activeRole!;
   const [content, setContent] = useState<messageContent[]>([]);
   const [room, setRoom] = useState<string>();
@@ -50,20 +50,21 @@ function MessagesPage() {
       <Stack direction="row" spacing={1} component="div" justifyContent="space-between">
         <ContentStyle>
           <MessageMenu
-            internalData={MessagesInternalCorespondence}
-            externalData={MessagesExternalCorespondence}
+            // internalData={MessagesInternalCorespondence}
+            // externalData={MessagesExternalCorespondence}
             accountType={role}
-            roomId={(id) => {
-              setRoom(id);
-            }}
+            user={user}
+            // roomId={(id) => {
+            //   setRoom(id);
+            // }}
           />
         </ContentStyle>
-        <ContentStyleMessage>
+        {/* <ContentStyleMessage>
           {room === '001' && <MessageContent data={Message} />}
           {room === '002' && <MessageContent data={Message1} />}
           {room === '003' && <MessageContent data={Message2} />}
           {room === '004' && <MessageContent data={Message3} />}
-        </ContentStyleMessage>
+        </ContentStyleMessage> */}
       </Stack>
     </Page>
   );

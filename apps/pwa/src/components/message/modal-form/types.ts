@@ -1,6 +1,12 @@
+import { AuthUser } from '../../../@types/auth';
+import { FusionAuthRoles } from '../../../@types/commons';
+
 export type NewMessageModalFormProps = {
   children?: React.ReactNode;
   onSubmit: (data: any) => void;
+  user: AuthUser;
+  activeRole: string;
+  corespondence: string;
 };
 
 export interface NewMessageModalFormValues {

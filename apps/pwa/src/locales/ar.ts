@@ -39,13 +39,13 @@ const ar = {
     },
     messages: {
       btn: {
-        create_new_message: 'أنشئ رسالة جديدة'
+        create_new_message: 'أنشئ رسالة جديدة',
       },
-      empty_user_data: 'قائمة الموظفين فارغة ، يرجى اختيار مسارات أخرى في القائمة',
+      empty_user_data: 'قائمة المستخدمين فارغة!',
       text_field: {
-        placeholder_list_tracks: 'اختر نوع المسار للموظف'
-      }
-    }
+        placeholder_list_tracks: 'اختر نوع المسار للموظف',
+      },
+    },
   },
   errors: {
     login: {
@@ -972,6 +972,7 @@ const ar = {
       label: {
         track_type: 'نوع المسار',
         employees: 'الموظفين',
+        search_employee: 'ابحث في اسم العميل',
       },
     },
   },

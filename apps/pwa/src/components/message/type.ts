@@ -1,3 +1,5 @@
+import { AuthUser } from '../../@types/auth';
+
 type messageContent = {
   sender: string;
   dateCreated: string;
@@ -30,10 +32,11 @@ export type IMessageMenuItem = {
 };
 
 export type IMenu = {
-  internalData: correspondanceData[];
-  externalData: correspondanceData[];
+  // internalData: correspondanceData[];
+  // externalData: correspondanceData[];
   accountType: string;
-  roomId: (id: string) => void;
+  user: AuthUser;
+  // roomId: (id: string) => void;
 };
 
 export interface TabPanelProps {
