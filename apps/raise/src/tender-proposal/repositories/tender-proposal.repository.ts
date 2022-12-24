@@ -100,4 +100,44 @@ export class TenderProposalRepository {
       throw theError;
     }
   }
+
+  async fetchTrack(limit: number, page: number) {
+    const offset = (page - 1) * limit;
+
+    let query: Prisma.project_tracksWhereInput = {
+      id: { notIn: ['DEFAULT_TRACK', 'GENERAL'] },
+    };
+
+    try {
+      const tracks = await this.prismaService.project_tracks.findMany({
+        where: {
+          ...query,
+        },
+        select: {
+          id: true,
+        },
+        take: limit,
+        skip: offset,
+      });
+
+      const count = await this.prismaService.project_tracks.count({
+        where: {
+          ...query,
+        },
+      });
+
+      return {
+        data: tracks,
+        total: count,
+      };
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalRepository.name,
+        'fetchTrack Error:',
+        `fetching proposal tracks!`,
+      );
+      throw theError;
+    }
+  }
 }

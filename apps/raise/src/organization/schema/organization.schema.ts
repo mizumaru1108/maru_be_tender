@@ -59,6 +59,8 @@ export class Organization {
   defaultLanguage: string;
   @Prop()
   campaignLanguage: string;
+  @Prop({ default: [] })
+  selectedLanguage: string[];
 }
 
 export const OrganizationSchema = SchemaFactory.createForClass(Organization);

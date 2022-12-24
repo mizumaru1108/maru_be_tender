@@ -37,6 +37,15 @@ const ar = {
         pending_projects: 'المشاريع المعلقة',
       },
     },
+    messages: {
+      btn: {
+        create_new_message: 'أنشئ رسالة جديدة',
+      },
+      empty_user_data: 'قائمة المستخدمين فارغة!',
+      text_field: {
+        placeholder_list_tracks: 'اختر نوع المسار للموظف',
+      },
+    },
   },
   errors: {
     login: {
@@ -963,6 +972,7 @@ const ar = {
       label: {
         track_type: 'نوع المسار',
         employees: 'الموظفين',
+        search_employee: 'ابحث في اسم العميل',
       },
     },
   },

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
 import { Model, Types } from 'mongoose';
@@ -171,39 +171,90 @@ export class ZakatService {
 
   async getSummary(organizationId: string) {
     this.logger.debug(`getSummary organizationId=${organizationId}`);
+    
     const getOrganization = await this.organizationModel.findOne({
       _id: organizationId,
     });
-    if (!getOrganization) {
-      const txtMessage = `request rejected organizationId not found`;
-      return {
-        statusCode: 514,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
-        body: JSON.stringify({
-          message: txtMessage,
-        }),
-      };
-    }
+
+    if (!getOrganization) throw new HttpException('Organization not found', HttpStatus.NOT_FOUND);
+
+    // Zakat Details
+    const zakatCampaign = await this.campaignModel.findOne(
+      {
+        organizationId: new Types.ObjectId(organizationId),
+        campaignType: 'zakat'
+      }
+    );
+
+    if (!zakatCampaign) throw new HttpException('Campaign not found', HttpStatus.NOT_FOUND);
+
     const donationList = await this.donationLogsModel.aggregate([
       {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
-          campaignId: new Types.ObjectId('6299ed6a9f1ad428563563ed'),
-          donationStatus: 'SUCCESS',
+          donorUserId: { $ne: null },
+          campaignId: zakatCampaign._id,
         },
       },
       {
         $group: {
           _id: { nonprofitRealmId: '$nonprofitRealmId' },
           total: { $sum: '$amount' },
+          listDonationId: { $addToSet: '$_id' }
         },
       },
     ]);
-    console.log(donationList);
-    const totalReceive = donationList.length == 0 ? 0 : donationList[0].total;
-    return { total_receive: totalReceive };
+
+    const total_receive: number = donationList.length ? donationList[0].total : 0;
+    const list_donation_id: any[] = donationList.length ? donationList[0].listDonationId : [];
+
+    let zakat_logs: {
+      total: number;
+      type: string;
+    }[] = [
+      { total: 0, type: 'money' },
+      { total: 0, type: 'gold' },
+      { total: 0, type: 'silver' },
+      { total: 0, type: 'stocks' },
+      { total: 0, type: 'mutual_funds' },
+    ];
+
+    const getZakatLogs = await this.zakatLogModel.aggregate([
+      {
+        $match: {
+          donationLogId: { $in: list_donation_id }
+        }
+      },
+      {
+        $group: {
+          _id: { type: '$type' },
+          total: {
+            $sum: {
+              $toDouble: '$totalAmount'
+            }
+          }
+        }
+      },
+      {
+        $addFields: {
+          type: '$_id.type',
+        }
+      },
+      {
+        $project: {
+          _id: 0
+        }
+      }
+    ]);
+
+    if (getZakatLogs && getZakatLogs.length) {
+      zakat_logs = getZakatLogs;
+    }
+
+    return {
+      total_receive,
+      zakat_logs
+    };
   }
 
   async getTransactionAll(organizationId: string, sortStatus: string) {
@@ -221,49 +272,22 @@ export class ZakatService {
       };
     }
 
-    // const getOrganization = await this.organizationModel.findOne({
-    //   _id: organizationId,
-    // });
-    // if (!getOrganization) {
-    //   const txtMessage = `request rejected organizationId not found`;
-    //   return {
-    //     statusCode: 514,
-    //     headers: {
-    //       'Access-Control-Allow-Origin': '*',
-    //     },
-    //     body: JSON.stringify({
-    //       message: txtMessage,
-    //     }),
-    //   };
-    // }
-    // const expenseList = await this.expenseModel.aggregate([
-    //   { $match: { createdBy: organizationId } },
-    //   {
-    //     $addFields: {
-    //       organizationName: getOrganization.name,
-    //       createdAt: '$createdDate',
-    //     },
-    //   },
-    // ]);
-    // console.log(expenseList);
-    // const donationList = await this.donationLogsModel.find({
-    //   nonprofitRealmId: new Types.ObjectId(organizationId),
-    //   campaignId: new Types.ObjectId('6299ed6a9f1ad428563563ed'),
-    // });
-    // // console.log(donationList);
-    // let transactionAll: any = [];
-    // transactionAll = transactionAll.concat(donationList);
-    // // transactionAll = transactionAll.concat(expenseList);
-    // transactionAll.sort(
-    //   (x: DonationLogs, y: DonationLogs) =>
-    //     +new Date(x.createdAt) - +new Date(y.createdAt),
-    // );
-    // return transactionAll;
-    return await this.donationLogsModel.aggregate([
+    // Zakat Details
+    const zakatCampaign = await this.campaignModel.findOne(
+      {
+        organizationId: new Types.ObjectId(organizationId),
+        campaignType: 'zakat'
+      }
+    );
+
+    if (!zakatCampaign) throw new HttpException('Campaign not found', HttpStatus.NOT_FOUND);
+
+    const zakatDonationList = await this.donationLogsModel.aggregate([
       {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
-          campaignId: new Types.ObjectId('6299ed6a9f1ad428563563ed'),
+          donorUserId: { $ne: null },
+          campaignId: zakatCampaign._id,
         },
       },
       {
@@ -274,17 +298,6 @@ export class ZakatService {
           as: 'user',
         },
       },
-      // {
-      //   $set: {
-      //     donorName: {
-      //       $concat: [
-      //         { $arrayElemAt: ['$user.firstname', 0] },
-      //         ' ',
-      //         { $arrayElemAt: ['$user.lastname', 0] },
-      //       ],
-      //     },
-      //   },
-      // },
       {
         $unwind: {
           path: '$user',
@@ -308,15 +321,11 @@ export class ZakatService {
       {
         $addFields: {
           donorName: {
-            $cond: {
-              if: { $eq: [{ $ifNull: ['$user', 0] }, 0] },
-              then: {
-                $concat: ['$anonymous.firstName', ' ', '$anonymous.lastName'],
-              },
-              else: {
-                $concat: ['$user.firstname', ' ', '$user.lastname'],
-              },
-            },
+            $cond: [
+              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              '$anonymous.firstName',
+              '$user.firstName',
+            ],
           },
           email: {
             $cond: [
@@ -341,18 +350,13 @@ export class ZakatService {
         $sort: sortData,
       },
     ]);
+
+    return zakatDonationList;
   }
 
   async getTransactionList(organizationId: string, sortStatus: string) {
     this.logger.debug(`getTransactions organizationId=${organizationId}`);
-    // const list = await this.donationLogsModel
-    //   .find({
-    //     nonprofitRealmId: new Types.ObjectId(organizationId),
-    //     campaignId: new Types.ObjectId('6299ed6a9f1ad428563563ed'),
-    //   })
-    //   .populate('donorUserId');
-    // console.log(list[0]?.donorUserId);
-    // return list;
+
     let sortData = {};
     if (sortStatus) {
       sortData = {
@@ -364,10 +368,23 @@ export class ZakatService {
         createdAt: -1,
       };
     }
-    return await this.donationLogsModel.aggregate([
+
+    // Zakat Details
+    const zakatCampaign = await this.campaignModel.findOne(
+      {
+        organizationId: new Types.ObjectId(organizationId),
+        campaignType: 'zakat'
+      }
+    );
+
+    if (!zakatCampaign) throw new HttpException('Campaign not found', HttpStatus.NOT_FOUND);
+
+    const zakatDonationList = await this.donationLogsModel.aggregate([
       {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
+          donorUserId: { $ne: null },
+          campaignId: zakatCampaign._id,
         },
       },
       {
@@ -378,24 +395,12 @@ export class ZakatService {
           as: 'user',
         },
       },
-      // {
-      //   $set: {
-      //     donorName: {
-      //       $concat: [
-      //         { $arrayElemAt: ['$user.firstname', 0] },
-      //         ' ',
-      //         { $arrayElemAt: ['$user.lastname', 0] },
-      //       ],
-      //     },
-      //   },
-      // },
       {
         $unwind: {
           path: '$user',
           preserveNullAndEmptyArrays: true,
         },
       },
-
       {
         $lookup: {
           from: 'anonymous',
@@ -413,15 +418,11 @@ export class ZakatService {
       {
         $addFields: {
           donorName: {
-            $cond: {
-              if: { $eq: [{ $ifNull: ['$user', 0] }, 0] },
-              then: {
-                $concat: ['$anonymous.firstName', ' ', '$anonymous.lastName'],
-              },
-              else: {
-                $concat: ['$user.firstname', ' ', '$user.lastname'],
-              },
-            },
+            $cond: [
+              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              '$anonymous.firstName',
+              '$user.firstName',
+            ],
           },
           email: {
             $cond: [
@@ -446,6 +447,8 @@ export class ZakatService {
         $sort: sortData,
       },
     ]);
+
+    return zakatDonationList;
   }
 
   async getExpenseList(organizationId: string) {

@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional } from 'class-validator';
+import { IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class BaseFilterRequest {
   /**
@@ -20,4 +20,20 @@ export class BaseFilterRequest {
   @Type(() => Number)
   @IsOptional()
   limit?: number = 10;
+
+  /**
+   * sorting
+   */
+  @ApiPropertyOptional({ default: 'desc' })
+  @IsString()
+  @IsIn(['asc', 'desc'], {
+    message: 'sort must be either asc or desc',
+  })
+  @IsOptional()
+  sort?: 'asc' | 'desc';
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  sorting_field?: string;
 }

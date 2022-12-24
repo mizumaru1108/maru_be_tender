@@ -1,11 +1,11 @@
 import FusionAuthClient, {
+  ChangePasswordRequest as IFusionAuthChangePasswordRequest,
   LoginResponse,
   RegistrationRequest as IFusionAuthRegistrationRequest,
   SendRequest,
   User as IFusionAuthUser,
   UserRegistration as IFusionAuthUserRegistration,
   ValidateResponse,
-  ChangePasswordRequest as IFusionAuthChangePasswordRequest,
 } from '@fusionauth/typescript-client';
 import ClientResponse from '@fusionauth/typescript-client/build/src/ClientResponse';
 import {
@@ -82,6 +82,11 @@ export class FusionAuthService {
     );
   }
 
+  /**
+   * Danang note:
+   * Validate Jwt Token
+   * Ref: https://fusionauth.io/docs/v1/tech/apis/jwt#validate-a-jwt
+   */
   async fusionAuthValidateToken(
     token: string,
   ): Promise<ClientResponse<ValidateResponse>> {

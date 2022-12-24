@@ -443,7 +443,10 @@ export class ItemService {
                 updateItemData.coverImage,
               );
               if (isExist) {
-                await this.bunnyService.deleteImage(updateItemData.coverImage);
+                await this.bunnyService.deleteMedia(
+                  updateItemData.coverImage,
+                  false,
+                );
               }
             }
             this.logger.info('Cover image has been replaced');
@@ -459,7 +462,10 @@ export class ItemService {
                 updateItemData.image1,
               );
               if (isExist) {
-                await this.bunnyService.deleteImage(updateItemData.image1);
+                await this.bunnyService.deleteMedia(
+                  updateItemData.image1,
+                  false,
+                );
               }
             }
             this.logger.info('Image 1 has been replaced');
@@ -475,7 +481,10 @@ export class ItemService {
                 updateItemData.image2,
               );
               if (isExist) {
-                await this.bunnyService.deleteImage(updateItemData.image2);
+                await this.bunnyService.deleteMedia(
+                  updateItemData.image2,
+                  false,
+                );
               }
             }
             this.logger.info('Image 2 has been replaced');
@@ -491,7 +500,10 @@ export class ItemService {
                 updateItemData.image3,
               );
               if (isExist) {
-                await this.bunnyService.deleteImage(updateItemData.image3);
+                await this.bunnyService.deleteMedia(
+                  updateItemData.image3,
+                  false,
+                );
               }
             }
             this.logger.info('Image 3 has been replaced');

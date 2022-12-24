@@ -3,9 +3,11 @@ export enum RoleEnum {
   SUPERADMIN = 'superadmin',
   OPERATOR = 'operator',
   VENDOR = 'vendor',
-  DONOR = 'donor',
-  NONPROFIT = 'nonprofit',
+  DONOR = 'donor', // user registration is started / created from gs
+  NONPROFIT = 'nonprofit', // user registration is started / created from tmra
+  EVALUATOR = 'evaluator',
 }
+
 export enum RoleTenderEnum {
   CLIENT = 'CLIENT',
   ACCOUNTS_MANAGER = 'ACCOUNTS_MANAGER',
@@ -16,5 +18,5 @@ export enum RoleTenderEnum {
   CEO = 'CEO',
   FINANCE = 'FINANCE',
   CASHIER = 'CASHIER',
-  ADMIN = 'ADMIN'
+  ADMIN = 'ADMIN',
 }

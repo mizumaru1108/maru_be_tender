@@ -49,71 +49,69 @@ function FilterModalMessage({
     h: '1000px',
   };
   return (
-    <div>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Stack direction="column" gap={4}>
-            <Typography>فلتر</Typography>
-            {supervisors && (
-              <TextField
-                label={supervisors.name}
-                InputLabelProps={{ shrink: true }}
-                SelectProps={{ native: true }}
-                select
-                fullWidth
-                // value={selected}
-                onChange={(event) => {
-                  setSelected({
-                    ...selected,
-                    supervisor: event.target.value,
-                  });
-                }}
-              >
-                <option value="">اختر</option>
-                {supervisors.options.map((option, index) => (
-                  <option key={index} value={option.value} style={{ backgroundColor: '#fff' }}>
-                    {option.label} {option.Role !== undefined && `- ${option.Role}`}
-                  </option>
-                ))}
-              </TextField>
-            )}
+    <Modal
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box sx={style}>
+        <Stack direction="column" gap={4}>
+          <Typography>فلتر</Typography>
+          {supervisors && (
+            <TextField
+              label={supervisors.name}
+              InputLabelProps={{ shrink: true }}
+              SelectProps={{ native: true }}
+              select
+              fullWidth
+              // value={selected}
+              onChange={(event) => {
+                setSelected({
+                  ...selected,
+                  supervisor: event.target.value,
+                });
+              }}
+            >
+              <option value="">اختر</option>
+              {supervisors.options.map((option, index) => (
+                <option key={index} value={option.value} style={{ backgroundColor: '#fff' }}>
+                  {option.label} {option.Role !== undefined && `- ${option.Role}`}
+                </option>
+              ))}
+            </TextField>
+          )}
 
-            {projectTracks && (
-              <TextField
-                label={projectTracks.name}
-                InputLabelProps={{ shrink: true }}
-                SelectProps={{ native: true }}
-                select
-                fullWidth
-                // value={selected}
-                onChange={(event) => {
-                  setSelected({
-                    ...selected,
-                    projectTrack: event.target.value,
-                  });
-                }}
-              >
-                <option value="">اختر</option>
-                {projectTracks.options.map((option, index) => (
-                  <option key={index} value={option.value} style={{ backgroundColor: '#fff' }}>
-                    {option.label}
-                  </option>
-                ))}
-              </TextField>
-            )}
-            <Stack direction="row" justifyContent="center">
-              <Button onClick={handleClose}>رجوع</Button>
-              <Button onClick={handleSubmit}>تأكيد</Button>
-            </Stack>
+          {projectTracks && (
+            <TextField
+              label={projectTracks.name}
+              InputLabelProps={{ shrink: true }}
+              SelectProps={{ native: true }}
+              select
+              fullWidth
+              // value={selected}
+              onChange={(event) => {
+                setSelected({
+                  ...selected,
+                  projectTrack: event.target.value,
+                });
+              }}
+            >
+              <option value="">اختر</option>
+              {projectTracks.options.map((option, index) => (
+                <option key={index} value={option.value} style={{ backgroundColor: '#fff' }}>
+                  {option.label}
+                </option>
+              ))}
+            </TextField>
+          )}
+          <Stack direction="row" justifyContent="center">
+            <Button onClick={handleClose}>رجوع</Button>
+            <Button onClick={handleSubmit}>تأكيد</Button>
           </Stack>
-        </Box>
-      </Modal>
-    </div>
+        </Stack>
+      </Box>
+    </Modal>
   );
 }
 

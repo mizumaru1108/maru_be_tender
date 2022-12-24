@@ -1,4 +1,4 @@
-import { Grid } from '@mui/material';
+import { Grid, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Page from 'components/Page';
 import useAuth from 'hooks/useAuth';
@@ -16,50 +16,56 @@ import {
   MessagesInternalCorespondence,
 } from './mock-data';
 
+// config
+import { HEADER } from '../../config';
+
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
   minHeight: '100vh',
   display: 'flex',
   justifyContent: 'start',
   flexDirection: 'column',
-  gap: 20,
+  width: '50%',
+}));
+
+const ContentStyleMessage = styled('div')(({ theme }) => ({
+  maxWidth: '100%',
+  position: 'fixed',
+  top: HEADER.MAIN_DESKTOP_HEIGHT + 10,
+  right: theme.spacing(2),
+  bottom: theme.spacing(5),
+  borderRadius: theme.spacing(1),
+  width: '40%',
+  padding: theme.spacing(2),
+  backgroundColor: '#fff',
 }));
 
 function MessagesPage() {
-  const { activeRole } = useAuth();
+  const { activeRole, user } = useAuth();
   const role = activeRole!;
   const [content, setContent] = useState<messageContent[]>([]);
   const [room, setRoom] = useState<string>();
   return (
-    <Page title="Previous Funding Requests">
-      <ContentStyle>
-        <Grid container columns={15} spacing={3} direction="row">
-          <Grid item xs={7} padding={2}>
-            <MessageMenu
-              internalData={MessagesInternalCorespondence}
-              externalData={MessagesExternalCorespondence}
-              accountType={role}
-              roomId={(id) => {
-                setRoom(id);
-                console.log('room', room);
-              }}
-            />
-          </Grid>
-          <Grid
-            item
-            xs={8}
-            sx={{
-              backgroundColor: '#fff',
-            }}
-            padding={3}
-          >
-            {room === '001' && <MessageContent data={Message} />}
-            {room === '002' && <MessageContent data={Message1} />}
-            {room === '003' && <MessageContent data={Message2} />}
-            {room === '004' && <MessageContent data={Message3} />}
-          </Grid>
-        </Grid>
-      </ContentStyle>
+    <Page title="Message Page">
+      <Stack direction="row" spacing={1} component="div" justifyContent="space-between">
+        <ContentStyle>
+          <MessageMenu
+            // internalData={MessagesInternalCorespondence}
+            // externalData={MessagesExternalCorespondence}
+            accountType={role}
+            user={user}
+            // roomId={(id) => {
+            //   setRoom(id);
+            // }}
+          />
+        </ContentStyle>
+        {/* <ContentStyleMessage>
+          {room === '001' && <MessageContent data={Message} />}
+          {room === '002' && <MessageContent data={Message1} />}
+          {room === '003' && <MessageContent data={Message2} />}
+          {room === '004' && <MessageContent data={Message3} />}
+        </ContentStyleMessage> */}
+      </Stack>
     </Page>
   );
 }

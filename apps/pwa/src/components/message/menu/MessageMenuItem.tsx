@@ -1,104 +1,93 @@
-import { Stack, Typography } from '@mui/material';
+// React
 import { useEffect, useState } from 'react';
+// @mui
+import { Stack, Typography, Box, useTheme } from '@mui/material';
+// icon
 import Iconify from '../../Iconify';
+// types
+import { Conversation } from '../../../@types/wschat';
 import { IMessageMenuItem } from '../type';
 
-type IroomId = {
-  data: {
-    id: string;
-  }[];
+type IPropsMessageItem = {
+  data: Conversation[];
 };
 
-export default function MessageMenuItem({ data, getRoomId }: IMessageMenuItem) {
+// export default function MessageMenuItem({ data, getRoomId }: IMessageMenuItem) {
+export default function MessageMenuItem({ data }: IPropsMessageItem) {
+  const theme = useTheme();
   const [focusedIndex, setFocusedIndex] = useState<number | undefined>(undefined);
-  const [id, setId] = useState('');
-
-  const getId = (roomId: string) => {
-    const a: IroomId = { data: [] };
-    a.data.push({ id: roomId });
-    // setId(a.data[0].id);
-    getRoomId(a.data[0].id);
-  };
 
   return (
     <>
       {data.map((item, index) => (
-        <Stack
-          direction="row"
-          gap="8px"
+        <Box
+          component="div"
           key={index}
           sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'self-start',
             padding: 2,
+            borderRadius: 1,
             color: '#000',
-            backgroundColor: focusedIndex === index ? '#fff' : undefined,
-
-            // set on hover to change color, give delay 0.5s
-            '&:hover': {
-              cursor: 'pointer',
-              // only if focusedIndex is not equal to index
-              ...(focusedIndex !== index && {
-                //set transition when mouse hover
-                transition: 'all 0.5s',
+            backgroundColor: {
+              ...(focusedIndex === index && {
+                transition: 'all 0.25s',
                 color: '#000',
-                // background color gradient darker than #fff
                 backgroundColor: '#fff',
               }),
             },
-          }} // on hover
+            '&:hover': {
+              cursor: 'pointer',
+              backgroundColor: theme.palette.grey[300],
+              ...(focusedIndex === index && {
+                transition: 'all 0.25s',
+                color: '#000',
+                backgroundColor: '#fff',
+              }),
+            },
+          }}
           onClick={() => {
             setFocusedIndex(index);
-            getId(item.roomId);
           }}
         >
-          <Stack>
-            <Iconify
-              icon={'codicon:account'}
-              color="#000"
-              sx={{
-                width: '32px',
-                height: '32px',
-              }}
-            />
-          </Stack>
-          <Stack
-            direction="column"
+          <Iconify icon={'codicon:account'} color="#000" width={28} height={28} />
+          <Box
+            component="div"
             sx={{
-              '& .MuiStack-root': {
-                gap: '9px',
-              },
+              display: 'flex',
+              flexDirection: 'column',
+              ml: 1.5,
             }}
           >
             <Typography
+              variant="subtitle2"
               sx={{
-                height: '26px',
-                fontSize: '14px',
-                bottopPadding: '3px',
+                pb: 0.25,
               }}
             >
-              {item.partnerName} - {item.projectName}
+              {item.partner_username} - {item.partner_selected_role}
             </Typography>
             <Typography
               sx={{
                 fontSize: '12px',
                 lineHeight: '24px',
-                bottopPadding: '8px',
+                pb: 0.5,
               }}
             >
-              {item.message}
+              {item.content && item.content.length ? `${item.content[0].body}` : 'No message yet.'}
             </Typography>
 
             <Typography
               sx={{
                 fontSize: '10px',
                 color: '#8E8E8E',
-                bottopPadding: '8px',
-                height: '19px',
               }}
             >
-              {new Date(item.footer).toLocaleString()}
+              {new Date().toLocaleString()}
             </Typography>
-          </Stack>
-        </Stack>
+          </Box>
+        </Box>
       ))}
     </>
   );

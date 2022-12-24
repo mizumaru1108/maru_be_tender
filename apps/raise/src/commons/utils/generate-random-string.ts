@@ -7,3 +7,10 @@ export const generateRandomNumberString = (length: number): string => {
   }
   return result;
 };
+
+export const generateRandomString = (length: number): string => {
+  return Array(length)
+    .fill(null)
+    .map(() => Math.round(Math.random() * 16).toString(16))
+    .join('');
+};

@@ -39,6 +39,15 @@ const en = {
         pending_projects: 'Pending Projects',
       },
     },
+    messages: {
+      btn: {
+        create_new_message: 'Create a New Message',
+      },
+      empty_user_data: 'User list is empty!',
+      text_field: {
+        placeholder_list_tracks: 'Choose the path type for Employee',
+      },
+    },
   },
   errors: {
     login: {
@@ -896,6 +905,7 @@ const en = {
       label: {
         track_type: 'Track Type',
         employees: 'Employees',
+        search_employee: 'Search the Client name',
       },
     },
   },

@@ -35,25 +35,30 @@ import { ZakatModule } from './zakat/zakat.module';
 // import { OpenTelemetryModule } from '@metinseylan/nestjs-opentelemetry';
 import { CommentsModule } from './comments/comments.module';
 import { envLoadErrorHelper } from './commons/helpers/env-loaderror-helper';
-import { PermissionManagerModule } from './permission-manager/permission-manager.module';
-import { WidgetBackendModule } from './widget-backend/widget-backend.module';
 import { DonationModule } from './donation/donation.module';
-import { PrismaModule } from './prisma/prisma.module';
-import { TenderModule } from './tender/tender.module';
-import { TenderProposalModule } from './tender-proposal/tender-proposal.module';
-import { TenderAppointmentModule } from './tender-appointment/tender-appointment.module';
-import { TenderAuthModule } from './tender-auth/tender-auth.module';
-import { TenderUserModule } from './tender-user/tender-user.module';
-import { TenderEmailModule } from './tender-email/tender-email.module';
-import { TenderTrackModule } from './tender-track/track.module';
 import { GsAuthModule } from './gs-auth/gs-auth.module';
 import { GsUserModule } from './gs-user/gs-user.module';
+import { PermissionManagerModule } from './permission-manager/permission-manager.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { TenderAppointmentModule } from './tender-appointment/tender-appointment.module';
+import { TenderAuthModule } from './tender-auth/tender-auth.module';
+import { TenderEmailModule } from './tender-email/tender-email.module';
+import { TenderProposalModule } from './tender-proposal/tender-proposal.module';
+import { TenderTrackModule } from './tender-track/track.module';
+import { TenderUserModule } from './tender-user/tender-user.module';
+import { TenderModule } from './tender/tender.module';
+import { WidgetBackendModule } from './widget-backend/widget-backend.module';
 /* Environtment Config */
-import { fusionAuthConfig } from './commons/configs/fusion-auth-config';
 import { bunnyConfig } from './commons/configs/bunny-config';
+import { fusionAuthConfig } from './commons/configs/fusion-auth-config';
 import { nodeMailerConfig } from './commons/configs/nodemailer-config';
 // import { metalApiConfig } from './commons/configs/metail-api-config';
 // import { gapiConfig } from './commons/configs/gapi-config';
+import { TenderCommentsModule } from './tender-comments/tender-comments.module';
+import { TenderEventsModule } from './tender-events-gateway/tender-events.module';
+import { TenderMessagesModule } from './tender-messaging/tender-messages.module';
+import { TenderStatisticsModule } from './tender-statistics/statistics.module';
+import { TenderNotificationModule } from './tender-notification/tender-notification.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -148,6 +153,11 @@ import { nodeMailerConfig } from './commons/configs/nodemailer-config';
     TenderTrackModule,
     GsAuthModule,
     GsUserModule,
+    TenderCommentsModule,
+    TenderMessagesModule,
+    TenderStatisticsModule,
+    TenderEventsModule,
+    TenderNotificationModule,
   ],
   controllers: [],
 })

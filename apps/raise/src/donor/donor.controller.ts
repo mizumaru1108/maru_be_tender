@@ -191,6 +191,38 @@ export class DonorController {
     );
   }
 
+  /**
+   * Endpoint for get insight of donor donation
+   */
+
+  @ApiOperation({ summary: 'Get insight donation log for donor' })
+  @UseGuards(JwtAuthGuard)
+  @Get('/:donorId/insight')
+  async getDonorInsight(
+    @Param('donorId') donorId: string,
+    @Query('organizationId') organizationId: string,
+    @Query('period') period: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ) {
+    this.logger.debug('Get insight donation log for donor');
+
+    const insightDonor = await this.donorService.insightSummaryDonors(
+      donorId,
+      organizationId,
+      period,
+      startDate,
+      endDate
+    );
+    const response = baseResponseHelper(
+      insightDonor,
+      HttpStatus.OK,
+      'Donor successfully show insight',
+    );
+
+    return response;
+  }
+
   @Get('donorTransaction')
   async getTrxDonorList(
     @Query() filter: DonorListTrxDto,

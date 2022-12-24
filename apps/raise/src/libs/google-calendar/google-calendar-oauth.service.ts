@@ -59,6 +59,7 @@ export class GoogleCalendarOAuthService {
             'https://www.googleapis.com/auth/calendar',
             'https://www.googleapis.com/auth/calendar.events',
           ],
+          login_hint: 'rdanang.dev@gmail.com',
         });
 
         console.log(`Go to this URL to acquire a refresh token:\n\n${url}\n`);

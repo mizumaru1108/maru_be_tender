@@ -1,36 +1,47 @@
-import { Box, Stack, Tab, Tabs, Typography } from '@mui/material';
-import { useState } from 'react';
+// React
+import { useState, useEffect } from 'react';
+// @mui material
+import { Box, Stack, Tab, Tabs, Typography, Button, useTheme } from '@mui/material';
+// hooks
 import useLocales from '../../../hooks/useLocales';
+// components
+import Iconify from 'components/Iconify';
 import ModalDialog from '../../modal-dialog';
-import { filterProjectTrack, filterSupervisor } from '../mock-data';
 import FilterModalMessage from '../modal-form/FilterModalMessage';
 import NewMessageModalForm from '../modal-form/NewMessageModalForm';
-import { IMenu, TabPanelProps } from '../type';
 import MessageMenuButton from './MessageMenuButton';
 import MessageMenuHeader from './MessageMenuHeader';
 import MessageMenuItem from './MessageMenuItem';
+// types
+import { IMenu, TabPanelProps } from '../type';
+import { UserDataTracks } from '../modal-form/types';
+// mock
+import { filterProjectTrack, filterSupervisor } from '../mock-data';
+// redux
+import { addConversation } from 'redux/slices/wschat';
+import { useDispatch, useSelector } from 'redux/store';
 
-const MessageMenu = ({ internalData, externalData, accountType, roomId }: IMenu) => {
+const MessageMenu = ({ accountType, user }: IMenu) => {
+  const theme = useTheme();
   const { translate } = useLocales();
+  const dispatch = useDispatch();
+  const { conversations } = useSelector((state) => state.wschat);
   const [modalState, setModalState] = useState(false);
   const [open, setOpen] = useState(false);
   const [valueTabItem, setValueTabItem] = useState(0);
-  const [focusedIndex, setFocusedIndex] = useState<number | undefined>(undefined);
+  const [corespondence, setCorespondence] = useState('external');
+
   const handleChangeTabsItem = (event: React.SyntheticEvent, newValue: number) => {
     setValueTabItem(newValue);
+
+    newValue === 0 ? setCorespondence('external') : setCorespondence('internal');
   };
-  const [messageModalState, setMesssageModalState] = useState(false);
-  const [filterModalState, setFilterModalState] = useState(false);
-  const [id, setId] = useState('');
 
   const handleCloseModal = () => {
     setModalState(false);
   };
 
-  const handleOpenFilter = () => setOpen(true);
   const handleCloseFilter = () => setOpen(false);
-
-  const handleAddNewMessage = () => {};
 
   function TabPanel(props: TabPanelProps) {
     const { children, value, index, ...other } = props;
@@ -43,14 +54,11 @@ const MessageMenu = ({ internalData, externalData, accountType, roomId }: IMenu)
         aria-labelledby={`simple-tab-${index}`}
         {...other}
       >
-        {value === index && (
-          <Box sx={{ p: 3 }}>
-            <Typography>{children}</Typography>
-          </Box>
-        )}
+        {value === index && <Box>{children}</Box>}
       </div>
     );
   }
+
   function a11yProps(index: number) {
     return {
       id: `simple-tab-${index}`,
@@ -59,13 +67,8 @@ const MessageMenu = ({ internalData, externalData, accountType, roomId }: IMenu)
   }
 
   return (
-    <Stack display="flex" spacing={1} sx={{ margin: 2.5 }} gap="20px">
+    <Stack display="flex" spacing={3} sx={{ margin: 2.5 }}>
       <MessageMenuHeader onClickFilter={() => setOpen(true)} />
-      {/* <FilterModalMessage
-        open={open}
-        handleClose={handleCloseFilter}
-        filters={filterProjectTrack}
-      /> */}
       <FilterModalMessage
         open={open}
         handleClose={handleCloseFilter}
@@ -75,6 +78,20 @@ const MessageMenu = ({ internalData, externalData, accountType, roomId }: IMenu)
         supervisors={filterSupervisor}
         projectTracks={filterProjectTrack}
       />
+
+      {[
+        'tender_project_manager',
+        'tender_consultant',
+        'tender_ceo',
+        'tender_finance',
+        'tender_cashier',
+      ].includes(accountType) && (
+        <MessageMenuButton
+          onClick={() => {
+            setModalState(true);
+          }}
+        />
+      )}
 
       {[
         'tender_moderator',
@@ -113,23 +130,6 @@ const MessageMenu = ({ internalData, externalData, accountType, roomId }: IMenu)
       )}
 
       {[
-        'tender_project_manager',
-        'tender_accounts_manager',
-        'tender_project_supervisor',
-        'tender_moderator',
-        'tender_consultant',
-        'tender_ceo',
-        'tender_finance',
-        'tender_cashier',
-      ].includes(accountType) && (
-        <MessageMenuButton
-          onClick={() => {
-            setModalState(true);
-          }}
-        />
-      )}
-
-      {[
         'tender_moderator',
         'tender_accounts_manager',
         'tender_project_supervisor',
@@ -137,22 +137,61 @@ const MessageMenu = ({ internalData, externalData, accountType, roomId }: IMenu)
       ].includes(accountType) && (
         <>
           <TabPanel value={valueTabItem} index={0}>
-            <Box sx={{ overflowX: 'hidden', height: '550px' }}>
-              <MessageMenuItem
-                data={externalData}
-                // data={internalData}
-                getRoomId={(value) => roomId(value)}
+            {[
+              'tender_project_manager',
+              'tender_accounts_manager',
+              'tender_project_supervisor',
+              'tender_moderator',
+              'tender_consultant',
+              'tender_ceo',
+              'tender_finance',
+              'tender_cashier',
+            ].includes(accountType) && (
+              <MessageMenuButton
+                onClick={() => {
+                  setModalState(true);
+                }}
               />
-            </Box>
+            )}
+
+            <Stack direction="column" component="div" sx={{ overflowX: 'hidden', mt: 4 }}>
+              <MessageMenuItem
+                data={conversations.filter((el) => el.correspondence_type_id === 'EXTERNAL')}
+                // data={internalData}
+                // getRoomId={(value) => roomId(value)}
+              />
+            </Stack>
           </TabPanel>
           <TabPanel value={valueTabItem} index={1}>
-            <Box sx={{ overflowX: 'hidden', height: '550px' }}>
-              <MessageMenuItem
-                // data={externalData}
-                data={internalData}
-                getRoomId={(value) => roomId(value)}
+            {[
+              'tender_project_manager',
+              'tender_accounts_manager',
+              'tender_project_supervisor',
+              'tender_moderator',
+              'tender_consultant',
+              'tender_ceo',
+              'tender_finance',
+              'tender_cashier',
+            ].includes(accountType) && (
+              <MessageMenuButton
+                onClick={() => {
+                  setModalState(true);
+                }}
               />
-            </Box>
+            )}
+
+            <Stack
+              direction="column"
+              component="div"
+              spacing={1}
+              sx={{ overflowX: 'hidden', mt: 4 }}
+            >
+              <MessageMenuItem
+                data={conversations.filter((el) => el.correspondence_type_id === 'INTERNAL')}
+                // data={internalData}
+                // getRoomId={(value) => roomId(value)}
+              />
+            </Stack>
           </TabPanel>
         </>
       )}
@@ -165,8 +204,8 @@ const MessageMenu = ({ internalData, externalData, accountType, roomId }: IMenu)
         'tender_finance',
         'tender_cashier',
       ].includes(accountType) && (
-        <Box sx={{ overflowX: 'hidden', height: '550px' }}>
-          <MessageMenuItem data={internalData} getRoomId={(value) => roomId(value)} />
+        <Box sx={{ overflowX: 'hidden' }}>
+          <MessageMenuItem data={conversations} />
         </Box>
       )}
 
@@ -179,18 +218,22 @@ const MessageMenu = ({ internalData, externalData, accountType, roomId }: IMenu)
           </Stack>
         }
         content={
-          <Stack display="flex" spacing={1} sx={{ margin: 2.5 }} height={400}>
+          <Box sx={{ mx: 1.5 }}>
             <NewMessageModalForm
-              onSubmit={(value: any) => {
-                console.log('form callback', value);
-                handleAddNewMessage();
+              user={user}
+              activeRole={accountType}
+              corespondence={corespondence}
+              onSubmit={(v: any) => {
+                setModalState(false);
+                dispatch(addConversation(v));
               }}
             />
-          </Stack>
+          </Box>
         }
         isOpen={modalState}
         onClose={handleCloseModal}
-        styleContent={{ padding: '1em', backgroundColor: '#fff' }}
+        styleContent={{ padding: 2.25, backgroundColor: '#fff' }}
+        maxWidth="md"
       />
     </Stack>
   );

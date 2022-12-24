@@ -75,44 +75,27 @@ export class TenderService {
 
   /* denactive client data after editing request*/
   async postCreateEditingRequest(request: BaseHashuraWebhookPayload) {
-    console.log('id', request.event.session_variables['x-hasura-user-id']);
+    // console.log('id', request.event.session_variables['x-hasura-user-id']);
     const user = await this.prismaService.user.findUnique({
       where: {
         id: request.event.session_variables['x-hasura-user-id'],
       },
     });
-
-    // console.log('user', user);
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 
-    const client = await this.prismaService.client_data.findFirst({
+    const updatedUser = await this.prismaService.user.update({
       where: {
-        user_id: user.id,
-      },
-    });
-    // console.log('client', client);
-    if (!client) {
-      throw new HttpException('Client not found', HttpStatus.NOT_FOUND);
-    }
-
-    // there's enum on table edit_request_status, with id of "WAITING_FOR_EDITING_APPROVAL", and value of "Waiting for editing approval"
-    // replace / edit value on table client_data.client_status with that "WAITING_FOR_EDITING_APPROVAL" and "Waiting for editing approval"
-    const updateClient = await this.prismaService.client_data.update({
-      where: {
-        id: client.id,
+        id: user.id,
       },
       data: {
-        // client_status: {
-        //   connect: {
-        //     id: 'WAITING_FOR_EDITING_APPROVAL',
-        //   },
-        // },
+        status_id: 'WAITING_FOR_EDITING_APPROVAL',
       },
     });
 
-    if (!updateClient) {
+    if (!updatedUser) {
       throw new Error('something went wrong when updating client data');
     }
-    return updateClient;
+
+    return updatedUser;
   }
 }

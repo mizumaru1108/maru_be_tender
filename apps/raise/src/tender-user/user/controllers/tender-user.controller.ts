@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Get,
   HttpStatus,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { user } from '@prisma/client';
@@ -13,9 +15,12 @@ import { baseResponseHelper } from '../../../commons/helpers/base-response-helpe
 import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
 import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
+import { ManualPaginatedResponse } from '../../../tender-commons/helpers/manual-paginated-response.dto';
+import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import { TenderCreateUserDto } from '../dtos/requests/create-user.dto';
 
 import { TenderDeleteUserDto } from '../dtos/requests/delete-user.dto';
+import { SearchUserFilterRequest } from '../dtos/requests/search-user-filter-request.dto';
 import { UpdateUserDto } from '../dtos/requests/update-user.dto';
 import { CreateUserResponseDto } from '../dtos/responses/create-user-response.dto';
 import { TenderCurrentUser } from '../interfaces/current-user.interface';
@@ -36,6 +41,27 @@ export class TenderUserController {
       response,
       HttpStatus.CREATED,
       'User created successfully!',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard)
+  @Get('find-users')
+  async findUsers(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Query() filter: SearchUserFilterRequest,
+  ): Promise<ManualPaginatedResponse<user[] | [] | user[][] | undefined>> {
+    const response = await this.tenderUserService.findUsers(
+      currentUser,
+      filter,
+    );
+
+    return manualPaginationHelper(
+      response.data,
+      response.total,
+      filter.page || 1,
+      filter.limit || 10,
+      HttpStatus.OK,
+      'Success',
     );
   }
 

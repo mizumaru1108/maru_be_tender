@@ -1,10 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, Matches, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  Matches,
+  IsOptional,
+  IsDataURI,
+} from 'class-validator';
 
 export class PayloadImage {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  @IsDataURI({
+    message: 'Must be a valid base64',
+  })
   base64Data: string;
 
   @ApiProperty()

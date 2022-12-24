@@ -901,9 +901,36 @@ export class TenderProposalService {
         ProposalAction.ACCEPT_AND_ASK_FOR_CONSULTION,
       );
       return proposal;
-    } else {
+    } else if((role === ProposalAdminRole.CEO || role === ProposalAdminRole.PROJECT_MANAGER || role === ProposalAdminRole.CASHIER || role === ProposalAdminRole.FINANCE) && action === ProposalAction.ASK_FOR_UPDATE){
+      await this.updateRequestToTheSuperVisor(user, body, id, role)
+    }else{
       throw new UnauthorizedException('There is no such action to do!');
     }
+  }
+
+  async updateRequestToTheSuperVisor(user: user, body: any, id: string, role: string){
+    const oldProposal = await this.prismaService.proposal.findUnique({
+      where: {
+        id,
+      },
+    });
+    const old_inner_status = oldProposal?.inner_status? oldProposal.inner_status : undefined;
+    const proposal = await this.updateProposalStatus(
+      id,
+      InnerStatusEnum.ACCEPTED_BY_MODERATOR,
+      undefined,
+      OuterStatusEnum.UPDATE_REQUEST,
+      old_inner_status
+    );
+    await this.createProposalLog(
+      body,
+      role,
+      proposal,
+      user.id,
+      `ProposalHasAnUpdateRequestBy@${user.employee_name}`,
+      ProposalAction.ASK_FOR_UPDATE,
+    );
+    return proposal;
   }
 
   async proposalStepBack(id: string, body: any, role: string, user: user) {
@@ -1175,6 +1202,7 @@ export class TenderProposalService {
     inner_status: string,
     track_id?: string,
     outter_status?: string,
+    old_inner_status?: string
   ) {
     return this.prismaService.proposal.update({
       where: {
@@ -1184,6 +1212,7 @@ export class TenderProposalService {
         inner_status,
         track_id,
         outter_status,
+        old_inner_status
       },
     });
   }
@@ -1208,5 +1237,9 @@ export class TenderProposalService {
         action,
       },
     });
+  }
+
+  async fetchTrack(limit: number, page: number) {
+    return await this.tenderProposalRepository.fetchTrack(limit, page);
   }
 }

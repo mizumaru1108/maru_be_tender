@@ -7,6 +7,7 @@ import {
   Req,
   UseGuards,
   Get,
+  Query,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { JwtAuthGuard } from '../../auth/jwt.guard';
@@ -30,6 +31,8 @@ import { UpdateProposalDto } from '../dtos/requests/proposal/update-proposal.dto
 import { UpdateProposalResponseDto } from '../dtos/responses/proposal/update-proposal-response.dto';
 import { UpdateProposalByCmsUsers } from '../dtos/updateProposalByCmsUsers.dto';
 import { user } from '@prisma/client';
+import { BaseFilterRequest } from '../../commons/dtos/base-filter-request.dto';
+import { manualPaginationHelper } from '../../tender-commons/helpers/manual-pagination-helper';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(
@@ -56,6 +59,39 @@ export class TenderProposalController {
     );
   }
 
+  /**
+   * this endpoint is for changing the state of the proposal,
+   * the status of proposal will be change, and the log will be created
+   * (DYNAMIC) DEPRECATED for now
+   */
+  // @UseGuards(JwtAuthGuard)
+  // @Patch('changeState')
+  // dchangeProposalState(
+  //   @CurrentUser() currentUser: ICurrentUser,
+  //   @Body() request: ChangeProposalStateDto,
+  // ) {
+  //   return this.tenderProposalService.dchangeProposalState(
+  //     currentUser,
+  //     request,
+  //   );
+  // }
+  @UseGuards(TenderJwtGuard)
+  @Get('fetch-track')
+  async fetchTrack(
+    @Query() { limit = 10, page = 1 }: BaseFilterRequest,
+  ): Promise<BaseResponse<any>> {
+    const result = await this.tenderProposalService.fetchTrack(limit, page);
+
+    return manualPaginationHelper(
+      result.data,
+      result.total,
+      page,
+      limit,
+      HttpStatus.OK,
+      'Success',
+    );
+  }
+
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles(
     'tender_cashier',
@@ -79,23 +115,6 @@ export class TenderProposalController {
       'Payment updated successfully',
     );
   }
-
-  /**
-   * this endpoint is for changing the state of the proposal,
-   * the status of proposal will be change, and the log will be created
-   * (DYNAMIC) DEPRECATED for now
-   */
-  // @UseGuards(JwtAuthGuard)
-  // @Patch('changeState')
-  // dchangeProposalState(
-  //   @CurrentUser() currentUser: ICurrentUser,
-  //   @Body() request: ChangeProposalStateDto,
-  // ) {
-  //   return this.tenderProposalService.dchangeProposalState(
-  //     currentUser,
-  //     request,
-  //   );
-  // }
 
   /**
    * changing proposal state (acc/reject, create logs)

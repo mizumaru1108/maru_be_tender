@@ -8,7 +8,10 @@ import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfac
 import axios, { AxiosRequestConfig } from 'axios';
 import { AllowedFileType } from '../../../commons/enums/allowed-filetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
-import { generateRandomNumberString } from '../../../commons/utils/generate-random-string';
+import {
+  generateRandomNumberString,
+  generateRandomString,
+} from '../../../commons/utils/generate-random-string';
 import { sanitizeString } from '../../../commons/utils/sanitize-string';
 import { uploadFileNameParser } from '../../../commons/utils/upload-filename-parser';
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
@@ -137,9 +140,13 @@ export class BunnyService {
     }
   }
 
-  async deleteImage(path: string): Promise<boolean> {
-    const mediaUrl = this.storageUrlMedia + '/' + path;
-    const cdnUrl = this.cdnUrl + '/' + path;
+  async deleteMedia(path: string, includeCdn: boolean): Promise<boolean> {
+    // if includeCdn then remove cdnUrl
+    const storageMediaUrl: string = includeCdn
+      ? this.storageUrlMedia + '/' + path.replace(this.cdnUrl + '/', '')
+      : this.storageUrlMedia + '/' + path;
+
+    const cdnUrl: string = includeCdn ? path : this.cdnUrl + '/' + path;
     this.logger.log(`Deleting ${cdnUrl} from storage ...`);
 
     const options: AxiosRequestConfig<any> = {
@@ -147,7 +154,7 @@ export class BunnyService {
       headers: {
         AccessKey: this.storageAccessKey,
       },
-      url: mediaUrl,
+      url: storageMediaUrl,
     };
 
     try {
@@ -155,7 +162,7 @@ export class BunnyService {
       if (response.data.HttpCode === 200) {
         this.logger.log(
           'Deleted %s from Bunny: %s %s %s',
-          mediaUrl,
+          storageMediaUrl,
           response.status,
           response.statusText,
           JSON.stringify(response.data, null, 2),
@@ -163,7 +170,7 @@ export class BunnyService {
       }
       return true;
     } catch (error) {
-      this.logger.error(`Error deleting image ${path}: ${error}`, error);
+      this.logger.error(`Error deleting media ${path}: ${error}`, error);
       throw new InternalServerErrorException(`Error deleting image!`);
     }
   }
@@ -223,6 +230,51 @@ export class BunnyService {
       );
       throw new InternalServerErrorException(
         `Error uploading image file to Bunny ${mediaUrl} (${file.buffer.length} bytes) while creating ${serviceName}`,
+      );
+    }
+  }
+
+  public async uploadFileBase64(
+    fileName: string,
+    fileBuffer: Buffer,
+    path: string,
+    serviceName: string,
+  ): Promise<string> {
+    this.logger.log('Uploading ', fileName, ' to ', path);
+    const storageUrlMedia = this.storageUrlMedia + '/' + path;
+    const cdnUrl = this.cdnUrl + '/' + path;
+
+    const options: AxiosRequestConfig<any> = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/octet-stream',
+        AccessKey: this.storageAccessKey,
+      },
+      data: fileBuffer,
+      url: storageUrlMedia,
+    };
+
+    try {
+      this.logger.log(
+        `Uploading to Bunny: ${storageUrlMedia} (${fileBuffer.length} bytes)...`,
+      );
+      const response = await axios(options);
+      this.logger.log(
+        'Uploaded %s (%d bytes) to Bunny: %s %s %s',
+        storageUrlMedia,
+        fileBuffer.length,
+        response.status,
+        response.statusText,
+        JSON.stringify(response.data, null, 2),
+      );
+      return cdnUrl;
+    } catch (error) {
+      this.logger.error(
+        `Error uploading image file to Bunny ${storageUrlMedia} (${fileBuffer.length} bytes) while creating ${serviceName}`,
+        error,
+      );
+      throw new InternalServerErrorException(
+        `Error uploading image file to Bunny ${storageUrlMedia} (${fileBuffer.length} bytes) while creating ${serviceName}`,
       );
     }
   }

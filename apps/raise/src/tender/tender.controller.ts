@@ -41,9 +41,10 @@ export class TenderController {
 
   @Post('edit-request-hook-handler')
   async postEditRequest(@Body() payload: BaseHashuraWebhookPayload) {
-    this.logger.info('payload: ' + { payload: JSON.stringify(payload) });
-    this.logger.info('payload data: ' + JSON.stringify(payload.event.data));
+    // this.logger.info('payload: ' + { payload: JSON.stringify(payload) });
+    // this.logger.info('payload data: ' + JSON.stringify(payload.event.data));
     const response = await this.tenderService.postCreateEditingRequest(payload);
-    this.logger.info('Response: ', { response: JSON.stringify(response) });
+    // this.logger.info('Response: ', { response: JSON.stringify(response) });
+    return response;
   }
 }

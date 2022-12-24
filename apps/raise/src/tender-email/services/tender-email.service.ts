@@ -27,7 +27,6 @@ export class TenderEmailService {
 
     // LATER ON
     // !TODO: use REDIS to queue (use consumer to add the task of sending email, if queue fail, retry) -> (use bull module)
-    this.emailService.SendMailAsync(emailPayload);
     // const emailResponse = await this.emailService.sendMail(emailPayload);
     // console.log('emailResponse', emailResponse.messageId);
     const emailRecordPayload: Prisma.email_recordCreateArgs = {
@@ -50,6 +49,8 @@ export class TenderEmailService {
     const createdRecord = await this.tenderEmailRepository.createNewEmailRecord(
       emailRecordPayload,
     );
+
+    this.emailService.SendMailAsync(emailPayload);
 
     return createdRecord;
   }
