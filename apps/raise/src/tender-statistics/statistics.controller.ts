@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Query,
   HttpStatus,
 } from '@nestjs/common';
 import { baseResponseHelper } from '../commons/helpers/base-response-helper';
@@ -11,8 +12,9 @@ export class TenderStatisticsController {
   constructor(private readonly tenderStatisticsService: TenderStatisticsService) {}
 
   @Get('all')
-  async getAllStatistcs() {
-    const allStatistics = await this.tenderStatisticsService.getAllStatistics();
+  async getAllStatistics(@Query() query: any) {
+    const { from, to } = query;
+    const allStatistics = await this.tenderStatisticsService.getAllStatistics(new Date(from), new Date(to));
     return baseResponseHelper(
       allStatistics,
       HttpStatus.OK,
