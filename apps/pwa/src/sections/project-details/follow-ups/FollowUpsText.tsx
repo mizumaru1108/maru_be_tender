@@ -1,10 +1,13 @@
 import { Avatar, Box, Grid, Stack, Typography } from '@mui/material';
+import { FollowUps } from '../../../@types/proposal';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 
-function FollowUpsText({ created_at, action, employee }: any) {
+function FollowUpsText(item: FollowUps) {
   const { activeRole } = useAuth();
+
   const { translate } = useLocales();
+
   const role = activeRole!;
 
   if (role === 'tender_client')
@@ -18,12 +21,12 @@ function FollowUpsText({ created_at, action, employee }: any) {
               padding: '10px',
             }}
           >
-            {action}
+            {item.action}
           </Box>
         </Grid>
         <Grid item md={1}>
           <Typography sx={{ color: 'gray' }}>{`${
-            new Date().getDate() - new Date(created_at).getDate()
+            new Date().getDate() - new Date(item.created_at).getDate()
           } ساعات`}</Typography>
         </Grid>
       </Grid>
@@ -70,18 +73,14 @@ function FollowUpsText({ created_at, action, employee }: any) {
           }}
         >
           <Stack direction="row" justifyContent="space-between">
-            {employee ? (
-              <Typography color="#0E8478">{`${employee.employee_name} - ${translate(
-                `permissions.${employee.roles[0].role}`
-              )}`}</Typography>
-            ) : (
-              <Typography color="#0E8478">المستخدم</Typography>
-            )}
+            <Typography color="#0E8478">{`${item.user.employee_name} - ${translate(
+              `permissions.${item.user.roles[0].role}`
+            )}`}</Typography>
             <Typography sx={{ color: 'gray' }}>{`${
-              new Date().getDate() - new Date(created_at).getDate()
+              new Date().getDate() - new Date(item.created_at).getDate()
             } ساعات`}</Typography>
           </Stack>
-          <Typography>{action}</Typography>
+          <Typography>{item.action}</Typography>
         </Box>
       </Grid>
     </Grid>

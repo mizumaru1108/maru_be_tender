@@ -43,7 +43,6 @@ export const topBar = {
       'project-path',
       'follow-ups',
       'payments',
-      'exchange-details',
     ],
   },
   tender_cashier: {

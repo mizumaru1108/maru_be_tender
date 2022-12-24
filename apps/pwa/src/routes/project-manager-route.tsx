@@ -63,15 +63,6 @@ export const projectManagerRoute = {
           path: ':id/amandementRequest',
           element: <AmandementRequest />,
         },
-        {
-          path: ':id/:actionType',
-          children: [
-            { path: 'main', element: <ProjectDetails /> },
-            { path: 'project-path', element: <ProjectDetails /> },
-            { path: 'follow-ups', element: <ProjectDetails /> },
-            { path: 'payments', element: <ProjectDetails /> },
-          ],
-        },
       ],
     },
     {
@@ -89,13 +80,7 @@ export const projectManagerRoute = {
             },
             {
               path: ':id/:actionType',
-              children: [
-                { path: 'main', element: <ProjectDetails /> },
-                { path: 'project-budget', element: <ProjectDetails /> },
-                { path: 'project-path', element: <ProjectDetails /> },
-                { path: 'project-timeline', element: <ProjectDetails /> },
-                { path: 'follow-ups', element: <ProjectDetails /> },
-              ],
+              element: <ProjectDetails />,
             },
           ],
         },
@@ -109,13 +94,7 @@ export const projectManagerRoute = {
             },
             {
               path: ':id/:actionType',
-              children: [
-                { path: 'main', element: <ProjectDetails /> },
-                { path: 'project-budget', element: <ProjectDetails /> },
-                { path: 'project-path', element: <ProjectDetails /> },
-                { path: 'project-timeline', element: <ProjectDetails /> },
-                { path: 'follow-ups', element: <ProjectDetails /> },
-              ],
+              element: <ProjectDetails />,
             },
           ],
         },
@@ -129,13 +108,7 @@ export const projectManagerRoute = {
             },
             {
               path: ':id/:actionType',
-              children: [
-                { path: 'main', element: <ProjectDetails /> },
-                { path: 'project-budget', element: <ProjectDetails /> },
-                { path: 'project-path', element: <ProjectDetails /> },
-                { path: 'project-timeline', element: <ProjectDetails /> },
-                { path: 'follow-ups', element: <ProjectDetails /> },
-              ],
+              element: <ProjectDetails />,
             },
           ],
         },
@@ -149,14 +122,7 @@ export const projectManagerRoute = {
             },
             {
               path: ':id/:actionType',
-              children: [
-                { path: 'main', element: <ProjectDetails /> },
-                { path: 'project-budget', element: <ProjectDetails /> },
-                { path: 'project-path', element: <ProjectDetails /> },
-                { path: 'project-timeline', element: <ProjectDetails /> },
-                { path: 'follow-ups', element: <ProjectDetails /> },
-                { path: 'payments', element: <ProjectDetails /> },
-              ],
+              element: <ProjectDetails />,
             },
           ],
         },

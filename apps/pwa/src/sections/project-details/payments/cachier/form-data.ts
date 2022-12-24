@@ -17,7 +17,7 @@ export const UploadReceiptFormFields = [
     label: 'رقم التحويل*',
     md: 6,
     xs: 12,
-    placeholder: 'رقم الشيك/التحويل',
+    placeholder: 'رقم التحويل',
   },
 
   {

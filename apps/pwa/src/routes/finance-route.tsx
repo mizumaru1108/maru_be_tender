@@ -49,12 +49,7 @@ export const financeRoute = {
         { path: '', element: <Searching /> },
         {
           path: ':id/:actionType',
-          children: [
-            { path: 'main', element: <ProjectDetails /> },
-            { path: 'project-path', element: <ProjectDetails /> },
-            { path: 'follow-ups', element: <ProjectDetails /> },
-            { path: 'payments', element: <ProjectDetails /> },
-          ],
+          element: <ProjectDetails />,
         },
       ],
     },
@@ -73,15 +68,7 @@ export const financeRoute = {
             },
             {
               path: ':id/:actionType',
-              children: [
-                { path: 'main', element: <ProjectDetails /> },
-                { path: 'project-budget', element: <ProjectDetails /> },
-                { path: 'project-path', element: <ProjectDetails /> },
-                { path: 'project-timeline', element: <ProjectDetails /> },
-                { path: 'follow-ups', element: <ProjectDetails /> },
-                { path: 'payments', element: <ProjectDetails /> },
-                { path: 'exchange-details', element: <ProjectDetails /> },
-              ],
+              element: <ProjectDetails />,
             },
           ],
         },
@@ -95,15 +82,7 @@ export const financeRoute = {
             },
             {
               path: ':id/:actionType',
-              children: [
-                { path: 'main', element: <ProjectDetails /> },
-                { path: 'project-budget', element: <ProjectDetails /> },
-                { path: 'project-path', element: <ProjectDetails /> },
-                { path: 'project-timeline', element: <ProjectDetails /> },
-                { path: 'follow-ups', element: <ProjectDetails /> },
-                { path: 'payments', element: <ProjectDetails /> },
-                { path: 'exchange-details', element: <ProjectDetails /> },
-              ],
+              element: <ProjectDetails />,
             },
           ],
         },

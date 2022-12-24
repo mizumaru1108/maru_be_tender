@@ -1,138 +1,21 @@
-import { Box, Button, Grid, Stack, Typography } from '@mui/material';
+import { Box, Grid, Stack, Typography } from '@mui/material';
 import PaymentsTable from './PaymentsTable';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import { useEffect, useState } from 'react';
-import { useMutation } from 'urql';
-import { updatePayment } from 'queries/project-supervisor/updatePayment';
-import { useSnackbar } from 'notistack';
+import { useSelector } from 'redux/store';
 
-function ManagerPaymentsPage({ data, mutate }: any) {
-  const { enqueueSnackbar } = useSnackbar();
-  const [paymentToApprove, setPaymentToApprove] = useState<{
-    id: string;
-    order: number | undefined;
-    payment_amount: number | undefined;
-    payment_date: string;
-    status: string;
-  }>({ id: '', order: undefined, payment_amount: undefined, payment_date: '', status: '' });
-  const [_, updatePay] = useMutation(updatePayment);
+function ManagerPaymentsPage() {
+  const { proposal } = useSelector((state) => state.proposal);
 
-  useEffect(() => {
-    for (var i = 0; i < data.payments.length; i++) {
-      if (data.payments[i].status === 'ISSUED_BY_SUPERVISOR') {
-        setPaymentToApprove(data.payments[i]);
-        break;
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  const handleApprovalPayment = () => {
-    const payload = {
-      id: paymentToApprove.id,
-      newState: { status: 'ACCEPTED_BY_PROJECT_MANAGER' },
-    };
-    updatePay(payload).then((result) => {
-      if (!result.error) {
-        enqueueSnackbar('The payment has been issued', {
-          variant: 'success',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'right',
-          },
-        });
-        mutate();
-      }
-      if (result.error) {
-        enqueueSnackbar(result.error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'right',
-          },
-        });
-      }
-    });
-  };
-  const handleRejectPayment = () => {
-    const payload = {
-      id: paymentToApprove.id,
-      newState: { status: 'SET_BY_SUPERVISOR' },
-    };
-    updatePay(payload).then((result) => {
-      if (!result.error) {
-        enqueueSnackbar('The payment has been Rejected', {
-          variant: 'success',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'right',
-          },
-        });
-        setPaymentToApprove({
-          id: '',
-          order: undefined,
-          payment_amount: undefined,
-          payment_date: '',
-          status: '',
-        });
-        mutate();
-      }
-      if (result.error) {
-        enqueueSnackbar(result.error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'right',
-          },
-        });
-      }
-    });
-  };
   return (
-    <Grid container spacing={3} sx={{ mt: '8px' }}>
-      {paymentToApprove.id !== '' && (
-        <Grid item md={12} xs={12}>
-          <Stack direction="column" gap={2}>
-            <Typography variant="h5">{`معلومات إذن الصرف`}</Typography>
-            <Stack direction="row" gap={2}>
-              <Stack direction="column" flex={2}>
-                <Typography>{`الأيبان ${data.user.bank_informations[0].bank_account_number}`}</Typography>
-              </Stack>
-              <Stack direction="row" gap={2} sx={{ alignItems: 'center' }}>
-                <Button
-                  sx={{
-                    backgroundColor: '#FF4842',
-                    color: '#fff',
-                    ':hover': { backgroundColor: '#FF170F' },
-                  }}
-                  startIcon={<CloseIcon />}
-                  onClick={handleRejectPayment}
-                >
-                  رفض إذن الصرف
-                </Button>
-                <Button
-                  sx={{
-                    backgroundColor: '#0E8478',
-                    color: '#fff',
-                  }}
-                  startIcon={<CheckIcon />}
-                  onClick={handleApprovalPayment}
-                >
-                  اعتماد إذن الصرف
-                </Button>
-              </Stack>
-            </Stack>
-          </Stack>
-        </Grid>
-      )}
+    <Grid container spacing={3} sx={{ mt: '2px' }}>
+      <Grid item md={12} xs={12}>
+        <Stack direction="column" gap={2}>
+          <Typography variant="h4">معلومات إذن الصرف</Typography>
+          <Typography
+            variant="h6"
+            color="text.tertiary"
+          >{`الأيبان : ${proposal.user.bank_informations[0].bank_account_number}`}</Typography>
+        </Stack>
+      </Grid>
       <Grid item md={12}>
         <Typography variant="h4">ميزانية المشروع</Typography>
       </Grid>
@@ -152,7 +35,7 @@ function ManagerPaymentsPage({ data, mutate }: any) {
           </Typography>
           <Typography
             sx={{ color: 'text.tertiary', fontWeight: 700 }}
-          >{`${data.number_of_payments} دفعات`}</Typography>
+          >{`${proposal.number_of_payments} دفعات`}</Typography>
         </Box>
       </Grid>
       <Grid item md={2} xs={12}>
@@ -172,7 +55,7 @@ function ManagerPaymentsPage({ data, mutate }: any) {
           </Typography>
           <Typography
             sx={{ color: 'text.tertiary', fontWeight: 700 }}
-          >{`${data.amount_required_fsupport} ريال`}</Typography>
+          >{`${proposal.amount_required_fsupport} ريال`}</Typography>
         </Box>
       </Grid>
       <Grid item md={2} xs={12}>
@@ -196,7 +79,7 @@ function ManagerPaymentsPage({ data, mutate }: any) {
         <Typography variant="h4">تقسيم الدفعات</Typography>
       </Grid>
       <Grid item md={12}>
-        <PaymentsTable payments={data.payments} />
+        <PaymentsTable />
       </Grid>
     </Grid>
   );

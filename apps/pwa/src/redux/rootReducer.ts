@@ -8,6 +8,8 @@ import productReducer from './slices/product';
 import calendarReducer from './slices/calendar';
 import kanbanReducer from './slices/kanban';
 import branchReducer from './slices/branch';
+import proposal from './slices/proposal';
+import supervisorAcceptingForm from './slices/supervisorAcceptingForm';
 
 // ----------------------------------------------------------------------
 
@@ -32,6 +34,8 @@ const rootReducer = combineReducers({
   kanban: kanbanReducer,
   product: persistReducer(productPersistConfig, productReducer),
   branch: branchReducer,
+  proposal: proposal,
+  supervisorAcceptingForm: supervisorAcceptingForm,
 });
 
 export { rootPersistConfig, rootReducer };

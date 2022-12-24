@@ -103,12 +103,10 @@ const ProjectCard = ({
     if (destination) {
       const x = location.pathname.split('/');
       console.log(
-        `/${x[1] + '/' + x[2] + '/' + destination}/${title.id}/${cardFooterButtonAction}/main`
+        `/${x[1] + '/' + x[2] + '/' + destination}/${title.id}/${cardFooterButtonAction}`
       );
-      navigate(
-        `/${x[1] + '/' + x[2] + '/' + destination}/${title.id}/${cardFooterButtonAction}/main`
-      );
-    } else navigate(`${location.pathname}/${title.id}/${cardFooterButtonAction}/main`);
+      navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${title.id}/${cardFooterButtonAction}`);
+    } else navigate(`${location.pathname}/${title.id}/${cardFooterButtonAction}`);
   };
   return (
     <Card sx={{ backgroundColor: '#fff' }}>

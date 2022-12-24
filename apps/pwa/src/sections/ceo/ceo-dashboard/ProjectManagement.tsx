@@ -26,9 +26,6 @@ function DashboardProjectManagement() {
 
   useEffect(() => {
     if (projectDatas) {
-      console.log(projectDatas);
-      // setProjectManagementData(projectDatas.proposal);
-      // setProjectManagementData(projectDatas.proposa.map((item: any) => item.proposal));
       setProjectManagementData(
         projectDatas.proposal.map((project: any) => ({
           id: (project.projectNumber as string) || 'N/A',

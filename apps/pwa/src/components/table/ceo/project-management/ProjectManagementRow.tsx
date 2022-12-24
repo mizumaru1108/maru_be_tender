@@ -17,8 +17,11 @@ export default function ProjectManagementTableRow({
   destination,
 }: ProjectManagementTableColumn) {
   const navigate = useNavigate();
+
   const location = useLocation();
+
   const theme = useTheme();
+
   const { translate } = useLocales();
 
   return (
@@ -56,13 +59,10 @@ export default function ProjectManagementTableRow({
             if (destination) {
               const x = location.pathname.split('/');
               navigate(
-                `/${x[1] + '/' + x[2] + '/' + destination}/${row.projectNumber}/show-details/main`
+                `/${x[1] + '/' + x[2] + '/' + destination}/${row.projectNumber}/show-details`
               );
             } else {
-              console.log(
-                `navigate to ${location.pathname}/${row.projectNumber}/show-details/main`
-              );
-              navigate(`${location.pathname}/${row.projectNumber}/show-details/main`);
+              navigate(`${location.pathname}/${row.projectNumber}/show-details`);
             }
           }}
           size="small"

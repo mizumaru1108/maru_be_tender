@@ -1,85 +1,130 @@
-import { Button, Stack, Typography } from '@mui/material';
-import { FusionAuthRoles } from '../../../../@types/commons';
+import { Button, Stack, Typography, Grid } from '@mui/material';
 import ModalDialog from 'components/modal-dialog';
 import useAuth from 'hooks/useAuth';
-import ActionPopupForm from './ActionPopupForm';
-import { useMutation } from 'urql';
-import { createNewFollowUp } from 'queries/commons/createNewFollowUp';
 import { useParams } from 'react-router';
 import { nanoid } from 'nanoid';
+import * as Yup from 'yup';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { FormProvider } from 'components/hook-form';
+import BaseField from 'components/hook-form/BaseField';
+import { LoadingButton } from '@mui/lab';
+import { addFollowups } from 'redux/slices/proposal';
+import { useDispatch } from 'redux/store';
+import { useSnackbar } from 'notistack';
 
 type Props = {
   open: boolean;
   handleClose: () => void;
-  mutate: () => void;
 };
-function ActionPopup({ open, handleClose, mutate }: Props) {
+
+type FormData = {
+  action: string;
+};
+
+function ActionPopup({ open, handleClose }: Props) {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const dispatch = useDispatch();
+
   const { id: proposal_id } = useParams();
-  const [, createFollow] = useMutation(createNewFollowUp);
-  const { user, activeRole } = useAuth();
+
+  const validationSchema = Yup.object().shape({
+    action: Yup.string().required('Action is required!'),
+  });
+
+  const defaultValues = {
+    action: '',
+  };
+
+  const methods = useForm<FormData>({
+    resolver: yupResolver(validationSchema),
+    defaultValues,
+  });
+
+  const {
+    reset,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methods;
+
+  const { user } = useAuth();
+
   const id = user?.id;
-  const role = activeRole!;
-  const handleSubmit = async (data: any) => {
-    if (role === 'tender_client') {
-      try {
-        await createFollow({
-          object: { action: data.action, user_id: id, proposal_id, id: nanoid() },
-        });
-        mutate();
-      } catch (error) {
-        console.log(error);
-      }
-    } else {
-      try {
-        await createFollow({
-          object: { action: data.action, employee_id: id, proposal_id, id: nanoid() },
-        });
-        mutate();
-      } catch (error) {
-        console.log(error);
-      }
+
+  const onSubmit = async (data: any) => {
+    try {
+      await dispatch(addFollowups({ action: data.action, user_id: id, proposal_id, id: nanoid() }));
+      enqueueSnackbar('تم رفع الإجراء بنجاح', {
+        variant: 'success',
+      });
+      reset();
+      handleClose();
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
     }
   };
   return (
-    <ModalDialog
-      maxWidth="md"
-      title={
-        <Stack display="flex">
-          <Typography variant="h6" fontWeight="bold" color="#000000">
-            إضافة تعليق
-          </Typography>
-        </Stack>
-      }
-      content={
-        <ActionPopupForm onSubmit={handleSubmit}>
+    <FormProvider methods={methods}>
+      <ModalDialog
+        maxWidth="md"
+        title={
+          <Stack display="flex">
+            <Typography variant="h6" fontWeight="bold" color="#000000">
+              إضافة إجراء
+            </Typography>
+          </Stack>
+        }
+        content={
+          <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
+            <Grid item md={12} xs={12}>
+              <BaseField
+                type="textArea"
+                name="action"
+                placeholder="الرجاء كتابة الإجراءات التي قمت بها  على المشروع "
+              />
+            </Grid>
+          </Grid>
+        }
+        showCloseIcon={true}
+        actionBtn={
           <Stack direction="row" justifyContent="space-around" gap={4}>
             <Button
               sx={{
                 color: '#000',
-                backgroundColor: 'transparent',
-                ':hover': { backgroundColor: 'transparent' },
+                size: 'large',
+                width: { xs: '100%', sm: '200px' },
+                hieght: { xs: '100%', sm: '50px' },
+                ':hover': { backgroundColor: '#efefef' },
               }}
               onClick={handleClose}
             >
               رجوع
             </Button>
-            <Button
-              type="submit"
+            <LoadingButton
+              onClick={handleSubmit(onSubmit)}
               sx={{
                 color: '#fff',
+                width: { xs: '100%', sm: '200px' },
+                hieght: { xs: '100%', sm: '50px' },
                 backgroundColor: '#0E8478',
                 ':hover': { backgroundColor: '#13B2A2' },
               }}
+              loading={isSubmitting}
             >
               اضافة
-            </Button>
+            </LoadingButton>
           </Stack>
-        </ActionPopupForm>
-      }
-      isOpen={open}
-      onClose={handleClose}
-      styleContent={{ padding: '1em', backgroundColor: '#fff' }}
-    />
+        }
+        isOpen={open}
+        onClose={handleClose}
+        styleContent={{ padding: '1em', backgroundColor: '#fff' }}
+      />
+    </FormProvider>
   );
 }
 

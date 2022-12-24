@@ -1,6 +1,5 @@
 import { Box, Container, Grid, Stack, Typography } from '@mui/material';
 import SvgIconStyle from 'components/SvgIconStyle';
-import React from 'react';
 
 function EmptyFollowUps() {
   return (

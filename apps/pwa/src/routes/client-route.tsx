@@ -43,12 +43,7 @@ export const clientRoute = {
         { path: '', element: <Searching /> },
         {
           path: ':id/:actionType',
-          children: [
-            { path: 'main', element: <ProjectDetails /> },
-            { path: 'project-path', element: <ProjectDetails /> },
-            { path: 'follow-ups', element: <ProjectDetails /> },
-            { path: 'payments', element: <ProjectDetails /> },
-          ],
+          element: <ProjectDetails />,
         },
       ],
     },
@@ -71,17 +66,11 @@ export const clientRoute = {
           ],
         },
         {
-          path: 'previous-funding-requests/:id/:actionType',
-          children: [
-            { path: 'main', element: <ProjectDetails /> },
-            { path: 'project-budget', element: <ProjectDetails /> },
-            { path: 'follow-ups', element: <ProjectDetails /> },
-            { path: 'payments', element: <ProjectDetails /> },
-          ],
-        },
-        {
           path: 'previous-funding-requests',
-          element: <PreviousFundingRequests />,
+          children: [
+            { path: '', element: <PreviousFundingRequests /> },
+            { path: ':id/:actionType', element: <ProjectDetails /> },
+          ],
         },
 
         {
@@ -90,16 +79,7 @@ export const clientRoute = {
         },
         {
           path: 'current-project/:id/:actionType',
-          children: [
-            {
-              path: 'main',
-              element: <ProjectDetails />,
-            },
-            { path: 'project-budget', element: <ProjectDetails /> },
-            { path: 'follow-ups', element: <ProjectDetails /> },
-            { path: 'payments', element: <ProjectDetails /> },
-            { path: 'project-timeline', element: <ProjectDetails /> },
-          ],
+          element: <ProjectDetails />,
         },
         { path: 'messages', element: <Messages /> },
         {
