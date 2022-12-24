@@ -1,18 +1,7 @@
 import * as React from 'react';
-import {
-  Grid,
-  Stack,
-  Typography,
-  Box,
-  Stepper,
-  Step,
-  StepButton,
-  Button,
-  Divider,
-} from '@mui/material';
+import { Grid, Stack, Typography, Box, Stepper, Step, Button, Divider } from '@mui/material';
 import { useParams } from 'react-router';
 import { useQuery } from 'urql';
-import { getFollowUps } from 'queries/client/getFollowUps';
 import useLocales from 'hooks/useLocales';
 import CircleIcon from '@mui/icons-material/Circle';
 import PanoramaFishEyeIcon from '@mui/icons-material/PanoramaFishEye';
@@ -28,24 +17,13 @@ type Role =
   | 'FINANCE'
   | 'CASHIER';
 
-const steps = [
-  'CLIENT',
-  'MODERATOR',
-  'PROJECT_SUPERVISOR',
-  'PROJECT_MANAGER',
-  'CEO',
-  'FINANCE',
-  'CASHIER',
-];
-
 type Log = {
   message: string;
   notes: string;
   action: 'accept' | 'reject' | 'pending' | 'accept_and_need_consultant' | 'one_step_back';
   user_role: Role;
 };
-function ProjectPath({ data }: any) {
-  const [userTypeId, setUserTypeId] = React.useState(data?.state);
+function ProjectPath() {
   const { translate } = useLocales();
   const [activeStep, setActiveStep] = React.useState(0);
   const [stepOn, setStepOn] = React.useState(1);

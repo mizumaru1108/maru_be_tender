@@ -100,9 +100,8 @@ const ProjectCardBE = ({
     }
     if (destination) {
       const x = location.pathname.split('/');
-      console.log(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/${cardFooterButtonAction}/main`);
-      navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/${cardFooterButtonAction}/main`);
-    } else navigate(`${location.pathname}/${id}/${cardFooterButtonAction}/main`);
+      navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/${cardFooterButtonAction}`);
+    } else navigate(`${location.pathname}/${id}/${cardFooterButtonAction}`);
   };
   return (
     <Card sx={{ backgroundColor: '#fff' }}>

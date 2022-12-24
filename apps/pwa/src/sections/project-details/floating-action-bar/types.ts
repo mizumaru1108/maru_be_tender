@@ -30,4 +30,5 @@ export interface ProposalApprovePayloadSupervisor {
   vat: boolean;
   vat_percentage: number;
   inclu_or_exclu: boolean;
+  support_goals: string;
 }

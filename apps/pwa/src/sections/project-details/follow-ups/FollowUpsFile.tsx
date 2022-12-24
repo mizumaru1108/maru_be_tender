@@ -1,11 +1,15 @@
 import { Avatar, Box, Button, Grid, Link, Stack, Typography } from '@mui/material';
+import { FollowUps } from '../../../@types/proposal';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 
-function FollowUpsFile({ created_at, file, employee }: any) {
+function FollowUpsFile(item: FollowUps) {
   const { activeRole } = useAuth();
+
   const { translate } = useLocales();
+
   const role = activeRole!;
+
   if (role === 'tender_client')
     return (
       <Grid container spacing={1}>
@@ -13,7 +17,7 @@ function FollowUpsFile({ created_at, file, employee }: any) {
           <Stack direction="row" gap={1}>
             <Button
               component={Link}
-              href={file.url}
+              href={item.file.url}
               target="_blank"
               rel="noopener noreferrer"
               download="صورة بطاقة الحساب البنكي"
@@ -42,7 +46,7 @@ function FollowUpsFile({ created_at, file, employee }: any) {
                       ملف خطاب طلب الدعم
                     </Typography>
                     <Typography gutterBottom sx={{ fontSize: '13px' }}>
-                      {`${file.size}KB`}
+                      {`${item.file.size}KB`}
                     </Typography>
                   </Stack>
                 </Stack>
@@ -57,7 +61,7 @@ function FollowUpsFile({ created_at, file, employee }: any) {
         </Grid>
         <Grid item md={1} sx={{ alignSelf: 'end' }}>
           <Typography sx={{ color: 'gray' }}>{`${
-            new Date().getDate() - new Date(created_at).getDate()
+            new Date().getDate() - new Date(item.created_at).getDate()
           } ساعة`}</Typography>
         </Grid>
       </Grid>
@@ -93,9 +97,9 @@ function FollowUpsFile({ created_at, file, employee }: any) {
         </Avatar>
       </Grid>
       <Grid item md={11.5}>
-        {employee ? (
-          <Typography color="#0E8478">{`${employee.employee_name} - ${translate(
-            `permissions.${employee.roles[0].role}`
+        {item.user ? (
+          <Typography color="#0E8478">{`${item.user.employee_name} - ${translate(
+            `permissions.${item.user.roles[0].role}`
           )}`}</Typography>
         ) : (
           <Typography color="#0E8478">المستخدم</Typography>
@@ -107,7 +111,7 @@ function FollowUpsFile({ created_at, file, employee }: any) {
       <Grid item md={10.5}>
         <Button
           component={Link}
-          href={file.url}
+          href={item.file.url}
           target="_blank"
           rel="noopener noreferrer"
           download="صورة بطاقة الحساب البنكي"
@@ -136,7 +140,7 @@ function FollowUpsFile({ created_at, file, employee }: any) {
                   ملف خطاب طلب الدعم
                 </Typography>
                 <Typography gutterBottom sx={{ fontSize: '13px' }}>
-                  {`${file.size}KB`}
+                  {`${item.file.size}KB`}
                 </Typography>
               </Stack>
             </Stack>
@@ -146,7 +150,7 @@ function FollowUpsFile({ created_at, file, employee }: any) {
       </Grid>
       <Grid item md={1} sx={{ alignSelf: 'end' }}>
         <Typography sx={{ color: 'gray', fontSize: '15px' }}>{`${
-          new Date().getDate() - new Date(created_at).getDate()
+          new Date().getDate() - new Date(item.created_at).getDate()
         } ساعات`}</Typography>
       </Grid>
     </Grid>

@@ -1,8 +1,10 @@
-export const getOneProposal = `query MyQuery($id: String!) {
-  proposal_by_pk(id: $id) {
+export const getOneProposal = `query getOneProposal($id: String!) {
+  proposal: proposal_by_pk(id: $id) {
+    id
     project_name
     project_implement_date
     project_location
+    project_track
     user {
       id
       employee_name
@@ -72,7 +74,39 @@ export const getOneProposal = `query MyQuery($id: String!) {
         }
       }
     }
+    follow_ups: proposal_follow_ups(where: {proposal_id: {_eq: $id}}) {
+      id
+    action
+    created_at
+    file
+    proposal_id
+    user {
+      employee_name
+      roles {
+        role: user_type_id
+      }
+    }
+    }
+    added_value
+      been_made_before
+      been_supported_before
+      chairman_of_board_of_directors
+    most_clents_projects
+      reasons_to_accept
+      clause
+    remote_or_insite
+      supervisor_id
+      target_group_age
+      target_group_num
+      target_group_type
   }
 }
-
 `;
+// this is added when the recommended_support is added to the proposal table
+// recommended_support {
+//   amount
+//   clause
+//   consultant_form_id
+//   explanation
+//   id
+// }

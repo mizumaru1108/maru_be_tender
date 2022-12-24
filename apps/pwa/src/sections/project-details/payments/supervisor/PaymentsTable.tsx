@@ -1,91 +1,67 @@
 import { Box, Button, Grid, Link, Stack, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import { updatePayment } from 'queries/project-supervisor/updatePayment';
 import { useEffect, useState } from 'react';
-import { useMutation } from 'urql';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-// The general page after the payments are set
-/**
- * payments = [
- *  {
- *    payment_date: string
-      payment_amount: number
-      id: nanoid
-      status: SET_BY_SUPERVISOR | ISSUED_BY_SUPERVISOR | ACCEPTED_BY_PROJECT_MANAGER | ACCEPTED_BY_FINANCE | DONE
- *  }
- * ]
- */
-const PaymentsNames = [
-  'الدفعة الأولى',
-  'الدفعة الثانية',
-  'الدفعة الثالثة',
-  'الدفعة الرابعة',
-  'الدفعة الخامسة',
-  'الدفعة السادسة',
-  'الدفعة السابعة',
-  'الدفعة الثامنة',
-  'الدفعة التاسعة',
-  'الدفعة العاشرة',
-];
-type PaymentProps = {
-  payment_date: string;
-  payment_amount: number;
-  id: string;
-  status:
-    | 'SET_BY_SUPERVISOR'
-    | 'ISSUED_BY_SUPERVISOR'
-    | 'ACCEPTED_BY_PROJECT_MANAGER'
-    | 'ACCEPTED_BY_FINANCE'
-    | 'DONE';
-};
-function PaymentsTable({ payments, children }: { payments: PaymentProps[]; children: any }) {
+import { useDispatch, useSelector } from 'redux/store';
+import { updatePaymentBySupervisorAndManagerAndFinance } from 'redux/slices/proposal';
+
+function PaymentsTable() {
   const { enqueueSnackbar } = useSnackbar();
+
+  const dispatch = useDispatch();
+
+  const { proposal } = useSelector((state) => state.proposal);
+
   const [currentIssuedPayament, setCurrentIssuedPayament] = useState(0);
-  const [beenIssued, setBeenIssued] = useState(false);
-  const [_, updatePay] = useMutation(updatePayment);
-  const handleIssuePayment = (data: PaymentProps) => {
-    const payload = { id: data.id, newState: { status: 'ISSUED_BY_SUPERVISOR' } };
-    updatePay(payload).then((result) => {
-      if (!result.error) {
-        enqueueSnackbar('تم إصدار أذن الصرف بنجاح', {
-          variant: 'success',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'right',
-          },
-        });
-        setBeenIssued(true);
-      }
-      if (result.error) {
-        enqueueSnackbar(result.error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'right',
-          },
-        });
-      }
-    });
+
+  const handleIssuePayment = async (data: any) => {
+    try {
+      await dispatch(
+        updatePaymentBySupervisorAndManagerAndFinance({
+          id: data.id,
+          status: 'ISSUED_BY_SUPERVISOR',
+        })
+      );
+      enqueueSnackbar('تم إصدار أذن الصرف بنجاح', {
+        variant: 'success',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+      });
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+      });
+    }
   };
+
   useEffect(() => {
-    for (var i = 0; i < payments.length; i++) {
-      if (payments[i].status === 'SET_BY_SUPERVISOR') {
+    for (var i = 0; i < proposal.payments.length; i++) {
+      if (proposal.payments[i].status === 'SET_BY_SUPERVISOR') {
         setCurrentIssuedPayament(i);
         break;
       }
     }
-  }, [beenIssued, payments]);
+  }, [proposal]);
+
   return (
     <>
-      {payments.map((item: any, index: any) => (
+      {proposal.payments.map((item, index) => (
         <Grid item md={12} key={index} sx={{ mb: '20px' }}>
           <Grid container direction="row" key={index}>
             <Grid item md={2}>
-              <Typography variant="h6">{PaymentsNames[index]}</Typography>
+              <Typography
+                variant="h6"
+                sx={{ alignSelf: 'center' }}
+              >{`الدفعة رقم ${item.order}`}</Typography>
             </Grid>
             <Grid item md={2}>
               <Stack direction="column">
@@ -99,7 +75,7 @@ function PaymentsTable({ payments, children }: { payments: PaymentProps[]; child
               <Stack direction="column">
                 <Typography sx={{ color: '#93A3B0' }}>تاريخ الدفعة:</Typography>
                 <Typography sx={{ color: '#1E1E1E' }} variant="h6">
-                  {item.payment_date}
+                  {new Date(item.payment_date).toISOString().substring(0, 10)}
                 </Typography>
               </Stack>
             </Grid>
@@ -180,7 +156,6 @@ function PaymentsTable({ payments, children }: { payments: PaymentProps[]; child
           </Grid>
         </Grid>
       ))}
-      {children}
     </>
   );
 }

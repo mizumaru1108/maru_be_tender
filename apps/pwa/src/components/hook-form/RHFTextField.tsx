@@ -1,7 +1,7 @@
 // form
 import { useFormContext, Controller } from 'react-hook-form';
 // @mui
-import { TextField, TextFieldProps } from '@mui/material';
+import { TextField, TextFieldProps, Typography } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -53,7 +53,9 @@ export default function RHFTextField({ name, ...other }: Props) {
           fullWidth
           value={typeof field.value === 'number' && field.value === 0 ? '' : field.value}
           error={!!error}
-          helperText={error?.message}
+          helperText={
+            <Typography sx={{ backgroundColor: 'transparent' }}>{error?.message}</Typography>
+          }
           {...other}
         />
       )}

@@ -1,44 +1,44 @@
 import useAuth from 'hooks/useAuth';
-import { useLocation, useParams } from 'react-router';
-import { SupervisorFloatingActionBar } from './supervisor';
+import { useParams } from 'react-router';
+import ProjectManagerFloatingActionBar from './project-manager';
+import SupervisorFloatingActionBar from './supervisor';
+import CeoFloatingActionBar from './ceo';
+import ModeratorActionBar from './moderator';
+import { useSelector } from 'redux/store';
+import ConsultantFloatingActionBar from './consultant';
 
-import { ProjectManagerFloatingActionBar } from './project-manager';
-import { ModeratorFloatingActionBar } from './moderator';
-import { CeoFloatingActionBar } from './ceo';
-import { ConsultantFloatingActionBar } from './consultant';
-
-function FloatinActonBar({ proposalData }: any) {
+function FloatinActonBar() {
   const { actionType } = useParams();
+
+  const { activeTap } = useSelector((state) => state.proposal);
+
   const { activeRole } = useAuth();
-  const location = useLocation();
+
   const role = activeRole!;
-  const activeTap = location.pathname.split('/').at(-1);
 
   return (
     <>
+      {/* ’Moderator is done */}
       {activeTap &&
         ['main', 'project-budget'].includes(activeTap) &&
         actionType === 'show-details' &&
-        role === 'tender_project_supervisor' && (
-          <SupervisorFloatingActionBar organizationId={proposalData.user.id} data={proposalData} />
-        )}
+        ['tender_moderator'].includes(role) && <ModeratorActionBar />}
+      {/* Supervisor is done */}
       {activeTap &&
         ['main', 'project-budget'].includes(activeTap) &&
         actionType === 'show-details' &&
-        role === 'tender_project_manager' && (
-          <ProjectManagerFloatingActionBar organizationId={proposalData.user.id} />
-        )}
+        role === 'tender_project_supervisor' && <SupervisorFloatingActionBar />}
+      {/* Projectmanager is done */}
       {activeTap &&
         ['main', 'project-budget'].includes(activeTap) &&
         actionType === 'show-details' &&
-        ['tender_ceo'].includes(role) &&
-        proposalData.outter_status !== 'CANCELED' && (
-          <CeoFloatingActionBar organizationId={proposalData.user.id} />
-        )}
+        role === 'tender_project_manager' && <ProjectManagerFloatingActionBar />}
+      {/* CEO is done */}
       {activeTap &&
         ['main', 'project-budget'].includes(activeTap) &&
         actionType === 'show-details' &&
-        ['tender_moderator'].includes(role) && <ModeratorFloatingActionBar />}
+        ['tender_ceo'].includes(role) && <CeoFloatingActionBar />}
+      {/* Consultant is done */}
       {activeTap &&
         ['main', 'supervisor-revision'].includes(activeTap) &&
         actionType === 'show-details' &&

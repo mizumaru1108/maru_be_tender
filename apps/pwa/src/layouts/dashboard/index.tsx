@@ -27,12 +27,12 @@ const MainStyle = styled('main', {
   backgroundColor: theme.palette.background.neutral,
   flexGrow: 1,
   paddingTop: HEADER.MOBILE_HEIGHT + 24,
-  paddingBottom: HEADER.MOBILE_HEIGHT + 24,
+  paddingBottom: HEADER.MOBILE_HEIGHT,
   [theme.breakpoints.up('lg')]: {
     paddingLeft: 16,
     paddingRight: 16,
     paddingTop: HEADER.DASHBOARD_DESKTOP_HEIGHT + 24,
-    paddingBottom: HEADER.DASHBOARD_DESKTOP_HEIGHT + 24,
+    paddingBottom: HEADER.DASHBOARD_DESKTOP_HEIGHT,
     width: `calc(100% - ${NAVBAR.DASHBOARD_WIDTH}px)`,
     transition: theme.transitions.create('margin-left', {
       duration: theme.transitions.duration.shorter,

@@ -1,12 +1,10 @@
 import { Grid, Stack, Tab, Tabs } from '@mui/material';
 import React from 'react';
 import { useTheme } from '@mui/material/styles';
-import { useQuery } from 'urql';
-import { getFollowUpsEmployee } from 'queries/client/getFollowUps';
-import { useParams } from 'react-router';
 import EmptyFollowUps from './EmptyFollowUps';
 import FollowUpsFile from './FollowUpsFile';
 import FollowUpsText from './FollowUpsText';
+import { useSelector } from 'redux/store';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -42,16 +40,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 function EmployeeFollowUpsPage() {
-  const { id } = useParams();
-
-  const [result] = useQuery({
-    query: getFollowUpsEmployee,
-    variables: {
-      proposal_id: id,
-    },
-  });
-
-  const { data, fetching, error } = result;
+  const { proposal } = useSelector((state) => state.proposal);
 
   const theme = useTheme();
 
@@ -61,11 +50,6 @@ function EmployeeFollowUpsPage() {
     setSwitchState(newValue);
   };
 
-  if (fetching) return <>... Loading</>;
-
-  if (error) return <>... Opss something went Wrong</>;
-
-  console.log(data);
   return (
     <Grid container spacing={3}>
       <Grid item md={12} xs={12} sx={{ alignSelf: 'center' }}>
@@ -81,7 +65,7 @@ function EmployeeFollowUpsPage() {
             }}
           >
             <Tab
-              label={'متابعات الموظفين'}
+              label="متابعات الموظفين"
               {...a11yProps(0)}
               sx={{
                 borderRadius: 0,
@@ -96,7 +80,7 @@ function EmployeeFollowUpsPage() {
               }}
             />
             <Tab
-              label={'متابعات الشريك'}
+              label="متابعات الشريك"
               {...a11yProps(1)}
               sx={{
                 borderRadius: 0,
@@ -115,48 +99,45 @@ function EmployeeFollowUpsPage() {
       </Grid>
       <Grid container md={12} xs={12}>
         <TabPanel value={switchState} index={0} dir={theme.direction}>
-          <>
-            {data.employee_follow_ups.length === 0 && (
-              <Grid item md={12} xs={12}>
-                <EmptyFollowUps />
-              </Grid>
-            )}
-            {data.employee_follow_ups.length !== 0 && (
-              <>
-                {data.employee_follow_ups.map((item: any, index: any) => (
-                  <Grid item md={12} xs={12} key={index}>
-                    {item.file && <FollowUpsFile {...item} />}
-                    {item.action && <FollowUpsText {...item} />}
-                  </Grid>
-                ))}
-              </>
-            )}
-          </>
+          {proposal.follow_ups.length === 0 ||
+          proposal.follow_ups.filter((item) => !item.user.roles.includes({ role: 'CLIENT' }))
+            .length === 0 ? (
+            <Grid item md={12} xs={12}>
+              <EmptyFollowUps />
+            </Grid>
+          ) : (
+            proposal.follow_ups
+              .filter((item) => !item.user.roles.includes({ role: 'CLIENT' }))
+              .map((item, index) => (
+                <Grid item md={12} xs={12} key={index}>
+                  {item.file && <FollowUpsFile {...item} />}
+                  {item.action && <FollowUpsText {...item} />}
+                </Grid>
+              ))
+          )}
         </TabPanel>
       </Grid>
       <Grid container md={12} xs={12}>
         <TabPanel value={switchState} index={1} dir={theme.direction}>
-          <>
-            {data.client_follow_ups.length === 0 && (
-              <Grid item md={12} xs={12}>
-                <EmptyFollowUps />
-              </Grid>
-            )}
-            {data.client_follow_ups.length !== 0 && (
-              <>
-                {data.client_follow_ups.map((item: any, index: any) => (
-                  <Grid item md={12} xs={12} key={index}>
-                    {item.file && <FollowUpsFile {...item} />}
-                    {item.action && <FollowUpsText {...item} />}
-                  </Grid>
-                ))}
-              </>
-            )}
-          </>
+          {proposal.follow_ups.length === 0 ||
+          proposal.follow_ups.filter((item) => item.user.roles.includes({ role: 'CLIENT' }))
+            .length === 0 ? (
+            <Grid item md={12} xs={12}>
+              <EmptyFollowUps />
+            </Grid>
+          ) : (
+            proposal.follow_ups
+              .filter((item) => item.user.roles.includes({ role: 'CLIENT' }))
+              .map((item, index) => (
+                <Grid item md={12} xs={12} key={index}>
+                  {item.file && <FollowUpsFile {...item} />}
+                  {item.action && <FollowUpsText {...item} />}
+                </Grid>
+              ))
+          )}
         </TabPanel>
       </Grid>
     </Grid>
   );
 }
-
 export default EmployeeFollowUpsPage;

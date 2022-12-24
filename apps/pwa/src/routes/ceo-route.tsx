@@ -43,18 +43,7 @@ export const ceoRoute = {
     },
     {
       path: 'searching',
-      children: [
-        { path: '', element: <Searching /> },
-        {
-          path: ':id/:actionType',
-          children: [
-            { path: 'main', element: <ProjectDetails /> },
-            { path: 'project-path', element: <ProjectDetails /> },
-            { path: 'follow-ups', element: <ProjectDetails /> },
-            { path: 'payments', element: <ProjectDetails /> },
-          ],
-        },
-      ],
+      children: [{ path: '', element: <Searching /> }],
     },
     {
       path: 'dashboard',
@@ -73,12 +62,7 @@ export const ceoRoute = {
             },
             {
               path: ':id/:actionType',
-              children: [
-                { path: 'main', element: <ProjectDetails /> },
-                { path: 'project-budget', element: <ProjectDetails /> },
-                { path: 'project-path', element: <ProjectDetails /> },
-                { path: 'follow-ups', element: <ProjectDetails /> },
-              ],
+              element: <ProjectDetails />,
             },
           ],
         },
@@ -95,12 +79,7 @@ export const ceoRoute = {
             },
             {
               path: ':id/:actionType',
-              children: [
-                { path: 'main', element: <ProjectDetails /> },
-                { path: 'project-budget', element: <ProjectDetails /> },
-                { path: 'project-path', element: <ProjectDetails /> },
-                { path: 'follow-ups', element: <ProjectDetails /> },
-              ],
+              element: <ProjectDetails />,
             },
           ],
         },
@@ -117,12 +96,7 @@ export const ceoRoute = {
             },
             {
               path: ':id/:actionType',
-              children: [
-                { path: 'main', element: <ProjectDetails /> },
-                { path: 'project-budget', element: <ProjectDetails /> },
-                { path: 'project-path', element: <ProjectDetails /> },
-                { path: 'follow-ups', element: <ProjectDetails /> },
-              ],
+              element: <ProjectDetails />,
             },
           ],
         },

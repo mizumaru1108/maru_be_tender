@@ -1,19 +1,30 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Grid } from '@mui/material';
-import FormGenerator from 'components/FormGenerator';
+import { Grid, Button, Stack } from '@mui/material';
 import { FormProvider } from 'components/hook-form';
 import BaseField from 'components/hook-form/BaseField';
+import ModalDialog from 'components/modal-dialog';
+import useLocales from 'hooks/useLocales';
 import { getAllSupervisorsForSpecificTrack } from 'queries/Moderator/getAllSupervisorsForSpecificTrack';
-import { getAlTheTracks } from 'queries/Moderator/getAllTheTracks';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery } from 'urql';
 import * as Yup from 'yup';
-import { ApproveProposalFormFields } from './form-data';
-import { ProposalFormProps, ProposalModeratorApprovePayload } from './types';
+import { LoadingButton } from '@mui/lab';
 
-function ProposalAcceptingForm({ children, onSubmit }: ProposalFormProps) {
-  const [supervisors, setSupervisors] = useState([]);
+interface FormProps {
+  onSubmit: (data: any) => void;
+  onClose: () => void;
+}
+
+interface ProposalModeratorApprovePayload {
+  path: string;
+  supervisors: string;
+  notes: string;
+}
+
+function ProposalAcceptingForm({ onSubmit, onClose }: FormProps) {
+  const { translate } = useLocales();
+
   const validationSchema = Yup.object().shape({
     path: Yup.string().required('Path is required!'),
     supervisors: Yup.string().required('Supervisors is required!'),
@@ -34,7 +45,6 @@ function ProposalAcceptingForm({ children, onSubmit }: ProposalFormProps) {
   const {
     handleSubmit,
     formState: { isSubmitting },
-    setValue,
     watch,
     resetField,
   } = methods;
@@ -43,84 +53,119 @@ function ProposalAcceptingForm({ children, onSubmit }: ProposalFormProps) {
     onSubmit(data);
   };
   const path = watch('path');
+
   const shouldPause = path === '';
+
   const [result, mutate] = useQuery({
     query: getAllSupervisorsForSpecificTrack,
     variables: { employee_path: path },
     pause: shouldPause,
   });
+
   const { data, fetching, error } = result;
 
   useEffect(() => {
     resetField('supervisors');
-    if (data?.users) {
-      setSupervisors(data.users);
-      // setValue('path');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetching]);
+  }, [resetField]);
 
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
-      <Grid container rowSpacing={3} columnSpacing={7} sx={{ mt: '10px' }}>
-        <Grid item md={6} xs={12}>
-          <BaseField
-            type="select"
-            name="path"
-            label="المسار"
-            placeholder="المسار"
-            children={
-              <>
-                <option value="MOSQUES" style={{ backgroundColor: '#fff' }}>
-                  مشروع يخص المساجد
-                </option>
-                <option value="CONCESSIONAL_GRANTS" style={{ backgroundColor: '#fff' }}>
-                  مشروع يخص المنح الميسر
-                </option>
-                <option value="INITIATIVES" style={{ backgroundColor: '#fff' }}>
-                  مشروع يخص المبادرات
-                </option>
-                <option value="BAPTISMS" style={{ backgroundColor: '#fff' }}>
-                  مشروع يخص تعميدات
-                </option>
-              </>
-            }
-          />
-        </Grid>
-        <Grid item md={6} xs={12}>
-          <BaseField
-            type="select"
-            name="supervisors"
-            label="المشرفين"
-            placeholder="الرجاء تحديد المشرف"
-            children={
-              <>
-                <option value="all" style={{ backgroundColor: '#fff' }}>
-                  كل المشرفين
-                </option>
-                {data?.users &&
-                  data.users.map((item: any, index: any) => (
-                    <option key={index} value={item?.id} style={{ backgroundColor: '#fff' }}>
-                      {item.name}
+    <FormProvider methods={methods}>
+      <ModalDialog
+        onClose={onClose}
+        isOpen={true}
+        showCloseIcon={true}
+        title={translate('accept_project')}
+        styleContent={{ padding: '1em', backgroundColor: '#fff' }}
+        content={
+          <Grid container rowSpacing={3} columnSpacing={7} sx={{ mt: '10px' }}>
+            <Grid item md={6} xs={12}>
+              <BaseField
+                type="select"
+                name="path"
+                label="المسار"
+                placeholder="المسار"
+                children={
+                  <>
+                    <option value="MOSQUES" style={{ backgroundColor: '#fff' }}>
+                      مشروع يخص المساجد
                     </option>
-                  ))}
-              </>
-            }
-            disabled={fetching}
-          />
-        </Grid>
-        <Grid item md={12} xs={12}>
-          <BaseField
-            type="textArea"
-            name="notes"
-            label="الملاحظات"
-            placeholder="الرجاء كتابة الملاحظات"
-          />
-        </Grid>
-        <Grid item md={12} xs={12} sx={{ mb: 2 }}>
-          {children}
-        </Grid>
-      </Grid>
+                    <option value="CONCESSIONAL_GRANTS" style={{ backgroundColor: '#fff' }}>
+                      مشروع يخص المنح الميسر
+                    </option>
+                    <option value="INITIATIVES" style={{ backgroundColor: '#fff' }}>
+                      مشروع يخص المبادرات
+                    </option>
+                    <option value="BAPTISMS" style={{ backgroundColor: '#fff' }}>
+                      مشروع يخص تعميدات
+                    </option>
+                  </>
+                }
+              />
+            </Grid>
+            <Grid item md={6} xs={12}>
+              <BaseField
+                type="select"
+                name="supervisors"
+                label="المشرفين"
+                placeholder="الرجاء تحديد المشرف"
+                children={
+                  <>
+                    <option value="all" style={{ backgroundColor: '#fff' }}>
+                      كل المشرفين
+                    </option>
+                    {data?.users &&
+                      data.users.map((item: any, index: any) => (
+                        <option key={index} value={item?.id} style={{ backgroundColor: '#fff' }}>
+                          {item.name}
+                        </option>
+                      ))}
+                  </>
+                }
+                disabled={fetching}
+              />
+            </Grid>
+            <Grid item md={12} xs={12}>
+              <BaseField
+                type="textArea"
+                name="notes"
+                label="الملاحظات"
+                placeholder="الرجاء كتابة الملاحظات"
+              />
+            </Grid>
+          </Grid>
+        }
+        actionBtn={
+          <Stack justifyContent="center" direction="row" gap={2}>
+            <Button
+              onClick={onClose}
+              sx={{
+                color: '#000',
+                size: 'large',
+                width: { xs: '100%', sm: '200px' },
+                hieght: { xs: '100%', sm: '50px' },
+                ':hover': { backgroundColor: '#efefef' },
+              }}
+            >
+              {translate('close')}
+            </Button>
+            <LoadingButton
+              loading={isSubmitting}
+              onClick={handleSubmit(onSubmitForm)}
+              variant="contained"
+              fullWidth
+              sx={{
+                backgroundColor: 'background.paper',
+                color: '#fff',
+                width: { xs: '100%', sm: '200px' },
+                hieght: { xs: '100%', sm: '50px' },
+                '&:hover': { backgroundColor: '#13B2A2' },
+              }}
+            >
+              {translate('accept')}
+            </LoadingButton>
+          </Stack>
+        }
+      />
     </FormProvider>
   );
 }

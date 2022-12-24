@@ -1,40 +1,121 @@
-import { AppRole, InnerStatus, OutterStatus } from './commons';
+import { InnerStatus, OutterStatus } from './commons';
+
+export interface BankInformation {
+  id: string;
+  bank_account_name: string;
+  bank_account_number: number;
+  bank_name: string;
+  card_image: { url: string; size: number | undefined; type: string };
+}
+
+export interface Cheques {
+  id: string;
+  number: number;
+  payment_id: number;
+  transfer_receipt: string;
+  deposit_date: Date;
+}
+
+export interface ItemBudget {
+  amount: number;
+  explanation: string;
+  clause: string;
+  id: string;
+}
+
+export type PaymentStatus =
+  | 'SET_BY_SUPERVISOR'
+  | 'ISSUED_BY_SUPERVISOR'
+  | 'ACCEPTED_BY_PROJECT_MANAGER'
+  | 'ACCEPTED_BY_FINANCE'
+  | 'DONE';
+
+export interface FollowUps {
+  id: string;
+  action: string;
+  created_at: Date;
+  file: { url: string; size: number | undefined; type: string };
+  user: {
+    employee_name: string;
+    roles: {
+      role: string;
+    }[];
+  };
+}
 
 export interface Proposal {
   id: string;
   project_name: string;
-  submitter_user_id: string;
-  created_at: Date | string;
-  updated_at: Date | string;
-  project_track?: string;
-  project_idea?: string;
-  proejct_implement_date?: Date | null;
-  project_location?: string | null;
-  execution_time?: string;
-  project_attachments?: string | null;
-  letter_ofsupport_req?: string | null;
-  num_ofproject_binificiaries?: number | null;
-  project_goals?: string | null;
-  project_outputs?: string | null;
-  project_strengths?: string | null;
-  project_risks?: string | null;
-  pm_name?: string | null;
-  pm_email?: string | null;
-  pm_mobile?: string | null;
-  governorate?: string | null;
-  region?: string | null;
-  amount_required_fsupport?: number | null;
-  need_consultant?: string | null;
-  step?: string | null;
-  whole_budget?: number | null;
-  state: AppRole;
-  inner_status: InnerStatus;
-  outter_status: OutterStatus;
-  previously_add_bank?: string | null;
-  project_beneficiaries?: string | null;
-  number_of_payments?: number | null;
-  finance_id?: string | null;
-  cashier_id?: string | null;
-  project_manager_id?: string | null;
-  supervisor_id?: string | null;
+  project_implement_date: Date;
+  project_location: string; // Orign
+  project_track: string; // Tracks
+  user: {
+    id: string;
+    employee_name: string;
+    email: string;
+    mobile_number: string;
+    client_data: {
+      region: string; // Orign
+      governorate: string; // the values of the orign
+      date_of_esthablistmen: Date;
+      num_of_beneficiaries: number;
+    };
+    bank_informations: BankInformation[];
+  };
+  created_at: Date;
+  num_ofproject_binicficiaries: number;
+  region: string;
+  execution_time: Date;
+  project_idea: string;
+  project_goals: string;
+  project_outputs: string;
+  project_strengths: string;
+  project_risks: string;
+  bank_informations: BankInformation[];
+  amount_required_fsupport: number;
+  letter_ofsupport_req: { url: string; size: number | undefined; type: string };
+  project_attachments: { url: string; size: number | undefined; type: string };
+  project_beneficiaries: string;
+  inner_status: InnerStatus; // outter_status
+  outter_status: OutterStatus; // Outter_status
+  state: string; // State
+  added_value: string;
+  been_made_before: boolean;
+  been_supported_before: boolean;
+  chairman_of_board_of_directors: string;
+  most_clents_projects: string;
+  reasons_to_accept: string;
+  remote_or_insite: boolean;
+  target_group_age: number;
+  target_group_num: number;
+  target_group_type: string;
+  recommended_support: ItemBudget[];
+  clause: string;
+  payments: {
+    id: string;
+    payment_amount: number;
+    payment_date: Date;
+    status: PaymentStatus;
+    order: number;
+    cheques: Cheques[];
+  }[];
+  number_of_payments: number;
+  proposal_item_budgets: ItemBudget[];
+  proposal_item_budgets_aggregate: {
+    aggregate: {
+      sum: {
+        amount: number;
+      };
+    };
+  };
+  follow_ups: FollowUps[];
 }
+
+export type ActiveTap =
+  | 'main'
+  | 'project-budget'
+  | 'project-timeline'
+  | 'follow-ups'
+  | 'payments'
+  | 'project-path'
+  | 'supervisor-revision';

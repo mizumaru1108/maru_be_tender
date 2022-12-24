@@ -6,7 +6,6 @@ export const PaymentsData = [
     name: 'payments',
 
     repeaterFields: [
-      // { type: 'repeaterLabel', label: 'test', xs: 12, md: 2 },
       {
         type: 'textField',
         name: 'payment_amount',

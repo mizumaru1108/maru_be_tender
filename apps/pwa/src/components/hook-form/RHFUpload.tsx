@@ -61,7 +61,6 @@ export function RHFUploadSingleFile({ name, placeholder, ...other }: Props) {
   const id = user?.id;
   const handleDrop = useCallback(
     async (acceptedFiles: File[]) => {
-      console.log('asdasdasd');
       const file = acceptedFiles[0];
       const userId = id;
       const formdata = new FormData();

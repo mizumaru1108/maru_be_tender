@@ -839,8 +839,8 @@ const en = {
     },
     search_bar: 'Type a name to search for',
   },
-  proposal_approved: 'Proposal Approved!',
-  proposal_rejected: 'Proposal Rejected!',
+  proposal_approved: 'The project has been successfully accepted',
+  proposal_rejected: 'The project was successfully rejected',
   view_all: 'view all',
   // PORTAL REPORTS
   ceo_portal_reports: {
