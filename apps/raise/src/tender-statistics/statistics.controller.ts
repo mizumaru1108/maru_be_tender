@@ -7,11 +7,11 @@ import {
 import { baseResponseHelper } from '../commons/helpers/base-response-helper';
 import { TenderStatisticsService } from './statistics.service';
 
-@Controller('statistcs')
+@Controller('statistics')
 export class TenderStatisticsController {
   constructor(private readonly tenderStatisticsService: TenderStatisticsService) {}
 
-  @Get('all')
+  @Get('orders')
   async getAllStatistics(@Query() query: any) {
     const { from, to } = query;
     const allStatistics = await this.tenderStatisticsService.getAllStatistics(new Date(from), new Date(to));
