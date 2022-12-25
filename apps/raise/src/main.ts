@@ -14,7 +14,7 @@ import { WinstonModule } from 'nest-winston';
 import pino from 'pino';
 import { ROOT_LOGGER } from './libs/root-logger';
 // import { WsAdapter } from '@nestjs/platform-ws';
-import { IoAdapter } from '@nestjs/platform-socket.io';
+// import { IoAdapter } from '@nestjs/platform-socket.io';
 
 async function bootstrap() {
   // bootstrap NestJS
@@ -35,8 +35,10 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'x-hasura-role'],
     origin: [
       'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:3002',
       'http://localhost:8081',
-      // 'http://localhost:4040',
+      'http://localhost:4040',
       // "https://77a9-2001-448a-2082-be2a-6548-a870-bb02-ceb8.ap.ngrok.io",
       // HTTP
       'http://dev.tmra.io', // TMRA Dev
@@ -87,7 +89,7 @@ async function bootstrap() {
    * workaround for server not serving websocket
    */
   // app.useWebSocketAdapter(new WsAdapter(app));
-  app.useWebSocketAdapter(new IoAdapter(app));
+  // app.useWebSocketAdapter(new IoAdapter(app));
   await app.listen(3000, '0.0.0.0');
 }
 bootstrap();
