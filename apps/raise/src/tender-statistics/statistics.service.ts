@@ -215,4 +215,80 @@ export class TenderStatisticsService {
      return response
   }
 
+  @UseGuards(JwtAuthGuard)
+  async getAllParntersStatistics(from: any, to: any){
+    const response = {} as any;
+    const userStatus = await this.prismaService.user_status.findMany();
+    const partnreStatus = {} as any;
+    const partnersRegion = {} as any;
+    const nestedPartnersRegion = {} as any;
+    const partnersGovernorate = {} as any;
+    const nestedPartnersGovernorate = {} as any;
+   for(const US of userStatus){
+      const pendingUsers = await this.prismaService.client_data.findMany({
+        where: {
+          AND: [{
+              created_at: {
+                  gte: from
+              },
+          }, {
+              created_at: {
+                  lte: to
+              }
+          }]
+      },
+        include:{
+          user:{
+            select:{
+              id: true,
+              status_id: true
+            }
+          }
+        }
+        });
+        for(const PU of pendingUsers){
+          if(!partnreStatus[US.title])
+          partnreStatus[US.title] = 0;
+          if(PU.user.status_id ===  US.id){
+            partnreStatus[US.title] = partnreStatus[US.title] + 1;
+          }
+          if(!PU.region) return;
+          if( !partnersRegion[PU.region]){
+            nestedPartnersRegion[US.title] = 1;
+            partnersRegion[PU.region] = Object.assign({}, nestedPartnersRegion)
+            delete nestedPartnersRegion[US.title]
+          }else{
+            if(!partnersRegion[PU.region][US.title]){
+              nestedPartnersRegion[US.title] = 1;
+              partnersRegion[PU.region] = Object.assign({}, nestedPartnersRegion)
+              delete nestedPartnersRegion[US.title]
+            }else{
+              partnersRegion[PU.region][US.title] = partnersRegion[PU.region][US.title] + 1;
+            }
+          }
+          if(!PU.governorate) return;
+          if( !partnersGovernorate[PU.governorate]){
+            nestedPartnersGovernorate[US.title] = 1;
+            partnersGovernorate[PU.governorate] = Object.assign({}, nestedPartnersGovernorate)
+            delete nestedPartnersGovernorate[US.title]
+          }else{
+            if(!partnersGovernorate[PU.governorate][US.title]){
+              nestedPartnersGovernorate[US.title] = 1;
+              partnersGovernorate[PU.governorate] = Object.assign({}, nestedPartnersGovernorate)
+              delete nestedPartnersGovernorate[US.title]
+            }else{
+              partnersGovernorate[PU.governorate][US.title] = partnersGovernorate[PU.governorate][US.title] + 1;
+            }
+          }
+
+        }
+    }
+    response.partnreStatus = partnreStatus
+    response.partnersRegion = partnersRegion;
+    response.partnersGovernorate = partnersGovernorate;
+
+    return response
+
+  }
+
 }

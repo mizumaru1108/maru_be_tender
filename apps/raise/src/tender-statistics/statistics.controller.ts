@@ -21,4 +21,15 @@ export class TenderStatisticsController {
       'Tender Statistics',
     );
   }
+
+  @Get('partners')
+  async getAllPartnersStatistics(@Query() query: any) {
+    const { from, to } = query;
+    const allParntersStatistics = await this.tenderStatisticsService.getAllParntersStatistics(new Date(from), new Date(to));
+    return baseResponseHelper(
+      allParntersStatistics,
+      HttpStatus.OK,
+      'Tender Statistics',
+    );
+  }
 }
