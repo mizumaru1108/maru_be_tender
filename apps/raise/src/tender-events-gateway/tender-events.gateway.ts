@@ -50,10 +50,13 @@ import { SocketAuthMiddleware } from './middleware/socket-auth-middleware';
  */
 @UsePipes(new ValidationPipe())
 @UseFilters(new WsExceptionFilter()) // custom exception filter that i have made
-@WebSocketGateway({
+@WebSocketGateway(3004, {
   cors: {
     origin: [
       'http://localhost:3000', // dev purposes
+      'http://localhost:3002', // dev purposes
+      'http://localhost:3004', // dev purposes
+      'http://localhost:4040', // dev purposes
       /* http */
       'http://app-dev.tmra.io',
       'http://app-staging.tmra.io',
