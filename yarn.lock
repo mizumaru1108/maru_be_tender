@@ -5654,6 +5654,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nestjs/platform-ws@npm:^9.2.1":
+  version: 9.2.1
+  resolution: "@nestjs/platform-ws@npm:9.2.1"
+  dependencies:
+    tslib: 2.4.1
+    ws: 8.11.0
+  peerDependencies:
+    "@nestjs/common": ^9.0.0
+    "@nestjs/websockets": ^9.0.0
+    rxjs: ^7.1.0
+  checksum: 033d24e50aae03bf205780df48c6d3b7da10600cb8b1f63b63454481e1181147f93e2d158c091c31f157704651d380721f296ef00ee500247eff704c93d2b640
+  languageName: node
+  linkType: hard
+
 "@nestjs/schedule@npm:^2.1.0":
   version: 2.1.0
   resolution: "@nestjs/schedule@npm:2.1.0"
@@ -7903,6 +7917,7 @@ __metadata:
     "@nestjs/platform-express": 9.0.8
     "@nestjs/platform-fastify": ^9.0.8
     "@nestjs/platform-socket.io": ^9.2.1
+    "@nestjs/platform-ws": ^9.2.1
     "@nestjs/schedule": ^2.1.0
     "@nestjs/schematics": ^9.0.1
     "@nestjs/swagger": ^6.0.5
@@ -28963,6 +28978,21 @@ __metadata:
     type-fest: ^0.4.1
     write-json-file: ^3.2.0
   checksum: 7864d44370f42a6761f6898d07ee2818c7a2faad45116580cf779f3adaf94e4bea5557612533a6c421c32323253ecb63b50615094960a637aeaef5df0fd2d6cd
+  languageName: node
+  linkType: hard
+
+"ws@npm:8.11.0":
+  version: 8.11.0
+  resolution: "ws@npm:8.11.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ^5.0.2
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 316b33aba32f317cd217df66dbfc5b281a2f09ff36815de222bc859e3424d83766d9eb2bd4d667de658b6ab7be151f258318fb1da812416b30be13103e5b5c67
   languageName: node
   linkType: hard
 
