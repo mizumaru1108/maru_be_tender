@@ -6,6 +6,7 @@ import { FusionAuthModule } from '../libs/fusionauth/fusion-auth.module';
 import { PaytabsModule } from '../libs/paytabs/paytabs.module';
 import { StripeModule } from '../libs/stripe/stripe.module';
 import { GoogleCalendarModule } from '../libs/google-calendar/google-calendar.module';
+import { GoogleOAuth2Module } from '../libs/google-oauth2/google-oauth2.module';
 // import { EventsModule } from '../tender-events-gateway/tender-events.module';
 
 @Module({
@@ -17,6 +18,7 @@ import { GoogleCalendarModule } from '../libs/google-calendar/google-calendar.mo
     PaytabsModule,
     StripeModule,
     GoogleCalendarModule,
+    GoogleOAuth2Module,
     // EventsModule, // socket io for real time events (tender)
   ],
 })

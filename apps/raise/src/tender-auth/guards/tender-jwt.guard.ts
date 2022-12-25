@@ -9,6 +9,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { FusionAuthService } from '../../libs/fusionauth/services/fusion-auth.service';
 import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
 
+/**
+ * @author RDananag (iyoy)
+ * Tender Jwt Guard, used to make sure that the user is authenticated.
+ * 1. to use this guard, you have to attach Authorization header with Bearer token
+ * 2. to use this guard, you have to attach x-hasura-role header with the role that you want to check
+ * 3. this guard can be combined with TenderRolesGuard and TenderGoogleOAuth2Guard
+ */
 @Injectable()
 export class TenderJwtGuard extends AuthGuard('jwt') implements CanActivate {
   constructor(private fusionAuthService: FusionAuthService) {
@@ -47,9 +54,6 @@ export class TenderJwtGuard extends AuthGuard('jwt') implements CanActivate {
       ) {
         throw new UnauthorizedException('Invalid token!');
       }
-
-      // console.log(request.headers['x-hasura-role']);
-      // console.log(validToken);
 
       if (
         validToken.response.jwt.roles.indexOf(

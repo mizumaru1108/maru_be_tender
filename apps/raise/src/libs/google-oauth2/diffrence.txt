@@ -1,0 +1,10 @@
+OAuth 2.0 client IDs: If your application is using OAuth 2.0 protocol,
+then use OAuth client ID. OAuth is used to create the Access token, which in
+turn is a unique identifier. However, the user needs to agree a consent.
+
+Service Account : Google APIs such as the Prediction API and Google Cloud
+Storage can act on behalf of your application without accessing user information.
+In these situations your application needs to prove its own identity to the API,
+but no user consent is necessary. Similarly, in enterprise scenarios, your
+application can request delegated access to some resources. For these types of
+server-to-server interactions you need a service account.

@@ -1,12 +1,10 @@
 import { Module, Global } from '@nestjs/common';
-import { GoogleCalendarOAuthService } from './google-calendar-oauth.service';
-import { GoogleCalendarServiceAccountService } from './google-calendar-service-account.service';
-
+import { GoogleCalendarService } from './google-calendar.service';
 import { GoogleCalendarController } from './google-calendar.controller';
 @Global()
 @Module({
   controllers: [GoogleCalendarController],
-  providers: [GoogleCalendarServiceAccountService, GoogleCalendarOAuthService],
-  exports: [GoogleCalendarServiceAccountService, GoogleCalendarOAuthService],
+  providers: [GoogleCalendarService],
+  exports: [GoogleCalendarService],
 })
 export class GoogleCalendarModule {}

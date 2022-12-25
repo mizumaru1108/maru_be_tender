@@ -13,6 +13,7 @@ import { contentParser } from 'fastify-multer';
 import { WinstonModule } from 'nest-winston';
 import pino from 'pino';
 import { ROOT_LOGGER } from './libs/root-logger';
+import { WsAdapter } from '@nestjs/platform-ws';
 
 async function bootstrap() {
   // bootstrap NestJS
@@ -81,6 +82,10 @@ async function bootstrap() {
 
   app.register(contentParser);
 
+  /**
+   * workaround for server not serving websocket
+   */
+  app.useWebSocketAdapter(new WsAdapter(app));
   await app.listen(3000, '0.0.0.0');
 }
 bootstrap();
