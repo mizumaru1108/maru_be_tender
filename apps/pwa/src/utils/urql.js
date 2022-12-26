@@ -1,13 +1,57 @@
 import { HASURA_GRAPHQL_URL } from 'config';
-import { createClient, dedupExchange, fetchExchange } from 'urql';
+import { createClient, dedupExchange, fetchExchange, subscriptionExchange } from 'urql';
 import { makeOperation } from '@urql/core';
 import { authExchange } from '@urql/exchange-auth';
 import { fusionAuthClient } from 'utils/fusionAuth';
 import jwtDecode from 'jwt-decode';
+import { isValidToken } from './jwt';
+
+import { SubscriptionClient } from 'subscriptions-transport-ws';
+
+const renewJwt = async (refreshToken) => {
+  const response = await fusionAuthClient.exchangeRefreshTokenForJWT({
+    refreshToken,
+  });
+
+  return response;
+};
+
+const getToken = () => {
+  let accessToken = localStorage.getItem('accessToken');
+  const refreshToken = localStorage.getItem('refreshToken');
+  const validToken = isValidToken(accessToken);
+
+  if (accessToken && !validToken) {
+    renewJwt(refreshToken).then((res) => {
+      accessToken = res.response?.token;
+    });
+  }
+
+  return accessToken;
+};
+const replaceUrl = HASURA_GRAPHQL_URL.replace('https:', 'wss:');
+const urlWss = replaceUrl.slice(0, replaceUrl.length - 1);
+const token = getToken();
+
+const subscriptionClient = new SubscriptionClient(urlWss, {
+  reconnect: true,
+  connectionParams: {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  },
+});
+
+subscriptionClient.onReconnecting(() => window.location.reload());
 
 export const makeClient = (activeRole) =>
   createClient({
     url: HASURA_GRAPHQL_URL,
+    fetchOptions: () => {
+      return {
+        headers: { Authorization: token },
+      };
+    },
     exchanges: [
       dedupExchange,
       // cacheExchange,
@@ -22,7 +66,6 @@ export const makeClient = (activeRole) =>
             typeof operation.context.fetchOptions === 'function'
               ? operation.context.fetchOptions()
               : operation.context.fetchOptions || {};
-
           return makeOperation(operation.kind, operation, {
             ...operation.context,
             fetchOptions: {
@@ -72,5 +115,8 @@ export const makeClient = (activeRole) =>
         },
       }),
       fetchExchange,
+      subscriptionExchange({
+        forwardSubscription: (operation) => subscriptionClient.request(operation),
+      }),
     ],
   });

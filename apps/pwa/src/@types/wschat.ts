@@ -7,50 +7,38 @@ export type ChatState = {
   // activeConversationId: null | string;
 };
 
+export type Participant = {
+  id: string;
+  employee_name: string;
+  roles: string;
+  is_online: boolean | null;
+  last_login: Date | string;
+};
+
 export type TextMessage = {
   id: string;
-  body: string;
-  contentType: 'text';
-  attachments: string[];
-  createdAt: Date;
-  senderId: string;
+  content: string | null;
+  content_title: string | null;
+  content_type_id: string;
+  attachment: string | null;
+  created_at: Date | string;
 };
 
 export type ImageMessage = {
   id: string;
-  body: string;
-  contentType: 'image';
-  attachments: string[];
-  createdAt: Date;
-  senderId: string;
+  content: string | null;
+  content_title: string | null;
+  content_type_id: string;
+  attachment: string | null;
+  created_at: Date | string;
 };
 
 export type Message = TextMessage | ImageMessage;
 
 export type Conversation = {
-  // id: string;
-  // participants: Participant[];
-  // type: string;
-  // unreadCount: number;
-  // messages: Message[];
-  room_id?: string;
-  partner_id: string;
-  sender_id: string;
-  correspondence_type_id: string;
-  partner_selected_role: string;
-  partner_username: string;
-  content: Message[];
-};
-
-export type Participant = {
-  id: string;
-  // name: string;
-  // username: string;
-  // avatar: string;
-  // address?: string;
-  // phone?: string;
-  // email?: string;
-  // lastActivity?: Date | string | number;
-  // status?: 'online' | 'offline' | 'away' | 'busy';
-  // position?: string;
+  id?: string;
+  correspondance_category_id: string;
+  messages: Message[] | [];
+  participant1: Participant | null;
+  participant2: Participant | null;
 };

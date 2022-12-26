@@ -28,6 +28,7 @@ import Iconify from 'components/Iconify';
 import Image from 'components/Image';
 // types
 import { NewMessageModalFormProps, NewMessageModalFormValues, UserDataTracks } from './types';
+import { Conversation } from '../../../@types/wschat';
 
 export default function NewMessageModalForm({
   user,
@@ -189,11 +190,27 @@ export default function NewMessageModalForm({
 
   const selectedUserMsg = async (el: UserDataTracks) => {
     const values = {
-      partner_id: el.id,
-      sender_id: user?.id,
-      correspondence_type_id: corespondence.toUpperCase(),
-      partner_selected_role: el.roles[0].user_type_id,
-      partner_username: el.employee_name,
+      correspondance_category_id: corespondence.toUpperCase(),
+      messages: [
+        {
+          content: null,
+          created_at: new Date().toISOString(),
+        },
+      ],
+      participant1: {
+        id: user?.id,
+        employee_name: user?.firstName,
+        roles: activeRole,
+        is_online: null,
+        last_login: new Date().toISOString(),
+      },
+      participant2: {
+        id: el.id,
+        employee_name: el.employee_name,
+        roles: `tender_${el.roles[0].user_type_id.toLowerCase()}`,
+        is_online: el.is_online,
+        last_login: el.last_login,
+      },
     };
 
     onSubmit(values);

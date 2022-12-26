@@ -15,7 +15,6 @@ const CHART_WIDTH = 600;
 
 export default function DonutChart({ data, type, headLine }: IDonatChartProps) {
   const { translate, currentLang } = useLocales();
-  console.log(currentLang);
   const theme = useTheme();
   const ChartWrapperStyle = styled('div')(({ theme }) => ({
     height: CHART_HEIGHT,

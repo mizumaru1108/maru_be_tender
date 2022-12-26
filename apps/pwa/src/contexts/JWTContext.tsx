@@ -8,6 +8,7 @@ import { FusionAuthRoles } from '../@types/commons';
 // redux
 import { useDispatch, useSelector } from 'redux/store';
 import { setAuthenticated, setUser, setActiveRole } from 'redux/slices/auth';
+//
 
 enum Types {
   Initial = 'INITIALIZE',
@@ -119,9 +120,9 @@ function AuthProvider({ children }: AuthProviderProps) {
           // dispatchState(setAuthenticated(true));
           // dispatchState(setUser(user.response.user));
           // dispatchState(setActiveRole(user.response.user.registrations[0].roles[0]));
-        } else if (accessToken && refreshToken) {
+        } else if (accessToken && refreshToken && !isValidToken(accessToken)) {
           const result = await fusionAuthClient.exchangeRefreshTokenForJWT({
-            refreshToken: refreshToken ?? '',
+            refreshToken: refreshToken,
           });
           if (result.response?.refreshToken && result.response?.token) {
             localStorage.setItem('accessToken', result.response.token);
@@ -129,6 +130,8 @@ function AuthProvider({ children }: AuthProviderProps) {
             const user = (await fusionAuthClient.retrieveUserUsingJWT(result.response.token)) as {
               response: { user: { registrations: Array<{ roles: Array<FusionAuthRoles> }> } };
             };
+
+            window.location.reload();
             dispatch({
               type: Types.Initial,
               payload: {
@@ -211,6 +214,7 @@ function AuthProvider({ children }: AuthProviderProps) {
   const logout = async () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+
     dispatch({ type: Types.Logout });
   };
 

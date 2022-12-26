@@ -14,7 +14,6 @@ const CHART_WIDTH = 600;
 
 export default function ProjectBenidiciaresKinds({ data, type, headLine }: any) {
   const { translate, currentLang } = useLocales();
-  console.log(currentLang);
   const theme = useTheme();
   const ChartWrapperStyle = styled('div')(({ theme }) => ({
     height: CHART_HEIGHT,
