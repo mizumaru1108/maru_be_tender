@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import {
   useDispatch as useAppDispatch,
   useSelector as useAppSelector,
@@ -6,6 +6,7 @@ import {
 } from 'react-redux';
 import { persistStore, persistReducer } from 'redux-persist';
 import { rootPersistConfig, rootReducer } from './rootReducer';
+import wsChatMiddleware from './slices/wsChatMiddleware';
 
 // ----------------------------------------------------------------------
 
@@ -16,6 +17,12 @@ const store = configureStore({
       serializableCheck: false,
       immutableCheck: false,
     }),
+  // middleware: (getDefaultMiddleware) => {
+  //   return getDefaultMiddleware({
+  //     serializableCheck: false,
+  //     immutableCheck: false,
+  //   }).concat([wsChatMiddleware]);
+  // },
 });
 
 const persistor = persistStore(store);
