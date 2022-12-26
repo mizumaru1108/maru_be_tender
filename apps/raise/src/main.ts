@@ -14,7 +14,7 @@ import { WinstonModule } from 'nest-winston';
 import pino from 'pino';
 import { ROOT_LOGGER } from './libs/root-logger';
 // import { WsAdapter } from '@nestjs/platform-ws';
-// import { IoAdapter } from '@nestjs/platform-socket.io';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 
 async function bootstrap() {
   // bootstrap NestJS
@@ -89,7 +89,7 @@ async function bootstrap() {
    * workaround for server not serving websocket
    */
   // app.useWebSocketAdapter(new WsAdapter(app));
-  // app.useWebSocketAdapter(new IoAdapter(app));
+  app.useWebSocketAdapter(new IoAdapter(app));
   await app.listen(3000, '0.0.0.0');
 }
 bootstrap();
