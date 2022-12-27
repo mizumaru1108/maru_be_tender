@@ -329,6 +329,7 @@ model proposal_follow_up {
   file                                  Json?
   action                                String?
   user_id                               String?
+  submitter_role                        String?
   proposal                              proposal  @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
   user_proposal_follow_up_user_idTouser user?     @relation("proposal_follow_up_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
 }
@@ -447,6 +448,7 @@ model project_track_flows {
   belongs_to_track                                     String?
   is_final_step                                        Boolean?        @default(false)
   action                                               String?         @db.VarChar
+  submitter_role                                       String?
   project_tracks                                       project_tracks? @relation(fields: [belongs_to_track], references: [id], onDelete: Cascade)
   user_type_project_track_flows_assigned_toTouser_type user_type       @relation("project_track_flows_assigned_toTouser_type", fields: [assigned_to], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_track_flows_assigned_to_fkey")
 }
@@ -559,13 +561,12 @@ model consultant_form {
 }
 
 model recommended_support_consultant {
-  clause             String
-  explanation        String
-  amount             Int
-  id                 String    @id
-  consultant_form_id String?
-  proposal_id        String?
-  proposal           proposal? @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
+  clause      String
+  explanation String
+  amount      Int
+  id          String    @id
+  proposal_id String?
+  proposal    proposal? @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
 }
 
 model track {
