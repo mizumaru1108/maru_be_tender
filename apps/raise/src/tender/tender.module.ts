@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { TenderController } from './tender.controller';
+import { TenderController } from './controllers/tender.controller';
 import { TenderService } from './tender.service';
 
 @Module({
@@ -7,4 +7,4 @@ import { TenderService } from './tender.service';
   providers: [TenderService],
   controllers: [TenderController],
 })
-export class TenderModule { }
+export class TenderModule {}

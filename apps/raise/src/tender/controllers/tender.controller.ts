@@ -9,12 +9,13 @@ import {
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@webundsoehne/nest-fastify-file-upload';
 import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
-import { BaseResponse } from '../commons/dtos/base-response';
-import { baseResponseHelper } from '../commons/helpers/base-response-helper';
-import { BaseHashuraWebhookPayload } from '../commons/interfaces/base-hashura-webhook-payload';
-import { UploadFilesDto } from '../tender-commons/dto/upload-files.dto';
-import { TenderService } from './tender.service';
-import { ROOT_LOGGER } from '../libs/root-logger';
+import { BaseResponse } from '../../commons/dtos/base-response';
+import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
+import { BaseHashuraWebhookPayload } from '../../commons/interfaces/base-hashura-webhook-payload';
+import { UploadFilesDto } from '../../tender-commons/dto/upload-files.dto';
+
+import { ROOT_LOGGER } from '../../libs/root-logger';
+import { TenderService } from '../services/tender.service';
 
 @Controller('tender')
 export class TenderController {
@@ -46,5 +47,16 @@ export class TenderController {
     const response = await this.tenderService.postCreateEditingRequest(payload);
     // this.logger.info('Response: ', { response: JSON.stringify(response) });
     return response;
+  }
+
+  @Post('follow-up-role-hook-handler')
+  async postRecommendedSupport(@Body() payload: BaseHashuraWebhookPayload) {
+    console.log('payload: ', payload);
+    console.log('payload: ', payload.event.data);
+    // this.logger.info('payload: ' + { payload: JSON.stringify(payload) });
+    // this.logger.info('payload data: ' + JSON.stringify(payload.event.data));
+    // const response = await this.tenderService.postCreateEditingRequest(payload);
+    // this.logger.info('Response: ', { response: JSON.stringify(response) });
+    // return response;
   }
 }
