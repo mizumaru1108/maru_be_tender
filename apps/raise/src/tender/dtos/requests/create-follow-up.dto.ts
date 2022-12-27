@@ -18,4 +18,10 @@ export class CreateProposalFollowUpDto {
   @IsNotEmpty()
   @IsString()
   file: UploadFilesJsonbDto;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  action: string;
 }

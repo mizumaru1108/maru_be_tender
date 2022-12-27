@@ -1,12 +1,17 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
-import { AllowedFileType } from '../commons/enums/allowed-filetype.enum';
-import { envLoadErrorHelper } from '../commons/helpers/env-loaderror-helper';
-import { BaseHashuraWebhookPayload } from '../commons/interfaces/base-hashura-webhook-payload';
-import { BunnyService } from '../libs/bunny/services/bunny.service';
-import { PrismaService } from '../prisma/prisma.service';
-import { UploadFilesDto } from '../tender-commons/dto/upload-files.dto';
+import { AllowedFileType } from '../../commons/enums/allowed-filetype.enum';
+import { envLoadErrorHelper } from '../../commons/helpers/env-loaderror-helper';
+import { BaseHashuraWebhookPayload } from '../../commons/interfaces/base-hashura-webhook-payload';
+import { BunnyService } from '../../libs/bunny/services/bunny.service';
+import { PrismaService } from '../../prisma/prisma.service';
+import { UploadFilesDto } from '../../tender-commons/dto/upload-files.dto';
 
 @Injectable()
 export class TenderService {
@@ -97,5 +102,12 @@ export class TenderService {
     }
 
     return updatedUser;
+  }
+
+  /* inserting user selected roles */
+  async postInsertFollowUp(request: BaseHashuraWebhookPayload) {
+    // console.log('id', request.event.session_variables['x-hasura-user-id']);
+    const userId = request.event.session_variables['x-hasura-user-id'];
+    if (!userId) throw new NotFoundException('User not found!');
   }
 }
