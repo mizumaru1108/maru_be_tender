@@ -280,9 +280,9 @@ export class TenderMessagesRepository {
   async readAllMessagesByRoomId(
     userId: string,
     roomId: string,
-  ): Promise<boolean> {
+  ): Promise<number> {
     try {
-      await this.prismaService.message.updateMany({
+      const result = await this.prismaService.message.updateMany({
         where: {
           room_id: {
             equals: roomId,
@@ -306,7 +306,8 @@ export class TenderMessagesRepository {
           read_status: true,
         },
       });
-      return true;
+      // return true;
+      return result.count;
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
