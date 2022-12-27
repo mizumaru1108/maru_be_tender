@@ -124,7 +124,7 @@ function PaymentsTable() {
                     sx={{
                       backgroundColor: '#0169DE',
                       color: '#fff',
-                      ':hover': { backgroundColor: '#1482FE'},
+                      ':hover': { backgroundColor: '#1482FE' },
                     }}
                   >
                     ارسال طلب تعديل

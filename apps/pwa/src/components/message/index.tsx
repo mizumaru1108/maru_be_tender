@@ -7,15 +7,15 @@ import { useEffect, useState } from 'react';
 import { useSubscription } from 'urql';
 import { getListConversations } from 'queries/messages/getListConversations';
 // redux
-import { addConversation } from 'redux/slices/wschat';
+import { addConversation, setConversation } from 'redux/slices/wschat';
 import { useDispatch } from 'redux/store';
 
-// import MessageContent from './content/MessageContent';
+import MessageContent from './content/MessageContent';
 import MessageMenu from './menu/MessageMenu';
-import { messageContent } from './mock-data';
 
 // config
 import { HEADER } from '../../config';
+import { Conversation } from '../../@types/wschat';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -54,24 +54,26 @@ function MessagesPage() {
   useEffect(() => {
     if (!fetching && data) {
       const { room_chat } = data;
+      const newArr = room_chat.map((el: Conversation) => ({
+        ...el,
+        participant1: {
+          ...el.participant1,
+          roles:
+            el.messages[0].owner_id === el.participant1?.id
+              ? el.messages[0].sender_role_as
+              : el.messages[0].receiver_role_as,
+        },
+        participant2: {
+          ...el.participant2,
+          roles:
+            el.messages[0].owner_id === el.participant2?.id
+              ? el.messages[0].sender_role_as
+              : el.messages[0].receiver_role_as,
+        },
+      }));
 
-      room_chat.forEach((el: any) => {
-        const newValue = {
-          ...el,
-          participant1: {
-            ...el.participant1,
-            roles: el.participant1?.roles[0].role.title,
-          },
-          participant2: {
-            ...el.participant2,
-            roles: el.participant2?.roles[0].role.title,
-          },
-        };
-
-        dispatch(addConversation(newValue));
-      });
+      dispatch(setConversation(newArr));
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, fetching]);
 
@@ -81,12 +83,9 @@ function MessagesPage() {
         <ContentStyle>
           <MessageMenu accountType={role} user={user} fetching={resultConversation.fetching} />
         </ContentStyle>
-        {/* <ContentStyleMessage>
-          {room === '001' && <MessageContent data={Message} />}
-          {room === '002' && <MessageContent data={Message1} />}
-          {room === '003' && <MessageContent data={Message2} />}
-          {room === '004' && <MessageContent data={Message3} />}
-        </ContentStyleMessage> */}
+        <ContentStyleMessage>
+          <MessageContent />
+        </ContentStyleMessage>
       </Stack>
     </Page>
   );

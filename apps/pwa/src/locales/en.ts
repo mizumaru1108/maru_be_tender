@@ -911,6 +911,10 @@ const en = {
       },
     },
   },
+  message_tab: {
+    internal: 'Internal Corespondence',
+    external: 'External Corespondence',
+  },
 
   // User Profile
   user_profile: {

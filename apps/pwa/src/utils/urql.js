@@ -42,7 +42,8 @@ const subscriptionClient = new SubscriptionClient(urlWss, {
   },
 });
 
-subscriptionClient.onReconnecting(() => window.location.reload());
+subscriptionClient.onReconnecting(() => console.log('Wss Reconnecting'));
+subscriptionClient.onConnected(() => console.log('Wss Connected'));
 
 export const makeClient = (activeRole) =>
   createClient({

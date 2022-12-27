@@ -189,12 +189,20 @@ export default function NewMessageModalForm({
   };
 
   const selectedUserMsg = async (el: UserDataTracks) => {
-    const values = {
+    const values: Conversation = {
+      id: uuidv4(),
       correspondance_category_id: corespondence.toUpperCase(),
       messages: [
         {
           content: null,
           created_at: new Date().toISOString(),
+          attachment: null,
+          content_title: null,
+          content_type_id: 'TEXT',
+          receiver_id: el.id,
+          owner_id: user?.id,
+          receiver_role_as: `tender_${el.roles[0].user_type_id.toLowerCase()}`,
+          sender_role_as: activeRole,
         },
       ],
       participant1: {

@@ -6,6 +6,9 @@ import { List, Collapse, Link } from '@mui/material';
 import { NavListProps } from '../type';
 import NavItem from './NavItem';
 import { getActive, isExternalLink } from '..';
+//redux
+import { setActiveConversationId, setMessageGrouped } from 'redux/slices/wschat';
+import { useDispatch } from 'redux/store';
 
 // ----------------------------------------------------------------------
 
@@ -24,6 +27,8 @@ export default function NavList({
 }: NavListRootProps) {
   const navigate = useNavigate();
 
+  const dispatch = useDispatch();
+
   const { pathname } = useLocation();
 
   const active = getActive(data.path, pathname);
@@ -35,6 +40,9 @@ export default function NavList({
       navigate(data.path);
     }
     setOpen(!open);
+
+    dispatch(setActiveConversationId(null));
+    dispatch(setMessageGrouped([]));
   };
 
   return (
@@ -65,7 +73,7 @@ export default function NavList({
             fontSize: '14px',
             ...(active && {
               color: '#fff',
-            })
+            }),
           }}
           item={data}
           depth={depth}

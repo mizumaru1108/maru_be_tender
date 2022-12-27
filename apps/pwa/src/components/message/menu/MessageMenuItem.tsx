@@ -10,6 +10,9 @@ import { IMessageMenuItem } from '../type';
 // hooks
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
+// redux
+import { setActiveConversationId } from 'redux/slices/wschat';
+import { useDispatch, useSelector } from 'redux/store';
 
 type IPropsMessageItem = {
   data: Conversation[];
@@ -20,7 +23,17 @@ export default function MessageMenuItem({ data }: IPropsMessageItem) {
   const theme = useTheme();
   const { currentLang, translate } = useLocales();
 
-  const [focusedIndex, setFocusedIndex] = useState<number | undefined>(undefined);
+  const [focusedItem, setFocusedItem] = useState<string | null>(null);
+  const { activeConversationId } = useSelector((state) => state.wschat);
+
+  // redux
+  const dispatch = useDispatch();
+
+  const handleFocusItem = (id: string) => {
+    dispatch(setActiveConversationId(id));
+
+    setFocusedItem(activeConversationId ? activeConversationId : null);
+  };
 
   return (
     <>
@@ -36,7 +49,7 @@ export default function MessageMenuItem({ data }: IPropsMessageItem) {
             borderRadius: 1,
             color: '#000',
             backgroundColor: {
-              ...(focusedIndex === index && {
+              ...(activeConversationId === item.id && {
                 transition: 'all 0.25s',
                 color: '#000',
                 backgroundColor: '#fff',
@@ -45,16 +58,14 @@ export default function MessageMenuItem({ data }: IPropsMessageItem) {
             '&:hover': {
               cursor: 'pointer',
               backgroundColor: theme.palette.grey[300],
-              ...(focusedIndex === index && {
+              ...(activeConversationId === item.id && {
                 transition: 'all 0.25s',
                 color: '#000',
                 backgroundColor: '#fff',
               }),
             },
           }}
-          onClick={() => {
-            setFocusedIndex(index);
-          }}
+          onClick={() => handleFocusItem(item.id!)}
         >
           <Iconify icon={'codicon:account'} color="#000" width={28} height={28} />
           <Box
@@ -81,9 +92,11 @@ export default function MessageMenuItem({ data }: IPropsMessageItem) {
               }}
             >
               {item.messages.length
-                ? item.messages[0].content
-                  ? `${item.messages[0].content}`
-                  : 'No message yet.'
+                ? item.messages[0].content_type_id === 'TEXT'
+                  ? item.messages[0].content
+                    ? `${item.messages[0].content}`
+                    : ''
+                  : 'New Image Message'
                 : 'No message yet.'}
             </Typography>
 

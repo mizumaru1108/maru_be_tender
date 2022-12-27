@@ -1,16 +1,15 @@
 export type ChatState = {
-  // isLoading: boolean;
-  // error: Error | string | null;
   conversations: Conversation[];
   isEstablishingConnection: boolean;
   isConnected: boolean;
-  // activeConversationId: null | string;
+  activeConversationId?: string | null;
+  messageGrouped?: IMassageGrouped[];
 };
 
 export type Participant = {
   id: string;
   employee_name: string;
-  roles: string;
+  roles?: string;
   is_online: boolean | null;
   last_login: Date | string;
 };
@@ -20,20 +19,48 @@ export type TextMessage = {
   content: string | null;
   content_title: string | null;
   content_type_id: string;
-  attachment: string | null;
+  attachment: {
+    size: number;
+    url: string;
+    type: string;
+  } | null;
   created_at: Date | string;
+  updated_at?: Date | string;
+  owner_id?: string | null;
+  sender_role_as?: string | null;
+  receiver_id?: string | null;
+  receiver_role_as?: string | null;
+  read_status?: boolean;
 };
 
 export type ImageMessage = {
-  id: string;
+  id?: string;
   content: string | null;
   content_title: string | null;
-  content_type_id: string;
-  attachment: string | null;
+  content_type_id: string | null;
+  attachment: {
+    size: number;
+    url: string;
+    type: string;
+  } | null;
   created_at: Date | string;
+  updated_at?: Date | string;
+  owner_id?: string | null;
+  sender_role_as?: string | null;
+  receiver_id?: string | null;
+  receiver_role_as?: string | null;
+  read_status?: boolean;
 };
 
 export type Message = TextMessage | ImageMessage;
+
+export type IMassageGrouped = {
+  group_created: Date | string;
+  messages: (Message & {
+    sender?: Participant | null;
+    receiver?: Participant | null;
+  })[];
+};
 
 export type Conversation = {
   id?: string;

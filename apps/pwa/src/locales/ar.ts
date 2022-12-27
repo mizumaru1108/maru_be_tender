@@ -978,6 +978,10 @@ const ar = {
       },
     },
   },
+  message_tab: {
+    internal: 'المراسلات الداخلية',
+    external: 'المراسلات الخارجية',
+  },
   filte_message_modal: {
     title: 'تصفية الرسائل',
   },
