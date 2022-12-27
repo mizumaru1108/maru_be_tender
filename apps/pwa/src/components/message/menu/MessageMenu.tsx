@@ -1,7 +1,7 @@
 // React
 import { useState, useEffect } from 'react';
 // @mui material
-import { Box, Stack, Tab, Tabs, Typography, Button, useTheme } from '@mui/material';
+import { Box, Stack, Tab, Tabs, Typography, Skeleton, useTheme } from '@mui/material';
 // hooks
 import useLocales from '../../../hooks/useLocales';
 // components
@@ -21,7 +21,7 @@ import { filterProjectTrack, filterSupervisor } from '../mock-data';
 import { addConversation } from 'redux/slices/wschat';
 import { useDispatch, useSelector } from 'redux/store';
 
-const MessageMenu = ({ accountType, user }: IMenu) => {
+const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
   const theme = useTheme();
   const { translate } = useLocales();
   const dispatch = useDispatch();
@@ -154,12 +154,36 @@ const MessageMenu = ({ accountType, user }: IMenu) => {
               />
             )}
 
-            <Stack direction="column" component="div" sx={{ overflowX: 'hidden', mt: 4 }}>
-              <MessageMenuItem
-                data={conversations.filter((el) => el.correspondence_type_id === 'EXTERNAL')}
-                // data={internalData}
-                // getRoomId={(value) => roomId(value)}
-              />
+            <Stack
+              direction="column"
+              component="div"
+              spacing={1}
+              sx={{ overflowX: 'hidden', mt: 4 }}
+            >
+              {fetching ? (
+                <>
+                  {[...Array(2)].map((el, i) => (
+                    <Skeleton
+                      key={i}
+                      variant="rectangular"
+                      height="100px"
+                      animation="pulse"
+                      sx={{ bgcolor: 'grey.300', borderRadius: 1, mb: 1.5 }}
+                    />
+                  ))}
+                </>
+              ) : (
+                <>
+                  {!conversations.filter((el) => el.correspondance_category_id === 'EXTERNAL')
+                    .length ? null : (
+                    <MessageMenuItem
+                      data={conversations.filter(
+                        (el) => el.correspondance_category_id === 'EXTERNAL'
+                      )}
+                    />
+                  )}
+                </>
+              )}
             </Stack>
           </TabPanel>
           <TabPanel value={valueTabItem} index={1}>
@@ -186,11 +210,30 @@ const MessageMenu = ({ accountType, user }: IMenu) => {
               spacing={1}
               sx={{ overflowX: 'hidden', mt: 4 }}
             >
-              <MessageMenuItem
-                data={conversations.filter((el) => el.correspondence_type_id === 'INTERNAL')}
-                // data={internalData}
-                // getRoomId={(value) => roomId(value)}
-              />
+              {fetching ? (
+                <>
+                  {[...Array(2)].map((el, i) => (
+                    <Skeleton
+                      key={i}
+                      variant="rectangular"
+                      height="100px"
+                      animation="pulse"
+                      sx={{ bgcolor: 'grey.300', borderRadius: 1, mb: 1.5 }}
+                    />
+                  ))}
+                </>
+              ) : (
+                <>
+                  {!conversations.filter((el) => el.correspondance_category_id === 'INTERNAL')
+                    .length ? null : (
+                    <MessageMenuItem
+                      data={conversations.filter(
+                        (el) => el.correspondance_category_id === 'INTERNAL'
+                      )}
+                    />
+                  )}
+                </>
+              )}
             </Stack>
           </TabPanel>
         </>
@@ -205,7 +248,21 @@ const MessageMenu = ({ accountType, user }: IMenu) => {
         'tender_cashier',
       ].includes(accountType) && (
         <Box sx={{ overflowX: 'hidden' }}>
-          <MessageMenuItem data={conversations} />
+          {fetching ? (
+            <>
+              {[...Array(2)].map((el, i) => (
+                <Skeleton
+                  key={i}
+                  variant="rectangular"
+                  height="100px"
+                  animation="pulse"
+                  sx={{ bgcolor: 'grey.300', borderRadius: 1, mb: 1.5 }}
+                />
+              ))}
+            </>
+          ) : (
+            <>{!conversations.length ? null : <MessageMenuItem data={conversations} />}</>
+          )}
         </Box>
       )}
 
@@ -225,6 +282,7 @@ const MessageMenu = ({ accountType, user }: IMenu) => {
               corespondence={corespondence}
               onSubmit={(v: any) => {
                 setModalState(false);
+
                 dispatch(addConversation(v));
               }}
             />

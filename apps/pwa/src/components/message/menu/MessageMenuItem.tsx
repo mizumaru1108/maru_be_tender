@@ -1,12 +1,15 @@
 // React
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 // @mui
-import { Stack, Typography, Box, useTheme } from '@mui/material';
+import { Typography, Box, useTheme } from '@mui/material';
 // icon
 import Iconify from '../../Iconify';
 // types
 import { Conversation } from '../../../@types/wschat';
 import { IMessageMenuItem } from '../type';
+// hooks
+import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
 
 type IPropsMessageItem = {
   data: Conversation[];
@@ -15,6 +18,8 @@ type IPropsMessageItem = {
 // export default function MessageMenuItem({ data, getRoomId }: IMessageMenuItem) {
 export default function MessageMenuItem({ data }: IPropsMessageItem) {
   const theme = useTheme();
+  const { currentLang, translate } = useLocales();
+
   const [focusedIndex, setFocusedIndex] = useState<number | undefined>(undefined);
 
   return (
@@ -66,7 +71,7 @@ export default function MessageMenuItem({ data }: IPropsMessageItem) {
                 pb: 0.25,
               }}
             >
-              {item.partner_username} - {item.partner_selected_role}
+              {item.participant2?.employee_name} - {translate(item.participant2?.roles)}
             </Typography>
             <Typography
               sx={{
@@ -75,7 +80,11 @@ export default function MessageMenuItem({ data }: IPropsMessageItem) {
                 pb: 0.5,
               }}
             >
-              {item.content && item.content.length ? `${item.content[0].body}` : 'No message yet.'}
+              {item.messages.length
+                ? item.messages[0].content
+                  ? `${item.messages[0].content}`
+                  : 'No message yet.'
+                : 'No message yet.'}
             </Typography>
 
             <Typography
@@ -84,7 +93,7 @@ export default function MessageMenuItem({ data }: IPropsMessageItem) {
                 color: '#8E8E8E',
               }}
             >
-              {new Date().toLocaleString()}
+              {new Date(item.messages[0].created_at).toLocaleString()}
             </Typography>
           </Box>
         </Box>

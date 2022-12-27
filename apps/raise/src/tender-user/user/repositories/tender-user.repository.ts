@@ -332,6 +332,38 @@ export class TenderUserRepository {
     }
   }
 
+  async updateUser(
+    userId: string,
+    userData: Prisma.userUpdateInput,
+    prismaSession?: Prisma.TransactionClient,
+  ): Promise<user> {
+    this.logger.debug(
+      `Invoke
+      update user with payload: ${JSON.stringify(userData)}`,
+    );
+    try {
+      if (prismaSession) {
+        return await prismaSession.user.update({
+          where: { id: userId },
+          data: userData,
+        });
+      } else {
+        return await this.prismaService.user.update({
+          where: { id: userId },
+          data: userData,
+        });
+      }
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderUserRepository.name,
+        'updateUser error:',
+        `updating user!`,
+      );
+      throw theError;
+    }
+  }
+
   async deleteUser(userId: string): Promise<user | null> {
     this.logger.debug(`Deleting user with id: ${userId}`);
     try {

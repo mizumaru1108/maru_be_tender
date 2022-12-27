@@ -1,5 +1,3 @@
-NOT QUIET USED YET SO TEMPORARY SAVED AS TXT
-
 import { registerAs } from '@nestjs/config';
 import * as Joi from 'joi';
 import { baseJoiRequiredString } from '../utils/joi-required-string';

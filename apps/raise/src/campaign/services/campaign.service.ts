@@ -91,18 +91,21 @@ export class CampaignService {
           campaignScheme._id,
         );
         tmpPath.push(path);
-
-        const base64Data = image.base64Data;
-        const binary = Buffer.from(image.base64Data, 'base64');
-        if (!binary) {
-          const trimmedString = 56;
-          base64Data.length > 40
-            ? base64Data.substring(0, 40 - 3) + '...'
-            : base64Data.substring(0, length);
-          throw new BadRequestException(
-            `Image payload on images[${index}] is not a valid base64 data: ${trimmedString}`,
-          );
-        }
+        // const base64Data = image.base64Data;
+        // const binary = Buffer.from(image.base64Data, 'base64');
+        // if (!binary) {
+        //   const trimmedString = 56;
+        //   base64Data.length > 40
+        //     ? base64Data.substring(0, 40 - 3) + '...'
+        //     : base64Data.substring(0, length);
+        //   throw new BadRequestException(
+        //     `Image payload on images[${index}] is not a valid base64 data: ${trimmedString}`,
+        //   );
+        // }
+        const binary = Buffer.from(
+          image.base64Data.replace(/^data:.*;base64,/, ''),
+          'base64',
+        );
         const imageUpload = await this.bunnyService.uploadImage(
           path,
           binary,

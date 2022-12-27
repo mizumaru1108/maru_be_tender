@@ -1,4 +1,4 @@
-import { Body, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
+import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -19,9 +19,7 @@ import { TenderFusionAuthRoles } from '../tender-commons/types';
 import { CreateMessageDto } from '../tender-messaging/tender-message/dtos/requests/create-message.dto';
 import { SearchMessageFilterRequest } from '../tender-messaging/tender-message/dtos/requests/search-message-filter-request.dto';
 import { ToogleReadMessageDto } from '../tender-messaging/tender-message/dtos/requests/toogle-read-message.dto';
-import { IIncomingMessageSummary } from '../tender-messaging/tender-message/interfaces/incomming-message';
 import { TenderMessagesService } from '../tender-messaging/tender-message/services/tender-messages.service';
-import { FetchLastMessageByUserIdDto } from '../tender-messaging/tender-room-chat/dtos/requests/fetch-last-mesage-by-user-id.dto';
 import { TenderRoomChatService } from '../tender-messaging/tender-room-chat/services/tender-room-chat.service';
 import { WsExceptionFilter } from './exceptions/ws-exception-filter';
 import { AuthSocket } from './interfaces/auth-socket.interface';
@@ -54,6 +52,9 @@ import { SocketAuthMiddleware } from './middleware/socket-auth-middleware';
   cors: {
     origin: [
       'http://localhost:3000', // dev purposes
+      'http://localhost:3002', // dev purposes
+      'http://localhost:3004', // dev purposes
+      'http://localhost:4040', // dev purposes
       /* http */
       'http://app-dev.tmra.io',
       'http://app-staging.tmra.io',

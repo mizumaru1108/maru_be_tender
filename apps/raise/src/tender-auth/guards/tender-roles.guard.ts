@@ -7,8 +7,9 @@ import {
 import { Reflector } from '@nestjs/core';
 
 /**
- * RolesGuard
- * Used to check if the user has the required FusionAuth (cluster)-level roles to access a route.
+ * @author RDananag (iyoy)
+ * RolesGuard Decorator
+ * Used to check if the user has the required FusionAuth roles to access a route.
  */
 @Injectable()
 export class TenderRolesGuard implements CanActivate {
@@ -16,9 +17,7 @@ export class TenderRolesGuard implements CanActivate {
    * RolesGuard constructor.
    * @param reflector The reflector service.
    */
-  constructor(
-    private reflector: Reflector /*, private userService: UserService*/,
-  ) {}
+  constructor(private reflector: Reflector) {}
 
   /**
    * Set the roles for the route.

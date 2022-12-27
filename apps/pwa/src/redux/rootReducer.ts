@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage';
 // slices
 import mailReducer from './slices/mail';
 import chatReducer from './slices/chat';
+import authReducer from './slices/auth';
 import wschatReducer from './slices/wschat';
 import productReducer from './slices/product';
 import calendarReducer from './slices/calendar';
@@ -29,13 +30,14 @@ const productPersistConfig = {
 };
 
 const rootReducer = combineReducers({
-  mail: mailReducer,
-  chat: chatReducer,
+  // mail: mailReducer,
+  // chat: chatReducer,
+  auth: authReducer,
   wschat: wschatReducer,
-  calendar: calendarReducer,
-  kanban: kanbanReducer,
-  product: persistReducer(productPersistConfig, productReducer),
-  branch: branchReducer,
+  // calendar: calendarReducer,
+  // kanban: kanbanReducer,
+  // product: persistReducer(productPersistConfig, productReducer),
+  // branch: branchReducer,
   proposal: proposal,
   supervisorAcceptingForm: supervisorAcceptingForm,
 });

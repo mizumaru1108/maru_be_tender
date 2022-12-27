@@ -5,6 +5,10 @@ import { ActionMap, AuthState, AuthUser, JWTContextType } from '../@types/auth';
 import { FUSIONAUTH_API } from 'config';
 import { fusionAuthClient } from 'utils/fusionAuth';
 import { FusionAuthRoles } from '../@types/commons';
+// redux
+import { useDispatch, useSelector } from 'redux/store';
+import { setAuthenticated, setUser, setActiveRole } from 'redux/slices/auth';
+//
 
 enum Types {
   Initial = 'INITIALIZE',
@@ -92,6 +96,8 @@ type AuthProviderProps = {
 function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(JWTReducer, initialState);
 
+  // const dispatchState = useDispatch();
+
   useEffect(() => {
     const initialize = async () => {
       try {
@@ -110,9 +116,13 @@ function AuthProvider({ children }: AuthProviderProps) {
               activeRole: user.response.user.registrations[0].roles[0],
             },
           });
-        } else if (accessToken && refreshToken) {
+
+          // dispatchState(setAuthenticated(true));
+          // dispatchState(setUser(user.response.user));
+          // dispatchState(setActiveRole(user.response.user.registrations[0].roles[0]));
+        } else if (accessToken && refreshToken && !isValidToken(accessToken)) {
           const result = await fusionAuthClient.exchangeRefreshTokenForJWT({
-            refreshToken: refreshToken ?? '',
+            refreshToken: refreshToken,
           });
           if (result.response?.refreshToken && result.response?.token) {
             localStorage.setItem('accessToken', result.response.token);
@@ -120,6 +130,8 @@ function AuthProvider({ children }: AuthProviderProps) {
             const user = (await fusionAuthClient.retrieveUserUsingJWT(result.response.token)) as {
               response: { user: { registrations: Array<{ roles: Array<FusionAuthRoles> }> } };
             };
+
+            window.location.reload();
             dispatch({
               type: Types.Initial,
               payload: {
@@ -128,6 +140,8 @@ function AuthProvider({ children }: AuthProviderProps) {
                 activeRole: user.response.user.registrations[0].roles[0],
               },
             });
+
+            // dispatchState(setAuthenticated(true));
           } else {
             dispatch({
               type: Types.Initial,
@@ -136,6 +150,8 @@ function AuthProvider({ children }: AuthProviderProps) {
                 user: null,
               },
             });
+
+            // dispatchState(setAuthenticated(false));
           }
         } else {
           dispatch({
@@ -145,6 +161,8 @@ function AuthProvider({ children }: AuthProviderProps) {
               user: null,
             },
           });
+
+          // dispatchState(setAuthenticated(false));
         }
       } catch (err) {
         dispatch({
@@ -182,6 +200,8 @@ function AuthProvider({ children }: AuthProviderProps) {
         activeRole: response.response.user.registrations[0].roles[0],
       },
     });
+
+    // dispatchState(setAuthenticated(true));
   };
 
   const register = async (
@@ -194,6 +214,7 @@ function AuthProvider({ children }: AuthProviderProps) {
   const logout = async () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+
     dispatch({ type: Types.Logout });
   };
 

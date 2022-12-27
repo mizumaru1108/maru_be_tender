@@ -1,10 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 // utils
-import axios from '../../utils/axios';
+// import axios from '../../utils/axios';
 // @types
 import { ChatState, Conversation } from '../../@types/wschat';
-//
-import { dispatch } from '../store';
 
 // ----------------------------------------------------------------------
 

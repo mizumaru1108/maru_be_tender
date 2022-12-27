@@ -12,7 +12,6 @@ type IProps = {
 type Props = IProps & TextFieldProps;
 
 export default function RHFTextField({ name, ...other }: Props) {
-  console.log(name);
   const { control, watch } = useFormContext();
   let project_beneficiaries = ''; //= watch('project_beneficiaries') ?? '';
   let condition = false;
@@ -53,9 +52,7 @@ export default function RHFTextField({ name, ...other }: Props) {
           fullWidth
           value={typeof field.value === 'number' && field.value === 0 ? '' : field.value}
           error={!!error}
-          helperText={
-            <Typography sx={{ backgroundColor: 'transparent' }}>{error?.message}</Typography>
-          }
+          helperText={error?.message}
           {...other}
         />
       )}

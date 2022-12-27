@@ -36,6 +36,7 @@ export type IMenu = {
   // externalData: correspondanceData[];
   accountType: string;
   user: AuthUser;
+  fetching: boolean;
   // roomId: (id: string) => void;
 };
 

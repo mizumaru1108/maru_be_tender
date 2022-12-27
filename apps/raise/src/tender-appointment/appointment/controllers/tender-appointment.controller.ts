@@ -12,7 +12,6 @@ import {
 import { JwtAuthGuard } from '../../../auth/jwt.guard';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
-import { GoogleAuthGuard } from '../../../tender-auth/guards/google-auth.guard';
 import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
 
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
@@ -21,6 +20,7 @@ import { CreateAppointmentDto } from '../dtos/requests/create-appointment.dto';
 import { SearchClientFilterRequest } from '../dtos/requests/search-client-filter-request.dto';
 import { TenderAppointmentService } from '../services/tender-appointment.service';
 import { FastifyReply } from 'fastify';
+import { GoogleOAuth2Guard } from '../../../tender-auth/guards/google-auth.guard';
 
 @Controller('tender-appointment')
 export class TenderAppointmentController {
@@ -28,28 +28,24 @@ export class TenderAppointmentController {
     private readonly tenderAppointmentService: TenderAppointmentService,
   ) {}
 
-  @UseGuards(TenderJwtGuard)
+  @UseGuards(TenderJwtGuard, GoogleOAuth2Guard)
   @Post('create-appointment')
   async createAppointment(
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: CreateAppointmentDto,
   ) {
     const result = await this.tenderAppointmentService.createAppointment(
-      request.code,
       currentUser,
+      request,
     );
     return baseResponseHelper(result, HttpStatus.CREATED, 'Success');
-  }
-
-  @Post('test-service-account')
-  async serviceAccount() {
-    await this.tenderAppointmentService.serviceAccount();
   }
 
   @Get('google-callback')
   async googleCallback(@Query() query: any, @Res() res: FastifyReply) {
     console.log('query', query);
-    await this.tenderAppointmentService.createAppointment(query.code);
+    // TODO: HOW TO IDENTIFY THE USER ?? if the user email is not same as the email in the APP?
+    // await this.tenderAppointmentService.createAppointmentOld(query.code);
     console.log('google callback hit');
     const html = `
       <!DOCTYPE html>
@@ -59,6 +55,7 @@ export class TenderAppointmentController {
           <title>Logining in...</title>
         </head>
         <body>
+          query: ${JSON.stringify(query.code)}
           your google account has been linked to tender app, you can close this
           <script>
             window.close();
