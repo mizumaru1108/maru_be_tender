@@ -5,7 +5,7 @@
 ports:
   - port: 3000
     visibility: public
+
 tasks:
-  - init: yarn install
-
-
+  - name: Use Node.js LTS then install dependencies
+    init: rm -r ~/.nvm/versions/node && nvm install --lts && npm -g install yarn && yarn install
