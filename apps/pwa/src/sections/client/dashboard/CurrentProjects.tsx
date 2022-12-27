@@ -54,7 +54,7 @@ function CurrentProjects({ current_projects }: any) {
         {current_projects.map((item: any, index: any) => (
           <Grid item md={12} xs={12} key={index}>
             <Grid container columnSpacing={7} rowSpacing={5}>
-              <Grid item md={8} xs={12}>
+              <Grid item md={7} xs={12}>
                 <ProjectCard
                   destination="current-project"
                   title={{ id: `${item.id}` }}
@@ -67,13 +67,13 @@ function CurrentProjects({ current_projects }: any) {
                   cardFooterButtonAction="show-details"
                 />
               </Grid>
-              <Grid item md={4} xs={12} rowSpacing={7}>
+              <Grid item md={5} xs={12} rowSpacing={7}>
                 <Stack gap={3}>
                   <Typography variant="h4">
                     {translate('content.client.main_page.current_budget')}
                   </Typography>
                   <Stack direction="column" gap={3}>
-                    <Stack direction="row" gap={1}>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                       <Box
                         sx={{
                           borderRadius: '8px',
@@ -102,13 +102,32 @@ function CurrentProjects({ current_projects }: any) {
                       >
                         <img src={`/icons/rial-currency.svg`} alt="" />
                         <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
+                          {translate('content.client.main_page.approved_budget')}
+                        </Typography>
+                        <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                          {item.fsupport_by_supervisor
+                            ? `${item.fsupport_by_supervisor} ريال`
+                            : translate('content.client.main_page.not_determined')}
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{
+                          borderRadius: '8px',
+                          backgroundColor: '#fff',
+                          py: '30px',
+                          paddingRight: '40px',
+                          paddingLeft: '5px',
+                        }}
+                      >
+                        <img src={`/icons/rial-currency.svg`} alt="" />
+                        <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
                           {translate('content.client.main_page.spent_budget')}
                         </Typography>
                         <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
                           {`${item.amount_required_fsupport} ريال`}
                         </Typography>
                       </Box>
-                    </Stack>
+                    </Box>
                   </Stack>
                 </Stack>
               </Grid>

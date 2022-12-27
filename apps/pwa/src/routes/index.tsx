@@ -30,7 +30,7 @@ export default function Router() {
     adminRoute,
     {
       path: '/',
-      element: <Navigate to={'/auth/login'} replace />,
+      element: <Navigate to="/auth/login" replace />,
     },
     { path: '*', element: <Navigate to="/404" replace /> },
   ]);

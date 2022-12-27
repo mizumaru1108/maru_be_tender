@@ -46,6 +46,7 @@ export const makeClient = (activeRole) =>
         didAuthError: ({ error }) =>
           // check if the error was an auth error (this can be implemented in various ways, e.g. 401 or a special error code)
           error.graphQLErrors.some((e) => e.extensions?.code === 'FORBIDDEN'),
+        // the responsible function for refreshing the token
         getAuth: async ({ authState, mutate }) => {
           if (!authState) {
             const token = localStorage.getItem('accessToken');

@@ -21,7 +21,6 @@ export interface SupervisorStep1 {
   vat_percentage: number | undefined;
   inclu_or_exclu: boolean | undefined;
   support_goal_id: string;
-  clasue_cons: string;
   accreditation_type_id: string;
 }
 

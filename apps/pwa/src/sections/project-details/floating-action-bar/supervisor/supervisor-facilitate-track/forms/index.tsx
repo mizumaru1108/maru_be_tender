@@ -4,7 +4,7 @@ import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
-import { updateProposalByModerator } from 'queries/Moderator/updateProposalByModerator';
+import { updateProposalByFacilitatedSupervisor } from 'queries/project-supervisor/updateProposalByFacilitatedSupervisor';
 import { useNavigate, useParams } from 'react-router';
 import {
   setStepFive,
@@ -46,7 +46,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const [, accept] = useMutation(updateProposalByModerator);
+  const [, accept] = useMutation(updateProposalByFacilitatedSupervisor);
 
   const dispatch = useDispatch();
 
@@ -67,15 +67,16 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
   };
 
   const handleSubmitFifthForm = async (data: any) => {
-    dispatch(setStepFive(data));
-    await handleSubmit();
+    await dispatch(setStepFive(data));
+    await handleSubmit(data);
   };
 
   const onBack = () => {
     dispatch(stepBackOne({}));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (data: any) => {
+    const { notes, ...restStep1 } = step1;
     accept({
       proposal_id,
       log: {
@@ -84,7 +85,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
         reviewer_id: user?.id,
         action: 'accept',
         message: 'تم قبول المشروع من قبل مشرف المشاريع ',
-        notes: step1.notes,
+        notes: notes,
         user_role: 'PROJECT_SUPERVISOR',
         state: 'PROJECT_SUPERVISOR',
       },
@@ -92,7 +93,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
         inner_status: 'ACCEPTED_BY_SUPERVISOR',
         outter_status: 'ONGOING',
         state: 'PROJECT_MANAGER',
-        ...step1,
+        ...restStep1,
         chairman_of_board_of_directors: step2.chairman_of_board_of_directors,
         been_supported_before: step2.been_supported_before,
         most_clents_projects: step2.most_clents_projects,
@@ -103,15 +104,16 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
         target_group_age: step3.target_group_age,
         been_made_before: step3.been_made_before,
         remote_or_insite: step3.remote_or_insite,
-        recommended_support: {
-          data: step5.recommended_support.map((item) => ({
-            clause: item.clause,
-            amount: item.amount,
-            explanation: item.explanation,
-            id: nanoid(),
-          })),
-        },
       },
+      recommended_support: [
+        ...data.recommended_support.map((item: any) => ({
+          proposal_id,
+          clause: item.clause,
+          amount: item.amount,
+          explanation: item.explanation,
+          id: nanoid(),
+        })),
+      ],
     }).then((res) => {
       if (res.error) {
         enqueueSnackbar(res.error.message, {

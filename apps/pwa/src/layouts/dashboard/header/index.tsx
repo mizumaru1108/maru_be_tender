@@ -19,6 +19,7 @@ import LanguagePopover from './LanguagePopover';
 import NotificationsPopover from './NotificationsPopover';
 import MessagePopover from './MessagePopover';
 import SwitchRole from './SwitchRole';
+import useAuth from 'hooks/useAuth';
 
 // ----------------------------------------------------------------------
 
@@ -69,6 +70,8 @@ export default function DashboardHeader({
 
   const isDesktop = useResponsive('up', 'lg');
 
+  const { activeRole } = useAuth();
+
   return (
     <RootStyle isCollapse={isCollapse} isOffset={isOffset} verticalLayout={verticalLayout}>
       <Toolbar
@@ -88,7 +91,7 @@ export default function DashboardHeader({
 
         <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
           <AccountPopover />
-          <SwitchRole />
+          {activeRole !== 'tender_client' && <SwitchRole />}
           <MessagePopover />
           <NotificationsPopover />
           <LanguagePopover />

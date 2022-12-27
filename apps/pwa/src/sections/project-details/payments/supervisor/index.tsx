@@ -12,6 +12,7 @@ function SupervisorPaymentsPage() {
 
   const { proposal } = useSelector((state) => state.proposal);
 
+  console.log(proposal);
   const [{ data: spentBudget, fetching }] = useQuery({
     query: getTheSpentBudgetForSpecificProposal,
     variables: { proposal_id },
@@ -42,7 +43,7 @@ function SupervisorPaymentsPage() {
             </Typography>
             <Typography
               sx={{ color: 'text.tertiary', fontWeight: 700 }}
-            >{`${proposal.number_of_payments} دفعات`}</Typography>
+            >{`${proposal.number_of_payments_by_supervisor} دفعات`}</Typography>
           </Box>
         </Grid>
         <Grid item md={2} xs={12}>

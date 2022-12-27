@@ -18,11 +18,13 @@ const ar = {
   content: {
     client: {
       main_page: {
-        current_projects: 'المشاريع الحالية',
+        current_projects: 'موازنة المشروع',
         no_current_projects: 'لا يوجد اي مشاريع حالية',
         apply_new_support_request: 'تقديم طلب دعم جديد',
-        current_budget: 'الميزانية الحالية',
+        current_budget: 'موازنة المشروع',
         required_budget: 'الميزانية المطلوبة',
+        approved_budget: 'الميزانية المعتمدة',
+        not_determined: 'لم تحدد بعد',
         spent_budget: 'الميزانية المصروفة',
         draft_projects: 'مشاريع محفوظة كمسودة',
         project_idea: 'فكرة المشروع',
@@ -183,7 +185,7 @@ const ar = {
       },
       pm_name: {
         message: '',
-        required: 'اسم مدير المشروع مطلوب',
+        required: 'اسم مدير الإدارة مطلوب',
       },
       pm_mobile: {
         message: 'الرقم يجب أن يكون مكتوب بصيغة ممائلة لهذه الصيغة +9665XXXXXXXX',
@@ -525,8 +527,8 @@ const ar = {
   funding_project_request_form3: {
     step: 'معلومات الاتصال',
     project_manager_name: {
-      label: 'اسم مدير المشروع*',
-      placeholder: 'الرجاء كتابة اسم مدير المشروع',
+      label: 'اسم مدير الإدارة*',
+      placeholder: 'الرجاء كتابة اسم مدير الإدارة',
     },
     mobile_number: {
       label: 'رقم الجوال*',
@@ -1068,7 +1070,7 @@ const ar = {
   tender_consultant: 'المستشار',
   tender_finance: 'المالية',
   tender_moderator: 'مسؤول الفرز',
-  tender_project_manager: 'مدير المشروع',
+  tender_project_manager: 'مدير الإدارة',
   tender_project_supervisor: 'مشرف المشروع',
   account_permission: 'صلاحيات الحساب',
   permissions: {

@@ -121,7 +121,11 @@ function PaymentsTable() {
                       </svg>
                     }
                     onClick={() => {}}
-                    sx={{ backgroundColor: '#0169DE', color: '#fff' }}
+                    sx={{
+                      backgroundColor: '#0169DE',
+                      color: '#fff',
+                      ':hover': { backgroundColor: '#1482FE'},
+                    }}
                   >
                     ارسال طلب تعديل
                   </Button>

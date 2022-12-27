@@ -100,14 +100,21 @@ function EmployeeFollowUpsPage() {
       <Grid container md={12} xs={12}>
         <TabPanel value={switchState} index={0} dir={theme.direction}>
           {proposal.follow_ups.length === 0 ||
-          proposal.follow_ups.filter((item) => !item.user.roles.includes({ role: 'CLIENT' }))
-            .length === 0 ? (
+          proposal.follow_ups.filter((items) => {
+            for (const item of items.user.roles) {
+              return item.role !== 'CLIENT';
+            }
+          }).length === 0 ? (
             <Grid item md={12} xs={12}>
               <EmptyFollowUps />
             </Grid>
           ) : (
             proposal.follow_ups
-              .filter((item) => !item.user.roles.includes({ role: 'CLIENT' }))
+              .filter((items) => {
+                for (const item of items.user.roles) {
+                  return item.role !== 'CLIENT';
+                }
+              })
               .map((item, index) => (
                 <Grid item md={12} xs={12} key={index}>
                   {item.file && <FollowUpsFile {...item} />}
@@ -120,14 +127,21 @@ function EmployeeFollowUpsPage() {
       <Grid container md={12} xs={12}>
         <TabPanel value={switchState} index={1} dir={theme.direction}>
           {proposal.follow_ups.length === 0 ||
-          proposal.follow_ups.filter((item) => item.user.roles.includes({ role: 'CLIENT' }))
-            .length === 0 ? (
+          proposal.follow_ups.filter((items) => {
+            for (const item of items.user.roles) {
+              return item.role === 'CLIENT';
+            }
+          }).length === 0 ? (
             <Grid item md={12} xs={12}>
               <EmptyFollowUps />
             </Grid>
           ) : (
             proposal.follow_ups
-              .filter((item) => item.user.roles.includes({ role: 'CLIENT' }))
+              .filter((items) => {
+                for (const item of items.user.roles) {
+                  return item.role === 'CLIENT';
+                }
+              })
               .map((item, index) => (
                 <Grid item md={12} xs={12} key={index}>
                   {item.file && <FollowUpsFile {...item} />}

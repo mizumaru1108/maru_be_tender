@@ -5,6 +5,7 @@ export const getOneProposal = `query getOneProposal($id: String!) {
     project_implement_date
     project_location
     project_track
+    number_of_payments_by_supervisor
     user {
       id
       employee_name
@@ -38,6 +39,12 @@ export const getOneProposal = `query getOneProposal($id: String!) {
       bank_account_number
       bank_name
       card_image
+    }
+    recommended_supports{
+       amount
+   		clause
+   		explanation
+   		id
     }
     amount_required_fsupport
     letter_ofsupport_req
@@ -88,25 +95,17 @@ export const getOneProposal = `query getOneProposal($id: String!) {
     }
     }
     added_value
-      been_made_before
-      been_supported_before
-      chairman_of_board_of_directors
+  	been_made_before
+    been_supported_before
+    chairman_of_board_of_directors
     most_clents_projects
-      reasons_to_accept
-      clause
+    reasons_to_accept
+    clause
     remote_or_insite
-      supervisor_id
-      target_group_age
-      target_group_num
-      target_group_type
+    supervisor_id
+    target_group_age
+    target_group_num
+    target_group_type
   }
 }
 `;
-// this is added when the recommended_support is added to the proposal table
-// recommended_support {
-//   amount
-//   clause
-//   consultant_form_id
-//   explanation
-//   id
-// }

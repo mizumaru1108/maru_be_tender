@@ -36,7 +36,7 @@ function MainPage() {
           <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
             مدة التنفيذ:
           </Typography>
-          <Typography>{new Date(execution_time).toISOString().substring(0, 10)}</Typography>
+          <Typography>{execution_time}</Typography>
         </Stack>
         <Stack direction="column">
           <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>

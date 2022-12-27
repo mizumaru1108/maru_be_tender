@@ -137,7 +137,7 @@ function FloatingActionBar() {
           autoHideDuration: 3000,
         });
       } else {
-        enqueueSnackbar('تم إرجاع المعاملة لمدير المشروع', {
+        enqueueSnackbar('تم إرجاع المعاملة لمدير الإدارة', {
           variant: 'success',
         });
         navigate(`/ceo/dashboard/app`);

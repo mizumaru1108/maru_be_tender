@@ -71,12 +71,10 @@ const ProjectCard = ({
 
   const onDeleteDraftClick = () => {
     console.log('onDeleteDraftClick');
-    // navigate(-1)
   };
 
   const onContinuingDraftClick = () => {
     console.log('onContinuingDraftClick');
-    // navigate(/client/dashboard/funding-project-request/step) with a specific step
   };
 
   const handleOnClick = async () => {
@@ -146,19 +144,27 @@ const ProjectCard = ({
 
         {/* The Content Section  */}
         <Typography
+          variant="h6"
           gutterBottom
-          sx={{ fontSize: '18px !important', fontWeight: 700, lineHeight: 28 / 18 }}
+          sx={{
+            mb: 1.5,
+            wordWrap: 'unset',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            maxWidth: '500px',
+          }}
         >
           {content.projectName}
         </Typography>
         <Typography
+          variant="h6"
           gutterBottom
           sx={{
-            fontSize: '15px !important',
-            mt: '-4px',
-            mb: '15px',
-            fontWeight: 400,
-            lineHeight: 28 / 18,
+            mb: 1.5,
+            wordWrap: 'unset',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            maxWidth: '500px',
           }}
         >
           {content.organizationName}
@@ -218,7 +224,16 @@ const ProjectCard = ({
             <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
               تفاصيل المشروع
             </Typography>
-            <Typography sx={{ mb: 1.5 }} color="#1E1E1E">
+            <Typography
+              sx={{
+                mb: 1.5,
+                display: '-webkit-box',
+                '-webkit-line-clamp': 2,
+                'line-clamp': 2,
+                '-webkit-box-orient': 'vertical',
+              }}
+              color="#1E1E1E"
+            >
               {content.projectDetails}
             </Typography>
           </>

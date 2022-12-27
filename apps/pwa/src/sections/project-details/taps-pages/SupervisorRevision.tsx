@@ -3,34 +3,6 @@ import { useSelector } from 'redux/store';
 
 function SupervisorRevision() {
   const { proposal } = useSelector((state) => state.proposal);
-  // const [result] = useQuery({
-  //   query: `query MyQuery($propsal_id: String = "") {
-  //   consultant_form(where: {proposal_id: {_eq: $propsal_id}}) {
-  //     added_value
-  //     been_made_before
-  //     been_supported_before
-  //     chairman_of_board_of_directors
-  //     id
-  //     most_clents_projects
-  //     reasons_to_accept
-  //     clause
-  //     recommended_support {
-  //       amount
-  //       clause
-  //       consultant_form_id
-  //       explanation
-  //       id
-  //     }
-  //     remote_or_insite
-  //     supervisor_id
-  //     target_group_age
-  //     target_group_num
-  //     target_group_type
-  //   }
-  // }
-  // `,
-  //   variables: { propsal_id },
-  // });
 
   return (
     <Grid container spacing={3}>
@@ -98,8 +70,8 @@ function SupervisorRevision() {
           <Typography variant="h6">المبلغ</Typography>
         </Stack>
       </Grid>
-      {proposal.recommended_support &&
-        proposal.recommended_support.map((item, index) => (
+      {proposal.recommended_supports &&
+        proposal.recommended_supports.map((item, index) => (
           <Grid item md={12} xs={12} key={index}>
             <Stack
               direction="row"

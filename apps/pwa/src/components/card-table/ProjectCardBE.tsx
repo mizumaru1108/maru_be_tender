@@ -17,6 +17,7 @@ import useAuth from 'hooks/useAuth';
 import { asignProposalToAUser } from 'queries/commons/asignProposalToAUser';
 import { useMutation } from 'urql';
 import { deleteDraftProposal } from 'queries/client/deleteDraftProposal';
+import { Box } from '@mui/material';
 
 const inquiryStatusStyle = {
   CANCELED: { color: '#FF4842', backgroundColor: '#FF484229', title: 'الطلب ملغي' },
@@ -136,21 +137,33 @@ const ProjectCardBE = ({
         </Stack>
 
         <Typography
+          variant="h6"
           gutterBottom
-          sx={{ fontSize: '18px !important', fontWeight: 700, lineHeight: 28 / 18 }}
+          sx={{
+            mb: 1.5,
+            wordWrap: 'unset',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            maxWidth: '500px',
+          }}
         >
           {project_name}
         </Typography>
         {project_idea && cardFooterButtonAction !== 'draft' && (
           <>
-            <Typography
-              variant="h6"
-              color="#93A3B0"
-              sx={{ fontSize: '10px !important', mt: '10px' }}
-            >
+            <Typography variant="h6" color="#93A3B0" sx={{ mt: '10px' }}>
               تفاصيل المشروع
             </Typography>
-            <Typography sx={{ mb: 1.5 }} color="#1E1E1E">
+            <Typography
+              sx={{
+                mb: 1.5,
+                wordWrap: 'unset',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                maxWidth: '500px',
+              }}
+              color="#1E1E1E"
+            >
               {project_idea}
             </Typography>
           </>

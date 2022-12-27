@@ -40,7 +40,6 @@ const initialState: SupervisorAcceptingForm = {
     vat_percentage: undefined,
     inclu_or_exclu: undefined,
     support_goal_id: '',
-    clasue_cons: '',
     accreditation_type_id: '',
   },
   step2: {

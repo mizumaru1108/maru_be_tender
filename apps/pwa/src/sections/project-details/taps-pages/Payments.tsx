@@ -1,10 +1,9 @@
-import { Proposal } from '../../../@types/proposal';
 import useAuth from 'hooks/useAuth';
 import { useSelector } from 'redux/store';
 import { CachierPaymentsTable } from '../payments/cachier';
-import { FinancePaymentsTable } from '../payments/finance';
+import FinancePaymentsPage from '../payments/finance';
 import { ManagerPaymentsPage } from '../payments/project-manager';
-import { SupervisorPaymentsPage } from '../payments/supervisor';
+import SupervisorPaymentsPage from '../payments/supervisor';
 
 function Payments() {
   const { activeRole } = useAuth();
@@ -23,7 +22,7 @@ function Payments() {
     return (
       <div>
         {activeRole === 'tender_project_manager' && <ManagerPaymentsPage />}
-        {activeRole === 'tender_finance' && <FinancePaymentsTable />}
+        {activeRole === 'tender_finance' && <FinancePaymentsPage />}
         {activeRole === 'tender_cashier' && <CachierPaymentsTable />}
         {activeRole === 'tender_client' && <CachierPaymentsTable />}
       </div>

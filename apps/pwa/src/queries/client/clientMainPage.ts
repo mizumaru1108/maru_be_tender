@@ -5,6 +5,7 @@ export const clientMainPage = `query clientMainPage {
     project_idea
     project_name
     amount_required_fsupport
+    fsupport_by_supervisor
   }
   draft_projects: proposal(where: { step: { _neq: ZERO } }, limit: 4, offset: 0) {
     id

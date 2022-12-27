@@ -55,7 +55,7 @@ const initialState: ProposalItme = {
     clause: '',
     most_clents_projects: '',
     reasons_to_accept: '',
-    recommended_support: [
+    recommended_supports: [
       {
         amount: 0,
         explanation: 'test',
@@ -70,7 +70,7 @@ const initialState: ProposalItme = {
     created_at: new Date('10-10-2022'),
     num_ofproject_binicficiaries: 0,
     region: 'test',
-    execution_time: new Date('10-10-2022'),
+    execution_time: '3 أشهر',
     project_idea: 'test',
     project_goals: 'test',
     project_outputs: 'test',
@@ -111,6 +111,7 @@ const initialState: ProposalItme = {
       },
     ],
     number_of_payments: 0,
+    number_of_payments_by_supervisor: 0,
     proposal_item_budgets: [
       {
         amount: 0,

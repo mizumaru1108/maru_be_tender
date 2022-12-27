@@ -65,7 +65,7 @@ export interface Proposal {
   created_at: Date;
   num_ofproject_binicficiaries: number;
   region: string;
-  execution_time: Date;
+  execution_time: string;
   project_idea: string;
   project_goals: string;
   project_outputs: string;
@@ -89,7 +89,7 @@ export interface Proposal {
   target_group_age: number;
   target_group_num: number;
   target_group_type: string;
-  recommended_support: ItemBudget[];
+  recommended_supports: ItemBudget[];
   clause: string;
   payments: {
     id: string;
@@ -100,6 +100,7 @@ export interface Proposal {
     cheques: Cheques[];
   }[];
   number_of_payments: number;
+  number_of_payments_by_supervisor: number;
   proposal_item_budgets: ItemBudget[];
   proposal_item_budgets_aggregate: {
     aggregate: {

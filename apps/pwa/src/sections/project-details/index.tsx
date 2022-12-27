@@ -26,7 +26,9 @@ function ProjectDetailsMainPage() {
   }, [dispatch, id]);
 
   if (isLoading) return <>... Loading</>;
+
   if (error) return <>{error}</>;
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Stack direction="row" justifyContent="space-between">
@@ -34,7 +36,7 @@ function ProjectDetailsMainPage() {
           color="inherit"
           variant="contained"
           onClick={() => navigate(-1)}
-          sx={{ padding: 1, minWidth: 25, minHeight: 25, mr: 3 }}
+          sx={{ padding: 2, minWidth: 35, minHeight: 25, mr: 3 }}
         >
           <Iconify
             icon={
@@ -49,7 +51,14 @@ function ProjectDetailsMainPage() {
         <ProjectStatus />
       </Stack>
       <Stack direction="row" justifyContent="space-between">
-        <Typography variant="h4">{proposal.project_name}</Typography>
+        <Typography
+          variant="h4"
+          sx={{
+            maxWidth: '700px',
+          }}
+        >
+          {proposal.project_name}
+        </Typography>
         <FollowUpsAction />
       </Stack>
       <ActionTap />

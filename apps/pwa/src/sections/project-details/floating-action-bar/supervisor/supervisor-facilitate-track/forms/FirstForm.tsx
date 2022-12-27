@@ -26,7 +26,6 @@ function FirstForm({ children, onSubmit }: any) {
     inclu_or_exclu: Yup.boolean(),
     accreditation_type_id: Yup.string().required('Procedures is required!'),
     support_goal_id: Yup.string().required('Procedures is required!'),
-    clasue_cons: Yup.string().required('Procedures is required!'),
   });
 
   const { step1 } = useSelector((state) => state.supervisorAcceptingForm);
@@ -198,7 +197,7 @@ function FirstForm({ children, onSubmit }: any) {
             type="textField"
             name="number_of_payments_by_supervisor"
             label="عدد الدفعات*"
-            placeholder="دفعة واحدة"
+            placeholder="1"
           />
         </Grid>
         <Grid item md={6} xs={12}>
@@ -234,21 +233,6 @@ function FirstForm({ children, onSubmit }: any) {
                 </>
               )
             )}
-          />
-        </Grid>
-        <Grid item md={12} xs={12}>
-          <BaseField
-            type="select"
-            name="clasue_cons"
-            label="البند"
-            placeholder="الرجاء اختيار البند"
-            children={
-              <>
-                <option value="test" style={{ backgroundColor: '#fff' }}>
-                  عام
-                </option>
-              </>
-            }
           />
         </Grid>
         <Grid item md={12} xs={12}>

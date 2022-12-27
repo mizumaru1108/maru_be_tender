@@ -148,7 +148,7 @@ function ConsultantFloatingActionBar() {
       </Box>
       {action === 'REJECT' && (
         <NotesModal
-          title="رفض المشروع وإعادته لمدير المشروع"
+          title="رفض المشروع وإعادته لمدير الإدارة"
           onClose={handleCloseModal}
           onSubmit={handleRejected}
           action={{ actionLabel: 'رفض', backgroundColor: '#FF0000', hoverColor: '#FF4842' }}

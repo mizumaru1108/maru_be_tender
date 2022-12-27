@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Alert, Box, Button, Checkbox, Grid, Stack, Typography } from '@mui/material';
 import BankImageComp from 'sections/shared/BankImageComp';
-import AddBankModal from './AddBankModal';
 import { getUserBankInformation } from 'queries/client/getUserBankInformation';
 import useAuth from 'hooks/useAuth';
 import { useQuery } from 'urql';
@@ -15,32 +14,24 @@ type Props = {
   onReturn: () => void;
   onSavingDraft: () => void;
   lastStep?: boolean;
-  step: number;
 };
-const SupportingDurationInfoForm = ({
-  onReturn,
-  onSavingDraft,
-  lastStep,
-  step,
-  onSubmit,
-}: Props) => {
+const SupportingDurationInfoForm = ({ onReturn, onSavingDraft, lastStep, onSubmit }: Props) => {
   const { user } = useAuth();
+
   const { translate } = useLocales();
+
   const [agreeOn, setAgreeOn] = useState(false);
+
   const id = user?.id;
-  const [result, reexxecuteUserBankInformation] = useQuery({
+
+  const [{ data, fetching, error }] = useQuery({
     query: getUserBankInformation,
     variables: { user_id: id },
   });
-  const { data, fetching, error } = result;
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const [isCreatedOne, setIsCreatedOne] = useState<Boolean>(false);
 
   const [oprnError, setOpenError] = useState(false);
+
   const onBankInfoSubmit = () => {
-    console.log(selectedCard);
     if (selectedCard === '') {
       setOpenError(true);
       window.scrollTo(0, 0);
@@ -48,15 +39,13 @@ const SupportingDurationInfoForm = ({
   };
 
   const [selectedCard, setSelectedCard] = useState<string>('');
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAgreeOn(event.target.checked);
   };
-  useEffect(() => {
-    reexxecuteUserBankInformation();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isCreatedOne]);
 
   if (fetching) return <>...Loading</>;
+
   if (error) return <>Something went wrong, please go back one step</>;
   return (
     <Grid container rowSpacing={4} columnSpacing={7}>
@@ -101,14 +90,6 @@ const SupportingDurationInfoForm = ({
           </Box>
         </Grid>
       ))}
-      <Grid item xs={12}>
-        <Stack justifyContent="center">
-          <Button sx={{ textDecoration: 'underline', margin: '0 auto' }} onClick={handleOpen}>
-            {translate('funding_project_request_form5.add_new_bank_details.label')}
-          </Button>
-          <AddBankModal open={open} handleClose={handleClose} setIsCreatedOne={setIsCreatedOne} />
-        </Stack>
-      </Grid>
       <Grid item xs={12}>
         <Stack direction="row" sx={{ alignItems: 'center' }}>
           <Checkbox onChange={handleChange} />

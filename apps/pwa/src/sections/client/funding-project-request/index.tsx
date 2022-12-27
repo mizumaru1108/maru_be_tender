@@ -398,7 +398,6 @@ const FundingProjectRequestForm = () => {
         )}
         {step === 4 && (
           <SupportingDurationInfoForm
-            step={step}
             lastStep={true}
             onReturn={onReturn}
             onSavingDraft={onSavingDraft}

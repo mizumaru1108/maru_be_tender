@@ -41,7 +41,9 @@ function ClientProfile() {
   }));
 
   if (fetching) return <>Loading ....</>;
+
   if (error) return <>{error.message}</>;
+
   const {
     user_by_pk: {
       client_data: {
@@ -82,7 +84,7 @@ function ClientProfile() {
             <Stack direction="column" sx={{ mb: '5px' }}>
               <Typography variant="h5">{entity}</Typography>
               <Typography variant="h6" sx={{ color: '#1E1E1E' }}>
-                {mockData.minister_type}
+                {authority}
               </Typography>
             </Stack>
             <Button
