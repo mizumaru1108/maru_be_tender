@@ -81,6 +81,10 @@ export class TenderMessagesService {
       );
     }
 
+    if (partnerRole.indexOf(partnerSelectedRole) === -1) {
+      throw new BadRequestException('Your partner does not have this role!');
+    }
+
     if (
       [
         'tender_project_manager',
@@ -239,7 +243,13 @@ export class TenderMessagesService {
     return response;
   }
 
-  async readAllMessageByRoomId(roomId: string): Promise<boolean> {
-    return await this.tenderMessagesRepository.readAllMessagesByRoomId(roomId);
+  async readAllMessageByRoomId(
+    userId: string,
+    roomId: string,
+  ): Promise<boolean> {
+    return await this.tenderMessagesRepository.readAllMessagesByRoomId(
+      userId,
+      roomId,
+    );
   }
 }

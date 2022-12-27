@@ -277,12 +277,29 @@ export class TenderMessagesRepository {
     }
   }
 
-  async readAllMessagesByRoomId(roomId: string): Promise<boolean> {
+  async readAllMessagesByRoomId(
+    userId: string,
+    roomId: string,
+  ): Promise<boolean> {
     try {
       await this.prismaService.message.updateMany({
         where: {
           room_id: {
             equals: roomId,
+          },
+          room_chat: {
+            OR: [
+              {
+                participant1_user_id: {
+                  equals: userId,
+                },
+              },
+              {
+                participant2_user_id: {
+                  equals: userId,
+                },
+              },
+            ],
           },
         },
         data: {
