@@ -96,17 +96,28 @@ export default function NewMessageModalForm({
   };
 
   const findUserTracks = async (employee_path: string) => {
-    const only_external = corespondence === 'external' ? 1 : 0;
-    const only_internal = corespondence === 'internal' ? 1 : 0;
+    const hide_internal = corespondence === 'external' ? 1 : 0;
+    const hide_external = corespondence === 'internal' ? 1 : 0;
+
+    let params = {};
+
+    if (corespondence === 'external') {
+      params = {
+        hide_internal,
+        limit: 6,
+      };
+    } else {
+      params = {
+        employee_path: employee_path,
+        hide_internal,
+        hide_external,
+        limit: 6,
+      };
+    }
 
     setLoadingUser(true);
     const { data } = await axiosInstance.get('/tender-user/find-users', {
-      params: {
-        employee_path: employee_path,
-        only_external,
-        only_internal,
-        limit: 6,
-      },
+      params,
       headers: { 'x-hasura-role': activeRole! },
     });
 
@@ -124,23 +135,26 @@ export default function NewMessageModalForm({
   };
 
   const paginateUserList = async (elem: number) => {
-    const only_external = corespondence === 'external' ? 1 : 0;
-    const only_internal = corespondence === 'internal' ? 1 : 0;
+    const hide_internal = corespondence === 'external' ? 1 : 0;
+    const hide_external = corespondence === 'internal' ? 1 : 0;
 
-    let params: {
-      only_external: number;
-      only_internal: number;
-      page: number;
-      limit: number;
-      employee_path?: string;
-    } = {
-      only_external,
-      only_internal,
-      page: elem,
-      limit: 6,
-    };
+    let params = {};
 
-    if (selectedTrack !== '') params.employee_path = selectedTrack;
+    if (corespondence === 'external') {
+      params = {
+        hide_internal,
+        page: elem,
+        limit: 6,
+      };
+    } else {
+      params = {
+        employee_path: selectedTrack,
+        hide_internal,
+        hide_external,
+        page: elem,
+        limit: 6,
+      };
+    }
 
     setLoadingUser(true);
     const { data } = await axiosInstance.get('/tender-user/find-users', {
@@ -165,7 +179,7 @@ export default function NewMessageModalForm({
     setLoadingUser(true);
     const { data } = await axiosInstance.get('/tender-user/find-users', {
       params: {
-        only_external: 1,
+        hide_internal: 1,
         limit: 6,
       },
       headers: { 'x-hasura-role': activeRole! },
@@ -354,7 +368,9 @@ export default function NewMessageModalForm({
                           <Typography variant="subtitle1" sx={{ mb: 0.5 }}>
                             {v.employee_name}
                           </Typography>
-                          <Typography variant="caption">{v.roles[0].user_type_id}</Typography>
+                          <Typography variant="caption">
+                            {translate(`tender_${v.roles[0].user_type_id.toLowerCase()}`)}
+                          </Typography>
                         </Box>
                       </Box>
                       <IconButton sx={{ color: theme.palette.grey[600] }}>
