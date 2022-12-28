@@ -30,10 +30,9 @@ const getToken = () => {
   return accessToken;
 };
 const replaceUrl = HASURA_GRAPHQL_URL.replace('https:', 'wss:');
-const urlWss = replaceUrl.slice(0, replaceUrl.length - 1);
 const token = getToken();
 
-const subscriptionClient = new SubscriptionClient(urlWss, {
+const subscriptionClient = new SubscriptionClient(replaceUrl, {
   reconnect: true,
   connectionParams: {
     headers: {
