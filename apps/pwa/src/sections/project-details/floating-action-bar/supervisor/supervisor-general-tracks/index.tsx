@@ -207,7 +207,7 @@ function FloatingActionBar() {
 
     if (valueNewConversation.length) {
       for (let index = 0; index < valueNewConversation.length; index++) {
-        const messages = valueNewConversation[index].messages;
+        const { messages } = valueNewConversation[index];
         const findReceiverId = messages.find(
           (el) =>
             el.owner_id === valueToConversation.messages[0].receiver_id ||
