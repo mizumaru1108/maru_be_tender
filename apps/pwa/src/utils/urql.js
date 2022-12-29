@@ -4,54 +4,12 @@ import { makeOperation } from '@urql/core';
 import { authExchange } from '@urql/exchange-auth';
 import { fusionAuthClient } from 'utils/fusionAuth';
 import jwtDecode from 'jwt-decode';
-import { isValidToken } from './jwt';
 
-import { SubscriptionClient } from 'subscriptions-transport-ws';
-
-const renewJwt = async (refreshToken) => {
-  const response = await fusionAuthClient.exchangeRefreshTokenForJWT({
-    refreshToken,
-  });
-
-  return response;
-};
-
-const getToken = () => {
-  let accessToken = localStorage.getItem('accessToken');
-  const refreshToken = localStorage.getItem('refreshToken');
-  const validToken = isValidToken(accessToken);
-
-  if (accessToken && !validToken) {
-    renewJwt(refreshToken).then((res) => {
-      accessToken = res.response?.token;
-    });
-  }
-
-  return accessToken;
-};
-const replaceUrl = HASURA_GRAPHQL_URL.replace('https:', 'wss:');
-const token = getToken();
-
-const subscriptionClient = new SubscriptionClient(replaceUrl, {
-  reconnect: true,
-  connectionParams: {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  },
-});
-
-subscriptionClient.onReconnecting(() => console.log('Wss Reconnecting'));
-subscriptionClient.onConnected(() => console.log('Wss Connected'));
+import { createClient as createWSClient } from 'graphql-ws';
 
 export const makeClient = (activeRole) =>
   createClient({
     url: HASURA_GRAPHQL_URL,
-    fetchOptions: () => {
-      return {
-        headers: { Authorization: token },
-      };
-    },
     exchanges: [
       dedupExchange,
       // cacheExchange,
@@ -117,7 +75,31 @@ export const makeClient = (activeRole) =>
       }),
       fetchExchange,
       subscriptionExchange({
-        forwardSubscription: (operation) => subscriptionClient.request(operation),
+        forwardSubscription(operation) {
+          const fetchOptions =
+            typeof operation.context.fetchOptions === 'function'
+              ? operation.context.fetchOptions()
+              : operation.context.fetchOptions || {};
+
+          const replaceUrl = HASURA_GRAPHQL_URL.replace('https:', 'wss:');
+          const wsClient = createWSClient({
+            url: replaceUrl,
+            connectionParams: {
+              headers: {
+                ...fetchOptions.headers,
+              },
+            },
+          });
+
+          return {
+            subscribe: (sink) => {
+              const dispose = wsClient.subscribe(operation, sink);
+              return {
+                unsubscribe: dispose,
+              };
+            },
+          };
+        },
       }),
     ],
   });

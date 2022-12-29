@@ -10,6 +10,10 @@ import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField, RHFCheckbox } from '../../../components/hook-form';
 import useLocales from 'hooks/useLocales';
 import useAuth from 'hooks/useAuth';
+// redux
+import { useDispatch } from 'redux/store';
+import { setConversation, setMessageGrouped, setActiveConversationId } from 'redux/slices/wschat';
+
 // ----------------------------------------------------------------------
 
 type FormValuesProps = {
@@ -24,6 +28,9 @@ export default function LoginForm() {
   const { translate } = useLocales();
   const [showPassword, setShowPassword] = useState(false);
   const [open, setOpen] = useState(false);
+
+  // redux
+  const dispatch = useDispatch();
 
   const LoginSchema = Yup.object().shape({
     email: Yup.string()
@@ -60,6 +67,9 @@ export default function LoginForm() {
   const onSubmit = async (data: FormValuesProps) => {
     try {
       await login(data.email, data.password);
+      dispatch(setActiveConversationId(null));
+      dispatch(setConversation([]));
+      dispatch(setMessageGrouped([]));
     } catch (error) {
       reset();
       setError('afterSubmit', { ...error, message: translate('login_message_error') });

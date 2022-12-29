@@ -61,7 +61,7 @@ export default function MessageContent() {
   const [resultMessages] = useSubscription({
     query: getListMessageByRoom,
     variables: {
-      activeConversationId: activeConversationId ?? '',
+      activeConversationId: activeConversationId || '',
     },
   });
 
@@ -180,11 +180,10 @@ export default function MessageContent() {
   };
 
   useEffect(() => {
-    if (!fetching && data.message.length) {
+    if (!fetching && data && data.message.length) {
       const findConversation: Conversation = conversations.find(
         (el) => el.id === activeConversationId
       )!;
-
       if (findConversation) {
         setCorespondenceType(findConversation.correspondance_category_id);
         setPartner({
@@ -192,19 +191,15 @@ export default function MessageContent() {
           roles: findConversation.participant2?.roles!,
         });
       }
-
       const messageContents = data.message;
       let grouped: IMassageGrouped[] = [];
-
       for (const msg of messageContents) {
         const date = moment(msg.created_at).isSame(moment(), 'day')
           ? 'Today'
           : moment(msg.created_at).isSame(moment().subtract(1, 'days'), 'day')
           ? 'Yesterday'
           : moment(msg.created_at).format('dddd DD/MM/YYYY');
-
         const group = grouped.find((g) => g.group_created === date);
-
         if (group) {
           group.messages.push(msg);
         } else {
@@ -214,33 +209,27 @@ export default function MessageContent() {
           });
         }
       }
-
       setGetMessageGrouped(grouped);
       dispatch(setMessageGrouped(grouped));
     } else {
       const findConversation: Conversation = conversations.find(
         (el) => el.id === activeConversationId
       )!;
-
       if (findConversation) {
         setCorespondenceType(findConversation.correspondance_category_id);
         setPartner({
           partner_name: findConversation.participant2?.employee_name!,
           roles: findConversation.participant2?.roles!,
         });
-
         const messageContents = findConversation.messages;
         let groupedAlter: IMassageGrouped[] = [];
-
         for (const msg of messageContents) {
           const date = moment(msg.created_at).isSame(moment(), 'day')
             ? 'Today'
             : moment(msg.created_at).isSame(moment().subtract(1, 'days'), 'day')
             ? 'Yesterday'
             : moment(msg.created_at).format('dddd DD/MM/YYYY');
-
           const group = groupedAlter.find((g) => g.group_created === date);
-
           if (group) {
             group.messages.push(msg);
           } else {
@@ -250,7 +239,6 @@ export default function MessageContent() {
             });
           }
         }
-
         setGetMessageGrouped(groupedAlter);
         dispatch(setMessageGrouped(groupedAlter));
       }

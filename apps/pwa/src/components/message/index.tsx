@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useSubscription } from 'urql';
 import { getListConversations } from 'queries/messages/getListConversations';
 // redux
-import { addConversation, setConversation } from 'redux/slices/wschat';
+import { setConversation } from 'redux/slices/wschat';
 import { useDispatch } from 'redux/store';
 
 import MessageContent from './content/MessageContent';

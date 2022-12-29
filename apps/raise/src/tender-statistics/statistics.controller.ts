@@ -1,20 +1,20 @@
-import {
-  Controller,
-  Get,
-  Query,
-  HttpStatus,
-} from '@nestjs/common';
+import { Controller, Get, Query, HttpStatus } from '@nestjs/common';
 import { baseResponseHelper } from '../commons/helpers/base-response-helper';
 import { TenderStatisticsService } from './statistics.service';
 
 @Controller('statistics')
 export class TenderStatisticsController {
-  constructor(private readonly tenderStatisticsService: TenderStatisticsService) {}
+  constructor(
+    private readonly tenderStatisticsService: TenderStatisticsService,
+  ) {}
 
   @Get('orders')
   async getAllStatistics(@Query() query: any) {
     const { from, to } = query;
-    const allStatistics = await this.tenderStatisticsService.getAllStatistics(new Date(from), new Date(to));
+    const allStatistics = await this.tenderStatisticsService.getAllStatistics(
+      new Date(from),
+      new Date(to),
+    );
     return baseResponseHelper(
       allStatistics,
       HttpStatus.OK,
@@ -25,7 +25,11 @@ export class TenderStatisticsController {
   @Get('partners')
   async getAllPartnersStatistics(@Query() query: any) {
     const { from, to } = query;
-    const allParntersStatistics = await this.tenderStatisticsService.getAllParntersStatistics(new Date(from), new Date(to));
+    const allParntersStatistics =
+      await this.tenderStatisticsService.getAllParntersStatistics(
+        new Date(from),
+        new Date(to),
+      );
     return baseResponseHelper(
       allParntersStatistics,
       HttpStatus.OK,
