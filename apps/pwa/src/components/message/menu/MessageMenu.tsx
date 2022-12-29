@@ -20,6 +20,7 @@ import { filterProjectTrack, filterSupervisor } from '../mock-data';
 import { addConversation, setActiveConversationId, setMessageGrouped } from 'redux/slices/wschat';
 import { useDispatch, useSelector } from 'redux/store';
 import { Conversation } from '../../../@types/wschat';
+import axiosInstance from 'utils/axios';
 
 const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
   const theme = useTheme();
@@ -47,6 +48,18 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
   };
 
   const handleCloseFilter = () => setOpen(false);
+
+  const handleReadMessages = async (conversationId: string) => {
+    await axiosInstance.patch(
+      '/tender/messages/toogle-read',
+      {
+        roomId: conversationId,
+      },
+      {
+        headers: { 'x-hasura-role': accountType! },
+      }
+    );
+  };
 
   function TabPanel(props: TabPanelProps) {
     const { children, value, index, ...other } = props;
@@ -99,6 +112,8 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
       ].includes(accountType) && (
         <MessageMenuButton
           onClick={() => {
+            dispatch(setActiveConversationId(null));
+            dispatch(setMessageGrouped([]));
             setModalState(true);
           }}
         />
@@ -160,6 +175,8 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
             ].includes(accountType) && (
               <MessageMenuButton
                 onClick={() => {
+                  dispatch(setActiveConversationId(null));
+                  dispatch(setMessageGrouped([]));
                   setModalState(true);
                 }}
               />
@@ -191,6 +208,7 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
                       data={newConversation.filter(
                         (el) => el.correspondance_category_id === 'EXTERNAL'
                       )}
+                      activeRole={accountType}
                     />
                   )}
                 </>
@@ -210,6 +228,8 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
             ].includes(accountType) && (
               <MessageMenuButton
                 onClick={() => {
+                  dispatch(setActiveConversationId(null));
+                  dispatch(setMessageGrouped([]));
                   setModalState(true);
                 }}
               />
@@ -241,6 +261,7 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
                       data={newConversation.filter(
                         (el) => el.correspondance_category_id === 'INTERNAL'
                       )}
+                      activeRole={accountType}
                     />
                   )}
                 </>
@@ -272,7 +293,11 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
               ))}
             </>
           ) : (
-            <>{!newConversation.length ? null : <MessageMenuItem data={newConversation} />}</>
+            <>
+              {!newConversation.length ? null : (
+                <MessageMenuItem data={newConversation} activeRole={accountType} />
+              )}
+            </>
           )}
         </Box>
       )}
@@ -292,9 +317,35 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
               activeRole={accountType}
               corespondence={corespondence}
               onSubmit={(v: Conversation) => {
-                setModalState(false);
+                const valueFromModal = v;
+                const valueNewConversation = newConversation;
+                let hasConversationId: string | undefined = undefined;
 
-                dispatch(addConversation(v));
+                if (valueNewConversation.length) {
+                  for (let index = 0; index < valueNewConversation.length; index++) {
+                    const messages = valueNewConversation[index].messages;
+                    const findReceiverId = messages.find(
+                      (el) =>
+                        el.owner_id === valueFromModal.messages[0].receiver_id ||
+                        el.receiver_id === valueFromModal.messages[0].receiver_id
+                    );
+
+                    if (findReceiverId) {
+                      hasConversationId = valueNewConversation[index].id;
+                    }
+                  }
+                }
+
+                if (hasConversationId) {
+                  dispatch(setActiveConversationId(hasConversationId));
+                  handleReadMessages(hasConversationId);
+                  setModalState(false);
+                } else {
+                  dispatch(addConversation(valueFromModal));
+                  dispatch(setActiveConversationId(valueFromModal.id!));
+                  handleReadMessages(valueFromModal.id!);
+                  setModalState(false);
+                }
               }}
             />
           </Box>

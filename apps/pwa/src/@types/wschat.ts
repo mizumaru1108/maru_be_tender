@@ -15,40 +15,52 @@ export type Participant = {
 };
 
 export type TextMessage = {
-  id: string;
-  content: string | null;
-  content_title: string | null;
-  content_type_id: string;
-  attachment: {
+  id?: string;
+  content?: string | null;
+  content_title?: string | null;
+  content_type_id?: string;
+  attachment?: {
     size: number;
     url: string;
     type: string;
   } | null;
-  created_at: Date | string;
+  created_at?: Date | string;
   updated_at?: Date | string;
   owner_id?: string | null;
   sender_role_as?: string | null;
+  sender?: {
+    employee_name: string | null;
+  } | null;
   receiver_id?: string | null;
   receiver_role_as?: string | null;
+  receiver?: {
+    employee_name: string | null;
+  } | null;
   read_status?: boolean;
 };
 
 export type ImageMessage = {
   id?: string;
-  content: string | null;
-  content_title: string | null;
-  content_type_id: string | null;
-  attachment: {
+  content?: string | null;
+  content_title?: string | null;
+  content_type_id?: string | null;
+  attachment?: {
     size: number;
     url: string;
     type: string;
   } | null;
-  created_at: Date | string;
+  created_at?: Date | string;
   updated_at?: Date | string;
   owner_id?: string | null;
   sender_role_as?: string | null;
+  sender?: {
+    employee_name: string | null;
+  } | null;
   receiver_id?: string | null;
   receiver_role_as?: string | null;
+  receiver?: {
+    employee_name: string | null;
+  } | null;
   read_status?: boolean;
 };
 
@@ -56,16 +68,11 @@ export type Message = TextMessage | ImageMessage;
 
 export type IMassageGrouped = {
   group_created: Date | string;
-  messages: (Message & {
-    sender?: Participant | null;
-    receiver?: Participant | null;
-  })[];
+  messages: Message[];
 };
 
 export type Conversation = {
   id?: string;
   correspondance_category_id: string;
   messages: Message[] | [];
-  participant1: Participant | null;
-  participant2: Participant | null;
 };

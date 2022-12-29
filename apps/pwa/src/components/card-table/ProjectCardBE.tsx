@@ -56,7 +56,6 @@ const ProjectCardBE = ({
   destination, // it refers to the url that I came from and the url that I have to go to
   mutate,
 }: ProjectCardPropsBE) => {
-  console.log(status);
   const daysSinceCreated = Math.ceil(
     (new Date().getTime() - created_at.getTime()) / (1000 * 3600 * 24)
   );

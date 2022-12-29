@@ -29,6 +29,7 @@ import Image from 'components/Image';
 // types
 import { NewMessageModalFormProps, NewMessageModalFormValues, UserDataTracks } from './types';
 import { Conversation } from '../../../@types/wschat';
+import moment from 'moment';
 
 export default function NewMessageModalForm({
   user,
@@ -138,22 +139,38 @@ export default function NewMessageModalForm({
     const hide_internal = corespondence === 'external' ? 1 : 0;
     const hide_external = corespondence === 'internal' ? 1 : 0;
 
+    const cLevel = [
+      'tender_project_manager',
+      'tender_consultant',
+      'tender_ceo',
+      'tender_finance',
+      'tender_cashier',
+    ].includes(activeRole);
+
     let params = {};
 
-    if (corespondence === 'external') {
+    if (cLevel) {
       params = {
-        hide_internal,
+        hide_external: 1,
         page: elem,
         limit: 6,
       };
     } else {
-      params = {
-        employee_path: selectedTrack,
-        hide_internal,
-        hide_external,
-        page: elem,
-        limit: 6,
-      };
+      if (corespondence === 'external') {
+        params = {
+          hide_internal,
+          page: elem,
+          limit: 6,
+        };
+      } else {
+        params = {
+          employee_path: selectedTrack,
+          hide_internal,
+          hide_external,
+          page: elem,
+          limit: 6,
+        };
+      }
     }
 
     setLoadingUser(true);
@@ -175,11 +192,11 @@ export default function NewMessageModalForm({
     }
   };
 
-  const findUserExternal = async () => {
+  const findUserInternal = async () => {
     setLoadingUser(true);
     const { data } = await axiosInstance.get('/tender-user/find-users', {
       params: {
-        hide_internal: 1,
+        hide_external: 1,
         limit: 6,
       },
       headers: { 'x-hasura-role': activeRole! },
@@ -209,7 +226,6 @@ export default function NewMessageModalForm({
       messages: [
         {
           content: null,
-          created_at: new Date().toISOString(),
           attachment: null,
           content_title: null,
           content_type_id: 'TEXT',
@@ -217,22 +233,17 @@ export default function NewMessageModalForm({
           owner_id: user?.id,
           receiver_role_as: `tender_${el.roles[0].user_type_id.toLowerCase()}`,
           sender_role_as: activeRole,
+          created_at: moment().toISOString(),
+          updated_at: moment().toISOString(),
+          read_status: false,
+          receiver: {
+            employee_name: el.employee_name,
+          },
+          sender: {
+            employee_name: user?.firstName,
+          },
         },
       ],
-      participant1: {
-        id: user?.id,
-        employee_name: user?.firstName,
-        roles: activeRole,
-        is_online: null,
-        last_login: new Date().toISOString(),
-      },
-      participant2: {
-        id: el.id,
-        employee_name: el.employee_name,
-        roles: `tender_${el.roles[0].user_type_id.toLowerCase()}`,
-        is_online: el.is_online,
-        last_login: el.last_login,
-      },
     };
 
     onSubmit(values);
@@ -248,7 +259,7 @@ export default function NewMessageModalForm({
       'tender_finance',
       'tender_cashier',
     ].includes(activeRole)
-      ? findUserExternal()
+      ? findUserInternal()
       : getAllProposalTracks();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

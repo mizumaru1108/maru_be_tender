@@ -11,6 +11,11 @@ export const getOneProposal = `query getOneProposal($id: String!) {
       employee_name
       email
       mobile_number
+      roles {
+        role {
+          title
+        }
+      }
       client_data {
         region
         governorate

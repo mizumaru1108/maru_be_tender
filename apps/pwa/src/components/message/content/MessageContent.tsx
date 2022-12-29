@@ -21,7 +21,7 @@ import useLocales from 'hooks/useLocales';
 // types
 import { IMassageGrouped, Message, Conversation } from '../../../@types/wschat';
 // redux
-import { setMessageGrouped, addMessageGrouped } from 'redux/slices/wschat';
+import { setMessageGrouped } from 'redux/slices/wschat';
 import { useSelector, useDispatch } from 'redux/store';
 // urql + subscription
 import { useSubscription } from 'urql';
@@ -81,102 +81,76 @@ export default function MessageContent() {
     current_user_selected_role: string;
     content: string;
   }) => {
-    await axiosInstance.post('/tender/messages/send', payload, {
+    let getPayload = payload;
+
+    getPayload.partner_selected_role !== 'tender_client'
+      ? (getPayload.correspondence_type_id = 'INTERNAL')
+      : (getPayload.correspondence_type_id = 'EXTERNAL');
+
+    await axiosInstance.post('/tender/messages/send', getPayload, {
       headers: { 'x-hasura-role': activeRole! },
     });
+  };
 
-    await axiosInstance.patch(
-      '/tender/messages/toogle-read',
-      {
-        roomId: activeConversationId,
-      },
-      {
-        headers: { 'x-hasura-role': activeRole! },
-      }
-    );
+  const initilizeGroupingMessage = () => {
+    let listMessageGrouped: IMassageGrouped[] = getMessageGrouped;
+    let findTodayMsg = listMessageGrouped.find((el) => el.group_created === 'Today');
+
+    if (findTodayMsg) {
+      const listMessage = findTodayMsg.messages;
+      const valuesMessage: Message = {
+        id: uuidv4(),
+        content_type_id: 'TEXT',
+        attachment: null,
+        content_title: null,
+        content: messageValue,
+        created_at: moment().toISOString(),
+        owner_id: user?.id,
+        sender_role_as: activeRole,
+        receiver_id:
+          listMessage[0].owner_id === user?.id
+            ? listMessage[0].receiver_id
+            : listMessage[0].owner_id,
+        receiver_role_as:
+          listMessage[0].owner_id === user?.id
+            ? listMessage[0].receiver_role_as
+            : listMessage[0].sender_role_as,
+        updated_at: moment().toISOString(),
+        read_status: false,
+      };
+
+      findTodayMsg = { ...findTodayMsg, messages: [...listMessage, valuesMessage] };
+
+      const concatValue = listMessageGrouped.map((item: IMassageGrouped) =>
+        item.group_created === findTodayMsg?.group_created ? findTodayMsg : item
+      );
+
+      listMessageGrouped = concatValue;
+
+      postMessage({
+        correspondence_type_id: corespondenceType,
+        content_type_id: valuesMessage.content_type_id!,
+        current_user_selected_role: activeRole!,
+        partner_id: valuesMessage.receiver_id!,
+        partner_selected_role: valuesMessage.receiver_role_as!,
+        content: messageValue,
+      });
+    }
+
+    setGetMessageGrouped(listMessageGrouped);
+    dispatch(setMessageGrouped(listMessageGrouped));
+
+    setMessageValue('');
   };
 
   const handleKeyupMsg = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && messageValue !== '') {
-      let listMessageGrouped: IMassageGrouped[] = getMessageGrouped;
-      let findTodayMsg = listMessageGrouped.find((el) => el.group_created === 'Today');
-
-      if (!findTodayMsg) {
-        const values: IMassageGrouped = {
-          group_created: 'Today',
-          messages: [
-            {
-              id: String(uuidv4()),
-              content_type_id: 'TEXT',
-              attachment: null,
-              content_title: null,
-              content: messageValue,
-              created_at: moment().toISOString(),
-              owner_id: user?.id,
-              sender_role_as: activeRole,
-              receiver_id:
-                listMessageGrouped[listMessageGrouped.length - 1].messages[
-                  listMessageGrouped.length - 1
-                ].receiver_id,
-              receiver_role_as:
-                listMessageGrouped[listMessageGrouped.length - 1].messages[
-                  listMessageGrouped.length - 1
-                ].receiver_role_as,
-            },
-          ],
-        };
-
-        const concatValueMessage: IMassageGrouped[] = [...listMessageGrouped, values];
-        listMessageGrouped = concatValueMessage;
-
-        postMessage({
-          correspondence_type_id: corespondenceType,
-          content_type_id: values.messages[0].content_type_id!,
-          current_user_selected_role: activeRole!,
-          partner_id: values.messages[0].receiver_id!,
-          partner_selected_role: values.messages[0].receiver_role_as!,
-          content: messageValue,
-        });
-      } else {
-        const listMessage = findTodayMsg.messages;
-        const valuesMessage: Message = {
-          id: uuidv4(),
-          content_type_id: 'TEXT',
-          attachment: null,
-          content_title: null,
-          content: messageValue,
-          created_at: moment().toISOString(),
-          owner_id: user?.id,
-          sender_role_as: activeRole,
-          receiver_id: listMessage[listMessage.length - 1].receiver_id,
-          receiver_role_as: listMessage[listMessage.length - 1].receiver_role_as,
-          updated_at: moment().toISOString(),
-          read_status: true,
-        };
-
-        findTodayMsg = { ...findTodayMsg, messages: [...listMessage, valuesMessage] };
-
-        const concatValue = listMessageGrouped.map((item: IMassageGrouped) =>
-          item.group_created === findTodayMsg?.group_created ? findTodayMsg : item
-        );
-
-        listMessageGrouped = concatValue;
-
-        postMessage({
-          correspondence_type_id: corespondenceType,
-          content_type_id: valuesMessage.content_type_id!,
-          current_user_selected_role: activeRole!,
-          partner_id: valuesMessage.receiver_id!,
-          partner_selected_role: valuesMessage.receiver_role_as!,
-          content: messageValue,
-        });
-      }
-
-      setGetMessageGrouped(listMessageGrouped);
-      dispatch(setMessageGrouped(listMessageGrouped));
-
-      setMessageValue('');
+      initilizeGroupingMessage();
     }
+  };
+
+  const handleClickSendMessage = async () => {
+    initilizeGroupingMessage();
   };
 
   useEffect(() => {
@@ -184,22 +158,32 @@ export default function MessageContent() {
       const findConversation: Conversation = conversations.find(
         (el) => el.id === activeConversationId
       )!;
+
       if (findConversation) {
         setCorespondenceType(findConversation.correspondance_category_id);
         setPartner({
-          partner_name: findConversation.participant2?.employee_name!,
-          roles: findConversation.participant2?.roles!,
+          partner_name:
+            findConversation.messages[0].owner_id === user?.id
+              ? findConversation.messages[0].receiver?.employee_name!
+              : findConversation.messages[0].sender?.employee_name!,
+          roles:
+            findConversation.messages[0].owner_id === user?.id
+              ? findConversation.messages[0].receiver_role_as!
+              : findConversation.messages[0].sender_role_as!,
         });
       }
       const messageContents = data.message;
       let grouped: IMassageGrouped[] = [];
+
       for (const msg of messageContents) {
         const date = moment(msg.created_at).isSame(moment(), 'day')
           ? 'Today'
           : moment(msg.created_at).isSame(moment().subtract(1, 'days'), 'day')
           ? 'Yesterday'
           : moment(msg.created_at).format('dddd DD/MM/YYYY');
-        const group = grouped.find((g) => g.group_created === date);
+
+        let group = grouped.find((g) => g.group_created === date)!;
+
         if (group) {
           group.messages.push(msg);
         } else {
@@ -209,6 +193,7 @@ export default function MessageContent() {
           });
         }
       }
+
       setGetMessageGrouped(grouped);
       dispatch(setMessageGrouped(grouped));
     } else {
@@ -218,11 +203,19 @@ export default function MessageContent() {
       if (findConversation) {
         setCorespondenceType(findConversation.correspondance_category_id);
         setPartner({
-          partner_name: findConversation.participant2?.employee_name!,
-          roles: findConversation.participant2?.roles!,
+          partner_name:
+            findConversation.messages[0].owner_id === user?.id
+              ? findConversation.messages[0].receiver?.employee_name!
+              : findConversation.messages[0].sender?.employee_name!,
+          roles:
+            findConversation.messages[0].owner_id === user?.id
+              ? findConversation.messages[0].receiver_role_as!
+              : findConversation.messages[0].sender_role_as!,
         });
+
         const messageContents = findConversation.messages;
         let groupedAlter: IMassageGrouped[] = [];
+
         for (const msg of messageContents) {
           const date = moment(msg.created_at).isSame(moment(), 'day')
             ? 'Today'
@@ -239,6 +232,7 @@ export default function MessageContent() {
             });
           }
         }
+
         setGetMessageGrouped(groupedAlter);
         dispatch(setMessageGrouped(groupedAlter));
       }
@@ -330,7 +324,14 @@ export default function MessageContent() {
                   {partner && `${partner.partner_name} - ${translate(partner.roles)}`}
                 </Typography>
               </Stack>
-              <Box sx={{ maxHeight: '525px', overflowY: 'scroll', whiteSpace: 'nowrap' }}>
+              <Box
+                sx={{
+                  maxHeight: '525px',
+                  overflowY: 'scroll',
+                  whiteSpace: 'nowrap',
+                  width: '100%',
+                }}
+              >
                 {!getMessageGrouped.length
                   ? null
                   : getMessageGrouped.map((el, i) => (
@@ -349,13 +350,14 @@ export default function MessageContent() {
                                 alignItems: user?.id === v.owner_id ? 'flex-start' : 'flex-end',
                                 justifyContent: 'flex-start',
                                 flexDirection: 'column',
+                                flexWrap: 'wrap',
                                 px: 1.5,
                                 mt: 2.5,
                                 width: '100%',
                               }}
                             >
                               {!v.content && !v.attachment ? null : (
-                                <>
+                                <Box sx={{ maxWidth: 400 }}>
                                   <Box
                                     sx={{
                                       backgroundColor:
@@ -368,7 +370,12 @@ export default function MessageContent() {
                                     }}
                                   >
                                     {v.content && v.content_type_id === 'TEXT' ? (
-                                      <Typography variant="body2">{v.content}</Typography>
+                                      <Typography
+                                        variant="body2"
+                                        sx={{ overflow: 'hidden', whiteSpace: 'normal' }}
+                                      >
+                                        {v.content}
+                                      </Typography>
                                     ) : (
                                       <>
                                         {v.attachment && v.content_type_id === 'IMAGE' ? (
@@ -412,7 +419,7 @@ export default function MessageContent() {
                                       alignItems: 'center',
                                     }}
                                   >
-                                    {moment(v.created_at).format('hh:mm:ss A')} -{' '}
+                                    {moment(v.created_at).format('LT')}.{' '}
                                     <Iconify
                                       icon="quill:checkmark-double"
                                       width={17}
@@ -425,7 +432,7 @@ export default function MessageContent() {
                                       }}
                                     />
                                   </Typography>
-                                </>
+                                </Box>
                               )}
                             </Box>
                           ))}
@@ -449,7 +456,7 @@ export default function MessageContent() {
                   margin: 'auto',
                 }}
               >
-                <IconButton>
+                <IconButton onClick={handleClickSendMessage}>
                   <Image
                     src="/assets/icons/send-message-icon.svg"
                     alt="logo"

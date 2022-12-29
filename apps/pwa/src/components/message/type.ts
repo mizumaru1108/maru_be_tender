@@ -32,12 +32,9 @@ export type IMessageMenuItem = {
 };
 
 export type IMenu = {
-  // internalData: correspondanceData[];
-  // externalData: correspondanceData[];
   accountType: string;
   user: AuthUser;
-  fetching: boolean;
-  // roomId: (id: string) => void;
+  fetching?: boolean;
 };
 
 export interface TabPanelProps {
