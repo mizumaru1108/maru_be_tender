@@ -135,6 +135,44 @@ export default function MessageContent() {
         partner_selected_role: valuesMessage.receiver_role_as!,
         content: messageValue,
       });
+    } else {
+      const values: IMassageGrouped = {
+        group_created: 'Today',
+        messages: [
+          {
+            id: String(uuidv4()),
+            content_type_id: 'TEXT',
+            attachment: null,
+            content_title: null,
+            content: messageValue,
+            created_at: moment().toISOString(),
+            owner_id: user?.id,
+            sender_role_as: activeRole,
+            receiver_id:
+              listMessageGrouped[0].messages[0].owner_id === user?.id
+                ? listMessageGrouped[0].messages[0].receiver_id
+                : listMessageGrouped[0].messages[0].owner_id,
+            receiver_role_as:
+              listMessageGrouped[0].messages[0].owner_id === user?.id
+                ? listMessageGrouped[0].messages[0].receiver_role_as
+                : listMessageGrouped[0].messages[0].sender_role_as,
+            updated_at: moment().toISOString(),
+            read_status: false,
+          },
+        ],
+      };
+
+      const concatValueMessage: IMassageGrouped[] = [...listMessageGrouped, values];
+      listMessageGrouped = concatValueMessage;
+
+      postMessage({
+        correspondence_type_id: corespondenceType,
+        content_type_id: values.messages[0].content_type_id!,
+        current_user_selected_role: activeRole!,
+        partner_id: values.messages[0].receiver_id!,
+        partner_selected_role: values.messages[0].receiver_role_as!,
+        content: messageValue,
+      });
     }
 
     setGetMessageGrouped(listMessageGrouped);
@@ -417,6 +455,8 @@ export default function MessageContent() {
                                       display: 'flex',
                                       flexDirection: 'row',
                                       alignItems: 'center',
+                                      justifyContent:
+                                        user?.id === v.owner_id ? 'flex-start' : 'flex-end',
                                     }}
                                   >
                                     {moment(v.created_at).format('LT')}.{' '}
