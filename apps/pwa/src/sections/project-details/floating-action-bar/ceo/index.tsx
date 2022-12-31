@@ -234,7 +234,7 @@ function FloatingActionBar() {
           onClose={handleCloseModal}
           onSubmit={handleApproval}
           action={{
-            actionLabel: 'رفض',
+            actionLabel: 'قبول',
             backgroundColor: 'background.paper',
             hoverColor: '#13B2A2',
           }}
