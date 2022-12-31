@@ -21,6 +21,8 @@ export type AuthState = {
   isInitialized: boolean;
   user: AuthUser;
   activeRole?: FusionAuthRoles;
+  token?: string | null;
+  refreshToken?: string | null;
 };
 
 export type JWTContextType = {
@@ -28,6 +30,8 @@ export type JWTContextType = {
   isInitialized: boolean;
   user: AuthUser;
   activeRole?: FusionAuthRoles;
+  token?: string | null;
+  refreshToken?: string | null;
   method: 'jwt';
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;

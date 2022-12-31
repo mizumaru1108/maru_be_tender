@@ -54,6 +54,13 @@ export interface Proposal {
     employee_name: string;
     email: string;
     mobile_number: string;
+    roles:
+      | {
+          role: {
+            title: string;
+          };
+        }[]
+      | [];
     client_data: {
       region: string; // Orign
       governorate: string; // the values of the orign

@@ -1,7 +1,7 @@
 import { Box, Button, Grid, Menu, MenuItem, Stack, useTheme } from '@mui/material';
 import Iconify from 'components/Iconify';
 import useLocales from 'hooks/useLocales';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams, useLocation } from 'react-router';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import React, { useState } from 'react';
@@ -17,6 +17,14 @@ import {
 import { UpdateAction } from '../../../../../@types/project-details';
 import NotesModal from 'components/notes-modal';
 
+//
+import { useDispatch, useSelector } from 'redux/store';
+import { addConversation, setActiveConversationId, setMessageGrouped } from 'redux/slices/wschat';
+import { Conversation } from '../../../../../@types/wschat';
+import uuidv4 from 'utils/uuidv4';
+import moment from 'moment';
+import axiosInstance from 'utils/axios';
+
 function FloatingActionBar() {
   const { id: pid } = useParams();
 
@@ -25,6 +33,7 @@ function FloatingActionBar() {
   const { enqueueSnackbar } = useSnackbar();
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [, accept] = useMutation(ProposalAcceptBySupervisor);
 
@@ -37,6 +46,10 @@ function FloatingActionBar() {
   const [action, setAction] = useState<UpdateAction>('');
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const dispatch = useDispatch();
+  const { proposal } = useSelector((state) => state.proposal);
+  const { conversations } = useSelector((state) => state.wschat);
 
   const open = Boolean(anchorEl);
 
@@ -157,6 +170,80 @@ function FloatingActionBar() {
     });
   };
 
+  const handleMessage = () => {
+    const proposalSubmitter = proposal.user;
+    const proposalStateRole = proposal.state;
+    const x = location.pathname.split('/');
+    const urlToMessage = `/${x[1]}/${x[2]}/messages`;
+
+    const valueToConversation: Conversation = {
+      id: uuidv4(),
+      correspondance_category_id: 'EXTERNAL',
+      messages: [
+        {
+          content: null,
+          attachment: null,
+          content_title: null,
+          content_type_id: 'TEXT',
+          receiver_id: proposalSubmitter.id,
+          owner_id: user?.id,
+          receiver_role_as: proposalSubmitter.roles[0].role.title,
+          sender_role_as: `tender_${proposalStateRole.toLowerCase()}`,
+          created_at: moment().toISOString(),
+          updated_at: moment().toISOString(),
+          read_status: false,
+          receiver: {
+            employee_name: proposalSubmitter.employee_name,
+          },
+          sender: {
+            employee_name: user?.firstName,
+          },
+        },
+      ],
+    };
+
+    const valueNewConversation = conversations;
+    let hasConversationId: string | undefined = undefined;
+
+    if (valueNewConversation.length) {
+      for (let index = 0; index < valueNewConversation.length; index++) {
+        const { messages } = valueNewConversation[index];
+        const findReceiverId = messages.find(
+          (el) =>
+            el.owner_id === valueToConversation.messages[0].receiver_id ||
+            el.receiver_id === valueToConversation.messages[0].receiver_id
+        );
+
+        if (findReceiverId) {
+          hasConversationId = valueNewConversation[index].id;
+        }
+      }
+    }
+
+    if (hasConversationId) {
+      dispatch(setActiveConversationId(hasConversationId));
+      handleReadMessages(hasConversationId);
+      navigate(urlToMessage);
+    } else {
+      dispatch(addConversation(valueToConversation));
+      dispatch(setActiveConversationId(valueToConversation.id!));
+      handleReadMessages(valueToConversation.id!);
+      navigate(urlToMessage);
+    }
+  };
+
+  const handleReadMessages = async (conversationId: string) => {
+    await axiosInstance.patch(
+      '/tender/messages/toogle-read',
+      {
+        roomId: conversationId,
+      },
+      {
+        headers: { 'x-hasura-role': `tender_${proposal.state.toLowerCase()}` },
+      }
+    );
+  };
+
   return (
     <>
       <Box
@@ -206,7 +293,8 @@ function FloatingActionBar() {
                 color="inherit"
                 endIcon={<Iconify icon="eva:message-circle-outline" />}
                 sx={{ flex: 1 }}
-                disabled={true}
+                // disabled={true}
+                onClick={handleMessage}
               >
                 {translate('partner_details.send_messages')}
               </Button>

@@ -277,19 +277,37 @@ export class TenderMessagesRepository {
     }
   }
 
-  async readAllMessagesByRoomId(roomId: string): Promise<boolean> {
+  async readAllMessagesByRoomId(
+    userId: string,
+    roomId: string,
+  ): Promise<number> {
     try {
-      await this.prismaService.message.updateMany({
+      const result = await this.prismaService.message.updateMany({
         where: {
           room_id: {
             equals: roomId,
+          },
+          room_chat: {
+            OR: [
+              {
+                participant1_user_id: {
+                  equals: userId,
+                },
+              },
+              {
+                participant2_user_id: {
+                  equals: userId,
+                },
+              },
+            ],
           },
         },
         data: {
           read_status: true,
         },
       });
-      return true;
+      // return true;
+      return result.count;
     } catch (error) {
       const theError = prismaErrorThrower(
         error,

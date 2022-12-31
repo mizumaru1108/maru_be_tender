@@ -18,7 +18,7 @@ import { EditScheduleRequestDto } from '../dtos/requests/edit-schedule-request.d
 import { EditScheduleResponse } from '../dtos/responses/edit-schedule-response.dto';
 import { TenderScheduleService } from '../services/tender-schedule.service';
 
-@Controller('tender-schedule')
+@Controller('tender/schedule')
 export class TenderScheduleController {
   constructor(private readonly tenderScheduleService: TenderScheduleService) {}
 

@@ -32,6 +32,7 @@ const initialState: ProposalItme = {
       employee_name: 'test',
       email: 'test',
       mobile_number: 'test',
+      roles: [],
       client_data: {
         region: 'test',
         governorate: 'test',
@@ -195,6 +196,7 @@ export const getProposal = (id: string) => async () => {
   try {
     dispatch(slice.actions.startLoading);
     const res = await graphQlAxiosInstance.post('', { query: getOneProposal, variables: { id } });
+
     dispatch(slice.actions.setProposal(res.data.data.proposal));
     dispatch(slice.actions.endLoading);
   } catch (error) {

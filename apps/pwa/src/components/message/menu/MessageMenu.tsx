@@ -14,27 +14,33 @@ import MessageMenuHeader from './MessageMenuHeader';
 import MessageMenuItem from './MessageMenuItem';
 // types
 import { IMenu, TabPanelProps } from '../type';
-import { UserDataTracks } from '../modal-form/types';
 // mock
 import { filterProjectTrack, filterSupervisor } from '../mock-data';
 // redux
-import { addConversation } from 'redux/slices/wschat';
+import { addConversation, setActiveConversationId, setMessageGrouped } from 'redux/slices/wschat';
 import { useDispatch, useSelector } from 'redux/store';
+import { Conversation } from '../../../@types/wschat';
+import axiosInstance from 'utils/axios';
 
 const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
   const theme = useTheme();
   const { translate } = useLocales();
   const dispatch = useDispatch();
   const { conversations } = useSelector((state) => state.wschat);
+
   const [modalState, setModalState] = useState(false);
   const [open, setOpen] = useState(false);
   const [valueTabItem, setValueTabItem] = useState(0);
   const [corespondence, setCorespondence] = useState('external');
 
+  const [newConversation, setNewConversation] = useState<Conversation[] | []>(conversations);
+
   const handleChangeTabsItem = (event: React.SyntheticEvent, newValue: number) => {
     setValueTabItem(newValue);
-
     newValue === 0 ? setCorespondence('external') : setCorespondence('internal');
+
+    dispatch(setActiveConversationId(null));
+    dispatch(setMessageGrouped([]));
   };
 
   const handleCloseModal = () => {
@@ -42,6 +48,18 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
   };
 
   const handleCloseFilter = () => setOpen(false);
+
+  const handleReadMessages = async (conversationId: string) => {
+    await axiosInstance.patch(
+      '/tender/messages/toogle-read',
+      {
+        roomId: conversationId,
+      },
+      {
+        headers: { 'x-hasura-role': accountType! },
+      }
+    );
+  };
 
   function TabPanel(props: TabPanelProps) {
     const { children, value, index, ...other } = props;
@@ -66,6 +84,12 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
     };
   }
 
+  useEffect(() => {
+    if (conversations.length) {
+      setNewConversation(conversations);
+    }
+  }, [conversations, newConversation]);
+
   return (
     <Stack display="flex" spacing={3} sx={{ margin: 2.5 }}>
       <MessageMenuHeader onClickFilter={() => setOpen(true)} />
@@ -88,6 +112,8 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
       ].includes(accountType) && (
         <MessageMenuButton
           onClick={() => {
+            dispatch(setActiveConversationId(null));
+            dispatch(setMessageGrouped([]));
             setModalState(true);
           }}
         />
@@ -124,8 +150,8 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
           }}
           aria-label="full width tabs example"
         >
-          <Tab label="External Corespondence" {...a11yProps(0)} />
-          <Tab label="Internal Corespondence" {...a11yProps(1)} />
+          <Tab label={translate('message_tab.external')} {...a11yProps(0)} />
+          <Tab label={translate('message_tab.internal')} {...a11yProps(1)} />
         </Tabs>
       )}
 
@@ -149,6 +175,8 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
             ].includes(accountType) && (
               <MessageMenuButton
                 onClick={() => {
+                  dispatch(setActiveConversationId(null));
+                  dispatch(setMessageGrouped([]));
                   setModalState(true);
                 }}
               />
@@ -174,12 +202,13 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
                 </>
               ) : (
                 <>
-                  {!conversations.filter((el) => el.correspondance_category_id === 'EXTERNAL')
+                  {!newConversation.filter((el) => el.correspondance_category_id === 'EXTERNAL')
                     .length ? null : (
                     <MessageMenuItem
-                      data={conversations.filter(
+                      data={newConversation.filter(
                         (el) => el.correspondance_category_id === 'EXTERNAL'
                       )}
+                      activeRole={accountType}
                     />
                   )}
                 </>
@@ -199,6 +228,8 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
             ].includes(accountType) && (
               <MessageMenuButton
                 onClick={() => {
+                  dispatch(setActiveConversationId(null));
+                  dispatch(setMessageGrouped([]));
                   setModalState(true);
                 }}
               />
@@ -224,12 +255,13 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
                 </>
               ) : (
                 <>
-                  {!conversations.filter((el) => el.correspondance_category_id === 'INTERNAL')
+                  {!newConversation.filter((el) => el.correspondance_category_id === 'INTERNAL')
                     .length ? null : (
                     <MessageMenuItem
-                      data={conversations.filter(
+                      data={newConversation.filter(
                         (el) => el.correspondance_category_id === 'INTERNAL'
                       )}
+                      activeRole={accountType}
                     />
                   )}
                 </>
@@ -261,7 +293,11 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
               ))}
             </>
           ) : (
-            <>{!conversations.length ? null : <MessageMenuItem data={conversations} />}</>
+            <>
+              {!newConversation.length ? null : (
+                <MessageMenuItem data={newConversation} activeRole={accountType} />
+              )}
+            </>
           )}
         </Box>
       )}
@@ -280,10 +316,36 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
               user={user}
               activeRole={accountType}
               corespondence={corespondence}
-              onSubmit={(v: any) => {
-                setModalState(false);
+              onSubmit={(v: Conversation) => {
+                const valueFromModal = v;
+                const valueNewConversation = newConversation;
+                let hasConversationId: string | undefined = undefined;
 
-                dispatch(addConversation(v));
+                if (valueNewConversation.length) {
+                  for (let index = 0; index < valueNewConversation.length; index++) {
+                    const { messages } = valueNewConversation[index];
+                    const findReceiverId = messages.find(
+                      (el) =>
+                        el.owner_id === valueFromModal.messages[0].receiver_id ||
+                        el.receiver_id === valueFromModal.messages[0].receiver_id
+                    );
+
+                    if (findReceiverId) {
+                      hasConversationId = valueNewConversation[index].id;
+                    }
+                  }
+                }
+
+                if (hasConversationId) {
+                  dispatch(setActiveConversationId(hasConversationId));
+                  handleReadMessages(hasConversationId);
+                  setModalState(false);
+                } else {
+                  dispatch(addConversation(valueFromModal));
+                  dispatch(setActiveConversationId(valueFromModal.id!));
+                  handleReadMessages(valueFromModal.id!);
+                  setModalState(false);
+                }
               }}
             />
           </Box>

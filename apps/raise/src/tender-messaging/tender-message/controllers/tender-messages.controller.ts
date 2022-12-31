@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Patch,
   Post,
   Put,
   Query,
@@ -65,17 +66,19 @@ export class TenderMessagesController {
   }
 
   @UseGuards(TenderJwtGuard)
-  @Put('toogle-read')
+  @Patch('toogle-read')
   async toogleRead(
+    @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: ToogleReadMessageDto,
-  ): Promise<BaseResponse<boolean>> {
+  ): Promise<BaseResponse<string>> {
     const res = await this.tenderMessagesService.readAllMessageByRoomId(
+      currentUser.id,
       request.roomId,
     );
     return baseResponseHelper(
-      res,
+      `${res} messages marked as read!`,
       HttpStatus.CREATED,
-      'Message sent successfully!',
+      'All messages in this room marked as read!',
     );
   }
 }

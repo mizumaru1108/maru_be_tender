@@ -1,3 +1,5 @@
+/* eslint-disable array-callback-return */
+
 import { Grid, Stack, Tab, Tabs } from '@mui/material';
 import React from 'react';
 import { useTheme } from '@mui/material/styles';

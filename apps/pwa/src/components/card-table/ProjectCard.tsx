@@ -66,7 +66,6 @@ const ProjectCard = ({
   const navigate = useNavigate();
   const location = useLocation();
   const { translate } = useLocales();
-  moment().locale('ar');
   const [_, updateAsigning] = useMutation(asignProposalToAUser);
 
   const onDeleteDraftClick = () => {

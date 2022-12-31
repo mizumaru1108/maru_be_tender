@@ -1,26 +1,56 @@
 // React
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 // @mui
 import { Typography, Box, useTheme } from '@mui/material';
 // icon
 import Iconify from '../../Iconify';
 // types
 import { Conversation } from '../../../@types/wschat';
-import { IMessageMenuItem } from '../type';
 // hooks
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
+// redux
+import { setActiveConversationId } from 'redux/slices/wschat';
+import { useDispatch, useSelector } from 'redux/store';
+// moment
+import moment from 'moment';
+import axiosInstance from 'utils/axios';
 
 type IPropsMessageItem = {
   data: Conversation[];
+  activeRole: string;
 };
 
-// export default function MessageMenuItem({ data, getRoomId }: IMessageMenuItem) {
-export default function MessageMenuItem({ data }: IPropsMessageItem) {
+export default function MessageMenuItem({ data, activeRole }: IPropsMessageItem) {
   const theme = useTheme();
+  const { user } = useAuth();
   const { currentLang, translate } = useLocales();
 
-  const [focusedIndex, setFocusedIndex] = useState<number | undefined>(undefined);
+  const [focusedItem, setFocusedItem] = useState<string | null>(null);
+  const { activeConversationId } = useSelector((state) => state.wschat);
+
+  // redux
+  const dispatch = useDispatch();
+
+  const handleFocusItem = (id: string) => {
+    dispatch(setActiveConversationId(id));
+
+    setFocusedItem(activeConversationId ? activeConversationId : null);
+
+    handleReadStatus(id);
+  };
+
+  const handleReadStatus = async (conversationId: string) => {
+    await axiosInstance.patch(
+      '/tender/messages/toogle-read',
+      {
+        roomId: conversationId,
+      },
+      {
+        headers: { 'x-hasura-role': activeRole! },
+      }
+    );
+  };
 
   return (
     <>
@@ -36,7 +66,7 @@ export default function MessageMenuItem({ data }: IPropsMessageItem) {
             borderRadius: 1,
             color: '#000',
             backgroundColor: {
-              ...(focusedIndex === index && {
+              ...(activeConversationId === item.id && {
                 transition: 'all 0.25s',
                 color: '#000',
                 backgroundColor: '#fff',
@@ -45,16 +75,14 @@ export default function MessageMenuItem({ data }: IPropsMessageItem) {
             '&:hover': {
               cursor: 'pointer',
               backgroundColor: theme.palette.grey[300],
-              ...(focusedIndex === index && {
+              ...(activeConversationId === item.id && {
                 transition: 'all 0.25s',
                 color: '#000',
                 backgroundColor: '#fff',
               }),
             },
           }}
-          onClick={() => {
-            setFocusedIndex(index);
-          }}
+          onClick={() => handleFocusItem(item.id!)}
         >
           <Iconify icon={'codicon:account'} color="#000" width={28} height={28} />
           <Box
@@ -71,7 +99,9 @@ export default function MessageMenuItem({ data }: IPropsMessageItem) {
                 pb: 0.25,
               }}
             >
-              {item.participant2?.employee_name} - {translate(item.participant2?.roles)}
+              {item.messages[0].owner_id === user?.id
+                ? item.messages[0].receiver?.employee_name
+                : item.messages[0].sender?.employee_name}
             </Typography>
             <Typography
               sx={{
@@ -81,9 +111,13 @@ export default function MessageMenuItem({ data }: IPropsMessageItem) {
               }}
             >
               {item.messages.length
-                ? item.messages[0].content
-                  ? `${item.messages[0].content}`
-                  : 'No message yet.'
+                ? item.messages[0].content_type_id === 'TEXT'
+                  ? item.messages[0].content
+                    ? item.messages[0].content.length > 50
+                      ? `${item.messages[0].content.slice(0, 50)} ...`
+                      : item.messages[0].content
+                    : ''
+                  : 'New Image Message'
                 : 'No message yet.'}
             </Typography>
 
@@ -93,7 +127,7 @@ export default function MessageMenuItem({ data }: IPropsMessageItem) {
                 color: '#8E8E8E',
               }}
             >
-              {new Date(item.messages[0].created_at).toLocaleString()}
+              {moment(item.messages[0].created_at).format('LLL')}
             </Typography>
           </Box>
         </Box>

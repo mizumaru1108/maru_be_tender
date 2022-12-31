@@ -122,7 +122,10 @@ export class TenderEventsGateway
     @ConnectedSocket() client: AuthSocket,
     @MessageBody() request: ToogleReadMessageDto,
   ) {
-    await this.tenderMessagesService.readAllMessageByRoomId(request.roomId);
+    await this.tenderMessagesService.readAllMessageByRoomId(
+      client.user.id,
+      request.roomId,
+    );
     this.server
       .to(request.roomId)
       .emit(

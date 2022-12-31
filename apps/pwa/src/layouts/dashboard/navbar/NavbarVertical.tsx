@@ -18,6 +18,9 @@ import { ReactComponent as Logo } from '../../../assets/logo.svg';
 import navConfig from './NavConfig';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
+// redux
+import { useDispatch } from 'redux/store';
+import { setConversation, setMessageGrouped, setActiveConversationId } from 'redux/slices/wschat';
 
 // ----------------------------------------------------------------------
 
@@ -44,6 +47,9 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const isDesktop = useResponsive('up', 'lg');
+
+  // redux
+  const dispatch = useDispatch();
 
   const role = activeRole!;
   const { isCollapse, collapseClick, collapseHover, onHoverEnter, onHoverLeave } =
@@ -86,6 +92,9 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
           display: 'inline-block',
         }}
         onClick={() => {
+          dispatch(setActiveConversationId(null));
+          dispatch(setConversation([]));
+          dispatch(setMessageGrouped([]));
           logout();
           navigate('/auth/login');
         }}

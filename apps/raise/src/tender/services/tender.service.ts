@@ -1,12 +1,23 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
-import { AllowedFileType } from '../commons/enums/allowed-filetype.enum';
-import { envLoadErrorHelper } from '../commons/helpers/env-loaderror-helper';
-import { BaseHashuraWebhookPayload } from '../commons/interfaces/base-hashura-webhook-payload';
-import { BunnyService } from '../libs/bunny/services/bunny.service';
-import { PrismaService } from '../prisma/prisma.service';
-import { UploadFilesDto } from '../tender-commons/dto/upload-files.dto';
+import { AllowedFileType } from '../../commons/enums/allowed-filetype.enum';
+import { envLoadErrorHelper } from '../../commons/helpers/env-loaderror-helper';
+import { BaseHashuraWebhookPayload } from '../../commons/interfaces/base-hashura-webhook-payload';
+import { BunnyService } from '../../libs/bunny/services/bunny.service';
+import { PrismaService } from '../../prisma/prisma.service';
+import { UploadFilesDto } from '../../tender-commons/dto/upload-files.dto';
+import {
+  appRoleMappers,
+  TenderFusionAuthRoles,
+} from '../../tender-commons/types';
+import { TenderRepository } from '../repositories/tender.repository';
 
 @Injectable()
 export class TenderService {
@@ -15,6 +26,7 @@ export class TenderService {
     private readonly bunnyService: BunnyService,
     private readonly prismaService: PrismaService,
     private readonly configService: ConfigService,
+    private tenderRepository: TenderRepository,
   ) {
     const environment = this.configService.get('APP_ENV');
     if (!environment) envLoadErrorHelper('APP_ENV');
@@ -97,5 +109,44 @@ export class TenderService {
     }
 
     return updatedUser;
+  }
+
+  /* inserting user selected roles */
+  async postInsertFollowUp(request: BaseHashuraWebhookPayload) {
+    // console.log('userid', request.event.session_variables['x-hasura-user-id']);
+
+    const userId = request.event.session_variables['x-hasura-user-id'];
+    if (!userId) {
+      throw new NotFoundException('User id is not found on session!');
+    }
+
+    const user = await this.tenderRepository.findUserById(userId);
+    // console.log('user', user);
+    if (!user) throw new NotFoundException('User not found on app!');
+
+    // console.log('role', request.event.session_variables['x-hasura-role']);
+    const selectedRole =
+      appRoleMappers[
+        request.event.session_variables[
+          'x-hasura-role'
+        ] as TenderFusionAuthRoles
+      ];
+    if (!selectedRole) throw new UnauthorizedException('Roles not found!');
+
+    // check if selected roles are exist on user.roles.user_type_id with indexof
+    const userRoles = user.roles.map((role) => role.user_type_id);
+    if (userRoles.indexOf(selectedRole) === -1) {
+      throw new UnauthorizedException(
+        'Seleceted role are not exist on user current roles!',
+      );
+    }
+
+    const updatedProposal = await this.tenderRepository.updateFollowUp(
+      request.event.data.new.id,
+      user.id,
+      selectedRole,
+    );
+
+    return updatedProposal;
   }
 }

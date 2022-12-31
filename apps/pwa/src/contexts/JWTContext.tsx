@@ -5,10 +5,6 @@ import { ActionMap, AuthState, AuthUser, JWTContextType } from '../@types/auth';
 import { FUSIONAUTH_API } from 'config';
 import { fusionAuthClient } from 'utils/fusionAuth';
 import { FusionAuthRoles } from '../@types/commons';
-// redux
-import { useDispatch, useSelector } from 'redux/store';
-import { setAuthenticated, setUser, setActiveRole } from 'redux/slices/auth';
-//
 
 enum Types {
   Initial = 'INITIALIZE',
@@ -23,15 +19,21 @@ type JWTAuthPayload = {
     isAuthenticated: boolean;
     user: AuthUser;
     activeRole?: FusionAuthRoles;
+    token?: string;
+    refreshToken?: string;
   };
   [Types.Login]: {
     user: any;
     activeRole?: FusionAuthRoles;
+    token?: string;
+    refreshToken?: string;
   };
   [Types.Logout]: undefined;
   [Types.Register]: {
     user: AuthUser;
     activeRole?: FusionAuthRoles;
+    token?: string;
+    refreshToken?: string;
   };
   [Types.Switch_Active_Role]: {
     activeRole?: FusionAuthRoles;
@@ -45,6 +47,8 @@ const initialState: AuthState = {
   isInitialized: false,
   user: null,
   activeRole: 'tender_client',
+  token: null,
+  refreshToken: null,
 };
 
 const JWTReducer = (state: AuthState, action: JWTActions) => {
@@ -55,6 +59,8 @@ const JWTReducer = (state: AuthState, action: JWTActions) => {
         isInitialized: true,
         user: action.payload.user,
         activeRole: action.payload.activeRole,
+        token: action.payload.token,
+        refreshToken: action.payload.refreshToken,
       };
     case 'LOGIN':
       return {
@@ -62,6 +68,8 @@ const JWTReducer = (state: AuthState, action: JWTActions) => {
         isAuthenticated: true,
         user: action.payload.user,
         activeRole: action.payload.activeRole,
+        token: action.payload.token,
+        refreshToken: action.payload.refreshToken,
       };
     case 'LOGOUT':
       return {
@@ -96,24 +104,26 @@ type AuthProviderProps = {
 function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(JWTReducer, initialState);
 
-  // const dispatchState = useDispatch();
-
   useEffect(() => {
     const initialize = async () => {
       try {
         const accessToken = localStorage.getItem('accessToken');
         const refreshToken = localStorage.getItem('refreshToken');
+
         if (accessToken && isValidToken(accessToken)) {
           setSession(accessToken, refreshToken);
           const user = (await fusionAuthClient.retrieveUserUsingJWT(accessToken)) as {
             response: { user: { registrations: Array<{ roles: Array<FusionAuthRoles> }> } };
           };
+
           dispatch({
             type: Types.Initial,
             payload: {
               isAuthenticated: true,
               user: user.response.user,
               activeRole: user.response.user.registrations[0].roles[0],
+              token: accessToken,
+              refreshToken: refreshToken!,
             },
           });
 
@@ -138,6 +148,8 @@ function AuthProvider({ children }: AuthProviderProps) {
                 isAuthenticated: true,
                 user: user.response.user,
                 activeRole: user.response.user.registrations[0].roles[0],
+                token: result.response.token,
+                refreshToken: result.response.refreshToken,
               },
             });
 
@@ -161,8 +173,6 @@ function AuthProvider({ children }: AuthProviderProps) {
               user: null,
             },
           });
-
-          // dispatchState(setAuthenticated(false));
         }
       } catch (err) {
         dispatch({
@@ -198,6 +208,8 @@ function AuthProvider({ children }: AuthProviderProps) {
       payload: {
         user,
         activeRole: response.response.user.registrations[0].roles[0],
+        token: accessToken,
+        refreshToken: refreshToken,
       },
     });
 

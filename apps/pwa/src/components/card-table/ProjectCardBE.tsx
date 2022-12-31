@@ -17,7 +17,6 @@ import useAuth from 'hooks/useAuth';
 import { asignProposalToAUser } from 'queries/commons/asignProposalToAUser';
 import { useMutation } from 'urql';
 import { deleteDraftProposal } from 'queries/client/deleteDraftProposal';
-import { Box } from '@mui/material';
 
 const inquiryStatusStyle = {
   CANCELED: { color: '#FF4842', backgroundColor: '#FF484229', title: 'الطلب ملغي' },
@@ -57,7 +56,6 @@ const ProjectCardBE = ({
   destination, // it refers to the url that I came from and the url that I have to go to
   mutate,
 }: ProjectCardPropsBE) => {
-  console.log(status);
   const daysSinceCreated = Math.ceil(
     (new Date().getTime() - created_at.getTime()) / (1000 * 3600 * 24)
   );

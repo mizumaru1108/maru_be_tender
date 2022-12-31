@@ -29,6 +29,7 @@ import Image from 'components/Image';
 // types
 import { NewMessageModalFormProps, NewMessageModalFormValues, UserDataTracks } from './types';
 import { Conversation } from '../../../@types/wschat';
+import moment from 'moment';
 
 export default function NewMessageModalForm({
   user,
@@ -96,51 +97,24 @@ export default function NewMessageModalForm({
   };
 
   const findUserTracks = async (employee_path: string) => {
-    const only_external = corespondence === 'external' ? 1 : 0;
-    const only_internal = corespondence === 'internal' ? 1 : 0;
+    const hide_internal = corespondence === 'external' ? 1 : 0;
+    const hide_external = corespondence === 'internal' ? 1 : 0;
 
-    setLoadingUser(true);
-    const { data } = await axiosInstance.get('/tender-user/find-users', {
-      params: {
-        employee_path: employee_path,
-        only_external,
-        only_internal,
+    let params = {};
+
+    if (corespondence === 'external') {
+      params = {
+        hide_internal,
         limit: 6,
-      },
-      headers: { 'x-hasura-role': activeRole! },
-    });
-
-    if (data.statusCode === 200) {
-      setListUser(data.data);
-      setPage(data.currentPage);
-      setTotalDataUser(data.total);
-      setHasNextPage(data.hasNextPage);
-
-      const pagesNumber = Math.ceil(data.total / data.limit);
-      setPageNumber(pagesNumber);
-
-      setLoadingUser(false);
+      };
+    } else {
+      params = {
+        employee_path: employee_path,
+        hide_internal,
+        hide_external,
+        limit: 6,
+      };
     }
-  };
-
-  const paginateUserList = async (elem: number) => {
-    const only_external = corespondence === 'external' ? 1 : 0;
-    const only_internal = corespondence === 'internal' ? 1 : 0;
-
-    let params: {
-      only_external: number;
-      only_internal: number;
-      page: number;
-      limit: number;
-      employee_path?: string;
-    } = {
-      only_external,
-      only_internal,
-      page: elem,
-      limit: 6,
-    };
-
-    if (selectedTrack !== '') params.employee_path = selectedTrack;
 
     setLoadingUser(true);
     const { data } = await axiosInstance.get('/tender-user/find-users', {
@@ -161,11 +135,68 @@ export default function NewMessageModalForm({
     }
   };
 
-  const findUserExternal = async () => {
+  const paginateUserList = async (elem: number) => {
+    const hide_internal = corespondence === 'external' ? 1 : 0;
+    const hide_external = corespondence === 'internal' ? 1 : 0;
+
+    const cLevel = [
+      'tender_project_manager',
+      'tender_consultant',
+      'tender_ceo',
+      'tender_finance',
+      'tender_cashier',
+    ].includes(activeRole);
+
+    let params = {};
+
+    if (cLevel) {
+      params = {
+        hide_external: 1,
+        page: elem,
+        limit: 6,
+      };
+    } else {
+      if (corespondence === 'external') {
+        params = {
+          hide_internal,
+          page: elem,
+          limit: 6,
+        };
+      } else {
+        params = {
+          employee_path: selectedTrack,
+          hide_internal,
+          hide_external,
+          page: elem,
+          limit: 6,
+        };
+      }
+    }
+
+    setLoadingUser(true);
+    const { data } = await axiosInstance.get('/tender-user/find-users', {
+      params,
+      headers: { 'x-hasura-role': activeRole! },
+    });
+
+    if (data.statusCode === 200) {
+      setListUser(data.data);
+      setPage(data.currentPage);
+      setTotalDataUser(data.total);
+      setHasNextPage(data.hasNextPage);
+
+      const pagesNumber = Math.ceil(data.total / data.limit);
+      setPageNumber(pagesNumber);
+
+      setLoadingUser(false);
+    }
+  };
+
+  const findUserInternal = async () => {
     setLoadingUser(true);
     const { data } = await axiosInstance.get('/tender-user/find-users', {
       params: {
-        only_external: 1,
+        hide_external: 1,
         limit: 6,
       },
       headers: { 'x-hasura-role': activeRole! },
@@ -189,28 +220,30 @@ export default function NewMessageModalForm({
   };
 
   const selectedUserMsg = async (el: UserDataTracks) => {
-    const values = {
+    const values: Conversation = {
+      id: uuidv4(),
       correspondance_category_id: corespondence.toUpperCase(),
       messages: [
         {
           content: null,
-          created_at: new Date().toISOString(),
+          attachment: null,
+          content_title: null,
+          content_type_id: 'TEXT',
+          receiver_id: el.id,
+          owner_id: user?.id,
+          receiver_role_as: `tender_${el.roles[0].user_type_id.toLowerCase()}`,
+          sender_role_as: activeRole,
+          created_at: moment().toISOString(),
+          updated_at: moment().toISOString(),
+          read_status: false,
+          receiver: {
+            employee_name: el.employee_name,
+          },
+          sender: {
+            employee_name: user?.firstName,
+          },
         },
       ],
-      participant1: {
-        id: user?.id,
-        employee_name: user?.firstName,
-        roles: activeRole,
-        is_online: null,
-        last_login: new Date().toISOString(),
-      },
-      participant2: {
-        id: el.id,
-        employee_name: el.employee_name,
-        roles: `tender_${el.roles[0].user_type_id.toLowerCase()}`,
-        is_online: el.is_online,
-        last_login: el.last_login,
-      },
     };
 
     onSubmit(values);
@@ -226,7 +259,7 @@ export default function NewMessageModalForm({
       'tender_finance',
       'tender_cashier',
     ].includes(activeRole)
-      ? findUserExternal()
+      ? findUserInternal()
       : getAllProposalTracks();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -346,7 +379,9 @@ export default function NewMessageModalForm({
                           <Typography variant="subtitle1" sx={{ mb: 0.5 }}>
                             {v.employee_name}
                           </Typography>
-                          <Typography variant="caption">{v.roles[0].user_type_id}</Typography>
+                          <Typography variant="caption">
+                            {translate(`tender_${v.roles[0].user_type_id.toLowerCase()}`)}
+                          </Typography>
                         </Box>
                       </Box>
                       <IconButton sx={{ color: theme.palette.grey[600] }}>

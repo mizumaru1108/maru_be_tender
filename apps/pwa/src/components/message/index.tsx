@@ -1,18 +1,10 @@
-import { Grid, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Page from 'components/Page';
 import useAuth from 'hooks/useAuth';
-import { useEffect, useState } from 'react';
-// urql + subscription
-import { useSubscription } from 'urql';
-import { getListConversations } from 'queries/messages/getListConversations';
-// redux
-import { addConversation } from 'redux/slices/wschat';
-import { useDispatch } from 'redux/store';
-
-// import MessageContent from './content/MessageContent';
+//
+import MessageContent from './content/MessageContent';
 import MessageMenu from './menu/MessageMenu';
-import { messageContent } from './mock-data';
 
 // config
 import { HEADER } from '../../config';
@@ -44,49 +36,15 @@ function MessagesPage() {
   const { activeRole, user } = useAuth();
   const role = activeRole!;
 
-  // urql + subscription
-  const [resultConversation] = useSubscription({ query: getListConversations });
-  const { data, fetching, error } = resultConversation;
-
-  // redux messages
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (!fetching && data) {
-      const { room_chat } = data;
-
-      room_chat.forEach((el: any) => {
-        const newValue = {
-          ...el,
-          participant1: {
-            ...el.participant1,
-            roles: el.participant1?.roles[0].role.title,
-          },
-          participant2: {
-            ...el.participant2,
-            roles: el.participant2?.roles[0].role.title,
-          },
-        };
-
-        dispatch(addConversation(newValue));
-      });
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, fetching]);
-
   return (
     <Page title="Message Page">
       <Stack direction="row" spacing={1} component="div" justifyContent="space-between">
         <ContentStyle>
-          <MessageMenu accountType={role} user={user} fetching={resultConversation.fetching} />
+          <MessageMenu accountType={role} user={user} />
         </ContentStyle>
-        {/* <ContentStyleMessage>
-          {room === '001' && <MessageContent data={Message} />}
-          {room === '002' && <MessageContent data={Message1} />}
-          {room === '003' && <MessageContent data={Message2} />}
-          {room === '004' && <MessageContent data={Message3} />}
-        </ContentStyleMessage> */}
+        <ContentStyleMessage>
+          <MessageContent />
+        </ContentStyleMessage>
       </Stack>
     </Page>
   );

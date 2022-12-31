@@ -6,7 +6,12 @@ import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helpe
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
 import { validateFileSize } from '../../../commons/utils/validate-file-size';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
-import { TenderFusionAuthRoles } from '../../../tender-commons/types';
+import {
+  appRoleMappers,
+  appRoleToFusionAuthRoles,
+  TenderAppRole,
+  TenderFusionAuthRoles,
+} from '../../../tender-commons/types';
 
 import { TenderUserRepository } from '../../../tender-user/user/repositories/tender-user.repository';
 import { TenderRoomChatRepository } from '../../tender-room-chat/repositories/tender-room-chat.repository';
@@ -54,6 +59,16 @@ export class TenderMessagesService {
 
     const sender = await this.tenderUserRepository.findUserById(senderId);
     if (!sender) throw new BadRequestException('Sender not found!');
+    let validUserRole = appRoleMappers[userRole as TenderFusionAuthRoles];
+    if (!validUserRole) {
+      throw new BadRequestException('You do not have this role!');
+    }
+    if (
+      sender.roles.map((role) => role.user_type_id).indexOf(validUserRole) ===
+      -1
+    ) {
+      throw new BadRequestException('You do not have this role!');
+    }
 
     const partner = await this.tenderUserRepository.findUserById(partner_id);
     if (!partner) throw new BadRequestException('Partner not found!');
@@ -61,6 +76,14 @@ export class TenderMessagesService {
     const partnerRole: string[] = partner.roles.map(
       (role) => role.user_type_id,
     );
+    let validPartnerRole =
+      appRoleMappers[partnerSelectedRole as TenderFusionAuthRoles];
+    if (!validPartnerRole) {
+      throw new BadRequestException('Partner does not have this role!');
+    }
+    if (partnerRole.indexOf(validPartnerRole) === -1) {
+      throw new BadRequestException('Your partner does not have this role!');
+    }
 
     if (
       (correspondanceType === 'INTERNAL' &&
@@ -239,7 +262,13 @@ export class TenderMessagesService {
     return response;
   }
 
-  async readAllMessageByRoomId(roomId: string): Promise<boolean> {
-    return await this.tenderMessagesRepository.readAllMessagesByRoomId(roomId);
+  async readAllMessageByRoomId(
+    userId: string,
+    roomId: string,
+  ): Promise<number> {
+    return await this.tenderMessagesRepository.readAllMessagesByRoomId(
+      userId,
+      roomId,
+    );
   }
 }

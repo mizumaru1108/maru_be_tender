@@ -22,7 +22,7 @@ import { TenderAppointmentService } from '../services/tender-appointment.service
 import { FastifyReply } from 'fastify';
 import { GoogleOAuth2Guard } from '../../../tender-auth/guards/google-auth.guard';
 
-@Controller('tender-appointment')
+@Controller('tender/appointment')
 export class TenderAppointmentController {
   constructor(
     private readonly tenderAppointmentService: TenderAppointmentService,

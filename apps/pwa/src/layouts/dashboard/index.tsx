@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
@@ -14,6 +14,13 @@ import DashboardHeader from './header';
 import NavbarVertical from './navbar/NavbarVertical';
 import NavbarHorizontal from './navbar/NavbarHorizontal';
 import CheakClientActivation from 'guards/CheakClientActivation';
+// urql + subscription
+import { useSubscription } from 'urql';
+import { getListConversations } from 'queries/messages/getListConversations';
+// redux
+import { setConversation } from 'redux/slices/wschat';
+import { useDispatch } from 'redux/store';
+import { Conversation } from '../../@types/wschat';
 
 // ----------------------------------------------------------------------
 
@@ -55,6 +62,26 @@ export default function DashboardLayout() {
   const [open, setOpen] = useState(false);
 
   const verticalLayout = themeLayout === 'vertical';
+
+  // urql + subscription
+  const [resultConversation] = useSubscription({ query: getListConversations });
+  const { data, fetching, error } = resultConversation;
+
+  // redux messages
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!fetching && data) {
+      const { room_chat } = data;
+
+      const newArr = room_chat.map((el: Conversation) => ({
+        ...el,
+      }));
+
+      dispatch(setConversation(newArr));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, fetching]);
 
   if (verticalLayout) {
     return (
