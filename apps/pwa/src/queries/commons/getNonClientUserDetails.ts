@@ -1,7 +1,8 @@
-export const getNonClientDetails = `query getNonClientDetails($userId: String!) {  
-  user(where: {id: {_eq: $userId}}) {    
+export const getNonClientDetails = `query getNonClientDetails($userId: String = "") {
+  profile: user_by_pk(id: $userId) {
     email
-    mobileNumber: mobile_number
-  }   
+    mobile_number
+    employee_name
+  }
 }
 `;

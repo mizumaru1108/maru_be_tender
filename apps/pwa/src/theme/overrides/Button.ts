@@ -2,9 +2,27 @@ import { Theme } from '@mui/material/styles';
 
 // ----------------------------------------------------------------------
 
+declare module '@mui/material/Button' {
+  interface ButtonPropsVariantOverrides {
+    b1: true;
+  }
+}
+
 export default function Button(theme: Theme) {
   return {
     MuiButton: {
+      variants: [
+        {
+          props: { variant: 'b1' },
+          style: {
+            border: `1px solid ${theme.palette.grey[500_32]}`,
+            backgroundColor: '#0f0',
+            '&:hover': {
+              backgroundColor: '#f0f',
+            },
+          },
+        },
+      ],
       styleOverrides: {
         root: {
           '&:hover': {

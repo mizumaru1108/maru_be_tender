@@ -1,4 +1,4 @@
-import { BasePaginateResponse } from "../../../../@types/commons";
+import { BasePaginateResponse } from '../../../../@types/commons';
 
 export interface RejectionList extends BasePaginateResponse {
   id: string;
@@ -23,7 +23,7 @@ export interface RejectionListTableColumn {
 }
 
 export interface RejectionListTableProps {
-  data: RejectionList[];
+  // data: RejectionList[];
   headerCell: RejectionListTableHeader[];
   headline?: string;
   isLoading?: boolean;

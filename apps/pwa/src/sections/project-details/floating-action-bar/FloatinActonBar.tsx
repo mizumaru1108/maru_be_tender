@@ -6,6 +6,7 @@ import CeoFloatingActionBar from './ceo';
 import ModeratorActionBar from './moderator';
 import { useSelector } from 'redux/store';
 import ConsultantFloatingActionBar from './consultant';
+import RejectProjectsActionBar from './reject-project';
 
 function FloatinActonBar() {
   const { actionType } = useParams();
@@ -43,6 +44,10 @@ function FloatinActonBar() {
         ['main', 'supervisor-revision'].includes(activeTap) &&
         actionType === 'show-details' &&
         ['tender_consultant'].includes(role) && <ConsultantFloatingActionBar />}
+
+      {activeTap &&
+        actionType === 'reject-project' &&
+        ['tender_ceo', 'tender_project_manager'].includes(role) && <RejectProjectsActionBar />}
     </>
   );
 }

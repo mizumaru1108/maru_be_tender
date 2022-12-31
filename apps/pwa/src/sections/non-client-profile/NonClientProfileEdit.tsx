@@ -1,7 +1,7 @@
 import { Container } from '@mui/material';
 import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
-import { ClientProfileEditForm } from 'sections/client/profile';
+import NonClientProfileEditForm from './NonClientProfileEditForm';
 
 export default function NonClientProfileEdit() {
   const ContentStyle = styled('div')(({ theme }) => ({
@@ -17,7 +17,7 @@ export default function NonClientProfileEdit() {
     <Page title="Profile Editing">
       <Container>
         <ContentStyle>
-          <ClientProfileEditForm />
+          <NonClientProfileEditForm />
         </ContentStyle>
       </Container>
     </Page>

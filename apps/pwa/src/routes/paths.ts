@@ -103,6 +103,7 @@ export const PATH_PROJECT_MANAGER = {
   portal_reports: path(ROOTS_PROJECT_MANAGER, '/dashboard/portal-reports'),
   messages: path(ROOTS_PROJECT_MANAGER, '/dashboard/messages'),
   appointments_with_partners: path(ROOTS_PROJECT_MANAGER, '/dashboard/appointments-with-partners'),
+  rejection_list: path(ROOTS_PROJECT_MANAGER, '/dashboard/rejection-list'),
 };
 
 export const PATH_MODERATOR = {

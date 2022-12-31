@@ -322,6 +322,11 @@ const navConfig = {
           icon: ICONS.tender_project_manager.previous_funding_requests,
         },
         {
+          title: 'rejection_list',
+          path: PATH_PROJECT_MANAGER.rejection_list,
+          icon: ICONS.tender_ceo.rejection_list,
+        },
+        {
           title: 'exchange_permission',
           path: PATH_PROJECT_MANAGER.exchange_permission,
           icon: ICONS.tender_project_manager.exchange_permission,

@@ -3,32 +3,28 @@ import { styled } from '@mui/material/styles';
 import { Container } from '@mui/system';
 import Page from 'components/Page';
 import useResponsive from 'hooks/useResponsive';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
-
+import { useLocation, useNavigate } from 'react-router';
 import { useQuery } from 'urql';
 import { role_url_map } from '../../@types/commons';
-import { UserProfileDetails } from '../../@types/user';
-
 import useAuth from '../../hooks/useAuth';
 import useLocales from '../../hooks/useLocales';
 import { getNonClientDetails } from '../../queries/commons/getNonClientUserDetails';
 
 export default function NonClientProfile() {
   const { translate } = useLocales();
+
+  const location = useLocation();
+
+  const pathRole = location.pathname.split('/')[1];
+
   const { user, activeRole } = useAuth();
+
   const role = activeRole!;
-  const [profile, setProfile] = useState<UserProfileDetails>({
-    firstName: '',
-    lastName: '',
-    address: '',
-    region: '',
-    email: '',
-    phoneNumber: '',
-  });
 
   const navigate = useNavigate();
+
   const isMobile = useResponsive('down', 'sm');
+
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -39,27 +35,17 @@ export default function NonClientProfile() {
   }));
 
   const userId = user?.id;
-  const [result, reexecuteGetOne] = useQuery({
+
+  const [{ data, fetching, error }, mutate] = useQuery({
     query: getNonClientDetails,
     variables: {
       userId,
     },
   });
 
-  // get error, fetching, data from result
-  const { data, fetching, error } = result;
+  if (fetching) return <>... Loading</>;
 
-  useEffect(() => {
-    setProfile({
-      firstName: user?.fullName || 'N/A',
-      lastName: user?.lastName || 'N/A',
-      address: data?.user[0].address || 'N/A',
-      region: data?.user[0].region || 'N/A',
-      email: user?.email || 'N/A',
-      phoneNumber: data?.user[0].mobileNumber || 'N/A',
-    });
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  if (error) return <>.... somthing went wrong</>;
 
   return (
     <Page title={translate('user_profile.label.page_title')}>
@@ -106,8 +92,7 @@ export default function NonClientProfile() {
                 height: '45px',
                 fontSize: isMobile ? '10px' : '15px',
               }}
-              onClick={() => navigate('/client/my-profile/edit')}
-              disabled
+              onClick={() => navigate(`/${pathRole}/my-profile/edit`)}
             >
               {translate('user_profile.label.edit_button')}
             </Button>
@@ -123,18 +108,7 @@ export default function NonClientProfile() {
                   <Typography sx={{ fontSize: '12px' }}>
                     {translate('user_profile.fields.first_name')}
                   </Typography>
-                  <Typography sx={{ mb: '15px' }}>{profile.firstName || 'N/A'}</Typography>
-                  <Typography sx={{ fontSize: '12px' }}>
-                    {translate('user_profile.fields.address')}
-                  </Typography>
-                  <Typography>{profile.address || 'N/A'}</Typography>
-                </Stack>
-
-                <Stack direction="column">
-                  <Typography sx={{ fontSize: '12px' }}>
-                    {translate('user_profile.fields.last_name')}
-                  </Typography>
-                  <Typography sx={{ mb: '15px' }}>{profile.lastName || 'N/A'}</Typography>
+                  <Typography sx={{ mb: '15px' }}>{data.profile.employee_name || 'N/A'}</Typography>
                 </Stack>
               </Stack>
             </Grid>
@@ -145,24 +119,21 @@ export default function NonClientProfile() {
               </Typography>
               <Stack direction="row" gap={3} justifyContent="space-between" sx={{ mb: '15px' }}>
                 <Stack direction="column">
-                  <Typography sx={{ mb: '15px' }}>
-                    {translate('user_profile.fields.region')}
-                  </Typography>
-                  <Typography sx={{ mb: '15px' }}>{profile.region || 'N/A'}</Typography>
-                </Stack>
-
-                <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>
                     {translate('user_profile.fields.email')}
                   </Typography>
-                  <Typography sx={{ mb: '15px' }}>{profile.email || 'N/A'}</Typography>
+                  <Typography sx={{ mb: '15px' }}>{data.profile.email || 'N/A'}</Typography>
                 </Stack>
 
                 <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>
                     {translate('user_profile.fields.phone_number')}
                   </Typography>
-                  <Typography sx={{ mb: '15px' }}>{profile.phoneNumber || 'N/A'}</Typography>
+                  <Typography sx={{ mb: '15px' }}>{data.profile.mobile_number || 'N/A'}</Typography>
+                </Stack>
+                <Stack direction="column">
+                  <Typography sx={{ fontSize: '12px' }}>كلمة السر</Typography>
+                  <Typography sx={{ mb: '15px' }}>***********</Typography>
                 </Stack>
               </Stack>
             </Grid>

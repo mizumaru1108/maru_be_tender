@@ -10,6 +10,7 @@ import { PATH_AUTH } from '../../routes/paths';
 import Page from '../../components/Page';
 // sections
 import { ResetPasswordForm } from '../../sections/auth/reset-password';
+import useLocales from 'hooks/useLocales';
 
 // ----------------------------------------------------------------------
 
@@ -26,6 +27,8 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function ResetPassword() {
+  const { translate } = useLocales();
+
   return (
     <Page title="Reset Password">
       <LogoOnlyLayout />
@@ -33,10 +36,12 @@ export default function ResetPassword() {
       <Container>
         <ContentStyle sx={{ textAlign: 'center' }}>
           <Typography variant="h3" paragraph>
+            {translate('forget_password')}
             Forgot your password?
           </Typography>
 
           <Typography sx={{ color: 'text.secondary', mb: 5 }}>
+            {translate('forget_password_details')}
             Please enter the email address associated with your account and We will email you a link
             to reset your password.
           </Typography>
@@ -44,6 +49,7 @@ export default function ResetPassword() {
           <ResetPasswordForm />
 
           <Button fullWidth size="large" component={RouterLink} to={PATH_AUTH.login} sx={{ mt: 1 }}>
+            {translate('back')}
             Back
           </Button>
         </ContentStyle>

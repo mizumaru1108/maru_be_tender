@@ -43,6 +43,8 @@ export default function useTable(props?: Props) {
 
   const [selected, setSelected] = useState<string[]>(props?.defaultSelected || []);
 
+  const [total, setTotal] = useState<number>(0);
+
   const onSort = (id: string) => {
     const isAsc = orderBy === id && order === 'asc';
     if (id !== '') {
@@ -109,6 +111,9 @@ export default function useTable(props?: Props) {
     onChangePage,
     onChangeDense,
     onChangeRowsPerPage,
+    //
+    total,
+    setTotal,
   };
 }
 

@@ -2,8 +2,7 @@ import { pxToRem, responsiveFontSizes } from '../utils/getFontValue';
 
 // ----------------------------------------------------------------------
 
-const FONT_PRIMARY = "'Cairo', sans-serif"; // Google Font
-// const FONT_SECONDARY = 'CircularStd, sans-serif'; // Local Font
+const FONT_PRIMARY = "'Cairo', sans-serif";
 
 const typography = {
   fontFamily: FONT_PRIMARY,

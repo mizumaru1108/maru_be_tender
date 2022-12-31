@@ -13,7 +13,7 @@ type Props = IProps & TextFieldProps;
 
 export default function RHFTextField({ name, ...other }: Props) {
   const { control, watch } = useFormContext();
-  let project_beneficiaries = ''; //= watch('project_beneficiaries') ?? '';
+  let project_beneficiaries = '';
   let condition = false;
   if (name === 'project_beneficiaries_specific_type') {
     project_beneficiaries = watch('project_beneficiaries');
