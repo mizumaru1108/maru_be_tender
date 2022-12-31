@@ -6,7 +6,6 @@ import Concessional from './Concessional';
 import Initiatives from './Initiatives';
 import Mosques from './Mosques';
 import DashboardProjectManagement from './ProjectManagement';
-import { Button } from '@mui/material';
 const dailyStatistic = [
   {
     subtitle: 'الميزانية الكلية للمؤسسة',
