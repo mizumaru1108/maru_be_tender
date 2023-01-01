@@ -58,14 +58,11 @@ export const financeRoute = {
       children: [
         { element: <Navigate to="/finance/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainFinance /> },
+        { path: 'amandement-request/:id', element: <AmandementRequest /> },
         {
           path: 'incoming-exchange-permission-requests',
           children: [
             { path: '', element: <IncomingExchangePermissionRequestsFinance /> },
-            {
-              path: ':id/amandementRequest',
-              element: <AmandementRequest />,
-            },
             {
               path: ':id/:actionType',
               element: <ProjectDetails />,

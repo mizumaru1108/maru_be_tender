@@ -50,15 +50,15 @@ export const ceoRoute = {
       children: [
         { element: <Navigate to="/ceo/dashboard/app" replace />, index: true },
         {
+          path: 'amandment-request/:id',
+          element: <AmandementRequest />,
+        },
+        {
           path: 'app',
           children: [
             {
               path: '',
               element: <MainCeoPage />,
-            },
-            {
-              path: ':id/amandementRequest',
-              element: <AmandementRequest />,
             },
             {
               path: ':id/:actionType',

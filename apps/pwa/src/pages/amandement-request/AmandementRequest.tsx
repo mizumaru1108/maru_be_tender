@@ -27,6 +27,7 @@ import { useEffect } from 'react';
 import { PATH_ACCOUNTS_MANAGER } from 'routes/paths';
 import { BaseAmandementRequest } from './types';
 import useLocales from '../../hooks/useLocales';
+import { LoadingButton } from '@mui/lab';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -45,21 +46,19 @@ type ValueMapper = {
   };
 };
 
-// export default function AmandementRequest({ onSubmit, children }: AmandementRequestProps) {
 export default function AmandementRequest() {
   const { currentLang, translate } = useLocales();
 
   const { activeRole } = useAuth();
+
   const role = activeRole!;
 
-  const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
 
-  // Routes
   const { id } = useParams();
+
   const navigate = useNavigate();
 
-  // Note Amandment Request
   const sendNotesSchema = Yup.object().shape({
     notes: Yup.string().required('Notes messages is required'),
   });
@@ -78,111 +77,45 @@ export default function AmandementRequest() {
     formState: { isSubmitting },
   } = methods;
 
-  // use effect to list params
-  useEffect(() => {
-    console.log('params', id);
-    console.log('role', role);
-  }, [id, role]);
-
-  const valueMapper: ValueMapper = {
-    cluster_admin: {
-      page_name: 'Amandement Request',
-      headline: 'Amandement Request',
-      sub_headline: translate('proposal_amandement.moderator.headline'),
-    },
-    tender_accounts_manager: {
-      page_name: 'Tender Accounts Manager',
-      headline: 'Tender Accounts Manager',
-      sub_headline: translate('proposal_amandement.moderator.headline'),
-    },
-    tender_admin: {
-      page_name: 'Tender Admin',
-      headline: 'Tender Admin',
-      sub_headline: translate('proposal_amandement.moderator.headline'),
-    },
-    tender_ceo: {
-      page_name: translate('proposal_amandement.ceo.page_name'),
-      headline: translate('proposal_amandement.ceo.headline'),
-      sub_headline: translate('proposal_amandement.ceo.sub_headline'),
-    },
-    tender_cashier: {
-      page_name: 'Tender Cashier',
-      headline: 'Tender Cashier',
-      sub_headline: translate('proposal_amandement.moderator.headline'),
-    },
-    tender_client: {
-      page_name: 'Tender Client',
-      headline: 'Tender Client',
-      sub_headline: translate('proposal_amandement.moderator.headline'),
-    },
-    tender_consultant: {
-      page_name: 'Tender Consultant',
-      headline: 'Tender Consultant',
-      sub_headline: translate('proposal_amandement.moderator.headline'),
-    },
-    tender_finance: {
-      page_name: translate('proposal_amandement.moderator.headline'),
-      headline: translate('proposal_amandement.moderator.headline'),
-      sub_headline: translate('proposal_amandement.moderator.headline'),
-    },
-    tender_moderator: {
-      page_name: translate('proposal_amandement.moderator.page_name'),
-      headline: translate('proposal_amandement.moderator.headline'),
-      sub_headline: translate('proposal_amandement.moderator.sub_headline'),
-    },
-    tender_project_manager: {
-      page_name: 'Tender Project Manager',
-      headline: 'Tender Project Manager',
-      sub_headline: translate('proposal_amandement.moderator.headline'),
-    },
-    tender_project_supervisor: {
-      page_name: 'Tender Project Supervisor',
-      headline: 'Tender Project Supervisor',
-      sub_headline: translate('proposal_amandement.moderator.headline'),
-    },
+  const onSubmit = (data: BaseAmandementRequest) => {
+    console.log(data.notes);
   };
-
   return (
-    <Page title={valueMapper[role].page_name}>
+    <Page title={translate(`proposal_amandement.${role}.page_name`)}>
       <Container>
         <ContentStyle>
-          <Stack
-            spacing={4}
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            component="div"
-            sx={{ width: '100%' }}
-          >
-            <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-              <Button
-                color="inherit"
-                variant="contained"
-                onClick={() => navigate(-1)}
-                sx={{ padding: 1, minWidth: 25, minHeight: 25, mr: 3 }}
-              >
-                <Iconify
-                  icon={
-                    currentLang.value === 'en'
-                      ? 'eva:arrow-ios-back-outline'
-                      : 'eva:arrow-ios-forward-outline'
-                  }
-                  width={25}
-                  height={25}
-                />
-              </Button>
-              <Box>
-                <Typography variant="h4">{valueMapper[role].headline}</Typography>
-                <Typography variant="subtitle1" component="p" sx={{ color: '#93A3B0' }}>
-                  {valueMapper[role].sub_headline}
-                </Typography>
-              </Box>
+          <Box>
+            <Button
+              color="inherit"
+              variant="contained"
+              onClick={() => navigate(-1)}
+              sx={{ padding: 2, minWidth: 35, minHeight: 35, mr: 3 }}
+            >
+              <Iconify
+                icon={
+                  currentLang.value === 'en'
+                    ? 'eva:arrow-ios-back-outline'
+                    : 'eva:arrow-ios-forward-outline'
+                }
+                width={25}
+                height={25}
+              />
+            </Button>
+          </Box>
+          <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+            <Box>
+              <Typography variant="h4">
+                {translate(`proposal_amandement.${role}.headline`)}
+              </Typography>
+              <Typography variant="subtitle1" component="p" sx={{ color: '#93A3B0' }}>
+                {translate(`proposal_amandement.${role}.sub_headline`)}
+              </Typography>
             </Box>
-          </Stack>
+          </Box>
           <Divider sx={{ mb: 4 }} />
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <FormProvider methods={methods}>
+              <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
                 <RHFTextArea
                   name="notes"
                   label={translate('account_manager.partner_details.form.amndreq_label')}
@@ -199,18 +132,18 @@ export default function AmandementRequest() {
                   spacing={2}
                   component="div"
                 >
-                  <Button
+                  <LoadingButton
                     type="submit"
                     variant="contained"
                     endIcon={<Iconify icon="eva:checkmark-outline" />}
                     disabled={isSubmitting}
                   >
                     {translate('account_manager.partner_details.btn_amndreq_send_request')}
-                  </Button>
+                  </LoadingButton>
                   <Button
                     variant="contained"
                     endIcon={<Iconify icon="eva:diagonal-arrow-right-up-outline" />}
-                    sx={{ backgroundColor: '#000000' }}
+                    sx={{ backgroundColor: '#000000', ':hover': { backgroundColor: '#000' } }}
                     onClick={() => navigate(PATH_ACCOUNTS_MANAGER.infoUpdateRequest)}
                   >
                     {translate('account_manager.partner_details.btn_amndreq_back')}

@@ -21,6 +21,9 @@ const NonClientProfileEdit = Loadable(
   lazy(() => import('sections/non-client-profile/NonClientProfileEdit'))
 );
 const Searching = Loadable(lazy(() => import('pages/searching')));
+const AmandementRequest = Loadable(
+  lazy(() => import('pages/amandement-request/AmandementRequest'))
+);
 
 export const cashierRoute = {
   path: 'cashier',
@@ -55,6 +58,7 @@ export const cashierRoute = {
       children: [
         { element: <Navigate to="/cashier/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainCashier /> },
+        { path: 'amandement-request/:id', element: <AmandementRequest /> },
         {
           path: 'incoming-exchange-permission-requests',
           children: [

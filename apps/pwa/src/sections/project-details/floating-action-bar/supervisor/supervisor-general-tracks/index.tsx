@@ -14,7 +14,7 @@ import {
   ProposalAcceptBySupervisor,
   ProposalRejectBySupervisor,
 } from 'queries/project-supervisor/ProposalAcceptBySupervisor';
-import { UpdateAction } from '../../../../../@types/project-details';
+import { UpdateAction, PendingRequest } from '../../../../../@types/project-details';
 import NotesModal from 'components/notes-modal';
 
 //
@@ -24,6 +24,7 @@ import { Conversation } from '../../../../../@types/wschat';
 import uuidv4 from 'utils/uuidv4';
 import moment from 'moment';
 import axiosInstance from 'utils/axios';
+import PendingProposalRequestSending from '../PendingProposalRequestSending';
 
 function FloatingActionBar() {
   const { id: pid } = useParams();
@@ -33,6 +34,7 @@ function FloatingActionBar() {
   const { enqueueSnackbar } = useSnackbar();
 
   const navigate = useNavigate();
+
   const location = useLocation();
 
   const [, accept] = useMutation(ProposalAcceptBySupervisor);
@@ -244,6 +246,10 @@ function FloatingActionBar() {
     );
   };
 
+  const pendingProposal = (data: PendingRequest) => {
+    console.log(data);
+  };
+
   return (
     <>
       <Box
@@ -329,11 +335,12 @@ function FloatingActionBar() {
                   horizontal: 'right',
                 }}
               >
-                <MenuItem disabled={true}>ارسال طلب تعديل الى المشرف</MenuItem>
-                <MenuItem
-                  onClick={() => setAction('STEP_BACK')} //{stepBackProposal}
-                >
+                <MenuItem disabled={true}>ارسال طلب تعديل الى الشريك</MenuItem>
+                <MenuItem onClick={() => setAction('STEP_BACK')}>
                   ارجاع المعاملة الى مسؤول الفرز
+                </MenuItem>
+                <MenuItem onClick={() => setAction('PENDING_REQUEST')}>
+                  اعادة المشروع للشريك لرفعه في وقت اخر
                 </MenuItem>
               </Menu>
             </Stack>
@@ -359,6 +366,9 @@ function FloatingActionBar() {
           onSubmit={stepBackProposal}
           action={{ actionLabel: 'إرجاع', backgroundColor: '#0169DE', hoverColor: '#1482FE' }}
         />
+      )}
+      {action === 'PENDING_REQUEST' && (
+        <PendingProposalRequestSending onClose={handleCloseModal} onSubmit={pendingProposal} />
       )}
     </>
   );

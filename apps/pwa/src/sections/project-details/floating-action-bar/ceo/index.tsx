@@ -204,7 +204,9 @@ function FloatingActionBar() {
               horizontal: 'left',
             }}
           >
-            <MenuItem disabled={true}>ارسال طلب تعديل الى المشرف</MenuItem>
+            <MenuItem onClick={() => navigate(`/ceo/dashboard/amandment-request/${proposal_id}`)}>
+              {translate('proposal_amandement.button_label')}
+            </MenuItem>
             <MenuItem onClick={() => setAction('STEP_BACK')}>
               ارجاع المعاملة الى مدير الإدارة
             </MenuItem>

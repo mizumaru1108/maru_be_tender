@@ -5,6 +5,7 @@ export type UpdateAction =
   | 'SEND_CLIENT_MESSAGE'
   | 'STEP_BACK'
   | 'ACCEPT_CONSULTANT'
+  | 'PENDING_REQUEST'
   | '';
 
 export type ModalProposalType = {
@@ -19,3 +20,8 @@ export type AcceptingModalProposalType = {
   amount_required_fsupport: number;
   project_track: string;
 };
+
+export interface PendingRequest {
+  pending_date: string;
+  notes: string;
+}

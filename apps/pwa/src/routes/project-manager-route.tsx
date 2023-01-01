@@ -59,19 +59,14 @@ export const projectManagerRoute = {
     },
     {
       path: 'searching',
-      children: [
-        { path: '', element: <Searching /> },
-        {
-          path: ':id/amandementRequest',
-          element: <AmandementRequest />,
-        },
-      ],
+      element: <Searching />,
     },
     {
       path: 'dashboard',
       children: [
         { element: <Navigate to="/project-manager/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainProjectManager /> },
+        { path: 'amandment-request/:id', element: <AmandementRequest /> },
         {
           path: 'incoming-funding-requests',
           children: [
@@ -100,7 +95,6 @@ export const projectManagerRoute = {
             },
           ],
         },
-
         {
           path: 'rejection-list',
           children: [

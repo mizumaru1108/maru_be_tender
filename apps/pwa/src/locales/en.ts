@@ -1,7 +1,5 @@
 // ----------------------------------------------------------------------
 
-import { translateRect } from '@fullcalendar/common';
-
 // IF THIS TRANSLATION IS INCORRECT PLEASE IGNORE THIS AS THIS TRANSLATION IS FOR DEMO PURPOSES ONLY
 // We are happy if you can help improve the translation by sending an email to support@minimals.cc.
 
@@ -934,27 +932,47 @@ const en = {
     },
   },
 
-  // amandement
   proposal_amandement: {
-    moderator: {
-      page_name: "Moderator - Amandement's",
-      headline: 'Send an amendment request to the partner',
-      sub_headline:
-        'Select the fields you want to modify and write the appropriate notes to inform the partner of the things required of him',
-      forms: {
-        notes: 'Notes on Order',
-        notes_placeholder: 'Please write your feedback here',
-      },
+    button_label: 'send an edit request to Supervisor',
+    forms: {
+      notes: 'Notes on Order',
+      notes_placeholder: 'Please write your feedback here',
     },
-    ceo: {
-      page_name: "CEO - Amandement's",
-      headline: 'Submit an amendment request to the project manager',
+    tender_moderator: {
+      page_name: 'Moderator - Amandement Reqauest',
+      headline: 'Submit an amendment request to the project supervisor',
       sub_headline:
-        'Write the appropriate notes to inform the project manager of the matters required of him',
-      forms: {
-        notes: 'Notes on Order',
-        notes_placeholder: 'Please write your feedback here',
-      },
+        'Write the appropriate notes to inform the project supervisor of the matters required of him',
+    },
+    tender_ceo: {
+      page_name: 'CEO - Amandement Request',
+      headline: 'Submit an amendment request to the project supervisor',
+      sub_headline:
+        'Write the appropriate notes to inform the project supervisor of the matters required of him',
+    },
+    tender_project_manager: {
+      page_name: 'Project Manager - Amandement Request',
+      headline: 'Submit an amendment request to the project supervisor',
+      sub_headline:
+        'Write the appropriate notes to inform the project supervisor of the matters required of him',
+    },
+    tender_finance: {
+      page_name: 'Finance - Amandment Request',
+      headline: 'Submit an amendment request to the project supervisor',
+      sub_headline:
+        'Write the appropriate notes to inform the project supervisor of the matters required of him',
+    },
+    tender_cashier: {
+      page_name: 'Cashier - Amandment Request',
+      headline: 'Submit an amendment request to the project supervisor',
+      sub_headline:
+        'Write the appropriate notes to inform the project supervisor of the matters required of him',
+    },
+    tender_project_supervisor: {
+      page_name: 'Project Supervisor - Amandment Request',
+      headline: 'Submit an Amandment Request to the Moderator',
+      sub_headline:
+        'Write the appropriate notes to inform the Moderator of the matters required of him',
     },
   },
   client_appointments: 'Appointments with the company',

@@ -53,27 +53,18 @@ export const projectSupervisorRoute = {
     },
     {
       path: 'searching',
-      children: [
-        { path: '', element: <Searching /> },
-        {
-          path: ':id/amandementRequest',
-          element: <AmandementRequest />,
-        },
-      ],
+      element: <Searching />,
     },
     {
       path: 'dashboard',
       children: [
         { element: <Navigate to="/project-supervisor/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainProjectSupervisor /> },
+        { path: 'amandment-request/:id', element: <AmandementRequest /> },
         {
           path: 'incoming-funding-requests',
           children: [
             { path: '', element: <IncomingFundingRequestsProjectSupervisor /> },
-            {
-              path: ':id/amandementRequest',
-              element: <AmandementRequest />,
-            },
             {
               path: ':id/:actionType',
               element: <ProjectDetails />,
@@ -85,10 +76,6 @@ export const projectSupervisorRoute = {
           children: [
             { path: '', element: <RequestsInProcessProjectSupervisor /> },
             {
-              path: ':id/amandementRequest',
-              element: <AmandementRequest />,
-            },
-            {
               path: ':id/:actionType',
               element: <ProjectDetails />,
             },
@@ -99,10 +86,6 @@ export const projectSupervisorRoute = {
           children: [
             { path: '', element: <PreviousFundingRequestsProjectSupervisor /> },
             {
-              path: ':id/amandementRequest',
-              element: <AmandementRequest />,
-            },
-            {
               path: ':id/:actionType',
               element: <ProjectDetails />,
             },
@@ -112,10 +95,6 @@ export const projectSupervisorRoute = {
           path: 'payment-adjustment',
           children: [
             { path: '', element: <PaymentAdjustmenProjectSupervisor /> },
-            {
-              path: ':id/amandementRequest',
-              element: <AmandementRequest />,
-            },
             {
               path: ':id/:actionType',
               element: <ProjectDetails />,

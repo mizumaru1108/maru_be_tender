@@ -11,11 +11,12 @@ import useAuth from 'hooks/useAuth';
 import { useSnackbar } from 'notistack';
 import { ProposalRejectBySupervisor } from 'queries/project-supervisor/ProposalAcceptBySupervisor';
 import { ProposalRejectBySupervisorFacilitateGrant } from 'queries/project-supervisor/ProposalRejectBySupervisorFacilitateGrant';
-import { UpdateAction } from '../../../../../@types/project-details';
+import { UpdateAction, PendingRequest } from '../../../../../@types/project-details';
 import NotesModal from 'components/notes-modal';
 import FacilitateSupervisorAcceptingForm from './forms';
 import { useDispatch, useSelector } from 'redux/store';
 import { setStepsData } from 'redux/slices/supervisorAcceptingForm';
+import PendingProposalRequestSending from '../PendingProposalRequestSending';
 
 function FloatinActionBar() {
   const dispatch = useDispatch();
@@ -123,6 +124,10 @@ function FloatinActionBar() {
         navigate(`/project-supervisor/dashboard/app`);
       }
     });
+  };
+
+  const pendingProposal = (data: PendingRequest) => {
+    console.log(data);
   };
 
   useEffect(() => {
@@ -239,6 +244,9 @@ function FloatinActionBar() {
         />
       )}
       {action === 'ACCEPT' && <FacilitateSupervisorAcceptingForm onClose={handleCloseModal} />}
+      {action === 'PENDING_REQUEST' && (
+        <PendingProposalRequestSending onClose={handleCloseModal} onSubmit={pendingProposal} />
+      )}
     </>
   );
 }
