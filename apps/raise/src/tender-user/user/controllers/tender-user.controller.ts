@@ -23,6 +23,7 @@ import { TenderDeleteUserDto } from '../dtos/requests/delete-user.dto';
 import { SearchUserFilterRequest } from '../dtos/requests/search-user-filter-request.dto';
 import { UpdateUserDto } from '../dtos/requests/update-user.dto';
 import { CreateUserResponseDto } from '../dtos/responses/create-user-response.dto';
+import { FindUserResponse } from '../dtos/responses/find-user-response.dto';
 import { TenderCurrentUser } from '../interfaces/current-user.interface';
 import { TenderUserService } from '../services/tender-user.service';
 
@@ -45,11 +46,22 @@ export class TenderUserController {
   }
 
   @UseGuards(TenderJwtGuard)
+  @TenderRoles(
+    'tender_accounts_manager',
+    'tender_admin',
+    'tender_cashier',
+    'tender_ceo',
+    'tender_client',
+    'tender_finance',
+    'tender_moderator',
+    'tender_project_manager',
+    'tender_project_supervisor',
+  )
   @Get('find-users')
   async findUsers(
     @CurrentUser() currentUser: TenderCurrentUser,
     @Query() filter: SearchUserFilterRequest,
-  ): Promise<ManualPaginatedResponse<user[] | [] | user[][] | undefined>> {
+  ): Promise<ManualPaginatedResponse<FindUserResponse['data']>> {
     const response = await this.tenderUserService.findUsers(
       currentUser,
       filter,

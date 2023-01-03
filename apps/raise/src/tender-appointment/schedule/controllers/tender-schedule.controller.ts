@@ -1,53 +1,58 @@
 import {
+  Body,
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
   HttpStatus,
+  Post,
+  UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../../../auth/jwt.guard';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
+import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
+import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
+import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
 import { ICurrentUser } from '../../../user/interfaces/current-user.interface';
-import { EditScheduleRequestDto } from '../dtos/requests/edit-schedule-request.dto';
-import { EditScheduleResponse } from '../dtos/responses/edit-schedule-response.dto';
+import { CreateScheduleDto } from '../dtos/requests/create-schedule-request.dto';
+import { CreateScheduleResponseDto } from '../dtos/responses/create-schedule-response.dto';
+import { GetMyScheduleResponse } from '../dtos/responses/get-my-schedule-response.dto';
 import { TenderScheduleService } from '../services/tender-schedule.service';
 
-@Controller('tender/schedule')
+@Controller('tender/schedules')
 export class TenderScheduleController {
   constructor(private readonly tenderScheduleService: TenderScheduleService) {}
 
-  @UseGuards(JwtAuthGuard)
-  @Patch('edit')
-  async edit(
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_client')
+  @Get('mine')
+  async getMySchedules(
     @CurrentUser() currentUser: ICurrentUser,
-    @Body() editRequests: EditScheduleRequestDto,
-  ): Promise<BaseResponse<EditScheduleResponse>> {
-    const response = await this.tenderScheduleService.edit(
+  ): Promise<BaseResponse<GetMyScheduleResponse['schedule']>> {
+    const schedules = await this.tenderScheduleService.getMySchedules(
       currentUser.id,
-      editRequests,
+    );
+    return baseResponseHelper(
+      schedules,
+      HttpStatus.OK,
+      'Schedule created successfully',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_client')
+  @Post('upsert-schedules')
+  async upsertSchedules(
+    @CurrentUser() currentUser: ICurrentUser,
+    @Body() createRequest: CreateScheduleDto,
+  ): Promise<BaseResponse<CreateScheduleResponseDto>> {
+    const response = await this.tenderScheduleService.upsertSchedules(
+      currentUser.id,
+      createRequest.payload,
     );
     return baseResponseHelper(
       response,
       HttpStatus.OK,
-      'Schedule edited successfully',
+      'Schedule created successfully',
     );
   }
-
-  @Post()
-  create() {}
-
-  @Get()
-  findAll() {}
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {}
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {}
 }

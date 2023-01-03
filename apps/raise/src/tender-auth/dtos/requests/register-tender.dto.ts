@@ -8,6 +8,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsIn,
   ValidateNested,
 } from 'class-validator';
 import { ValidateKsaPhoneNumber9661 } from '../../../tender-commons/decorators/validate-ksa-phone-number-9661.decorator';
@@ -184,6 +185,9 @@ class registerClient {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  @IsIn(['main', 'sub'], {
+    message: 'client_field must be either main or sub',
+  })
   client_field: string;
 
   @ApiProperty()

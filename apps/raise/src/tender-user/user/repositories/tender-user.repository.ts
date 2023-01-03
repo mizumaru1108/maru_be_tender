@@ -1,11 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, project_tracks, user, user_type } from '@prisma/client';
+import {
+  Prisma,
+  project_tracks,
+  user,
+  user_role,
+  user_type,
+} from '@prisma/client';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { FindManyResult } from '../../../tender-commons/dto/find-many-result.dto';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { SearchUserFilterRequest } from '../dtos/requests/search-user-filter-request.dto';
+import { FindUserResponse } from '../dtos/responses/find-user-response.dto';
 import { UpdateUserPayload } from '../interfaces/update-user-payload.interface';
 import { UserStatus } from '../types/user_status';
 
@@ -110,7 +117,7 @@ export class TenderUserRepository {
   async findUsers(
     filter: SearchUserFilterRequest,
     findOnlyActive: boolean,
-  ): Promise<FindManyResult<user[]>> {
+  ): Promise<FindUserResponse> {
     const {
       employee_name,
       employee_path,
@@ -119,6 +126,10 @@ export class TenderUserRepository {
       limit = 10,
       sort = 'desc',
       sorting_field,
+      association_name,
+      client_field,
+      single_role,
+      include_schedule = '0',
       hide_external = '0',
       hide_internal = '0',
     } = filter;
@@ -194,7 +205,51 @@ export class TenderUserRepository {
       };
     }
 
-    // if key sorting_fields exist on <T> then sort by it
+    let include: Prisma.userInclude = {};
+    if (include_schedule === '1' && hide_internal === '1') {
+      include = {
+        ...include,
+        schedule: {
+          select: {
+            id: true,
+            start_time: true,
+            end_time: true,
+          },
+        },
+        client_data: {
+          select: {
+            id: true,
+            client_field: true,
+            entity: true,
+          },
+        },
+      };
+    }
+
+    if (hide_internal === '1' && association_name) {
+      query = {
+        ...query,
+        client_data: {
+          entity: {
+            contains: association_name,
+            mode: 'insensitive',
+          },
+        },
+      };
+    }
+
+    if (hide_internal === '1' && client_field) {
+      query = {
+        ...query,
+        client_data: {
+          client_field: {
+            contains: client_field,
+            mode: 'insensitive',
+          },
+        },
+      };
+    }
+
     const order_by: Prisma.userOrderByWithRelationInput = {};
     const field = sorting_field as keyof Prisma.userOrderByWithRelationInput;
     if (sorting_field) {
@@ -204,21 +259,37 @@ export class TenderUserRepository {
     }
 
     try {
-      const users = await this.prismaService.user.findMany({
-        where: {
-          ...query,
-        },
-        include: {
-          roles: {
-            select: {
-              user_type_id: true,
-            },
+      const users: FindUserResponse['data'] =
+        await this.prismaService.user.findMany({
+          where: {
+            ...query,
           },
-        },
-        skip: offset,
-        take: limit,
-        orderBy: order_by,
-      });
+          include: {
+            roles: {
+              select: {
+                user_type_id: true,
+              },
+            },
+            ...include,
+          },
+          skip: offset,
+          take: limit,
+          orderBy: order_by,
+        });
+
+      let mappedUserSingleRole: FindUserResponse['data'] = [];
+
+      if (single_role) {
+        for (const user of users) {
+          for (const role of user.roles) {
+            const data = {
+              ...user,
+              roles: [role],
+            };
+            mappedUserSingleRole.push(data);
+          }
+        }
+      }
 
       const count = await this.prismaService.user.count({
         where: {
@@ -227,7 +298,7 @@ export class TenderUserRepository {
       });
 
       return {
-        data: users,
+        data: single_role ? mappedUserSingleRole : users,
         total: count,
       };
     } catch (error) {

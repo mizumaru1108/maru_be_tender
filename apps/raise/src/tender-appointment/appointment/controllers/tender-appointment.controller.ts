@@ -5,30 +5,31 @@ import {
   HttpStatus,
   Post,
   Query,
-  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../../../auth/jwt.guard';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
 import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
 
+import { FastifyReply } from 'fastify';
+import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
+import { GoogleOAuth2Guard } from '../../../tender-auth/guards/google-auth.guard';
+import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
+import { AppointmentFilterRequest } from '../dtos/requests/appointment-filter-request.dto';
 import { CreateAppointmentDto } from '../dtos/requests/create-appointment.dto';
-import { SearchClientFilterRequest } from '../dtos/requests/search-client-filter-request.dto';
 import { TenderAppointmentService } from '../services/tender-appointment.service';
-import { FastifyReply } from 'fastify';
-import { GoogleOAuth2Guard } from '../../../tender-auth/guards/google-auth.guard';
 
-@Controller('tender/appointment')
+@Controller('tender/appointments')
 export class TenderAppointmentController {
   constructor(
     private readonly tenderAppointmentService: TenderAppointmentService,
   ) {}
 
-  @UseGuards(TenderJwtGuard, GoogleOAuth2Guard)
+  @UseGuards(TenderJwtGuard, GoogleOAuth2Guard, TenderRolesGuard)
+  @TenderRoles('tender_project_supervisor')
   @Post('create-appointment')
   async createAppointment(
     @CurrentUser() currentUser: TenderCurrentUser,
@@ -39,6 +40,28 @@ export class TenderAppointmentController {
       request,
     );
     return baseResponseHelper(result, HttpStatus.CREATED, 'Success');
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_project_supervisor', 'tender_client')
+  @Get('mine')
+  async getMyAppointments(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Query() filter: AppointmentFilterRequest,
+  ) {
+    const result = await this.tenderAppointmentService.getMyAppointment(
+      currentUser,
+      filter,
+    );
+    // return baseResponseHelper(result, HttpStatus.CREATED, 'Success');
+    return manualPaginationHelper(
+      result.data,
+      result.total,
+      filter.page || 1,
+      filter.limit || 10,
+      HttpStatus.OK,
+      'Success',
+    );
   }
 
   @Get('google-callback')
@@ -66,22 +89,5 @@ export class TenderAppointmentController {
 
     res.header('Content-Type', 'text/html').code(200);
     res.send(html);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('search-client')
-  async searchClient(@Query() searchParams: SearchClientFilterRequest) {
-    const result = await this.tenderAppointmentService.searchClientByName(
-      searchParams,
-    );
-
-    return manualPaginationHelper(
-      result.data,
-      result.total,
-      searchParams.page || 1,
-      searchParams.limit || 10,
-      HttpStatus.OK,
-      'Success',
-    );
   }
 }

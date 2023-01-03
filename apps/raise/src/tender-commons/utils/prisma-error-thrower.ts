@@ -52,7 +52,7 @@ export function prismaErrorThrower(
     if (error instanceof Prisma.NotFoundError) {
       instance = 'NotFoundError';
     }
-    logger.error(`(Source: Prisma[${instance}]), Error:`, error);
+    logger.error(`( Source: Prisma ${instance}), Error:`, error);
     return new InternalServerErrorException(
       `Something went wrong at '${errorThrowMessage}'`,
     );

@@ -1,32 +1,53 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsUUID, IsOptional } from 'class-validator';
-
-export class CreateScheduleDto {
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsIn,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { Validate12HourTimeFormat } from '../../../../tender-commons/decorators/validate-12hour-time-format.decorator';
+export class CreateSchedulePayload {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  id: string;
+  @IsIn(
+    [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ],
+    {
+      message:
+        'day must be a valid day of the week (ex: Monday, Tuesday, etc.)',
+    },
+  )
+  day: string;
 
-  // @ApiProperty()
-  // @IsNotEmpty()
-  // @IsString()
-  // @IsUUID()
-  // user_id: string;
-
-  // @ApiProperty()
-  // @IsNotEmpty()
-  // @IsString()
-  // day: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  start_time?: string;
+  @Validate12HourTimeFormat()
+  start_time: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiProperty()
   @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  end_time?: string;
+  @Validate12HourTimeFormat()
+  end_time: string;
+}
+export class CreateScheduleDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateSchedulePayload)
+  payload: CreateSchedulePayload[];
 }

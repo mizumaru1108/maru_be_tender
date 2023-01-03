@@ -8,11 +8,12 @@ import { Prisma, user } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
-import { FindManyResult } from '../../../tender-commons/dto/find-many-result.dto';
+import { getTimeGap } from '../../../tender-commons/utils/get-time-gap';
 import { TenderCreateUserDto } from '../dtos/requests/create-user.dto';
 import { SearchUserFilterRequest } from '../dtos/requests/search-user-filter-request.dto';
 import { UpdateUserDto } from '../dtos/requests/update-user.dto';
 import { CreateUserResponseDto } from '../dtos/responses/create-user-response.dto';
+import { FindUserResponse } from '../dtos/responses/find-user-response.dto';
 import { TenderCurrentUser } from '../interfaces/current-user.interface';
 import { UpdateUserPayload } from '../interfaces/update-user-payload.interface';
 import { updateUserMapper } from '../mappers/update-user.mapper';
@@ -223,8 +224,17 @@ export class TenderUserService {
   async findUsers(
     currentUser: TenderCurrentUser,
     filter: SearchUserFilterRequest,
-  ): Promise<FindManyResult<user[]>> {
-    const { sorting_field, hide_internal, hide_external } = filter;
+  ): Promise<FindUserResponse> {
+    const {
+      sorting_field,
+      hide_internal,
+      hide_external,
+      include_schedule,
+      association_name,
+      client_field,
+      employee_path,
+      single_role,
+    } = filter;
     if (
       sorting_field &&
       [
@@ -246,6 +256,51 @@ export class TenderUserService {
       );
     }
 
+    if (hide_internal === '1' && single_role) {
+      throw new BadRequestException(
+        "You can't use single_role when hide the internal user!",
+      );
+    }
+
+    if (hide_internal === '1' && employee_path) {
+      throw new BadRequestException(
+        "You can't use employee_path when hide the internal user!",
+      );
+    }
+
+    if ((hide_external === '0' || !hide_external) && single_role) {
+      throw new BadRequestException(
+        'External must be hidden when you want to use single_role filter!',
+      );
+    }
+
+    if (hide_external === '1' && include_schedule === '1') {
+      throw new BadRequestException(
+        "You can't hide external user when you want to include schedule!",
+      );
+    }
+
+    if (hide_external === '1' && association_name) {
+      throw new BadRequestException(
+        "You can't hide external user when you want to search client by association name!",
+      );
+    }
+
+    if (hide_external === '1' && client_field) {
+      throw new BadRequestException(
+        "You can't hide external user when you want to search client by association name!",
+      );
+    }
+
+    if (
+      hide_external === '1' &&
+      (association_name || include_schedule === '1')
+    ) {
+      throw new BadRequestException(
+        "You can't hide external user when you want to search client by association name or include schedule!",
+      );
+    }
+
     /* if loggined user is account manager, it will show all user, if not, only active user will shown */
     const findOnlyActive =
       currentUser.choosenRole === 'tender_accounts_manager' ? false : true;
@@ -254,6 +309,48 @@ export class TenderUserService {
       filter,
       findOnlyActive,
     );
-    return response;
+
+    let finalResult: FindUserResponse['data'] = [];
+
+    // only show internal user & split if user has multiple roles (like using unwind in mongodb)
+    if (single_role && hide_external === '1') {
+      for (const user of response.data) {
+        for (const role of user.roles) {
+          const data = {
+            ...user,
+            roles: [role],
+          };
+          finalResult.push(data);
+        }
+      }
+    } else if (include_schedule === '1' && hide_internal === '1') {
+      for (const user of response.data) {
+        const data = {
+          ...user,
+        };
+
+        if (user.schedule && user.schedule.length > 0) {
+          for (const schedule of user.schedule) {
+            if (schedule.start_time && schedule.end_time) {
+              const gap = getTimeGap(
+                schedule.start_time,
+                schedule.end_time,
+                15,
+              );
+              schedule.time_gap = gap;
+            }
+          }
+        }
+
+        finalResult.push(data);
+      }
+    } else {
+      finalResult = response.data;
+    }
+
+    return {
+      data: finalResult,
+      total: response.total,
+    };
   }
 }

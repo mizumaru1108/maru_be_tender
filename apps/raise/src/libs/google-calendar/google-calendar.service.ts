@@ -42,6 +42,31 @@ export class GoogleCalendarService {
       auth: this.oauth2Client,
     });
 
+    // const clientSchedule: GaxiosResponse<calendar_v3.Schema$FreeBusyResponse> =
+    //   await this.gCalendar.freebusy.query({
+    //     requestBody: {
+    //       timeMin: start,
+    //       timeMax: end,
+    //       timeZone,
+    //       items: [
+    //         {
+    //           id: 'primary',
+    //         },
+    //       ],
+    //     },
+    //   });
+
+    // console.log('client schedule', clientSchedule.data.calendars);
+    // // // console without type error
+    // console.log(
+    //   'client schedule busy',
+    //   clientSchedule?.data?.calendars?.[attendees[1]]?.busy,
+    // );
+    // console.log(
+    //   'client schedule error',
+    //   clientSchedule?.data?.calendars?.[attendees[1]]?.errors,
+    // );
+
     const event: Schema$Event = {
       summary,
       description,
@@ -80,8 +105,9 @@ export class GoogleCalendarService {
           requestBody: event,
           conferenceDataVersion: 1,
         });
-      console.log(result);
+      // console.log(result);
       return {
+        calendarId: result.data.id,
         calendarLink: result.data.htmlLink,
         conferenceLink: result.data.hangoutLink,
       };
