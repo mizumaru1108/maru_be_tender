@@ -74,7 +74,7 @@ export class TenderJwtGuard extends AuthGuard('jwt') implements CanActivate {
 
       request.user = user;
     } catch (e) {
-      console.log(e);
+      // console.log(e);
       if (
         e instanceof UnauthorizedException ||
         e instanceof BadRequestException

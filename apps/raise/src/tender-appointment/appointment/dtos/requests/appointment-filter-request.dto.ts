@@ -7,9 +7,9 @@ export class AppointmentFilterRequest extends BaseFilterRequest {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @IsIn(['WAITING_FOR_ACCEPTANCE', 'ACCEPTED', 'REJECTED', 'DONE'], {
+  @IsIn(['tentative', 'confirmed', 'declined', 'done'], {
     message:
-      'Status must be one of WAITING_FOR_ACCEPTANCE, ACCEPTED, REJECTED, DONE',
+      'Status must be one of tentative, confirmed, declined, done',
   })
-  status?: 'WAITING_FOR_ACCEPTANCE' | 'ACCEPTED' | 'REJECTED' | 'DONE';
+  status?: 'tentative' | 'confirmed' | 'declined' | 'done';
 }

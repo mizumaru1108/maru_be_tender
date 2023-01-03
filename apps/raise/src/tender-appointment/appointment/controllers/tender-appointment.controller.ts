@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Patch,
   Post,
   Query,
   Res,
@@ -12,7 +13,9 @@ import { CurrentUser } from '../../../commons/decorators/current-user.decorator'
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
 import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
 
+import { appointment } from '@prisma/client';
 import { FastifyReply } from 'fastify';
+import { BaseResponse } from '../../../commons/dtos/base-response';
 import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
 import { GoogleOAuth2Guard } from '../../../tender-auth/guards/google-auth.guard';
 import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
@@ -20,6 +23,7 @@ import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-p
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import { AppointmentFilterRequest } from '../dtos/requests/appointment-filter-request.dto';
 import { CreateAppointmentDto } from '../dtos/requests/create-appointment.dto';
+import { InvitationResponseDto } from '../dtos/requests/response-invitation.dto';
 import { TenderAppointmentService } from '../services/tender-appointment.service';
 
 @Controller('tender/appointments')
@@ -34,8 +38,22 @@ export class TenderAppointmentController {
   async createAppointment(
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: CreateAppointmentDto,
-  ) {
+  ): Promise<BaseResponse<appointment>> {
     const result = await this.tenderAppointmentService.createAppointment(
+      currentUser,
+      request,
+    );
+    return baseResponseHelper(result, HttpStatus.CREATED, 'Success');
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_client')
+  @Patch('response-invitation')
+  async responseInvitation(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() request: InvitationResponseDto,
+  ): Promise<BaseResponse<appointment>> {
+    const result = await this.tenderAppointmentService.responseInvitation(
       currentUser,
       request,
     );
@@ -53,7 +71,7 @@ export class TenderAppointmentController {
       currentUser,
       filter,
     );
-    // return baseResponseHelper(result, HttpStatus.CREATED, 'Success');
+
     return manualPaginationHelper(
       result.data,
       result.total,

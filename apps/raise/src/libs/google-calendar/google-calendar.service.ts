@@ -1,9 +1,9 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { GaxiosResponse } from 'gaxios';
 import { Credentials, OAuth2Client } from 'google-auth-library';
 import { calendar_v3, google } from 'googleapis';
 import { nanoid } from 'nanoid';
-import { GaxiosResponse } from 'gaxios';
 import Calendar = calendar_v3.Calendar;
 import Schema$Event = calendar_v3.Schema$Event;
 
@@ -42,31 +42,6 @@ export class GoogleCalendarService {
       auth: this.oauth2Client,
     });
 
-    // const clientSchedule: GaxiosResponse<calendar_v3.Schema$FreeBusyResponse> =
-    //   await this.gCalendar.freebusy.query({
-    //     requestBody: {
-    //       timeMin: start,
-    //       timeMax: end,
-    //       timeZone,
-    //       items: [
-    //         {
-    //           id: 'primary',
-    //         },
-    //       ],
-    //     },
-    //   });
-
-    // console.log('client schedule', clientSchedule.data.calendars);
-    // // // console without type error
-    // console.log(
-    //   'client schedule busy',
-    //   clientSchedule?.data?.calendars?.[attendees[1]]?.busy,
-    // );
-    // console.log(
-    //   'client schedule error',
-    //   clientSchedule?.data?.calendars?.[attendees[1]]?.errors,
-    // );
-
     const event: Schema$Event = {
       summary,
       description,
@@ -87,6 +62,12 @@ export class GoogleCalendarService {
           email: attendees[1],
         },
       ],
+      // the status of this meeting will be auto confirmed (user no longer needs to confirmed).
+      status: 'confirmed',
+      // no remainders
+      reminders: {
+        useDefault: false,
+      },
       conferenceData: {
         createRequest: {
           requestId: nanoid(10),
@@ -98,16 +79,14 @@ export class GoogleCalendarService {
     };
 
     try {
-      // console.log('event', event);
       const result: GaxiosResponse<calendar_v3.Schema$Event> =
         await this.gCalendar.events.insert({
           calendarId: 'primary',
           requestBody: event,
           conferenceDataVersion: 1,
         });
-      // console.log(result);
       return {
-        calendarId: result.data.id,
+        calendarEventId: result.data.id,
         calendarLink: result.data.htmlLink,
         conferenceLink: result.data.hangoutLink,
       };

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { appointment, Prisma } from '@prisma/client';
-import { BaseFilterRequest } from '../../../commons/dtos/base-filter-request.dto';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { FindManyResult } from '../../../tender-commons/dto/find-many-result.dto';
 import { TenderFusionAuthRoles } from '../../../tender-commons/types';
@@ -22,6 +21,46 @@ export class TenderAppointmentRepository {
         TenderAppointmentRepository.name,
         'createAppointment Error:',
         `Creating Appointment!`,
+      );
+      throw theError;
+    }
+  }
+
+  async findAppointmentById(
+    userId: string,
+    userRole: TenderFusionAuthRoles,
+    appointmentId: string,
+  ) {
+    let query: Prisma.appointmentWhereInput = {};
+    if (userRole === 'tender_client') {
+      query = {
+        ...query,
+        user_id: userId,
+      };
+    } else {
+      query = {
+        ...query,
+        employee_id: userId,
+      };
+    }
+
+    query = {
+      ...query,
+      id: appointmentId,
+    };
+
+    try {
+      return await this.prismaService.appointment.findFirst({
+        where: {
+          ...query,
+        },
+      });
+    } catch (err) {
+      const theError = prismaErrorThrower(
+        err,
+        TenderAppointmentRepository.name,
+        'findAppointmentById Error:',
+        `Finding Appointment by id: ${appointmentId}`,
       );
       throw theError;
     }
@@ -101,6 +140,112 @@ export class TenderAppointmentRepository {
         TenderAppointmentRepository.name,
         'findUsers Error:',
         `finding users!`,
+      );
+      throw theError;
+    }
+  }
+
+  async updateAppointment(
+    appointmentId: string,
+    updateAppointmentPayload: Prisma.appointmentUpdateInput,
+  ) {
+    try {
+      const response = await this.prismaService.appointment.update({
+        where: {
+          id: appointmentId,
+        },
+        data: {
+          ...updateAppointmentPayload,
+        },
+      });
+      return response;
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderAppointmentRepository.name,
+        'updateAppointment Error:',
+        `updating appointment status!`,
+      );
+      throw theError;
+    }
+  }
+
+  async findPendingOrApprovedAppointment(
+    userId: string,
+    userRole: TenderFusionAuthRoles,
+    date: Date,
+    startTime: string,
+    endTime: string,
+  ): Promise<
+    | (appointment & {
+        client: {
+          employee_name: string | null;
+          email: string;
+          client_data: {
+            entity: string | null;
+          } | null;
+        };
+      })
+    | null
+  > {
+    let query: Prisma.appointmentWhereInput = {};
+
+    // in this case only client and supervisor can access this endpoint
+    if (userRole === 'tender_client') {
+      query = {
+        ...query,
+        user_id: userId,
+      };
+    } else {
+      query = {
+        ...query,
+        employee_id: userId,
+      };
+    }
+
+    query = {
+      ...query,
+      status: {
+        in: ['tentative', 'confirmed'],
+      },
+      date: {
+        equals: date,
+      },
+      start_time: {
+        gte: startTime,
+      },
+      end_time: {
+        lte: endTime,
+      },
+    };
+
+    try {
+      const result = await this.prismaService.appointment.findFirst({
+        where: {
+          ...query,
+        },
+        include: {
+          client: {
+            select: {
+              employee_name: true,
+              email: true,
+              client_data: {
+                select: {
+                  entity: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      // console.log(result);
+      return result;
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderAppointmentRepository.name,
+        'findAppointments Error:',
+        `finding appointment!`,
       );
       throw theError;
     }

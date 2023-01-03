@@ -36,34 +36,9 @@ export class CreateAppointmentDto {
   @Validate12HourTimeFormat()
   end_time: string;
 
-  // @ApiProperty()
-  // @IsNotEmpty()
-  // @IsString()
-  // // ex: asia/jakarta to Asia/Jakarta
-  // @Transform(({ value }) => {
-  //   return value
-  //     .split('/')
-  //     .map((v: string) => v[0].toUpperCase() + v.slice(1))
-  //     .join('/');
-  // })
-  // @ValidateTimeZone()
-  // time_zone: string;
-
-  // @ApiProperty()
-  // @IsNotEmpty()
-  // @IsString()
-  // @IsEmail()
-  // sender: string;
-
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
   @IsUUID()
   client_id: string;
-
-  // @ApiProperty()
-  // @IsNotEmpty()
-  // @IsString()
-  // @IsEmail()
-  // receiver: string;
 }

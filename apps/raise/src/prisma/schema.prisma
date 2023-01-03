@@ -492,22 +492,22 @@ model contact_us {
 }
 
 model appointment {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  employee_id   String
-  user_id       String
-  meeting_url   String    @db.VarChar
-  calendar_url  String    @db.VarChar
-  calendar_id   String    @db.VarChar
-  date          DateTime  @db.Date
-  start_time    String    @db.VarChar
-  end_time      String    @db.VarChar
-  reject_reason String?
-  status        String    @db.VarChar
-  day           String    @db.VarChar
-  created_at    DateTime? @default(now()) @db.Timestamptz(6)
-  updated_at    DateTime? @default(now()) @db.Timestamptz(6)
-  employee      user      @relation("appointment_employee_idTouser", fields: [employee_id], references: [id], onDelete: Cascade)
-  client        user      @relation("appointment_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employee_id       String
+  user_id           String
+  meeting_url       String    @db.VarChar
+  calendar_url      String    @db.VarChar
+  date              DateTime  @db.Date
+  start_time        String    @db.VarChar
+  end_time          String    @db.VarChar
+  reject_reason     String?
+  status            String    @db.VarChar
+  day               String    @db.VarChar
+  created_at        DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime? @default(now()) @db.Timestamptz(6)
+  calendar_event_id String    @db.VarChar
+  employee          user      @relation("appointment_employee_idTouser", fields: [employee_id], references: [id], onDelete: Cascade)
+  client            user      @relation("appointment_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model schedule {
