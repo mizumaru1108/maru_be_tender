@@ -4,7 +4,7 @@ import { TenderStatisticsService } from './statistics.service';
 
 @Module({
   controllers: [TenderStatisticsController],
-  providers: [TenderStatisticsService, ],
+  providers: [TenderStatisticsService],
   exports: [TenderStatisticsService],
 })
 export class TenderStatisticsModule {}

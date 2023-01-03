@@ -299,7 +299,7 @@ export class TenderStatisticsService {
   async getAllParntersStatistics(from: any, to: any) {
     const response = {} as any;
     const userStatus = await this.prismaService.user_status.findMany();
-    const partnreStatus = {} as any;
+    const partnersStatus = {} as any;
     const partnersRegion = {} as any;
     const nestedPartnersRegion = {} as any;
     const partnersGovernorate = {} as any;
@@ -330,9 +330,9 @@ export class TenderStatisticsService {
         },
       });
       for (const PU of pendingUsers) {
-        if (!partnreStatus[US.title]) partnreStatus[US.title] = 0;
+        if (!partnersStatus[US.title]) partnersStatus[US.title] = 0;
         if (PU.user.status_id === US.id) {
-          partnreStatus[US.title] = partnreStatus[US.title] + 1;
+          partnersStatus[US.title] = partnersStatus[US.title] + 1;
         }
         if (!PU.region) return;
         if (!partnersRegion[PU.region]) {
@@ -372,7 +372,7 @@ export class TenderStatisticsService {
         }
       }
     }
-    response.partnreStatus = partnreStatus;
+    response.partnersStatus = partnersStatus;
     response.partnersRegion = partnersRegion;
     response.partnersGovernorate = partnersGovernorate;
 
