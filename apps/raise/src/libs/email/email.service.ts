@@ -23,7 +23,7 @@ export class EmailService {
    * SendMail Services,
    * used to send email to user with attachment,
    */
-  async sendMail(sendMailDto: SendEmailDto) {
+  async sendMailAsync(sendMailDto: SendEmailDto) {
     const {
       to,
       mailType,
@@ -89,7 +89,7 @@ export class EmailService {
    * SendMail Services,
    * without await TOOD: need to be refactored with REDIS for queue
    */
-  SendMailAsync(sendMailDto: SendEmailDto) {
+  sendMail(sendMailDto: SendEmailDto) {
     const {
       to,
       mailType,

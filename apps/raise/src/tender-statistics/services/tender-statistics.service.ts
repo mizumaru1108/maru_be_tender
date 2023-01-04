@@ -1,13 +1,17 @@
 import { Injectable, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt.guard';
-import { PrismaService } from '../prisma/prisma.service';
+import { JwtAuthGuard } from '../../auth/jwt.guard';
+import { PrismaService } from '../../prisma/prisma.service';
 import _ from 'lodash';
+import { GetBudgetInfoDto } from '../dtos/requests/get-budget-info.dto';
+import { TenderStatisticsRepository } from '../repositories/tender-statistic.repository';
 
 @Injectable()
 export class TenderStatisticsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly tenderStatisticRepository: TenderStatisticsRepository,
+  ) {}
 
-  @UseGuards(JwtAuthGuard)
   async getAllStatistics(from: any, to: any) {
     const tarcksStatistics = await this.getAllTrackStatistics(from, to);
     return tarcksStatistics;
@@ -295,7 +299,6 @@ export class TenderStatisticsService {
     return response;
   }
 
-  @UseGuards(JwtAuthGuard)
   async getAllParntersStatistics(from: any, to: any) {
     const response = {} as any;
     const userStatus = await this.prismaService.user_status.findMany();
@@ -377,5 +380,12 @@ export class TenderStatisticsService {
     response.partnersGovernorate = partnersGovernorate;
 
     return response;
+  }
+
+  async getBudgetInfo(request: GetBudgetInfoDto) {
+    const proposals = await this.tenderStatisticRepository.getBudgetInfo(
+      request,
+    );
+    return proposals;
   }
 }

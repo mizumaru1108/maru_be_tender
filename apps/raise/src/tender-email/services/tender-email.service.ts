@@ -50,7 +50,7 @@ export class TenderEmailService {
       emailRecordPayload,
     );
 
-    this.emailService.SendMailAsync(emailPayload);
+    this.emailService.sendMail(emailPayload);
 
     return createdRecord;
   }

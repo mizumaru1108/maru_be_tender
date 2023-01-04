@@ -14,6 +14,29 @@ export class TenderAppointmentRepository {
     try {
       return await this.prismaService.appointment.create({
         data: payload,
+        include: {
+          client: {
+            select: {
+              id: true,
+              employee_name: true,
+              email: true,
+              mobile_number: true,
+              client_data: {
+                select: {
+                  entity: true,
+                },
+              },
+            },
+          },
+          employee: {
+            select: {
+              id: true,
+              employee_name: true,
+              email: true,
+              mobile_number: true,
+            },
+          },
+        },
       });
     } catch (err) {
       const theError = prismaErrorThrower(
@@ -156,6 +179,29 @@ export class TenderAppointmentRepository {
         },
         data: {
           ...updateAppointmentPayload,
+        },
+        include: {
+          client: {
+            select: {
+              id: true,
+              employee_name: true,
+              email: true,
+              mobile_number: true,
+              client_data: {
+                select: {
+                  entity: true,
+                },
+              },
+            },
+          },
+          employee: {
+            select: {
+              id: true,
+              employee_name: true,
+              email: true,
+              mobile_number: true,
+            },
+          },
         },
       });
       return response;

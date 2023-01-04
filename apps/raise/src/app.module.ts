@@ -57,8 +57,10 @@ import { nodeMailerConfig } from './commons/configs/nodemailer-config';
 import { TenderCommentsModule } from './tender-comments/tender-comments.module';
 import { TenderEventsModule } from './tender-events-gateway/tender-events.module';
 import { TenderMessagesModule } from './tender-messaging/tender-messages.module';
-import { TenderStatisticsModule } from './tender-statistics/statistics.module';
+import { TenderStatisticsModule } from './tender-statistics/tender-statistics.module';
 import { TenderNotificationModule } from './tender-notification/tender-notification.module';
+import { gapiConfig } from './commons/configs/gapi-config';
+import { twilioConfig } from './commons/configs/twilio-config';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -87,13 +89,15 @@ import { TenderNotificationModule } from './tender-notification/tender-notificat
 
     ConfigModule.forRoot({
       // load: [
-      //   fusionAuthConfig,
-      //   bunnyConfig,
-      //   nodeMailerConfig,
-      //   // metalApiConfig,
-      //   // gapiConfig,
+      // metalApiConfig,
       // ],
-      load: [fusionAuthConfig, bunnyConfig, nodeMailerConfig],
+      load: [
+        fusionAuthConfig,
+        bunnyConfig,
+        nodeMailerConfig,
+        gapiConfig,
+        twilioConfig,
+      ],
       isGlobal: true,
     }),
 

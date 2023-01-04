@@ -7,6 +7,7 @@ import { PaytabsModule } from '../libs/paytabs/paytabs.module';
 import { StripeModule } from '../libs/stripe/stripe.module';
 import { GoogleCalendarModule } from '../libs/google-calendar/google-calendar.module';
 import { GoogleOAuth2Module } from '../libs/google-oauth2/google-oauth2.module';
+import { TwilioModule } from '../libs/twilio/twilio.module';
 // import { EventsModule } from '../tender-events-gateway/tender-events.module';
 
 @Module({
@@ -19,6 +20,7 @@ import { GoogleOAuth2Module } from '../libs/google-oauth2/google-oauth2.module';
     StripeModule,
     GoogleCalendarModule,
     GoogleOAuth2Module,
+    TwilioModule,
     // EventsModule, // socket io for real time events (tender)
   ],
 })

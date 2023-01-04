@@ -208,7 +208,10 @@ export class CampaignService {
             image.newImage.imageExtension,
             campaignId,
           );
-          const binary = Buffer.from(image.newImage.base64Data, 'base64');
+          const binary = Buffer.from(
+            image.newImage.base64Data.replace(/^data:.*;base64,/, ''),
+            'base64',
+          );
           const imageUpload = await this.bunnyService.uploadImage(
             imagePath,
             binary,

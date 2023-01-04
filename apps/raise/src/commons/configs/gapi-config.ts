@@ -27,11 +27,11 @@ export const gapiConfig = registerAs('gapiConfig', (): IGapiConfig => {
   };
 
   const schema = Joi.object<IGapiConfig>({
-    clientId: baseJoiRequiredUrl('GAPI_CLIENT_ID'),
+    clientId: baseJoiRequiredString('GAPI_CLIENT_ID'),
     projectId: baseJoiRequiredString('GAPI_PROJECT_ID'),
-    authUri: baseJoiRequiredString('GAPI_AUTH_URI'),
-    tokenUri: baseJoiRequiredString('GAPI_TOKEN_URI'),
-    authProviderX509CertUrl: baseJoiRequiredString(
+    authUri: baseJoiRequiredUrl('GAPI_AUTH_URI'),
+    tokenUri: baseJoiRequiredUrl('GAPI_TOKEN_URI'),
+    authProviderX509CertUrl: baseJoiRequiredUrl(
       'GAPI_AUTH_PROVIDER_X509_CERT_URL',
     ),
     clientSecret: baseJoiRequiredString('GAPI_CLIENT_SECRET'),

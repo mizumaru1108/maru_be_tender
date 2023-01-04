@@ -6,7 +6,10 @@ import {
 import { appointment, Prisma } from '@prisma/client';
 
 import { v4 as uuidv4 } from 'uuid';
+import { SendEmailDto } from '../../../libs/email/dtos/requests/send-email.dto';
+import { EmailService } from '../../../libs/email/email.service';
 import { GoogleCalendarService } from '../../../libs/google-calendar/google-calendar.service';
+import { TwilioService } from '../../../libs/twilio/services/twilio.service';
 import { compareTime } from '../../../tender-commons/utils/time-compare';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import { TenderUserRepository } from '../../../tender-user/user/repositories/tender-user.repository';
@@ -18,9 +21,11 @@ import { TenderAppointmentRepository } from '../repositories/tender-appointment.
 @Injectable()
 export class TenderAppointmentService {
   constructor(
+    private readonly googleCalendarService: GoogleCalendarService,
+    private readonly emailService: EmailService,
+    private readonly twilioService: TwilioService,
     private readonly tenderAppointmentRepository: TenderAppointmentRepository,
     private readonly tenderUserRepository: TenderUserRepository,
-    private readonly googleCalendarService: GoogleCalendarService,
   ) {}
 
   async createAppointment(
@@ -126,7 +131,59 @@ export class TenderAppointmentService {
         appointmentCreatePayload,
       );
 
+    // send email to client and the employee
+    let subject = `Tender's New Appointment`;
+    let clientContent = `New Appointment request from ${currentUser.email}, on ${dayOfWeek}, ${date} at ${start_time} - ${end_time}`;
+    let employeeContent = `Successfully sent appointment invitation to ${client.email}, details:  ${dayOfWeek}, ${date}  at ${start_time} - ${end_time}`;
+
+    const clientEmailPayload: SendEmailDto = {
+      mailType: 'plain',
+      to: appointment.client.email,
+      from: 'no-reply@hcharity.org',
+      content: clientContent,
+    };
+    const employeeEmailPayload: SendEmailDto = {
+      mailType: 'plain',
+      to: appointment.employee.email,
+      subject,
+      content: employeeContent,
+      from: 'no-reply@hcharity.org',
+    };
+
+    this.emailService.sendMail(clientEmailPayload);
+    this.emailService.sendMail(employeeEmailPayload);
+
+    // if (appointment.client.mobile_number && client.mobile_number !== '') {
+    //   this.twilioService.sendSMS({
+    //     to: appointment.client.mobile_number,
+    //     body: subject + ',' + clientContent,
+    //   });
+    // }
+    // if (
+    //   appointment.employee.mobile_number &&
+    //   appointment.employee.mobile_number !== ''
+    // ) {
+    //   this.twilioService.sendSMS({
+    //     to: appointment.employee.mobile_number,
+    //     body: subject + ',' + employeeContent,
+    //   });
+    // }
+
+    // const twilioResponse = this.twilioService.sendSMSAsync({
+    //   to: '+6285718530636',
+    //   body: subject + ',' + employeeContent,
+    // });
+    // console.log('twilioResponse', twilioResponse);
+
     return appointment;
+  }
+
+  async test() {
+    const twilioResponse = this.twilioService.sendSMSAsync({
+      to: '+6285718530636',
+      body: 'testing sms',
+    });
+    console.log('twilioResponse', twilioResponse);
   }
 
   async responseInvitation(
@@ -146,7 +203,7 @@ export class TenderAppointmentService {
         currentUser.choosenRole,
         request.appointmentId,
       );
-    console.log('appointment', appointment);
+    // console.log('appointment', appointment);
     if (!appointment) {
       throw new NotFoundException('Appointment not found!');
     }
@@ -169,6 +226,61 @@ export class TenderAppointmentService {
         appointment.id,
         updatePayload,
       );
+
+    const {
+      date,
+      day,
+      start_time,
+      end_time,
+      meeting_url,
+      client,
+      employee,
+      updated_at,
+    } = updatedAppointment;
+
+    let clientEmailPayload: SendEmailDto = {
+      mailType: 'plain',
+      to: client.email,
+      from: 'no-reply@hcharity.org',
+    };
+    let employeeEmailPayload: SendEmailDto = {
+      mailType: 'plain',
+      to: employee.email,
+      from: 'no-reply@hcharity.org',
+    };
+
+    if (request.response === 'declined') {
+      clientEmailPayload.subject = "Tender's Appointment Declined";
+      clientEmailPayload.content = `Your appointment with ${
+        employee.email
+      } on ${day}, ${date} at ${start_time} - ${end_time} has been cancelled at ${
+        new Date(updated_at!).toLocaleDateString
+      }. Reason: ${request.reject_reason}`;
+
+      employeeEmailPayload.subject = "Tender's Appointment Declined";
+      employeeEmailPayload.content = `Your appointment request with ${
+        client.email
+      } on ${day}, ${date} at ${start_time} - ${end_time} has been declined at ${
+        new Date(updated_at!).toLocaleDateString
+      }. Reason: ${request.reject_reason}`;
+    } else if (request.response === 'confirmed') {
+      clientEmailPayload.subject = "Tender's Appointment Confirmed";
+      clientEmailPayload.content = `Your appointment request with ${
+        employee.email
+      } on ${day}, ${date} at ${start_time} - ${end_time} has been confirmed at ${
+        new Date(updated_at!).toLocaleDateString
+      }. Meeting url: ${meeting_url}`;
+
+      employeeEmailPayload.subject = "Tender's Appointment Confirmed";
+      employeeEmailPayload.content = `Your appointment request with ${
+        client.email
+      } on ${day}, ${date} at ${start_time} - ${end_time} has been confirmed at ${
+        new Date(updated_at!).toLocaleDateString
+      }. Meeting url: ${meeting_url}`;
+    }
+
+    this.emailService.sendMail(clientEmailPayload);
+    this.emailService.sendMail(employeeEmailPayload);
 
     return updatedAppointment;
   }

@@ -235,7 +235,7 @@ model proposal_item_budget {
   explanation String
   clause      String   @db.Char(255)
   proposal_id String
-  proposal    proposal @relation(fields: [proposal_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "detail_project_budget_proposal_id_fkey")
+  proposal    proposal @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
 }
 
 model proposal_log {
@@ -292,6 +292,8 @@ model user {
   employees_permissions_employees_permissionsTouser   employees_permissions[]
   message_messageTouser                               message[]
   message_message_receiver_idTouser                   message[]               @relation("message_receiver_idTouser")
+  notification_notification_employee_idTouser         notification[]          @relation("notification_employee_idTouser")
+  notification_notification_user_idTouser             notification[]          @relation("notification_user_idTouser")
   proposal                                            proposal[]
   proposal_follow_up_proposal_follow_up_user_idTouser proposal_follow_up[]    @relation("proposal_follow_up_user_idTouser")
   proposal_log                                        proposal_log[]
@@ -657,4 +659,17 @@ model support_goal {
   id       String     @id
   title    String?    @unique
   proposal proposal[]
+}
+
+model notification {
+  id                                  String  @id
+  content                             String  @db.VarChar
+  proposal_id                         String?
+  room_id                             String?
+  message_id                          String?
+  user_id                             String
+  employee_id                         String?
+  notification_type                   String? @db.VarChar
+  user_notification_employee_idTouser user?   @relation("notification_employee_idTouser", fields: [employee_id], references: [id], onDelete: Cascade)
+  user_notification_user_idTouser     user    @relation("notification_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
 }
