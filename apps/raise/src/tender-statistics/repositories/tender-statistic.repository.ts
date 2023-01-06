@@ -3,7 +3,9 @@ import { Prisma } from '@prisma/client';
 import { ROOT_LOGGER } from '../../libs/root-logger';
 import { PrismaService } from '../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
+import { BaseStatisticFilter } from '../dtos/requests/base-statistic-filter.dto';
 import { GetBudgetInfoDto } from '../dtos/requests/get-budget-info.dto';
+import { GetRawBeneficiariesDataResponseDto } from '../dtos/responses/get-raw-beneficiaries-data-response.dto';
 
 @Injectable()
 export class TenderStatisticsRepository {
@@ -11,6 +13,56 @@ export class TenderStatisticsRepository {
     'log.logger': TenderStatisticsRepository.name,
   });
   constructor(private readonly prismaService: PrismaService) {}
+
+  async getRawBeneficiariesData(
+    filter: BaseStatisticFilter,
+  ): Promise<GetRawBeneficiariesDataResponseDto[]> {
+    const { start_date, end_date } = filter;
+    let query: Prisma.proposalWhereInput = {};
+
+    if (start_date) {
+      query = {
+        ...query,
+        created_at: {
+          gte: new Date(start_date),
+        },
+      };
+    }
+
+    if (end_date) {
+      query = {
+        ...query,
+        created_at: {
+          lte: new Date(end_date),
+        },
+      };
+    }
+
+    try {
+      return await this.prismaService.proposal.findMany({
+        where: {
+          ...query,
+          project_track: {
+            not: null, // already bypass moderator (approved by moderator)
+            notIn: ['GENERAL', 'DEFAULT_TRACK'], // already bypass moderator (approved by moderator)
+          },
+        },
+        select: {
+          project_track: true,
+          num_ofproject_binicficiaries: true,
+          project_beneficiaries: true,
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderStatisticsRepository.name,
+        'findUsers Error:',
+        `finding users!`,
+      );
+      throw theError;
+    }
+  }
 
   async getBudgetInfo(filter: GetBudgetInfoDto): Promise<
     {
@@ -24,6 +76,8 @@ export class TenderStatisticsRepository {
       proposal_item_budget: {
         id: string;
         amount: Prisma.Decimal | null;
+        created_at: Date | null;
+        updated_at: Date | null;
       }[];
     }[]
   > {
@@ -68,6 +122,8 @@ export class TenderStatisticsRepository {
             select: {
               id: true,
               amount: true,
+              created_at: true,
+              updated_at: true,
             },
           },
         },

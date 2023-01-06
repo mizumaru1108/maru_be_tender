@@ -3,10 +3,6 @@ import { Prisma, schedule } from '@prisma/client';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
-import {
-  CreateScheduleDto,
-  CreateSchedulePayload,
-} from '../dtos/requests/create-schedule-request.dto';
 import { CreateScheduleResponseDto } from '../dtos/responses/create-schedule-response.dto';
 
 @Injectable()

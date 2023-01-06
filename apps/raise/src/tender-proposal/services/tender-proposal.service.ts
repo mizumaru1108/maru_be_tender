@@ -202,6 +202,8 @@ export class TenderProposalService {
             amount: new Prisma.Decimal(item_budget.amount),
             clause: item_budget.clause,
             explanation: item_budget.explanation,
+            created_at: new Date(),
+            updated_at: new Date(),
           };
           return itemBudget;
         },

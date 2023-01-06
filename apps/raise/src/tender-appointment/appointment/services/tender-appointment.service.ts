@@ -11,6 +11,9 @@ import { EmailService } from '../../../libs/email/email.service';
 import { GoogleCalendarService } from '../../../libs/google-calendar/google-calendar.service';
 import { TwilioService } from '../../../libs/twilio/services/twilio.service';
 import { compareTime } from '../../../tender-commons/utils/time-compare';
+import { CreateManyNotificationDto } from '../../../tender-notification/dtos/requests/create-many-notification.dto';
+import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
+import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import { TenderUserRepository } from '../../../tender-user/user/repositories/tender-user.repository';
 import { AppointmentFilterRequest } from '../dtos/requests/appointment-filter-request.dto';
@@ -24,6 +27,7 @@ export class TenderAppointmentService {
     private readonly googleCalendarService: GoogleCalendarService,
     private readonly emailService: EmailService,
     private readonly twilioService: TwilioService,
+    private readonly tenderNotificationService: TenderNotificationService,
     private readonly tenderAppointmentRepository: TenderAppointmentRepository,
     private readonly tenderUserRepository: TenderUserRepository,
   ) {}
@@ -131,11 +135,12 @@ export class TenderAppointmentService {
         appointmentCreatePayload,
       );
 
-    // send email to client and the employee
+    // Notification
     let subject = `Tender's New Appointment`;
     let clientContent = `New Appointment request from ${currentUser.email}, on ${dayOfWeek}, ${date} at ${start_time} - ${end_time}`;
     let employeeContent = `Successfully sent appointment invitation to ${client.email}, details:  ${dayOfWeek}, ${date}  at ${start_time} - ${end_time}`;
 
+    // via email
     const clientEmailPayload: SendEmailDto = {
       mailType: 'plain',
       to: appointment.client.email,
@@ -153,6 +158,28 @@ export class TenderAppointmentService {
     this.emailService.sendMail(clientEmailPayload);
     this.emailService.sendMail(employeeEmailPayload);
 
+    // via web app
+    const createNotifPayload: CreateManyNotificationDto = {
+      payloads: [
+        {
+          type: 'APPOINTMENT',
+          user_id: appointment.client.id,
+          appointment_id: appointment.id,
+          content: clientContent,
+          subject,
+        },
+        {
+          type: 'APPOINTMENT',
+          user_id: appointment.employee.id,
+          appointment_id: appointment.id,
+          content: employeeContent,
+          subject,
+        },
+      ],
+    };
+    await this.tenderNotificationService.createMany(createNotifPayload);
+
+    // via sms
     // if (appointment.client.mobile_number && client.mobile_number !== '') {
     //   this.twilioService.sendSMS({
     //     to: appointment.client.mobile_number,
@@ -249,7 +276,11 @@ export class TenderAppointmentService {
       from: 'no-reply@hcharity.org',
     };
 
+    let clientNotif: CreateNotificationDto | undefined = undefined;
+    let employeeNotif: CreateNotificationDto | undefined = undefined;
+
     if (request.response === 'declined') {
+      // client payload
       clientEmailPayload.subject = "Tender's Appointment Declined";
       clientEmailPayload.content = `Your appointment with ${
         employee.email
@@ -257,13 +288,33 @@ export class TenderAppointmentService {
         new Date(updated_at!).toLocaleDateString
       }. Reason: ${request.reject_reason}`;
 
+      clientNotif = {
+        type: 'APPOINTMENT',
+        user_id: client.id,
+        appointment_id: appointment.id,
+        subject: clientEmailPayload.subject,
+        content: clientEmailPayload.content,
+      };
+      // client payload
+
+      // employee payload
       employeeEmailPayload.subject = "Tender's Appointment Declined";
       employeeEmailPayload.content = `Your appointment request with ${
         client.email
       } on ${day}, ${date} at ${start_time} - ${end_time} has been declined at ${
         new Date(updated_at!).toLocaleDateString
       }. Reason: ${request.reject_reason}`;
+
+      employeeNotif = {
+        type: 'APPOINTMENT',
+        user_id: employee.id,
+        appointment_id: appointment.id,
+        subject: employeeEmailPayload.subject,
+        content: employeeEmailPayload.content,
+      };
+      // employee payload
     } else if (request.response === 'confirmed') {
+      // client payload
       clientEmailPayload.subject = "Tender's Appointment Confirmed";
       clientEmailPayload.content = `Your appointment request with ${
         employee.email
@@ -271,16 +322,43 @@ export class TenderAppointmentService {
         new Date(updated_at!).toLocaleDateString
       }. Meeting url: ${meeting_url}`;
 
+      clientNotif = {
+        type: 'APPOINTMENT',
+        user_id: client.id,
+        appointment_id: appointment.id,
+        subject: clientEmailPayload.subject,
+        content: clientEmailPayload.content,
+      };
+      // client payload
+
+      // employee payload
       employeeEmailPayload.subject = "Tender's Appointment Confirmed";
       employeeEmailPayload.content = `Your appointment request with ${
         client.email
       } on ${day}, ${date} at ${start_time} - ${end_time} has been confirmed at ${
         new Date(updated_at!).toLocaleDateString
       }. Meeting url: ${meeting_url}`;
+
+      employeeNotif = {
+        type: 'APPOINTMENT',
+        user_id: employee.id,
+        appointment_id: appointment.id,
+        subject: employeeEmailPayload.subject,
+        content: employeeEmailPayload.content,
+      };
+      // employee payload
     }
 
+    // send email
     this.emailService.sendMail(clientEmailPayload);
     this.emailService.sendMail(employeeEmailPayload);
+
+    // send web app notif
+    if (clientNotif && employeeNotif) {
+      await this.tenderNotificationService.createMany({
+        payloads: [clientNotif, employeeNotif],
+      });
+    }
 
     return updatedAppointment;
   }

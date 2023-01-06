@@ -1,9 +1,15 @@
-import { Injectable, UseGuards } from '@nestjs/common';
+import { BadRequestException, Injectable, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../../auth/jwt.guard';
 import { PrismaService } from '../../prisma/prisma.service';
 import _ from 'lodash';
 import { GetBudgetInfoDto } from '../dtos/requests/get-budget-info.dto';
 import { TenderStatisticsRepository } from '../repositories/tender-statistic.repository';
+import { BaseStatisticFilter } from '../dtos/requests/base-statistic-filter.dto';
+import {
+  GetBeneficiariesReportDto,
+  IGetBeneficiariesByTrackDto,
+  IGetBeneficiariesByTypeDto,
+} from '../dtos/responses/get-beneficiaries-report.dto';
 
 @Injectable()
 export class TenderStatisticsService {
@@ -307,6 +313,7 @@ export class TenderStatisticsService {
     const nestedPartnersRegion = {} as any;
     const partnersGovernorate = {} as any;
     const nestedPartnersGovernorate = {} as any;
+
     for (const US of userStatus) {
       const pendingUsers = await this.prismaService.client_data.findMany({
         where: {
@@ -332,11 +339,13 @@ export class TenderStatisticsService {
           },
         },
       });
+
       for (const PU of pendingUsers) {
         if (!partnersStatus[US.title]) partnersStatus[US.title] = 0;
         if (PU.user.status_id === US.id) {
           partnersStatus[US.title] = partnersStatus[US.title] + 1;
         }
+
         if (!PU.region) return;
         if (!partnersRegion[PU.region]) {
           nestedPartnersRegion[US.title] = 1;
@@ -352,6 +361,7 @@ export class TenderStatisticsService {
               partnersRegion[PU.region][US.title] + 1;
           }
         }
+
         if (!PU.governorate) return;
         if (!partnersGovernorate[PU.governorate]) {
           nestedPartnersGovernorate[US.title] = 1;
@@ -382,10 +392,197 @@ export class TenderStatisticsService {
     return response;
   }
 
+  async getBeneficiariesReport(
+    filter: BaseStatisticFilter,
+  ): Promise<GetBeneficiariesReportDto> {
+    // Get raw data from repository (filtering will be done in the repository)
+    const proposals =
+      await this.tenderStatisticRepository.getRawBeneficiariesData(filter);
+
+    // Initialize empty objects for by_track and by_type data
+    const byTrack: { [key: string]: IGetBeneficiariesByTrackDto } = {};
+    const byType: { [key: string]: IGetBeneficiariesByTypeDto } = {};
+
+    // Loop through raw data
+    for (let i = 0; i < proposals.length; i++) {
+      const proposal = proposals[i];
+      // If project_track and num_ofproject_binicficiaries are not null, add data to byTrack object
+      if (
+        proposal.project_track != null &&
+        proposal.num_ofproject_binicficiaries != null
+      ) {
+        // Check if project_track exists in byTrack object
+        if (!byTrack[proposal.project_track]) {
+          // If project_track does not exist in byTrack object, initialize it with track and total_project_beneficiaries values
+          byTrack[proposal.project_track] = {
+            track: proposal.project_track,
+            total_project_beneficiaries: 0, // if project_track does not exist, initialize total_project_beneficiaries with 0
+          };
+        }
+        // Add num_ofproject_binicficiaries value to total_project_beneficiaries for the current project_track
+        byTrack[proposal.project_track].total_project_beneficiaries +=
+          proposal.num_ofproject_binicficiaries;
+      }
+
+      // basicly same logic as above
+      if (
+        proposal.project_beneficiaries != null &&
+        proposal.num_ofproject_binicficiaries != null
+      ) {
+        if (!byType[proposal.project_beneficiaries]) {
+          byType[proposal.project_beneficiaries] = {
+            type: proposal.project_beneficiaries,
+            total_project_beneficiaries: 0,
+          };
+        }
+        byType[proposal.project_beneficiaries].total_project_beneficiaries +=
+          proposal.num_ofproject_binicficiaries;
+      }
+    }
+
+    // Return response with byTrack and byType data
+    return {
+      by_track: Object.values(byTrack),
+      by_type: Object.values(byType),
+    };
+  }
+
   async getBudgetInfo(request: GetBudgetInfoDto) {
     const proposals = await this.tenderStatisticRepository.getBudgetInfo(
       request,
     );
-    return proposals;
+
+    type GroupedProposal = {
+      project_track: string | null;
+      total_budget: number;
+      spended_budget: number;
+      spended_budget_last_week: number;
+      reserved_budget: number;
+      reserved_budget_last_week: number;
+    };
+
+    const groupedData: GroupedProposal[] = proposals.reduce(
+      (previousData, proposal) => {
+        const existingGroup = previousData.find(
+          (group) => group.project_track === proposal.project_track,
+        );
+        if (existingGroup) {
+          existingGroup.total_budget += Number(
+            proposal.amount_required_fsupport,
+          );
+          existingGroup.spended_budget += proposal.proposal_item_budget.reduce(
+            (sum, item) => sum + Number(item.amount),
+            0,
+          );
+          // get last week spended budget if proposal.proposal_item_budget.created_at is in last week
+          // then add it to existingGroup.spended_budget_last_week if not then add 0
+          existingGroup.spended_budget_last_week +=
+            proposal.proposal_item_budget.reduce((sum, item) => {
+              // get the last week from the request.end_date if exist,
+              // if not get from request.start,
+              // if both not exist, get from date now
+              let lastWeek: Date;
+              if (request.end_date && request.start_date) {
+                lastWeek = new Date(request.end_date);
+              } else if (request.start_date && !request.end_date) {
+                lastWeek = new Date(request.start_date);
+              } else {
+                lastWeek = new Date();
+              }
+              lastWeek.setDate(lastWeek.getDate() - 7);
+              const date = new Date(item.created_at!);
+              if (date > lastWeek) {
+                return sum + Number(item.amount);
+              }
+              return sum;
+            }, 0) || 0;
+          existingGroup.reserved_budget =
+            existingGroup.total_budget - existingGroup.spended_budget;
+          existingGroup.reserved_budget_last_week =
+            existingGroup.total_budget - existingGroup.spended_budget_last_week;
+          return previousData;
+        } else {
+          previousData.push({
+            project_track: proposal.project_track,
+            total_budget: Number(proposal.amount_required_fsupport),
+            spended_budget: proposal.proposal_item_budget.reduce(
+              (sum, item) => sum + Number(item.amount),
+              0,
+            ),
+            spended_budget_last_week: proposal.proposal_item_budget.reduce(
+              (sum, item) => {
+                //   const date = new Date(item.created_at!);
+                //   const lastWeek = new Date();
+                //   lastWeek.setDate(lastWeek.getDate() - 7);
+                //   if (date > lastWeek) {
+                //     return sum + Number(item.amount);
+                //   }
+                //   return sum;
+                // },
+                // 0,
+
+                // get the last week from the request.end_date if exist,
+                // if not get from request.start,
+                // if both not exist, get from date now
+                let lastWeek: Date;
+                if (request.end_date && request.start_date) {
+                  lastWeek = new Date(request.end_date);
+                } else if (request.start_date && !request.end_date) {
+                  lastWeek = new Date(request.start_date);
+                } else {
+                  lastWeek = new Date();
+                }
+                lastWeek.setDate(lastWeek.getDate() - 7);
+                const date = new Date(item.created_at!);
+                if (date > lastWeek) {
+                  return sum + Number(item.amount);
+                }
+                return sum;
+              },
+              0,
+            ),
+            reserved_budget:
+              0 -
+              proposal.proposal_item_budget.reduce(
+                (sum, item) => sum + Number(item.amount),
+                0,
+              ),
+            reserved_budget_last_week:
+              0 -
+              proposal.proposal_item_budget.reduce((sum, item) => {
+                // const date = new Date(item.created_at!);
+                // const lastWeek = new Date();
+                // lastWeek.setDate(lastWeek.getDate() - 7);
+                // if (date > lastWeek) {
+                //   return sum + Number(item.amount);
+                // }
+                // return sum;
+
+                // get the last week from the request.end_date if exist,
+                // if not get from request.start,
+                // if both not exist, get from date now
+                let lastWeek: Date;
+                if (request.end_date && request.start_date) {
+                  lastWeek = new Date(request.end_date);
+                } else if (request.start_date && !request.end_date) {
+                  lastWeek = new Date(request.start_date);
+                } else {
+                  lastWeek = new Date();
+                }
+                lastWeek.setDate(lastWeek.getDate() - 7);
+                const date = new Date(item.created_at!);
+                if (date > lastWeek) {
+                  return sum + Number(item.amount);
+                }
+                return sum;
+              }, 0),
+          });
+        }
+        return previousData;
+      },
+      [] as GroupedProposal[],
+    );
+
+    return groupedData;
   }
 }
