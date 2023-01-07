@@ -41,7 +41,7 @@ interface Props extends CardProps {
   }[];
 }
 
-export default function PtojectsNumbers({
+export default function ProjectsNumbers({
   title,
   subheader,
   chartColors,
@@ -55,10 +55,14 @@ export default function PtojectsNumbers({
   const chartSeries = chartData.map((i) => i.value);
 
   const chartOptions = merge(BaseOptionChart(), {
+    height: 275,
     colors: chartColors,
     labels: chartLabels,
     stroke: { colors: [theme.palette.background.paper] },
-    legend: { floating: true, horizontalAlign: 'center' },
+    legend: {
+      floating: true,
+      horizontalAlign: 'center',
+    },
     dataLabels: { enabled: true, dropShadow: { enabled: false } },
     tooltip: {
       fillSeriesColor: false,
@@ -78,7 +82,7 @@ export default function PtojectsNumbers({
     <Stack direction="column">
       <Typography variant="h4">{title}</Typography>
       <ChartWrapperStyle>
-        <ReactApexChart type="pie" series={chartSeries} options={chartOptions} height={280} />
+        <ReactApexChart type="pie" series={chartSeries} options={chartOptions} height={275} />
       </ChartWrapperStyle>
     </Stack>
   );

@@ -78,9 +78,9 @@ function PortalReports() {
       <Container>
         <ContentStyle>
           <Grid container direction="row">
-            <Grid item xs={12} md={6}>
+            {/* <Grid item xs={12} md={6}>
               <DonutChart data={dataAccount} headLine="حسب حالة الشريك" type="accounts" />
-            </Grid>
+            </Grid> */}
             <Grid item xs={12} md={6}>
               <BarChart
                 headline={translate('ceo_portal_reports.bar_chart.headline.partners')}

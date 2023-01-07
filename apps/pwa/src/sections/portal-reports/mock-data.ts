@@ -155,3 +155,51 @@ export const dataProject = {
     value: 25,
   },
 };
+
+//
+export const initDonatValue = [
+  {
+    key: 'BAPTISMS',
+    ongoing: {
+      label: 'Ongoing',
+      value: 0,
+    },
+    canceled: {
+      label: 'Canceled',
+      value: 0,
+    },
+  },
+  {
+    key: 'MOSQUES',
+    ongoing: {
+      label: 'Ongoing',
+      value: 0,
+    },
+    canceled: {
+      label: 'Canceled',
+      value: 0,
+    },
+  },
+  {
+    key: 'CONCESSIONAL_GRANTS',
+    ongoing: {
+      label: 'Ongoing',
+      value: 0,
+    },
+    canceled: {
+      label: 'Canceled',
+      value: 0,
+    },
+  },
+  {
+    key: 'INITIATIVES',
+    ongoing: {
+      label: 'Ongoing',
+      value: 0,
+    },
+    canceled: {
+      label: 'Canceled',
+      value: 0,
+    },
+  },
+];

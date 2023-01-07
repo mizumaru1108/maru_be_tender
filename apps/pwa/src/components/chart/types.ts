@@ -23,13 +23,10 @@ interface ValueChartDonut {
   value: number;
 }
 interface IDataChart {
-  accepted: ValueChartDonut;
-  processing: ValueChartDonut;
-  pending: ValueChartDonut;
-  rejected: ValueChartDonut;
+  ongoing: ValueChartDonut;
+  canceled: ValueChartDonut;
 }
 export interface IDonatChartProps {
   data: IDataChart;
-  type: 'projects' | 'accounts';
-  headLine: string;
+  headline: string;
 }

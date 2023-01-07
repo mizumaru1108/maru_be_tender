@@ -19,22 +19,11 @@ export default function BarChart({
   barRenderBorderRadius,
 }: IBarCartProps) {
   const { translate } = useLocales();
-  const defaultSeries: ApexAxisChartSeries | ApexNonAxisChartSeries = [
-    {
-      name: 'Last Month',
-      data: [10, 13, 25, 23],
-    },
-    {
-      name: 'This Month',
-      data: [13, 33, 15, 18],
-    },
-  ];
 
   var options: ApexOptions = {
     chart: {
       type: 'bar',
       height: 400,
-      // height: !customApexChartOptions && chartBarHeight ? chartBarHeight : 350,
       width: !customApexChartOptions && chartBarWidth ? chartBarWidth : '100%',
     },
     plotOptions: barRenderOptions ?? {
@@ -47,7 +36,7 @@ export default function BarChart({
     dataLabels: {
       enabled: false,
     },
-    colors: customBarColors ?? (data && data.length === 1) ? ['#0E8478'] : ['#1E1E1E', '#0E8478'],
+    colors: customBarColors ?? (data && data.length === 1) ? ['#0E8478'] : ['#0E8478', '#FF4842'],
     stroke: {
       show: true,
       width: 2,
@@ -70,7 +59,7 @@ export default function BarChart({
     tooltip: {
       y: {
         formatter: function (val) {
-          return '$ ' + val + ' thousands';
+          return `${val}`;
         },
       },
     },
@@ -78,10 +67,10 @@ export default function BarChart({
 
   return (
     <Box>
-      <Typography variant="h3" sx={{ padding: '10px' }}>
+      <Typography variant="h4" sx={{ padding: '10px' }}>
         {translate(headline)}
       </Typography>
-      <Chart options={options} series={data ?? defaultSeries} type="bar" />
+      <Chart options={options} series={data} type="bar" />
     </Box>
   );
 }

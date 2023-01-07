@@ -7,12 +7,20 @@ import useLocales from 'hooks/useLocales';
 import merge from 'lodash/merge';
 import ReactApexChart from 'react-apexcharts';
 import { fNumber } from 'utils/formatNumber';
+//
+import { IBaseLabelValue } from './types';
 
 const CHART_HEIGHT = 392;
 const LEGEND_HEIGHT = 72;
 const CHART_WIDTH = 600;
 
-export default function ProjectBenidiciaresKinds({ data, type, headLine }: any) {
+export default function ProjectBenidiciaresKinds({
+  data,
+  headLine,
+}: {
+  data: IBaseLabelValue[];
+  headLine: string;
+}) {
   const { translate, currentLang } = useLocales();
   const theme = useTheme();
   const ChartWrapperStyle = styled('div')(({ theme }) => ({
@@ -28,7 +36,7 @@ export default function ProjectBenidiciaresKinds({ data, type, headLine }: any) 
       flexWrap: 'wrap !important',
       [theme.breakpoints.up('lg')]: {
         flexWrap: 'wrap',
-        height: 250,
+        height: 200,
         width: '50%',
       },
     },
@@ -46,24 +54,12 @@ export default function ProjectBenidiciaresKinds({ data, type, headLine }: any) 
           : `translateX(${-55}%) translateY(${0})`,
     },
   }));
-  const chartData = [
-    {
-      label: data.men.label,
-      value: data.men.value,
-    },
-    {
-      label: data.teen.label,
-      value: data.teen.value,
-    },
-    {
-      label: data.women.label,
-      value: data.women.value,
-    },
-  ];
-  const chartSeries = chartData.map((i) => i.value);
-  const chartLabels = chartData.map((i) => i.label);
+  const chartData = data;
+  const chartSeries = chartData.map((el) => el.value);
+  const chartLabels = chartData.map((el) => el.label);
+
   const chartOptions: ApexOptions = {
-    colors: ['#0E8478', '#13B2A2', '#FF4842', '#FFC107'],
+    colors: ['#0E8478', '#FFC107', '#FF4842', '#13B2A2'],
     labels: chartLabels,
     legend: {
       show: true,
@@ -90,8 +86,7 @@ export default function ProjectBenidiciaresKinds({ data, type, headLine }: any) 
     },
     plotOptions: {
       pie: {
-        startAngle: 10,
-        endAngle: 300,
+        startAngle: 0,
         expandOnClick: false,
         donut: {
           size: '90%',
@@ -105,7 +100,7 @@ export default function ProjectBenidiciaresKinds({ data, type, headLine }: any) 
         {headLine}
       </Typography>
       <ChartWrapperStyle>
-        <ReactApexChart type="donut" series={chartSeries} options={chartOptions} height={280} />
+        <ReactApexChart type="donut" series={chartSeries} options={chartOptions} height={200} />
       </ChartWrapperStyle>
     </>
   );

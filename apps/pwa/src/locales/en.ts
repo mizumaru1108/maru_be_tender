@@ -869,6 +869,23 @@ const en = {
       conessional_track_budget: 'The concessional grant track budget',
       initiatives_track_budget: 'Initiatives track budget',
       complexity_track_budget: 'Complexity track budget',
+      total_number_of_request: 'The total number of requests',
+      authorities_label: 'According to the side',
+      by_regions: 'By Regions',
+      by_governorate: 'By Governorate',
+      ongoing: 'Ongoing',
+      canceled: 'Canceled',
+      empty_data: 'Data is empty.',
+      total_number_beneficiaries: 'Total number of project beneficiaries',
+      type_beneficiaries_project: 'Type of beneficiaries of the projects',
+      gender: {
+        general: 'General',
+        men: 'Men',
+        woman: 'Woman',
+        middle_aged: 'Teen',
+        kids: 'Kids',
+        elderly: 'Elderly',
+      },
     },
     form: {
       date_picker: {

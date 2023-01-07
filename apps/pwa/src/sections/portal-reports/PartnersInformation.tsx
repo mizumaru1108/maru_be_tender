@@ -67,7 +67,7 @@ function PartnersInformation() {
     <Box>
       <Grid container direction="row">
         <Grid item xs={12} md={6}>
-          <DonutChart data={dataAccount} headLine="حسب حالة الشريك" type="accounts" />
+          {/* <DonutChart data={dataAccount} headLine="حسب حالة الشريك" type="accounts" /> */}
         </Grid>
         <Grid item xs={12} md={6}>
           <BarChart

@@ -35,8 +35,8 @@ function CardTableBE({
   // The params that will be used with the query later on
   const [params, setParams] = useState({
     limit: limitShowCard ? limitShowCard : 6,
-    offset: 0,
-    order_by: { created_at: 'asc' },
+    // offset: (page - 1) * (limitShowCard ? limitShowCard : 6),
+    order_by: { created_at: 'desc' },
     where: whereFilterGenerator(
       Object.keys(filtersStateObjectArray).map((item, index) => filtersStateObjectArray[item])
     ),
@@ -54,7 +54,7 @@ function CardTableBE({
   const handleCloseFilter = () => setOpen(false);
 
   // It is used for the number of the pages that are rendered
-  const pagesNumber = Math.ceil(data?.data?.length / params.limit);
+  const pagesNumber = Math.ceil(data?.proposal_aggregate?.aggregate?.count / params.limit);
 
   // The data showed in a single page
   const dataSinglePage = data?.data.slice(
@@ -67,12 +67,14 @@ function CardTableBE({
     setParams((prevParams) => ({
       ...prevParams,
       limit: event.target.value as any,
+      offset: ((page - 1) * event.target.value) as number,
     }));
   };
 
   const alphabeticalOrderHandleChange = (event: React.MouseEvent<HTMLElement>) => {
     setParams((prevParams) => ({
       ...prevParams,
+      offset: (page - 1) * (limitShowCard ? limitShowCard : 6),
       order_by: {
         ...prevParams.order_by,
         project_name: alphabeticalOrderState === 'asc' ? 'desc' : 'asc',
@@ -158,7 +160,7 @@ function CardTableBE({
         ))}
       {data &&
         !fetching &&
-        dataSinglePage.map((item: any, index: any) => (
+        data?.data.map((item: any, index: any) => (
           <Grid item key={index} md={6} xs={12}>
             <ProjectTableBE
               {...item}
@@ -180,6 +182,11 @@ function CardTableBE({
                   key={index}
                   onClick={() => {
                     setPage(index + 1);
+                    setParams((prevParams) => ({
+                      ...prevParams,
+                      offset: (index + 1 - 1) * prevParams.limit,
+                    }));
+                    mutate({ requestPolicy: 'network-only' });
                   }}
                   sx={{
                     color: index === page - 1 ? '#fff' : 'rgba(147, 163, 176, 0.8)',

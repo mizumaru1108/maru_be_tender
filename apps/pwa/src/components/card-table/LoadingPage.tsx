@@ -3,7 +3,7 @@ import React from 'react';
 
 function LoadingPage() {
   return (
-    <Grid container md={12} xs={12}>
+    <Grid container>
       <Grid item md={6} xs={12}>
         <Skeleton
           variant="rectangular"

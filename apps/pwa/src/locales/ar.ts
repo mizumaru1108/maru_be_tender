@@ -929,6 +929,23 @@ const ar = {
       concessional_track_budget: 'ميزانية مسار المنح الميسر',
       initiatives_track_budget: 'ميزانية مسار المبادرات',
       complexity_track_budget: 'ميزانية مسار التعميدات',
+      total_number_of_request: 'العدد الكلي للطلبات',
+      authorities_label: 'حسب الجهة',
+      by_regions: 'حسب المناطق',
+      by_governorate: 'حسب المحافظة',
+      ongoing: 'جاري التنفيذ',
+      canceled: 'ألغيت',
+      empty_data: 'البيانات فارغة',
+      total_number_beneficiaries: 'العدد الكلي للمستفيدين من المشاريع',
+      type_beneficiaries_project: 'نوع المتسفيدين من المشاريع',
+      gender: {
+        general: 'أخرى',
+        men: 'رجال',
+        woman: 'فتيات',
+        middle_aged: 'شباب',
+        kids: 'أشبال',
+        elderly: 'كبار السن',
+      },
     },
     form: {
       date_picker: {
