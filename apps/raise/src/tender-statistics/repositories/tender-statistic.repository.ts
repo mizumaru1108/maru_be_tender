@@ -6,6 +6,8 @@ import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thro
 import { BaseStatisticFilter } from '../dtos/requests/base-statistic-filter.dto';
 import { GetBudgetInfoDto } from '../dtos/requests/get-budget-info.dto';
 import { GetRawBeneficiariesDataResponseDto } from '../dtos/responses/get-raw-beneficiaries-data-response.dto';
+import { GetRawPartnerDatasResponseDto } from '../dtos/responses/get-raw-partner-datas.dto';
+import { GetRawStatusDatasResponseDto } from '../dtos/responses/get-raw-status.datas.dto';
 
 @Injectable()
 export class TenderStatisticsRepository {
@@ -43,14 +45,111 @@ export class TenderStatisticsRepository {
         where: {
           ...query,
           project_track: {
-            not: null, // already bypass moderator (approved by moderator)
-            notIn: ['GENERAL', 'DEFAULT_TRACK'], // already bypass moderator (approved by moderator)
+            not: null,
+            notIn: ['GENERAL', 'DEFAULT_TRACK'],
+          },
+          project_manager_id: {
+            not: null,
+          },
+          supervisor_id: {
+            not: null,
+          },
+          outter_status: {
+            not: null,
+            notIn: ['CANCELLED', 'REJECTED'],
           },
         },
         select: {
           project_track: true,
           num_ofproject_binicficiaries: true,
           project_beneficiaries: true,
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderStatisticsRepository.name,
+        'findUsers Error:',
+        `finding users!`,
+      );
+      throw theError;
+    }
+  }
+
+  async getRawPartnersData(
+    filter: BaseStatisticFilter,
+  ): Promise<GetRawPartnerDatasResponseDto[]> {
+    try {
+      const { start_date, end_date } = filter;
+      let query: Prisma.userWhereInput = {};
+
+      if (start_date) {
+        query = {
+          ...query,
+          created_at: {
+            gte: new Date(start_date),
+          },
+        };
+      }
+
+      if (end_date) {
+        query = {
+          ...query,
+          created_at: {
+            lte: new Date(end_date),
+          },
+        };
+      }
+
+      const partners = await this.prismaService.user.findMany({
+        where: {
+          ...query,
+          roles: {
+            some: {
+              user_type_id: 'CLIENT',
+            },
+          },
+        },
+        select: {
+          roles: {
+            select: {
+              user_type_id: true,
+            },
+          },
+          status: {
+            select: {
+              id: true,
+            },
+          },
+          client_data: {
+            select: {
+              governorate: true,
+              region: true,
+            },
+          },
+          created_at: true,
+        },
+        orderBy: {
+          created_at: 'desc',
+        },
+      });
+      return partners;
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderStatisticsRepository.name,
+        'findUsers Error:',
+        `finding users!`,
+      );
+      throw theError;
+    }
+  }
+
+  async getRawUserStatus(): Promise<GetRawStatusDatasResponseDto[]> {
+    try {
+      return await this.prismaService.user_status.findMany({
+        select: {
+          id: true,
         },
       });
     } catch (error) {

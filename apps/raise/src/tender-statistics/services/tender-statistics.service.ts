@@ -1,15 +1,14 @@
-import { BadRequestException, Injectable, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../../auth/jwt.guard';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import _ from 'lodash';
-import { GetBudgetInfoDto } from '../dtos/requests/get-budget-info.dto';
-import { TenderStatisticsRepository } from '../repositories/tender-statistic.repository';
 import { BaseStatisticFilter } from '../dtos/requests/base-statistic-filter.dto';
+import { GetBudgetInfoDto } from '../dtos/requests/get-budget-info.dto';
 import {
   GetBeneficiariesReportDto,
   IGetBeneficiariesByTrackDto,
   IGetBeneficiariesByTypeDto,
 } from '../dtos/responses/get-beneficiaries-report.dto';
+import { GetPartnersStatisticResponseDto } from '../dtos/responses/get-partner-statistic.dto';
+import { TenderStatisticsRepository } from '../repositories/tender-statistic.repository';
 
 @Injectable()
 export class TenderStatisticsService {
@@ -390,6 +389,100 @@ export class TenderStatisticsService {
     response.partnersGovernorate = partnersGovernorate;
 
     return response;
+  }
+
+  async getPartnersStatistic(
+    filter: BaseStatisticFilter,
+  ): Promise<GetPartnersStatisticResponseDto> {
+    const partners = await this.tenderStatisticRepository.getRawPartnersData(
+      filter,
+    );
+
+    const latestPartnerCreatedDate = partners[0].created_at!;
+
+    const partnerStatus =
+      await this.tenderStatisticRepository.getRawUserStatus();
+
+    const byStatus = partnerStatus.map((status) => {
+      return {
+        label: status.id,
+        data_count: partners.filter(
+          (partner) => partner.status.id === status.id,
+        ).length,
+      };
+    });
+
+    const byRegion = Array.from(
+      new Set(partners.map((partner) => partner.client_data?.region)),
+    ).map((region) => {
+      const data = partners.filter(
+        (partner) => partner.client_data?.region === region,
+      );
+      return {
+        label: region || 'Region Not Set',
+        data_count: partnerStatus.map((status) => {
+          return {
+            label: status.id,
+            data_count: data.filter(
+              (partner) => partner.status.id === status.id,
+            ).length,
+          };
+        }),
+        total: data.length,
+      };
+    });
+
+    const byGovernorate = Array.from(
+      new Set(partners.map((partner) => partner.client_data?.governorate)),
+    ).map((governorate) => {
+      const data = partners.filter(
+        (partner) => partner.client_data?.governorate === governorate,
+      );
+      return {
+        label: governorate || 'Governorate Not Set',
+        data_count: partnerStatus.map((status) => {
+          return {
+            label: status.id,
+            data_count: data.filter(
+              (partner) => partner.status.id === status.id,
+            ).length,
+          };
+        }),
+        total: data.length,
+      };
+    });
+
+    const monthlyData = {
+      this_month: partnerStatus.map((status) => {
+        return {
+          label: status.id,
+          data_count: partners.filter(
+            (partner) =>
+              partner.status.id === status.id &&
+              partner.created_at!.getMonth() ===
+                latestPartnerCreatedDate.getMonth(),
+          ).length,
+        };
+      }),
+      last_month: partnerStatus.map((status) => {
+        return {
+          label: status.id,
+          data_count: partners.filter(
+            (partner) =>
+              partner.status.id === status.id &&
+              partner.created_at!.getMonth() ===
+                latestPartnerCreatedDate.getMonth() - 1,
+          ).length,
+        };
+      }),
+    };
+
+    return {
+      by_status: byStatus,
+      by_region: byRegion,
+      by_governorate: byGovernorate,
+      monthlyData: monthlyData,
+    };
   }
 
   async getBeneficiariesReport(

@@ -56,6 +56,29 @@ export class TenderStatisticsController {
     'tender_project_manager',
     'tender_project_supervisor',
   ) // only internal users
+  @Get('partners-section')
+  async getPartnersReport(@Query() query: BaseStatisticFilter) {
+    const allParntersStatistics =
+      await this.tenderStatisticsService.getPartnersStatistic(query);
+    return baseResponseHelper(
+      allParntersStatistics,
+      HttpStatus.OK,
+      'Beneficiaries Report Generated Successfully!',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles(
+    'tender_accounts_manager',
+    'tender_admin',
+    'tender_cashier',
+    'tender_ceo',
+    'tender_consultant',
+    'tender_finance',
+    'tender_moderator',
+    'tender_project_manager',
+    'tender_project_supervisor',
+  ) // only internal users
   @Get('benificiaries-report')
   async getProjectBeneficiariesReport(@Query() query: BaseStatisticFilter) {
     const allParntersStatistics =
