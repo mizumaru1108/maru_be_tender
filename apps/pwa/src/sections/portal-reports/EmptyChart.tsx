@@ -17,16 +17,7 @@ export default function EmptyChart({ title, type }: IPropsEmptyChart) {
 
   return (
     <Grid item md={type === 'bar' ? 12 : 6} xs={12}>
-      <Typography
-        variant="h4"
-        sx={{
-          ...(type === 'bar' && {
-            mt: 6,
-          }),
-        }}
-      >
-        {title}
-      </Typography>
+      <Typography variant="h4">{title}</Typography>
       {type !== 'bar' ? (
         <Stack
           direction="column"

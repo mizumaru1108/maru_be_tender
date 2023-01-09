@@ -12,7 +12,7 @@ import { IDonatChartProps } from './types';
 const CHART_HEIGHT = 200;
 const CHART_WIDTH = 600;
 
-export default function DonutChart({ headline, data }: IDonatChartProps) {
+export default function DonutChart({ headline, data, anotherData }: IDonatChartProps) {
   const { translate, currentLang } = useLocales();
   const theme = useTheme();
 
@@ -47,21 +47,29 @@ export default function DonutChart({ headline, data }: IDonatChartProps) {
       transform:
         currentLang.label === 'English'
           ? `translateX(${0}%) translateY(${0})`
-          : `translateX(${-55}%) translateY(${0})`,
+          : `translateX(${anotherData ? 55 : -55}%) translateY(${0})`,
     },
   }));
 
-  const chartData = [
-    { label: data.ongoing.label, value: data.ongoing.value },
-    { label: data.canceled.label, value: data.canceled.value },
-  ];
+  let newChartData, newChartSeries: number[], newChartLabels: string[];
 
-  const chartSeries = chartData.map((i) => i.value);
-  const chartLabels = chartData.map((i) => i.label);
+  if (anotherData && anotherData.length) {
+    newChartData = anotherData.map((v) => ({ label: translate(v.label), value: v.value }));
+    newChartSeries = anotherData.map((v) => v.value);
+    newChartLabels = anotherData.map((v) => translate(v.label));
+  } else {
+    newChartData = [
+      { label: translate(data?.ongoing.label), value: data?.ongoing.value },
+      { label: translate(data?.canceled.label), value: data?.canceled.value },
+    ];
+
+    newChartSeries = newChartData.map((i) => i.value!);
+    newChartLabels = newChartData.map((i) => translate(i.label));
+  }
 
   const chartOptions: ApexOptions = {
     colors: ['#0E8478', '#FF4842', '#FFC107', '#13B2A2'],
-    labels: chartLabels,
+    labels: newChartLabels,
     legend: {
       show: true,
       floating: false,
@@ -106,7 +114,7 @@ export default function DonutChart({ headline, data }: IDonatChartProps) {
         {headline}
       </Typography>
       <ChartWrapperStyle>
-        <ReactApexChart type="donut" series={chartSeries} options={chartOptions} height={200} />
+        <ReactApexChart type="donut" series={newChartSeries} options={chartOptions} height={200} />
       </ChartWrapperStyle>
     </>
   );

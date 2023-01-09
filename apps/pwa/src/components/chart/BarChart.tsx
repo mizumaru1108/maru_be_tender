@@ -20,10 +20,17 @@ export default function BarChart({
 }: IBarCartProps) {
   const { translate } = useLocales();
 
+  const xAxisDatasTranslate = xAxisDatas?.map((v) => translate(v));
+
+  const dataTranslate = data?.map((v: any) => ({
+    name: translate(v.name),
+    data: v.data,
+  }));
+
   var options: ApexOptions = {
     chart: {
       type: 'bar',
-      height: 400,
+      // height: 400,
       width: !customApexChartOptions && chartBarWidth ? chartBarWidth : '100%',
     },
     plotOptions: barRenderOptions ?? {
@@ -43,7 +50,7 @@ export default function BarChart({
       colors: ['transparent'],
     },
     xaxis: {
-      categories: xAxisDatas ?? [
+      categories: xAxisDatasTranslate ?? [
         'default data 1',
         'default data 2',
         'default data 3',
@@ -70,7 +77,7 @@ export default function BarChart({
       <Typography variant="h4" sx={{ padding: '10px' }}>
         {translate(headline)}
       </Typography>
-      <Chart options={options} series={data} type="bar" />
+      <Chart options={options} series={dataTranslate} type="bar" height={400} />
     </Box>
   );
 }

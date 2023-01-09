@@ -52,21 +52,6 @@ export default function ProjectsInformation({
   const [dataTrackBeneficiaries, setDataTrackBeneficiaries] = useState<IBaseLabelValue[] | []>([]);
   const [dataTypeBeneficiaries, setDataTypeBeneficiaries] = useState<IBaseLabelValue[] | []>([]);
 
-  const benificiaresDataKind = {
-    men: {
-      label: 'رجال',
-      value: 150,
-    },
-    teen: {
-      label: 'شباب',
-      value: 100,
-    },
-    women: {
-      label: 'فتيات',
-      value: 150,
-    },
-  };
-
   useEffect(() => {
     if (valueDataList && valueDataList.length) {
       const findTracks = valueDataList.find((el) => el.key === 'tracks')!;
@@ -81,11 +66,11 @@ export default function ProjectsInformation({
           return {
             key: el.key,
             ongoing: {
-              label: translate('section_portal_reports.heading.ongoing'),
+              label: 'section_portal_reports.heading.ongoing',
               value: ongoing,
             },
             canceled: {
-              label: translate('section_portal_reports.heading.canceled'),
+              label: 'section_portal_reports.heading.canceled',
               value: canceled,
             },
           };
@@ -102,8 +87,6 @@ export default function ProjectsInformation({
 
         setDonutDataTracks(valueDonutCharts);
         setDonutDataRequest(valueTotalRequest);
-      } else {
-        setDonutDataTracks(initDonatValue);
       }
 
       if (findAuthorities && findAuthorities.data.length) {
@@ -120,11 +103,11 @@ export default function ProjectsInformation({
         const valueAxisLabelAuthor = reduceAuthorities.map((el) => el.key);
         const valueBarAuthorities: ApexAxisChartSeries | ApexNonAxisChartSeries = [
           {
-            name: translate('section_portal_reports.heading.ongoing'),
+            name: 'section_portal_reports.heading.ongoing',
             data: reduceAuthorities.map((obj) => obj.ongoing),
           },
           {
-            name: translate('section_portal_reports.heading.canceled'),
+            name: 'section_portal_reports.heading.canceled',
             data: reduceAuthorities.map((obj) => obj.canceled),
           },
         ].concat();
@@ -143,7 +126,7 @@ export default function ProjectsInformation({
             const track = Object.keys(item)[0];
             const data = item[track];
             return {
-              label: translate(track),
+              label: track,
               ongoing: data.ONGOING || 0,
               canceled: data.CANCELED || 0,
             };
@@ -168,11 +151,11 @@ export default function ProjectsInformation({
 
         const valueBarRegions: ApexAxisChartSeries | ApexNonAxisChartSeries = [
           {
-            name: translate('section_portal_reports.heading.ongoing'),
+            name: 'section_portal_reports.heading.ongoing',
             data: reduceDataRegions.map((obj) => obj.ongoing),
           },
           {
-            name: translate('section_portal_reports.heading.canceled'),
+            name: 'section_portal_reports.heading.canceled',
             data: reduceDataRegions.map((obj) => obj.canceled),
           },
         ].concat();
@@ -191,7 +174,7 @@ export default function ProjectsInformation({
             const track = Object.keys(item)[0];
             const data = item[track];
             return {
-              label: translate(track),
+              label: track,
               ongoing: data.ONGOING || 0,
               canceled: data.CANCELED || 0,
             };
@@ -216,11 +199,11 @@ export default function ProjectsInformation({
 
         const valueBarGovernorates: ApexAxisChartSeries | ApexNonAxisChartSeries = [
           {
-            name: translate('section_portal_reports.heading.ongoing'),
+            name: 'section_portal_reports.heading.ongoing',
             data: reduceDataGovernorates.map((obj) => obj.ongoing),
           },
           {
-            name: translate('section_portal_reports.heading.canceled'),
+            name: 'section_portal_reports.heading.canceled',
             data: reduceDataGovernorates.map((obj) => obj.canceled),
           },
         ].concat();
@@ -232,12 +215,12 @@ export default function ProjectsInformation({
 
     if (dataBeneficiaries) {
       const valueTrakcs = dataBeneficiaries.by_track.map((v) => ({
-        label: translate(v.track),
+        label: v.track,
         value: v.total_project_beneficiaries,
       }));
 
       const valueType = dataBeneficiaries.by_type.map((v) => ({
-        label: translate(`section_portal_reports.heading.gender.${v.type.toLowerCase()}`),
+        label: `section_portal_reports.heading.gender.${v.type.toLowerCase()}`,
         value: v.total_project_beneficiaries,
       }));
 
@@ -249,7 +232,7 @@ export default function ProjectsInformation({
   }, [valueDataList, dataBeneficiaries]);
 
   return (
-    <Box sx={{ pt: 2 }}>
+    <Box sx={{ pt: 1 }}>
       {submitting ? (
         <Box
           sx={{
@@ -263,14 +246,16 @@ export default function ProjectsInformation({
           <CircularProgress size={50} />
         </Box>
       ) : (
-        <Grid container direction="row" columnSpacing={3} rowSpacing={4}>
-          {donutDataTracks.length
-            ? donutDataTracks.map((v, i) => (
-                <Grid key={i} item xs={12} md={6}>
-                  <DonutChart headline={translate(v.key)} data={v} />
-                </Grid>
-              ))
-            : null}
+        <Grid container direction="row" columnSpacing={4} rowSpacing={6}>
+          {donutDataTracks.length ? (
+            donutDataTracks.map((v, i) => (
+              <Grid key={i} item xs={12} md={6}>
+                <DonutChart headline={translate(v.key)} data={v} />
+              </Grid>
+            ))
+          ) : (
+            <EmptyChart type="donut" title={translate('commons.track_type.all_tracks')} />
+          )}
 
           {donutDataRequest.length ? (
             <Grid item md={6} xs={12}>
@@ -287,45 +272,32 @@ export default function ProjectsInformation({
             />
           )}
 
-          {barDataAuthorities.length || axisLabelAuthorities.length ? (
-            <Grid item xs={12} md={12}>
-              <BarChart
-                headline={translate('section_portal_reports.heading.authorities_label')}
-                data={barDataAuthorities}
-                xAxisDatas={axisLabelAuthorities}
-                barRenderBorderRadius={12}
-              />
-            </Grid>
-          ) : null}
-
-          {barRegions.length || axisLabelRegions.length ? (
-            <Grid item xs={12} md={12}>
-              <BarChart
-                headline={translate('section_portal_reports.heading.by_regions')}
-                data={barRegions}
-                xAxisDatas={axisLabelRegions}
-                barRenderBorderRadius={12}
-              />
-            </Grid>
-          ) : (
-            <EmptyChart type="bar" title={translate('section_portal_reports.heading.by_regions')} />
-          )}
-
-          {barGovernorates.length || axisLabelGovernorates.length ? (
-            <Grid item xs={12} md={12}>
-              <BarChart
-                headline={translate('section_portal_reports.heading.by_governorate')}
-                data={barGovernorates}
-                xAxisDatas={axisLabelGovernorates}
-                barRenderBorderRadius={12}
-              />
-            </Grid>
-          ) : (
-            <EmptyChart
-              type="bar"
-              title={translate('section_portal_reports.heading.by_governorate')}
+          <Grid item xs={12} md={12}>
+            <BarChart
+              headline={translate('section_portal_reports.heading.authorities_label')}
+              data={barDataAuthorities}
+              xAxisDatas={axisLabelAuthorities}
+              barRenderBorderRadius={20}
             />
-          )}
+          </Grid>
+
+          <Grid item xs={12} md={12}>
+            <BarChart
+              headline={translate('section_portal_reports.heading.by_regions')}
+              data={barRegions}
+              xAxisDatas={axisLabelRegions}
+              barRenderBorderRadius={15}
+            />
+          </Grid>
+
+          <Grid item xs={12} md={12}>
+            <BarChart
+              headline={translate('section_portal_reports.heading.by_governorate')}
+              data={barGovernorates}
+              xAxisDatas={axisLabelGovernorates}
+              barRenderBorderRadius={8}
+            />
+          </Grid>
 
           {dataTrackBeneficiaries.length ? (
             <Grid item md={6} xs={12}>

@@ -56,7 +56,7 @@ export default function ProjectBenidiciaresKinds({
   }));
   const chartData = data;
   const chartSeries = chartData.map((el) => el.value);
-  const chartLabels = chartData.map((el) => el.label);
+  const chartLabels = chartData.map((el) => translate(el.label));
 
   const chartOptions: ApexOptions = {
     colors: ['#0E8478', '#FFC107', '#FF4842', '#13B2A2'],

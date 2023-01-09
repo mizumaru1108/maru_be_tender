@@ -27,6 +27,7 @@ interface IDataChart {
   canceled: ValueChartDonut;
 }
 export interface IDonatChartProps {
-  data: IDataChart;
-  headline: string;
+  data?: IDataChart;
+  headline?: string;
+  anotherData?: ValueChartDonut[];
 }

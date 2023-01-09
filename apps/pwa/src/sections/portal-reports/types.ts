@@ -15,6 +15,10 @@ export interface IPropsHeaderTabs {
     | [];
 }
 
+/**
+ * types for project info tab
+ */
+
 export interface IPropsProjectInfo {
   dataList: IPropsHeaderTabs[] | null;
   dataBeneficiaries: IPolarBeneficiaries | null;
@@ -68,4 +72,49 @@ export interface IBenTypes {
 export interface IPolarBeneficiaries {
   by_track: IBenTracks[];
   by_type: IBenTypes[];
+}
+
+/**
+ * types for partners tab
+ */
+
+export interface IBaseCountValue {
+  label: string;
+  value:
+    | number
+    | {
+        label: string;
+        value: number;
+        total?: number;
+      }[]
+    | [];
+  total?: number;
+}
+
+export interface IPartnerDatas {
+  by_status: IBaseCountValue[] | [];
+  by_region: IBaseCountValue[] | [];
+  by_governorate: IBaseCountValue[] | [];
+  monthlyData: {
+    this_month: IBaseCountValue[] | [];
+    last_month: IBaseCountValue[] | [];
+  };
+}
+
+export interface IPropsPartnerInfo {
+  partner_data: IPartnerDatas | null;
+  submitting: boolean;
+}
+
+/**
+ * types for budget info tab
+ */
+
+export interface IPropsBudgetInfo {
+  project_track: string;
+  total_budget: number;
+  spended_budget: number;
+  spended_budget_last_week: number;
+  reserved_budget: number;
+  reserved_budget_last_week: number;
 }

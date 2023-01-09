@@ -6,6 +6,7 @@ import { Box, CardProps, Card, Stack, Typography } from '@mui/material';
 import useResponsive from 'hooks/useResponsive';
 import { BaseOptionChart } from 'components/chart';
 // hooks
+import useLocales from 'hooks/useLocales';
 // components
 
 // ----------------------------------------------------------------------
@@ -45,10 +46,11 @@ export default function ProjectBenificiares({
   ...other
 }: Props) {
   const theme = useTheme();
+  const { translate } = useLocales();
 
   const isDesktop = useResponsive('up', 'sm');
 
-  const chartLabels = chartData.map((i) => i.label);
+  const chartLabels = chartData.map((i) => translate(i.label));
 
   const chartSeries = chartData.map((i) => i.value);
 
@@ -57,6 +59,15 @@ export default function ProjectBenificiares({
     colors: chartColors,
     stroke: {
       colors: [theme.palette.background.paper],
+    },
+    yaxis: {
+      show: true,
+      logBase: 10,
+      tickAmount: 6,
+      labels: {
+        formatter: (val: number) => val.toFixed(0),
+      },
+      min: 0,
     },
     fill: { opacity: 0.8 },
     legend: {

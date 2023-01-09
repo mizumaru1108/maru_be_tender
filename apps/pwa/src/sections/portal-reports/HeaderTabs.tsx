@@ -20,17 +20,20 @@ import useLocales from 'hooks/useLocales';
 // sections
 import AverageTransaction from './AverageTransactions';
 import AchievementEffectiveness from './AchievementEffectiveness';
-import MosqueTrack from './MosqueTrack';
-import ConcessionalTrack from './ConcessionalTrack';
-import InitiativeTrack from './InitiativeTrack';
-import ComplexityTrack from './ComplexityTrack';
+import CardBudgetInfoTracks from './CardBudgetInfoTracks';
 import PartnersInformation from './PartnersInformation';
 import ProjectsInformation from './ProjectsInformation';
 // utils
 import axiosInstance from 'utils/axios';
 import useAuth from 'hooks/useAuth';
 // types
-import { TabPanelProps, IPropsHeaderTabs, IPolarBeneficiaries } from './types';
+import {
+  TabPanelProps,
+  IPropsHeaderTabs,
+  IPolarBeneficiaries,
+  IPartnerDatas,
+  IPropsBudgetInfo,
+} from './types';
 
 // -------------------------------------------------------------------------------
 const ContentStyle = styled('div')(({ theme }) => ({
@@ -68,7 +71,7 @@ function a11yProps(index: number) {
 export default function HeaderTabs() {
   const theme = useTheme();
   const { translate } = useLocales();
-  const [value, setValue] = useState(0);
+  const [valueTab, setValueTab] = useState(0);
   const { activeRole } = useAuth();
 
   //
@@ -84,23 +87,24 @@ export default function HeaderTabs() {
   };
 
   // Report Data
-  const [dataReport, setDataReport] = useState<IPropsHeaderTabs[] | null>(null);
-  const [dataBeneficiaries, setDataBeneficiaries] = useState<IPolarBeneficiaries | null>(null);
+  const [projectsData, setProjectsData] = useState<IPropsHeaderTabs[] | null>(null);
+  const [beneficiariesData, setBeneficiariesData] = useState<IPolarBeneficiaries | null>(null);
+  const [partnersData, setPartnersData] = useState<IPartnerDatas | null>(null);
+  const [budgetInfoData, setBudgetInfoData] = useState<IPropsBudgetInfo[] | []>([]);
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+    setValueTab(newValue);
+
+    handleSubmitDate(valueStartDate!, valueEndDate!, newValue);
   };
 
   const handleChangeIndex = (index: number) => {
-    setValue(index);
+    setValueTab(index);
   };
 
-  const handleSubmitDate = async () => {
-    const startDate = valueStartDate?.format('YYYY-MM-DD');
-    const endDate = valueEndDate?.format('YYYY-MM-DD');
-
+  const handleResOrders = async (startDate: string, endDate: string) => {
     try {
       setIsSubmitting(true);
 
@@ -124,7 +128,7 @@ export default function HeaderTabs() {
               };
             });
 
-            setDataReport(data);
+            setProjectsData(data);
           }
         });
 
@@ -136,13 +140,78 @@ export default function HeaderTabs() {
           if (res.status === 200) {
             const resBeneficiaries = res.data.data as IPolarBeneficiaries;
 
-            setDataBeneficiaries(resBeneficiaries);
+            setBeneficiariesData(resBeneficiaries);
           }
         });
       setIsSubmitting(false);
     } catch (error) {
       console.error(error);
       setIsSubmitting(false);
+    }
+  };
+
+  const handleResPartners = async (startDate: string, endDate: string) => {
+    try {
+      setIsSubmitting(true);
+
+      await axiosInstance
+        .get(`/statistics/partners-section?start_date=${startDate}&end_date=${endDate}`, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            setPartnersData(res.data.data as IPartnerDatas);
+          }
+        });
+
+      setIsSubmitting(false);
+    } catch (error) {
+      console.error(error);
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleResBudgetInfo = async (startDate: string, endDate: string) => {
+    try {
+      setIsSubmitting(true);
+
+      await axiosInstance
+        .get(`/statistics/budget-info?start_date=${startDate}&end_date=${endDate}`, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            setBudgetInfoData(res.data.data as IPropsBudgetInfo[]);
+          }
+        });
+
+      setIsSubmitting(false);
+    } catch (error) {
+      console.error(error);
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSubmitDate = async (start_date: Dayjs, end_date: Dayjs, value_tab: number) => {
+    const startDate = start_date?.format('YYYY-MM-DD');
+    const endDate = end_date?.format('YYYY-MM-DD');
+
+    switch (value_tab) {
+      case 0:
+        handleResOrders(startDate, endDate);
+        break;
+      case 1:
+        handleResPartners(startDate, endDate);
+        break;
+      case 2:
+        handleResBudgetInfo(startDate, endDate);
+        break;
+      case 3:
+        console.log('Eksekusi res achivement');
+        break;
+
+      default:
+        break;
     }
   };
 
@@ -154,7 +223,7 @@ export default function HeaderTabs() {
       setValueStartDate(initStartDate);
       setValueEndDate(initEndDate);
     } else {
-      handleSubmitDate();
+      handleSubmitDate(valueStartDate, valueEndDate, valueTab);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -216,7 +285,7 @@ export default function HeaderTabs() {
               <LoadingButton
                 disabled={!valueStartDate || !valueEndDate}
                 loading={isSubmitting}
-                onClick={handleSubmitDate}
+                onClick={() => handleSubmitDate(valueStartDate!, valueEndDate!, valueTab)}
                 variant="contained"
               >
                 {translate('section_portal_reports.button.create_special_report')}
@@ -228,7 +297,7 @@ export default function HeaderTabs() {
       <Stack spacing={2} direction="column">
         <Box sx={{ width: '100%' }}>
           <Tabs
-            value={value}
+            value={valueTab}
             onChange={handleChange}
             indicatorColor="primary"
             textColor="inherit"
@@ -312,29 +381,37 @@ export default function HeaderTabs() {
             </Box>
           ) : (
             <>
-              <TabPanel value={value} index={0} dir={theme.direction}>
+              <TabPanel value={valueTab} index={0} dir={theme.direction}>
                 <ContentStyle sx={{ mt: 3 }}>
                   <ProjectsInformation
-                    dataList={dataReport!}
-                    dataBeneficiaries={dataBeneficiaries}
+                    dataList={projectsData!}
+                    dataBeneficiaries={beneficiariesData!}
                     submitting={isSubmitting}
                   />
                 </ContentStyle>
               </TabPanel>
-              {/* <TabPanel value={value} index={1} dir={theme.direction}>
+              <TabPanel value={valueTab} index={1} dir={theme.direction}>
                 <ContentStyle sx={{ mt: 3 }}>
-                  <PartnersInformation />
+                  <PartnersInformation partner_data={partnersData} submitting={isSubmitting} />
                 </ContentStyle>
               </TabPanel>
-              <TabPanel value={value} index={2} dir={theme.direction}>
+              <TabPanel value={valueTab} index={2} dir={theme.direction}>
                 <ContentStyle sx={{ mt: 3 }}>
-                  <MosqueTrack />
-                  <ConcessionalTrack />
-                  <InitiativeTrack />
-                  <ComplexityTrack />
+                  {budgetInfoData.length &&
+                    budgetInfoData.map((el, i) => (
+                      <CardBudgetInfoTracks
+                        key={i}
+                        project_track={el.project_track}
+                        spended_budget={el.spended_budget}
+                        spended_budget_last_week={el.spended_budget_last_week}
+                        reserved_budget={el.reserved_budget}
+                        reserved_budget_last_week={el.reserved_budget_last_week}
+                        total_budget={el.total_budget}
+                      />
+                    ))}
                 </ContentStyle>
               </TabPanel>
-              <TabPanel value={value} index={3} dir={theme.direction}>
+              {/* <TabPanel value={valueTab} index={3} dir={theme.direction}>
                 <ContentStyle sx={{ mt: 3 }}>
                   <AverageTransaction />
                   <AchievementEffectiveness />

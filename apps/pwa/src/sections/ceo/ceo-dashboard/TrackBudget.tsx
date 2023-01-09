@@ -64,7 +64,7 @@ function TrackBudget({ data }: Props) {
                   {item.compareValue} {translate(item.type?.label)}
                 </Label>
                 <Typography variant="caption" sx={{ color: theme.palette.grey[500] }}>
-                  {translate('section_portal_reports.since_last_month')}
+                  {translate('section_portal_reports.since_last_weeks')}
                 </Typography>
               </Box>
             )}

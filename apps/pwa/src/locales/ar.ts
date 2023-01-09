@@ -946,6 +946,20 @@ const ar = {
         kids: 'أشبال',
         elderly: 'كبار السن',
       },
+      // Partner tabs
+      depending_of_partner: 'حسب حالة الشريك',
+    },
+    label: {
+      WAITING_FOR_ACTIVATION: 'يجب أن ينشط الشركاء',
+      ACTIVE_ACCOUNT: 'شركاء نشطون',
+      SUSPENDED_ACCOUNT: 'الشركاء المعلقين',
+      CANCELED_ACCOUNT: 'الشركاء الملغون',
+      REVISED_ACCOUNT: 'مراجعة الشركاء',
+      WAITING_FOR_EDITING_APPROVAL: 'يحتاج الشركاء إلى الموافقة',
+      series_name: {
+        last_month: 'الشهر الماضي',
+        this_month: 'هذا الشهر',
+      },
     },
     form: {
       date_picker: {
@@ -976,7 +990,7 @@ const ar = {
     riyals: 'ريال',
     spent_budget: 'الميزانية المصروفة',
     reserved_budget: 'الميزانية المحجوزة',
-    since_last_month: 'منذ الأسبوع الماض',
+    since_last_weeks: 'منذ الأسابيع الماضية',
     initiatives_track: 'مسار المبادرات',
     facilitated_scholarship_track: 'مسار المنح الميسر',
     the_path_of_the_mosques: 'مسار المساجد',

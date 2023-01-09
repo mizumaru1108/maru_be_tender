@@ -886,6 +886,20 @@ const en = {
         kids: 'Kids',
         elderly: 'Elderly',
       },
+      // Partner tabs
+      depending_of_partner: 'Depending on the status of the partner',
+    },
+    label: {
+      WAITING_FOR_ACTIVATION: 'Parters Need to Active',
+      ACTIVE_ACCOUNT: 'Active Partners',
+      SUSPENDED_ACCOUNT: 'Suspended Partners',
+      CANCELED_ACCOUNT: 'Canceled Partners',
+      REVISED_ACCOUNT: 'Revised Partners',
+      WAITING_FOR_EDITING_APPROVAL: 'Parters Need to Approval',
+      series_name: {
+        last_month: 'Last Month',
+        this_month: 'This Month',
+      },
     },
     form: {
       date_picker: {
@@ -912,6 +926,11 @@ const en = {
         number_of_clock: 'Number of Clock',
       },
     },
+    total_budget_for_the_course: 'The total budget for the track',
+    riyals: 'ريال',
+    spent_budget: 'Spent Budget',
+    reserved_budget: 'Reserved Budget',
+    since_last_weeks: 'Since last week',
   },
 
   // Message Page
