@@ -10,9 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../../auth/jwt.guard';
-import { Permissions } from '../../auth/permissions.decorator';
-import { PermissionsGuard } from '../../auth/permissions.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt.guard';
+
 import { CampaignVendorLog } from '../../buying/vendor/vendor.schema';
 import { CurrentUser } from '../../commons/decorators/current-user.decorator';
 
@@ -41,6 +40,8 @@ import { CampaignService } from '../services/campaign.service';
 import { GetAllMyCampaignFilterDto } from '../dto/get-all-my-campaign.dto';
 import { CampaignSetFavoriteDto } from '../dto/campaign-set-favorite.dto';
 import { CreateCampaignDto } from '../dto/create-campaign.dto';
+import { Permissions } from '../../auth/decorator/permissions.decorator';
+import { PermissionsGuard } from '../../auth/guards/permissions.guard';
 
 @ApiTags('campaign')
 @Controller('campaign')

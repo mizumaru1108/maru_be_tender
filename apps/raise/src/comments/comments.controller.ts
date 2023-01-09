@@ -10,9 +10,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/jwt.guard';
-import { Permissions } from '../auth/permissions.decorator';
-import { PermissionsGuard } from '../auth/permissions.guard';
+import { Permissions } from '../auth/decorator/permissions.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { PermissionsGuard } from '../auth/guards/permissions.guard';
+
 import { CurrentUser } from '../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../commons/dtos/base-response';
 import { PaginatedResponse } from '../commons/dtos/paginated-response.dto';

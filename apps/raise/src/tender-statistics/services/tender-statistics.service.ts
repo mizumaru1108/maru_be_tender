@@ -398,91 +398,103 @@ export class TenderStatisticsService {
       filter,
     );
 
-    const latestPartnerCreatedDate = partners[0].created_at!;
-
     const partnerStatus =
       await this.tenderStatisticRepository.getRawUserStatus();
 
-    const byStatus = partnerStatus.map((status) => {
-      return {
-        label: status.id,
-        data_count: partners.filter(
-          (partner) => partner.status.id === status.id,
-        ).length,
-      };
-    });
+    // console.log('partners', partners);
+    // console.log('length', partners.length);
+    if (partners.length > 0) {
+      const latestPartnerCreatedDate = partners[0].created_at!;
+      const byStatus = partnerStatus.map((status) => {
+        return {
+          label: status.id,
+          value: partners.filter((partner) => partner.status.id === status.id)
+            .length,
+        };
+      });
 
-    const byRegion = Array.from(
-      new Set(partners.map((partner) => partner.client_data?.region)),
-    ).map((region) => {
-      const data = partners.filter(
-        (partner) => partner.client_data?.region === region,
-      );
-      return {
-        label: region || 'Region Not Set',
-        data_count: partnerStatus.map((status) => {
+      const byRegion = Array.from(
+        new Set(partners.map((partner) => partner.client_data?.region)),
+      ).map((region) => {
+        const data = partners.filter(
+          (partner) => partner.client_data?.region === region,
+        );
+        return {
+          label: region || 'Region Not Set',
+          value: partnerStatus.map((status) => {
+            return {
+              label: status.id,
+              value: data.filter((partner) => partner.status.id === status.id)
+                .length,
+            };
+          }),
+          total: data.length,
+        };
+      });
+
+      const byGovernorate = Array.from(
+        new Set(partners.map((partner) => partner.client_data?.governorate)),
+      ).map((governorate) => {
+        const data = partners.filter(
+          (partner) => partner.client_data?.governorate === governorate,
+        );
+        return {
+          label: governorate || 'Governorate Not Set',
+          value: partnerStatus.map((status) => {
+            return {
+              label: status.id,
+              value: data.filter((partner) => partner.status.id === status.id)
+                .length,
+            };
+          }),
+          total: data.length,
+        };
+      });
+
+      const monthlyData = {
+        this_month: partnerStatus.map((status) => {
           return {
             label: status.id,
-            data_count: data.filter(
-              (partner) => partner.status.id === status.id,
+            value: partners.filter(
+              (partner) =>
+                partner.status.id === status.id &&
+                partner.created_at!.getMonth() ===
+                  latestPartnerCreatedDate.getMonth(),
             ).length,
           };
         }),
-        total: data.length,
-      };
-    });
-
-    const byGovernorate = Array.from(
-      new Set(partners.map((partner) => partner.client_data?.governorate)),
-    ).map((governorate) => {
-      const data = partners.filter(
-        (partner) => partner.client_data?.governorate === governorate,
-      );
-      return {
-        label: governorate || 'Governorate Not Set',
-        data_count: partnerStatus.map((status) => {
+        last_month: partnerStatus.map((status) => {
           return {
             label: status.id,
-            data_count: data.filter(
-              (partner) => partner.status.id === status.id,
+            value: partners.filter(
+              (partner) =>
+                partner.status.id === status.id &&
+                partner.created_at!.getMonth() ===
+                  latestPartnerCreatedDate.getMonth() - 1,
             ).length,
           };
         }),
-        total: data.length,
       };
-    });
 
-    const monthlyData = {
-      this_month: partnerStatus.map((status) => {
-        return {
-          label: status.id,
-          data_count: partners.filter(
-            (partner) =>
-              partner.status.id === status.id &&
-              partner.created_at!.getMonth() ===
-                latestPartnerCreatedDate.getMonth(),
-          ).length,
-        };
-      }),
-      last_month: partnerStatus.map((status) => {
-        return {
-          label: status.id,
-          data_count: partners.filter(
-            (partner) =>
-              partner.status.id === status.id &&
-              partner.created_at!.getMonth() ===
-                latestPartnerCreatedDate.getMonth() - 1,
-          ).length,
-        };
-      }),
-    };
+      // console.log('monthly', monthlyData);
 
-    return {
-      by_status: byStatus,
-      by_region: byRegion,
-      by_governorate: byGovernorate,
-      monthlyData: monthlyData,
-    };
+      return {
+        by_status: byStatus,
+        by_region: byRegion,
+        by_governorate: byGovernorate,
+        monthlyData: monthlyData,
+      };
+    } else {
+      return {
+        by_status: [],
+        by_region: [],
+        by_governorate: [],
+        monthlyData: {
+          this_month: [],
+          last_month: [],
+        },
+      };
+    }
   }
 
   async getBeneficiariesReport(
@@ -496,48 +508,55 @@ export class TenderStatisticsService {
     const byTrack: { [key: string]: IGetBeneficiariesByTrackDto } = {};
     const byType: { [key: string]: IGetBeneficiariesByTypeDto } = {};
 
-    // Loop through raw data
-    for (let i = 0; i < proposals.length; i++) {
-      const proposal = proposals[i];
-      // If project_track and num_ofproject_binicficiaries are not null, add data to byTrack object
-      if (
-        proposal.project_track != null &&
-        proposal.num_ofproject_binicficiaries != null
-      ) {
-        // Check if project_track exists in byTrack object
-        if (!byTrack[proposal.project_track]) {
-          // If project_track does not exist in byTrack object, initialize it with track and total_project_beneficiaries values
-          byTrack[proposal.project_track] = {
-            track: proposal.project_track,
-            total_project_beneficiaries: 0, // if project_track does not exist, initialize total_project_beneficiaries with 0
-          };
+    if (proposals.length > 0) {
+      // Loop through raw data
+      for (let i = 0; i < proposals.length; i++) {
+        const proposal = proposals[i];
+        // If project_track and num_ofproject_binicficiaries are not null, add data to byTrack object
+        if (
+          proposal.project_track != null &&
+          proposal.num_ofproject_binicficiaries != null
+        ) {
+          // Check if project_track exists in byTrack object
+          if (!byTrack[proposal.project_track]) {
+            // If project_track does not exist in byTrack object, initialize it with track and total_project_beneficiaries values
+            byTrack[proposal.project_track] = {
+              track: proposal.project_track,
+              total_project_beneficiaries: 0, // if project_track does not exist, initialize total_project_beneficiaries with 0
+            };
+          }
+          // Add num_ofproject_binicficiaries value to total_project_beneficiaries for the current project_track
+          byTrack[proposal.project_track].total_project_beneficiaries +=
+            proposal.num_ofproject_binicficiaries;
         }
-        // Add num_ofproject_binicficiaries value to total_project_beneficiaries for the current project_track
-        byTrack[proposal.project_track].total_project_beneficiaries +=
-          proposal.num_ofproject_binicficiaries;
+
+        // basicly same logic as above
+        if (
+          proposal.project_beneficiaries != null &&
+          proposal.num_ofproject_binicficiaries != null
+        ) {
+          if (!byType[proposal.project_beneficiaries]) {
+            byType[proposal.project_beneficiaries] = {
+              type: proposal.project_beneficiaries,
+              total_project_beneficiaries: 0,
+            };
+          }
+          byType[proposal.project_beneficiaries].total_project_beneficiaries +=
+            proposal.num_ofproject_binicficiaries;
+        }
       }
 
-      // basicly same logic as above
-      if (
-        proposal.project_beneficiaries != null &&
-        proposal.num_ofproject_binicficiaries != null
-      ) {
-        if (!byType[proposal.project_beneficiaries]) {
-          byType[proposal.project_beneficiaries] = {
-            type: proposal.project_beneficiaries,
-            total_project_beneficiaries: 0,
-          };
-        }
-        byType[proposal.project_beneficiaries].total_project_beneficiaries +=
-          proposal.num_ofproject_binicficiaries;
-      }
+      // Return response with byTrack and byType data
+      return {
+        by_track: Object.values(byTrack),
+        by_type: Object.values(byType),
+      };
+    } else {
+      return {
+        by_track: [],
+        by_type: [],
+      };
     }
-
-    // Return response with byTrack and byType data
-    return {
-      by_track: Object.values(byTrack),
-      by_type: Object.values(byType),
-    };
   }
 
   async getBudgetInfo(request: GetBudgetInfoDto) {

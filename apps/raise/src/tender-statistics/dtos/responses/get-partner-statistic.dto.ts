@@ -5,7 +5,7 @@ export class GetPartnersStatisticByStatusResponseDto {
   label: string;
 
   @ApiProperty()
-  data_count: number;
+  value: number;
 }
 
 export class GetPartnersStatisticByRegionResponseDto {
@@ -16,7 +16,7 @@ export class GetPartnersStatisticByRegionResponseDto {
     type: GetPartnersStatisticByStatusResponseDto,
     isArray: true,
   })
-  data_count: GetPartnersStatisticByStatusResponseDto[];
+  value: GetPartnersStatisticByStatusResponseDto[];
 
   @ApiProperty()
   total: number;
@@ -30,7 +30,7 @@ export class GetPartnersStatisticByGovernorateResponseDto {
     type: GetPartnersStatisticByStatusResponseDto,
     isArray: true,
   })
-  data_count: GetPartnersStatisticByStatusResponseDto[];
+  value: GetPartnersStatisticByStatusResponseDto[];
 
   @ApiProperty()
   total: number;

@@ -38,7 +38,7 @@ import { paginationHelper } from 'src/commons/helpers/pagination-helper';
 import { BaseResponse } from 'src/commons/dtos/base-response';
 import { AppearanceNavigation } from './schema/nonprofit_appearance_navigation.schema';
 import { baseResponseHelper } from 'src/commons/helpers/base-response-helper';
-import { JwtAuthGuard } from 'src/auth/jwt.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { DonationLogsDocument } from '../donation/schema/donation_log.schema';
 import { DonationLogDocument } from '../donation/schema/donation-log.schema';
 
@@ -179,7 +179,7 @@ export class OrganizationController {
       organizationId,
       period,
       startDate,
-      endDate
+      endDate,
     );
   }
 

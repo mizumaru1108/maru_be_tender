@@ -7,8 +7,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { FusionAuthService } from '../libs/fusionauth/services/fusion-auth.service';
-import { ICurrentUser } from '../user/interfaces/current-user.interface';
+import { FusionAuthService } from '../../libs/fusionauth/services/fusion-auth.service';
+import { ICurrentUser } from '../../user/interfaces/current-user.interface';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {

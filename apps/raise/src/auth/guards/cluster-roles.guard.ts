@@ -5,7 +5,6 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ICurrentUser } from '../user/interfaces/current-user.interface';
 
 /**
  * RolesGuard
@@ -14,7 +13,7 @@ import { ICurrentUser } from '../user/interfaces/current-user.interface';
 @Injectable()
 export class ClusterRolesGuard implements CanActivate {
   /**
-   * RolesGuard constructor.https://acefile.co/f/72732734/ice-age-scrat-tales-s01e02-zonafilm-in-mp4
+   * RolesGuard constructor.
    * @param reflector The reflector service.
    */
   constructor(

@@ -13,7 +13,7 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginatedResponse } from 'src/commons/dtos/paginated-response.dto';
 import { paginationHelper } from 'src/commons/helpers/pagination-helper';
-import { JwtAuthGuard } from '../auth/jwt.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { Vendor } from '../buying/vendor/vendor.schema';
 import { CurrentUser } from '../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../commons/dtos/base-response';
@@ -212,7 +212,7 @@ export class DonorController {
       organizationId,
       period,
       startDate,
-      endDate
+      endDate,
     );
     const response = baseResponseHelper(
       insightDonor,

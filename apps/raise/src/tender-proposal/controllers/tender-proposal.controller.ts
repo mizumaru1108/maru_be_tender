@@ -10,7 +10,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { JwtAuthGuard } from '../../auth/jwt.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt.guard';
 import { CurrentUser } from '../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../commons/helpers/base-response-helper';

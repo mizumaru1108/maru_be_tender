@@ -1,15 +1,46 @@
+import { User } from '@fusionauth/typescript-client';
 import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { BaseResponse } from '../commons/dtos/base-response';
-import { baseResponseHelper } from '../commons/helpers/base-response-helper';
-import { User } from '../user/schema/user.schema';
-
-import { AuthService } from './auth.service';
-import { LoginRequestDto, LoginResponseDto, RegisterRequestDto } from './dtos';
+import { BaseResponse } from '../../commons/dtos/base-response';
+import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
+import { LoginRequestDto, LoginResponseDto, RegisterRequestDto } from '../dtos';
+import { HandleGoogleCallbackDto } from '../dtos/requests/handle-google-callback.dto';
+import { AuthService } from '../services/auth.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @ApiOperation({ summary: 'Login with fusion auth' })
+  @ApiResponse({
+    status: 201,
+    description: 'Login Success!',
+  })
+  @Post('google/login')
+  async googleLogin(): Promise<BaseResponse<string>> {
+    const loginResponse = await this.authService.googleLogin();
+    return baseResponseHelper(
+      loginResponse,
+      HttpStatus.CREATED,
+      'Login Success!',
+    );
+  }
+
+  @ApiOperation({ summary: 'Login with fusion auth' })
+  @ApiResponse({
+    status: 201,
+    description: 'Login Success!',
+  })
+  @Post('google/auth-callback')
+  async handleGoogleCallback(@Body() { code }: HandleGoogleCallbackDto) {
+    console.log('code', code);
+    const loginResponse = await this.authService.handleGoogleCallback(code);
+    return baseResponseHelper(
+      loginResponse,
+      HttpStatus.CREATED,
+      'Login Success!',
+    );
+  }
 
   @ApiOperation({ summary: 'Login with fusion auth' })
   @ApiResponse({

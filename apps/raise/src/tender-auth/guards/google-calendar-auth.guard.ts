@@ -20,7 +20,7 @@ import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-use
  * 3. this guard should be used together with TenderJwtGuard (to get the current user) [src/tender-auth/guards/tender-jwt.guard.ts]
  */
 @Injectable()
-export class GoogleOAuth2Guard implements CanActivate {
+export class GoogleOAuth2CalendarGuard implements CanActivate {
   // only use global module for this guard for mobility and reusability
   constructor(
     private googleOAuth2Service: GoogleOAuth2Service,
@@ -70,7 +70,11 @@ export class GoogleOAuth2Guard implements CanActivate {
     // if there is no google session on the current user and there's no auth code
     if (!user.google_session && !authCode) {
       // console.log("no google session and no auth code, let's login first");
-      const authUrl = await this.googleOAuth2Service.getLoginUrl();
+      const authUrl = await this.googleOAuth2Service.getLoginUrl([
+        'profile', // get the user's profile
+        'https://www.googleapis.com/auth/calendar', // get the user's calendar
+        'https://www.googleapis.com/auth/calendar.events', // for calendar events (create)
+      ]);
       throw new UnauthorizedException(
         `You need to login to google first!, please go to this url: ${authUrl}`,
       );
@@ -113,7 +117,11 @@ export class GoogleOAuth2Guard implements CanActivate {
           // if the token is expired (expiry_date < now)
           // console.log('token is expired, deleting the session');
           await deleteGoogleSession(user.id);
-          const authUrl = await this.googleOAuth2Service.getLoginUrl();
+          const authUrl = await this.googleOAuth2Service.getLoginUrl([
+            'profile', // get the user's profile
+            'https://www.googleapis.com/auth/calendar', // get the user's calendar
+            'https://www.googleapis.com/auth/calendar.events', // for calendar events (create)
+          ]);
           throw new UnauthorizedException(
             `Your session is expired!, please re-login go to this url: ${authUrl}`,
           );
@@ -132,7 +140,11 @@ export class GoogleOAuth2Guard implements CanActivate {
           // console.log(
           //   "google session is empty object and there's no auth code",
           // );
-          const authUrl = await this.googleOAuth2Service.getLoginUrl();
+          const authUrl = await this.googleOAuth2Service.getLoginUrl([
+            'profile', // get the user's profile
+            'https://www.googleapis.com/auth/calendar', // get the user's calendar
+            'https://www.googleapis.com/auth/calendar.events', // for calendar events (create)
+          ]);
           throw new UnauthorizedException(
             `Your session is expired!, please go to this url: ${authUrl}`,
           );

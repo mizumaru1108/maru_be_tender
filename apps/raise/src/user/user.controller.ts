@@ -9,9 +9,9 @@ import {
   // Delete,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt.guard';
-import { Permissions } from '../auth/permissions.decorator';
-import { PermissionsGuard } from '../auth/permissions.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { PermissionsGuard } from '../auth/guards/permissions.guard';
+
 import { CurrentUser } from '../commons/decorators/current-user.decorator';
 import { AuthzedService } from '../libs/authzed/authzed.service';
 import { Permission } from '../libs/authzed/enums/permission.enum';

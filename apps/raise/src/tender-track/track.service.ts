@@ -1,6 +1,6 @@
 import { Injectable, UseGuards } from '@nestjs/common';
 import { track, track_section, Prisma } from '@prisma/client';
-import { JwtAuthGuard } from '../auth/jwt.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { TracSectionkDto } from './dto/track.dto';
 import { TenderTrackRepository } from './track.repository';
 import { UpdateTrackSection } from './dto/updateTrackSection.dto';
@@ -20,7 +20,7 @@ export class TenderTrackService {
         budget,
         track_id,
         section_id,
-        is_leaf
+        is_leaf,
       },
     };
 
@@ -44,7 +44,7 @@ export class TenderTrackService {
         budget,
         track_id,
         section_id,
-        is_leaf
+        is_leaf,
       },
       where: {},
     };

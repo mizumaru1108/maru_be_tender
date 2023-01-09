@@ -6,7 +6,7 @@ import {
   Patch,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../../../auth/jwt.guard';
+import { JwtAuthGuard } from '../../../auth/guards/jwt.guard';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';

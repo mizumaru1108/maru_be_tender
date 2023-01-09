@@ -17,7 +17,6 @@ import { appointment } from '@prisma/client';
 import { FastifyReply } from 'fastify';
 import { BaseResponse } from '../../../commons/dtos/base-response';
 import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
-import { GoogleOAuth2Guard } from '../../../tender-auth/guards/google-auth.guard';
 import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
@@ -25,6 +24,7 @@ import { AppointmentFilterRequest } from '../dtos/requests/appointment-filter-re
 import { CreateAppointmentDto } from '../dtos/requests/create-appointment.dto';
 import { InvitationResponseDto } from '../dtos/requests/response-invitation.dto';
 import { TenderAppointmentService } from '../services/tender-appointment.service';
+import { GoogleOAuth2CalendarGuard } from '../../../tender-auth/guards/google-calendar-auth.guard';
 
 @Controller('tender/appointments')
 export class TenderAppointmentController {
@@ -32,7 +32,7 @@ export class TenderAppointmentController {
     private readonly tenderAppointmentService: TenderAppointmentService,
   ) {}
 
-  @UseGuards(TenderJwtGuard, GoogleOAuth2Guard, TenderRolesGuard)
+  @UseGuards(TenderJwtGuard, GoogleOAuth2CalendarGuard, TenderRolesGuard)
   @TenderRoles('tender_project_supervisor')
   @Post('create-appointment')
   async createAppointment(

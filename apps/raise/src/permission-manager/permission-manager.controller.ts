@@ -1,8 +1,8 @@
 import { Relationship } from '@authzed/authzed-node/dist/src/v1';
 import { Body, Controller, HttpStatus, Post, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt.guard';
-import { Permissions } from '../auth/permissions.decorator';
-import { PermissionsGuard } from '../auth/permissions.guard';
+import { Permissions } from '../auth/decorator/permissions.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { BaseResponse } from '../commons/dtos/base-response';
 import { baseResponseHelper } from '../commons/helpers/base-response-helper';
 import { Permission } from '../libs/authzed/enums/permission.enum';
@@ -52,9 +52,8 @@ export class PermissionManagerController {
   async assignNonprofit(
     @Body() request: UpsertUserPermission,
   ): Promise<BaseResponse<Relationship>> {
-    const response = await this.permissionManagerService.grantNonprofitPermission(
-      request,
-    );
+    const response =
+      await this.permissionManagerService.grantNonprofitPermission(request);
     return baseResponseHelper(
       response,
       HttpStatus.CREATED,

@@ -1,13 +1,13 @@
+import { User } from '@fusionauth/typescript-client';
 import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ROOT_LOGGER } from 'src/libs/root-logger';
 import { UserService } from 'src/user/user.service';
-import { SendEmailDto } from '../libs/email/dtos/requests/send-email.dto';
-import { EmailService } from '../libs/email/email.service';
-import { FusionAuthService } from '../libs/fusionauth/services/fusion-auth.service';
-import { PrismaService } from '../prisma/prisma.service';
-import { User } from '../user/schema/user.schema';
-import { LoginRequestDto, RegisterRequestDto } from './dtos';
+import { SendEmailDto } from '../../libs/email/dtos/requests/send-email.dto';
+import { EmailService } from '../../libs/email/email.service';
+import { FusionAuthService } from '../../libs/fusionauth/services/fusion-auth.service';
+import { GoogleOAuth2Service } from '../../libs/google-oauth2/google-oauth2.service';
+import { LoginRequestDto, RegisterRequestDto } from '../dtos';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +19,22 @@ export class AuthService {
     private readonly emailService: EmailService,
     private readonly fusionAuthService: FusionAuthService,
     private readonly jwtService: JwtService,
+    private readonly googleOAuth2Service: GoogleOAuth2Service,
   ) {}
+
+  async googleLogin() {
+    return await this.googleOAuth2Service.tmraGetLoginUrl(['profile', 'email']);
+  }
+
+  async handleGoogleCallback(code: string) {
+    const token = await this.googleOAuth2Service.getNewRefreshToken(code);
+    console.log('token', token);
+    return token;
+    // const googleUser = await this.googleOAuth2Service.getUserInfo(token);
+    // console.log('googleUser', googleUser);
+    // return googleUser;
+    // const user = await this.usersService.getOneUser({ email: })
+  }
 
   async fusionLogin(loginRequest: LoginRequestDto) {
     const loginResponse = await this.fusionAuthService.fusionAuthLogin(

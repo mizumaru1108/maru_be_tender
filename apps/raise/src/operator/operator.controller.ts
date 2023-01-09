@@ -15,7 +15,7 @@ import { OperatorFilterRequest } from './dto/operator-filter-request';
 import { paginationHelper } from '../commons/helpers/pagination-helper';
 import { PaginatedResponse } from '../commons/dtos/paginated-response.dto';
 import { OperatorDocument } from './schema/operator.schema';
-import { JwtAuthGuard } from '../auth/jwt.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 @ApiTags('operator')
 @Controller('operator')

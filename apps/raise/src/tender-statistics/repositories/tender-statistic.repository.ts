@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import moment from 'moment';
 import { ROOT_LOGGER } from '../../libs/root-logger';
 import { PrismaService } from '../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
@@ -26,7 +27,7 @@ export class TenderStatisticsRepository {
       query = {
         ...query,
         created_at: {
-          gte: new Date(start_date),
+          gte: moment(start_date).startOf('day').toDate(),
         },
       };
     }
@@ -35,7 +36,17 @@ export class TenderStatisticsRepository {
       query = {
         ...query,
         created_at: {
-          lte: new Date(end_date),
+          lte: moment(end_date).endOf('day').toDate(),
+        },
+      };
+    }
+
+    if (start_date && end_date && start_date === end_date) {
+      query = {
+        ...query,
+        created_at: {
+          gte: moment(start_date).startOf('day').toDate(),
+          lte: moment(end_date).endOf('day').toDate(),
         },
       };
     }
@@ -83,11 +94,14 @@ export class TenderStatisticsRepository {
       const { start_date, end_date } = filter;
       let query: Prisma.userWhereInput = {};
 
+      // console.log('start_date', start_date);
+      // console.log('end_date', end_date);
       if (start_date) {
         query = {
           ...query,
           created_at: {
-            gte: new Date(start_date),
+            // use moment instead of new Date (reason, moment is more accurate [the current date will be compared untill the minutes and seconds, instead of just comparing by day])
+            gte: moment(start_date).startOf('day').toDate(),
           },
         };
       }
@@ -96,11 +110,26 @@ export class TenderStatisticsRepository {
         query = {
           ...query,
           created_at: {
-            lte: new Date(end_date),
+            // lte: new Date(end_date),
+            // use moment instead of new Date
+            lte: moment(end_date).endOf('day').toDate(),
           },
         };
       }
 
+      if (start_date && end_date && start_date === end_date) {
+        query = {
+          ...query,
+          created_at: {
+            // gte: new Date(start_date),
+            // lte: new Date(end_date),
+            gte: moment(start_date).startOf('day').toDate(),
+            lte: moment(end_date).endOf('day').toDate(),
+          },
+        };
+      }
+
+      console.log('query', query);
       const partners = await this.prismaService.user.findMany({
         where: {
           ...query,

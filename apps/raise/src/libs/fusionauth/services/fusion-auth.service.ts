@@ -117,6 +117,107 @@ export class FusionAuthService {
   }
 
   /**
+   * Fusion Auth Passwordless Test 1
+   */
+  async fusionAuthPasswordlessLoginStart(loginId: string) {
+    const baseUrl = this.fusionAuthUrl;
+    const registerUrl = baseUrl + '/api/passwordless/start';
+
+    const options: AxiosRequestConfig<any> = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.fusionAuthAdminKey,
+      },
+      data: {
+        applicationId: this.fusionAuthAppId,
+        loginId,
+      },
+      url: registerUrl,
+    };
+
+    try {
+      const data = await axios(options);
+      return data.data;
+    } catch (error) {}
+  }
+  /**
+   * Fusion Auth Passwordless Test 2
+   */
+  async fusionAuthPasswordlessLogin2(registerRequest: RegisterRequestDto) {
+    const baseUrl = this.fusionAuthUrl;
+    const registerUrl = baseUrl + '/api/passwordless/login';
+    const user: IFusionAuthUser = {
+      email: registerRequest.email,
+      password: registerRequest.password,
+      firstName: registerRequest.firstName,
+      lastName: registerRequest.lastName,
+    };
+    const registration: IFusionAuthUserRegistration = {
+      applicationId: this.fusionAuthAppId,
+    };
+
+    const registrationRequest: IFusionAuthRegistrationRequest = {
+      user,
+      registration,
+    };
+
+    const options: AxiosRequestConfig<any> = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.fusionAuthAdminKey,
+        'X-FusionAuth-TenantId': this.fusionAuthTenantId,
+      },
+      data: registrationRequest,
+      url: registerUrl,
+    };
+
+    try {
+      const data = await axios(options);
+      return data.data;
+    } catch (error) {}
+  }
+
+  /**
+   * Fusion Auth Passwordless Test 3
+   */
+  async fusionAuthPasswordlessLogin3(registerRequest: RegisterRequestDto) {
+    const baseUrl = this.fusionAuthUrl;
+    const registerUrl = baseUrl + '/api/passwordless/start';
+    const user: IFusionAuthUser = {
+      email: registerRequest.email,
+      password: registerRequest.password,
+      firstName: registerRequest.firstName,
+      lastName: registerRequest.lastName,
+    };
+    const registration: IFusionAuthUserRegistration = {
+      applicationId: this.fusionAuthAppId,
+    };
+
+    const registrationRequest: IFusionAuthRegistrationRequest = {
+      user,
+      registration,
+    };
+
+    const options: AxiosRequestConfig<any> = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.fusionAuthAdminKey,
+        'X-FusionAuth-TenantId': this.fusionAuthTenantId,
+      },
+      data: registrationRequest,
+      url: registerUrl,
+    };
+
+    try {
+      const data = await axios(options);
+      return data.data;
+    } catch (error) {}
+  }
+
+  /**
    * Fusion Auth Register
    * why use raw axios post o fusion auth ?
    * reason, there's error on lib, ref: https://github.com/FusionAuth/fusionauth-typescript-client/issues/10

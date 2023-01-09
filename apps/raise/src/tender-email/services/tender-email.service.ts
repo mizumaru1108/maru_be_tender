@@ -1,6 +1,6 @@
 import { Injectable, UseGuards } from '@nestjs/common';
 import { email_record, Prisma } from '@prisma/client';
-import { JwtAuthGuard } from '../../auth/jwt.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt.guard';
 import { SendEmailDto } from '../../libs/email/dtos/requests/send-email.dto';
 import { EmailService } from '../../libs/email/email.service';
 import { FindManyResult } from '../../tender-commons/dto/find-many-result.dto';
