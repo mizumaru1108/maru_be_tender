@@ -5,8 +5,8 @@ import { ROOT_LOGGER } from '../../libs/root-logger';
 import { PrismaService } from '../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
 import { BaseStatisticFilter } from '../dtos/requests/base-statistic-filter.dto';
-import { GetBudgetInfoDto } from '../dtos/requests/get-budget-info.dto';
 import { GetRawBeneficiariesDataResponseDto } from '../dtos/responses/get-raw-beneficiaries-data-response.dto';
+import { GetRawExecutionTimeDataResponseDto } from '../dtos/responses/get-raw-execution-time-data-response.dto';
 import { GetRawPartnerDatasResponseDto } from '../dtos/responses/get-raw-partner-datas.dto';
 import { GetRawStatusDatasResponseDto } from '../dtos/responses/get-raw-status.datas.dto';
 
@@ -21,40 +21,13 @@ export class TenderStatisticsRepository {
     filter: BaseStatisticFilter,
   ): Promise<GetRawBeneficiariesDataResponseDto[]> {
     const { start_date, end_date } = filter;
-    let query: Prisma.proposalWhereInput = {};
-
-    if (start_date) {
-      query = {
-        ...query,
-        created_at: {
-          gte: moment(start_date).startOf('day').toDate(),
-        },
-      };
-    }
-
-    if (end_date) {
-      query = {
-        ...query,
-        created_at: {
-          lte: moment(end_date).endOf('day').toDate(),
-        },
-      };
-    }
-
-    if (start_date && end_date && start_date === end_date) {
-      query = {
-        ...query,
-        created_at: {
-          gte: moment(start_date).startOf('day').toDate(),
-          lte: moment(end_date).endOf('day').toDate(),
-        },
-      };
-    }
-
     try {
       return await this.prismaService.proposal.findMany({
         where: {
-          ...query,
+          created_at: {
+            gte: moment(start_date).startOf('day').toDate(),
+            lte: moment(end_date).endOf('day').toDate(),
+          },
           project_track: {
             not: null,
             notIn: ['GENERAL', 'DEFAULT_TRACK'],
@@ -92,47 +65,13 @@ export class TenderStatisticsRepository {
   ): Promise<GetRawPartnerDatasResponseDto[]> {
     try {
       const { start_date, end_date } = filter;
-      let query: Prisma.userWhereInput = {};
 
-      // console.log('start_date', start_date);
-      // console.log('end_date', end_date);
-      if (start_date) {
-        query = {
-          ...query,
-          created_at: {
-            // use moment instead of new Date (reason, moment is more accurate [the current date will be compared untill the minutes and seconds, instead of just comparing by day])
-            gte: moment(start_date).startOf('day').toDate(),
-          },
-        };
-      }
-
-      if (end_date) {
-        query = {
-          ...query,
-          created_at: {
-            // lte: new Date(end_date),
-            // use moment instead of new Date
-            lte: moment(end_date).endOf('day').toDate(),
-          },
-        };
-      }
-
-      if (start_date && end_date && start_date === end_date) {
-        query = {
-          ...query,
-          created_at: {
-            // gte: new Date(start_date),
-            // lte: new Date(end_date),
-            gte: moment(start_date).startOf('day').toDate(),
-            lte: moment(end_date).endOf('day').toDate(),
-          },
-        };
-      }
-
-      console.log('query', query);
       const partners = await this.prismaService.user.findMany({
         where: {
-          ...query,
+          created_at: {
+            gte: moment(start_date).startOf('day').toDate(),
+            lte: moment(end_date).endOf('day').toDate(),
+          },
           roles: {
             some: {
               user_type_id: 'CLIENT',
@@ -192,7 +131,7 @@ export class TenderStatisticsRepository {
     }
   }
 
-  async getBudgetInfo(filter: GetBudgetInfoDto): Promise<
+  async getBudgetInfo(filter: BaseStatisticFilter): Promise<
     {
       id: string;
       fsupport_by_supervisor: Prisma.Decimal | null;
@@ -211,31 +150,26 @@ export class TenderStatisticsRepository {
   > {
     try {
       const { start_date, end_date } = filter;
-      let query: Prisma.proposalWhereInput = {};
-
-      if (start_date) {
-        query = {
-          ...query,
-          created_at: {
-            gte: new Date(start_date),
-          },
-        };
-      }
-
-      if (end_date) {
-        query = {
-          ...query,
-          created_at: {
-            lte: new Date(end_date),
-          },
-        };
-      }
 
       const budgetInfo = await this.prismaService.proposal.findMany({
         where: {
-          ...query,
+          created_at: {
+            gte: moment(start_date).startOf('day').toDate(),
+            lte: moment(end_date).endOf('day').toDate(),
+          },
           project_track: {
             not: null,
+            notIn: ['GENERAL', 'DEFAULT_TRACK'],
+          },
+          project_manager_id: {
+            not: null,
+          },
+          supervisor_id: {
+            not: null,
+          },
+          outter_status: {
+            not: null,
+            notIn: ['CANCELLED', 'REJECTED'],
           },
         },
         select: {
@@ -257,6 +191,58 @@ export class TenderStatisticsRepository {
         },
       });
       return budgetInfo;
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderStatisticsRepository.name,
+        'findUsers Error:',
+        `finding users!`,
+      );
+      throw theError;
+    }
+  }
+
+  async getRawProposalExecutionTime(
+    filter: BaseStatisticFilter,
+  ): Promise<GetRawExecutionTimeDataResponseDto[]> {
+    try {
+      const { start_date, end_date } = filter;
+
+      const rawExecutionTime = await this.prismaService.proposal.findMany({
+        where: {
+          created_at: {
+            gte: moment(start_date).startOf('day').toDate(),
+            lte: moment(end_date).endOf('day').toDate(),
+          },
+          project_track: {
+            not: null,
+            notIn: ['GENERAL', 'DEFAULT_TRACK'],
+          },
+          execution_time: {
+            not: null,
+          },
+          project_manager_id: {
+            not: null,
+          },
+          supervisor_id: {
+            not: null,
+          },
+          outter_status: {
+            not: null,
+            notIn: ['CANCELLED', 'REJECTED'],
+          },
+        },
+        select: {
+          project_track: true,
+          execution_time: true,
+          created_at: true,
+        },
+        orderBy: {
+          created_at: 'desc',
+        },
+      });
+
+      return rawExecutionTime;
     } catch (error) {
       const theError = prismaErrorThrower(
         error,

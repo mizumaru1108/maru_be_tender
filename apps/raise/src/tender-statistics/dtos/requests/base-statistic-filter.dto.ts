@@ -1,24 +1,17 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsDateString,
-  IsOptional,
-  IsString,
-  IsNotEmpty,
-} from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsDateString, IsString, IsNotEmpty } from 'class-validator';
 import { BaseFilterRequest } from '../../../commons/dtos/base-filter-request.dto';
 
 export class BaseStatisticFilter extends BaseFilterRequest {
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiProperty()
   @IsString()
   @IsDateString()
   @IsNotEmpty()
-  start_date?: string;
+  start_date: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiProperty()
   @IsString()
   @IsDateString()
   @IsNotEmpty()
-  end_date?: string;
+  end_date: string;
 }

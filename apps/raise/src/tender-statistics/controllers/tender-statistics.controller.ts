@@ -4,7 +4,6 @@ import { TenderRoles } from '../../tender-auth/decorators/tender-roles.decorator
 import { TenderJwtGuard } from '../../tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../../tender-auth/guards/tender-roles.guard';
 import { BaseStatisticFilter } from '../dtos/requests/base-statistic-filter.dto';
-import { GetBudgetInfoDto } from '../dtos/requests/get-budget-info.dto';
 import { TenderStatisticsService } from '../services/tender-statistics.service';
 
 @Controller('statistics')
@@ -102,8 +101,28 @@ export class TenderStatisticsController {
     'tender_project_manager',
     'tender_project_supervisor',
   ) // only internal users
+  @Get('average-transaction')
+  async averageTransaction(@Query() query: BaseStatisticFilter) {
+    const budgetInfo = await this.tenderStatisticsService.getAverageTransaction(
+      query,
+    );
+    return baseResponseHelper(budgetInfo, HttpStatus.OK, 'Average transaction');
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles(
+    'tender_accounts_manager',
+    'tender_admin',
+    'tender_cashier',
+    'tender_ceo',
+    'tender_consultant',
+    'tender_finance',
+    'tender_moderator',
+    'tender_project_manager',
+    'tender_project_supervisor',
+  ) // only internal users
   @Get('budget-info')
-  async getBudgetInfo(@Query() query: GetBudgetInfoDto) {
+  async getBudgetInfo(@Query() query: BaseStatisticFilter) {
     const budgetInfo = await this.tenderStatisticsService.getBudgetInfo(query);
     return baseResponseHelper(budgetInfo, HttpStatus.OK, 'Budget Info');
   }

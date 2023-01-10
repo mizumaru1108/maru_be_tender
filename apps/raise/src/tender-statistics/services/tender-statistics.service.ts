@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import moment from 'moment';
 import { PrismaService } from '../../prisma/prisma.service';
 import { BaseStatisticFilter } from '../dtos/requests/base-statistic-filter.dto';
-import { GetBudgetInfoDto } from '../dtos/requests/get-budget-info.dto';
+import { GetAverageTransactionResponseDto } from '../dtos/responses/get-average-transaction-response.dto';
 import {
   GetBeneficiariesReportDto,
   IGetBeneficiariesByTrackDto,
   IGetBeneficiariesByTypeDto,
 } from '../dtos/responses/get-beneficiaries-report.dto';
 import { GetPartnersStatisticResponseDto } from '../dtos/responses/get-partner-statistic.dto';
+import { GetRawExecutionTimeDataResponseDto } from '../dtos/responses/get-raw-execution-time-data-response.dto';
 import { TenderStatisticsRepository } from '../repositories/tender-statistic.repository';
 
 @Injectable()
@@ -404,7 +406,8 @@ export class TenderStatisticsService {
     // console.log('partners', partners);
     // console.log('length', partners.length);
     if (partners.length > 0) {
-      const latestPartnerCreatedDate = partners[0].created_at!;
+      // const latestPartnerData = partners[0].created_at!;
+      const latestPartnerData = moment(filter.end_date).startOf('day').toDate();
       const byStatus = partnerStatus.map((status) => {
         return {
           label: status.id,
@@ -458,8 +461,7 @@ export class TenderStatisticsService {
             value: partners.filter(
               (partner) =>
                 partner.status.id === status.id &&
-                partner.created_at!.getMonth() ===
-                  latestPartnerCreatedDate.getMonth(),
+                partner.created_at!.getMonth() === latestPartnerData.getMonth(),
             ).length,
           };
         }),
@@ -470,7 +472,7 @@ export class TenderStatisticsService {
               (partner) =>
                 partner.status.id === status.id &&
                 partner.created_at!.getMonth() ===
-                  latestPartnerCreatedDate.getMonth() - 1,
+                  latestPartnerData.getMonth() - 1,
             ).length,
           };
         }),
@@ -559,7 +561,7 @@ export class TenderStatisticsService {
     }
   }
 
-  async getBudgetInfo(request: GetBudgetInfoDto) {
+  async getBudgetInfo(request: BaseStatisticFilter) {
     const proposals = await this.tenderStatisticRepository.getBudgetInfo(
       request,
     );
@@ -696,5 +698,77 @@ export class TenderStatisticsService {
     );
 
     return groupedData;
+  }
+
+  async getAverageTransaction(
+    request: BaseStatisticFilter,
+  ): Promise<GetAverageTransactionResponseDto[]> {
+    const rawExecutionTime =
+      await this.tenderStatisticRepository.getRawProposalExecutionTime(request);
+    // console.log(rawExecutionTime.length);
+
+    if (rawExecutionTime.length > 0) {
+      // Group transactions by project track
+      const groupedTransactions = rawExecutionTime.reduce((acc, curr) => {
+        if (curr.project_track) {
+          const collection = acc.get(curr.project_track);
+          if (!collection) {
+            acc.set(curr.project_track, [curr]);
+          } else {
+            collection.push(curr);
+          }
+        }
+        return acc;
+      }, new Map<string, GetRawExecutionTimeDataResponseDto[]>());
+
+      // Calculate statistics for each group
+      const response: GetAverageTransactionResponseDto[] = [];
+      for (const projectTrack of Array.from(groupedTransactions.keys())) {
+        const projectTransactions = groupedTransactions.get(projectTrack);
+
+        if (!projectTransactions) {
+          continue;
+        }
+
+        const totalExecutionTime = projectTransactions.reduce(
+          (acc, curr) => acc + Number(curr.execution_time),
+          0,
+        );
+        const average = totalExecutionTime / projectTransactions.length || 0;
+
+        const total_execution_time_data_count = projectTransactions.length;
+
+        const lastWeekTransactions = projectTransactions.filter(
+          (transaction) => {
+            const transactionDate = moment(transaction.created_at);
+            const lastWeekStart = moment(request.end_date).subtract(7, 'days');
+            return transactionDate.isSameOrAfter(lastWeekStart);
+          },
+        );
+        const totalExecutionTimeLastWeek = lastWeekTransactions.reduce(
+          (acc, curr) => acc + Number(curr.execution_time),
+          0,
+        );
+        const averageLastWeek =
+          totalExecutionTimeLastWeek / lastWeekTransactions.length || 0;
+
+        const total_execution_last_week_data_count =
+          lastWeekTransactions.length;
+
+        response.push({
+          project_track: projectTrack,
+          total_execution_time: totalExecutionTime,
+          total_execution_time_data_count,
+          average: average,
+          total_execution_last_week: totalExecutionTimeLastWeek,
+          average_last_week: averageLastWeek,
+          total_execution_last_week_data_count,
+        });
+      }
+
+      return response;
+    } else {
+      return [];
+    }
   }
 }
