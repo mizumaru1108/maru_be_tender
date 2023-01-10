@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Prisma, proposal_log } from '@prisma/client';
 import { ROOT_LOGGER } from '../../libs/root-logger';
 import { PrismaService } from '../../prisma/prisma.service';
+import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
 
 @Injectable()
 export class TenderProposalLogRepository {
@@ -21,6 +22,62 @@ export class TenderProposalLogRepository {
       throw new InternalServerErrorException(
         'Something went wrong when creating proposal logs!',
       );
+    }
+  }
+
+  async findProposalLogByid(proposal_log_id: string): Promise<
+    | (proposal_log & {
+        proposal: {
+          id: string;
+          project_name: string;
+          submitter_user_id: string;
+          user: {
+            employee_name: string | null;
+            email: string;
+          };
+        };
+        reviewer: {
+          employee_name: string | null;
+        };
+      })
+    | null
+  > {
+    this.logger.info('finding proposal log');
+    try {
+      const response = await this.prismaService.proposal_log.findUnique({
+        where: {
+          id: proposal_log_id,
+        },
+        include: {
+          proposal: {
+            select: {
+              id: true,
+              project_name: true,
+              submitter_user_id: true,
+              user: {
+                select: {
+                  employee_name: true,
+                  email: true,
+                },
+              },
+            },
+          },
+          reviewer: {
+            select: {
+              employee_name: true,
+            },
+          },
+        },
+      });
+      return response;
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalLogRepository.name,
+        'fetchProposalLogById error details: ',
+        'finding proposal log!',
+      );
+      throw theError;
     }
   }
 }

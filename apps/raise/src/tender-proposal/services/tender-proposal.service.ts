@@ -39,6 +39,13 @@ import { ProposalAdminRole } from '../enum/adminRoles.enum';
 import { InnerStatusEnum } from '../enum/innerStatus.enum';
 import { OuterStatusEnum } from '../enum/outerStatus.enum';
 import { ProposalAction } from '../enum/proposalAction.enum';
+import { CreateNotificationDto } from '../../tender-notification/dtos/requests/create-notification.dto';
+import { CreateProposalNotificationDto } from '../dtos/requests/proposal/create-proposal-notification.dto';
+import { TenderNotificationService } from '../../tender-notification/services/tender-notification.service';
+import { TenderProposalLogRepository } from '../repositories/tender-proposal-log.repository';
+import { TenderEmailService } from '../../tender-email/services/tender-email.service';
+import { SendEmailDto } from '../../libs/email/dtos/requests/send-email.dto';
+import { EmailService } from '../../libs/email/email.service';
 
 @Injectable()
 export class TenderProposalService {
@@ -48,9 +55,10 @@ export class TenderProposalService {
 
   constructor(
     private readonly prismaService: PrismaService,
+    private readonly emailService: EmailService,
+    private readonly tenderNotificationService: TenderNotificationService,
+    private readonly tenderProposalLogRepository: TenderProposalLogRepository,
     private readonly tenderProposalRepository: TenderProposalRepository,
-    private readonly tenderProposalLogService: TenderProposalLogService,
-    private readonly tenderProposalFlowService: TenderProposalFlowService,
   ) {}
 
   // for draft / edit request
@@ -903,26 +911,39 @@ export class TenderProposalService {
         ProposalAction.ACCEPT_AND_ASK_FOR_CONSULTION,
       );
       return proposal;
-    } else if((role === ProposalAdminRole.CEO || role === ProposalAdminRole.PROJECT_MANAGER || role === ProposalAdminRole.CASHIER || role === ProposalAdminRole.FINANCE) && action === ProposalAction.ASK_FOR_UPDATE){
-      await this.updateRequestToTheSuperVisor(user, body, id, role)
-    }else{
+    } else if (
+      (role === ProposalAdminRole.CEO ||
+        role === ProposalAdminRole.PROJECT_MANAGER ||
+        role === ProposalAdminRole.CASHIER ||
+        role === ProposalAdminRole.FINANCE) &&
+      action === ProposalAction.ASK_FOR_UPDATE
+    ) {
+      await this.updateRequestToTheSuperVisor(user, body, id, role);
+    } else {
       throw new UnauthorizedException('There is no such action to do!');
     }
   }
 
-  async updateRequestToTheSuperVisor(user: user, body: any, id: string, role: string){
+  async updateRequestToTheSuperVisor(
+    user: user,
+    body: any,
+    id: string,
+    role: string,
+  ) {
     const oldProposal = await this.prismaService.proposal.findUnique({
       where: {
         id,
       },
     });
-    const old_inner_status = oldProposal?.inner_status? oldProposal.inner_status : undefined;
+    const old_inner_status = oldProposal?.inner_status
+      ? oldProposal.inner_status
+      : undefined;
     const proposal = await this.updateProposalStatus(
       id,
       InnerStatusEnum.ACCEPTED_BY_MODERATOR,
       undefined,
       OuterStatusEnum.UPDATE_REQUEST,
-      old_inner_status
+      old_inner_status,
     );
     await this.createProposalLog(
       body,
@@ -1204,7 +1225,7 @@ export class TenderProposalService {
     inner_status: string,
     track_id?: string,
     outter_status?: string,
-    old_inner_status?: string
+    old_inner_status?: string,
   ) {
     return this.prismaService.proposal.update({
       where: {
@@ -1214,11 +1235,11 @@ export class TenderProposalService {
         inner_status,
         track_id,
         outter_status,
-        old_inner_status
+        old_inner_status,
       },
     });
   }
-  
+
   async createProposalLog(
     body: any,
     user_role: string,
@@ -1243,5 +1264,63 @@ export class TenderProposalService {
 
   async fetchTrack(limit: number, page: number) {
     return await this.tenderProposalRepository.fetchTrack(limit, page);
+  }
+
+  async sendNotification(
+    currentUser: TenderCurrentUser,
+    payload: CreateProposalNotificationDto,
+  ) {
+    const proposalLog =
+      await this.tenderProposalLogRepository.findProposalLogByid(
+        payload.proposal_log_id,
+      );
+    if (!proposalLog) throw new NotFoundException('Proposal Log not found');
+
+    const actions =
+      proposalLog.action &&
+      ['accept', 'reject'].indexOf(proposalLog.action) > -1
+        ? proposalLog.action
+        : 'review';
+
+    // email notification
+    const employeeEmailNotifPayload: SendEmailDto = {
+      mailType: 'plain',
+      to: proposalLog.reviewer_id,
+      from: 'no-reply@hcharity.org',
+      subject: `Proposal ${actions}ed Notification`,
+      content: `Your review has been submitted for proposal (${proposalLog.proposal.project_name}) at (${proposalLog.created_at}), and already been notified to the user ${proposalLog.proposal.user.employee_name} (${proposalLog.proposal.user.email})`,
+    };
+
+    const clientEmailNotifPayload: SendEmailDto = {
+      mailType: 'plain',
+      to: proposalLog.proposal.user.email,
+      from: 'no-reply@hcharity.org',
+      subject: `Proposal ${actions}ed Notification`,
+      content: `Your proposal (${proposalLog.proposal.project_name}), has been ${actions}ed by ${currentUser.choosenRole} (${proposalLog.reviewer.employee_name}) at (${proposalLog.created_at})`,
+    };
+
+    this.emailService.sendMail(employeeEmailNotifPayload);
+    this.emailService.sendMail(clientEmailNotifPayload);
+
+    // create web app notification
+    const employeeWebNotifPayload: CreateNotificationDto = {
+      type: 'PROPOSAL',
+      user_id: proposalLog.reviewer_id,
+      proposal_id: proposalLog.proposal_id,
+      subject: `Proposal ${actions}ed Notification`,
+      content: `Your review has been submitted for proposal (${proposalLog.proposal.project_name}) at (${proposalLog.created_at}), and already been notified to the user ${proposalLog.proposal.user.employee_name} (${proposalLog.proposal.user.email})`,
+    };
+
+    const clientWebNotifPayload: CreateNotificationDto = {
+      type: 'PROPOSAL',
+      user_id: proposalLog.proposal.submitter_user_id,
+      proposal_id: proposalLog.proposal_id,
+      subject: `Proposal ${actions}ed Notification`,
+      content: `Your proposal (${proposalLog.proposal.project_name}), has been ${actions}ed by ${currentUser.choosenRole} (${proposalLog.reviewer.employee_name}) at (${proposalLog.created_at})`,
+    };
+
+    await this.tenderNotificationService.createMany({
+      payloads: [employeeWebNotifPayload, clientWebNotifPayload],
+    });
   }
 }

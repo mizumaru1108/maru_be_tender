@@ -33,6 +33,8 @@ import { UpdateProposalByCmsUsers } from '../dtos/updateProposalByCmsUsers.dto';
 import { user } from '@prisma/client';
 import { BaseFilterRequest } from '../../commons/dtos/base-filter-request.dto';
 import { manualPaginationHelper } from '../../tender-commons/helpers/manual-pagination-helper';
+import { CreateNotificationDto } from '../../tender-notification/dtos/requests/create-notification.dto';
+import { CreateProposalNotificationDto } from '../dtos/requests/proposal/create-proposal-notification.dto';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(
@@ -59,22 +61,34 @@ export class TenderProposalController {
     );
   }
 
-  /**
-   * this endpoint is for changing the state of the proposal,
-   * the status of proposal will be change, and the log will be created
-   * (DYNAMIC) DEPRECATED for now
-   */
-  // @UseGuards(JwtAuthGuard)
-  // @Patch('changeState')
-  // dchangeProposalState(
-  //   @CurrentUser() currentUser: ICurrentUser,
-  //   @Body() request: ChangeProposalStateDto,
-  // ) {
-  //   return this.tenderProposalService.dchangeProposalState(
-  //     currentUser,
-  //     request,
-  //   );
-  // }
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles(
+    'tender_accounts_manager',
+    'tender_admin',
+    'tender_cashier',
+    'tender_ceo',
+    'tender_consultant',
+    'tender_finance',
+    'tender_moderator',
+    'tender_project_manager',
+    'tender_project_supervisor',
+  ) // only internal users
+  @Post('send-notification')
+  async sendNotification(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() request: CreateProposalNotificationDto,
+  ) {
+    const createdPayment = await this.tenderProposalService.sendNotification(
+      currentUser,
+      request,
+    );
+    return baseResponseHelper(
+      createdPayment,
+      HttpStatus.CREATED,
+      'Payment created successfully',
+    );
+  }
+
   @UseGuards(TenderJwtGuard)
   @Get('fetch-track')
   async fetchTrack(

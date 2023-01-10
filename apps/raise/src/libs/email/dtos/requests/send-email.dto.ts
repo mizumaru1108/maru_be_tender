@@ -10,7 +10,6 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Template } from 'handlebars';
 
 export class EmailAttachment {
   @ApiProperty()

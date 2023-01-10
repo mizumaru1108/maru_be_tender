@@ -42,6 +42,12 @@ export class CreateNotificationDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
+  proposal_log_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   @IsUUID()
   message_id?: string;
 

@@ -27,13 +27,37 @@ export class AuthService {
   }
 
   async handleGoogleCallback(code: string) {
+    /* validate user token, exchange into google refresh token, also set oauth2 creds using that token */
     const token = await this.googleOAuth2Service.getNewRefreshToken(code);
-    console.log('token', token);
-    return token;
-    // const googleUser = await this.googleOAuth2Service.getUserInfo(token);
-    // console.log('googleUser', googleUser);
-    // return googleUser;
-    // const user = await this.usersService.getOneUser({ email: })
+    // console.log('token', token);
+
+    /* get user info using current oauth2 creds  */
+    const googleUser = await this.googleOAuth2Service.getUserInfo(token);
+    // console.log('googleUser.data', googleUser.data);
+
+    /*  login by email(from google) on fusion auth (fusion auth passwordless login) */
+    const loginCode =
+      await this.fusionAuthService.fusionAuthPasswordlessLoginStart(
+        googleUser.data.email,
+      );
+
+    /* if the user exist on fusion auth */
+    if (typeof loginCode !== 'number') {
+      // console.log('loginCode', loginCode);
+
+      /* login with email result (get jwt token) */
+      const loginResponse =
+        await this.fusionAuthService.fusionAuthPasswordlessLogin(loginCode);
+      // console.log('login Response: ', loginResponse);
+
+      /* return the jwt token */
+      return loginResponse;
+    }
+
+    /* usert not exist on fusion auth */
+    if (loginCode === 404) {
+    }
+    return googleUser;
   }
 
   async fusionLogin(loginRequest: LoginRequestDto) {
