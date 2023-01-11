@@ -73,6 +73,7 @@ export type IMassageGrouped = {
 
 export type Conversation = {
   id?: string;
+  unread_message?: number;
   correspondance_category_id: string;
   messages: Message[] | [];
 };

@@ -33,6 +33,7 @@ function ModeratorActionBar() {
   };
 
   const handleApproval = async (data: any) => {
+    // const newLogId = nanoid();
     update({
       proposal_id: id,
       new_values: {

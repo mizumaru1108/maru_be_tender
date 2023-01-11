@@ -118,3 +118,24 @@ export interface IPropsBudgetInfo {
   reserved_budget: number;
   reserved_budget_last_week: number;
 }
+
+/**
+ * types for average transaction tab
+ */
+
+export interface IPropsLineChart {
+  color?: string;
+  series_data?: ApexAxisChartSeries | ApexNonAxisChartSeries;
+}
+
+export interface IPropsAvgTransactions {
+  project_track: string;
+  total_execution_time: number;
+  total_execution_time_data_count: number;
+  average: number;
+  total_execution_last_week: number;
+  average_last_week: number;
+  total_execution_last_week_data_count: number;
+  color?: string;
+  series_data?: ApexAxisChartSeries | ApexNonAxisChartSeries;
+}

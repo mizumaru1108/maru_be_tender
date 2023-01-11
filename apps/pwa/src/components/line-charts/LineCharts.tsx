@@ -1,37 +1,29 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import { merge } from 'lodash';
 // material | component
-import { Box, Typography, Card, Stack, useTheme, Grid } from '@mui/material';
+import { useTheme } from '@mui/material';
 import BaseOptionChart from 'components/chart/BaseOptionChart';
-import Label from 'components/Label';
-import Iconify from 'components/Iconify';
 //
 import { ILineCharts } from './LineCharts.types';
 import useLocales from 'hooks/useLocales';
 
-const LineCharts = ({
-  lineChartData,
-  seriesData,
-  categories,
-  height,
-  title,
-  subtitle,
-  type,
-  compareValue,
-  color,
-  icon,
-}: ILineCharts) => {
+const LineCharts = ({ series_data, color }: ILineCharts) => {
   const { translate } = useLocales();
   const theme = useTheme();
+  const [valueColor, setValueColor] = useState<string>('');
+  const [valueSeries, setValueSeries] = useState<ApexAxisChartSeries | ApexNonAxisChartSeries | []>(
+    []
+  );
+
   const chartOptions = merge(BaseOptionChart(), {
     colors: [
       function () {
-        if (color === 'up') {
+        if (valueColor === 'up') {
           return '#0E8478';
-        } else if (color === 'stable') {
+        } else if (valueColor === 'stable') {
           return '#FFC107';
-        } else if (color === 'down') {
+        } else if (valueColor === 'down') {
           return '#FF4842';
         } else {
           return '#161C24';
@@ -51,7 +43,7 @@ const LineCharts = ({
       },
     },
     xaxis: {
-      categories,
+      categories: ['', ''],
     },
     yaxis: {
       show: false,
@@ -63,76 +55,15 @@ const LineCharts = ({
     },
   });
 
+  useEffect(() => {
+    setValueColor(color!);
+    setValueSeries(series_data!);
+  }, [series_data, color]);
+
   return (
-    <Card sx={{ bgcolor: 'white', p: lineChartData ? 2 : 3 }}>
-      <Stack
-        spacing={1}
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        component="div"
-      >
-        <Grid item xs={lineChartData ? 6 : 12}>
-          <Stack component="div" spacing={1} sx={{ textAlign: 'left' }}>
-            {title && <Typography variant="h6">{translate(title)}</Typography>}
-            {icon && (
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'flex-start',
-                }}
-              >
-                <img src="/assets/icons/currency-icon.svg" alt="currency-icon" />
-              </Box>
-            )}
-            {subtitle && (
-              <Typography variant="subtitle2" sx={{ color: theme.palette.grey[500] }}>
-                {translate(subtitle)}
-              </Typography>
-            )}
-            {type && (
-              <Typography variant="h4" component="p" sx={{ color: theme.palette.primary.main }}>
-                {type?.value} {translate(type?.label)}
-              </Typography>
-            )}
-            {compareValue && (
-              <Box>
-                <Label
-                  color={
-                    (color === 'up' && 'primary') ||
-                    (color === 'stable' && 'warning') ||
-                    (color === 'down' && 'error') ||
-                    'default'
-                  }
-                  sx={{ mr: 1 }}
-                >
-                  {compareValue} {translate(type?.label)}
-                </Label>
-                <Typography variant="caption" sx={{ color: theme.palette.grey[500] }}>
-                  {translate('section_portal_reports.since_last_weeks')}
-                </Typography>
-              </Box>
-            )}
-          </Stack>
-        </Grid>
-        {typeof lineChartData === 'object' && (
-          <Grid item xs={lineChartData ? 6 : 12}>
-            {lineChartData?.map((item) => (
-              <Box key={item.year} sx={{ width: '100%' }}>
-                {item.year === seriesData && (
-                  <ReactApexChart
-                    type="line"
-                    series={item.data}
-                    options={chartOptions}
-                    height={height}
-                  />
-                )}
-              </Box>
-            ))}
-          </Grid>
-        )}
-      </Stack>
-    </Card>
+    <>
+      <ReactApexChart type="line" series={valueSeries} options={chartOptions} height="140" />
+    </>
   );
 };
 

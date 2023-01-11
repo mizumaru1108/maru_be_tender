@@ -305,12 +305,17 @@ export default function NewMessageModalForm({
               value={selectedTrack}
               onChange={handleChange}
             >
-              {listTrack &&
+              {listTrack ? (
                 listTrack.map((option, index) => (
                   <MenuItem key={index} value={option.id}>
-                    {option.id}
+                    {translate(option.id)}
                   </MenuItem>
-                ))}
+                ))
+              ) : (
+                <Typography variant="caption">
+                  {translate('content.messages.text_field.placeholder_list_tracks')}
+                </Typography>
+              )}
             </TextField>
           </>
         )}
