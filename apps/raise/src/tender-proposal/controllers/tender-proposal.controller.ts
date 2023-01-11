@@ -135,11 +135,16 @@ export class TenderProposalController {
    */
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles(
-    'tender_moderator',
-    'tender_project_supervisor',
-    'tender_project_manager',
+    'tender_accounts_manager',
+    'tender_admin',
+    'tender_cashier',
     'tender_ceo',
-  )
+    'tender_consultant',
+    'tender_finance',
+    'tender_moderator',
+    'tender_project_manager',
+    'tender_project_supervisor',
+  ) // only internal users
   @Patch('change-state')
   changeProposalState(
     @CurrentUser() currentUser: TenderCurrentUser,

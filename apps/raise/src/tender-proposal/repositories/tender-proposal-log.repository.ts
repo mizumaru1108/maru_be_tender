@@ -34,10 +34,12 @@ export class TenderProposalLogRepository {
           user: {
             employee_name: string | null;
             email: string;
+            mobile_number: string | null;
           };
         };
         reviewer: {
           employee_name: string | null;
+          mobile_number: string | null;
         };
       })
     | null
@@ -58,6 +60,7 @@ export class TenderProposalLogRepository {
                 select: {
                   employee_name: true,
                   email: true,
+                  mobile_number: true,
                 },
               },
             },
@@ -65,6 +68,7 @@ export class TenderProposalLogRepository {
           reviewer: {
             select: {
               employee_name: true,
+              mobile_number: true,
             },
           },
         },

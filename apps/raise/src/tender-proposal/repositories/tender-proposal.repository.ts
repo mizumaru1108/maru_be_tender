@@ -101,6 +101,62 @@ export class TenderProposalRepository {
     }
   }
 
+  async updateProposalState(
+    proposalId: string,
+    proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
+    proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
+  ) {
+    try {
+      return await this.prismaService.$transaction(async (prismaTrans) => {
+        const proposal = await prismaTrans.proposal.update({
+          where: {
+            id: proposalId,
+          },
+          data: proposalUpdatePayload,
+        });
+
+        const proposal_logs = await prismaTrans.proposal_log.create({
+          data: proposalLogCreateInput,
+          include: {
+            proposal: {
+              select: {
+                id: true,
+                project_name: true,
+                submitter_user_id: true,
+                user: {
+                  select: {
+                    employee_name: true,
+                    email: true,
+                    mobile_number: true,
+                  },
+                },
+              },
+            },
+            reviewer: {
+              select: {
+                employee_name: true,
+                mobile_number: true,
+              },
+            },
+          },
+        });
+
+        return {
+          proposal,
+          proposal_logs,
+        };
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalRepository.name,
+        'updateProposalState error details: ',
+        'updating proposal state!',
+      );
+      throw theError;
+    }
+  }
+
   async fetchTrack(limit: number, page: number) {
     const offset = (page - 1) * limit;
 
@@ -135,6 +191,24 @@ export class TenderProposalRepository {
         error,
         TenderProposalRepository.name,
         'fetchTrack Error:',
+        `fetching proposal tracks!`,
+      );
+      throw theError;
+    }
+  }
+
+  async findTrackById(id: string) {
+    try {
+      return await this.prismaService.project_tracks.findFirst({
+        where: {
+          id,
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalRepository.name,
+        'fetchTracks Error:',
         `fetching proposal tracks!`,
       );
       throw theError;
