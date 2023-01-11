@@ -851,6 +851,8 @@ const en = {
       series_name: {
         last_month: 'Last Month',
         this_month: 'This Month',
+        last_week: 'Last Week',
+        this_week: 'This Week',
       },
       label: {
         partners_need_to_active: 'Parters Need to Active',
@@ -928,6 +930,7 @@ const en = {
     },
     total_budget_for_the_course: 'The total budget for the track',
     riyals: 'ريال',
+    hours: 'Hours',
     spent_budget: 'Spent Budget',
     reserved_budget: 'Reserved Budget',
     since_last_weeks: 'Since last week',

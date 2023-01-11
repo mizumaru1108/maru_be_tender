@@ -1,9 +1,10 @@
 // React
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 // @mui
-import { Typography, Box, useTheme } from '@mui/material';
+import { Typography, useTheme, Stack } from '@mui/material';
 // icon
 import Iconify from '../../Iconify';
+import Label from 'components/Label';
 // types
 import { Conversation } from '../../../@types/wschat';
 // hooks
@@ -27,7 +28,7 @@ export default function MessageMenuItem({ data, activeRole }: IPropsMessageItem)
   const { currentLang, translate } = useLocales();
 
   const [focusedItem, setFocusedItem] = useState<string | null>(null);
-  const { activeConversationId } = useSelector((state) => state.wschat);
+  const { conversations, activeConversationId } = useSelector((state) => state.wschat);
 
   // redux
   const dispatch = useDispatch();
@@ -39,6 +40,14 @@ export default function MessageMenuItem({ data, activeRole }: IPropsMessageItem)
 
     handleReadStatus(id);
   };
+
+  useEffect(() => {
+    if (conversations.length) {
+      if (activeConversationId) {
+        setFocusedItem(activeConversationId);
+      }
+    }
+  }, [conversations, activeConversationId]);
 
   const handleReadStatus = async (conversationId: string) => {
     await axiosInstance.patch(
@@ -55,13 +64,14 @@ export default function MessageMenuItem({ data, activeRole }: IPropsMessageItem)
   return (
     <>
       {data.map((item, index) => (
-        <Box
+        <Stack
           component="div"
           key={index}
+          spacing={2}
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
           sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'self-start',
             padding: 2,
             borderRadius: 1,
             color: '#000',
@@ -84,53 +94,56 @@ export default function MessageMenuItem({ data, activeRole }: IPropsMessageItem)
           }}
           onClick={() => handleFocusItem(item.id!)}
         >
-          <Iconify icon={'codicon:account'} color="#000" width={28} height={28} />
-          <Box
-            component="div"
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              ml: 1.5,
-            }}
-          >
-            <Typography
-              variant="subtitle2"
-              sx={{
-                pb: 0.25,
-              }}
-            >
-              {item.messages[0].owner_id === user?.id
-                ? item.messages[0].receiver?.employee_name
-                : item.messages[0].sender?.employee_name}
-            </Typography>
-            <Typography
-              sx={{
-                fontSize: '12px',
-                lineHeight: '24px',
-                pb: 0.5,
-              }}
-            >
-              {item.messages.length
-                ? item.messages[0].content_type_id === 'TEXT'
-                  ? item.messages[0].content
-                    ? item.messages[0].content.length > 50
-                      ? `${item.messages[0].content.slice(0, 50)} ...`
-                      : item.messages[0].content
-                    : ''
-                  : 'New Image Message'
-                : 'No message yet.'}
-            </Typography>
+          <Stack component="div" spacing={2} direction="row" alignItems="flex-start">
+            <Iconify icon={'codicon:account'} color="#000" width={28} height={28} />
+            <Stack component="div" direction="column">
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  ...(item.unread_message! > 0 && {
+                    fontWeight: 700,
+                  }),
+                }}
+              >
+                {item.messages[0].owner_id === user?.id
+                  ? item.messages[0].receiver?.employee_name
+                  : item.messages[0].sender?.employee_name}
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: '12px',
+                  lineHeight: '24px',
+                  ...(item.unread_message! > 0 && {
+                    fontWeight: 700,
+                  }),
+                }}
+              >
+                {item.messages.length
+                  ? item.messages[0].content_type_id === 'TEXT'
+                    ? item.messages[0].content
+                      ? item.messages[0].content.length > 50
+                        ? `${item.messages[0].content.slice(0, 50)} ...`
+                        : item.messages[0].content
+                      : ''
+                    : 'New Image Message'
+                  : 'No message yet.'}
+              </Typography>
 
-            <Typography
-              sx={{
-                fontSize: '10px',
-                color: '#8E8E8E',
-              }}
-            >
-              {moment(item.messages[0].created_at).format('LLL')}
-            </Typography>
-          </Box>
-        </Box>
+              <Typography
+                sx={{
+                  fontSize: '10px',
+                  color: '#8E8E8E',
+                  ...(item.unread_message! > 0 && {
+                    fontWeight: 700,
+                  }),
+                }}
+              >
+                {moment(item.messages[0].created_at).format('LLL')}
+              </Typography>
+            </Stack>
+          </Stack>
+          {item.unread_message! > 0 ? <Label color="primary">{item.unread_message}</Label> : null}
+        </Stack>
       ))}
     </>
   );

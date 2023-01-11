@@ -911,6 +911,8 @@ const ar = {
       series_name: {
         last_month: 'الشهر الماضي',
         this_month: 'هذا الشهر',
+        last_week: 'الاسبوع الماضى',
+        this_week: 'هذا الاسبوع',
       },
       label: {
         partners_need_to_active: 'الشركاء المطلوب تفعيلهم',
@@ -988,6 +990,7 @@ const ar = {
     },
     total_budget_for_the_course: 'الميزانية الكلية للمسار',
     riyals: 'ريال',
+    hours: 'ساعة',
     spent_budget: 'الميزانية المصروفة',
     reserved_budget: 'الميزانية المحجوزة',
     since_last_weeks: 'منذ الأسابيع الماضية',

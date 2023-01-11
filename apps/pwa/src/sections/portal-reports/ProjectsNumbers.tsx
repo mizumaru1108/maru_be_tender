@@ -2,10 +2,11 @@ import merge from 'lodash/merge';
 import ReactApexChart from 'react-apexcharts';
 // @mui
 import { useTheme, styled } from '@mui/material/styles';
-import { Card, CardHeader, CardProps, Stack, Typography } from '@mui/material';
+import { CardProps, Stack, Typography } from '@mui/material';
 import { BaseOptionChart } from 'components/chart';
 import { fNumber } from 'utils/formatNumber';
-// utils
+// hooks
+import useLocales from 'hooks/useLocales';
 // components
 
 // ----------------------------------------------------------------------
@@ -49,8 +50,9 @@ export default function ProjectsNumbers({
   ...other
 }: Props) {
   const theme = useTheme();
+  const { translate } = useLocales();
 
-  const chartLabels = chartData.map((i) => i.label);
+  const chartLabels = chartData.map((i) => translate(i.label));
 
   const chartSeries = chartData.map((i) => i.value);
 

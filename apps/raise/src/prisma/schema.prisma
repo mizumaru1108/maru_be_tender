@@ -243,19 +243,20 @@ model proposal_item_budget {
 }
 
 model proposal_log {
-  id          String    @id
-  proposal_id String
-  created_at  DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at  DateTime  @default(now()) @db.Timestamptz(6)
-  reviewer_id String
-  state       String
-  notes       String?
-  action      String?   @db.VarChar
-  message     String?   @db.VarChar
-  user_role   String?   @db.VarChar
-  user_type   user_type @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_assign_fkey")
-  proposal    proposal  @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
-  reviewer    user      @relation(fields: [reviewer_id], references: [id], onUpdate: Restrict, map: "proposal_log_user_id_fkey")
+  id           String         @id
+  proposal_id  String
+  created_at   DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime       @default(now()) @db.Timestamptz(6)
+  reviewer_id  String
+  state        String
+  notes        String?
+  action       String?        @db.VarChar
+  message      String?        @db.VarChar
+  user_role    String?        @db.VarChar
+  user_type    user_type      @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_assign_fkey")
+  proposal     proposal       @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
+  reviewer     user           @relation(fields: [reviewer_id], references: [id], onUpdate: Restrict, map: "proposal_log_user_id_fkey")
+  notification notification[]
 }
 
 model proposal_state {
@@ -666,19 +667,21 @@ model support_goal {
 }
 
 model notification {
-  id             String       @id
-  content        String       @db.VarChar
-  proposal_id    String?
-  message_id     String?
-  appointment_id String?
-  user_id        String
-  type           String       @db.VarChar
-  created_at     DateTime?    @default(now()) @db.Timestamptz(6)
-  updated_at     DateTime?    @default(now()) @db.Timestamptz(6)
-  read_status    Boolean?     @default(false)
-  subject        String
-  appointment    appointment? @relation(fields: [appointment_id], references: [id])
-  message        message?     @relation(fields: [message_id], references: [id], onDelete: Cascade)
-  proposal       proposal?    @relation(fields: [proposal_id], references: [id])
-  user           user         @relation("notification_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
+  id              String        @id
+  content         String        @db.VarChar
+  proposal_id     String?
+  message_id      String?
+  appointment_id  String?
+  user_id         String
+  type            String        @db.VarChar
+  created_at      DateTime?     @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime?     @default(now()) @db.Timestamptz(6)
+  read_status     Boolean?      @default(false)
+  subject         String
+  proposal_log_id String?
+  appointment     appointment?  @relation(fields: [appointment_id], references: [id])
+  message         message?      @relation(fields: [message_id], references: [id], onDelete: Cascade)
+  proposal        proposal?     @relation(fields: [proposal_id], references: [id])
+  proposal_log    proposal_log? @relation(fields: [proposal_log_id], references: [id], onDelete: Cascade)
+  user            user          @relation("notification_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
 }

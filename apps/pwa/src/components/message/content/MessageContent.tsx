@@ -21,7 +21,7 @@ import useLocales from 'hooks/useLocales';
 // types
 import { IMassageGrouped, Message, Conversation } from '../../../@types/wschat';
 // redux
-import { setMessageGrouped } from 'redux/slices/wschat';
+import { setMessageGrouped, setActiveConversationId } from 'redux/slices/wschat';
 import { useSelector, useDispatch } from 'redux/store';
 // urql + subscription
 import { useSubscription } from 'urql';
@@ -73,6 +73,18 @@ export default function MessageContent() {
     }
   };
 
+  const handleReadStatus = async (conversationId: string) => {
+    await axiosInstance.patch(
+      '/tender/messages/toogle-read',
+      {
+        roomId: conversationId,
+      },
+      {
+        headers: { 'x-hasura-role': activeRole! },
+      }
+    );
+  };
+
   const postMessage = async (payload: {
     content_type_id: string;
     correspondence_type_id: string;
@@ -87,9 +99,14 @@ export default function MessageContent() {
       ? (getPayload.correspondence_type_id = 'INTERNAL')
       : (getPayload.correspondence_type_id = 'EXTERNAL');
 
-    await axiosInstance.post('/tender/messages/send', getPayload, {
-      headers: { 'x-hasura-role': activeRole! },
-    });
+    await axiosInstance
+      .post('/tender/messages/send', getPayload, {
+        headers: { 'x-hasura-role': activeRole! },
+      })
+      .then((res) => {
+        dispatch(setActiveConversationId(res.data.data.roomChatId));
+      })
+      .catch((err) => console.log('err', err.message));
   };
 
   const initilizeGroupingMessage = () => {
@@ -281,8 +298,9 @@ export default function MessageContent() {
   useEffect(() => {
     if (getMessageGrouped.length) {
       scrollToBottom();
+      // handleReadStatus(activeConversationId!);
     }
-  }, [getMessageGrouped]);
+  }, [getMessageGrouped, activeConversationId]);
 
   return (
     <>

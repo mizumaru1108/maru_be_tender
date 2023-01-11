@@ -19,7 +19,6 @@ import {
 import useLocales from 'hooks/useLocales';
 // sections
 import AverageTransaction from './AverageTransactions';
-import AchievementEffectiveness from './AchievementEffectiveness';
 import CardBudgetInfoTracks from './CardBudgetInfoTracks';
 import PartnersInformation from './PartnersInformation';
 import ProjectsInformation from './ProjectsInformation';
@@ -33,7 +32,9 @@ import {
   IPolarBeneficiaries,
   IPartnerDatas,
   IPropsBudgetInfo,
+  IPropsAvgTransactions,
 } from './types';
+import EmptyChart from './EmptyChart';
 
 // -------------------------------------------------------------------------------
 const ContentStyle = styled('div')(({ theme }) => ({
@@ -91,6 +92,7 @@ export default function HeaderTabs() {
   const [beneficiariesData, setBeneficiariesData] = useState<IPolarBeneficiaries | null>(null);
   const [partnersData, setPartnersData] = useState<IPartnerDatas | null>(null);
   const [budgetInfoData, setBudgetInfoData] = useState<IPropsBudgetInfo[] | []>([]);
+  const [avgTransactionCard, setAvgTransactionCard] = useState<IPropsAvgTransactions[] | []>([]);
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -181,7 +183,30 @@ export default function HeaderTabs() {
         })
         .then((res) => {
           if (res.status === 200) {
+            console.log('res.data.data', res.data.data);
+
             setBudgetInfoData(res.data.data as IPropsBudgetInfo[]);
+          }
+        });
+
+      setIsSubmitting(false);
+    } catch (error) {
+      console.error(error);
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleResAverageTransaction = async (startDate: string, endDate: string) => {
+    try {
+      setIsSubmitting(true);
+
+      await axiosInstance
+        .get(`/statistics/average-transaction?start_date=${startDate}&end_date=${endDate}`, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            setAvgTransactionCard(res.data.data);
           }
         });
 
@@ -207,7 +232,7 @@ export default function HeaderTabs() {
         handleResBudgetInfo(startDate, endDate);
         break;
       case 3:
-        console.log('Eksekusi res achivement');
+        handleResAverageTransaction(startDate, endDate);
         break;
 
       default:
@@ -397,7 +422,7 @@ export default function HeaderTabs() {
               </TabPanel>
               <TabPanel value={valueTab} index={2} dir={theme.direction}>
                 <ContentStyle sx={{ mt: 3 }}>
-                  {budgetInfoData.length &&
+                  {budgetInfoData.length ? (
                     budgetInfoData.map((el, i) => (
                       <CardBudgetInfoTracks
                         key={i}
@@ -408,15 +433,17 @@ export default function HeaderTabs() {
                         reserved_budget_last_week={el.reserved_budget_last_week}
                         total_budget={el.total_budget}
                       />
-                    ))}
+                    ))
+                  ) : (
+                    <EmptyChart type="bar" title={translate('commons.track_type.all_tracks')} />
+                  )}
                 </ContentStyle>
               </TabPanel>
-              {/* <TabPanel value={valueTab} index={3} dir={theme.direction}>
+              <TabPanel value={valueTab} index={3} dir={theme.direction}>
                 <ContentStyle sx={{ mt: 3 }}>
-                  <AverageTransaction />
-                  <AchievementEffectiveness />
+                  <AverageTransaction data={avgTransactionCard} loading={isSubmitting} />
                 </ContentStyle>
-              </TabPanel> */}
+              </TabPanel>
             </>
           )}
         </Box>

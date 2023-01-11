@@ -2,12 +2,10 @@ import { useState, useEffect } from 'react';
 // hooks
 import useLocales from 'hooks/useLocales';
 // mui
-import { Box, Grid, Stack, CircularProgress, Typography, useTheme } from '@mui/material';
+import { Box, Grid, CircularProgress, useTheme } from '@mui/material';
 // components
 import BarChart from 'components/chart/BarChart';
 import DonutChart from 'components/chart/DonutChart';
-// mock data
-import { initDonatValue } from './mock-data';
 //
 import ProjectBenidiciaresKinds from './ProjectBenidiciaresKinds';
 import ProjectBenificiares from './ProjectBenificiares';
@@ -80,7 +78,7 @@ export default function ProjectsInformation({
           const ongoing = el.data.reduce((acc, curr) => acc + (curr.ONGOING || 0), 0);
 
           return {
-            label: translate(el.key),
+            label: el.key,
             value: ongoing,
           };
         });

@@ -19,14 +19,15 @@ import { filterProjectTrack, filterSupervisor } from '../mock-data';
 // redux
 import { addConversation, setActiveConversationId, setMessageGrouped } from 'redux/slices/wschat';
 import { useDispatch, useSelector } from 'redux/store';
-import { Conversation } from '../../../@types/wschat';
+import { Conversation, IMassageGrouped } from '../../../@types/wschat';
 import axiosInstance from 'utils/axios';
+import moment from 'moment';
 
 const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
   const theme = useTheme();
   const { translate } = useLocales();
   const dispatch = useDispatch();
-  const { conversations } = useSelector((state) => state.wschat);
+  const { conversations, activeConversationId } = useSelector((state) => state.wschat);
 
   const [modalState, setModalState] = useState(false);
   const [open, setOpen] = useState(false);
@@ -87,8 +88,9 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
   useEffect(() => {
     if (conversations.length) {
       setNewConversation(conversations);
+      dispatch(setActiveConversationId(activeConversationId!));
     }
-  }, [conversations, newConversation]);
+  }, [conversations, newConversation, activeConversationId, dispatch]);
 
   return (
     <Stack display="flex" spacing={3} sx={{ margin: 2.5 }}>
@@ -338,11 +340,61 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
 
                 if (hasConversationId) {
                   dispatch(setActiveConversationId(hasConversationId));
+
+                  const findConversation: Conversation = conversations.find(
+                    (el) => el.id === hasConversationId
+                  )!;
+
+                  const messageContents = findConversation.messages;
+                  let grouped: IMassageGrouped[] = [];
+
+                  for (const msg of messageContents) {
+                    const date = moment(msg.created_at).isSame(moment(), 'day')
+                      ? 'Today'
+                      : moment(msg.created_at).isSame(moment().subtract(1, 'days'), 'day')
+                      ? 'Yesterday'
+                      : moment(msg.created_at).format('dddd DD/MM/YYYY');
+
+                    let group = grouped.find((g) => g.group_created === date)!;
+
+                    if (group) {
+                      group.messages.push(msg);
+                    } else {
+                      grouped.push({
+                        group_created: date,
+                        messages: [msg],
+                      });
+                    }
+                  }
+
+                  dispatch(setMessageGrouped(grouped));
                   handleReadMessages(hasConversationId);
                   setModalState(false);
                 } else {
                   dispatch(addConversation(valueFromModal));
                   dispatch(setActiveConversationId(valueFromModal.id!));
+
+                  const messageContents = valueFromModal.messages;
+                  let groupedAlter: IMassageGrouped[] = [];
+
+                  for (const msg of messageContents) {
+                    const date = moment(msg.created_at).isSame(moment(), 'day')
+                      ? 'Today'
+                      : moment(msg.created_at).isSame(moment().subtract(1, 'days'), 'day')
+                      ? 'Yesterday'
+                      : moment(msg.created_at).format('dddd DD/MM/YYYY');
+                    const group = groupedAlter.find((g) => g.group_created === date);
+                    if (group) {
+                      group.messages.push(msg);
+                    } else {
+                      groupedAlter.push({
+                        group_created: date,
+                        messages: [msg],
+                      });
+                    }
+                  }
+
+                  dispatch(setMessageGrouped(groupedAlter));
                   handleReadMessages(valueFromModal.id!);
                   setModalState(false);
                 }

@@ -180,37 +180,41 @@ export class TenderAppointmentService {
     await this.tenderNotificationService.createMany(createNotifPayload);
 
     // via sms
-    // if (appointment.client.mobile_number && client.mobile_number !== '') {
-    //   this.twilioService.sendSMS({
-    //     to: appointment.client.mobile_number,
-    //     body: subject + ',' + clientContent,
-    //   });
-    // }
-    // if (
-    //   appointment.employee.mobile_number &&
-    //   appointment.employee.mobile_number !== ''
-    // ) {
-    //   this.twilioService.sendSMS({
-    //     to: appointment.employee.mobile_number,
-    //     body: subject + ',' + employeeContent,
-    //   });
-    // }
-
-    // const twilioResponse = this.twilioService.sendSMSAsync({
-    //   to: '+6285718530636',
-    //   body: subject + ',' + employeeContent,
-    // });
-    // console.log('twilioResponse', twilioResponse);
+    if (appointment.client.mobile_number && client.mobile_number !== '') {
+      this.twilioService.sendSMS({
+        to: appointment.client.mobile_number,
+        body: subject + ',' + clientContent,
+      });
+    }
+    if (
+      appointment.employee.mobile_number &&
+      appointment.employee.mobile_number !== ''
+    ) {
+      this.twilioService.sendSMS({
+        to: appointment.employee.mobile_number,
+        body: subject + ',' + employeeContent,
+      });
+    }
 
     return appointment;
   }
 
   async test() {
     const twilioResponse = this.twilioService.sendSMSAsync({
+      to: '+966592251227',
+      body: 'Hallo Sara!, this is danang from tender-app, just making sure this twilio service is working fine!',
+    });
+    const twilioResponse2 = this.twilioService.sendSMSAsync({
+      to: '+6282120570110',
+      body: 'Hallo frisky!, this is danang from tender-app, just making sure this twilio service is working fine!',
+    });
+    const twilioResponse3 = this.twilioService.sendSMSAsync({
       to: '+6285718530636',
-      body: 'testing sms',
+      body: 'Hallo Putri!, this is danang from tender-app, just making sure this twilio service is working fine!',
     });
     console.log('twilioResponse', twilioResponse);
+    console.log('twilioResponse2', twilioResponse2);
+    console.log('twilioResponse3', twilioResponse3);
   }
 
   async responseInvitation(

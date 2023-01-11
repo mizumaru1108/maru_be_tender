@@ -20,7 +20,7 @@ import {
   TenderAppRole,
   TenderFusionAuthRoles,
 } from '../../tender-commons/types';
-import { InnerStatus } from '../../tender-commons/types/proposal';
+import { InnerStatus, OutterStatus } from '../../tender-commons/types/proposal';
 import { compareUrl } from '../../tender-commons/utils/compare-jsonb-imageurl';
 import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
 
@@ -39,6 +39,15 @@ import { ProposalAdminRole } from '../enum/adminRoles.enum';
 import { InnerStatusEnum } from '../enum/innerStatus.enum';
 import { OuterStatusEnum } from '../enum/outerStatus.enum';
 import { ProposalAction } from '../enum/proposalAction.enum';
+import { CreateNotificationDto } from '../../tender-notification/dtos/requests/create-notification.dto';
+import { CreateProposalNotificationDto } from '../dtos/requests/proposal/create-proposal-notification.dto';
+import { TenderNotificationService } from '../../tender-notification/services/tender-notification.service';
+import { TenderProposalLogRepository } from '../repositories/tender-proposal-log.repository';
+import { TenderEmailService } from '../../tender-email/services/tender-email.service';
+import { SendEmailDto } from '../../libs/email/dtos/requests/send-email.dto';
+import { EmailService } from '../../libs/email/email.service';
+import { TwilioService } from '../../libs/twilio/services/twilio.service';
+import { IProposalLogsResponse } from '../interfaces/proposal-logs-response';
 
 @Injectable()
 export class TenderProposalService {
@@ -48,9 +57,11 @@ export class TenderProposalService {
 
   constructor(
     private readonly prismaService: PrismaService,
+    private readonly emailService: EmailService,
+    private readonly twilioService: TwilioService,
+    private readonly tenderNotificationService: TenderNotificationService,
+    private readonly tenderProposalLogRepository: TenderProposalLogRepository,
     private readonly tenderProposalRepository: TenderProposalRepository,
-    private readonly tenderProposalLogService: TenderProposalLogService,
-    private readonly tenderProposalFlowService: TenderProposalFlowService,
   ) {}
 
   // for draft / edit request
@@ -265,604 +276,13 @@ export class TenderProposalService {
     return response;
   }
 
-  // async handleModeratorApprove(
-  //   currentUser: ICurrentUser,
-  //   currentProposal: proposal,
-  //   request: ChangeProposalStateDto,
-  // ): Promise<ChangeProposalStateResponseDto> {
-  //   const { supervisor_user_id, notes, procedures, track_name } = request;
-
-  //   let proposal: proposal = currentProposal;
-  //   let log: proposal_log | null = null;
-
-  //   if (proposal.project_track === 'DEFAULT_TRACK') {
-  //     if (!track_name) throw new BadRequestException('track_name is required!');
-  //     if (!supervisor_user_id) {
-  //       throw new BadRequestException(
-  //         'responsible officer (Supervisor) is required!',
-  //       );
-  //     }
-  //     const nextTrack = await this.tenderProposalFlowService.fetchTrack(
-  //       'MODERATOR',
-  //       track_name,
-  //       true,
-  //     );
-
-  //     // update the track proposal from default to the defined track by the moderator, also asign to the next state.
-  //     const updatedProposal = await this.prismaService.proposal.update({
-  //       where: {
-  //         id: proposal.id,
-  //       },
-  //       data: {
-  //         supervisor_id: supervisor_user_id,
-  //         inner_status: 'ACCEPTED_BY_MODERATOR',
-  //         outter_status: 'ONGOING',
-  //         state: nextTrack.assigned_to, // move the state to the next responsible officer.
-  //         project_track: request.track_name, // change the track name.
-  //       },
-  //     });
-  //     proposal = updatedProposal;
-
-  //     this.logger.info('reviewr id', currentUser.id);
-  //     this.logger.info(
-  //       'submitter / client_userid',
-  //       currentProposal.submitter_user_id,
-  //     );
-  //     // create logs
-  //     // const createdLog = await this.tenderProposalLogService.createLog(
-  //     //   currentProposal.id,
-  //     //   currentUser.id,
-  //     //   currentProposal.submitter_user_id,
-  //     //   nextTrack.assigned_to,
-  //     //   updatedProposal.project_track,
-  //     //   'ACCEPTED_BY_MODERATOR',
-  //     //   'ONGOING',
-  //     //   notes,
-  //     //   procedures,
-  //     // );
-  //     // log = createdLog;
-  //   } else {
-  //     const nextTrack = await this.tenderProposalFlowService.fetchTrack(
-  //       'MODERATOR',
-  //       proposal.project_track,
-  //       false,
-  //     );
-  //     this.logger.info('next', nextTrack);
-
-  //     // update the track proposal from default to the defined track by the moderator, aslo asign to the next state.
-  //     const updatedProposal = await this.prismaService.proposal.update({
-  //       where: {
-  //         id: proposal.id,
-  //       },
-  //       data: {
-  //         inner_status: 'ACCEPTED_BY_MODERATOR',
-  //         outter_status: 'ONGOING',
-  //         state: nextTrack.assigned_to, // move the state to the next responsible officer.
-  //       },
-  //     });
-  //     proposal = updatedProposal;
-
-  //     // create logs
-  //     const createdLog = await this.tenderProposalLogService.createLog(
-  //       currentProposal.id,
-  //       currentUser.id, //should be there since it's already determined by the moderator (has track)
-  //       currentProposal.submitter_user_id,
-  //       nextTrack.assigned_to,
-  //       proposal.project_track,
-  //       'ACCEPTED_BY_MODERATOR',
-  //       'ONGOING',
-  //       notes,
-  //       procedures,
-  //     );
-  //     log = createdLog;
-  //   }
-
-  //   return {
-  //     proposal,
-  //     log,
-  //   };
-  // }
-
-  // async handleProjectSupervisorApprove(
-  //   currentUser: ICurrentUser,
-  //   currentProposal: proposal,
-  //   request: ChangeProposalStateDto,
-  // ): Promise<ChangeProposalStateResponseDto> {
-  //   let proposal: proposal = currentProposal;
-  //   let log: proposal_log | null = null;
-
-  //   const nextTrack = await this.tenderProposalFlowService.fetchTrack(
-  //     'PROJECT_SUPERVISOR',
-  //     proposal.project_track,
-  //     false,
-  //   );
-  //   // this.logger.info('next', nextTrack);
-
-  //   // 2 is default for project supervisor set paymentsetup.
-  //   // if the next track is 3, then the proposal shouldn't have a paymentsetup
-  //   if (nextTrack.step_position === 3) {
-  //     if (!request.setupPaymentPayload) {
-  //       throw new BadRequestException('setupPaymentPayload is required!');
-  //     }
-
-  //     const {
-  //       clause,
-  //       clasification_field,
-  //       support_type,
-  //       closing_report,
-  //       need_picture,
-  //       does_an_agreement,
-  //       support_amount,
-  //       number_of_payments,
-  //       notes,
-  //       support_outputs,
-  //       vat,
-  //       vat_percentage,
-  //       inclu_or_exclu,
-  //     } = request.setupPaymentPayload;
-
-  //     await this.prismaService.supervisor.create({
-  //       data: {
-  //         id: nanoid(),
-  //         proposal_id: proposal.id,
-  //         user_id: proposal.supervisor_id!, // should be there since it's already determined by the moderator (has track)
-  //         clause,
-  //         clasification_field,
-  //         support_type,
-  //         closing_report,
-  //         need_picture,
-  //         does_an_agreement,
-  //         support_amount,
-  //         number_of_payments,
-  //         notes,
-  //         support_outputs,
-  //         vat,
-  //         vat_percentage,
-  //         inclu_or_exclu,
-  //       },
-  //     });
-
-  //     const updatedProposal = await this.prismaService.proposal.update({
-  //       where: {
-  //         id: proposal.id,
-  //       },
-  //       data: {
-  //         inner_status: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
-  //         outter_status: 'ONGOING',
-  //         state: nextTrack.assigned_to, // move the state to the next responsible officer.
-  //       },
-  //     });
-  //     proposal = updatedProposal;
-
-  //     // create logs
-  //     const createdLog = await this.tenderProposalLogService.createLog(
-  //       currentProposal.id,
-  //       currentUser.id, //should be there since it's already determined by the moderator (has track)
-  //       currentProposal.submitter_user_id,
-  //       nextTrack.assigned_to,
-  //       proposal.project_track,
-  //       'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
-  //       'ONGOING',
-  //       notes,
-  //     );
-  //     log = createdLog;
-  //   }
-
-  //   // if its not defining payment setup, then apply diffrent logic like approve reject / something else.
-
-  //   return {
-  //     proposal,
-  //     log,
-  //   };
-  // }
-
-  // async handleProjectManagerApprove(
-  //   currentUser: ICurrentUser,
-  //   currentProposal: proposal,
-  //   request: ChangeProposalStateDto,
-  // ): Promise<ChangeProposalStateResponseDto> {
-  //   let proposal: proposal = currentProposal;
-  //   let log: proposal_log | null = null;
-
-  //   if (!request.notes) throw new BadRequestException('notes is required!');
-
-  //   const nextTrack = await this.tenderProposalFlowService.fetchTrack(
-  //     'PROJECT_MANAGER',
-  //     currentProposal.project_track,
-  //     false,
-  //   );
-  //   this.logger.info('next', nextTrack);
-
-  //   const updatedProposal = await this.prismaService.proposal.update({
-  //     where: {
-  //       id: proposal.id,
-  //     },
-  //     data: {
-  //       inner_status: 'ACCEPTED_BY_PROJECT_MANAGER',
-  //       outter_status: 'ONGOING',
-  //       state: nextTrack.assigned_to, // move the state to the next responsible officer.
-  //     },
-  //   });
-  //   proposal = updatedProposal;
-
-  //   // create logs
-  //   const createdLog = await this.tenderProposalLogService.createLog(
-  //     currentProposal.id,
-  //     currentUser.id,
-  //     currentProposal.submitter_user_id,
-  //     nextTrack.assigned_to,
-  //     proposal.project_track,
-  //     'ACCEPTED_BY_PROJECT_MANAGER',
-  //     'ONGOING',
-  //     request.notes,
-  //   );
-  //   log = createdLog;
-
-  //   return {
-  //     proposal,
-  //     log,
-  //   };
-  // }
-
-  // async handleConsultantApprove(
-  //   currentUser: ICurrentUser,
-  //   currentProposal: proposal,
-  //   request: ChangeProposalStateDto,
-  // ): Promise<ChangeProposalStateResponseDto> {
-  //   let proposal: proposal = currentProposal;
-  //   let log: proposal_log | null = null;
-
-  //   if (!request.notes) throw new BadRequestException('notes is required!');
-  //   if (!request.procedures)
-  //     throw new BadRequestException('procedures is required!');
-
-  //   const nextTrack = await this.tenderProposalFlowService.fetchTrack(
-  //     'CONSULTANT',
-  //     currentProposal.project_track,
-  //     false,
-  //   );
-  //   this.logger.info('next', nextTrack);
-
-  //   const updatedProposal = await this.prismaService.proposal.update({
-  //     where: {
-  //       id: proposal.id,
-  //     },
-  //     data: {
-  //       inner_status: 'ACCEPTED_BY_CONSULTANT',
-  //       outter_status: 'ONGOING',
-  //       state: nextTrack.assigned_to, // move the state to the next responsible officer.
-  //     },
-  //   });
-  //   proposal = updatedProposal;
-
-  //   // create logs
-  //   const createdLog = await this.tenderProposalLogService.createLog(
-  //     currentProposal.id,
-  //     currentUser.id, //should be there since it's already determined by the moderator (has track)
-  //     currentProposal.submitter_user_id,
-  //     nextTrack.assigned_to,
-  //     proposal.project_track,
-  //     'ACCEPTED_BY_CONSULTANT',
-  //     'ONGOING',
-  //     request.notes,
-  //     request.procedures,
-  //   );
-  //   log = createdLog;
-
-  //   return {
-  //     proposal,
-  //     log,
-  //   };
-  // }
-
-  // async handleCeoApprove(
-  //   currentUser: ICurrentUser,
-  //   currentProposal: proposal,
-  // ): Promise<ChangeProposalStateResponseDto> {
-  //   let proposal: proposal = currentProposal;
-  //   let log: proposal_log | null = null;
-
-  //   const nextTrack = await this.tenderProposalFlowService.fetchTrack(
-  //     'CEO',
-  //     currentProposal.project_track,
-  //     false,
-  //   );
-  //   this.logger.info('next', nextTrack);
-
-  //   const updatedProposal = await this.prismaService.proposal.update({
-  //     where: {
-  //       id: proposal.id,
-  //     },
-  //     data: {
-  //       inner_status: 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
-  //       outter_status: 'ONGOING',
-  //       state: nextTrack.assigned_to, // move the state to the next responsible officer.
-  //     },
-  //   });
-  //   proposal = updatedProposal;
-
-  //   // create logs
-  //   const createdLog = await this.tenderProposalLogService.createLog(
-  //     currentProposal.id,
-  //     currentUser.id,
-  //     currentProposal.submitter_user_id,
-  //     nextTrack.assigned_to,
-  //     proposal.project_track,
-  //     'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
-  //     'ONGOING',
-  //   );
-  //   log = createdLog;
-
-  //   return {
-  //     proposal,
-  //     log,
-  //   };
-  // }
-
-  // async handleModeratorReject(
-  //   currentUser: ICurrentUser,
-  //   currentProposal: proposal,
-  //   request: ChangeProposalStateDto,
-  // ) {
-  //   if (!request.notes) throw new BadRequestException('notes is required!');
-
-  //   const nextTrack = await this.tenderProposalFlowService.fetchTrack(
-  //     'MODERATOR',
-  //     currentProposal.project_track,
-  //     false,
-  //   );
-  //   this.logger.info('next', nextTrack);
-
-  //   const updatedProposal = await this.prismaService.proposal.update({
-  //     where: {
-  //       id: currentProposal.id,
-  //     },
-  //     data: {
-  //       inner_status: 'REJECTED_BY_MODERATOR',
-  //       outter_status: 'ONGOING',
-  //       state: nextTrack.assigned_to,
-  //     },
-  //   });
-
-  //   // create logs
-  //   const createdLog = await this.tenderProposalLogService.createLog(
-  //     currentProposal.id,
-  //     currentUser.id,
-  //     currentProposal.submitter_user_id,
-  //     nextTrack.assigned_to,
-  //     currentProposal.project_track,
-  //     'REJECTED_BY_MODERATOR',
-  //     'ONGOING',
-  //     request.notes,
-  //   );
-
-  //   return {
-  //     proposal: updatedProposal,
-  //     log: createdLog,
-  //   };
-  // }
-
-  // async handleProjectSupervisorReject(
-  //   currentUser: ICurrentUser,
-  //   currentProposal: proposal,
-  //   request: ChangeProposalStateDto,
-  // ) {
-  //   if (!request.notes) throw new BadRequestException('notes is required!');
-
-  //   const nextTrack = await this.tenderProposalFlowService.fetchTrack(
-  //     'PROJECT_SUPERVISOR',
-  //     currentProposal.project_track,
-  //     false,
-  //   );
-  //   this.logger.info('next', nextTrack);
-
-  //   const updatedProposal = await this.prismaService.proposal.update({
-  //     where: {
-  //       id: currentProposal.id,
-  //     },
-  //     data: {
-  //       inner_status: 'REJECTED_BY_SUPERVISOR_WITH_COMMENT',
-  //       outter_status: 'ONGOING',
-  //       state: nextTrack.assigned_to,
-  //     },
-  //   });
-
-  //   // create logs
-  //   const createdLog = await this.tenderProposalLogService.createLog(
-  //     currentProposal.id,
-  //     currentUser.id,
-  //     currentProposal.submitter_user_id,
-  //     nextTrack.assigned_to,
-  //     currentProposal.project_track,
-  //     'REJECTED_BY_SUPERVISOR_WITH_COMMENT',
-  //     'ONGOING',
-  //     request.notes,
-  //   );
-
-  //   return {
-  //     proposal: updatedProposal,
-  //     log: createdLog,
-  //   };
-  // }
-
-  // // dynamic (deprecated for now)
-  // async dchangeProposalState(
-  //   currentUser: ICurrentUser,
-  //   request: ChangeProposalStateDto,
-  // ) {
-  //   const currentRoles = currentUser.type as TenderFusionAuthRoles;
-  //   if (!currentRoles)
-  //     throw new UnauthorizedException(
-  //       'You are not authorized to perform this action',
-  //     );
-  //   // this.logger.info('roles', currentRoles);
-  //   const appRoles = appRoleMappers[currentRoles] as TenderAppRole;
-  //   // this.logger.info('app roles', appRoles);
-
-  //   const proposal = await this.prismaService.proposal.findUnique({
-  //     where: {
-  //       id: request.proposal_id,
-  //     },
-  //   });
-  //   if (!proposal) {
-  //     throw new NotFoundException(
-  //       `Proposal with id ${request.proposal_id} not found`,
-  //     );
-  //   }
-
-  //   //'MODERATOR', 'PROJECT_SUPERVISOR', 'PROJECT_MANAGER', 'CEO', 'CONSULTANT'
-  //   // 'ACCOUNTS_MANAGER' 'ADMIN'  'CASHIER' 'CLIENT'  'FINANCE';
-  //   if (request.action === 'approve') {
-  //     if (appRoles === 'MODERATOR') {
-  //       const result = await this.handleModeratorApprove(
-  //         currentUser,
-  //         proposal,
-  //         request,
-  //       );
-  //       return result;
-  //     }
-  //     if (appRoles === 'PROJECT_SUPERVISOR') {
-  //       const result = await this.handleProjectSupervisorApprove(
-  //         currentUser,
-  //         proposal,
-  //         request,
-  //       );
-  //       return result;
-  //     }
-  //     if (appRoles === 'PROJECT_MANAGER') {
-  //       const result = await this.handleProjectManagerApprove(
-  //         currentUser,
-  //         proposal,
-  //         request,
-  //       );
-  //       return result;
-  //     }
-  //     if (appRoles === 'CEO') {
-  //       const result = await this.handleCeoApprove(currentUser, proposal);
-  //       return result;
-  //     }
-  //     if (appRoles === 'CONSULTANT') {
-  //       const result = await this.handleConsultantApprove(
-  //         currentUser,
-  //         proposal,
-  //         request,
-  //       );
-  //       return result;
-  //     }
-  //   }
-
-  //   // if the action is edit_request the track will be stopped, and the proposal will be sent to the Supervisor
-  //   if (request.action === 'edit_request') {
-  //     // update state to PROJECT_SUPERVISOR, and inner_status to WAITING_FOR_EDIT_REQUEST_APPROVAL_FROM_SUPERVISOR
-  //     const updatedProposal = await this.prismaService.proposal.update({
-  //       where: {
-  //         id: proposal.id,
-  //       },
-  //       data: {
-  //         inner_status: 'WAITING_FOR_EDIT_REQUEST_APPROVAL_FROM_SUPERVISOR',
-  //         outter_status: 'PENDING',
-  //         state: 'PROJECT_SUPERVISOR',
-  //       },
-  //     });
-
-  //     const createdLog = await this.tenderProposalLogService.createLog(
-  //       proposal.id,
-  //       proposal.supervisor_id!, //should be there since it's already determined by the moderator (has track)
-  //       proposal.submitter_user_id,
-  //       'PROJECT_SUPERVISOR',
-  //       proposal.project_track,
-  //       'WAITING_FOR_EDIT_REQUEST_APPROVAL_FROM_SUPERVISOR',
-  //       'PENDING',
-  //     );
-
-  //     return {
-  //       proposal: updatedProposal,
-  //       log: createdLog,
-  //     };
-  //   }
-
-  //   //'MODERATOR', 'PROJECT_SUPERVISOR', 'PROJECT_MANAGER', 'CEO', 'CONSULTANT'
-  //   if (request.action === 'reject') {
-  //     // Moderator, PROJECT_SUPERVISOR
-  //     if (appRoles === 'MODERATOR') {
-  //       const result = await this.handleModeratorReject(
-  //         currentUser,
-  //         proposal,
-  //         request,
-  //       );
-  //       return result;
-  //     }
-  //     if (appRoles === 'PROJECT_SUPERVISOR') {
-  //       const result = await this.handleProjectSupervisorReject(
-  //         currentUser,
-  //         proposal,
-  //         request,
-  //       );
-  //       return result;
-  //     }
-
-  //     //Project_Manager/CEO/Consultant if rejected by those roles the flow will stop (outter_status will be cancelled)
-  //     if (['PROJECT_MANAGER', 'CEO', 'CONSULTANT'].includes(appRoles)) {
-  //       let inner = '';
-  //       if (!request.notes) throw new BadRequestException('notes is required!');
-  //       if (appRoles === 'PROJECT_MANAGER') {
-  //         inner = 'REJECTED_BY_PROJECT_MANAGER_WITH_COMMENT';
-  //       }
-  //       if (appRoles === 'CEO') {
-  //         if (!request.procedures) {
-  //           throw new BadRequestException('procedures is required!');
-  //         }
-  //         inner = 'REJECTED_BY_CEO_WITH_COMMENT';
-  //       }
-  //       if (appRoles === 'CONSULTANT') {
-  //         if (!request.procedures) {
-  //           throw new BadRequestException('procedures is required!');
-  //         }
-  //         inner = 'REJECTED_BY_CONSULTANT';
-  //       }
-
-  //       const updatedProposal = await this.prismaService.proposal.update({
-  //         where: {
-  //           id: proposal.id,
-  //         },
-  //         data: {
-  //           inner_status: inner,
-  //           outter_status: 'CANCELLED',
-  //           state: appRoles,
-  //         },
-  //       });
-
-  //       const createdLog = await this.tenderProposalLogService.createLog(
-  //         proposal.id,
-  //         currentUser.id,
-  //         proposal.submitter_user_id,
-  //         appRoles,
-  //         proposal.project_track,
-  //         inner as InnerStatus,
-  //         'CANCELED',
-  //         request.notes,
-  //         request.procedures,
-  //       );
-
-  //       return {
-  //         proposal: updatedProposal,
-  //         log: createdLog,
-  //       };
-  //     }
-
-  //     // if rejected by any other role the flow will go to the next track
-  //   }
-  // }
-
   async changeProposalState(
     currentUser: TenderCurrentUser,
     request: ChangeProposalStateDto,
   ) {
-    const proposal = await this.prismaService.proposal.findUnique({
-      where: {
-        id: request.proposal_id,
-      },
-    });
+    const proposal = await this.tenderProposalRepository.fetchProposalById(
+      request.proposal_id,
+    );
 
     if (!proposal) {
       throw new NotFoundException(
@@ -870,9 +290,195 @@ export class TenderProposalService {
       );
     }
 
+    const logId = nanoid();
+    let proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput = {};
+    let proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput = {
+      id: logId,
+      proposal_id: request.proposal_id,
+      reviewer_id: currentUser.id,
+      state: appRoleMappers[currentUser.choosenRole] as TenderAppRole, //(default) will be changed later on based on the action
+    };
+    request.notes && (proposalLogCreateInput.notes = request.notes);
+    request.message && (proposalLogCreateInput.message = request.message);
+
+    /* if user is moderator */
+    if (currentUser.choosenRole === 'tender_moderator') {
+      const mod = await this.moderatorChangeState(
+        proposalUpdatePayload,
+        proposalLogCreateInput,
+        request,
+      );
+      proposalUpdatePayload = {
+        ...proposalUpdatePayload,
+        ...mod.proposalUpdatePayload,
+      };
+      proposalLogCreateInput = {
+        ...proposalLogCreateInput,
+        ...mod.proposalLogCreateInput,
+      };
+    }
+
+    /* update proposal and create the logs */
+    const updateProposalResult =
+      await this.tenderProposalRepository.updateProposalState(
+        request.proposal_id,
+        proposalUpdatePayload,
+        proposalLogCreateInput,
+      );
+
+    const { proposal_logs } = updateProposalResult;
+    await this.sendChangeStateNotification(
+      {
+        data: proposal_logs,
+      },
+      currentUser.choosenRole,
+    );
+
     // 'ACCOUNTS_MANAGER' 'ADMIN'  'CASHIER' 'CLIENT'  'FINANCE';
-    //'MODERATOR', 'PROJECT_SUPERVISOR', 'PROJECT_MANAGER', 'CEO', 'CONSULTANT'
   }
+
+  async moderatorChangeState(
+    proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
+    proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
+    request: ChangeProposalStateDto,
+  ) {
+    /* moderator only allowed to acc and reject */
+    if (
+      [ProposalAction.ACCEPT, ProposalAction.REJECT].indexOf(request.action) >
+      -1
+    ) {
+      throw new BadRequestException(
+        `You are not allowed to perform this action ${request.action}`,
+      );
+    }
+    /* if moderator_acc_payload is not exist  */
+    if (!request.moderator_payload) {
+      throw new BadRequestException('Moderator accept payload is required!');
+    }
+
+    /* validate the sended track */
+    const track = await this.tenderProposalRepository.findTrackById(
+      request.moderator_payload.project_track,
+    );
+    if (!track) {
+      throw new BadRequestException(
+        `Invalid Track (${request.moderator_payload.project_track})`,
+      );
+    }
+
+    /* acc */
+    if (request.action === ProposalAction.ACCEPT) {
+      /* proposal */
+      proposalUpdatePayload.inner_status = 'ACCEPTED_BY_MODERATOR';
+      proposalUpdatePayload.outter_status = 'ONGOING';
+      proposalUpdatePayload.state = 'PROJECT_SUPERVISOR';
+      proposalUpdatePayload.project_track = track.id;
+      /* if track not ALL, only for supervisor in defined track */
+      if (request.moderator_payload.supervisor_id) {
+        proposalUpdatePayload.supervisor_id =
+          request.moderator_payload.supervisor_id;
+      }
+
+      /* log */
+      proposalLogCreateInput.action = ProposalAction.ACCEPT;
+      proposalLogCreateInput.state = 'MODERATOR';
+      proposalLogCreateInput.user_role = 'MODERATOR';
+    }
+
+    /* reject */
+    if (request.action === ProposalAction.REJECT) {
+      /* proposal */
+      proposalUpdatePayload.inner_status = 'REJECTED_BY_MODERATOR';
+      proposalUpdatePayload.outter_status = 'CANCELED';
+      proposalUpdatePayload.state = 'MODERATOR';
+      proposalUpdatePayload.project_track = track.id;
+
+      /* log */
+      proposalLogCreateInput.action = ProposalAction.REJECT;
+      proposalLogCreateInput.state = 'MODERATOR';
+      proposalLogCreateInput.user_role = 'MODERATOR';
+    }
+
+    return {
+      proposalUpdatePayload,
+      proposalLogCreateInput,
+    };
+  }
+
+  async sendChangeStateNotification(
+    log: IProposalLogsResponse,
+    reviewerRole: string,
+  ) {
+    const actions =
+      log.data.action && ['accept', 'reject'].indexOf(log.data.action) > -1
+        ? log.data.action
+        : 'review';
+
+    let subject = `Proposal ${actions}ed Notification`;
+    let clientContent = `Your proposal (${log.data.proposal.project_name}), has been ${actions}ed by ${reviewerRole} (${log.data.reviewer.employee_name}) at (${log.data.created_at})`;
+    let employeeContent = `Your review has been submitted for proposal (${log.data.proposal.project_name}) at (${log.data.created_at}), and already been notified to the user ${log.data.proposal.user.employee_name} (${log.data.proposal.user.email})`;
+
+    // email notification
+    const employeeEmailNotifPayload: SendEmailDto = {
+      mailType: 'plain',
+      to: log.data.reviewer_id,
+      from: 'no-reply@hcharity.org',
+      subject,
+      content: employeeContent,
+    };
+
+    const clientEmailNotifPayload: SendEmailDto = {
+      mailType: 'plain',
+      to: log.data.proposal.user.email,
+      from: 'no-reply@hcharity.org',
+      subject,
+      content: clientContent,
+    };
+
+    this.emailService.sendMail(employeeEmailNotifPayload);
+    this.emailService.sendMail(clientEmailNotifPayload);
+
+    // create web app notification
+    const employeeWebNotifPayload: CreateNotificationDto = {
+      type: 'PROPOSAL',
+      user_id: log.data.reviewer_id,
+      proposal_id: log.data.proposal_id,
+      subject,
+      content: employeeContent,
+    };
+
+    const clientWebNotifPayload: CreateNotificationDto = {
+      type: 'PROPOSAL',
+      user_id: log.data.proposal.submitter_user_id,
+      proposal_id: log.data.proposal_id,
+      subject,
+      content: clientContent,
+    };
+
+    await this.tenderNotificationService.createMany({
+      payloads: [employeeWebNotifPayload, clientWebNotifPayload],
+    });
+
+    if (
+      log.data.proposal.user.mobile_number &&
+      log.data.proposal.user.mobile_number !== ''
+    ) {
+      this.twilioService.sendSMS({
+        to: log.data.proposal.user.mobile_number,
+        body: subject + ',' + clientContent,
+      });
+    }
+    if (
+      log.data.reviewer.mobile_number &&
+      log.data.reviewer.mobile_number !== ''
+    ) {
+      this.twilioService.sendSMS({
+        to: log.data.reviewer.mobile_number,
+        body: subject + ',' + employeeContent,
+      });
+    }
+  }
+
   async updateProposalByCmsUsers(
     user: user,
     body: any,
@@ -903,26 +509,39 @@ export class TenderProposalService {
         ProposalAction.ACCEPT_AND_ASK_FOR_CONSULTION,
       );
       return proposal;
-    } else if((role === ProposalAdminRole.CEO || role === ProposalAdminRole.PROJECT_MANAGER || role === ProposalAdminRole.CASHIER || role === ProposalAdminRole.FINANCE) && action === ProposalAction.ASK_FOR_UPDATE){
-      await this.updateRequestToTheSuperVisor(user, body, id, role)
-    }else{
+    } else if (
+      (role === ProposalAdminRole.CEO ||
+        role === ProposalAdminRole.PROJECT_MANAGER ||
+        role === ProposalAdminRole.CASHIER ||
+        role === ProposalAdminRole.FINANCE) &&
+      action === ProposalAction.ASK_FOR_UPDATE
+    ) {
+      await this.updateRequestToTheSuperVisor(user, body, id, role);
+    } else {
       throw new UnauthorizedException('There is no such action to do!');
     }
   }
 
-  async updateRequestToTheSuperVisor(user: user, body: any, id: string, role: string){
+  async updateRequestToTheSuperVisor(
+    user: user,
+    body: any,
+    id: string,
+    role: string,
+  ) {
     const oldProposal = await this.prismaService.proposal.findUnique({
       where: {
         id,
       },
     });
-    const old_inner_status = oldProposal?.inner_status? oldProposal.inner_status : undefined;
+    const old_inner_status = oldProposal?.inner_status
+      ? oldProposal.inner_status
+      : undefined;
     const proposal = await this.updateProposalStatus(
       id,
       InnerStatusEnum.ACCEPTED_BY_MODERATOR,
       undefined,
       OuterStatusEnum.UPDATE_REQUEST,
-      old_inner_status
+      old_inner_status,
     );
     await this.createProposalLog(
       body,
@@ -1204,7 +823,7 @@ export class TenderProposalService {
     inner_status: string,
     track_id?: string,
     outter_status?: string,
-    old_inner_status?: string
+    old_inner_status?: string,
   ) {
     return this.prismaService.proposal.update({
       where: {
@@ -1214,11 +833,11 @@ export class TenderProposalService {
         inner_status,
         track_id,
         outter_status,
-        old_inner_status
+        old_inner_status,
       },
     });
   }
-  
+
   async createProposalLog(
     body: any,
     user_role: string,
@@ -1243,5 +862,86 @@ export class TenderProposalService {
 
   async fetchTrack(limit: number, page: number) {
     return await this.tenderProposalRepository.fetchTrack(limit, page);
+  }
+
+  async sendNotification(
+    currentUser: TenderCurrentUser,
+    payload: CreateProposalNotificationDto,
+  ) {
+    const proposalLog =
+      await this.tenderProposalLogRepository.findProposalLogByid(
+        payload.proposal_log_id,
+      );
+    if (!proposalLog) throw new NotFoundException('Proposal Log not found');
+
+    const actions =
+      proposalLog.action &&
+      ['accept', 'reject'].indexOf(proposalLog.action) > -1
+        ? proposalLog.action
+        : 'review';
+
+    let subject = `Proposal ${actions}ed Notification`;
+    let clientContent = `Your proposal (${proposalLog.proposal.project_name}), has been ${actions}ed by ${currentUser.choosenRole} (${proposalLog.reviewer.employee_name}) at (${proposalLog.created_at})`;
+    let employeeContent = `Your review has been submitted for proposal (${proposalLog.proposal.project_name}) at (${proposalLog.created_at}), and already been notified to the user ${proposalLog.proposal.user.employee_name} (${proposalLog.proposal.user.email})`;
+
+    // email notification
+    const employeeEmailNotifPayload: SendEmailDto = {
+      mailType: 'plain',
+      to: proposalLog.reviewer_id,
+      from: 'no-reply@hcharity.org',
+      subject,
+      content: employeeContent,
+    };
+
+    const clientEmailNotifPayload: SendEmailDto = {
+      mailType: 'plain',
+      to: proposalLog.proposal.user.email,
+      from: 'no-reply@hcharity.org',
+      subject,
+      content: clientContent,
+    };
+
+    this.emailService.sendMail(employeeEmailNotifPayload);
+    this.emailService.sendMail(clientEmailNotifPayload);
+
+    // create web app notification
+    const employeeWebNotifPayload: CreateNotificationDto = {
+      type: 'PROPOSAL',
+      user_id: proposalLog.reviewer_id,
+      proposal_id: proposalLog.proposal_id,
+      subject,
+      content: employeeContent,
+    };
+
+    const clientWebNotifPayload: CreateNotificationDto = {
+      type: 'PROPOSAL',
+      user_id: proposalLog.proposal.submitter_user_id,
+      proposal_id: proposalLog.proposal_id,
+      subject,
+      content: clientContent,
+    };
+
+    await this.tenderNotificationService.createMany({
+      payloads: [employeeWebNotifPayload, clientWebNotifPayload],
+    });
+
+    if (
+      proposalLog.proposal.user.mobile_number &&
+      proposalLog.proposal.user.mobile_number !== ''
+    ) {
+      this.twilioService.sendSMS({
+        to: proposalLog.proposal.user.mobile_number,
+        body: subject + ',' + clientContent,
+      });
+    }
+    if (
+      proposalLog.reviewer.mobile_number &&
+      proposalLog.reviewer.mobile_number !== ''
+    ) {
+      this.twilioService.sendSMS({
+        to: proposalLog.reviewer.mobile_number,
+        body: subject + ',' + employeeContent,
+      });
+    }
   }
 }

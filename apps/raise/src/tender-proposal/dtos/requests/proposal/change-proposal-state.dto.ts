@@ -1,13 +1,16 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsEnum,
   IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { ProposalAction } from '../../../enum/proposalAction.enum';
 import { SetupPaymentPayloadDto } from '../setup-payment-payload.dto';
+import { ModeratorChangeStatePayload } from './moderator-change-state.dto';
 
 export class ChangeProposalStateDto {
   @ApiProperty()
@@ -18,36 +21,24 @@ export class ChangeProposalStateDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @IsIn(['approve', 'reject', 'edit_request'], {
-    message: 'status must be approve, reject or edit_request',
-  })
-  action: string;
+  @IsEnum(ProposalAction)
+  action: ProposalAction;
 
-  /**
-   * for moderator acceptance
-   */
   @ApiPropertyOptional()
   @IsOptional()
+  @Type(() => ModeratorChangeStatePayload)
+  @ValidateNested()
+  moderator_payload?: ModeratorChangeStatePayload;
+
+  @ApiPropertyOptional()
   @IsString()
-  @IsNotEmpty()
-  supervisor_user_id?: string;
-
-  /**
-   * for moderator acceptance
-   */
-  @ApiPropertyOptional()
   @IsOptional()
+  notes?: string;
+
+  @ApiPropertyOptional()
   @IsString()
-  @IsNotEmpty()
-  track_name?: string;
-
-  @ApiPropertyOptional()
   @IsOptional()
-  notes?: string | undefined;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  procedures?: string | undefined;
+  message?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

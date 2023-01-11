@@ -1,12 +1,14 @@
 import {
   HttpException,
   Injectable,
+  InternalServerErrorException,
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GaxiosError, GaxiosResponse } from 'gaxios';
 import { Credentials, OAuth2Client } from 'google-auth-library';
+import { UserInfo } from './dtos/responses/user-info.dto';
 
 @Injectable()
 export class GoogleOAuth2Service {
@@ -46,48 +48,28 @@ export class GoogleOAuth2Service {
     return await this.getLoginUrl(scope);
   }
 
-  // // get user info from google (using credentials)
-  // async getUserInfo(credentials: Credentials): Promise<any> {
-  //   try {
-  //     const userInfo = await this.oauth2Client.request({
-  //       url: 'https://www.googleapis.com/oauth2/v1/userinfo',
-  //       headers: {
-  //         Authorization: `Bearer ${credentials.access_token}`,
-  //       },
-  //     });
+  // get user info from google (using credentials)
+  async getUserInfo(
+    credentials: Credentials,
+  ): Promise<GaxiosResponse<UserInfo>> {
+    try {
+      const response = await this.oauth2Client.request<UserInfo>({
+        url: 'https://www.googleapis.com/oauth2/v1/userinfo',
+        headers: {
+          Authorization: `Bearer ${credentials.access_token}`,
+        },
+      });
 
-  //     return userInfo.data;
-  //   } catch (error) {
-  //     if (error instanceof GaxiosError && error.response) {
-  //       this.logger.error(error.response.data);
-  //       throw new HttpException(error.response.data, error.response.status);
-  //     }
-  //     this.logger.error(error);
-  //     throw new HttpException(error, 500);
-  //   }
-  // }
-
-  // async getUserInfo(
-  //   credentials: Credentials,
-  // ): Promise<GaxiosResponse<UserInfo>> {
-  //   try {
-  //     const userInfo = await this.oauth2Client.request<UserInfo>({
-  //       url: 'https://www.googleapis.com/oauth2/v1/userinfo',
-  //       headers: {
-  //         Authorization: `Bearer ${credentials.access_token}`,
-  //       },
-  //     });
-
-  //     return userInfo;
-  //   } catch (error) {
-  //     if (error instanceof GaxiosError && error.response) {
-  //       this.logger.error(error.response.data);
-  //       throw new HttpException(error.response.data, error.response.status);
-  //     }
-  //     this.logger.error(error);
-  //     throw new HttpException(error, 500);
-  //   }
-  // }
+      return response;
+    } catch (error) {
+      if (error instanceof GaxiosError && error.response) {
+        this.logger.error(error.response.data);
+        throw new HttpException(error.response.data, error.response.status);
+      }
+      this.logger.error(error);
+      throw new HttpException(error, 500);
+    }
+  }
 
   async getLoginUrl(scope: string[]): Promise<string> {
     const url = this.oauth2Client.generateAuthUrl({

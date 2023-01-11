@@ -2,6 +2,8 @@ import { Avatar, Checkbox, TableRow, TableCell, Typography, Stack, Chip } from '
 import Label from '../../../../components/Label';
 import { UsersAndPermissionsInterface } from './types';
 import { LoadingButton } from '@mui/lab';
+// hooks
+import useLocales from 'hooks/useLocales';
 
 // ----------------------------------------------------------------------
 
@@ -22,6 +24,7 @@ export default function UsersAndPermissionsTableRow({
   isDeleting,
 }: Props) {
   const { name, email, activation, permissions } = row;
+  const { translate } = useLocales();
 
   return (
     <TableRow hover selected={selected}>
@@ -34,7 +37,7 @@ export default function UsersAndPermissionsTableRow({
       <TableCell align="left">
         <Stack direction="row" gap={1}>
           {permissions.map((item, index) => (
-            <Chip key={index} label={item.role} />
+            <Chip key={index} label={translate(`tender_${item.role.toLowerCase()}`)} />
           ))}
         </Stack>
       </TableCell>

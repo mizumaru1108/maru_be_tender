@@ -7,6 +7,7 @@ import { Box } from '@mui/material';
 import useSettings from '../../hooks/useSettings';
 import useResponsive from '../../hooks/useResponsive';
 import useCollapseDrawer from '../../hooks/useCollapseDrawer';
+import useAuth from 'hooks/useAuth';
 // config
 import { HEADER, NAVBAR } from '../../config';
 //
@@ -63,8 +64,13 @@ export default function DashboardLayout() {
 
   const verticalLayout = themeLayout === 'vertical';
 
+  const { user } = useAuth();
+
   // urql + subscription
-  const [resultConversation] = useSubscription({ query: getListConversations });
+  const [resultConversation] = useSubscription({
+    query: getListConversations,
+    variables: { user_id: user?.id },
+  });
   const { data, fetching, error } = resultConversation;
 
   // redux messages
@@ -74,8 +80,11 @@ export default function DashboardLayout() {
     if (!fetching && data) {
       const { room_chat } = data;
 
-      const newArr = room_chat.map((el: Conversation) => ({
-        ...el,
+      const newArr = room_chat.map((el: any) => ({
+        id: el.id,
+        correspondance_category_id: el.correspondance_category_id,
+        messages: el.messages,
+        unread_message: el.messages_aggregate.aggregate.count,
       }));
 
       dispatch(setConversation(newArr));
