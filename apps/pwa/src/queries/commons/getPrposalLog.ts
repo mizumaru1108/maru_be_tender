@@ -5,6 +5,23 @@ export const getProposalLog = `query getProposalLog($proposal_id: String = "") {
     message
     notes
     user_role
+    proposal: proposal {
+      inclu_or_exclu
+      does_an_agreement
+      closing_report
+      clasification_field
+      clause
+      support_outputs
+      vat
+      vat_percentage
+      support_goal_id
+      support_type
+      number_of_payments_by_supervisor
+      need_picture
+      fsupport_by_supervisor
+      updated_at
+      created_at
+    }
   }
 }
 

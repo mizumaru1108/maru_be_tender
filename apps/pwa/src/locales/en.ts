@@ -1073,6 +1073,23 @@ const en = {
     ACCOUNTS_MANAGER: 'Accounts Manager',
     ADMIN: 'Super Admin',
   },
+  review: {
+    order_status: 'Order Status',
+    classification_field: 'Classification Field',
+    review_by_supervisor: 'Review by Supervisor',
+    closing_report: 'Closing Report',
+    closing_agreement: 'Closing Agreement',
+    vat_in_project: 'Vat in Project',
+    vat: 'Vat %',
+    inclu_or_exclu: 'Payment is Inclusive or Exclusive',
+    number_of_payment: 'Number of Payment',
+    payment_support: 'Payment Support',
+    support_amount_inclu: 'Support amount inclusive of VAT',
+    procedure: 'Procedure',
+    note_on_project: 'Note on the Project',
+    support_output: 'Support Output',
+  },
+  show_modified_fields: 'Show Modified Fields',
 };
 
 export default en;

@@ -1142,6 +1142,23 @@ const ar = {
     ACCOUNTS_MANAGER: 'إدارة الشركاء (مشرف الحسابات)',
     ADMIN: 'سوبر ادمن',
   },
+  review: {
+    order_status: 'حالة الطلب',
+    classification_field: 'مجال التصنيف',
+    review_by_supervisor: 'مراجعة من قبل المشرف',
+    closing_report: 'التقرير الختامي',
+    closing_agreement: 'اتفاق ختامي',
+    vat_in_project: 'ضريبة القيمة المضافة في المشروع',
+    vat: 'ضريبة القيمة المضافة٪',
+    inclu_or_exclu: 'الدفع شامل أو حصري',
+    number_of_payment: 'عدد المدفوعات',
+    payment_support: 'دعم الدفع',
+    support_amount_inclu: 'مبلغ الدعم شاملاً ضريبة القيمة المضافة',
+    procedure: 'إجراء',
+    note_on_project: 'ملاحظة حول المشروع',
+    support_output: 'إخراج الدعم',
+  },
+  show_modified_fields: 'إظهار الحقول المعدلة',
 };
 
 export default ar;
