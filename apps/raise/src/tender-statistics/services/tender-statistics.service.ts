@@ -403,8 +403,6 @@ export class TenderStatisticsService {
     const partnerStatus =
       await this.tenderStatisticRepository.getRawUserStatus();
 
-    // console.log('partners', partners);
-    // console.log('length', partners.length);
     if (partners.length > 0) {
       // const latestPartnerData = partners[0].created_at!;
       const latestPartnerData = moment(filter.end_date).startOf('day').toDate();

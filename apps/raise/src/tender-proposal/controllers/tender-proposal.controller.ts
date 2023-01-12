@@ -1,16 +1,15 @@
 import {
   Body,
   Controller,
+  Get,
   HttpStatus,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
-  Get,
-  Query,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { JwtAuthGuard } from '../../auth/guards/jwt.guard';
 import { CurrentUser } from '../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
@@ -22,19 +21,17 @@ import { ChangeProposalStateDto } from '../dtos/requests/proposal/change-proposa
 
 import { TenderProposalPaymentService } from '../services/tender-proposal-payment.service';
 
-import { TenderRolesGuard } from '../../tender-auth/guards/tender-roles.guard';
-import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
-import { TenderProposalService } from '../services/tender-proposal.service';
-import { UpdatePaymentDto } from '../dtos/requests/payment/update-payment.dto';
-import { UpdatePaymentResponseDto } from '../dtos/responses/payment/update-payment-response.dto';
-import { UpdateProposalDto } from '../dtos/requests/proposal/update-proposal.dto';
-import { UpdateProposalResponseDto } from '../dtos/responses/proposal/update-proposal-response.dto';
-import { UpdateProposalByCmsUsers } from '../dtos/updateProposalByCmsUsers.dto';
 import { user } from '@prisma/client';
 import { BaseFilterRequest } from '../../commons/dtos/base-filter-request.dto';
+import { TenderRolesGuard } from '../../tender-auth/guards/tender-roles.guard';
 import { manualPaginationHelper } from '../../tender-commons/helpers/manual-pagination-helper';
-import { CreateNotificationDto } from '../../tender-notification/dtos/requests/create-notification.dto';
-import { CreateProposalNotificationDto } from '../dtos/requests/proposal/create-proposal-notification.dto';
+import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
+import { UpdatePaymentDto } from '../dtos/requests/payment/update-payment.dto';
+import { UpdateProposalDto } from '../dtos/requests/proposal/update-proposal.dto';
+import { UpdatePaymentResponseDto } from '../dtos/responses/payment/update-payment-response.dto';
+import { UpdateProposalResponseDto } from '../dtos/responses/proposal/update-proposal-response.dto';
+import { UpdateProposalByCmsUsers } from '../dtos/updateProposalByCmsUsers.dto';
+import { TenderProposalService } from '../services/tender-proposal.service';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(
@@ -61,33 +58,33 @@ export class TenderProposalController {
     );
   }
 
-  @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles(
-    'tender_accounts_manager',
-    'tender_admin',
-    'tender_cashier',
-    'tender_ceo',
-    'tender_consultant',
-    'tender_finance',
-    'tender_moderator',
-    'tender_project_manager',
-    'tender_project_supervisor',
-  ) // only internal users
-  @Post('send-notification')
-  async sendNotification(
-    @CurrentUser() currentUser: TenderCurrentUser,
-    @Body() request: CreateProposalNotificationDto,
-  ) {
-    const createdPayment = await this.tenderProposalService.sendNotification(
-      currentUser,
-      request,
-    );
-    return baseResponseHelper(
-      createdPayment,
-      HttpStatus.CREATED,
-      'Payment created successfully',
-    );
-  }
+  // @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  // @TenderRoles(
+  //   'tender_accounts_manager',
+  //   'tender_admin',
+  //   'tender_cashier',
+  //   'tender_ceo',
+  //   'tender_consultant',
+  //   'tender_finance',
+  //   'tender_moderator',
+  //   'tender_project_manager',
+  //   'tender_project_supervisor',
+  // ) // only internal users
+  // @Post('send-notification')
+  // async sendNotification(
+  //   @CurrentUser() currentUser: TenderCurrentUser,
+  //   @Body() request: CreateProposalNotificationDto,
+  // ) {
+  //   const createdPayment = await this.tenderProposalService.sendNotification(
+  //     currentUser,
+  //     request,
+  //   );
+  //   return baseResponseHelper(
+  //     createdPayment,
+  //     HttpStatus.CREATED,
+  //     'Payment created successfully',
+  //   );
+  // }
 
   @UseGuards(TenderJwtGuard)
   @Get('fetch-track')
@@ -146,11 +143,19 @@ export class TenderProposalController {
     'tender_project_supervisor',
   ) // only internal users
   @Patch('change-state')
-  changeProposalState(
+  async changeProposalState(
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: ChangeProposalStateDto,
   ) {
-    return this.tenderProposalService.changeProposalState(currentUser, request);
+    const proposal = await this.tenderProposalService.changeProposalState(
+      currentUser,
+      request,
+    );
+    return baseResponseHelper(
+      proposal,
+      HttpStatus.OK,
+      `Proposal change state success!, current state: ${proposal.outter_status}, details: ${proposal.inner_status}`,
+    );
   }
 
   @UseGuards(TenderJwtGuard)

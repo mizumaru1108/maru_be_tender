@@ -135,6 +135,7 @@ export class TenderProposalRepository {
             reviewer: {
               select: {
                 employee_name: true,
+                email: true,
                 mobile_number: true,
               },
             },

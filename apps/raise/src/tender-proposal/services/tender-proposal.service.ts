@@ -1,53 +1,35 @@
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import {
-  Prisma,
-  proposal,
-  proposal_item_budget,
-  proposal_log,
-  user,
-} from '@prisma/client';
+import { Prisma, proposal, proposal_item_budget, user } from '@prisma/client';
 import { nanoid } from 'nanoid';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../prisma/prisma.service';
-import {
-  appRoleMappers,
-  TenderAppRole,
-  TenderFusionAuthRoles,
-} from '../../tender-commons/types';
-import { InnerStatus, OutterStatus } from '../../tender-commons/types/proposal';
+import { appRoleMappers, TenderAppRole } from '../../tender-commons/types';
 import { compareUrl } from '../../tender-commons/utils/compare-jsonb-imageurl';
 import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
 
-import { ICurrentUser } from '../../user/interfaces/current-user.interface';
 import { ChangeProposalStateDto } from '../dtos/requests/proposal/change-proposal-state.dto';
 import { UpdateProposalDto } from '../dtos/requests/proposal/update-proposal.dto';
 
-import { ChangeProposalStateResponseDto } from '../dtos/responses/proposal/change-proposal-state-response.dto';
 import { UpdateProposalResponseDto } from '../dtos/responses/proposal/update-proposal-response.dto';
 import { TenderProposalRepository } from '../repositories/tender-proposal.repository';
 
-import { TenderProposalFlowService } from './tender-proposal-flow.service';
-import { TenderProposalLogService } from './tender-proposal-log.service';
+import { SendEmailDto } from '../../libs/email/dtos/requests/send-email.dto';
+import { EmailService } from '../../libs/email/email.service';
 import { ROOT_LOGGER } from '../../libs/root-logger';
+import { TwilioService } from '../../libs/twilio/services/twilio.service';
+import { CreateNotificationDto } from '../../tender-notification/dtos/requests/create-notification.dto';
+import { TenderNotificationService } from '../../tender-notification/services/tender-notification.service';
 import { ProposalAdminRole } from '../enum/adminRoles.enum';
 import { InnerStatusEnum } from '../enum/innerStatus.enum';
 import { OuterStatusEnum } from '../enum/outerStatus.enum';
 import { ProposalAction } from '../enum/proposalAction.enum';
-import { CreateNotificationDto } from '../../tender-notification/dtos/requests/create-notification.dto';
-import { CreateProposalNotificationDto } from '../dtos/requests/proposal/create-proposal-notification.dto';
-import { TenderNotificationService } from '../../tender-notification/services/tender-notification.service';
-import { TenderProposalLogRepository } from '../repositories/tender-proposal-log.repository';
-import { TenderEmailService } from '../../tender-email/services/tender-email.service';
-import { SendEmailDto } from '../../libs/email/dtos/requests/send-email.dto';
-import { EmailService } from '../../libs/email/email.service';
-import { TwilioService } from '../../libs/twilio/services/twilio.service';
 import { IProposalLogsResponse } from '../interfaces/proposal-logs-response';
+import { TenderProposalLogRepository } from '../repositories/tender-proposal-log.repository';
 
 @Injectable()
 export class TenderProposalService {
@@ -290,10 +272,9 @@ export class TenderProposalService {
       );
     }
 
-    const logId = nanoid();
     let proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput = {};
     let proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput = {
-      id: logId,
+      id: nanoid(),
       proposal_id: request.proposal_id,
       reviewer_id: currentUser.id,
       state: appRoleMappers[currentUser.choosenRole] as TenderAppRole, //(default) will be changed later on based on the action
@@ -318,6 +299,23 @@ export class TenderProposalService {
       };
     }
 
+    if (currentUser.choosenRole === 'tender_project_supervisor') {
+      const supervisorResult = await this.supervisorChangeState(
+        proposal,
+        proposalUpdatePayload,
+        proposalLogCreateInput,
+        request,
+      );
+      proposalUpdatePayload = {
+        ...proposalUpdatePayload,
+        ...supervisorResult.proposalUpdatePayload,
+      };
+      proposalLogCreateInput = {
+        ...proposalLogCreateInput,
+        ...supervisorResult.proposalLogCreateInput,
+      };
+    }
+
     /* update proposal and create the logs */
     const updateProposalResult =
       await this.tenderProposalRepository.updateProposalState(
@@ -334,6 +332,7 @@ export class TenderProposalService {
       currentUser.choosenRole,
     );
 
+    return updateProposalResult.proposal;
     // 'ACCOUNTS_MANAGER' 'ADMIN'  'CASHIER' 'CLIENT'  'FINANCE';
   }
 
@@ -344,8 +343,7 @@ export class TenderProposalService {
   ) {
     /* moderator only allowed to acc and reject */
     if (
-      [ProposalAction.ACCEPT, ProposalAction.REJECT].indexOf(request.action) >
-      -1
+      [ProposalAction.ACCEPT, ProposalAction.REJECT].indexOf(request.action) < 0
     ) {
       throw new BadRequestException(
         `You are not allowed to perform this action ${request.action}`,
@@ -373,6 +371,7 @@ export class TenderProposalService {
       proposalUpdatePayload.outter_status = 'ONGOING';
       proposalUpdatePayload.state = 'PROJECT_SUPERVISOR';
       proposalUpdatePayload.project_track = track.id;
+
       /* if track not ALL, only for supervisor in defined track */
       if (request.moderator_payload.supervisor_id) {
         proposalUpdatePayload.supervisor_id =
@@ -405,6 +404,80 @@ export class TenderProposalService {
     };
   }
 
+  async supervisorChangeState(
+    proposal: proposal,
+    proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
+    proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
+    request: ChangeProposalStateDto,
+  ) {
+    /* moderator only allowed to acc and reject */
+    if (
+      [
+        ProposalAction.ACCEPT,
+        ProposalAction.REJECT,
+        ProposalAction.STEP_BACK,
+      ].indexOf(request.action) > -1
+    ) {
+      throw new BadRequestException(
+        `You are not allowed to perform this action ${request.action}`,
+      );
+    }
+    /* if moderator_acc_payload is not exist  */
+    if (!request.moderator_payload) {
+      throw new BadRequestException('Moderator accept payload is required!');
+    }
+
+    /* validate the sended track */
+    const track = await this.tenderProposalRepository.findTrackById(
+      request.moderator_payload.project_track,
+    );
+    if (!track) {
+      throw new BadRequestException(
+        `Invalid Track (${request.moderator_payload.project_track})`,
+      );
+    }
+
+    /* acc */
+    if (request.action === ProposalAction.ACCEPT) {
+      if (proposal.project_track === 'CONCESSIONAL_GRANTS') {
+      }
+      /* proposal */
+      proposalUpdatePayload.inner_status = 'ACCEPTED_BY_MODERATOR';
+      proposalUpdatePayload.outter_status = 'ONGOING';
+      proposalUpdatePayload.state = 'PROJECT_SUPERVISOR';
+      proposalUpdatePayload.project_track = track.id;
+      /* if track not ALL, only for supervisor in defined track */
+      if (request.moderator_payload.supervisor_id) {
+        proposalUpdatePayload.supervisor_id =
+          request.moderator_payload.supervisor_id;
+      }
+
+      /* log */
+      proposalLogCreateInput.action = ProposalAction.ACCEPT;
+      proposalLogCreateInput.state = 'MODERATOR';
+      proposalLogCreateInput.user_role = 'MODERATOR';
+    }
+
+    /* reject */
+    if (request.action === ProposalAction.REJECT) {
+      /* proposal */
+      proposalUpdatePayload.inner_status = 'REJECTED_BY_SUPERVISOR';
+      proposalUpdatePayload.outter_status = 'CANCELED';
+      proposalUpdatePayload.state = 'PROJECT_SUPERVISOR';
+      proposalUpdatePayload.project_track = track.id;
+
+      /* log */
+      proposalLogCreateInput.action = ProposalAction.REJECT;
+      proposalLogCreateInput.state = 'PROJECT_SUPERVISOR';
+      proposalLogCreateInput.user_role = 'PROJECT_SUPERVISOR';
+    }
+
+    return {
+      proposalUpdatePayload,
+      proposalLogCreateInput,
+    };
+  }
+
   async sendChangeStateNotification(
     log: IProposalLogsResponse,
     reviewerRole: string,
@@ -421,7 +494,7 @@ export class TenderProposalService {
     // email notification
     const employeeEmailNotifPayload: SendEmailDto = {
       mailType: 'plain',
-      to: log.data.reviewer_id,
+      to: log.data.reviewer.email,
       from: 'no-reply@hcharity.org',
       subject,
       content: employeeContent,
@@ -864,84 +937,84 @@ export class TenderProposalService {
     return await this.tenderProposalRepository.fetchTrack(limit, page);
   }
 
-  async sendNotification(
-    currentUser: TenderCurrentUser,
-    payload: CreateProposalNotificationDto,
-  ) {
-    const proposalLog =
-      await this.tenderProposalLogRepository.findProposalLogByid(
-        payload.proposal_log_id,
-      );
-    if (!proposalLog) throw new NotFoundException('Proposal Log not found');
+  // async sendNotification(
+  //   currentUser: TenderCurrentUser,
+  //   payload: CreateProposalNotificationDto,
+  // ) {
+  //   const proposalLog =
+  //     await this.tenderProposalLogRepository.findProposalLogByid(
+  //       payload.proposal_log_id,
+  //     );
+  //   if (!proposalLog) throw new NotFoundException('Proposal Log not found');
 
-    const actions =
-      proposalLog.action &&
-      ['accept', 'reject'].indexOf(proposalLog.action) > -1
-        ? proposalLog.action
-        : 'review';
+  //   const actions =
+  //     proposalLog.action &&
+  //     ['accept', 'reject'].indexOf(proposalLog.action) > -1
+  //       ? proposalLog.action
+  //       : 'review';
 
-    let subject = `Proposal ${actions}ed Notification`;
-    let clientContent = `Your proposal (${proposalLog.proposal.project_name}), has been ${actions}ed by ${currentUser.choosenRole} (${proposalLog.reviewer.employee_name}) at (${proposalLog.created_at})`;
-    let employeeContent = `Your review has been submitted for proposal (${proposalLog.proposal.project_name}) at (${proposalLog.created_at}), and already been notified to the user ${proposalLog.proposal.user.employee_name} (${proposalLog.proposal.user.email})`;
+  //   let subject = `Proposal ${actions}ed Notification`;
+  //   let clientContent = `Your proposal (${proposalLog.proposal.project_name}), has been ${actions}ed by ${currentUser.choosenRole} (${proposalLog.reviewer.employee_name}) at (${proposalLog.created_at})`;
+  //   let employeeContent = `Your review has been submitted for proposal (${proposalLog.proposal.project_name}) at (${proposalLog.created_at}), and already been notified to the user ${proposalLog.proposal.user.employee_name} (${proposalLog.proposal.user.email})`;
 
-    // email notification
-    const employeeEmailNotifPayload: SendEmailDto = {
-      mailType: 'plain',
-      to: proposalLog.reviewer_id,
-      from: 'no-reply@hcharity.org',
-      subject,
-      content: employeeContent,
-    };
+  //   // email notification
+  //   const employeeEmailNotifPayload: SendEmailDto = {
+  //     mailType: 'plain',
+  //     to: proposalLog.reviewer.email,
+  //     from: 'no-reply@hcharity.org',
+  //     subject,
+  //     content: employeeContent,
+  //   };
 
-    const clientEmailNotifPayload: SendEmailDto = {
-      mailType: 'plain',
-      to: proposalLog.proposal.user.email,
-      from: 'no-reply@hcharity.org',
-      subject,
-      content: clientContent,
-    };
+  //   const clientEmailNotifPayload: SendEmailDto = {
+  //     mailType: 'plain',
+  //     to: proposalLog.proposal.user.email,
+  //     from: 'no-reply@hcharity.org',
+  //     subject,
+  //     content: clientContent,
+  //   };
 
-    this.emailService.sendMail(employeeEmailNotifPayload);
-    this.emailService.sendMail(clientEmailNotifPayload);
+  //   this.emailService.sendMail(employeeEmailNotifPayload);
+  //   this.emailService.sendMail(clientEmailNotifPayload);
 
-    // create web app notification
-    const employeeWebNotifPayload: CreateNotificationDto = {
-      type: 'PROPOSAL',
-      user_id: proposalLog.reviewer_id,
-      proposal_id: proposalLog.proposal_id,
-      subject,
-      content: employeeContent,
-    };
+  //   // create web app notification
+  //   const employeeWebNotifPayload: CreateNotificationDto = {
+  //     type: 'PROPOSAL',
+  //     user_id: proposalLog.reviewer_id,
+  //     proposal_id: proposalLog.proposal_id,
+  //     subject,
+  //     content: employeeContent,
+  //   };
 
-    const clientWebNotifPayload: CreateNotificationDto = {
-      type: 'PROPOSAL',
-      user_id: proposalLog.proposal.submitter_user_id,
-      proposal_id: proposalLog.proposal_id,
-      subject,
-      content: clientContent,
-    };
+  //   const clientWebNotifPayload: CreateNotificationDto = {
+  //     type: 'PROPOSAL',
+  //     user_id: proposalLog.proposal.submitter_user_id,
+  //     proposal_id: proposalLog.proposal_id,
+  //     subject,
+  //     content: clientContent,
+  //   };
 
-    await this.tenderNotificationService.createMany({
-      payloads: [employeeWebNotifPayload, clientWebNotifPayload],
-    });
+  //   await this.tenderNotificationService.createMany({
+  //     payloads: [employeeWebNotifPayload, clientWebNotifPayload],
+  //   });
 
-    if (
-      proposalLog.proposal.user.mobile_number &&
-      proposalLog.proposal.user.mobile_number !== ''
-    ) {
-      this.twilioService.sendSMS({
-        to: proposalLog.proposal.user.mobile_number,
-        body: subject + ',' + clientContent,
-      });
-    }
-    if (
-      proposalLog.reviewer.mobile_number &&
-      proposalLog.reviewer.mobile_number !== ''
-    ) {
-      this.twilioService.sendSMS({
-        to: proposalLog.reviewer.mobile_number,
-        body: subject + ',' + employeeContent,
-      });
-    }
-  }
+  //   if (
+  //     proposalLog.proposal.user.mobile_number &&
+  //     proposalLog.proposal.user.mobile_number !== ''
+  //   ) {
+  //     this.twilioService.sendSMS({
+  //       to: proposalLog.proposal.user.mobile_number,
+  //       body: subject + ',' + clientContent,
+  //     });
+  //   }
+  //   if (
+  //     proposalLog.reviewer.mobile_number &&
+  //     proposalLog.reviewer.mobile_number !== ''
+  //   ) {
+  //     this.twilioService.sendSMS({
+  //       to: proposalLog.reviewer.mobile_number,
+  //       body: subject + ',' + employeeContent,
+  //     });
+  //   }
+  // }
 }
