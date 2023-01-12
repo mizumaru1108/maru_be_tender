@@ -1,11 +1,12 @@
 import {
-  Controller,
-  Post,
-  Body,
-  UploadedFiles,
-  UseInterceptors,
-  HttpStatus,
   BadRequestException,
+  Body,
+  Controller,
+  HttpStatus,
+  Post,
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@webundsoehne/nest-fastify-file-upload';
 import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
@@ -16,6 +17,7 @@ import { UploadFilesDto } from '../../tender-commons/dto/upload-files.dto';
 
 import { ROOT_LOGGER } from '../../libs/root-logger';
 import { TenderService } from '../services/tender.service';
+import { TenderJwtGuard } from '../../tender-auth/guards/tender-jwt.guard';
 
 @Controller('tender')
 export class TenderController {
@@ -60,5 +62,14 @@ export class TenderController {
     // const response = await this.tenderService.postCreateEditingRequest(payload);
     // this.logger.info('Response: ', { response: JSON.stringify(response) });
     // return response;
+  }
+
+  @UseGuards(TenderJwtGuard)
+  @Post('twilio-test')
+  async twilioTest(
+    @Body('phone_number') phoneNumber: string[],
+    @Body('message') message: string,
+  ) {
+    return await this.tenderService.test(phoneNumber, message);
   }
 }

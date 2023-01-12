@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -11,6 +12,7 @@ import { AllowedFileType } from '../../commons/enums/allowed-filetype.enum';
 import { envLoadErrorHelper } from '../../commons/helpers/env-loaderror-helper';
 import { BaseHashuraWebhookPayload } from '../../commons/interfaces/base-hashura-webhook-payload';
 import { BunnyService } from '../../libs/bunny/services/bunny.service';
+import { TwilioService } from '../../libs/twilio/services/twilio.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UploadFilesDto } from '../../tender-commons/dto/upload-files.dto';
 import {
@@ -26,6 +28,7 @@ export class TenderService {
     private readonly bunnyService: BunnyService,
     private readonly prismaService: PrismaService,
     private readonly configService: ConfigService,
+    private readonly twilioService: TwilioService,
     private tenderRepository: TenderRepository,
   ) {
     const environment = this.configService.get('APP_ENV');
@@ -148,5 +151,20 @@ export class TenderService {
     );
 
     return updatedProposal;
+  }
+
+  async test(phoneNumber: string[], message: string) {
+    if (!phoneNumber || !message) {
+      throw new BadRequestException('Phone number and message are required');
+    }
+    // for each and send to all in phoneNumber array
+    phoneNumber.forEach(async (number) => {
+      const twilioResponse = await this.twilioService.sendSMSAsync({
+        to: number,
+        body: message,
+      });
+      console.log('twilioResponse', twilioResponse);
+    });
+    return true;
   }
 }

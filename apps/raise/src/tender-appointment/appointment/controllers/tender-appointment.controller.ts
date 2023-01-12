@@ -46,12 +46,6 @@ export class TenderAppointmentController {
     return baseResponseHelper(result, HttpStatus.CREATED, 'Success');
   }
 
-  @Post('test')
-  async testingTwilio(): Promise<BaseResponse<any>> {
-    const result = await this.tenderAppointmentService.test();
-    return baseResponseHelper(result, HttpStatus.CREATED, 'Success');
-  }
-
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_client')
   @Patch('response-invitation')
