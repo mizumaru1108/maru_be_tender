@@ -7,6 +7,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FilterModal from '../FilterModal';
 import FilterModalSearch from './FilterModalSearch';
 import Iconify from '../../Iconify';
+import useLocales from 'hooks/useLocales';
 
 //create theme for component box
 const themeBox = {
@@ -37,6 +38,7 @@ function CardTableSearching({
   pagination = true,
   cardFooterButtonAction,
 }: CardTableSearchingProps) {
+  const { translate } = useLocales();
   const [page, setPage] = useState(1);
   const [filter, setFilter] = useState<SearchingProposal>({
     project: '',
@@ -105,7 +107,7 @@ function CardTableSearching({
             startIcon={<img alt="" src="/icons/filter-icon.svg" />}
             onClick={handleOpenFilter}
           >
-            فلتر
+            {translate('commons.filter_button_label')}
           </Button>
         </Stack>
       </Grid>

@@ -23,7 +23,7 @@ function PreviousSupportRequests() {
         <ContentStyle>
           <CardTableBE
             resource={gettingPreviousRequests}
-            title={'طلبات الدعم السابقة'}
+            title={translate('previous_support_requests')}
             cardFooterButtonAction="show-project"
             destination="previous-funding-requests"
             dateFilter={true}

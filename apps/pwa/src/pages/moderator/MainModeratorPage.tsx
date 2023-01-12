@@ -43,7 +43,7 @@ function MainManagerPage() {
       <Container>
         <ContentStyle>
           <CardInsight
-            headline={translate('daily_stats')}
+            headline={translate('account_manager.heading.daily_stats')}
             data={Object.keys(statsData).map((item) => ({
               title: translate(`${item}`),
               value: statsData[`${item}`].aggregate.count,
@@ -71,7 +71,7 @@ function MainManagerPage() {
                     navigate('/moderator/dashboard/incoming-support-requests');
                   }}
                 >
-                  عرض الكل
+                  {translate('view_all')}
                 </Button>
               </Stack>
             </Grid>

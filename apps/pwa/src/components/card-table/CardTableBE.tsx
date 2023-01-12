@@ -14,6 +14,7 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import DateFilterBE from './DateFilterBE';
 import TapTableFilterBE from './TapTableFilterBE';
+import useLocales from 'hooks/useLocales';
 
 function CardTableBE({
   title,
@@ -30,6 +31,7 @@ function CardTableBE({
   baseFilters = {},
 }: CardTablePropsBE) {
   const [page, setPage] = useState(1);
+  const { translate } = useLocales();
   const [alphabeticalOrderState, setAlphabeticalOrderState] = useState<string | null>(null);
   const [filtersStateObjectArray, setFiltersStateObjectArray] = useState(baseFilters);
   // The params that will be used with the query later on
@@ -113,7 +115,6 @@ function CardTableBE({
       </Grid>
       <Grid item md={6} xs={12}>
         <Stack direction="row" justifyContent="end" gap={1}>
-          {/* Date Filter */}
           {dateFilter && (
             <DateFilterBE
               filtersStateObjectArray={filtersStateObjectArray}
@@ -121,10 +122,11 @@ function CardTableBE({
               setParams={setParams}
             />
           )}
-          {/* Alpha-betical Order Filter */}
           {alphabeticalOrder && (
             <Stack direction="row" gap={1}>
-              <Typography sx={{ textAlign: 'center', my: 'auto' }}>ترتيب حسب:</Typography>
+              <Typography sx={{ textAlign: 'center', my: 'auto' }}>
+                {translate('table_filter.sortby_title')}:
+              </Typography>
               <Button
                 endIcon={
                   alphabeticalOrderState === 'desc' ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />
@@ -132,7 +134,7 @@ function CardTableBE({
                 sx={{ color: '#000' }}
                 onClick={alphabeticalOrderHandleChange}
               >
-                اسم المشروع من أ الى ي
+                {translate('table_filter.sortby_options.project_name_az')}
               </Button>
             </Stack>
           )}
@@ -146,20 +148,13 @@ function CardTableBE({
               startIcon={<img alt="" src="/icons/filter-icon.svg" />}
               onClick={handleOpenFilter}
             >
-              فلتر
+              {translate('commons.filter_button_label')}
             </Button>
           )}
         </Stack>
       </Grid>
       {fetching && <LoadingPage />}
-      {!data ||
-        (data?.data?.length === 0 && (
-          <Grid item md={12} xs={12}>
-            <CardTableNoData />
-          </Grid>
-        ))}
-      {data &&
-        !fetching &&
+      {data && !fetching ? (
         data?.data.map((item: any, index: any) => (
           <Grid item key={index} md={6} xs={12}>
             <ProjectTableBE
@@ -170,7 +165,12 @@ function CardTableBE({
               mutate={mutate}
             />
           </Grid>
-        ))}
+        ))
+      ) : (
+        <Grid item md={12} xs={12}>
+          <CardTableNoData />
+        </Grid>
+      )}
 
       {pagination && (
         <Grid item md={12} xs={12}>

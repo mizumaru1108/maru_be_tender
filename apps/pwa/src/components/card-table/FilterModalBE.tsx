@@ -1,6 +1,7 @@
 import { Box, Button, Modal, SelectChangeEvent, Stack, TextField, Typography } from '@mui/material';
 import { whereFilterGenerator } from 'utils/whereFilterGenerator';
 import { filterInterface, filterInterfaceBE } from './types';
+import useLocales from 'hooks/useLocales';
 
 type Props = {
   open: boolean;
@@ -19,6 +20,7 @@ function FilterModalBE({
   filtersStateObjectArray,
   setParams,
 }: Props) {
+  const { translate } = useLocales();
   const style = {
     position: 'absolute' as 'absolute',
     top: '50%',
@@ -56,7 +58,7 @@ function FilterModalBE({
       >
         <Box sx={style}>
           <Stack direction="column" gap={4}>
-            <Typography>فلتر</Typography>
+            <Typography>{translate('commons.filter_button_label')}</Typography>
             {filters?.map((item: filterInterfaceBE, index: number) => (
               <TextField
                 InputLabelProps={{ shrink: true }}

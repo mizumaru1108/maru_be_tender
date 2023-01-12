@@ -1,20 +1,20 @@
-export const moderatorStatistics = `query moderatorStatistics {
-  acceptableRequest: proposal_aggregate(where: {outter_status: {_in: COMPLETED}}) {
+export const moderatorStatistics = `query moderatorStatistics($action: String = "") {
+  acceptableRequest: proposal_aggregate(where: {proposal_logs: {action: {_eq: "accept"}}}) {
     aggregate {
-      count(columns: outter_status)
+      count
     }
   }
-  rejectedRequest: proposal_aggregate(where: {outter_status: {_in: CANCELED}}) {
+  rejectedRequest: proposal_aggregate(where: {proposal_logs: {action: {_eq: "reject"}}}) {
     aggregate {
-      count(columns: outter_status)
+      count
     }
   }
-  pendingRequest: proposal_aggregate(where: {outter_status: {_in: PENDING}}) {
+  pendingRequest: proposal_aggregate(where: {outter_status: {_eq: PENDING}}) {
     aggregate {
-      count(columns: project_name)
+      count(columns: id)
     }
   }
-  incomingNewRequest: proposal_aggregate(where: {outter_status: {_in: ONGOING}}) {
+  incomingNewRequest: proposal_aggregate(where: {outter_status: {_eq: ONGOING}}) {
     aggregate {
       count(columns: outter_status)
     }

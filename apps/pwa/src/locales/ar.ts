@@ -233,6 +233,9 @@ const ar = {
       syeikh_track: 'مسار السيوخ',
     },
     filter_button_label: 'تصفية',
+    chip_canceled: 'تم إلغاء الطلب',
+    chip_completed: 'الطلب كامل',
+    chip_pending: 'الطلب معلق',
   },
   demo: {
     title: `Arabic`,
@@ -638,6 +641,7 @@ const ar = {
   },
   incoming_funding_requests: 'الطلبات الواردة',
   project_details: {
+    heading: 'تفاصيل المشروع',
     actions: {
       main: 'العامة',
       project_budget: 'موازنة المشروع',
@@ -755,6 +759,8 @@ const ar = {
     section: 'القسم',
     date_created: 'تاريخ الانشاء',
     events: 'الاحداث',
+    days: 'أيام',
+    sent_section: 'القسم المرسل',
   },
   concessional_card_insights: {
     title: {

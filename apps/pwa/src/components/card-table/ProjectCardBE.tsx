@@ -18,12 +18,6 @@ import { asignProposalToAUser } from 'queries/commons/asignProposalToAUser';
 import { useMutation } from 'urql';
 import { deleteDraftProposal } from 'queries/client/deleteDraftProposal';
 
-const inquiryStatusStyle = {
-  CANCELED: { color: '#FF4842', backgroundColor: '#FF484229', title: 'الطلب ملغي' },
-  COMPLETED: { color: '#0E8478', backgroundColor: '#0E847829', title: 'الطلب مكتمل' },
-  PENDING: { color: '#FFC107', backgroundColor: '#FFC10729', title: 'الطلب معلّق' },
-};
-
 const cardFooterButtonActionLocal = {
   'show-project': 'show_project',
   'show-details': 'show_details',
@@ -66,6 +60,12 @@ const ProjectCardBE = ({
   const { translate } = useLocales();
   const [, updateAsigning] = useMutation(asignProposalToAUser);
   const [, deleteDrPro] = useMutation(deleteDraftProposal);
+
+  const inquiryStatusStyle = {
+    CANCELED: { color: '#FF4842', backgroundColor: '#FF484229', title: 'commons.chip_canceled' },
+    COMPLETED: { color: '#0E8478', backgroundColor: '#0E847829', title: 'commons.chip_completed' },
+    PENDING: { color: '#FFC107', backgroundColor: '#FFC10729', title: 'commons.chip_pending' },
+  };
 
   const onDeleteDraftClick = async () => {
     await deleteDrPro({ id });
@@ -123,7 +123,7 @@ const ProjectCardBE = ({
           )}
           {destination === 'previous-funding-requests' && status && (
             <Chip
-              label={inquiryStatusStyle[status].title}
+              label={translate(`${inquiryStatusStyle[status].title}`)}
               sx={{
                 fontWeight: 500,
                 backgroundColor: inquiryStatusStyle[status].backgroundColor,
@@ -150,7 +150,7 @@ const ProjectCardBE = ({
         {project_idea && cardFooterButtonAction !== 'draft' && (
           <>
             <Typography variant="h6" color="#93A3B0" sx={{ mt: '10px' }}>
-              تفاصيل المشروع
+              {translate('table_filter.sortby_title')}:
             </Typography>
             <Typography
               sx={{
@@ -198,7 +198,7 @@ const ProjectCardBE = ({
               gutterBottom
               sx={{ fontSize: '10px !important' }}
             >
-              تاريخ الإنشاء
+              {translate('project_management_headercell.date_created')}
             </Typography>
           </Grid>
           <Grid item md={6} xs={6}>
@@ -217,7 +217,7 @@ const ProjectCardBE = ({
                 </Typography>
               </Stack>
               <Chip
-                label={`${daysSinceCreated} أيام`}
+                label={`${daysSinceCreated} ${translate('project_management_headercell.days')}`}
                 sx={{
                   alignSelf: 'end',
                   fontWeight: 500,

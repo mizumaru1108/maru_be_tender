@@ -6,6 +6,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FilterModal from './FilterModal';
 import { useQuery } from 'urql';
+import useLocales from 'hooks/useLocales';
 
 function CardTable({
   resource,
@@ -20,6 +21,7 @@ function CardTable({
   cardFooterButtonAction,
 }: CardTableProps) {
   // const [result, reexecuteQuery] = useQuery(resource);
+  const { translate } = useLocales();
   const [page, setPage] = useState(1);
   // The params that will be used with the query later on
   const [params, setParams] = useState({
@@ -106,9 +108,11 @@ function CardTable({
           {/* Alpha-betical Order Filter */}
           {alphabeticalOrder && (
             <Stack direction="row" gap={1}>
-              <Typography sx={{ textAlign: 'center', my: 'auto' }}>ترتيب حسب:</Typography>
+              <Typography sx={{ textAlign: 'center', my: 'auto' }}>
+                {translate('table_filter.sortby_title')}:
+              </Typography>
               <Button endIcon={<img src="/icons/asc-order-icon.svg" alt="" />}>
-                اسم المشروع من أ الى ي
+                {translate('table_filter.sortby_options.project_name_az')}
               </Button>
             </Stack>
           )}
@@ -118,7 +122,7 @@ function CardTable({
               startIcon={<img alt="" src="/icons/filter-icon.svg" />}
               onClick={handleOpenFilter}
             >
-              فلتر
+              {translate('commons.filter_button_label')}
             </Button>
           )}
         </Stack>

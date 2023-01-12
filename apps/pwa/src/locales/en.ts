@@ -197,6 +197,9 @@ const en = {
       syeikh_track: "Syeikh's Track",
     },
     filter_button_label: 'Filter',
+    chip_canceled: 'The request is canceled',
+    chip_completed: 'The request is complete',
+    chip_pending: 'The request is pending',
   },
   demo: {
     title: `English`,
@@ -278,8 +281,8 @@ const en = {
   dont_have_account: "You don't have an account?",
   register_one: 'register from here',
   show_details: 'Studying The Project',
-  show_project: 'استعراض المشروع',
-  completing_exchange_permission: 'إتمام إذن الصرف',
+  show_project: 'Project Review',
+  completing_exchange_permission: 'Completion of the disbursement authorization',
   pending: 'Request Pending',
   completed: 'Completed Order',
   canceled: 'Request Canceled',
@@ -604,6 +607,7 @@ const en = {
   },
   incoming_funding_requests: 'Incoming Funding Requests',
   project_details: {
+    heading: 'Project Details',
     actions: {
       main: 'Main',
       project_budget: 'Project Budget',
@@ -694,6 +698,8 @@ const en = {
     section: 'Section',
     date_created: 'Date Created',
     events: 'Events',
+    days: 'Days',
+    sent_section: 'Sent Section',
   },
   concessional_card_insights: {
     title: {
@@ -929,7 +935,7 @@ const en = {
       },
     },
     total_budget_for_the_course: 'The total budget for the track',
-    riyals: 'ريال',
+    riyals: 'SAR',
     hours: 'Hours',
     spent_budget: 'Spent Budget',
     reserved_budget: 'Reserved Budget',

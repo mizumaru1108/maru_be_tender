@@ -1,6 +1,7 @@
 import { Box, Button, Modal, Stack, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import { IFilterMessage } from '../type';
+import useLocales from 'hooks/useLocales';
 
 type Props = {
   open: boolean;
@@ -17,6 +18,7 @@ function FilterModalMessage({
   supervisors,
   projectTracks,
 }: Props) {
+  const { translate } = useLocales();
   const [selected, setSelected] = useState({
     supervisor: '',
     projectTrack: '',
@@ -57,7 +59,7 @@ function FilterModalMessage({
     >
       <Box sx={style}>
         <Stack direction="column" gap={4}>
-          <Typography>فلتر</Typography>
+          <Typography>{translate('commons.filter_button_label')}</Typography>
           {supervisors && (
             <TextField
               label={supervisors.name}

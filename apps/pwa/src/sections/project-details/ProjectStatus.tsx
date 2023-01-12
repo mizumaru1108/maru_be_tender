@@ -1,8 +1,10 @@
 import { Box, Typography } from '@mui/material';
 import { useSelector } from 'redux/store';
+import useLocales from 'hooks/useLocales';
 
 function ProjectStatus() {
   const { proposal } = useSelector((state) => state.proposal);
+  const { translate } = useLocales();
 
   return (
     <Box
@@ -22,7 +24,7 @@ function ProjectStatus() {
           color: '#0E8478',
         }}
       >
-        {'State : ' + proposal.state || 'حالة المشروع'}
+        {'State : ' + translate(`permissions.${proposal.state}`) || 'حالة المشروع'}
       </Typography>
       <Typography
         sx={{
