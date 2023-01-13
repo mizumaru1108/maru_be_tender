@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { TenderUserModule } from '../tender-user/tender-user.module';
 
 import { TenderProposalController } from './controllers/tender-proposal.controller';
 import { TenderProposalFlowRepository } from './repositories/tender-proposal-flow.repository';

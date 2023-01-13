@@ -353,4 +353,8 @@ export class TenderUserService {
       total: response.total,
     };
   }
+
+  async findById(id: string): Promise<user | null> {
+    return await this.tenderUserRepository.findUserById(id);
+  }
 }

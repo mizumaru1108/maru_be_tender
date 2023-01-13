@@ -8,7 +8,11 @@ import { Prisma, proposal, proposal_item_budget, user } from '@prisma/client';
 import { nanoid } from 'nanoid';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../prisma/prisma.service';
-import { appRoleMappers, TenderAppRole } from '../../tender-commons/types';
+import {
+  appRoleMappers,
+  TenderAppRole,
+  TenderAppRoleEnum,
+} from '../../tender-commons/types';
 import { compareUrl } from '../../tender-commons/utils/compare-jsonb-imageurl';
 import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
 
@@ -24,12 +28,14 @@ import { ROOT_LOGGER } from '../../libs/root-logger';
 import { TwilioService } from '../../libs/twilio/services/twilio.service';
 import { CreateNotificationDto } from '../../tender-notification/dtos/requests/create-notification.dto';
 import { TenderNotificationService } from '../../tender-notification/services/tender-notification.service';
-import { ProposalAdminRole } from '../enum/adminRoles.enum';
-import { InnerStatusEnum } from '../enum/innerStatus.enum';
-import { OuterStatusEnum } from '../enum/outerStatus.enum';
-import { ProposalAction } from '../enum/proposalAction.enum';
+
 import { IProposalLogsResponse } from '../interfaces/proposal-logs-response';
 import { TenderProposalLogRepository } from '../repositories/tender-proposal-log.repository';
+import {
+  InnerStatusEnum,
+  OuterStatusEnum,
+  ProposalAction,
+} from '../../tender-commons/types/proposal';
 
 @Injectable()
 export class TenderProposalService {
@@ -299,6 +305,7 @@ export class TenderProposalService {
       };
     }
 
+    /* if user is supervisor */
     if (currentUser.choosenRole === 'tender_project_supervisor') {
       const supervisorResult = await this.supervisorChangeState(
         proposal,
@@ -314,6 +321,28 @@ export class TenderProposalService {
         ...proposalLogCreateInput,
         ...supervisorResult.proposalLogCreateInput,
       };
+    }
+
+    /* if user is project manager */
+    if (currentUser.choosenRole === 'tender_project_manager') {
+      const pm = await this.projectManagerChangeState(
+        proposal,
+        proposalUpdatePayload,
+        proposalLogCreateInput,
+        request,
+      );
+      proposalUpdatePayload = {
+        ...proposalUpdatePayload,
+        ...pm.proposalUpdatePayload,
+      };
+      proposalLogCreateInput = {
+        ...proposalLogCreateInput,
+        ...pm.proposalLogCreateInput,
+      };
+    }
+
+    /* if user is ceo */
+    if (currentUser.choosenRole === 'tender_ceo') {
     }
 
     /* update proposal and create the logs */
@@ -336,6 +365,7 @@ export class TenderProposalService {
     // 'ACCOUNTS_MANAGER' 'ADMIN'  'CASHIER' 'CLIENT'  'FINANCE';
   }
 
+  /* Moderator Done */
   async moderatorChangeState(
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
     proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
@@ -364,12 +394,12 @@ export class TenderProposalService {
       );
     }
 
-    /* acc */
     if (request.action === ProposalAction.ACCEPT) {
       /* proposal */
-      proposalUpdatePayload.inner_status = 'ACCEPTED_BY_MODERATOR';
-      proposalUpdatePayload.outter_status = 'ONGOING';
-      proposalUpdatePayload.state = 'PROJECT_SUPERVISOR';
+      proposalUpdatePayload.inner_status =
+        InnerStatusEnum.ACCEPTED_BY_MODERATOR;
+      proposalUpdatePayload.outter_status = OuterStatusEnum.ONGOING;
+      proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
       proposalUpdatePayload.project_track = track.id;
 
       /* if track not ALL, only for supervisor in defined track */
@@ -380,22 +410,22 @@ export class TenderProposalService {
 
       /* log */
       proposalLogCreateInput.action = ProposalAction.ACCEPT;
-      proposalLogCreateInput.state = 'MODERATOR';
-      proposalLogCreateInput.user_role = 'MODERATOR';
+      proposalLogCreateInput.state = TenderAppRoleEnum.MODERATOR;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.MODERATOR;
     }
 
-    /* reject */
     if (request.action === ProposalAction.REJECT) {
       /* proposal */
-      proposalUpdatePayload.inner_status = 'REJECTED_BY_MODERATOR';
-      proposalUpdatePayload.outter_status = 'CANCELED';
-      proposalUpdatePayload.state = 'MODERATOR';
+      proposalUpdatePayload.inner_status =
+        InnerStatusEnum.REJECTED_BY_MODERATOR;
+      proposalUpdatePayload.outter_status = OuterStatusEnum.CANCELED;
+      proposalUpdatePayload.state = TenderAppRoleEnum.MODERATOR;
       proposalUpdatePayload.project_track = track.id;
 
       /* log */
       proposalLogCreateInput.action = ProposalAction.REJECT;
-      proposalLogCreateInput.state = 'MODERATOR';
-      proposalLogCreateInput.user_role = 'MODERATOR';
+      proposalLogCreateInput.state = TenderAppRoleEnum.MODERATOR;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.MODERATOR;
     }
 
     return {
@@ -410,64 +440,49 @@ export class TenderProposalService {
     proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
     request: ChangeProposalStateDto,
   ) {
-    /* moderator only allowed to acc and reject */
+    /* supervisor only allowed to acc and reject and step back */
     if (
       [
         ProposalAction.ACCEPT,
         ProposalAction.REJECT,
         ProposalAction.STEP_BACK,
-      ].indexOf(request.action) > -1
+      ].indexOf(request.action) < 0
     ) {
       throw new BadRequestException(
         `You are not allowed to perform this action ${request.action}`,
-      );
-    }
-    /* if moderator_acc_payload is not exist  */
-    if (!request.moderator_payload) {
-      throw new BadRequestException('Moderator accept payload is required!');
-    }
-
-    /* validate the sended track */
-    const track = await this.tenderProposalRepository.findTrackById(
-      request.moderator_payload.project_track,
-    );
-    if (!track) {
-      throw new BadRequestException(
-        `Invalid Track (${request.moderator_payload.project_track})`,
       );
     }
 
     /* acc */
     if (request.action === ProposalAction.ACCEPT) {
       if (proposal.project_track === 'CONCESSIONAL_GRANTS') {
+        //
+      } else {
       }
-      /* proposal */
-      proposalUpdatePayload.inner_status = 'ACCEPTED_BY_MODERATOR';
-      proposalUpdatePayload.outter_status = 'ONGOING';
-      proposalUpdatePayload.state = 'PROJECT_SUPERVISOR';
-      proposalUpdatePayload.project_track = track.id;
-      /* if track not ALL, only for supervisor in defined track */
-      if (request.moderator_payload.supervisor_id) {
-        proposalUpdatePayload.supervisor_id =
-          request.moderator_payload.supervisor_id;
-      }
-
-      /* log */
-      proposalLogCreateInput.action = ProposalAction.ACCEPT;
-      proposalLogCreateInput.state = 'MODERATOR';
-      proposalLogCreateInput.user_role = 'MODERATOR';
     }
 
-    /* reject */
+    /* reject (same for grants and not grants) DONE */
     if (request.action === ProposalAction.REJECT) {
       /* proposal */
       proposalUpdatePayload.inner_status = 'REJECTED_BY_SUPERVISOR';
       proposalUpdatePayload.outter_status = 'CANCELED';
       proposalUpdatePayload.state = 'PROJECT_SUPERVISOR';
-      proposalUpdatePayload.project_track = track.id;
 
       /* log */
       proposalLogCreateInput.action = ProposalAction.REJECT;
+      proposalLogCreateInput.state = 'PROJECT_SUPERVISOR';
+      proposalLogCreateInput.user_role = 'PROJECT_SUPERVISOR';
+    }
+
+    /* step back (same for grants and not grants) DONE */
+    if (request.action === ProposalAction.STEP_BACK) {
+      /* proposal */
+      proposalUpdatePayload.inner_status = 'CREATED_BY_CLIENT';
+      proposalUpdatePayload.outter_status = 'ONGOING';
+      proposalUpdatePayload.state = 'MODERATOR';
+
+      /* log */
+      proposalLogCreateInput.action = ProposalAction.STEP_BACK;
       proposalLogCreateInput.state = 'PROJECT_SUPERVISOR';
       proposalLogCreateInput.user_role = 'PROJECT_SUPERVISOR';
     }
@@ -476,6 +491,187 @@ export class TenderProposalService {
       proposalUpdatePayload,
       proposalLogCreateInput,
     };
+  }
+
+  /* Project Manager Done */
+  async projectManagerChangeState(
+    proposal: proposal,
+    proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
+    proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
+    request: ChangeProposalStateDto,
+  ) {
+    /* Project manager only allowed to acc and reject and step back, and ask for consultation*/
+    if (
+      [
+        ProposalAction.ACCEPT,
+        ProposalAction.REJECT,
+        ProposalAction.STEP_BACK,
+        ProposalAction.ACCEPT_AND_ASK_FOR_CONSULTION,
+      ].indexOf(request.action) < 0
+    ) {
+      throw new BadRequestException(
+        `You are not allowed to perform this action ${request.action}`,
+      );
+    }
+
+    if (request.action === ProposalAction.ACCEPT) {
+      /* proposal */
+      proposalUpdatePayload.inner_status =
+        InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER;
+      proposalUpdatePayload.outter_status = OuterStatusEnum.ONGOING;
+      proposalUpdatePayload.state = TenderAppRoleEnum.CEO;
+
+      /* log */
+      proposalLogCreateInput.action = ProposalAction.ACCEPT;
+      proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_MANAGER;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
+    }
+
+    if (request.action === ProposalAction.ACCEPT_AND_ASK_FOR_CONSULTION) {
+      /* proposal */
+      proposalUpdatePayload.inner_status =
+        InnerStatusEnum.ACCEPTED_AND_NEED_CONSULTANT;
+      proposalUpdatePayload.outter_status = OuterStatusEnum.ONGOING;
+      proposalUpdatePayload.state = TenderAppRoleEnum.CONSULTANT;
+
+      /* log */
+      proposalLogCreateInput.action = ProposalAction.ACCEPT;
+      proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_MANAGER;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
+    }
+
+    if (request.action === ProposalAction.REJECT) {
+      /* proposal */
+      proposalUpdatePayload.inner_status =
+        InnerStatusEnum.REJECTED_BY_PROJECT_MANAGER;
+      proposalUpdatePayload.outter_status = OuterStatusEnum.CANCELED;
+      proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_MANAGER;
+
+      /* log */
+      proposalLogCreateInput.action = ProposalAction.REJECT;
+      proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_MANAGER;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
+    }
+
+    if (request.action === ProposalAction.STEP_BACK) {
+      /* proposal */
+      proposalUpdatePayload.inner_status =
+        InnerStatusEnum.ACCEPTED_BY_MODERATOR;
+      proposalUpdatePayload.outter_status = OuterStatusEnum.ONGOING;
+      proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+      proposalUpdatePayload.project_manager_id = null;
+
+      /* log */
+      proposalLogCreateInput.action = ProposalAction.STEP_BACK;
+      proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_MANAGER;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
+    }
+
+    return {
+      proposalUpdatePayload,
+      proposalLogCreateInput,
+    };
+  }
+
+  /* CEO DONE */
+  async ceoChangeState(
+    proposal: proposal,
+    proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
+    proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
+    request: ChangeProposalStateDto,
+  ) {
+    /* CEO only allowed to acc and reject and step back */
+    if (
+      [
+        ProposalAction.ACCEPT,
+        ProposalAction.REJECT,
+        ProposalAction.STEP_BACK,
+      ].indexOf(request.action) < 0
+    ) {
+      throw new BadRequestException(
+        `You are not allowed to perform this action ${request.action}`,
+      );
+    }
+
+    if (request.action === ProposalAction.ACCEPT) {
+      /* proposal */
+      proposalUpdatePayload.inner_status =
+        InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION;
+      proposalUpdatePayload.outter_status = 'ONGOING';
+      proposalUpdatePayload.state = TenderAppRoleEnum.CEO;
+
+      /* log */
+      proposalLogCreateInput.action = ProposalAction.ACCEPT;
+      proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.CEO;
+    }
+
+    if (request.action === ProposalAction.REJECT) {
+      /* proposal */
+      proposalUpdatePayload.inner_status = InnerStatusEnum.REJECTED_BY_CEO;
+      proposalUpdatePayload.outter_status = OuterStatusEnum.CANCELED;
+      proposalUpdatePayload.state = TenderAppRoleEnum.CEO;
+
+      /* log */
+      proposalLogCreateInput.action = ProposalAction.REJECT;
+      proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.CEO;
+    }
+
+    if (request.action === ProposalAction.STEP_BACK) {
+      /* proposal */
+      proposalUpdatePayload.inner_status =
+        InnerStatusEnum.ACCEPTED_BY_SUPERVISOR;
+      proposalUpdatePayload.outter_status = OuterStatusEnum.ONGOING;
+      proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_MANAGER;
+      /* log */
+      proposalLogCreateInput.action = ProposalAction.STEP_BACK;
+      proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.CEO;
+    }
+  }
+
+  /* Consultant Done */
+  async consultantChangeState(
+    proposal: proposal,
+    proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
+    proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
+    request: ChangeProposalStateDto,
+  ) {
+    /* Consultant only allowed to acc and reject and step back */
+    if (
+      [ProposalAction.ACCEPT, ProposalAction.REJECT].indexOf(request.action) < 0
+    ) {
+      throw new BadRequestException(
+        `You are not allowed to perform this action ${request.action}`,
+      );
+    }
+
+    if (request.action === ProposalAction.ACCEPT) {
+      /* proposal */
+      proposalUpdatePayload.inner_status =
+        InnerStatusEnum.ACCEPTED_BY_CONSULTANT;
+      proposalUpdatePayload.outter_status = OuterStatusEnum.ONGOING;
+      proposalUpdatePayload.state = TenderAppRoleEnum.CEO;
+
+      /* log */
+      proposalLogCreateInput.action = ProposalAction.ACCEPT;
+      proposalLogCreateInput.state = TenderAppRoleEnum.CONSULTANT;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.CONSULTANT;
+    }
+
+    if (request.action === ProposalAction.REJECT) {
+      /* proposal */
+      proposalUpdatePayload.inner_status =
+        InnerStatusEnum.REJECTED_BY_CONSULTANT;
+      proposalUpdatePayload.outter_status = OuterStatusEnum.ONGOING;
+      proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_MANAGER;
+
+      /* log */
+      proposalLogCreateInput.action = ProposalAction.REJECT;
+      proposalLogCreateInput.state = TenderAppRoleEnum.CONSULTANT;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.CONSULTANT;
+    }
   }
 
   async sendChangeStateNotification(
@@ -567,7 +763,7 @@ export class TenderProposalService {
       return this.proposalStepBack(id, body, role, user);
     } else if (
       action === ProposalAction.ACCEPT_AND_ASK_FOR_CONSULTION &&
-      role === ProposalAdminRole.PROJECT_MANAGER
+      role === TenderAppRoleEnum.PROJECT_MANAGER
     ) {
       const proposal = await this.updateProposalStatus(
         id,
@@ -583,10 +779,10 @@ export class TenderProposalService {
       );
       return proposal;
     } else if (
-      (role === ProposalAdminRole.CEO ||
-        role === ProposalAdminRole.PROJECT_MANAGER ||
-        role === ProposalAdminRole.CASHIER ||
-        role === ProposalAdminRole.FINANCE) &&
+      (role === TenderAppRoleEnum.CEO ||
+        role === TenderAppRoleEnum.PROJECT_MANAGER ||
+        role === TenderAppRoleEnum.CASHIER ||
+        role === TenderAppRoleEnum.FINANCE) &&
       action === ProposalAction.ASK_FOR_UPDATE
     ) {
       await this.updateRequestToTheSuperVisor(user, body, id, role);
@@ -629,7 +825,7 @@ export class TenderProposalService {
 
   async proposalStepBack(id: string, body: any, role: string, user: user) {
     let proposal;
-    if (role === ProposalAdminRole.PROJECT_SUPERVISOR) {
+    if (role === TenderAppRoleEnum.PROJECT_SUPERVISOR) {
       proposal = await this.updateProposalStatus(
         id,
         InnerStatusEnum.CREATED_BY_CLIENT,
@@ -644,7 +840,7 @@ export class TenderProposalService {
         `ProposalWasRolledBackBy@${user.employee_name}`,
         ProposalAction.STEP_BACK,
       );
-    } else if (role === ProposalAdminRole.PROJECT_MANAGER) {
+    } else if (role === TenderAppRoleEnum.PROJECT_MANAGER) {
       proposal = await this.updateProposalStatus(
         id,
         InnerStatusEnum.ACCEPTED_BY_MODERATOR,
@@ -659,7 +855,7 @@ export class TenderProposalService {
         `ProposalWasRolledBackBy@${user.employee_name}`,
         ProposalAction.STEP_BACK,
       );
-    } else if (role === ProposalAdminRole.CEO) {
+    } else if (role === TenderAppRoleEnum.CEO) {
       proposal = await this.updateProposalStatus(
         id,
         InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER,
@@ -684,7 +880,7 @@ export class TenderProposalService {
 
   async rejectProposal(id: string, body: any, role: string, user: user) {
     let proposal;
-    if (role === ProposalAdminRole.MODERATOR) {
+    if (role === TenderAppRoleEnum.MODERATOR) {
       proposal = await this.updateProposalStatus(
         id,
         InnerStatusEnum.REJECTED_BY_MODERATOR,
@@ -699,7 +895,7 @@ export class TenderProposalService {
         `ProposalWasRejectedBy@${user.employee_name}`,
         ProposalAction.REJECT,
       );
-    } else if (role === ProposalAdminRole.PROJECT_SUPERVISOR) {
+    } else if (role === TenderAppRoleEnum.PROJECT_SUPERVISOR) {
       proposal = await this.updateProposalStatus(
         id,
         InnerStatusEnum.REJECTED_BY_SUPERVISOR,
@@ -714,7 +910,7 @@ export class TenderProposalService {
         `ProposalWasRejectedBy@${user.employee_name}`,
         ProposalAction.REJECT,
       );
-    } else if (role === ProposalAdminRole.PROJECT_MANAGER) {
+    } else if (role === TenderAppRoleEnum.PROJECT_MANAGER) {
       proposal = await this.updateProposalStatus(
         id,
         InnerStatusEnum.REJECTED_BY_PROJECT_MANAGER,
@@ -729,7 +925,7 @@ export class TenderProposalService {
         `ProposalWasRejectedBy@${user.employee_name}`,
         ProposalAction.REJECT,
       );
-    } else if (role === ProposalAdminRole.CONSULTANT) {
+    } else if (role === TenderAppRoleEnum.CONSULTANT) {
       proposal = await this.updateProposalStatus(
         id,
         InnerStatusEnum.REJECTED_BY_CONSULTANT,
@@ -742,7 +938,7 @@ export class TenderProposalService {
         `ProposalWasRejectedBy@${user.employee_name}`,
         ProposalAction.REJECT,
       );
-    } else if (role === ProposalAdminRole.CEO) {
+    } else if (role === TenderAppRoleEnum.CEO) {
       proposal = await this.updateProposalStatus(
         id,
         InnerStatusEnum.REJECTED_BY_CEO,
@@ -767,7 +963,7 @@ export class TenderProposalService {
 
   async acceptProposal(id: string, body: any, role: string, user: user) {
     let proposal;
-    if (role === ProposalAdminRole.MODERATOR) {
+    if (role === TenderAppRoleEnum.MODERATOR) {
       proposal = await this.updateProposalStatus(
         id,
         InnerStatusEnum.ACCEPTED_BY_MODERATOR,
@@ -781,7 +977,7 @@ export class TenderProposalService {
         `ProposalWasAcceptedBy@${user.employee_name}`,
         ProposalAction.ACCEPT,
       );
-    } else if (role === ProposalAdminRole.PROJECT_SUPERVISOR) {
+    } else if (role === TenderAppRoleEnum.PROJECT_SUPERVISOR) {
       proposal = await this.updateProposalStatus(
         id,
         InnerStatusEnum.ACCEPTED_BY_SUPERVISOR,
@@ -827,7 +1023,7 @@ export class TenderProposalService {
           },
         });
       }
-    } else if (role === ProposalAdminRole.PROJECT_MANAGER) {
+    } else if (role === TenderAppRoleEnum.PROJECT_MANAGER) {
       proposal = await this.updateProposalStatus(
         id,
         InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER,
@@ -840,7 +1036,7 @@ export class TenderProposalService {
         `ProposalWasAcceptedBy@${user.employee_name}`,
         ProposalAction.ACCEPT,
       );
-    } else if (role === ProposalAdminRole.CONSULTANT) {
+    } else if (role === TenderAppRoleEnum.CONSULTANT) {
       proposal = await this.updateProposalStatus(
         id,
         InnerStatusEnum.ACCEPTED_BY_CONSULTANT,
@@ -870,10 +1066,10 @@ export class TenderProposalService {
         `ProposalWasAcceptedBy@${projectManager.employee_name}`,
         ProposalAction.ACCEPT,
       );
-    } else if (role === ProposalAdminRole.CEO) {
+    } else if (role === TenderAppRoleEnum.CEO) {
       proposal = await this.updateProposalStatus(
         id,
-        InnerStatusEnum.ACCEPTED_BY_CEO,
+        InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION,
       );
       await this.createProposalLog(
         body,
@@ -936,85 +1132,4 @@ export class TenderProposalService {
   async fetchTrack(limit: number, page: number) {
     return await this.tenderProposalRepository.fetchTrack(limit, page);
   }
-
-  // async sendNotification(
-  //   currentUser: TenderCurrentUser,
-  //   payload: CreateProposalNotificationDto,
-  // ) {
-  //   const proposalLog =
-  //     await this.tenderProposalLogRepository.findProposalLogByid(
-  //       payload.proposal_log_id,
-  //     );
-  //   if (!proposalLog) throw new NotFoundException('Proposal Log not found');
-
-  //   const actions =
-  //     proposalLog.action &&
-  //     ['accept', 'reject'].indexOf(proposalLog.action) > -1
-  //       ? proposalLog.action
-  //       : 'review';
-
-  //   let subject = `Proposal ${actions}ed Notification`;
-  //   let clientContent = `Your proposal (${proposalLog.proposal.project_name}), has been ${actions}ed by ${currentUser.choosenRole} (${proposalLog.reviewer.employee_name}) at (${proposalLog.created_at})`;
-  //   let employeeContent = `Your review has been submitted for proposal (${proposalLog.proposal.project_name}) at (${proposalLog.created_at}), and already been notified to the user ${proposalLog.proposal.user.employee_name} (${proposalLog.proposal.user.email})`;
-
-  //   // email notification
-  //   const employeeEmailNotifPayload: SendEmailDto = {
-  //     mailType: 'plain',
-  //     to: proposalLog.reviewer.email,
-  //     from: 'no-reply@hcharity.org',
-  //     subject,
-  //     content: employeeContent,
-  //   };
-
-  //   const clientEmailNotifPayload: SendEmailDto = {
-  //     mailType: 'plain',
-  //     to: proposalLog.proposal.user.email,
-  //     from: 'no-reply@hcharity.org',
-  //     subject,
-  //     content: clientContent,
-  //   };
-
-  //   this.emailService.sendMail(employeeEmailNotifPayload);
-  //   this.emailService.sendMail(clientEmailNotifPayload);
-
-  //   // create web app notification
-  //   const employeeWebNotifPayload: CreateNotificationDto = {
-  //     type: 'PROPOSAL',
-  //     user_id: proposalLog.reviewer_id,
-  //     proposal_id: proposalLog.proposal_id,
-  //     subject,
-  //     content: employeeContent,
-  //   };
-
-  //   const clientWebNotifPayload: CreateNotificationDto = {
-  //     type: 'PROPOSAL',
-  //     user_id: proposalLog.proposal.submitter_user_id,
-  //     proposal_id: proposalLog.proposal_id,
-  //     subject,
-  //     content: clientContent,
-  //   };
-
-  //   await this.tenderNotificationService.createMany({
-  //     payloads: [employeeWebNotifPayload, clientWebNotifPayload],
-  //   });
-
-  //   if (
-  //     proposalLog.proposal.user.mobile_number &&
-  //     proposalLog.proposal.user.mobile_number !== ''
-  //   ) {
-  //     this.twilioService.sendSMS({
-  //       to: proposalLog.proposal.user.mobile_number,
-  //       body: subject + ',' + clientContent,
-  //     });
-  //   }
-  //   if (
-  //     proposalLog.reviewer.mobile_number &&
-  //     proposalLog.reviewer.mobile_number !== ''
-  //   ) {
-  //     this.twilioService.sendSMS({
-  //       to: proposalLog.reviewer.mobile_number,
-  //       body: subject + ',' + employeeContent,
-  //     });
-  //   }
-  // }
 }

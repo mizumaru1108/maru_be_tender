@@ -11,6 +11,20 @@ export type TenderFusionAuthRoles =
   | 'tender_project_manager'
   | 'tender_project_supervisor';
 
+export enum TEnderFusionAuthRolesEnum {
+  CLUSTER_ADMIN = 'cluster_admin',
+  TENDER_ACCOUNTS_MANAGER = 'tender_accounts_manager',
+  TENDER_ADMIN = 'tender_admin',
+  TENDER_CEO = 'tender_ceo',
+  TENDER_CASHIER = 'tender_cashier',
+  TENDER_CLIENT = 'tender_client',
+  TENDER_CONSULTANT = 'tender_consultant',
+  TENDER_FINANCE = 'tender_finance',
+  TENDER_MODERATOR = 'tender_moderator',
+  TENDER_PROJECT_MANAGER = 'tender_project_manager',
+  TENDER_PROJECT_SUPERVISOR = 'tender_project_supervisor',
+}
+
 export type TenderAppRoles =
   | 'accounts_manager'
   | 'admin'
@@ -23,6 +37,19 @@ export type TenderAppRoles =
   | 'project_manager'
   | 'project_supervisor';
 
+export enum TenderAppRolesEnum {
+  ACCOUNTS_MANAGER = 'accounts_manager',
+  ADMIN = 'admin',
+  CEO = 'ceo',
+  CASHIER = 'cashier',
+  CLIENT = 'client',
+  CONSULTANT = 'consultant',
+  FINANCE = 'finance',
+  MODERATOR = 'moderator',
+  PROJECT_MANAGER = 'project_manager',
+  PROJECT_SUPERVISOR = 'project_supervisor',
+}
+
 export type TenderAppRole =
   | 'ACCOUNTS_MANAGER'
   | 'ADMIN'
@@ -34,6 +61,19 @@ export type TenderAppRole =
   | 'MODERATOR'
   | 'PROJECT_MANAGER'
   | 'PROJECT_SUPERVISOR';
+
+export enum TenderAppRoleEnum {
+  ACCOUNTS_MANAGER = 'ACCOUNTS_MANAGER',
+  ADMIN = 'ADMIN',
+  CEO = 'CEO',
+  CASHIER = 'CASHIER',
+  CLIENT = 'CLIENT',
+  CONSULTANT = 'CONSULTANT',
+  FINANCE = 'FINANCE',
+  MODERATOR = 'MODERATOR',
+  PROJECT_MANAGER = 'PROJECT_MANAGER',
+  PROJECT_SUPERVISOR = 'PROJECT_SUPERVISOR',
+}
 
 export const appRolesMappers = {
   cluster_admin: '',
