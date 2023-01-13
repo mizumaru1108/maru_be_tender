@@ -78,7 +78,7 @@ export type OutterStatus =
   | 'ONGOING'
   | 'UPDATE_REQUEST';
 
-export enum OuterStatusEnum {
+export enum OutterStatusEnum {
   CANCELED = 'CANCELED',
   PENDING = 'PENDING',
   ONGOING = 'ONGOING',

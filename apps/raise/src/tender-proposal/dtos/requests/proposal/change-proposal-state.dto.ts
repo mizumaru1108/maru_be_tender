@@ -2,13 +2,13 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsEnum,
-  IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { ProposalAction } from '../../../enum/proposalAction.enum';
+import { ProposalAction } from '../../../../tender-commons/types/proposal';
+
 import { SetupPaymentPayloadDto } from '../setup-payment-payload.dto';
 import { ModeratorChangeStatePayload } from './moderator-change-state.dto';
 

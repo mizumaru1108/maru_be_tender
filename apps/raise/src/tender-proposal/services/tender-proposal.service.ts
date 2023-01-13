@@ -33,7 +33,7 @@ import { IProposalLogsResponse } from '../interfaces/proposal-logs-response';
 import { TenderProposalLogRepository } from '../repositories/tender-proposal-log.repository';
 import {
   InnerStatusEnum,
-  OuterStatusEnum,
+  OutterStatusEnum,
   ProposalAction,
 } from '../../tender-commons/types/proposal';
 
@@ -398,7 +398,7 @@ export class TenderProposalService {
       /* proposal */
       proposalUpdatePayload.inner_status =
         InnerStatusEnum.ACCEPTED_BY_MODERATOR;
-      proposalUpdatePayload.outter_status = OuterStatusEnum.ONGOING;
+      proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
       proposalUpdatePayload.project_track = track.id;
 
@@ -418,7 +418,7 @@ export class TenderProposalService {
       /* proposal */
       proposalUpdatePayload.inner_status =
         InnerStatusEnum.REJECTED_BY_MODERATOR;
-      proposalUpdatePayload.outter_status = OuterStatusEnum.CANCELED;
+      proposalUpdatePayload.outter_status = OutterStatusEnum.CANCELED;
       proposalUpdatePayload.state = TenderAppRoleEnum.MODERATOR;
       proposalUpdatePayload.project_track = track.id;
 
@@ -518,7 +518,7 @@ export class TenderProposalService {
       /* proposal */
       proposalUpdatePayload.inner_status =
         InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER;
-      proposalUpdatePayload.outter_status = OuterStatusEnum.ONGOING;
+      proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdatePayload.state = TenderAppRoleEnum.CEO;
 
       /* log */
@@ -531,7 +531,7 @@ export class TenderProposalService {
       /* proposal */
       proposalUpdatePayload.inner_status =
         InnerStatusEnum.ACCEPTED_AND_NEED_CONSULTANT;
-      proposalUpdatePayload.outter_status = OuterStatusEnum.ONGOING;
+      proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdatePayload.state = TenderAppRoleEnum.CONSULTANT;
 
       /* log */
@@ -544,7 +544,7 @@ export class TenderProposalService {
       /* proposal */
       proposalUpdatePayload.inner_status =
         InnerStatusEnum.REJECTED_BY_PROJECT_MANAGER;
-      proposalUpdatePayload.outter_status = OuterStatusEnum.CANCELED;
+      proposalUpdatePayload.outter_status = OutterStatusEnum.CANCELED;
       proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_MANAGER;
 
       /* log */
@@ -557,7 +557,7 @@ export class TenderProposalService {
       /* proposal */
       proposalUpdatePayload.inner_status =
         InnerStatusEnum.ACCEPTED_BY_MODERATOR;
-      proposalUpdatePayload.outter_status = OuterStatusEnum.ONGOING;
+      proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
       proposalUpdatePayload.project_manager_id = null;
 
@@ -609,7 +609,7 @@ export class TenderProposalService {
     if (request.action === ProposalAction.REJECT) {
       /* proposal */
       proposalUpdatePayload.inner_status = InnerStatusEnum.REJECTED_BY_CEO;
-      proposalUpdatePayload.outter_status = OuterStatusEnum.CANCELED;
+      proposalUpdatePayload.outter_status = OutterStatusEnum.CANCELED;
       proposalUpdatePayload.state = TenderAppRoleEnum.CEO;
 
       /* log */
@@ -622,7 +622,7 @@ export class TenderProposalService {
       /* proposal */
       proposalUpdatePayload.inner_status =
         InnerStatusEnum.ACCEPTED_BY_SUPERVISOR;
-      proposalUpdatePayload.outter_status = OuterStatusEnum.ONGOING;
+      proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_MANAGER;
       /* log */
       proposalLogCreateInput.action = ProposalAction.STEP_BACK;
@@ -651,7 +651,7 @@ export class TenderProposalService {
       /* proposal */
       proposalUpdatePayload.inner_status =
         InnerStatusEnum.ACCEPTED_BY_CONSULTANT;
-      proposalUpdatePayload.outter_status = OuterStatusEnum.ONGOING;
+      proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdatePayload.state = TenderAppRoleEnum.CEO;
 
       /* log */
@@ -664,7 +664,7 @@ export class TenderProposalService {
       /* proposal */
       proposalUpdatePayload.inner_status =
         InnerStatusEnum.REJECTED_BY_CONSULTANT;
-      proposalUpdatePayload.outter_status = OuterStatusEnum.ONGOING;
+      proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_MANAGER;
 
       /* log */
@@ -809,7 +809,7 @@ export class TenderProposalService {
       id,
       InnerStatusEnum.ACCEPTED_BY_MODERATOR,
       undefined,
-      OuterStatusEnum.UPDATE_REQUEST,
+      OutterStatusEnum.UPDATE_REQUEST,
       old_inner_status,
     );
     await this.createProposalLog(
@@ -830,7 +830,7 @@ export class TenderProposalService {
         id,
         InnerStatusEnum.CREATED_BY_CLIENT,
         undefined,
-        OuterStatusEnum.ONGOING,
+        OutterStatusEnum.ONGOING,
       );
       await this.createProposalLog(
         body,
@@ -845,7 +845,7 @@ export class TenderProposalService {
         id,
         InnerStatusEnum.ACCEPTED_BY_MODERATOR,
         undefined,
-        OuterStatusEnum.ONGOING,
+        OutterStatusEnum.ONGOING,
       );
       await this.createProposalLog(
         body,
@@ -860,7 +860,7 @@ export class TenderProposalService {
         id,
         InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER,
         undefined,
-        OuterStatusEnum.ONGOING,
+        OutterStatusEnum.ONGOING,
       );
       await this.createProposalLog(
         body,
@@ -885,7 +885,7 @@ export class TenderProposalService {
         id,
         InnerStatusEnum.REJECTED_BY_MODERATOR,
         undefined,
-        OuterStatusEnum.CANCELED,
+        OutterStatusEnum.CANCELED,
       );
       await this.createProposalLog(
         body,
@@ -900,7 +900,7 @@ export class TenderProposalService {
         id,
         InnerStatusEnum.REJECTED_BY_SUPERVISOR,
         undefined,
-        OuterStatusEnum.CANCELED,
+        OutterStatusEnum.CANCELED,
       );
       await this.createProposalLog(
         body,
@@ -915,7 +915,7 @@ export class TenderProposalService {
         id,
         InnerStatusEnum.REJECTED_BY_PROJECT_MANAGER,
         undefined,
-        OuterStatusEnum.CANCELED,
+        OutterStatusEnum.CANCELED,
       );
       await this.createProposalLog(
         body,
@@ -943,7 +943,7 @@ export class TenderProposalService {
         id,
         InnerStatusEnum.REJECTED_BY_CEO,
         undefined,
-        OuterStatusEnum.CANCELED,
+        OutterStatusEnum.CANCELED,
       );
       await this.createProposalLog(
         body,
