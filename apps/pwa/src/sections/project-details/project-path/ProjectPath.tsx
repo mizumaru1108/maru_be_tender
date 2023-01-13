@@ -71,12 +71,6 @@ function ProjectPath() {
   if (fetching) return <>.. Loading</>;
   if (error) return <Page500 error={error.message} />;
 
-  const getDay = (newDate: string) => {
-    const dateTimeAgo = moment(new Date(newDate)).fromNow();
-    return dateTimeAgo;
-  };
-  console.log('FOLLOW UP', result);
-
   return (
     <Grid container spacing={2}>
       <Grid item md={8} xs={8} sx={{ backgroundColor: 'transparent', px: 6 }}>
@@ -109,7 +103,8 @@ function ProjectPath() {
                 {index === activeStep && (
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
-                      This project already reviewed by Supervisor {getDay(item.proposal.updated_at)}
+                      This project already reviewed by Supervisor{' '}
+                      {moment(item.proposal.updated_at).fromNow()}
                     </Typography>
                   </Stack>
                 )}
@@ -181,7 +176,6 @@ function ProjectPath() {
                     {index === activeStep && (
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                         <Typography>{item.proposal.inclu_or_exclu ? 'Yes' : 'No'}</Typography>
-                        {/* <Typography>{item.clasification_field}</Typography> */}
                       </Stack>
                     )}
                   </>
@@ -198,7 +192,6 @@ function ProjectPath() {
                         <Typography>
                           {item.proposal.number_of_payments_by_supervisor} SAR
                         </Typography>
-                        {/* <Typography>{item.clasification_field}</Typography> */}
                       </Stack>
                     )}
                   </>
@@ -213,7 +206,6 @@ function ProjectPath() {
                     {index === activeStep && (
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                         <Typography>{item.proposal.fsupport_by_supervisor} SAR</Typography>
-                        {/* <Typography>{item.clasification_field}</Typography> */}
                       </Stack>
                     )}
                   </>
@@ -228,7 +220,6 @@ function ProjectPath() {
                     {index === activeStep && (
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                         <Typography>{item.proposal.support_type ? 'Yes' : 'No'}</Typography>
-                        {/* <Typography>{item.clasification_field}</Typography> */}
                       </Stack>
                     )}
                   </>
@@ -255,7 +246,6 @@ function ProjectPath() {
                 {index === activeStep && (
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>{item.notes}</Typography>
-                    {/* <Typography>{item.clasification_field}</Typography> */}
                   </Stack>
                 )}
               </>
@@ -268,13 +258,13 @@ function ProjectPath() {
                 {index === activeStep && (
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>{item.proposal.support_outputs}</Typography>
-                    {/* <Typography>{item.clasification_field}</Typography> */}
                   </Stack>
                 )}
               </>
             ))}
           </Stack>
-          <Stack direction="row" justifyContent="center">
+
+          {/* <Stack direction="row" justifyContent="center">
             <Link
               style={{ color: '#A4A4A4' }}
               onClick={() => {
@@ -284,7 +274,7 @@ function ProjectPath() {
             >
               {translate(`show_modified_fields`)}
             </Link>
-          </Stack>
+          </Stack> */}
         </Stack>
       </Grid>
       <Grid item md={4} xs={4} sx={{ backgroundColor: '#fff' }}>

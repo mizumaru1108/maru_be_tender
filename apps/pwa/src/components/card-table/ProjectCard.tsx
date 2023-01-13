@@ -12,6 +12,8 @@ import {
 import useLocales from 'hooks/useLocales';
 import { useLocation, useNavigate } from 'react-router';
 import { ProjectCardProps } from './types';
+// import 'moment/locale/es';
+// import 'moment/locale/ar';
 import moment from 'moment';
 import useAuth from 'hooks/useAuth';
 import { asignProposalToAUser } from 'queries/commons/asignProposalToAUser';
@@ -97,9 +99,9 @@ const ProjectCard = ({
     }
     if (destination) {
       const x = location.pathname.split('/');
-      // console.log(
-      //   `/${x[1] + '/' + x[2] + '/' + destination}/${title.id}/${cardFooterButtonAction}`
-      // );
+      console.log(
+        `/${x[1] + '/' + x[2] + '/' + destination}/${title.id}/${cardFooterButtonAction}`
+      );
       navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${title.id}/${cardFooterButtonAction}`);
     } else navigate(`${location.pathname}/${title.id}/${cardFooterButtonAction}`);
   };
@@ -171,7 +173,7 @@ const ProjectCard = ({
             {content.createdAt && (
               <>
                 <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
-                  {translate('project_management_headercell.date_created')}
+                  تاريخ الإنشاء
                 </Typography>
                 <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
                   {`${content.createdAt.getDay()}.${content.createdAt.getMonth()}.${content.createdAt.getFullYear()} في ${content.createdAt.getHours()}:${content.createdAt.getMinutes()}`}
@@ -181,7 +183,7 @@ const ProjectCard = ({
             {content.sentSection && (
               <>
                 <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
-                  {translate('project_management_headercell.sent_section')}
+                  القسم المرسل
                 </Typography>
                 <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
                   {content.sentSection}
@@ -219,7 +221,7 @@ const ProjectCard = ({
         {content.projectDetails && (
           <>
             <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
-              {translate('project_details.heading')}
+              تفاصيل المشروع
             </Typography>
             <Typography
               sx={{
@@ -269,7 +271,7 @@ const ProjectCard = ({
                   gutterBottom
                   sx={{ fontSize: '10px !important' }}
                 >
-                  {translate('project_management_headercell.date_created')}
+                  تاريخ الإنشاء
                 </Typography>
                 <Typography
                   variant="h6"
@@ -317,7 +319,7 @@ const ProjectCard = ({
                   {destination === 'requests-in-process'
                     ? translate('continue_studying_the_project')
                     : role === 'tender_client'
-                    ? translate('show_clients_project_detail')
+                    ? 'عرض التفاصيل' // translate("show_clients_project_detail")
                     : translate(cardFooterButtonActionLocal[`${cardFooterButtonAction}`])}
                 </Button>
               )}
