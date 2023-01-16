@@ -2,8 +2,10 @@ import { Box, Divider, Grid, Stack, Typography, Link, Button } from '@mui/materi
 import React from 'react';
 import { useSelector } from 'redux/store';
 import BankImageComp from 'sections/shared/BankImageComp';
+import useLocales from '../../../hooks/useLocales';
 
 function MainPage() {
+  const { translate } = useLocales();
   const { proposal } = useSelector((state) => state.proposal);
 
   const {
@@ -30,27 +32,27 @@ function MainPage() {
       <Stack direction="row" gap={6}>
         <Stack direction="column">
           <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
-            عدد المستفيدين من المشروع:
+            {translate('number_of_beneficiaries_of_the_project')}
           </Typography>
           <Typography sx={{ mb: '20px' }}>{num_ofproject_binicficiaries}</Typography>
           <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
-            مدة التنفيذ:
+            {translate('implementation_period')}
           </Typography>
           <Typography>{execution_time}</Typography>
         </Stack>
         <Stack direction="column">
           <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
-            مكان تنفيذ المشروع:
+            {translate('where_to_implement_the_project')}
           </Typography>
           <Typography sx={{ mb: '20px' }}>{project_location}</Typography>
           <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
-            نوع الفئة المستهدفة:
+            {translate('target_group_type')}
           </Typography>
-          <Typography>{project_beneficiaries}</Typography>
+          <Typography>{translate(`project_beneficiaries.${project_beneficiaries}`)}</Typography>
         </Stack>
         <Stack direction="column">
           <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
-            تاريخ تنفيذ المشروع:
+            {translate('project_implementation_date')}
           </Typography>
           <Typography>{new Date(project_implement_date).toISOString().substring(0, 10)}</Typography>
         </Stack>
@@ -59,15 +61,25 @@ function MainPage() {
       <Grid container columnSpacing={7}>
         <Grid item md={8} xs={12}>
           <Stack direction="column">
-            <Typography sx={{ color: '#93A3B0', fontSize: '12px' }}>فكرة المشروع:</Typography>
+            <Typography sx={{ color: '#93A3B0', fontSize: '12px' }}>
+              {translate('project_idea')}
+            </Typography>
             <Typography sx={{ mb: '10px' }}>{project_idea}</Typography>
-            <Typography sx={{ color: '#93A3B0', fontSize: '12px' }}>أهداف المشروع:</Typography>
+            <Typography sx={{ color: '#93A3B0', fontSize: '12px' }}>
+              {translate('project_goals')}
+            </Typography>
             <Typography sx={{ mb: '10px' }}>{project_goals}</Typography>
-            <Typography sx={{ color: '#93A3B0', fontSize: '12px' }}>مخرجات المشروع:</Typography>
+            <Typography sx={{ color: '#93A3B0', fontSize: '12px' }}>
+              {translate('project_outputs')}
+            </Typography>
             <Typography sx={{ mb: '10px' }}>{project_outputs}</Typography>
-            <Typography sx={{ color: '#93A3B0', fontSize: '12px' }}>نقاط القوة للمشروع:</Typography>
+            <Typography sx={{ color: '#93A3B0', fontSize: '12px' }}>
+              {translate('project_strengths')}
+            </Typography>
             <Typography sx={{ mb: '10px' }}>{project_strengths}</Typography>
-            <Typography sx={{ color: '#93A3B0', fontSize: '12px' }}>مخاطر المشروع:</Typography>
+            <Typography sx={{ color: '#93A3B0', fontSize: '12px' }}>
+              {translate('project_risks')}
+            </Typography>
             <Typography sx={{ mb: '10px' }}>{project_risks}</Typography>
           </Stack>
           <Stack direction="row" justifyContent="space-between" gap={3}>
@@ -101,7 +113,7 @@ function MainPage() {
                   </Stack>
                   <Stack direction="column">
                     <Typography gutterBottom sx={{ fontSize: '13px' }}>
-                      ملف خطاب طلب الدعم
+                      {translate('support_letter_file')}
                     </Typography>
                     <Typography gutterBottom sx={{ fontSize: '13px' }}>
                       {letter_ofsupport_req.size !== undefined
@@ -147,7 +159,7 @@ function MainPage() {
                   </Stack>
                   <Stack direction="column">
                     <Typography gutterBottom sx={{ fontSize: '13px' }}>
-                      ملف مرفقات المشروع
+                      {translate('project_attachment_file')}
                     </Typography>
                     <Typography gutterBottom sx={{ fontSize: '13px' }}>
                       {project_attachments.size !== undefined
@@ -169,33 +181,33 @@ function MainPage() {
           <Stack direction="column">
             <Stack direction="column">
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
-                البريد الإلكتروني:
+                {translate('email')}
               </Typography>
               <Typography sx={{ mb: '15px' }}>{email}</Typography>
             </Stack>
             <Stack direction="column">
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
-                رقم الجوال:
+                {translate('mobile_number')}
               </Typography>
               <Typography sx={{ mb: '15px' }}>{mobile_number}</Typography>
             </Stack>
             <Stack direction="column">
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
-                المحافظة:
+                {translate('governorate')}
               </Typography>
               <Typography sx={{ mb: '15px' }}>{client_data.governorate}</Typography>
             </Stack>
             <Box sx={{ backgroundColor: '#fff', py: '30px', pl: '10px', mb: '15px' }}>
               <Stack direction="column">
                 <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
-                  المبلغ المطلوب للدعم:
+                  {translate('amount_required_for_support')}
                 </Typography>
                 <Typography>{amount_required_fsupport}</Typography>
               </Stack>
             </Box>
             <Stack>
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
-                المصرف المختار:
+                {translate('selected_bank')}
               </Typography>
               <BankImageComp
                 enableButton={true}

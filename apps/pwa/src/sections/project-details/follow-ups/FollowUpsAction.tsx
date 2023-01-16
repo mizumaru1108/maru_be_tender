@@ -4,8 +4,10 @@ import Iconify from 'components/Iconify';
 import { useState } from 'react';
 import ActionPopup from './follow-ups-popups/ActionPopup';
 import FilePopup from './follow-ups-popups/FilePopup';
+import useLocales from '../../../hooks/useLocales';
 
 function FollowUpsAction() {
+  const { translate } = useLocales();
   const [actoinOpen, setActionOpen] = useState(false);
 
   const [fileOpen, setFileOpen] = useState(false);
@@ -40,7 +42,7 @@ function FollowUpsAction() {
         }}
       >
         <Iconify icon="eva:edit-2-outline" />
-        <Typography sx={{ fontWeight: 700 }}>إضافة إجراء</Typography>
+        <Typography sx={{ fontWeight: 700 }}>{translate('add_action')}</Typography>
       </IconButtonAnimate>
       <IconButtonAnimate
         onClick={handleFileOpen}
@@ -54,7 +56,7 @@ function FollowUpsAction() {
         }}
       >
         <img src="/icons/add-action-follow-up-icon.svg" alt="" />
-        <Typography sx={{ fontWeight: 700 }}>رفع ملف جديد</Typography>
+        <Typography sx={{ fontWeight: 700 }}>{translate('upload_a_new_file')}</Typography>
       </IconButtonAnimate>
     </Stack>
   );

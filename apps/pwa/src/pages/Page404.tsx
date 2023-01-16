@@ -8,6 +8,7 @@ import Page from '../components/Page';
 import { MotionContainer, varBounce } from '../components/animate';
 // assets
 import { PageNotFoundIllustration } from '../assets';
+import useLocales from 'hooks/useLocales';
 
 // ----------------------------------------------------------------------
 
@@ -24,20 +25,21 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function Page404() {
+  const { translate } = useLocales();
+
   return (
     <Page title="404 Page Not Found">
       <Container component={MotionContainer}>
         <ContentStyle sx={{ textAlign: 'center', alignItems: 'center' }}>
           <m.div variants={varBounce().in}>
             <Typography variant="h3" paragraph>
-              Sorry, page not found!
+              {translate('page_not_found')}!
             </Typography>
           </m.div>
 
           <m.div variants={varBounce().in}>
             <Typography sx={{ color: 'text.secondary' }}>
-              Sorry, we couldn’t find the page you’re looking for. Perhaps you’ve mistyped the URL?
-              Be sure to check your spelling.
+              {translate('desc_page_not_found')}.
             </Typography>
           </m.div>
 
@@ -46,7 +48,7 @@ export default function Page404() {
           </m.div>
 
           <Button to="/" size="large" variant="contained" component={RouterLink}>
-            Go to Home
+            {translate('go_to_home')}
           </Button>
         </ContentStyle>
       </Container>

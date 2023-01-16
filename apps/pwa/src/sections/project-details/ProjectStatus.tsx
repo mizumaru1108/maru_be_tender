@@ -24,7 +24,7 @@ function ProjectStatus() {
           color: '#0E8478',
         }}
       >
-        {'State : ' + translate(`permissions.${proposal.state}`) || 'حالة المشروع'}
+        {translate(`state`) + ' : ' + translate(`permissions.${proposal.state}`) || 'حالة المشروع'}
       </Typography>
       <Typography
         sx={{
@@ -36,7 +36,8 @@ function ProjectStatus() {
           }[`${proposal.outter_status}`],
         }}
       >
-        {'status : ' + proposal.outter_status || 'status'}
+        {translate('status') + ' : ' + translate(`outter_status.${proposal.outter_status}`) ||
+          'status'}
       </Typography>
     </Box>
   );

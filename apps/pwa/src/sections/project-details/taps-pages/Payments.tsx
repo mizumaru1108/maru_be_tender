@@ -4,9 +4,11 @@ import { CachierPaymentsTable } from '../payments/cachier';
 import FinancePaymentsPage from '../payments/finance';
 import { ManagerPaymentsPage } from '../payments/project-manager';
 import SupervisorPaymentsPage from '../payments/supervisor';
+import useLocales from 'hooks/useLocales';
 
 function Payments() {
   const { activeRole } = useAuth();
+  const { translate } = useLocales();
 
   const { proposal } = useSelector((state) => state.proposal);
 
@@ -28,7 +30,7 @@ function Payments() {
       </div>
     );
   }
-  return <>The Payments haven't been set yet</>;
+  return <>{translate('nothing_payment')}</>;
 }
 
 export default Payments;

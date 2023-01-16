@@ -54,6 +54,8 @@ function ProjectPath() {
     variables: { proposal_id },
   });
 
+  const valueLocale = localStorage.getItem('i18nextLng');
+
   const { data: followUps, fetching, error } = result;
   const handleStep = (step: number) => () => {
     window.scrollTo(115, 115);
@@ -103,8 +105,8 @@ function ProjectPath() {
                 {index === activeStep && (
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
-                      This project already reviewed by Supervisor{' '}
-                      {moment(item.proposal.updated_at).fromNow()}
+                      {translate('project_already_reviewed_by_supervisor')}{' '}
+                      {moment(item.proposal.updated_at).locale(`${valueLocale}`).fromNow()}
                     </Typography>
                   </Stack>
                 )}

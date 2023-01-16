@@ -325,13 +325,13 @@ export default function MessageContent() {
             variant="subtitle2"
             sx={{ color: theme.palette.grey[500], fontStyle: 'italic' }}
           >
-            Message is empty,
+            {translate('message_is_empty')},
           </Typography>
           <Typography
             variant="subtitle2"
             sx={{ color: theme.palette.grey[500], fontStyle: 'italic' }}
           >
-            You can create new message for new conversation.
+            {translate('you_can_create_new_message_for_new_conversation')}.
           </Typography>
         </Box>
       ) : (

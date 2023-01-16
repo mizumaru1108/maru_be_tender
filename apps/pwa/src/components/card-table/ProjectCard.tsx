@@ -12,8 +12,8 @@ import {
 import useLocales from 'hooks/useLocales';
 import { useLocation, useNavigate } from 'react-router';
 import { ProjectCardProps } from './types';
-// import 'moment/locale/es';
-// import 'moment/locale/ar';
+import 'moment/locale/es';
+import 'moment/locale/ar';
 import moment from 'moment';
 import useAuth from 'hooks/useAuth';
 import { asignProposalToAUser } from 'queries/commons/asignProposalToAUser';
@@ -67,6 +67,8 @@ const ProjectCard = ({
   const location = useLocation();
   const { translate } = useLocales();
   const [_, updateAsigning] = useMutation(asignProposalToAUser);
+
+  const valueLocale = localStorage.getItem('i18nextLng');
 
   const onDeleteDraftClick = () => {
     console.log('onDeleteDraftClick');
@@ -183,7 +185,7 @@ const ProjectCard = ({
                   {translate('project_management_headercell.sent_section')}
                 </Typography>
                 <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
-                  {content.sentSection}
+                  {translate(`project_card.${content.sentSection.toLowerCase()}`)}
                 </Typography>
               </>
             )}
@@ -277,7 +279,7 @@ const ProjectCard = ({
                   sx={{ fontSize: '15px !important' }}
                 >
                   {footer.createdAt
-                    ? moment(footer.createdAt).format('LLLL')
+                    ? moment(footer.createdAt).locale(`${valueLocale}`).format('LLLL')
                     : // ? `${footer.createdAt.getDay()}.${footer.createdAt.getMonth()}.${footer.createdAt.getFullYear()} في ${footer.createdAt.getHours()}:${footer.createdAt.getMinutes()}`
                       '5 ساعات'}
                 </Typography>
