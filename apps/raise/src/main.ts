@@ -90,6 +90,6 @@ async function bootstrap() {
    */
   // app.useWebSocketAdapter(new WsAdapter(app));
   app.useWebSocketAdapter(new IoAdapter(app));
-  await app.listen(3002, '0.0.0.0');
+  await app.listen(3000, '0.0.0.0');
 }
 bootstrap();

@@ -400,32 +400,44 @@ export class TenderStatisticsService {
       filter,
     );
 
-    const partnerStatus =
-      await this.tenderStatisticRepository.getRawUserStatus();
-
     if (partners.length > 0) {
       // const latestPartnerData = partners[0].created_at!;
       const latestPartnerData = moment(filter.end_date).startOf('day').toDate();
+
+      // map the partners to have the same structure as before
+      const mappedPartners = partners.map((partner) => {
+        return {
+          client_data: partner.user_detail.client_data,
+          status: partner.user_status,
+          created_at: partner.created_at,
+        };
+      });
+
+      const partnerStatus = Array.from(
+        new Set(mappedPartners.map((partner) => partner.status.id)),
+      );
+
       const byStatus = partnerStatus.map((status) => {
         return {
-          label: status.id,
-          value: partners.filter((partner) => partner.status.id === status.id)
-            .length,
+          label: status,
+          value: mappedPartners.filter(
+            (partner) => partner.status.id === status,
+          ).length,
         };
       });
 
       const byRegion = Array.from(
-        new Set(partners.map((partner) => partner.client_data?.region)),
+        new Set(mappedPartners.map((partner) => partner.client_data?.region)),
       ).map((region) => {
-        const data = partners.filter(
+        const data = mappedPartners.filter(
           (partner) => partner.client_data?.region === region,
         );
         return {
           label: region || 'Region Not Set',
           value: partnerStatus.map((status) => {
             return {
-              label: status.id,
-              value: data.filter((partner) => partner.status.id === status.id)
+              label: status,
+              value: data.filter((partner) => partner.status.id === status)
                 .length,
             };
           }),
@@ -434,17 +446,19 @@ export class TenderStatisticsService {
       });
 
       const byGovernorate = Array.from(
-        new Set(partners.map((partner) => partner.client_data?.governorate)),
+        new Set(
+          mappedPartners.map((partner) => partner.client_data?.governorate),
+        ),
       ).map((governorate) => {
-        const data = partners.filter(
+        const data = mappedPartners.filter(
           (partner) => partner.client_data?.governorate === governorate,
         );
         return {
           label: governorate || 'Governorate Not Set',
           value: partnerStatus.map((status) => {
             return {
-              label: status.id,
-              value: data.filter((partner) => partner.status.id === status.id)
+              label: status,
+              value: data.filter((partner) => partner.status.id === status)
                 .length,
             };
           }),
@@ -455,28 +469,26 @@ export class TenderStatisticsService {
       const monthlyData = {
         this_month: partnerStatus.map((status) => {
           return {
-            label: status.id,
-            value: partners.filter(
+            label: status,
+            value: mappedPartners.filter(
               (partner) =>
-                partner.status.id === status.id &&
+                partner.status.id === status &&
                 partner.created_at!.getMonth() === latestPartnerData.getMonth(),
             ).length,
           };
         }),
         last_month: partnerStatus.map((status) => {
           return {
-            label: status.id,
-            value: partners.filter(
+            label: status,
+            value: mappedPartners.filter(
               (partner) =>
-                partner.status.id === status.id &&
+                partner.status.id === status &&
                 partner.created_at!.getMonth() ===
                   latestPartnerData.getMonth() - 1,
             ).length,
           };
         }),
       };
-
-      // console.log('monthly', monthlyData);
 
       return {
         by_status: byStatus,

@@ -66,33 +66,39 @@ export class TenderStatisticsRepository {
     try {
       const { start_date, end_date } = filter;
 
-      const partners = await this.prismaService.user.findMany({
+      const partners = await this.prismaService.user_status_log.findMany({
         where: {
           created_at: {
             gte: moment(start_date).startOf('day').toDate(),
             lte: moment(end_date).endOf('day').toDate(),
           },
-          roles: {
-            some: {
-              user_type_id: 'CLIENT',
+          user_detail: {
+            roles: {
+              some: {
+                user_type_id: 'CLIENT',
+              },
             },
           },
         },
         select: {
-          roles: {
+          user_detail: {
             select: {
-              user_type_id: true,
+              client_data: {
+                select: {
+                  governorate: true,
+                  region: true,
+                },
+              },
+              roles: {
+                select: {
+                  user_type_id: true,
+                },
+              },
             },
           },
-          status: {
+          user_status: {
             select: {
               id: true,
-            },
-          },
-          client_data: {
-            select: {
-              governorate: true,
-              region: true,
             },
           },
           created_at: true,
