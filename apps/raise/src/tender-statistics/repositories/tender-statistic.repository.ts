@@ -83,6 +83,7 @@ export class TenderStatisticsRepository {
         select: {
           user_detail: {
             select: {
+              id: true,
               client_data: {
                 select: {
                   governorate: true,

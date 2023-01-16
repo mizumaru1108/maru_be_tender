@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+export class PartnerValue {
+  @ApiProperty()
+  user_id: string;
+
+  @ApiProperty()
+  label: string[];
+}
 export class GetPartnersStatisticByStatusResponseDto {
   @ApiProperty()
   label: string;
@@ -12,11 +19,8 @@ export class GetPartnersStatisticByRegionResponseDto {
   @ApiProperty()
   label: string;
 
-  @ApiProperty({
-    type: GetPartnersStatisticByStatusResponseDto,
-    isArray: true,
-  })
-  value: GetPartnersStatisticByStatusResponseDto[];
+  @ApiProperty()
+  value: PartnerValue[];
 
   @ApiProperty()
   total: number;
@@ -26,11 +30,8 @@ export class GetPartnersStatisticByGovernorateResponseDto {
   @ApiProperty()
   label: string;
 
-  @ApiProperty({
-    type: GetPartnersStatisticByStatusResponseDto,
-    isArray: true,
-  })
-  value: GetPartnersStatisticByStatusResponseDto[];
+  @ApiProperty()
+  value: PartnerValue[];
 
   @ApiProperty()
   total: number;

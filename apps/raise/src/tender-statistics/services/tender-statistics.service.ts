@@ -8,9 +8,15 @@ import {
   IGetBeneficiariesByTrackDto,
   IGetBeneficiariesByTypeDto,
 } from '../dtos/responses/get-beneficiaries-report.dto';
-import { GetPartnersStatisticResponseDto } from '../dtos/responses/get-partner-statistic.dto';
+import {
+  GetPartnersStatisticByGovernorateResponseDto,
+  GetPartnersStatisticByRegionResponseDto,
+  GetPartnersStatisticResponseDto,
+  PartnerValue,
+} from '../dtos/responses/get-partner-statistic.dto';
 import { GetRawExecutionTimeDataResponseDto } from '../dtos/responses/get-raw-execution-time-data-response.dto';
 import { TenderStatisticsRepository } from '../repositories/tender-statistic.repository';
+import { groupBy } from 'lodash';
 
 @Injectable()
 export class TenderStatisticsService {
@@ -400,100 +406,113 @@ export class TenderStatisticsService {
       filter,
     );
 
+    const partnerStatus =
+      await this.tenderStatisticRepository.getRawUserStatus();
+
     if (partners.length > 0) {
-      // const latestPartnerData = partners[0].created_at!;
       const latestPartnerData = moment(filter.end_date).startOf('day').toDate();
-
-      // map the partners to have the same structure as before
-      const mappedPartners = partners.map((partner) => {
-        return {
-          client_data: partner.user_detail.client_data,
-          status: partner.user_status,
-          created_at: partner.created_at,
-        };
-      });
-
-      const partnerStatus = Array.from(
-        new Set(mappedPartners.map((partner) => partner.status.id)),
-      );
-
       const byStatus = partnerStatus.map((status) => {
         return {
-          label: status,
-          value: mappedPartners.filter(
-            (partner) => partner.status.id === status,
+          label: status.id,
+          value: partners.filter(
+            (partner) => partner.user_status.id === status.id,
           ).length,
         };
       });
 
-      const byRegion = Array.from(
-        new Set(mappedPartners.map((partner) => partner.client_data?.region)),
-      ).map((region) => {
-        const data = mappedPartners.filter(
-          (partner) => partner.client_data?.region === region,
-        );
-        return {
-          label: region || 'Region Not Set',
-          value: partnerStatus.map((status) => {
-            return {
-              label: status,
-              value: data.filter((partner) => partner.status.id === status)
-                .length,
-            };
-          }),
-          total: data.length,
-        };
+      // create Maps for byRegion and byGovernorate
+      const byRegion = new Map<string, any>();
+      const byGovernorate = new Map<string, any>();
+
+      partners.forEach((partner) => {
+        const { user_detail } = partner;
+        const { client_data } = user_detail;
+        if (!client_data) return;
+        const { region, governorate } = client_data;
+        const { id: userId } = user_detail;
+        const status = partner.user_status.id;
+
+        // add to byRegion map
+        if (region) {
+          if (byRegion.has(region)) {
+            const currentData: GetPartnersStatisticByRegionResponseDto =
+              byRegion.get(region);
+            if (
+              !currentData.value.find(
+                (val: PartnerValue) => val.user_id === userId,
+              )
+            ) {
+              currentData.value.push({ user_id: userId, label: [status] });
+              currentData.total++;
+            } else {
+              currentData.value
+                .find((val: PartnerValue) => val.user_id === userId)!
+                .label.push(status);
+            }
+          } else {
+            byRegion.set(region, {
+              label: region,
+              value: [{ user_id: userId, label: [status] }],
+              total: 1,
+            });
+          }
+        }
+
+        // add to byGovernorate map
+        if (governorate) {
+          if (byGovernorate.has(governorate)) {
+            const currentData: GetPartnersStatisticByGovernorateResponseDto =
+              byGovernorate.get(governorate);
+            if (
+              !currentData.value.find(
+                (val: PartnerValue) => val.user_id === userId,
+              )
+            ) {
+              currentData.value.push({ user_id: userId, label: [status] });
+              currentData.total++;
+            } else {
+              currentData.value
+                .find((val: PartnerValue) => val.user_id === userId)!
+                .label.push(status);
+            }
+          } else {
+            byGovernorate.set(governorate, {
+              label: governorate,
+              value: [{ user_id: userId, label: [status] }],
+              total: 1,
+            });
+          }
+        }
       });
 
-      const byGovernorate = Array.from(
-        new Set(
-          mappedPartners.map((partner) => partner.client_data?.governorate),
-        ),
-      ).map((governorate) => {
-        const data = mappedPartners.filter(
-          (partner) => partner.client_data?.governorate === governorate,
-        );
-        return {
-          label: governorate || 'Governorate Not Set',
-          value: partnerStatus.map((status) => {
-            return {
-              label: status,
-              value: data.filter((partner) => partner.status.id === status)
-                .length,
-            };
-          }),
-          total: data.length,
-        };
-      });
-
+      //calculate monthly data
       const monthlyData = {
         this_month: partnerStatus.map((status) => {
           return {
-            label: status,
-            value: mappedPartners.filter(
+            label: status.id,
+            value: partners.filter(
               (partner) =>
-                partner.status.id === status &&
+                partner.user_status.id === status.id &&
                 partner.created_at!.getMonth() === latestPartnerData.getMonth(),
             ).length,
           };
         }),
         last_month: partnerStatus.map((status) => {
           return {
-            label: status,
-            value: mappedPartners.filter(
+            label: status.id,
+            value: partners.filter(
               (partner) =>
-                partner.status.id === status &&
+                partner.user_status.id === status.id &&
                 partner.created_at!.getMonth() ===
                   latestPartnerData.getMonth() - 1,
             ).length,
           };
         }),
       };
-
       return {
         by_status: byStatus,
-        by_region: byRegion,
-        by_governorate: byGovernorate,
+        by_region: Array.from(byRegion.values()),
+        by_governorate: Array.from(byGovernorate.values()),
         monthlyData: monthlyData,
       };
     } else {

@@ -6,6 +6,7 @@ export class GetRawPartnerDatasResponseDto {
 
   @ApiProperty()
   user_detail: {
+    id: string;
     client_data: {
       governorate: string | null;
       region: string | null;
