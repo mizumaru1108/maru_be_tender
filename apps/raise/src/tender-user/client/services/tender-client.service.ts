@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -27,7 +26,8 @@ import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { UpdateBankInfoPayload } from '../interfaces/update-bank-info-payload.interface';
 import { UpdateUserPayload } from '../../user/interfaces/update-user-payload.interface';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
-
+import { v4 as uuidv4 } from 'uuid';
+import { UserStatusEnum } from '../../user/types/user_status';
 @Injectable()
 export class TenderClientService {
   private readonly logger = ROOT_LOGGER.child({
@@ -65,8 +65,18 @@ export class TenderClientService {
   ): Promise<CreateUserResponseDto> {
     const userCreatePayload = CreateClientMapper(idFromFusionAuth, request);
 
+    const createStatusLogPayload: Prisma.user_status_logUncheckedCreateInput[] =
+      [
+        {
+          id: uuidv4(),
+          user_id: idFromFusionAuth,
+          status_id: UserStatusEnum.WAITING_FOR_ACTIVATION,
+        },
+      ] as Prisma.user_status_logUncheckedCreateInput[];
+
     const createdUser = await this.tenderUserRepository.createUser(
       userCreatePayload,
+      createStatusLogPayload,
     );
 
     return {

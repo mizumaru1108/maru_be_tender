@@ -32,6 +32,21 @@ import { useSnackbar } from 'notistack';
 //
 import { PartnerDetailsProps } from '../../../@types/client_data';
 import { PATH_ACCOUNTS_MANAGER } from 'routes/paths';
+import axiosInstance from '../../../utils/axios';
+
+// -------------------------------------------------------------------------------
+
+type UserStatus =
+  | 'WAITING_FOR_ACTIVATION'
+  | 'SUSPENDED_ACCOUNT'
+  | 'CANCELED_ACCOUNT'
+  | 'ACTIVE_ACCOUNT'
+  | 'REVISED_ACCOUNT'
+  | 'WAITING_FOR_EDITING_APPROVAL';
+interface ChangeStatusRequest {
+  status: UserStatus;
+  user_id: string;
+}
 
 // -------------------------------------------------------------------------------
 
@@ -47,7 +62,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // -------------------------------------------------------------------------------
 
 function AccountPartnerDetails() {
-  const { user } = useAuth();
+  const { user, activeRole } = useAuth();
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -73,76 +88,120 @@ function AccountPartnerDetails() {
   const [partnerDetails, setPartnerDetails] = useState<any>(null);
 
   // Activate | Suspended Client
-  const [activateResult, activateClient] = useMutation(changeClientStatus);
+  /* old gql */
+  // const [activateResult, activateClient] = useMutation(changeClientStatus);
   const [suspendedResult, suspendedClient] = useMutation(changeClientStatus);
   const [deleteResult, deleteClient] = useMutation(deleteClientData);
   const [isSubmitting, setIsSubimitting] = useState(false);
 
-  const handleActivateAccount = async (id: string) => {
+  /* old GQL */
+  // const handleActivateAccount = async (id: string) => {
+  //   setIsSubimitting(true);
+
+  //   const resActivate = await activateClient({
+  //     id: params.partnerId,
+  //     _set: {
+  //       status_id: 'ACTIVE_ACCOUNT',
+  //     },
+  //   });
+
+  //   if (resActivate) {
+  //     setDynamicState('ACTIVE_ACCOUNT');
+  //     setIsSubimitting(false);
+  //     enqueueSnackbar(
+  //       `${translate('account_manager.partner_details.notification.activate_account')}`,
+  //       {
+  //         variant: 'success',
+  //       }
+  //     );
+  //   }
+  // };
+
+  const handleChangeStatus = async (
+    id: string,
+    status: 'ACTIVE_ACCOUNT' | 'SUSPENDED_ACCOUNT' | 'CANCELED_ACCOUNT'
+  ) => {
     setIsSubimitting(true);
-
-    const resActivate = await activateClient({
-      id: params.partnerId,
-      _set: {
-        status_id: 'ACTIVE_ACCOUNT',
-      },
-    });
-
-    if (resActivate) {
-      setDynamicState('ACTIVE_ACCOUNT');
-      setIsSubimitting(false);
-      enqueueSnackbar(
-        `${translate('account_manager.partner_details.notification.activate_account')}`,
+    try {
+      await axiosInstance.patch<ChangeStatusRequest, any>(
+        '/tender-user/update-status',
         {
-          variant: 'success',
+          status: status,
+          user_id: id,
+        } as ChangeStatusRequest,
+        {
+          headers: { 'x-hasura-role': activeRole! },
         }
       );
+
+      let notif = '';
+      if (status === 'ACTIVE_ACCOUNT') {
+        notif = 'account_manager.partner_details.notification.activate_account';
+      } else if (status === 'SUSPENDED_ACCOUNT') {
+        notif = 'account_manager.partner_details.notification.disabled_account';
+      } else if (status === 'CANCELED_ACCOUNT') {
+        notif = 'account_manager.partner_details.notification.deleted_account';
+      }
+      setDynamicState(status);
+      setIsSubimitting(false);
+      enqueueSnackbar(`${translate(notif)}`, {
+        variant: 'success',
+      });
+    } catch (err) {
+      setIsSubimitting(false);
+      enqueueSnackbar(
+        `${err.statusCode < 500 && err.message ? err.message : 'something went wrong!'}`,
+        {
+          variant: 'error',
+        }
+      );
+      console.log(err);
     }
   };
 
-  const handeSuspendedAccount = async (id: string) => {
-    setIsSubimitting(true);
+  // const handeSuspendedAccount = async (id: string) => {
+  //   setIsSubimitting(true);
 
-    const resSuspended = await suspendedClient({
-      id: params.partnerId,
-      _set: {
-        status_id: 'SUSPENDED_ACCOUNT',
-      },
-    });
+  //   const resSuspended = await suspendedClient({
+  //     id: params.partnerId,
+  //     _set: {
+  //       status_id: 'SUSPENDED_ACCOUNT',
+  //     },
+  //   });
 
-    if (resSuspended) {
-      setDynamicState('SUSPENDED_ACCOUNT');
-      setIsSubimitting(false);
-      enqueueSnackbar(
-        `${translate('account_manager.partner_details.notification.disabled_account')}`,
-        {
-          variant: 'success',
-        }
-      );
-    }
-  };
+  //   if (resSuspended) {
+  //     setDynamicState('SUSPENDED_ACCOUNT');
+  //     setIsSubimitting(false);
+  //     enqueueSnackbar(
+  //       `${translate('account_manager.partner_details.notification.disabled_account')}`,
+  //       {
+  //         variant: 'success',
+  //       }
+  //     );
+  //   }
+  // };
 
-  const handleDeleteAccount = async (email: string) => {
-    setIsSubimitting(true);
+  // const handleDeleteAccount = async (email: string) => {
+  //   setIsSubimitting(true);
 
-    const resDeleted = await deleteClient({
-      id: params.partnerId,
-      _set: {
-        status_id: 'CANCELED_ACCOUNT',
-      },
-    });
+  //   const resDeleted = await deleteClient({
+  //     id: params.partnerId,
+  //     _set: {
+  //       status_id: 'CANCELED_ACCOUNT',
+  //     },
+  //   });
 
-    if (resDeleted) {
-      setDynamicState('CANCELED_ACCOUNT');
-      setIsSubimitting(false);
-      enqueueSnackbar(
-        `${translate('account_manager.partner_details.notification.deleted_account')}`,
-        {
-          variant: 'success',
-        }
-      );
-    }
-  };
+  //   if (resDeleted) {
+  //     setDynamicState('CANCELED_ACCOUNT');
+  //     setIsSubimitting(false);
+  //     enqueueSnackbar(
+  //       `${translate('account_manager.partner_details.notification.deleted_account')}`,
+  //       {
+  //         variant: 'success',
+  //       }
+  //     );
+  //   }
+  // };
 
   useEffect(() => {
     if (data) {
@@ -575,7 +634,7 @@ function AccountPartnerDetails() {
                   <Grid item>
                     {dynamicState === 'ACTIVE_ACCOUNT' ? (
                       <Button
-                        onClick={() => handeSuspendedAccount(partnerDetails?.id!)}
+                        onClick={() => handleChangeStatus(partnerDetails?.id!, 'SUSPENDED_ACCOUNT')}
                         variant="contained"
                         color="warning"
                         disabled={isSubmitting}
@@ -584,7 +643,7 @@ function AccountPartnerDetails() {
                       </Button>
                     ) : (
                       <Button
-                        onClick={() => handleActivateAccount(params.partnerId!)}
+                        onClick={() => handleChangeStatus(params.partnerId!, 'ACTIVE_ACCOUNT')}
                         variant="contained"
                         color="primary"
                         disabled={isSubmitting}
@@ -597,7 +656,7 @@ function AccountPartnerDetails() {
                     <Button
                       variant="contained"
                       color="error"
-                      onClick={() => handleDeleteAccount(user?.email)}
+                      onClick={() => handleChangeStatus(user?.id!, 'CANCELED_ACCOUNT')}
                       disabled={dynamicState === 'CANCELED_ACCOUNT' ? true : false}
                     >
                       {translate('account_manager.partner_details.btn_deleted_account')}

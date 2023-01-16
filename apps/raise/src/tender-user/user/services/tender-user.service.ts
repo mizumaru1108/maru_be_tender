@@ -6,18 +6,26 @@ import {
 } from '@nestjs/common';
 import { Prisma, user } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
+import { SendEmailDto } from '../../../libs/email/dtos/requests/send-email.dto';
+import { EmailService } from '../../../libs/email/email.service';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
+import { TwilioService } from '../../../libs/twilio/services/twilio.service';
 import { getTimeGap } from '../../../tender-commons/utils/get-time-gap';
+import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
+import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
 import { TenderCreateUserDto } from '../dtos/requests/create-user.dto';
 import { SearchUserFilterRequest } from '../dtos/requests/search-user-filter-request.dto';
 import { UpdateUserDto } from '../dtos/requests/update-user.dto';
+import { UserStatusUpdateDto } from '../dtos/requests/user-status-update.dto';
 import { CreateUserResponseDto } from '../dtos/responses/create-user-response.dto';
 import { FindUserResponse } from '../dtos/responses/find-user-response.dto';
+import { IUserStatusLogResponseDto } from '../dtos/responses/user-status-log-response.dto';
 import { TenderCurrentUser } from '../interfaces/current-user.interface';
 import { UpdateUserPayload } from '../interfaces/update-user-payload.interface';
 import { updateUserMapper } from '../mappers/update-user.mapper';
 import { TenderUserRepository } from '../repositories/tender-user.repository';
+import { UserStatusEnum } from '../types/user_status';
 
 @Injectable()
 export class TenderUserService {
@@ -27,6 +35,9 @@ export class TenderUserService {
 
   constructor(
     private readonly fusionAuthService: FusionAuthService,
+    private readonly tenderNotificationService: TenderNotificationService,
+    private readonly emailService: EmailService,
+    private readonly twilioService: TwilioService,
     private tenderUserRepository: TenderUserRepository,
   ) {}
 
@@ -112,7 +123,9 @@ export class TenderUserService {
     }
 
     // map as a create input
-    let status = activate_user ? 'ACTIVE_ACCOUNT' : 'WAITING_FOR_ACTIVATION';
+    let status = activate_user
+      ? UserStatusEnum.ACTIVE_ACCOUNT
+      : UserStatusEnum.WAITING_FOR_ACTIVATION;
     const createUserPayload: Prisma.userCreateInput = {
       id: fusionAuthResult.user.id,
       email,
@@ -139,8 +152,26 @@ export class TenderUserService {
         };
       });
 
+    const createStatusLogPayload: Prisma.user_status_logUncheckedCreateInput[] =
+      [
+        {
+          id: uuidv4(),
+          user_id: fusionAuthResult.user.id as string,
+          status_id: UserStatusEnum.WAITING_FOR_ACTIVATION,
+        },
+      ] as Prisma.user_status_logUncheckedCreateInput[];
+
+    if (status === UserStatusEnum.ACTIVE_ACCOUNT) {
+      createStatusLogPayload.push({
+        id: uuidv4(),
+        user_id: fusionAuthResult.user.id as string,
+        status_id: UserStatusEnum.ACTIVE_ACCOUNT,
+      });
+    }
+
     const createdUser = await this.tenderUserRepository.createUser(
       createUserPayload,
+      createStatusLogPayload,
       createRolesData,
     );
 
@@ -356,5 +387,105 @@ export class TenderUserService {
 
   async findById(id: string): Promise<user | null> {
     return await this.tenderUserRepository.findUserById(id);
+  }
+
+  async updateUserStatus(accManagerId: string, request: UserStatusUpdateDto) {
+    const response = await this.tenderUserRepository.changeUserStatus(
+      request.user_id,
+      request.status,
+      undefined,
+      accManagerId,
+    );
+    await this.sendChangeStatusNotification(response.user_status_log);
+    return response;
+  }
+
+  async sendChangeStatusNotification(
+    status_log: IUserStatusLogResponseDto['data'],
+  ) {
+    let subject = '';
+    let clientContent = '';
+    let employeeContent = `You have changed the account status of ${status_log.user_detail.email} to ${status_log.user_status.title}`;
+    if (status_log.user_status.id === UserStatusEnum.ACTIVE_ACCOUNT) {
+      subject = 'Your account has been activated!';
+      clientContent = `Your account (${status_log.user_detail.email}) has been activated by the Account Manager`;
+    } else if (
+      status_log.user_status.id === UserStatusEnum.WAITING_FOR_ACTIVATION
+    ) {
+      subject = "You're account is waiting for activation!";
+      clientContent =
+        'You have been successfully registered as a user on tender-app, please be patience untill your account being reviewed and approved!';
+    } else if (status_log.user_status.id === UserStatusEnum.SUSPENDED_ACCOUNT) {
+      subject = 'Your account has been suspended!';
+      clientContent = `Your account (${status_log.user_detail.email}) has been suspended by the Account Manager`;
+    } else if (status_log.user_status.id === UserStatusEnum.CANCELED_ACCOUNT) {
+      subject = 'Your account has been canceled!';
+      clientContent = `Your account (${status_log.user_detail.email}) has been canceled by the Account Manager`;
+    } else if (status_log.user_status.id === UserStatusEnum.REVISED_ACCOUNT) {
+      subject = 'Your account has been revised!';
+      clientContent = `Your account (${status_log.user_detail.email}) has been revised by the Account Manager`;
+    } else if (
+      status_log.user_status.id === UserStatusEnum.WAITING_FOR_EDITING_APPROVAL
+    ) {
+      subject = 'Your account editing request has been sent!';
+      clientContent = `Your account editing request has been sent to the Account Manager, please be patience untill your account being reviewed and approved!`;
+    }
+
+    // email notification
+    const clientEmailNotifPayload: SendEmailDto = {
+      mailType: 'plain',
+      to: status_log.user_detail.email,
+      from: 'no-reply@hcharity.org',
+      subject,
+      content: clientContent,
+    };
+    this.emailService.sendMail(clientEmailNotifPayload);
+
+    const clientWebNotifPayload: CreateNotificationDto = {
+      type: 'ACCOUNT',
+      user_id: status_log.user_detail.id,
+      subject,
+      content: clientContent,
+    };
+    this.tenderNotificationService.create(clientWebNotifPayload);
+
+    if (
+      status_log.user_detail.mobile_number &&
+      status_log.user_detail.mobile_number !== ''
+    ) {
+      this.twilioService.sendSMS({
+        to: status_log.user_detail.mobile_number,
+        body: subject + ',' + clientContent,
+      });
+    }
+
+    if (status_log.account_manager_detail) {
+      const employeeEmailNotifPayload: SendEmailDto = {
+        mailType: 'plain',
+        to: status_log.account_manager_detail.email,
+        from: 'no-reply@hcharity.org',
+        subject,
+        content: employeeContent,
+      };
+      this.emailService.sendMail(employeeEmailNotifPayload);
+
+      const employeeWebNotifPayload: CreateNotificationDto = {
+        type: 'ACCOUNT',
+        user_id: status_log.account_manager_detail.id,
+        subject,
+        content: employeeContent,
+      };
+      this.tenderNotificationService.create(employeeWebNotifPayload);
+
+      if (
+        status_log.account_manager_detail.mobile_number &&
+        status_log.account_manager_detail.mobile_number !== ''
+      ) {
+        this.twilioService.sendSMS({
+          to: status_log.account_manager_detail.mobile_number,
+          body: subject + ',' + employeeContent,
+        });
+      }
+    }
   }
 }

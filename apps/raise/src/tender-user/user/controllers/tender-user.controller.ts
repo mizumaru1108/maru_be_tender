@@ -22,6 +22,7 @@ import { TenderCreateUserDto } from '../dtos/requests/create-user.dto';
 import { TenderDeleteUserDto } from '../dtos/requests/delete-user.dto';
 import { SearchUserFilterRequest } from '../dtos/requests/search-user-filter-request.dto';
 import { UpdateUserDto } from '../dtos/requests/update-user.dto';
+import { UserStatusUpdateDto } from '../dtos/requests/user-status-update.dto';
 import { CreateUserResponseDto } from '../dtos/responses/create-user-response.dto';
 import { FindUserResponse } from '../dtos/responses/find-user-response.dto';
 import { TenderCurrentUser } from '../interfaces/current-user.interface';
@@ -117,6 +118,24 @@ export class TenderUserController {
     );
     return baseResponseHelper(
       updateResult,
+      HttpStatus.CREATED,
+      'User updated successfully!',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_accounts_manager')
+  @Patch('update-status')
+  async updateStatus(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() request: UserStatusUpdateDto,
+  ): Promise<BaseResponse<any>> {
+    const status = await this.tenderUserService.updateUserStatus(
+      currentUser.id,
+      request,
+    );
+    return baseResponseHelper(
+      status,
       HttpStatus.CREATED,
       'User updated successfully!',
     );

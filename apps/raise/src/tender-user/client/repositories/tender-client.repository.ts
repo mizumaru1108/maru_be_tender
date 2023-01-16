@@ -443,6 +443,7 @@ export class TenderClientRepository {
             userId,
             'ACTIVE_ACCOUNT',
             prisma,
+            reviewerId,
           );
 
           return {
