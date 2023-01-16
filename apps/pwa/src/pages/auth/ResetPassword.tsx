@@ -36,21 +36,17 @@ export default function ResetPassword() {
       <Container>
         <ContentStyle sx={{ textAlign: 'center' }}>
           <Typography variant="h3" paragraph>
-            {translate('forget_password')}
-            Forgot your password?
+            {translate('forgot_your_password')}
           </Typography>
 
           <Typography sx={{ color: 'text.secondary', mb: 5 }}>
-            {translate('forget_password_details')}
-            Please enter the email address associated with your account and We will email you a link
-            to reset your password.
+            {translate('forgot_password_details')}
           </Typography>
 
           <ResetPasswordForm />
 
           <Button fullWidth size="large" component={RouterLink} to={PATH_AUTH.login} sx={{ mt: 1 }}>
-            {translate('back')}
-            Back
+            {translate('going_back_one_step')}
           </Button>
         </ContentStyle>
       </Container>

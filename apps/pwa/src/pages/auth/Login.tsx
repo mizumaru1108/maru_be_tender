@@ -70,7 +70,7 @@ export default function Login() {
             </Typography>
             <LoginForm />
             <Typography variant="body2" align="center" sx={{ mt: 3 }}>
-              {translate('dont_have_account')}
+              {translate('dont_have_account')}&nbsp;
               <Link
                 variant="subtitle2"
                 component={RouterLink}

@@ -311,6 +311,10 @@ const ar = {
   password_label: 'كلمة السر',
   remember_me: 'تذكرني',
   forget_the_password: 'نسيت كلمة المرور',
+
+  forgot_your_password: 'نسيت رقمك السري؟',
+  forgot_password_details:
+    'يرجى إدخال عنوان البريد الإلكتروني المرتبط بحسابك وسنرسل لك عبر البريد الإلكتروني رابطًا لإعادة تعيين كلمة المرور الخاصة بك.',
   login: 'تسجيل الدخول',
   the_login_message: 'الرجاء إدخال عنوان البريد الإلكتروني',
   dont_have_account: 'ليس لديك حساب في المنصة؟',

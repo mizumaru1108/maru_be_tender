@@ -17,7 +17,7 @@ i18n
       en: { translations: enLocales },
       ar: { translations: arLocales },
     },
-    lng: localStorage.getItem('i18nextLng') || defaultLang.value,
+    lng: defaultLang.value || localStorage.getItem('i18nextLng')!,
     fallbackLng: defaultLang.value,
     debug: false,
     ns: ['translations'],

@@ -275,6 +275,9 @@ const en = {
   password_label: 'The password',
   remember_me: 'remember me',
   forget_the_password: 'forget the password',
+  forgot_your_password: 'Forgot your password?',
+  forgot_password_details:
+    'Please enter the email address associated with your account and We will email you a link to reset your password.',
   login: 'Login',
   create_new_account: 'Create a new account',
   the_login_message: 'Please enter your email address to login.',

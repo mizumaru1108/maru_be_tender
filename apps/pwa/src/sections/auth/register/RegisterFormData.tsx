@@ -101,7 +101,8 @@ export const AdministrativeInfoData = [
     label: 'register_form4.entery_data_phone.label',
     xs: 12,
     md: 6,
-    placeholder: 'register_form4.entery_data_phone.placeholder',
+    // placeholder: 'register_form4.entery_data_phone.placeholder',
+    placeholder: 'xxx-xxx-xxx',
   },
   {
     type: 'textField',
@@ -135,11 +136,45 @@ export const BankingInfoData = [
     placeholder: 'register_form5.bank_account_name.placeholder',
   },
   {
-    type: 'textField',
+    type: 'select',
     name: 'bank_name',
     label: 'register_form5.bank_name.label',
     xs: 12,
     placeholder: 'register_form5.bank_name.placeholder',
+    children: (
+      <>
+        <option value="البنك الأهلي السعودي" style={{ backgroundColor: '#fff' }}>
+          البنك الأهلي السعودي
+        </option>
+        <option value="بنك الجزيرة" style={{ backgroundColor: '#fff' }}>
+          بنك الجزيرة
+        </option>
+        <option value="بنك ساب" style={{ backgroundColor: '#fff' }}>
+          بنك ساب
+        </option>
+        <option value="البنك السعودي الفرنسي" style={{ backgroundColor: '#fff' }}>
+          البنك السعودي الفرنسي
+        </option>
+        <option value="البنك العربي الوطني" style={{ backgroundColor: '#fff' }}>
+          البنك العربي الوطني
+        </option>
+        <option value="البنك السعودي للاستثمار" style={{ backgroundColor: '#fff' }}>
+          البنك السعودي للاستثمار
+        </option>
+        <option value="بنك الرياض" style={{ backgroundColor: '#fff' }}>
+          بنك الرياض
+        </option>
+        <option value="مصرف الإنماء" style={{ backgroundColor: '#fff' }}>
+          مصرف الإنماء
+        </option>
+        <option value="مصرف الراجحي" style={{ backgroundColor: '#fff' }}>
+          مصرف الراجحي
+        </option>
+        <option value="بنك البلاد" style={{ backgroundColor: '#fff' }}>
+          بنك البلاد
+        </option>
+      </>
+    ),
   },
   {
     type: 'uploadLabel',

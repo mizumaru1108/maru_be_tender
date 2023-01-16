@@ -68,7 +68,7 @@ export default function ResetPasswordForm() {
           variant="contained"
           loading={isSubmitting}
         >
-          Send Request
+          {translate('account_manager.partner_details.btn_amndreq_send_request')}
         </LoadingButton>
       </Stack>
     </FormProvider>

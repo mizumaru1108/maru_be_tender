@@ -157,19 +157,15 @@ export default function RegisterForm() {
   return (
     <>
       {step !== 5 && (
-        <Stack direction="row" justifyContent="space-between">
-          <Typography
-            variant="h4"
-            gutterBottom
-            sx={{ fontFamily: 'Cairo', fontStyle: 'Bold', mt: 5 }}
-          >
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ my: 3 }}>
+          <Typography variant="h4" gutterBottom sx={{ fontFamily: 'Cairo', fontStyle: 'Bold' }}>
             {translate('create_new_account')}
           </Typography>
           <Link
             variant="subtitle2"
             component={RouterLink}
             to={'/auth/login'}
-            sx={{ textDecorationLine: 'underline', mt: 5, alignSelf: 'center' }}
+            sx={{ textDecorationLine: 'underline', alignSelf: 'center' }}
           >
             {translate('login')}
           </Link>
