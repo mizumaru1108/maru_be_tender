@@ -21,6 +21,9 @@ const ExchangePermissionProjectManager = Loadable(
   lazy(() => import('pages/project-manager/ExchangePermission'))
 );
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
+const ProjectOwnerDetails = Loadable(
+  lazy(() => import('pages/project-details/ProjectOwnerDetails'))
+);
 const AppointmentsWithPartners = Loadable(
   lazy(() => import('pages/project-manager/AppointmentsWithPartners'))
 );
@@ -67,6 +70,14 @@ export const projectManagerRoute = {
         { element: <Navigate to="/project-manager/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainProjectManager /> },
         { path: 'amandment-request/:id', element: <AmandementRequest /> },
+        {
+          path: 'current-project',
+          children: [
+            { path: ':id/:actionType', element: <ProjectDetails /> },
+
+            { path: ':id/owner/:submiterId', element: <ProjectOwnerDetails /> },
+          ],
+        },
         {
           path: 'incoming-funding-requests',
           children: [

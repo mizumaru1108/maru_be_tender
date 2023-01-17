@@ -25,3 +25,16 @@ export interface PendingRequest {
   pending_date: string;
   notes: string;
 }
+
+export interface ProjectOwnerDetails {
+  entity: string;
+  user: {
+    email: string;
+  };
+  phone: string;
+  region: string;
+  governorate: string;
+  center_administration: string;
+  license_number: string;
+  license_issue_date: string;
+}

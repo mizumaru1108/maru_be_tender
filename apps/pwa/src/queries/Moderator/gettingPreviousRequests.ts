@@ -11,7 +11,8 @@
 //   }
 // }`;
 
-export const gettingPreviousRequests = `query gettingIncomingRequests($where: proposal_bool_exp = {}, $limit: Int = 3, $offset: Int = 0, $order_by: [proposal_order_by!] = {}) {
+export const gettingPreviousRequests = `
+query gettingIncomingRequests($where: proposal_bool_exp = {}, $limit: Int = 3, $offset: Int = 0, $order_by: [proposal_order_by!] = {}) {
   proposal_aggregate(where: $where) {
     aggregate {
       count

@@ -8,7 +8,8 @@
 //   }
 // }`;
 
-export const getProposals = `query getProposals($limit: Int = 4, $offset: Int = 0, $order_by: [proposal_order_by!] = {}, $where: proposal_bool_exp = {}) {
+export const getProposals = `
+query getProposals($limit: Int = 4, $offset: Int = 0, $order_by: [proposal_order_by!] = {}, $where: proposal_bool_exp = {}) {
   proposal_aggregate(where: $where) {
     aggregate {
       count

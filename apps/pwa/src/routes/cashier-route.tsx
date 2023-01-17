@@ -13,6 +13,9 @@ const RequestsInProcessCashier = Loadable(lazy(() => import('pages/cashier/Reque
 const PortalReportsCashier = Loadable(lazy(() => import('pages/PortalReports')));
 const MessagesCashier = Loadable(lazy(() => import('pages/cashier/Messages')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
+const ProjectOwnerDetails = Loadable(
+  lazy(() => import('pages/project-details/ProjectOwnerDetails'))
+);
 
 const NonClientProfile = Loadable(
   lazy(() => import('sections/non-client-profile/NonClientProfile'))
@@ -59,6 +62,14 @@ export const cashierRoute = {
         { element: <Navigate to="/cashier/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainCashier /> },
         { path: 'amandement-request/:id', element: <AmandementRequest /> },
+        {
+          path: 'current-project',
+          children: [
+            { path: ':id/:actionType', element: <ProjectDetails /> },
+
+            { path: ':id/owner/:submiterId', element: <ProjectOwnerDetails /> },
+          ],
+        },
         {
           path: 'incoming-exchange-permission-requests',
           children: [

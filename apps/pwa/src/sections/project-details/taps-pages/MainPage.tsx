@@ -1,5 +1,6 @@
 import { Box, Divider, Grid, Stack, Typography, Link, Button } from '@mui/material';
 import React from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import { useSelector } from 'redux/store';
 import BankImageComp from 'sections/shared/BankImageComp';
 import useLocales from '../../../hooks/useLocales';
@@ -7,6 +8,9 @@ import useLocales from '../../../hooks/useLocales';
 function MainPage() {
   const { translate } = useLocales();
   const { proposal } = useSelector((state) => state.proposal);
+  const { id } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const {
     project_location,
@@ -26,7 +30,14 @@ function MainPage() {
   } = proposal;
 
   React.useEffect(() => {}, [proposal]);
-
+  const handleOpenProjectOwnerDetails = () => {
+    const submiterId = proposal.user.id;
+    const url = location.pathname.split('/').slice(0, 3).join('/');
+    // const destination = location.pathname.split('/').slice(3, 4).join('/');
+    // const url = location.pathname;
+    navigate(`${url}/current-project/${id}/owner/${submiterId}`);
+    // console.log({ url, destination });
+  };
   return (
     <Box sx={{ display: 'flex', gap: 3, flexDirection: 'column' }}>
       <Stack direction="row" gap={6}>
@@ -197,6 +208,28 @@ function MainPage() {
               </Typography>
               <Typography sx={{ mb: '15px' }}>{client_data.governorate}</Typography>
             </Stack>
+            <Box sx={{ backgroundColor: '#fff', py: '30px', pl: '10px', mb: '15px' }}>
+              <Stack direction="column">
+                <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
+                  {translate('project_owner_details.card_title')}
+                </Typography>
+                <Typography sx={{ color: '#0E8478', fontSize: '12px', mb: '5px', fontWeight: 700 }}>
+                  {translate('project_owner_details.card_content')}
+                </Typography>
+                <Typography
+                  sx={{
+                    color: '#1E1E1E',
+                    fontSize: '12px',
+                    mb: '5px',
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                  }}
+                  onClick={handleOpenProjectOwnerDetails}
+                >
+                  {translate('project_owner_details.card_href')}
+                </Typography>
+              </Stack>
+            </Box>
             <Box sx={{ backgroundColor: '#fff', py: '30px', pl: '10px', mb: '15px' }}>
               <Stack direction="column">
                 <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>

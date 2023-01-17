@@ -21,6 +21,9 @@ const PaymentAdjustmenProjectSupervisor = Loadable(
 const PortalReportsProjectSupervisor = Loadable(lazy(() => import('pages/PortalReports')));
 const MessagesProjectSupervisor = Loadable(lazy(() => import('pages/project-supervisor/Messages')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
+const ProjectOwnerDetails = Loadable(
+  lazy(() => import('pages/project-details/ProjectOwnerDetails'))
+);
 const AmandementRequest = Loadable(
   lazy(() => import('pages/amandement-request/AmandementRequest'))
 );
@@ -61,6 +64,14 @@ export const projectSupervisorRoute = {
         { element: <Navigate to="/project-supervisor/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainProjectSupervisor /> },
         { path: 'amandment-request/:id', element: <AmandementRequest /> },
+        {
+          path: 'current-project',
+          children: [
+            { path: ':id/:actionType', element: <ProjectDetails /> },
+
+            { path: ':id/owner/:submiterId', element: <ProjectOwnerDetails /> },
+          ],
+        },
         {
           path: 'incoming-funding-requests',
           children: [

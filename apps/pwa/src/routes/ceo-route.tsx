@@ -11,6 +11,10 @@ const CeoProjectManagementPage = Loadable(lazy(() => import('pages/ceo/CeoProjec
 const CeoRejectionListPage = Loadable(lazy(() => import('pages/ceo/CeoRejectionListPage')));
 const CeoPortalReportPage = Loadable(lazy(() => import('pages/PortalReports')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
+const ProjectOwnerDetails = Loadable(
+  lazy(() => import('pages/project-details/ProjectOwnerDetails'))
+);
+
 const AmandementRequest = Loadable(
   lazy(() => import('pages/amandement-request/AmandementRequest'))
 );
@@ -52,6 +56,14 @@ export const ceoRoute = {
         {
           path: 'amandment-request/:id',
           element: <AmandementRequest />,
+        },
+        {
+          path: 'current-project',
+          children: [
+            { path: ':id/:actionType', element: <ProjectDetails /> },
+
+            { path: ':id/owner/:submiterId', element: <ProjectOwnerDetails /> },
+          ],
         },
         {
           path: 'app',

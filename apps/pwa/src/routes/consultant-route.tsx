@@ -12,6 +12,9 @@ const IncomingFundingRequestConsultant = Loadable(
 const PortalReportsConsultant = Loadable(lazy(() => import('pages/PortalReports')));
 const MessagesConsultant = Loadable(lazy(() => import('pages/consultant/Messages')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
+const ProjectOwnerDetails = Loadable(
+  lazy(() => import('pages/project-details/ProjectOwnerDetails'))
+);
 
 const NonClientProfile = Loadable(
   lazy(() => import('sections/non-client-profile/NonClientProfile'))
@@ -54,6 +57,14 @@ export const consultantRoute = {
       children: [
         { element: <Navigate to="/consultant/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainConsultant /> },
+        {
+          path: 'current-project',
+          children: [
+            { path: ':id/:actionType', element: <ProjectDetails /> },
+
+            { path: ':id/owner/:submiterId', element: <ProjectOwnerDetails /> },
+          ],
+        },
         {
           path: 'incoming-funding-requests',
           children: [

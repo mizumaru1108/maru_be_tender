@@ -11,6 +11,9 @@ const PreviousFundingRequests = Loadable(
   lazy(() => import('pages/client/previous-funding-requests'))
 );
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
+const ProjectOwnerDetails = Loadable(
+  lazy(() => import('pages/project-details/ProjectOwnerDetails'))
+);
 const Messages = Loadable(lazy(() => import('pages/client/Messages')));
 const ContactSupport = Loadable(lazy(() => import('pages/client/ContactSupport')));
 const MainClientPage = Loadable(lazy(() => import('pages/client/MainClientPage')));
@@ -55,6 +58,14 @@ export const clientRoute = {
         {
           path: 'funding-project-request',
           element: <FundingProjectRequest />,
+        },
+        {
+          path: 'current-project',
+          children: [
+            { path: ':id/:actionType', element: <ProjectDetails /> },
+
+            { path: ':id/owner/:submiterId', element: <ProjectOwnerDetails /> },
+          ],
         },
         {
           path: 'draft-funding-requests',

@@ -1194,6 +1194,18 @@ const ar = {
   upload_a_new_file: 'رفع ملف جديد',
   state: 'ولاية',
   status: 'حالة',
+  project_owner_details: {
+    card_title: 'اسم الشريك',
+    card_content: 'الجمعية للدعم والإرشاد والوعي الاجتماعي في منطقة الصناعة الجديدة في الرياض',
+    card_href: 'عرض جميع المشاريع للشريك',
+    client_details_header: 'ملف العميل',
+    summary: {
+      title_main: 'المعلومات الرئيسية',
+      title_contact: 'معلومات الاتصال',
+      title_license: 'معلومات الترخيص',
+      button_show_all: 'عرض جميع المعلومات',
+    },
+  },
   outter_status: {
     COMPLETED: 'منجز',
     ONGOING: 'جاري التنفيذ',

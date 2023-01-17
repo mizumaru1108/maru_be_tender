@@ -13,6 +13,9 @@ const RequestsInProcessFinance = Loadable(lazy(() => import('pages/finance/Reque
 const PortalReportsFinance = Loadable(lazy(() => import('pages/PortalReports')));
 const MessagesFinance = Loadable(lazy(() => import('pages/finance/Messages')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
+const ProjectOwnerDetails = Loadable(
+  lazy(() => import('pages/project-details/ProjectOwnerDetails'))
+);
 const AmandementRequest = Loadable(
   lazy(() => import('pages/amandement-request/AmandementRequest'))
 );
@@ -59,6 +62,14 @@ export const financeRoute = {
         { element: <Navigate to="/finance/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainFinance /> },
         { path: 'amandement-request/:id', element: <AmandementRequest /> },
+        {
+          path: 'current-project',
+          children: [
+            { path: ':id/:actionType', element: <ProjectDetails /> },
+
+            { path: ':id/owner/:submiterId', element: <ProjectOwnerDetails /> },
+          ],
+        },
         {
           path: 'incoming-exchange-permission-requests',
           children: [

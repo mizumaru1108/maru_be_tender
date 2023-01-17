@@ -1127,6 +1127,19 @@ const en = {
   upload_a_new_file: 'Upload a new file',
   state: 'State',
   status: 'Status',
+  project_owner_details: {
+    card_title: 'Partner Name',
+    card_content:
+      'The Association for Advocacy, Guidance and Community Awareness in the New Industrial Area in Riyadh',
+    card_href: 'View all projects of the partner',
+    client_details_header: 'Client Profile',
+    summary: {
+      title_main: 'Main Information',
+      title_contact: 'Contact Information',
+      title_license: 'License Information',
+      button_show_all: 'See full Information',
+    },
+  },
   outter_status: {
     COMPLETED: 'COMPLETED',
     ONGOING: 'ONGOING',

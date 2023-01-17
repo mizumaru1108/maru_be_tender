@@ -11,7 +11,7 @@ import { getProposal } from 'redux/slices/proposal';
 import { useDispatch, useSelector } from 'redux/store';
 
 function ProjectDetailsMainPage() {
-  const { id } = useParams();
+  const { id, actionType } = useParams();
 
   const dispatch = useDispatch();
 
@@ -59,7 +59,7 @@ function ProjectDetailsMainPage() {
         >
           {proposal.project_name}
         </Typography>
-        <FollowUpsAction />
+        {actionType && actionType !== 'show-project' && <FollowUpsAction />}
       </Stack>
       <ActionTap />
       <FloatinActonBar />

@@ -18,6 +18,10 @@ const PreviouseSupportRequests = Loadable(
 );
 const PortalReports = Loadable(lazy(() => import('pages/PortalReports')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
+const ProjectOwnerDetails = Loadable(
+  lazy(() => import('pages/project-details/ProjectOwnerDetails'))
+);
+
 const AmandementRequest = Loadable(
   lazy(() => import('pages/amandement-request/AmandementRequest'))
 );
@@ -62,6 +66,14 @@ export const moderatorRoute = {
       children: [
         { element: <Navigate to="/moderator/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainModeratorPage /> },
+        // { path: 'current-project/:id/owner/:submiterId', element: <ProjectOwnerDetails /> },
+        {
+          path: 'current-project',
+          children: [
+            { path: ':id/:actionType', element: <ProjectDetails /> },
+            { path: ':id/owner/:submiterId', element: <ProjectOwnerDetails /> },
+          ],
+        },
         {
           path: 'requests-in-process',
           children: [
