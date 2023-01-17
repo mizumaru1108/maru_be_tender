@@ -36,9 +36,17 @@ import {
   OutterStatusEnum,
   ProposalAction,
 } from '../../tender-commons/types/proposal';
+import { ProposalCreateDto } from '../dtos/requests/proposal/proposal-create.dto';
+import { CreateProposalMapper } from '../mappers/create-proposal.mapper';
+import { AllowedFileType } from '../../commons/enums/allowed-filetype.enum';
+import { ConfigService } from '@nestjs/config';
+import { envLoadErrorHelper } from '../../commons/helpers/env-loaderror-helper';
+import { validateAllowedExtension } from '../../commons/utils/validate-allowed-extension';
+import { validateFileSize } from '../../commons/utils/validate-file-size';
 
 @Injectable()
 export class TenderProposalService {
+  private readonly appEnv: string;
   private readonly logger = ROOT_LOGGER.child({
     'log.logger': TenderProposalService.name,
   });
@@ -47,10 +55,85 @@ export class TenderProposalService {
     private readonly prismaService: PrismaService,
     private readonly emailService: EmailService,
     private readonly twilioService: TwilioService,
+    private readonly configService: ConfigService,
+    private readonly tenderProposalRepository: TenderProposalRepository,
     private readonly tenderNotificationService: TenderNotificationService,
     private readonly tenderProposalLogRepository: TenderProposalLogRepository,
-    private readonly tenderProposalRepository: TenderProposalRepository,
-  ) {}
+  ) {
+    const environment = this.configService.get('APP_ENV');
+    if (!environment) envLoadErrorHelper('APP_ENV');
+    this.appEnv = environment;
+  }
+
+  async createProposal(userId: string, request: ProposalCreateDto) {
+    const proposalCreatePayload: Prisma.proposalUncheckedCreateInput =
+      CreateProposalMapper(userId, request);
+
+    let projectAttachmentPath: string | undefined = undefined;
+    let projectAttachmentBuffer: Buffer | undefined = undefined;
+    let letterOfSupportPath: string | undefined = undefined;
+    let letterOfSupportBuffer: Buffer | undefined = undefined;
+
+    if (request.project_attachments || request.letter_ofsupport_req) {
+      const maxSize: number = 1024 * 1024 * 512; // 512MB
+      const allowedType: AllowedFileType[] = [
+        AllowedFileType.JPG,
+        AllowedFileType.JPEG,
+        AllowedFileType.PNG,
+        AllowedFileType.GIF,
+        AllowedFileType.PDF,
+        AllowedFileType.DOC,
+        AllowedFileType.DOCX,
+        AllowedFileType.XLS,
+        AllowedFileType.XLSX,
+        AllowedFileType.PPT,
+        AllowedFileType.PPTX,
+      ];
+
+      /* project attachment */
+      let projectAttachmentfileName =
+        request.project_attachments.fullName +
+        new Date().getTime() +
+        '.' +
+        request.project_attachments.fileExtension.split('/')[1];
+
+      projectAttachmentPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}-${projectAttachmentfileName}`;
+
+      validateAllowedExtension(
+        request.project_attachments.fileExtension,
+        allowedType,
+      );
+      validateFileSize(request.project_attachments.base64Data.length, maxSize);
+
+      projectAttachmentBuffer = Buffer.from(
+        request.project_attachments.base64Data.replace(/^data:.*;base64,/, ''),
+        'base64',
+      );
+
+      /* letter of support */
+      let letterOfSupportfileName =
+        request.letter_ofsupport_req.fullName +
+        new Date().getTime() +
+        '.' +
+        request.letter_ofsupport_req.fileExtension.split('/')[1];
+
+      letterOfSupportPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}-${letterOfSupportfileName}`;
+
+      validateAllowedExtension(
+        request.letter_ofsupport_req.fileExtension,
+        allowedType,
+      );
+      validateFileSize(request.letter_ofsupport_req.base64Data.length, maxSize);
+
+      letterOfSupportBuffer = Buffer.from(
+        request.letter_ofsupport_req.base64Data.replace(/^data:.*;base64,/, ''),
+        'base64',
+      );
+    }
+
+    // create proposal and the logs
+    
+  }
 
   // for draft / edit request
   async updateProposal(
@@ -341,8 +424,39 @@ export class TenderProposalService {
       };
     }
 
+    if (currentUser.choosenRole === 'tender_consultant') {
+      const consultant = await this.consultantChangeState(
+        proposal,
+        proposalUpdatePayload,
+        proposalLogCreateInput,
+        request,
+      );
+      proposalUpdatePayload = {
+        ...proposalUpdatePayload,
+        ...consultant.proposalUpdatePayload,
+      };
+      proposalLogCreateInput = {
+        ...proposalLogCreateInput,
+        ...consultant.proposalLogCreateInput,
+      };
+    }
+
     /* if user is ceo */
     if (currentUser.choosenRole === 'tender_ceo') {
+      const ceo = await this.ceoChangeState(
+        proposal,
+        proposalUpdatePayload,
+        proposalLogCreateInput,
+        request,
+      );
+      proposalUpdatePayload = {
+        ...proposalUpdatePayload,
+        ...ceo.proposalUpdatePayload,
+      };
+      proposalLogCreateInput = {
+        ...proposalLogCreateInput,
+        ...ceo.proposalLogCreateInput,
+      };
     }
 
     /* update proposal and create the logs */
@@ -629,6 +743,11 @@ export class TenderProposalService {
       proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.CEO;
     }
+
+    return {
+      proposalUpdatePayload,
+      proposalLogCreateInput,
+    };
   }
 
   /* Consultant Done */
@@ -672,6 +791,11 @@ export class TenderProposalService {
       proposalLogCreateInput.state = TenderAppRoleEnum.CONSULTANT;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.CONSULTANT;
     }
+
+    return {
+      proposalUpdatePayload,
+      proposalLogCreateInput,
+    };
   }
 
   async sendChangeStateNotification(
@@ -684,17 +808,23 @@ export class TenderProposalService {
         : 'review';
 
     let subject = `Proposal ${actions}ed Notification`;
-    let clientContent = `Your proposal (${log.data.proposal.project_name}), has been ${actions}ed by ${reviewerRole} (${log.data.reviewer.employee_name}) at (${log.data.created_at})`;
+    let clientContent = `Your proposal (${log.data.proposal.project_name}), has been ${actions}ed by ${reviewerRole} at (${log.data.created_at})`;
+    if (log.data.reviewer) {
+      clientContent = `Your proposal (${log.data.proposal.project_name}), has been ${actions}ed by ${reviewerRole} (${log.data.reviewer.employee_name}) at (${log.data.created_at})`;
+    }
     let employeeContent = `Your review has been submitted for proposal (${log.data.proposal.project_name}) at (${log.data.created_at}), and already been notified to the user ${log.data.proposal.user.employee_name} (${log.data.proposal.user.email})`;
 
     // email notification
-    const employeeEmailNotifPayload: SendEmailDto = {
-      mailType: 'plain',
-      to: log.data.reviewer.email,
-      from: 'no-reply@hcharity.org',
-      subject,
-      content: employeeContent,
-    };
+    if (log.data.reviewer) {
+      const employeeEmailNotifPayload: SendEmailDto = {
+        mailType: 'plain',
+        to: log.data.reviewer.email,
+        from: 'no-reply@hcharity.org',
+        subject,
+        content: employeeContent,
+      };
+      this.emailService.sendMail(employeeEmailNotifPayload);
+    }
 
     const clientEmailNotifPayload: SendEmailDto = {
       mailType: 'plain',
@@ -704,17 +834,19 @@ export class TenderProposalService {
       content: clientContent,
     };
 
-    this.emailService.sendMail(employeeEmailNotifPayload);
     this.emailService.sendMail(clientEmailNotifPayload);
 
     // create web app notification
-    const employeeWebNotifPayload: CreateNotificationDto = {
-      type: 'PROPOSAL',
-      user_id: log.data.reviewer_id,
-      proposal_id: log.data.proposal_id,
-      subject,
-      content: employeeContent,
-    };
+    if (log.data.reviewer_id) {
+      const employeeWebNotifPayload: CreateNotificationDto = {
+        type: 'PROPOSAL',
+        user_id: log.data.reviewer_id,
+        proposal_id: log.data.proposal_id,
+        subject,
+        content: employeeContent,
+      };
+      await this.tenderNotificationService.create(employeeWebNotifPayload);
+    }
 
     const clientWebNotifPayload: CreateNotificationDto = {
       type: 'PROPOSAL',
@@ -723,10 +855,7 @@ export class TenderProposalService {
       subject,
       content: clientContent,
     };
-
-    await this.tenderNotificationService.createMany({
-      payloads: [employeeWebNotifPayload, clientWebNotifPayload],
-    });
+    await this.tenderNotificationService.create(clientWebNotifPayload);
 
     if (
       log.data.proposal.user.mobile_number &&
@@ -738,6 +867,7 @@ export class TenderProposalService {
       });
     }
     if (
+      log.data.reviewer &&
       log.data.reviewer.mobile_number &&
       log.data.reviewer.mobile_number !== ''
     ) {

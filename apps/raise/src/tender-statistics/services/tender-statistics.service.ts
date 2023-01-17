@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import moment from 'moment';
 import { PrismaService } from '../../prisma/prisma.service';
 import { BaseStatisticFilter } from '../dtos/requests/base-statistic-filter.dto';
@@ -16,7 +16,7 @@ import {
 } from '../dtos/responses/get-partner-statistic.dto';
 import { GetRawExecutionTimeDataResponseDto } from '../dtos/responses/get-raw-execution-time-data-response.dto';
 import { TenderStatisticsRepository } from '../repositories/tender-statistic.repository';
-import { groupBy } from 'lodash';
+import { groupBy as loadashGroupBy, map as loadashMap } from 'lodash';
 
 @Injectable()
 export class TenderStatisticsService {
@@ -729,75 +729,39 @@ export class TenderStatisticsService {
     return groupedData;
   }
 
-  async getAverageTransaction(
-    request: BaseStatisticFilter,
-  ): Promise<GetAverageTransactionResponseDto[]> {
-    const rawExecutionTime =
-      await this.tenderStatisticRepository.getRawProposalExecutionTime(request);
-    // console.log(rawExecutionTime.length);
-
-    if (rawExecutionTime.length > 0) {
-      // Group transactions by project track
-      const groupedTransactions = rawExecutionTime.reduce((acc, curr) => {
-        if (curr.project_track) {
-          const collection = acc.get(curr.project_track);
-          if (!collection) {
-            acc.set(curr.project_track, [curr]);
-          } else {
-            collection.push(curr);
-          }
-        }
-        return acc;
-      }, new Map<string, GetRawExecutionTimeDataResponseDto[]>());
-
-      // Calculate statistics for each group
-      const response: GetAverageTransactionResponseDto[] = [];
-      for (const projectTrack of Array.from(groupedTransactions.keys())) {
-        const projectTransactions = groupedTransactions.get(projectTrack);
-
-        if (!projectTransactions) {
-          continue;
-        }
-
-        const totalExecutionTime = projectTransactions.reduce(
-          (acc, curr) => acc + Number(curr.execution_time),
-          0,
+  async getAverageTransaction(request: BaseStatisticFilter): Promise<any> {
+    try {
+      const { start_date, end_date } = request;
+      const rawExecutionTime =
+        await this.tenderStatisticRepository.getRawProposalExecutionTime(
+          request,
         );
-        const average = totalExecutionTime / projectTransactions.length || 0;
 
-        const total_execution_time_data_count = projectTransactions.length;
+      // Group the data by proposal.project_track
+      const groupedByProjectTrack = loadashGroupBy(
+        rawExecutionTime,
+        (log) => log.proposal.project_track,
+      );
 
-        const lastWeekTransactions = projectTransactions.filter(
-          (transaction) => {
-            const transactionDate = moment(transaction.created_at);
-            const lastWeekStart = moment(request.end_date).subtract(7, 'days');
-            return transactionDate.isSameOrAfter(lastWeekStart);
-          },
-        );
-        const totalExecutionTimeLastWeek = lastWeekTransactions.reduce(
-          (acc, curr) => acc + Number(curr.execution_time),
-          0,
-        );
-        const averageLastWeek =
-          totalExecutionTimeLastWeek / lastWeekTransactions.length || 0;
+      // Map over the grouped data to group again by proposal_id
+      const data = Object.entries(groupedByProjectTrack).map(
+        ([projectTrack, logs]) => {
+          const logByProposalId = loadashGroupBy(
+            logs,
+            (log) => log.proposal_id,
+          );
+          return {
+            project_track: projectTrack,
+            log_by_proposal_id: Object.entries(logByProposalId).map(
+              ([proposal_id, logs]) => ({ proposal_id, logs }),
+            ),
+          };
+        },
+      );
 
-        const total_execution_last_week_data_count =
-          lastWeekTransactions.length;
-
-        response.push({
-          project_track: projectTrack,
-          total_execution_time: totalExecutionTime,
-          total_execution_time_data_count,
-          average: average,
-          total_execution_last_week: totalExecutionTimeLastWeek,
-          average_last_week: averageLastWeek,
-          total_execution_last_week_data_count,
-        });
-      }
-
-      return response;
-    } else {
-      return [];
+      return data;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

@@ -1,12 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsString,
-  IsNotEmpty,
-  Matches,
-  IsOptional,
-  IsDataURI,
-  IsMimeType,
-} from 'class-validator';
+import { IsDataURI, IsMimeType, IsNotEmpty, IsString } from 'class-validator';
 
 export class TenderFilePayload {
   @ApiProperty()

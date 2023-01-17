@@ -10,6 +10,8 @@ export class TenderProposalRepository {
   });
   constructor(private readonly prismaService: PrismaService) {}
 
+  async createProposal() {}
+
   async fetchProposalById(proposalId: string): Promise<proposal | null> {
     try {
       return await this.prismaService.proposal.findUnique({

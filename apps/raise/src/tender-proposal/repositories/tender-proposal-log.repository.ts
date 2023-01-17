@@ -41,13 +41,13 @@ export class TenderProposalLogRepository {
           employee_name: string | null;
           email: string;
           mobile_number: string | null;
-        };
+        } | null;
       })
     | null
   > {
     this.logger.info('finding proposal log');
     try {
-      const response = await this.prismaService.proposal_log.findUnique({
+      const response = await this.prismaService.proposal_log.findFirst({
         where: {
           id: proposal_log_id,
         },

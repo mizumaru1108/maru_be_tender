@@ -243,20 +243,21 @@ model proposal_item_budget {
 }
 
 model proposal_log {
-  id           String         @id
-  proposal_id  String
-  created_at   DateTime       @default(now()) @db.Timestamptz(6)
-  updated_at   DateTime       @default(now()) @db.Timestamptz(6)
-  reviewer_id  String
-  state        String
-  notes        String?
-  action       String?        @db.VarChar
-  message      String?        @db.VarChar
-  user_role    String?        @db.VarChar
-  user_type    user_type      @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_assign_fkey")
-  proposal     proposal       @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
-  reviewer     user           @relation(fields: [reviewer_id], references: [id], onUpdate: Restrict, map: "proposal_log_user_id_fkey")
-  notification notification[]
+  id            String         @id
+  proposal_id   String
+  created_at    DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime       @default(now()) @db.Timestamptz(6)
+  reviewer_id   String?
+  state         String
+  notes         String?
+  action        String?        @db.VarChar
+  message       String?        @db.VarChar
+  user_role     String?        @db.VarChar
+  response_time Int?
+  user_type     user_type      @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_assign_fkey")
+  proposal      proposal       @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
+  reviewer      user?          @relation(fields: [reviewer_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_log_user_id_fkey")
+  notification  notification[]
 }
 
 model proposal_state {

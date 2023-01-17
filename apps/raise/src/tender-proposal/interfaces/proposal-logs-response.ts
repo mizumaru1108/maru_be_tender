@@ -16,6 +16,6 @@ export interface IProposalLogsResponse {
       employee_name: string | null;
       email: string;
       mobile_number: string | null;
-    };
+    } | null;
   };
 }

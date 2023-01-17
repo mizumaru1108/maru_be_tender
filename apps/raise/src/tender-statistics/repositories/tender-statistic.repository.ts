@@ -209,39 +209,37 @@ export class TenderStatisticsRepository {
     }
   }
 
-  async getRawProposalExecutionTime(
-    filter: BaseStatisticFilter,
-  ): Promise<GetRawExecutionTimeDataResponseDto[]> {
+  async getRawProposalExecutionTime(filter: BaseStatisticFilter): Promise<any> {
     try {
       const { start_date, end_date } = filter;
 
-      const rawExecutionTime = await this.prismaService.proposal.findMany({
+      const rawExecutionTime = await this.prismaService.proposal_log.findMany({
         where: {
           created_at: {
             gte: moment(start_date).startOf('day').toDate(),
             lte: moment(end_date).endOf('day').toDate(),
           },
-          project_track: {
-            not: null,
-            notIn: ['GENERAL', 'DEFAULT_TRACK'],
-          },
-          execution_time: {
-            not: null,
-          },
-          project_manager_id: {
-            not: null,
-          },
-          supervisor_id: {
-            not: null,
-          },
-          outter_status: {
-            not: null,
-            notIn: ['CANCELLED', 'REJECTED'],
+          proposal: {
+            project_track: {
+              not: null,
+              notIn: ['GENERAL', 'DEFAULT_TRACK'],
+            },
           },
         },
         select: {
-          project_track: true,
-          execution_time: true,
+          reviewer: {
+            select: {
+              id: true,
+              employee_name: true,
+            },
+          },
+          proposal: {
+            select: {
+              project_track: true,
+            },
+          },
+          proposal_id: true,
+          user_role: true,
           created_at: true,
         },
         orderBy: {

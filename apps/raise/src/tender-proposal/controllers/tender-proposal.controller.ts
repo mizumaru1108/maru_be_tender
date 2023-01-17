@@ -32,12 +32,31 @@ import { UpdatePaymentResponseDto } from '../dtos/responses/payment/update-payme
 import { UpdateProposalResponseDto } from '../dtos/responses/proposal/update-proposal-response.dto';
 import { UpdateProposalByCmsUsers } from '../dtos/updateProposalByCmsUsers.dto';
 import { TenderProposalService } from '../services/tender-proposal.service';
+import { ProposalCreateDto } from '../dtos/requests/proposal/proposal-create.dto';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(
     private readonly tenderProposalService: TenderProposalService,
     private readonly tenderProposalPaymentService: TenderProposalPaymentService,
   ) {}
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_client')
+  @Post('create')
+  async create(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() payload: ProposalCreateDto,
+  ) {
+    const createdProposal = await this.tenderProposalService.createProposal(
+      currentUser.id,
+      payload,
+    );
+    return baseResponseHelper(
+      createdProposal,
+      HttpStatus.CREATED,
+      'Proposal created successfully',
+    );
+  }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_project_supervisor')
