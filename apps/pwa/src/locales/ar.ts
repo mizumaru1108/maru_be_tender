@@ -320,7 +320,7 @@ const ar = {
   dont_have_account: 'ليس لديك حساب في المنصة؟',
   register_one: 'قم بإنشاء حساب من هنا',
   add_new_line: 'إنشاء سطر جديد',
-  create_new_account: ' إنشاء حساب جديد',
+  create_new_account: 'إنشاء حساب جديد',
   show_details: 'دراسة المشروع',
   show_project: 'استعراض المشروع',
   completing_exchange_permission: 'إتمام إذن الصرف',
@@ -440,6 +440,14 @@ const ar = {
     executive_director_mobile: {
       label: 'جوال المدير التنفيذي*',
       placeholder: 'الرجاء كتابة جوال المدير التنفيذي',
+    },
+    chairman_name: {
+      label: 'اسم رئيس مجلس الإدارة*',
+      placeholder: 'الرجاء كتابة اسم الرئيس',
+    },
+    chairman_mobile: {
+      label: 'رئيس موبايل*',
+      placeholder: 'الرجاء كتابة رقم هاتف رئيس مجلس الإدارة',
     },
     entery_data_name: {
       label: 'اسم مدخل البيانات*',

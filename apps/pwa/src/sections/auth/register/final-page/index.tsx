@@ -14,6 +14,7 @@ import LicenseInfo from './LicenseInfo';
 import AdministrativeInfo from './AdministrativeInfo';
 import BankInformation from './BankInformation';
 import { TMRA_RAISE_URL } from 'config';
+import useLocales from 'hooks/useLocales';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -27,6 +28,7 @@ function FinalPage({
   setStep: (val: number) => void;
 }) {
   const { login } = useAuth();
+  const { translate } = useLocales();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [errors, setErrors] = useState('');
@@ -43,32 +45,42 @@ function FinalPage({
     const { form1, form2, form3, form4, form5 } = registerState;
     const { phone, center_administration, ...restForm2 } = form2;
     try {
-      const { data } = await axios.post(`${TMRA_RAISE_URL}/tender-auth/register`, {
-        data: {
-          employee_name: registerState.form1.entity,
-          // employee_path: ,
-          bank_informations: [
-            {
-              bank_account_number: form5.bank_account_number,
-              bank_account_name: form5.bank_account_name,
-              bank_name: form5.bank_name,
-              card_image: form5.card_image,
-            },
-          ],
-          ...form1,
-          ...restForm2,
-          ...(phone !== '' && { phone }),
-          ...(center_administration !== '' && { center_administration }),
-          license_number: form3.license_number,
-          license_issue_date: form3.license_issue_date,
-          license_expired: form3.license_expired,
-          license_file: form3.license_file,
-          board_ofdec_file: form3.board_ofdec_file,
-          ...form4,
-        },
-      });
-      await login(registerState.form2.email, registerState.form2.password);
-      navigate('/');
+      await axios
+        .post(`${TMRA_RAISE_URL}/tender-auth/register`, {
+          data: {
+            employee_name: registerState.form1.entity,
+            // employee_path: ,
+            bank_informations: [
+              {
+                bank_account_number: form5.bank_account_number,
+                bank_account_name: form5.bank_account_name,
+                bank_name: form5.bank_name,
+                card_image: form5.card_image,
+              },
+            ],
+            ...form1,
+            ...restForm2,
+            ...(phone !== '' && { phone }),
+            ...(center_administration !== '' && { center_administration }),
+            license_number: form3.license_number,
+            license_issue_date: form3.license_issue_date,
+            license_expired: form3.license_expired,
+            license_file: form3.license_file,
+            board_ofdec_file: form3.board_ofdec_file,
+            ...form4,
+          },
+        })
+        .then(async (res) => {
+          if (res.data.statusCode === 200) {
+            await login(registerState.form2.email, registerState.form2.password);
+            navigate('/');
+          }
+        })
+        .catch((err) => {
+          setErrors(err.response.data.message);
+          setOpen(true);
+          setIsSending(false);
+        });
     } catch (error) {
       setErrors(error.response.data.message);
       setOpen(true);
@@ -104,7 +116,7 @@ function FinalPage({
               setStep(4);
             }}
           >
-            رجوع
+            {translate('going_back_one_step')}
           </Button>
           <LoadingButton
             fullWidth
@@ -119,7 +131,7 @@ function FinalPage({
               hieght: { xs: '100%', sm: '50px' },
             }}
           >
-            انشاء حساب
+            {translate('create_new_account')}
           </LoadingButton>
         </Stack>
       </Stack>

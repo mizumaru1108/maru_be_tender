@@ -30,7 +30,9 @@ export default function RHFDatePicker({ name, maxDate, minDate, ...other }: Prop
           SelectProps={{ native: true }}
           error={!!error}
           helperText={
-            <Typography sx={{ backgroundColor: 'transparent' }}>{error?.message}</Typography>
+            <Typography component="span" sx={{ backgroundColor: 'transparent' }}>
+              {error?.message}
+            </Typography>
           }
           {...other}
         />

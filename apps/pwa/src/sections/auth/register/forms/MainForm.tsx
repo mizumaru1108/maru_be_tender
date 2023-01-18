@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { Grid } from '@mui/material';
+import { Grid, MenuItem } from '@mui/material';
 import { FormProvider, RHFSelect, RHFTextField } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -30,10 +30,12 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
     num_of_employed_facility: Yup.number()
       .positive()
       .integer()
+      .min(1)
       .required(translate('errors.register.num_of_employed_facility.required')),
     num_of_beneficiaries: Yup.number()
       .positive()
       .integer()
+      .min(1)
       .required(translate('errors.register.num_of_beneficiaries.required')),
     // vat: Yup.boolean().required(),
   });
@@ -47,10 +49,12 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
     watch,
     handleSubmit,
     formState: { isSubmitting },
+    setValue,
     reset,
   } = methods;
 
   const onSubmitForm = async (data: MainValuesProps) => {
+    reset({ ...data });
     onSubmit(data);
   };
   useEffect(() => {
@@ -70,44 +74,38 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
           />
         </Grid>
         <Grid item md={12} xs={12}>
-          <RHFSelect name="client_field" label={translate('register_form1.entity_area.label')}>
-            <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
-              {translate('register_form1.entity_area.placeholder')}
-            </option>
-            <option value="main" style={{ backgroundColor: '#fff' }}>
+          <RHFSelect
+            name="client_field"
+            label={translate('register_form1.entity_area.label')}
+            placeholder={translate('register_form1.entity_area.placeholder')}
+          >
+            <MenuItem value="main">
               {translate('register_form1.entity_area.options.sub_entity_area')}
-            </option>
-            <option value="sub" style={{ backgroundColor: '#fff' }}>
+            </MenuItem>
+            <MenuItem value="sub">
               {translate('register_form1.entity_area.options.main_entity_area')}
-            </option>
+            </MenuItem>
           </RHFSelect>
         </Grid>
-        {client_field !== '' && (
-          <>
-            {client_field === 'main' && (
-              <Grid item md={12} xs={12}>
-                <RHFSelect
-                  name="authority"
-                  label={translate('register_form1.authority.label')}
-                  placeholder={translate('register_form1.authority.placeholder')}
-                >
-                  {AUTHORITY.map((item, index) => (
-                    <option value={item} style={{ backgroundColor: '#fff' }} key={index}>
-                      {item}
-                    </option>
-                  ))}
-                </RHFSelect>
-              </Grid>
-            )}
-            {client_field === 'sub' && (
-              <Grid item md={12} xs={12}>
-                <RHFTextField
-                  name="authority"
-                  label={translate('register_form1.authority.label')}
-                />
-              </Grid>
-            )}
-          </>
+        {client_field !== '' && client_field === 'main' && (
+          <Grid item md={12} xs={12}>
+            <RHFSelect
+              name="authority"
+              label={translate('register_form1.authority.label')}
+              placeholder={translate('register_form1.authority.placeholder')}
+            >
+              {AUTHORITY.map((option, i) => (
+                <MenuItem key={i} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </RHFSelect>
+          </Grid>
+        )}
+        {client_field !== '' && client_field === 'sub' && (
+          <Grid item md={12} xs={12}>
+            <RHFTextField name="authority" label={translate('register_form1.authority.label')} />
+          </Grid>
         )}
         <Grid item md={6} xs={12}>
           <RHFDatePicker
@@ -122,34 +120,69 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
           />
         </Grid>
         <Grid item md={6} xs={12}>
-          <RHFSelect name="headquarters" label={translate('register_form1.headquarters.label')}>
-            <>
-              <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
-                {translate('register_form1.headquarters.placeholder')}
-              </option>
-              {[
-                'register_form1.headquarters.options.own',
-                'register_form1.headquarters.options.rent',
-              ].map((item, index) => (
-                <option key={index} value={item} style={{ backgroundColor: '#fff' }}>
-                  {translate(item)}
-                </option>
-              ))}
-            </>
+          <RHFSelect
+            name="headquarters"
+            label={translate('register_form1.headquarters.label')}
+            placeholder={translate('register_form1.headquarters.placeholder')}
+          >
+            {[
+              'register_form1.headquarters.options.own',
+              'register_form1.headquarters.options.rent',
+            ].map((option, i) => (
+              <MenuItem key={i} value={translate(option)}>
+                {translate(option)}
+              </MenuItem>
+            ))}
           </RHFSelect>
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFTextField
             name="num_of_employed_facility"
+            type="number"
+            InputProps={{
+              inputProps: { min: 0 },
+            }}
             label={translate('register_form1.number_of_employees.label')}
             placeholder={translate('register_form1.number_of_employees.placeholder')}
+            onKeyDown={(e) => {
+              const prevent = ['e', 'E', '+', '-', '.', ','];
+              prevent.includes(e.key) && e.preventDefault();
+            }}
+            onKeyPress={(e) => {
+              if (!/[0-9]/.test(e.key)) {
+                e.preventDefault();
+              }
+            }}
+            onChange={(event) => {
+              const newValue =
+                event.target.value === '' || !event.target.value ? 0 : event.target.value;
+              setValue('num_of_employed_facility', newValue as number);
+            }}
           />
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFTextField
             name="num_of_beneficiaries"
+            type="number"
+            InputProps={{
+              inputProps: { min: 0 },
+            }}
             label={translate('register_form1.number_of_beneficiaries.label')}
             placeholder={translate('register_form1.number_of_beneficiaries.placeholder')}
+            onKeyDown={(e) => {
+              const prevent = ['e', 'E', '+', '-', '.', ','];
+              prevent.includes(e.key) && e.preventDefault();
+            }}
+            onKeyPress={(e) => {
+              if (!/[0-9]/.test(e.key)) {
+                e.preventDefault();
+              }
+            }}
+            onChange={(event) => {
+              const newValue =
+                event.target.value === '' || !event.target.value ? 0 : event.target.value;
+              setValue('num_of_beneficiaries', newValue as number);
+            }}
           />
         </Grid>
         {/* <Grid item md={6} xs={12}>

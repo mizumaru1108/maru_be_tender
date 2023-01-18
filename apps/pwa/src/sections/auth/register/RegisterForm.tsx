@@ -47,8 +47,8 @@ const initialValue = {
     authority: '',
     date_of_esthablistmen: '',
     headquarters: '',
-    num_of_employed_facility: undefined,
-    num_of_beneficiaries: undefined,
+    num_of_employed_facility: 0,
+    num_of_beneficiaries: 0,
     // vat: false,
   },
   form2: {
@@ -73,6 +73,8 @@ const initialValue = {
     agree_on: false,
     ceo_name: '',
     ceo_mobile: '',
+    chairman_name: '',
+    chairman_mobile: '',
     data_entry_name: '',
     data_entry_mobile: '',
     data_entry_mail: '',
@@ -87,7 +89,7 @@ const initialValue = {
 export default function RegisterForm() {
   const { translate } = useLocales();
   const isMobile = useResponsive('down', 'sm');
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(3);
   const [done, setDone] = useState(false);
   const [registerState, setRegisterState] = useState(initialValue);
 
@@ -154,6 +156,7 @@ export default function RegisterForm() {
   const onReturn = () => {
     if (step > 0) setStep((prevStep) => prevStep - 1);
   };
+
   return (
     <>
       {step !== 5 && (

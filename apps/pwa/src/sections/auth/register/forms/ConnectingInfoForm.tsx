@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { Grid } from '@mui/material';
+import { Grid, MenuItem } from '@mui/material';
 import { FormProvider, RHFSelect, RHFTextField } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -23,20 +23,34 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
       region: Yup.string().required('Region name required'),
       governorate: Yup.string().required('City name required'),
       center_administration: Yup.string(),
-      entity_mobile: Yup.string().required('Mobile Number is required'),
+      entity_mobile: Yup.string()
+        .required('Mobile Number is required')
+        .test('len', 'Entity mobile at least 9 characters', (val) => {
+          if (val === undefined) {
+            return true;
+          }
+
+          return val.length === 0 || val!.length >= 13;
+        }),
       // .matches(
-      //   /^\+966[0-9]{8}$/,
+      //   /^\+966[0-9]$/,
       //   `The Entity Mobile must be written in the exact way of +966xxxxxxxx`
       // ),
-      phone: Yup.string().nullable().notRequired(),
+      phone: Yup.string()
+        .nullable()
+        .notRequired()
+        .test('len', 'Phone number at least 9 characters', (val) => {
+          if (val === undefined) {
+            return true;
+          }
+          return val?.length === 0 || val!.length >= 13;
+        }),
       // .when('phone', {
-      //   is: (value: string) => {
-      //     return value?.length;
-      //   },
+      //   is: (value: string) => value?.length,
       //   then: (rule) =>
       //     rule.matches(
-      //       /^\+966[0-9]{8}$/,
-      //       `The Entity Mobile must be written in the exact way of +966xxxxxxxx`
+      //       /^\+966[0-9]$/,
+      //       `Phone number must be written in the exact way of +966xxxxxxxx`
       //     ),
       // }),
       twitter_acount: Yup.string(),
@@ -63,20 +77,19 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
     watch,
     reset,
     getValues,
-    setValue,
   } = methods;
 
   const onSubmitForm = async (data: ConnectingValuesProps) => {
     let newEntityMobile = getValues('entity_mobile');
     let newPhoneValues = getValues('phone');
 
-    if (newEntityMobile.substring(0, 4) !== '+966') {
-      newEntityMobile = '+966'.concat(`${getValues('entity_mobile')}`);
-    }
+    newEntityMobile.substring(0, 4) !== '+966'
+      ? (newEntityMobile = '+966'.concat(`${getValues('entity_mobile')}`))
+      : (newEntityMobile = getValues('entity_mobile'));
 
-    if (newPhoneValues!.substring(0, 4) !== '+966') {
-      newPhoneValues = '+966'.concat(`${getValues('phone')}`);
-    }
+    newPhoneValues!.substring(0, 4) !== '+966'
+      ? (newPhoneValues = '+966'.concat(`${getValues('phone')}`))
+      : (newPhoneValues = getValues('phone'));
 
     const payload: ConnectingValuesProps = {
       ...data,
@@ -84,9 +97,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
       entity_mobile: newEntityMobile!,
     };
 
-    setValue('phone', newPhoneValues);
-    setValue('entity_mobile', newEntityMobile);
-
+    reset({ ...payload });
     onSubmit(payload);
   };
 
@@ -106,13 +117,11 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
             label={translate('register_form2.region.label')}
             placeholder={translate('register_form2.region.placeholder')}
           >
-            <>
-              {Object.keys(REGION).map((item, index) => (
-                <option key={index} value={item} style={{ backgroundColor: '#fff' }}>
-                  {item}
-                </option>
-              ))}
-            </>
+            {Object.keys(REGION).map((item, index) => (
+              <MenuItem key={index} value={item}>
+                {item}
+              </MenuItem>
+            ))}
           </RHFSelect>
         </Grid>
         <Grid item md={6} xs={12}>
@@ -121,15 +130,12 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
             label={translate('register_form2.city.label')}
             placeholder={translate('register_form2.city.placeholder')}
           >
-            {region !== '' && (
-              <>
-                {REGION[`${region}`].map((item: any, index: any) => (
-                  <option key={index} value={item} style={{ backgroundColor: '#fff' }}>
-                    {item}
-                  </option>
-                ))}
-              </>
-            )}
+            {region !== '' &&
+              REGION[`${region}`].map((item: any, index: any) => (
+                <MenuItem key={index} value={item}>
+                  {item}
+                </MenuItem>
+              ))}
           </RHFSelect>
         </Grid>
         <Grid item md={6} xs={12}>
@@ -145,15 +151,6 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
             label={translate('register_form2.mobile_number.label')}
             // placeholder={translate('register_form2.mobile_number.placeholder')}
             placeholder="xxx-xxx-xxx"
-            onKeyDown={(e) => {
-              const prevent = ['e', 'E', '+', '-', '.', ','];
-              prevent.includes(e.key) && e.preventDefault();
-            }}
-            onKeyPress={(e) => {
-              if (!/[0-9]/.test(e.key)) {
-                e.preventDefault();
-              }
-            }}
           />
         </Grid>
         <Grid item md={6} xs={12}>
@@ -162,15 +159,6 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
             label={translate('register_form2.phone.label')}
             // placeholder={translate('register_form2.phone.placeholder')}
             placeholder="xxx-xxx-xxx"
-            onKeyDown={(e) => {
-              const prevent = ['e', 'E', '+', '-', '.', ','];
-              prevent.includes(e.key) && e.preventDefault();
-            }}
-            onKeyPress={(e) => {
-              if (!/[0-9]/.test(e.key)) {
-                e.preventDefault();
-              }
-            }}
           />
         </Grid>
         <Grid item md={6} xs={12}>

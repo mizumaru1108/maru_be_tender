@@ -26,9 +26,9 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
       type: Yup.string().required(),
     }),
     board_ofdec_file: Yup.object().shape({
-      url: Yup.string().required(),
+      url: Yup.string(),
       size: Yup.number(),
-      type: Yup.string().required(),
+      type: Yup.string(),
     }),
   });
 
@@ -40,6 +40,7 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
   const { handleSubmit, reset } = methods;
 
   const onSubmitForm = async (data: LicenseValuesProps) => {
+    reset({ ...data });
     onSubmit(data);
   };
 

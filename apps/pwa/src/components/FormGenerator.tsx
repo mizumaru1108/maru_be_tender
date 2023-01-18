@@ -48,18 +48,18 @@ export interface Props {
 
 const FormGenerator = ({ data }: Props) => (
   <>
-    {data.map((element: FormSingleProps) => {
+    {data.map((element: FormSingleProps, i) => {
       if (!element.md) element.md = 0;
       if (!element.xs) element.xs = 0;
       return (
-        <>
+        <React.Fragment key={i}>
           {element.type !== 'repeater' && (
             <Grid item md={element.md} xs={element.xs}>
               <BaseField {...element} />
             </Grid>
           )}
           {element.type === 'repeater' && <BaseField {...element} />}
-        </>
+        </React.Fragment>
       );
     })}
   </>

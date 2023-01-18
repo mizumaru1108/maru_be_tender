@@ -54,9 +54,13 @@ export default function RHFTextField({ name, ...other }: Props) {
           error={!!error}
           helperText={error?.message}
           InputProps={{
-            startAdornment: ['phone', 'data_entry_mobile', 'entity_mobile', 'ceo_mobile'].includes(
-              name
-            ) ? (
+            startAdornment: [
+              'phone',
+              'data_entry_mobile',
+              'entity_mobile',
+              'ceo_mobile',
+              'chairman_mobile',
+            ].includes(name) ? (
               <InputAdornment
                 position="start"
                 sx={{

@@ -17,13 +17,39 @@ type FormProps = {
 const AdministrativeInfoForm = ({ onSubmit, defaultValues, onReturn, done }: FormProps) => {
   const RegisterSchema = Yup.object().shape({
     ceo_name: Yup.string().required('Executive Director is required'),
-    ceo_mobile: Yup.string().required('CEO Mobile is required'),
+    ceo_mobile: Yup.string()
+      .required('CEO mobile is required')
+      .test('len', 'CEO mobile at least 9 characters', (val) => {
+        if (val === undefined) {
+          return true;
+        }
+
+        return val.length === 0 || val!.length >= 13;
+      }),
+    chairman_name: Yup.string().required('Chairman name is required'),
+    chairman_mobile: Yup.string()
+      .required('Chairman mobile is required')
+      .test('len', 'CEO mobile at least 9 characters', (val) => {
+        if (val === undefined) {
+          return true;
+        }
+
+        return val.length === 0 || val!.length >= 13;
+      }),
     // .matches(
     //   /^\+966[0-9]{8}$/,
     //   `The CEO Mobile must be written in the exact way of +966xxxxxxxx`
     // ),
     data_entry_name: Yup.string().required('Entery Data Name is required'),
-    data_entry_mobile: Yup.string().required('Data Entry Mobile is required'),
+    data_entry_mobile: Yup.string()
+      .required('Data Entry Mobile is required')
+      .test('len', 'Data entry mobile at least 9 characters', (val) => {
+        if (val === undefined) {
+          return true;
+        }
+
+        return val.length === 0 || val!.length >= 13;
+      }),
     // .matches(
     //   /^\+9665[0-9]{8}$/,
     //   `The Data Entry Mobile must be written in the exact way of +9665xxxxxxxx`
@@ -42,32 +68,36 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, onReturn, done }: For
     formState: { isSubmitting },
     watch,
     getValues,
-    setValue,
+    reset,
   } = methods;
 
   const agree_on = watch('agree_on');
   const onSubmitForm = async (data: AdministrativeValuesProps) => {
     let newCeoMobile = getValues('ceo_mobile');
     let newDataEntryMobile = getValues('data_entry_mobile');
+    let newChairmanMobile = getValues('chairman_mobile');
 
-    if (newCeoMobile.substring(0, 4) !== '+966') {
-      newCeoMobile = '+966'.concat(`${getValues('ceo_mobile')}`);
-    }
+    newCeoMobile.substring(0, 4) !== '+966'
+      ? (newCeoMobile = '+966'.concat(`${getValues('ceo_mobile')}`))
+      : (newCeoMobile = getValues('ceo_mobile'));
 
-    if (newDataEntryMobile!.substring(0, 4) !== '+966') {
-      newDataEntryMobile = '+966'.concat(`${getValues('data_entry_mobile')}`);
-    }
+    newDataEntryMobile.substring(0, 4) !== '+966'
+      ? (newDataEntryMobile = '+966'.concat(`${getValues('data_entry_mobile')}`))
+      : (newDataEntryMobile = getValues('data_entry_mobile'));
+
+    newChairmanMobile.substring(0, 4) !== '+966'
+      ? (newChairmanMobile = '+966'.concat(`${getValues('chairman_mobile')}`))
+      : (newChairmanMobile = getValues('chairman_mobile'));
 
     const payload: AdministrativeValuesProps = {
       ...data,
       ceo_mobile: newCeoMobile!,
       data_entry_mobile: newDataEntryMobile!,
+      chairman_mobile: newChairmanMobile!,
     };
 
-    setValue('ceo_mobile', newCeoMobile);
-    setValue('data_entry_mobile', newDataEntryMobile);
-
-    onSubmit(payload);
+    reset({ ...payload });
+    onSubmit({ ...payload });
   };
 
   return (

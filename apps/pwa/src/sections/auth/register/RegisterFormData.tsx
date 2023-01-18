@@ -15,6 +15,7 @@ export const REGIONS = [
   'منطقة الباحة',
   'منطقة الجوف',
 ];
+
 export const GOVERNORATES = [
   'الرياض',
   'الدرعية',
@@ -66,6 +67,20 @@ export const GOVERNORATES = [
   'العيص',
   'وادي الفرع',
 ];
+
+export const LIST_OF_BANK = [
+  'البنك الأهلي السعودي',
+  'بنك الجزيرة',
+  'بنك ساب',
+  'البنك السعودي الفرنسي',
+  'البنك العربي الوطني',
+  'البنك السعودي للاستثمار',
+  'بنك الرياض',
+  'مصرف الإنماء',
+  'مصرف الراجحي',
+  'بنك البلاد',
+];
+
 /**
  * The form which has conditions inside, I write it in the dummy way
  */
@@ -83,6 +98,23 @@ export const AdministrativeInfoData = [
     type: 'textField',
     name: 'ceo_mobile',
     label: 'register_form4.executive_director_mobile.label',
+    xs: 12,
+    md: 6,
+    // placeholder: 'register_form4.executive_director_mobile.placeholder',
+    placeholder: 'xxx-xxx-xxx',
+  },
+  {
+    type: 'textField',
+    name: 'chairman_name',
+    label: 'register_form4.chairman_name.label',
+    md: 6,
+    xs: 12,
+    placeholder: 'register_form4.chairman_name.placeholder',
+  },
+  {
+    type: 'textField',
+    name: 'chairman_mobile',
+    label: 'register_form4.chairman_mobile.label',
     xs: 12,
     md: 6,
     // placeholder: 'register_form4.executive_director_mobile.placeholder',
@@ -119,6 +151,7 @@ export const AdministrativeInfoData = [
     xs: 12,
   },
 ] as Array<FormSingleProps>;
+
 export const BankingInfoData = [
   {
     type: 'textField',
@@ -142,40 +175,6 @@ export const BankingInfoData = [
     label: 'register_form5.bank_name.label',
     xs: 12,
     placeholder: 'register_form5.bank_name.placeholder',
-    children: (
-      <>
-        <option value="البنك الأهلي السعودي" style={{ backgroundColor: '#fff' }}>
-          البنك الأهلي السعودي
-        </option>
-        <option value="بنك الجزيرة" style={{ backgroundColor: '#fff' }}>
-          بنك الجزيرة
-        </option>
-        <option value="بنك ساب" style={{ backgroundColor: '#fff' }}>
-          بنك ساب
-        </option>
-        <option value="البنك السعودي الفرنسي" style={{ backgroundColor: '#fff' }}>
-          البنك السعودي الفرنسي
-        </option>
-        <option value="البنك العربي الوطني" style={{ backgroundColor: '#fff' }}>
-          البنك العربي الوطني
-        </option>
-        <option value="البنك السعودي للاستثمار" style={{ backgroundColor: '#fff' }}>
-          البنك السعودي للاستثمار
-        </option>
-        <option value="بنك الرياض" style={{ backgroundColor: '#fff' }}>
-          بنك الرياض
-        </option>
-        <option value="مصرف الإنماء" style={{ backgroundColor: '#fff' }}>
-          مصرف الإنماء
-        </option>
-        <option value="مصرف الراجحي" style={{ backgroundColor: '#fff' }}>
-          مصرف الراجحي
-        </option>
-        <option value="بنك البلاد" style={{ backgroundColor: '#fff' }}>
-          بنك البلاد
-        </option>
-      </>
-    ),
   },
   {
     type: 'uploadLabel',

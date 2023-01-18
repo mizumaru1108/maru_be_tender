@@ -19,9 +19,9 @@ const BankingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
     bank_account_name: Yup.string().required('Bank Account name required'),
     bank_name: Yup.string().required('Bank Name is required'),
     card_image: Yup.object().shape({
-      url: Yup.string().required(),
+      url: Yup.string(),
       size: Yup.number(),
-      type: Yup.string().required(),
+      type: Yup.string(),
     }),
   });
 
@@ -33,9 +33,11 @@ const BankingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
   const {
     handleSubmit,
     formState: { isSubmitting },
+    reset,
   } = methods;
 
   const onSubmitForm = async (data: BankingValuesProps) => {
+    reset({ ...data });
     onSubmit(data);
   };
 

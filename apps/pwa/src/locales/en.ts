@@ -405,6 +405,14 @@ const en = {
       label: 'جوال المدير التنفيذي*',
       placeholder: 'الرجاء كتابة جوال المدير التنفيذي',
     },
+    chairman_name: {
+      label: 'اسم رئيس مجلس الإدارة*',
+      placeholder: 'الرجاء كتابة اسم الرئيس',
+    },
+    chairman_mobile: {
+      label: 'رئيس موبايل*',
+      placeholder: 'الرجاء كتابة رقم هاتف رئيس مجلس الإدارة',
+    },
     entery_data_name: {
       label: 'اسم مدخل البيانات*',
       placeholder: 'الرجاء كتابة اسم مدخل البيانات',
@@ -572,8 +580,8 @@ const en = {
       placeholder: 'Bank account card image',
     },
   },
-  next: 'next',
-  going_back_one_step: 'back',
+  next: 'Next',
+  going_back_one_step: 'Back',
   saving_as_draft: 'save as draft',
   send: 'send',
   add: 'Add',
