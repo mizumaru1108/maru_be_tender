@@ -12,8 +12,6 @@ import {
 import useLocales from 'hooks/useLocales';
 import { useLocation, useNavigate } from 'react-router';
 import { ProjectCardProps } from './types';
-import 'moment/locale/es';
-import 'moment/locale/ar';
 import moment from 'moment';
 import useAuth from 'hooks/useAuth';
 import { asignProposalToAUser } from 'queries/commons/asignProposalToAUser';

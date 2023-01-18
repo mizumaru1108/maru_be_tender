@@ -96,7 +96,7 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
           dispatch(setConversation([]));
           dispatch(setMessageGrouped([]));
           logout();
-          navigate('/auth/login');
+          navigate(0);
         }}
       >
         <Stack direction="row" gap={2}>

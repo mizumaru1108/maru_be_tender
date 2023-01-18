@@ -3,11 +3,14 @@ import { ProjectCard } from 'components/card-table';
 import SvgIconStyle from 'components/SvgIconStyle';
 import useLocales from 'hooks/useLocales';
 import { useNavigate } from 'react-router';
+//
+import { fCurrencyNumber } from 'utils/formatNumber';
 
 function CurrentProjects({ current_projects }: any) {
   const navigate = useNavigate();
 
   const { translate } = useLocales();
+
   if (current_projects.length === 0)
     return (
       <Container>
@@ -88,9 +91,7 @@ function CurrentProjects({ current_projects }: any) {
                           {translate('content.client.main_page.required_budget')}
                         </Typography>
                         <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                          {`${item.amount_required_fsupport} ${translate(
-                            'section_portal_reports.riyals'
-                          )}`}
+                          {fCurrencyNumber(item.amount_required_fsupport)}
                         </Typography>
                       </Box>
                       <Box
@@ -108,9 +109,7 @@ function CurrentProjects({ current_projects }: any) {
                         </Typography>
                         <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
                           {item.fsupport_by_supervisor
-                            ? `${item.fsupport_by_supervisor} ${translate(
-                                'section_portal_reports.riyals'
-                              )}`
+                            ? fCurrencyNumber(item.amount_required_fsupport)
                             : translate('content.client.main_page.not_determined')}
                         </Typography>
                       </Box>
@@ -128,9 +127,7 @@ function CurrentProjects({ current_projects }: any) {
                           {translate('content.client.main_page.spent_budget')}
                         </Typography>
                         <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                          {`${item.amount_required_fsupport} ${translate(
-                            'section_portal_reports.riyals'
-                          )}`}
+                          {fCurrencyNumber(item.amount_required_fsupport)}
                         </Typography>
                       </Box>
                     </Box>

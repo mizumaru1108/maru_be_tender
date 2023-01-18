@@ -1,18 +1,20 @@
 import { Box, Button, Stack, useTheme } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import Iconify from 'components/Iconify';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import { updateProposalByModerator } from 'queries/Moderator/updateProposalByModerator';
-import { useState } from 'react';
+import { JSXElementConstructor, ReactElement, ReactFragment, ReactPortal, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useMutation } from 'urql';
 import ProposalAcceptingForm from './ProposalAcceptingForm';
 import ProposalRejectingForm from './ProposalRejectingForm';
+import axiosInstance from 'utils/axios';
 
 function ModeratorActionBar() {
-  const { user } = useAuth();
+  const { user, activeRole } = useAuth();
 
   const { id } = useParams();
 
@@ -28,80 +30,123 @@ function ModeratorActionBar() {
 
   const [action, setAction] = useState<'accept' | 'reject' | ''>('');
 
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isSubmittingRejected, setIsSubmittingRejected] = useState<boolean>(false);
+
   const handleOnCloseModal = () => {
     setAction('');
   };
 
   const handleApproval = async (data: any) => {
-    // const newLogId = nanoid();
-    update({
-      proposal_id: id,
-      new_values: {
-        inner_status: 'ACCEPTED_BY_MODERATOR',
-        outter_status: 'ONGOING',
-        state: 'PROJECT_SUPERVISOR',
-        project_track: data.path,
-        ...(data.supervisors !== 'all' && { supervisor_id: data.supervisors }),
-      },
-      log: {
-        id: nanoid(),
+    setIsSubmitting(true);
+
+    try {
+      const payload = {
         proposal_id: id,
-        reviewer_id: user?.id!,
         action: 'accept',
+        moderator_payload: {
+          project_track: data.path,
+          ...(data.supervisors !== 'all' && { supervisor_id: data.supervisors }),
+        },
         message: 'تم قبول المشروع من قبل مسوؤل الفرز',
         notes: data.notes,
-        user_role: 'MODERATOR',
-        state: 'MODERATOR',
-      },
-    }).then((res) => {
-      if (res.error) {
-        enqueueSnackbar(res.error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
+      };
+      await axiosInstance
+        .patch('/tender-proposal/change-state', payload, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            enqueueSnackbar(translate('proposal_approved'), {
+              variant: 'success',
+            });
+          }
+
+          setIsSubmitting(false);
+          navigate(`/moderator/dashboard/app`);
+        })
+        .catch((err) => {
+          if (typeof err.message === 'object') {
+            err.message.forEach((el: any) => {
+              enqueueSnackbar(el, {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            });
+          } else {
+            enqueueSnackbar(err.message, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
+          }
+
+          setIsSubmitting(false);
         });
-      } else {
-        enqueueSnackbar(translate('proposal_approved'), {
-          variant: 'success',
-        });
-        navigate(`/moderator/dashboard/app`);
-      }
-    });
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+    }
   };
 
   const handleRejected = async (data: any) => {
-    update({
-      proposal_id: id,
-      new_values: {
-        inner_status: 'REJECTED_BY_MODERATOR',
-        outter_status: 'CANCELED',
-        state: 'MODERATOR',
-        project_track: data.path,
-      },
-      log: {
-        id: nanoid(),
+    setIsSubmittingRejected(true);
+
+    try {
+      const payload = {
         proposal_id: id,
-        reviewer_id: user?.id!,
         action: 'reject',
+        moderator_payload: {
+          project_track: data.path,
+        },
         message: 'تم رفض المشروع من قبل مسوؤل الفرز',
         notes: data.notes,
-        user_role: 'MODERATOR',
-        state: 'MODERATOR',
-      },
-    }).then((res) => {
-      if (res.error) {
-        enqueueSnackbar(res.error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
+      };
+
+      await axiosInstance
+        .patch('/tender-proposal/change-state', payload, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            enqueueSnackbar(translate('proposal_rejected'), {
+              variant: 'success',
+            });
+          }
+
+          setIsSubmittingRejected(false);
+          navigate(`/moderator/dashboard/app`);
+        })
+        .catch((err) => {
+          if (typeof err.message === 'object') {
+            err.message.forEach((el: any) => {
+              enqueueSnackbar(el, {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            });
+          } else {
+            enqueueSnackbar(err.message, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
+          }
+
+          setIsSubmittingRejected(false);
         });
-      } else {
-        enqueueSnackbar(translate('proposal_rejected'), {
-          variant: 'success',
-        });
-        navigate(`/moderator/dashboard/app`);
-      }
-    });
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+    }
   };
 
   return (
@@ -119,15 +164,17 @@ function ModeratorActionBar() {
       >
         <Stack direction={{ sm: 'column', md: 'row' }} justifyContent="space-between">
           <Stack flexDirection={{ sm: 'column', md: 'row' }}>
-            <Button
+            <LoadingButton
+              loading={isSubmitting}
               variant="contained"
               color="primary"
               sx={{ mr: { md: '1em' } }}
               onClick={() => setAction('accept')}
             >
               {translate('project_acceptance')}
-            </Button>
-            <Button
+            </LoadingButton>
+            <LoadingButton
+              loading={isSubmittingRejected}
               variant="contained"
               sx={{
                 my: { xs: '1.3em', md: '0' },
@@ -138,7 +185,7 @@ function ModeratorActionBar() {
               onClick={() => setAction('reject')}
             >
               {translate('project_rejected')}
-            </Button>
+            </LoadingButton>
             {/* here where Yayan should complete from  "send_message_to_partner"*/}
             <Button
               variant="outlined"
@@ -160,10 +207,18 @@ function ModeratorActionBar() {
         </Stack>
       </Box>
       {action === 'accept' && (
-        <ProposalAcceptingForm onClose={handleOnCloseModal} onSubmit={handleApproval} />
+        <ProposalAcceptingForm
+          onClose={handleOnCloseModal}
+          onSubmit={handleApproval}
+          loading={isSubmitting}
+        />
       )}
       {action === 'reject' && (
-        <ProposalRejectingForm onClose={handleOnCloseModal} onSubmit={handleRejected} />
+        <ProposalRejectingForm
+          onClose={handleOnCloseModal}
+          onSubmit={handleRejected}
+          loading={isSubmittingRejected}
+        />
       )}
     </>
   );

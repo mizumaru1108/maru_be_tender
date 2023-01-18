@@ -85,7 +85,8 @@ export const AdministrativeInfoData = [
     label: 'register_form4.executive_director_mobile.label',
     xs: 12,
     md: 6,
-    placeholder: 'register_form4.executive_director_mobile.placeholder',
+    // placeholder: 'register_form4.executive_director_mobile.placeholder',
+    placeholder: 'xxx-xxx-xxx',
   },
   {
     type: 'textField',

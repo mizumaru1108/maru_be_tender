@@ -17,19 +17,17 @@ type FormProps = {
 const AdministrativeInfoForm = ({ onSubmit, defaultValues, onReturn, done }: FormProps) => {
   const RegisterSchema = Yup.object().shape({
     ceo_name: Yup.string().required('Executive Director is required'),
-    ceo_mobile: Yup.string()
-      .required('CEO Mobile is required')
-      .matches(
-        /^\+9665[0-9]{8}$/,
-        `The CEO Mobile must be written in the exact way of +9665xxxxxxxx`
-      ),
+    ceo_mobile: Yup.string().required('CEO Mobile is required'),
+    // .matches(
+    //   /^\+966[0-9]{8}$/,
+    //   `The CEO Mobile must be written in the exact way of +966xxxxxxxx`
+    // ),
     data_entry_name: Yup.string().required('Entery Data Name is required'),
-    data_entry_mobile: Yup.string()
-      .required('Data Entry Mobile is required')
-      .matches(
-        /^\+9665[0-9]{8}$/,
-        `The Data Entry Mobile must be written in the exact way of +9665xxxxxxxx`
-      ),
+    data_entry_mobile: Yup.string().required('Data Entry Mobile is required'),
+    // .matches(
+    //   /^\+9665[0-9]{8}$/,
+    //   `The Data Entry Mobile must be written in the exact way of +9665xxxxxxxx`
+    // ),
     data_entry_mail: Yup.string().email().required('Entery Data Email is required'),
     agree_on: Yup.boolean().required('Agreeing_On is required'),
   });
@@ -43,11 +41,33 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, onReturn, done }: For
     handleSubmit,
     formState: { isSubmitting },
     watch,
+    getValues,
+    setValue,
   } = methods;
 
   const agree_on = watch('agree_on');
   const onSubmitForm = async (data: AdministrativeValuesProps) => {
-    onSubmit(data);
+    let newCeoMobile = getValues('ceo_mobile');
+    let newDataEntryMobile = getValues('data_entry_mobile');
+
+    if (newCeoMobile.substring(0, 4) !== '+966') {
+      newCeoMobile = '+966'.concat(`${getValues('ceo_mobile')}`);
+    }
+
+    if (newDataEntryMobile!.substring(0, 4) !== '+966') {
+      newDataEntryMobile = '+966'.concat(`${getValues('data_entry_mobile')}`);
+    }
+
+    const payload: AdministrativeValuesProps = {
+      ...data,
+      ceo_mobile: newCeoMobile!,
+      data_entry_mobile: newDataEntryMobile!,
+    };
+
+    setValue('ceo_mobile', newCeoMobile);
+    setValue('data_entry_mobile', newDataEntryMobile);
+
+    onSubmit(payload);
   };
 
   return (

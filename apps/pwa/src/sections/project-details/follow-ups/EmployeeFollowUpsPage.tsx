@@ -99,7 +99,7 @@ function EmployeeFollowUpsPage() {
           </Tabs>
         </Stack>
       </Grid>
-      <Grid container md={12} xs={12}>
+      <Grid container spacing={3}>
         <TabPanel value={switchState} index={0} dir={theme.direction}>
           {proposal.follow_ups.length === 0 ||
           proposal.follow_ups.filter((items) => {
@@ -126,7 +126,7 @@ function EmployeeFollowUpsPage() {
           )}
         </TabPanel>
       </Grid>
-      <Grid container md={12} xs={12}>
+      <Grid container spacing={3}>
         <TabPanel value={switchState} index={1} dir={theme.direction}>
           {proposal.follow_ups.length === 0 ||
           proposal.follow_ups.filter((items) => {

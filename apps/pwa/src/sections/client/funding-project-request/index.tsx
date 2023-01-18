@@ -127,7 +127,7 @@ const FundingProjectRequestForm = () => {
 
   // on submit for the fourth step
   const onSubmitform4 = (data: any) => {
-    console.log(data);
+    // console.log(data);
     setStep((prevStep) => prevStep + 1);
     setRequestState((prevRegisterState: any) => ({
       ...prevRegisterState,

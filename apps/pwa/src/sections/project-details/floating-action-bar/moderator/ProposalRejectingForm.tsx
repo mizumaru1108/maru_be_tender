@@ -16,9 +16,10 @@ type FormData = {
 interface FormProps {
   onSubmit: (data: any) => void;
   onClose: () => void;
+  loading?: boolean;
 }
 
-function ProposalRejectingForm({ onSubmit, onClose }: FormProps) {
+function ProposalRejectingForm({ onSubmit, onClose, loading }: FormProps) {
   const { translate } = useLocales();
 
   const validationSchema = Yup.object().shape({
@@ -104,7 +105,7 @@ function ProposalRejectingForm({ onSubmit, onClose }: FormProps) {
               {translate('close')}
             </Button>
             <LoadingButton
-              loading={isSubmitting}
+              loading={loading}
               onClick={handleSubmit(onSubmitForm)}
               variant="contained"
               fullWidth

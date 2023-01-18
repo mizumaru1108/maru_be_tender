@@ -8,6 +8,9 @@ import { useQuery } from 'urql';
 import { ProjectCard } from '../../components/card-table';
 import { moderatorStatistics } from '../../queries/Moderator/stactic';
 
+//
+import moment from 'moment';
+
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
   minHeight: '100vh',
@@ -23,6 +26,10 @@ function MainManagerPage() {
 
   const [stats] = useQuery({
     query: moderatorStatistics,
+    variables: {
+      start_date: moment().startOf('day').toISOString(),
+      end_date: moment().endOf('day').toISOString(),
+    },
   });
   const { data: statsData, fetching, error } = stats;
 

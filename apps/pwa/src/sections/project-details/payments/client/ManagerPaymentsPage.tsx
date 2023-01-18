@@ -1,11 +1,6 @@
-import { Box, Button, Grid, Stack, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import PaymentsTable from './PaymentsTable';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import { useEffect, useState } from 'react';
-import { useMutation } from 'urql';
-import { updatePayment } from 'queries/project-supervisor/updatePayment';
-import { useSnackbar } from 'notistack';
+import { fCurrencyNumber } from 'utils/formatNumber';
 
 function ManagerPaymentsPage({ data, mutate }: any) {
   return (
@@ -47,9 +42,9 @@ function ManagerPaymentsPage({ data, mutate }: any) {
           <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
             الميزانية الكلية للمشروع
           </Typography>
-          <Typography
-            sx={{ color: 'text.tertiary', fontWeight: 700 }}
-          >{`${data.amount_required_fsupport} ريال`}</Typography>
+          <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+            {fCurrencyNumber(data.amount_required_fsupport)}
+          </Typography>
         </Box>
       </Grid>
       <Grid item md={2} xs={12}>

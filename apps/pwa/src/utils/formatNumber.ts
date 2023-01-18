@@ -21,3 +21,13 @@ export function fShortenNumber(number: string | number) {
 export function fData(number: string | number) {
   return numeral(number).format('0.0 b');
 }
+
+export function fCurrencyNumber(value: number) {
+  const currencyOptions = {
+    style: 'currency',
+    currency: 'SAR',
+    maximumSignificantDigits: 18,
+  };
+
+  return new Intl.NumberFormat('en-US', currencyOptions).format(value) as unknown as number;
+}

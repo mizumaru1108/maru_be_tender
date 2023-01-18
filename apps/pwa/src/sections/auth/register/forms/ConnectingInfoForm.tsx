@@ -23,27 +23,22 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
       region: Yup.string().required('Region name required'),
       governorate: Yup.string().required('City name required'),
       center_administration: Yup.string(),
-      entity_mobile: Yup.string()
-        .required('Mobile Number is required')
-        .matches(
-          /^\+9665[0-9]{8}$/,
-          `The Entity Mobile must be written in the exact way of +9665xxxxxxxx`
-        ),
-      phone: Yup.string()
-        .nullable()
-        .notRequired()
-        .when('phone', {
-          is: (value: string) => {
-            console.log(value?.length);
-            return value?.length;
-          },
-          then: (rule) =>
-            rule.matches(
-              /^\+9661[0-9]{8}$/,
-              `The Entity Mobile must be written in the exact way of +9661xxxxxxxx`
-            ),
-        }),
-
+      entity_mobile: Yup.string().required('Mobile Number is required'),
+      // .matches(
+      //   /^\+966[0-9]{8}$/,
+      //   `The Entity Mobile must be written in the exact way of +966xxxxxxxx`
+      // ),
+      phone: Yup.string().nullable().notRequired(),
+      // .when('phone', {
+      //   is: (value: string) => {
+      //     return value?.length;
+      //   },
+      //   then: (rule) =>
+      //     rule.matches(
+      //       /^\+966[0-9]{8}$/,
+      //       `The Entity Mobile must be written in the exact way of +966xxxxxxxx`
+      //     ),
+      // }),
       twitter_acount: Yup.string(),
       website: Yup.string(),
       email: Yup.string()
@@ -67,10 +62,32 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
     formState: { isSubmitting },
     watch,
     reset,
+    getValues,
+    setValue,
   } = methods;
 
   const onSubmitForm = async (data: ConnectingValuesProps) => {
-    onSubmit(data);
+    let newEntityMobile = getValues('entity_mobile');
+    let newPhoneValues = getValues('phone');
+
+    if (newEntityMobile.substring(0, 4) !== '+966') {
+      newEntityMobile = '+966'.concat(`${getValues('entity_mobile')}`);
+    }
+
+    if (newPhoneValues!.substring(0, 4) !== '+966') {
+      newPhoneValues = '+966'.concat(`${getValues('phone')}`);
+    }
+
+    const payload: ConnectingValuesProps = {
+      ...data,
+      phone: newPhoneValues!,
+      entity_mobile: newEntityMobile!,
+    };
+
+    setValue('phone', newPhoneValues);
+    setValue('entity_mobile', newEntityMobile);
+
+    onSubmit(payload);
   };
 
   useEffect(() => {
@@ -126,7 +143,17 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
           <RHFTextField
             name="entity_mobile"
             label={translate('register_form2.mobile_number.label')}
-            placeholder={translate('register_form2.mobile_number.placeholder')}
+            // placeholder={translate('register_form2.mobile_number.placeholder')}
+            placeholder="xxx-xxx-xxx"
+            onKeyDown={(e) => {
+              const prevent = ['e', 'E', '+', '-', '.', ','];
+              prevent.includes(e.key) && e.preventDefault();
+            }}
+            onKeyPress={(e) => {
+              if (!/[0-9]/.test(e.key)) {
+                e.preventDefault();
+              }
+            }}
           />
         </Grid>
         <Grid item md={6} xs={12}>
@@ -135,6 +162,15 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
             label={translate('register_form2.phone.label')}
             // placeholder={translate('register_form2.phone.placeholder')}
             placeholder="xxx-xxx-xxx"
+            onKeyDown={(e) => {
+              const prevent = ['e', 'E', '+', '-', '.', ','];
+              prevent.includes(e.key) && e.preventDefault();
+            }}
+            onKeyPress={(e) => {
+              if (!/[0-9]/.test(e.key)) {
+                e.preventDefault();
+              }
+            }}
           />
         </Grid>
         <Grid item md={6} xs={12}>

@@ -226,6 +226,7 @@ function AuthProvider({ children }: AuthProviderProps) {
   const logout = async () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('i18nextLng');
 
     dispatch({ type: Types.Logout });
   };

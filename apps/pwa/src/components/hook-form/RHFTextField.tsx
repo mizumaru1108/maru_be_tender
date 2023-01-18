@@ -21,7 +21,6 @@ export default function RHFTextField({ name, ...other }: Props) {
     condition = true;
   }
   if (condition && project_beneficiaries === 'GENERAL') {
-    console.log('in');
     return (
       <Controller
         name={name}
@@ -55,24 +54,25 @@ export default function RHFTextField({ name, ...other }: Props) {
           error={!!error}
           helperText={error?.message}
           InputProps={{
-            startAdornment:
-              name === 'phone' || name === 'data_entry_mobile' ? (
-                <InputAdornment
-                  position="start"
-                  sx={{
-                    mr: 1.5,
-                    pr: 1.5,
-                    height: 'auto',
-                    borderRight: `1px solid ${theme.palette.text.disabled}`,
+            startAdornment: ['phone', 'data_entry_mobile', 'entity_mobile', 'ceo_mobile'].includes(
+              name
+            ) ? (
+              <InputAdornment
+                position="start"
+                sx={{
+                  mr: 1.5,
+                  pr: 1.5,
+                  height: 'auto',
+                  borderRight: `1px solid ${theme.palette.text.disabled}`,
+                  color: theme.palette.text.disabled,
+                  '& > .MuiTypography-root': {
                     color: theme.palette.text.disabled,
-                    '& > .MuiTypography-root': {
-                      color: theme.palette.text.disabled,
-                    },
-                  }}
-                >
-                  +966
-                </InputAdornment>
-              ) : null,
+                  },
+                }}
+              >
+                +966
+              </InputAdornment>
+            ) : null,
           }}
           {...other}
         />

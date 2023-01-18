@@ -6,6 +6,7 @@ import { useSelector } from 'redux/store';
 import { useQuery } from 'urql';
 import PaymentsSetForm from './PaymentsSetForm';
 import PaymentsTable from './PaymentsTable';
+import { fCurrencyNumber } from 'utils/formatNumber';
 
 function SupervisorPaymentsPage() {
   const { id: proposal_id } = useParams();
@@ -61,9 +62,9 @@ function SupervisorPaymentsPage() {
             <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
               الميزانية الكلية للمشروع
             </Typography>
-            <Typography
-              sx={{ color: 'text.tertiary', fontWeight: 700 }}
-            >{`${proposal.amount_required_fsupport} ريال`}</Typography>
+            <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+              {fCurrencyNumber(proposal.amount_required_fsupport)}
+            </Typography>
           </Box>
         </Grid>
         <Grid item md={2} xs={12}>

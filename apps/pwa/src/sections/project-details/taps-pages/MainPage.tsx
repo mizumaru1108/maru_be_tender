@@ -4,6 +4,8 @@ import { useLocation, useNavigate, useParams } from 'react-router';
 import { useSelector } from 'redux/store';
 import BankImageComp from 'sections/shared/BankImageComp';
 import useLocales from '../../../hooks/useLocales';
+//
+import { fCurrencyNumber } from 'utils/formatNumber';
 
 function MainPage() {
   const { translate } = useLocales();
@@ -235,7 +237,7 @@ function MainPage() {
                 <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                   {translate('amount_required_for_support')}
                 </Typography>
-                <Typography>{amount_required_fsupport}</Typography>
+                <Typography>{fCurrencyNumber(amount_required_fsupport)}</Typography>
               </Stack>
             </Box>
             <Stack>
