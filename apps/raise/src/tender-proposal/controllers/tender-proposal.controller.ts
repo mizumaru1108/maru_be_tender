@@ -15,7 +15,6 @@ import { BaseResponse } from '../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
 import { TenderRoles } from '../../tender-auth/decorators/tender-roles.decorator';
 import { TenderJwtGuard } from '../../tender-auth/guards/tender-jwt.guard';
-import { ICurrentUser } from '../../user/interfaces/current-user.interface';
 import { CreateProposalPaymentDto } from '../dtos/requests/payment/create-payment.dto';
 import { ChangeProposalStateDto } from '../dtos/requests/proposal/change-proposal-state.dto';
 
@@ -27,12 +26,11 @@ import { TenderRolesGuard } from '../../tender-auth/guards/tender-roles.guard';
 import { manualPaginationHelper } from '../../tender-commons/helpers/manual-pagination-helper';
 import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
 import { UpdatePaymentDto } from '../dtos/requests/payment/update-payment.dto';
-import { UpdateProposalDto } from '../dtos/requests/proposal/update-proposal.dto';
+import { ProposalCreateDto } from '../dtos/requests/proposal/proposal-create.dto';
+import { ProposalSaveDraftDto } from '../dtos/requests/proposal/proposal-save-draft';
 import { UpdatePaymentResponseDto } from '../dtos/responses/payment/update-payment-response.dto';
-import { UpdateProposalResponseDto } from '../dtos/responses/proposal/update-proposal-response.dto';
 import { UpdateProposalByCmsUsers } from '../dtos/updateProposalByCmsUsers.dto';
 import { TenderProposalService } from '../services/tender-proposal.service';
-import { ProposalCreateDto } from '../dtos/requests/proposal/proposal-create.dto';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(
@@ -56,6 +54,24 @@ export class TenderProposalController {
       HttpStatus.CREATED,
       'Proposal created successfully',
     );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @Patch('update-draft')
+  async updateDraft(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() request: ProposalSaveDraftDto,
+  ) {
+    console.log('request', request.project_attachments);
+    // const updateResponse = await this.tenderProposalService.updateDraft(
+    //   currentUser.id,
+    //   request,
+    // );
+    // return baseResponseHelper(
+    //   updateResponse,
+    //   HttpStatus.OK,
+    //   'Proposal updated successfully',
+    // );
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
@@ -177,39 +193,22 @@ export class TenderProposalController {
     );
   }
 
-  @UseGuards(TenderJwtGuard)
-  @Patch('update-draft')
-  async updateDraft(
-    @CurrentUser() currentUser: TenderCurrentUser,
-    @Body() request: UpdateProposalDto,
-  ): Promise<BaseResponse<UpdateProposalResponseDto>> {
-    const updateResponse = await this.tenderProposalService.updateProposal(
-      currentUser.id,
-      request,
-    );
-    return baseResponseHelper(
-      updateResponse,
-      HttpStatus.OK,
-      'Proposal updated successfully',
-    );
-  }
-
-  @UseGuards(TenderJwtGuard)
-  @Patch('update-proposal')
-  async updateProposal(
-    @CurrentUser() currentUser: ICurrentUser,
-    @Body() request: UpdateProposalDto,
-  ): Promise<BaseResponse<UpdateProposalResponseDto>> {
-    const updateResponse = await this.tenderProposalService.updateProposal(
-      currentUser.id,
-      request,
-    );
-    return baseResponseHelper(
-      updateResponse,
-      HttpStatus.OK,
-      'Proposal updated successfully',
-    );
-  }
+  // @UseGuards(TenderJwtGuard)
+  // @Patch('update-proposal')
+  // async updateProposal(
+  //   @CurrentUser() currentUser: ICurrentUser,
+  //   @Body() request: UpdateProposalDto,
+  // ): Promise<BaseResponse<UpdateProposalResponseDto>> {
+  //   const updateResponse = await this.tenderProposalService.updateProposal(
+  //     currentUser.id,
+  //     request,
+  //   );
+  //   return baseResponseHelper(
+  //     updateResponse,
+  //     HttpStatus.OK,
+  //     'Proposal updated successfully',
+  //   );
+  // }
 
   @UseGuards(TenderJwtGuard)
   @Patch('proposal-action')

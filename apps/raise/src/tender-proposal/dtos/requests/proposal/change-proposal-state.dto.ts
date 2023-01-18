@@ -33,6 +33,11 @@ export class ChangeProposalStateDto {
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
+  reject_reason?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
   notes?: string;
 
   @ApiPropertyOptional()

@@ -46,6 +46,8 @@ export function CreateClientMapper(userId: string, request: RegisterTenderDto) {
       },
       center_administration: request.data.center_administration || null,
       ceo_mobile: request.data.ceo_mobile,
+      chairman_name: request.data.chairman_name,
+      chairman_mobile: request.data.chairman_mobile,
       data_entry_mail: request.data.data_entry_mail,
       data_entry_name: request.data.data_entry_name,
       data_entry_mobile: request.data.data_entry_mobile,

@@ -52,6 +52,8 @@ model client_data {
   user_id                  String       @unique
   license_file             Json?
   board_ofdec_file         Json?
+  chaiman_name             String?      @db.VarChar
+  chaiman_mobile           String?      @db.VarChar
   user                     user         @relation("client_data_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
   client_log               client_log[]
 }
@@ -254,6 +256,7 @@ model proposal_log {
   message       String?        @db.VarChar
   user_role     String?        @db.VarChar
   response_time Int?
+  reject_reason String?        @db.VarChar
   user_type     user_type      @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_assign_fkey")
   proposal      proposal       @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
   reviewer      user?          @relation(fields: [reviewer_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_log_user_id_fkey")

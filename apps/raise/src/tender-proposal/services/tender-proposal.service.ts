@@ -43,6 +43,7 @@ import { ConfigService } from '@nestjs/config';
 import { envLoadErrorHelper } from '../../commons/helpers/env-loaderror-helper';
 import { validateAllowedExtension } from '../../commons/utils/validate-allowed-extension';
 import { validateFileSize } from '../../commons/utils/validate-file-size';
+import { BunnyService } from '../../libs/bunny/services/bunny.service';
 
 @Injectable()
 export class TenderProposalService {
@@ -56,6 +57,7 @@ export class TenderProposalService {
     private readonly emailService: EmailService,
     private readonly twilioService: TwilioService,
     private readonly configService: ConfigService,
+    private readonly bunnyService: BunnyService,
     private readonly tenderProposalRepository: TenderProposalRepository,
     private readonly tenderNotificationService: TenderNotificationService,
     private readonly tenderProposalLogRepository: TenderProposalLogRepository,
@@ -71,9 +73,12 @@ export class TenderProposalService {
 
     let projectAttachmentPath: string | undefined = undefined;
     let projectAttachmentBuffer: Buffer | undefined = undefined;
+    let uploadedProjectAttachmentPath: string | undefined = undefined;
     let letterOfSupportPath: string | undefined = undefined;
     let letterOfSupportBuffer: Buffer | undefined = undefined;
+    let uploadedLetterOfSupportPath: string | undefined = undefined;
 
+    /* validate and create path */
     if (request.project_attachments || request.letter_ofsupport_req) {
       const maxSize: number = 1024 * 1024 * 512; // 512MB
       const allowedType: AllowedFileType[] = [
@@ -131,19 +136,88 @@ export class TenderProposalService {
       );
     }
 
+    // upload the project_attachments to bunny cloud service
+    if (
+      request.project_attachments &&
+      projectAttachmentPath &&
+      projectAttachmentBuffer
+    ) {
+      const imageUrl = await this.bunnyService.uploadFileBase64(
+        request.project_attachments.fullName,
+        projectAttachmentBuffer,
+        projectAttachmentPath,
+        `Uploading Proposal Project Attachment from user ${userId}`,
+      );
+
+      uploadedProjectAttachmentPath = imageUrl;
+      proposalCreatePayload.project_attachments = {
+        url: imageUrl,
+        type: request.project_attachments.fileExtension,
+        size: projectAttachmentBuffer.length,
+      };
+    }
+
+    if (
+      request.letter_ofsupport_req &&
+      letterOfSupportPath &&
+      letterOfSupportBuffer
+    ) {
+      const imageUrl = await this.bunnyService.uploadFileBase64(
+        request.letter_ofsupport_req.fullName,
+        letterOfSupportBuffer,
+        letterOfSupportPath,
+        `Uploading Proposal Letter of support from user ${userId}`,
+      );
+
+      uploadedLetterOfSupportPath = imageUrl;
+      proposalCreatePayload.letter_ofsupport_req = {
+        url: imageUrl,
+        type: request.letter_ofsupport_req.fileExtension,
+        size: letterOfSupportBuffer.length,
+      };
+    }
+
+    // after upload the project_attachments to bunny cloud service
+    // if one of them is failed, delete the other one
+    if (request.project_attachments && request.letter_ofsupport_req) {
+      // if attachment not uploaded and letter of support uploaded
+      if (
+        uploadedProjectAttachmentPath === undefined &&
+        !!uploadedLetterOfSupportPath
+      ) {
+        await this.bunnyService.deleteMedia(uploadedLetterOfSupportPath, true);
+      }
+
+      // if letter of support not uploaded and attachment uploaded
+      if (
+        uploadedLetterOfSupportPath === undefined &&
+        !!uploadedProjectAttachmentPath
+      ) {
+        await this.bunnyService.deleteMedia(
+          uploadedProjectAttachmentPath,
+          true,
+        );
+      }
+    }
+
     // create proposal and the logs
-    
+    const createdProposal = await this.tenderProposalRepository.createProposal(
+      proposalCreatePayload,
+      uploadedProjectAttachmentPath,
+      uploadedLetterOfSupportPath,
+    );
+
+    return createdProposal;
   }
 
   // for draft / edit request
-  async updateProposal(
+  async updateDraft(
     userId: string,
     updateProposal: UpdateProposalDto,
   ): Promise<UpdateProposalResponseDto> {
     // create payload for update proposal
     const updateProposalPayload: Prisma.proposalUpdateInput = {};
     let itemBudgets: proposal_item_budget[] | null = null;
-    // const updateProposalPayload: any = {};
     let message = 'Proposal updated successfully';
 
     // find proposal by id
@@ -154,11 +228,11 @@ export class TenderProposalService {
     });
 
     // match proposal.submitter_user_id with current user id for permissions
-    // if (proposal.submitter_user_id !== userId) {
-    //   throw new BadRequestException(
-    //     `You're not allowed to update this proposal`,
-    //   );
-    // }
+    if (proposal.submitter_user_id !== userId) {
+      throw new BadRequestException(
+        `You're not allowed to update this proposal`,
+      );
+    }
 
     // check if there is any data to update on the form1
     if (updateProposal.form1) {
@@ -311,15 +385,6 @@ export class TenderProposalService {
       message = message + ` some changes from5 has been applied.`;
     }
 
-    if (updateProposal.step) {
-      // updateProposalPayload.step = updateProposal.step;
-      updateProposalPayload.proposal_step = {
-        connect: {
-          id: updateProposal.step,
-        },
-      };
-    }
-
     let update: proposal | null = null;
     // if updateProposalPayload !== {} then update the proposal
     if (Object.keys(updateProposalPayload).length > 0) {
@@ -354,6 +419,11 @@ export class TenderProposalService {
     const proposal = await this.tenderProposalRepository.fetchProposalById(
       request.proposal_id,
     );
+
+    const lastLog =
+      await this.tenderProposalLogRepository.findLastLogCreateAtByProposalId(
+        request.proposal_id,
+      );
 
     if (!proposal) {
       throw new NotFoundException(
@@ -465,6 +535,7 @@ export class TenderProposalService {
         request.proposal_id,
         proposalUpdatePayload,
         proposalLogCreateInput,
+        lastLog,
       );
 
     const { proposal_logs } = updateProposalResult;
@@ -529,6 +600,9 @@ export class TenderProposalService {
     }
 
     if (request.action === ProposalAction.REJECT) {
+      if (!request.reject_reason) {
+        throw new BadRequestException('You must provide a reject reason!');
+      }
       /* proposal */
       proposalUpdatePayload.inner_status =
         InnerStatusEnum.REJECTED_BY_MODERATOR;
@@ -538,6 +612,7 @@ export class TenderProposalService {
 
       /* log */
       proposalLogCreateInput.action = ProposalAction.REJECT;
+      proposalLogCreateInput.reject_reason = request.reject_reason;
       proposalLogCreateInput.state = TenderAppRoleEnum.MODERATOR;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.MODERATOR;
     }

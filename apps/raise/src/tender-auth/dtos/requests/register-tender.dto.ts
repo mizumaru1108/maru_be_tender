@@ -11,8 +11,7 @@ import {
   IsIn,
   ValidateNested,
 } from 'class-validator';
-import { ValidateKsaPhoneNumber9661 } from '../../../tender-commons/decorators/validate-ksa-phone-number-9661.decorator';
-import { ValidateKsaPhoneNumber9665 } from '../../../tender-commons/decorators/validate-ksa-phone-number-9665.decorator';
+import { ValidateKsaPhoneNumber966 } from '../../../tender-commons/decorators/validate-ksa-phone-number-966.decorator';
 
 import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
 class bankData {
@@ -53,6 +52,7 @@ class registerClient {
   password: string;
 
   @ApiProperty()
+  @IsString()
   @IsNotEmpty()
   employee_name: string;
 
@@ -81,12 +81,24 @@ class registerClient {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @ValidateKsaPhoneNumber9665()
+  @ValidateKsaPhoneNumber966()
   ceo_mobile: string;
 
   @ApiProperty()
   @IsNotEmpty()
+  @IsString()
   ceo_name: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @ValidateKsaPhoneNumber966()
+  chairman_mobile: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  chaiman_name: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -102,7 +114,7 @@ class registerClient {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @ValidateKsaPhoneNumber9665()
+  @ValidateKsaPhoneNumber966()
   entity_mobile: string;
 
   @ApiProperty()
@@ -134,7 +146,7 @@ class registerClient {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @ValidateKsaPhoneNumber9665()
+  @ValidateKsaPhoneNumber966()
   data_entry_mobile: string;
 
   @ApiProperty()
@@ -151,7 +163,7 @@ class registerClient {
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  @ValidateKsaPhoneNumber9661()
+  @ValidateKsaPhoneNumber966()
   phone?: string;
 
   @ApiProperty()

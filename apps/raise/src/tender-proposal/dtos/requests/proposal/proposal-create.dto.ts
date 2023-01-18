@@ -75,77 +75,90 @@ export class ProposalCreateDto {
   /* first form ---------------------------------------------------- */
 
   /* second form ---------------------------------------------------- */
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNumber()
   @IsNotEmpty()
-  num_ofproject_binicficiaries: number;
+  num_ofproject_binicficiaries?: number;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  project_goals: string;
+  project_goals?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  project_outputs: string;
+  project_outputs?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  project_strengths: string;
+  project_strengths?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  project_risks: string;
+  project_risks?: string;
   /* second form ---------------------------------------------------- */
 
   /* third form ---------------------------------------------------- */
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  pm_name: string;
+  pm_name?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  pm_mobile: string;
+  pm_mobile?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  pm_email: string;
+  pm_email?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  region: string;
+  region?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  governorate: string;
+  governorate?: string;
   /* third form ---------------------------------------------------- */
 
   /* fourth form ---------------------------------------------------- */
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  amount_required_fsupport: string;
+  amount_required_fsupport?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNotEmptyObject()
   @Type(() => CreateProjectBudgetDto)
   @ValidateNested()
-  detail_project_budgets: CreateProjectBudgetDto;
+  detail_project_budgets?: CreateProjectBudgetDto;
   /* fourth form ---------------------------------------------------- */
 
   /* fifth form ---------------------------------------------------- */
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   @IsUUID()
-  proposal_bank_information_id: string;
+  proposal_bank_information_id?: string;
   /* fifth form ---------------------------------------------------- */
 }

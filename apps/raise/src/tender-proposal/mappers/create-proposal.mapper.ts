@@ -46,26 +46,115 @@ export const CreateProposalMapper = (
   createPayload.project_implement_date = project_implement_date;
   createPayload.execution_time = execution_time;
   createPayload.project_beneficiaries = project_beneficiaries;
+  if (
+    project_idea &&
+    project_location &&
+    project_implement_date &&
+    execution_time &&
+    project_beneficiaries
+  ) {
+    createPayload.step = 'FIRST';
+  }
 
   /* form 2 */
-  createPayload.num_ofproject_binicficiaries = num_ofproject_binicficiaries;
-  createPayload.project_goals = project_goals;
-  createPayload.project_outputs = project_outputs;
-  createPayload.project_strengths = project_strengths;
-  createPayload.project_risks = project_risks;
+  if (num_ofproject_binicficiaries) {
+    createPayload.num_ofproject_binicficiaries = num_ofproject_binicficiaries;
+  }
+  project_goals && (createPayload.project_goals = project_goals);
+  project_outputs && (createPayload.project_outputs = project_outputs);
+  project_strengths && (createPayload.project_strengths = project_strengths);
+  project_risks && (createPayload.project_risks = project_risks);
+  if (
+    project_idea &&
+    project_location &&
+    project_implement_date &&
+    execution_time &&
+    project_beneficiaries &&
+    num_ofproject_binicficiaries &&
+    project_goals &&
+    project_outputs &&
+    project_strengths &&
+    project_risks
+  ) {
+    createPayload.step = 'SECOND';
+  }
 
   /* form 3 */
-  createPayload.pm_name = pm_name;
-  createPayload.pm_mobile = pm_mobile;
-  createPayload.pm_email = pm_email;
-  createPayload.region = region;
-  createPayload.governorate = governorate;
+  pm_name && (createPayload.pm_name = pm_name);
+  pm_mobile && (createPayload.pm_mobile = pm_mobile);
+  pm_email && (createPayload.pm_email = pm_email);
+  region && (createPayload.region = region);
+  governorate && (createPayload.governorate = governorate);
+  if (
+    project_idea &&
+    project_location &&
+    project_implement_date &&
+    execution_time &&
+    project_beneficiaries &&
+    num_ofproject_binicficiaries &&
+    project_goals &&
+    project_outputs &&
+    project_strengths &&
+    project_risks &&
+    pm_name &&
+    pm_mobile &&
+    pm_email &&
+    region &&
+    governorate
+  ) {
+    createPayload.step = 'THIRD';
+  }
 
   /* form 4 */
-  createPayload.amount_required_fsupport = amount_required_fsupport;
+  if (amount_required_fsupport) {
+    createPayload.amount_required_fsupport = amount_required_fsupport;
+  }
+  if (
+    project_idea &&
+    project_location &&
+    project_implement_date &&
+    execution_time &&
+    project_beneficiaries &&
+    num_ofproject_binicficiaries &&
+    project_goals &&
+    project_outputs &&
+    project_strengths &&
+    project_risks &&
+    pm_name &&
+    pm_mobile &&
+    pm_email &&
+    region &&
+    governorate &&
+    amount_required_fsupport
+  ) {
+    createPayload.step = 'FOURTH';
+  }
 
   /* form 5 */
-  createPayload.proposal_bank_id = proposal_bank_information_id;
+  if (proposal_bank_information_id) {
+    createPayload.proposal_bank_id = proposal_bank_information_id;
+  }
+  if (
+    project_idea &&
+    project_location &&
+    project_implement_date &&
+    execution_time &&
+    project_beneficiaries &&
+    num_ofproject_binicficiaries &&
+    project_goals &&
+    project_outputs &&
+    project_strengths &&
+    project_risks &&
+    pm_name &&
+    pm_mobile &&
+    pm_email &&
+    region &&
+    governorate &&
+    amount_required_fsupport &&
+    proposal_bank_information_id
+  ) {
+    createPayload.step = 'ZERO';
+  }
 
   return createPayload;
 };

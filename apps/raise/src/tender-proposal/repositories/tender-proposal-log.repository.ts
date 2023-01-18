@@ -86,4 +86,29 @@ export class TenderProposalLogRepository {
       throw theError;
     }
   }
+
+  async findLastLogCreateAtByProposalId(proposal_id: string) {
+    try {
+      return await this.prismaService.proposal_log.findFirst({
+        where: {
+          proposal_id,
+        },
+        orderBy: {
+          created_at: 'desc',
+        },
+        select: {
+          created_at: true,
+        },
+        take: 1,
+      });
+    } catch (err) {
+      const theError = prismaErrorThrower(
+        err,
+        TenderProposalLogRepository.name,
+        'findLastLogCreateAtByProposalId error details: ',
+        'finding last log create at by proposal id!',
+      );
+      throw theError;
+    }
+  }
 }

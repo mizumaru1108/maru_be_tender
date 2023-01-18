@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, proposal, proposal_item_budget } from '@prisma/client';
+import { nanoid } from 'nanoid';
+import { BunnyService } from '../../libs/bunny/services/bunny.service';
 import { ROOT_LOGGER } from '../../libs/root-logger';
 import { PrismaService } from '../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
@@ -8,9 +10,51 @@ export class TenderProposalRepository {
   private readonly logger = ROOT_LOGGER.child({
     logger: TenderProposalRepository.name,
   });
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly bunnyService: BunnyService,
+  ) {}
 
-  async createProposal() {}
+  async createProposal(
+    createProposalPayload: Prisma.proposalUncheckedCreateInput,
+    project_attachment_path: string | undefined,
+    letter_of_support_path: string | undefined,
+  ) {
+    try {
+      return await this.prismaService.$transaction(async (prisma) => {
+        const proposal = await prisma.proposal.create({
+          data: {
+            ...createProposalPayload,
+          },
+        });
+
+        await prisma.proposal_log.create({
+          data: {
+            id: nanoid(),
+            proposal_id: proposal.id,
+            state: 'CLIENT',
+            user_role: 'CLIENT',
+          },
+        });
+        return proposal;
+      });
+    } catch (error) {
+      // if error
+      if (project_attachment_path) {
+        await this.bunnyService.deleteMedia(project_attachment_path, true);
+      }
+      if (letter_of_support_path) {
+        await this.bunnyService.deleteMedia(letter_of_support_path, true);
+      }
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalRepository.name,
+        'fetchProposalById error details: ',
+        'finding proposal!',
+      );
+      throw theError;
+    }
+  }
 
   async fetchProposalById(proposalId: string): Promise<proposal | null> {
     try {
@@ -107,6 +151,9 @@ export class TenderProposalRepository {
     proposalId: string,
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
     proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
+    lastLog: {
+      created_at: Date;
+    } | null,
   ) {
     try {
       return await this.prismaService.$transaction(async (prismaTrans) => {
@@ -118,7 +165,15 @@ export class TenderProposalRepository {
         });
 
         const proposal_logs = await prismaTrans.proposal_log.create({
-          data: proposalLogCreateInput,
+          data: {
+            ...proposalLogCreateInput,
+            // get the last log.created_at, and create a new date, compare the time difference, and convert to minutes, if last log is null, then response time is null
+            response_time: lastLog
+              ? Math.round(
+                  (new Date().getTime() - lastLog.created_at.getTime()) / 60000,
+                )
+              : null,
+          },
           include: {
             proposal: {
               select: {

@@ -40,15 +40,6 @@ export class UpdateProposalDto {
   @IsString()
   proposal_id: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  @IsIn(['ZERO', 'FIRST', 'SECOND', 'THIRD', 'FOURTH', 'FIFTH'], {
-    message:
-      'Value of step should be ZERO, FIRST, SECOND, THIRD, FOURTH or FIFTH',
-  })
-  step: string;
-
   @ApiPropertyOptional()
   @IsOptional()
   @IsNotEmptyObject()
