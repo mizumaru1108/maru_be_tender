@@ -44,6 +44,9 @@ import { envLoadErrorHelper } from '../../commons/helpers/env-loaderror-helper';
 import { validateAllowedExtension } from '../../commons/utils/validate-allowed-extension';
 import { validateFileSize } from '../../commons/utils/validate-file-size';
 import { BunnyService } from '../../libs/bunny/services/bunny.service';
+import { ProposalSaveDraftDto } from '../dtos/requests/proposal/proposal-save-draft';
+import { CreateItemBudgetsMapper } from '../mappers/create-item-budgets.mappers';
+import { UpdateProposalMapper } from '../mappers/update-proposal.mapper';
 
 @Injectable()
 export class TenderProposalService {
@@ -67,9 +70,12 @@ export class TenderProposalService {
     this.appEnv = environment;
   }
 
-  async createProposal(userId: string, request: ProposalCreateDto) {
+  async create(userId: string, request: ProposalCreateDto) {
     const proposalCreatePayload: Prisma.proposalUncheckedCreateInput =
       CreateProposalMapper(userId, request);
+
+    const proposal_id = nanoid();
+    proposalCreatePayload.id = proposal_id;
 
     let projectAttachmentPath: string | undefined = undefined;
     let projectAttachmentBuffer: Buffer | undefined = undefined;
@@ -77,84 +83,286 @@ export class TenderProposalService {
     let letterOfSupportPath: string | undefined = undefined;
     let letterOfSupportBuffer: Buffer | undefined = undefined;
     let uploadedLetterOfSupportPath: string | undefined = undefined;
+    let uploadedFilePath: string[] = [];
+
+    let proposal_item_budgets:
+      | Prisma.proposal_item_budgetCreateManyInput[]
+      | undefined = undefined;
 
     /* validate and create path */
-    if (request.project_attachments || request.letter_ofsupport_req) {
-      const maxSize: number = 1024 * 1024 * 512; // 512MB
-      const allowedType: AllowedFileType[] = [
-        AllowedFileType.JPG,
-        AllowedFileType.JPEG,
-        AllowedFileType.PNG,
-        AllowedFileType.GIF,
-        AllowedFileType.PDF,
-        AllowedFileType.DOC,
-        AllowedFileType.DOCX,
-        AllowedFileType.XLS,
-        AllowedFileType.XLSX,
-        AllowedFileType.PPT,
-        AllowedFileType.PPTX,
-      ];
+    const maxSize: number = 1024 * 1024 * 512; // 512MB
+    const allowedType: AllowedFileType[] = [
+      AllowedFileType.JPG,
+      AllowedFileType.JPEG,
+      AllowedFileType.PNG,
+      AllowedFileType.GIF,
+      AllowedFileType.PDF,
+      AllowedFileType.DOC,
+      AllowedFileType.DOCX,
+      AllowedFileType.XLS,
+      AllowedFileType.XLSX,
+      AllowedFileType.PPT,
+      AllowedFileType.PPTX,
+    ];
 
-      /* project attachment */
-      let projectAttachmentfileName =
-        request.project_attachments.fullName +
-        new Date().getTime() +
-        '.' +
-        request.project_attachments.fileExtension.split('/')[1];
+    if (request.proposal_bank_information_id) {
+      const isMyOwnBank =
+        await this.tenderProposalRepository.validateOwnBankAccount(
+          userId,
+          request.proposal_bank_information_id,
+        );
+      if (!isMyOwnBank) {
+        throw new BadRequestException('Bank account is not yours');
+      }
+      proposalCreatePayload.proposal_bank_id =
+        request.proposal_bank_information_id;
+    }
 
-      projectAttachmentPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}-${projectAttachmentfileName}`;
+    // upload the project_attachments to bunny cloud service
+    if (request.project_attachments) {      
+      try {
+        /* project attachment */
+        let projectAttachmentfileName =
+          request.project_attachments.fullName
+            .replace(/[^a-zA-Z0-9]/g, '')
+            .slice(0, 10) +
+          new Date().getTime() +
+          '.' +
+          request.project_attachments.fileExtension.split('/')[1];
 
-      validateAllowedExtension(
-        request.project_attachments.fileExtension,
-        allowedType,
-      );
-      validateFileSize(request.project_attachments.base64Data.length, maxSize);
+        projectAttachmentPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}-${projectAttachmentfileName}`;
 
-      projectAttachmentBuffer = Buffer.from(
-        request.project_attachments.base64Data.replace(/^data:.*;base64,/, ''),
-        'base64',
-      );
+        projectAttachmentBuffer = Buffer.from(
+          request.project_attachments.base64Data.replace(
+            /^data:.*;base64,/,
+            '',
+          ),
+          'base64',
+        );
 
-      /* letter of support */
-      let letterOfSupportfileName =
-        request.letter_ofsupport_req.fullName +
-        new Date().getTime() +
-        '.' +
-        request.letter_ofsupport_req.fileExtension.split('/')[1];
+        validateAllowedExtension(
+          request.project_attachments.fileExtension,
+          allowedType,
+        );
+        validateFileSize(projectAttachmentBuffer.length, maxSize);
 
-      letterOfSupportPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}-${letterOfSupportfileName}`;
+        const imageUrl = await this.bunnyService.uploadFileBase64(
+          request.project_attachments.fullName,
+          projectAttachmentBuffer,
+          projectAttachmentPath,
+          `Uploading Proposal Project Attachment from user ${userId}`,
+        );
 
-      validateAllowedExtension(
-        request.letter_ofsupport_req.fileExtension,
-        allowedType,
-      );
-      validateFileSize(request.letter_ofsupport_req.base64Data.length, maxSize);
+        uploadedProjectAttachmentPath = imageUrl;
+        uploadedFilePath.push(imageUrl);
+        proposalCreatePayload.project_attachments = {
+          url: imageUrl,
+          type: request.project_attachments.fileExtension,
+          size: projectAttachmentBuffer.length,
+        };
+      } catch (error) {
+        this.logger.error('Error while uploading project attachment: ' + error);
+        if (uploadedFilePath.length > 0) {
+          uploadedFilePath.forEach(async (path) => {
+            await this.bunnyService.deleteMedia(path, true);
+          });
+        }
+        throw error;
+      }
+    }
 
-      letterOfSupportBuffer = Buffer.from(
-        request.letter_ofsupport_req.base64Data.replace(/^data:.*;base64,/, ''),
-        'base64',
+    if (request.letter_ofsupport_req) {
+      try {
+        /* letter of support */
+        let letterOfSupportfileName =
+          request.letter_ofsupport_req.fullName
+            .replace(/[^a-zA-Z0-9]/g, '')
+            .slice(0, 10) +
+          new Date().getTime() +
+          '.' +
+          request.letter_ofsupport_req.fileExtension.split('/')[1];
+
+        letterOfSupportPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}-${letterOfSupportfileName}`;
+
+        letterOfSupportBuffer = Buffer.from(
+          request.letter_ofsupport_req.base64Data.replace(
+            /^data:.*;base64,/,
+            '',
+          ),
+          'base64',
+        );
+
+        validateAllowedExtension(
+          request.letter_ofsupport_req.fileExtension,
+          allowedType,
+        );
+        validateFileSize(letterOfSupportBuffer.length, maxSize);
+
+        const imageUrl = await this.bunnyService.uploadFileBase64(
+          request.letter_ofsupport_req.fullName,
+          letterOfSupportBuffer,
+          letterOfSupportPath,
+          `Uploading Proposal Letter of support from user ${userId}`,
+        );
+
+        uploadedLetterOfSupportPath = imageUrl;
+        uploadedFilePath.push(imageUrl);
+        proposalCreatePayload.letter_ofsupport_req = {
+          url: imageUrl,
+          type: request.letter_ofsupport_req.fileExtension,
+          size: letterOfSupportBuffer.length,
+        };
+      } catch (error) {
+        this.logger.error('Error while uploading letter of support: ' + error);
+        if (uploadedFilePath.length > 0) {
+          uploadedFilePath.forEach(async (path) => {
+            await this.bunnyService.deleteMedia(path, true);
+          });
+        }
+        throw error;
+      }
+    }
+
+    if (request.detail_project_budgets) {
+      proposal_item_budgets = CreateItemBudgetsMapper(
+        proposal_id,
+        request.detail_project_budgets,
       );
     }
+
+    // create proposal and the logs
+    const createdProposal = await this.tenderProposalRepository.create(
+      proposalCreatePayload,
+      uploadedProjectAttachmentPath,
+      uploadedLetterOfSupportPath,
+      proposal_item_budgets,
+    );
+
+    return createdProposal;
+  }
+
+  async saveDraft(userId: string, request: ProposalSaveDraftDto) {
+    // create payload for update proposal
+    const updateProposalPayload: Prisma.proposalUncheckedUpdateInput =
+      UpdateProposalMapper(request);
+
+    let proposal_item_budgets:
+      | Prisma.proposal_item_budgetCreateManyInput[]
+      | undefined = undefined;
+
+    let projectAttachmentPath: string | undefined = undefined;
+    let projectAttachmentBuffer: Buffer | undefined = undefined;
+    let uploadedProjectAttachmentPath: string | undefined = undefined;
+    let letterOfSupportPath: string | undefined = undefined;
+    let letterOfSupportBuffer: Buffer | undefined = undefined;
+    let uploadedLetterOfSupportPath: string | undefined = undefined;
+    let uploadedFilePath: string[] = [];
+
+    // find proposal by id
+    const proposal = await this.tenderProposalRepository.fetchProposalById(
+      request.proposal_id,
+    );
+    if (!proposal) {
+      throw new BadRequestException(`Proposal not found`);
+    }
+
+    if (proposal.submitter_user_id !== userId) {
+      throw new BadRequestException(
+        `You are not allowed to edit this proposal`,
+      );
+    }
+
+    if (request.proposal_bank_information_id) {
+      const isMyOwnBank =
+        await this.tenderProposalRepository.validateOwnBankAccount(
+          userId,
+          request.proposal_bank_information_id,
+        );
+      if (!isMyOwnBank) {
+        throw new BadRequestException('Bank account is not yours');
+      }
+    }
+
+    /* validate and create path */
+    const maxSize: number = 1024 * 1024 * 512; // 512MB
+    const allowedType: AllowedFileType[] = [
+      AllowedFileType.JPG,
+      AllowedFileType.JPEG,
+      AllowedFileType.PNG,
+      AllowedFileType.GIF,
+      AllowedFileType.PDF,
+      AllowedFileType.DOC,
+      AllowedFileType.DOCX,
+      AllowedFileType.XLS,
+      AllowedFileType.XLSX,
+      AllowedFileType.PPT,
+      AllowedFileType.PPTX,
+    ];
 
     // upload the project_attachments to bunny cloud service
     if (
       request.project_attachments &&
-      projectAttachmentPath &&
-      projectAttachmentBuffer
+      request.project_attachments.hasOwnProperty('base64Data') &&
+      typeof request.project_attachments.base64Data === 'string' &&
+      !!request.project_attachments.base64Data &&
+      request.project_attachments.hasOwnProperty('fullName') &&
+      typeof request.project_attachments.fullName === 'string' &&
+      !!request.project_attachments.fullName &&
+      request.project_attachments.hasOwnProperty('fileExtension') &&
+      typeof request.project_attachments.fileExtension === 'string' &&
+      !!request.project_attachments.fileExtension &&
+      request.project_attachments.fileExtension.match(
+        /^([a-z]+\/[a-z]+)(;[a-z]+=[a-z]+)*$/i,
+      )
     ) {
-      const imageUrl = await this.bunnyService.uploadFileBase64(
-        request.project_attachments.fullName,
-        projectAttachmentBuffer,
-        projectAttachmentPath,
-        `Uploading Proposal Project Attachment from user ${userId}`,
-      );
+      try {
+        /* project attachment */
+        let projectAttachmentfileName =
+          request.project_attachments.fullName
+            .replace(/[^a-zA-Z0-9]/g, '')
+            .slice(0, 10) +
+          new Date().getTime() +
+          '.' +
+          request.project_attachments.fileExtension.split('/')[1];
 
-      uploadedProjectAttachmentPath = imageUrl;
-      proposalCreatePayload.project_attachments = {
-        url: imageUrl,
-        type: request.project_attachments.fileExtension,
-        size: projectAttachmentBuffer.length,
-      };
+        projectAttachmentPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}-${projectAttachmentfileName}`;
+
+        projectAttachmentBuffer = Buffer.from(
+          request.project_attachments.base64Data.replace(
+            /^data:.*;base64,/,
+            '',
+          ),
+          'base64',
+        );
+
+        validateAllowedExtension(
+          request.project_attachments.fileExtension,
+          allowedType,
+        );
+        validateFileSize(projectAttachmentBuffer.length, maxSize);
+
+        const imageUrl = await this.bunnyService.uploadFileBase64(
+          request.project_attachments.fullName,
+          projectAttachmentBuffer,
+          projectAttachmentPath,
+          `Uploading Proposal Project Attachment from user ${userId}`,
+        );
+
+        uploadedProjectAttachmentPath = imageUrl;
+        uploadedFilePath.push(imageUrl);
+        updateProposalPayload.project_attachments = {
+          url: imageUrl,
+          type: request.project_attachments.fileExtension,
+          size: projectAttachmentBuffer.length,
+        };
+      } catch (error) {
+        if (uploadedFilePath.length > 0) {
+          uploadedFilePath.forEach(async (path) => {
+            await this.bunnyService.deleteMedia(path, true);
+          });
+        }
+        throw error;
+      }
     }
 
     if (
@@ -162,254 +370,73 @@ export class TenderProposalService {
       letterOfSupportPath &&
       letterOfSupportBuffer
     ) {
-      const imageUrl = await this.bunnyService.uploadFileBase64(
-        request.letter_ofsupport_req.fullName,
-        letterOfSupportBuffer,
-        letterOfSupportPath,
-        `Uploading Proposal Letter of support from user ${userId}`,
-      );
+      try {
+        /* letter of support */
+        let letterOfSupportfileName =
+          request.letter_ofsupport_req.fullName
+            .replace(/[^a-zA-Z0-9]/g, '')
+            .slice(0, 10) +
+          new Date().getTime() +
+          '.' +
+          request.letter_ofsupport_req.fileExtension.split('/')[1];
 
-      uploadedLetterOfSupportPath = imageUrl;
-      proposalCreatePayload.letter_ofsupport_req = {
-        url: imageUrl,
-        type: request.letter_ofsupport_req.fileExtension,
-        size: letterOfSupportBuffer.length,
-      };
+        letterOfSupportPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}-${letterOfSupportfileName}`;
+
+        letterOfSupportBuffer = Buffer.from(
+          request.letter_ofsupport_req.base64Data.replace(
+            /^data:.*;base64,/,
+            '',
+          ),
+          'base64',
+        );
+
+        validateAllowedExtension(
+          request.letter_ofsupport_req.fileExtension,
+          allowedType,
+        );
+        validateFileSize(letterOfSupportBuffer.length, maxSize);
+
+        const imageUrl = await this.bunnyService.uploadFileBase64(
+          request.letter_ofsupport_req.fullName,
+          letterOfSupportBuffer,
+          letterOfSupportPath,
+          `Uploading Proposal Letter of support from user ${userId}`,
+        );
+
+        uploadedLetterOfSupportPath = imageUrl;
+        uploadedFilePath.push(imageUrl);
+        updateProposalPayload.letter_ofsupport_req = {
+          url: imageUrl,
+          type: request.letter_ofsupport_req.fileExtension,
+          size: letterOfSupportBuffer.length,
+        };
+      } catch (error) {
+        if (uploadedFilePath.length > 0) {
+          uploadedFilePath.forEach(async (path) => {
+            await this.bunnyService.deleteMedia(path, true);
+          });
+        }
+        throw error;
+      }
     }
 
-    // after upload the project_attachments to bunny cloud service
-    // if one of them is failed, delete the other one
-    if (request.project_attachments && request.letter_ofsupport_req) {
-      // if attachment not uploaded and letter of support uploaded
-      if (
-        uploadedProjectAttachmentPath === undefined &&
-        !!uploadedLetterOfSupportPath
-      ) {
-        await this.bunnyService.deleteMedia(uploadedLetterOfSupportPath, true);
-      }
-
-      // if letter of support not uploaded and attachment uploaded
-      if (
-        uploadedLetterOfSupportPath === undefined &&
-        !!uploadedProjectAttachmentPath
-      ) {
-        await this.bunnyService.deleteMedia(
-          uploadedProjectAttachmentPath,
-          true,
-        );
-      }
+    if (request.detail_project_budgets) {
+      proposal_item_budgets = CreateItemBudgetsMapper(
+        proposal.id,
+        request.detail_project_budgets,
+      );
     }
 
     // create proposal and the logs
-    const createdProposal = await this.tenderProposalRepository.createProposal(
-      proposalCreatePayload,
+    const updatedProposal = await this.tenderProposalRepository.saveDraft(
+      proposal.id,
+      updateProposalPayload,
       uploadedProjectAttachmentPath,
       uploadedLetterOfSupportPath,
+      proposal_item_budgets,
     );
 
-    return createdProposal;
-  }
-
-  // for draft / edit request
-  async updateDraft(
-    userId: string,
-    updateProposal: UpdateProposalDto,
-  ): Promise<UpdateProposalResponseDto> {
-    // create payload for update proposal
-    const updateProposalPayload: Prisma.proposalUpdateInput = {};
-    let itemBudgets: proposal_item_budget[] | null = null;
-    let message = 'Proposal updated successfully';
-
-    // find proposal by id
-    const proposal = await this.prismaService.proposal.findUniqueOrThrow({
-      where: {
-        id: updateProposal.proposal_id,
-      },
-    });
-
-    // match proposal.submitter_user_id with current user id for permissions
-    if (proposal.submitter_user_id !== userId) {
-      throw new BadRequestException(
-        `You're not allowed to update this proposal`,
-      );
-    }
-
-    // check if there is any data to update on the form1
-    if (updateProposal.form1) {
-      const {
-        project_name,
-        project_location,
-        project_implement_date,
-        project_idea,
-        project_beneficiaries,
-        project_attachments,
-        letter_ofsupport_req,
-        execution_time,
-      } = updateProposal.form1;
-
-      project_name && (updateProposalPayload.project_name = project_name);
-      if (project_location) {
-        updateProposalPayload.project_location = project_location;
-      }
-      if (project_implement_date) {
-        updateProposalPayload.project_implement_date = project_implement_date;
-      }
-      project_idea && (updateProposalPayload.project_idea = project_idea);
-      execution_time && (updateProposalPayload.execution_time = execution_time);
-      if (project_beneficiaries) {
-        updateProposalPayload.proposal_beneficiaries = {
-          connect: {
-            id: project_beneficiaries,
-          },
-        };
-      }
-
-      // if there's any new upload request for replace the old one
-      if (project_attachments) {
-        // TODO: when the flow is changed u have to create a new func to upload
-        // it should be here latter on if fe decided to upload the file when submit button is pressed
-
-        // if old proposal value exist
-        let isSame = true;
-        if (proposal.project_attachments) {
-          const sameUrl = await compareUrl(
-            proposal.project_attachments, // old object value
-            project_attachments, // new object from request
-          );
-          if (!sameUrl) isSame = false;
-        }
-
-        // changes to new one if it's not the same
-        if (!isSame) {
-          updateProposalPayload.project_attachments = {
-            url: project_attachments.url,
-            type: project_attachments.type,
-            size: project_attachments.size,
-          };
-        }
-      }
-
-      if (letter_ofsupport_req) {
-        let isSame = true;
-        if (proposal.letter_ofsupport_req) {
-          const sameUrl = await compareUrl(
-            proposal.project_attachments, // old object value
-            letter_ofsupport_req, // new object from request
-          );
-          if (!sameUrl) isSame = false;
-        }
-
-        // changes to new one if it's not the same
-        if (!isSame) {
-          updateProposalPayload.letter_ofsupport_req = {
-            url: letter_ofsupport_req.url,
-            type: letter_ofsupport_req.type,
-            size: letter_ofsupport_req.size,
-          };
-        }
-      }
-
-      message = message + ` some changes from1 has been applied.`;
-    }
-
-    if (updateProposal.form2) {
-      const {
-        num_ofproject_binicficiaries,
-        project_goals,
-        project_outputs,
-        project_strengths,
-        project_risks,
-      } = updateProposal.form2;
-
-      if (num_ofproject_binicficiaries) {
-        updateProposalPayload.num_ofproject_binicficiaries =
-          num_ofproject_binicficiaries;
-      }
-      project_goals && (updateProposalPayload.project_goals = project_goals);
-      if (project_outputs) {
-        updateProposalPayload.project_outputs = project_outputs;
-      }
-      if (project_strengths) {
-        updateProposalPayload.project_strengths = project_strengths;
-      }
-      project_risks && (updateProposalPayload.project_risks = project_risks);
-      message = message + ` some changes from2 has been applied.`;
-    }
-
-    if (updateProposal.form3) {
-      const { pm_name, pm_mobile, pm_email, region, governorate } =
-        updateProposal.form3;
-
-      pm_name && (updateProposalPayload.pm_name = pm_name);
-      pm_mobile && (updateProposalPayload.pm_mobile = pm_mobile);
-      pm_email && (updateProposalPayload.pm_email = pm_email);
-      region && (updateProposalPayload.region = region);
-      governorate && (updateProposalPayload.governorate = governorate);
-      message = message + ` some changes from3 has been applied.`;
-    }
-
-    if (updateProposal.form4) {
-      // proposal item budgets payload.
-      itemBudgets = updateProposal.form4.detail_project_budgets.map(
-        (item_budget) => {
-          const itemBudget = {
-            id: uuidv4(),
-            proposal_id: updateProposal.proposal_id,
-            amount: new Prisma.Decimal(item_budget.amount),
-            clause: item_budget.clause,
-            explanation: item_budget.explanation,
-            created_at: new Date(),
-            updated_at: new Date(),
-          };
-          return itemBudget;
-        },
-      );
-
-      if (updateProposal.form4.amount_required_fsupport) {
-        updateProposalPayload.amount_required_fsupport = new Prisma.Decimal(
-          updateProposal.form4.amount_required_fsupport,
-        );
-      }
-
-      message = message + ` some changes from4 has been applied.`;
-    }
-
-    if (updateProposal.form5) {
-      if (updateProposal.form5.proposal_bank_information_id) {
-        updateProposalPayload.bank_information = {
-          connect: {
-            id: updateProposal.form5.proposal_bank_information_id,
-          },
-        };
-      }
-      message = message + ` some changes from5 has been applied.`;
-    }
-
-    let update: proposal | null = null;
-    // if updateProposalPayload !== {} then update the proposal
-    if (Object.keys(updateProposalPayload).length > 0) {
-      const updatedProposal =
-        await this.tenderProposalRepository.updateProposal(
-          updateProposal.proposal_id,
-          updateProposalPayload,
-          itemBudgets,
-        );
-
-      if (Array.isArray(updatedProposal)) {
-        update = updatedProposal[2];
-      } else {
-        update = updatedProposal;
-      }
-    }
-    if (!update) message = 'No changes made to proposal';
-
-    let response: UpdateProposalResponseDto = {
-      currentProposal: proposal,
-      updatedProposal: update,
-      details: message,
-    };
-
-    return response;
+    return updatedProposal;
   }
 
   async changeProposalState(

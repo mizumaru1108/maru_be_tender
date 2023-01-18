@@ -1,18 +1,25 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsNotEmpty,
-  IsNotEmptyObject,
   IsNumber,
   IsOptional,
   IsString,
   IsUUID,
+  Max,
   Min,
   ValidateNested,
 } from 'class-validator';
 import { TenderFilePayload } from '../../../../tender-commons/dto/tender-file-payload.dto';
 
-class CreateProjectBudgetDto {
+export class CreateProjectBudgetDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  id?: string;
+
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -24,8 +31,9 @@ class CreateProjectBudgetDto {
   explanation: string;
 
   @ApiProperty()
-  @IsNumber()
-  @Min(1)
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0.01)
+  @Max(999999999999999999.99)
   amount: number;
 }
 
@@ -77,8 +85,9 @@ export class ProposalCreateDto {
   /* second form ---------------------------------------------------- */
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNumber()
-  @IsNotEmpty()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0.01)
+  @Max(999999999999999999.99)
   num_ofproject_binicficiaries?: number;
 
   @ApiPropertyOptional()
@@ -141,16 +150,17 @@ export class ProposalCreateDto {
   /* fourth form ---------------------------------------------------- */
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  amount_required_fsupport?: string;
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0.01)
+  @Max(999999999999999999.99)
+  amount_required_fsupport?: number;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmptyObject()
-  @Type(() => CreateProjectBudgetDto)
+  @IsArray()
   @ValidateNested()
-  detail_project_budgets?: CreateProjectBudgetDto;
+  @Type(() => CreateProjectBudgetDto)
+  detail_project_budgets?: CreateProjectBudgetDto[];
   /* fourth form ---------------------------------------------------- */
 
   /* fifth form ---------------------------------------------------- */

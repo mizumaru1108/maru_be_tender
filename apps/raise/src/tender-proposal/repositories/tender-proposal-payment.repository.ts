@@ -116,7 +116,7 @@ export class TenderProposalPaymentRepository {
             logs,
           };
         },
-        { maxWait: 5000, timeout: 15000 },
+        { maxWait: 50000, timeout: 150000 },
       );
     } catch (error) {
       const theError = prismaErrorThrower(

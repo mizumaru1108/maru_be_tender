@@ -6,6 +6,7 @@ export const CreateProposalMapper = (
   submitter_user_id: string,
   payload: ProposalCreateDto,
 ): Prisma.proposalUncheckedCreateInput => {
+  console.log('on mapper');
   const {
     /* from (step 1) */
     project_name,
@@ -30,6 +31,7 @@ export const CreateProposalMapper = (
     governorate,
     /* from (step 4) */
     amount_required_fsupport,
+    detail_project_budgets,
     /* from (step 5) */
     proposal_bank_information_id,
   } = payload;
@@ -43,15 +45,15 @@ export const CreateProposalMapper = (
   /* form 1 */
   createPayload.project_idea = project_idea;
   createPayload.project_location = project_location;
-  createPayload.project_implement_date = project_implement_date;
+  createPayload.project_implement_date = new Date(project_implement_date);
   createPayload.execution_time = execution_time;
   createPayload.project_beneficiaries = project_beneficiaries;
   if (
-    project_idea &&
-    project_location &&
-    project_implement_date &&
-    execution_time &&
-    project_beneficiaries
+    !!project_idea &&
+    !!project_location &&
+    !!project_implement_date &&
+    !!execution_time &&
+    !!project_beneficiaries
   ) {
     createPayload.step = 'FIRST';
   }
@@ -65,16 +67,16 @@ export const CreateProposalMapper = (
   project_strengths && (createPayload.project_strengths = project_strengths);
   project_risks && (createPayload.project_risks = project_risks);
   if (
-    project_idea &&
-    project_location &&
-    project_implement_date &&
-    execution_time &&
-    project_beneficiaries &&
-    num_ofproject_binicficiaries &&
-    project_goals &&
-    project_outputs &&
-    project_strengths &&
-    project_risks
+    !!project_idea &&
+    !!project_location &&
+    !!project_implement_date &&
+    !!execution_time &&
+    !!project_beneficiaries &&
+    !!num_ofproject_binicficiaries &&
+    !!project_goals &&
+    !!project_outputs &&
+    !!project_strengths &&
+    !!project_risks
   ) {
     createPayload.step = 'SECOND';
   }
@@ -86,21 +88,22 @@ export const CreateProposalMapper = (
   region && (createPayload.region = region);
   governorate && (createPayload.governorate = governorate);
   if (
-    project_idea &&
-    project_location &&
-    project_implement_date &&
-    execution_time &&
-    project_beneficiaries &&
-    num_ofproject_binicficiaries &&
-    project_goals &&
-    project_outputs &&
-    project_strengths &&
-    project_risks &&
-    pm_name &&
-    pm_mobile &&
-    pm_email &&
-    region &&
-    governorate
+    !!project_idea &&
+    !!project_location &&
+    !!project_implement_date &&
+    !!execution_time &&
+    !!project_beneficiaries &&
+    !!num_ofproject_binicficiaries &&
+    !!project_goals &&
+    !!project_outputs &&
+    !!project_strengths &&
+    !!project_risks &&
+    !!pm_name &&
+    !!pm_name &&
+    !!pm_mobile &&
+    !!pm_email &&
+    !!region &&
+    !!governorate
   ) {
     createPayload.step = 'THIRD';
   }
@@ -110,48 +113,47 @@ export const CreateProposalMapper = (
     createPayload.amount_required_fsupport = amount_required_fsupport;
   }
   if (
-    project_idea &&
-    project_location &&
-    project_implement_date &&
-    execution_time &&
-    project_beneficiaries &&
-    num_ofproject_binicficiaries &&
-    project_goals &&
-    project_outputs &&
-    project_strengths &&
-    project_risks &&
-    pm_name &&
-    pm_mobile &&
-    pm_email &&
-    region &&
-    governorate &&
-    amount_required_fsupport
+    !!project_idea &&
+    !!project_location &&
+    !!project_implement_date &&
+    !!execution_time &&
+    !!project_beneficiaries &&
+    !!num_ofproject_binicficiaries &&
+    !!project_goals &&
+    !!project_outputs &&
+    !!project_strengths &&
+    !!project_risks &&
+    !!pm_name &&
+    !!pm_mobile &&
+    !!pm_email &&
+    !!region &&
+    !!governorate &&
+    !!amount_required_fsupport &&
+    !!detail_project_budgets
   ) {
     createPayload.step = 'FOURTH';
   }
 
   /* form 5 */
-  if (proposal_bank_information_id) {
-    createPayload.proposal_bank_id = proposal_bank_information_id;
-  }
   if (
-    project_idea &&
-    project_location &&
-    project_implement_date &&
-    execution_time &&
-    project_beneficiaries &&
-    num_ofproject_binicficiaries &&
-    project_goals &&
-    project_outputs &&
-    project_strengths &&
-    project_risks &&
-    pm_name &&
-    pm_mobile &&
-    pm_email &&
-    region &&
-    governorate &&
-    amount_required_fsupport &&
-    proposal_bank_information_id
+    !!project_idea &&
+    !!project_location &&
+    !!project_implement_date &&
+    !!execution_time &&
+    !!project_beneficiaries &&
+    !!num_ofproject_binicficiaries &&
+    !!project_goals &&
+    !!project_outputs &&
+    !!project_strengths &&
+    !!project_risks &&
+    !!pm_name &&
+    !!pm_mobile &&
+    !!pm_email &&
+    !!region &&
+    !!governorate &&
+    !!amount_required_fsupport &&
+    !!detail_project_budgets &&
+    !!proposal_bank_information_id
   ) {
     createPayload.step = 'ZERO';
   }

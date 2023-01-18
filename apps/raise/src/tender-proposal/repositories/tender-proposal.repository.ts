@@ -15,31 +15,131 @@ export class TenderProposalRepository {
     private readonly bunnyService: BunnyService,
   ) {}
 
-  async createProposal(
+  async validateOwnBankAccount(user_id: string, bank_id: string) {
+    try {
+      const bankAccount = await this.prismaService.bank_information.findFirst({
+        where: {
+          user_id,
+          id: bank_id,
+        },
+      });
+      return bankAccount;
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalRepository.name,
+        'fetchProposalById error details: ',
+        'finding proposal!',
+      );
+      throw theError;
+    }
+  }
+
+  async create(
     createProposalPayload: Prisma.proposalUncheckedCreateInput,
     project_attachment_path: string | undefined,
     letter_of_support_path: string | undefined,
+    proposal_item_budgets:
+      | Prisma.proposal_item_budgetCreateManyInput[]
+      | undefined,
   ) {
+    this.logger.log(
+      'info',
+      'Creating proposal with payload: ',
+      createProposalPayload,
+    );
     try {
-      return await this.prismaService.$transaction(async (prisma) => {
-        const proposal = await prisma.proposal.create({
-          data: {
-            ...createProposalPayload,
-          },
-        });
+      return await this.prismaService.$transaction(
+        async (prisma) => {
+          const proposal = await prisma.proposal.create({
+            data: {
+              ...createProposalPayload,
+            },
+          });
 
-        await prisma.proposal_log.create({
-          data: {
-            id: nanoid(),
-            proposal_id: proposal.id,
-            state: 'CLIENT',
-            user_role: 'CLIENT',
-          },
-        });
-        return proposal;
-      });
+          if (proposal_item_budgets) {
+            await prisma.proposal_item_budget.createMany({
+              data: proposal_item_budgets,
+            });
+          }
+
+          await prisma.proposal_log.create({
+            data: {
+              id: nanoid(),
+              proposal_id: proposal.id,
+              state: 'CLIENT',
+              user_role: 'CLIENT',
+            },
+          });
+          return proposal;
+        },
+        { maxWait: 50000, timeout: 150000 },
+      );
     } catch (error) {
       // if error
+      if (project_attachment_path) {
+        this.logger.log(
+          'info',
+          'Proposal failed to be created, deleting project attachemmt!',
+        );
+        await this.bunnyService.deleteMedia(project_attachment_path, true);
+      }
+      if (letter_of_support_path) {
+        this.logger.log(
+          'info',
+          'Proposal failed to be created, deleting letter of support!',
+        );
+        await this.bunnyService.deleteMedia(letter_of_support_path, true);
+      }
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalRepository.name,
+        'fetchProposalById error details: ',
+        'finding proposal!',
+      );
+      throw theError;
+    }
+  }
+
+  async saveDraft(
+    proposal_id: string,
+    createProposalPayload: Prisma.proposalUncheckedUpdateInput,
+    project_attachment_path: string | undefined,
+    letter_of_support_path: string | undefined,
+    proposal_item_budgets:
+      | Prisma.proposal_item_budgetCreateManyInput[]
+      | undefined,
+  ) {
+    try {
+      return await this.prismaService.$transaction(
+        async (prisma) => {
+          const proposal = await prisma.proposal.update({
+            where: {
+              id: proposal_id,
+            },
+            data: {
+              ...createProposalPayload,
+            },
+          });
+
+          if (proposal_item_budgets) {
+            await prisma.proposal_item_budget.deleteMany({
+              where: {
+                proposal_id: proposal.id,
+              },
+            });
+
+            await prisma.proposal_item_budget.createMany({
+              data: proposal_item_budgets,
+            });
+          }
+
+          return proposal;
+        },
+        { maxWait: 50000, timeout: 150000 },
+      );
+    } catch (error) {
+      // if error delete all media
       if (project_attachment_path) {
         await this.bunnyService.deleteMedia(project_attachment_path, true);
       }

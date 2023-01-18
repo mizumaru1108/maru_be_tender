@@ -115,6 +115,8 @@ export class BunnyService {
         'Content-Type': 'application/octet-stream',
         AccessKey: this.storageAccessKey,
       },
+      maxBodyLength: Infinity,
+      maxContentLength: Infinity,
       data: binary,
       url: mediaUrl,
     };
@@ -205,6 +207,8 @@ export class BunnyService {
         'Content-Type': 'application/octet-stream',
         AccessKey: this.storageAccessKey,
       },
+      maxBodyLength: Infinity,
+      maxContentLength: Infinity,
       data: file.buffer,
       url: mediaUrl,
     };
@@ -250,6 +254,8 @@ export class BunnyService {
         'Content-Type': 'application/octet-stream',
         AccessKey: this.storageAccessKey,
       },
+      maxBodyLength: Infinity,
+      maxContentLength: Infinity,
       data: fileBuffer,
       url: storageUrlMedia,
     };

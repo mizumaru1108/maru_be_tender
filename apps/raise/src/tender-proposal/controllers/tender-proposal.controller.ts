@@ -45,7 +45,7 @@ export class TenderProposalController {
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() payload: ProposalCreateDto,
   ) {
-    const createdProposal = await this.tenderProposalService.createProposal(
+    const createdProposal = await this.tenderProposalService.create(
       currentUser.id,
       payload,
     );
@@ -57,21 +57,21 @@ export class TenderProposalController {
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @Patch('update-draft')
-  async updateDraft(
+  @TenderRoles('tender_client')
+  @Patch('save-draft')
+  async saveDraft(
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: ProposalSaveDraftDto,
   ) {
-    console.log('request', request.project_attachments);
-    // const updateResponse = await this.tenderProposalService.updateDraft(
-    //   currentUser.id,
-    //   request,
-    // );
-    // return baseResponseHelper(
-    //   updateResponse,
-    //   HttpStatus.OK,
-    //   'Proposal updated successfully',
-    // );
+    const updateResponse = await this.tenderProposalService.saveDraft(
+      currentUser.id,
+      request,
+    );
+    return baseResponseHelper(
+      updateResponse,
+      HttpStatus.OK,
+      'Proposal updated successfully',
+    );
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)

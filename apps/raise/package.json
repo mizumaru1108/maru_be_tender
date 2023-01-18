@@ -55,6 +55,7 @@
     "handlebars": "^4.7.7",
     "joi": "^17.7.0",
     "lodash": "^4.17.21",
+    "lru-cache": "^7.14.1",
     "mercurius": "^10.1.0",
     "moment": "^2.29.3",
     "mongodb": "^4.4.1",

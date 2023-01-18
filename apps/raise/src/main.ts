@@ -23,6 +23,11 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter({
       logger: process.env.LOG_FORMAT === 'ecs' ? pinoLogger : true,
+      // in express we can use json and urlencoded. u can see in code that i define below
+      bodyLimit: 100000000, // prevent 413 Payload Too Large (fastify)
+      // how to limit json and urlencoded (form submit) in express
+      // app.use(json({ limit: '50mb' }));
+      // app.use(urlencoded({ limit: '50mb', extended: true }));
     }),
     {
       logger: WinstonModule.createLogger({
