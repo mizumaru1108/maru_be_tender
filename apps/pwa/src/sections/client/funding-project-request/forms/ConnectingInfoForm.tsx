@@ -79,7 +79,7 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            type="select"
+            type="selectWithoutGenerator"
             name="region"
             label="funding_project_request_form3.region.label"
             placeholder="funding_project_request_form3.region.placeholder"
@@ -95,7 +95,7 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            type="select"
+            type="selectWithoutGenerator"
             name="governorate"
             label="funding_project_request_form3.city.label"
             placeholder="funding_project_request_form3.city.placeholder"

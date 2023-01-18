@@ -6,6 +6,7 @@ import useAuth from 'hooks/useAuth';
 import { useQuery } from 'urql';
 import { ReactComponent as MovingBack } from '../../../../assets/move-back-icon.svg';
 import useLocales from 'hooks/useLocales';
+import { LoadingButton } from '@mui/lab';
 
 type Props = {
   onSubmit: (data: any) => void;
@@ -13,9 +14,18 @@ type Props = {
   defaultValues: any;
   onReturn: () => void;
   onSavingDraft: () => void;
+  onLoader: (value: boolean) => void;
+  isLoading?: boolean;
   lastStep?: boolean;
 };
-const SupportingDurationInfoForm = ({ onReturn, onSavingDraft, lastStep, onSubmit }: Props) => {
+const SupportingDurationInfoForm = ({
+  onReturn,
+  onSavingDraft,
+  lastStep,
+  onSubmit,
+  onLoader,
+  isLoading,
+}: Props) => {
   const { user } = useAuth();
 
   const { translate } = useLocales();
@@ -35,7 +45,10 @@ const SupportingDurationInfoForm = ({ onReturn, onSavingDraft, lastStep, onSubmi
     if (selectedCard === '') {
       setOpenError(true);
       window.scrollTo(0, 0);
-    } else onSubmit(selectedCard);
+    } else {
+      onLoader(true);
+      onSubmit(selectedCard);
+    }
   };
 
   const [selectedCard, setSelectedCard] = useState<string>('');
@@ -107,9 +120,10 @@ const SupportingDurationInfoForm = ({ onReturn, onSavingDraft, lastStep, onSubmi
             }}
           >
             <Stack justifyContent="center" direction="row" gap={3}>
-              <Button
+              <LoadingButton
+                loading={isLoading}
                 onClick={onReturn}
-                endIcon={<MovingBack />}
+                endIcon={!isLoading && <MovingBack />}
                 sx={{
                   color: 'text.primary',
                   width: { xs: '100%', sm: '200px' },
@@ -117,9 +131,10 @@ const SupportingDurationInfoForm = ({ onReturn, onSavingDraft, lastStep, onSubmi
                 }}
               >
                 {translate('going_back_one_step')}
-              </Button>
+              </LoadingButton>
               <Box sx={{ width: '10px' }} />
-              <Button
+              <LoadingButton
+                loading={isLoading}
                 variant="outlined"
                 sx={{
                   color: 'text.primary',
@@ -132,8 +147,9 @@ const SupportingDurationInfoForm = ({ onReturn, onSavingDraft, lastStep, onSubmi
                 disabled
               >
                 {translate('saving_as_draft')}
-              </Button>
-              <Button
+              </LoadingButton>
+              <LoadingButton
+                loading={isLoading}
                 onClick={onBankInfoSubmit}
                 variant="outlined"
                 sx={{
@@ -146,7 +162,7 @@ const SupportingDurationInfoForm = ({ onReturn, onSavingDraft, lastStep, onSubmi
                 disabled={agreeOn ? false : true}
               >
                 {lastStep ? translate('send') : translate('next')}
-              </Button>
+              </LoadingButton>
             </Stack>
           </Box>
         </Stack>

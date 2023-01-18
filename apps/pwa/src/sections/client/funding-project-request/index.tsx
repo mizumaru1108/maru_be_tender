@@ -31,7 +31,7 @@ const STEP = ['FIRST', 'SECOND', 'THIRD', 'FOURTH'];
 
 const FundingProjectRequestForm = () => {
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, activeRole } = useAuth();
   const navigate = useNavigate();
   const { translate } = useLocales();
 
@@ -58,8 +58,22 @@ const FundingProjectRequestForm = () => {
       project_implement_date: '',
       execution_time: '',
       project_beneficiaries: '',
-      letter_ofsupport_req: { url: '', size: undefined, type: '' },
-      project_attachments: { url: '', size: undefined, type: '' },
+      letter_ofsupport_req: {
+        url: '',
+        size: undefined,
+        type: '',
+        base64Data: '',
+        fileExtension: '',
+        fullName: '',
+      },
+      project_attachments: {
+        url: '',
+        size: undefined,
+        type: '',
+        base64Data: '',
+        fileExtension: '',
+        fullName: '',
+      },
       project_beneficiaries_specific_type: '',
     },
     form2: {
@@ -88,15 +102,19 @@ const FundingProjectRequestForm = () => {
   const [requestState, setRequestState] = useState(defaultValues);
   const isMobile = useResponsive('down', 'sm');
   const [step, setStep] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   // on submit for the first step
   const onSubmitform1 = (data: any) => {
+    setIsLoading(false);
+    const newData = { ...data };
+    const newExTime = Number(data.execution_time);
+    newData.execution_time = String(newExTime * 60);
     setStep((prevStep) => prevStep + 1);
     setRequestState((prevRegisterState: any) => ({
       ...prevRegisterState,
       form1: {
-        ...prevRegisterState.form1,
-        ...data,
+        ...newData,
       },
     }));
   };
@@ -143,42 +161,85 @@ const FundingProjectRequestForm = () => {
 
   // on submit for creating a new project
   const onSubmit = async (data: any) => {
-    const { project_beneficiaries_specific_type, ...restData } = requestState.form1;
-
-    setRequestState((prevRegisterState: any) => ({
-      ...prevRegisterState,
+    setIsLoading(true);
+    const createdProposel = {
+      ...(step >= 1 && { ...requestState.form1 }),
+      ...(step >= 2 && { ...requestState.form2 }),
+      ...(step >= 3 && { ...requestState.form3 }),
+      ...(step >= 4 && {
+        amount_required_fsupport: requestState.form4.amount_required_fsupport,
+        detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
+      }),
+      // no need to save the proposal_bank_informations
+      submitter_user_id: user?.id,
       proposal_bank_id: data,
-    }));
-    if (id) {
-      const res = await updateDraft({
-        id,
-        update: {
-          ...requestState.form1,
-          ...requestState.form2,
-          ...requestState.form3,
-          amount_required_fsupport: requestState.form4.amount_required_fsupport,
-          proposal_item_budgets: requestState.form4.detail_project_budgets,
-          proposal_bank_id: data,
-          step: 'ZERO',
+      id: nanoid(),
+      step: STEP[step - 1],
+    };
+    console.log({ createdProposel });
+    try {
+      const rest = await axiosInstance.post(
+        'tender-proposal/create',
+        {
+          ...createdProposel,
         },
-      });
-      if (res.error === undefined) navigate('/client/dashboard/app');
-    } else {
-      const res = await createProposal({
-        createdProposel: {
-          ...restData,
-          ...requestState.form2,
-          ...requestState.form3,
-          amount_required_fsupport: requestState.form4.amount_required_fsupport,
-          proposal_item_budgets: requestState.form4.detail_project_budgets,
-          proposal_bank_id: data,
-          submitter_user_id: user?.id,
-          id: nanoid(),
-          step: 'ZERO',
-        },
-      });
-      if (res.error === undefined) navigate('/client/dashboard/app');
+        {
+          headers: { 'x-hasura-role': activeRole! },
+          maxBodyLength: Infinity,
+          maxContentLength: Infinity,
+        }
+      );
+      // setIsLoading(false);
+      console.log({ rest });
+      if (rest) {
+        const spreadUrl = location.pathname.split('/');
+        // history.push('/dashboard');
+        navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/app`);
+      } else {
+        setIsLoading(false);
+        alert('Something went wrong');
+      }
+    } catch (err) {
+      console.log(err);
+      setIsLoading(false);
     }
+
+    // // const { project_beneficiaries_specific_type, ...restData } = requestState.form1;
+
+    // setRequestState((prevRegisterState: any) => ({
+    //   ...prevRegisterState,
+    //   proposal_bank_id: data,
+    // }));
+    // if (id) {
+    //   const res = await updateDraft({
+    //     id,
+    //     update: {
+    //       ...requestState.form1,
+    //       ...requestState.form2,
+    //       ...requestState.form3,
+    //       amount_required_fsupport: requestState.form4.amount_required_fsupport,
+    //       proposal_item_budgets: requestState.form4.detail_project_budgets,
+    //       proposal_bank_id: data,
+    //       step: 'ZERO',
+    //     },
+    //   });
+    //   if (res.error === undefined) navigate('/client/dashboard/app');
+    // } else {
+    //   const res = await createProposal({
+    //     createdProposel: {
+    //       ...restData,
+    //       ...requestState.form2,
+    //       ...requestState.form3,
+    //       amount_required_fsupport: requestState.form4.amount_required_fsupport,
+    //       proposal_item_budgets: requestState.form4.detail_project_budgets,
+    //       proposal_bank_id: data,
+    //       submitter_user_id: user?.id,
+    //       id: nanoid(),
+    //       step: 'ZERO',
+    //     },
+    //   });
+    //   if (res.error === undefined) navigate('/client/dashboard/app');
+    // }
   };
 
   // on saving function and also update a draft one
@@ -196,48 +257,66 @@ const FundingProjectRequestForm = () => {
       id: nanoid(),
       step: STEP[step - 1],
     };
-    if (id) {
-      const res = await axiosInstance.post('/tender-proposal/update-draft', {
-        ...(step >= 1 && { form: requestState.form1 }),
-        ...(step >= 2 && { form2: requestState.form2 }),
-        ...(step >= 3 && { form3: requestState.form3 }),
-        ...(step >= 4 && {
-          amount_required_fsupport: requestState.form4.amount_required_fsupport,
-          proposal_item_budgets: requestState.form4.detail_project_budgets,
-        }),
-      });
-      // const res = axios.post(
-      //   'https://api-staging.tmra.io/v2/raise/tender-proposal/update-draft',
-      // {
-      //   ...(step >= 1 && { form: requestState.form1 }),
-      //   ...(step >= 2 && { form2: requestState.form2 }),
-      //   ...(step >= 3 && { form3: requestState.form3 }),
-      //   ...(step >= 4 && {
-      //     amount_required_fsupport: requestState.form4.amount_required_fsupport,
-      //     proposal_item_budgets: requestState.form4.detail_project_budgets,
-      //   }),
-      // },
-      //   {
-      //     headers: {
-      //       Accept: 'application/json',
-      //       'Content-Type': 'application/json',
-      //       'X-Requested-With': 'XMLHttpRequest',
-      //       Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      //     },
-      //   }
-      // );
-      console.log(res);
-      // const res = await updateDraft({
-      //   id,
-      //   update: createdProposel,
-      // });
-      // if (res.error === undefined) navigate(-1);
-    } else {
-      const res = await createProposal({
-        createdProposel,
-      });
-      if (res.error === undefined) navigate(-1);
-    }
+    console.log({ createdProposel });
+    // try {
+    //   await axiosInstance.post(
+    //     'tender-proposal/create',
+    //     {
+    //       ...createdProposel,
+    //     },
+    //     {
+    //       headers: { 'x-hasura-role': activeRole! },
+    //       maxBodyLength: Infinity,
+    //       maxContentLength: Infinity,
+    //     }
+    //   );
+    //   setIsLoading(false);
+    // } catch (err) {
+    //   console.log(err);
+    //   setIsLoading(false);
+    // }
+    // if (id) {
+    //   const res = await axiosInstance.post('/tender-proposal/update-draft', {
+    //     ...(step >= 1 && { form: requestState.form1 }),
+    //     ...(step >= 2 && { form2: requestState.form2 }),
+    //     ...(step >= 3 && { form3: requestState.form3 }),
+    //     ...(step >= 4 && {
+    //       amount_required_fsupport: requestState.form4.amount_required_fsupport,
+    //       proposal_item_budgets: requestState.form4.detail_project_budgets,
+    //     }),
+    //   });
+    //   // const res = axios.post(
+    //   //   'https://api-staging.tmra.io/v2/raise/tender-proposal/update-draft',
+    //   // {
+    //   //   ...(step >= 1 && { form: requestState.form1 }),
+    //   //   ...(step >= 2 && { form2: requestState.form2 }),
+    //   //   ...(step >= 3 && { form3: requestState.form3 }),
+    //   //   ...(step >= 4 && {
+    //   //     amount_required_fsupport: requestState.form4.amount_required_fsupport,
+    //   //     proposal_item_budgets: requestState.form4.detail_project_budgets,
+    //   //   }),
+    //   // },
+    //   //   {
+    //   //     headers: {
+    //   //       Accept: 'application/json',
+    //   //       'Content-Type': 'application/json',
+    //   //       'X-Requested-With': 'XMLHttpRequest',
+    //   //       Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+    //   //     },
+    //   //   }
+    //   // );
+    //   console.log(res);
+    //   // const res = await updateDraft({
+    //   //   id,
+    //   //   update: createdProposel,
+    //   // });
+    //   // if (res.error === undefined) navigate(-1);
+    // } else {
+    //   const res = await createProposal({
+    //     createdProposel,
+    //   });
+    //   if (res.error === undefined) navigate(-1);
+    // }
   };
 
   // on return
@@ -402,14 +481,18 @@ const FundingProjectRequestForm = () => {
             onReturn={onReturn}
             onSavingDraft={onSavingDraft}
             onSubmit={onSubmit}
+            onLoader={(load) => setIsLoading(load)}
+            isLoading={isLoading}
             defaultValues={requestState?.proposal_bank_id}
           >
-            <ActionBox
-              step={step}
-              lastStep={true}
-              onReturn={onReturn}
-              onSavingDraft={onSavingDraft}
-            />
+            {/* <ActionBox
+                step={step}
+                lastStep={true}
+                onReturn={onReturn}
+                onSavingDraft={onSavingDraft}
+                setLoader={(load) => setIsLoading(load)}
+                isLoading={isLoading}
+              /> */}
           </SupportingDurationInfoForm>
         )}
       </Container>

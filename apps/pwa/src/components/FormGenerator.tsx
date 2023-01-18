@@ -6,9 +6,11 @@ import BaseField from './hook-form/BaseField';
 
 type FieldType =
   | 'select'
+  | 'selectWithoutGenerator'
   | 'datePicker'
   | 'textField'
   | 'upload'
+  | 'uploadBe'
   | 'uploadLabel'
   | 'textArea'
   | 'repeater'
@@ -16,7 +18,8 @@ type FieldType =
   | 'radioGroup'
   | 'repeaterLabel'
   | 'password'
-  | 'checkboxMulti';
+  | 'checkboxMulti'
+  | 'numberField';
 
 // ----------------------------------------------------------------------
 

@@ -1,11 +1,6 @@
 import { Box, Button, Typography } from '@mui/material';
 import useLocales from 'hooks/useLocales';
-import moment from 'moment';
-import React from 'react';
-import { useParams } from 'react-router';
-import { useQuery } from 'urql';
 import { ProjectOwnerDetails } from '../../../@types/project-details';
-import { getSummaryProjectOwner } from '../../../queries/client/getSummaryProjectOwner';
 
 // ----------------------------------------------------------------------
 const StylTextContent = {
@@ -19,66 +14,37 @@ const StylTextTitle = {
   fontFamily: 'Cairo',
 };
 // ----------------------------------------------------------------------
+interface SummaryClientInfoProps {
+  dataClient: ProjectOwnerDetails;
+}
 
-function SummaryClientInfo() {
-  const [userInfo, setUserInfo] = React.useState<ProjectOwnerDetails>({
-    entity: 'maru',
-    // email: 'maru@gmail.com',
-    user: {
-      email: 'maru@gmail.com',
-    },
-    phone: '01000000000',
-    region: 'Indonesia',
-    governorate: 'DKI Jakarta',
-    center_administration: 'Jakarta Selatan',
-    license_number: '123456789',
-    license_issue_date: moment().format('YYYY-MM-DD'),
-  });
-  const { id, submiterId } = useParams();
-
+function SummaryClientInfo({ dataClient }: SummaryClientInfoProps) {
   const { translate } = useLocales();
 
-  const [result, _] = useQuery({
-    query: getSummaryProjectOwner,
-    variables: { id: submiterId },
-  });
-
-  const { fetching, data, error } = result;
-
-  React.useEffect(() => {
-    if (data) {
-      // console.log('data', data.user_by_pk.client_data);
-      setUserInfo(data.user_by_pk.client_data);
-    }
-  }, [data, submiterId]);
-
-  if (fetching) return <>Loading ....</>;
-
-  if (error) return <>{error.message}</>;
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row', gap: 2 }}>
       <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
         <Typography sx={StylTextTitle}>
           {translate('project_owner_details.summary.title_main')}
         </Typography>
-        <Typography sx={StylTextContent}>{userInfo.entity}</Typography>
-        <Typography sx={StylTextContent}>{userInfo.user.email}</Typography>
-        <Typography sx={StylTextContent}>{userInfo.phone}</Typography>
+        <Typography sx={StylTextContent}>{dataClient.entity}</Typography>
+        <Typography sx={StylTextContent}>{dataClient.user.email}</Typography>
+        <Typography sx={StylTextContent}>{dataClient.phone}</Typography>
       </Box>
       <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
         <Typography sx={StylTextTitle}>
           {translate('project_owner_details.summary.title_contact')}
         </Typography>
-        <Typography sx={StylTextContent}>{userInfo.region}</Typography>
-        <Typography sx={StylTextContent}>{userInfo.governorate}</Typography>
-        <Typography sx={StylTextContent}>{userInfo.center_administration}</Typography>
+        <Typography sx={StylTextContent}>{dataClient.region}</Typography>
+        <Typography sx={StylTextContent}>{dataClient.governorate}</Typography>
+        <Typography sx={StylTextContent}>{dataClient.center_administration}</Typography>
       </Box>
       <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
         <Typography sx={StylTextTitle}>
           {translate('project_owner_details.summary.title_license')}
         </Typography>
-        <Typography sx={StylTextContent}>{userInfo.license_number}</Typography>
-        <Typography sx={StylTextContent}>{userInfo.license_issue_date}</Typography>
+        <Typography sx={StylTextContent}>{dataClient.license_number}</Typography>
+        <Typography sx={StylTextContent}>{dataClient.license_issue_date}</Typography>
         <Typography sx={StylTextContent}>{'Classification'}</Typography>
       </Box>
       <Box

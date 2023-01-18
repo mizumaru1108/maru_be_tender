@@ -154,10 +154,14 @@ const ar = {
       letter_ofsupport_req: {
         message: '',
         required: 'خطاب طلب الدعم مطلوب',
+        fileSize: 'يجب أن يكون حجم الملف أقل من 5 ميغابايت',
+        fileExtension: 'يجب أن يكون امتداد الملف واحد من الأمتدادات التالية: pdf, png, jpg, jpeg',
       },
       project_attachments: {
         message: '',
         required: 'مرفقات المشروع مطلوبة',
+        fileSize: 'يجب أن يكون حجم الملف أقل من 5 ميغابايت',
+        fileExtension: 'يجب أن يكون امتداد الملف واحد من الأمتدادات التالية: pdf, png, jpg, jpeg',
       },
       project_beneficiaries_specific_type: {
         message: '',
@@ -501,7 +505,7 @@ const ar = {
     },
     applying_duration: {
       label: 'مدة التنفيذ*',
-      placeholder: 'الرجاء تحديد مدة التنفيذ',
+      placeholder: 'الرجاء تحديد مدة التنفيذ (بالساعات)',
     },
     target_group_type: {
       label: 'نوع الفئة المستهدفة*',
@@ -1207,6 +1211,7 @@ const ar = {
     card_content: 'الجمعية للدعم والإرشاد والوعي الاجتماعي في منطقة الصناعة الجديدة في الرياض',
     card_href: 'عرض جميع المشاريع للشريك',
     client_details_header: 'ملف العميل',
+    table_title: 'المشاريع بواسطة',
     summary: {
       title_main: 'المعلومات الرئيسية',
       title_contact: 'معلومات الاتصال',

@@ -11,6 +11,8 @@ import { RHFCheckbox, RHFMultiCheckbox } from './RHFCheckbox';
 import RHFTextArea from './RHFTextArea';
 import RHFRadioGroup from './RHFRadioGroup';
 import RHFPassword from './RHFPassword';
+import { RHFUploadSingleFileBe } from './RHFUploadBe';
+import RHFSelectNoGenerator from './RHFSelectNoGen';
 
 const LabelStyle = styled(Typography)(({ theme }) => ({
   ...theme.typography.subtitle2,
@@ -48,6 +50,16 @@ function BaseField({
           {children}
         </RHFSelect>
       )}
+      {type === 'selectWithoutGenerator' && (
+        <RHFSelectNoGenerator
+          name={name ?? ''}
+          label={translate(label)}
+          placeholder={translate(placeholder) ?? ''}
+          {...other}
+        >
+          {children}
+        </RHFSelectNoGenerator>
+      )}
       {type === 'datePicker' && (
         <RHFDatePicker
           name={name ?? ''}
@@ -65,10 +77,22 @@ function BaseField({
           {...other}
         />
       )}
+      {type === 'numberField' && (
+        <RHFTextField
+          type="number"
+          name={name ?? ''}
+          label={translate(label)}
+          placeholder={translate(placeholder)}
+          {...other}
+        />
+      )}
       {type === 'uploadLabel' && <LabelStyle>{translate(label)}</LabelStyle>}
       {type === 'checkbox' && <RHFCheckbox name={name ?? ''} label={translate(label)} {...other} />}
       {type === 'upload' && (
         <RHFUploadSingleFile name={name ?? ''} placeholder={translate(placeholder)} {...other} />
+      )}
+      {type === 'uploadBe' && (
+        <RHFUploadSingleFileBe name={name ?? ''} placeholder={translate(placeholder)} {...other} />
       )}
       {type === 'textArea' && (
         <RHFTextArea

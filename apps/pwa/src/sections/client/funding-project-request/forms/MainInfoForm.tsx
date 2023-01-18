@@ -42,16 +42,70 @@ const MainInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
     project_beneficiaries: Yup.string().required(
       translate('errors.cre_proposal.project_beneficiaries.required')
     ),
-    letter_ofsupport_req: Yup.object().shape({
-      url: Yup.string().required(),
-      size: Yup.number(),
-      type: Yup.string().required(),
-    }),
-    project_attachments: Yup.object().shape({
-      url: Yup.string().required(),
-      size: Yup.number(),
-      type: Yup.string().required(),
-    }),
+    // letter_ofsupport_req: Yup.object().shape({
+    //   url: Yup.string().required(),
+    //   size: Yup.number(),
+    //   type: Yup.string().required(),
+    // }),
+    letter_ofsupport_req: Yup.mixed()
+      .test('size', translate('errors.cre_proposal.letter_ofsupport_req.fileSize'), (value) => {
+        if (value) {
+          const trueSize = value.size * 28;
+          if (trueSize > 1024 * 1024 * 10) {
+            return false;
+          }
+        }
+        return true;
+      })
+      .test(
+        'fileExtension',
+        translate('errors.cre_proposal.letter_ofsupport_req.fileExtension'),
+        (value) => {
+          if (value) {
+            if (
+              value.type !== 'application/pdf' &&
+              value.type !== 'image/png' &&
+              value.type !== 'image/jpeg' &&
+              value.type !== 'image/jpg'
+            ) {
+              return false;
+            }
+          }
+          return true;
+        }
+      ),
+    // project_attachments: Yup.object().shape({
+    //   url: Yup.string().required(),
+    //   size: Yup.number(),
+    //   type: Yup.string().required(),
+    // }),
+    project_attachments: Yup.mixed()
+      .test('size', translate('errors.cre_proposal.project_attachments.fileSize'), (value) => {
+        if (value) {
+          const trueSize = value.size * 28;
+          if (trueSize > 1024 * 1024 * 10) {
+            return false;
+          }
+        }
+        return true;
+      })
+      .test(
+        'fileExtension',
+        translate('errors.cre_proposal.project_attachments.fileExtension'),
+        (value) => {
+          if (value) {
+            if (
+              value.type !== 'application/pdf' &&
+              value.type !== 'image/png' &&
+              value.type !== 'image/jpeg' &&
+              value.type !== 'image/jpg'
+            ) {
+              return false;
+            }
+          }
+          return true;
+        }
+      ),
     project_beneficiaries_specific_type: Yup.string().when('project_beneficiaries', {
       is: 'GENERAL',
       then: Yup.string().required(

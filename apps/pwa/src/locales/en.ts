@@ -118,10 +118,14 @@ const en = {
       letter_ofsupport_req: {
         message: '',
         required: 'The letter of support is required',
+        fileSize: 'The file size must be less than 5 MB',
+        fileExtension: 'The file extension must be one of the following: pdf, png, jpg, jpeg',
       },
       project_attachments: {
         message: '',
         required: 'Project attachments are required',
+        fileSize: 'The file size must be less than 5 MB',
+        fileExtension: 'The file extension must be one of the following: pdf, png, jpg, jpeg',
       },
       project_beneficiaries_specific_type: {
         message: '',
@@ -465,7 +469,7 @@ const en = {
     },
     applying_duration: {
       label: 'Execution time*',
-      placeholder: 'Please specify the execution period',
+      placeholder: 'Please specify the execution period (in hour)',
     },
     target_group_type: {
       label: 'Target group type*',
@@ -1141,6 +1145,7 @@ const en = {
       'The Association for Advocacy, Guidance and Community Awareness in the New Industrial Area in Riyadh',
     card_href: 'View all projects of the partner',
     client_details_header: 'Client Profile',
+    table_title: 'Projects by ',
     summary: {
       title_main: 'Main Information',
       title_contact: 'Contact Information',

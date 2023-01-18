@@ -43,7 +43,7 @@ export const MainFormData = [
     minDate: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0],
   },
   {
-    type: 'textField',
+    type: 'numberField',
     name: 'execution_time',
     label: 'funding_project_request_form1.applying_duration.label',
     placeholder: 'funding_project_request_form1.applying_duration.placeholder',
@@ -94,7 +94,7 @@ export const MainFormData = [
     xs: 12,
   },
   {
-    type: 'upload',
+    type: 'uploadBe',
     name: 'letter_ofsupport_req',
     placeholder: 'funding_project_request_form1.letter_support_request.placeholder',
     md: 12,
@@ -107,7 +107,7 @@ export const MainFormData = [
     xs: 12,
   },
   {
-    type: 'upload',
+    type: 'uploadBe',
     name: 'project_attachments',
     placeholder: 'funding_project_request_form1.project_attachments.placeholder',
     md: 12,
@@ -117,7 +117,7 @@ export const MainFormData = [
 
 export const ProjectInfoData = [
   {
-    type: 'textField',
+    type: 'numberField',
     name: 'num_ofproject_binicficiaries',
     label: 'funding_project_request_form2.number_of_project_beneficiaries.label',
     placeholder: 'funding_project_request_form2.number_of_project_beneficiaries.placeholder',
@@ -156,7 +156,7 @@ export const ProjectInfoData = [
 
 export const ProjectBudgetData = [
   {
-    type: 'textField',
+    type: 'numberField',
     name: 'amount_required_fsupport',
     label: 'funding_project_request_form4.amount_required_fsupport.label',
     placeholder: 'funding_project_request_form4.amount_required_fsupport.placeholder',
@@ -184,7 +184,7 @@ export const ProjectBudgetData = [
         xs: 12,
       },
       {
-        type: 'textField',
+        type: 'numberField',
         name: 'amount',
         label: 'funding_project_request_form4.amount.label',
         placeholder: 'funding_project_request_form4.amount.placeholder',
