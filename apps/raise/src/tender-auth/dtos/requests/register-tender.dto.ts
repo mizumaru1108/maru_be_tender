@@ -98,7 +98,7 @@ class registerClient {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  chaiman_name: string;
+  chairman_name: string;
 
   @ApiProperty()
   @IsNotEmpty()

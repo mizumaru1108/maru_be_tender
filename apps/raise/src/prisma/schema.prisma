@@ -52,8 +52,8 @@ model client_data {
   user_id                  String       @unique
   license_file             Json?
   board_ofdec_file         Json?
-  chaiman_name             String?      @db.VarChar
-  chaiman_mobile           String?      @db.VarChar
+  chairman_name            String?      @db.VarChar
+  chairman_mobile          String?      @db.VarChar
   user                     user         @relation("client_data_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
   client_log               client_log[]
 }
