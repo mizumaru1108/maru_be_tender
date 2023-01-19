@@ -36,16 +36,18 @@ export const UpdateProposalMapper = (
   const updatePayload: Prisma.proposalUncheckedUpdateInput = {};
 
   /* form 1 */
+  project_name && (updatePayload.project_name = project_name);
   project_idea && (updatePayload.project_idea = project_idea);
   project_location && (updatePayload.project_location = project_location);
   if (project_implement_date) {
-    updatePayload.project_implement_date = project_implement_date;
+    updatePayload.project_implement_date = new Date(project_implement_date);
   }
   execution_time && (updatePayload.execution_time = execution_time);
   if (project_beneficiaries) {
     updatePayload.project_beneficiaries = project_beneficiaries;
   }
   if (
+    project_name &&
     project_idea &&
     project_location &&
     project_implement_date &&
@@ -64,6 +66,7 @@ export const UpdateProposalMapper = (
   project_strengths && (updatePayload.project_strengths = project_strengths);
   project_risks && (updatePayload.project_risks = project_risks);
   if (
+    project_name &&
     project_idea &&
     project_location &&
     project_implement_date &&
@@ -85,6 +88,7 @@ export const UpdateProposalMapper = (
   region && (updatePayload.region = region);
   governorate && (updatePayload.governorate = governorate);
   if (
+    project_name &&
     project_idea &&
     project_location &&
     project_implement_date &&
@@ -109,6 +113,7 @@ export const UpdateProposalMapper = (
     updatePayload.amount_required_fsupport = amount_required_fsupport;
   }
   if (
+    project_name &&
     project_idea &&
     project_location &&
     project_implement_date &&
@@ -135,6 +140,7 @@ export const UpdateProposalMapper = (
     updatePayload.proposal_bank_id = proposal_bank_information_id;
   }
   if (
+    project_name &&
     project_idea &&
     project_location &&
     project_implement_date &&

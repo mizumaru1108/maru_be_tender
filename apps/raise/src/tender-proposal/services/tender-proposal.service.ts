@@ -4,22 +4,18 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Prisma, proposal, proposal_item_budget, user } from '@prisma/client';
+import { Prisma, proposal, user } from '@prisma/client';
 import { nanoid } from 'nanoid';
-import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../prisma/prisma.service';
 import {
   appRoleMappers,
   TenderAppRole,
   TenderAppRoleEnum,
 } from '../../tender-commons/types';
-import { compareUrl } from '../../tender-commons/utils/compare-jsonb-imageurl';
 import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
 
 import { ChangeProposalStateDto } from '../dtos/requests/proposal/change-proposal-state.dto';
-import { UpdateProposalDto } from '../dtos/requests/proposal/update-proposal.dto';
 
-import { UpdateProposalResponseDto } from '../dtos/responses/proposal/update-proposal-response.dto';
 import { TenderProposalRepository } from '../repositories/tender-proposal.repository';
 
 import { SendEmailDto } from '../../libs/email/dtos/requests/send-email.dto';
@@ -29,24 +25,24 @@ import { TwilioService } from '../../libs/twilio/services/twilio.service';
 import { CreateNotificationDto } from '../../tender-notification/dtos/requests/create-notification.dto';
 import { TenderNotificationService } from '../../tender-notification/services/tender-notification.service';
 
-import { IProposalLogsResponse } from '../interfaces/proposal-logs-response';
-import { TenderProposalLogRepository } from '../repositories/tender-proposal-log.repository';
+import { ConfigService } from '@nestjs/config';
+import { AllowedFileType } from '../../commons/enums/allowed-filetype.enum';
+import { envLoadErrorHelper } from '../../commons/helpers/env-loaderror-helper';
+import { validateAllowedExtension } from '../../commons/utils/validate-allowed-extension';
+import { validateFileSize } from '../../commons/utils/validate-file-size';
+import { BunnyService } from '../../libs/bunny/services/bunny.service';
 import {
   InnerStatusEnum,
   OutterStatusEnum,
   ProposalAction,
 } from '../../tender-commons/types/proposal';
 import { ProposalCreateDto } from '../dtos/requests/proposal/proposal-create.dto';
-import { CreateProposalMapper } from '../mappers/create-proposal.mapper';
-import { AllowedFileType } from '../../commons/enums/allowed-filetype.enum';
-import { ConfigService } from '@nestjs/config';
-import { envLoadErrorHelper } from '../../commons/helpers/env-loaderror-helper';
-import { validateAllowedExtension } from '../../commons/utils/validate-allowed-extension';
-import { validateFileSize } from '../../commons/utils/validate-file-size';
-import { BunnyService } from '../../libs/bunny/services/bunny.service';
 import { ProposalSaveDraftDto } from '../dtos/requests/proposal/proposal-save-draft';
+import { IProposalLogsResponse } from '../interfaces/proposal-logs-response';
 import { CreateItemBudgetsMapper } from '../mappers/create-item-budgets.mappers';
+import { CreateProposalMapper } from '../mappers/create-proposal.mapper';
 import { UpdateProposalMapper } from '../mappers/update-proposal.mapper';
+import { TenderProposalLogRepository } from '../repositories/tender-proposal-log.repository';
 
 @Injectable()
 export class TenderProposalService {
@@ -250,12 +246,8 @@ export class TenderProposalService {
       | Prisma.proposal_item_budgetCreateManyInput[]
       | undefined = undefined;
 
-    let projectAttachmentPath: string | undefined = undefined;
     let projectAttachmentBuffer: Buffer | undefined = undefined;
-    let uploadedProjectAttachmentPath: string | undefined = undefined;
-    let letterOfSupportPath: string | undefined = undefined;
     let letterOfSupportBuffer: Buffer | undefined = undefined;
-    let uploadedLetterOfSupportPath: string | undefined = undefined;
     let uploadedFilePath: string[] = [];
 
     // find proposal by id
@@ -325,7 +317,7 @@ export class TenderProposalService {
           '.' +
           request.project_attachments.fileExtension.split('/')[1];
 
-        projectAttachmentPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}-${projectAttachmentfileName}`;
+        let projectAttachmentPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}/${userId}-${projectAttachmentfileName}`;
 
         projectAttachmentBuffer = Buffer.from(
           request.project_attachments.base64Data.replace(
@@ -348,14 +340,31 @@ export class TenderProposalService {
           `Uploading Proposal Project Attachment from user ${userId}`,
         );
 
-        uploadedProjectAttachmentPath = imageUrl;
         uploadedFilePath.push(imageUrl);
         updateProposalPayload.project_attachments = {
           url: imageUrl,
           type: request.project_attachments.fileExtension,
           size: projectAttachmentBuffer.length,
         };
+
+        if (
+          proposal.project_attachments &&
+          proposal.project_attachments.hasOwnProperty('url') &&
+          proposal.project_attachments.hasOwnProperty('type') &&
+          proposal.project_attachments.hasOwnProperty('size')
+        ) {
+          const oldFile = proposal.project_attachments as {
+            url: string;
+            type: string;
+            size: number;
+          };
+          await this.bunnyService.deleteMedia(oldFile.url, true);
+        }
       } catch (error) {
+        this.logger.log(
+          'log',
+          'upload project attachments failed, deleting all uploaded files before this file upload',
+        );
         if (uploadedFilePath.length > 0) {
           uploadedFilePath.forEach(async (path) => {
             await this.bunnyService.deleteMedia(path, true);
@@ -367,8 +376,18 @@ export class TenderProposalService {
 
     if (
       request.letter_ofsupport_req &&
-      letterOfSupportPath &&
-      letterOfSupportBuffer
+      request.letter_ofsupport_req.hasOwnProperty('base64Data') &&
+      typeof request.letter_ofsupport_req.base64Data === 'string' &&
+      !!request.letter_ofsupport_req.base64Data &&
+      request.letter_ofsupport_req.hasOwnProperty('fullName') &&
+      typeof request.letter_ofsupport_req.fullName === 'string' &&
+      !!request.letter_ofsupport_req.fullName &&
+      request.letter_ofsupport_req.hasOwnProperty('fileExtension') &&
+      typeof request.letter_ofsupport_req.fileExtension === 'string' &&
+      !!request.letter_ofsupport_req.fileExtension &&
+      request.letter_ofsupport_req.fileExtension.match(
+        /^([a-z]+\/[a-z]+)(;[a-z]+=[a-z]+)*$/i,
+      )
     ) {
       try {
         /* letter of support */
@@ -380,7 +399,7 @@ export class TenderProposalService {
           '.' +
           request.letter_ofsupport_req.fileExtension.split('/')[1];
 
-        letterOfSupportPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}-${letterOfSupportfileName}`;
+        let letterOfSupportPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}/${userId}-${letterOfSupportfileName}`;
 
         letterOfSupportBuffer = Buffer.from(
           request.letter_ofsupport_req.base64Data.replace(
@@ -403,14 +422,31 @@ export class TenderProposalService {
           `Uploading Proposal Letter of support from user ${userId}`,
         );
 
-        uploadedLetterOfSupportPath = imageUrl;
         uploadedFilePath.push(imageUrl);
         updateProposalPayload.letter_ofsupport_req = {
           url: imageUrl,
           type: request.letter_ofsupport_req.fileExtension,
           size: letterOfSupportBuffer.length,
         };
+
+        if (
+          proposal.letter_ofsupport_req &&
+          proposal.letter_ofsupport_req.hasOwnProperty('url') &&
+          proposal.letter_ofsupport_req.hasOwnProperty('type') &&
+          proposal.letter_ofsupport_req.hasOwnProperty('size')
+        ) {
+          const oldFile = proposal.letter_ofsupport_req as {
+            url: string;
+            type: string;
+            size: number;
+          };
+          await this.bunnyService.deleteMedia(oldFile.url, true);
+        }
       } catch (error) {
+        this.logger.log(
+          'log',
+          'upload letter of support failed, deleting all uploaded files before this file upload',
+        );
         if (uploadedFilePath.length > 0) {
           uploadedFilePath.forEach(async (path) => {
             await this.bunnyService.deleteMedia(path, true);
@@ -431,9 +467,8 @@ export class TenderProposalService {
     const updatedProposal = await this.tenderProposalRepository.saveDraft(
       proposal.id,
       updateProposalPayload,
-      uploadedProjectAttachmentPath,
-      uploadedLetterOfSupportPath,
       proposal_item_budgets,
+      uploadedFilePath,
     );
 
     return updatedProposal;

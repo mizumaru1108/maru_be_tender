@@ -104,11 +104,10 @@ export class TenderProposalRepository {
   async saveDraft(
     proposal_id: string,
     createProposalPayload: Prisma.proposalUncheckedUpdateInput,
-    project_attachment_path: string | undefined,
-    letter_of_support_path: string | undefined,
     proposal_item_budgets:
       | Prisma.proposal_item_budgetCreateManyInput[]
       | undefined,
+    uploadedFilePath: string[],
   ) {
     try {
       return await this.prismaService.$transaction(
@@ -139,18 +138,20 @@ export class TenderProposalRepository {
         { maxWait: 50000, timeout: 150000 },
       );
     } catch (error) {
-      // if error delete all media
-      if (project_attachment_path) {
-        await this.bunnyService.deleteMedia(project_attachment_path, true);
-      }
-      if (letter_of_support_path) {
-        await this.bunnyService.deleteMedia(letter_of_support_path, true);
+      this.logger.log(
+        'log',
+        'saving data on db failed, deleting all uploaded files for this proposal',
+      );
+      if (uploadedFilePath.length > 0) {
+        uploadedFilePath.forEach(async (path) => {
+          await this.bunnyService.deleteMedia(path, true);
+        });
       }
       const theError = prismaErrorThrower(
         error,
         TenderProposalRepository.name,
-        'fetchProposalById error details: ',
-        'finding proposal!',
+        'Saving Draft Proposal error details: ',
+        'Saving Proposal Draft!',
       );
       throw theError;
     }
