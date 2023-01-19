@@ -1,3 +1,4 @@
+import * as React from 'react';
 import * as Yup from 'yup';
 import { Button, Grid, Stack } from '@mui/material';
 import { FormProvider } from 'components/hook-form';
@@ -6,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import FormGenerator from 'components/FormGenerator';
 import { AdministrativeInfoData } from '../RegisterFormData';
 import { AdministrativeValuesProps } from '../../../../@types/register';
+import useLocales from '../../../../hooks/useLocales';
 
 type FormProps = {
   onReturn: () => void;
@@ -15,47 +17,50 @@ type FormProps = {
 };
 
 const AdministrativeInfoForm = ({ onSubmit, defaultValues, onReturn, done }: FormProps) => {
+  const { translate } = useLocales();
   const RegisterSchema = Yup.object().shape({
-    ceo_name: Yup.string().required('Executive Director is required'),
+    ceo_name: Yup.string().required(translate('errors.register.ceo_name.required')),
     ceo_mobile: Yup.string()
-      .required('CEO mobile is required')
-      .test('len', 'CEO mobile at least 9 characters', (val) => {
+      .required(translate('errors.register.ceo_mobile.length'))
+      .test('len', translate('errors.register.ceo_mobile.length'), (val) => {
         if (val === undefined) {
           return true;
         }
 
-        return val.length === 0 || val!.length >= 13;
+        return val.length === 0 || val!.length === 9;
       }),
-    chairman_name: Yup.string().required('Chairman name is required'),
+    chairman_name: Yup.string().required(translate('errors.register.chairman_name.required')),
     chairman_mobile: Yup.string()
-      .required('Chairman mobile is required')
-      .test('len', 'CEO mobile at least 9 characters', (val) => {
+      .required(translate('errors.register.chairman_mobile.length'))
+      .test('len', translate('errors.register.chairman_mobile.length'), (val) => {
         if (val === undefined) {
           return true;
         }
 
-        return val.length === 0 || val!.length >= 13;
+        return val.length === 0 || val!.length === 9;
       }),
     // .matches(
     //   /^\+966[0-9]{8}$/,
     //   `The CEO Mobile must be written in the exact way of +966xxxxxxxx`
     // ),
-    data_entry_name: Yup.string().required('Entery Data Name is required'),
+    data_entry_name: Yup.string().required(translate('errors.register.data_entry_name.required')),
     data_entry_mobile: Yup.string()
-      .required('Data Entry Mobile is required')
-      .test('len', 'Data entry mobile at least 9 characters', (val) => {
+      .required(translate('errors.register.data_entry_mobile.length'))
+      .test('len', translate('errors.register.data_entry_mobile.required'), (val) => {
         if (val === undefined) {
           return true;
         }
 
-        return val.length === 0 || val!.length >= 13;
+        return val.length === 0 || val!.length === 9;
       }),
     // .matches(
     //   /^\+9665[0-9]{8}$/,
     //   `The Data Entry Mobile must be written in the exact way of +9665xxxxxxxx`
     // ),
-    data_entry_mail: Yup.string().email().required('Entery Data Email is required'),
-    agree_on: Yup.boolean().required('Agreeing_On is required'),
+    data_entry_mail: Yup.string()
+      .email(translate('errors.register.email.email'))
+      .required(translate('errors.register.email.required')),
+    agree_on: Yup.boolean().required(translate('errors.register.agree_on.required')),
   });
 
   const methods = useForm<AdministrativeValuesProps>({
@@ -96,10 +101,25 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, onReturn, done }: For
       chairman_mobile: newChairmanMobile!,
     };
 
-    reset({ ...payload });
+    // reset({ ...payload });
     onSubmit({ ...payload });
   };
-
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+    let newValues = { ...defaultValues };
+    const newCeoMobile = defaultValues.ceo_mobile?.replace('+966', '');
+    const newDataEntryMobile = defaultValues.data_entry_mobile?.replace('+966', '');
+    const newChairmanMobile = defaultValues.chairman_mobile?.replace('+966', '');
+    newValues = {
+      ...newValues,
+      ceo_mobile: newCeoMobile,
+      data_entry_mobile: newDataEntryMobile,
+      chairman_mobile: newChairmanMobile,
+    };
+    console.log('newValues', newValues);
+    reset({ ...newValues });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues]);
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7}>

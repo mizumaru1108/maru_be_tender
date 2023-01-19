@@ -60,7 +60,7 @@ export function RHFUploadSingleFileBe({ name, placeholder, ...other }: Props) {
     setValue(name, {
       url: URL.createObjectURL(acceptedFiles[0]),
       type: acceptedFiles[0].type,
-      size: acceptedFiles[0].size / 28,
+      size: acceptedFiles[0].size,
       base64Data,
       fullName,
       fileExtension,
@@ -94,7 +94,7 @@ export function RHFUploadSingleFileBe({ name, placeholder, ...other }: Props) {
             }
             {...other}
             onDrop={handleDrop}
-            uploading={uploading}
+            // uploading={uploading}
             onRemove={onRemove}
           />
         );

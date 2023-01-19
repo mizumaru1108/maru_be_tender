@@ -89,11 +89,12 @@ const initialValue = {
 export default function RegisterForm() {
   const { translate } = useLocales();
   const isMobile = useResponsive('down', 'sm');
-  const [step, setStep] = useState(3);
+  const [step, setStep] = useState(5);
   const [done, setDone] = useState(false);
   const [registerState, setRegisterState] = useState(initialValue);
 
   const onSubmit1 = (data: MainValuesProps) => {
+    // console.log({ data });
     setStep((prevStep) => prevStep + 1);
     setRegisterState((prevRegisterState: AccountValuesProps) => ({
       ...prevRegisterState,
@@ -118,6 +119,7 @@ export default function RegisterForm() {
   };
 
   const onSubmit3 = (data: LicenseValuesProps) => {
+    // console.log({ data });
     setStep((prevStep) => prevStep + 1);
     setRegisterState((prevRegisterState: AccountValuesProps) => ({
       ...prevRegisterState,
@@ -130,6 +132,7 @@ export default function RegisterForm() {
   };
 
   const onSubmit4 = (data: AdministrativeValuesProps) => {
+    // console.log({ data });
     setStep((prevStep) => prevStep + 1);
     setRegisterState((prevRegisterState: AccountValuesProps) => ({
       ...prevRegisterState,
@@ -142,6 +145,7 @@ export default function RegisterForm() {
   };
 
   const onSubmit5 = (data: BankingValuesProps) => {
+    // console.log({ data });
     setStep((prevStep) => prevStep + 1);
     setRegisterState((prevRegisterState: AccountValuesProps) => ({
       ...prevRegisterState,

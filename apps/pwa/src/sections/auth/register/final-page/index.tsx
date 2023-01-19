@@ -44,34 +44,52 @@ function FinalPage({
     setIsSending(true);
     const { form1, form2, form3, form4, form5 } = registerState;
     const { phone, center_administration, ...restForm2 } = form2;
+    const newVal = {
+      // employee_name: registerState.form1.entity,
+      // employee_path: ,
+      // bank_informations: [
+      //   {
+      //     bank_account_number: form5.bank_account_number,
+      //     bank_account_name: form5.bank_account_name,
+      //     bank_name: form5.bank_name,
+      //     card_image: form5.card_image,
+      //   },
+      // ],
+      // ...form1,
+      // ...restForm2,
+      // ...(phone !== '' && { phone }),
+      // ...(center_administration !== '' && { center_administration }),
+      // license_number: form3.license_number,
+      // license_issue_date: form3.license_issue_date,
+      // license_expired: form3.license_expired,
+      // license_file: form3.license_file,
+      // board_ofdec_file: form3.board_ofdec_file,
+      // ...form4,
+      employee_name: registerState.form1.entity,
+      bank_informations: {
+        bank_account_number: form5.bank_account_number,
+        bank_account_name: form5.bank_account_name,
+        bank_name: form5.bank_name,
+        card_image: form5.card_image,
+      },
+      ...form1,
+      ...restForm2,
+      ...(phone !== '' && { phone }),
+      ...(center_administration !== '' && { center_administration }),
+      license_number: form3.license_number,
+      license_issue_date: form3.license_issue_date,
+      license_expired: form3.license_expired,
+      license_file: form3.license_file,
+      board_ofdec_file: form3.board_ofdec_file,
+      ...form4,
+    };
     try {
       await axios
         .post(`${TMRA_RAISE_URL}/tender-auth/register`, {
-          data: {
-            employee_name: registerState.form1.entity,
-            // employee_path: ,
-            bank_informations: [
-              {
-                bank_account_number: form5.bank_account_number,
-                bank_account_name: form5.bank_account_name,
-                bank_name: form5.bank_name,
-                card_image: form5.card_image,
-              },
-            ],
-            ...form1,
-            ...restForm2,
-            ...(phone !== '' && { phone }),
-            ...(center_administration !== '' && { center_administration }),
-            license_number: form3.license_number,
-            license_issue_date: form3.license_issue_date,
-            license_expired: form3.license_expired,
-            license_file: form3.license_file,
-            board_ofdec_file: form3.board_ofdec_file,
-            ...form4,
-          },
+          data: newVal,
         })
         .then(async (res) => {
-          if (res.data.statusCode === 200) {
+          if (res.data.statusCode <= 300) {
             await login(registerState.form2.email, registerState.form2.password);
             navigate('/');
           }

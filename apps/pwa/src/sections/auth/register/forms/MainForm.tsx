@@ -30,12 +30,12 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
     num_of_employed_facility: Yup.number()
       .positive()
       .integer()
-      .min(1)
+      .min(1, translate('errors.register.num_of_employed_facility.min'))
       .required(translate('errors.register.num_of_employed_facility.required')),
     num_of_beneficiaries: Yup.number()
       .positive()
       .integer()
-      .min(1)
+      .min(1, translate('errors.register.num_of_beneficiaries.min'))
       .required(translate('errors.register.num_of_beneficiaries.required')),
     // vat: Yup.boolean().required(),
   });

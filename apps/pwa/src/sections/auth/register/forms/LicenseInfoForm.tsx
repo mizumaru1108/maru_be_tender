@@ -17,19 +17,79 @@ type FormProps = {
 const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
   const { translate } = useLocales();
   const RegisterSchema = Yup.object().shape({
-    license_number: Yup.string().required('License Number is required'),
-    license_issue_date: Yup.string().required('License Issue Date is required'),
-    license_expired: Yup.string().required('License Expiry Date is required'),
-    license_file: Yup.object().shape({
-      url: Yup.string().required(),
-      size: Yup.number(),
-      type: Yup.string().required(),
-    }),
-    board_ofdec_file: Yup.object().shape({
-      url: Yup.string(),
-      size: Yup.number(),
-      type: Yup.string(),
-    }),
+    license_number: Yup.string().required(translate('errors.register.license_number.required')),
+    license_issue_date: Yup.string().required(
+      translate('errors.register.license_issue_date.required')
+    ),
+    license_expired: Yup.string().required(translate('errors.register.license_expired.required')),
+    // license_file: Yup.object().shape({
+    //   url: Yup.string().required(),
+    //   size: Yup.number(),
+    //   type: Yup.string().required(),
+    // }),
+    license_file: Yup.mixed()
+      .test('size', translate('errors.register.license_file.size'), (value) => {
+        if (value) {
+          const trueSize = value.size * 28;
+          if (trueSize > 1024 * 1024 * 5) {
+            return false;
+          }
+        }
+        return true;
+      })
+      .test('fileExtension', translate('errors.register.license_file.fileExtension'), (value) => {
+        if (value) {
+          if (
+            value.type !== 'application/pdf' &&
+            value.type !== 'image/png' &&
+            value.type !== 'image/jpeg' &&
+            value.type !== 'image/jpg'
+          ) {
+            return false;
+          }
+        }
+        return true;
+      }),
+    // board_ofdec_file: Yup.object().shape({
+    //   url: Yup.string(),
+    //   size: Yup.number(),
+    //   type: Yup.string(),
+    // }),
+    board_ofdec_file: Yup.mixed()
+      .test('size', translate('errors.register.board_ofdec_file.size'), (value) => {
+        if (value) {
+          const trueSize = value.size * 28;
+          if (trueSize > 1024 * 1024 * 5) {
+            return false;
+          }
+        }
+        return true;
+      })
+      .test(
+        'fileExtension',
+        translate('errors.register.board_ofdec_file.fileExtension'),
+        (value) => {
+          if (value) {
+            if (
+              value.type !== 'application/pdf' &&
+              value.type !== 'application/msword' &&
+              value.type !==
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document' &&
+              value.type !== 'application/vnd.ms-excel' &&
+              value.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' &&
+              value.type !== 'application/vnd.ms-powerpoint' &&
+              value.type !==
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation' &&
+              value.type !== 'image/png' &&
+              value.type !== 'image/jpeg' &&
+              value.type !== 'image/jpg'
+            ) {
+              return false;
+            }
+          }
+          return true;
+        }
+      ),
   });
 
   const methods = useForm<LicenseValuesProps>({
@@ -92,14 +152,18 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
           <BaseField type="uploadLabel" label="register_form3.license_file.label" />
         </Grid>
         <Grid item md={12} xs={12}>
-          <BaseField type="upload" name="license_file" label="register_form3.license_file.label" />
+          <BaseField
+            type="uploadBe"
+            name="license_file"
+            label="register_form3.license_file.label"
+          />
         </Grid>
         <Grid item md={12} xs={12}>
           <BaseField type="uploadLabel" label="register_form3.resolution_file.label" />
         </Grid>
         <Grid item md={12} xs={12}>
           <BaseField
-            type="upload"
+            type="uploadBe"
             name="board_ofdec_file"
             label="register_form3.resolution_file.label"
           />

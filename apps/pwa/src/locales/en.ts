@@ -81,15 +81,118 @@ const en = {
         message: '',
         required: 'Headquarters is required',
       },
+      region: {
+        message: '',
+        required: 'Region is required',
+      },
+      governorate: {
+        message: '',
+        required: 'Governorate is required',
+      },
+      entity_mobile: {
+        message: '',
+        required: 'Mobile number is required',
+        length: 'Mobile number must be 9 digits',
+      },
+      phone: {
+        message: '',
+        required: 'Phone number is required',
+        length: 'Phone number must be 9 digits',
+      },
+      email: {
+        message: '',
+        required: 'Email is required',
+        email: 'Email must be a valid email address',
+      },
+      password: {
+        message: '',
+        required: 'Password is required',
+      },
+      license_number: {
+        message: '',
+        required: 'License number is required',
+      },
+      license_issue_date: {
+        message: '',
+        required: 'License issue date is required',
+      },
+      license_expired: {
+        message: '',
+        required: 'License expiration date is required',
+      },
+      ceo_name: {
+        message: '',
+        required: 'CEO name is required',
+      },
+      ceo_mobile: {
+        message: '',
+        required: 'CEO mobile number is required',
+        length: 'CEO mobile number must be 9 digits',
+      },
+      chairman_name: {
+        message: '',
+        required: 'Chairman name is required',
+      },
+      chairman_mobile: {
+        message: '',
+        required: 'Chairman mobile number is required',
+        length: 'Chairman mobile number must be 9 digits',
+      },
+      data_entry_name: {
+        message: '',
+        required: 'Data entry name is required',
+      },
+      agree_on: {
+        message: '',
+        required: 'Agree on terms and conditions is required',
+      },
+      data_entry_mobile: {
+        message: '',
+        required: 'Data entry mobile number is required',
+        length: 'Data entry mobile number must be 9 digits',
+      },
+      license_file: {
+        message: '',
+        size: 'The file size must be less than 5 MB',
+        fileExtension: 'The file extension must be one of the following: pdf, png, jpg, jpeg',
+      },
+      board_ofdec_file: {
+        message: '',
+        size: 'The file size must be less than 5 MB',
+        fileExtension:
+          'The file extension must be one of the following: pdf, doc, docx, xls, xlsx, ppt, pptx, png, jpg, jpeg',
+      },
       num_of_employed_facility: {
         message: '',
         required: 'Number Of Employees is required',
+        min: 'Number Of Employees must be at least 1',
       },
       num_of_beneficiaries: {
         message: '',
         required: 'Number Of Beneficiaries is required',
+        min: 'Number Of Beneficiaries must be at least 1',
+      },
+      bank_account_number: {
+        message: '',
+        required: 'Bank Account Number is required',
+        match: 'Invallid International Bank Account Number ',
+      },
+      bank_account_name: {
+        message: '',
+        required: 'Bank Account Name is required',
+      },
+      bank_name: {
+        message: '',
+        required: 'Bank Name is required',
+      },
+      card_image: {
+        message: '',
+        required: 'Card Image is required',
+        size: 'The file size must be less than 5 MB',
+        fileExtension: 'The file extension must be one of the following: pdf, png, jpg, jpeg',
       },
     },
+
     cre_proposal: {
       project_name: {
         message: '',

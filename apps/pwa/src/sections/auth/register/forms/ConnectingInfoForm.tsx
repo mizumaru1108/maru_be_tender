@@ -8,7 +8,7 @@ import { REGION } from '_mock/region';
 import useLocales from 'hooks/useLocales';
 import { RegionNames } from '../../../../@types/region';
 import RHFPassword from 'components/hook-form/RHFPassword';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 type FormProps = {
   children?: React.ReactNode;
@@ -18,19 +18,29 @@ type FormProps = {
 
 const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
   const { translate } = useLocales();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    let newValues = { ...defaultValues };
+    const newEntityMobile = defaultValues.entity_mobile?.replace('+966', '');
+    const newPhone = defaultValues.phone?.replace('+966', '');
+    newValues = { ...newValues, entity_mobile: newEntityMobile, phone: newPhone };
+    reset(newValues);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues]);
   const RegisterSchema = Yup.object().shape(
     {
-      region: Yup.string().required('Region name required'),
-      governorate: Yup.string().required('City name required'),
+      region: Yup.string().required(translate('errors.register.region.required')),
+      governorate: Yup.string().required(translate('errors.register.governorate.required')),
       center_administration: Yup.string(),
       entity_mobile: Yup.string()
-        .required('Mobile Number is required')
-        .test('len', 'Entity mobile at least 9 characters', (val) => {
+        .required(translate('errors.register.entity_mobile.required'))
+        .test('len', translate('errors.register.entity_mobile.length'), (val) => {
           if (val === undefined) {
             return true;
           }
 
-          return val.length === 0 || val!.length >= 13;
+          return val.length === 0 || val!.length === 9;
         }),
       // .matches(
       //   /^\+966[0-9]$/,
@@ -39,11 +49,11 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
       phone: Yup.string()
         .nullable()
         .notRequired()
-        .test('len', 'Phone number at least 9 characters', (val) => {
+        .test('len', 'errors.register.phone.length', (val) => {
           if (val === undefined) {
             return true;
           }
-          return val?.length === 0 || val!.length >= 13;
+          return val?.length === 0 || val!.length === 9;
         }),
       // .when('phone', {
       //   is: (value: string) => value?.length,
@@ -56,9 +66,9 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
       twitter_acount: Yup.string(),
       website: Yup.string(),
       email: Yup.string()
-        .email('Email must be a valid email address')
-        .required('Email is required'),
-      password: Yup.string().required('Password is required'),
+        .email(translate('errors.register.email.email'))
+        .required(translate('errors.register.email.required')),
+      password: Yup.string().required(translate('errors.register.password.required')),
     },
     [
       // Add Cyclic deps here because when require itself
@@ -97,15 +107,15 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
       entity_mobile: newEntityMobile!,
     };
 
-    reset({ ...payload });
+    // reset({ ...payload });
     onSubmit(payload);
   };
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    reset(defaultValues);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultValues]);
+  // useEffect(() => {
+  //   window.scrollTo(0, 0);
+  //   reset(defaultValues);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [defaultValues]);
   const region = watch('region') as RegionNames | '';
 
   return (

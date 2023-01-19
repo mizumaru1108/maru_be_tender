@@ -101,7 +101,7 @@ export const AdministrativeInfoData = [
     xs: 12,
     md: 6,
     // placeholder: 'register_form4.executive_director_mobile.placeholder',
-    placeholder: 'xxx-xxx-xxx',
+    placeholder: '987654321',
   },
   {
     type: 'textField',
@@ -118,7 +118,7 @@ export const AdministrativeInfoData = [
     xs: 12,
     md: 6,
     // placeholder: 'register_form4.executive_director_mobile.placeholder',
-    placeholder: 'xxx-xxx-xxx',
+    placeholder: '987654321',
   },
   {
     type: 'textField',
@@ -135,7 +135,7 @@ export const AdministrativeInfoData = [
     xs: 12,
     md: 6,
     // placeholder: 'register_form4.entery_data_phone.placeholder',
-    placeholder: 'xxx-xxx-xxx',
+    placeholder: '987654321',
   },
   {
     type: 'textField',
@@ -183,7 +183,7 @@ export const BankingInfoData = [
     xs: 12,
   },
   {
-    type: 'upload',
+    type: 'uploadBe',
     name: 'card_image',
     label: 'register_form5.entery_data_phone.label',
     xs: 12,

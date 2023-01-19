@@ -84,10 +84,12 @@ const ar = {
       num_of_employed_facility: {
         message: '',
         required: 'عدد الموظفين بدوام كامل مطلوب',
+        min: 'عدد الموظفين بدوام كامل يجب أن يكون على الأقل 1',
       },
       num_of_beneficiaries: {
         message: '',
         required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+        min: 'عدد المستفيدين من خدمات الجهة يجب أن يكون على الأقل 1',
       },
       region: {
         message: '',
@@ -104,10 +106,35 @@ const ar = {
       entity_mobile: {
         message: '',
         required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+        length: 'رقم الجوال يجب أن يكون 9 أرقام',
       },
       phone: {
         message: '',
         required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+        length: 'رقم الهاتف يجب أن يكون 9 أرقام',
+      },
+      license_number: {
+        message: '',
+        required: 'رقم الرخصة مطلوب',
+      },
+      license_issue_date: {
+        message: '',
+        required: 'تاريخ صدور الرخصة مطلوب',
+      },
+      license_expired: {
+        message: '',
+        required: 'تاريخ انتهاء الرخصة مطلوب',
+      },
+      license_file: {
+        message: '',
+        size: 'حجم الملف يجب أن يكون أقل من 5 ميجا',
+        fileExtension: 'يجب أن يكون الملف من نوع pdf, png, jpg, jpeg',
+      },
+      board_ofdec_file: {
+        message: '',
+        size: 'حجم الملف يجب أن يكون أقل من 5 ميجا',
+        fileExtension:
+          'يجب أن يكون الملف من نوع pdf, doc, docx, xls, xlsx, ppt, pptx, png, jpg, jpeg',
       },
       twitter_acount: {
         message: '',
@@ -120,10 +147,61 @@ const ar = {
       email: {
         message: '',
         required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+        email: 'البريد الإلكتروني غير صحيح',
       },
       password: {
         message: '',
         required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
+      ceo_name: {
+        message: '',
+        required: 'اسم المدير العام مطلوب',
+      },
+      ceo_mobile: {
+        message: '',
+        required: 'رقم جوال المدير العام مطلوب',
+        length: 'رقم جوال المدير العام يجب أن يكون 9 أرقام',
+      },
+      chairman_name: {
+        message: '',
+        required: 'اسم رئيس مجلس الإدارة مطلوب',
+      },
+      chairman_mobile: {
+        message: '',
+        required: 'رقم جوال رئيس مجلس الإدارة مطلوب',
+        length: 'رقم جوال رئيس مجلس الإدارة يجب أن يكون 9 أرقام',
+      },
+      data_entry_name: {
+        message: '',
+        required: 'اسم مسؤول البيانات مطلوب',
+      },
+      agree_on: {
+        message: '',
+        required: 'الموافقة على الشروط والأحكام مطلوبة',
+      },
+      data_entry_mobile: {
+        message: '',
+        required: 'رقم جوال مسؤول البيانات مطلوب',
+        length: 'رقم جوال مسؤول البيانات يجب أن يكون 9 أرقام',
+      },
+      bank_account_number: {
+        message: '',
+        required: 'رقم الحساب المصرفي مطلوب',
+        match: 'رقم الحساب المصرفي غير صحيح',
+      },
+      bank_account_name: {
+        message: '',
+        required: 'اسم صاحب الحساب المصرفي مطلوب',
+      },
+      bank_name: {
+        message: '',
+        required: 'اسم البنك مطلوب',
+      },
+      card_image: {
+        message: '',
+        required: 'صورة البطاقة مطلوبة',
+        size: 'حجم الملف يجب أن يكون أقل من 5 ميجا',
+        fileExtension: 'يجب أن يكون الملف من نوع pdf, png, jpg, jpeg',
       },
     },
     cre_proposal: {

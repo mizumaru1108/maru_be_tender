@@ -53,6 +53,26 @@ export default function RHFTextField({ name, ...other }: Props) {
           value={typeof field.value === 'number' && field.value === 0 ? '' : field.value}
           error={!!error}
           helperText={error?.message}
+          onChange={(e) => {
+            const newDial = e.target.value.match(/\+?\d+/g)?.[0] ?? '';
+            const inputValue = e.target.value;
+            let cleanedValue = inputValue.replace(/\s+/g, '');
+            cleanedValue = cleanedValue.replace(/[-+\s]/, '');
+            cleanedValue = cleanedValue.replace(/(.{4})/g, '$1 ');
+            field.onChange(
+              [
+                'phone',
+                'data_entry_mobile',
+                'entity_mobile',
+                'ceo_mobile',
+                'chairman_mobile',
+              ].includes(name)
+                ? newDial
+                : ['bank_account_number'].includes(name)
+                ? cleanedValue
+                : e.target.value
+            );
+          }}
           InputProps={{
             startAdornment: [
               'phone',
