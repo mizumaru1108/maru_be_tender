@@ -127,7 +127,16 @@ const MainInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    reset(defaultValues);
+    let newValue = { ...defaultValues };
+    const newTimeExecution = Number(newValue.execution_time) / 60;
+    newValue = { ...newValue, execution_time: newTimeExecution.toString() };
+    if (newTimeExecution === 0) {
+      reset(defaultValues);
+    } else {
+      reset(newValue);
+    }
+    // console.log({ newValue });
+    // reset(newValue);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues]);
   return (

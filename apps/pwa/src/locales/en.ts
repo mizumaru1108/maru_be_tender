@@ -155,6 +155,7 @@ const en = {
         message: '',
         size: 'The file size must be less than 5 MB',
         fileExtension: 'The file extension must be one of the following: pdf, png, jpg, jpeg',
+        required: 'License file is required',
       },
       board_ofdec_file: {
         message: '',

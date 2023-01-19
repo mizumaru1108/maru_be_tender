@@ -4,11 +4,13 @@ import { ReactComponent as MovingBack } from '../../../../assets/move-back-icon.
 
 type PROPS = {
   onReturn: () => void;
-  onSavingDraft: () => void;
+  // onSavingDraft: () => void;
   lastStep?: boolean;
   step: number;
+  isStep?: boolean;
+  isDraft: (draft: boolean) => void;
 };
-const ActionBox = ({ onReturn, onSavingDraft, lastStep, step }: PROPS) => {
+const ActionBox = ({ onReturn, lastStep, step, isStep, isDraft }: PROPS) => {
   const { translate } = useLocales();
 
   return (
@@ -36,15 +38,16 @@ const ActionBox = ({ onReturn, onSavingDraft, lastStep, step }: PROPS) => {
           <Box sx={{ width: '10px' }} />
           <Button
             variant="outlined"
+            type="submit"
             sx={{
               color: 'text.primary',
               width: { xs: '100%', sm: '200px' },
               hieght: { xs: '100%', sm: '50px' },
               borderColor: '#000',
             }}
-            onClick={onSavingDraft}
-            // disabled={step ? false : true}
-            disabled
+            onClick={() => isDraft(true)}
+            disabled={isStep ? false : true}
+            // disabled
           >
             {translate('saving_as_draft')}
           </Button>

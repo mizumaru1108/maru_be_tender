@@ -129,6 +129,7 @@ const ar = {
         message: '',
         size: 'حجم الملف يجب أن يكون أقل من 5 ميجا',
         fileExtension: 'يجب أن يكون الملف من نوع pdf, png, jpg, jpeg',
+        required: 'ملف الرخصة مطلوب',
       },
       board_ofdec_file: {
         message: '',

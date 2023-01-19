@@ -14,7 +14,7 @@ import { AUTHORITY } from '_mock/authority';
 type FormProps = {
   children?: React.ReactNode;
   onSubmit: (data: any) => void;
-  defaultValues: MainValuesProps;
+  defaultValues: any;
 };
 const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) => {
   const { translate } = useLocales();

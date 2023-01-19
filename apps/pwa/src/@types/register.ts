@@ -29,8 +29,8 @@ export type LicenseValuesProps = {
   license_number: string;
   license_issue_date: string;
   license_expired: string;
-  license_file: FileProp;
-  board_ofdec_file?: FileProp;
+  license_file: any;
+  board_ofdec_file?: any;
 };
 
 export type ConnectingValuesProps = {

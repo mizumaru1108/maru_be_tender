@@ -66,7 +66,14 @@ const initialValue = {
     license_number: '',
     license_issue_date: '',
     license_expired: '',
-    license_file: { size: undefined, url: '', type: 'image/jpg' },
+    license_file: {
+      url: '',
+      size: undefined,
+      type: '',
+      base64Data: '',
+      fileExtension: '',
+      fullName: '',
+    },
     board_ofdec_file: { size: undefined, url: '', type: 'image/jpg' },
   },
   form4: {
@@ -89,7 +96,7 @@ const initialValue = {
 export default function RegisterForm() {
   const { translate } = useLocales();
   const isMobile = useResponsive('down', 'sm');
-  const [step, setStep] = useState(5);
+  const [step, setStep] = useState(0);
   const [done, setDone] = useState(false);
   const [registerState, setRegisterState] = useState(initialValue);
 

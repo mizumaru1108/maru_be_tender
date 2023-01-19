@@ -238,3 +238,112 @@ export const AddBankData = [
     xs: 12,
   },
 ] as Array<FormSingleProps>;
+
+// <RHFTextField
+// name="license_number"
+// label={translate('register_form3.license_number.label')}
+// placeholder={translate('register_form3.license_number.placeholder')}
+// />
+// </Grid>
+// <Grid item md={6} xs={12}>
+// <RHFDatePicker
+// name="license_issue_date"
+// label={translate('register_form3.license_issue_date.label')}
+// placeholder={translate('register_form3.license_issue_date.placeholder')}
+// InputProps={{
+//   inputProps: {
+//     max: new Date(new Date().setDate(new Date().getDate() + 1))
+//       .toISOString()
+//       .split('T')[0],
+//   },
+// }}
+// />
+// </Grid>
+// <Grid item md={6} xs={12}>
+// <RHFDatePicker
+// name="license_expired"
+// label={translate('register_form3.license_expiry_date.label')}
+// placeholder={translate('register_form3.license_expiry_date.placeholder')}
+// InputProps={{
+//   inputProps: {
+//     min: new Date(new Date().setDate(new Date().getDate() + 2))
+//       .toISOString()
+//       .split('T')[0],
+//   },
+// }}
+// />
+// </Grid>
+// <Grid item md={12} xs={12}>
+// <BaseField type="uploadLabel" label="register_form3.license_file.label" />
+// </Grid>
+// <Grid item md={12} xs={12}>
+// <BaseField
+// type="uploadBe"
+// name="license_file"
+// label="register_form3.license_file.label"
+// />
+// </Grid>
+// <Grid item md={12} xs={12}>
+// <BaseField type="uploadLabel" label="register_form3.resolution_file.label" />
+// </Grid>
+// <Grid item md={12} xs={12}>
+// <BaseField
+// type="uploadBe"
+// name="board_ofdec_file"
+// label="register_form3.resolution_file.label"
+// />
+// </Grid>
+export const LicenseInfoData = [
+  {
+    type: 'textField',
+    name: 'license_number',
+    label: 'register_form3.license_number.label',
+    placeholder: 'register_form3.license_number.placeholder',
+    md: 12,
+    xs: 12,
+  },
+  {
+    type: 'datePicker',
+    name: 'license_issue_date',
+    label: 'register_form3.license_issue_date.label',
+    placeholder: 'register_form3.license_issue_date.placeholder',
+    md: 6,
+    xs: 12,
+  },
+  {
+    type: 'datePicker',
+    name: 'license_expired',
+    label: 'register_form3.license_expiry_date.label',
+    placeholder: 'register_form3.license_expiry_date.placeholder',
+    md: 6,
+    xs: 12,
+  },
+  {
+    type: 'uploadLabel',
+    label: 'register_form3.license_file.label',
+    md: 12,
+    xs: 12,
+  },
+  {
+    type: 'uploadBe',
+    name: 'license_file',
+    label: 'register_form3.license_file.label',
+    placeholder: 'register_form3.license_file.placeholder',
+    md: 12,
+    xs: 12,
+  },
+  {
+    type: 'uploadLabel',
+    label: 'register_form3.resolution_file.label',
+    md: 12,
+    xs: 12,
+  },
+  {
+    type: 'uploadBe',
+    name: 'board_ofdec_file',
+    label: 'register_form3.resolution_file.label',
+    placeholder: 'register_form3.resolution_file.placeholder',
+    md: 12,
+    xs: 12,
+  },
+] as Array<FormSingleProps>;
