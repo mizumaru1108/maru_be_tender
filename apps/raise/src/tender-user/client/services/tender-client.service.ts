@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -28,8 +29,18 @@ import { UpdateUserPayload } from '../../user/interfaces/update-user-payload.int
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 import { v4 as uuidv4 } from 'uuid';
 import { UserStatusEnum } from '../../user/types/user_status';
+import { BunnyService } from '../../../libs/bunny/services/bunny.service';
+import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
+import { ConfigService } from '@nestjs/config';
+import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
+import { validateFileSize } from '../../../commons/utils/validate-file-size';
+import { AllowedFileType } from '../../../commons/enums/allowed-filetype.enum';
+import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
+import { UserClientDataMapper } from '../mappers/user-client-data.mapper';
+import { BankInformationsMapper } from '../mappers/bank_information.mapper';
 @Injectable()
 export class TenderClientService {
+  private readonly appEnv: string;
   private readonly logger = ROOT_LOGGER.child({
     'log.logger': TenderClientService.name,
   });
@@ -37,9 +48,15 @@ export class TenderClientService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly fusionAuthService: FusionAuthService,
+    private readonly bunnyService: BunnyService,
+    private readonly configService: ConfigService,
     private tenderUserRepository: TenderUserRepository,
     private tenderClientRepository: TenderClientRepository,
-  ) {}
+  ) {
+    const environment = this.configService.get('APP_ENV');
+    if (!environment) envLoadErrorHelper('APP_ENV');
+    this.appEnv = environment;
+  }
 
   async getUserTrack(userId: string): Promise<string | null> {
     try {
@@ -62,8 +79,11 @@ export class TenderClientService {
   async createUserAndClient(
     idFromFusionAuth: string,
     request: RegisterTenderDto,
-  ): Promise<CreateUserResponseDto> {
-    const userCreatePayload = CreateClientMapper(idFromFusionAuth, request);
+  ): Promise<any> {
+    let userCreatePayload: Prisma.userCreateInput = CreateClientMapper(
+      idFromFusionAuth,
+      request,
+    );
 
     const createStatusLogPayload: Prisma.user_status_logUncheckedCreateInput[] =
       [
@@ -74,9 +94,226 @@ export class TenderClientService {
         },
       ] as Prisma.user_status_logUncheckedCreateInput[];
 
+    let bankCreatePayload:
+      | Prisma.bank_informationUncheckedCreateInput
+      | undefined = undefined;
+
+    let lisceneFileObj: UploadFilesJsonbDto | undefined = undefined;
+    let lisceneFileBuffer: Buffer | undefined = undefined;
+    let ofdecObj: UploadFilesJsonbDto | undefined = undefined;
+    let ofdecBuffer: Buffer | undefined = undefined;
+    let bankCardObj: UploadFilesJsonbDto | undefined = undefined;
+    let bankCardBuffer: Buffer | undefined = undefined;
+    let uploadedFilePath: string[] = [];
+
+    const maxSize: number = 1024 * 1024 * 6; // 6MB
+
+    // make the upload file on this service into another service that can used globally on this service (diffrent case with bunny service)
+    if (request.data.license_file) {
+      try {
+        /* liscene file */
+        let lisceneFilefileName =
+          request.data.license_file.fullName
+            .replace(/[^a-zA-Z0-9]/g, '')
+            .slice(0, 10) +
+          new Date().getTime() +
+          '.' +
+          request.data.license_file.fileExtension.split('/')[1];
+
+        let lisceneFilePath = `tmra/${this.appEnv}/organization/tender-management/client-data/${idFromFusionAuth}/${idFromFusionAuth}-${lisceneFilefileName}`;
+
+        lisceneFileBuffer = Buffer.from(
+          request.data.license_file.base64Data.replace(/^data:.*;base64,/, ''),
+          'base64',
+        );
+
+        validateAllowedExtension(request.data.license_file.fileExtension, [
+          AllowedFileType.JPG,
+          AllowedFileType.JPEG,
+          AllowedFileType.PNG,
+          AllowedFileType.PDF,
+        ]);
+        validateFileSize(request.data.license_file.size, maxSize);
+
+        const imageUrl = await this.bunnyService.uploadFileBase64(
+          request.data.license_file.fullName,
+          lisceneFileBuffer,
+          lisceneFilePath,
+          `Uploading liscene file for user ${idFromFusionAuth}`,
+        );
+
+        uploadedFilePath.push(imageUrl);
+        lisceneFileObj = {
+          url: imageUrl,
+          type: request.data.license_file.fileExtension,
+          size: request.data.license_file.size,
+        };
+      } catch (error) {
+        this.logger.error('Error while uploading liscene file: ' + error);
+        this.logger.log('log', 'deleting fusion auth user');
+        await this.fusionAuthService.fusionAuthDeleteUser(idFromFusionAuth);
+        this.logger.log(
+          'log',
+          'deleting all uploaded files before this file upload',
+        );
+        if (uploadedFilePath.length > 0) {
+          uploadedFilePath.forEach(async (path) => {
+            await this.bunnyService.deleteMedia(path, true);
+          });
+        }
+        throw error;
+      }
+    }
+
+    if (request.data.board_ofdec_file) {
+      try {
+        /* ofdec files */
+        let ofdecfileName =
+          request.data.board_ofdec_file.fullName
+            .replace(/[^a-zA-Z0-9]/g, '')
+            .slice(0, 10) +
+          new Date().getTime() +
+          '.' +
+          request.data.board_ofdec_file.fileExtension.split('/')[1];
+
+        let ofdecPath = `tmra/${this.appEnv}/organization/tender-management/client-data/${idFromFusionAuth}/${idFromFusionAuth}-${ofdecfileName}`;
+
+        ofdecBuffer = Buffer.from(
+          request.data.board_ofdec_file.base64Data.replace(
+            /^data:.*;base64,/,
+            '',
+          ),
+          'base64',
+        );
+
+        validateAllowedExtension(request.data.board_ofdec_file.fileExtension, [
+          AllowedFileType.JPG,
+          AllowedFileType.JPEG,
+          AllowedFileType.PNG,
+          AllowedFileType.PDF,
+          AllowedFileType.DOC,
+          AllowedFileType.DOCX,
+          AllowedFileType.XLS,
+          AllowedFileType.XLSX,
+          AllowedFileType.PPT,
+          AllowedFileType.PPTX,
+        ]);
+        validateFileSize(request.data.board_ofdec_file.size, maxSize);
+
+        const imageUrl = await this.bunnyService.uploadFileBase64(
+          request.data.board_ofdec_file.fullName,
+          ofdecBuffer,
+          ofdecPath,
+          `Uploading board ofdec file from user ${idFromFusionAuth}`,
+        );
+
+        uploadedFilePath.push(imageUrl);
+        ofdecObj = {
+          url: imageUrl,
+          type: request.data.board_ofdec_file.fileExtension,
+          size: request.data.board_ofdec_file.size,
+        };
+      } catch (error) {
+        this.logger.error('Error while uploading board ofdec file: ' + error);
+        this.logger.log('log', 'deleting fusion auth user');
+        await this.fusionAuthService.fusionAuthDeleteUser(idFromFusionAuth);
+        this.logger.log(
+          'log',
+          'deleting all uploaded files before this file upload',
+        );
+        if (uploadedFilePath.length > 0) {
+          uploadedFilePath.forEach(async (path) => {
+            await this.bunnyService.deleteMedia(path, true);
+          });
+        }
+        throw error;
+      }
+    }
+
+    if (request.data.bank_informations) {
+      try {
+        /* ofdec files */
+        let bankCardfileName =
+          request.data.bank_informations.card_image.fullName
+            .replace(/[^a-zA-Z0-9]/g, '')
+            .slice(0, 10) +
+          new Date().getTime() +
+          '.' +
+          request.data.bank_informations.card_image.fileExtension.split('/')[1];
+
+        let bankCardPath = `tmra/${this.appEnv}/organization/tender-management/client-data/${idFromFusionAuth}/${idFromFusionAuth}-${bankCardfileName}`;
+
+        bankCardBuffer = Buffer.from(
+          request.data.bank_informations.card_image.base64Data.replace(
+            /^data:.*;base64,/,
+            '',
+          ),
+          'base64',
+        );
+
+        validateAllowedExtension(
+          request.data.bank_informations.card_image.fileExtension,
+          [AllowedFileType.JPG, AllowedFileType.JPEG, AllowedFileType.PNG],
+        );
+        validateFileSize(
+          request.data.bank_informations.card_image.size,
+          maxSize,
+        );
+
+        const imageUrl = await this.bunnyService.uploadFileBase64(
+          request.data.bank_informations.card_image.fullName,
+          bankCardBuffer,
+          bankCardPath,
+          `Uploading bank card file from user ${idFromFusionAuth}`,
+        );
+
+        uploadedFilePath.push(imageUrl);
+        bankCardObj = {
+          url: imageUrl,
+          type: request.data.bank_informations.card_image.fileExtension,
+          size: request.data.bank_informations.card_image.size,
+        };
+      } catch (error) {
+        this.logger.error('Error while uploading bank card file: ' + error);
+        this.logger.log('log', 'deleting fusion auth user');
+        await this.fusionAuthService.fusionAuthDeleteUser(idFromFusionAuth);
+        this.logger.log(
+          'log',
+          'deleting all uploaded files before this file upload',
+        );
+        if (uploadedFilePath.length > 0) {
+          uploadedFilePath.forEach(async (path) => {
+            await this.bunnyService.deleteMedia(path, true);
+          });
+        }
+        throw error;
+      }
+
+      bankCreatePayload = BankInformationsMapper(
+        idFromFusionAuth,
+        request.data.bank_informations,
+        bankCardObj,
+      );
+    }
+
+    userCreatePayload = UserClientDataMapper(
+      userCreatePayload,
+      request,
+      lisceneFileObj,
+      ofdecObj,
+    );
+
+    // console.log(
+    //   'userCreatePayload',
+    //   JSON.stringify(userCreatePayload, null, 2),
+    // );
+
     const createdUser = await this.tenderUserRepository.createUser(
       userCreatePayload,
       createStatusLogPayload,
+      undefined,
+      bankCreatePayload,
+      uploadedFilePath,
     );
 
     return {

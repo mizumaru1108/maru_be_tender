@@ -119,7 +119,7 @@ export class TenderProposalService {
     }
 
     // upload the project_attachments to bunny cloud service
-    if (request.project_attachments) {      
+    if (request.project_attachments) {
       try {
         /* project attachment */
         let projectAttachmentfileName =

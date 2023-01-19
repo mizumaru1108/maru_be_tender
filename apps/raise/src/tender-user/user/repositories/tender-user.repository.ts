@@ -9,6 +9,7 @@ import { FindUserResponse } from '../dtos/responses/find-user-response.dto';
 import { UpdateUserPayload } from '../interfaces/update-user-payload.interface';
 import { UserStatus } from '../types/user_status';
 import { v4 as uuidv4 } from 'uuid';
+import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 
 @Injectable()
 export class TenderUserRepository {
@@ -17,6 +18,7 @@ export class TenderUserRepository {
   });
   constructor(
     private readonly prismaService: PrismaService,
+    private readonly bunnyService: BunnyService,
     private readonly fusionAuthService: FusionAuthService,
   ) {}
 
@@ -441,29 +443,59 @@ export class TenderUserRepository {
     userData: Prisma.userCreateInput | Prisma.userUncheckedCreateInput,
     userStatusLogData: Prisma.user_status_logUncheckedCreateInput[],
     rolesData?: Prisma.user_roleUncheckedCreateInput[],
+    bankInfoData?: Prisma.bank_informationUncheckedCreateInput,
+    uploadedFilesPath?: string[],
   ) {
     this.logger.debug(
       `Invoke create user with payload: ${JSON.stringify(userData)}`,
     );
     try {
-      return await this.prismaService.$transaction(async (prismaSession) => {
-        const user = await prismaSession.user.create({
-          data: userData,
-        });
-
-        await prismaSession.user_status_log.createMany({
-          data: userStatusLogData,
-        });
-
-        if (rolesData) {
-          await prismaSession.user_role.createMany({
-            data: rolesData,
+      return await this.prismaService.$transaction(
+        async (prismaSession) => {
+          this.logger.log('info', 'creating user...');
+          const user = await prismaSession.user.create({
+            data: userData,
           });
-        }
 
-        return user;
-      });
+          this.logger.log('info', 'creating user status log...');
+          await prismaSession.user_status_log.createMany({
+            data: userStatusLogData,
+          });
+
+          if (rolesData) {
+            this.logger.log('info', 'creating user_role...');
+            await prismaSession.user_role.createMany({
+              data: rolesData,
+            });
+          }
+
+          if (bankInfoData) {
+            this.logger.log('info', 'creating bank information...');
+            await prismaSession.bank_information.create({
+              data: bankInfoData,
+            });
+          }
+
+          return user;
+        },
+        { maxWait: 50000, timeout: 150000 },
+      );
     } catch (error) {
+      // delete the fusion auth user if the user creation failed
+      this.logger.log(
+        'log',
+        `Falied to store user data on db, deleting the user ${userData.id} from fusion auth`,
+      );
+      await this.fusionAuthService.fusionAuthDeleteUser(userData.id);
+      this.logger.log(
+        'log',
+        `deleting all uploaded files related for user ${userData.id}`,
+      );
+      if (uploadedFilesPath && uploadedFilesPath.length > 0) {
+        uploadedFilesPath.forEach(async (path) => {
+          await this.bunnyService.deleteMedia(path, true);
+        });
+      }
       const theError = prismaErrorThrower(
         error,
         TenderUserRepository.name,

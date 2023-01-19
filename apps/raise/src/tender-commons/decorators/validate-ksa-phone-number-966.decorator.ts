@@ -20,7 +20,7 @@ export function ValidateKsaPhoneNumber966(
           // options each is true so we can use it with {each: true}
           // if the value is [] then it will be splitted
           if (validationOptions && validationOptions.each) {
-            if (!value.match(/^\+966[0-9]$/)) {
+            if (!value.match(/^\+966[0-9]{9}$/)) {
               throw new BadRequestException(
                 `${args.property} (${value}) is an invalid (+966) KSA phone number!`,
               );
@@ -32,7 +32,7 @@ export function ValidateKsaPhoneNumber966(
                 `${propertyName} must be a string!`,
               );
             }
-            if (!value.match(/^\+966[0-9]$/)) {
+            if (!value.match(/^\+966[0-9]{9}$/)) {
               throw new BadRequestException(
                 `${args.property} (${value}) is an invalid (+966) KSA phone number!`,
               );

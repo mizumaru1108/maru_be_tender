@@ -1,37 +1,47 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
-  IsArray,
   IsDate,
   IsEmail,
+  IsIn,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
-  IsIn,
+  MaxLength,
+  MinLength,
   ValidateNested,
 } from 'class-validator';
 import { ValidateKsaPhoneNumber966 } from '../../../tender-commons/decorators/validate-ksa-phone-number-966.decorator';
+import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
 
-import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
-class bankData {
+export class bankData {
   @ApiProperty()
   @IsString()
+  @IsNotEmpty()
   bank_account_name: string;
 
   @ApiProperty()
   @IsString()
+  @MinLength(14, {
+    message: 'bank_account_number must be at least 14 characters',
+  })
+  @MaxLength(34, {
+    message: 'bank_account_number must be at most 34 characters',
+  })
+  @IsNotEmpty()
   bank_account_number: string;
 
   @ApiProperty()
   @IsString()
+  @IsNotEmpty()
   bank_name: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  @Type(() => UploadFilesJsonbDto)
+  @Type(() => TenderFilePayload)
   @ValidateNested()
-  card_image: UploadFilesJsonbDto;
+  card_image: TenderFilePayload;
 }
 
 // for registering
@@ -68,9 +78,9 @@ class registerClient {
 
   @ApiProperty()
   @IsNotEmpty()
-  @Type(() => UploadFilesJsonbDto)
+  @Type(() => TenderFilePayload)
   @ValidateNested()
-  board_ofdec_file: UploadFilesJsonbDto;
+  board_ofdec_file: TenderFilePayload;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -133,9 +143,9 @@ class registerClient {
 
   @ApiProperty()
   @IsNotEmpty()
-  @Type(() => UploadFilesJsonbDto)
+  @Type(() => TenderFilePayload)
   @ValidateNested()
-  license_file: UploadFilesJsonbDto;
+  license_file: TenderFilePayload;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -203,11 +213,10 @@ class registerClient {
   client_field: string;
 
   @ApiProperty()
-  @IsArray()
+  @IsNotEmpty()
+  @ValidateNested()
   @Type(() => bankData)
-  @IsNotEmpty({ each: true })
-  @ValidateNested({ each: true })
-  bank_informations: bankData[];
+  bank_informations: bankData;
 }
 
 export class RegisterTenderDto {

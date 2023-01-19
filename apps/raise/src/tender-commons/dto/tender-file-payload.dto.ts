@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDataURI, IsMimeType, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsDataURI,
+  IsMimeType,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 
 export class TenderFilePayload {
   @ApiProperty()
@@ -20,4 +26,10 @@ export class TenderFilePayload {
   @IsNotEmpty()
   @IsMimeType()
   fileExtension: string;
+
+  /* in bytes */
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  size: number;
 }
