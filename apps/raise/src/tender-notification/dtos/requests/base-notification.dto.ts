@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, IsUUID } from 'class-validator';
 
-export class ReadNotificationDto {
+export class BaseNotificationDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

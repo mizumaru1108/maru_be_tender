@@ -686,6 +686,7 @@ model notification {
   read_status     Boolean?      @default(false)
   subject         String
   proposal_log_id String?
+  shown           Boolean       @default(true)
   appointment     appointment?  @relation(fields: [appointment_id], references: [id])
   message         message?      @relation(fields: [message_id], references: [id], onDelete: Cascade)
   proposal        proposal?     @relation(fields: [proposal_id], references: [id])

@@ -107,4 +107,46 @@ export class TenderNotificationRepository {
       throw theError;
     }
   }
+
+  async hideById(notificationId: string): Promise<notification> {
+    try {
+      return await this.prismaService.notification.update({
+        where: {
+          id: notificationId,
+        },
+        data: {
+          shown: false,
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderNotificationRepository.name,
+        'Read Notification error:',
+        `Reading Notification!`,
+      );
+      throw theError;
+    }
+  }
+
+  async hideAllMine(userId: string) {
+    try {
+      return await this.prismaService.notification.updateMany({
+        where: {
+          user_id: userId,
+        },
+        data: {
+          shown: false,
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderNotificationRepository.name,
+        'Read Notification error:',
+        `Reading Notification!`,
+      );
+      throw theError;
+    }
+  }
 }

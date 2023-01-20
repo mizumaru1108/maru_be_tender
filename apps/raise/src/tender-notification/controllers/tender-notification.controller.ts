@@ -10,7 +10,8 @@ import { CurrentUser } from '../../commons/decorators/current-user.decorator';
 import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
 import { TenderJwtGuard } from '../../tender-auth/guards/tender-jwt.guard';
 import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
-import { ReadNotificationDto } from '../dtos/requests/read-notification.dto';
+import { BaseNotificationDto } from '../dtos/requests/base-notification.dto';
+
 import { TenderNotificationService } from '../services/tender-notification.service';
 
 @Controller('tender/notification')
@@ -21,11 +22,11 @@ export class TenderNotificationController {
 
   @UseGuards(TenderJwtGuard)
   @Patch('read')
-  read(
+  async read(
     @CurrentUser() currentUser: TenderCurrentUser,
-    @Body() request: ReadNotificationDto,
+    @Body() request: BaseNotificationDto,
   ) {
-    const readResponse = this.tenderNotificationService.read(
+    const readResponse = await this.tenderNotificationService.read(
       currentUser.id,
       request.notificationId,
     );
@@ -39,8 +40,40 @@ export class TenderNotificationController {
 
   @UseGuards(TenderJwtGuard)
   @Patch('read-mine')
-  readAll(@CurrentUser() currentUser: TenderCurrentUser) {
-    const readResponse = this.tenderNotificationService.readMine(
+  async readAll(@CurrentUser() currentUser: TenderCurrentUser) {
+    const readResponse = await this.tenderNotificationService.readMine(
+      currentUser.id,
+    );
+
+    return baseResponseHelper(
+      readResponse,
+      HttpStatus.OK,
+      'All my notifications read successfully',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard)
+  @Patch('hide')
+  async hide(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() request: BaseNotificationDto,
+  ) {
+    const readResponse = await this.tenderNotificationService.hide(
+      currentUser.id,
+      request.notificationId,
+    );
+
+    return baseResponseHelper(
+      readResponse,
+      HttpStatus.OK,
+      'Notification read successfully',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard)
+  @Patch('hide-all-mine')
+  async hideAllMine(@CurrentUser() currentUser: TenderCurrentUser) {
+    const readResponse = await this.tenderNotificationService.hideAllMine(
       currentUser.id,
     );
 
