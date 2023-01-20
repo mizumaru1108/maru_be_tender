@@ -185,6 +185,7 @@ const en = {
         message: '',
         required: 'Bank Account Number is required',
         match: 'Invallid International Bank Account Number ',
+        min: 'Bank Account Number must be 22 digit of numbers',
       },
       bank_account_name: {
         message: '',
@@ -546,7 +547,7 @@ const en = {
   register_form5: {
     bank_account_number: {
       label: 'رقم الحساب البنكي*',
-      placeholder: 'رقم الحساب البنكي',
+      placeholder: 'XX XXXX XXXX XXXX XXXX XXXX',
     },
     bank_account_name: {
       label: 'اسم الحساب البنكي*',

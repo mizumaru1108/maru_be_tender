@@ -197,6 +197,7 @@ const ar = {
         message: '',
         required: 'رقم الحساب المصرفي مطلوب',
         match: 'رقم الحساب المصرفي غير صحيح',
+        min: 'رقم الحساب المصرفي يجب أن يكون 22 رقم',
       },
       bank_account_name: {
         message: '',
@@ -557,7 +558,7 @@ const ar = {
   register_form5: {
     bank_account_number: {
       label: 'أيبان الحساب البنكي*',
-      placeholder: 'SAXX-XXXX-XXXX-XXXX-XXXX-XXXX',
+      placeholder: 'XX XXXX XXXX XXXX XXXX XXXX',
     },
     bank_account_name: {
       label: 'اسم الحساب البنكي*',

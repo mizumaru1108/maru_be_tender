@@ -55,9 +55,10 @@ export default function RHFTextField({ name, ...other }: Props) {
           helperText={error?.message}
           onChange={(e) => {
             const newDial = e.target.value.match(/\+?\d+/g)?.[0] ?? '';
+            // const newNumber = e.target.value.match(/\d+/g)?.[1] ?? '';
             const inputValue = e.target.value;
-            let cleanedValue = inputValue.replace(/\s+/g, '');
-            cleanedValue = cleanedValue.replace(/[-+\s]/, '');
+            let cleanedValue = inputValue.replace(/\s+/g, '').replace(/\D/g, '');
+            cleanedValue = cleanedValue.slice(0, 22);
             cleanedValue = cleanedValue.replace(/(.{4})/g, '$1 ');
             field.onChange(
               [
@@ -66,6 +67,8 @@ export default function RHFTextField({ name, ...other }: Props) {
                 'entity_mobile',
                 'ceo_mobile',
                 'chairman_mobile',
+                'pm_mobile',
+                'execution_time',
               ].includes(name)
                 ? newDial
                 : ['bank_account_number'].includes(name)
@@ -80,6 +83,7 @@ export default function RHFTextField({ name, ...other }: Props) {
               'entity_mobile',
               'ceo_mobile',
               'chairman_mobile',
+              'pm_mobile',
             ].includes(name) ? (
               <InputAdornment
                 position="start"
@@ -95,6 +99,22 @@ export default function RHFTextField({ name, ...other }: Props) {
                 }}
               >
                 +966
+              </InputAdornment>
+            ) : ['bank_account_number'].includes(name) ? (
+              <InputAdornment
+                position="start"
+                sx={{
+                  mr: 1.5,
+                  pr: 1.5,
+                  height: 'auto',
+                  borderRight: `1px solid ${theme.palette.text.disabled}`,
+                  color: theme.palette.text.disabled,
+                  '& > .MuiTypography-root': {
+                    color: theme.palette.text.disabled,
+                  },
+                }}
+              >
+                SA
               </InputAdornment>
             ) : null,
           }}

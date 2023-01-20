@@ -10,6 +10,7 @@ import { LoadingButton } from '@mui/lab';
 
 type Props = {
   onSubmit: (data: any) => void;
+  onUpdate: (data: any) => void;
   children?: React.ReactNode;
   defaultValues: any;
   onReturn: () => void;
@@ -17,14 +18,17 @@ type Props = {
   onLoader: (value: boolean) => void;
   isLoading?: boolean;
   lastStep?: boolean;
+  proposal_id?: string;
 };
 const SupportingDurationInfoForm = ({
   onReturn,
   // onSavingDraft,
   lastStep,
   onSubmit,
+  onUpdate,
   onLoader,
   isLoading,
+  proposal_id,
 }: Props) => {
   const { user } = useAuth();
 
@@ -42,12 +46,20 @@ const SupportingDurationInfoForm = ({
   const [oprnError, setOpenError] = useState(false);
 
   const onBankInfoSubmit = () => {
-    if (selectedCard === '') {
-      setOpenError(true);
-      window.scrollTo(0, 0);
+    // const newValue = {
+    //   proposal_id,
+    //   selectedCard,
+    // };
+    if (!!proposal_id) {
+      onUpdate(selectedCard);
     } else {
-      onLoader(true);
-      onSubmit(selectedCard);
+      if (selectedCard === '') {
+        setOpenError(true);
+        window.scrollTo(0, 0);
+      } else {
+        onLoader(true);
+        onSubmit(selectedCard);
+      }
     }
   };
 
@@ -133,7 +145,7 @@ const SupportingDurationInfoForm = ({
                 {translate('going_back_one_step')}
               </LoadingButton>
               <Box sx={{ width: '10px' }} />
-              <LoadingButton
+              {/* <LoadingButton
                 loading={isLoading}
                 variant="outlined"
                 sx={{
@@ -147,7 +159,7 @@ const SupportingDurationInfoForm = ({
                 disabled
               >
                 {translate('saving_as_draft')}
-              </LoadingButton>
+              </LoadingButton> */}
               <LoadingButton
                 loading={isLoading}
                 onClick={onBankInfoSubmit}
@@ -161,7 +173,11 @@ const SupportingDurationInfoForm = ({
                 }}
                 disabled={agreeOn ? false : true}
               >
-                {lastStep ? translate('send') : translate('next')}
+                {lastStep && proposal_id
+                  ? translate('update')
+                  : lastStep && !proposal_id
+                  ? translate('send')
+                  : translate('next')}
               </LoadingButton>
             </Stack>
           </Box>

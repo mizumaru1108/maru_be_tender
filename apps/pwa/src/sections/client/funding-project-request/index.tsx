@@ -1,25 +1,24 @@
-import { useEffect, useState } from 'react';
-import { Step, StepLabel, Typography, Stepper, Box, alpha, Container } from '@mui/material';
-import useResponsive from 'hooks/useResponsive';
-import {
-  MainInfoForm,
-  ProjectInfoForm,
-  ConnectingInfoForm,
-  SupportingDurationInfoForm,
-  ProjectBudgetForm,
-} from './forms';
-import useLocales from 'hooks/useLocales';
-import ActionBox from './forms/ActionBox';
-import { useMutation, useQuery } from 'urql';
-import { CreateProposel } from 'queries/client/createProposel';
-import { nanoid } from 'nanoid';
-import { useLocation, useNavigate } from 'react-router';
+import { alpha, Box, Container, Step, StepLabel, Stepper, Typography } from '@mui/material';
 import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
+import useResponsive from 'hooks/useResponsive';
+import { nanoid } from 'nanoid';
+import { useSnackbar } from 'notistack';
+import { CreateProposel } from 'queries/client/createProposel';
 import { getDraftProposal } from 'queries/client/getDraftProposal';
 import { updateDraftProposal } from 'queries/client/updateDraftProposal';
-import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router';
+import { useMutation, useQuery } from 'urql';
 import axiosInstance from 'utils/axios';
-import { useSnackbar } from 'notistack';
+import {
+  ConnectingInfoForm,
+  MainInfoForm,
+  ProjectBudgetForm,
+  ProjectInfoForm,
+  SupportingDurationInfoForm,
+} from './forms';
+import ActionBox from './forms/ActionBox';
 
 const steps = [
   'funding_project_request_form1.step',
@@ -107,9 +106,11 @@ const FundingProjectRequestForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDraft, setIsDraft] = useState(false);
   const [lastIndex, setLastIndex] = useState(0);
+  const [tempValues, setTempValues] = useState({});
 
   // on submit for the first step
   const onSubmitform1 = (data: any) => {
+    // console.log('data form 1', data);
     setIsLoading(false);
     const newData = { ...data };
     const newExTime = Number(data.execution_time);
@@ -145,13 +146,14 @@ const FundingProjectRequestForm = () => {
 
   // on submit for the third step
   const onSubmitform3 = (data: any) => {
+    // console.log('data form 3', data);
     if (isDraft) {
       onSavingDraft(data);
     } else {
       setStep((prevStep) => prevStep + 1);
       setRequestState((prevRegisterState: any) => ({
         ...prevRegisterState,
-        form2: {
+        form3: {
           ...prevRegisterState.form3,
           ...data,
         },
@@ -166,7 +168,7 @@ const FundingProjectRequestForm = () => {
       ...newValue,
       amount_required_fsupport: data.amount_required_fsupport,
       detail_project_budgets: {
-        ...data.form4.detail_project_budgets,
+        ...requestState.form4.detail_project_budgets,
         data: data.detail_project_budgets,
       },
     };
@@ -186,6 +188,7 @@ const FundingProjectRequestForm = () => {
 
   // on submit for creating a new project
   const onSubmit = async (data: any) => {
+    // console.log({ data });
     setIsLoading(true);
     const createdProposel = {
       ...(step >= 1 && { ...requestState.form1 }),
@@ -201,7 +204,7 @@ const FundingProjectRequestForm = () => {
       id: nanoid(),
       step: STEP[step - 1],
     };
-    console.log({ createdProposel });
+    // console.log({ createdProposel });
     try {
       const rest = await axiosInstance.post(
         'tender-proposal/create',
@@ -215,7 +218,7 @@ const FundingProjectRequestForm = () => {
         }
       );
       // setIsLoading(false);
-      console.log({ rest });
+      // console.log({ rest });
       if (rest) {
         const spreadUrl = location.pathname.split('/');
         // history.push('/dashboard');
@@ -269,48 +272,106 @@ const FundingProjectRequestForm = () => {
 
   // on saving function and also update a draft one
   const onSavingDraft = async (data: any) => {
-    console.log('data', data);
-    // setIsLoading(true);
+    // console.log('data', data);
+    // console.log({ requestState });
+    setIsLoading(true);
     const proposalPayload = {
-      ...(lastIndex === 0 && { ...requestState.form1 }),
-      ...(step === 1 && { ...requestState.form1, ...requestState.form2 }),
-      ...(step === 2 && { ...requestState.form1, ...requestState.form2, ...requestState.form3 }),
-      ...(step === 3 && {
-        ...requestState.form1,
-        ...requestState.form2,
-        ...requestState.form3,
+      ...(lastIndex >= 0 && { ...requestState.form1 }),
+      ...(lastIndex >= 1 && { ...requestState.form2 }),
+      ...(lastIndex >= 2 && { ...requestState.form3 }),
+      ...(lastIndex >= 3 && {
+        // ...requestState.form4,
         amount_required_fsupport: requestState.form4.amount_required_fsupport,
         detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
       }),
-      ...data,
+      ...(lastIndex < step && step >= 1 && { ...requestState.form1 }),
+      ...(lastIndex < step && step >= 2 && { ...requestState.form2 }),
+      ...(lastIndex < step && step >= 3 && { ...requestState.form3 }),
+      ...(lastIndex < step &&
+        step >= 4 && {
+          // ...requestState.form4,
+          amount_required_fsupport: requestState.form4.amount_required_fsupport,
+          detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
+        }),
+      // ...data,
+      ...(step !== 3 && step !== 4
+        ? { ...data }
+        : step === 3
+        ? {
+            amount_required_fsupport: data.amount_required_fsupport,
+            detail_project_budgets: [...data.detail_project_budgets.data],
+          }
+        : { ...data }),
       // no need to save the proposal_bank_informations
       submitter_user_id: user?.id,
-      // proposal_bank_id: data,
-      proposal_bank_id: step === 4 ? data : undefined,
       id: nanoid(),
     };
-    console.log({ proposalPayload });
+    // console.log({ proposalPayload });
+    // console.log({ tempValues });
+    // console.log({ requestState });
+    const newAttachment = {
+      ...(lastIndex === step &&
+      step >= 0 &&
+      requestState.form1.project_attachments.url !== data.project_attachments.url
+        ? {
+            base64Data: data.project_attachments.base64Data,
+            fileExtension: data.project_attachments.fileExtension,
+            fullName: data.project_attachments.fullName,
+            size: data.project_attachments.size,
+          }
+        : {}),
+    };
+    const newLetteSupport = {
+      ...(lastIndex === step &&
+      step >= 0 &&
+      requestState.form1.letter_ofsupport_req.url !== data.letter_ofsupport_req.url
+        ? {
+            base64Data: data.letter_ofsupport_req.base64Data,
+            fileExtension: data.letter_ofsupport_req.fileExtension,
+            fullName: data.letter_ofsupport_req.fullName,
+            size: data.letter_ofsupport_req.size,
+          }
+        : {}),
+    };
     if (!!id) {
       const res = await axiosInstance.patch(
         '/tender-proposal/save-draft',
         {
-          ...(lastIndex === 0 && { ...requestState.form1 }),
-          ...(step === 1 && { ...requestState.form1, ...requestState.form2 }),
-          ...(step === 2 && {
-            ...requestState.form1,
-            ...requestState.form2,
-            ...requestState.form3,
-          }),
-          ...(step === 3 && {
-            ...requestState.form1,
-            ...requestState.form2,
-            ...requestState.form3,
+          ...(lastIndex >= 0 && { ...requestState.form1 }),
+          ...(lastIndex >= 1 && { ...requestState.form2 }),
+          ...(lastIndex >= 2 && { ...requestState.form3 }),
+          ...(lastIndex >= 3 && {
+            // ...requestState.form4,
             amount_required_fsupport: requestState.form4.amount_required_fsupport,
             detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
           }),
-          ...data,
+          ...(lastIndex === step && step >= 0
+            ? {
+                ...data,
+                project_attachments: {
+                  ...(!!newAttachment && Object.keys(newAttachment).length > 0
+                    ? { ...newAttachment }
+                    : { ...data.project_attachments }),
+                },
+                letter_ofsupport_req: {
+                  ...(!!newLetteSupport && Object.keys(newLetteSupport).length > 0
+                    ? { ...newLetteSupport }
+                    : { ...data.letter_ofsupport_req }),
+                },
+              }
+            : {}),
+          ...(lastIndex < step && step >= 1 && { ...requestState.form1 }),
+          ...(lastIndex < step && step >= 2 && { ...requestState.form2 }),
+          ...(lastIndex < step && step >= 3 && { ...requestState.form3 }),
+          ...(lastIndex < step &&
+            step >= 4 && {
+              // ...requestState.form4,
+              amount_required_fsupport: requestState.form4.amount_required_fsupport,
+              detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
+            }),
+          // ...data,
+          proposal_bank_information_id: step === 4 ? data : undefined,
           proposal_id: id,
-          proposal_bank_id: step === 4 ? data : undefined,
         },
         {
           headers: { 'x-hasura-role': activeRole! },
@@ -327,12 +388,6 @@ const FundingProjectRequestForm = () => {
           variant: 'error',
         });
       }
-      // console.log(res);
-      // const res = await updateDraft({
-      //   id,
-      //   update: createdProposel,
-      // });
-      // if (res.error === undefined) navigate(-1);
     } else {
       try {
         const rest = await axiosInstance.post(
@@ -347,7 +402,7 @@ const FundingProjectRequestForm = () => {
           }
         );
         // setIsLoading(false);
-        console.log({ rest });
+        // console.log({ rest });
         if (rest) {
           const spreadUrl = location.pathname.split('/');
           // history.push('/dashboard');
@@ -361,12 +416,49 @@ const FundingProjectRequestForm = () => {
         setIsLoading(false);
       }
     }
-    // else {
-    //   const res = await createProposal({
-    //     createdProposel,
-    //   });
-    //   if (res.error === undefined) navigate(-1);
-    // }
+  };
+  const onLastSavingDraft = async (data: any) => {
+    // console.log('data', data);
+    setIsLoading(true);
+    const res = await axiosInstance.patch(
+      '/tender-proposal/save-draft',
+      {
+        ...(lastIndex >= 0 && { ...requestState.form1 }),
+        ...(lastIndex >= 1 && { ...requestState.form2 }),
+        ...(lastIndex >= 2 && { ...requestState.form3 }),
+        ...(lastIndex >= 3 && {
+          // ...requestState.form4,
+          amount_required_fsupport: requestState.form4.amount_required_fsupport,
+          detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
+        }),
+        ...(lastIndex < step && step >= 1 && { ...requestState.form1 }),
+        ...(lastIndex < step && step >= 2 && { ...requestState.form2 }),
+        ...(lastIndex < step && step >= 3 && { ...requestState.form3 }),
+        ...(lastIndex < step &&
+          step >= 4 && {
+            // ...requestState.form4,
+            amount_required_fsupport: requestState.form4.amount_required_fsupport,
+            detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
+          }),
+        // ...data,
+        proposal_bank_information_id: step === 4 ? data : undefined,
+        proposal_id: id,
+      },
+      {
+        headers: { 'x-hasura-role': activeRole! },
+        maxBodyLength: Infinity,
+        maxContentLength: Infinity,
+      }
+    );
+    if (res) {
+      const spreadUrl = location.pathname.split('/');
+      // history.push('/dashboard');
+      navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
+    } else {
+      enqueueSnackbar(translate('Something went wrong'), {
+        variant: 'error',
+      });
+    }
   };
 
   // on return
@@ -464,6 +556,53 @@ const FundingProjectRequestForm = () => {
               }),
             },
           }));
+          setTempValues((prevTempValues: any) => ({
+            ...prevTempValues,
+            ...(STEP.indexOf(step.trim()) >= 0 && {
+              project_name: project_name.trim(),
+              project_idea,
+              project_location,
+              project_implement_date,
+              execution_time: execution_time.trim(),
+              project_beneficiaries,
+              letter_ofsupport_req: {
+                // size: undefined,
+                // url: letter_ofsupport_req,
+                // type: 'image/jpeg',
+                ...letter_ofsupport_req,
+              },
+              project_attachments: {
+                // size: undefined,
+                // url: project_attachments,
+                // type: 'image/jpeg',
+                ...project_attachments,
+              },
+            }),
+            ...(STEP.indexOf(step.trim()) >= 1 && {
+              num_ofproject_binicficiaries,
+              project_goals,
+              project_outputs,
+              project_strengths,
+              project_risks,
+            }),
+            ...(STEP.indexOf(step.trim()) >= 2 && {
+              pm_name: pm_name.trim(),
+              pm_mobile: pm_mobile.trim(),
+              pm_email: pm_email.trim(),
+              region: region.trim(),
+              governorate,
+            }),
+            ...(STEP.indexOf(step.trim()) >= 3 && {
+              amount_required_fsupport,
+              detail_project_budgets: {
+                data: proposal_item_budgets.map((item: any, index: any) => ({
+                  amount: item.amount,
+                  clause: item.clause.trim(),
+                  explanation: item.explanation.trim(),
+                })),
+              },
+            }),
+          }));
           setStep(STEP.indexOf(step.trim()));
           setLastIndex(STEP.indexOf(step.trim()));
         }
@@ -516,6 +655,7 @@ const FundingProjectRequestForm = () => {
             <ActionBox
               step={step}
               onReturn={onReturn}
+              isLoad={isLoading}
               // onSavingDraft={onSavingDraft}
               isStep={step < 5}
               isDraft={(draft: boolean) => setIsDraft(draft)}
@@ -527,6 +667,7 @@ const FundingProjectRequestForm = () => {
             <ActionBox
               step={step}
               onReturn={onReturn}
+              isLoad={isLoading}
               // onSavingDraft={onSavingDraft}
               isStep={id !== undefined ? true : false}
               isDraft={(draft: boolean) => setIsDraft(draft)}
@@ -538,6 +679,7 @@ const FundingProjectRequestForm = () => {
             <ActionBox
               step={step}
               onReturn={onReturn}
+              isLoad={isLoading}
               // onSavingDraft={onSavingDraft}
               isStep={id !== undefined ? true : false}
               isDraft={(draft: boolean) => setIsDraft(draft)}
@@ -549,6 +691,7 @@ const FundingProjectRequestForm = () => {
             <ActionBox
               step={step}
               onReturn={onReturn}
+              isLoad={isLoading}
               // onSavingDraft={onSavingDraft}
               isStep={id !== undefined ? true : false}
               isDraft={(draft: boolean) => setIsDraft(draft)}
@@ -559,7 +702,11 @@ const FundingProjectRequestForm = () => {
           <SupportingDurationInfoForm
             lastStep={true}
             onReturn={onReturn}
+            onUpdate={(data: any) => {
+              onLastSavingDraft(data);
+            }}
             // onSavingDraft={onSavingDraft}
+            proposal_id={id}
             onSubmit={onSubmit}
             onLoader={(load) => setIsLoading(load)}
             isLoading={isLoading}

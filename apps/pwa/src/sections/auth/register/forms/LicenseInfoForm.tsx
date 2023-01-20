@@ -1,12 +1,11 @@
-import * as Yup from 'yup';
-import { Grid } from '@mui/material';
-import { FormProvider, RHFDatePicker, RHFTextField } from 'components/hook-form';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { LicenseValuesProps } from '../../../../@types/register';
+import { Grid } from '@mui/material';
+import { FormProvider } from 'components/hook-form';
 import useLocales from 'hooks/useLocales';
-import BaseField from 'components/hook-form/BaseField';
 import { useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
+import { LicenseValuesProps } from '../../../../@types/register';
 import FormGenerator from '../../../../components/FormGenerator';
 import { LicenseInfoData } from '../../../client/funding-project-request/Forms-Data';
 
@@ -27,8 +26,8 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
     license_file: Yup.mixed()
       .test('size', translate('errors.register.license_file.size'), (value) => {
         if (value) {
-          const trueSize = value.size * 28;
-          if (trueSize > 1024 * 1024 * 5) {
+          // const trueSize = value.size * 28;
+          if (value.size > 1024 * 1024 * 5) {
             return false;
           }
         }
@@ -50,8 +49,8 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
     board_ofdec_file: Yup.mixed()
       .test('size', translate('errors.register.board_ofdec_file.size'), (value) => {
         if (value) {
-          const trueSize = value.size * 28;
-          if (trueSize > 1024 * 1024 * 5) {
+          // const trueSize = value.size * 28;
+          if (value.size > 1024 * 1024 * 5) {
             return false;
           }
         }

@@ -1,14 +1,15 @@
-import * as Yup from 'yup';
-import { Grid, MenuItem } from '@mui/material';
-import { FormProvider, RHFSelect, RHFTextField } from 'components/hook-form';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ConnectingValuesProps } from '../../../../@types/register';
-import { REGION } from '_mock/region';
-import useLocales from 'hooks/useLocales';
-import { RegionNames } from '../../../../@types/region';
+import { Grid } from '@mui/material';
+import { FormProvider, RHFTextField } from 'components/hook-form';
 import RHFPassword from 'components/hook-form/RHFPassword';
-import { useEffect, useMemo, useState } from 'react';
+import useLocales from 'hooks/useLocales';
+import { useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
+import { REGION } from '_mock/region';
+import { RegionNames } from '../../../../@types/region';
+import { ConnectingValuesProps } from '../../../../@types/register';
+import BaseField from '../../../../components/hook-form/BaseField';
 
 type FormProps = {
   children?: React.ReactNode;
@@ -25,7 +26,12 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
     const newEntityMobile = defaultValues.entity_mobile?.replace('+966', '');
     const newPhone = defaultValues.phone?.replace('+966', '');
     newValues = { ...newValues, entity_mobile: newEntityMobile, phone: newPhone };
-    reset(newValues);
+    console.log('newValues', newValues);
+    if (!!newValues.entity_mobile) {
+      reset(newValues);
+    }
+    // if (!!defaultValues) {
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues]);
   const RegisterSchema = Yup.object().shape(
@@ -117,36 +123,49 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [defaultValues]);
   const region = watch('region') as RegionNames | '';
+  console.log('region', region);
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7}>
         <Grid item md={6} xs={12}>
-          <RHFSelect
+          <BaseField
+            type="selectWithoutGenerator"
             name="region"
-            label={translate('register_form2.region.label')}
-            placeholder={translate('register_form2.region.placeholder')}
+            label="funding_project_request_form3.region.label"
+            placeholder="funding_project_request_form3.region.placeholder"
           >
-            {Object.keys(REGION).map((item, index) => (
-              <MenuItem key={index} value={item}>
-                {item}
-              </MenuItem>
-            ))}
-          </RHFSelect>
+            <>
+              {Object.keys(REGION).map((item, index) => (
+                <option key={index} value={item} style={{ backgroundColor: '#fff' }}>
+                  {item}
+                </option>
+              ))}
+            </>
+          </BaseField>
         </Grid>
         <Grid item md={6} xs={12}>
-          <RHFSelect
+          <BaseField
+            type="selectWithoutGenerator"
             name="governorate"
-            label={translate('register_form2.city.label')}
-            placeholder={translate('register_form2.city.placeholder')}
+            label="funding_project_request_form3.city.label"
+            placeholder="funding_project_request_form3.city.placeholder"
           >
-            {region !== '' &&
-              REGION[`${region}`].map((item: any, index: any) => (
-                <MenuItem key={index} value={item}>
-                  {item}
-                </MenuItem>
-              ))}
-          </RHFSelect>
+            {region !== '' && (
+              <>
+                {REGION[`${region}`].map((item: any, index: any) => (
+                  <option key={index} value={item} style={{ backgroundColor: '#fff' }}>
+                    {item}
+                  </option>
+                ))}
+              </>
+            )}
+            {region === '' && (
+              <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
+                {translate('funding_project_request_form3.city.placeholder')}
+              </option>
+            )}
+          </BaseField>
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFTextField

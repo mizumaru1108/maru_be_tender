@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Typography,
   Stack,
@@ -17,6 +18,8 @@ import useAuth from 'hooks/useAuth';
 import { asignProposalToAUser } from 'queries/commons/asignProposalToAUser';
 import { useMutation } from 'urql';
 import { deleteDraftProposal } from 'queries/client/deleteDraftProposal';
+import axiosInstance from '../../utils/axios';
+import { LoadingButton } from '@mui/lab';
 
 const cardFooterButtonActionLocal = {
   'show-project': 'show_project',
@@ -60,6 +63,7 @@ const ProjectCardBE = ({
   const { translate } = useLocales();
   const [, updateAsigning] = useMutation(asignProposalToAUser);
   const [, deleteDrPro] = useMutation(deleteDraftProposal);
+  const [loading, setLoading] = React.useState(false);
 
   const inquiryStatusStyle = {
     CANCELED: { color: '#FF4842', backgroundColor: '#FF484229', title: 'commons.chip_canceled' },
@@ -68,8 +72,27 @@ const ProjectCardBE = ({
   };
 
   const onDeleteDraftClick = async () => {
-    await deleteDrPro({ id });
-    mutate();
+    // await deleteDrPro({ id });
+    setLoading(true);
+    try {
+      const rest = await axiosInstance.post(
+        'tender-proposal/delete-draft',
+        {
+          proposal_id: id,
+        },
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
+      console.log({ rest });
+      if (rest) {
+        mutate();
+      } else {
+        alert('Something went wrong');
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const onContinuingDraftClick = () => {
@@ -241,8 +264,9 @@ const ProjectCardBE = ({
             <Stack direction="row" justifyContent="end" gap={2}>
               {cardFooterButtonAction === 'draft' ? (
                 <Stack direction="row" gap={2}>
-                  <Button
+                  <LoadingButton
                     variant="outlined"
+                    loading={loading}
                     onClick={onDeleteDraftClick}
                     startIcon={<img alt="" src="/icons/trash-icon.svg" />}
                     sx={{
@@ -251,14 +275,15 @@ const ProjectCardBE = ({
                     }}
                   >
                     حذف المسودة
-                  </Button>
-                  <Button
+                  </LoadingButton>
+                  <LoadingButton
+                    loading={loading}
                     onClick={onContinuingDraftClick}
                     startIcon={<img alt="" src="/icons/edit-pencile-icon.svg" />}
                     sx={{ backgroundColor: 'text.tertiary', color: '#fff' }}
                   >
                     إكمال الطلب
-                  </Button>
+                  </LoadingButton>
                 </Stack>
               ) : (
                 <Button

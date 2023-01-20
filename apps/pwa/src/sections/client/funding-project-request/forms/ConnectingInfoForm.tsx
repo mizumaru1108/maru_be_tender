@@ -26,12 +26,26 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
   const { translate } = useLocales();
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    let newValues = { ...defaultValues };
+    const newEntityMobile = defaultValues.pm_mobile?.replace('+966', '');
+    newValues = { ...newValues, pm_mobile: newEntityMobile };
+    if (!!newValues.pm_name) {
+      reset(newValues);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues]);
   const CreatingProposalForm3 = Yup.object().shape({
     pm_name: Yup.string().required(translate('errors.cre_proposal.pm_name.required')),
     pm_mobile: Yup.string()
-      .matches(/^\+9665[0-9]{8}$/, translate('errors.cre_proposal.pm_mobile.message'))
-      .required(translate('errors.cre_proposal.pm_mobile.required')),
+      // .matches(/^\+9665[0-9]{8}$/, translate('errors.cre_proposal.pm_mobile.message'))
+      // .required(translate('errors.cre_proposal.pm_mobile.required')),
+      .required(translate('errors.register.phone.length'))
+      .test('len', translate('errors.register.phone.length'), (val) => {
+        if (val === undefined) {
+          return true;
+        }
+        return val?.length === 0 || val!.length === 9;
+      }),
     pm_email: Yup.string()
       .email('Email must be a valid email address')
       .required(translate('errors.cre_proposal.pm_email.required')),
@@ -46,12 +60,31 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
   const {
     handleSubmit,
     formState: { isSubmitting },
+    getValues,
     watch,
+    reset,
   } = methods;
 
+  const onSubmitForm = async (data: any) => {
+    let newEntityMobile = getValues('pm_mobile');
+
+    newEntityMobile.substring(0, 4) !== '+966'
+      ? (newEntityMobile = '+966'.concat(`${getValues('pm_mobile')}`))
+      : (newEntityMobile = getValues('pm_mobile'));
+
+    const payload = {
+      ...data,
+      pm_mobile: newEntityMobile!,
+    };
+
+    // reset({ ...payload });
+    onSubmit(payload);
+  };
+
   const region = watch('region') as RegionNames | '';
+
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7}>
         <Grid item md={12} xs={12}>
           <BaseField

@@ -1,3 +1,4 @@
+import { LoadingButton } from '@mui/lab';
 import { Stack, Button, Box } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 import { ReactComponent as MovingBack } from '../../../../assets/move-back-icon.svg';
@@ -9,8 +10,9 @@ type PROPS = {
   step: number;
   isStep?: boolean;
   isDraft: (draft: boolean) => void;
+  isLoad?: boolean;
 };
-const ActionBox = ({ onReturn, lastStep, step, isStep, isDraft }: PROPS) => {
+const ActionBox = ({ onReturn, lastStep, step, isStep, isDraft, isLoad }: PROPS) => {
   const { translate } = useLocales();
 
   return (
@@ -24,9 +26,10 @@ const ActionBox = ({ onReturn, lastStep, step, isStep, isDraft }: PROPS) => {
         }}
       >
         <Stack justifyContent="center" direction="row" gap={3}>
-          <Button
+          <LoadingButton
             onClick={onReturn}
-            endIcon={<MovingBack />}
+            loading={isLoad}
+            endIcon={!isLoad && <MovingBack />}
             sx={{
               color: 'text.primary',
               width: { xs: '100%', sm: '200px' },
@@ -34,9 +37,10 @@ const ActionBox = ({ onReturn, lastStep, step, isStep, isDraft }: PROPS) => {
             }}
           >
             {translate('going_back_one_step')}
-          </Button>
+          </LoadingButton>
           <Box sx={{ width: '10px' }} />
-          <Button
+          <LoadingButton
+            loading={isLoad}
             variant="outlined"
             type="submit"
             sx={{
@@ -46,12 +50,13 @@ const ActionBox = ({ onReturn, lastStep, step, isStep, isDraft }: PROPS) => {
               borderColor: '#000',
             }}
             onClick={() => isDraft(true)}
-            disabled={isStep ? false : true}
+            disabled={step < 4 ? false : true}
             // disabled
           >
             {translate('saving_as_draft')}
-          </Button>
-          <Button
+          </LoadingButton>
+          <LoadingButton
+            loading={isLoad}
             type="submit"
             variant="outlined"
             sx={{
@@ -63,7 +68,7 @@ const ActionBox = ({ onReturn, lastStep, step, isStep, isDraft }: PROPS) => {
             }}
           >
             {lastStep ? translate('send') : translate('next')}
-          </Button>
+          </LoadingButton>
         </Stack>
       </Box>
     </Stack>
