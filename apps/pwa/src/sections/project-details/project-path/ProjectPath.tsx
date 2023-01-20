@@ -79,29 +79,29 @@ function ProjectPath() {
         <Stack direction="column" gap={2} justifyContent="start">
           <Typography variant="h6">{translate(`review.order_status`)}</Typography>
           {followUps.log.map((item: Log, index: number) => (
-            <>
+            <React.Fragment key={index}>
               {index === activeStep && (
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                   <Typography>{item.action}</Typography>
                 </Stack>
               )}
-            </>
+            </React.Fragment>
           ))}
           <Typography variant="h6">{translate(`review.classification_field`)}</Typography>
           {followUps.log.map((item: Log, index: number) => (
-            <>
+            <React.Fragment key={index}>
               {index === activeStep && (
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                   <Typography>{item.notes}</Typography>
                 </Stack>
               )}
-            </>
+            </React.Fragment>
           ))}
           <Divider />
           <Typography variant="h6">{translate(`review.review_by_supervisor`)}</Typography>
           <Stack direction="column" gap={2} sx={{ pb: 2 }}>
             {followUps.log.map((item: Log, index: number) => (
-              <>
+              <React.Fragment key={index}>
                 {index === activeStep && (
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
@@ -110,7 +110,7 @@ function ProjectPath() {
                     </Typography>
                   </Stack>
                 )}
-              </>
+              </React.Fragment>
             ))}
           </Stack>
           <Grid container spacing={2}>
@@ -118,13 +118,13 @@ function ProjectPath() {
               <Typography variant="h6">{translate(`review.closing_report`)}</Typography>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 {followUps.log.map((item: Log, index: number) => (
-                  <>
+                  <React.Fragment key={index}>
                     {index === activeStep && (
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                         <Typography>{item.proposal.closing_report ? 'Yes' : 'No'}</Typography>
                       </Stack>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
               </Stack>
             </Grid>
@@ -132,13 +132,13 @@ function ProjectPath() {
               <Typography variant="h6">{translate(`review.closing_agreement`)}</Typography>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 {followUps.log.map((item: Log, index: number) => (
-                  <>
+                  <React.Fragment key={index}>
                     {index === activeStep && (
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                         <Typography>{item.proposal.does_an_agreement ? 'Yes' : 'No'}</Typography>
                       </Stack>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
               </Stack>
             </Grid>
@@ -146,13 +146,13 @@ function ProjectPath() {
               <Typography variant="h6">{translate(`review.vat_in_project`)}</Typography>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 {followUps.log.map((item: Log, index: number) => (
-                  <>
+                  <React.Fragment key={index}>
                     {index === activeStep && (
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                         <Typography>{item.proposal.vat ? 'Yes' : 'No'}</Typography>
                       </Stack>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
               </Stack>
             </Grid>
@@ -160,13 +160,13 @@ function ProjectPath() {
               <Typography variant="h6">{translate(`review.vat`)}</Typography>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 {followUps.log.map((item: Log, index: number) => (
-                  <>
+                  <React.Fragment key={index}>
                     {index === activeStep && (
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                         <Typography>{item.proposal.vat_percentage || 0}</Typography>
                       </Stack>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
               </Stack>
             </Grid>
@@ -174,13 +174,13 @@ function ProjectPath() {
               <Typography variant="h6">{translate(`review.inclu_or_exclu`)}</Typography>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 {followUps.log.map((item: Log, index: number) => (
-                  <>
+                  <React.Fragment key={index}>
                     {index === activeStep && (
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                         <Typography>{item.proposal.inclu_or_exclu ? 'Yes' : 'No'}</Typography>
                       </Stack>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
               </Stack>
             </Grid>
@@ -188,7 +188,7 @@ function ProjectPath() {
               <Typography variant="h6">{translate(`review.number_of_payment`)}</Typography>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 {followUps.log.map((item: Log, index: number) => (
-                  <>
+                  <React.Fragment key={index}>
                     {index === activeStep && (
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                         <Typography>
@@ -196,7 +196,7 @@ function ProjectPath() {
                         </Typography>
                       </Stack>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
               </Stack>
             </Grid>
@@ -204,13 +204,13 @@ function ProjectPath() {
               <Typography variant="h6">{translate(`review.payment_support`)}</Typography>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 {followUps.log.map((item: Log, index: number) => (
-                  <>
+                  <React.Fragment key={index}>
                     {index === activeStep && (
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                         <Typography>{item.proposal.fsupport_by_supervisor} SAR</Typography>
                       </Stack>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
               </Stack>
             </Grid>
@@ -218,13 +218,13 @@ function ProjectPath() {
               <Typography variant="h6">{translate(`review.support_amount_inclu`)}</Typography>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 {followUps.log.map((item: Log, index: number) => (
-                  <>
+                  <React.Fragment key={index}>
                     {index === activeStep && (
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                         <Typography>{item.proposal.support_type ? 'Yes' : 'No'}</Typography>
                       </Stack>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
               </Stack>
             </Grid>
@@ -232,37 +232,37 @@ function ProjectPath() {
           <Typography variant="h6">{translate(`review.procedure`)}</Typography>
           <Stack direction="column" gap={2} sx={{ pb: 2 }}>
             {followUps.log.map((item: Log, index: number) => (
-              <>
+              <React.Fragment key={index}>
                 {index === activeStep && (
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>{item.proposal.support_goal_id}</Typography>
                   </Stack>
                 )}
-              </>
+              </React.Fragment>
             ))}
           </Stack>
           <Typography variant="h6">{translate(`review.note_on_project`)}</Typography>
           <Stack direction="column" gap={2} sx={{ pb: 2 }}>
             {followUps.log.map((item: Log, index: number) => (
-              <>
+              <React.Fragment key={index}>
                 {index === activeStep && (
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>{item.notes}</Typography>
                   </Stack>
                 )}
-              </>
+              </React.Fragment>
             ))}
           </Stack>
           <Typography variant="h6">{translate(`review.support_output`)}</Typography>
           <Stack direction="column" gap={2} sx={{ pb: 2 }}>
             {followUps.log.map((item: Log, index: number) => (
-              <>
+              <React.Fragment key={index}>
                 {index === activeStep && (
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>{item.proposal.support_outputs}</Typography>
                   </Stack>
                 )}
-              </>
+              </React.Fragment>
             ))}
           </Stack>
 

@@ -61,7 +61,11 @@ function MainPage() {
           <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
             {translate('target_group_type')}
           </Typography>
-          <Typography>{translate(`project_beneficiaries.${project_beneficiaries}`)}</Typography>
+          <Typography>
+            {translate(
+              `section_portal_reports.heading.gender.${project_beneficiaries.toLowerCase()}`
+            )}
+          </Typography>
         </Stack>
         <Stack direction="column">
           <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>

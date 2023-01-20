@@ -4,10 +4,12 @@ import useAuth from 'hooks/useAuth';
 import { getProposals } from 'queries/commons/getProposal';
 import { useNavigate } from 'react-router';
 import { useQuery } from 'urql';
+import useLocales from 'hooks/useLocales';
 
-function RequestsInProcess() {
+export default function RequestsInProcess() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { translate } = useLocales();
   const [result] = useQuery({
     query: getProposals,
     variables: {
@@ -24,47 +26,45 @@ function RequestsInProcess() {
   const props = data?.data ?? [];
   if (!props || props.length === 0) return <></>;
   return (
-    <Grid container spacing={1}>
-      <Grid item md={12} xs={12}>
-        <Stack direction="row" justifyContent="space-between">
-          <Typography variant="h4" sx={{ mb: '20px' }}>
-            طلبات قيد الإجراء
-          </Typography>
-          <Button
-            sx={{
+    <>
+      <Stack direction="row" justifyContent="space-between">
+        <Typography variant="h4" sx={{ mb: '20px' }}>
+          {translate('content.client.main_page.process_request')}
+        </Typography>
+        <Button
+          sx={{
+            backgroundColor: 'transparent',
+            color: '#93A3B0',
+            textDecoration: 'underline',
+            ':hover': {
               backgroundColor: 'transparent',
-              color: '#93A3B0',
-              textDecoration: 'underline',
-              ':hover': {
-                backgroundColor: 'transparent',
-              },
-            }}
-            onClick={() => {
-              navigate('/project-supervisor/dashboard/requests-in-process');
-            }}
-          >
-            عرض الكل
-          </Button>
-        </Stack>
+            },
+          }}
+          onClick={() => {
+            navigate('/project-supervisor/dashboard/requests-in-process');
+          }}
+        >
+          {translate('view_all')}
+        </Button>
+      </Stack>
+      <Grid container spacing={3}>
+        {props?.map((item: any, index: any) => (
+          <Grid item md={6} key={index}>
+            <ProjectCard
+              title={{ id: item.id }}
+              content={{
+                projectName: item.project_name,
+                organizationName: item.project_name,
+                sentSection: 'Supervisor',
+                employee: 'Supervisor',
+              }}
+              footer={{ createdAt: new Date(item.created_at) }}
+              cardFooterButtonAction="show-details"
+              destination="requests-in-process"
+            />
+          </Grid>
+        ))}
       </Grid>
-
-      {props?.map((item: any, index: any) => (
-        <Grid item md={6} key={index}>
-          <ProjectCard
-            title={{ id: item.id }}
-            content={{
-              projectName: item.project_name,
-              organizationName: item.project_name,
-              sentSection: 'Supervisor',
-              employee: 'Supervisor',
-            }}
-            footer={{ createdAt: new Date(item.created_at) }}
-            cardFooterButtonAction="show-details"
-            destination="requests-in-process"
-          />
-        </Grid>
-      ))}
-    </Grid>
+    </>
   );
 }
-export default RequestsInProcess;

@@ -36,7 +36,7 @@ function FloatingActionBar(props: FloatingActionBarProps) {
               props.handleAccept();
             }}
           >
-            {translate('project_acceptance')}
+            {translate('account_manager.accept_project')}
           </Button>
           <Button
             variant="contained"
@@ -46,7 +46,7 @@ function FloatingActionBar(props: FloatingActionBarProps) {
               props.handleReject();
             }}
           >
-            {translate('project_rejected')}
+            {translate('account_manager.reject_project')}
           </Button>
 
           {props.role === 'tender_moderator' && (

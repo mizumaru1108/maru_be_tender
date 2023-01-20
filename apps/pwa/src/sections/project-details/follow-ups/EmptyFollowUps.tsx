@@ -1,7 +1,10 @@
 import { Box, Container, Grid, Stack, Typography } from '@mui/material';
 import SvgIconStyle from 'components/SvgIconStyle';
+import useLocales from 'hooks/useLocales';
 
 function EmptyFollowUps() {
+  const { translate } = useLocales();
+
   return (
     <Container>
       <Grid
@@ -19,10 +22,10 @@ function EmptyFollowUps() {
               <SvgIconStyle src={`/icons/empty-project.svg`} />
             </Box>
             <Typography variant="h6" sx={{ textAlign: 'center' }}>
-              لا يوجد اي متابعات
+              {translate('content.client.main_page.empty_text_followup')}
             </Typography>
             <Typography sx={{ textAlign: 'center', color: '#93A3B0' }}>
-              قم بإضافة تعليق او رفع ملف
+              {translate('content.client.main_page.empty_add_comment_followup')}
             </Typography>
           </Stack>
         </Box>

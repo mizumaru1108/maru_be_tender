@@ -69,38 +69,44 @@ function FloatingActionBar() {
 
   const handleApproval = async (values: any) => {
     const { notes, ...restValues } = values;
-    accept({
-      proposal_id: pid,
-      new_values: {
-        inner_status: 'ACCEPTED_BY_SUPERVISOR',
-        outter_status: 'ONGOING',
-        state: 'PROJECT_MANAGER',
-        ...restValues,
-      },
-      log: {
-        id: nanoid(),
-        proposal_id: pid,
-        reviewer_id: user?.id!,
-        action: 'accept',
-        message: 'تم قبول المشروع من قبل مشرف المشاريع ',
-        notes: notes,
-        user_role: 'PROJECT_SUPERVISOR',
-        state: 'PROJECT_SUPERVISOR',
-      },
-    }).then((res) => {
-      if (res.error) {
-        enqueueSnackbar(res.error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-        });
-      } else {
-        enqueueSnackbar('تم قبول المشروع بنجاح', {
-          variant: 'success',
-        });
-        navigate(`/project-supervisor/dashboard/app`);
-      }
+
+    console.log('supervisorPayload', {
+      notes,
+      ...restValues,
     });
+
+    // accept({
+    //   proposal_id: pid,
+    //   new_values: {
+    //     inner_status: 'ACCEPTED_BY_SUPERVISOR',
+    //     outter_status: 'ONGOING',
+    //     state: 'PROJECT_MANAGER',
+    //     ...restValues,
+    //   },
+    //   log: {
+    //     id: nanoid(),
+    //     proposal_id: pid,
+    //     reviewer_id: user?.id!,
+    //     action: 'accept',
+    //     message: 'تم قبول المشروع من قبل مشرف المشاريع ',
+    //     notes: notes,
+    //     user_role: 'PROJECT_SUPERVISOR',
+    //     state: 'PROJECT_SUPERVISOR',
+    //   },
+    // }).then((res) => {
+    //   if (res.error) {
+    //     enqueueSnackbar(res.error.message, {
+    //       variant: 'error',
+    //       preventDuplicate: true,
+    //       autoHideDuration: 3000,
+    //     });
+    //   } else {
+    //     enqueueSnackbar('تم قبول المشروع بنجاح', {
+    //       variant: 'success',
+    //     });
+    //     navigate(`/project-supervisor/dashboard/app`);
+    //   }
+    // });
   };
 
   const handleRejected = async (values: any) => {
@@ -273,7 +279,7 @@ function FloatingActionBar() {
                 endIcon={<CheckIcon />}
                 sx={{ flex: 1 }}
               >
-                {translate('accept_project')}
+                {translate('account_manager.accept_project')}
               </Button>
               <Button
                 sx={{
@@ -285,7 +291,7 @@ function FloatingActionBar() {
                 onClick={() => setAction('REJECT')}
                 endIcon={<ClearIcon />}
               >
-                {translate('reject_project')}
+                {translate('account_manager.reject_project')}
               </Button>
             </Stack>
           </Grid>
@@ -302,7 +308,7 @@ function FloatingActionBar() {
                 // disabled={true}
                 onClick={handleMessage}
               >
-                {translate('partner_details.send_messages')}
+                {translate('account_manager.partner_details.send_messages')}
               </Button>
               <Button
                 id="demo-positioned-button"
@@ -318,7 +324,7 @@ function FloatingActionBar() {
                   ':hover': { backgroundColor: '#1482FE' },
                 }}
               >
-                {translate('partner_details.submit_amendment_request')}
+                {translate('account_manager.partner_details.submit_amendment_request')}
               </Button>
               <Menu
                 id="demo-positioned-menu"

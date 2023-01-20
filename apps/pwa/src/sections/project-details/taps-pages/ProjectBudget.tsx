@@ -1,6 +1,7 @@
 import { Box, Container, Divider, Stack, Typography } from '@mui/material';
 import { Proposal } from '../../../@types/proposal';
 import { useSelector } from 'redux/store';
+import React from 'react';
 
 function ProjectBudget() {
   const { proposal } = useSelector((state) => state.proposal);
@@ -30,7 +31,7 @@ function ProjectBudget() {
         </Typography>
       </Box>
       {proposal.proposal_item_budgets.map((item, index) => (
-        <>
+        <React.Fragment key={index}>
           <Stack direction="row" key={index} gap={3} sx={{ padding: '10px' }}>
             <Typography flex={2} sx={{ color: '#1E1E1E' }}>
               {item.clause}
@@ -43,7 +44,7 @@ function ProjectBudget() {
             </Typography>
           </Stack>
           <Divider />
-        </>
+        </React.Fragment>
       ))}
       <Box
         sx={{

@@ -3,6 +3,7 @@ import EmptyFollowUps from './EmptyFollowUps';
 import FollowUpsFile from './FollowUpsFile';
 import FollowUpsText from './FollowUpsText';
 import { useSelector } from 'redux/store';
+import React from 'react';
 
 function ClientFollowUpsPage() {
   const { proposal } = useSelector((state) => state.proposal);

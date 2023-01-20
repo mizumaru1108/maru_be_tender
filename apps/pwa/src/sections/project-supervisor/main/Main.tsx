@@ -7,7 +7,7 @@ import TrackBudget from './TrackBudget';
 
 function Main() {
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={4}>
       <Grid item md={12}>
         <DailyStatistics />
       </Grid>

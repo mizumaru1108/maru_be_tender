@@ -156,7 +156,7 @@ function FloatinActionBar() {
                 endIcon={<CheckIcon />}
                 sx={{ flex: 1 }}
               >
-                {translate('accept_project')}
+                {translate('account_manager.accept_project')}
               </Button>
               <Button
                 sx={{
@@ -168,7 +168,7 @@ function FloatinActionBar() {
                 onClick={() => setAction('REJECT')}
                 endIcon={<ClearIcon />}
               >
-                {translate('reject_project')}
+                {translate('account_manager.reject_project')}
               </Button>
             </Stack>
           </Grid>

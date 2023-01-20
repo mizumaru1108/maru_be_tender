@@ -240,7 +240,7 @@ const ProjectCard = ({
       </CardContent>
 
       {/* The Footer Section  */}
-      <CardActions sx={{ justifyContent: 'space-between', px: '30px' }}>
+      <CardActions sx={{ justifyContent: 'space-between', px: 3, pb: 3 }}>
         <Grid container spacing={2}>
           {footer.payments && (
             <Grid container item md={12} columnSpacing={1}>

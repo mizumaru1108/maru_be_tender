@@ -1,12 +1,13 @@
 /* eslint-disable array-callback-return */
 
-import { Grid, Stack, Tab, Tabs } from '@mui/material';
+import { Grid, Stack, Tab, Tabs, Container } from '@mui/material';
 import React from 'react';
 import { useTheme } from '@mui/material/styles';
 import EmptyFollowUps from './EmptyFollowUps';
 import FollowUpsFile from './FollowUpsFile';
 import FollowUpsText from './FollowUpsText';
 import { useSelector } from 'redux/store';
+import useLocales from 'hooks/useLocales';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -43,6 +44,7 @@ function TabPanel(props: TabPanelProps) {
 
 function EmployeeFollowUpsPage() {
   const { proposal } = useSelector((state) => state.proposal);
+  const { translate } = useLocales();
 
   const theme = useTheme();
 
@@ -67,7 +69,7 @@ function EmployeeFollowUpsPage() {
             }}
           >
             <Tab
-              label="متابعات الموظفين"
+              label={translate('content.client.main_page.employee_followup')}
               {...a11yProps(0)}
               sx={{
                 borderRadius: 0,
@@ -82,7 +84,7 @@ function EmployeeFollowUpsPage() {
               }}
             />
             <Tab
-              label="متابعات الشريك"
+              label={translate('content.client.main_page.partner_followup')}
               {...a11yProps(1)}
               sx={{
                 borderRadius: 0,
@@ -99,60 +101,65 @@ function EmployeeFollowUpsPage() {
           </Tabs>
         </Stack>
       </Grid>
-      <Grid container spacing={3}>
-        <TabPanel value={switchState} index={0} dir={theme.direction}>
-          {proposal.follow_ups.length === 0 ||
-          proposal.follow_ups.filter((items) => {
-            for (const item of items.user.roles) {
-              return item.role !== 'CLIENT';
-            }
-          }).length === 0 ? (
-            <Grid item md={12} xs={12}>
-              <EmptyFollowUps />
-            </Grid>
-          ) : (
-            proposal.follow_ups
-              .filter((items) => {
-                for (const item of items.user.roles) {
-                  return item.role !== 'CLIENT';
-                }
-              })
-              .map((item, index) => (
-                <Grid item md={12} xs={12} key={index}>
-                  {item.file && <FollowUpsFile {...item} />}
-                  {item.action && <FollowUpsText {...item} />}
-                </Grid>
-              ))
-          )}
-        </TabPanel>
-      </Grid>
-      <Grid container spacing={3}>
-        <TabPanel value={switchState} index={1} dir={theme.direction}>
-          {proposal.follow_ups.length === 0 ||
-          proposal.follow_ups.filter((items) => {
-            for (const item of items.user.roles) {
-              return item.role === 'CLIENT';
-            }
-          }).length === 0 ? (
-            <Grid item md={12} xs={12}>
-              <EmptyFollowUps />
-            </Grid>
-          ) : (
-            proposal.follow_ups
-              .filter((items) => {
-                for (const item of items.user.roles) {
-                  return item.role === 'CLIENT';
-                }
-              })
-              .map((item, index) => (
-                <Grid item md={12} xs={12} key={index}>
-                  {item.file && <FollowUpsFile {...item} />}
-                  {item.action && <FollowUpsText {...item} />}
-                </Grid>
-              ))
-          )}
-        </TabPanel>
-      </Grid>
+
+      <TabPanel value={switchState} index={0} dir={theme.direction}>
+        <Container sx={{ py: 2, width: '100%' }}>
+          <Grid container spacing={3}>
+            {proposal.follow_ups.length === 0 ||
+            proposal.follow_ups.filter((items) => {
+              for (const item of items.user.roles) {
+                return item.role !== 'CLIENT';
+              }
+            }).length === 0 ? (
+              <Grid item md={12} xs={12}>
+                <EmptyFollowUps />
+              </Grid>
+            ) : (
+              proposal.follow_ups
+                .filter((items) => {
+                  for (const item of items.user.roles) {
+                    return item.role !== 'CLIENT';
+                  }
+                })
+                .map((item, index) => (
+                  <Grid item md={12} xs={12} key={index}>
+                    {item.file && <FollowUpsFile {...item} />}
+                    {item.action && <FollowUpsText {...item} />}
+                  </Grid>
+                ))
+            )}
+          </Grid>
+        </Container>
+      </TabPanel>
+      <TabPanel value={switchState} index={1} dir={theme.direction}>
+        <Container sx={{ py: 2, width: '100%' }}>
+          <Grid container spacing={3}>
+            {proposal.follow_ups.length === 0 ||
+            proposal.follow_ups.filter((items) => {
+              for (const item of items.user.roles) {
+                return item.role === 'CLIENT';
+              }
+            }).length === 0 ? (
+              <Grid item md={12} xs={12}>
+                <EmptyFollowUps />
+              </Grid>
+            ) : (
+              proposal.follow_ups
+                .filter((items) => {
+                  for (const item of items.user.roles) {
+                    return item.role === 'CLIENT';
+                  }
+                })
+                .map((item, index) => (
+                  <Grid item md={12} xs={12} key={index}>
+                    {item.file && <FollowUpsFile {...item} />}
+                    {item.action && <FollowUpsText {...item} />}
+                  </Grid>
+                ))
+            )}
+          </Grid>
+        </Container>
+      </TabPanel>
     </Grid>
   );
 }

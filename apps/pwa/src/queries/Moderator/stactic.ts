@@ -14,7 +14,7 @@ export const moderatorStatistics = `query moderatorStatistics($start_date: times
       count
     }
   }
-  incomingNewRequest: proposal_aggregate(where: {_and: {updated_at: {_gte: $start_date}, _and: {updated_at: {_lt: $end_date}}}, project_track: {_is_null: true}}) {
+  incomingNewRequest: proposal_aggregate(where: { _and: {updated_at: {_gte: $start_date}, _and: {updated_at: {_lt: $end_date}}}, project_track: {_is_null: true}}) {
     aggregate {
       count
     }

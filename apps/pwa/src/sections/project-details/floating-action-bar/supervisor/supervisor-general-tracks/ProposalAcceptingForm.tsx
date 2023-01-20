@@ -8,13 +8,16 @@ import { ProposalApprovePayloadSupervisor } from '../../types';
 import BaseField from 'components/hook-form/BaseField';
 import { useEffect } from 'react';
 import ModalDialog from 'components/modal-dialog';
-import { Stack, Typography, Grid, Button } from '@mui/material';
+import { Stack, Typography, Grid, Button, MenuItem, TextField } from '@mui/material';
 import { _supportGoals } from '_mock/_supportgoals';
 import { useSelector } from 'redux/store';
 import { LoadingButton } from '@mui/lab';
+import useLocales from 'hooks/useLocales';
+// import { useFormContext, Controller } from 'react-hook-form';
 
 function ProposalAcceptingForm({ onClose, onSubmit }: ModalProposalType) {
   const { proposal } = useSelector((state) => state.proposal);
+  const { translate } = useLocales();
 
   const validationSchema = Yup.object().shape({
     clasification_field: Yup.string().required('clasification_field is required!'),
@@ -86,13 +89,22 @@ function ProposalAcceptingForm({ onClose, onSubmit }: ModalProposalType) {
         title={
           <Stack>
             <Typography variant="h6" fontWeight="bold" color="#000000">
-              قبول المشروع
+              {translate('account_manager.accept_project')}
             </Typography>
           </Stack>
         }
         content={
           <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
             <Grid item md={6} xs={12}>
+              {/* <TextField
+                name="clause"
+                label="البند حسب التصنيف*"
+                placeholder="الرجاء اختيار البند"
+                select
+                fullWidth
+              >
+                <MenuItem value="Hello">Hello</MenuItem>
+              </TextField> */}
               <BaseField
                 type="select"
                 name="clause"
@@ -100,7 +112,8 @@ function ProposalAcceptingForm({ onClose, onSubmit }: ModalProposalType) {
                 placeholder="الرجاء اختيار البند"
                 children={
                   <>
-                    <option value="مشروع يخص المساجد" style={{ backgroundColor: '#fff' }}>
+                    <MenuItem value="Hello">Hello</MenuItem>
+                    {/* <option value="مشروع يخص المساجد" style={{ backgroundColor: '#fff' }}>
                       مشروع يخص المساجد
                     </option>
                     <option value="مشروع يخص المنح الميسر" style={{ backgroundColor: '#fff' }}>
@@ -111,12 +124,12 @@ function ProposalAcceptingForm({ onClose, onSubmit }: ModalProposalType) {
                     </option>
                     <option value="مشروع يخص تعميدات" style={{ backgroundColor: '#fff' }}>
                       مشروع يخص تعميدات
-                    </option>
+                    </option> */}
                   </>
                 }
               />
             </Grid>
-            <Grid item md={6} xs={12}>
+            {/* <Grid item md={6} xs={12}>
               <BaseField
                 type="select"
                 name="clasification_field"
@@ -267,7 +280,7 @@ function ProposalAcceptingForm({ onClose, onSubmit }: ModalProposalType) {
                 label="مخرجات الدعم (لصالح)*"
                 placeholder="اكتب هنا"
               />
-            </Grid>
+            </Grid> */}
           </Grid>
         }
         isOpen={true}

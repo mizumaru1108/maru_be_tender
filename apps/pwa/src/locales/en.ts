@@ -37,6 +37,14 @@ const en = {
         all_projects: 'All Projects',
         completed_projects: 'Completed Projects',
         pending_projects: 'Pending Projects',
+        track_budget: 'Track Budget',
+        total_track_budget: 'The total budget of the project',
+        process_request: 'Process Request',
+        project_followups: 'Project follow-ups',
+        employee_followup: 'Employee follow-ups',
+        partner_followup: 'Partner follow-up',
+        empty_text_followup: 'There are no follow ups',
+        empty_add_comment_followup: 'Add a comment or upload a file',
       },
     },
     messages: {
@@ -155,6 +163,7 @@ const en = {
         message: '',
         size: 'The file size must be less than 5 MB',
         fileExtension: 'The file extension must be one of the following: pdf, png, jpg, jpeg',
+        required: 'License file is required',
       },
       board_ofdec_file: {
         message: '',
@@ -1175,6 +1184,7 @@ const en = {
   pendingRequest: 'Pending Projects',
   rejectedRequest: 'Rejected Projects',
   totalRequest: 'Total Projects',
+  projects: 'Projects',
   login_message_error: 'This email or password is not correct',
   budget_error_message:
     "The sum of the budget's items should be the exact same as the whole budget",
@@ -1265,7 +1275,7 @@ const en = {
   project_beneficiaries: {
     KIDS: 'KIDS',
     ELDERLY: 'ELDERLY',
-    MIDDLE_AGED: 'MIDDLE_AGED',
+    MIDDLE_AGED: 'MIDDLE AGED',
     GENERAL: 'GENERAL',
     MEN: 'MEN',
     WOMEN: 'WOMEN',

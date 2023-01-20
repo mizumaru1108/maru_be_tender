@@ -1,27 +1,22 @@
 export const getDailySupervisorStatistics = `query getDailySupervisorStatistics($user_id: String = "", $first_date: timestamptz = "", $second_date: timestamptz = "") {
-  accepted_projects: proposal_log_aggregate(where: {reviewer_id: {_eq: $user_id}, _and: {action: {_eq: "accept"}, _and: {updated_at: {_gte: $first_date}, _and: {updated_at: {_lt: $second_date}}}}}) {
+  acceptableRequest: proposal_log_aggregate(where: {reviewer_id: {_eq: $user_id}, action: {_eq: "accept"}, _and: {updated_at: {_gte: $first_date}, _and: {updated_at: {_lt: $second_date}}}}) {
     aggregate {
-      count
+      count(columns: proposal_id, distinct: true)
     }
   }
-  pending_projects: proposal_log_aggregate(where: {reviewer_id: {_eq: $user_id}, _and: {action: {_eq: "pending"}, , _and: {action: {_eq: "accept"}, _and: {updated_at: {_gte: $first_date}, _and: {updated_at: {_lt: $second_date}}}}}}) {
+  rejectedRequest: proposal_log_aggregate(where: {reviewer_id: {_eq: $user_id}, _and: {action: {_eq: "reject"}, _and: {updated_at: {_gte: $first_date}, _and: {updated_at: {_lt: $second_date}}}}}) {
     aggregate {
-      count
+      count(columns: proposal_id, distinct: true)
     }
   }
-  rejected_projects: proposal_log_aggregate(where: {reviewer_id: {_eq: $user_id}, _and: {action: {_eq: "rejected"}, , _and: {action: {_eq: "accept"}, _and: {updated_at: {_gte: $first_date}, _and: {updated_at: {_lt: $second_date}}}}}}) {
+  pendingRequest: proposal_aggregate(where: {supervisor_id: {_eq: $user_id}, _and: {inner_status: {_eq: ACCEPTED_BY_SUPERVISOR}, state: {_eq: PROJECT_MANAGER}, _and: {_and: {updated_at: {_gte: $first_date}, _and: {updated_at: {_lt: $second_date}}}}}}) {
     aggregate {
-      count
+      count(columns: id, distinct: true)
     }
   }
-  particular_projects: proposal_aggregate(where: {supervisor_id: {_eq: $user_id}, _and: {inner_status: {_eq: ACCEPTED_BY_MODERATOR}, _and: {outter_status: {_eq: ONGOING}, _and: {updated_at: {_gte: $first_date}, _and: {updated_at: {_lt: $second_date}}}}}}) {
+  totalRequest: proposal_aggregate(where: {_and: {updated_at: {_gte: $first_date}, _and: {updated_at: {_lt: $second_date}}}}) {
     aggregate {
-      count
-    }
-  }
-  general_projects: proposal_aggregate(where: {supervisor_id: {_is_null: true}, _and: {inner_status: {_eq: ACCEPTED_BY_MODERATOR}, _and: {outter_status: {_eq: ONGOING}, _and: {updated_at: {_gte: $first_date}, _and: {updated_at: {_lt: $second_date}}}}}}) {
-    aggregate {
-      count
+      count(columns: id, distinct: true)
     }
   }
 }`;

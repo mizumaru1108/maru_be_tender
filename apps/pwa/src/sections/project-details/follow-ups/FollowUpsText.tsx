@@ -33,7 +33,7 @@ function FollowUpsText(item: FollowUps) {
     );
   return (
     <Grid container>
-      <Grid item md={0.5}>
+      <Grid item md={1}>
         <Avatar alt="Remy Sharp">
           <svg
             width="46"
@@ -61,7 +61,7 @@ function FollowUpsText(item: FollowUps) {
           </svg>
         </Avatar>
       </Grid>
-      <Grid item md={11.5}>
+      <Grid item md={11}>
         <Box
           sx={{
             backgroundColor: '#fff',
