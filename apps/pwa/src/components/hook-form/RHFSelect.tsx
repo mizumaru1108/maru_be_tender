@@ -30,6 +30,10 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
             'headquarters',
             'region',
             'governorate',
+            'clause',
+            'clasification_field',
+            'support_goal_id',
+            'reject_reason',
           ].includes(name) ? (
             <TextField
               {...field}
@@ -44,6 +48,11 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
                 </Typography>
               }
               {...other}
+              sx={{
+                '& > .MuiFormHelperText-root': {
+                  backgroundColor: 'white',
+                },
+              }}
             >
               {placeholder && (
                 <option value="" disabled selected>
@@ -58,8 +67,17 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
               select
               fullWidth
               error={!!error}
-              helperText={error?.message}
+              helperText={
+                <Typography variant="caption" component="span" sx={{ backgroundColor: 'white' }}>
+                  {error?.message}
+                </Typography>
+              }
               {...other}
+              sx={{
+                '& > .MuiFormHelperText-root': {
+                  backgroundColor: 'white',
+                },
+              }}
             >
               {!children &&
                 name === 'bank_name' &&

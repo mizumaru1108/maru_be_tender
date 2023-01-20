@@ -1,21 +1,19 @@
 // @ts-nocheck
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FormProvider } from 'components/hook-form';
+import { FormProvider, RHFSelect, RHFRadioGroup, RHFTextField } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import { ModalProposalType } from '../../../../../@types/project-details';
 import * as Yup from 'yup';
 import { ProposalApprovePayloadSupervisor } from '../../types';
-import BaseField from 'components/hook-form/BaseField';
 import { useEffect } from 'react';
 import ModalDialog from 'components/modal-dialog';
-import { Stack, Typography, Grid, Button, MenuItem, TextField } from '@mui/material';
+import { Stack, Typography, Grid, Button, MenuItem } from '@mui/material';
 import { _supportGoals } from '_mock/_supportgoals';
 import { useSelector } from 'redux/store';
 import { LoadingButton } from '@mui/lab';
 import useLocales from 'hooks/useLocales';
-// import { useFormContext, Controller } from 'react-hook-form';
 
-function ProposalAcceptingForm({ onClose, onSubmit }: ModalProposalType) {
+function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType) {
   const { proposal } = useSelector((state) => state.proposal);
   const { translate } = useLocales();
 
@@ -51,7 +49,7 @@ function ProposalAcceptingForm({ onClose, onSubmit }: ModalProposalType) {
     support_outputs: '',
     vat: undefined,
     vat_percentage: undefined,
-    inclu_or_exclu: undefined,
+    inclu_or_exclu: false,
     support_goal_id: '',
   };
 
@@ -96,65 +94,30 @@ function ProposalAcceptingForm({ onClose, onSubmit }: ModalProposalType) {
         content={
           <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
             <Grid item md={6} xs={12}>
-              {/* <TextField
+              <RHFSelect
                 name="clause"
+                size="small"
                 label="البند حسب التصنيف*"
                 placeholder="الرجاء اختيار البند"
-                select
-                fullWidth
               >
-                <MenuItem value="Hello">Hello</MenuItem>
-              </TextField> */}
-              <BaseField
-                type="select"
-                name="clause"
-                label="البند حسب التصنيف*"
-                placeholder="الرجاء اختيار البند"
-                children={
-                  <>
-                    <MenuItem value="Hello">Hello</MenuItem>
-                    {/* <option value="مشروع يخص المساجد" style={{ backgroundColor: '#fff' }}>
-                      مشروع يخص المساجد
-                    </option>
-                    <option value="مشروع يخص المنح الميسر" style={{ backgroundColor: '#fff' }}>
-                      مشروع يخص المنح الميسر
-                    </option>
-                    <option value="مشروع يخص المبادرات" style={{ backgroundColor: '#fff' }}>
-                      مشروع يخص المبادرات
-                    </option>
-                    <option value="مشروع يخص تعميدات" style={{ backgroundColor: '#fff' }}>
-                      مشروع يخص تعميدات
-                    </option> */}
-                  </>
-                }
-              />
+                <MenuItem value="مشروع يخص المساجد">مشروع يخص المساجد</MenuItem>
+                <MenuItem value="مشروع يخص المنح الميسر">مشروع يخص المنح الميسر</MenuItem>
+                <MenuItem value="مشروع يخص المبادرات">مشروع يخص المبادرات</MenuItem>
+                <MenuItem value="مشروع يخص تعميدات">مشروع يخص تعميدات</MenuItem>
+              </RHFSelect>
             </Grid>
-            {/* <Grid item md={6} xs={12}>
-              <BaseField
-                type="select"
+            <Grid item md={6} xs={12}>
+              <RHFSelect
                 name="clasification_field"
                 label="مجال التصنيف*"
                 placeholder="الرجاء اختيار مجال التصنيف"
-                children={
-                  <>
-                    <option value="test" style={{ backgroundColor: '#fff' }}>
-                      test
-                    </option>
-                    <option value="test" style={{ backgroundColor: '#fff' }}>
-                      test
-                    </option>
-                    <option value="test" style={{ backgroundColor: '#fff' }}>
-                      test
-                    </option>
-                    <option value="test" style={{ backgroundColor: '#fff' }}>
-                      test
-                    </option>
-                  </>
-                }
-              />
+                size="small"
+              >
+                <MenuItem value="test">Test</MenuItem>
+              </RHFSelect>
             </Grid>
             <Grid item md={6} xs={12}>
-              <BaseField
+              <RHFRadioGroup
                 type="radioGroup"
                 name="support_type"
                 label="نوع الدعم"
@@ -165,7 +128,7 @@ function ProposalAcceptingForm({ onClose, onSubmit }: ModalProposalType) {
               />
             </Grid>
             <Grid item md={6} xs={12}>
-              <BaseField
+              <RHFRadioGroup
                 type="radioGroup"
                 name="closing_report"
                 label="تقرير الإغلاق"
@@ -176,7 +139,7 @@ function ProposalAcceptingForm({ onClose, onSubmit }: ModalProposalType) {
               />
             </Grid>
             <Grid item md={6} xs={12}>
-              <BaseField
+              <RHFRadioGroup
                 type="radioGroup"
                 name="need_picture"
                 label="هل يحتاج إلى صور"
@@ -187,7 +150,7 @@ function ProposalAcceptingForm({ onClose, onSubmit }: ModalProposalType) {
               />
             </Grid>
             <Grid item md={6} xs={12}>
-              <BaseField
+              <RHFRadioGroup
                 type="radioGroup"
                 name="does_an_agreement"
                 label="هل يحتاج اتفاقية"
@@ -198,7 +161,7 @@ function ProposalAcceptingForm({ onClose, onSubmit }: ModalProposalType) {
               />
             </Grid>
             <Grid item md={6} xs={12}>
-              <BaseField
+              <RHFRadioGroup
                 type="radioGroup"
                 name="vat"
                 label="هل يشمل المشروع ضريبة القيمة المضافة"
@@ -209,35 +172,37 @@ function ProposalAcceptingForm({ onClose, onSubmit }: ModalProposalType) {
               />
             </Grid>
             <Grid item md={6} xs={12}>
-              <BaseField
+              <RHFSelect
                 type="select"
+                size="small"
                 name="support_goal_id"
                 placeholder="الرجاء اختيار أهداف الدعم"
                 label="اهداف الدعم*"
-                children={_supportGoals[
-                  `${proposal.project_track as keyof typeof _supportGoals}`
-                ].map((item) => (
-                  <>
-                    <option value={item.value} style={{ backgroundColor: '#fff' }}>
+              >
+                {_supportGoals[`${proposal.project_track as keyof typeof _supportGoals}`].map(
+                  (item) => (
+                    <MenuItem value={item.value} key={item.value}>
                       {item.title}
-                    </option>
-                  </>
-                ))}
-              />
+                    </MenuItem>
+                  )
+                )}
+              </RHFSelect>
             </Grid>
             {vat === 'true' && (
               <Grid item md={6} xs={12}>
-                <BaseField
-                  type="textField"
+                <RHFTextField
+                  type="number"
+                  size="small"
                   name="vat_percentage"
                   label="النسبة المئوية من الضريبة"
                   placeholder="النسبة المئوية من الضريبة"
+                  InputProps={{ inputProps: { min: 0 } }}
                 />
               </Grid>
             )}
             {vat === 'true' && (
               <Grid item md={6} xs={12}>
-                <BaseField
+                <RHFRadioGroup
                   type="radioGroup"
                   name="inclu_or_exclu"
                   label="هل مبلغ السداد شامل أو غير شامل لضريبة القيمة المضافة"
@@ -249,38 +214,44 @@ function ProposalAcceptingForm({ onClose, onSubmit }: ModalProposalType) {
               </Grid>
             )}
             <Grid item md={6} xs={12}>
-              <BaseField
-                type="textField"
+              <RHFTextField
+                type="number"
+                size="small"
                 name="fsupport_by_supervisor"
                 label="مبلغ الدعم*"
                 placeholder="مبلغ الدعم"
                 disabled={support_type === 'false' ? true : false}
+                InputProps={{ inputProps: { min: 0 } }}
               />
             </Grid>
             <Grid item md={6} xs={12}>
-              <BaseField
-                type="textField"
+              <RHFTextField
+                type="number"
+                size="small"
                 name="number_of_payments_by_supervisor"
                 label="عدد الدفعات*"
                 placeholder="1"
+                InputProps={{ inputProps: { min: 0 } }}
               />
             </Grid>
             <Grid item md={12} xs={12}>
-              <BaseField
-                type="textArea"
+              <RHFTextField
                 name="notes"
+                multiline
+                minRows={3}
                 label="ملاحظات على المشروع"
                 placeholder="اكتب ملاحظاتك هنا"
               />
             </Grid>
             <Grid item md={12} xs={12}>
-              <BaseField
-                type="textArea"
+              <RHFTextField
                 name="support_outputs"
+                multiline
+                minRows={3}
                 label="مخرجات الدعم (لصالح)*"
                 placeholder="اكتب هنا"
               />
-            </Grid> */}
+            </Grid>
           </Grid>
         }
         isOpen={true}
@@ -302,7 +273,7 @@ function ProposalAcceptingForm({ onClose, onSubmit }: ModalProposalType) {
               إغلاق
             </Button>
             <LoadingButton
-              loading={isSubmitting}
+              loading={loading}
               onClick={handleSubmit(onSubmitForm)}
               variant="contained"
               fullWidth

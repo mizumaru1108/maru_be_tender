@@ -11,6 +11,7 @@ export type UpdateAction =
 export type ModalProposalType = {
   onClose: () => void;
   onSubmit: (data: any) => void;
+  loading?: boolean;
 };
 
 export type AcceptingModalProposalType = {

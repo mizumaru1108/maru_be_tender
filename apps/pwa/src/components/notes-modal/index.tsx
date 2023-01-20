@@ -1,8 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
-import { Typography, Stack, Grid, Button } from '@mui/material';
-import { FormProvider } from 'components/hook-form';
-import BaseField from 'components/hook-form/BaseField';
+import { Typography, Stack, Grid, Button, MenuItem } from '@mui/material';
+import { FormProvider, RHFTextField, RHFSelect } from 'components/hook-form';
 import ModalDialog from 'components/modal-dialog';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
@@ -18,18 +17,22 @@ interface Propos {
   onSubmit: (data: any) => void;
   onClose: () => void;
   action: ActionPropos;
+  loading?: boolean;
 }
 
 interface FormInput {
+  reject_reason: string;
   notes: string;
 }
 
-function NotesModal({ title, onSubmit, onClose, action }: Propos) {
+function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
   const validationSchema = Yup.object().shape({
+    reject_reason: Yup.string().required(),
     notes: Yup.string().required(),
   });
 
   const defaultValues = {
+    reject_reason: '',
     notes: '',
   };
 
@@ -61,8 +64,39 @@ function NotesModal({ title, onSubmit, onClose, action }: Propos) {
         content={
           <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
             <Grid item md={12} xs={12}>
-              <BaseField
-                type="textArea"
+              <RHFSelect
+                name="reject_reason"
+                size="small"
+                label="سبب الرفض *"
+                placeholder="الرجاء اختيار سبب المشروع المرفوض"
+              >
+                <MenuItem value="تكرار المشروع">تكرار المشروع</MenuItem>
+                <MenuItem value="ارتفاع التكاليف">ارتفاع التكاليف</MenuItem>
+                <MenuItem value="ضعف الجهة">ضعف الجهة</MenuItem>
+                <MenuItem value="عدم اختصاص الجهة">عدم اختصاص الجهة</MenuItem>
+                <MenuItem value="عدم تفاعل الجهة">عدم تفاعل الجهة</MenuItem>
+                <MenuItem value="عدم وجود بند">عدم وجود بند</MenuItem>
+                <MenuItem value="انتهاء الموازنة المخصصة للبند">
+                  انتهاء الموازنة المخصصة للبند
+                </MenuItem>
+                <MenuItem value="عدم وجود عروض أسعار كافية">عدم وجود عروض أسعار كافية</MenuItem>
+                <MenuItem value="الجهة غير حاصلة على شهادة الحوكمة">
+                  الجهة غير حاصلة على شهادة الحوكمة
+                </MenuItem>
+                <MenuItem value="المشروع غير متوافق مع احتياج المستفيدين">
+                  المشروع غير متوافق مع احتياج المستفيدين
+                </MenuItem>
+                <MenuItem value="لا يوجد دراسة احتياج للمشروع">
+                  لا يوجد دراسة احتياج للمشروع
+                </MenuItem>
+                <MenuItem value="المشروع ينقصه موافقة رسمية">المشروع ينقصه موافقة رسمية</MenuItem>
+                <MenuItem value="أخرى">أخرى</MenuItem>
+              </RHFSelect>
+            </Grid>
+            <Grid item md={12} xs={12}>
+              <RHFTextField
+                multiline
+                minRows={3}
                 name="notes"
                 label="الملاحظات"
                 placeholder="اكتب ملاحظاتك هنا"
@@ -89,7 +123,7 @@ function NotesModal({ title, onSubmit, onClose, action }: Propos) {
               إغلاق
             </Button>
             <LoadingButton
-              loading={isSubmitting}
+              loading={loading}
               onClick={handleSubmit(onSubmitForm)}
               variant="contained"
               fullWidth

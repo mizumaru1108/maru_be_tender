@@ -99,6 +99,11 @@ export default function RHFTextField({ name, ...other }: Props) {
             ) : null,
           }}
           {...other}
+          sx={{
+            '& > .MuiFormHelperText-root': {
+              backgroundColor: 'white',
+            },
+          }}
         />
       )}
     />

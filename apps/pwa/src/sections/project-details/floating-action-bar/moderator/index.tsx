@@ -6,7 +6,7 @@ import useLocales from 'hooks/useLocales';
 import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import { updateProposalByModerator } from 'queries/Moderator/updateProposalByModerator';
-import { JSXElementConstructor, ReactElement, ReactFragment, ReactPortal, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useMutation } from 'urql';
 import ProposalAcceptingForm from './ProposalAcceptingForm';

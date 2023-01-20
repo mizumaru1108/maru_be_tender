@@ -16,6 +16,7 @@ import {
 } from 'queries/project-supervisor/ProposalAcceptBySupervisor';
 import { UpdateAction, PendingRequest } from '../../../../../@types/project-details';
 import NotesModal from 'components/notes-modal';
+import { LoadingButton } from '@mui/lab';
 
 //
 import { useDispatch, useSelector } from 'redux/store';
@@ -29,7 +30,7 @@ import PendingProposalRequestSending from '../PendingProposalRequestSending';
 function FloatingActionBar() {
   const { id: pid } = useParams();
 
-  const { user } = useAuth();
+  const { user, activeRole } = useAuth();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -48,6 +49,9 @@ function FloatingActionBar() {
   const [action, setAction] = useState<UpdateAction>('');
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isSubmittingRejected, setIsSubmittingRejected] = useState<boolean>(false);
 
   const dispatch = useDispatch();
   const { proposal } = useSelector((state) => state.proposal);
@@ -70,77 +74,117 @@ function FloatingActionBar() {
   const handleApproval = async (values: any) => {
     const { notes, ...restValues } = values;
 
-    console.log('supervisorPayload', {
-      notes,
-      ...restValues,
-    });
+    setIsSubmitting(true);
 
-    // accept({
-    //   proposal_id: pid,
-    //   new_values: {
-    //     inner_status: 'ACCEPTED_BY_SUPERVISOR',
-    //     outter_status: 'ONGOING',
-    //     state: 'PROJECT_MANAGER',
-    //     ...restValues,
-    //   },
-    //   log: {
-    //     id: nanoid(),
-    //     proposal_id: pid,
-    //     reviewer_id: user?.id!,
-    //     action: 'accept',
-    //     message: 'تم قبول المشروع من قبل مشرف المشاريع ',
-    //     notes: notes,
-    //     user_role: 'PROJECT_SUPERVISOR',
-    //     state: 'PROJECT_SUPERVISOR',
-    //   },
-    // }).then((res) => {
-    //   if (res.error) {
-    //     enqueueSnackbar(res.error.message, {
-    //       variant: 'error',
-    //       preventDuplicate: true,
-    //       autoHideDuration: 3000,
-    //     });
-    //   } else {
-    //     enqueueSnackbar('تم قبول المشروع بنجاح', {
-    //       variant: 'success',
-    //     });
-    //     navigate(`/project-supervisor/dashboard/app`);
-    //   }
-    // });
+    try {
+      const payload = {
+        proposal_id: pid,
+        action: 'accept',
+        message: 'تم قبول المشروع من قبل مشرف المشاريع ',
+        notes,
+        supervisor_payload: {
+          ...restValues,
+        },
+      };
+
+      console.log('acceptSupervisor', payload);
+
+      await axiosInstance
+        .patch('/tender-proposal/change-state', payload, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            enqueueSnackbar(translate('proposal_approved'), {
+              variant: 'success',
+            });
+          }
+
+          setIsSubmitting(false);
+          navigate(`/project-supervisor/dashboard/app`);
+        })
+        .catch((err) => {
+          if (typeof err.message === 'object') {
+            err.message.forEach((el: any) => {
+              enqueueSnackbar(el, {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            });
+          } else {
+            enqueueSnackbar(err.message, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
+          }
+
+          setIsSubmitting(false);
+        });
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+    }
   };
 
   const handleRejected = async (values: any) => {
-    reject({
-      proposal_id: pid,
-      new_values: {
-        inner_status: 'REJECTED_BY_SUPERVISOR',
-        outter_status: 'CANCELED',
-        state: 'PROJECT_SUPERVISOR',
-      },
-      log: {
-        id: nanoid(),
+    setIsSubmittingRejected(true);
+
+    try {
+      const payload = {
         proposal_id: pid,
-        reviewer_id: user?.id!,
         action: 'reject',
         message: 'تم رفض المشروع من قبل مشرف المشاريع',
         notes: values.notes,
-        user_role: 'PROJECT_SUPERVISOR',
-        state: 'PROJECT_SUPERVISOR',
-      },
-    }).then((res) => {
-      if (res.error) {
-        enqueueSnackbar(res.error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
+        reject_reason: values.reject_reason,
+      };
+
+      console.log('rejectedSupervisor', payload);
+
+      await axiosInstance
+        .patch('/tender-proposal/change-state', payload, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            enqueueSnackbar(translate('proposal_rejected'), {
+              variant: 'success',
+            });
+          }
+
+          setIsSubmittingRejected(false);
+          navigate(`/project-supervisor/dashboard/app`);
+        })
+        .catch((err) => {
+          if (typeof err.message === 'object') {
+            err.message.forEach((el: any) => {
+              enqueueSnackbar(el, {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            });
+          } else {
+            enqueueSnackbar(err.message, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
+          }
+
+          setIsSubmittingRejected(false);
         });
-      } else {
-        enqueueSnackbar(translate('proposal_rejected'), {
-          variant: 'success',
-        });
-        navigate(`/project-supervisor/dashboard/app`);
-      }
-    });
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+    }
   };
 
   const stepBackProposal = () => {
@@ -272,16 +316,17 @@ function FloatingActionBar() {
         <Grid container rowSpacing={5} alignItems="center" justifyContent="space-around">
           <Grid item md={5} xs={12}>
             <Stack direction="row" gap={2} justifyContent="space-around">
-              <Button
+              <LoadingButton
                 onClick={() => setAction('ACCEPT')}
                 variant="contained"
                 color="primary"
                 endIcon={<CheckIcon />}
                 sx={{ flex: 1 }}
+                loading={isSubmitting}
               >
                 {translate('account_manager.accept_project')}
-              </Button>
-              <Button
+              </LoadingButton>
+              <LoadingButton
                 sx={{
                   flex: 1,
                   backgroundColor: '#FF4842',
@@ -290,9 +335,10 @@ function FloatingActionBar() {
                 variant="contained"
                 onClick={() => setAction('REJECT')}
                 endIcon={<ClearIcon />}
+                loading={isSubmittingRejected}
               >
                 {translate('account_manager.reject_project')}
-              </Button>
+              </LoadingButton>
             </Stack>
           </Grid>
           <Grid item md={2}>
@@ -359,11 +405,16 @@ function FloatingActionBar() {
           title="رفض المشروع"
           onClose={handleCloseModal}
           onSubmit={handleRejected}
+          loading={isSubmittingRejected}
           action={{ actionLabel: 'رفض', backgroundColor: '#FF0000', hoverColor: '#FF4842' }}
         />
       )}
       {action === 'ACCEPT' && (
-        <ProposalAcceptingForm onSubmit={handleApproval} onClose={handleCloseModal} />
+        <ProposalAcceptingForm
+          onSubmit={handleApproval}
+          onClose={handleCloseModal}
+          loading={isSubmitting}
+        />
       )}
       {action === 'STEP_BACK' && (
         <NotesModal
