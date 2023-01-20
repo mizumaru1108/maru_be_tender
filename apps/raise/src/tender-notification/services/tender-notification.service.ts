@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { CreateManyNotificationDto } from '../dtos/requests/create-many-notification.dto';
 import { CreateNotificationDto } from '../dtos/requests/create-notification.dto';
@@ -29,5 +29,23 @@ export class TenderNotificationService {
     return {
       createdNotification: payload,
     };
+  }
+
+  async read(userId: string, notificationId: string) {
+    const response = await this.tenderNotificationRepository.findById(
+      notificationId,
+    );
+    if (!response) throw new NotFoundException('Notification not found');
+    if (response.user_id !== userId) {
+      throw new NotFoundException('Notification not found');
+    }
+    const updatedNotif = await this.tenderNotificationRepository.readById(
+      notificationId,
+    );
+    return updatedNotif;
+  }
+
+  async readMine(userId: string) {
+    return await this.tenderNotificationRepository.readByUserId(userId);
   }
 }

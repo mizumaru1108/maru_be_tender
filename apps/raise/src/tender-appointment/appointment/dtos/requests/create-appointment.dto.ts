@@ -1,9 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
 import {
-  IsDate,
   IsDateString,
-  IsEmail,
   IsNotEmpty,
   IsOptional,
   IsString,

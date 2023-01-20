@@ -11,6 +11,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
+import { ProposalDeleteDraftDto } from './proposal-delete-draft';
 
 export class CreateProjectBudgetDto {
   @ApiPropertyOptional()
@@ -36,12 +37,7 @@ export class CreateProjectBudgetDto {
   amount: number;
 }
 
-export class ProposalSaveDraftDto {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  proposal_id: string;
-
+export class ProposalSaveDraftDto extends ProposalDeleteDraftDto {
   /* first form ---------------------------------------------------- */
   @ApiProperty()
   @IsString()

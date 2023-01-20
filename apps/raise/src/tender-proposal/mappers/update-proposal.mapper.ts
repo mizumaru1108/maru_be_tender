@@ -47,12 +47,12 @@ export const UpdateProposalMapper = (
     updatePayload.project_beneficiaries = project_beneficiaries;
   }
   if (
-    project_name &&
-    project_idea &&
-    project_location &&
-    project_implement_date &&
-    execution_time &&
-    project_beneficiaries
+    !!project_name &&
+    !!project_idea &&
+    !!project_location &&
+    !!project_implement_date &&
+    !!execution_time &&
+    !!project_beneficiaries
   ) {
     updatePayload.step = 'FIRST';
   }
@@ -66,17 +66,17 @@ export const UpdateProposalMapper = (
   project_strengths && (updatePayload.project_strengths = project_strengths);
   project_risks && (updatePayload.project_risks = project_risks);
   if (
-    project_name &&
-    project_idea &&
-    project_location &&
-    project_implement_date &&
-    execution_time &&
-    project_beneficiaries &&
-    num_ofproject_binicficiaries &&
-    project_goals &&
-    project_outputs &&
-    project_strengths &&
-    project_risks
+    !!project_name &&
+    !!project_idea &&
+    !!project_location &&
+    !!project_implement_date &&
+    !!execution_time &&
+    !!project_beneficiaries &&
+    !!num_ofproject_binicficiaries &&
+    !!project_goals &&
+    !!project_outputs &&
+    !!project_strengths &&
+    !!project_risks
   ) {
     updatePayload.step = 'SECOND';
   }
@@ -88,22 +88,22 @@ export const UpdateProposalMapper = (
   region && (updatePayload.region = region);
   governorate && (updatePayload.governorate = governorate);
   if (
-    project_name &&
-    project_idea &&
-    project_location &&
-    project_implement_date &&
-    execution_time &&
-    project_beneficiaries &&
-    num_ofproject_binicficiaries &&
-    project_goals &&
-    project_outputs &&
-    project_strengths &&
-    project_risks &&
-    pm_name &&
-    pm_mobile &&
-    pm_email &&
-    region &&
-    governorate
+    !!project_name &&
+    !!project_idea &&
+    !!project_location &&
+    !!project_implement_date &&
+    !!execution_time &&
+    !!project_beneficiaries &&
+    !!num_ofproject_binicficiaries &&
+    !!project_goals &&
+    !!project_outputs &&
+    !!project_strengths &&
+    !!project_risks &&
+    !!pm_name &&
+    !!pm_mobile &&
+    !!pm_email &&
+    !!region &&
+    !!governorate
   ) {
     updatePayload.step = 'THIRD';
   }
@@ -113,24 +113,24 @@ export const UpdateProposalMapper = (
     updatePayload.amount_required_fsupport = amount_required_fsupport;
   }
   if (
-    project_name &&
-    project_idea &&
-    project_location &&
-    project_implement_date &&
-    execution_time &&
-    project_beneficiaries &&
-    num_ofproject_binicficiaries &&
-    project_goals &&
-    project_outputs &&
-    project_strengths &&
-    project_risks &&
-    pm_name &&
-    pm_mobile &&
-    pm_email &&
-    region &&
-    governorate &&
-    amount_required_fsupport &&
-    detail_project_budgets
+    !!project_name &&
+    !!project_idea &&
+    !!project_location &&
+    !!project_implement_date &&
+    !!execution_time &&
+    !!project_beneficiaries &&
+    !!num_ofproject_binicficiaries &&
+    !!project_goals &&
+    !!project_outputs &&
+    !!project_strengths &&
+    !!project_risks &&
+    !!pm_name &&
+    !!pm_mobile &&
+    !!pm_email &&
+    !!region &&
+    !!governorate &&
+    !!amount_required_fsupport &&
+    !!detail_project_budgets
   ) {
     updatePayload.step = 'FOURTH';
   }
@@ -140,25 +140,25 @@ export const UpdateProposalMapper = (
     updatePayload.proposal_bank_id = proposal_bank_information_id;
   }
   if (
-    project_name &&
-    project_idea &&
-    project_location &&
-    project_implement_date &&
-    execution_time &&
-    project_beneficiaries &&
-    num_ofproject_binicficiaries &&
-    project_goals &&
-    project_outputs &&
-    project_strengths &&
-    project_risks &&
-    pm_name &&
-    pm_mobile &&
-    pm_email &&
-    region &&
-    governorate &&
-    amount_required_fsupport &&
-    detail_project_budgets &&
-    proposal_bank_information_id
+    !!project_name &&
+    !!project_idea &&
+    !!project_location &&
+    !!project_implement_date &&
+    !!execution_time &&
+    !!project_beneficiaries &&
+    !!num_ofproject_binicficiaries &&
+    !!project_goals &&
+    !!project_outputs &&
+    !!project_strengths &&
+    !!project_risks &&
+    !!pm_name &&
+    !!pm_mobile &&
+    !!pm_email &&
+    !!region &&
+    !!governorate &&
+    !!amount_required_fsupport &&
+    !!detail_project_budgets &&
+    !!proposal_bank_information_id
   ) {
     updatePayload.step = 'ZERO';
   }

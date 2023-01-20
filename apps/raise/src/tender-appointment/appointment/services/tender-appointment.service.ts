@@ -137,15 +137,22 @@ export class TenderAppointmentService {
 
     // Notification
     let subject = `Tender's New Appointment`;
-    let clientContent = `New Appointment request from ${currentUser.email}, on ${dayOfWeek}, ${date} at ${start_time} - ${end_time}`;
-    let employeeContent = `Successfully sent appointment invitation to ${client.email}, details:  ${dayOfWeek}, ${date}  at ${start_time} - ${end_time}`;
+    let appointmentTime = `${dayOfWeek}, ${date} at ${start_time} - ${end_time}`;
+    let clientContent = `New Appointment request from ${currentUser.email}, on ${appointmentTime}`;
+    let employeeContent = `Successfully sent appointment invitation to ${client.email}, details:  ${appointmentTime}`;
 
     // via email
     const clientEmailPayload: SendEmailDto = {
-      mailType: 'plain',
+      mailType: 'template',
       to: appointment.client.email,
       from: 'no-reply@hcharity.org',
-      content: clientContent,
+      subject,
+      templatePath: 'tender/ar/appointment/appointment-invitation',
+      templateContext: {
+        clientUserName: appointment.client.employee_name,
+        employeeUsername: appointment.employee.employee_name || 'Tender Admin',
+        appointmentDate: appointmentTime,
+      },
     };
     const employeeEmailPayload: SendEmailDto = {
       mailType: 'plain',

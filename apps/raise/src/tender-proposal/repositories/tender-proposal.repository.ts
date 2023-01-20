@@ -157,9 +157,27 @@ export class TenderProposalRepository {
     }
   }
 
+  async deleteProposal(proposal_id: string) {
+    try {
+      return await this.prismaService.proposal.delete({
+        where: {
+          id: proposal_id,
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalRepository.name,
+        'Deleting Draft Proposal error details: ',
+        'Deleting Draft Proposal!',
+      );
+      throw theError;
+    }
+  }
+
   async fetchProposalById(proposalId: string): Promise<proposal | null> {
     try {
-      return await this.prismaService.proposal.findUnique({
+      return await this.prismaService.proposal.findFirst({
         where: {
           id: proposalId,
         },

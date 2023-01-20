@@ -43,6 +43,8 @@ import { CreateItemBudgetsMapper } from '../mappers/create-item-budgets.mappers'
 import { CreateProposalMapper } from '../mappers/create-proposal.mapper';
 import { UpdateProposalMapper } from '../mappers/update-proposal.mapper';
 import { TenderProposalLogRepository } from '../repositories/tender-proposal-log.repository';
+import { ProposalDeleteDraftDto } from '../dtos/requests/proposal/proposal-delete-draft';
+import { update } from 'lodash';
 
 @Injectable()
 export class TenderProposalService {
@@ -126,7 +128,7 @@ export class TenderProposalService {
           '.' +
           request.project_attachments.fileExtension.split('/')[1];
 
-        projectAttachmentPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}-${projectAttachmentfileName}`;
+        projectAttachmentPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}/${projectAttachmentfileName}`;
 
         projectAttachmentBuffer = Buffer.from(
           request.project_attachments.base64Data.replace(
@@ -140,7 +142,7 @@ export class TenderProposalService {
           request.project_attachments.fileExtension,
           allowedType,
         );
-        validateFileSize(projectAttachmentBuffer.length, maxSize);
+        validateFileSize(request.project_attachments.size, maxSize);
 
         const imageUrl = await this.bunnyService.uploadFileBase64(
           request.project_attachments.fullName,
@@ -154,7 +156,7 @@ export class TenderProposalService {
         proposalCreatePayload.project_attachments = {
           url: imageUrl,
           type: request.project_attachments.fileExtension,
-          size: projectAttachmentBuffer.length,
+          size: request.project_attachments.size,
         };
       } catch (error) {
         this.logger.error('Error while uploading project attachment: ' + error);
@@ -178,7 +180,7 @@ export class TenderProposalService {
           '.' +
           request.letter_ofsupport_req.fileExtension.split('/')[1];
 
-        letterOfSupportPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}-${letterOfSupportfileName}`;
+        letterOfSupportPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}/${letterOfSupportfileName}`;
 
         letterOfSupportBuffer = Buffer.from(
           request.letter_ofsupport_req.base64Data.replace(
@@ -192,7 +194,7 @@ export class TenderProposalService {
           request.letter_ofsupport_req.fileExtension,
           allowedType,
         );
-        validateFileSize(letterOfSupportBuffer.length, maxSize);
+        validateFileSize(request.project_attachments.size, maxSize);
 
         const imageUrl = await this.bunnyService.uploadFileBase64(
           request.letter_ofsupport_req.fullName,
@@ -206,7 +208,7 @@ export class TenderProposalService {
         proposalCreatePayload.letter_ofsupport_req = {
           url: imageUrl,
           type: request.letter_ofsupport_req.fileExtension,
-          size: letterOfSupportBuffer.length,
+          size: request.letter_ofsupport_req.size,
         };
       } catch (error) {
         this.logger.error('Error while uploading letter of support: ' + error);
@@ -317,7 +319,7 @@ export class TenderProposalService {
           '.' +
           request.project_attachments.fileExtension.split('/')[1];
 
-        let projectAttachmentPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}/${userId}-${projectAttachmentfileName}`;
+        let projectAttachmentPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}/${projectAttachmentfileName}`;
 
         projectAttachmentBuffer = Buffer.from(
           request.project_attachments.base64Data.replace(
@@ -331,8 +333,11 @@ export class TenderProposalService {
           request.project_attachments.fileExtension,
           allowedType,
         );
-        validateFileSize(projectAttachmentBuffer.length, maxSize);
+        validateFileSize(request.project_attachments.size, maxSize);
 
+        console.log(
+          'New proposal project attachment exist, uploading to the server...',
+        );
         const imageUrl = await this.bunnyService.uploadFileBase64(
           request.project_attachments.fullName,
           projectAttachmentBuffer,
@@ -344,7 +349,7 @@ export class TenderProposalService {
         updateProposalPayload.project_attachments = {
           url: imageUrl,
           type: request.project_attachments.fileExtension,
-          size: projectAttachmentBuffer.length,
+          size: request.project_attachments.size,
         };
 
         if (
@@ -358,11 +363,15 @@ export class TenderProposalService {
             type: string;
             size: number;
           };
-          await this.bunnyService.deleteMedia(oldFile.url, true);
+          if (!!oldFile.url) {
+            console.log(
+              'Old proposal project attachment exist, deleting from the server...',
+            );
+            await this.bunnyService.deleteMedia(oldFile.url, true);
+          }
         }
       } catch (error) {
-        this.logger.log(
-          'log',
+        console.log(
           'upload project attachments failed, deleting all uploaded files before this file upload',
         );
         if (uploadedFilePath.length > 0) {
@@ -399,7 +408,7 @@ export class TenderProposalService {
           '.' +
           request.letter_ofsupport_req.fileExtension.split('/')[1];
 
-        let letterOfSupportPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}/${userId}-${letterOfSupportfileName}`;
+        let letterOfSupportPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}/${letterOfSupportfileName}`;
 
         letterOfSupportBuffer = Buffer.from(
           request.letter_ofsupport_req.base64Data.replace(
@@ -413,7 +422,11 @@ export class TenderProposalService {
           request.letter_ofsupport_req.fileExtension,
           allowedType,
         );
-        validateFileSize(letterOfSupportBuffer.length, maxSize);
+        validateFileSize(request.project_attachments.size, maxSize);
+
+        console.log(
+          'New proposal letter of support exist, uploading to the server...',
+        );
 
         const imageUrl = await this.bunnyService.uploadFileBase64(
           request.letter_ofsupport_req.fullName,
@@ -426,7 +439,7 @@ export class TenderProposalService {
         updateProposalPayload.letter_ofsupport_req = {
           url: imageUrl,
           type: request.letter_ofsupport_req.fileExtension,
-          size: letterOfSupportBuffer.length,
+          size: request.letter_ofsupport_req.size,
         };
 
         if (
@@ -440,7 +453,10 @@ export class TenderProposalService {
             type: string;
             size: number;
           };
-          await this.bunnyService.deleteMedia(oldFile.url, true);
+          if (!!oldFile.url) {
+            console.log('deleting old letter of support file');
+            await this.bunnyService.deleteMedia(oldFile.url, true);
+          }
         }
       } catch (error) {
         this.logger.log(
@@ -472,6 +488,68 @@ export class TenderProposalService {
     );
 
     return updatedProposal;
+  }
+
+  async deleteDraft(userId: string, proposal_id: string) {
+    const proposal = await this.tenderProposalRepository.fetchProposalById(
+      proposal_id,
+    );
+
+    if (!proposal) {
+      throw new BadRequestException('Proposal not found');
+    }
+
+    if (proposal.submitter_user_id !== userId) {
+      throw new BadRequestException(
+        'User not authorized to delete this proposal',
+      );
+    }
+
+    const deletedProposal = await this.tenderProposalRepository.deleteProposal(
+      proposal.id,
+    );
+
+    if (
+      deletedProposal.project_attachments &&
+      deletedProposal.project_attachments.hasOwnProperty('url') &&
+      deletedProposal.project_attachments.hasOwnProperty('type') &&
+      deletedProposal.project_attachments.hasOwnProperty('size')
+    ) {
+      const oldFile = deletedProposal.project_attachments as {
+        url: string;
+        type: string;
+        size: number;
+      };
+      if (!!oldFile.url) {
+        this.logger.log(
+          'log',
+          'Deleted Proposal has project attachment, deleting the files ...',
+        );
+        await this.bunnyService.deleteMedia(oldFile.url, true);
+      }
+    }
+
+    if (
+      deletedProposal.letter_ofsupport_req &&
+      deletedProposal.letter_ofsupport_req.hasOwnProperty('url') &&
+      deletedProposal.letter_ofsupport_req.hasOwnProperty('type') &&
+      deletedProposal.letter_ofsupport_req.hasOwnProperty('size')
+    ) {
+      const oldFile = deletedProposal.letter_ofsupport_req as {
+        url: string;
+        type: string;
+        size: number;
+      };
+      if (!!oldFile.url) {
+        this.logger.log(
+          'log',
+          'Deleted Proposal has letter of support, deleting the files ...',
+        );
+        await this.bunnyService.deleteMedia(oldFile.url, true);
+      }
+    }
+
+    return deletedProposal;
   }
 
   async changeProposalState(
@@ -706,9 +784,88 @@ export class TenderProposalService {
 
     /* acc */
     if (request.action === ProposalAction.ACCEPT) {
+      if (!request.supervisor_payload) {
+        throw new BadRequestException('Supervisor accept payload is required!');
+      }
+      if (proposal.project_track !== 'CONCESSIONAL_GRANTS') {
+        /* proposal */
+        proposalUpdatePayload.inner_status =
+          InnerStatusEnum.ACCEPTED_BY_SUPERVISOR;
+        proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
+        proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+
+        /* propsal supervisor payload */
+        if (request.supervisor_payload.inclu_or_exclu) {
+          proposalUpdatePayload.inclu_or_exclu =
+            request.supervisor_payload.inclu_or_exclu;
+        }
+
+        if (request.supervisor_payload.vat_percentage) {
+          proposalUpdatePayload.vat_percentage =
+            request.supervisor_payload.vat_percentage;
+        }
+
+        if (request.supervisor_payload.support_goal_id) {
+          proposalUpdatePayload.support_goal_id =
+            request.supervisor_payload.support_goal_id;
+        }
+
+        if (request.supervisor_payload.vat) {
+          proposalUpdatePayload.vat = request.supervisor_payload.vat;
+        }
+
+        if (request.supervisor_payload.support_outputs) {
+          proposalUpdatePayload.support_outputs =
+            request.supervisor_payload.support_outputs;
+        }
+
+        if (request.supervisor_payload.number_of_payments_by_supervisor) {
+          proposalUpdatePayload.number_of_payments_by_supervisor =
+            request.supervisor_payload.number_of_payments_by_supervisor;
+        }
+
+        if (request.supervisor_payload.fsupport_by_supervisor) {
+          proposalUpdatePayload.fsupport_by_supervisor =
+            request.supervisor_payload.fsupport_by_supervisor;
+        }
+
+        if (request.supervisor_payload.does_an_agreement) {
+          proposalUpdatePayload.does_an_agreement =
+            request.supervisor_payload.does_an_agreement;
+        }
+
+        if (request.supervisor_payload.need_picture) {
+          proposalUpdatePayload.need_picture =
+            request.supervisor_payload.need_picture;
+        }
+
+        if (request.supervisor_payload.closing_report) {
+          proposalUpdatePayload.closing_report =
+            request.supervisor_payload.closing_report;
+        }
+
+        if (request.supervisor_payload.support_type) {
+          proposalUpdatePayload.support_type =
+            request.supervisor_payload.support_type;
+        }
+
+        if (request.supervisor_payload.clause) {
+          proposalUpdatePayload.clause = request.supervisor_payload.clause;
+        }
+
+        if (request.supervisor_payload.clasification_field) {
+          proposalUpdatePayload.clasification_field =
+            request.supervisor_payload.clasification_field;
+        }
+
+        /* log */
+        proposalLogCreateInput.action = ProposalAction.ACCEPT;
+        proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+        proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+      }
+
       if (proposal.project_track === 'CONCESSIONAL_GRANTS') {
         //
-      } else {
       }
     }
 
@@ -964,11 +1121,17 @@ export class TenderProposalService {
     }
 
     const clientEmailNotifPayload: SendEmailDto = {
-      mailType: 'plain',
+      mailType: 'template',
       to: log.data.proposal.user.email,
       from: 'no-reply@hcharity.org',
       subject,
-      content: clientContent,
+      templatePath: `tender/ar/proposal/${
+        log.data.action === 'reject' ? 'project_declined' : 'project_approved'
+      }`,
+      templateContext: {
+        projectName: log.data.proposal.project_name,
+        clientUsername: log.data.proposal.user.employee_name,
+      },
     };
 
     this.emailService.sendMail(clientEmailNotifPayload);

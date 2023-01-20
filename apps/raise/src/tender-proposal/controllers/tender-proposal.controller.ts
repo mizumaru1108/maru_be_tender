@@ -31,6 +31,7 @@ import { ProposalSaveDraftDto } from '../dtos/requests/proposal/proposal-save-dr
 import { UpdatePaymentResponseDto } from '../dtos/responses/payment/update-payment-response.dto';
 import { UpdateProposalByCmsUsers } from '../dtos/updateProposalByCmsUsers.dto';
 import { TenderProposalService } from '../services/tender-proposal.service';
+import { ProposalDeleteDraftDto } from '../dtos/requests/proposal/proposal-delete-draft';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(
@@ -75,6 +76,24 @@ export class TenderProposalController {
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_client')
+  @Post('delete-draft')
+  async deleteDraft(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() request: ProposalDeleteDraftDto,
+  ) {
+    const deletedDraft = await this.tenderProposalService.deleteDraft(
+      currentUser.id,
+      request.proposal_id,
+    );
+    return baseResponseHelper(
+      deletedDraft,
+      HttpStatus.OK,
+      'Draft deleted successfully',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_project_supervisor')
   @Post('insert-payment')
   async insertPayment(
@@ -92,34 +111,6 @@ export class TenderProposalController {
       'Payment created successfully',
     );
   }
-
-  // @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  // @TenderRoles(
-  //   'tender_accounts_manager',
-  //   'tender_admin',
-  //   'tender_cashier',
-  //   'tender_ceo',
-  //   'tender_consultant',
-  //   'tender_finance',
-  //   'tender_moderator',
-  //   'tender_project_manager',
-  //   'tender_project_supervisor',
-  // ) // only internal users
-  // @Post('send-notification')
-  // async sendNotification(
-  //   @CurrentUser() currentUser: TenderCurrentUser,
-  //   @Body() request: CreateProposalNotificationDto,
-  // ) {
-  //   const createdPayment = await this.tenderProposalService.sendNotification(
-  //     currentUser,
-  //     request,
-  //   );
-  //   return baseResponseHelper(
-  //     createdPayment,
-  //     HttpStatus.CREATED,
-  //     'Payment created successfully',
-  //   );
-  // }
 
   @UseGuards(TenderJwtGuard)
   @Get('fetch-track')
@@ -192,23 +183,6 @@ export class TenderProposalController {
       `Proposal change state success!, current state: ${proposal.outter_status}, details: ${proposal.inner_status}`,
     );
   }
-
-  // @UseGuards(TenderJwtGuard)
-  // @Patch('update-proposal')
-  // async updateProposal(
-  //   @CurrentUser() currentUser: ICurrentUser,
-  //   @Body() request: UpdateProposalDto,
-  // ): Promise<BaseResponse<UpdateProposalResponseDto>> {
-  //   const updateResponse = await this.tenderProposalService.updateProposal(
-  //     currentUser.id,
-  //     request,
-  //   );
-  //   return baseResponseHelper(
-  //     updateResponse,
-  //     HttpStatus.OK,
-  //     'Proposal updated successfully',
-  //   );
-  // }
 
   @UseGuards(TenderJwtGuard)
   @Patch('proposal-action')

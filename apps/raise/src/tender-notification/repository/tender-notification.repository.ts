@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { notification, Prisma } from '@prisma/client';
 import { FusionAuthService } from '../../libs/fusionauth/services/fusion-auth.service';
 import { ROOT_LOGGER } from '../../libs/root-logger';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -43,6 +43,66 @@ export class TenderNotificationRepository {
         TenderNotificationRepository.name,
         'createSchedules error:',
         `creating schedule!`,
+      );
+      throw theError;
+    }
+  }
+
+  async findById(notificationId: string): Promise<notification | null> {
+    try {
+      return await this.prismaService.notification.findUnique({
+        where: {
+          id: notificationId,
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderNotificationRepository.name,
+        'Find Notification error:',
+        `Finding Notification!`,
+      );
+      throw theError;
+    }
+  }
+
+  async readById(notificationId: string): Promise<notification> {
+    try {
+      return await this.prismaService.notification.update({
+        where: {
+          id: notificationId,
+        },
+        data: {
+          read_status: true,
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderNotificationRepository.name,
+        'Read Notification error:',
+        `Reading Notification!`,
+      );
+      throw theError;
+    }
+  }
+
+  async readByUserId(userId: string) {
+    try {
+      return await this.prismaService.notification.updateMany({
+        where: {
+          user_id: userId,
+        },
+        data: {
+          read_status: true,
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderNotificationRepository.name,
+        'Read Notification error:',
+        `Reading Notification!`,
       );
       throw theError;
     }

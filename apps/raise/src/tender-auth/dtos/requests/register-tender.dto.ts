@@ -13,6 +13,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ValidateKsaPhoneNumber966 } from '../../../tender-commons/decorators/validate-ksa-phone-number-966.decorator';
+import { ValidateSaIBAN } from '../../../tender-commons/decorators/validate-sa-iban.decorator';
 import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
 
 export class bankData {
@@ -23,13 +24,14 @@ export class bankData {
 
   @ApiProperty()
   @IsString()
-  @MinLength(14, {
-    message: 'bank_account_number must be at least 14 characters',
-  })
-  @MaxLength(34, {
-    message: 'bank_account_number must be at most 34 characters',
-  })
   @IsNotEmpty()
+  @MinLength(24, {
+    message: 'IBAN must be 24 characters',
+  })
+  @MaxLength(24, {
+    message: 'IBAN must be 24 characters',
+  })
+  @ValidateSaIBAN()
   bank_account_number: string;
 
   @ApiProperty()

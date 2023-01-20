@@ -4,6 +4,7 @@ import {
   IsArray,
   IsNotEmpty,
   IsNumber,
+  IsNumberString,
   IsOptional,
   IsString,
   IsUUID,
@@ -62,6 +63,7 @@ export class ProposalCreateDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  @IsNumberString()
   execution_time: string;
 
   @ApiProperty()

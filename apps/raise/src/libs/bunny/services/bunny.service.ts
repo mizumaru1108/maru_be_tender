@@ -163,10 +163,7 @@ export class BunnyService {
       const response = await axios(options);
       if (response.data.HttpCode === 200) {
         this.logger.log(
-          'Deleted %s from Bunny: %s %s %s',
-          storageMediaUrl,
-          response.status,
-          response.statusText,
+          `${cdnUrl} has been removed from the cloud service!`,
           JSON.stringify(response.data, null, 2),
         );
       }
@@ -244,7 +241,7 @@ export class BunnyService {
     path: string,
     serviceName: string,
   ): Promise<string> {
-    this.logger.log('Uploading ', fileName, ' to ', path);
+    // this.logger.log('Uploading ', fileName, ' to ', path);
     const storageUrlMedia = this.storageUrlMedia + '/' + path;
     const cdnUrl = this.cdnUrl + '/' + path;
 
@@ -262,15 +259,11 @@ export class BunnyService {
 
     try {
       this.logger.log(
-        `Uploading to Bunny: ${storageUrlMedia} (${fileBuffer.length} bytes)...`,
+        `Uploading [${fileName}] (${fileBuffer.length} bytes) to Bunny ${this.storageUrlMedia} ...`,
       );
       const response = await axios(options);
       this.logger.log(
-        'Uploaded %s (%d bytes) to Bunny: %s %s %s',
-        storageUrlMedia,
-        fileBuffer.length,
-        response.status,
-        response.statusText,
+        `${fileName} has been Uploaded!, uploaded Url: ${cdnUrl}`,
         JSON.stringify(response.data, null, 2),
       );
       return cdnUrl;

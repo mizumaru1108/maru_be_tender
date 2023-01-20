@@ -11,6 +11,7 @@ import { ProposalAction } from '../../../../tender-commons/types/proposal';
 
 import { SetupPaymentPayloadDto } from '../setup-payment-payload.dto';
 import { ModeratorChangeStatePayload } from './moderator-change-state.dto';
+import { SupervisorChangeStatePayload } from './supervisor-change-state.dto';
 
 export class ChangeProposalStateDto {
   @ApiProperty()
@@ -29,6 +30,12 @@ export class ChangeProposalStateDto {
   @Type(() => ModeratorChangeStatePayload)
   @ValidateNested()
   moderator_payload?: ModeratorChangeStatePayload;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => SupervisorChangeStatePayload)
+  @ValidateNested()
+  supervisor_payload?: SupervisorChangeStatePayload;
 
   @ApiPropertyOptional()
   @IsString()
