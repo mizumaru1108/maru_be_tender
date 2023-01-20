@@ -49,7 +49,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
       phone: Yup.string()
         .nullable()
         .notRequired()
-        .test('len', 'errors.register.phone.length', (val) => {
+        .test('len', translate('errors.register.phone.length'), (val) => {
           if (val === undefined) {
             return true;
           }

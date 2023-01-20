@@ -13,14 +13,14 @@ type Props = {
   children?: React.ReactNode;
   defaultValues: any;
   onReturn: () => void;
-  onSavingDraft: () => void;
+  // onSavingDraft: () => void;
   onLoader: (value: boolean) => void;
   isLoading?: boolean;
   lastStep?: boolean;
 };
 const SupportingDurationInfoForm = ({
   onReturn,
-  onSavingDraft,
+  // onSavingDraft,
   lastStep,
   onSubmit,
   onLoader,
@@ -142,7 +142,7 @@ const SupportingDurationInfoForm = ({
                   hieght: { xs: '100%', sm: '50px' },
                   borderColor: '#000',
                 }}
-                onClick={onSavingDraft}
+                // onClick={onSavingDraft}
                 // disabled={step ? false : true}
                 disabled
               >
