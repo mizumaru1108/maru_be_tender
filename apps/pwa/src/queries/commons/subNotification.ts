@@ -40,7 +40,7 @@
 // }`;
 
 export const subNotification = `subscription subNotification ($user_id: String = "") {
-  notification (where: {user_id: {_eq: $user_id}, shown: {_eq: false}}, order_by: {created_at: desc}){
+  notification (where: {user_id: {_eq: $user_id}, shown: {_eq: true}}, order_by: {created_at: desc}){
     id
     appointment_id
     subject
