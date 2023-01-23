@@ -312,6 +312,11 @@ const FundingProjectRequestForm = () => {
     const newAttachment = {
       ...(lastIndex === step &&
       step >= 0 &&
+      requestState &&
+      requestState.form1 &&
+      requestState.form1.project_attachments &&
+      data &&
+      data.project_attachments &&
       requestState.form1.project_attachments.url !== data.project_attachments.url
         ? {
             base64Data: data.project_attachments.base64Data,
@@ -324,6 +329,11 @@ const FundingProjectRequestForm = () => {
     const newLetteSupport = {
       ...(lastIndex === step &&
       step >= 0 &&
+      requestState &&
+      requestState.form1 &&
+      requestState.form1.project_attachments &&
+      data &&
+      data.project_attachments &&
       requestState.form1.letter_ofsupport_req.url !== data.letter_ofsupport_req.url
         ? {
             base64Data: data.letter_ofsupport_req.base64Data,
@@ -360,16 +370,34 @@ const FundingProjectRequestForm = () => {
                 },
               }
             : {}),
-          ...(lastIndex < step && step >= 1 && { ...requestState.form1 }),
-          ...(lastIndex < step && step >= 2 && { ...requestState.form2 }),
-          ...(lastIndex < step && step >= 3 && { ...requestState.form3 }),
+          ...(lastIndex < step && step >= 0 && { ...requestState.form1 }),
+          ...(lastIndex < step && step >= 1 && { ...requestState.form2 }),
+          ...(lastIndex < step && step >= 2 && { ...requestState.form3 }),
           ...(lastIndex < step &&
-            step >= 4 && {
+            data &&
+            step === 3 && {
+              amount_required_fsupport: data.amount_required_fsupport,
+              detail_project_budgets: [...data.detail_project_budgets.data],
+            }),
+          ...(lastIndex > step && step === 0 && data && { ...data }),
+          ...(lastIndex > step && step === 1 && data && { ...data }),
+          ...(lastIndex > step && step === 2 && data && { ...data }),
+          ...(lastIndex > step &&
+            data &&
+            step === 3 && {
               // ...requestState.form4,
-              amount_required_fsupport: requestState.form4.amount_required_fsupport,
-              detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
+              amount_required_fsupport: data.amount_required_fsupport,
+              detail_project_budgets: [...data.detail_project_budgets.data],
             }),
           // ...data,
+          ...(step !== 3 && step !== 4
+            ? { ...data }
+            : step === 3
+            ? {
+                amount_required_fsupport: data.amount_required_fsupport,
+                detail_project_budgets: [...data.detail_project_budgets.data],
+              }
+            : { ...data }),
           proposal_bank_information_id: step === 4 ? data : undefined,
           proposal_id: id,
         },
@@ -463,7 +491,11 @@ const FundingProjectRequestForm = () => {
 
   // on return
   const onReturn = () => {
-    setStep((prevStep) => (prevStep > 0 ? prevStep - 1 : prevStep));
+    if (step === 0) {
+      navigate('/client/dashboard/draft-funding-requests');
+    } else {
+      setStep((prevStep) => (prevStep > 0 ? prevStep - 1 : prevStep));
+    }
   };
 
   // useEffect is responible for fetching the data when we are on a Draft project

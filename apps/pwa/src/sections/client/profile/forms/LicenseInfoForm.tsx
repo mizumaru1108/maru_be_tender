@@ -20,16 +20,64 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
     license_number: Yup.string().required('License Number is required'),
     license_issue_date: Yup.string().required('License Issue Date is required'),
     license_expired: Yup.string().required('License Expiry Date is required'),
-    license_file: Yup.object().shape({
-      url: Yup.string().required(),
-      size: Yup.number(),
-      type: Yup.string().required(),
-    }),
-    board_ofdec_file: Yup.object().shape({
-      url: Yup.string().required(),
-      size: Yup.number(),
-      type: Yup.string().required(),
-    }),
+    license_file: Yup.mixed()
+      .test('size', translate('errors.register.license_file.size'), (value) => {
+        if (value) {
+          // const trueSize = value.size * 28;
+          if (value.size > 1024 * 1024 * 5) {
+            return false;
+          }
+        }
+        return true;
+      })
+      .test('fileExtension', translate('errors.register.license_file.fileExtension'), (value) => {
+        if (value) {
+          if (
+            value.type !== 'application/pdf' &&
+            value.type !== 'image/png' &&
+            value.type !== 'image/jpeg' &&
+            value.type !== 'image/jpg'
+          ) {
+            return false;
+          }
+        }
+        return true;
+      }),
+    board_ofdec_file: Yup.mixed()
+      .test('size', translate('errors.register.board_ofdec_file.size'), (value) => {
+        if (value) {
+          // const trueSize = value.size * 28;
+          if (value.size > 1024 * 1024 * 5) {
+            return false;
+          }
+        }
+        return true;
+      })
+      .test(
+        'fileExtension',
+        translate('errors.register.board_ofdec_file.fileExtension'),
+        (value) => {
+          if (value) {
+            if (
+              value.type !== 'application/pdf' &&
+              value.type !== 'application/msword' &&
+              value.type !==
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document' &&
+              value.type !== 'application/vnd.ms-excel' &&
+              value.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' &&
+              value.type !== 'application/vnd.ms-powerpoint' &&
+              value.type !==
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation' &&
+              value.type !== 'image/png' &&
+              value.type !== 'image/jpeg' &&
+              value.type !== 'image/jpg'
+            ) {
+              return false;
+            }
+          }
+          return true;
+        }
+      ),
   });
 
   const methods = useForm<LicenseValuesProps>({

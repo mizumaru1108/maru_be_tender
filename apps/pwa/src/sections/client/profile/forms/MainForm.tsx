@@ -1,13 +1,14 @@
-import * as Yup from 'yup';
-import { Grid } from '@mui/material';
-import { FormProvider, RHFSelect, RHFTextField } from 'components/hook-form';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { Grid } from '@mui/material';
+import { FormProvider, RHFTextField } from 'components/hook-form';
 import RHFDatePicker from 'components/hook-form/RHFDatePicker';
 import useLocales from 'hooks/useLocales';
-import { MainValuesProps } from '../../../../@types/register';
-import { REGIONS } from 'sections/auth/register/RegisterFormData';
 import { useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { REGIONS } from 'sections/auth/register/RegisterFormData';
+import * as Yup from 'yup';
+import { MainValuesProps } from '../../../../@types/register';
+import RHFSelectNoGenerator from '../../../../components/hook-form/RHFSelectNoGen';
 
 type FormProps = {
   children?: React.ReactNode;
@@ -60,7 +61,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
           <RHFTextField name="entity" label={'اسم العميل'} placeholder={'الرجاء أدخل اسم العميل'} />
         </Grid>
         <Grid item md={12} xs={12}>
-          <RHFSelect name="client_field" label={'مجال الجهة'}>
+          <RHFSelectNoGenerator name="client_field" label={'مجال الجهة'}>
             <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
               {translate('register_form1.entity_area.placeholder')}
             </option>
@@ -70,13 +71,16 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
             <option value="sub" style={{ backgroundColor: '#fff' }}>
               {translate('register_form1.entity_area.options.main_entity_area')}
             </option>
-          </RHFSelect>
+          </RHFSelectNoGenerator>
         </Grid>
         {client_field !== '' && (
           <>
             {client_field === 'main' && (
               <Grid item md={12} xs={12}>
-                <RHFSelect name="authority" label={translate('register_form1.authority.label')}>
+                <RHFSelectNoGenerator
+                  name="authority"
+                  label={translate('register_form1.authority.label')}
+                >
                   <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
                     {translate('register_form1.authority.placeholder')}
                   </option>
@@ -104,7 +108,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
                   <option value="7" style={{ backgroundColor: '#fff' }}>
                     وزارة الموارد البشرية والتنميةالاجتماعية
                   </option>
-                </RHFSelect>
+                </RHFSelectNoGenerator>
               </Grid>
             )}
             {client_field === 'sub' && (
@@ -130,7 +134,10 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
           />
         </Grid>
         <Grid item md={6} xs={12}>
-          <RHFSelect name="headquarters" label={translate('register_form1.headquarters.label')}>
+          <RHFSelectNoGenerator
+            name="headquarters"
+            label={translate('register_form1.headquarters.label')}
+          >
             <>
               <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
                 {translate('register_form1.headquarters.placeholder')}
@@ -141,7 +148,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
                 </option>
               ))}
             </>
-          </RHFSelect>
+          </RHFSelectNoGenerator>
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFTextField

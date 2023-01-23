@@ -66,7 +66,14 @@ function ClientProfileEditForm() {
       license_number: '',
       license_issue_date: '',
       license_expired: '',
-      license_file: { size: undefined, url: '', type: '' },
+      license_file: {
+        url: '',
+        size: undefined,
+        type: '',
+        base64Data: '',
+        fileExtension: '',
+        fullName: '',
+      },
       board_ofdec_file: { size: undefined, url: '', type: '' },
     },
     form4: {

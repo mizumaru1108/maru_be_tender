@@ -9,6 +9,7 @@ import useLocales from 'hooks/useLocales';
 import { RegionNames } from '../../../../@types/region';
 import RHFPassword from 'components/hook-form/RHFPassword';
 import { useEffect, useMemo } from 'react';
+import RHFSelectNoGenerator from '../../../../components/hook-form/RHFSelectNoGen';
 
 type FormProps = {
   children?: React.ReactNode;
@@ -67,7 +68,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7}>
         <Grid item md={6} xs={12}>
-          <RHFSelect
+          <RHFSelectNoGenerator
             name="region"
             label={translate('register_form2.region.label')}
             placeholder={translate('register_form2.region.placeholder')}
@@ -79,10 +80,10 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
                 </option>
               ))}
             </>
-          </RHFSelect>
+          </RHFSelectNoGenerator>
         </Grid>
         <Grid item md={6} xs={12}>
-          <RHFSelect
+          <RHFSelectNoGenerator
             name="governorate"
             label={translate('register_form2.city.label')}
             placeholder={translate('register_form2.city.placeholder')}
@@ -96,7 +97,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
                 ))}
               </>
             )}
-          </RHFSelect>
+          </RHFSelectNoGenerator>
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFTextField
