@@ -230,7 +230,7 @@ export const AddBankData = [
     xs: 12,
   },
   {
-    type: 'upload',
+    type: 'uploadBe',
     name: 'card_image',
     label: 'funding_project_request_form6.bank_account_card_image.label',
     placeholder: 'funding_project_request_form6.bank_account_card_image.placeholder',

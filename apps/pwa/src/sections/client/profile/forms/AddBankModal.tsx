@@ -12,6 +12,7 @@ import { useMutation } from 'urql';
 import { addNewBankInformation } from 'queries/client/addNewBankInformation';
 import useAuth from 'hooks/useAuth';
 import { nanoid } from 'nanoid';
+import useLocales from '../../../../hooks/useLocales';
 const style = {
   position: 'absolute' as 'absolute',
   top: '50%',
@@ -27,33 +28,63 @@ type FormValuesProps = {
   bank_account_number: string;
   bank_account_name: string;
   bank_name: string;
-  bank_account_card_image: FileProp;
+  card_image: FileProp;
 };
 
-export default function AddBankModal({ open, handleClose }: any) {
+export default function AddBankModal({ open, handleClose, onSubmit }: any) {
+  const { translate } = useLocales();
   const rootRef = React.useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const id = user?.id;
   // addNewBankInformation
   const [_, addingNewBankInfo] = useMutation(addNewBankInformation);
   const RegisterSchema = Yup.object().shape({
-    bank_account_number: Yup.string().required('Project goals required'),
+    // bank_account_number: Yup.string().required('Project goals required'),
+    bank_account_number: Yup.string()
+      .min(27, translate('errors.register.bank_account_number.min'))
+      .required(translate('errors.register.bank_account_number.required')),
     bank_account_name: Yup.string().required('Project outputs is required'),
     bank_name: Yup.string().required('Project strengths is required'),
-    bank_account_card_image: Yup.object().shape({
-      url: Yup.string().required(),
-      size: Yup.number(),
-      type: Yup.string().required(),
-    }),
+    // bank_account_card_image: Yup.object().shape({
+    //   url: Yup.string().required(),
+    //   size: Yup.number(),
+    //   type: Yup.string().required(),
+    // }),
+    card_image: Yup.mixed()
+      .test('size', translate('errors.register.card_image.size'), (value) => {
+        if (value) {
+          // const trueSize = value.size * 28;
+          if (value.size > 1024 * 1024 * 5) {
+            return false;
+          }
+        }
+        return true;
+      })
+      .test('fileExtension', translate('errors.register.card_image.fileExtension'), (value) => {
+        if (value) {
+          if (
+            value.type !== 'image/png' &&
+            value.type !== 'image/jpeg' &&
+            value.type !== 'image/jpg'
+          ) {
+            return false;
+          }
+        }
+        return true;
+      })
+      .required(translate('errors.register.card_image.required')),
   });
   const defaultValues = {
     bank_account_number: '',
     bank_account_name: '',
     bank_name: '',
-    bank_account_card_image: {
+    card_image: {
       url: '',
       size: undefined,
-      type: 'image/jpeg',
+      type: '',
+      base64Data: '',
+      fileExtension: '',
+      fullName: '',
     },
   };
 
@@ -65,19 +96,40 @@ export default function AddBankModal({ open, handleClose }: any) {
   const {
     handleSubmit,
     formState: { isSubmitting },
+    setValue,
+    getValues,
   } = methods;
 
-  const onSubmit = async (data: FormValuesProps) => {
-    console.log(data);
-    const res = await addingNewBankInfo({
-      payload: {
-        bank_account_name: data.bank_account_name,
-        bank_account_number: data.bank_account_number,
-        bank_name: data.bank_name,
-        card_image: data.bank_account_card_image.url,
-        user_id: id,
-      },
+  const onSubmitForm = async (data: FormValuesProps) => {
+    let newData = { ...data };
+    let newBankAccNumber = getValues('bank_account_number');
+    // remove all spaces
+    // newBankAccNumber = newBankAccNumber.replace(/\s/g, '');
+    newBankAccNumber.substring(0, 2) !== 'SA'
+      ? (newBankAccNumber = 'SA'.concat(`${getValues('bank_account_number')}`).replace(/\s/g, ''))
+      : (newBankAccNumber = getValues('bank_account_number'));
+    newData = { ...newData, bank_account_number: newBankAccNumber };
+    setValue('bank_account_number', '');
+    setValue('bank_account_name', '');
+    setValue('bank_name', '');
+    setValue('card_image', {
+      url: '',
+      size: undefined,
+      type: '',
+      base64Data: '',
+      fileExtension: '',
+      fullName: '',
     });
+    onSubmit(newData);
+    // const res = await addingNewBankInfo({
+    //   payload: {
+    //     bank_account_name: data.bank_account_name,
+    //     bank_account_number: data.bank_account_number,
+    //     bank_name: data.bank_name,
+    //     card_image: data.bank_account_card_image.url,
+    //     user_id: id,
+    //   },
+    // });
     handleClose();
   };
   return (
@@ -107,7 +159,7 @@ export default function AddBankModal({ open, handleClose }: any) {
         <Typography variant="h6" sx={{ mb: '50px' }}>
           اضافة حساب بنكي جديد
         </Typography>
-        <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+        <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
           <Grid container rowSpacing={4} columnSpacing={7}>
             <FormGenerator data={AddBankData} />
             <Grid item xs={12}>

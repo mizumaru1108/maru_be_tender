@@ -88,13 +88,28 @@ function ClientProfileEditForm() {
         bank_account_number: '',
         bank_account_name: '',
         bank_name: '',
-        card_image: { size: undefined, url: '', type: '' },
+        card_image: {
+          url: '',
+          size: undefined,
+          type: '',
+          base64Data: '',
+          fileExtension: '',
+          fullName: '',
+        },
         id,
       },
     ],
-  } as AccountEditValuesProps;
+  };
   const [profileState, setProfileState] = useState(initialValue);
   const [open, setOpen] = useState(false);
+  const [isEdit, setIsEdit] = useState({
+    form1: false,
+    form2: false,
+    form3: false,
+    form4: false,
+    form5: false,
+  });
+  const [startedValue, setStartedValue] = useState<any>();
   const onSubmit = () => {
     setOpen(true);
     window.scrollTo(0, 0);
@@ -135,7 +150,8 @@ function ClientProfileEditForm() {
         data_entry_mobile,
         data_entry_mail,
       } = client;
-      setProfileState((prevState) => ({
+      setStartedValue({ bank_informations, email, ...client });
+      setProfileState((prevState: any) => ({
         ...prevState,
         form1: {
           ...prevState.form1,
@@ -157,15 +173,24 @@ function ClientProfileEditForm() {
           twitter_acount,
           website,
           email: email.trim(),
-          password,
+          // password,
+          new_password: '',
+          confirm_password: '',
+          old_password: '',
         },
         form3: {
           ...prevState.form3,
           license_number,
           license_issue_date,
           license_expired,
-          license_file: { size: undefined, url: license_file, type: 'application/pdf' },
-          board_ofdec_file: { size: undefined, url: board_ofdec_file, type: 'application/pdf' },
+          license_file: {
+            // size: undefined, url: license_file, type: 'application/pdf'
+            ...license_file,
+          },
+          board_ofdec_file: {
+            // size: undefined, url: board_ofdec_file, type: 'application/pdf'
+            ...board_ofdec_file,
+          },
         },
         form4: {
           ...prevState.form4,
@@ -180,60 +205,183 @@ function ClientProfileEditForm() {
     }
   }, [data]);
 
+  // console.log({ startedValue });
+
   const onSubmit1 = (data: MainValuesProps) => {
-    setOpen(true);
     window.scrollTo(0, 0);
-    console.log(data);
-    setProfileState((prevProfileState: AccountEditValuesProps) => ({
-      ...prevProfileState,
-      form1: {
-        ...prevProfileState.form1,
-        ...data,
-      },
-    }));
+    // console.log(data);
+    if (isEdit && isEdit.form1) {
+      setIsEdit((prevIsEdit: any) => ({
+        ...prevIsEdit,
+        form1: false,
+      }));
+      setProfileState((prevProfileState: any) => ({
+        ...prevProfileState,
+        form1: {
+          ...prevProfileState.form1,
+          entity: startedValue && startedValue.entity && startedValue.entity,
+          client_field: startedValue && startedValue.client_field && startedValue.client_field,
+          authority: startedValue && startedValue.authority && startedValue.authority,
+          date_of_esthablistmen:
+            startedValue &&
+            startedValue.date_of_esthablistmen &&
+            startedValue.date_of_esthablistmen,
+          headquarters: startedValue && startedValue.headquarters && startedValue.headquarters,
+          num_of_beneficiaries:
+            startedValue && startedValue.num_of_beneficiaries && startedValue.num_of_beneficiaries,
+          num_of_employed_facility:
+            startedValue &&
+            startedValue.num_of_employed_facility &&
+            startedValue.num_of_employed_facility,
+        },
+      }));
+    }
+    if (isEdit && !isEdit.form1) {
+      setOpen(true);
+      setIsEdit((prevIsEdit: any) => ({
+        ...prevIsEdit,
+        form1: true,
+      }));
+      setProfileState((prevProfileState: any) => ({
+        ...prevProfileState,
+        form1: {
+          ...prevProfileState.form1,
+          ...data,
+        },
+      }));
+    }
   };
 
   const onSubmit2 = (data: ConnectingValuesProps) => {
-    setOpen(true);
     window.scrollTo(0, 0);
-    setProfileState((prevProfileState: AccountEditValuesProps) => ({
-      ...prevProfileState,
-      form2: {
-        ...prevProfileState.form2,
-        ...data,
-      },
-    }));
+    if (isEdit && isEdit.form2) {
+      setIsEdit((prevIsEdit: any) => ({
+        ...prevIsEdit,
+        form2: false,
+      }));
+      setProfileState((prevProfileState: any) => ({
+        ...prevProfileState,
+        form2: {
+          ...prevProfileState.form2,
+          region: startedValue && startedValue.region && startedValue.region,
+          governorate: startedValue && startedValue.governorate && startedValue.governorate,
+          center_administration:
+            startedValue &&
+            startedValue.center_administration &&
+            startedValue.center_administration,
+          entity_mobile: startedValue && startedValue.entity_mobile && startedValue.entity_mobile,
+          phone: startedValue && startedValue.phone && startedValue.phone,
+          twitter_acount:
+            startedValue && startedValue.twitter_acount && startedValue.twitter_acount,
+          website: startedValue && startedValue.website && startedValue.website,
+          email: startedValue && startedValue.email && startedValue.email,
+          // password: startedValue && startedValue.password && startedValue.password,
+        },
+      }));
+    }
+    if (isEdit && !isEdit.form2) {
+      setOpen(true);
+      setIsEdit((prevIsEdit: any) => ({
+        ...prevIsEdit,
+        form2: true,
+      }));
+      setProfileState((prevProfileState: any) => ({
+        ...prevProfileState,
+        form2: {
+          ...prevProfileState.form2,
+          ...data,
+        },
+      }));
+    }
   };
 
   const onSubmit3 = (data: LicenseValuesProps) => {
-    setOpen(true);
     window.scrollTo(0, 0);
-    console.log(data);
-    setProfileState((prevProfileState: AccountEditValuesProps) => ({
-      ...prevProfileState,
-      form3: {
-        ...prevProfileState.form3,
-        ...data,
-      },
-    }));
+    console.log({ data });
+    if (isEdit && isEdit.form3) {
+      setIsEdit((prevIsEdit: any) => ({
+        ...prevIsEdit,
+        form3: false,
+      }));
+      setProfileState((prevProfileState: any) => ({
+        ...prevProfileState,
+        form3: {
+          ...prevProfileState.form3,
+          license_number:
+            startedValue && startedValue.license_number && startedValue.license_number,
+          license_issue_date:
+            startedValue && startedValue.license_issue_date && startedValue.license_issue_date,
+          license_expired:
+            startedValue && startedValue.license_expired && startedValue.license_expired,
+          license_file: {
+            ...(startedValue && startedValue.license_file && { ...startedValue.license_file }),
+          },
+          board_ofdec_file: {
+            ...(startedValue &&
+              startedValue.board_ofdec_file && { ...startedValue.board_ofdec_file }),
+          },
+        },
+      }));
+    }
+    if (isEdit && !isEdit.form3) {
+      setOpen(true);
+      setIsEdit((prevIsEdit: any) => ({
+        ...prevIsEdit,
+        form3: true,
+      }));
+      setProfileState((prevProfileState: any) => ({
+        ...prevProfileState,
+        form3: {
+          ...prevProfileState.form3,
+          ...data,
+        },
+      }));
+    }
   };
 
   const onSubmit4 = (data: AdministrativeValuesProps) => {
-    setOpen(true);
     window.scrollTo(0, 0);
-    setProfileState((prevProfileState: AccountEditValuesProps) => ({
-      ...prevProfileState,
-      form4: {
-        ...prevProfileState.form4,
-        ...data,
-      },
-    }));
+    if (isEdit && isEdit.form4) {
+      setIsEdit((prevIsEdit: any) => ({
+        ...prevIsEdit,
+        form4: false,
+      }));
+      setProfileState((prevProfileState: any) => ({
+        ...prevProfileState,
+        form4: {
+          ...prevProfileState.form4,
+          region: startedValue && startedValue.region && startedValue.region,
+          ceo_name: startedValue && startedValue.ceo_name && startedValue.ceo_name,
+          ceo_mobile: startedValue && startedValue.ceo_mobile && startedValue.ceo_mobile,
+          data_entry_name:
+            startedValue && startedValue.data_entry_name && startedValue.data_entry_name,
+          data_entry_mobile:
+            startedValue && startedValue.data_entry_mobile && startedValue.data_entry_mobile,
+          data_entry_mail:
+            startedValue && startedValue.data_entry_mail && startedValue.data_entry_mail,
+        },
+      }));
+    }
+    if (isEdit && !isEdit.form4) {
+      setOpen(true);
+      setIsEdit((prevIsEdit: any) => ({
+        ...prevIsEdit,
+        form4: true,
+      }));
+      setProfileState((prevProfileState: any) => ({
+        ...prevProfileState,
+        form4: {
+          ...prevProfileState.form4,
+          ...data,
+        },
+      }));
+    }
   };
 
   const onSubmit5 = (data: BankingValuesProps) => {
     setOpen(true);
     window.scrollTo(0, 0);
-    setProfileState((prevProfileState: AccountEditValuesProps) => ({
+    setProfileState((prevProfileState: any) => ({
       ...prevProfileState,
       form5: {
         ...prevProfileState.form5,
@@ -243,12 +391,17 @@ function ClientProfileEditForm() {
   };
 
   const onDeleteBankInformation = (index: number) => {
-    setProfileState((prevProfileState: AccountEditValuesProps) => ({
+    setProfileState((prevProfileState: any) => ({
       ...prevProfileState,
-      form5: prevProfileState.form5.filter((item, indx) => indx !== index),
+      form5: prevProfileState.form5.filter((item: any, indx: any) => indx !== index),
     }));
   };
-  console.log(profileState);
+
+  const onSubmitEditRequest = async () => {
+    // console.log({ profileState });
+    console.log({ startedValue });
+  };
+  // console.log(profileState);
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Stack direction="row">
@@ -282,6 +435,7 @@ function ClientProfileEditForm() {
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="h4">تعديل بيانات الحساب</Typography>
         <Button
+          onClick={onSubmitEditRequest}
           sx={{
             color: '#fff',
             backgroundColor: 'background.paper',
@@ -323,32 +477,47 @@ function ClientProfileEditForm() {
       {step === 0 && !fetching && (
         <Box sx={{ px: '100px', display: 'flex', flexDirection: 'column', gap: 4 }}>
           <Typography variant="h5">المعلومات الرئيسية</Typography>
-          <MainForm onSubmit={onSubmit1} defaultValues={profileState.form1}>
-            <ActionsBox />
+          <MainForm onSubmit={onSubmit1} defaultValues={profileState.form1} isEdit={isEdit.form1}>
+            <ActionsBox isEdit={isEdit.form1} />
           </MainForm>
         </Box>
       )}
       {step === 1 && (
         <Box sx={{ px: '100px', display: 'flex', flexDirection: 'column', gap: 4 }}>
           <Typography variant="h5">معلومات الاتصال</Typography>
-          <ConnectingInfoForm onSubmit={onSubmit2} defaultValues={profileState.form2}>
-            <ActionsBox />
+          <ConnectingInfoForm
+            onSubmit={onSubmit2}
+            defaultValues={profileState.form2 as ConnectingValuesProps}
+            isEdit={isEdit.form2}
+          >
+            {/* <ActionsBox /> */}
+            <ActionsBox isEdit={isEdit.form2} />
           </ConnectingInfoForm>
         </Box>
       )}
       {step === 2 && (
         <Box sx={{ px: '100px', display: 'flex', flexDirection: 'column', gap: 4 }}>
           <Typography variant="h5">معلومات الترخيص</Typography>
-          <LicenseInfoForm onSubmit={onSubmit3} defaultValues={profileState.form3}>
-            <ActionsBox />
+          <LicenseInfoForm
+            onSubmit={onSubmit3}
+            defaultValues={profileState.form3}
+            isEdit={isEdit.form3}
+          >
+            {/* <ActionsBox /> */}
+            <ActionsBox isEdit={isEdit.form3} />
           </LicenseInfoForm>
         </Box>
       )}
       {step === 3 && (
         <Box sx={{ px: '100px', display: 'flex', flexDirection: 'column', gap: 4 }}>
           <Typography variant="h5">بيانات ادارية</Typography>
-          <AdministrativeInfoForm onSubmit={onSubmit4} defaultValues={profileState.form4}>
-            <ActionsBox />
+          <AdministrativeInfoForm
+            onSubmit={onSubmit4}
+            defaultValues={profileState.form4}
+            isEdit={isEdit.form4}
+          >
+            {/* <ActionsBox /> */}
+            <ActionsBox isEdit={isEdit.form4} />
           </AdministrativeInfoForm>
         </Box>
       )}
@@ -359,9 +528,11 @@ function ClientProfileEditForm() {
             onDelete={onDeleteBankInformation}
             onSubmit={onSubmit}
             initialValue={profileState.form5}
-          >
-            <ActionsBox />
-          </BankingInfoForm>
+            isEdit={isEdit.form5}
+          />
+          {/* <ActionsBox /> */}
+          {/* <ActionsBox isEdit={isEdit.form5} /> */}
+          {/* </BankingInfoForm> */}
         </Box>
       )}
       <Toast

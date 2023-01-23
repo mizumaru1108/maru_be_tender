@@ -16,11 +16,12 @@ import { async } from '@firebase/util';
 interface Props extends Omit<UploadProps, 'file'> {
   name: string;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 // ----------------------------------------------------------------------
 
-export function RHFUploadSingleFileBe({ name, placeholder, ...other }: Props) {
+export function RHFUploadSingleFileBe({ name, placeholder, disabled, ...other }: Props) {
   const { control, setValue } = useFormContext();
   const { user } = useAuth();
   const [uploading, setUploading] = useState(false);
@@ -85,6 +86,7 @@ export function RHFUploadSingleFileBe({ name, placeholder, ...other }: Props) {
             placeholder={placeholder ?? ''}
             file={field.value}
             error={checkError}
+            disabled={disabled}
             helperText={
               checkError && (
                 <FormHelperText error sx={{ px: 2 }}>

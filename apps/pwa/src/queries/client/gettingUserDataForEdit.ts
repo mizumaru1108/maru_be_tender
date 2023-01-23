@@ -1,6 +1,5 @@
 export const gettingUserDataForEdit = `query MyQuery($id: String = "") {
   user_by_pk(id: $id) {
-    email
     client_data {
       client_field
       entity
@@ -16,7 +15,6 @@ export const gettingUserDataForEdit = `query MyQuery($id: String = "") {
       phone
       twitter_acount
       website
-      email
       password
       license_number
       license_issue_date
@@ -36,6 +34,7 @@ export const gettingUserDataForEdit = `query MyQuery($id: String = "") {
       card_image
       id
     }
+    email
   }
 }
 `;

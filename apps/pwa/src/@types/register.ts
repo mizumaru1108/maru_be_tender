@@ -43,6 +43,9 @@ export type ConnectingValuesProps = {
   website: string;
   email: string;
   password: string;
+  new_password?: string;
+  old_password?: string;
+  confirm_password: string;
 };
 
 export type MainValuesProps = {

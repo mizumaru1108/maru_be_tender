@@ -13,9 +13,11 @@ import RHFSelectNoGenerator from '../../../../components/hook-form/RHFSelectNoGe
 type FormProps = {
   children?: React.ReactNode;
   onSubmit: (data: any) => void;
-  defaultValues: MainValuesProps;
+  // defaultValues: MainValuesProps;
+  defaultValues: any;
+  isEdit?: boolean;
 };
-const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) => {
+const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEdit }) => {
   const { translate } = useLocales();
   const RegisterSchema = Yup.object().shape({
     entity: Yup.string().required('Entity is required'),
@@ -58,10 +60,15 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7}>
         <Grid item md={12} xs={12}>
-          <RHFTextField name="entity" label={'اسم العميل'} placeholder={'الرجاء أدخل اسم العميل'} />
+          <RHFTextField
+            name="entity"
+            disabled={isEdit}
+            label={'اسم العميل'}
+            placeholder={'الرجاء أدخل اسم العميل'}
+          />
         </Grid>
         <Grid item md={12} xs={12}>
-          <RHFSelectNoGenerator name="client_field" label={'مجال الجهة'}>
+          <RHFSelectNoGenerator disabled={isEdit} name="client_field" label={'مجال الجهة'}>
             <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
               {translate('register_form1.entity_area.placeholder')}
             </option>
@@ -78,6 +85,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
             {client_field === 'main' && (
               <Grid item md={12} xs={12}>
                 <RHFSelectNoGenerator
+                  disabled={isEdit}
                   name="authority"
                   label={translate('register_form1.authority.label')}
                 >
@@ -114,6 +122,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
             {client_field === 'sub' && (
               <Grid item md={12} xs={12}>
                 <RHFTextField
+                  disabled={isEdit}
                   name="authority"
                   label={translate('register_form1.authority.label')}
                 />
@@ -123,6 +132,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
         )}
         <Grid item md={6} xs={12}>
           <RHFDatePicker
+            disabled={isEdit}
             name="date_of_esthablistmen"
             label={translate('register_form1.date_of_establishment.label')}
             placeholder={translate('register_form1.date_of_establishment.placeholder')}
@@ -135,6 +145,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFSelectNoGenerator
+            disabled={isEdit}
             name="headquarters"
             label={translate('register_form1.headquarters.label')}
           >
@@ -152,6 +163,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFTextField
+            disabled={isEdit}
             name="num_of_employed_facility"
             label={translate('register_form1.number_of_employees.label')}
             placeholder={translate('register_form1.number_of_employees.placeholder')}
@@ -159,6 +171,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFTextField
+            disabled={isEdit}
             name="num_of_beneficiaries"
             label={translate('register_form1.number_of_beneficiaries.label')}
             placeholder={translate('register_form1.number_of_beneficiaries.placeholder')}

@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { Button, Grid, Stack } from '@mui/material';
-import { FormProvider } from 'components/hook-form';
+import { FormProvider, RHFTextField } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import FormGenerator from 'components/FormGenerator';
@@ -11,9 +11,10 @@ type FormProps = {
   onSubmit: (data: any) => void;
   defaultValues: any;
   children?: React.ReactNode;
+  isEdit?: boolean;
 };
 
-const AdministrativeInfoForm = ({ onSubmit, defaultValues, children }: FormProps) => {
+const AdministrativeInfoForm = ({ onSubmit, defaultValues, children, isEdit }: FormProps) => {
   const RegisterSchema = Yup.object().shape({
     ceo_name: Yup.string().required('Executive Director is required'),
     ceo_mobile: Yup.string()
@@ -51,7 +52,47 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, children }: FormProps
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7}>
-        <FormGenerator data={AdministrativeInfoData} />
+        <Grid item md={6} xs={12}>
+          <RHFTextField
+            disabled={isEdit}
+            name="ceo_name"
+            label="register_form4.executive_director.label"
+            placeholder="register_form4.executive_director.placeholder"
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFTextField
+            disabled={isEdit}
+            name="ceo_mobile"
+            label="register_form4.executive_director_mobile.label"
+            placeholder="register_form4.executive_director_mobile.placeholder"
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFTextField
+            disabled={isEdit}
+            name="data_entry_name"
+            label="register_form4.entery_data_name.label"
+            placeholder="register_form4.entery_data_name.placeholder"
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFTextField
+            disabled={isEdit}
+            name="data_entry_mobile"
+            label="register_form4.entery_data_phone.label"
+            placeholder="register_form4.entery_data_phone.placeholder"
+          />
+        </Grid>
+        <Grid item md={12} xs={12}>
+          <RHFTextField
+            disabled={isEdit}
+            name="data_entry_mail"
+            label="register_form4.entery_data_email.label"
+            placeholder="register_form4.entery_data_email.placeholder"
+          />
+        </Grid>
+        {/* <FormGenerator data={AdministrativeInfoData} /> */}
         <Grid item md={12} xs={12}>
           {children}
         </Grid>

@@ -69,7 +69,7 @@ const BankingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
     let newBankAccNumber = getValues('bank_account_number');
 
     newBankAccNumber.substring(0, 2) !== 'SA'
-      ? (newBankAccNumber = 'SA'.concat(`${getValues('bank_account_number')}`))
+      ? (newBankAccNumber = 'SA'.concat(`${getValues('bank_account_number')}`).replace(/\s/g, ''))
       : (newBankAccNumber = getValues('bank_account_number'));
     newData = { ...newData, bank_account_number: newBankAccNumber };
     reset({ ...data });
@@ -78,7 +78,10 @@ const BankingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
   React.useEffect(() => {
     window.scrollTo(0, 0);
     let newValues = { ...defaultValues };
-    const newBankAccNumber = defaultValues.bank_account_number?.replace('SA', '');
+    // cleanedValue = cleanedValue.replace(/(.{4})/g, '$1 ');
+    const newBankAccNumber = defaultValues.bank_account_number
+      ?.replace('SA', '')
+      .replace(/(.{4})/g, '$1 ');
     newValues = { ...newValues, bank_account_number: newBankAccNumber };
     reset(newValues);
     // eslint-disable-next-line react-hooks/exhaustive-deps

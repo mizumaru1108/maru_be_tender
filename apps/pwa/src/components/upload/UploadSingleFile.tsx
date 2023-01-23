@@ -37,6 +37,7 @@ export default function UploadSingleFile({
   sx,
   placeholder,
   uploading,
+  disabled,
   onRemove,
   ...other
 }: Props) {
@@ -48,7 +49,7 @@ export default function UploadSingleFile({
     <Grid container spacing={file.url === '' ? 0 : 5} sx={{ width: '100%', ...sx }}>
       <Grid item md={file.url === '' ? 12 : 10} xs={file.url === '' ? 12 : 10}>
         <DropZoneStyle
-          {...getRootProps()}
+          {...(!disabled && getRootProps())}
           sx={{
             ...(isDragActive && { opacity: 0.72 }),
             ...((isDragReject || error) && {
@@ -133,6 +134,7 @@ export default function UploadSingleFile({
                 backgroundColor: '#FF170F',
               },
             }}
+            disabled={disabled}
             onClick={onRemove}
           >
             حذف

@@ -12,9 +12,10 @@ type FormProps = {
   children?: React.ReactNode;
   onSubmit: (data: any) => void;
   defaultValues: LicenseValuesProps;
+  isEdit?: boolean;
 };
 
-const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
+const LicenseInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProps) => {
   const { translate } = useLocales();
   const RegisterSchema = Yup.object().shape({
     license_number: Yup.string().required('License Number is required'),
@@ -102,6 +103,7 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
       <Grid container rowSpacing={4} columnSpacing={7}>
         <Grid item md={12} xs={12}>
           <RHFTextField
+            disabled={isEdit}
             name="license_number"
             label={translate('register_form3.license_number.label')}
             placeholder={translate('register_form3.license_number.placeholder')}
@@ -109,6 +111,7 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFDatePicker
+            disabled={isEdit}
             name="license_issue_date"
             label={translate('register_form3.license_issue_date.label')}
             placeholder={translate('register_form3.license_issue_date.placeholder')}
@@ -123,6 +126,7 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFDatePicker
+            disabled={isEdit}
             name="license_expired"
             label={translate('register_form3.license_expiry_date.label')}
             placeholder={translate('register_form3.license_expiry_date.placeholder')}
@@ -139,14 +143,20 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
           <BaseField type="uploadLabel" label="register_form3.license_file.label" />
         </Grid>
         <Grid item md={12} xs={12}>
-          <BaseField type="upload" name="license_file" label="register_form3.license_file.label" />
+          <BaseField
+            disabled={isEdit}
+            type="uploadBe"
+            name="license_file"
+            label="register_form3.license_file.label"
+          />
         </Grid>
         <Grid item md={12} xs={12}>
           <BaseField type="uploadLabel" label="register_form3.resolution_file.label" />
         </Grid>
         <Grid item md={12} xs={12}>
           <BaseField
-            type="upload"
+            disabled={isEdit}
+            type="uploadBe"
             name="board_ofdec_file"
             label="register_form3.resolution_file.label"
           />

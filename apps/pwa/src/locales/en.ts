@@ -513,6 +513,18 @@ const en = {
       title: 'كلمة السر*',
       placeholder: 'كلمة السر',
     },
+    new_password: {
+      title: 'كلمة السر الجديدة*',
+      placeholder: 'كلمة السر الجديدة',
+    },
+    old_password: {
+      title: 'كلمة السر القديمة*',
+      placeholder: 'كلمة السر القديمة',
+    },
+    confirm_password: {
+      title: 'تأكيد كلمة السر*',
+      placeholder: 'تأكيد كلمة السر',
+    },
   },
   register_form3: {
     license_number: {

@@ -16,6 +16,9 @@ export interface FileProp {
   url: string;
   size: number | undefined;
   type: string;
+  base64Data?: string;
+  fileExtension?: string;
+  fullName?: string;
 }
 
 export interface UploadProps extends DropzoneOptions {
