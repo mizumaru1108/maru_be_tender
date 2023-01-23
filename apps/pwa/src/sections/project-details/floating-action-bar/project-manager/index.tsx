@@ -11,15 +11,22 @@ import * as React from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useSnackbar } from 'notistack';
-import { nanoid } from 'nanoid';
 import { updateProposalByProjectManager } from 'queries/project-manager/updateProposalByProjectManager';
 import { UpdateAction } from '../../../../@types/project-details';
 import NotesModal from 'components/notes-modal';
+import { LoadingButton } from '@mui/lab';
+
+//
+import axiosInstance from 'utils/axios';
 
 function FloatingActionBar() {
   const { id: proposal_id } = useParams();
 
-  const { user } = useAuth();
+  const { user, activeRole } = useAuth();
+
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isSubmittingRejected, setIsSubmittingRejected] = useState<boolean>(false);
+  const [isSubmittingStepback, setIsSubmittingStepback] = useState<boolean>(false);
 
   const employee_id = user?.id;
 
@@ -65,140 +72,295 @@ function FloatingActionBar() {
     setAction('');
   };
 
-  const handleApproval = (values: any) => {
-    update({
-      proposal_id,
-      new_values: {
-        inner_status: 'ACCEPTED_BY_PROJECT_MANAGER',
-        outter_status: 'ONGOING',
-        state: 'CEO',
-      },
-      log: {
-        id: nanoid(),
-        proposal_id,
-        reviewer_id: user?.id!,
+  const handleApproval = async (values: any) => {
+    setIsSubmitting(true);
+
+    try {
+      const payload = {
+        proposal_id: proposal_id,
         action: 'accept',
         message: 'تم قبول المشروع من قبل مدير المشاريع ',
         notes: values.notes,
-        user_role: 'PROJECT_MANAGER',
-        state: 'PROJECT_MANAGER',
-      },
-    }).then((res) => {
-      if (res.error) {
-        enqueueSnackbar(res.error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
+      };
+
+      console.log('payloadApprovalGeneralPM', payload);
+
+      await axiosInstance
+        .patch('/tender-proposal/change-state', payload, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            enqueueSnackbar(translate('proposal_approved'), {
+              variant: 'success',
+            });
+          }
+
+          setIsSubmitting(false);
+          navigate(`/project-manager/dashboard/app`);
+        })
+        .catch((err) => {
+          if (typeof err.message === 'object') {
+            err.message.forEach((el: any) => {
+              enqueueSnackbar(el, {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            });
+          } else {
+            enqueueSnackbar(err.message, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
+          }
+
+          setIsSubmitting(false);
         });
-      } else {
-        enqueueSnackbar(translate('proposal_approved'), {
-          variant: 'success',
-        });
-        navigate(`/project-manager/dashboard/app`);
-      }
-    });
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+
+      setIsSubmitting(false);
+    }
   };
 
-  const handleApprovalConsultant = (values: any) => {
-    update({
-      proposal_id,
-      new_values: {
-        inner_status: 'ACCEPTED_AND_NEED_CONSULTANT',
-        outter_status: 'ONGOING',
-        state: 'CONSULTANT',
-      },
-      log: {
-        id: nanoid(),
-        proposal_id,
-        reviewer_id: user?.id!,
+  const handleApprovalConsultant = async (values: any) => {
+    setIsSubmitting(true);
+
+    try {
+      const payload = {
+        proposal_id: proposal_id,
         action: 'accept',
         message: 'تم قبول المشروع من قبل مدير المشاريع وإحالته إلى قسم الاستشاريين ',
         notes: values.notes,
-        user_role: 'PROJECT_MANAGER',
-        state: 'PROJECT_MANAGER',
-      },
-    }).then((res) => {
-      if (res.error) {
-        enqueueSnackbar(res.error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
+      };
+
+      console.log('payloadApprovalConsultant', payload);
+
+      await axiosInstance
+        .patch('/tender-proposal/change-state', payload, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            enqueueSnackbar(translate('proposal_approved'), {
+              variant: 'success',
+            });
+          }
+
+          setIsSubmitting(false);
+          navigate(`/project-manager/dashboard/app`);
+        })
+        .catch((err) => {
+          if (typeof err.message === 'object') {
+            err.message.forEach((el: any) => {
+              enqueueSnackbar(el, {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            });
+          } else {
+            enqueueSnackbar(err.message, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
+          }
+
+          setIsSubmitting(false);
         });
-      } else {
-        enqueueSnackbar(translate('تم إرسال طلب الاستشارة بنجاح'), {
-          variant: 'success',
-        });
-        navigate(`/project-manager/dashboard/app`);
-      }
-    });
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+
+      setIsSubmitting(false);
+    }
+    // update({
+    //   proposal_id,
+    //   new_values: {
+    //     inner_status: 'ACCEPTED_AND_NEED_CONSULTANT',
+    //     outter_status: 'ONGOING',
+    //     state: 'CONSULTANT',
+    //   },
+    //   log: {
+    //     id: nanoid(),
+    //     proposal_id,
+    //     reviewer_id: user?.id!,
+    //     action: 'accept',
+    //     message: 'تم قبول المشروع من قبل مدير المشاريع وإحالته إلى قسم الاستشاريين ',
+    //     notes: values.notes,
+    //     user_role: 'PROJECT_MANAGER',
+    //     state: 'PROJECT_MANAGER',
+    //   },
+    // }).then((res) => {
+    //   if (res.error) {
+    //     enqueueSnackbar(res.error.message, {
+    //       variant: 'error',
+    //       preventDuplicate: true,
+    //       autoHideDuration: 3000,
+    //     });
+    //   } else {
+    //     enqueueSnackbar(translate('تم إرسال طلب الاستشارة بنجاح'), {
+    //       variant: 'success',
+    //     });
+    //     navigate(`/project-manager/dashboard/app`);
+    //   }
+    // });
   };
 
-  const handleRejected = (values: any) => {
-    update({
-      proposal_id,
-      new_values: {
-        inner_status: 'REJECTED',
-        outter_status: 'CANCELED',
-        state: 'PROJECT_MANAGER',
-      },
-      log: {
-        id: nanoid(),
-        proposal_id,
-        reviewer_id: user?.id!,
-        action: 'rejected',
+  const handleRejected = async (values: any) => {
+    setIsSubmittingRejected(true);
+
+    try {
+      const payload = {
+        proposal_id: proposal_id,
+        action: 'reject',
         message: 'تم رفض المشروع من قبل مدير المشاريع',
         notes: values.notes,
-        user_role: 'PROJECT_MANAGER',
-        state: 'PROJECT_MANAGER',
-      },
-    }).then((res) => {
-      if (res.error) {
-        enqueueSnackbar(res.error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
+        reject_reason: values.reject_reason ?? null,
+      };
+
+      console.log('payloadRejectPM', payload);
+
+      await axiosInstance
+        .patch('/tender-proposal/change-state', payload, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            enqueueSnackbar(translate('proposal_rejected'), {
+              variant: 'success',
+            });
+          }
+
+          setIsSubmittingRejected(false);
+          navigate(`/project-manager/dashboard/app`);
+        })
+        .catch((err) => {
+          if (typeof err.message === 'object') {
+            err.message.forEach((el: any) => {
+              enqueueSnackbar(el, {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            });
+          } else {
+            enqueueSnackbar(err.message, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
+          }
+
+          setIsSubmittingRejected(false);
         });
-      } else {
-        enqueueSnackbar(translate('proposal_rejected'), {
-          variant: 'success',
-        });
-        navigate(`/project-manager/dashboard/app`);
-      }
-    });
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+
+      setIsSubmittingRejected(false);
+    }
   };
 
-  const stepBackProposal = () => {
-    update({
-      proposal_id,
-      new_values: {
-        inner_status: 'ACCEPTED_BY_MODERATOR',
-        outter_status: 'ONGOING',
-        state: 'PROJECT_SUPERVISOR',
-        project_manager_id: null,
-      },
-      log: {
-        id: nanoid(),
-        proposal_id,
-        reviewer_id: user?.id!,
+  const stepBackProposal = async (values: any) => {
+    setIsSubmittingStepback(true);
+
+    try {
+      const payload = {
+        proposal_id: proposal_id,
         action: 'step_back',
         message: 'تم إرجاع المشروع خطوة للوراء',
-        user_role: 'PROJECT_MANAGER',
-        state: 'PROJECT_MANAGER',
-      },
-    }).then((res) => {
-      if (res.error) {
-        enqueueSnackbar(res.error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
+        notes: values.notes,
+      };
+
+      console.log('payloadStepbackToSupervisor', payload);
+
+      await axiosInstance
+        .patch('/tender-proposal/change-state', payload, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            enqueueSnackbar(translate('proposal_stepback'), {
+              variant: 'success',
+            });
+          }
+
+          setIsSubmittingStepback(true);
+          navigate(`/project-manager/dashboard/app`);
+        })
+        .catch((err) => {
+          if (typeof err.message === 'object') {
+            err.message.forEach((el: any) => {
+              enqueueSnackbar(el, {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            });
+          } else {
+            enqueueSnackbar(err.message, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
+          }
+
+          setIsSubmittingStepback(true);
         });
-      } else {
-        enqueueSnackbar('تم إرجاع المعاملة لمشرف المشروع بنجاح', {
-          variant: 'success',
-        });
-        navigate(`/project-manager/dashboard/app`);
-      }
-    });
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+
+      setIsSubmittingStepback(true);
+    }
+    // update({
+    //   proposal_id,
+    //   new_values: {
+    //     inner_status: 'ACCEPTED_BY_MODERATOR',
+    //     outter_status: 'ONGOING',
+    //     state: 'PROJECT_SUPERVISOR',
+    //     project_manager_id: null,
+    //   },
+    //   log: {
+    //     id: nanoid(),
+    //     proposal_id,
+    //     reviewer_id: user?.id!,
+    //     action: 'step_back',
+    //     message: 'تم إرجاع المشروع خطوة للوراء',
+    //     user_role: 'PROJECT_MANAGER',
+    //     state: 'PROJECT_MANAGER',
+    //   },
+    // }).then((res) => {
+    //   if (res.error) {
+    //     enqueueSnackbar(res.error.message, {
+    //       variant: 'error',
+    //       preventDuplicate: true,
+    //       autoHideDuration: 3000,
+    //     });
+    //   } else {
+    //     enqueueSnackbar('تم إرجاع المعاملة لمشرف المشروع بنجاح', {
+    //       variant: 'success',
+    //     });
+    //     navigate(`/project-manager/dashboard/app`);
+    //   }
+    // });
   };
 
   if (fetching) return <>... Loading</>;
@@ -220,7 +382,7 @@ function FloatingActionBar() {
       >
         <Grid container rowSpacing={5} alignItems="center" justifyContent="space-around">
           <Grid item md={5} xs={12}>
-            <Button
+            <LoadingButton
               id="demo-positioned-button"
               aria-controls={open ? 'demo-positioned-menu' : undefined}
               aria-haspopup="true"
@@ -233,9 +395,10 @@ function FloatingActionBar() {
                 '&:hover': { backgroundColor: '#1482FE' },
               }}
               onClick={handleClick}
+              loading={isSubmittingStepback}
             >
               {translate('partner_details.submit_amendment_request')}
-            </Button>
+            </LoadingButton>
             <Menu
               id="demo-positioned-menu"
               aria-labelledby="demo-positioned-button"
@@ -252,13 +415,19 @@ function FloatingActionBar() {
               }}
             >
               <MenuItem
-                onClick={() =>
-                  navigate(`/project-manager/dashboard/amandment-request/${proposal_id}`)
-                }
+                onClick={() => {
+                  navigate(`/project-manager/dashboard/amandment-request/${proposal_id}`);
+                  handleClose();
+                }}
               >
                 {translate('proposal_amandement.button_label')}
               </MenuItem>
-              <MenuItem onClick={() => setAction('STEP_BACK')}>
+              <MenuItem
+                onClick={() => {
+                  handleClose();
+                  setAction('STEP_BACK');
+                }}
+              >
                 ارجاع المعاملة الى مشرف المشاريع
               </MenuItem>
             </Menu>
@@ -270,24 +439,26 @@ function FloatingActionBar() {
           )}
           <Grid item md={data.user.track === 'CONCESSIONAL_GRANTS' ? 7 : 4} xs={12}>
             <Stack direction="row" gap={2} justifyContent="space-around">
-              <Button
+              <LoadingButton
                 onClick={() => setAction('ACCEPT')}
                 variant="contained"
                 color="primary"
                 endIcon={<CheckIcon />}
                 sx={{ flex: 1, '&:hover': { backgroundColor: '#13B2A2' } }}
+                loading={isSubmitting}
               >
                 قبول المشروع
-              </Button>
-              <Button
+              </LoadingButton>
+              <LoadingButton
                 sx={{ flex: 1, '&:hover': { backgroundColor: '#FF170F' } }}
                 variant="contained"
                 color="error"
                 onClick={() => setAction('REJECT')}
                 endIcon={<ClearIcon />}
+                loading={isSubmittingRejected}
               >
                 {translate('reject_project')}
-              </Button>
+              </LoadingButton>
               {data.user.track === 'CONCESSIONAL_GRANTS' && (
                 <Button
                   variant="outlined"
@@ -308,7 +479,13 @@ function FloatingActionBar() {
           title="رفض المشروع"
           onClose={handleCloseModal}
           onSubmit={handleRejected}
-          action={{ actionLabel: 'رفض', backgroundColor: '#FF0000', hoverColor: '#FF4842' }}
+          action={{
+            actionType: action,
+            actionLabel: 'رفض',
+            backgroundColor: '#FF0000',
+            hoverColor: '#FF4842',
+          }}
+          loading={isSubmittingRejected}
         />
       )}
       {action === 'STEP_BACK' && (
@@ -316,7 +493,13 @@ function FloatingActionBar() {
           title="إرجاع المعاملة إلى مشرف المشروع"
           onClose={handleCloseModal}
           onSubmit={stepBackProposal}
-          action={{ actionLabel: 'إرجاع', backgroundColor: '#0169DE', hoverColor: '#1482FE' }}
+          action={{
+            actionType: action,
+            actionLabel: 'إرجاع',
+            backgroundColor: '#0169DE',
+            hoverColor: '#1482FE',
+          }}
+          loading={isSubmittingStepback}
         />
       )}
       {action === 'ACCEPT' && (
@@ -325,10 +508,12 @@ function FloatingActionBar() {
           onClose={handleCloseModal}
           onSubmit={handleApproval}
           action={{
+            actionType: action,
             actionLabel: 'قبول',
             backgroundColor: 'background.paper',
             hoverColor: '#13B2A2',
           }}
+          loading={isSubmitting}
         />
       )}
       {action === 'ACCEPT_CONSULTANT' && (
@@ -337,10 +522,12 @@ function FloatingActionBar() {
           onClose={handleCloseModal}
           onSubmit={handleApprovalConsultant}
           action={{
+            actionType: action,
             actionLabel: 'تأكيد طلب الاستشارة',
             backgroundColor: 'background.paper',
             hoverColor: '#13B2A2',
           }}
+          loading={isSubmitting}
         />
       )}
     </>

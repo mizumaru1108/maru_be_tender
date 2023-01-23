@@ -10,6 +10,7 @@ interface ActionPropos {
   backgroundColor: string;
   hoverColor: string;
   actionLabel: string;
+  actionType?: string;
 }
 
 interface Propos {
@@ -27,12 +28,12 @@ interface FormInput {
 
 function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
   const validationSchema = Yup.object().shape({
-    reject_reason: Yup.string().required(),
+    ...(action.actionType === 'REJECT' && { reject_reason: Yup.string().required() }),
     notes: Yup.string().required(),
   });
 
   const defaultValues = {
-    reject_reason: '',
+    ...(action.actionType === 'REJECT' && { reject_reason: '' }),
     notes: '',
   };
 
@@ -63,36 +64,38 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
         }
         content={
           <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
-            <Grid item md={12} xs={12}>
-              <RHFSelect
-                name="reject_reason"
-                size="small"
-                label="سبب الرفض *"
-                placeholder="الرجاء اختيار سبب المشروع المرفوض"
-              >
-                <MenuItem value="تكرار المشروع">تكرار المشروع</MenuItem>
-                <MenuItem value="ارتفاع التكاليف">ارتفاع التكاليف</MenuItem>
-                <MenuItem value="ضعف الجهة">ضعف الجهة</MenuItem>
-                <MenuItem value="عدم اختصاص الجهة">عدم اختصاص الجهة</MenuItem>
-                <MenuItem value="عدم تفاعل الجهة">عدم تفاعل الجهة</MenuItem>
-                <MenuItem value="عدم وجود بند">عدم وجود بند</MenuItem>
-                <MenuItem value="انتهاء الموازنة المخصصة للبند">
-                  انتهاء الموازنة المخصصة للبند
-                </MenuItem>
-                <MenuItem value="عدم وجود عروض أسعار كافية">عدم وجود عروض أسعار كافية</MenuItem>
-                <MenuItem value="الجهة غير حاصلة على شهادة الحوكمة">
-                  الجهة غير حاصلة على شهادة الحوكمة
-                </MenuItem>
-                <MenuItem value="المشروع غير متوافق مع احتياج المستفيدين">
-                  المشروع غير متوافق مع احتياج المستفيدين
-                </MenuItem>
-                <MenuItem value="لا يوجد دراسة احتياج للمشروع">
-                  لا يوجد دراسة احتياج للمشروع
-                </MenuItem>
-                <MenuItem value="المشروع ينقصه موافقة رسمية">المشروع ينقصه موافقة رسمية</MenuItem>
-                <MenuItem value="أخرى">أخرى</MenuItem>
-              </RHFSelect>
-            </Grid>
+            {action.actionType && action.actionType === 'REJECT' ? (
+              <Grid item md={12} xs={12}>
+                <RHFSelect
+                  name="reject_reason"
+                  size="small"
+                  label="سبب الرفض *"
+                  placeholder="الرجاء اختيار سبب المشروع المرفوض"
+                >
+                  <MenuItem value="تكرار المشروع">تكرار المشروع</MenuItem>
+                  <MenuItem value="ارتفاع التكاليف">ارتفاع التكاليف</MenuItem>
+                  <MenuItem value="ضعف الجهة">ضعف الجهة</MenuItem>
+                  <MenuItem value="عدم اختصاص الجهة">عدم اختصاص الجهة</MenuItem>
+                  <MenuItem value="عدم تفاعل الجهة">عدم تفاعل الجهة</MenuItem>
+                  <MenuItem value="عدم وجود بند">عدم وجود بند</MenuItem>
+                  <MenuItem value="انتهاء الموازنة المخصصة للبند">
+                    انتهاء الموازنة المخصصة للبند
+                  </MenuItem>
+                  <MenuItem value="عدم وجود عروض أسعار كافية">عدم وجود عروض أسعار كافية</MenuItem>
+                  <MenuItem value="الجهة غير حاصلة على شهادة الحوكمة">
+                    الجهة غير حاصلة على شهادة الحوكمة
+                  </MenuItem>
+                  <MenuItem value="المشروع غير متوافق مع احتياج المستفيدين">
+                    المشروع غير متوافق مع احتياج المستفيدين
+                  </MenuItem>
+                  <MenuItem value="لا يوجد دراسة احتياج للمشروع">
+                    لا يوجد دراسة احتياج للمشروع
+                  </MenuItem>
+                  <MenuItem value="المشروع ينقصه موافقة رسمية">المشروع ينقصه موافقة رسمية</MenuItem>
+                  <MenuItem value="أخرى">أخرى</MenuItem>
+                </RHFSelect>
+              </Grid>
+            ) : null}
             <Grid item md={12} xs={12}>
               <RHFTextField
                 multiline

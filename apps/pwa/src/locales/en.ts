@@ -47,6 +47,30 @@ const en = {
         empty_add_comment_followup: 'Add a comment or upload a file',
       },
     },
+    administrative: {
+      project_details: {
+        payment: {
+          heading: {
+            exchange_information: 'Exchange Authorization Information',
+            project_budget: 'Project Budget',
+            iban: 'Iban',
+            registered_payments: 'The number of registered payments',
+            total_budget: 'The total budget of the project',
+            split_payments: 'Split payments',
+          },
+          table: {
+            td: {
+              batch_no: 'Batch no',
+              payment_no: 'Payment no',
+              batch_date: 'Batch date',
+            },
+            btn: {
+              review_transfer_receipt: 'Review the transfer receipt',
+            },
+          },
+        },
+      },
+    },
     messages: {
       btn: {
         create_new_message: 'Create a New Message',
@@ -977,6 +1001,7 @@ const en = {
   },
   proposal_approved: 'The project has been successfully accepted',
   proposal_rejected: 'The project was successfully rejected',
+  proposal_stepback: 'The project has been change status',
   view_all: 'view all',
   // PORTAL REPORTS
   ceo_portal_reports: {

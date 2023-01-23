@@ -18,6 +18,8 @@ import {
   ListItemButton,
   Stack,
   Tab,
+  Alert,
+  Snackbar,
 } from '@mui/material';
 // utils
 import { fToNow } from '../../../utils/formatTime';
@@ -92,6 +94,8 @@ export default function MessagePopover() {
   const [open, setOpen] = useState<HTMLElement | null>(null);
   const [activeTap, setActiveTap] = useState('1');
 
+  const [openAlert, setOpenAlert] = useState(true);
+
   const { user, activeRole } = useAuth();
 
   let currentSubcription: any;
@@ -140,7 +144,14 @@ export default function MessagePopover() {
   useEffect(() => {}, [data]);
 
   if (fetching) return <>.. Loading</>;
-  if (error) return <Page500 error={error.message} />;
+
+  const handleCloseAlert = () => {
+    setOpenAlert(false);
+  };
+
+  if (error) {
+    setOpenAlert(true);
+  }
 
   const oneDay = 24 * 60 * 60 * 1000;
   const oneDayAgo = Date.now() - oneDay;
@@ -184,6 +195,16 @@ export default function MessagePopover() {
 
   return (
     <>
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        open={openAlert}
+        autoHideDuration={6000}
+        onClose={handleCloseAlert}
+      >
+        <Alert severity="error" onClose={handleCloseAlert} sx={{ width: '100%' }}>
+          ...Opss, in message popover component something went wrong
+        </Alert>
+      </Snackbar>
       <IconButtonAnimate onClick={handleOpen} sx={{ width: 40, height: 40 }}>
         {totalUnRead > 0 ? (
           <Badge badgeContent={totalUnRead} color="primary">

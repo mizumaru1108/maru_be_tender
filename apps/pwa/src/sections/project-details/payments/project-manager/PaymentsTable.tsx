@@ -5,6 +5,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useSnackbar } from 'notistack';
 import { updatePaymentBySupervisorAndManagerAndFinance } from 'redux/slices/proposal';
 import React from 'react';
+import useLocales from 'hooks/useLocales';
+import { fCurrencyNumber } from 'utils/formatNumber';
 
 function PaymentsTable() {
   const { enqueueSnackbar } = useSnackbar();
@@ -12,6 +14,8 @@ function PaymentsTable() {
   const dispatch = useDispatch();
 
   const { proposal } = useSelector((state) => state.proposal);
+
+  const { translate } = useLocales();
 
   const handleApprovalPayment = async (id: string) => {
     try {
@@ -75,19 +79,28 @@ function PaymentsTable() {
         <Grid item md={12} key={index} sx={{ mb: '20px' }}>
           <Grid container direction="row" key={index}>
             <Grid item md={2}>
-              <Typography variant="h6">{`الدفعة رقم ${item.order}`}</Typography>
+              <Typography variant="h6">
+                <Typography component="span">
+                  {translate('content.administrative.project_details.payment.table.td.batch_no')}
+                </Typography>
+                <Typography component="span">&nbsp;{item.order}</Typography>
+              </Typography>
             </Grid>
             <Grid item md={2}>
               <Stack direction="column">
-                <Typography sx={{ color: '#93A3B0' }}>مبلغ الدفعة:</Typography>
+                <Typography sx={{ color: '#93A3B0' }}>
+                  {translate('content.administrative.project_details.payment.table.td.payment_no')}:
+                </Typography>
                 <Typography sx={{ color: '#1E1E1E' }} variant="h6">
-                  {item.payment_amount}
+                  {fCurrencyNumber(item.payment_amount)}
                 </Typography>
               </Stack>
             </Grid>
             <Grid item md={2}>
               <Stack direction="column">
-                <Typography sx={{ color: '#93A3B0' }}>تاريخ الدفعة:</Typography>
+                <Typography sx={{ color: '#93A3B0' }}>
+                  {translate('content.administrative.project_details.payment.table.td.batch_date')}:
+                </Typography>
                 <Typography sx={{ color: '#1E1E1E' }} variant="h6">
                   {new Date(item.payment_date).toISOString().substring(0, 10)}
                 </Typography>
@@ -107,7 +120,9 @@ function PaymentsTable() {
                     textDecorationLine: 'underline',
                   }}
                 >
-                  استعراض ايصال التحويل
+                  {translate(
+                    'content.administrative.project_details.payment.table.btn.review_transfer_receipt'
+                  )}
                 </Button>
               </Grid>
             )}

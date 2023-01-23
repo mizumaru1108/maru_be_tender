@@ -18,6 +18,8 @@ import {
   ListItemButton,
   Stack,
   Tab,
+  Alert,
+  Snackbar,
 } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 // utils
@@ -86,6 +88,8 @@ export default function NotificationsPopover() {
 
   const [open, setOpen] = useState<HTMLElement | null>(null);
 
+  const [openAlert, setOpenAlert] = useState(true);
+
   const { user, activeRole } = useAuth();
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -120,7 +124,6 @@ export default function NotificationsPopover() {
   useEffect(() => {}, [data]);
 
   if (fetching) return <>.. Loading</>;
-  if (error) return <Page500 error={error.message} />;
 
   const handleClose = () => {
     setOpen(null);
@@ -187,6 +190,14 @@ export default function NotificationsPopover() {
     }
   });
 
+  const handleCloseAlert = () => {
+    setOpenAlert(false);
+  };
+
+  if (error) {
+    setOpenAlert(true);
+  }
+
   // console.log('RESULT', data);
   // console.log('Subcription', currentSubcription);
   // console.log('ROLE', activeRole);
@@ -195,6 +206,16 @@ export default function NotificationsPopover() {
 
   return (
     <>
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        open={openAlert}
+        autoHideDuration={6000}
+        onClose={handleCloseAlert}
+      >
+        <Alert severity="error" onClose={handleCloseAlert} sx={{ width: '100%' }}>
+          ...Opss, in notification popover component something went wrong
+        </Alert>
+      </Snackbar>
       <IconButtonAnimate onClick={handleOpen} sx={{ width: 40, height: 40 }}>
         {notifCount?.data?.notification_aggregate?.aggregate?.count > 0 ? (
           <Badge

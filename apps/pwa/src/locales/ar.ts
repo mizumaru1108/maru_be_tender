@@ -47,6 +47,31 @@ const ar = {
         empty_add_comment_followup: 'قم بإضافة تعليق او رفع ملف',
       },
     },
+    administrative: {
+      project_details: {
+        payment: {
+          heading: {
+            exchange_information: 'معلومات إذن الصرف',
+            project_budget: 'ميزانية المشروع',
+            iban: 'الأيبان',
+            registered_payments: 'عدد الدفعات المسجلة',
+            total_budget: 'الميزانية الكلية للمشروع',
+            amount_spent: 'المبلغ المصروف',
+            split_payments: 'تقسيم الدفعات',
+          },
+          table: {
+            td: {
+              batch_no: 'الدفعة رقم',
+              payment_no: 'مبلغ الدفعة',
+              batch_date: 'تاريخ الدفعة',
+            },
+            btn: {
+              review_transfer_receipt: 'استعراض ايصال التحويل',
+            },
+          },
+        },
+      },
+    },
     messages: {
       btn: {
         create_new_message: 'أنشئ رسالة جديدة',
@@ -1013,6 +1038,7 @@ const ar = {
   },
   proposal_approved: 'تم قبول الطلب بنجاح',
   proposal_rejected: 'تم رفض الطلب بنجاح',
+  proposal_stepback: 'تم تغيير حالة المشروع',
 
   // PORTAL REPORTS
   ceo_portal_reports: {

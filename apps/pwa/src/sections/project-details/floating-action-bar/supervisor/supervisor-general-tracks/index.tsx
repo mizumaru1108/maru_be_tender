@@ -128,6 +128,8 @@ function FloatingActionBar() {
         preventDuplicate: true,
         autoHideDuration: 3000,
       });
+
+      setIsSubmitting(false);
     }
   };
 
@@ -184,6 +186,8 @@ function FloatingActionBar() {
         preventDuplicate: true,
         autoHideDuration: 3000,
       });
+
+      setIsSubmittingRejected(true);
     }
   };
 
@@ -406,7 +410,12 @@ function FloatingActionBar() {
           onClose={handleCloseModal}
           onSubmit={handleRejected}
           loading={isSubmittingRejected}
-          action={{ actionLabel: 'رفض', backgroundColor: '#FF0000', hoverColor: '#FF4842' }}
+          action={{
+            actionType: action,
+            actionLabel: 'رفض',
+            backgroundColor: '#FF0000',
+            hoverColor: '#FF4842',
+          }}
         />
       )}
       {action === 'ACCEPT' && (
@@ -421,7 +430,12 @@ function FloatingActionBar() {
           title="إرجاع المعاملة إلى مسؤول الفرز"
           onClose={handleCloseModal}
           onSubmit={stepBackProposal}
-          action={{ actionLabel: 'إرجاع', backgroundColor: '#0169DE', hoverColor: '#1482FE' }}
+          action={{
+            actionType: action,
+            actionLabel: 'إرجاع',
+            backgroundColor: '#0169DE',
+            hoverColor: '#1482FE',
+          }}
         />
       )}
       {action === 'PENDING_REQUEST' && (
