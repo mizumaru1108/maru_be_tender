@@ -50,7 +50,7 @@ function ProjectDetailsMainPage() {
         </Button>
         <ProjectStatus />
       </Stack>
-      <Stack direction="row" justifyContent="space-between">
+      <Stack direction="column" justifyContent="space-between">
         <Typography
           variant="h4"
           sx={{
@@ -58,6 +58,11 @@ function ProjectDetailsMainPage() {
           }}
         >
           {proposal.project_name}
+        </Typography>
+        <Typography sx={{ color: '#93A3B0', fontSize: '14px' }}>
+          {` Created by ${proposal.user.employee_name} - ${new Date(
+            proposal.created_at
+          ).toLocaleString()}`}
         </Typography>
         {actionType && actionType !== 'show-project' && <FollowUpsAction />}
       </Stack>

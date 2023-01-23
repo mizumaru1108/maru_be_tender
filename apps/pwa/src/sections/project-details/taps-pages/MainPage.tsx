@@ -40,6 +40,7 @@ function MainPage() {
     navigate(`${url}/current-project/${id}/owner/${submiterId}`);
     // console.log({ url, destination });
   };
+  console.log(proposal, 'PROPOSALs');
   return (
     <Box sx={{ display: 'flex', gap: 3, flexDirection: 'column' }}>
       <Stack direction="row" gap={6}>
@@ -220,7 +221,8 @@ function MainPage() {
                   {translate('project_owner_details.card_title')}
                 </Typography>
                 <Typography sx={{ color: '#0E8478', fontSize: '12px', mb: '5px', fontWeight: 700 }}>
-                  {translate('project_owner_details.card_content')}
+                  {/* {translate('project_owner_details.card_content')} */}
+                  {proposal.user.employee_name}
                 </Typography>
                 <Typography
                   sx={{
