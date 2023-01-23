@@ -31,7 +31,7 @@ import { sub } from 'date-fns';
 import useLocales from '../../../hooks/useLocales';
 import useAuth from 'hooks/useAuth';
 import { useSubscription } from 'urql';
-import { subNotification } from 'queries/commons/subNotification';
+import { subNotification, subNotificationClient } from 'queries/commons/subNotification';
 import { notificationCount } from 'queries/commons/subNotificationCount';
 import Page500 from 'pages/Page500';
 import { useLocation, useNavigate } from 'react-router';
@@ -58,8 +58,24 @@ type NotificationItemProps = {
   content: string;
   read_status: boolean;
   created_at: Date;
+  type: string;
   proposal: {
     id: string;
+  };
+  appointment: {
+    id: string;
+    calendar_url: string;
+    meeting_url: string;
+    client: {
+      id: string;
+      employee_name: string;
+      email: string;
+      created_at: string;
+      client_data: {
+        entity: string;
+        authority: string;
+      };
+    };
   };
 };
 
@@ -76,6 +92,8 @@ export default function NotificationsPopover() {
     setOpen(event.currentTarget);
   };
 
+  let currentSubcription: any;
+
   const [result] = useSubscription({
     query: subNotification,
     variables: { user_id: user?.id },
@@ -86,7 +104,18 @@ export default function NotificationsPopover() {
     variables: { user_id: user?.id },
   });
 
-  const { data, fetching, error } = result;
+  const [clientNotification] = useSubscription({
+    query: subNotificationClient,
+    variables: { user_id: user?.id },
+  });
+
+  if (activeRole === 'tender_client' || activeRole === 'tender_project_supervisor') {
+    currentSubcription = clientNotification;
+  } else {
+    currentSubcription = result;
+  }
+
+  const { data, fetching, error } = currentSubcription;
 
   useEffect(() => {}, [data]);
 
@@ -159,6 +188,7 @@ export default function NotificationsPopover() {
   });
 
   // console.log('RESULT', data);
+  // console.log('Subcription', currentSubcription);
   // console.log('ROLE', activeRole);
   // console.log('USER', user?.id);
   // console.log('notif Count', notifCount);
@@ -394,9 +424,11 @@ function NotificationItem({
 
   const createdAt = new Date(notification.created_at);
 
-  // const fiveMinSoon = 5 * 60 * 1000;
+  const fiveMinSoon = 5 * 60 * 1000;
   // const createdAtMeeting = new Date(data?.appointment?.created_at);
   // const getTimeMeeting = Date.now() - createdAtMeeting.getTime();
+
+  const getTimeMeeting = (createdAtMeeting: any) => Date.now() - createdAtMeeting.getTime();
 
   const handleNavigateProject = async (id: string, notificationId: string) => {
     await axiosInstance.patch(
@@ -411,6 +443,21 @@ function NotificationItem({
 
     const x = location.pathname.split('/');
     navigate(`/${x[1] + '/' + x[2]}/previous-funding-requests/${id}/show-details`);
+  };
+
+  const handleNavigateAppointment = async (id: string, notificationId: string) => {
+    await axiosInstance.patch(
+      'tender/notification/read',
+      {
+        notificationId: notificationId,
+      },
+      {
+        headers: { 'x-hasura-role': activeRole! },
+      }
+    );
+
+    const x = location.pathname.split('/');
+    navigate(`/${x[1] + '/' + x[2]}/appointments`);
   };
 
   return (
@@ -445,8 +492,8 @@ function NotificationItem({
                     >
                       {fToNow(notification.created_at)}
                     </Typography>
-                    {notification.proposal && (
-                      <Stack direction="row" justifyContent="start">
+                    <Stack direction="row" justifyContent="start">
+                      {notification.type === 'PROPOSAL' && (
                         <Button
                           style={{ textAlign: 'start', color: 'green' }}
                           onClick={() =>
@@ -455,6 +502,58 @@ function NotificationItem({
                         >
                           Go to Project
                         </Button>
+                      )}
+                      {notification.type === 'APPOINTMENT' && (
+                        <Button
+                          style={{ textAlign: 'start', color: 'blue' }}
+                          onClick={() =>
+                            handleNavigateAppointment(notification.appointment.id, notification.id)
+                          }
+                        >
+                          See the Appointment
+                        </Button>
+                      )}
+                    </Stack>
+                  </Stack>
+                }
+              />
+            </ListItemButton>
+          )}
+          {/* ---------------------------End Project Today Item--------------------------- */}
+          {notification?.appointment && getTimeMeeting(notification?.created_at) <= fiveMinSoon && (
+            <ListItemButton
+              sx={{
+                py: 1.5,
+                px: 2.5,
+                mt: '1px',
+              }}
+            >
+              <ListItemText
+                primary={'Your appointment will starting soon!'}
+                secondary={
+                  <Stack direction="column">
+                    <Typography>
+                      {'This meeting will last 5 minutes, you can join the meeting now'}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        mt: 0.5,
+                        display: 'flex',
+                        alignItems: 'center',
+                        color: 'text.disabled',
+                      }}
+                    >
+                      {fToNow(notification.created_at)}
+                    </Typography>
+                    {notification.type === 'PROPOSAL' && (
+                      <Stack direction="row" justifyContent="start">
+                        <Button
+                          style={{ textAlign: 'start', color: 'green' }}
+                          onClick={() => navigate(notification.appointment.meeting_url)}
+                        >
+                          Join Now
+                        </Button>
                       </Stack>
                     )}
                   </Stack>
@@ -462,7 +561,6 @@ function NotificationItem({
               />
             </ListItemButton>
           )}
-          {/* ---------------------------End Project Today Item--------------------------- */}
         </>
       ) : (
         <>
@@ -493,8 +591,8 @@ function NotificationItem({
                   >
                     {fToNow(notification.created_at)}
                   </Typography>
-                  {notification.proposal && (
-                    <Stack direction="row" justifyContent="start">
+                  <Stack direction="row" justifyContent="start">
+                    {notification.type === 'PROPOSAL' && (
                       <Button
                         style={{ textAlign: 'start', color: 'green' }}
                         onClick={() =>
@@ -503,14 +601,64 @@ function NotificationItem({
                       >
                         Go to Project
                       </Button>
-                    </Stack>
-                  )}
+                    )}
+                    {notification.type === 'APPOINTMENT' && (
+                      <Button
+                        style={{ textAlign: 'start', color: 'blue' }}
+                        onClick={() =>
+                          handleNavigateAppointment(notification.appointment.id, notification.id)
+                        }
+                      >
+                        See the Appointment
+                      </Button>
+                    )}
+                  </Stack>
                 </Stack>
               }
             />
           </ListItemButton>
-
           {/* ---------------------------End Project Previous Item--------------------------- */}
+          {notification?.appointment && (
+            <ListItemButton
+              sx={{
+                py: 1.5,
+                px: 2.5,
+                mt: '1px',
+              }}
+            >
+              <ListItemText
+                primary={'Your appointment will starting soon!'}
+                secondary={
+                  <Stack direction="column">
+                    <Typography>
+                      {'This meeting will last 5 minutes, you can join the meeting now'}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        mt: 0.5,
+                        display: 'flex',
+                        alignItems: 'center',
+                        color: 'text.disabled',
+                      }}
+                    >
+                      {fToNow(notification.created_at)}
+                    </Typography>
+                    {notification.type === 'APPOINTMENT' && (
+                      <Stack direction="row" justifyContent="start">
+                        <Button
+                          style={{ textAlign: 'start', color: 'green' }}
+                          onClick={() => navigate(notification.appointment.meeting_url)}
+                        >
+                          Join Now
+                        </Button>
+                      </Stack>
+                    )}
+                  </Stack>
+                }
+              />
+            </ListItemButton>
+          )}
         </>
       )}
     </>

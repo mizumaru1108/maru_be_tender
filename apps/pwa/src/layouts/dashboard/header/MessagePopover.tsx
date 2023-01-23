@@ -29,7 +29,7 @@ import SvgIconStyle from 'components/SvgIconStyle';
 import { sub } from 'date-fns';
 import useLocales from '../../../hooks/useLocales';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { subNotification } from 'queries/commons/subNotification';
+import { subNotification, subNotificationClient } from 'queries/commons/subNotification';
 import useAuth from 'hooks/useAuth';
 import { useSubscription } from 'urql';
 import Page500 from 'pages/Page500';
@@ -92,7 +92,9 @@ export default function MessagePopover() {
   const [open, setOpen] = useState<HTMLElement | null>(null);
   const [activeTap, setActiveTap] = useState('1');
 
-  const { user } = useAuth();
+  const { user, activeRole } = useAuth();
+
+  let currentSubcription: any;
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     setOpen(event.currentTarget);
@@ -103,7 +105,18 @@ export default function MessagePopover() {
     variables: { user_id: user?.id },
   });
 
-  const { data, fetching, error } = result;
+  const [clientNotification] = useSubscription({
+    query: subNotificationClient,
+    variables: { user_id: user?.id },
+  });
+
+  if (activeRole === 'tender_client' || activeRole === 'tender_project_supervisor') {
+    currentSubcription = clientNotification;
+  } else {
+    currentSubcription = result;
+  }
+
+  const { data, fetching, error } = currentSubcription;
 
   const handleClose = () => {
     setOpen(null);
