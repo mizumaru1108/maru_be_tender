@@ -40,7 +40,6 @@ function MainPage() {
     navigate(`${url}/current-project/${id}/owner/${submiterId}`);
     // console.log({ url, destination });
   };
-  console.log(proposal, 'PROPOSALs');
   return (
     <Box sx={{ display: 'flex', gap: 3, flexDirection: 'column' }}>
       <Stack direction="row" gap={6}>

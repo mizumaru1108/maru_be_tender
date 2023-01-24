@@ -94,7 +94,7 @@ export default function MessagePopover() {
   const [open, setOpen] = useState<HTMLElement | null>(null);
   const [activeTap, setActiveTap] = useState('1');
 
-  const [openAlert, setOpenAlert] = useState(true);
+  const [openAlert, setOpenAlert] = useState(false);
 
   const { user, activeRole } = useAuth();
 

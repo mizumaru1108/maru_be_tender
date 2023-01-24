@@ -63,6 +63,9 @@ type NotificationItemProps = {
   type: string;
   proposal: {
     id: string;
+    inner_status: string;
+    outter_status: string;
+    state: string;
   };
   appointment: {
     id: string;
@@ -88,7 +91,7 @@ export default function NotificationsPopover() {
 
   const [open, setOpen] = useState<HTMLElement | null>(null);
 
-  const [openAlert, setOpenAlert] = useState(true);
+  const [openAlert, setOpenAlert] = useState(false);
 
   const { user, activeRole } = useAuth();
 
@@ -198,9 +201,9 @@ export default function NotificationsPopover() {
     setOpenAlert(true);
   }
 
-  // console.log('RESULT', data);
+  console.log('RESULT', data);
   // console.log('Subcription', currentSubcription);
-  // console.log('ROLE', activeRole);
+  // console.log('ROLE', newActiveRole);
   // console.log('USER', user?.id);
   // console.log('notif Count', notifCount);
 
@@ -355,7 +358,12 @@ export default function NotificationsPopover() {
                     <>
                       {data.notification.map(
                         (item: NotificationItemProps, index: Key | null | undefined) => (
-                          <NotificationItem key={index} notification={item} tabValue={activeTap} />
+                          <NotificationItem
+                            key={index}
+                            notification={item}
+                            tabValue={activeTap}
+                            onClose={handleClose}
+                          />
                         )
                       )}
                     </>
@@ -390,7 +398,12 @@ export default function NotificationsPopover() {
                     <>
                       {data.notification.map(
                         (item: NotificationItemProps, index: Key | null | undefined) => (
-                          <NotificationItem key={index} notification={item} tabValue={activeTap} />
+                          <NotificationItem
+                            key={index}
+                            notification={item}
+                            tabValue={activeTap}
+                            onClose={handleClose}
+                          />
                         )
                       )}
                     </>
@@ -428,9 +441,11 @@ export default function NotificationsPopover() {
 function NotificationItem({
   notification,
   tabValue,
+  onClose,
 }: {
   notification: NotificationItemProps;
   tabValue: any;
+  onClose: () => void;
 }) {
   // const { description } = renderContent(notification);
 
@@ -451,7 +466,13 @@ function NotificationItem({
 
   const getTimeMeeting = (createdAtMeeting: any) => Date.now() - createdAtMeeting.getTime();
 
-  const handleNavigateProject = async (id: string, notificationId: string) => {
+  const handleNavigateProject = async (
+    id: string,
+    notificationId: string,
+    innerStatus: string,
+    outterStatus: string,
+    state: string
+  ) => {
     await axiosInstance.patch(
       'tender/notification/read',
       {
@@ -461,9 +482,22 @@ function NotificationItem({
         headers: { 'x-hasura-role': activeRole! },
       }
     );
+    const prefixRole = activeRole && activeRole.substring(0, 7);
+
+    const newActiveRole =
+      prefixRole && activeRole && activeRole.replace(prefixRole, '').toUpperCase();
+
+    let footer_action = '';
+    if (activeRole !== 'tender_client' && state === newActiveRole && outterStatus === 'ONGOING') {
+      footer_action = 'show-details';
+    } else {
+      footer_action = 'show-project';
+    }
+
+    onClose();
 
     const x = location.pathname.split('/');
-    navigate(`/${x[1] + '/' + x[2]}/previous-funding-requests/${id}/show-details`);
+    navigate(`/${x[1] + '/' + x[2]}/incoming-support-requests/${id}/${footer_action}`);
   };
 
   const handleNavigateAppointment = async (id: string, notificationId: string) => {
@@ -476,6 +510,8 @@ function NotificationItem({
         headers: { 'x-hasura-role': activeRole! },
       }
     );
+
+    onClose();
 
     const x = location.pathname.split('/');
     navigate(`/${x[1] + '/' + x[2]}/appointments`);
@@ -518,7 +554,13 @@ function NotificationItem({
                         <Button
                           style={{ textAlign: 'start', color: 'green' }}
                           onClick={() =>
-                            handleNavigateProject(notification.proposal.id, notification.id)
+                            handleNavigateProject(
+                              notification.proposal.id,
+                              notification.id,
+                              notification.proposal.inner_status,
+                              notification.proposal.outter_status,
+                              notification.proposal.state
+                            )
                           }
                         >
                           Go to Project
@@ -617,7 +659,13 @@ function NotificationItem({
                       <Button
                         style={{ textAlign: 'start', color: 'green' }}
                         onClick={() =>
-                          handleNavigateProject(notification.proposal.id, notification.id)
+                          handleNavigateProject(
+                            notification.proposal.id,
+                            notification.id,
+                            notification.proposal.inner_status,
+                            notification.proposal.outter_status,
+                            notification.proposal.state
+                          )
                         }
                       >
                         Go to Project

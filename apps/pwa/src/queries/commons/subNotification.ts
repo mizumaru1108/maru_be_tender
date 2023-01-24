@@ -64,6 +64,9 @@ export const subNotification = `subscription subNotification ($user_id: String =
     }
     proposal {
       id
+      inner_status
+      outter_status
+      state
     }
   }
 }`;
@@ -93,6 +96,8 @@ export const subNotificationClient = `subscription subNotificationClient ($user_
     }
     proposal {
       id
+      inner_status
+      outter_status
     }
     appointment {
       id
