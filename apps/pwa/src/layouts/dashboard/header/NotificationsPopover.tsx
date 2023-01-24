@@ -124,7 +124,7 @@ export default function NotificationsPopover() {
 
   const { data, fetching, error } = currentSubcription;
 
-  useEffect(() => {}, [data]);
+  // useEffect(() => {}, [data]);
 
   if (fetching) return <>.. Loading</>;
 
@@ -488,16 +488,19 @@ function NotificationItem({
       prefixRole && activeRole && activeRole.replace(prefixRole, '').toUpperCase();
 
     let footer_action = '';
+    let request_action = '';
     if (activeRole !== 'tender_client' && state === newActiveRole && outterStatus === 'ONGOING') {
       footer_action = 'show-details';
+      request_action = 'incoming-support-requests';
     } else {
       footer_action = 'show-project';
+      request_action = 'previous-funding-requests';
     }
 
     onClose();
 
     const x = location.pathname.split('/');
-    navigate(`/${x[1] + '/' + x[2]}/incoming-support-requests/${id}/${footer_action}`);
+    navigate(`/${x[1] + '/' + x[2]}/${request_action}/${id}/${footer_action}`);
   };
 
   const handleNavigateAppointment = async (id: string, notificationId: string) => {
