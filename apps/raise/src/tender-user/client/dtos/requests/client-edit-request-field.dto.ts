@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
+  IsArray,
   IsDate,
   IsNotEmpty,
   IsNumber,
@@ -9,6 +10,9 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { UploadFilesJsonbDto } from '../../../../tender-commons/dto/upload-files-jsonb.dto';
+import { CreateBankInformationDto } from './create-bank-information.dto';
+import { ExistingClientBankInformation } from './existing-bank-information.dto';
+import { UpdateBankInformationDto } from './update-bank-information.dto';
 
 export class ClientEditRequestFieldDto {
   @ApiPropertyOptional()
@@ -96,11 +100,17 @@ export class ClientEditRequestFieldDto {
   // @IsString()
   // email?: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsNotEmpty()
-  @IsString()
-  password?: string;
+  // @ApiPropertyOptional()
+  // @IsOptional()
+  // @IsNotEmpty()
+  // @IsString()
+  // password?: string;
+
+  // @ApiPropertyOptional()
+  // @IsOptional()
+  // @IsNotEmpty()
+  // @IsString()
+  // old_password?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -123,16 +133,16 @@ export class ClientEditRequestFieldDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsNotEmpty()
-  @Type(() => UploadFilesJsonbDto)
-  @ValidateNested()
-  license_file?: UploadFilesJsonbDto;
+  // @Type(() => any)
+  // @ValidateNested()
+  license_file?: any;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsNotEmpty()
-  @Type(() => UploadFilesJsonbDto)
-  @ValidateNested()
-  board_ofdec_file?: UploadFilesJsonbDto;
+  // @Type(() => any)
+  // @ValidateNested()
+  board_ofdec_file?: any;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -169,4 +179,41 @@ export class ClientEditRequestFieldDto {
   @IsNotEmpty()
   @IsString()
   client_field?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  @IsNotEmpty({ each: true })
+  @ValidateNested({ each: true })
+  @Type(() => CreateBankInformationDto)
+  created_banks?: CreateBankInformationDto[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  @IsNotEmpty({ each: true })
+  @ValidateNested({ each: true })
+  @Type(() => UpdateBankInformationDto)
+  updated_banks?: UpdateBankInformationDto[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  @IsNotEmpty({ each: true })
+  @ValidateNested({ each: true })
+  @Type(() => ExistingClientBankInformation)
+  deleted_banks?: ExistingClientBankInformation[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  @IsNotEmpty({ each: true })
+  @ValidateNested({ each: true })
+  @Type(() => ExistingClientBankInformation)
+  old_banks?: ExistingClientBankInformation[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => ExistingClientBankInformation)
+  bank_information?: ExistingClientBankInformation[];
 }

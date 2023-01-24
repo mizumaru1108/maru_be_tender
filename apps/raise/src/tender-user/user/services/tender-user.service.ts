@@ -217,11 +217,20 @@ export class TenderUserService {
     const currentUser = await this.tenderUserRepository.findUserById(userId);
     if (!currentUser) throw new NotFoundException("User doesn't exist!");
 
-    // if (request.password && !request.current_password) {
-    //   throw new BadRequestException(
-    //     'Current password should be provided when changing password',
-    //   );
-    // }
+    if (request.password) {
+      if (!request.old_password) {
+        throw new BadRequestException(
+          'Please provide your old password in order to change password',
+        );
+      }
+
+      const valid = await this.fusionAuthService.login(
+        currentUser.email,
+        request.old_password,
+      );
+      if (!valid) throw new BadRequestException('Old Password Incorrect!');
+    }
+
     updateUserPayload = updateUserMapper(currentUser, request);
 
     const queryResult = await this.tenderUserRepository.updateUserWFusionAuth(

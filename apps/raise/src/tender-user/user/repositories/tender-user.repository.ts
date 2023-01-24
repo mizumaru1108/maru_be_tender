@@ -446,31 +446,44 @@ export class TenderUserRepository {
     bankInfoData?: Prisma.bank_informationUncheckedCreateInput,
     uploadedFilesPath?: string[],
   ) {
-    this.logger.debug(
-      `Invoke create user with payload: ${JSON.stringify(userData)}`,
-    );
     try {
       return await this.prismaService.$transaction(
         async (prismaSession) => {
-          this.logger.log('info', 'creating user...');
+          this.logger.log(
+            'info',
+            'creating user...',
+            JSON.stringify(userData, null, 2),
+          );
           const user = await prismaSession.user.create({
             data: userData,
           });
 
-          this.logger.log('info', 'creating user status log...');
+          this.logger.log(
+            'info',
+            'creating user status log...',
+            JSON.stringify(userStatusLogData, null, 2),
+          );
           await prismaSession.user_status_log.createMany({
             data: userStatusLogData,
           });
 
           if (rolesData) {
-            this.logger.log('info', 'creating user_role...');
+            this.logger.log(
+              'info',
+              'creating user_role...',
+              JSON.stringify(rolesData, null, 2),
+            );
             await prismaSession.user_role.createMany({
               data: rolesData,
             });
           }
 
           if (bankInfoData) {
-            this.logger.log('info', 'creating bank information...');
+            this.logger.log(
+              'info',
+              'creating bank information...',
+              JSON.stringify(rolesData, null, 2),
+            );
             await prismaSession.bank_information.create({
               data: bankInfoData,
             });
@@ -637,9 +650,9 @@ export class TenderUserRepository {
           where: { id: userId },
           data: {
             employee_name: request.employee_name,
-            // email: request.email,
+            email: request.email,
             address: request.address,
-            // mobile_number: request.mobile_number,
+            mobile_number: request.mobile_number,
           },
         });
 

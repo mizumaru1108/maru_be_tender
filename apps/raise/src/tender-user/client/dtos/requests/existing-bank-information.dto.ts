@@ -1,14 +1,27 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsString, IsUUID, ValidateNested } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+  ValidateNested,
+} from 'class-validator';
 import { UploadFilesJsonbDto } from '../../../../tender-commons/dto/upload-files-jsonb.dto';
 
-export class CreateClientBankInformation {
+export class ExistingClientBankInformation {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
   @IsUUID()
   id: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  @IsUUID()
+  user_id?: string;
 
   @ApiProperty()
   @IsNotEmpty()

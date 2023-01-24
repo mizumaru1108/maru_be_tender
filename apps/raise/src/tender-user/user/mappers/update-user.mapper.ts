@@ -30,11 +30,5 @@ export const updateUserMapper = (
     updateUserPayload.mobile_number = request.mobile_number;
   }
 
-  // if (request.password && request.current_password) {
-  //   updateUserPayload.password = request.password;
-  //   updateUserPayload.current_password = request.current_password;
-  // }
-  if (request.password) updateUserPayload.password = request.password;
-
   return updateUserPayload;
 };

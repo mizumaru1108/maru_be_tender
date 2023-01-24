@@ -33,9 +33,9 @@ export class UpdateUserDto {
   @IsNotEmpty()
   password?: string;
 
-  // @ApiPropertyOptional()
-  // @IsOptional()
-  // @IsString()
-  // @IsNotEmpty()
-  // current_password?: string;
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  old_password?: string;
 }

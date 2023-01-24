@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   bank_information,
   client_data,
-  edit_request,
+  edit_requests,
   Prisma,
   user,
   user_status,
@@ -11,6 +11,8 @@ import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
+import { SearchEditRequestFilter } from '../dtos/requests/search-edit-request-filter-request.dto';
+import { RawEditRequestByLogIdDto } from '../dtos/responses/raw-edit-request-by-log-id.dto';
 import { UpdateBankInfoPayload } from '../interfaces/update-bank-info-payload.interface';
 import { ApprovalStatus } from '../types';
 
@@ -63,14 +65,11 @@ export class TenderClientRepository {
     }
   }
 
-  async findClientAndUser(userId: string) {
+  async findBanksByUserId(userId: string) {
     try {
-      return await this.prismaService.client_data.findFirst({
+      return await this.prismaService.bank_information.findMany({
         where: {
           user_id: userId,
-        },
-        include: {
-          user: true,
         },
       });
     } catch (error) {
@@ -84,27 +83,257 @@ export class TenderClientRepository {
     }
   }
 
+  async findClientDataByUserId(userId: string) {
+    try {
+      return await this.prismaService.client_data.findFirst({
+        where: {
+          user_id: userId,
+        },
+        select: {
+          entity: true,
+          authority: true,
+          date_of_esthablistmen: true,
+          headquarters: true,
+          num_of_employed_facility: true,
+          num_of_beneficiaries: true,
+          region: true,
+          governorate: true,
+          center_administration: true,
+          entity_mobile: true,
+          phone: true,
+          twitter_acount: true,
+          website: true,
+          license_number: true,
+          license_issue_date: true,
+          license_expired: true,
+          license_file: true,
+          board_ofdec_file: true,
+          ceo_name: true,
+          ceo_mobile: true,
+          data_entry_name: true,
+          data_entry_mobile: true,
+          data_entry_mail: true,
+          // chairman_name: true,
+          // chairman_mobile: true,
+          user: {
+            select: {
+              status_id: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderClientRepository.name,
+        'findClientAndUser error details: ',
+        'find client and user!',
+      );
+      throw theError;
+    }
+  }
+
+  async countMyPendingLogs(userId: string) {
+    try {
+      return await this.prismaService.edit_requests.count({
+        where: {
+          user_id: userId,
+          status_id: {
+            contains: 'PENDING',
+            mode: 'insensitive',
+          },
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderClientRepository.name,
+        'findClientAndUser error details: ',
+        'find client and user!',
+      );
+      throw theError;
+    }
+  }
+
+  async findEditRequestLogsByRequestId(request_id: string) {
+    try {
+      return await this.prismaService.edit_request_logs.findMany({
+        where: {
+          request_id,
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderClientRepository.name,
+        'findClientAndUser error details: ',
+        'find client and user!',
+      );
+      throw theError;
+    }
+  }
+
+  // async findEditRequestLogById(
+  //   log_id: string,
+  // ): Promise<RawEditRequestByLogIdDto['data']> {
+  //   try {
+  //     return await this.prismaService.edit_requests.findUnique({
+  //       where: {
+  //         id: log_id,
+  //       },
+  //       include: {
+  //         user: {
+  //           select: {
+  //             client_data: true,
+  //             bank_information: true,
+  //           },
+  //         },
+  //         edit_requests: true,
+  //       },
+  //     });
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderClientRepository.name,
+  //       'findClientAndUser error details: ',
+  //       'find client and user!',
+  //     );
+  //     throw theError;
+  //   }
+  // }
+
+  async findEditRequestLogByRequestId(request_id: string) {
+    try {
+      return await this.prismaService.edit_request_logs.findFirst({
+        where: {
+          request_id: request_id,
+          identifier: {
+            contains: 'full_payload',
+            mode: 'insensitive',
+          },
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderClientRepository.name,
+        'findClientAndUser error details: ',
+        'find client and user!',
+      );
+      throw theError;
+    }
+  }
+
+  async findEditRequests(filter: SearchEditRequestFilter) {
+    const {
+      association_name,
+      status,
+      page = 1,
+      limit = 10,
+      sort = 'desc',
+      sorting_field,
+    } = filter;
+
+    const offset = (page - 1) * limit;
+
+    let query: Prisma.edit_requestsWhereInput = {};
+
+    if (association_name) {
+      query = {
+        ...query,
+        user: {
+          client_data: {
+            entity: {
+              contains: association_name,
+              mode: 'insensitive',
+            },
+          },
+        },
+      };
+    }
+
+    if (status) {
+      query = {
+        ...query,
+        status_id: {
+          contains: status,
+          mode: 'insensitive',
+        },
+      };
+    }
+
+    const order_by: Prisma.edit_requestsOrderByWithRelationInput = {};
+    const field =
+      sorting_field as keyof Prisma.edit_requestsOrderByWithRelationInput;
+    if (sorting_field) {
+      order_by[field] = sort;
+    } else {
+      order_by.created_at = sort;
+    }
+
+    try {
+      const response = await this.prismaService.edit_requests.findMany({
+        where: {
+          ...query,
+        },
+        select: {
+          id: true,
+          status_id: true,
+          created_at: true,
+          user: {
+            select: {
+              client_data: {
+                select: {
+                  entity: true,
+                },
+              },
+            },
+          },
+          // edit_requests: true,
+        },
+        skip: offset,
+        take: limit,
+        orderBy: order_by,
+      });
+
+      const count = await this.prismaService.edit_requests.count({
+        where: {
+          ...query,
+        },
+      });
+
+      return {
+        data: response,
+        total: count,
+      };
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderUserRepository.name,
+        'findUsers Error:',
+        `finding users!`,
+      );
+      throw theError;
+    }
+  }
+
   async createUpdateRequest(
-    clientUserId: string,
-    editRequest: Prisma.edit_requestCreateInput[],
-    denactiveAccount: boolean,
+    editRequestLogPayload: Prisma.edit_requestsUncheckedCreateInput,
+    editRequest?: Prisma.edit_request_logsUncheckedCreateInput[],
   ) {
     try {
       return await this.prismaService.$transaction(async (prisma) => {
+        const logs = await prisma.edit_requests.create({
+          data: editRequestLogPayload,
+        });
+
         if (editRequest) {
-          await prisma.edit_request.createMany({
+          await prisma.edit_request_logs.createMany({
             data: editRequest,
           });
         }
 
-        if (denactiveAccount) {
-          await this.tenderUserRepository.changeUserStatus(
-            clientUserId,
-            'WAITING_FOR_EDITING_APPROVAL',
-          );
-        }
-
-        return editRequest;
+        return logs;
       });
     } catch (error) {
       const theError = prismaErrorThrower(
@@ -119,7 +348,7 @@ export class TenderClientRepository {
 
   async findUpdateRequestById(id: string) {
     try {
-      return await this.prismaService.edit_request.findUnique({
+      return await this.prismaService.edit_requests.findUnique({
         where: {
           id,
         },
@@ -135,165 +364,165 @@ export class TenderClientRepository {
     }
   }
 
-  async findUnapprovedEditRequestByUserId(
-    userId: string,
-  ): Promise<edit_request[]> {
-    try {
-      return await this.prismaService.edit_request.findMany({
-        where: {
-          user_id: userId,
-          approval_status: 'WAITING_FOR_APPROVAL',
-        },
-      });
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        TenderClientRepository.name,
-        'findUnapprovedEditRequestByUserId error details: ',
-        'finding update requests!',
-      );
-      throw theError;
-    }
-  }
+  // async findUnapprovedEditRequestByUserId(
+  //   userId: string,
+  // ): Promise<edit_request[]> {
+  //   try {
+  //     return await this.prismaService.edit_request.findMany({
+  //       where: {
+  //         user_id: userId,
+  //         approval_status: 'WAITING_FOR_APPROVAL',
+  //       },
+  //     });
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderClientRepository.name,
+  //       'findUnapprovedEditRequestByUserId error details: ',
+  //       'finding update requests!',
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
-  async getRemainingUpdateRequestCount(
-    userId: string,
-    prismaSession?: Prisma.TransactionClient,
-  ) {
-    this.logger.log(
-      'info',
-      `get remaining edit request for user (${userId}), with prisma session: ${
-        prismaSession ? true : false
-      }`,
-    );
-    try {
-      if (prismaSession) {
-        return await prismaSession.edit_request.findMany({
-          where: {
-            user_id: userId,
-            approval_status: {
-              equals: 'WAITING_FOR_APPROVAL',
-            },
-          },
-        });
-      } else {
-        return await this.prismaService.edit_request.findMany({
-          where: {
-            user_id: userId,
-            approval_status: {
-              equals: 'WAITING_FOR_APPROVAL',
-            },
-          },
-        });
-      }
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        TenderClientRepository.name,
-        'getRemainingUpdateRequestCount error details: ',
-        'fetching remaining update request count!',
-      );
-      throw theError;
-    }
-  }
+  // async getRemainingUpdateRequestCount(
+  //   userId: string,
+  //   prismaSession?: Prisma.TransactionClient,
+  // ) {
+  //   this.logger.log(
+  //     'info',
+  //     `get remaining edit request for user (${userId}), with prisma session: ${
+  //       prismaSession ? true : false
+  //     }`,
+  //   );
+  //   try {
+  //     if (prismaSession) {
+  //       return await prismaSession.edit_request.findMany({
+  //         where: {
+  //           user_id: userId,
+  //           approval_status: {
+  //             equals: 'WAITING_FOR_APPROVAL',
+  //           },
+  //         },
+  //       });
+  //     } else {
+  //       return await this.prismaService.edit_request.findMany({
+  //         where: {
+  //           user_id: userId,
+  //           approval_status: {
+  //             equals: 'WAITING_FOR_APPROVAL',
+  //           },
+  //         },
+  //       });
+  //     }
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderClientRepository.name,
+  //       'getRemainingUpdateRequestCount error details: ',
+  //       'fetching remaining update request count!',
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
-  async changeEditRequestStatus(
-    requestId: string,
-    reviewerId: string,
-    status: string,
-    prismaSession?: Prisma.TransactionClient,
-  ) {
-    this.logger.log(
-      'info',
-      `changing edit request status to ${status}, using prisma session: ${
-        prismaSession ? true : false
-      }`,
-    );
-    try {
-      if (prismaSession) {
-        return await prismaSession.edit_request.update({
-          where: {
-            id: requestId,
-          },
-          data: {
-            approval_status: {
-              set: status,
-            },
-            reviewer_id: reviewerId,
-          },
-        });
-      } else {
-        return await this.prismaService.edit_request.update({
-          where: {
-            id: requestId,
-          },
-          data: {
-            approval_status: {
-              set: status,
-            },
-            reviewer_id: reviewerId,
-          },
-        });
-      }
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        TenderClientRepository.name,
-        'changeEditRequestStatus error details: ',
-        'changing edit request status!',
-      );
-      throw theError;
-    }
-  }
+  // async changeEditRequestStatus(
+  //   requestId: string,
+  //   reviewerId: string,
+  //   status: string,
+  //   prismaSession?: Prisma.TransactionClient,
+  // ) {
+  //   this.logger.log(
+  //     'info',
+  //     `changing edit request status to ${status}, using prisma session: ${
+  //       prismaSession ? true : false
+  //     }`,
+  //   );
+  //   try {
+  //     if (prismaSession) {
+  //       return await prismaSession.edit_request.update({
+  //         where: {
+  //           id: requestId,
+  //         },
+  //         data: {
+  //           approval_status: {
+  //             set: status,
+  //           },
+  //           reviewer_id: reviewerId,
+  //         },
+  //       });
+  //     } else {
+  //       return await this.prismaService.edit_request.update({
+  //         where: {
+  //           id: requestId,
+  //         },
+  //         data: {
+  //           approval_status: {
+  //             set: status,
+  //           },
+  //           reviewer_id: reviewerId,
+  //         },
+  //       });
+  //     }
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderClientRepository.name,
+  //       'changeEditRequestStatus error details: ',
+  //       'changing edit request status!',
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
-  async changeEditRequestStatusByUserId(
-    userId: string,
-    reviewerId: string,
-    status: ApprovalStatus,
-    prismaSession?: Prisma.TransactionClient,
-  ) {
-    this.logger.log(
-      'info',
-      `changing edit request status to ${status}, using prisma session: ${
-        prismaSession ? true : false
-      }`,
-    );
-    try {
-      if (prismaSession) {
-        return await prismaSession.edit_request.updateMany({
-          where: {
-            user_id: userId,
-          },
-          data: {
-            approval_status: {
-              set: status as string,
-            },
-            reviewer_id: reviewerId,
-          },
-        });
-      } else {
-        return await this.prismaService.edit_request.updateMany({
-          where: {
-            user_id: userId,
-          },
-          data: {
-            approval_status: {
-              set: status as string,
-            },
-            reviewer_id: reviewerId,
-          },
-        });
-      }
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        TenderClientRepository.name,
-        'changeEditRequestStatusByUserId error details: ',
-        'changing edit request status!',
-      );
-      throw theError;
-    }
-  }
+  // async changeEditRequestStatusByUserId(
+  //   userId: string,
+  //   reviewerId: string,
+  //   status: ApprovalStatus,
+  //   prismaSession?: Prisma.TransactionClient,
+  // ) {
+  //   this.logger.log(
+  //     'info',
+  //     `changing edit request status to ${status}, using prisma session: ${
+  //       prismaSession ? true : false
+  //     }`,
+  //   );
+  //   try {
+  //     if (prismaSession) {
+  //       return await prismaSession.edit_request.updateMany({
+  //         where: {
+  //           user_id: userId,
+  //         },
+  //         data: {
+  //           approval_status: {
+  //             set: status as string,
+  //           },
+  //           reviewer_id: reviewerId,
+  //         },
+  //       });
+  //     } else {
+  //       return await this.prismaService.edit_request.updateMany({
+  //         where: {
+  //           user_id: userId,
+  //         },
+  //         data: {
+  //           approval_status: {
+  //             set: status as string,
+  //           },
+  //           reviewer_id: reviewerId,
+  //         },
+  //       });
+  //     }
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderClientRepository.name,
+  //       'changeEditRequestStatusByUserId error details: ',
+  //       'changing edit request status!',
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
   async updateClientFieldByKeyValuePair(
     userId: string,
@@ -431,12 +660,12 @@ export class TenderClientRepository {
           }
 
           /* approve all request */
-          await this.changeEditRequestStatusByUserId(
-            userId,
-            reviewerId,
-            'APPROVED',
-            prisma,
-          );
+          // await this.changeEditRequestStatusByUserId(
+          //   userId,
+          //   reviewerId,
+          //   'APPROVED',
+          //   prisma,
+          // );
 
           /* active the account */
           await this.tenderUserRepository.changeUserStatus(

@@ -3,31 +3,30 @@ import {
   Controller,
   Get,
   HttpStatus,
-  Patch,
+  Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../../../auth/guards/jwt.guard';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
 import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
 import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
+import { ManualPaginatedResponse } from '../../../tender-commons/helpers/manual-paginated-response.dto';
+import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import { ICurrentUser } from '../../../user/interfaces/current-user.interface';
-import { TenderCurrentUser } from '../../user/interfaces/current-user.interface';
-import {
-  ApproveEditRequestDto,
-  BatchApproveEditRequestDto,
-} from '../dtos/requests/approve-edit-request.dto';
-import { ClientEditRequestDto } from '../dtos/requests/client-edit-request.dto';
+import { ClientEditRequestFieldDto } from '../dtos/requests/client-edit-request-field.dto';
+import { EditRequestByIdDto } from '../dtos/requests/edit-request-by-id.dto';
+import { SearchEditRequestFilter } from '../dtos/requests/search-edit-request-filter-request.dto';
 import { ClientEditRequestResponseDto } from '../dtos/responses/client-edit-request.response.dto';
 import { TenderClientService } from '../services/tender-client.service';
 
-@Controller('tender-client')
+@Controller('tender/client')
 export class TenderClientController {
   constructor(private readonly tenderClientService: TenderClientService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(TenderJwtGuard)
   @Get('current-user-track')
   async getCurrentUserTrack(
     @CurrentUser() user: ICurrentUser,
@@ -40,12 +39,64 @@ export class TenderClientController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Patch('edit-request')
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_accounts_manager')
+  @Get('edit-request/list')
+  async findEditRequest(
+    @Query() filter: SearchEditRequestFilter,
+  ): Promise<ManualPaginatedResponse<any>> {
+    const response = await this.tenderClientService.findEditRequests(filter);
+
+    return manualPaginationHelper(
+      response.data,
+      response.total,
+      filter.page || 1,
+      filter.limit || 10,
+      HttpStatus.OK,
+      'Success',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_accounts_manager')
+  @Get('edit-request/find')
+  async find(
+    @Query() filter: EditRequestByIdDto,
+  ): Promise<ManualPaginatedResponse<any>> {
+    const response = await this.tenderClientService.findEditRequestByLogId(
+      filter.requestid,
+    );
+    return baseResponseHelper(
+      response,
+      HttpStatus.OK,
+      'Edit Request Data Successfully Fetched!',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_client')
+  @Get('edit-request/my-pending-count')
+  async getPendingCount(
+    @CurrentUser() currentUser: ICurrentUser,
+  ): Promise<ManualPaginatedResponse<any>> {
+    const response = await this.tenderClientService.findMyPendingLogCount(
+      currentUser.id,
+    );
+    return baseResponseHelper(
+      response,
+      HttpStatus.OK,
+      'Edit Request Data Successfully Fetched!',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_client')
+  @Post('edit-request/create')
   async createEditRequest(
     @CurrentUser() user: ICurrentUser,
-    @Body() editRequest: ClientEditRequestDto,
-  ): Promise<BaseResponse<ClientEditRequestResponseDto>> {
+    @Body() editRequest: ClientEditRequestFieldDto,
+  ): Promise<BaseResponse<any>> {
+    // console.log('payload', JSON.stringify(editRequest, null, 2));
     const response = await this.tenderClientService.createEditRequest(
       user,
       editRequest,
@@ -54,44 +105,26 @@ export class TenderClientController {
     return baseResponseHelper(
       response,
       HttpStatus.OK,
-      'Asking for changes successfully applied!',
+      'Asking for changes successfully applied!, please wait untill account manager responded to your request',
     );
   }
 
   // @UseGuards(TenderJwtGuard, TenderRolesGuard)
   // @TenderRoles('tender_accounts_manager')
-  // @Patch('approve-edit-request')
-  // async approveEditRequest(
-  //   @CurrentUser() user: TenderCurrentUser,
-  //   @Body() editRequest: ApproveEditRequestDto,
-  // ) {
-  //   const response = await this.tenderClientService.acceptEditRequest(
+  // @Patch('approve-edit-requests')
+  // async approveEditRequests(
+  //   @CurrentUser() user: ICurrentUser,
+  //   @Body() editRequest: BatchApproveEditRequestDto,
+  // ): Promise<BaseResponse<any>> {
+  //   const response = await this.tenderClientService.acceptEditRequests(
   //     user.id,
   //     editRequest,
   //   );
 
   //   return baseResponseHelper(
-  //     response.logs,
+  //     response,
   //     HttpStatus.OK,
   //     'Asking for changes successfully applied!',
   //   );
   // }
-
-  @UseGuards(JwtAuthGuard)
-  @Patch('approve-edit-requests')
-  async approveEditRequests(
-    @CurrentUser() user: ICurrentUser,
-    @Body() editRequest: BatchApproveEditRequestDto,
-  ): Promise<BaseResponse<any>> {
-    const response = await this.tenderClientService.acceptEditRequests(
-      user.id,
-      editRequest,
-    );
-
-    return baseResponseHelper(
-      response,
-      HttpStatus.OK,
-      'Asking for changes successfully applied!',
-    );
-  }
 }

@@ -117,6 +117,20 @@ export class FusionAuthService {
     }
   }
 
+  /* login without thorwing error when not exist */
+  async login(email: string, password: string): Promise<boolean> {
+    try {
+      await this.fusionAuthClient.login({
+        loginId: email,
+        password: password,
+        applicationId: this.fusionAuthAppId,
+      });
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
   /**
    * Fusion Auth Passwordless
    * https://fusionauth.io/docs/v1/tech/apis/passwordless#start-passwordless-login
@@ -475,15 +489,21 @@ export class FusionAuthService {
   }
 
   async fusionAuthUpdateUser(userId: string, updateRequest: UpdateUserPayload) {
-    this.logger.log('info', `updating user (${userId}) on FusionAuth`);
-
     const user: IFusionAuthUser = {
       firstName: updateRequest.employee_name as string | undefined,
       password: updateRequest.password as string | undefined,
-      // will be enabled later on when email and phone can be updated
-      // email: updateRequest.email as string | undefined,
-      // mobilePhone: updateRequest.mobile_number as string | undefined,
+      email: updateRequest.email as string | undefined,
+      mobilePhone: updateRequest.mobile_number as string | undefined,
     };
+
+    this.logger.log(
+      'info',
+      `updating user (${userId}) on FusionAuth, with payload : ${JSON.stringify(
+        user,
+        null,
+        2,
+      )}`,
+    );
 
     try {
       await this.fusionAuthAdminClient.patchUser(userId, {

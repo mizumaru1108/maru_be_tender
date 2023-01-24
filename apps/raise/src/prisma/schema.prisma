@@ -16,6 +16,7 @@ model bank_information {
   proposal_id                                          String?
   id                                                   String                     @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   card_image                                           Json?
+  id_deleted                                           Boolean?                   @default(false)
   proposal                                             proposal?                  @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
   user                                                 user                       @relation(fields: [user_id], references: [id], onDelete: Cascade)
   proposal_bank_informationToproposal_proposal_bank_id proposal[]                 @relation("bank_informationToproposal_proposal_bank_id")
@@ -296,6 +297,8 @@ model user {
   consultant_form                                          consultant_form[]
   contact_us_contact_us_receiver_idTouser                  contact_us[]            @relation("contact_us_receiver_idTouser")
   contact_us_contact_us_sender_idTouser                    contact_us[]            @relation("contact_us_sender_idTouser")
+  edit_requests_edit_requests_reviewer_idTouser            edit_requests[]         @relation("edit_requests_reviewer_idTouser")
+  edit_requests_edit_requests_user_idTouser                edit_requests[]         @relation("edit_requests_user_idTouser")
   email_record_email_record_receiver_idTouser              email_record[]          @relation("email_record_receiver_idTouser")
   email_record_email_record_sender_idTouser                email_record[]          @relation("email_record_sender_idTouser")
   employees_permissions_employees_permissionsTouser        employees_permissions[]
@@ -433,24 +436,10 @@ model correspondance_category {
   room_chat room_chat[]
 }
 
-model edit_request {
-  id                  String              @id
-  field_name          String              @db.VarChar
-  approval_status     String              @default("WAITING_FOR_APPROVAL")
-  old_value           String?             @db.VarChar
-  new_value           String              @db.VarChar
-  user_id             String
-  field_type          String              @db.VarChar
-  reviewer_id         String?
-  created_at          DateTime?           @default(now()) @db.Timestamptz(6)
-  updated_at          DateTime?           @default(now()) @db.Timestamptz(6)
-  edit_request_status edit_request_status @relation(fields: [approval_status], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
 model edit_request_status {
-  id           String         @id
-  title        String         @unique
-  edit_request edit_request[]
+  id            String          @id
+  title         String          @unique
+  edit_requests edit_requests[]
 }
 
 model project_track_flows {
@@ -704,4 +693,28 @@ model user_status_log {
   account_manager_detail user?       @relation("userTouser_status_log_account_manager_id", fields: [account_manager_id], references: [id], onDelete: Cascade)
   user_status            user_status @relation(fields: [status_id], references: [id], onDelete: Cascade)
   user_detail            user        @relation("userTouser_status_log_user_id", fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model edit_request_logs {
+  id            String        @id(map: "edit_request_pkey")
+  identifier    String        @db.VarChar
+  old_value     String?       @db.VarChar
+  new_value     String        @db.VarChar
+  request_id    String
+  edit_requests edit_requests @relation(fields: [request_id], references: [id], onDelete: Cascade, map: "edit_request_logs_id_fkey")
+}
+
+model edit_requests {
+  id                  String              @id(map: "edit_request_logs_pkey")
+  user_id             String
+  reviewer_id         String?
+  status_id           String
+  reject_reason       String?
+  rejected_at         DateTime?           @db.Timestamptz(6)
+  accepted_at         DateTime?           @db.Timestamptz(6)
+  created_at          DateTime            @default(now()) @db.Timestamptz(6)
+  reviewer            user?               @relation("edit_requests_reviewer_idTouser", fields: [reviewer_id], references: [id], onDelete: Cascade, map: "edit_request_logs_reviwer_id_fkey")
+  edit_request_status edit_request_status @relation(fields: [status_id], references: [id], onDelete: Cascade, map: "edit_request_logs_status_id_fkey")
+  user                user                @relation("edit_requests_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade, map: "edit_request_logs_user_id_fkey")
+  edit_request_logs   edit_request_logs[]
 }
