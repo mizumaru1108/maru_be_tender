@@ -329,18 +329,19 @@ export class TenderClientService {
     );
     if (!log) throw new NotFoundException('Edit Request Not Found!');
 
-    const new_request = JSON.parse(log.new_value);
-    delete new_request.createdBanks;
-    delete new_request.updatedBanks;
-    delete new_request.deletedBanks;
+    const old_data = JSON.parse(log.old_value);
+    const new_data = JSON.parse(log.new_value);
+
+    delete new_data.createdBanks;
+    delete new_data.updatedBanks;
+    delete new_data.deletedBanks;
+
+    const diffrence = ApproveEditRequestMapper(old_data, new_data);
 
     return {
-      old_data: {
-        ...JSON.parse(log.old_value!),
-      },
-      new_data: {
-        ...new_request,
-      },
+      old_data,
+      new_data,
+      diffrence,
     };
   }
 
