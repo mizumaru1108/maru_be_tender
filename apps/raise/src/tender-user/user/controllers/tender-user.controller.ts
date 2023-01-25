@@ -101,7 +101,6 @@ export class TenderUserController {
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: UpdateUserDto,
   ): Promise<BaseResponse<any>> {
-    // console.log('request', request);
     const updateResult = await this.tenderUserService.updateProfile(
       currentUser,
       request,

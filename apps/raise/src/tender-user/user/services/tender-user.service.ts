@@ -218,7 +218,12 @@ export class TenderUserService {
       currentUser.id,
     );
     if (!existingUserData) throw new NotFoundException("User doesn't exist!");
-    // console.log('current user', existingUserData);
+
+    updateUserPayload = updateUserMapper(
+      existingUserData,
+      request,
+      currentUser,
+    );
 
     if (request.password) {
       if (!request.old_password) {
@@ -232,14 +237,8 @@ export class TenderUserService {
         request.old_password,
       );
       if (!valid) throw new BadRequestException('Wrong Credentials!');
+      updateUserPayload.password = request.password;
     }
-
-    updateUserPayload = updateUserMapper(
-      existingUserData,
-      request,
-      currentUser,
-    );
-    console.log('payload', updateUserPayload);
 
     const queryResult = await this.tenderUserRepository.updateUserWFusionAuth(
       currentUser.id,
@@ -248,7 +247,6 @@ export class TenderUserService {
 
     let logs = '';
     let updatedUser: user | null = null;
-    // console.log('delete result', queryResult);
 
     logs = queryResult.prismaResult
       ? 'User profile updated on our app!'
