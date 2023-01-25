@@ -5,6 +5,7 @@ import { Button, Grid } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
+import React, { useState, useEffect } from 'react';
 
 const RHFRepeater = ({
   name,
@@ -15,6 +16,8 @@ const RHFRepeater = ({
 }: FormSingleProps) => {
   const { control } = useFormContext();
   const { translate } = useLocales();
+
+  const [disabledValue, setDisabledValue] = useState<boolean>(false);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -31,12 +34,21 @@ const RHFRepeater = ({
     }
     return result;
   };
+
+  useEffect(() => {
+    const reducedDisabled = repeaterFields
+      ?.map((el) => (el.disabled ? el.disabled : false))
+      .reduce((a, b) => a || b, false);
+
+    setDisabledValue(reducedDisabled!);
+  }, [repeaterFields]);
+
   return (
     <>
       {fields.map((field, index) => (
-        <>
+        <React.Fragment key={index}>
           {repeaterFields?.map((repeaterField, i) => (
-            <>
+            <React.Fragment key={i}>
               <Controller
                 key={index}
                 name={`${name}[${index}].${repeaterField.name}`}
@@ -51,7 +63,7 @@ const RHFRepeater = ({
                   </Grid>
                 )}
               />
-            </>
+            </React.Fragment>
           ))}
           {fields.length > 1 && enableRemoveButton && (
             <Grid item md={1} xs={12}>
@@ -60,16 +72,17 @@ const RHFRepeater = ({
                 onClick={() => {
                   remove(index);
                 }}
+                disabled={disabledValue}
               >
                 <CloseIcon />
               </IconButton>
             </Grid>
           )}
-        </>
+        </React.Fragment>
       ))}
 
       {enableAddButton && (
-        <Grid item md={11} xs={12}>
+        <Grid item md={12}>
           <Button
             type="button"
             sx={{
@@ -81,6 +94,7 @@ const RHFRepeater = ({
             onClick={() => {
               append(cleanField());
             }}
+            disabled={disabledValue}
           >
             {translate('add_new_line')}
           </Button>

@@ -24,7 +24,7 @@ interface SupervisorAcceptingForm {
 const initialState: SupervisorAcceptingForm = {
   isLoading: false,
   error: null,
-  activeStep: 0,
+  activeStep: 4,
   step1: {
     clause: '',
     clasification_field: '',

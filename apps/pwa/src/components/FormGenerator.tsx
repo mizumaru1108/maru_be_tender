@@ -14,6 +14,7 @@ type FieldType =
   | 'uploadLabel'
   | 'textArea'
   | 'repeater'
+  | 'repeaterCustom'
   | 'checkbox'
   | 'radioGroup'
   | 'repeaterLabel'
@@ -56,12 +57,13 @@ const FormGenerator = ({ data }: Props) => (
       if (!element.xs) element.xs = 0;
       return (
         <React.Fragment key={i}>
-          {element.type !== 'repeater' && (
+          {element.type !== 'repeater' && element.type !== 'repeaterCustom' && (
             <Grid item md={element.md} xs={element.xs}>
               <BaseField {...element} />
             </Grid>
           )}
           {element.type === 'repeater' && <BaseField {...element} />}
+          {element.type === 'repeaterCustom' && <BaseField {...element} />}
         </React.Fragment>
       );
     })}

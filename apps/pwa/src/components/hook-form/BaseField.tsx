@@ -32,7 +32,6 @@ function BaseField({
   options,
   maxDate,
   minDate,
-  disabled,
   ...other
 }: FormSingleProps) {
   const { translate } = useLocales();
@@ -96,7 +95,7 @@ function BaseField({
         <RHFUploadSingleFileBe
           name={name ?? ''}
           placeholder={translate(placeholder)}
-          disabled={disabled}
+          disabled={other.disabled}
           {...other}
         />
       )}

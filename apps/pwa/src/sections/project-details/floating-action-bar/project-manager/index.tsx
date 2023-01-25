@@ -135,7 +135,7 @@ function FloatingActionBar() {
     try {
       const payload = {
         proposal_id: proposal_id,
-        action: 'accept',
+        action: 'accept_and_ask_for_consultaion',
         message: 'تم قبول المشروع من قبل مدير المشاريع وإحالته إلى قسم الاستشاريين ',
         notes: values.notes,
       };
@@ -184,37 +184,6 @@ function FloatingActionBar() {
 
       setIsSubmitting(false);
     }
-    // update({
-    //   proposal_id,
-    //   new_values: {
-    //     inner_status: 'ACCEPTED_AND_NEED_CONSULTANT',
-    //     outter_status: 'ONGOING',
-    //     state: 'CONSULTANT',
-    //   },
-    //   log: {
-    //     id: nanoid(),
-    //     proposal_id,
-    //     reviewer_id: user?.id!,
-    //     action: 'accept',
-    //     message: 'تم قبول المشروع من قبل مدير المشاريع وإحالته إلى قسم الاستشاريين ',
-    //     notes: values.notes,
-    //     user_role: 'PROJECT_MANAGER',
-    //     state: 'PROJECT_MANAGER',
-    //   },
-    // }).then((res) => {
-    //   if (res.error) {
-    //     enqueueSnackbar(res.error.message, {
-    //       variant: 'error',
-    //       preventDuplicate: true,
-    //       autoHideDuration: 3000,
-    //     });
-    //   } else {
-    //     enqueueSnackbar(translate('تم إرسال طلب الاستشارة بنجاح'), {
-    //       variant: 'success',
-    //     });
-    //     navigate(`/project-manager/dashboard/app`);
-    //   }
-    // });
   };
 
   const handleRejected = async (values: any) => {
@@ -288,39 +257,39 @@ function FloatingActionBar() {
 
       console.log('payloadStepbackToSupervisor', payload);
 
-      await axiosInstance
-        .patch('/tender-proposal/change-state', payload, {
-          headers: { 'x-hasura-role': activeRole! },
-        })
-        .then((res) => {
-          if (res.data.statusCode === 200) {
-            enqueueSnackbar(translate('proposal_stepback'), {
-              variant: 'success',
-            });
-          }
+      // await axiosInstance
+      //   .patch('/tender-proposal/change-state', payload, {
+      //     headers: { 'x-hasura-role': activeRole! },
+      //   })
+      //   .then((res) => {
+      //     if (res.data.statusCode === 200) {
+      //       enqueueSnackbar(translate('proposal_stepback'), {
+      //         variant: 'success',
+      //       });
+      //     }
 
-          setIsSubmittingStepback(true);
-          navigate(`/project-manager/dashboard/app`);
-        })
-        .catch((err) => {
-          if (typeof err.message === 'object') {
-            err.message.forEach((el: any) => {
-              enqueueSnackbar(el, {
-                variant: 'error',
-                preventDuplicate: true,
-                autoHideDuration: 3000,
-              });
-            });
-          } else {
-            enqueueSnackbar(err.message, {
-              variant: 'error',
-              preventDuplicate: true,
-              autoHideDuration: 3000,
-            });
-          }
+      //     setIsSubmittingStepback(true);
+      //     navigate(`/project-manager/dashboard/app`);
+      //   })
+      //   .catch((err) => {
+      //     if (typeof err.message === 'object') {
+      //       err.message.forEach((el: any) => {
+      //         enqueueSnackbar(el, {
+      //           variant: 'error',
+      //           preventDuplicate: true,
+      //           autoHideDuration: 3000,
+      //         });
+      //       });
+      //     } else {
+      //       enqueueSnackbar(err.message, {
+      //         variant: 'error',
+      //         preventDuplicate: true,
+      //         autoHideDuration: 3000,
+      //       });
+      //     }
 
-          setIsSubmittingStepback(true);
-        });
+      //     setIsSubmittingStepback(true);
+      //   });
     } catch (error) {
       enqueueSnackbar(error.message, {
         variant: 'error',
@@ -330,37 +299,6 @@ function FloatingActionBar() {
 
       setIsSubmittingStepback(true);
     }
-    // update({
-    //   proposal_id,
-    //   new_values: {
-    //     inner_status: 'ACCEPTED_BY_MODERATOR',
-    //     outter_status: 'ONGOING',
-    //     state: 'PROJECT_SUPERVISOR',
-    //     project_manager_id: null,
-    //   },
-    //   log: {
-    //     id: nanoid(),
-    //     proposal_id,
-    //     reviewer_id: user?.id!,
-    //     action: 'step_back',
-    //     message: 'تم إرجاع المشروع خطوة للوراء',
-    //     user_role: 'PROJECT_MANAGER',
-    //     state: 'PROJECT_MANAGER',
-    //   },
-    // }).then((res) => {
-    //   if (res.error) {
-    //     enqueueSnackbar(res.error.message, {
-    //       variant: 'error',
-    //       preventDuplicate: true,
-    //       autoHideDuration: 3000,
-    //     });
-    //   } else {
-    //     enqueueSnackbar('تم إرجاع المعاملة لمشرف المشروع بنجاح', {
-    //       variant: 'success',
-    //     });
-    //     navigate(`/project-manager/dashboard/app`);
-    //   }
-    // });
   };
 
   if (fetching) return <>... Loading</>;

@@ -1,21 +1,54 @@
 // @ts-nocheck
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, RHFSelect, RHFRadioGroup, RHFTextField } from 'components/hook-form';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { ModalProposalType } from '../../../../../@types/project-details';
 import * as Yup from 'yup';
 import { ProposalApprovePayloadSupervisor } from '../../types';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import ModalDialog from 'components/modal-dialog';
-import { Stack, Typography, Grid, Button, MenuItem } from '@mui/material';
+import {
+  Stack,
+  Typography,
+  Grid,
+  Button,
+  MenuItem,
+  Box,
+  TextField,
+  IconButton,
+} from '@mui/material';
 import { _supportGoals } from '_mock/_supportgoals';
 import { useSelector } from 'redux/store';
 import { LoadingButton } from '@mui/lab';
 import useLocales from 'hooks/useLocales';
+import CloseIcon from '@mui/icons-material/Close';
+
+import { useQuery } from 'urql';
+import uuidv4 from 'utils/uuidv4';
+import { getOneProposal } from 'queries/commons/getOneProposal';
+import { useParams } from 'react-router';
 
 function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType) {
-  const { proposal } = useSelector((state) => state.proposal);
   const { translate } = useLocales();
+  const { proposal } = useSelector((state) => state.proposal);
+  const { id: pid } = useParams();
+  const [basedBudget, setBasedBudget] = useState<
+    | { id?: string; amount?: number | undefined | null; clause?: string; explanation?: string }[]
+    | []
+  >([]);
+  const [tempDeletedBudget, setTempDeletedBudget] = useState<
+    | { id?: string; amount?: number | undefined | null; clause?: string; explanation?: string }[]
+    | []
+  >([]);
+
+  const [proposalResult] = useQuery({
+    query: getOneProposal,
+    variables: {
+      id: pid,
+    },
+  });
+
+  const { data: proposalData, fetching: fetchingProposal, error: errorProposal } = proposalResult;
 
   const validationSchema = Yup.object().shape({
     clasification_field: Yup.string().required('clasification_field is required!'),
@@ -24,9 +57,23 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
     closing_report: Yup.boolean().required('closing_report is required!'),
     need_picture: Yup.boolean().required('need_picture is required!'),
     does_an_agreement: Yup.boolean().required('does_an_agreement is required!'),
-    fsupport_by_supervisor: Yup.number().required('fsupport_by_supervisor is required!'),
-    number_of_payments_by_supervisor: Yup.number().required(
-      'number_of_payments_by_supervisor is required!'
+    // fsupport_by_supervisor: Yup.number().required('fsupport_by_supervisor is required!'),
+    // number_of_payments_by_supervisor: Yup.number().required(
+    //   'number_of_payments_by_supervisor is required!'
+    // ),
+    detail_project_budgets: Yup.array().of(
+      Yup.object().shape({
+        clause: Yup.string().required(
+          translate('errors.cre_proposal.detail_project_budgets.clause.required')
+        ),
+        explanation: Yup.string().required(
+          translate('errors.cre_proposal.detail_project_budgets.explanation.required')
+        ),
+        amount: Yup.number()
+          .typeError(translate('errors.cre_proposal.detail_project_budgets.amount.message'))
+          .integer()
+          .required(translate('errors.cre_proposal.detail_project_budgets.amount.required')),
+      })
     ),
     notes: Yup.string(),
     support_outputs: Yup.string().required('support_outputs is required!'),
@@ -39,17 +86,24 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
   const defaultValues = {
     clause: '',
     clasification_field: '',
-    support_type: undefined,
+    support_type: true,
     closing_report: undefined,
     need_picture: undefined,
     does_an_agreement: undefined,
-    fsupport_by_supervisor: undefined,
-    number_of_payments_by_supervisor: undefined,
+    // fsupport_by_supervisor: undefined,
+    // number_of_payments_by_supervisor: undefined,
+    // detail_project_budgets: [
+    //   {
+    //     clause: '',
+    //     explanation: '',
+    //     amount: 0,
+    //   },
+    // ],
     notes: '',
     support_outputs: '',
     vat: undefined,
     vat_percentage: undefined,
-    inclu_or_exclu: false,
+    inclu_or_exclu: undefined,
     support_goal_id: '',
   };
 
@@ -64,21 +118,63 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
     watch,
     setValue,
     resetField,
+    getValues,
+    control,
   } = methods;
 
-  const onSubmitForm = async (data: ProposalApprovePayloadSupervisor) => {
-    onSubmit(data);
-  };
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'detail_project_budgets',
+  });
 
   const vat = watch('vat');
-
   const support_type = watch('support_type');
+  const detail_proposal_budget = watch('detail_project_budgets');
+
+  const handleDeleteBudgets = (id: string, i: number) => {
+    const deleteValues = fields.filter((v) => v.id === id);
+    const newFilterItems = fields.filter((v) => v.id !== id);
+
+    remove(i);
+    setTempDeletedBudget([...tempDeletedBudget, ...deleteValues]);
+    setValue('detail_project_budgets', newFilterItems);
+  };
+
+  const onSubmitForm = async (data: ProposalApprovePayloadSupervisor) => {
+    const created_proposal_budget = detail_proposal_budget.filter(
+      (item) => !basedBudget.find((i) => i.id === item.id)
+    );
+    const updated_proposal_budget = data.detail_project_budgets;
+    const deleted_proposal_budget = tempDeletedBudget;
+
+    const { length } = updated_proposal_budget;
+    const totalFSupport = updated_proposal_budget
+      .map((el) => Number(el.amount))
+      .reduce((acc, curr) => acc + (curr || 0), 0);
+
+    delete data.detail_project_budgets;
+
+    const newData = {
+      fsupport_by_supervisor: totalFSupport,
+      number_of_payments_by_supervisor: length,
+      created_proposal_budget,
+      updated_proposal_budget,
+      deleted_proposal_budget,
+      ...data,
+    };
+
+    // console.log(newData);
+    onSubmit(newData);
+  };
 
   useEffect(() => {
-    if (support_type === 'true') resetField('fsupport_by_supervisor');
-    if (support_type === 'false')
-      setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
-  }, [proposal.amount_required_fsupport, resetField, setValue, support_type]);
+    if (!fetchingProposal && proposalData) {
+      setValue('detail_project_budgets', proposalData.proposal.proposal_item_budgets);
+      setBasedBudget(proposalData.proposal.proposal_item_budgets);
+    } else {
+      resetField('detail_project_budgets');
+    }
+  }, [proposalData, fetchingProposal, resetField, setValue]);
 
   return (
     <FormProvider methods={methods}>
@@ -92,167 +188,289 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
           </Stack>
         }
         content={
-          <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
-            <Grid item md={6} xs={12}>
-              <RHFSelect
-                name="clause"
-                size="small"
-                label="البند حسب التصنيف*"
-                placeholder="الرجاء اختيار البند"
-              >
-                <MenuItem value="مشروع يخص المساجد">مشروع يخص المساجد</MenuItem>
-                <MenuItem value="مشروع يخص المنح الميسر">مشروع يخص المنح الميسر</MenuItem>
-                <MenuItem value="مشروع يخص المبادرات">مشروع يخص المبادرات</MenuItem>
-                <MenuItem value="مشروع يخص تعميدات">مشروع يخص تعميدات</MenuItem>
-              </RHFSelect>
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <RHFSelect
-                name="clasification_field"
-                label="مجال التصنيف*"
-                placeholder="الرجاء اختيار مجال التصنيف"
-                size="small"
-              >
-                <MenuItem value="test">Test</MenuItem>
-              </RHFSelect>
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <RHFRadioGroup
-                type="radioGroup"
-                name="support_type"
-                label="نوع الدعم"
-                options={[
-                  { label: 'دعم جزئي', value: true },
-                  { label: 'دعم كلي', value: false },
-                ]}
-              />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <RHFRadioGroup
-                type="radioGroup"
-                name="closing_report"
-                label="تقرير الإغلاق"
-                options={[
-                  { label: 'نعم', value: true },
-                  { label: 'لا', value: false },
-                ]}
-              />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <RHFRadioGroup
-                type="radioGroup"
-                name="need_picture"
-                label="هل يحتاج إلى صور"
-                options={[
-                  { label: 'نعم', value: true },
-                  { label: 'لا', value: false },
-                ]}
-              />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <RHFRadioGroup
-                type="radioGroup"
-                name="does_an_agreement"
-                label="هل يحتاج اتفاقية"
-                options={[
-                  { label: 'نعم', value: true },
-                  { label: 'لا', value: false },
-                ]}
-              />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <RHFRadioGroup
-                type="radioGroup"
-                name="vat"
-                label="هل يشمل المشروع ضريبة القيمة المضافة"
-                options={[
-                  { label: 'نعم', value: true },
-                  { label: 'لا', value: false },
-                ]}
-              />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <RHFSelect
-                type="select"
-                size="small"
-                name="support_goal_id"
-                placeholder="الرجاء اختيار أهداف الدعم"
-                label="اهداف الدعم*"
-              >
-                {_supportGoals[`${proposal.project_track as keyof typeof _supportGoals}`].map(
-                  (item) => (
-                    <MenuItem value={item.value} key={item.value}>
-                      {item.title}
-                    </MenuItem>
-                  )
+          <>
+            {fetchingProposal && !proposalData ? (
+              <>loading...</>
+            ) : (
+              <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: 0.5 }}>
+                <Grid item md={6} xs={12}>
+                  <RHFSelect
+                    name="clause"
+                    size="small"
+                    label="البند حسب التصنيف*"
+                    placeholder="الرجاء اختيار البند"
+                  >
+                    <MenuItem value="مشروع يخص المساجد">مشروع يخص المساجد</MenuItem>
+                    <MenuItem value="مشروع يخص المنح الميسر">مشروع يخص المنح الميسر</MenuItem>
+                    <MenuItem value="مشروع يخص المبادرات">مشروع يخص المبادرات</MenuItem>
+                    <MenuItem value="مشروع يخص تعميدات">مشروع يخص تعميدات</MenuItem>
+                  </RHFSelect>
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <RHFSelect
+                    name="clasification_field"
+                    label="مجال التصنيف*"
+                    placeholder="الرجاء اختيار مجال التصنيف"
+                    size="small"
+                  >
+                    <MenuItem value="test">Test</MenuItem>
+                  </RHFSelect>
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <RHFRadioGroup
+                    type="radioGroup"
+                    name="support_type"
+                    label="نوع الدعم"
+                    options={[
+                      { label: 'دعم جزئي', value: true },
+                      { label: 'دعم كلي', value: false },
+                    ]}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <RHFRadioGroup
+                    type="radioGroup"
+                    name="closing_report"
+                    label="تقرير الإغلاق"
+                    options={[
+                      { label: 'نعم', value: true },
+                      { label: 'لا', value: false },
+                    ]}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <RHFRadioGroup
+                    type="radioGroup"
+                    name="need_picture"
+                    label="هل يحتاج إلى صور"
+                    options={[
+                      { label: 'نعم', value: true },
+                      { label: 'لا', value: false },
+                    ]}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <RHFRadioGroup
+                    type="radioGroup"
+                    name="does_an_agreement"
+                    label="هل يحتاج اتفاقية"
+                    options={[
+                      { label: 'نعم', value: true },
+                      { label: 'لا', value: false },
+                    ]}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <RHFRadioGroup
+                    type="radioGroup"
+                    name="vat"
+                    label="هل يشمل المشروع ضريبة القيمة المضافة"
+                    options={[
+                      { label: 'نعم', value: true },
+                      { label: 'لا', value: false },
+                    ]}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <RHFSelect
+                    type="select"
+                    size="small"
+                    name="support_goal_id"
+                    placeholder="الرجاء اختيار أهداف الدعم"
+                    label="اهداف الدعم*"
+                  >
+                    {_supportGoals[`${proposal.project_track as keyof typeof _supportGoals}`].map(
+                      (item) => (
+                        <MenuItem value={item.value} key={item.value}>
+                          {item.title}
+                        </MenuItem>
+                      )
+                    )}
+                  </RHFSelect>
+                </Grid>
+                {vat === 'true' && (
+                  <Grid item md={6} xs={12}>
+                    <RHFTextField
+                      type="number"
+                      size="small"
+                      name="vat_percentage"
+                      label="النسبة المئوية من الضريبة"
+                      placeholder="النسبة المئوية من الضريبة"
+                      InputProps={{ inputProps: { min: 0 } }}
+                    />
+                  </Grid>
                 )}
-              </RHFSelect>
-            </Grid>
-            {vat === 'true' && (
-              <Grid item md={6} xs={12}>
-                <RHFTextField
-                  type="number"
-                  size="small"
-                  name="vat_percentage"
-                  label="النسبة المئوية من الضريبة"
-                  placeholder="النسبة المئوية من الضريبة"
-                  InputProps={{ inputProps: { min: 0 } }}
-                />
+                {vat === 'true' && (
+                  <Grid item md={6} xs={12}>
+                    <RHFRadioGroup
+                      type="radioGroup"
+                      name="inclu_or_exclu"
+                      label="هل مبلغ السداد شامل أو غير شامل لضريبة القيمة المضافة"
+                      options={[
+                        { label: 'نعم', value: true },
+                        { label: 'لا', value: false },
+                      ]}
+                    />
+                  </Grid>
+                )}
+                {/* <Grid item md={6} xs={12}>
+                  <RHFTextField
+                    type="number"
+                    size="small"
+                    name="fsupport_by_supervisor"
+                    label="مبلغ الدعم*"
+                    placeholder="مبلغ الدعم"
+                    disabled={true}
+                    InputProps={{ inputProps: { min: 0 } }}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <RHFTextField
+                    type="number"
+                    size="small"
+                    name="number_of_payments_by_supervisor"
+                    label="عدد الدفعات*"
+                    InputProps={{ inputProps: { min: 0 } }}
+                    disabled={true}
+                  />
+                </Grid> */}
+                <Grid item xs={12}>
+                  <Typography sx={{ mb: 2 }}>الموازنة التفصيلية للمشروع</Typography>
+                  {fields.map((v, i) => (
+                    <Grid container key={i} spacing={2} sx={{ mb: 2 }}>
+                      <Grid item xs={3}>
+                        <Controller
+                          name={`detail_project_budgets[${i}].clause`}
+                          control={control}
+                          render={({ field, fieldState: { error } }) => (
+                            <TextField
+                              {...field}
+                              InputLabelProps={{ shrink: true }}
+                              fullWidth
+                              size="small"
+                              error={!!error}
+                              helperText={error?.message}
+                              disabled={
+                                support_type === 'false' || support_type === undefined
+                                  ? true
+                                  : false
+                              }
+                              sx={{
+                                '& > .MuiFormHelperText-root': {
+                                  backgroundColor: 'white',
+                                },
+                              }}
+                            />
+                          )}
+                        />
+                      </Grid>
+                      <Grid item xs={4}>
+                        <Controller
+                          name={`detail_project_budgets[${i}].explanation`}
+                          control={control}
+                          render={({ field, fieldState: { error } }) => (
+                            <TextField
+                              {...field}
+                              InputLabelProps={{ shrink: true }}
+                              fullWidth
+                              size="small"
+                              error={!!error}
+                              helperText={error?.message}
+                              disabled={
+                                support_type === 'false' || support_type === undefined
+                                  ? true
+                                  : false
+                              }
+                              sx={{
+                                '& > .MuiFormHelperText-root': {
+                                  backgroundColor: 'white',
+                                },
+                              }}
+                            />
+                          )}
+                        />
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Controller
+                          name={`detail_project_budgets[${i}].amount`}
+                          control={control}
+                          render={({ field, fieldState: { error } }) => (
+                            <TextField
+                              {...field}
+                              InputLabelProps={{ shrink: true }}
+                              fullWidth
+                              size="small"
+                              type="number"
+                              error={!!error}
+                              helperText={error?.message}
+                              disabled={
+                                support_type === 'false' || support_type === undefined
+                                  ? true
+                                  : false
+                              }
+                              sx={{
+                                '& > .MuiFormHelperText-root': {
+                                  backgroundColor: 'white',
+                                },
+                              }}
+                            />
+                          )}
+                        />
+                      </Grid>
+                      <Grid item xs={2}>
+                        <IconButton
+                          color="error"
+                          variant="contained"
+                          onClick={() => handleDeleteBudgets(v.id, i)}
+                          disabled={
+                            support_type === 'false' || support_type === undefined ? true : false
+                          }
+                        >
+                          <CloseIcon />
+                        </IconButton>
+                      </Grid>
+                    </Grid>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="contained"
+                    color="inherit"
+                    fullWidth
+                    size="medium"
+                    onClick={async () => {
+                      append({
+                        amount: 0,
+                        clause: '',
+                        explanation: '',
+                        id: uuidv4(),
+                      });
+                    }}
+                    disabled={support_type === 'false' || support_type === undefined ? true : false}
+                  >
+                    {translate('add_new_line')}
+                  </Button>
+                </Grid>
+                <Grid item md={12} xs={12}>
+                  <RHFTextField
+                    name="notes"
+                    multiline
+                    minRows={3}
+                    label="ملاحظات على المشروع"
+                    placeholder="اكتب ملاحظاتك هنا"
+                  />
+                </Grid>
+                <Grid item md={12} xs={12}>
+                  <RHFTextField
+                    name="support_outputs"
+                    multiline
+                    minRows={3}
+                    label="مخرجات الدعم (لصالح)*"
+                    placeholder="اكتب هنا"
+                  />
+                </Grid>
               </Grid>
             )}
-            {vat === 'true' && (
-              <Grid item md={6} xs={12}>
-                <RHFRadioGroup
-                  type="radioGroup"
-                  name="inclu_or_exclu"
-                  label="هل مبلغ السداد شامل أو غير شامل لضريبة القيمة المضافة"
-                  options={[
-                    { label: 'نعم', value: true },
-                    { label: 'لا', value: false },
-                  ]}
-                />
-              </Grid>
-            )}
-            <Grid item md={6} xs={12}>
-              <RHFTextField
-                type="number"
-                size="small"
-                name="fsupport_by_supervisor"
-                label="مبلغ الدعم*"
-                placeholder="مبلغ الدعم"
-                disabled={support_type === 'false' ? true : false}
-                InputProps={{ inputProps: { min: 0 } }}
-              />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <RHFTextField
-                type="number"
-                size="small"
-                name="number_of_payments_by_supervisor"
-                label="عدد الدفعات*"
-                placeholder="1"
-                InputProps={{ inputProps: { min: 0 } }}
-              />
-            </Grid>
-            <Grid item md={12} xs={12}>
-              <RHFTextField
-                name="notes"
-                multiline
-                minRows={3}
-                label="ملاحظات على المشروع"
-                placeholder="اكتب ملاحظاتك هنا"
-              />
-            </Grid>
-            <Grid item md={12} xs={12}>
-              <RHFTextField
-                name="support_outputs"
-                multiline
-                minRows={3}
-                label="مخرجات الدعم (لصالح)*"
-                placeholder="اكتب هنا"
-              />
-            </Grid>
-          </Grid>
+          </>
         }
         isOpen={true}
         onClose={onClose}

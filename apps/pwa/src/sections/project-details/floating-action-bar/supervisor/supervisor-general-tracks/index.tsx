@@ -89,39 +89,39 @@ function FloatingActionBar() {
 
       console.log('acceptSupervisor', payload);
 
-      await axiosInstance
-        .patch('/tender-proposal/change-state', payload, {
-          headers: { 'x-hasura-role': activeRole! },
-        })
-        .then((res) => {
-          if (res.data.statusCode === 200) {
-            enqueueSnackbar(translate('proposal_approved'), {
-              variant: 'success',
-            });
-          }
+      // await axiosInstance
+      //   .patch('/tender-proposal/change-state', payload, {
+      //     headers: { 'x-hasura-role': activeRole! },
+      //   })
+      //   .then((res) => {
+      //     if (res.data.statusCode === 200) {
+      //       enqueueSnackbar(translate('proposal_approved'), {
+      //         variant: 'success',
+      //       });
+      //     }
 
-          setIsSubmitting(false);
-          navigate(`/project-supervisor/dashboard/app`);
-        })
-        .catch((err) => {
-          if (typeof err.message === 'object') {
-            err.message.forEach((el: any) => {
-              enqueueSnackbar(el, {
-                variant: 'error',
-                preventDuplicate: true,
-                autoHideDuration: 3000,
-              });
-            });
-          } else {
-            enqueueSnackbar(err.message, {
-              variant: 'error',
-              preventDuplicate: true,
-              autoHideDuration: 3000,
-            });
-          }
+      //     setIsSubmitting(false);
+      //     navigate(`/project-supervisor/dashboard/app`);
+      //   })
+      //   .catch((err) => {
+      //     if (typeof err.message === 'object') {
+      //       err.message.forEach((el: any) => {
+      //         enqueueSnackbar(el, {
+      //           variant: 'error',
+      //           preventDuplicate: true,
+      //           autoHideDuration: 3000,
+      //         });
+      //       });
+      //     } else {
+      //       enqueueSnackbar(err.message, {
+      //         variant: 'error',
+      //         preventDuplicate: true,
+      //         autoHideDuration: 3000,
+      //       });
+      //     }
 
-          setIsSubmitting(false);
-        });
+      //     setIsSubmitting(false);
+      //   });
     } catch (error) {
       enqueueSnackbar(error.message, {
         variant: 'error',
