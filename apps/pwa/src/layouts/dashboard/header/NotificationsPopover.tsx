@@ -124,7 +124,7 @@ export default function NotificationsPopover() {
 
   const { data, fetching, error } = currentSubcription;
 
-  // useEffect(() => {}, [data]);
+  useEffect(() => {}, [data, fetching]);
 
   if (fetching) return <>.. Loading</>;
 
@@ -201,7 +201,7 @@ export default function NotificationsPopover() {
     setOpenAlert(true);
   }
 
-  console.log('RESULT', data);
+  // console.log('RESULT', data);
   // console.log('Subcription', currentSubcription);
   // console.log('ROLE', newActiveRole);
   // console.log('USER', user?.id);
@@ -491,7 +491,14 @@ function NotificationItem({
     let request_action = '';
     if (activeRole !== 'tender_client' && state === newActiveRole && outterStatus === 'ONGOING') {
       footer_action = 'show-details';
-      request_action = 'incoming-support-requests';
+      request_action = 'requests-in-process';
+    } else if (
+      activeRole === 'tender_ceo' &&
+      state === newActiveRole &&
+      outterStatus === 'ONGOING'
+    ) {
+      footer_action = 'show-details';
+      request_action = 'project-management';
     } else {
       footer_action = 'show-project';
       request_action = 'previous-funding-requests';
