@@ -6,6 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import FormGenerator from 'components/FormGenerator';
 import { AdministrativeInfoData } from '../form-data';
 import { AdministrativeValuesProps } from '../../../../@types/register';
+import React from 'react';
 
 type FormProps = {
   onSubmit: (data: any) => void;
@@ -42,13 +43,29 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, children, isEdit }: F
     handleSubmit,
     formState: { isSubmitting },
     watch,
+    reset,
   } = methods;
 
   const agree_on = watch('agree_on');
   const onSubmitForm = async (data: AdministrativeValuesProps) => {
     onSubmit(data);
   };
-
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+    let newValues = { ...defaultValues };
+    const newCeoMobile = defaultValues.ceo_mobile?.replace('+966', '');
+    const newDataEntryMobile = defaultValues.data_entry_mobile?.replace('+966', '');
+    const newChairmanMobile = defaultValues.chairman_mobile?.replace('+966', '');
+    newValues = {
+      ...newValues,
+      ceo_mobile: newCeoMobile,
+      data_entry_mobile: newDataEntryMobile,
+      chairman_mobile: newChairmanMobile,
+    };
+    console.log('newValues', newValues);
+    reset({ ...newValues });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues]);
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7}>

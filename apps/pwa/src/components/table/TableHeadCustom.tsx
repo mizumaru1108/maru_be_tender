@@ -37,6 +37,7 @@ type Props = {
   onSort?: (id: string) => void;
   onSelectAllRows?: (checked: boolean) => void;
   sx?: SxProps<Theme>;
+  editRequest?: boolean;
 };
 
 export default function TableHeadCustom({
@@ -48,13 +49,15 @@ export default function TableHeadCustom({
   onSort,
   onSelectAllRows,
   sx,
+  editRequest,
 }: Props) {
   const { translate } = useLocales();
+  console.log({ headLabel });
 
   return (
     <TableHead sx={sx}>
       <TableRow sx={{ px: '10px' }}>
-        {onSelectAllRows && (
+        {onSelectAllRows && !editRequest && (
           <TableCell padding="checkbox" sx={{ boxShadow: 'inset 0 0 0 0 #fff !important' }}>
             <Checkbox
               indeterminate={numSelected > 0 && numSelected < rowCount}

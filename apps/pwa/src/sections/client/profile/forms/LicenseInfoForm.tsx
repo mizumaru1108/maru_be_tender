@@ -144,7 +144,8 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProp
         </Grid>
         <Grid item md={12} xs={12}>
           <BaseField
-            disabled={isEdit}
+            // disabled={isEdit}
+            disabled
             type="uploadBe"
             name="license_file"
             label="register_form3.license_file.label"
@@ -155,7 +156,8 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProp
         </Grid>
         <Grid item md={12} xs={12}>
           <BaseField
-            disabled={isEdit}
+            // disabled={isEdit}
+            disabled
             type="uploadBe"
             name="board_ofdec_file"
             label="register_form3.resolution_file.label"

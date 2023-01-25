@@ -54,6 +54,7 @@ function ClientProfile() {
         headers: { 'x-hasura-role': activeRole! },
       });
       // console.log({ rest });
+      console.log('res: ', rest.data.data);
       if (!!rest) {
         setDisabelEdit((prev: any) => ({
           ...prev,
@@ -196,7 +197,7 @@ function ClientProfile() {
                   fontSize: isMobile ? '10px' : '15px',
                 }}
                 onClick={() => navigate('/client/my-profile/edit')}
-                // disabled={disabelEdit.association_edit > 0}
+                disabled={disabelEdit.association_edit > 0}
               >
                 {/* تعديل معلومات الحساب */}
                 edit association information

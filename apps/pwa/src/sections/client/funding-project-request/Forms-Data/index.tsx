@@ -215,7 +215,7 @@ export const AddBankData = [
     xs: 12,
   },
   {
-    type: 'textField',
+    type: 'select',
     name: 'bank_name',
     label: 'funding_project_request_form6.bank_name.label',
     placeholder: 'funding_project_request_form6.bank_name.placeholder',

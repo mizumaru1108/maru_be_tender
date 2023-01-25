@@ -21,23 +21,27 @@ type Props = {
   // actions?: React.ReactNode;
   share?: boolean;
   shareLink?: string;
+  editRequest?: boolean;
 };
 
-export default function ProductTableRow({ row, selected, onSelectRow }: Props) {
+export default function ProductTableRow({ row, selected, onSelectRow, editRequest }: Props) {
   const theme = useTheme();
   const { translate } = useLocales();
   const navigate = useNavigate();
 
-  const { partner_name, createdAt, account_status, events, update_status, id } = row;
-
+  const { partner_name, createdAt, account_status, events, update_status, id, status_id, user } =
+    row;
+  console.log({ row, selected, onSelectRow, editRequest });
   return (
     <TableRow hover selected={selected}>
-      <TableCell padding="checkbox">
-        <Checkbox checked={selected} onClick={onSelectRow} />
-      </TableCell>
+      {!editRequest && (
+        <TableCell padding="checkbox">
+          <Checkbox checked={selected} onClick={onSelectRow} />
+        </TableCell>
+      )}
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
         <Typography variant="subtitle2" noWrap>
-          {partner_name}
+          {editRequest ? user?.client_data?.entity : partner_name}
         </Typography>
       </TableCell>
       <TableCell>{moment(createdAt).format('DD-MM-YYYY')}</TableCell>
@@ -45,23 +49,39 @@ export default function ProductTableRow({ row, selected, onSelectRow }: Props) {
         <Label
           variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
           color={
-            ((!account_status ||
+            (((!account_status && !editRequest) ||
               account_status === 'WAITING_FOR_ACTIVATION' ||
               account_status === 'REVISED_ACCOUNT') &&
+              !editRequest &&
               'warning') ||
-            (account_status === 'ACTIVE_ACCOUNT' && 'success') ||
+            (account_status === 'ACTIVE_ACCOUNT' && !editRequest && 'success') ||
+            (editRequest && status_id === 'PENDING' && 'warning') ||
+            (editRequest && status_id === 'APPROVE' && 'success') ||
+            (editRequest && status_id === 'REJECT' && 'error') ||
             'error'
           }
           sx={{ textTransform: 'capitalize' }}
         >
           {(account_status === 'ACTIVE_ACCOUNT' &&
+            !editRequest &&
             translate('account_manager.table.td.label_active_account')) ||
             ((account_status === 'WAITING_FOR_ACTIVATION' ||
               account_status === 'REVISED_ACCOUNT') &&
+              !editRequest &&
               translate('account_manager.table.td.label_waiting_activation')) ||
             (account_status !== 'waiting' &&
+              !editRequest &&
               account_status !== 'approved' &&
               translate('account_manager.table.td.label_canceled_account'))}
+          {(editRequest &&
+            status_id === 'PENDING' &&
+            translate('account_manager.table.td.label_pending')) ||
+            (editRequest &&
+              status_id === 'APPROVE' &&
+              translate('account_manager.table.td.label_approved')) ||
+            (editRequest &&
+              status_id === 'REJECT' &&
+              translate('account_manager.table.td.label_rejected'))}
         </Label>
       </TableCell>
       {update_status ? (

@@ -998,6 +998,7 @@ const ar = {
         partner_name: 'اسم الشريك',
         createdAt: 'تاريخ التسجيل',
         account_status: 'حالة الحساب',
+        request_status: 'حالة الطلب',
         events: 'الاحداث',
       },
       td: {
@@ -1006,6 +1007,9 @@ const ar = {
         label_waiting_activation: 'بانتظار التفعيل',
         label_active_account: 'حساب مفعل',
         label_canceled_account: 'حساب ملغى',
+        label_pending: 'قيد الانتظار',
+        label_approved: 'مقبول',
+        label_rejected: 'مرفوض',
       },
     },
     accept_project: 'قبول المشروع',

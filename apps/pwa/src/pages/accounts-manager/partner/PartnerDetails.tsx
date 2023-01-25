@@ -205,6 +205,7 @@ function AccountPartnerDetails() {
 
   useEffect(() => {
     if (data) {
+      console.log({ data });
       setPartnerDetails(data?.user_by_pk);
       setDynamicState(data?.user_by_pk?.status_id);
     }

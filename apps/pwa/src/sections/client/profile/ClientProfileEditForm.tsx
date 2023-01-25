@@ -25,6 +25,7 @@ import { useQuery } from 'urql';
 import { gettingUserDataForEdit } from 'queries/client/gettingUserDataForEdit';
 import useAuth from 'hooks/useAuth';
 import axiosInstance from '../../../utils/axios';
+import { LoadingButton } from '@mui/lab';
 const taps = [
   'register_first_tap',
   'register_second_tap',
@@ -106,6 +107,7 @@ function ClientProfileEditForm() {
   };
   const [profileState, setProfileState] = useState(initialValue);
   const [open, setOpen] = useState(false);
+  const [LoadingButtonState, setLoadingButtonState] = useState(false);
   const [isEdit, setIsEdit] = useState({
     form1: false,
     form2: false,
@@ -424,6 +426,7 @@ function ClientProfileEditForm() {
   };
 
   const onSubmitEditRequest = async () => {
+    setLoadingButtonState(true);
     let newBankInformation = {};
     if (
       (profileState && profileState.updated_banks && profileState.updated_banks.length > 0) ||
@@ -466,31 +469,34 @@ function ClientProfileEditForm() {
       ...newBankInformation,
     };
     console.log({ payload });
-    // try {
-    //   const rest = await axiosInstance.post(
-    //     'tender/client/edit-request/create',
-    //     {
-    //       // proposal_id: id,
-    //       ...payload,
-    //     },
-    //     {
-    //       headers: { 'x-hasura-role': activeRole! },
-    //     }
-    //   );
-    //   console.log({ rest });
-    //   // if (rest) {
-    //   //   mutate();
-    //   // } else {
-    //   //   alert('Something went wrong');
-    //   // }
-    // } catch (err) {
-    //   console.log(err);
-    //   setOpen(true);
-    //   setErrorState({
-    //     value: true,
-    //     message: err.response.data.message,
-    //   });
-    // }
+    try {
+      const rest = await axiosInstance.post(
+        'tender/client/edit-request/create',
+        {
+          // proposal_id: id,
+          ...payload,
+        },
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
+      console.log({ rest });
+      if (rest) {
+        // mutate();
+        navigate('/client/my-profile');
+        setLoadingButtonState(false);
+      } else {
+        alert('Something went wrong');
+        setLoadingButtonState(false);
+      }
+    } catch (err) {
+      console.log(err);
+      setOpen(true);
+      setErrorState({
+        value: true,
+        message: err.response.data.message,
+      });
+    }
     // console.log({ newBankInformation });
     // console.log({ profileState });
     // const createdBank =
@@ -528,7 +534,8 @@ function ClientProfileEditForm() {
       </Stack>
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="h4">تعديل بيانات الحساب</Typography>
-        <Button
+        <LoadingButton
+          loading={LoadingButtonState}
           onClick={onSubmitEditRequest}
           sx={{
             color: '#fff',
@@ -536,7 +543,7 @@ function ClientProfileEditForm() {
           }}
         >
           إرسال التعديلات
-        </Button>
+        </LoadingButton>
       </Stack>
 
       <Tabs
@@ -632,10 +639,10 @@ function ClientProfileEditForm() {
       <Toast
         variant="outlined"
         // toastType="success"
-        toastType={errorState ? 'error' : 'success'}
+        toastType={!!errorState.value ? 'error' : 'success'}
         // message="تم التأكد من المعلومات أنها صحيحة, لحفظ تعديلاتك الرجاء الضغط على إرسال التعديلات أعلاه"
         message={
-          errorState
+          !!errorState.value
             ? errorState.message
             : 'تم التأكد من المعلومات أنها صحيحة, لحفظ تعديلاتك الرجاء الضغط على إرسال التعديلات أعلاه'
         }

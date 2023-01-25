@@ -82,53 +82,14 @@ function ClientProfileEditForm() {
       );
       console.log({ rest });
       navigate('/client/my-profile');
-      // setDisabelEdit((prev: any) => ({
-      //   ...prev,
-      //   association_edit: rest.data.data,
-      // }));
     } catch (err) {
+      setOpen(true);
+      setErrorState({
+        value: true,
+        message: err.response.data.message,
+      });
       console.log(err);
     }
-    // if (isEdit && isEdit.form1) {
-    //   setIsEdit((prevIsEdit: any) => ({
-    //     ...prevIsEdit,
-    //     form1: false,
-    //   }));
-    //   // setProfileState((prevProfileState: any) => ({
-    //   //   ...prevProfileState,
-    //   //   form1: {
-    //   //     ...prevProfileState.form1,
-    //   //     entity: startedValue && startedValue.entity && startedValue.entity,
-    //   //     client_field: startedValue && startedValue.client_field && startedValue.client_field,
-    //   //     authority: startedValue && startedValue.authority && startedValue.authority,
-    //   //     date_of_esthablistmen:
-    //   //       startedValue &&
-    //   //       startedValue.date_of_esthablistmen &&
-    //   //       startedValue.date_of_esthablistmen,
-    //   //     headquarters: startedValue && startedValue.headquarters && startedValue.headquarters,
-    //   //     num_of_beneficiaries:
-    //   //       startedValue && startedValue.num_of_beneficiaries && startedValue.num_of_beneficiaries,
-    //   //     num_of_employed_facility:
-    //   //       startedValue &&
-    //   //       startedValue.num_of_employed_facility &&
-    //   //       startedValue.num_of_employed_facility,
-    //   //   },
-    //   // }));
-    // }
-    // if (isEdit && !isEdit.form1) {
-    //   setOpen(true);
-    //   setIsEdit((prevIsEdit: any) => ({
-    //     ...prevIsEdit,
-    //     form1: true,
-    //   }));
-    //   setProfileState((prevProfileState: any) => ({
-    //     ...prevProfileState,
-    //     form1: {
-    //       ...prevProfileState.form1,
-    //       ...data,
-    //     },
-    //   }));
-    // }
   };
 
   return (

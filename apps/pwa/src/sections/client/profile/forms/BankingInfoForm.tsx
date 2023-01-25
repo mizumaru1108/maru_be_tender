@@ -6,6 +6,7 @@ import AddBankModal from './AddBankModal';
 import { BankingValuesProps } from '../../../../@types/register';
 import { dataAccount } from '../../../../pages/moderator/mock-data';
 import { nanoid } from 'nanoid';
+import { LIST_OF_BANK } from 'sections/auth/register/RegisterFormData';
 
 type FormProps = {
   children?: React.ReactNode;
@@ -207,6 +208,7 @@ const BankingInfoForm = ({ children, onSubmit, initialValue, onDelete, isEdit }:
             handleClose={handleClose}
             onSubmit={onSubmitForm}
             initialValues={tmpUpdatedBank}
+            listOfBank={LIST_OF_BANK}
           />
         </Stack>
       </Grid>

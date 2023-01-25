@@ -961,6 +961,7 @@ const en = {
         partner_name: 'Partner name',
         createdAt: 'Date of registration',
         account_status: 'Account Status',
+        request_status: 'Request Status',
         events: 'Events',
       },
       td: {
@@ -969,6 +970,9 @@ const en = {
         label_waiting_activation: 'Waiting for activation',
         label_active_account: 'Active account',
         label_canceled_account: 'Canceled account',
+        label_pending: 'Pending',
+        label_approved: 'Approved',
+        label_rejected: 'Rejected',
       },
     },
     accept_project: 'Accept Project',

@@ -32,7 +32,13 @@ type FormValuesProps = {
   id: string;
 };
 
-export default function AddBankModal({ open, handleClose, onSubmit, initialValues }: any) {
+export default function AddBankModal({
+  open,
+  handleClose,
+  onSubmit,
+  initialValues,
+  listOfBank,
+}: any) {
   const { translate } = useLocales();
   const rootRef = React.useRef<HTMLDivElement>(null);
   // const { user } = useAuth();
@@ -132,10 +138,21 @@ export default function AddBankModal({ open, handleClose, onSubmit, initialValue
   };
   React.useEffect(() => {
     if (!!initialValues) {
+      let newValues = { ...initialValues };
+      const checkedBankName = listOfBank.find((bank: any) => {
+        console.log('bank.value', bank);
+        return bank === initialValues.bank_name;
+      });
+      if (!checkedBankName) {
+        newValues = { ...newValues, bank_name: '' };
+      } else {
+        newValues = { ...newValues, bank_name: checkedBankName };
+      }
+
       const newBankAccNumber = initialValues.bank_account_number.replace(/(.{4})/g, '$1 ');
       setValue('bank_account_number', newBankAccNumber);
       setValue('bank_account_name', initialValues.bank_account_name);
-      setValue('bank_name', initialValues.bank_name);
+      setValue('bank_name', newValues.bank_name);
       setValue('card_image', {
         url: initialValues.card_image.url,
         size: initialValues.card_image.size,
@@ -145,7 +162,7 @@ export default function AddBankModal({ open, handleClose, onSubmit, initialValue
         fullName: initialValues.card_image.fullName,
       });
     }
-  }, [initialValues, setValue]);
+  }, [initialValues, setValue, listOfBank]);
   return (
     <Modal
       open={open}

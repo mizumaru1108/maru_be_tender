@@ -7,6 +7,13 @@ export type IPropsTablesList = {
   share?: boolean;
   shareLink?: string;
   update_status?: boolean | false;
+  status_id?: string | null;
+  user?: userTypes | null;
+};
+type userTypes = {
+  client_data?: {
+    entity?: string;
+  };
 };
 
 export type IPropsPortalReportEmployee = {

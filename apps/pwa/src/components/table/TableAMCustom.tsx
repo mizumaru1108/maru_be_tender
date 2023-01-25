@@ -36,6 +36,13 @@ const TABLE_HEAD = [
   { id: 'events', label: 'account_manager.table.th.events', align: 'left' },
   // { id: '', label: '', align: 'center' },
 ];
+const TABLE_HEAD_EDIT = [
+  { id: 'partner_name', label: 'account_manager.table.th.partner_name' },
+  { id: 'createdAt', label: 'account_manager.table.th.createdAt' },
+  { id: 'account_edit', label: 'account_manager.table.th.account_status', align: 'left' },
+  { id: 'events', label: 'account_manager.table.th.events', align: 'left' },
+  // { id: '', label: '', align: 'center' },
+];
 
 // -------------------------------------------------------------------------------
 
@@ -44,11 +51,13 @@ export default function TableAMCustom({
   view_all,
   headline,
   lengthRowsPerPage,
+  editRequest,
 }: {
   data: IPropsTablesList[];
   view_all?: string;
   headline: string;
   lengthRowsPerPage?: number;
+  editRequest?: boolean;
 }) {
   const { translate } = useLocales();
   const [tableData, setTableData] = useState<IPropsTablesList[]>([]);
@@ -165,7 +174,7 @@ export default function TableAMCustom({
           <TableHeadCustom
             order={order}
             orderBy={orderBy}
-            headLabel={TABLE_HEAD}
+            headLabel={editRequest ? TABLE_HEAD_EDIT : TABLE_HEAD}
             rowCount={tableData.length}
             onSort={onSort}
             onSelectAllRows={(checked) =>
@@ -181,16 +190,27 @@ export default function TableAMCustom({
                 boxShadow: 'none !important',
               },
             }}
+            editRequest={editRequest}
           />
           <TableBody>
             {dataFiltered.length > 0 &&
               dataFiltered
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .filter((v) => {
-                  if (query === '') {
-                    return v;
-                  } else if (v.partner_name?.toLowerCase().includes(query.toLowerCase())) {
-                    return v;
+                  if (editRequest) {
+                    if (query === '') {
+                      return v;
+                    } else if (
+                      v.user?.client_data?.entity!.toLowerCase().includes(query.toLowerCase())
+                    ) {
+                      return v;
+                    }
+                  } else {
+                    if (query === '') {
+                      return v;
+                    } else if (v.partner_name?.toLowerCase().includes(query.toLowerCase())) {
+                      return v;
+                    }
                   }
                 })
                 .map((x, key) => (
@@ -199,6 +219,7 @@ export default function TableAMCustom({
                     row={x}
                     selected={selected.includes(x.id as string)}
                     onSelectRow={() => onSelectRow(x.id as string)}
+                    editRequest={editRequest}
                   />
                 ))}
           </TableBody>
