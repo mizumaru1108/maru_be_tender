@@ -216,4 +216,19 @@ export class ClientEditRequestFieldDto {
   @IsOptional()
   @Type(() => ExistingClientBankInformation)
   bank_information?: ExistingClientBankInformation[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => ExistingClientBankInformation)
+  createdBanks?: ExistingClientBankInformation[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => ExistingClientBankInformation)
+  updatedBanks?: ExistingClientBankInformation[];
+  
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => ExistingClientBankInformation)
+  deletedBanks?: ExistingClientBankInformation[];
 }

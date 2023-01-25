@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -25,6 +26,26 @@ import { TenderClientService } from '../services/tender-client.service';
 @Controller('tender/client')
 export class TenderClientController {
   constructor(private readonly tenderClientService: TenderClientService) {}
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_client')
+  @Post('edit-request/create')
+  async createEditRequest(
+    @CurrentUser() user: ICurrentUser,
+    @Body() editRequest: ClientEditRequestFieldDto,
+  ): Promise<BaseResponse<any>> {
+    // console.log('payload', JSON.stringify(editRequest, null, 2));
+    const response = await this.tenderClientService.createEditRequest(
+      user,
+      editRequest,
+    );
+
+    return baseResponseHelper(
+      response,
+      HttpStatus.OK,
+      'Asking for changes successfully applied!, please wait untill account manager responded to your request',
+    );
+  }
 
   @UseGuards(TenderJwtGuard)
   @Get('current-user-track')
@@ -90,41 +111,21 @@ export class TenderClientController {
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_client')
-  @Post('edit-request/create')
-  async createEditRequest(
+  @TenderRoles('tender_accounts_manager')
+  @Patch('approve-edit-requests')
+  async approveEditRequests(
     @CurrentUser() user: ICurrentUser,
-    @Body() editRequest: ClientEditRequestFieldDto,
+    @Body() editRequest: EditRequestByIdDto,
   ): Promise<BaseResponse<any>> {
-    // console.log('payload', JSON.stringify(editRequest, null, 2));
-    const response = await this.tenderClientService.createEditRequest(
-      user,
-      editRequest,
+    const response = await this.tenderClientService.acceptEditRequests(
+      user.id,
+      editRequest.requestid,
     );
 
     return baseResponseHelper(
       response,
       HttpStatus.OK,
-      'Asking for changes successfully applied!, please wait untill account manager responded to your request',
+      'Asking for changes successfully applied!',
     );
   }
-
-  // @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  // @TenderRoles('tender_accounts_manager')
-  // @Patch('approve-edit-requests')
-  // async approveEditRequests(
-  //   @CurrentUser() user: ICurrentUser,
-  //   @Body() editRequest: BatchApproveEditRequestDto,
-  // ): Promise<BaseResponse<any>> {
-  //   const response = await this.tenderClientService.acceptEditRequests(
-  //     user.id,
-  //     editRequest,
-  //   );
-
-  //   return baseResponseHelper(
-  //     response,
-  //     HttpStatus.OK,
-  //     'Asking for changes successfully applied!',
-  //   );
-  // }
 }

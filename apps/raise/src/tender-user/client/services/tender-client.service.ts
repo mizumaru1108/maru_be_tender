@@ -8,7 +8,7 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { ICurrentUser } from '../../../user/interfaces/current-user.interface';
 
 import { ConfigService } from '@nestjs/config';
-import { Prisma } from '@prisma/client';
+import { bank_information, client_data, Prisma } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { AllowedFileType } from '../../../commons/enums/allowed-filetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
@@ -27,9 +27,10 @@ import { ExistingClientBankInformation } from '../dtos/requests/existing-bank-in
 import { SearchEditRequestFilter } from '../dtos/requests/search-edit-request-filter-request.dto';
 import { BankInformationsMapper } from '../mappers/bank_information.mapper';
 import { CreateClientMapper } from '../mappers/create-client.mapper';
-import { CreateEditRequestLogMapper } from '../mappers/create-edit-request-log.mapper';
 import { UserClientDataMapper } from '../mappers/user-client-data.mapper';
 import { TenderClientRepository } from '../repositories/tender-client.repository';
+import { EditRequestByIdDto } from '../dtos/requests/edit-request-by-id.dto';
+import { ApproveEditRequestMapper } from '../mappers/approve-edit-request.mapper';
 @Injectable()
 export class TenderClientService {
   private readonly appEnv: string;
@@ -327,11 +328,6 @@ export class TenderClientService {
     if (!log) throw new NotFoundException('Edit Request Not Found!');
 
     return {
-      // current_data: {
-      //   client_data: log.user.client_data,
-      //   bank_informations: log.user.bank_information,
-      // }
-      // log,
       current_data: {
         ...JSON.parse(log.old_value!),
       },
@@ -339,8 +335,6 @@ export class TenderClientService {
         ...JSON.parse(log.new_value),
       },
     };
-
-    // return log;
   }
 
   async createEditRequest(
@@ -383,19 +377,24 @@ export class TenderClientService {
       } as ClientEditRequestFieldDto;
 
       const fullPayloadRequest = this.sanitizeEditRequest(tmp);
-      const fullPayloadFinal = this.sanitizeEditRequest(editRequest);
+      const createdBankInfo: ExistingClientBankInformation[] = [];
+      const updatedBankInfo: ExistingClientBankInformation[] = [];
+      const deletedBankInfo: ExistingClientBankInformation[] = [];
 
-      let newEditRequest: Prisma.edit_request_logsUncheckedCreateInput[] = [];
+      let fullPayloadFinal = this.sanitizeEditRequest(editRequest);
 
-      const editRequestLogPayload = CreateEditRequestLogMapper(user.id);
-
-      const baseEditRequest = {
-        request_id: editRequestLogPayload.id,
+      let baseNewEditRequest = {
+        id: uuidv4(),
+        user_id: user.id,
+        status_id: 'PENDING',
       };
+      let newEditRequest: Prisma.edit_requestsUncheckedCreateInput | undefined =
+        undefined;
 
       const maxSize: number = 1024 * 1024 * 6; // 6MB
 
       const newBankInfo: ExistingClientBankInformation[] = [];
+
       if (old_banks && old_banks.length > 0) {
         newBankInfo.push(...old_banks);
 
@@ -464,15 +463,8 @@ export class TenderClientService {
               card_image: cardImage,
             };
 
-            newEditRequest.push({
-              id: uuidv4(),
-              identifier: `bankInfo@updated(${i + 1})`,
-              old_value: JSON.stringify(oldData),
-              new_value: JSON.stringify(newData),
-              ...baseEditRequest,
-            });
-
             newBankInfo[idx] = newData as any;
+            updatedBankInfo.push(newData as any);
           }
         }
 
@@ -481,15 +473,8 @@ export class TenderClientService {
             const idx = newBankInfo.findIndex(
               (value) => value.id === deleted_banks[i].id,
             );
-            const oldData = newBankInfo[idx];
-            newEditRequest.push({
-              id: uuidv4(),
-              identifier: `bankInfo@deleted(${i + 1})`,
-              old_value: JSON.stringify(oldData ?? undefined),
-              new_value: JSON.stringify(deleted_banks[i]),
-              ...baseEditRequest,
-            });
 
+            deletedBankInfo.push(newBankInfo[i]);
             newBankInfo.splice(idx, 1);
           }
         }
@@ -508,24 +493,16 @@ export class TenderClientService {
 
             uploadedFilePath = uploadResult.uploadedFilePath;
 
-            const bankInfo: Prisma.bank_informationUncheckedCreateInput = {
+            newBankInfo.push({
               id: uuidv4(),
               user_id: user.id,
               bank_name: created_banks[i].bank_name,
               bank_account_name: created_banks[i].bank_account_name,
               bank_account_number: created_banks[i].bank_account_number,
               card_image: uploadResult.fileObj,
-            };
-
-            newEditRequest.push({
-              id: uuidv4(),
-              identifier: `bankInfo@created(${i + 1})`,
-              old_value: undefined,
-              new_value: JSON.stringify(bankInfo),
-              ...baseEditRequest,
             });
 
-            newBankInfo.push({
+            createdBankInfo.push({
               id: uuidv4(),
               user_id: user.id,
               bank_name: created_banks[i].bank_name,
@@ -538,20 +515,27 @@ export class TenderClientService {
 
         fullPayloadRequest['bank_information'] = old_banks;
         fullPayloadFinal['bank_information'] = newBankInfo;
+        fullPayloadFinal = {
+          ...fullPayloadFinal,
+          createdBanks: [...createdBankInfo],
+          updatedBanks: [...updatedBankInfo],
+          deletedBanks: deleted_banks,
+        };
 
-        newEditRequest.push({
-          id: uuidv4(),
-          identifier: `full_payload`,
-          old_value: JSON.stringify(fullPayloadRequest),
-          new_value: JSON.stringify(fullPayloadFinal),
-          ...baseEditRequest,
-        });
+        // newEditRequest = {
+        //   ...baseNewEditRequest,
+        //   old_value: JSON.stringify(fullPayloadRequest),
+        //   new_value: JSON.stringify(fullPayloadFinal),
+        // };
       }
 
-      // console.log('the edit request', newEditRequest);
+      newEditRequest = {
+        ...baseNewEditRequest,
+        old_value: JSON.stringify(fullPayloadRequest),
+        new_value: JSON.stringify(fullPayloadFinal),
+      };
 
       const response = await this.tenderClientRepository.createUpdateRequest(
-        editRequestLogPayload,
         newEditRequest,
       );
 
@@ -571,7 +555,10 @@ export class TenderClientService {
   }
 
   async findMyPendingLogCount(user_id: string) {
-    return await this.tenderClientRepository.countMyPendingLogs(user_id);
+    const total = await this.tenderClientRepository.countMyPendingLogs(user_id);
+    return {
+      dataCount: total,
+    };
   }
 
   async uploadClientFile(
@@ -647,208 +634,63 @@ export class TenderClientService {
     return newValue;
   }
 
-  // single accept for edit request
-  // async acceptEditRequest(reviewerId: string, request: ApproveEditRequestDto) {
-  //   // check if the request is exist and not approved yet
-  //   const editRequest = await this.tenderClientRepository.findUpdateRequestById(
-  //     request.requestId,
-  //   );
-  //   if (!editRequest) throw new NotFoundException('Edit request not found!');
+  async acceptEditRequests(reviewerId: string, request_id: string) {
+    const requestData =
+      await this.tenderClientRepository.findEditRequestLogByRequestId(
+        request_id,
+      );
 
-  //   // check if the request is already approved / rejected
-  //   if (editRequest.approval_status === 'APPROVED') {
-  //     throw new BadRequestException('Edit request already approved!');
-  //   }
-  //   if (editRequest.approval_status === 'REJECTED') {
-  //     throw new BadRequestException('Edit request already rejected!');
-  //   }
+    if (!requestData) {
+      throw new BadRequestException('No Request Data Found!');
+    }
 
-  //   let logs: string = '';
-  //   let itemsLeft: string[] = [];
+    let old_data: client_data;
+    let new_data: client_data;
+    let updateClientPayload: Prisma.client_dataUncheckedUpdateInput | undefined;
+    let created_bank: Prisma.bank_informationCreateManyInput[] = [];
+    let updated_bank: bank_information[] = [];
+    let deleted_bank: bank_information[] = [];
 
-  //   // check the field type
-  //   const {
-  //     field_type: fieldType,
-  //     new_value: newValue,
-  //     field_name: fieldName,
-  //   } = editRequest;
+    const { old_value, new_value } = requestData;
 
-  //   // parse the new value to the correct type based on the field type
-  //   const parsedValue = this.valueParser(fieldType, newValue);
+    let oldTmp = JSON.parse(old_value);
+    delete oldTmp.bank_information;
+    old_data = oldTmp;
 
-  //   // approve the request, and change the field value
-  //   if (
-  //     [
-  //       'password',
-  //       'email',
-  //       'entity_mobile',
-  //       'employee_name',
-  //       'bank_information',
-  //     ].indexOf(fieldName) === -1
-  //   ) {
-  //     await this.tenderClientRepository.appoveUpdateRequest(
-  //       editRequest,
-  //       reviewerId,
-  //       parsedValue,
-  //     );
-  //   } else {
-  //     console.log('on else');
-  //     // TODO: if it password, email, phone number / bank apply custom logic.
-  //   }
+    let newTmp = JSON.parse(new_value);
+    created_bank = newTmp['createdBanks'];
+    updated_bank = newTmp['updatedBanks'];
+    deleted_bank = newTmp['deletedBanks'];
 
-  //   // count the remaining request
-  //   const remainingRequest =
-  //     await this.tenderClientRepository.getRemainingUpdateRequestCount(
-  //       editRequest.user_id,
-  //     );
+    delete newTmp.bank_information;
+    delete newTmp.createdBanks;
+    delete newTmp.updatedBanks;
+    delete newTmp.deletedBanks;
+    new_data = newTmp;
 
-  //   if (remainingRequest.length === 0) {
-  //     await this.tenderUserRepository.changeUserStatus(
-  //       editRequest.user_id,
-  //       'ACTIVE_ACCOUNT',
-  //     );
-  //     logs = 'All edit request has been approved, your account is active now!';
-  //   }
+    // if (identifier.toLowerCase().includes('bankinfo@created'.toLowerCase())) {
+    //   let tmp = JSON.parse(new_value);
+    //   created_bank.push(tmp);
+    // }
+    // if (identifier.toLowerCase().includes('bankinfo@updated'.toLowerCase())) {
+    //   let tmp = JSON.parse(new_value);
+    //   updated_bank.push(tmp);
+    // }
+    // if (identifier.toLowerCase().includes('bankinfo@deleted'.toLowerCase())) {
+    //   let tmp = JSON.parse(new_value);
+    //   tmp['is_deleted'] = true;
+    //   deleted_bank.push(tmp);
+    // }
 
-  //   if (remainingRequest.length > 0) {
-  //     itemsLeft = remainingRequest.map((item: edit_request) => {
-  //       return ` [${item.field_name}]`;
-  //     });
+    updateClientPayload = ApproveEditRequestMapper(old_data, new_data);
 
-  //     logs = `Edit request has been approved, you have ${remainingRequest.length} request(s) remaining,  your account is still inactive!`;
-  //   }
-
-  //   return {
-  //     logs,
-  //     itemsLeft,
-  //   };
-  // }
-
-  // batch accept for edit request
-  // async acceptEditRequests(
-  //   reviewerId: string,
-  //   request: BatchApproveEditRequestDto,
-  // ) {
-  //   // check if the request is exist and not approved yet
-  //   const editRequests =
-  //     await this.tenderClientRepository.findUnapprovedEditRequestByUserId(
-  //       request.userId,
-  //     );
-
-  //   const updateClientPayload: Record<string, any> = {};
-  //   const updateUserPayload: Record<string, any> = {};
-  //   let createBankInfoPayload: Prisma.bank_informationCreateInput[] = [];
-  //   const updateBankInfoPayload: UpdateBankInfoPayload[] = [];
-  //   const fusionAuthChangeUserPayload: UpdateUserPayload = {};
-
-  //   if (editRequests.length > 0) {
-  //     editRequests.forEach((editRequest) => {
-  //       const parsedValue = this.valueParser(
-  //         editRequest.field_type,
-  //         editRequest.new_value,
-  //       );
-
-  //       // change email and mobile will be implemented later on
-  //       // if (
-  //       //   ['employee_name', 'email', 'entity_mobile'].indexOf(
-  //       //     editRequest.field_name,
-  //       //   ) > -1
-  //       // ) {
-  //       if (['employee_name'].indexOf(editRequest.field_name) > -1) {
-  //         updateUserPayload[editRequest.field_name] = parsedValue;
-  //         // will be user later on after email and mobile number can be edited.
-  //         // if (editRequest.field_name === 'email') {
-  //         //   fusionAuthChangeUserPayload.email = parsedValue;
-  //         // }
-  //         // if (editRequest.field_name === 'entity_mobile') {
-  //         //   fusionAuthChangeUserPayload.mobile_number = parsedValue;
-  //         // }
-  //         if (editRequest.field_name === 'employee_name') {
-  //           fusionAuthChangeUserPayload.employee_name = parsedValue;
-  //         }
-  //       } else if (editRequest.field_name.split('.')[0] === 'bankInfo') {
-  //         const bankInfoId = editRequest.field_name.split('.')[1];
-  //         const bankInfoField = editRequest.field_name.split('.')[2];
-
-  //         if (updateBankInfoPayload.length > 0) {
-  //           updateBankInfoPayload.forEach((item) => {
-  //             // if item._id === bankinfoId then add the field to the data, else create new item
-  //             if (item._id === bankInfoId) {
-  //               item.data[bankInfoField] = parsedValue;
-  //             } else {
-  //               updateBankInfoPayload.push({
-  //                 _id: bankInfoId,
-  //                 data: {
-  //                   [bankInfoField]: parsedValue,
-  //                 },
-  //               });
-  //             }
-  //           });
-  //         } else {
-  //           updateBankInfoPayload.push({
-  //             _id: bankInfoId,
-  //             data: {
-  //               [bankInfoField]: parsedValue,
-  //             },
-  //           });
-  //         }
-  //       } else if (editRequest.field_name === 'newBankInfo') {
-  //         // push to current array
-  //         createBankInfoPayload = [
-  //           ...(createBankInfoPayload || []),
-  //           parsedValue as Prisma.bank_informationCreateInput,
-  //         ];
-  //       } else if (editRequest.field_name === 'password') {
-  //         fusionAuthChangeUserPayload.password = parsedValue;
-  //       } else {
-  //         updateClientPayload[editRequest.field_name] = parsedValue;
-  //       }
-  //     });
-  //   }
-
-  //   this.logger.log('info', 'client update payload', updateClientPayload);
-  //   this.logger.log('info', 'user update payload', updateUserPayload);
-  //   this.logger.log('info', 'bank info update payload', updateBankInfoPayload);
-  //   this.logger.log(
-  //     'info',
-  //     'create many bank info payload',
-  //     createBankInfoPayload,
-  //   );
-  //   this.logger.log(
-  //     'info',
-  //     'user new password',
-  //     fusionAuthChangeUserPayload.password,
-  //   );
-
-  //   // const response =
-  //   await this.tenderClientRepository.approveEditRequests(
-  //     request.userId,
-  //     reviewerId,
-  //     updateClientPayload,
-  //     updateUserPayload,
-  //     createBankInfoPayload,
-  //     updateBankInfoPayload,
-  //   );
-  //   // console.log('response', response);
-
-  //   if (Object.keys(fusionAuthChangeUserPayload).length > 0) {
-  //     this.logger.log(
-  //       'info',
-  //       'changing user info on fusion auth with: ',
-  //       fusionAuthChangeUserPayload,
-  //     );
-
-  //     const fusionAuthResponse =
-  //       await this.fusionAuthService.fusionAuthUpdateUser(
-  //         request.userId,
-  //         fusionAuthChangeUserPayload,
-  //       );
-
-  //     this.logger.log(
-  //       'info',
-  //       'FusionAuth Changing is',
-  //       fusionAuthResponse ? 'success' : 'failed',
-  //     );
-  //   }
-  // }
+    return {
+      old_data,
+      new_data,
+      updateClientPayload,
+      // created_bank,
+      // updated_bank,
+      // deleted_bank,
+    };
+  }
 }

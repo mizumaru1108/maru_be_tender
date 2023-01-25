@@ -51,7 +51,6 @@ export function CreateEditRequestMapper(
   //   if (key in oldValues && value !== oldValues[key]) {
   //     const editRequest: edit_request = {
   //       id: uuidv4(),
-  //       identifier: key,
   //       old_value: oldValues[key].toString(),
   //       new_value: value.toString(),
   //       ...baseEditRequest,
@@ -62,12 +61,11 @@ export function CreateEditRequestMapper(
   //   }
   // }
 
-  const editRequest: Prisma.edit_request_logsUncheckedCreateInput[] = [];
+  const editRequest: Prisma.edit_requestsUncheckedCreateInput[] = [];
 
   if (entity && entity !== clientData.entity) {
     editRequest.push({
       id: uuidv4(),
-      identifier: 'entity',
       old_value: clientData.entity,
       new_value: entity,
       ...baseEditRequest,
@@ -78,7 +76,6 @@ export function CreateEditRequestMapper(
   if (authority && authority !== clientData.authority) {
     editRequest.push({
       id: uuidv4(),
-      identifier: 'authority',
       old_value: clientData.authority,
       new_value: authority,
       ...baseEditRequest,
@@ -89,7 +86,6 @@ export function CreateEditRequestMapper(
   if (headquarters && headquarters !== clientData.headquarters) {
     editRequest.push({
       id: uuidv4(),
-      identifier: 'headquarters',
       old_value: clientData.headquarters,
       new_value: headquarters,
       ...baseEditRequest,
@@ -106,7 +102,6 @@ export function CreateEditRequestMapper(
     if (date_of_esthablistmen.toISOString() !== existing) {
       editRequest.push({
         id: uuidv4(),
-        identifier: 'date_of_esthablistmen',
         old_value: clientData.date_of_esthablistmen
           ? clientData.date_of_esthablistmen.toISOString()
           : null,
@@ -123,7 +118,6 @@ export function CreateEditRequestMapper(
   ) {
     editRequest.push({
       id: uuidv4(),
-      identifier: 'num_of_beneficiaries',
       old_value: clientData.num_of_beneficiaries
         ? clientData.num_of_beneficiaries.toString()
         : null,
@@ -139,7 +133,6 @@ export function CreateEditRequestMapper(
   ) {
     editRequest.push({
       id: uuidv4(),
-      identifier: 'num_of_employed_facility',
       old_value: clientData.num_of_employed_facility
         ? clientData.num_of_employed_facility.toString()
         : null,
@@ -152,7 +145,6 @@ export function CreateEditRequestMapper(
   if (governorate && governorate !== clientData.governorate) {
     editRequest.push({
       id: uuidv4(),
-      identifier: 'governorate',
       old_value: clientData.governorate,
       new_value: governorate,
       ...baseEditRequest,
@@ -163,7 +155,6 @@ export function CreateEditRequestMapper(
   if (region && region !== clientData.region) {
     editRequest.push({
       id: uuidv4(),
-      identifier: 'region',
       old_value: clientData.region,
       new_value: region,
       ...baseEditRequest,
@@ -174,7 +165,6 @@ export function CreateEditRequestMapper(
   // if (entity_mobile && entity_mobile !== clientData.entity_mobile) {
   //   editRequest.push({
   //     id: uuidv4(),
-  //     identifier: 'entity_mobile',
   //     old_value: clientData.entity_mobile,
   //     new_value: entity_mobile,
   //     ...baseEditRequest,
@@ -188,7 +178,6 @@ export function CreateEditRequestMapper(
   ) {
     editRequest.push({
       id: uuidv4(),
-      identifier: 'center_administration',
       old_value: clientData.center_administration,
       new_value: center_administration,
       ...baseEditRequest,
@@ -199,7 +188,6 @@ export function CreateEditRequestMapper(
   if (twitter_acount && twitter_acount !== clientData.twitter_acount) {
     editRequest.push({
       id: uuidv4(),
-      identifier: 'twitter_acount',
       old_value: clientData.twitter_acount,
       new_value: twitter_acount,
       ...baseEditRequest,
@@ -210,7 +198,6 @@ export function CreateEditRequestMapper(
   if (phone && phone !== clientData.phone) {
     editRequest.push({
       id: uuidv4(),
-      identifier: 'phone',
       old_value: clientData.phone,
       new_value: phone,
       ...baseEditRequest,
@@ -221,7 +208,6 @@ export function CreateEditRequestMapper(
   if (website && website !== clientData.website) {
     editRequest.push({
       id: uuidv4(),
-      identifier: 'website',
       old_value: clientData.website,
       new_value: website,
       ...baseEditRequest,
@@ -232,7 +218,6 @@ export function CreateEditRequestMapper(
   // if (email && email !== clientData.user.email) {
   //   editRequest.push({
   //     id: uuidv4(),
-  //     identifier: 'email',
   //     old_value: clientData.user.email,
   //     new_value: email,
   //     ...baseEditRequest,
@@ -243,7 +228,6 @@ export function CreateEditRequestMapper(
   // if (password) {
   //   editRequest.push({
   //     id: uuidv4(),
-  //     identifier: 'password',
   //     old_value: '',
   //     new_value: password,
   //     ...baseEditRequest,
@@ -254,7 +238,6 @@ export function CreateEditRequestMapper(
   if (license_number && license_number !== clientData.license_number) {
     editRequest.push({
       id: uuidv4(),
-      identifier: 'license_number',
       old_value: clientData.license_number,
       new_value: license_number,
       ...baseEditRequest,
@@ -271,7 +254,6 @@ export function CreateEditRequestMapper(
     if (license_expired.toISOString() !== existing) {
       editRequest.push({
         id: uuidv4(),
-        identifier: 'license_expired',
         old_value: clientData.license_expired
           ? clientData.license_expired.toISOString()
           : null,
@@ -291,7 +273,6 @@ export function CreateEditRequestMapper(
     if (license_issue_date.toISOString() !== existing) {
       editRequest.push({
         id: uuidv4(),
-        identifier: 'license_issue_date',
         old_value: clientData.license_issue_date
           ? clientData.license_issue_date.toISOString()
           : null,
@@ -308,7 +289,6 @@ export function CreateEditRequestMapper(
   // ) {
   //   editRequest.push({
   //     id: uuidv4(),
-  //     identifier: 'license_file',
   //     old_value: '',
   //     new_value: JSON.stringify(license_file),
   //     ...baseEditRequest,
@@ -322,7 +302,6 @@ export function CreateEditRequestMapper(
   // ) {
   //   editRequest.push({
   //     id: uuidv4(),
-  //     identifier: 'board_ofdec_file',
   //     old_value: '',
   //     new_value: JSON.stringify(board_ofdec_file),
   //     ...baseEditRequest,
@@ -333,7 +312,6 @@ export function CreateEditRequestMapper(
   if (ceo_mobile && ceo_mobile !== clientData.ceo_mobile) {
     editRequest.push({
       id: uuidv4(),
-      identifier: 'ceo_mobile',
       old_value: clientData.ceo_mobile,
       new_value: ceo_mobile,
       ...baseEditRequest,
@@ -344,7 +322,6 @@ export function CreateEditRequestMapper(
   if (ceo_name && ceo_name !== clientData.ceo_name) {
     editRequest.push({
       id: uuidv4(),
-      identifier: 'ceo_name',
       old_value: clientData.ceo_name,
       new_value: ceo_name,
       ...baseEditRequest,
@@ -355,7 +332,6 @@ export function CreateEditRequestMapper(
   if (data_entry_mobile && data_entry_mobile !== clientData.data_entry_mobile) {
     editRequest.push({
       id: uuidv4(),
-      identifier: 'data_entry_mobile',
       old_value: clientData.data_entry_mobile,
       new_value: data_entry_mobile,
       ...baseEditRequest,
@@ -366,7 +342,6 @@ export function CreateEditRequestMapper(
   if (data_entry_name && data_entry_name !== clientData.data_entry_name) {
     editRequest.push({
       id: uuidv4(),
-      identifier: 'data_entry_name',
       old_value: clientData.data_entry_name,
       new_value: data_entry_name,
       ...baseEditRequest,
@@ -377,7 +352,6 @@ export function CreateEditRequestMapper(
   if (data_entry_mail && data_entry_mail !== clientData.data_entry_mail) {
     editRequest.push({
       id: uuidv4(),
-      identifier: 'data_entry_mail',
       old_value: clientData.data_entry_mail,
       new_value: data_entry_mail,
       ...baseEditRequest,
@@ -388,7 +362,6 @@ export function CreateEditRequestMapper(
   if (client_field && client_field !== clientData.client_field) {
     editRequest.push({
       id: uuidv4(),
-      identifier: 'client_field',
       old_value: clientData.client_field,
       new_value: client_field,
       ...baseEditRequest,

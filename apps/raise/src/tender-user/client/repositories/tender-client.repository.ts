@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import {
   bank_information,
   client_data,
-  edit_requests,
   Prisma,
   user,
   user_status,
@@ -12,9 +11,7 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
 import { SearchEditRequestFilter } from '../dtos/requests/search-edit-request-filter-request.dto';
-import { RawEditRequestByLogIdDto } from '../dtos/responses/raw-edit-request-by-log-id.dto';
 import { UpdateBankInfoPayload } from '../interfaces/update-bank-info-payload.interface';
-import { ApprovalStatus } from '../types';
 
 @Injectable()
 export class TenderClientRepository {
@@ -115,6 +112,7 @@ export class TenderClientRepository {
           data_entry_mail: true,
           // chairman_name: true,
           // chairman_mobile: true,
+          client_field: true,
           user: {
             select: {
               status_id: true,
@@ -155,11 +153,11 @@ export class TenderClientRepository {
     }
   }
 
-  async findEditRequestLogsByRequestId(request_id: string) {
+  async findEditRequestLogsByRequestId(id: string) {
     try {
-      return await this.prismaService.edit_request_logs.findMany({
+      return await this.prismaService.edit_requests.findMany({
         where: {
-          request_id,
+          id,
         },
       });
     } catch (error) {
@@ -202,15 +200,11 @@ export class TenderClientRepository {
   //   }
   // }
 
-  async findEditRequestLogByRequestId(request_id: string) {
+  async findEditRequestLogByRequestId(id: string) {
     try {
-      return await this.prismaService.edit_request_logs.findFirst({
+      return await this.prismaService.edit_requests.findFirst({
         where: {
-          request_id: request_id,
-          identifier: {
-            contains: 'full_payload',
-            mode: 'insensitive',
-          },
+          id,
         },
       });
     } catch (error) {
@@ -319,21 +313,12 @@ export class TenderClientRepository {
 
   async createUpdateRequest(
     editRequestLogPayload: Prisma.edit_requestsUncheckedCreateInput,
-    editRequest?: Prisma.edit_request_logsUncheckedCreateInput[],
   ) {
     try {
       return await this.prismaService.$transaction(async (prisma) => {
-        const logs = await prisma.edit_requests.create({
+        return await prisma.edit_requests.create({
           data: editRequestLogPayload,
         });
-
-        if (editRequest) {
-          await prisma.edit_request_logs.createMany({
-            data: editRequest,
-          });
-        }
-
-        return logs;
       });
     } catch (error) {
       const theError = prismaErrorThrower(

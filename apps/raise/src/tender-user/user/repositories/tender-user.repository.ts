@@ -77,6 +77,7 @@ export class TenderUserRepository {
         where: { id: userId },
         include: {
           roles: true,
+          client_data: true,
         },
       });
     } catch (error) {
