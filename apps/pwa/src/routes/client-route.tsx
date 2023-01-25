@@ -19,6 +19,7 @@ const ContactSupport = Loadable(lazy(() => import('pages/client/ContactSupport')
 const MainClientPage = Loadable(lazy(() => import('pages/client/MainClientPage')));
 const ClientProfile = Loadable(lazy(() => import('pages/client/ClientProfile')));
 const ClientProfileEdit = Loadable(lazy(() => import('pages/client/ClientProfileEdit')));
+const ClientUserEdit = Loadable(lazy(() => import('pages/client/ClientUserEdit')));
 const Searching = Loadable(lazy(() => import('pages/searching')));
 const Appointments = Loadable(lazy(() => import('pages/client/Appointments')));
 const AdjustYourTime = Loadable(lazy(() => import('pages/client/AdjustYourTime')));
@@ -38,6 +39,7 @@ export const clientRoute = {
       children: [
         { path: '', element: <ClientProfile /> },
         { path: 'edit', element: <ClientProfileEdit /> },
+        { path: 'edit-user', element: <ClientUserEdit /> },
       ],
     },
     {

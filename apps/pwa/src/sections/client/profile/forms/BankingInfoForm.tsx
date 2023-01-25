@@ -4,6 +4,8 @@ import { Button, Grid, Stack } from '@mui/material';
 import BankImageComp from 'sections/shared/BankImageComp';
 import AddBankModal from './AddBankModal';
 import { BankingValuesProps } from '../../../../@types/register';
+import { dataAccount } from '../../../../pages/moderator/mock-data';
+import { nanoid } from 'nanoid';
 
 type FormProps = {
   children?: React.ReactNode;
@@ -17,25 +19,28 @@ const BankingInfoForm = ({ children, onSubmit, initialValue, onDelete, isEdit }:
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [deletedBankId, setDeletedBankId] = useState<string[]>([]);
+  const [deleted_banks, setDeletedBank] = useState<any>([]);
   const [tmpBank, setTmpBank] = useState<any>(initialValue);
+  const [tmpUpdatedBank, setTmpUpdatedBank] = useState<any>();
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    console.log({ tmpBank });
-    console.log({ deletedBankId });
-  }, [tmpBank, deletedBankId]);
+  // useEffect(() => {
+  //   window.scrollTo(0, 0);
+  //   console.log({ tmpBank });
+  //   console.log({ deletedBank });
+  // }, [tmpBank, deletedBank]);
 
   const onEdit = () => {
     console.log('edit');
   };
   const removeTmpBank = (id: string, index: number) => {
-    if (id !== 'new') {
-      setDeletedBankId((prev: any) => {
+    // console.log('length id: ', id.length);
+    if (id.length > 4) {
+      setDeletedBank((prev: any) => {
+        const newDeletedBank = tmpBank.filter((item: any) => item && item.id === id);
         if (prev) {
-          return [...prev, id];
+          return [...prev, ...newDeletedBank];
         }
-        return [id];
+        return [...newDeletedBank];
       });
     }
     setTmpBank((prev: any) => {
@@ -45,17 +50,51 @@ const BankingInfoForm = ({ children, onSubmit, initialValue, onDelete, isEdit }:
     });
   };
   const onSubmitForm = (data: any) => {
-    setTmpBank((prev: any) => {
-      const tmp = [...prev];
-      tmp.push({ ...data });
-      return tmp;
+    setTmpUpdatedBank(null);
+    let newData = { ...data };
+    newData = { ...newData, id: nanoid(4) };
+    // console.log({ newData });
+    const updatedBankAccount = tmpBank.map((account: any) => {
+      if (account.id === data.id) {
+        return { ...account, ...data };
+      }
+      return account;
     });
+    if (data && data.id) {
+      setTmpBank(updatedBankAccount);
+    } else {
+      setTmpBank([...tmpBank, newData]);
+    }
+  };
+  const onUpdatedBank = (id: string, bankIndex: number) => {
+    // console.log({ id, bankIndex });
+    if (!id) {
+      const newUpdatedBank = tmpBank.filter(
+        (item: any, index: number) => item && !item.id && index === bankIndex
+      );
+      setTmpUpdatedBank(() => {
+        const tmp = { ...newUpdatedBank[0] };
+        return tmp;
+      });
+    } else if (!!id) {
+      const newUpdatedBank = tmpBank.filter((item: any) => item && item.id === id);
+      setTmpUpdatedBank(() => {
+        const tmp = { ...newUpdatedBank[0] };
+        return tmp;
+      });
+    } else {
+      setTmpUpdatedBank(null);
+    }
+    setOpen(true);
   };
 
   const onSubmitForm5 = () => {
-    const newUpdatedBank = tmpBank.filter((item: any) => item && !!item.id);
-    const newAddedBank = tmpBank.filter((item: any) => item && !item.id);
-    console.log({ tmpBank, deletedBankId, newUpdatedBank, newAddedBank });
+    let newData = {};
+    const updated_banks = tmpBank.filter((item: any) => item && item.id && item.id.length > 4);
+    const created_banks = tmpBank.filter((item: any) => item && item.id && item.id.length <= 4);
+    newData = { ...newData, updated_banks, created_banks, deleted_banks };
+    // console.log({ tmpBank, deletedBank, updatedBank, createdBank });
+    onSubmit(newData);
   };
   return (
     <Grid container rowSpacing={4} columnSpacing={7}>
@@ -73,10 +112,15 @@ const BankingInfoForm = ({ children, onSubmit, initialValue, onDelete, isEdit }:
               />
               <Stack direction="row" justifyContent="space-around" gap={5} sx={{ mt: '10px' }}>
                 <Button
+                  disabled={isEdit}
                   sx={{
                     backgroundColor: '#0169DE',
                     color: '#fff',
                     ':hover': { backgroundColor: '#1482FE' },
+                  }}
+                  onClick={() => {
+                    const newId = item && item.id ? item.id : 'new';
+                    onUpdatedBank(newId, index);
                   }}
                   startIcon={
                     <svg
@@ -103,6 +147,7 @@ const BankingInfoForm = ({ children, onSubmit, initialValue, onDelete, isEdit }:
                   تعديل
                 </Button>
                 <Button
+                  disabled={isEdit || tmpBank.length <= 1}
                   sx={{
                     backgroundColor: '#FF170F',
                     color: '#fff',
@@ -138,8 +183,6 @@ const BankingInfoForm = ({ children, onSubmit, initialValue, onDelete, isEdit }:
                     </svg>
                   }
                   onClick={() => {
-                    // console.log(onDelete);
-                    // onDelete(index);
                     const newId = item && item.id ? item.id : 'new';
                     removeTmpBank(newId, index);
                   }}
@@ -152,10 +195,19 @@ const BankingInfoForm = ({ children, onSubmit, initialValue, onDelete, isEdit }:
         ))}
       <Grid item xs={12}>
         <Stack justifyContent="center">
-          <Button sx={{ textDecoration: 'underline', margin: '0 auto' }} onClick={handleOpen}>
+          <Button
+            disabled={isEdit}
+            sx={{ textDecoration: 'underline', margin: '0 auto' }}
+            onClick={handleOpen}
+          >
             اضافة تفاصيل بنك جديد
           </Button>
-          <AddBankModal open={open} handleClose={handleClose} onSubmit={onSubmitForm} />
+          <AddBankModal
+            open={open}
+            handleClose={handleClose}
+            onSubmit={onSubmitForm}
+            initialValues={tmpUpdatedBank}
+          />
         </Stack>
       </Grid>
       <Stack justifyContent="center" direction="row" gap={2}>

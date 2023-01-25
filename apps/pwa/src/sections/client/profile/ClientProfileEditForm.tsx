@@ -24,6 +24,7 @@ import { useTheme } from '@mui/material/styles';
 import { useQuery } from 'urql';
 import { gettingUserDataForEdit } from 'queries/client/gettingUserDataForEdit';
 import useAuth from 'hooks/useAuth';
+import axiosInstance from '../../../utils/axios';
 const taps = [
   'register_first_tap',
   'register_second_tap',
@@ -34,7 +35,7 @@ const taps = [
 
 function ClientProfileEditForm() {
   const theme = useTheme();
-  const { user } = useAuth();
+  const { user, activeRole } = useAuth();
   const id = user?.id;
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
@@ -99,6 +100,9 @@ function ClientProfileEditForm() {
         id,
       },
     ],
+    updated_banks: [],
+    created_banks: [],
+    deleted_banks: [],
   };
   const [profileState, setProfileState] = useState(initialValue);
   const [open, setOpen] = useState(false);
@@ -108,6 +112,10 @@ function ClientProfileEditForm() {
     form3: false,
     form4: false,
     form5: false,
+  });
+  const [errorState, setErrorState] = useState({
+    value: false,
+    message: '',
   });
   const [startedValue, setStartedValue] = useState<any>();
   const onSubmit = () => {
@@ -174,9 +182,9 @@ function ClientProfileEditForm() {
           website,
           email: email.trim(),
           // password,
-          new_password: '',
-          confirm_password: '',
-          old_password: '',
+          // new_password: '',
+          // confirm_password: '',
+          // old_password: '',
         },
         form3: {
           ...prevState.form3,
@@ -297,7 +305,7 @@ function ClientProfileEditForm() {
 
   const onSubmit3 = (data: LicenseValuesProps) => {
     window.scrollTo(0, 0);
-    console.log({ data });
+    // console.log({ data });
     if (isEdit && isEdit.form3) {
       setIsEdit((prevIsEdit: any) => ({
         ...prevIsEdit,
@@ -379,16 +387,34 @@ function ClientProfileEditForm() {
   };
 
   const onSubmit5 = (data: BankingValuesProps) => {
-    setOpen(true);
+    // console.log({ data });
     window.scrollTo(0, 0);
-    setProfileState((prevProfileState: any) => ({
-      ...prevProfileState,
-      form5: {
-        ...prevProfileState.form5,
+    if (isEdit && isEdit.form5) {
+      setIsEdit((prevIsEdit: any) => ({
+        ...prevIsEdit,
+        form5: false,
+      }));
+      setProfileState((prevProfileState: any) => ({
+        ...prevProfileState,
+        form5: {
+          ...prevProfileState.form5,
+          ...(startedValue.bank_information && startedValue.bank_information),
+        },
+      }));
+    }
+    if (isEdit && !isEdit.form5) {
+      setOpen(true);
+      setIsEdit((prevIsEdit: any) => ({
+        ...prevIsEdit,
+        form5: true,
+      }));
+      setProfileState((prevProfileState: any) => ({
+        ...prevProfileState,
         ...data,
-      },
-    }));
+      }));
+    }
   };
+  // console.log({ profileState });
 
   const onDeleteBankInformation = (index: number) => {
     setProfileState((prevProfileState: any) => ({
@@ -398,8 +424,76 @@ function ClientProfileEditForm() {
   };
 
   const onSubmitEditRequest = async () => {
+    let newBankInformation = {};
+    if (
+      (profileState && profileState.updated_banks && profileState.updated_banks.length > 0) ||
+      (profileState && profileState.updated_banks && profileState.updated_banks.length > 0) ||
+      (profileState && profileState.deleted_banks && profileState.deleted_banks.length > 0)
+    ) {
+      // newBankInformation = {
+      //   ...newBankInformation,
+      //   updated_banks: profileState.updated_banks,
+      //   deleted_banks: profileState.deleted_banks,
+      //   created_banks: profileState.updated_banks,
+      // };
+      if (profileState.updated_banks.length > 0) {
+        newBankInformation = {
+          ...newBankInformation,
+          old_banks: profileState.form5,
+          updated_banks: profileState.updated_banks,
+        };
+      }
+      if (profileState.deleted_banks.length > 0) {
+        newBankInformation = {
+          ...newBankInformation,
+          old_banks: profileState.form5,
+          deleted_banks: profileState.deleted_banks,
+        };
+      }
+      if (profileState.created_banks.length > 0) {
+        newBankInformation = {
+          ...newBankInformation,
+          old_banks: profileState.form5,
+          created_banks: profileState.created_banks,
+        };
+      }
+    }
+    const payload = {
+      ...profileState.form1,
+      ...profileState.form2,
+      ...profileState.form3,
+      ...profileState.form4,
+      ...newBankInformation,
+    };
+    console.log({ payload });
+    // try {
+    //   const rest = await axiosInstance.post(
+    //     'tender/client/edit-request/create',
+    //     {
+    //       // proposal_id: id,
+    //       ...payload,
+    //     },
+    //     {
+    //       headers: { 'x-hasura-role': activeRole! },
+    //     }
+    //   );
+    //   console.log({ rest });
+    //   // if (rest) {
+    //   //   mutate();
+    //   // } else {
+    //   //   alert('Something went wrong');
+    //   // }
+    // } catch (err) {
+    //   console.log(err);
+    //   setOpen(true);
+    //   setErrorState({
+    //     value: true,
+    //     message: err.response.data.message,
+    //   });
+    // }
+    // console.log({ newBankInformation });
     // console.log({ profileState });
-    console.log({ startedValue });
+    // const createdBank =
   };
   // console.log(profileState);
   return (
@@ -526,7 +620,7 @@ function ClientProfileEditForm() {
           <Typography variant="h5">معلومات بنكية</Typography>
           <BankingInfoForm
             onDelete={onDeleteBankInformation}
-            onSubmit={onSubmit}
+            onSubmit={onSubmit5}
             initialValue={profileState.form5}
             isEdit={isEdit.form5}
           />
@@ -537,8 +631,14 @@ function ClientProfileEditForm() {
       )}
       <Toast
         variant="outlined"
-        toastType="success"
-        message="تم التأكد من المعلومات أنها صحيحة, لحفظ تعديلاتك الرجاء الضغط على إرسال التعديلات أعلاه"
+        // toastType="success"
+        toastType={errorState ? 'error' : 'success'}
+        // message="تم التأكد من المعلومات أنها صحيحة, لحفظ تعديلاتك الرجاء الضغط على إرسال التعديلات أعلاه"
+        message={
+          errorState
+            ? errorState.message
+            : 'تم التأكد من المعلومات أنها صحيحة, لحفظ تعديلاتك الرجاء الضغط على إرسال التعديلات أعلاه'
+        }
         autoHideDuration={10000}
         isOpen={open}
         position="bottom-right"

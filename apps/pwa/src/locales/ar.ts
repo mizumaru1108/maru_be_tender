@@ -141,6 +141,10 @@ const ar = {
         required: 'عدد المستفيدين من خدمات الجهة مطلوب',
         length: 'رقم الجوال يجب أن يكون 9 أرقام',
       },
+      entity_employee: {
+        message: '',
+        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+      },
       phone: {
         message: '',
         required: 'عدد المستفيدين من خدمات الجهة مطلوب',
@@ -536,6 +540,10 @@ const ar = {
     confirm_password: {
       title: 'تأكيد كلمة السر*',
       placeholder: 'تأكيد كلمة السر',
+    },
+    employee_name: {
+      label: 'اسم الموظف*',
+      placeholder: 'الرجاء كتابة اسم الموظف',
     },
   },
   register_form3: {

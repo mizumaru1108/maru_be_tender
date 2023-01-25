@@ -29,31 +29,26 @@ type FormValuesProps = {
   bank_account_name: string;
   bank_name: string;
   card_image: FileProp;
+  id: string;
 };
 
-export default function AddBankModal({ open, handleClose, onSubmit }: any) {
+export default function AddBankModal({ open, handleClose, onSubmit, initialValues }: any) {
   const { translate } = useLocales();
   const rootRef = React.useRef<HTMLDivElement>(null);
-  const { user } = useAuth();
-  const id = user?.id;
+  // const { user } = useAuth();
+  // const id = user?.id;
   // addNewBankInformation
-  const [_, addingNewBankInfo] = useMutation(addNewBankInformation);
+  // const [_, addingNewBankInfo] = useMutation(addNewBankInformation);
   const RegisterSchema = Yup.object().shape({
-    // bank_account_number: Yup.string().required('Project goals required'),
     bank_account_number: Yup.string()
       .min(27, translate('errors.register.bank_account_number.min'))
       .required(translate('errors.register.bank_account_number.required')),
     bank_account_name: Yup.string().required('Project outputs is required'),
     bank_name: Yup.string().required('Project strengths is required'),
-    // bank_account_card_image: Yup.object().shape({
-    //   url: Yup.string().required(),
-    //   size: Yup.number(),
-    //   type: Yup.string().required(),
-    // }),
+
     card_image: Yup.mixed()
       .test('size', translate('errors.register.card_image.size'), (value) => {
         if (value) {
-          // const trueSize = value.size * 28;
           if (value.size > 1024 * 1024 * 5) {
             return false;
           }
@@ -103,8 +98,6 @@ export default function AddBankModal({ open, handleClose, onSubmit }: any) {
   const onSubmitForm = async (data: FormValuesProps) => {
     let newData = { ...data };
     let newBankAccNumber = getValues('bank_account_number');
-    // remove all spaces
-    // newBankAccNumber = newBankAccNumber.replace(/\s/g, '');
     newBankAccNumber.substring(0, 2) !== 'SA'
       ? (newBankAccNumber = 'SA'.concat(`${getValues('bank_account_number')}`).replace(/\s/g, ''))
       : (newBankAccNumber = getValues('bank_account_number'));
@@ -120,7 +113,12 @@ export default function AddBankModal({ open, handleClose, onSubmit }: any) {
       fileExtension: '',
       fullName: '',
     });
-    onSubmit(newData);
+    if (initialValues && initialValues.id) {
+      newData = { ...newData, id: initialValues.id };
+      onSubmit(newData);
+    } else {
+      onSubmit(newData);
+    }
     // const res = await addingNewBankInfo({
     //   payload: {
     //     bank_account_name: data.bank_account_name,
@@ -132,6 +130,22 @@ export default function AddBankModal({ open, handleClose, onSubmit }: any) {
     // });
     handleClose();
   };
+  React.useEffect(() => {
+    if (!!initialValues) {
+      const newBankAccNumber = initialValues.bank_account_number.replace(/(.{4})/g, '$1 ');
+      setValue('bank_account_number', newBankAccNumber);
+      setValue('bank_account_name', initialValues.bank_account_name);
+      setValue('bank_name', initialValues.bank_name);
+      setValue('card_image', {
+        url: initialValues.card_image.url,
+        size: initialValues.card_image.size,
+        type: initialValues.card_image.type,
+        base64Data: initialValues.card_image.base64Data,
+        fileExtension: initialValues.card_image.fileExtension,
+        fullName: initialValues.card_image.fullName,
+      });
+    }
+  }, [initialValues, setValue]);
   return (
     <Modal
       open={open}

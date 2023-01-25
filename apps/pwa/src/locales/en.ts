@@ -126,6 +126,10 @@ const en = {
         required: 'Mobile number is required',
         length: 'Mobile number must be 9 digits',
       },
+      entity_employee: {
+        message: '',
+        required: 'Entity employee is required',
+      },
       phone: {
         message: '',
         required: 'Phone number is required',
@@ -524,6 +528,10 @@ const en = {
     confirm_password: {
       title: 'تأكيد كلمة السر*',
       placeholder: 'تأكيد كلمة السر',
+    },
+    employee_name: {
+      label: 'اسم الموظف*',
+      placeholder: 'الرجاء كتابة اسم الموظف',
     },
   },
   register_form3: {
