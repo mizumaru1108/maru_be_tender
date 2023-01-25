@@ -6,5 +6,5 @@ export class EditRequestByIdDto {
   @IsString()
   @IsUUID()
   @IsNotEmpty()
-  requestid: string;
+  requestId: string;
 }

@@ -19,6 +19,7 @@ import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-p
 import { ICurrentUser } from '../../../user/interfaces/current-user.interface';
 import { ClientEditRequestFieldDto } from '../dtos/requests/client-edit-request-field.dto';
 import { EditRequestByIdDto } from '../dtos/requests/edit-request-by-id.dto';
+import { RejectEditRequestDto } from '../dtos/requests/reject-edit-request.dto';
 import { SearchEditRequestFilter } from '../dtos/requests/search-edit-request-filter-request.dto';
 import { ClientEditRequestResponseDto } from '../dtos/responses/client-edit-request.response.dto';
 import { TenderClientService } from '../services/tender-client.service';
@@ -34,7 +35,6 @@ export class TenderClientController {
     @CurrentUser() user: ICurrentUser,
     @Body() editRequest: ClientEditRequestFieldDto,
   ): Promise<BaseResponse<any>> {
-    // console.log('payload', JSON.stringify(editRequest, null, 2));
     const response = await this.tenderClientService.createEditRequest(
       user,
       editRequest,
@@ -85,7 +85,7 @@ export class TenderClientController {
     @Query() filter: EditRequestByIdDto,
   ): Promise<ManualPaginatedResponse<any>> {
     const response = await this.tenderClientService.findEditRequestByLogId(
-      filter.requestid,
+      filter.requestId,
     );
     return baseResponseHelper(
       response,
@@ -119,7 +119,26 @@ export class TenderClientController {
   ): Promise<BaseResponse<any>> {
     const response = await this.tenderClientService.acceptEditRequests(
       user.id,
-      editRequest.requestid,
+      editRequest.requestId,
+    );
+
+    return baseResponseHelper(
+      response,
+      HttpStatus.OK,
+      'Asking for changes successfully applied!',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_accounts_manager')
+  @Patch('reject-edit-requests')
+  async rejectEditRequests(
+    @CurrentUser() user: ICurrentUser,
+    @Body() request: RejectEditRequestDto,
+  ): Promise<BaseResponse<any>> {
+    const response = await this.tenderClientService.rejectEditRequests(
+      user.id,
+      request,
     );
 
     return baseResponseHelper(

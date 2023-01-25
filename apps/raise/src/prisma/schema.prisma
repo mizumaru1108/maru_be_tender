@@ -16,7 +16,7 @@ model bank_information {
   proposal_id                                          String?
   id                                                   String                     @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   card_image                                           Json?
-  id_deleted                                           Boolean?                   @default(false)
+  is_deleted                                           Boolean?                   @default(false)
   proposal                                             proposal?                  @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
   user                                                 user                       @relation(fields: [user_id], references: [id], onDelete: Cascade)
   proposal_bank_informationToproposal_proposal_bank_id proposal[]                 @relation("bank_informationToproposal_proposal_bank_id")

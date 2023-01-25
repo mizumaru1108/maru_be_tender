@@ -6,6 +6,7 @@ import {
   user,
   user_status,
 } from '@prisma/client';
+import { any } from 'joi';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
@@ -171,35 +172,6 @@ export class TenderClientRepository {
     }
   }
 
-  // async findEditRequestLogById(
-  //   log_id: string,
-  // ): Promise<RawEditRequestByLogIdDto['data']> {
-  //   try {
-  //     return await this.prismaService.edit_requests.findUnique({
-  //       where: {
-  //         id: log_id,
-  //       },
-  //       include: {
-  //         user: {
-  //           select: {
-  //             client_data: true,
-  //             bank_information: true,
-  //           },
-  //         },
-  //         edit_requests: true,
-  //       },
-  //     });
-  //   } catch (error) {
-  //     const theError = prismaErrorThrower(
-  //       error,
-  //       TenderClientRepository.name,
-  //       'findClientAndUser error details: ',
-  //       'find client and user!',
-  //     );
-  //     throw theError;
-  //   }
-  // }
-
   async findEditRequestLogByRequestId(id: string) {
     try {
       return await this.prismaService.edit_requests.findFirst({
@@ -349,193 +321,25 @@ export class TenderClientRepository {
     }
   }
 
-  // async findUnapprovedEditRequestByUserId(
-  //   userId: string,
-  // ): Promise<edit_request[]> {
-  //   try {
-  //     return await this.prismaService.edit_request.findMany({
-  //       where: {
-  //         user_id: userId,
-  //         approval_status: 'WAITING_FOR_APPROVAL',
-  //       },
-  //     });
-  //   } catch (error) {
-  //     const theError = prismaErrorThrower(
-  //       error,
-  //       TenderClientRepository.name,
-  //       'findUnapprovedEditRequestByUserId error details: ',
-  //       'finding update requests!',
-  //     );
-  //     throw theError;
-  //   }
-  // }
-
-  // async getRemainingUpdateRequestCount(
-  //   userId: string,
-  //   prismaSession?: Prisma.TransactionClient,
-  // ) {
-  //   this.logger.log(
-  //     'info',
-  //     `get remaining edit request for user (${userId}), with prisma session: ${
-  //       prismaSession ? true : false
-  //     }`,
-  //   );
-  //   try {
-  //     if (prismaSession) {
-  //       return await prismaSession.edit_request.findMany({
-  //         where: {
-  //           user_id: userId,
-  //           approval_status: {
-  //             equals: 'WAITING_FOR_APPROVAL',
-  //           },
-  //         },
-  //       });
-  //     } else {
-  //       return await this.prismaService.edit_request.findMany({
-  //         where: {
-  //           user_id: userId,
-  //           approval_status: {
-  //             equals: 'WAITING_FOR_APPROVAL',
-  //           },
-  //         },
-  //       });
-  //     }
-  //   } catch (error) {
-  //     const theError = prismaErrorThrower(
-  //       error,
-  //       TenderClientRepository.name,
-  //       'getRemainingUpdateRequestCount error details: ',
-  //       'fetching remaining update request count!',
-  //     );
-  //     throw theError;
-  //   }
-  // }
-
-  // async changeEditRequestStatus(
-  //   requestId: string,
-  //   reviewerId: string,
-  //   status: string,
-  //   prismaSession?: Prisma.TransactionClient,
-  // ) {
-  //   this.logger.log(
-  //     'info',
-  //     `changing edit request status to ${status}, using prisma session: ${
-  //       prismaSession ? true : false
-  //     }`,
-  //   );
-  //   try {
-  //     if (prismaSession) {
-  //       return await prismaSession.edit_request.update({
-  //         where: {
-  //           id: requestId,
-  //         },
-  //         data: {
-  //           approval_status: {
-  //             set: status,
-  //           },
-  //           reviewer_id: reviewerId,
-  //         },
-  //       });
-  //     } else {
-  //       return await this.prismaService.edit_request.update({
-  //         where: {
-  //           id: requestId,
-  //         },
-  //         data: {
-  //           approval_status: {
-  //             set: status,
-  //           },
-  //           reviewer_id: reviewerId,
-  //         },
-  //       });
-  //     }
-  //   } catch (error) {
-  //     const theError = prismaErrorThrower(
-  //       error,
-  //       TenderClientRepository.name,
-  //       'changeEditRequestStatus error details: ',
-  //       'changing edit request status!',
-  //     );
-  //     throw theError;
-  //   }
-  // }
-
-  // async changeEditRequestStatusByUserId(
-  //   userId: string,
-  //   reviewerId: string,
-  //   status: ApprovalStatus,
-  //   prismaSession?: Prisma.TransactionClient,
-  // ) {
-  //   this.logger.log(
-  //     'info',
-  //     `changing edit request status to ${status}, using prisma session: ${
-  //       prismaSession ? true : false
-  //     }`,
-  //   );
-  //   try {
-  //     if (prismaSession) {
-  //       return await prismaSession.edit_request.updateMany({
-  //         where: {
-  //           user_id: userId,
-  //         },
-  //         data: {
-  //           approval_status: {
-  //             set: status as string,
-  //           },
-  //           reviewer_id: reviewerId,
-  //         },
-  //       });
-  //     } else {
-  //       return await this.prismaService.edit_request.updateMany({
-  //         where: {
-  //           user_id: userId,
-  //         },
-  //         data: {
-  //           approval_status: {
-  //             set: status as string,
-  //           },
-  //           reviewer_id: reviewerId,
-  //         },
-  //       });
-  //     }
-  //   } catch (error) {
-  //     const theError = prismaErrorThrower(
-  //       error,
-  //       TenderClientRepository.name,
-  //       'changeEditRequestStatusByUserId error details: ',
-  //       'changing edit request status!',
-  //     );
-  //     throw theError;
-  //   }
-  // }
-
-  async updateClientFieldByKeyValuePair(
-    userId: string,
-    updatePayload: Record<string, any>,
-    prismaSession?: Prisma.TransactionClient,
+  async updateById(
+    id: string,
+    updatePayload: Prisma.edit_requestsUncheckedUpdateInput,
+    passedSession?: Prisma.TransactionClient,
   ) {
-    // log the key and the value
-    Object.keys(updatePayload).forEach((key) => {
-      this.logger.log(
-        'info',
-        `updating client field ${key} with value ${updatePayload[key]}`,
-      );
-    });
-
     try {
-      if (prismaSession) {
-        return await prismaSession.client_data.update({
+      if (passedSession) {
+        return await passedSession.edit_requests.update({
           where: {
-            user_id: userId,
+            id,
           },
           data: {
             ...updatePayload,
           },
         });
       } else {
-        return await this.prismaService.client_data.update({
+        return await this.prismaService.edit_requests.update({
           where: {
-            user_id: userId,
+            id,
           },
           data: {
             ...updatePayload,
@@ -546,128 +350,100 @@ export class TenderClientRepository {
       const theError = prismaErrorThrower(
         error,
         TenderClientRepository.name,
-        'updateClientField error details: ',
-        'updating client field!',
+        'Update Edit Request Error details: ',
+        'Updating edit request!',
       );
       throw theError;
     }
   }
 
-  // for accepting one by one
-  // async appoveUpdateRequest(
-  //   currentEditRequest: edit_request,
-  //   reviewerId: string,
-  //   parsedValue: number | string | boolean | Date | Object,
-  // ) {
-  //   try {
-  //     return await this.prismaService.$transaction(async (prisma) => {
-  //       await this.updateClientField(
-  //         currentEditRequest.user_id,
-  //         currentEditRequest.field_name,
-  //         parsedValue,
-  //         prisma,
-  //       );
-
-  //       await this.changeEditRequestStatus(
-  //         currentEditRequest.id,
-  //         reviewerId,
-  //         'APPROVED',
-  //         prisma,
-  //       );
-  //     });
-  //   } catch (error) {
-  //     const theError = prismaErrorThrower(
-  //       error,
-  //       TenderClientRepository.name,
-  //       'appoveUpdateRequest error details: ',
-  //       'approving update request!',
-  //     );
-  //     throw theError;
-  //   }
-  // }
-
   async approveEditRequests(
-    userId: string,
-    reviewerId: string,
-    updateClientPayload: Record<string, any>,
-    updateUserPayload: Record<string, any>,
-    createBankInfoPayload: Prisma.bank_informationCreateInput[],
-    updateBankInfoPayload: UpdateBankInfoPayload[],
+    request_id: string,
+    reviewer_id: string,
+    user_id: string,
+    updateClientPayload: Prisma.client_dataUncheckedUpdateInput | undefined,
+    created_bank: Prisma.bank_informationCreateManyInput[],
+    updated_bank: bank_information[],
+    deleted_bank: bank_information[],
   ) {
     try {
       return await this.prismaService.$transaction(
         async (prisma) => {
-          let updatedClient: client_data | null = null;
-          if (Object.keys(updateClientPayload).length > 0) {
-            updatedClient = await this.updateClientFieldByKeyValuePair(
-              userId,
-              updateClientPayload,
-              prisma,
+          const updatedClientData = await prisma.client_data.update({
+            where: {
+              user_id,
+            },
+            data: {
+              ...updateClientPayload,
+            },
+          });
+
+          if (created_bank && created_bank.length > 0) {
+            console.log(
+              `create .., payload: ${JSON.stringify(created_bank, null, 2)}`,
             );
+            await prisma.bank_information.createMany({
+              data: created_bank,
+            });
           }
 
-          let updatedUser: user | null = null;
-          if (Object.keys(updateUserPayload).length > 0) {
-            updatedUser =
-              await this.tenderUserRepository.updateUserFieldByKeyValuePair(
-                userId,
-                updateUserPayload,
-                prisma,
+          if (updated_bank && updated_bank.length > 0) {
+            for (let i = 0; i < updated_bank.length; i++) {
+              console.log(
+                `updating bank ${updated_bank[i].id}, payload: ${JSON.stringify(
+                  updated_bank[i],
+                  null,
+                  2,
+                )}`,
               );
+              await prisma.bank_information.update({
+                where: {
+                  id: updated_bank[i].id,
+                },
+                data: {
+                  user_id: updated_bank[i].user_id,
+                  bank_name: updated_bank[i].bank_name,
+                  bank_account_name: updated_bank[i].bank_account_number,
+                  bank_account_number: updated_bank[i].bank_account_number,
+                  card_image: updated_bank[i].card_image,
+                } as Prisma.bank_informationUncheckedUpdateInput,
+              });
+            }
           }
 
-          let createdBankInformations: bank_information[] | null = null;
-          if (createBankInfoPayload.length > 0) {
-            const createdBankInfos = createBankInfoPayload.map(
-              async (bankInfo) => {
-                return await this.tenderUserRepository.createUserBankAccount(
-                  userId,
-                  bankInfo,
-                  prisma,
-                );
-              },
-            );
-            createdBankInformations = await Promise.all(createdBankInfos);
+          if (deleted_bank && deleted_bank.length > 0) {
+            for (let i = 0; i < deleted_bank.length; i++) {
+              console.log(
+                `setting flag delete for bank ${deleted_bank[i].id} ...`,
+              );
+              await prisma.bank_information.update({
+                where: {
+                  id: deleted_bank[i].id,
+                },
+                data: {
+                  is_deleted: true,
+                },
+              });
+            }
           }
 
-          let updatedBankInformations: bank_information[] | null = null;
-          if (updateBankInfoPayload.length > 0) {
-            const updatedBankInfos = updateBankInfoPayload.map(
-              async (bankInfo) => {
-                return await this.tenderUserRepository.updateBankAccount(
-                  bankInfo._id,
-                  bankInfo.data,
-                  prisma,
-                );
-              },
-            );
-            updatedBankInformations = await Promise.all(updatedBankInfos);
-          }
-
-          /* approve all request */
-          // await this.changeEditRequestStatusByUserId(
-          //   userId,
-          //   reviewerId,
-          //   'APPROVED',
-          //   prisma,
-          // );
-
-          /* active the account */
-          await this.tenderUserRepository.changeUserStatus(
-            userId,
-            'ACTIVE_ACCOUNT',
+          this.logger.log('log', 'Approving edit request status...');
+          await this.updateById(
+            request_id,
+            {
+              reviewer_id,
+              status_id: 'APPROVED',
+              accepted_at: new Date(),
+            },
             prisma,
-            reviewerId,
           );
 
-          return {
-            updatedClient,
-            updatedUser,
-            createdBankInformations,
-            updatedBankInformations,
-          };
+          return updatedClientData;
         },
-        { maxWait: 50000, timeout: 150000 },
+        {
+          maxWait: 50000,
+          timeout: 150000,
+        },
       );
     } catch (error) {
       const theError = prismaErrorThrower(

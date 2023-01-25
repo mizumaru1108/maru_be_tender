@@ -31,6 +31,8 @@ import { UserClientDataMapper } from '../mappers/user-client-data.mapper';
 import { TenderClientRepository } from '../repositories/tender-client.repository';
 import { EditRequestByIdDto } from '../dtos/requests/edit-request-by-id.dto';
 import { ApproveEditRequestMapper } from '../mappers/approve-edit-request.mapper';
+import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
+import { RejectEditRequestDto } from '../dtos/requests/reject-edit-request.dto';
 @Injectable()
 export class TenderClientService {
   private readonly appEnv: string;
@@ -327,12 +329,17 @@ export class TenderClientService {
     );
     if (!log) throw new NotFoundException('Edit Request Not Found!');
 
+    const new_request = JSON.parse(log.new_value);
+    delete new_request.createdBanks;
+    delete new_request.updatedBanks;
+    delete new_request.deletedBanks;
+
     return {
-      current_data: {
+      old_data: {
         ...JSON.parse(log.old_value!),
       },
-      new_request: {
-        ...JSON.parse(log.new_value),
+      new_data: {
+        ...new_request,
       },
     };
   }
@@ -521,12 +528,6 @@ export class TenderClientService {
           updatedBanks: [...updatedBankInfo],
           deletedBanks: deleted_banks,
         };
-
-        // newEditRequest = {
-        //   ...baseNewEditRequest,
-        //   old_value: JSON.stringify(fullPayloadRequest),
-        //   new_value: JSON.stringify(fullPayloadFinal),
-        // };
       }
 
       newEditRequest = {
@@ -634,10 +635,10 @@ export class TenderClientService {
     return newValue;
   }
 
-  async acceptEditRequests(reviewerId: string, request_id: string) {
+  async acceptEditRequests(reviewerId: string, requestId: string) {
     const requestData =
       await this.tenderClientRepository.findEditRequestLogByRequestId(
-        request_id,
+        requestId,
       );
 
     if (!requestData) {
@@ -651,46 +652,76 @@ export class TenderClientService {
     let updated_bank: bank_information[] = [];
     let deleted_bank: bank_information[] = [];
 
-    const { old_value, new_value } = requestData;
+    try {
+      const { old_value, new_value, user_id } = requestData;
 
-    let oldTmp = JSON.parse(old_value);
-    delete oldTmp.bank_information;
-    old_data = oldTmp;
+      let oldTmp = JSON.parse(old_value);
+      delete oldTmp.bank_information;
+      old_data = oldTmp;
 
-    let newTmp = JSON.parse(new_value);
-    created_bank = newTmp['createdBanks'];
-    updated_bank = newTmp['updatedBanks'];
-    deleted_bank = newTmp['deletedBanks'];
+      let newTmp = JSON.parse(new_value);
+      created_bank = newTmp['createdBanks'];
+      updated_bank = newTmp['updatedBanks'];
+      deleted_bank = newTmp['deletedBanks'];
 
-    delete newTmp.bank_information;
-    delete newTmp.createdBanks;
-    delete newTmp.updatedBanks;
-    delete newTmp.deletedBanks;
-    new_data = newTmp;
+      delete newTmp.bank_information;
+      delete newTmp.createdBanks;
+      delete newTmp.updatedBanks;
+      delete newTmp.deletedBanks;
+      new_data = newTmp;
 
-    // if (identifier.toLowerCase().includes('bankinfo@created'.toLowerCase())) {
-    //   let tmp = JSON.parse(new_value);
-    //   created_bank.push(tmp);
-    // }
-    // if (identifier.toLowerCase().includes('bankinfo@updated'.toLowerCase())) {
-    //   let tmp = JSON.parse(new_value);
-    //   updated_bank.push(tmp);
-    // }
-    // if (identifier.toLowerCase().includes('bankinfo@deleted'.toLowerCase())) {
-    //   let tmp = JSON.parse(new_value);
-    //   tmp['is_deleted'] = true;
-    //   deleted_bank.push(tmp);
-    // }
+      updateClientPayload = ApproveEditRequestMapper(old_data, new_data);
 
-    updateClientPayload = ApproveEditRequestMapper(old_data, new_data);
+      const response = await this.tenderClientRepository.approveEditRequests(
+        requestId,
+        reviewerId,
+        user_id,
+        updateClientPayload,
+        created_bank,
+        updated_bank,
+        deleted_bank,
+      );
 
-    return {
-      old_data,
-      new_data,
-      updateClientPayload,
-      // created_bank,
-      // updated_bank,
-      // deleted_bank,
-    };
+      return response;
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderClientService.name,
+        'Approving Edit Requests!',
+        'Approving Edit Requests!',
+      );
+      throw theError;
+    }
+  }
+
+  async rejectEditRequests(reviewer_id: string, request: RejectEditRequestDto) {
+    const requestData =
+      await this.tenderClientRepository.findEditRequestLogByRequestId(
+        request.requestId,
+      );
+    if (!requestData) {
+      throw new BadRequestException('No Request Data Found!');
+    }
+    try {
+      const updatePayload: Prisma.edit_requestsUncheckedUpdateInput = {
+        status_id: 'REJECTED',
+        reject_reason: request.reject_reason,
+        rejected_at: new Date(),
+        reviewer_id,
+      };
+
+      await this.tenderClientRepository.updateById(
+        request.requestId,
+        updatePayload,
+      );
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderClientService.name,
+        'Approving Edit Requests!',
+        'Approving Edit Requests!',
+      );
+      throw theError;
+    }
   }
 }
