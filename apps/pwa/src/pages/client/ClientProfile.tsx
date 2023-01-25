@@ -54,11 +54,11 @@ function ClientProfile() {
         headers: { 'x-hasura-role': activeRole! },
       });
       // console.log({ rest });
-      console.log('res: ', rest.data.data);
+      console.log('res: ', rest);
       if (!!rest) {
         setDisabelEdit((prev: any) => ({
           ...prev,
-          association_edit: rest.data.data,
+          association_edit: rest.data.data.dataCount,
         }));
         setLoadingEditButton(false);
       }
@@ -108,6 +108,7 @@ function ClientProfile() {
       aggregate: { count: completed_projects },
     },
   } = data!;
+  console.log({ disabelEdit });
 
   return (
     <Page title="My Profile">

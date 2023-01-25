@@ -27,7 +27,7 @@ export const gettingUserDataForEdit = `query MyQuery($id: String = "") {
       data_entry_mobile
       data_entry_mail
     }
-    bank_informations {
+    bank_informations(where: {is_deleted: {_eq: false}}) {
       bank_account_name
       bank_account_number
       bank_name
