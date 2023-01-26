@@ -115,43 +115,43 @@ export class TenderService {
   }
 
   /* inserting user selected roles */
-  async postInsertFollowUp(request: BaseHashuraWebhookPayload) {
-    // console.log('userid', request.event.session_variables['x-hasura-user-id']);
+  // async postInsertFollowUp(request: BaseHashuraWebhookPayload) {
+  //   // console.log('userid', request.event.session_variables['x-hasura-user-id']);
 
-    const userId = request.event.session_variables['x-hasura-user-id'];
-    if (!userId) {
-      throw new NotFoundException('User id is not found on session!');
-    }
+  //   const userId = request.event.session_variables['x-hasura-user-id'];
+  //   if (!userId) {
+  //     throw new NotFoundException('User id is not found on session!');
+  //   }
 
-    const user = await this.tenderRepository.findUserById(userId);
-    // console.log('user', user);
-    if (!user) throw new NotFoundException('User not found on app!');
+  //   const user = await this.tenderRepository.findUserById(userId);
+  //   // console.log('user', user);
+  //   if (!user) throw new NotFoundException('User not found on app!');
 
-    // console.log('role', request.event.session_variables['x-hasura-role']);
-    const selectedRole =
-      appRoleMappers[
-        request.event.session_variables[
-          'x-hasura-role'
-        ] as TenderFusionAuthRoles
-      ];
-    if (!selectedRole) throw new UnauthorizedException('Roles not found!');
+  //   // console.log('role', request.event.session_variables['x-hasura-role']);
+  //   const selectedRole =
+  //     appRoleMappers[
+  //       request.event.session_variables[
+  //         'x-hasura-role'
+  //       ] as TenderFusionAuthRoles
+  //     ];
+  //   if (!selectedRole) throw new UnauthorizedException('Roles not found!');
 
-    // check if selected roles are exist on user.roles.user_type_id with indexof
-    const userRoles = user.roles.map((role) => role.user_type_id);
-    if (userRoles.indexOf(selectedRole) === -1) {
-      throw new UnauthorizedException(
-        'Seleceted role are not exist on user current roles!',
-      );
-    }
+  //   // check if selected roles are exist on user.roles.user_type_id with indexof
+  //   const userRoles = user.roles.map((role) => role.user_type_id);
+  //   if (userRoles.indexOf(selectedRole) === -1) {
+  //     throw new UnauthorizedException(
+  //       'Seleceted role are not exist on user current roles!',
+  //     );
+  //   }
 
-    const updatedProposal = await this.tenderRepository.updateFollowUp(
-      request.event.data.new.id,
-      user.id,
-      selectedRole,
-    );
+  //   const updatedProposal = await this.tenderRepository.updateFollowUp(
+  //     request.event.data.new.id,
+  //     user.id,
+  //     selectedRole,
+  //   );
 
-    return updatedProposal;
-  }
+  //   return updatedProposal;
+  // }
 
   async test(phoneNumber: string[], message: string) {
     if (!phoneNumber || !message) {

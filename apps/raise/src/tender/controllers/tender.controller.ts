@@ -51,18 +51,18 @@ export class TenderController {
     return response;
   }
 
-  @Post('follow-up-role-hook-handler')
-  async postRecommendedSupport(@Body() payload: BaseHashuraWebhookPayload) {
-    console.log('payload: ', payload);
-    console.log('payload: ', payload.event.data);
-    const response = await this.tenderService.postInsertFollowUp(payload);
-    return response;
-    // this.logger.info('payload: ' + { payload: JSON.stringify(payload) });
-    // this.logger.info('payload data: ' + JSON.stringify(payload.event.data));
-    // const response = await this.tenderService.postCreateEditingRequest(payload);
-    // this.logger.info('Response: ', { response: JSON.stringify(response) });
-    // return response;
-  }
+  // @Post('follow-up-role-hook-handler')
+  // async postRecommendedSupport(@Body() payload: BaseHashuraWebhookPayload) {
+  //   console.log('payload: ', payload);
+  //   console.log('payload: ', payload.event.data);
+  //   const response = await this.tenderService.postInsertFollowUp(payload);
+  //   return response;
+  //   // this.logger.info('payload: ' + { payload: JSON.stringify(payload) });
+  //   // this.logger.info('payload data: ' + JSON.stringify(payload.event.data));
+  //   // const response = await this.tenderService.postCreateEditingRequest(payload);
+  //   // this.logger.info('Response: ', { response: JSON.stringify(response) });
+  //   // return response;
+  // }
 
   @UseGuards(TenderJwtGuard)
   @Post('twilio-test')

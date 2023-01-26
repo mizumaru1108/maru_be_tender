@@ -4,7 +4,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Prisma, proposal, user } from '@prisma/client';
+import { Prisma, proposal, proposal_item_budget, user } from '@prisma/client';
 import { nanoid } from 'nanoid';
 import { PrismaService } from '../../prisma/prisma.service';
 import {
@@ -45,6 +45,8 @@ import { UpdateProposalMapper } from '../mappers/update-proposal.mapper';
 import { TenderProposalLogRepository } from '../repositories/tender-proposal-log.repository';
 import { ProposalDeleteDraftDto } from '../dtos/requests/proposal/proposal-delete-draft';
 import { update } from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
+import { ProposalItemBudgetDto } from '../dtos/requests/proposal/supervisor-change-state.dto';
 
 @Injectable()
 export class TenderProposalService {
@@ -581,6 +583,12 @@ export class TenderProposalService {
     request.notes && (proposalLogCreateInput.notes = request.notes);
     request.message && (proposalLogCreateInput.message = request.message);
 
+    let createdItemBudgetPayload: Prisma.proposal_item_budgetCreateManyInput[] =
+      [];
+    let updatedItemBudgetPayload: Prisma.proposal_item_budgetUncheckedUpdateInput[] =
+      [];
+    let deletedItemBudgetIds: string[] = [];
+
     /* if user is moderator */
     if (currentUser.choosenRole === 'tender_moderator') {
       const mod = await this.moderatorChangeState(
@@ -605,7 +613,11 @@ export class TenderProposalService {
         proposalUpdatePayload,
         proposalLogCreateInput,
         request,
+        createdItemBudgetPayload,
+        updatedItemBudgetPayload,
+        deletedItemBudgetIds,
       );
+
       proposalUpdatePayload = {
         ...proposalUpdatePayload,
         ...supervisorResult.proposalUpdatePayload,
@@ -614,6 +626,19 @@ export class TenderProposalService {
         ...proposalLogCreateInput,
         ...supervisorResult.proposalLogCreateInput,
       };
+
+      createdItemBudgetPayload = [
+        ...createdItemBudgetPayload,
+        ...supervisorResult.createdItemBudgetPayload,
+      ];
+      updatedItemBudgetPayload = [
+        ...updatedItemBudgetPayload,
+        ...supervisorResult.updatedItemBudgetPayload,
+      ];
+      deletedItemBudgetIds = [
+        ...deletedItemBudgetIds,
+        ...supervisorResult.deletedItemBudgetIds,
+      ];
     }
 
     /* if user is project manager */
@@ -676,6 +701,9 @@ export class TenderProposalService {
         proposalUpdatePayload,
         proposalLogCreateInput,
         lastLog,
+        createdItemBudgetPayload,
+        updatedItemBudgetPayload,
+        deletedItemBudgetIds,
       );
 
     const { proposal_logs } = updateProposalResult;
@@ -768,6 +796,9 @@ export class TenderProposalService {
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
     proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
     request: ChangeProposalStateDto,
+    createdItemBudgetPayload: Prisma.proposal_item_budgetCreateManyInput[],
+    updatedItemBudgetPayload: Prisma.proposal_item_budgetUncheckedUpdateInput[],
+    deletedItemBudgetIds: string[],
   ) {
     /* supervisor only allowed to acc and reject and step back */
     if (
@@ -787,6 +818,13 @@ export class TenderProposalService {
       if (!request.supervisor_payload) {
         throw new BadRequestException('Supervisor accept payload is required!');
       }
+
+      const {
+        created_proposal_budget,
+        deleted_proposal_budget,
+        updated_proposal_budget,
+      } = request.supervisor_payload;
+
       if (proposal.project_track !== 'CONCESSIONAL_GRANTS') {
         /* proposal */
         proposalUpdatePayload.inner_status =
@@ -858,6 +896,29 @@ export class TenderProposalService {
             request.supervisor_payload.clasification_field;
         }
 
+        /* if there's a new created item budget */
+        if (created_proposal_budget && created_proposal_budget.length > 0) {
+          for (const itemBudget of created_proposal_budget) {
+            createdItemBudgetPayload.push({
+              id: uuidv4(),
+              amount: itemBudget.amount,
+              clause: itemBudget.clause,
+              explanation: itemBudget.explanation,
+              proposal_id: request.proposal_id,
+            });
+          }
+        }
+
+        if (updated_proposal_budget && updated_proposal_budget.length > 0) {
+          updatedItemBudgetPayload = [...updated_proposal_budget];
+        }
+
+        if (deleted_proposal_budget && deleted_proposal_budget.length > 0) {
+          for (const itemBudget of deleted_proposal_budget) {
+            deletedItemBudgetIds.push(itemBudget.id);
+          }
+        }
+
         /* log */
         proposalLogCreateInput.action = ProposalAction.ACCEPT;
         proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
@@ -898,6 +959,9 @@ export class TenderProposalService {
     return {
       proposalUpdatePayload,
       proposalLogCreateInput,
+      createdItemBudgetPayload,
+      updatedItemBudgetPayload,
+      deletedItemBudgetIds,
     };
   }
 

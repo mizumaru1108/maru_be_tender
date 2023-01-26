@@ -273,6 +273,9 @@ export class TenderProposalRepository {
     lastLog: {
       created_at: Date;
     } | null,
+    createdItemBudgetPayload: Prisma.proposal_item_budgetCreateManyInput[],
+    updatedItemBudgetPayload: Prisma.proposal_item_budgetUncheckedUpdateInput[],
+    deletedItemBudgetIds: string[],
   ) {
     try {
       return await this.prismaService.$transaction(async (prismaTrans) => {
@@ -317,6 +320,35 @@ export class TenderProposalRepository {
             },
           },
         });
+
+        if (createdItemBudgetPayload && createdItemBudgetPayload.length > 0) {
+          await prismaTrans.proposal_item_budget.createMany({
+            data: createdItemBudgetPayload,
+          });
+        }
+
+        if (updatedItemBudgetPayload && updatedItemBudgetPayload.length > 0) {
+          for (let i = 0; i < updatedItemBudgetPayload.length; i++) {
+            await prismaTrans.proposal_item_budget.update({
+              where: {
+                id: updatedItemBudgetPayload[i].id as string,
+              },
+              data: {
+                ...updatedItemBudgetPayload[i],
+              },
+            });
+          }
+        }
+
+        if (deletedItemBudgetIds && deletedItemBudgetIds.length > 0) {
+          await prismaTrans.proposal_item_budget.deleteMany({
+            where: {
+              proposal_id: {
+                in: [...deletedItemBudgetIds],
+              },
+            },
+          });
+        }
 
         return {
           proposal,

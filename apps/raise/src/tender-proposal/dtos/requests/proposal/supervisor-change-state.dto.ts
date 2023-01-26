@@ -1,5 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsBoolean,
   IsNotEmpty,
   IsNumber,
@@ -7,7 +9,31 @@ import {
   IsString,
   Max,
   Min,
+  ValidateNested,
 } from 'class-validator';
+
+export class ProposalItemBudgetDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  id: string;
+
+  @ApiProperty()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0.01)
+  @Max(999999999999999999.99)
+  amount: number;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  explanation: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  clause: string;
+}
 
 export class SupervisorChangeStatePayload {
   @ApiPropertyOptional()
@@ -82,4 +108,25 @@ export class SupervisorChangeStatePayload {
   @IsString()
   @IsNotEmpty()
   clasification_field?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  @Type(() => ProposalItemBudgetDto)
+  @ValidateNested({ each: true })
+  created_proposal_budget?: ProposalItemBudgetDto[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  @Type(() => ProposalItemBudgetDto)
+  @ValidateNested({ each: true })
+  updated_proposal_budget?: ProposalItemBudgetDto[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  @Type(() => ProposalItemBudgetDto)
+  @ValidateNested({ each: true })
+  deleted_proposal_budget?: ProposalItemBudgetDto[];
 }
