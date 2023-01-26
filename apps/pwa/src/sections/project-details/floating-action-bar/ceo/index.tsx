@@ -10,9 +10,12 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useMutation } from 'urql';
 import NotesModal from 'components/notes-modal';
+//
+import axiosInstance from 'utils/axios';
+import { LoadingButton } from '@mui/lab';
 
 function FloatingActionBar() {
-  const { user } = useAuth();
+  const { user, activeRole } = useAuth();
 
   const { id: proposal_id } = useParams();
 
@@ -32,6 +35,10 @@ function FloatingActionBar() {
 
   const open = Boolean(anchorEl);
 
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isSubmittingRejected, setIsSubmittingRejected] = useState<boolean>(false);
+  const [isSubmittingStepback, setIsSubmittingStepback] = useState<boolean>(false);
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -45,104 +52,174 @@ function FloatingActionBar() {
   };
 
   const handleApproval = async (data: any) => {
-    update({
-      proposal_id,
-      new_values: {
-        inner_status: 'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
-        outter_status: 'ONGOING',
-        state: `CEO`,
-      },
-      log: {
-        id: nanoid(),
+    setIsSubmitting(true);
+
+    try {
+      const payload = {
         proposal_id,
-        reviewer_id: user?.id!,
         action: 'accept',
-        notes: data.notes,
         message: 'تم قبول المشروع من قبل الرئيس التنفيذي ',
-        user_role: 'CEO',
-        state: 'CEO',
-      },
-    }).then((res) => {
-      if (res.error) {
-        enqueueSnackbar(res.error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
+        notes: data.notes,
+      };
+
+      console.log('payloadApprovalCeo', payload);
+
+      await axiosInstance
+        .patch('/tender-proposal/change-state', payload, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            enqueueSnackbar(translate('proposal_approved'), {
+              variant: 'success',
+            });
+          }
+
+          setIsSubmitting(false);
+          navigate(`/ceo/dashboard/app`);
+        })
+        .catch((err) => {
+          if (typeof err.message === 'object') {
+            err.message.forEach((el: any) => {
+              enqueueSnackbar(el, {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            });
+          } else {
+            enqueueSnackbar(err.message, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
+          }
+
+          setIsSubmitting(false);
         });
-      } else {
-        enqueueSnackbar(translate('proposal_accept'), {
-          variant: 'success',
-        });
-        navigate(`/ceo/dashboard/app`);
-      }
-    });
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+
+      setIsSubmitting(false);
+    }
   };
 
   const handleRejected = async (data: any) => {
-    update({
-      proposal_id,
-      new_values: {
-        inner_status: 'REJECTED_BY_CEO',
-        outter_status: 'CANCELED',
-        state: 'CEO',
-      },
-      log: {
-        id: nanoid(),
+    setIsSubmittingRejected(true);
+
+    try {
+      const payload = {
         proposal_id,
-        reviewer_id: user?.id!,
         action: 'reject',
-        notes: data.notes,
         message: 'تم قبول المشروع من قبل الرئيس التنفيذي ',
-        user_role: 'CEO',
-        state: 'CEO',
-      },
-    }).then((res) => {
-      if (res.error) {
-        enqueueSnackbar(res.error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
+        notes: data.notes,
+      };
+
+      console.log('payloadRejectedCeo', payload);
+
+      await axiosInstance
+        .patch('/tender-proposal/change-state', payload, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            enqueueSnackbar(translate('proposal_rejected'), {
+              variant: 'success',
+            });
+          }
+
+          setIsSubmittingRejected(false);
+          navigate(`/ceo/dashboard/app`);
+        })
+        .catch((err) => {
+          if (typeof err.message === 'object') {
+            err.message.forEach((el: any) => {
+              enqueueSnackbar(el, {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            });
+          } else {
+            enqueueSnackbar(err.message, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
+          }
+
+          setIsSubmittingRejected(false);
         });
-      } else {
-        enqueueSnackbar(translate('proposal_accept'), {
-          variant: 'success',
-        });
-        navigate(`/ceo/dashboard/app`);
-      }
-    });
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+
+      setIsSubmittingRejected(false);
+    }
   };
 
-  const stepBackProposal = () => {
-    update({
-      proposal_id,
-      new_values: {
-        inner_status: 'ACCEPTED_BY_SUPERVISOR',
-        outter_status: 'ONGOING',
-        state: 'PROJECT_MANAGER',
-      },
-      log: {
-        id: nanoid(),
+  const stepBackProposal = async (data: any) => {
+    setIsSubmittingStepback(true);
+
+    try {
+      const payload = {
         proposal_id,
-        reviewer_id: user?.id!,
         action: 'step_back',
         message: 'تم إرجاع المشروع خطوة للوراء',
-        user_role: 'CEO',
-        state: 'CEO',
-      },
-    }).then((res) => {
-      if (res.error) {
-        enqueueSnackbar(res.error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
+        notes: data.notes,
+      };
+
+      console.log('payloadStepBackCeo', payload);
+
+      await axiosInstance
+        .patch('/tender-proposal/change-state', payload, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            enqueueSnackbar(translate('proposal_stepback'), {
+              variant: 'success',
+            });
+          }
+
+          setIsSubmittingStepback(false);
+          navigate(`/ceo/dashboard/app`);
+        })
+        .catch((err) => {
+          if (typeof err.message === 'object') {
+            err.message.forEach((el: any) => {
+              enqueueSnackbar(el, {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            });
+          } else {
+            enqueueSnackbar(err.message, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
+          }
+
+          setIsSubmittingStepback(false);
         });
-      } else {
-        enqueueSnackbar('تم إرجاع المعاملة لمدير الإدارة', {
-          variant: 'success',
-        });
-        navigate(`/ceo/dashboard/app`);
-      }
-    });
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+
+      setIsSubmittingStepback(false);
+    }
   };
 
   return (
@@ -160,15 +237,16 @@ function FloatingActionBar() {
       >
         <Stack direction={{ sm: 'column', md: 'row' }} justifyContent="space-between">
           <Stack flexDirection={{ sm: 'column', md: 'row' }}>
-            <Button
+            <LoadingButton
               variant="contained"
               color="primary"
               sx={{ mr: { md: '1em' } }}
               onClick={() => setAction('ACCEPT')}
+              loading={isSubmitting}
             >
               {translate('project_acceptance')}
-            </Button>
-            <Button
+            </LoadingButton>
+            <LoadingButton
               variant="contained"
               sx={{
                 my: { xs: '1.3em', md: '0' },
@@ -177,18 +255,20 @@ function FloatingActionBar() {
                 ':hover': { backgroundColor: '#FF170F' },
               }}
               onClick={() => setAction('REJECT')}
+              loading={isSubmittingRejected}
             >
               {translate('project_rejected')}
-            </Button>
+            </LoadingButton>
           </Stack>
-          <Button
+          <LoadingButton
             variant="contained"
             onClick={handleClick}
             sx={{ backgroundColor: '#0169DE', ':hover': { backgroundColor: '#1482FE' } }}
             endIcon={<Iconify icon="eva:edit-2-outline" />}
+            loading={isSubmittingStepback}
           >
             {translate('submit_amendment_request')}
-          </Button>
+          </LoadingButton>
           <Menu
             id="demo-positioned-menu"
             aria-labelledby="demo-positioned-button"
@@ -204,10 +284,20 @@ function FloatingActionBar() {
               horizontal: 'left',
             }}
           >
-            <MenuItem onClick={() => navigate(`/ceo/dashboard/amandment-request/${proposal_id}`)}>
+            <MenuItem
+              onClick={() => {
+                navigate(`/ceo/dashboard/amandment-request/${proposal_id}`);
+                handleClose();
+              }}
+            >
               {translate('proposal_amandement.button_label')}
             </MenuItem>
-            <MenuItem onClick={() => setAction('STEP_BACK')}>
+            <MenuItem
+              onClick={() => {
+                setAction('STEP_BACK');
+                handleClose();
+              }}
+            >
               ارجاع المعاملة الى مدير الإدارة
             </MenuItem>
           </Menu>
@@ -219,7 +309,13 @@ function FloatingActionBar() {
           title="رفض المشروع"
           onClose={handleCloseModal}
           onSubmit={handleRejected}
-          action={{ actionLabel: 'رفض', backgroundColor: '#FF0000', hoverColor: '#FF4842' }}
+          action={{
+            actionType: action,
+            actionLabel: 'رفض',
+            backgroundColor: '#FF0000',
+            hoverColor: '#FF4842',
+          }}
+          loading={isSubmittingRejected}
         />
       )}
       {action === 'STEP_BACK' && (
@@ -227,7 +323,13 @@ function FloatingActionBar() {
           title="إرجاع المعاملة إلى مدير الإدارة"
           onClose={handleCloseModal}
           onSubmit={stepBackProposal}
-          action={{ actionLabel: 'إرجاع', backgroundColor: '#0169DE', hoverColor: '#1482FE' }}
+          action={{
+            actionType: action,
+            actionLabel: 'إرجاع',
+            backgroundColor: '#0169DE',
+            hoverColor: '#1482FE',
+          }}
+          loading={isSubmittingStepback}
         />
       )}
       {action === 'ACCEPT' && (
@@ -236,10 +338,12 @@ function FloatingActionBar() {
           onClose={handleCloseModal}
           onSubmit={handleApproval}
           action={{
+            actionType: action,
             actionLabel: 'قبول',
             backgroundColor: 'background.paper',
             hoverColor: '#13B2A2',
           }}
+          loading={isSubmitting}
         />
       )}
     </>

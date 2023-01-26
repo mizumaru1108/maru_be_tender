@@ -5,6 +5,8 @@ import { FormProvider, RHFTextField, RHFSelect } from 'components/hook-form';
 import ModalDialog from 'components/modal-dialog';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
+//
+import useAuth from 'hooks/useAuth';
 
 interface ActionPropos {
   backgroundColor: string;
@@ -27,9 +29,14 @@ interface FormInput {
 }
 
 function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
+  const { activeRole } = useAuth();
+
   const validationSchema = Yup.object().shape({
-    ...(action.actionType === 'REJECT' && { reject_reason: Yup.string().required() }),
-    notes: Yup.string().required(),
+    ...(action.actionType === 'REJECT' &&
+      ['tender_project_manager', 'tender_project_supervisor'].includes(activeRole!) && {
+        reject_reason: Yup.string().required(),
+      }),
+    notes: Yup.string(),
   });
 
   const defaultValues = {
@@ -64,7 +71,9 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
         }
         content={
           <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
-            {action.actionType && action.actionType === 'REJECT' ? (
+            {action.actionType &&
+            action.actionType === 'REJECT' &&
+            ['tender_project_manager', 'tender_project_supervisor'].includes(activeRole!) ? (
               <Grid item md={12} xs={12}>
                 <RHFSelect
                   name="reject_reason"

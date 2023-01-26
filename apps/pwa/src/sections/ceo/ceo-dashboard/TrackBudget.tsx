@@ -1,13 +1,15 @@
 import { Box, Grid, Stack, Typography, useTheme } from '@mui/material';
 import Label from 'components/Label';
 import useLocales from 'hooks/useLocales';
+//
+import { fCurrencyNumber } from 'utils/formatNumber';
 
 type Props = {
   data: {
     subtitle: string;
     type?: {
       label?: string;
-      value?: string;
+      value?: number;
     };
     compareValue?: string;
     color?: string;
@@ -47,7 +49,7 @@ function TrackBudget({ data }: Props) {
             )}
             {item.type && (
               <Typography variant="h4" component="p" sx={{ color: theme.palette.primary.main }}>
-                {item.type?.value} {translate(item.type?.label)}
+                {fCurrencyNumber(item.type?.value!)}
               </Typography>
             )}
             {item.compareValue && (

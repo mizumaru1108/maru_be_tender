@@ -52,7 +52,7 @@ export default function TableHeadCustom({
   editRequest,
 }: Props) {
   const { translate } = useLocales();
-  console.log({ headLabel });
+  // console.log({ headLabel });
 
   return (
     <TableHead sx={sx}>

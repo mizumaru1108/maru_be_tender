@@ -5,6 +5,8 @@ import { useSnackbar } from 'notistack';
 import { LoadingButton } from '@mui/lab';
 import { updatePaymentBySupervisorAndManagerAndFinance } from 'redux/slices/proposal';
 import React from 'react';
+//
+import { fCurrencyNumber } from 'utils/formatNumber';
 
 function PaymentsTable() {
   const dispatch = useDispatch();
@@ -54,7 +56,7 @@ function PaymentsTable() {
               <Stack direction="column">
                 <Typography sx={{ color: '#93A3B0' }}>مبلغ الدفعة:</Typography>
                 <Typography sx={{ color: '#1E1E1E' }} variant="h6">
-                  {item.payment_amount}
+                  {fCurrencyNumber(item.payment_amount)}
                 </Typography>
               </Stack>
             </Grid>

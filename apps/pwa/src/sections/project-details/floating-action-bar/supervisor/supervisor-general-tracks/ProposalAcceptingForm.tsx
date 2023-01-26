@@ -30,7 +30,7 @@ import { useParams } from 'react-router';
 
 function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType) {
   const { translate } = useLocales();
-  const { proposal } = useSelector((state) => state.proposal);
+  // const { proposal } = useSelector((state) => state.proposal);
   const { id: pid } = useParams();
   const [basedBudget, setBasedBudget] = useState<
     | { id?: string; amount?: number | undefined | null; clause?: string; explanation?: string }[]
@@ -163,7 +163,6 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
       ...data,
     };
 
-    // console.log(newData);
     onSubmit(newData);
   };
 
@@ -175,6 +174,8 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
       resetField('detail_project_budgets');
     }
   }, [proposalData, fetchingProposal, resetField, setValue]);
+
+  if (errorProposal) return <>Something when wrong on get proposal details</>;
 
   return (
     <FormProvider methods={methods}>
@@ -279,13 +280,13 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                     placeholder="الرجاء اختيار أهداف الدعم"
                     label="اهداف الدعم*"
                   >
-                    {_supportGoals[`${proposal.project_track as keyof typeof _supportGoals}`].map(
-                      (item) => (
-                        <MenuItem value={item.value} key={item.value}>
-                          {item.title}
-                        </MenuItem>
-                      )
-                    )}
+                    {_supportGoals[
+                      `${proposalData.proposal.project_track as keyof typeof _supportGoals}`
+                    ].map((item) => (
+                      <MenuItem value={item.value} key={item.value}>
+                        {item.title}
+                      </MenuItem>
+                    ))}
                   </RHFSelect>
                 </Grid>
                 {vat === 'true' && (

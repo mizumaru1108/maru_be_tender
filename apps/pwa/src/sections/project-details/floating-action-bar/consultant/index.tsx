@@ -10,11 +10,14 @@ import { useSnackbar } from 'notistack';
 import { UpdateAction } from '../../../../@types/project-details';
 import { useState } from 'react';
 import NotesModal from 'components/notes-modal';
+//
+import axiosInstance from 'utils/axios';
+import { LoadingButton } from '@mui/lab';
 
 function ConsultantFloatingActionBar() {
   const { enqueueSnackbar } = useSnackbar();
 
-  const { user } = useAuth();
+  const { user, activeRole } = useAuth();
 
   const { translate } = useLocales();
 
@@ -28,74 +31,125 @@ function ConsultantFloatingActionBar() {
 
   const theme = useTheme();
 
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isSubmittingRejected, setIsSubmittingRejected] = useState<boolean>(false);
+
   const handleCloseModal = () => {
     setAction('');
   };
 
-  const handleApproval = async () => {
-    update({
-      proposal_id,
-      new_values: {
-        inner_status: 'ACCEPTED_BY_CONSULTANT',
-        outter_status: 'ONGOING',
-        state: 'CEO',
-      },
-      log: {
-        id: nanoid(),
+  const handleApproval = async (values: any) => {
+    setIsSubmitting(true);
+
+    try {
+      const payload = {
         proposal_id,
-        reviewer_id: user?.id!,
         action: 'accept',
         message: 'تم قبول المشروع من قبل لجنة المستشارين ',
-        user_role: 'PROJECT_SUPERVISOR',
-        state: 'PROJECT_SUPERVISOR',
-      },
-    }).then((res) => {
-      if (res.error) {
-        enqueueSnackbar(res.error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
+        notes: values.notes,
+      };
+
+      console.log('payloadApprovalConsultant', payload);
+
+      await axiosInstance
+        .patch('/tender-proposal/change-state', payload, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            enqueueSnackbar(translate('proposal_approved'), {
+              variant: 'success',
+            });
+          }
+
+          setIsSubmitting(false);
+          navigate(`/consultant/dashboard/app`);
+        })
+        .catch((err) => {
+          if (typeof err.message === 'object') {
+            err.message.forEach((el: any) => {
+              enqueueSnackbar(el, {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            });
+          } else {
+            enqueueSnackbar(err.message, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
+          }
+
+          setIsSubmitting(false);
         });
-      } else {
-        enqueueSnackbar(translate('proposal_approved'), {
-          variant: 'success',
-        });
-        navigate(`/consultant/dashboard/app`);
-      }
-    });
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+
+      setIsSubmitting(false);
+    }
   };
 
-  const handleRejected = async () => {
-    update({
-      proposal_id,
-      new_values: {
-        inner_status: 'REJECTED_BY_CONSULTANT',
-        outter_status: 'ONGOING',
-        state: 'PROJECT_MANAGER',
-      },
-      log: {
-        id: nanoid(),
+  const handleRejected = async (values: any) => {
+    setIsSubmittingRejected(true);
+
+    try {
+      const payload = {
         proposal_id,
-        reviewer_id: user?.id!,
-        action: 'accept',
+        action: 'reject',
         message: 'تم قبول المشروع من قبل مدير المشاريع ',
-        user_role: 'PROJECT_SUPERVISOR',
-        state: 'PROJECT_SUPERVISOR',
-      },
-    }).then((res) => {
-      if (res.error) {
-        enqueueSnackbar(res.error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
+        notes: values.notes,
+      };
+
+      console.log('payloadRejectedConsultant', payload);
+
+      await axiosInstance
+        .patch('/tender-proposal/change-state', payload, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            enqueueSnackbar(translate('proposal_rejected'), {
+              variant: 'success',
+            });
+          }
+
+          setIsSubmitting(false);
+          navigate(`/consultant/dashboard/app`);
+        })
+        .catch((err) => {
+          if (typeof err.message === 'object') {
+            err.message.forEach((el: any) => {
+              enqueueSnackbar(el, {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            });
+          } else {
+            enqueueSnackbar(err.message, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
+          }
+
+          setIsSubmitting(false);
         });
-      } else {
-        enqueueSnackbar(translate('proposal_rejected'), {
-          variant: 'success',
-        });
-        navigate(`/consultant/dashboard/app`);
-      }
-    });
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+
+      setIsSubmittingRejected(false);
+    }
   };
 
   return (
@@ -123,7 +177,7 @@ function ConsultantFloatingActionBar() {
             {translate('submit_amendment_request')}
           </Button>
           <Stack flexDirection={{ sm: 'column', md: 'row' }}>
-            <Button
+            <LoadingButton
               variant="contained"
               sx={{
                 my: { xs: '1.3em', md: '0' },
@@ -132,17 +186,19 @@ function ConsultantFloatingActionBar() {
                 ':hover': { backgroundColor: '#FF170F' },
               }}
               onClick={() => setAction('REJECT')}
+              loading={isSubmittingRejected}
             >
               {translate('project_rejected')}
-            </Button>
-            <Button
+            </LoadingButton>
+            <LoadingButton
               variant="contained"
               color="primary"
               sx={{ mr: { md: '1em' } }}
               onClick={() => setAction('ACCEPT')}
+              loading={isSubmitting}
             >
               {translate('project_acceptance')}
-            </Button>
+            </LoadingButton>
           </Stack>
         </Stack>
       </Box>
@@ -151,7 +207,12 @@ function ConsultantFloatingActionBar() {
           title="رفض المشروع وإعادته لمدير الإدارة"
           onClose={handleCloseModal}
           onSubmit={handleRejected}
-          action={{ actionLabel: 'رفض', backgroundColor: '#FF0000', hoverColor: '#FF4842' }}
+          action={{
+            actionType: action,
+            actionLabel: 'رفض',
+            backgroundColor: '#FF0000',
+            hoverColor: '#FF4842',
+          }}
         />
       )}
       {action === 'ACCEPT' && (
@@ -160,10 +221,12 @@ function ConsultantFloatingActionBar() {
           onClose={handleCloseModal}
           onSubmit={handleApproval}
           action={{
+            actionType: action,
             actionLabel: 'قبول',
             backgroundColor: 'background.paper',
             hoverColor: '#13B2A2',
           }}
+          loading={isSubmitting}
         />
       )}
     </>

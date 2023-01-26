@@ -29,6 +29,8 @@ function MainPage() {
     amount_required_fsupport,
     letter_ofsupport_req,
     project_attachments,
+    support_type,
+    proposal_item_budgets_aggregate,
   } = proposal;
 
   React.useEffect(() => {}, [proposal]);
@@ -71,7 +73,23 @@ function MainPage() {
           <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
             {translate('project_implementation_date')}
           </Typography>
-          <Typography>{new Date(project_implement_date).toISOString().substring(0, 10)}</Typography>
+          <Typography sx={{ mb: '20px' }}>
+            {new Date(project_implement_date).toISOString().substring(0, 10)}
+          </Typography>
+          <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
+            {translate('support_type')}
+          </Typography>
+          <Typography>
+            {support_type ? translate('full_support') : translate('partial_support')}&nbsp;
+            <Typography component="span">{translate('with')}&nbsp;</Typography>
+            {/* <Typography component="span" sx={{ fontWeight: 'bold' }}>
+              {fCurrencyNumber(proposal_item_budgets_aggregate.aggregate.sum.amount)}&nbsp;
+            </Typography> */}
+            <Typography component="span" sx={{ fontWeight: 'bold' }}>
+              {fCurrencyNumber(amount_required_fsupport)}&nbsp;
+            </Typography>
+            <Typography component="span">{translate('amount')}&nbsp;</Typography>
+          </Typography>
         </Stack>
       </Stack>
       <Divider />

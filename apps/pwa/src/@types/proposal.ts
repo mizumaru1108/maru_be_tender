@@ -108,6 +108,7 @@ export interface Proposal {
   }[];
   number_of_payments: number;
   number_of_payments_by_supervisor: number;
+  support_type: boolean;
   proposal_item_budgets: ItemBudget[];
   proposal_item_budgets_aggregate: {
     aggregate: {

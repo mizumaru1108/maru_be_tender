@@ -5,6 +5,7 @@ export const getOneProposal = `query getOneProposal($id: String!) {
     project_implement_date
     project_location
     project_track
+    support_type
     number_of_payments_by_supervisor
     user {
       id

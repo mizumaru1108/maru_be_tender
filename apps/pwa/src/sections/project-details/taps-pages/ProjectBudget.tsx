@@ -2,12 +2,22 @@ import { Box, Container, Divider, Stack, Typography } from '@mui/material';
 import { Proposal } from '../../../@types/proposal';
 import { useSelector } from 'redux/store';
 import React from 'react';
+//
+import { fCurrencyNumber } from 'utils/formatNumber';
+import useLocales from 'hooks/useLocales';
 
 function ProjectBudget() {
   const { proposal } = useSelector((state) => state.proposal);
+  const { translate } = useLocales();
 
   return (
     <Container>
+      <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
+        {translate('support_type')}
+      </Typography>
+      <Typography sx={{ mb: '20px' }}>
+        {proposal.support_type ? translate('full_support') : translate('partial_support')}
+      </Typography>
       <Box
         sx={{
           mt: '20px',
@@ -40,7 +50,7 @@ function ProjectBudget() {
               {item.explanation}
             </Typography>
             <Typography flex={2} sx={{ color: '#1E1E1E' }}>
-              {item.amount}
+              {fCurrencyNumber(item.amount)}
             </Typography>
           </Stack>
           <Divider />
@@ -61,9 +71,9 @@ function ProjectBudget() {
         <Box flex={2} />
         <Box flex={2} />
         <Typography variant="h6" flex={2.8}>
-          {`المبلغ الإجمالي : ${
+          {`المبلغ الإجمالي : ${fCurrencyNumber(
             (proposal as Proposal).proposal_item_budgets_aggregate.aggregate.sum.amount
-          } ريال`}
+          )}`}
         </Typography>
       </Box>
     </Container>

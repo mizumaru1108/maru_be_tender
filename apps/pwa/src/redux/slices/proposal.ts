@@ -114,6 +114,7 @@ const initialState: ProposalItme = {
     ],
     number_of_payments: 0,
     number_of_payments_by_supervisor: 0,
+    support_type: false,
     proposal_item_budgets: [
       {
         amount: 0,

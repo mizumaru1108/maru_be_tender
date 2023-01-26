@@ -2,6 +2,8 @@ import { Box, Grid, Typography } from '@mui/material';
 import { Proposal } from '../../../../@types/proposal';
 import { useSelector } from 'redux/store';
 import PaymentsTable from './PaymentsTable';
+//
+import { fCurrencyNumber } from 'utils/formatNumber';
 
 function FinancePaymentsPage() {
   const { proposal } = useSelector((state) => state.proposal);
@@ -26,9 +28,9 @@ function FinancePaymentsPage() {
           <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
             الميزانية الكلية للمشروع
           </Typography>
-          <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>{`${
+          <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>{`${fCurrencyNumber(
             (proposal as Proposal).amount_required_fsupport
-          } ريال`}</Typography>
+          )}`}</Typography>
         </Box>
       </Grid>
       <Grid item md={2} xs={12}>
@@ -46,7 +48,7 @@ function FinancePaymentsPage() {
             عدد الدفعات المسجلة
           </Typography>
           <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>{`${
-            (proposal as Proposal).number_of_payments
+            (proposal as Proposal).number_of_payments ?? 0
           } دفعات`}</Typography>
         </Box>
       </Grid>

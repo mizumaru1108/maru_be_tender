@@ -11,7 +11,7 @@ const dailyStatistic = [
     subtitle: 'الميزانية الكلية للمؤسسة',
     type: {
       label: 'section_portal_reports.riyals',
-      value: '1,000,000',
+      value: 1000000,
     },
     height: '140',
     icon: true,
@@ -22,7 +22,7 @@ const dailyStatistic = [
     subtitle: 'الميزانية المصروفة',
     type: {
       label: 'section_portal_reports.riyals',
-      value: '1,000,000',
+      value: 1000000,
     },
     height: '140',
     icon: true,
@@ -33,7 +33,7 @@ const dailyStatistic = [
     subtitle: 'الميزانية المحجوزة',
     type: {
       label: 'section_portal_reports.riyals',
-      value: '1,000,000',
+      value: 1000000,
     },
     height: '140',
     icon: true,

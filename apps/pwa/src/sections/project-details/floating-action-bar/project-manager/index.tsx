@@ -257,39 +257,39 @@ function FloatingActionBar() {
 
       console.log('payloadStepbackToSupervisor', payload);
 
-      // await axiosInstance
-      //   .patch('/tender-proposal/change-state', payload, {
-      //     headers: { 'x-hasura-role': activeRole! },
-      //   })
-      //   .then((res) => {
-      //     if (res.data.statusCode === 200) {
-      //       enqueueSnackbar(translate('proposal_stepback'), {
-      //         variant: 'success',
-      //       });
-      //     }
+      await axiosInstance
+        .patch('/tender-proposal/change-state', payload, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            enqueueSnackbar(translate('proposal_stepback'), {
+              variant: 'success',
+            });
+          }
 
-      //     setIsSubmittingStepback(true);
-      //     navigate(`/project-manager/dashboard/app`);
-      //   })
-      //   .catch((err) => {
-      //     if (typeof err.message === 'object') {
-      //       err.message.forEach((el: any) => {
-      //         enqueueSnackbar(el, {
-      //           variant: 'error',
-      //           preventDuplicate: true,
-      //           autoHideDuration: 3000,
-      //         });
-      //       });
-      //     } else {
-      //       enqueueSnackbar(err.message, {
-      //         variant: 'error',
-      //         preventDuplicate: true,
-      //         autoHideDuration: 3000,
-      //       });
-      //     }
+          setIsSubmittingStepback(true);
+          navigate(`/project-manager/dashboard/app`);
+        })
+        .catch((err) => {
+          if (typeof err.message === 'object') {
+            err.message.forEach((el: any) => {
+              enqueueSnackbar(el, {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            });
+          } else {
+            enqueueSnackbar(err.message, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
+          }
 
-      //     setIsSubmittingStepback(true);
-      //   });
+          setIsSubmittingStepback(true);
+        });
     } catch (error) {
       enqueueSnackbar(error.message, {
         variant: 'error',
