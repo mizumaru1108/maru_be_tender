@@ -134,3 +134,35 @@ export const subNotificationClient = `subscription subNotificationClient ($user_
     }
   }
 }`;
+
+export const notifAccManager = `subscription notifAccManager ($user_id: String = "") {
+  notification (where: {user_id: {_eq: $user_id}, shown: {_eq: true}}, order_by: {created_at: desc}){
+    id
+    appointment_id
+    subject
+    content
+    read_status
+    shown
+    created_at
+    type
+    message {
+      id
+      content_type_id
+      content_title
+      content
+      created_at
+      attachment
+    read_status
+    room_id
+      sender {
+        email
+      }
+    }
+    proposal {
+      id
+      inner_status
+      outter_status
+      state
+    }
+  }
+}`;

@@ -31,7 +31,11 @@ import SvgIconStyle from 'components/SvgIconStyle';
 import { sub } from 'date-fns';
 import useLocales from '../../../hooks/useLocales';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { subNotification, subNotificationClient } from 'queries/commons/subNotification';
+import {
+  subNotification,
+  subNotificationClient,
+  notifAccManager,
+} from 'queries/commons/subNotification';
 import useAuth from 'hooks/useAuth';
 import { useSubscription } from 'urql';
 import Page500 from 'pages/Page500';
@@ -114,8 +118,15 @@ export default function MessagePopover() {
     variables: { user_id: user?.id },
   });
 
+  const [AccManagerNotification] = useSubscription({
+    query: notifAccManager,
+    variables: { user_id: user?.id },
+  });
+
   if (activeRole === 'tender_client' || activeRole === 'tender_project_supervisor') {
     currentSubcription = clientNotification;
+  } else if (activeRole === 'tender_accounts_manager') {
+    currentSubcription = AccManagerNotification;
   } else {
     currentSubcription = result;
   }

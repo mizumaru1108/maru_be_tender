@@ -33,7 +33,11 @@ import { sub } from 'date-fns';
 import useLocales from '../../../hooks/useLocales';
 import useAuth from 'hooks/useAuth';
 import { useSubscription } from 'urql';
-import { subNotification, subNotificationClient } from 'queries/commons/subNotification';
+import {
+  subNotification,
+  subNotificationClient,
+  notifAccManager,
+} from 'queries/commons/subNotification';
 import { notificationCount } from 'queries/commons/subNotificationCount';
 import Page500 from 'pages/Page500';
 import { useLocation, useNavigate } from 'react-router';
@@ -132,8 +136,15 @@ export default function NotificationsPopover() {
     variables: { user_id: user?.id },
   });
 
+  const [AccManagerNotification] = useSubscription({
+    query: notifAccManager,
+    variables: { user_id: user?.id },
+  });
+
   if (activeRole === 'tender_client' || activeRole === 'tender_project_supervisor') {
     currentSubcription = clientNotification;
+  } else if (activeRole === 'tender_accounts_manager') {
+    currentSubcription = AccManagerNotification;
   } else {
     currentSubcription = result;
   }
@@ -549,13 +560,15 @@ function NotificationItem({
   const subject = (value: any) => {
     let tempSubject = '';
     if (value === 'Proposal accepted Notification') {
-      tempSubject = 'proposal_accepted';
+      tempSubject = 'notification.proposal_accepted';
     } else if (value === 'Proposal rejected Notification') {
-      tempSubject = 'proposal_rejected';
+      tempSubject = 'notification.proposal_rejected';
     } else if (value === 'Proposal reviewed Notification') {
-      tempSubject = 'proposal_reviewed';
+      tempSubject = 'notification.proposal_reviewed';
+    } else if (value === "Tender's New Appointment") {
+      tempSubject = 'notification.tender_appointment';
     } else {
-      tempSubject = 'tender_appointment';
+      tempSubject = value;
     }
     return tempSubject;
   };
@@ -577,7 +590,7 @@ function NotificationItem({
               }}
             >
               <ListItemText
-                primary={translate(`notification.${subject(notification.subject)}`)}
+                primary={translate(`${subject(notification.subject)}`)}
                 secondary={
                   <Stack direction="column">
                     <Typography>{notification.content}</Typography>
@@ -735,7 +748,7 @@ function NotificationItem({
             }}
           >
             <ListItemText
-              primary={translate(`notification.${subject(notification.subject)}`)}
+              primary={translate(`${subject(notification.subject)}`)}
               secondary={
                 <Stack direction="column">
                   <Typography>{notification.content}</Typography>
