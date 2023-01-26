@@ -17,7 +17,7 @@ function FollowUpsFile(item: FollowUps) {
           <Stack direction="row" gap={1}>
             <Button
               component={Link}
-              href={item.file.url}
+              href={item.attachments.url}
               target="_blank"
               rel="noopener noreferrer"
               download="صورة بطاقة الحساب البنكي"
@@ -46,7 +46,7 @@ function FollowUpsFile(item: FollowUps) {
                       ملف خطاب طلب الدعم
                     </Typography>
                     <Typography gutterBottom sx={{ fontSize: '13px' }}>
-                      {`${item.file.size}KB`}
+                      {`${item.attachments.size}KB`}
                     </Typography>
                   </Stack>
                 </Stack>
@@ -111,7 +111,7 @@ function FollowUpsFile(item: FollowUps) {
       <Grid item md={11}>
         <Button
           component={Link}
-          href={item.file.url}
+          href={item.attachments.url}
           target="_blank"
           rel="noopener noreferrer"
           download="صورة بطاقة الحساب البنكي"
@@ -140,7 +140,7 @@ function FollowUpsFile(item: FollowUps) {
                   ملف خطاب طلب الدعم
                 </Typography>
                 <Typography gutterBottom sx={{ fontSize: '13px' }}>
-                  {`${item.file.size}KB`}
+                  {`${item.attachments.size}KB`}
                 </Typography>
               </Stack>
             </Stack>

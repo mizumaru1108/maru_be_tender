@@ -21,7 +21,7 @@ function FollowUpsText(item: FollowUps) {
               padding: '10px',
             }}
           >
-            {item.action}
+            {item.content}
           </Box>
         </Grid>
         <Grid item md={1}>
@@ -80,7 +80,7 @@ function FollowUpsText(item: FollowUps) {
               new Date().getDate() - new Date(item.created_at).getDate()
             } ساعات`}</Typography>
           </Stack>
-          <Typography>{item.action}</Typography>
+          <Typography>{item.content}</Typography>
         </Box>
       </Grid>
     </Grid>

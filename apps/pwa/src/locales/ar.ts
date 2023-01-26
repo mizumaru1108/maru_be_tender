@@ -1388,6 +1388,27 @@ const ar = {
     moderator: 'الوسيط',
   },
   nothing_payment: 'لم يتم تعيين المدفوعات حتى الآن',
+  notification: {
+    today: 'اليوم',
+    previous: 'سابق',
+    read_all: 'علامات مقروءه',
+    clear_all: 'امسح الكل',
+    to_project: 'انتقل إلى المشروع',
+    appointment: 'انظر التعيين',
+    join_now: 'نضم الان',
+    no_notifications_today: 'لا إخطارات اليوم',
+    no_notifications: 'لا إشعارات',
+    proposal_accepted: 'إخطار قبول الاقتراح',
+    proposal_rejected: 'الإخطار برفض الاقتراح',
+    proposal_reviewed: 'تم استلام الإخطار بالاقتراح',
+    header: 'الإشعارات',
+    tender_appointment: 'موعد العطاء الجديد',
+    subject_five_min_appointment: 'موعدك سيبدأ قريبا!',
+    content_five_min_appointment: 'سيستمر هذا الاجتماع 5 دقائق ، يمكنك الانضمام إلى الاجتماع الآن',
+    subject_payment: 'تهانينا ، لقد تم إرسال صندوق مشروعك!',
+    content_payment: 'يرجى التحقق من حسابك وإثبات الأموال أدناه',
+    proof_of_funds: 'الدليل على الأموال',
+  },
 };
 
 export default ar;

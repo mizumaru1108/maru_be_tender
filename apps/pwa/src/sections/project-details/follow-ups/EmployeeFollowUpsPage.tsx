@@ -123,8 +123,8 @@ function EmployeeFollowUpsPage() {
                 })
                 .map((item, index) => (
                   <Grid item md={12} xs={12} key={index}>
-                    {item.file && <FollowUpsFile {...item} />}
-                    {item.action && <FollowUpsText {...item} />}
+                    {item.attachments && <FollowUpsFile {...item} />}
+                    {item.content && <FollowUpsText {...item} />}
                   </Grid>
                 ))
             )}
@@ -152,8 +152,8 @@ function EmployeeFollowUpsPage() {
                 })
                 .map((item, index) => (
                   <Grid item md={12} xs={12} key={index}>
-                    {item.file && <FollowUpsFile {...item} />}
-                    {item.action && <FollowUpsText {...item} />}
+                    {item.attachments && <FollowUpsFile {...item} />}
+                    {item.content && <FollowUpsText {...item} />}
                   </Grid>
                 ))
             )}

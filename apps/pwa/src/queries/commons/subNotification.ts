@@ -67,6 +67,15 @@ export const subNotification = `subscription subNotification ($user_id: String =
       inner_status
       outter_status
       state
+      payments {
+        id
+        payment_date
+        status
+        cheques {
+          transfer_receipt
+          id
+        }
+      }
     }
   }
 }`;
@@ -98,6 +107,15 @@ export const subNotificationClient = `subscription subNotificationClient ($user_
       id
       inner_status
       outter_status
+      payments {
+        id
+        payment_date
+        status
+        cheques {
+          transfer_receipt
+          id
+        }
+      }
     }
     appointment {
       id

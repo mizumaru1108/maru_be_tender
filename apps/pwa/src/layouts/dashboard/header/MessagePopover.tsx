@@ -248,7 +248,7 @@ export default function MessagePopover() {
           </Box> */}
 
             <Box>
-              <Typography variant="subtitle1">الإشعارات</Typography>
+              <Typography variant="subtitle1">{translate('notification.header')}</Typography>
               <TabList
                 value={activeTap}
                 onChange={handleTapChange}
@@ -258,7 +258,7 @@ export default function MessagePopover() {
                   label={
                     <>
                       <Box>
-                        Today
+                        {translate('notification.today')}
                         {totalUnReadToday > 0 && (
                           <Typography
                             component="span"
@@ -283,7 +283,7 @@ export default function MessagePopover() {
                   label={
                     <>
                       <Box>
-                        Previous
+                        {translate('notification.previous')}
                         {totalUnReadPrevious > 0 && (
                           <Typography
                             component="span"
@@ -319,17 +319,15 @@ export default function MessagePopover() {
                   {/* <Tooltip title=" Mark all as read"> */}
                   <IconButton color="primary" onClick={handleMarkAllAsRead}>
                     <Iconify icon="eva:done-all-fill" width={20} height={20} />
-                    <Typography sx={{ ml: 0.5 }}>Mark all as read</Typography>
+                    <Typography sx={{ ml: 0.5 }}>{translate('notification.read_all')}</Typography>
                   </IconButton>
                   {/* </Tooltip> */}
                 </>
               )}
 
-              {/* <Tooltip title=" Mark all as read"> */}
               <IconButton color="error" onClick={handleClearAll}>
-                <Typography sx={{ ml: 0.5 }}>Clear All</Typography>
+                <Typography sx={{ ml: 0.5 }}>{translate('notification.clear_all')}</Typography>
               </IconButton>
-              {/* </Tooltip> */}
             </Box>
           </Box>
 
@@ -354,7 +352,7 @@ export default function MessagePopover() {
                         mt: '1px',
                       }}
                     >
-                      <ListItemText primary="No Notifications Today" />
+                      <ListItemText primary={translate(`notification.no_notifications_today`)} />
                     </ListItemButton>
                   )}
                 </>
@@ -389,7 +387,7 @@ export default function MessagePopover() {
                         mt: '1px',
                       }}
                     >
-                      <ListItemText primary="No Notifications" />
+                      <ListItemText primary={translate(`notification.no_notifications`)} />
                     </ListItemButton>
                   )}
                 </>

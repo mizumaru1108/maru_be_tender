@@ -1345,6 +1345,27 @@ const en = {
     moderator: 'Moderator',
   },
   nothing_payment: 'The Payments haven’t been set yet',
+  notification: {
+    today: 'Today',
+    previous: 'Previous',
+    read_all: 'Mark All as Read',
+    clear_all: 'Clear All',
+    to_project: 'Go to Project',
+    appointment: 'See the Appointment',
+    join_now: 'Join Now',
+    no_notifications_today: 'No Notifications Today',
+    no_notifications: 'No Notifications',
+    proposal_accepted: 'Proposal Accepted Notifcation',
+    proposal_rejected: 'Proposal Rejected Notifcation',
+    proposal_reviewed: 'Proposal Reviewed Notifcation',
+    header: 'Notifications',
+    tender_appointment: 'Tender New Appointment',
+    subject_five_min_appointment: 'Your appointment will starting soon!',
+    content_five_min_appointment: 'This meeting will last 5 minutes, you can join the meeting now',
+    subject_payment: 'congratulations, your project fund have been sent!',
+    content_payment: 'Please check your account and proof of funds below',
+    proof_of_funds: 'Proof of Funds',
+  },
 };
 
 export default en;

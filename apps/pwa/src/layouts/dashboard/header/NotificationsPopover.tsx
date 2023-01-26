@@ -38,6 +38,9 @@ import { notificationCount } from 'queries/commons/subNotificationCount';
 import Page500 from 'pages/Page500';
 import { useLocation, useNavigate } from 'react-router';
 import axiosInstance from 'utils/axios';
+// import 'moment/locale/ar';
+import 'moment/min/locales';
+import moment from 'moment';
 
 // ----------------------------------------------------------------------
 // const _notifications = [...Array(3)].map((_, index) => ({
@@ -66,6 +69,19 @@ type NotificationItemProps = {
     inner_status: string;
     outter_status: string;
     state: string;
+    payments: [
+      {
+        id: string;
+        payment_date: string;
+        status: string;
+        cheques: [
+          {
+            transfer_receipt: string;
+            id: string;
+          }
+        ];
+      }
+    ];
   };
   appointment: {
     id: string;
@@ -264,7 +280,7 @@ export default function NotificationsPopover() {
           </Box> */}
 
             <Box>
-              <Typography variant="subtitle1">الإشعارات</Typography>
+              <Typography variant="subtitle1">{translate('notification.header')}</Typography>
               <TabList
                 value={activeTap}
                 onChange={handleTapChange}
@@ -274,7 +290,7 @@ export default function NotificationsPopover() {
                   label={
                     <>
                       <Box>
-                        Today
+                        {translate('notification.today')}
                         {totalUnReadToday > 0 && (
                           <Box
                             component={'span'}
@@ -299,7 +315,7 @@ export default function NotificationsPopover() {
                   label={
                     <>
                       <Box>
-                        Previous
+                        {translate('notification.previous')}
                         {notifCount?.data?.notification_aggregate?.aggregate?.count > 0 && (
                           <Box
                             component={'span'}
@@ -335,7 +351,7 @@ export default function NotificationsPopover() {
                   {/* <Tooltip title=" Mark all as read"> */}
                   <IconButton color="primary" onClick={handleMarkAllAsRead}>
                     <Iconify icon="eva:done-all-fill" width={20} height={20} />
-                    <Typography sx={{ ml: 0.5 }}>Mark all as read</Typography>
+                    <Typography sx={{ ml: 0.5 }}>{translate('notification.read_all')}</Typography>
                   </IconButton>
                   {/* </Tooltip> */}
                 </>
@@ -343,7 +359,7 @@ export default function NotificationsPopover() {
 
               {/* <Tooltip title=" Mark all as read"> */}
               <IconButton color="error" onClick={handleClearAll}>
-                <Typography sx={{ ml: 0.5 }}>Clear All</Typography>
+                <Typography sx={{ ml: 0.5 }}>{translate('notification.clear_all')}</Typography>
               </IconButton>
               {/* </Tooltip> */}
             </Box>
@@ -375,7 +391,7 @@ export default function NotificationsPopover() {
                         mt: '1px',
                       }}
                     >
-                      <ListItemText primary="No Notifications Today" />
+                      <ListItemText primary={translate(`notification.no_notifications_today`)} />
                     </ListItemButton>
                   )}
                 </>
@@ -415,7 +431,7 @@ export default function NotificationsPopover() {
                         mt: '1px',
                       }}
                     >
-                      <ListItemText primary="No Notifications" />
+                      <ListItemText primary={translate(`notification.no_notifications`)} />
                     </ListItemButton>
                   )}
                 </>
@@ -448,11 +464,14 @@ function NotificationItem({
   onClose: () => void;
 }) {
   // const { description } = renderContent(notification);
+  const { translate } = useLocales();
 
   const navigate = useNavigate();
   const location = useLocation();
 
   const { activeRole } = useAuth();
+
+  const valueLocale = localStorage.getItem('i18nextLng');
 
   const oneDay = 24 * 60 * 60 * 1000;
 
@@ -489,16 +508,16 @@ function NotificationItem({
 
     let footer_action = '';
     let request_action = '';
-    if (activeRole !== 'tender_client' && state === newActiveRole && outterStatus === 'ONGOING') {
+    if (activeRole === 'tender_ceo' && state === newActiveRole && outterStatus === 'ONGOING') {
       footer_action = 'show-details';
-      request_action = 'requests-in-process';
+      request_action = 'project-management';
     } else if (
-      activeRole === 'tender_ceo' &&
+      activeRole !== 'tender_client' &&
       state === newActiveRole &&
       outterStatus === 'ONGOING'
     ) {
       footer_action = 'show-details';
-      request_action = 'project-management';
+      request_action = 'requests-in-process';
     } else {
       footer_action = 'show-project';
       request_action = 'previous-funding-requests';
@@ -527,6 +546,20 @@ function NotificationItem({
     navigate(`/${x[1] + '/' + x[2]}/appointments`);
   };
 
+  const subject = (value: any) => {
+    let tempSubject = '';
+    if (value === 'Proposal accepted Notification') {
+      tempSubject = 'proposal_accepted';
+    } else if (value === 'Proposal rejected Notification') {
+      tempSubject = 'proposal_rejected';
+    } else if (value === 'Proposal reviewed Notification') {
+      tempSubject = 'proposal_reviewed';
+    } else {
+      tempSubject = 'tender_appointment';
+    }
+    return tempSubject;
+  };
+
   return (
     <>
       {tabValue === '1' ? (
@@ -544,7 +577,7 @@ function NotificationItem({
               }}
             >
               <ListItemText
-                primary={notification.subject}
+                primary={translate(`notification.${subject(notification.subject)}`)}
                 secondary={
                   <Stack direction="column">
                     <Typography>{notification.content}</Typography>
@@ -557,7 +590,7 @@ function NotificationItem({
                         color: 'text.disabled',
                       }}
                     >
-                      {fToNow(notification.created_at)}
+                      {moment(notification.created_at).locale(`${valueLocale}`).fromNow()}
                     </Typography>
                     <Stack direction="row" justifyContent="start">
                       {notification.type === 'PROPOSAL' && (
@@ -573,7 +606,7 @@ function NotificationItem({
                             )
                           }
                         >
-                          Go to Project
+                          {translate('notification.to_project')}
                         </Button>
                       )}
                       {notification.type === 'APPOINTMENT' && (
@@ -583,7 +616,7 @@ function NotificationItem({
                             handleNavigateAppointment(notification.appointment.id, notification.id)
                           }
                         >
-                          See the Appointment
+                          {translate('notification.appointment')}
                         </Button>
                       )}
                     </Stack>
@@ -593,6 +626,7 @@ function NotificationItem({
             </ListItemButton>
           )}
           {/* ---------------------------End Project Today Item--------------------------- */}
+          {/* ---------------------------Appointment Today Item--------------------------- */}
           {notification?.appointment && getTimeMeeting(notification?.created_at) <= fiveMinSoon && (
             <ListItemButton
               sx={{
@@ -602,11 +636,11 @@ function NotificationItem({
               }}
             >
               <ListItemText
-                primary={'Your appointment will starting soon!'}
+                primary={translate(`notification.subject_five_min_appointment`)}
                 secondary={
                   <Stack direction="column">
                     <Typography>
-                      {'This meeting will last 5 minutes, you can join the meeting now'}
+                      {translate(`notification.content_five_min_appointment`)}
                     </Typography>
                     <Typography
                       variant="caption"
@@ -617,15 +651,17 @@ function NotificationItem({
                         color: 'text.disabled',
                       }}
                     >
-                      {fToNow(notification.created_at)}
+                      {moment(notification.created_at).locale(`${valueLocale}`).fromNow()}
                     </Typography>
                     {notification.type === 'PROPOSAL' && (
                       <Stack direction="row" justifyContent="start">
                         <Button
                           style={{ textAlign: 'start', color: 'green' }}
-                          onClick={() => navigate(notification.appointment.meeting_url)}
+                          href={notification.appointment.meeting_url}
+                          rel="noopened noreferrer"
+                          target="_blank"
                         >
-                          Join Now
+                          {translate('notification.join_now')}
                         </Button>
                       </Stack>
                     )}
@@ -633,6 +669,56 @@ function NotificationItem({
                 }
               />
             </ListItemButton>
+          )}
+          {/* ---------------------------End Appointment Today Item--------------------------- */}
+          {/* ---------------------------Payment Today Item--------------------------- */}
+          {notification?.proposal && notification.proposal.payments && (
+            <>
+              {notification.proposal.payments.map((cheque, index) => (
+                <ListItemButton
+                  sx={{
+                    py: 1.5,
+                    px: 2.5,
+                    mt: '1px',
+                  }}
+                  key={index}
+                >
+                  <ListItemText
+                    primary={translate('notification.subject_payment')}
+                    secondary={
+                      <Stack direction="column">
+                        <Typography>{translate('notification.subject_payment')}</Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            mt: 0.5,
+                            display: 'flex',
+                            alignItems: 'center',
+                            color: 'text.disabled',
+                          }}
+                        >
+                          {moment(notification.created_at).locale(`${valueLocale}`).fromNow()}
+                        </Typography>
+                        {cheque.cheques.map((item, index) => (
+                          <>
+                            <Stack direction="row" justifyContent="start" key={index}>
+                              <Button
+                                style={{ textAlign: 'start', color: 'blue' }}
+                                href={item.transfer_receipt}
+                                rel="noopened noreferrer"
+                                target="_blank"
+                              >
+                                {translate(`notification.proof_of_funds`)}
+                              </Button>
+                            </Stack>
+                          </>
+                        ))}
+                      </Stack>
+                    }
+                  />
+                </ListItemButton>
+              ))}
+            </>
           )}
         </>
       ) : (
@@ -649,7 +735,7 @@ function NotificationItem({
             }}
           >
             <ListItemText
-              primary={notification.subject}
+              primary={translate(`notification.${subject(notification.subject)}`)}
               secondary={
                 <Stack direction="column">
                   <Typography>{notification.content}</Typography>
@@ -662,7 +748,7 @@ function NotificationItem({
                       color: 'text.disabled',
                     }}
                   >
-                    {fToNow(notification.created_at)}
+                    {moment(notification.created_at).locale(`${valueLocale}`).fromNow()}
                   </Typography>
                   <Stack direction="row" justifyContent="start">
                     {notification.type === 'PROPOSAL' && (
@@ -678,7 +764,7 @@ function NotificationItem({
                           )
                         }
                       >
-                        Go to Project
+                        {translate('notification.to_project')}
                       </Button>
                     )}
                     {notification.type === 'APPOINTMENT' && (
@@ -688,7 +774,7 @@ function NotificationItem({
                           handleNavigateAppointment(notification.appointment.id, notification.id)
                         }
                       >
-                        See the Appointment
+                        {translate('notification.appointment')}
                       </Button>
                     )}
                   </Stack>
@@ -697,6 +783,7 @@ function NotificationItem({
             />
           </ListItemButton>
           {/* ---------------------------End Project Previous Item--------------------------- */}
+          {/* ---------------------------Appointment Previous Item--------------------------- */}
           {notification?.appointment && (
             <ListItemButton
               sx={{
@@ -706,11 +793,11 @@ function NotificationItem({
               }}
             >
               <ListItemText
-                primary={'Your appointment will starting soon!'}
+                primary={translate(`notification.subject_five_min_appointment`)}
                 secondary={
                   <Stack direction="column">
                     <Typography>
-                      {'This meeting will last 5 minutes, you can join the meeting now'}
+                      {translate(`notification.content_five_min_appointment`)}
                     </Typography>
                     <Typography
                       variant="caption"
@@ -721,15 +808,17 @@ function NotificationItem({
                         color: 'text.disabled',
                       }}
                     >
-                      {fToNow(notification.created_at)}
+                      {moment(notification.created_at).locale(`${valueLocale}`).fromNow()}
                     </Typography>
                     {notification.type === 'APPOINTMENT' && (
                       <Stack direction="row" justifyContent="start">
                         <Button
                           style={{ textAlign: 'start', color: 'green' }}
-                          onClick={() => navigate(notification.appointment.meeting_url)}
+                          href={notification.appointment.meeting_url}
+                          rel="noopened noreferrer"
+                          target="_blank"
                         >
-                          Join Now
+                          {translate('notification.join_now')}
                         </Button>
                       </Stack>
                     )}
@@ -737,6 +826,56 @@ function NotificationItem({
                 }
               />
             </ListItemButton>
+          )}
+          {/* ---------------------------End Appointment Previous Item--------------------------- */}
+          {/* ---------------------------Payment Previous Item--------------------------- */}
+          {notification?.proposal && notification.proposal.payments && (
+            <>
+              {notification.proposal.payments.map((cheque, index) => (
+                <ListItemButton
+                  sx={{
+                    py: 1.5,
+                    px: 2.5,
+                    mt: '1px',
+                  }}
+                  key={index}
+                >
+                  <ListItemText
+                    primary={translate('notification.subject_payment')}
+                    secondary={
+                      <Stack direction="column">
+                        <Typography>{translate('notification.content_payment')}</Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            mt: 0.5,
+                            display: 'flex',
+                            alignItems: 'center',
+                            color: 'text.disabled',
+                          }}
+                        >
+                          {moment(notification.created_at).locale(`${valueLocale}`).fromNow()}
+                        </Typography>
+                        {cheque.cheques.map((item, index) => (
+                          <>
+                            <Stack direction="row" justifyContent="start" key={index}>
+                              <Button
+                                style={{ textAlign: 'start', color: 'blue' }}
+                                href={item.transfer_receipt}
+                                rel="noopened noreferrer"
+                                target="_blank"
+                              >
+                                {translate(`notification.proof_of_funds`)}
+                              </Button>
+                            </Stack>
+                          </>
+                        ))}
+                      </Stack>
+                    }
+                  />
+                </ListItemButton>
+              ))}
+            </>
           )}
         </>
       )}

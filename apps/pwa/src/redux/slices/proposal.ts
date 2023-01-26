@@ -7,6 +7,7 @@ import { ActiveTap, Proposal } from '../../@types/proposal';
 import { updatePayment } from 'queries/project-supervisor/updatePayment';
 import { insertChequeUpdatePayment } from 'queries/Cashier/insertChequeUpdatePayment';
 import { createNewFollowUp } from 'queries/commons/createNewFollowUp';
+import axiosInstance from 'utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -300,3 +301,17 @@ export const addFollowups = (data: any) => async () => {
     throw error;
   }
 };
+
+// export function addFollowups(data:any) {
+//   return async () => {
+//     dispatch(slice.actions.startLoading());
+//     try {
+//       const response = await axiosInstance.post('', {
+//         data,
+//       });
+//       dispatch(slice.actions.insertFollowUp(response.data));
+//     } catch (error) {
+//       dispatch(slice.actions.hasError(error));
+//     }
+//   };
+// }
