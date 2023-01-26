@@ -16,7 +16,9 @@ export class TenderProposalFollowUpRepository {
   ) {
     try {
       return await this.prismaService.proposal_follow_up.create({
-        data: followUpCreatePayload,
+        data: {
+          ...followUpCreatePayload,
+        },
         include: {
           proposal: {
             include: {
@@ -29,6 +31,7 @@ export class TenderProposalFollowUpRepository {
         },
       });
     } catch (error) {
+      console.log('error', error);
       const theError = prismaErrorThrower(
         error,
         TenderProposalFollowUpRepository.name,

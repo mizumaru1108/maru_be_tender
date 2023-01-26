@@ -13,6 +13,7 @@ import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-js
 import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
 import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
+import { TenderProposalRepository } from '../../tender-proposal/repositories/tender-proposal.repository';
 import { CreateProposalFollowUpDto } from '../dtos/requests/create-follow-up.dto';
 import { RawCreateFollowUpDto } from '../dtos/responses/raw-create-follow-up.dto';
 import { CreateFollowUpMapper } from '../mappers/create-follow-up.mapper';
@@ -31,6 +32,7 @@ export class TenderProposalFollowUpService {
     private readonly twilioService: TwilioService,
     private readonly emailService: EmailService,
     private readonly notificationService: TenderNotificationService,
+    private readonly tenderProposalRepository: TenderProposalRepository,
   ) {
     const environment = this.configService.get('APP_ENV');
     if (!environment) envLoadErrorHelper('APP_ENV');
@@ -44,6 +46,11 @@ export class TenderProposalFollowUpService {
     const uploadedFilePath: string[] = [];
     let tenderFileFollowUpObj: UploadFilesJsonbDto[] = [];
     try {
+      const proposal = await this.tenderProposalRepository.fetchProposalById(
+        payload.proposal_id,
+      );
+      if (!proposal) throw new BadRequestException('Proposal Not Found!');
+
       const { proposal_id, follow_up_type, content, follow_up_attachment } =
         payload;
 
@@ -59,9 +66,15 @@ export class TenderProposalFollowUpService {
         );
       }
 
+      if (!!content && !!follow_up_attachment) {
+        throw new BadRequestException(
+          'You can only send either attachment or message!',
+        );
+      }
+
       const createFollowUpPayload = CreateFollowUpMapper(currentUser, payload);
       const maxSize = 1024 * 1024 * 5;
-      if (follow_up_attachment) {
+      if (follow_up_attachment && follow_up_attachment.length > 0) {
         for (let i = 0; i < follow_up_attachment.length; i++) {
           /* project attachment */
           let followUpFileName =
@@ -101,16 +114,22 @@ export class TenderProposalFollowUpService {
           );
 
           uploadedFilePath.push(imageUrl);
-          tenderFileFollowUpObj = [
-            ...tenderFileFollowUpObj,
+          let newFileFollowUpObj = [
             {
               url: imageUrl,
               type: follow_up_attachment[i].fileExtension,
               size: follow_up_attachment[i].size,
             },
           ];
+
+          tenderFileFollowUpObj = [
+            ...tenderFileFollowUpObj,
+            ...newFileFollowUpObj,
+          ];
         }
       }
+
+      createFollowUpPayload.attachments = tenderFileFollowUpObj as any;
 
       const createdFolllowUp = await this.followUpRepository.create(
         createFollowUpPayload,

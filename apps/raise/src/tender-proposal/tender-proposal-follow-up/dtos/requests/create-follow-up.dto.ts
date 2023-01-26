@@ -27,9 +27,9 @@ export class CreateProposalFollowUpDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsNotEmpty()
-  @Type(() => TenderFilePayload)
-  @ValidateNested()
   @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TenderFilePayload)
   follow_up_attachment?: TenderFilePayload[];
 
   @ApiPropertyOptional()
