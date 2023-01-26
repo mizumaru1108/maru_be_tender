@@ -405,11 +405,19 @@ export class TenderClientService {
     const old_data = JSON.parse(log.old_value);
     const new_data = JSON.parse(log.new_value);
 
+    const tmpDiffrence = ApproveEditRequestMapper(old_data, new_data);
+
+    let diffrence = {
+      ...tmpDiffrence,
+      created_bank: [...new_data.createdBanks],
+      updated_bank: [...new_data.updatedBanks],
+      deleted_bank: [...new_data.deletedBanks],
+    };
+
+    // sanitize the new_data
     delete new_data.createdBanks;
     delete new_data.updatedBanks;
     delete new_data.deletedBanks;
-
-    const diffrence = ApproveEditRequestMapper(old_data, new_data);
 
     return {
       old_data,
