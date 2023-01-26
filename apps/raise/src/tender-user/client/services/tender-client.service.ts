@@ -316,11 +316,84 @@ export class TenderClientService {
     };
   }
 
-  async findEditRequests(request: SearchEditRequestFilter) {
-    const response = await this.tenderClientRepository.findEditRequests(
-      request,
-    );
-    return response;
+  async findMyPendingLogCount(user_id: string) {
+    const total = await this.tenderClientRepository.countMyPendingLogs(user_id);
+    return {
+      dataCount: total,
+    };
+  }
+
+  async uploadClientFile(
+    userId: string,
+    uploadMessage: string,
+    file: TenderFilePayload,
+    folderName: string,
+    AllowedFileTypes: AllowedFileType[],
+    maxSize: number = 1024 * 1024 * 6,
+    uploadedFilePath: string[],
+  ) {
+    try {
+      let fileName =
+        file.fullName.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10) +
+        new Date().getTime() +
+        '.' +
+        file.fileExtension.split('/')[1];
+
+      let filePath = `tmra/${this.appEnv}/organization/tender-management/client-data/${userId}/${folderName}/${fileName}`;
+
+      let fileBuffer = Buffer.from(
+        file.base64Data.replace(/^data:.*;base64,/, ''),
+        'base64',
+      );
+
+      validateAllowedExtension(file.fileExtension, AllowedFileTypes);
+      validateFileSize(file.size, maxSize);
+
+      const imageUrl = await this.bunnyService.uploadFileBase64(
+        file.fullName,
+        fileBuffer,
+        filePath,
+        `${uploadMessage} ${userId}`,
+      );
+
+      uploadedFilePath.push(imageUrl);
+      let fileObj = {
+        url: imageUrl,
+        type: file.fileExtension,
+        size: file.size,
+      };
+
+      return {
+        uploadedFilePath,
+        fileObj,
+      };
+    } catch (error) {
+      if (uploadedFilePath.length > 0) {
+        this.logger.log(
+          'log',
+          `${uploadMessage} error, deleting all previous uploaded files: ${error}`,
+        );
+        uploadedFilePath.forEach(async (path) => {
+          await this.bunnyService.deleteMedia(path, true);
+        });
+      }
+      throw new InternalServerErrorException(`${uploadMessage} error`);
+    }
+  }
+
+  sanitizeEditRequest(oldData: ClientEditRequestFieldDto) {
+    delete oldData.created_banks;
+    delete oldData.deleted_banks;
+    delete oldData.updated_banks;
+    delete oldData.old_banks;
+    return oldData;
+  }
+
+  valueParser(type: string, newValue: string) {
+    if (type === 'number') return Number(newValue);
+    if (type === 'object') return JSON.parse(newValue);
+    if (type === 'date') return new Date(newValue);
+    return newValue;
   }
 
   async findEditRequestByLogId(request_id: string) {
@@ -343,6 +416,13 @@ export class TenderClientService {
       new_data,
       diffrence,
     };
+  }
+
+  async findEditRequests(request: SearchEditRequestFilter) {
+    const response = await this.tenderClientRepository.findEditRequests(
+      request,
+    );
+    return response;
   }
 
   async createEditRequest(
@@ -418,22 +498,7 @@ export class TenderClientService {
             };
 
             // uploading if the image of the bank changed
-            if (
-              updated_banks[i].card_image.hasOwnProperty('base64Data') &&
-              typeof updated_banks[i].card_image.base64Data === 'string' &&
-              !!updated_banks[i].card_image.base64Data &&
-              updated_banks[i].card_image.hasOwnProperty('fullName') &&
-              typeof updated_banks[i].card_image.fullName === 'string' &&
-              !!updated_banks[i].card_image.fullName &&
-              updated_banks[i].card_image.hasOwnProperty('fileExtension') &&
-              typeof updated_banks[i].card_image.fileExtension === 'string' &&
-              !!updated_banks[i].card_image.fileExtension &&
-              updated_banks[i].card_image.fileExtension.match(
-                /^([a-z]+\/[a-z]+)(;[a-z]+=[a-z]+)*$/i,
-              ) &&
-              updated_banks[i].card_image.hasOwnProperty('size') &&
-              typeof updated_banks[i].card_image.size === 'number'
-            ) {
+            if (isTenderFilePayload(updated_banks[i].card_image)) {
               const uploadResult = await this.uploadClientFile(
                 user.id,
                 'Uploading bank card image for user',
@@ -554,86 +619,6 @@ export class TenderClientService {
       }
       throw error;
     }
-  }
-
-  async findMyPendingLogCount(user_id: string) {
-    const total = await this.tenderClientRepository.countMyPendingLogs(user_id);
-    return {
-      dataCount: total,
-    };
-  }
-
-  async uploadClientFile(
-    userId: string,
-    uploadMessage: string,
-    file: TenderFilePayload,
-    folderName: string,
-    AllowedFileTypes: AllowedFileType[],
-    maxSize: number = 1024 * 1024 * 6,
-    uploadedFilePath: string[],
-  ) {
-    try {
-      let fileName =
-        file.fullName.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10) +
-        new Date().getTime() +
-        '.' +
-        file.fileExtension.split('/')[1];
-
-      let filePath = `tmra/${this.appEnv}/organization/tender-management/client-data/${userId}/${folderName}/${fileName}`;
-
-      let fileBuffer = Buffer.from(
-        file.base64Data.replace(/^data:.*;base64,/, ''),
-        'base64',
-      );
-
-      validateAllowedExtension(file.fileExtension, AllowedFileTypes);
-      validateFileSize(file.size, maxSize);
-
-      const imageUrl = await this.bunnyService.uploadFileBase64(
-        file.fullName,
-        fileBuffer,
-        filePath,
-        `${uploadMessage} ${userId}`,
-      );
-
-      uploadedFilePath.push(imageUrl);
-      let fileObj = {
-        url: imageUrl,
-        type: file.fileExtension,
-        size: file.size,
-      };
-
-      return {
-        uploadedFilePath,
-        fileObj,
-      };
-    } catch (error) {
-      if (uploadedFilePath.length > 0) {
-        this.logger.log(
-          'log',
-          `${uploadMessage} error, deleting all previous uploaded files: ${error}`,
-        );
-        uploadedFilePath.forEach(async (path) => {
-          await this.bunnyService.deleteMedia(path, true);
-        });
-      }
-      throw new InternalServerErrorException(`${uploadMessage} error`);
-    }
-  }
-
-  sanitizeEditRequest(oldData: ClientEditRequestFieldDto) {
-    delete oldData.created_banks;
-    delete oldData.deleted_banks;
-    delete oldData.updated_banks;
-    delete oldData.old_banks;
-    return oldData;
-  }
-
-  valueParser(type: string, newValue: string) {
-    if (type === 'number') return Number(newValue);
-    if (type === 'object') return JSON.parse(newValue);
-    if (type === 'date') return new Date(newValue);
-    return newValue;
   }
 
   async acceptEditRequests(reviewerId: string, requestId: string) {
