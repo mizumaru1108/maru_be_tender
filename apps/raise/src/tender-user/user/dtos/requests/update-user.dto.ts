@@ -31,11 +31,10 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  password?: string;
+  new_password?: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  old_password?: string;
+  current_password: string;
 }

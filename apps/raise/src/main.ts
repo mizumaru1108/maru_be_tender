@@ -24,7 +24,7 @@ async function bootstrap() {
     new FastifyAdapter({
       logger: process.env.LOG_FORMAT === 'ecs' ? pinoLogger : true,
       // in express we can use json and urlencoded. u can see in code that i define below
-      bodyLimit: 100000000, // prevent 413 Payload Too Large (fastify)
+      bodyLimit: 52428800, // prevent 413 Payload Too Large (fastify)
       // how to limit json and urlencoded (form submit) in express
       // app.use(json({ limit: '50mb' }));
       // app.use(urlencoded({ limit: '50mb', extended: true }));
@@ -37,13 +37,25 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-hasura-role'],
+    methods: ['OPTIONS', 'POST', 'GET', 'PATCH'],
+    allowedHeaders: [
+      'Access-Control-Allow-Origin',
+      'Origin',
+      'X-Requested-With',
+      'Accept',
+      'Content-Type',
+      'Authorization',
+      'x-hasura-role',
+    ],
+    exposedHeaders: ['x-hasura-role', 'Authorization'],
+    credentials: true,
     origin: [
       'http://localhost:3000',
       'http://localhost:3001',
       'http://localhost:3002',
       'http://localhost:8081',
       'http://localhost:4040',
+
       // HTTP
       'http://dev.tmra.io', // TMRA Dev
       'http://staging.tmra.io', // TMRA staging
@@ -65,8 +77,9 @@ async function bootstrap() {
       'https://app-dev.tmra.io', // Tender Dev
       'https://app-staging.tmra.io', // Tender Staging
       'https://gaith.hcharity.org', // Tender Staging
+      'https://11a2-2001-448a-2082-475e-7287-8f41-1ef8-9d47.ap.ngrok.io',
     ],
-    credentials: true,
+    preflightContinue: true,
   });
 
   const config = app.get<ConfigService>(ConfigService);

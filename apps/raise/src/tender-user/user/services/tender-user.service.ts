@@ -213,33 +213,24 @@ export class TenderUserService {
   }
 
   async updateProfile(currentUser: TenderCurrentUser, request: UpdateUserDto) {
-    let updateUserPayload: UpdateUserPayload = {};
-
     const existingUserData = await this.tenderUserRepository.findUserById(
       currentUser.id,
     );
     if (!existingUserData) throw new NotFoundException("User doesn't exist!");
+
+    const valid = await this.fusionAuthService.login(
+      existingUserData.email,
+      request.current_password,
+    );
+    if (!valid) throw new BadRequestException('Wrong Credentials!');
+
+    let updateUserPayload: UpdateUserPayload = {};
 
     updateUserPayload = updateUserMapper(
       existingUserData,
       request,
       currentUser,
     );
-
-    if (request.password) {
-      if (!request.old_password) {
-        throw new BadRequestException(
-          'Please provide your old password in order to change password',
-        );
-      }
-
-      const valid = await this.fusionAuthService.login(
-        existingUserData.email,
-        request.old_password,
-      );
-      if (!valid) throw new BadRequestException('Wrong Credentials!');
-      updateUserPayload.password = request.password;
-    }
 
     const queryResult = await this.tenderUserRepository.updateUserWFusionAuth(
       currentUser.id,

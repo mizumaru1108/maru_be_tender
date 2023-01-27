@@ -52,5 +52,7 @@ export const updateUserMapper = (
     }
   }
 
+  if (request.new_password) updateUserPayload.password = request.new_password;
+
   return updateUserPayload;
 };
