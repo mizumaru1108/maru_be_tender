@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { message, Prisma, room_chat, user } from '@prisma/client';
-import { AllowedFileType } from '../../../commons/enums/allowed-filetype.enum';
+import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
 import { validateFileSize } from '../../../commons/utils/validate-file-size';
@@ -159,34 +159,34 @@ export class TenderMessagesService {
 
     if (attachment && contentType !== 'TEXT') {
       const maxSize: number = 1024 * 1024 * 512; // 512MB
-      const allowedType: AllowedFileType[] = [];
+      const allowedType: FileMimeTypeEnum[] = [];
 
       // 'TEXT', 'IMAGE', 'VIDEO', 'AUDIO', 'FILE'
       if (contentType === 'IMAGE') {
-        allowedType.push(AllowedFileType.JPG);
-        allowedType.push(AllowedFileType.JPEG);
-        allowedType.push(AllowedFileType.PNG);
+        allowedType.push(FileMimeTypeEnum.JPG);
+        allowedType.push(FileMimeTypeEnum.JPEG);
+        allowedType.push(FileMimeTypeEnum.PNG);
       } else if (contentType === 'VIDEO') {
-        allowedType.push(AllowedFileType.MP4);
-        allowedType.push(AllowedFileType.MOV);
+        allowedType.push(FileMimeTypeEnum.MP4);
+        allowedType.push(FileMimeTypeEnum.MOV);
       } else if (contentType === 'AUDIO') {
-        allowedType.push(AllowedFileType.MP3);
-        allowedType.push(AllowedFileType.WAV);
+        allowedType.push(FileMimeTypeEnum.MP3);
+        allowedType.push(FileMimeTypeEnum.WAV);
       } else if (contentType === 'FILE') {
-        allowedType.push(AllowedFileType.JPG);
-        allowedType.push(AllowedFileType.JPEG);
-        allowedType.push(AllowedFileType.PNG);
-        allowedType.push(AllowedFileType.MP4);
-        allowedType.push(AllowedFileType.MOV);
-        allowedType.push(AllowedFileType.MP3);
-        allowedType.push(AllowedFileType.WAV);
-        allowedType.push(AllowedFileType.PDF);
-        allowedType.push(AllowedFileType.DOC);
-        allowedType.push(AllowedFileType.DOCX);
-        allowedType.push(AllowedFileType.XLS);
-        allowedType.push(AllowedFileType.XLSX);
-        allowedType.push(AllowedFileType.PPT);
-        allowedType.push(AllowedFileType.PPTX);
+        allowedType.push(FileMimeTypeEnum.JPG);
+        allowedType.push(FileMimeTypeEnum.JPEG);
+        allowedType.push(FileMimeTypeEnum.PNG);
+        allowedType.push(FileMimeTypeEnum.MP4);
+        allowedType.push(FileMimeTypeEnum.MOV);
+        allowedType.push(FileMimeTypeEnum.MP3);
+        allowedType.push(FileMimeTypeEnum.WAV);
+        allowedType.push(FileMimeTypeEnum.PDF);
+        allowedType.push(FileMimeTypeEnum.DOC);
+        allowedType.push(FileMimeTypeEnum.DOCX);
+        allowedType.push(FileMimeTypeEnum.XLS);
+        allowedType.push(FileMimeTypeEnum.XLSX);
+        allowedType.push(FileMimeTypeEnum.PPT);
+        allowedType.push(FileMimeTypeEnum.PPTX);
       }
 
       let fileName =

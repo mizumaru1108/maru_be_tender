@@ -1,4 +1,5 @@
-const isTenderFilePayload = (payload: any): boolean => {
+export const isTenderFilePayload = (payload: any): boolean => {
+  console.log(payload);
   if (
     payload.hasOwnProperty('base64Data') &&
     typeof payload.base64Data === 'string' &&
@@ -15,6 +16,5 @@ const isTenderFilePayload = (payload: any): boolean => {
   ) {
     return true;
   }
-
   return false;
 };

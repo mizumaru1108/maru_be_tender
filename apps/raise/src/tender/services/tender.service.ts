@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
-import { AllowedFileType } from '../../commons/enums/allowed-filetype.enum';
+import { FileMimeTypeEnum } from '../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../commons/helpers/env-loaderror-helper';
 import { BaseHashuraWebhookPayload } from '../../commons/interfaces/base-hashura-webhook-payload';
 import { BunnyService } from '../../libs/bunny/services/bunny.service';
@@ -39,15 +39,15 @@ export class TenderService {
   async uploadFiles(payload: UploadFilesDto, files: MulterFile[]) {
     // const maxSize: number = 1024 * 1024 * 1; // 1MB
     const maxSize: number = 1024 * 1024 * 512;
-    const allowedType: AllowedFileType[] = [
-      AllowedFileType.JPG,
-      AllowedFileType.JPEG,
-      AllowedFileType.PNG,
-      AllowedFileType.PDF,
-      AllowedFileType.DOC,
-      AllowedFileType.DOCX,
-      AllowedFileType.XLS,
-      AllowedFileType.XLSX,
+    const allowedType: FileMimeTypeEnum[] = [
+      FileMimeTypeEnum.JPG,
+      FileMimeTypeEnum.JPEG,
+      FileMimeTypeEnum.PNG,
+      FileMimeTypeEnum.PDF,
+      FileMimeTypeEnum.DOC,
+      FileMimeTypeEnum.DOCX,
+      FileMimeTypeEnum.XLS,
+      FileMimeTypeEnum.XLSX,
     ];
     let uploadedFileLinks: string = 'Uploaded file links: \n';
     try {

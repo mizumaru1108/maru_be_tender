@@ -6,6 +6,7 @@ import {
 import { appointment, Prisma } from '@prisma/client';
 
 import { v4 as uuidv4 } from 'uuid';
+import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
 import { SendEmailDto } from '../../../libs/email/dtos/requests/send-email.dto';
 import { EmailService } from '../../../libs/email/email.service';
 import { GoogleCalendarService } from '../../../libs/google-calendar/google-calendar.service';
@@ -187,18 +188,20 @@ export class TenderAppointmentService {
     await this.tenderNotificationService.createMany(createNotifPayload);
 
     // via sms
-    if (appointment.client.mobile_number && client.mobile_number !== '') {
+    const clientPhone = isExistAndValidPhone(appointment.client.mobile_number);
+    if (clientPhone) {
       this.twilioService.sendSMS({
-        to: appointment.client.mobile_number,
+        to: clientPhone,
         body: subject + ',' + clientContent,
       });
     }
-    if (
-      appointment.employee.mobile_number &&
-      appointment.employee.mobile_number !== ''
-    ) {
+
+    const employeeNumber = isExistAndValidPhone(
+      appointment.employee.mobile_number,
+    );
+    if (employeeNumber) {
       this.twilioService.sendSMS({
-        to: appointment.employee.mobile_number,
+        to: employeeNumber,
         body: subject + ',' + employeeContent,
       });
     }

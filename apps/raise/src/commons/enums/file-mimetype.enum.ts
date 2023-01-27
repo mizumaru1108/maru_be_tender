@@ -1,4 +1,4 @@
-export enum AllowedFileType {
+export enum FileMimeTypeEnum {
   JPG = 'image/jpg',
   JPEG = 'image/jpeg',
   PNG = 'image/png',

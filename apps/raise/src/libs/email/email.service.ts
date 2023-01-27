@@ -101,7 +101,8 @@ export class EmailService {
       templateContext,
       attachments,
     } = sendMailDto;
-    this.logger.debug(`Sending email to ${to}`);
+    // this.logger.log('log', `Sending email to ${to}`);
+    console.log(`Sending email to ${to}`);
 
     const param: ISendMailOptions = {
       to: to,

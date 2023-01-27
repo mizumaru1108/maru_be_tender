@@ -9,30 +9,40 @@ import { ICurrentUser } from '../../../user/interfaces/current-user.interface';
 
 import { ConfigService } from '@nestjs/config';
 import { bank_information, client_data, Prisma } from '@prisma/client';
+import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
-import { AllowedFileType } from '../../../commons/enums/allowed-filetype.enum';
+import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
 import { validateFileSize } from '../../../commons/utils/validate-file-size';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
+import { SendEmailDto } from '../../../libs/email/dtos/requests/send-email.dto';
+import { EmailService } from '../../../libs/email/email.service';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
+import { TwilioService } from '../../../libs/twilio/services/twilio.service';
 import { RegisterTenderDto } from '../../../tender-auth/dtos/requests/register-tender.dto';
 import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
 import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
+import { generateFileName } from '../../../tender-commons/utils/generate-filename';
+import { isTenderFilePayload } from '../../../tender-commons/utils/is-tender-file-payload';
+import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
+import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
+import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
 import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
 import { UserStatusEnum } from '../../user/types/user_status';
 import { ClientEditRequestFieldDto } from '../dtos/requests/client-edit-request-field.dto';
 import { ExistingClientBankInformation } from '../dtos/requests/existing-bank-information.dto';
+import { RejectEditRequestDto } from '../dtos/requests/reject-edit-request.dto';
 import { SearchEditRequestFilter } from '../dtos/requests/search-edit-request-filter-request.dto';
+import { RawCreateEditRequestResponse } from '../dtos/responses/raw-create-edit-request-response.dto';
+import { RawResponseEditRequestDto } from '../dtos/responses/raw-response-edit-request-response.dto';
+import { ApproveEditRequestMapper } from '../mappers/approve-edit-request.mapper';
 import { BankInformationsMapper } from '../mappers/bank_information.mapper';
 import { CreateClientMapper } from '../mappers/create-client.mapper';
 import { UserClientDataMapper } from '../mappers/user-client-data.mapper';
 import { TenderClientRepository } from '../repositories/tender-client.repository';
-import { EditRequestByIdDto } from '../dtos/requests/edit-request-by-id.dto';
-import { ApproveEditRequestMapper } from '../mappers/approve-edit-request.mapper';
-import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
-import { RejectEditRequestDto } from '../dtos/requests/reject-edit-request.dto';
+import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
 @Injectable()
 export class TenderClientService {
   private readonly appEnv: string;
@@ -45,6 +55,9 @@ export class TenderClientService {
     private readonly fusionAuthService: FusionAuthService,
     private readonly bunnyService: BunnyService,
     private readonly configService: ConfigService,
+    private readonly emailService: EmailService,
+    private readonly notificationService: TenderNotificationService,
+    private readonly twilioService: TwilioService,
     private tenderUserRepository: TenderUserRepository,
     private tenderClientRepository: TenderClientRepository,
   ) {
@@ -94,196 +107,81 @@ export class TenderClientService {
       | undefined = undefined;
 
     let lisceneFileObj: UploadFilesJsonbDto | undefined = undefined;
-    let lisceneFileBuffer: Buffer | undefined = undefined;
     let ofdecObj: UploadFilesJsonbDto | undefined = undefined;
-    let ofdecBuffer: Buffer | undefined = undefined;
     let bankCardObj: UploadFilesJsonbDto | undefined = undefined;
-    let bankCardBuffer: Buffer | undefined = undefined;
     let uploadedFilePath: string[] = [];
 
-    const maxSize: number = 1024 * 1024 * 6; // 6MB
+    const maxSize: number = 1024 * 1024 * 8; // 8MB
 
     // make the upload file on this service into another service that can used globally on this service (diffrent case with bunny service)
     if (request.data.license_file) {
-      try {
-        /* liscene file */
-        let lisceneFilefileName =
-          request.data.license_file.fullName
-            .replace(/[^a-zA-Z0-9]/g, '')
-            .slice(0, 10) +
-          new Date().getTime() +
-          '.' +
-          request.data.license_file.fileExtension.split('/')[1];
+      const uploadResult = await this.uploadClientFile(
+        idFromFusionAuth,
+        'Uploading Liscene File for user',
+        request.data.license_file,
+        'license-file',
+        [
+          FileMimeTypeEnum.JPG,
+          FileMimeTypeEnum.JPEG,
+          FileMimeTypeEnum.PNG,
+          FileMimeTypeEnum.PDF,
+        ],
+        maxSize,
+        uploadedFilePath,
+      );
+      uploadedFilePath = [
+        ...uploadedFilePath,
+        ...uploadResult.uploadedFilePath,
+      ];
 
-        let lisceneFilePath = `tmra/${this.appEnv}/organization/tender-management/client-data/${idFromFusionAuth}/liscene-file/${lisceneFilefileName}`;
-
-        lisceneFileBuffer = Buffer.from(
-          request.data.license_file.base64Data.replace(/^data:.*;base64,/, ''),
-          'base64',
-        );
-
-        validateAllowedExtension(request.data.license_file.fileExtension, [
-          AllowedFileType.JPG,
-          AllowedFileType.JPEG,
-          AllowedFileType.PNG,
-          AllowedFileType.PDF,
-        ]);
-        validateFileSize(request.data.license_file.size, maxSize);
-
-        const imageUrl = await this.bunnyService.uploadFileBase64(
-          request.data.license_file.fullName,
-          lisceneFileBuffer,
-          lisceneFilePath,
-          `Uploading liscene file for user ${idFromFusionAuth}`,
-        );
-
-        uploadedFilePath.push(imageUrl);
-        lisceneFileObj = {
-          url: imageUrl,
-          type: request.data.license_file.fileExtension,
-          size: request.data.license_file.size,
-        };
-      } catch (error) {
-        this.logger.error('Error while uploading liscene file: ' + error);
-        this.logger.log('log', 'deleting fusion auth user');
-        await this.fusionAuthService.fusionAuthDeleteUser(idFromFusionAuth);
-        this.logger.log(
-          'log',
-          'deleting all uploaded files before this file upload',
-        );
-        if (uploadedFilePath.length > 0) {
-          uploadedFilePath.forEach(async (path) => {
-            await this.bunnyService.deleteMedia(path, true);
-          });
-        }
-        throw error;
-      }
+      lisceneFileObj = uploadResult.fileObj;
     }
 
     if (request.data.board_ofdec_file) {
-      try {
-        /* ofdec files */
-        let ofdecfileName =
-          request.data.board_ofdec_file.fullName
-            .replace(/[^a-zA-Z0-9]/g, '')
-            .slice(0, 10) +
-          new Date().getTime() +
-          '.' +
-          request.data.board_ofdec_file.fileExtension.split('/')[1];
+      const uploadResult = await this.uploadClientFile(
+        idFromFusionAuth,
+        'Uploading Board Ofdec File for user',
+        request.data.board_ofdec_file,
+        'ofdec',
+        [
+          FileMimeTypeEnum.JPG,
+          FileMimeTypeEnum.JPEG,
+          FileMimeTypeEnum.PNG,
+          FileMimeTypeEnum.PDF,
+          FileMimeTypeEnum.DOC,
+          FileMimeTypeEnum.DOCX,
+          FileMimeTypeEnum.XLS,
+          FileMimeTypeEnum.XLSX,
+          FileMimeTypeEnum.PPT,
+          FileMimeTypeEnum.PPTX,
+        ],
+        maxSize,
+        uploadedFilePath,
+      );
+      uploadedFilePath = [
+        ...uploadedFilePath,
+        ...uploadResult.uploadedFilePath,
+      ];
 
-        let ofdecPath = `tmra/${this.appEnv}/organization/tender-management/client-data/${idFromFusionAuth}/ofdec-file/${ofdecfileName}`;
-
-        ofdecBuffer = Buffer.from(
-          request.data.board_ofdec_file.base64Data.replace(
-            /^data:.*;base64,/,
-            '',
-          ),
-          'base64',
-        );
-
-        validateAllowedExtension(request.data.board_ofdec_file.fileExtension, [
-          AllowedFileType.JPG,
-          AllowedFileType.JPEG,
-          AllowedFileType.PNG,
-          AllowedFileType.PDF,
-          AllowedFileType.DOC,
-          AllowedFileType.DOCX,
-          AllowedFileType.XLS,
-          AllowedFileType.XLSX,
-          AllowedFileType.PPT,
-          AllowedFileType.PPTX,
-        ]);
-        validateFileSize(request.data.board_ofdec_file.size, maxSize);
-
-        const imageUrl = await this.bunnyService.uploadFileBase64(
-          request.data.board_ofdec_file.fullName,
-          ofdecBuffer,
-          ofdecPath,
-          `Uploading board ofdec file from user ${idFromFusionAuth}`,
-        );
-
-        uploadedFilePath.push(imageUrl);
-        ofdecObj = {
-          url: imageUrl,
-          type: request.data.board_ofdec_file.fileExtension,
-          size: request.data.board_ofdec_file.size,
-        };
-      } catch (error) {
-        this.logger.error('Error while uploading board ofdec file: ' + error);
-        this.logger.log('log', 'deleting fusion auth user');
-        await this.fusionAuthService.fusionAuthDeleteUser(idFromFusionAuth);
-        this.logger.log(
-          'log',
-          'deleting all uploaded files before this file upload',
-        );
-        if (uploadedFilePath.length > 0) {
-          uploadedFilePath.forEach(async (path) => {
-            await this.bunnyService.deleteMedia(path, true);
-          });
-        }
-        throw error;
-      }
+      ofdecObj = uploadResult.fileObj;
     }
 
     if (request.data.bank_informations) {
-      try {
-        /* ofdec files */
-        let bankCardfileName =
-          request.data.bank_informations.card_image.fullName
-            .replace(/[^a-zA-Z0-9]/g, '')
-            .slice(0, 10) +
-          new Date().getTime() +
-          '.' +
-          request.data.bank_informations.card_image.fileExtension.split('/')[1];
+      const uploadResult = await this.uploadClientFile(
+        idFromFusionAuth,
+        'Uploading Board Ofdec File for user',
+        request.data.board_ofdec_file,
+        'bank-info',
+        [FileMimeTypeEnum.JPG, FileMimeTypeEnum.JPEG, FileMimeTypeEnum.PNG],
+        maxSize,
+        uploadedFilePath,
+      );
+      uploadedFilePath = [
+        ...uploadedFilePath,
+        ...uploadResult.uploadedFilePath,
+      ];
 
-        let bankCardPath = `tmra/${this.appEnv}/organization/tender-management/client-data/${idFromFusionAuth}/bank-info/${bankCardfileName}`;
-
-        bankCardBuffer = Buffer.from(
-          request.data.bank_informations.card_image.base64Data.replace(
-            /^data:.*;base64,/,
-            '',
-          ),
-          'base64',
-        );
-
-        validateAllowedExtension(
-          request.data.bank_informations.card_image.fileExtension,
-          [AllowedFileType.JPG, AllowedFileType.JPEG, AllowedFileType.PNG],
-        );
-        validateFileSize(
-          request.data.bank_informations.card_image.size,
-          maxSize,
-        );
-
-        const imageUrl = await this.bunnyService.uploadFileBase64(
-          request.data.bank_informations.card_image.fullName,
-          bankCardBuffer,
-          bankCardPath,
-          `Uploading bank card file from user ${idFromFusionAuth}`,
-        );
-
-        uploadedFilePath.push(imageUrl);
-        bankCardObj = {
-          url: imageUrl,
-          type: request.data.bank_informations.card_image.fileExtension,
-          size: request.data.bank_informations.card_image.size,
-        };
-      } catch (error) {
-        this.logger.error('Error while uploading bank card file: ' + error);
-        this.logger.log('log', 'deleting fusion auth user');
-        await this.fusionAuthService.fusionAuthDeleteUser(idFromFusionAuth);
-        this.logger.log(
-          'log',
-          'deleting all uploaded files before this file upload',
-        );
-        if (uploadedFilePath.length > 0) {
-          uploadedFilePath.forEach(async (path) => {
-            await this.bunnyService.deleteMedia(path, true);
-          });
-        }
-        throw error;
-      }
-
+      bankCardObj = uploadResult.fileObj;
       bankCreatePayload = BankInformationsMapper(
         idFromFusionAuth,
         request.data.bank_informations,
@@ -328,16 +226,15 @@ export class TenderClientService {
     uploadMessage: string,
     file: TenderFilePayload,
     folderName: string,
-    AllowedFileTypes: AllowedFileType[],
+    AllowedFileTypes: FileMimeTypeEnum[],
     maxSize: number = 1024 * 1024 * 6,
     uploadedFilePath: string[],
   ) {
     try {
-      let fileName =
-        file.fullName.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10) +
-        new Date().getTime() +
-        '.' +
-        file.fileExtension.split('/')[1];
+      let fileName = generateFileName(
+        file.fullName,
+        file.fileExtension as FileMimeTypeEnum,
+      );
 
       let filePath = `tmra/${this.appEnv}/organization/tender-management/client-data/${userId}/${folderName}/${fileName}`;
 
@@ -389,13 +286,6 @@ export class TenderClientService {
     return oldData;
   }
 
-  valueParser(type: string, newValue: string) {
-    if (type === 'number') return Number(newValue);
-    if (type === 'object') return JSON.parse(newValue);
-    if (type === 'date') return new Date(newValue);
-    return newValue;
-  }
-
   async findEditRequestByLogId(request_id: string) {
     const log = await this.tenderClientRepository.findEditRequestLogByRequestId(
       request_id,
@@ -409,10 +299,75 @@ export class TenderClientService {
 
     let diffrence = {
       ...tmpDiffrence,
-      created_bank: [...new_data.createdBanks],
-      updated_bank: [...new_data.updatedBanks],
-      deleted_bank: [...new_data.deletedBanks],
     };
+
+    if (old_data.bank_information && old_data.bank_information.length > 0) {
+      for (let i = 0; i < old_data.bank_information.length; i++) {
+        if (new_data.updatedBanks && new_data.updatedBanks.length > 0) {
+          const isExist = new_data.updatedBanks.findIndex(
+            (value: bank_information) =>
+              value.id === old_data.bank_information[i].id,
+          );
+          isExist !== -1
+            ? (old_data.bank_information[i]['color'] = 'blue')
+            : 'transparent';
+        } else {
+          old_data.bank_information[i]['color'] = 'transparent';
+        }
+
+        if (new_data.deletedBanks && new_data.deletedBanks.length > 0) {
+          const isExist = new_data.deletedBanks.findIndex(
+            (value: bank_information) =>
+              value.id === old_data.bank_information[i].id,
+          );
+          isExist !== -1
+            ? (old_data.bank_information[i]['color'] = 'red')
+            : 'transparent';
+        } else {
+          old_data.bank_information[i]['color'] = 'transparent';
+        }
+      }
+    }
+
+    if (new_data.bank_information && new_data.bank_information.length > 0) {
+      for (let i = 0; i < new_data.bank_information.length; i++) {
+        if (new_data.createdBanks && new_data.createdBanks.length > 0) {
+          const isExist = new_data.createdBanks.findIndex(
+            (value: bank_information) =>
+              value.id === new_data.bank_information[i].id,
+          );
+          isExist === -1
+            ? (new_data.bank_information[i]['color'] = 'green')
+            : 'transparent';
+        } else {
+          new_data.bank_information[i]['color'] = 'transparent';
+        }
+
+        if (new_data.updatedBanks && new_data.updatedBanks.length > 0) {
+          const isExist = new_data.updatedBanks.findIndex(
+            (value: bank_information) =>
+              value.id === new_data.bank_information[i].id,
+          );
+          isExist !== -1
+            ? (new_data.bank_information[i]['color'] = 'blue')
+            : 'transparent';
+        } else {
+          new_data.bank_information[i]['color'] = 'transparent';
+        }
+
+        if (new_data.deletedBanks && new_data.deletedBanks.length > 0) {
+          const isExist = new_data.deletedBanks.findIndex(
+            (value: bank_information) =>
+              value.id === new_data.bank_information[i].id,
+          );
+          isExist !== -1
+            ? (new_data.bank_information[i]['color'] = 'red')
+            : 'transparent';
+        } else {
+          new_data.bank_information[i]['color'] = 'transparent';
+        }
+      }
+    }
 
     // sanitize the new_data
     delete new_data.createdBanks;
@@ -513,9 +468,9 @@ export class TenderClientService {
                 updated_banks[i].card_image,
                 'bank-info',
                 [
-                  AllowedFileType.JPG,
-                  AllowedFileType.JPEG,
-                  AllowedFileType.PNG,
+                  FileMimeTypeEnum.JPG,
+                  FileMimeTypeEnum.JPEG,
+                  FileMimeTypeEnum.PNG,
                 ],
                 maxSize,
                 uploadedFilePath,
@@ -567,7 +522,11 @@ export class TenderClientService {
               'Uploading bank card image for user',
               created_banks[i].card_image,
               'bank-info',
-              [AllowedFileType.JPG, AllowedFileType.JPEG, AllowedFileType.PNG],
+              [
+                FileMimeTypeEnum.JPG,
+                FileMimeTypeEnum.JPEG,
+                FileMimeTypeEnum.PNG,
+              ],
               maxSize,
               uploadedFilePath,
             );
@@ -613,6 +572,8 @@ export class TenderClientService {
       const response = await this.tenderClientRepository.createUpdateRequest(
         newEditRequest,
       );
+
+      await this.sendEditRequestNotif(response);
 
       return response;
     } catch (error) {
@@ -675,7 +636,9 @@ export class TenderClientService {
         updated_bank,
         deleted_bank,
       );
+      console.log('response', response);
 
+      await this.sendResponseNotif(response);
       return response;
     } catch (error) {
       const theError = prismaErrorThrower(
@@ -704,10 +667,12 @@ export class TenderClientService {
         reviewer_id,
       };
 
-      await this.tenderClientRepository.updateById(
+      const response = await this.tenderClientRepository.updateById(
         request.requestId,
         updatePayload,
       );
+
+      await this.sendResponseNotif(response);
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
@@ -716,6 +681,176 @@ export class TenderClientService {
         'Approving Edit Requests!',
       );
       throw theError;
+    }
+  }
+
+  async sendResponseNotif(editRequest: RawResponseEditRequestDto['data']) {
+    const {
+      user,
+      reviewer,
+      status_id,
+      rejected_at,
+      reject_reason,
+      accepted_at,
+    } = editRequest;
+
+    console.log('edit request', editRequest);
+
+    const rejectedTime = !!rejected_at
+      ? moment(rejected_at).format('llll')
+      : '';
+    const approvedTime = !!accepted_at
+      ? moment(accepted_at).format('llll')
+      : '';
+
+    const clientSubject = `Edit Request ${
+      status_id === 'APPROVED' ? 'Approved' : 'Rejected'
+    }`;
+    const accManagersubject = `Change Edit Request Status Success!`;
+
+    const msgSuffix =
+      status_id === 'APPROVED'
+        ? `at ${approvedTime}`
+        : `, Details: ${reject_reason} at ${rejectedTime}`;
+
+    const clientContent = `Your Edit Requet is ${
+      status_id === 'APPROVED' ? 'Approved' : 'Rejected'
+    } by The Account Manager ${
+      reviewer ? '(' + reviewer.employee_name + ')' : ''
+    } ${msgSuffix}`;
+
+    const accManagerContent = `Your reponse is already applied (Changing edit request status from ${user.employee_name} to ${status_id}) ${msgSuffix}`;
+
+    const baseSendEmail: Omit<SendEmailDto, 'to'> = {
+      mailType: 'plain',
+      from: 'no-reply@hcharity.org',
+    };
+
+    /* client ------------------------------------------------------------------------------------------------------------------------ */
+    const clientEmailNotif: SendEmailDto = {
+      ...baseSendEmail,
+      to: user.email,
+      subject: clientSubject,
+      content: clientContent,
+    };
+    this.emailService.sendMail(clientEmailNotif);
+
+    const clientWebNotifPayload: CreateNotificationDto = {
+      user_id: user.id,
+      type: 'ACCOUNT',
+      subject: clientSubject,
+      content: clientContent,
+    };
+    await this.notificationService.create(clientWebNotifPayload);
+
+    const clientPhone = isExistAndValidPhone(user.mobile_number);
+    if (clientPhone) {
+      this.twilioService.sendSMS({
+        to: clientPhone,
+        body: clientSubject + ', ' + clientContent,
+      });
+    }
+    /* ----------------------------------------------------------------------------------------------------------------------------------- */
+
+    if (reviewer) {
+      const accManagerEmailNotif: SendEmailDto = {
+        ...baseSendEmail,
+        to: reviewer.email,
+        subject: accManagersubject,
+        content: accManagerContent,
+      };
+      this.emailService.sendMail(accManagerEmailNotif);
+
+      const accManagerWebNotif: CreateNotificationDto = {
+        user_id: reviewer.id,
+        type: 'ACCOUNT',
+        subject: accManagersubject,
+        content: accManagerContent,
+      };
+      await this.notificationService.create(accManagerWebNotif);
+
+      const accManagerPhone = isExistAndValidPhone(reviewer.mobile_number);
+      if (accManagerPhone) {
+        this.twilioService.sendSMS({
+          body: accManagersubject + ', ' + accManagerContent,
+          to: accManagerPhone,
+        });
+      }
+    }
+  }
+
+  async sendEditRequestNotif(
+    editRequest: RawCreateEditRequestResponse['data'],
+  ) {
+    const { user } = editRequest;
+    let clientSubject = `New Edit Request Submitted Success!`;
+    let accManagersubject = `New Edit Request Submitted Success!`;
+    let clientContent = `Your edit request is submitted successfully!, please wait until account manager is reponded to your request`;
+    let accManagerContent = `There's a new Edit Request from ${user.employee_name}`;
+
+    const baseSendEmail: Omit<SendEmailDto, 'to'> = {
+      mailType: 'plain',
+      from: 'no-reply@hcharity.org',
+    };
+
+    /* the client on this proposal ------------------------------------------------------------------------------------------------ */
+    const clientEmailNotif: SendEmailDto = {
+      ...baseSendEmail,
+      to: user.email,
+      subject: clientSubject,
+      content: clientContent,
+    };
+
+    this.emailService.sendMail(clientEmailNotif);
+
+    const clientWebNotifPayload: CreateNotificationDto = {
+      user_id: user.id,
+      type: 'ACCOUNT',
+      subject: clientSubject,
+      content: clientContent,
+    };
+    await this.notificationService.create(clientWebNotifPayload);
+
+    let clientPhone = isExistAndValidPhone(user.mobile_number);
+    if (clientPhone) {
+      this.twilioService.sendSMS({
+        to: clientPhone,
+        body: clientSubject + ', ' + clientContent,
+      });
+    }
+    /* ----------------------------------------------------------------------------------------------------------------------------------- */
+
+    const accountManagers = await this.tenderUserRepository.findByRole(
+      'ACCOUNTS_MANAGER',
+    );
+    if (accountManagers && accountManagers.length > 0) {
+      for (let i = 0; i < accountManagers.length; i++) {
+        const accManagerEmailNotif: SendEmailDto = {
+          ...baseSendEmail,
+          to: accountManagers[i].email,
+          subject: accManagersubject,
+          content: accManagerContent,
+        };
+        this.emailService.sendMail(accManagerEmailNotif);
+        const accManagerWebNotif: CreateNotificationDto = {
+          user_id: accountManagers[i].id,
+          type: 'ACCOUNT',
+          subject: accManagersubject,
+          content: accManagerContent,
+        };
+        await this.notificationService.create(accManagerWebNotif);
+
+        let accManagerPhone = isExistAndValidPhone(
+          accountManagers[i].mobile_number,
+        );
+
+        if (accManagerPhone) {
+          this.twilioService.sendSMS({
+            body: accManagersubject + ', ' + accManagerContent,
+            to: accManagerPhone,
+          });
+        }
+      }
     }
   }
 }

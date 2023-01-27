@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Prisma, user } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
+import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
 import { SendEmailDto } from '../../../libs/email/dtos/requests/send-email.dto';
 import { EmailService } from '../../../libs/email/email.service';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
@@ -464,12 +465,12 @@ export class TenderUserService {
     };
     this.tenderNotificationService.create(clientWebNotifPayload);
 
-    if (
-      status_log.user_detail.mobile_number &&
-      status_log.user_detail.mobile_number !== ''
-    ) {
+    const clientPhone = isExistAndValidPhone(
+      status_log.user_detail.mobile_number,
+    );
+    if (clientPhone) {
       this.twilioService.sendSMS({
-        to: status_log.user_detail.mobile_number,
+        to: clientPhone,
         body: subject + ',' + clientContent,
       });
     }
@@ -492,12 +493,12 @@ export class TenderUserService {
       };
       this.tenderNotificationService.create(employeeWebNotifPayload);
 
-      if (
-        status_log.account_manager_detail.mobile_number &&
-        status_log.account_manager_detail.mobile_number !== ''
-      ) {
+      const accManagerPhone = isExistAndValidPhone(
+        status_log.account_manager_detail.mobile_number,
+      );
+      if (accManagerPhone) {
         this.twilioService.sendSMS({
-          to: status_log.account_manager_detail.mobile_number,
+          to: accManagerPhone,
           body: subject + ',' + employeeContent,
         });
       }

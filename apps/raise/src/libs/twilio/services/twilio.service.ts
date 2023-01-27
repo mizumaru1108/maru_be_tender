@@ -34,13 +34,13 @@ export class TwilioService {
   }
 
   async sendSMSAsync(payload: SendSmsDto) {
+    this.logger.log('log', `Sending sms to ${payload.to}`);
     try {
       const response = await this.client.messages.create({
         from: payload.from || this.twilioNumber,
         to: payload.to,
         body: payload.body,
       });
-      console.log('response', response);
       return response;
     } catch (err) {
       this.logger.error('Error occured when sending message: ', err);
@@ -49,6 +49,7 @@ export class TwilioService {
   }
 
   sendSMS(payload: SendSmsDto) {
+    this.logger.log('log', `Sending sms to ${payload.to}`);
     this.client.messages.create({
       from: payload.from || this.twilioNumber,
       to: payload.to,

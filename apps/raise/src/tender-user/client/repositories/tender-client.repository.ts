@@ -290,6 +290,9 @@ export class TenderClientRepository {
       return await this.prismaService.$transaction(async (prisma) => {
         return await prisma.edit_requests.create({
           data: editRequestLogPayload,
+          include: {
+            user: true,
+          },
         });
       });
     } catch (error) {
@@ -335,6 +338,10 @@ export class TenderClientRepository {
           data: {
             ...updatePayload,
           },
+          include: {
+            user: true,
+            reviewer: true,
+          },
         });
       } else {
         return await this.prismaService.edit_requests.update({
@@ -343,6 +350,10 @@ export class TenderClientRepository {
           },
           data: {
             ...updatePayload,
+          },
+          include: {
+            user: true,
+            reviewer: true,
           },
         });
       }
@@ -369,7 +380,7 @@ export class TenderClientRepository {
     try {
       return await this.prismaService.$transaction(
         async (prisma) => {
-          const updatedClientData = await prisma.client_data.update({
+          await prisma.client_data.update({
             where: {
               user_id,
             },
@@ -428,7 +439,7 @@ export class TenderClientRepository {
           }
 
           this.logger.log('log', 'Approving edit request status...');
-          await this.updateById(
+          const editRequestResult = await this.updateById(
             request_id,
             {
               reviewer_id,
@@ -438,7 +449,7 @@ export class TenderClientRepository {
             prisma,
           );
 
-          return updatedClientData;
+          return editRequestResult;
         },
         {
           maxWait: 50000,

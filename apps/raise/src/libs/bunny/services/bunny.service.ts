@@ -6,7 +6,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
 import axios, { AxiosRequestConfig } from 'axios';
-import { AllowedFileType } from '../../../commons/enums/allowed-filetype.enum';
+import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import {
   generateRandomNumberString,
@@ -149,7 +149,7 @@ export class BunnyService {
       : this.storageUrlMedia + '/' + path;
 
     const cdnUrl: string = includeCdn ? path : this.cdnUrl + '/' + path;
-    this.logger.log(`Deleting ${cdnUrl} from storage ...`);
+    this.logger.log('log', `Deleting ${cdnUrl} from storage ...`);
 
     const options: AxiosRequestConfig<any> = {
       method: 'DELETE',
@@ -176,7 +176,7 @@ export class BunnyService {
 
   public async uploadFile(
     file: MulterFile,
-    allowedFileType: AllowedFileType[],
+    allowedFileType: FileMimeTypeEnum[],
     maxFileSize: number,
     serviceName: string,
     parseFileName: boolean,
@@ -189,12 +189,12 @@ export class BunnyService {
       ? uploadFileNameParser(file.originalname)
       : file.originalname;
 
-    this.logger.log('fileName before path: ', fileName);
+    this.logger.log('log', 'fileName before path: ', fileName);
 
     if (path) {
       fileName = path + '/' + fileName;
     }
-    this.logger.log(`path=${path} fileName after path=${fileName}`);
+    this.logger.log('log', `path=${path} fileName after path=${fileName}`);
 
     const mediaUrl = this.storageUrlMedia + '/' + fileName;
 

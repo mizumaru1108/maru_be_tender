@@ -1,7 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AllowedFileType } from '../../../commons/enums/allowed-filetype.enum';
+import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
+import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
 import { validateFileSize } from '../../../commons/utils/validate-file-size';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
@@ -93,16 +94,16 @@ export class TenderProposalFollowUpService {
           );
 
           validateAllowedExtension(follow_up_attachment[i].fileExtension, [
-            AllowedFileType.PDF,
-            AllowedFileType.DOC,
-            AllowedFileType.DOCX,
-            AllowedFileType.PPT,
-            AllowedFileType.PPTX,
-            AllowedFileType.JPEG,
-            AllowedFileType.JPG,
-            AllowedFileType.PNG,
-            AllowedFileType.XLS,
-            AllowedFileType.XLSX,
+            FileMimeTypeEnum.PDF,
+            FileMimeTypeEnum.DOC,
+            FileMimeTypeEnum.DOCX,
+            FileMimeTypeEnum.PPT,
+            FileMimeTypeEnum.PPTX,
+            FileMimeTypeEnum.JPEG,
+            FileMimeTypeEnum.JPG,
+            FileMimeTypeEnum.PNG,
+            FileMimeTypeEnum.XLS,
+            FileMimeTypeEnum.XLSX,
           ]);
           validateFileSize(follow_up_attachment[i].size, maxSize);
 
@@ -196,10 +197,11 @@ export class TenderProposalFollowUpService {
     };
     await this.notificationService.create(clientWebNotifPayload);
 
-    if (proposal.user.mobile_number && proposal.user.mobile_number !== '') {
+    const clientPhone = isExistAndValidPhone(proposal.user.mobile_number);
+    if (clientPhone) {
       this.twilioService.sendSMS({
         ...baseSendSms,
-        to: proposal.user.mobile_number,
+        to: clientPhone,
       });
     }
     /* ----------------------------------------------------------------------------------------------------------------------------------- */
@@ -222,13 +224,13 @@ export class TenderProposalFollowUpService {
       };
       await this.notificationService.create(projectManagerWebNotif);
 
-      if (
-        proposal.project_manager.mobile_number &&
-        proposal.project_manager.mobile_number !== ''
-      ) {
+      const pmPhone = isExistAndValidPhone(
+        proposal.project_manager.mobile_number,
+      );
+      if (pmPhone) {
         this.twilioService.sendSMS({
           ...baseSendSms,
-          to: proposal.project_manager.mobile_number,
+          to: pmPhone,
         });
       }
     }
@@ -252,13 +254,13 @@ export class TenderProposalFollowUpService {
       };
       await this.notificationService.create(supervisorWebNotif);
 
-      if (
-        proposal.supervisor.mobile_number &&
-        proposal.supervisor.mobile_number !== ''
-      ) {
+      const supervisorPhone = isExistAndValidPhone(
+        proposal.supervisor.mobile_number,
+      );
+      if (supervisorPhone) {
         this.twilioService.sendSMS({
           ...baseSendSms,
-          to: proposal.supervisor.mobile_number,
+          to: supervisorPhone,
         });
       }
     }

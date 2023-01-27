@@ -11,7 +11,7 @@ export type TenderFusionAuthRoles =
   | 'tender_project_manager'
   | 'tender_project_supervisor';
 
-export enum TEnderFusionAuthRolesEnum {
+export enum TenderFusionAuthRolesEnum {
   CLUSTER_ADMIN = 'cluster_admin',
   TENDER_ACCOUNTS_MANAGER = 'tender_accounts_manager',
   TENDER_ADMIN = 'tender_admin',

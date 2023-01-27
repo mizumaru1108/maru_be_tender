@@ -10,6 +10,7 @@ import { UpdateUserPayload } from '../interfaces/update-user-payload.interface';
 import { UserStatus } from '../types/user_status';
 import { v4 as uuidv4 } from 'uuid';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
+import { TenderAppRole } from '../../../tender-commons/types';
 
 @Injectable()
 export class TenderUserRepository {
@@ -45,6 +46,31 @@ export class TenderUserRepository {
     try {
       return await this.prismaService.user_type.findUnique({
         where: { id: role },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderUserRepository.name,
+        'validateRoles Error:',
+        `validating roles!`,
+      );
+      throw theError;
+    }
+  }
+
+  async findByRole(role: TenderAppRole) {
+    try {
+      return await this.prismaService.user.findMany({
+        where: {
+          roles: {
+            some: {
+              user_type_id: {
+                contains: role,
+                mode: 'insensitive',
+              },
+            },
+          },
+        },
       });
     } catch (error) {
       const theError = prismaErrorThrower(

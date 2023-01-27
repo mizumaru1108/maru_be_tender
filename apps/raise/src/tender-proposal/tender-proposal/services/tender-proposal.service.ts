@@ -26,7 +26,7 @@ import { TenderNotificationService } from '../../../tender-notification/services
 
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
-import { AllowedFileType } from '../../../commons/enums/allowed-filetype.enum';
+import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
 import { validateFileSize } from '../../../commons/utils/validate-file-size';
@@ -43,6 +43,7 @@ import { ProposalSaveDraftDto } from '../dtos/requests/proposal-save-draft';
 import { ProposalCreateDto } from '../dtos/requests/proposal-create.dto';
 import { CreateProposalMapper } from '../mappers/create-proposal.mapper';
 import { UpdateProposalMapper } from '../mappers/update-proposal.mapper';
+import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
 
 @Injectable()
 export class TenderProposalService {
@@ -87,18 +88,18 @@ export class TenderProposalService {
 
     /* validate and create path */
     const maxSize: number = 1024 * 1024 * 512; // 512MB
-    const allowedType: AllowedFileType[] = [
-      AllowedFileType.JPG,
-      AllowedFileType.JPEG,
-      AllowedFileType.PNG,
-      AllowedFileType.GIF,
-      AllowedFileType.PDF,
-      AllowedFileType.DOC,
-      AllowedFileType.DOCX,
-      AllowedFileType.XLS,
-      AllowedFileType.XLSX,
-      AllowedFileType.PPT,
-      AllowedFileType.PPTX,
+    const allowedType: FileMimeTypeEnum[] = [
+      FileMimeTypeEnum.JPG,
+      FileMimeTypeEnum.JPEG,
+      FileMimeTypeEnum.PNG,
+      FileMimeTypeEnum.GIF,
+      FileMimeTypeEnum.PDF,
+      FileMimeTypeEnum.DOC,
+      FileMimeTypeEnum.DOCX,
+      FileMimeTypeEnum.XLS,
+      FileMimeTypeEnum.XLSX,
+      FileMimeTypeEnum.PPT,
+      FileMimeTypeEnum.PPTX,
     ];
 
     if (request.proposal_bank_information_id) {
@@ -277,18 +278,18 @@ export class TenderProposalService {
 
     /* validate and create path */
     const maxSize: number = 1024 * 1024 * 512; // 512MB
-    const allowedType: AllowedFileType[] = [
-      AllowedFileType.JPG,
-      AllowedFileType.JPEG,
-      AllowedFileType.PNG,
-      AllowedFileType.GIF,
-      AllowedFileType.PDF,
-      AllowedFileType.DOC,
-      AllowedFileType.DOCX,
-      AllowedFileType.XLS,
-      AllowedFileType.XLSX,
-      AllowedFileType.PPT,
-      AllowedFileType.PPTX,
+    const allowedType: FileMimeTypeEnum[] = [
+      FileMimeTypeEnum.JPG,
+      FileMimeTypeEnum.JPEG,
+      FileMimeTypeEnum.PNG,
+      FileMimeTypeEnum.GIF,
+      FileMimeTypeEnum.PDF,
+      FileMimeTypeEnum.DOC,
+      FileMimeTypeEnum.DOCX,
+      FileMimeTypeEnum.XLS,
+      FileMimeTypeEnum.XLSX,
+      FileMimeTypeEnum.PPT,
+      FileMimeTypeEnum.PPTX,
     ];
 
     // upload the project_attachments to bunny cloud service
@@ -1217,22 +1218,18 @@ export class TenderProposalService {
     };
     await this.tenderNotificationService.create(clientWebNotifPayload);
 
-    if (
-      log.data.proposal.user.mobile_number &&
-      log.data.proposal.user.mobile_number !== ''
-    ) {
+    const clientPhone = isExistAndValidPhone(log.data.proposal.user.mobile_number);
+    if (clientPhone) {
       this.twilioService.sendSMS({
-        to: log.data.proposal.user.mobile_number,
+        to: clientPhone,
         body: subject + ',' + clientContent,
       });
     }
-    if (
-      log.data.reviewer &&
-      log.data.reviewer.mobile_number &&
-      log.data.reviewer.mobile_number !== ''
-    ) {
+
+    const reviewerPhone = isExistAndValidPhone(log.data.proposal.user.mobile_number);
+    if (reviewerPhone) {
       this.twilioService.sendSMS({
-        to: log.data.reviewer.mobile_number,
+        to: reviewerPhone,
         body: subject + ',' + employeeContent,
       });
     }

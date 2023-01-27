@@ -61,6 +61,7 @@ import { TenderStatisticsModule } from './tender-statistics/tender-statistics.mo
 import { TenderNotificationModule } from './tender-notification/tender-notification.module';
 import { gapiConfig } from './commons/configs/gapi-config';
 import { twilioConfig } from './commons/configs/twilio-config';
+import { TenderFileManagerModule } from './tender-file-manager/tender-file-manager.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -162,6 +163,7 @@ import { twilioConfig } from './commons/configs/twilio-config';
     TenderStatisticsModule,
     TenderEventsModule,
     TenderNotificationModule,
+    TenderFileManagerModule,
   ],
   controllers: [],
 })
