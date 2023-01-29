@@ -22,6 +22,7 @@ type Props = {
   accountNumber?: string | number;
   imageUrl?: string;
   size?: number;
+  borderColor?: string;
 };
 
 const BankImageComp = ({
@@ -31,11 +32,23 @@ const BankImageComp = ({
   accountNumber,
   imageUrl,
   size,
+  borderColor,
 }: Props) => {
   const { translate } = useLocales();
 
   return (
-    <Stack direction="column" gap={1} sx={{ height: '270px' }} justifyContent="center">
+    <Stack
+      direction="column"
+      gap={1}
+      sx={{
+        height: '270px',
+        border: 0.5,
+        borderRadius: 1,
+        borderColor: `${borderColor}`,
+      }}
+      justifyContent="center"
+      padding={0.5}
+    >
       <Paper
         style={{
           backgroundRepeat: 'no-repeat',
@@ -45,6 +58,7 @@ const BankImageComp = ({
           height: '180px',
           padding: '10px',
           backgroundImage: `url(${BankImage})`,
+          opacity: 1,
         }}
       >
         <Stack direction="column" sx={{ color: '#fff' }}>

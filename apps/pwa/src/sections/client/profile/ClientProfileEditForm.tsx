@@ -26,6 +26,7 @@ import { gettingUserDataForEdit } from 'queries/client/gettingUserDataForEdit';
 import useAuth from 'hooks/useAuth';
 import axiosInstance from '../../../utils/axios';
 import { LoadingButton } from '@mui/lab';
+import { useSnackbar } from 'notistack';
 const taps = [
   'register_first_tap',
   'register_second_tap',
@@ -39,6 +40,7 @@ function ClientProfileEditForm() {
   const { user, activeRole } = useAuth();
   const id = user?.id;
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
   const [step, setStep] = useState(0);
   const { translate } = useLocales();
   const [result] = useQuery({ query: gettingUserDataForEdit, variables: { id } });
@@ -62,7 +64,7 @@ function ClientProfileEditForm() {
       twitter_acount: '',
       website: '',
       email: '',
-      password: '',
+      // password: '',
     },
     form3: {
       license_number: '',
@@ -428,35 +430,30 @@ function ClientProfileEditForm() {
   const onSubmitEditRequest = async () => {
     setLoadingButtonState(true);
     let newBankInformation = {};
+    newBankInformation = {
+      ...newBankInformation,
+      old_banks: [...profileState.form5],
+    };
     if (
       (profileState && profileState.updated_banks && profileState.updated_banks.length > 0) ||
       (profileState && profileState.updated_banks && profileState.updated_banks.length > 0) ||
       (profileState && profileState.deleted_banks && profileState.deleted_banks.length > 0)
     ) {
-      // newBankInformation = {
-      //   ...newBankInformation,
-      //   updated_banks: profileState.updated_banks,
-      //   deleted_banks: profileState.deleted_banks,
-      //   created_banks: profileState.updated_banks,
-      // };
       if (profileState.updated_banks.length > 0) {
         newBankInformation = {
           ...newBankInformation,
-          old_banks: profileState.form5,
           updated_banks: profileState.updated_banks,
         };
       }
       if (profileState.deleted_banks.length > 0) {
         newBankInformation = {
           ...newBankInformation,
-          old_banks: profileState.form5,
           deleted_banks: profileState.deleted_banks,
         };
       }
       if (profileState.created_banks.length > 0) {
         newBankInformation = {
           ...newBankInformation,
-          old_banks: profileState.form5,
           created_banks: profileState.created_banks,
         };
       }
@@ -480,26 +477,30 @@ function ClientProfileEditForm() {
           headers: { 'x-hasura-role': activeRole! },
         }
       );
-      console.log({ rest });
+      // console.log({ rest });
       if (rest) {
         // mutate();
         navigate('/client/my-profile');
         setLoadingButtonState(false);
-      } else {
-        alert('Something went wrong');
-        setLoadingButtonState(false);
       }
+      // else {
+      //   alert('Something went wrong');
+      //   setLoadingButtonState(false);
+      // }
     } catch (err) {
-      console.log(err);
-      setOpen(true);
-      setErrorState({
-        value: true,
-        message: err.response.data.message,
+      enqueueSnackbar(err.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
       });
+      console.log(err);
     }
     // console.log({ newBankInformation });
     // console.log({ profileState });
-    // const createdBank =
   };
   // console.log(profileState);
   return (
@@ -556,6 +557,7 @@ function ClientProfileEditForm() {
           borderRadius: 1,
         }}
       >
+        setErrorState
         {taps.map((label, index) => (
           <Tab
             key={index}
@@ -639,10 +641,10 @@ function ClientProfileEditForm() {
       <Toast
         variant="outlined"
         // toastType="success"
-        toastType={!!errorState.value ? 'error' : 'success'}
+        toastType={errorState.value ? 'error' : 'success'}
         // message="تم التأكد من المعلومات أنها صحيحة, لحفظ تعديلاتك الرجاء الضغط على إرسال التعديلات أعلاه"
         message={
-          !!errorState.value
+          errorState.value
             ? errorState.message
             : 'تم التأكد من المعلومات أنها صحيحة, لحفظ تعديلاتك الرجاء الضغط على إرسال التعديلات أعلاه'
         }

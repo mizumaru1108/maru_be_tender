@@ -28,10 +28,10 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
   const theme = useTheme();
   const { translate } = useLocales();
   const navigate = useNavigate();
+  // console.log({ editRequest });
 
   const { partner_name, createdAt, account_status, events, update_status, id, status_id, user } =
     row;
-  console.log({ row, selected, onSelectRow, editRequest });
   return (
     <TableRow hover selected={selected}>
       {!editRequest && (
@@ -42,6 +42,7 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
         <Typography variant="subtitle2" noWrap>
           {editRequest ? user?.client_data?.entity : partner_name}
+          {partner_name}
         </Typography>
       </TableCell>
       <TableCell>{moment(createdAt).format('DD-MM-YYYY')}</TableCell>
@@ -56,8 +57,8 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
               'warning') ||
             (account_status === 'ACTIVE_ACCOUNT' && !editRequest && 'success') ||
             (editRequest && status_id === 'PENDING' && 'warning') ||
-            (editRequest && status_id === 'APPROVE' && 'success') ||
-            (editRequest && status_id === 'REJECT' && 'error') ||
+            (editRequest && status_id === 'APPROVED' && 'success') ||
+            (editRequest && status_id === 'REJECTED' && 'error') ||
             'error'
           }
           sx={{ textTransform: 'capitalize' }}
@@ -77,33 +78,55 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
             status_id === 'PENDING' &&
             translate('account_manager.table.td.label_pending')) ||
             (editRequest &&
-              status_id === 'APPROVE' &&
+              status_id === 'APPROVED' &&
               translate('account_manager.table.td.label_approved')) ||
             (editRequest &&
-              status_id === 'REJECT' &&
+              status_id === 'REJECTED' &&
               translate('account_manager.table.td.label_rejected'))}
         </Label>
       </TableCell>
       {update_status ? (
         <TableCell align="left">
           <Button
-            onClick={() => navigate(PATH_ACCOUNTS_MANAGER.partnerDetails(id as string))}
+            onClick={() =>
+              editRequest
+                ? navigate(
+                    PATH_ACCOUNTS_MANAGER.partnerEditProfileDetails(
+                      id as string,
+                      status_id as string
+                    )
+                  )
+                : navigate(PATH_ACCOUNTS_MANAGER.partnerDetails(id as string))
+            }
             color="inherit"
             variant="outlined"
             size="medium"
           >
-            {translate('account_manager.table.td.btn_view_partner_projects')}
+            {editRequest
+              ? translate('account_manager.table.td.btn_view_edit_request')
+              : translate('account_manager.table.td.btn_view_partner_projects')}
             <Iconify icon={'bx:briefcase'} width={20} height={20} sx={{ ml: 1 }} />
           </Button>
         </TableCell>
       ) : (
         <TableCell align="left">
           <Button
-            onClick={() => navigate(PATH_ACCOUNTS_MANAGER.partnerDetails(id as string))}
+            onClick={() =>
+              editRequest
+                ? navigate(
+                    PATH_ACCOUNTS_MANAGER.partnerEditProfileDetails(
+                      id as string,
+                      status_id as string
+                    )
+                  )
+                : navigate(PATH_ACCOUNTS_MANAGER.partnerDetails(id as string))
+            }
             color="inherit"
             size="small"
           >
-            {translate('account_manager.table.td.btn_account_review')}
+            {editRequest
+              ? translate('account_manager.table.td.btn_view_edit_request')
+              : translate('account_manager.table.td.btn_view_partner_projects')}
             <Iconify icon={'eva:eye-outline'} width={20} height={20} sx={{ ml: 1 }} />
           </Button>
         </TableCell>

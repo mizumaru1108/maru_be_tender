@@ -49,7 +49,6 @@ function PartnerManagementPage() {
         account_status: v.status_id,
         events: v.id,
       }));
-
       setClientData(resultAllClientData);
     }
   }, [fetchingAllClientRequest, resultAllClientRequest, activeButton]);

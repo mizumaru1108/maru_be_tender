@@ -17,6 +17,9 @@ const MessagesManagerPage = Loadable(lazy(() => import('pages/accounts-manager/M
 const PartnerDetailsPage = Loadable(
   lazy(() => import('pages/accounts-manager/partner/PartnerDetails'))
 );
+const EditRequestDetailsPage = Loadable(
+  lazy(() => import('pages/accounts-manager/partner/EditRequestDetails'))
+);
 const PartnerSendAmandementPage = Loadable(
   lazy(() => import('pages/accounts-manager/partner/SendAmandementRequest'))
 );
@@ -51,6 +54,10 @@ export const accoutsManagerRoute = {
             {
               path: ':partnerId',
               element: <PartnerDetailsPage />,
+            },
+            {
+              path: ':requestId/:editStatus',
+              element: <EditRequestDetailsPage />,
             },
             { path: ':partnerId/amendment-request', element: <PartnerSendAmandementPage /> },
           ],

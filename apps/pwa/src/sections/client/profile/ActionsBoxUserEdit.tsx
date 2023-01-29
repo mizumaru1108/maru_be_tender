@@ -1,9 +1,15 @@
+import { LoadingButton } from '@mui/lab';
 import { Button, Stack } from '@mui/material';
+interface Props {
+  loading?: boolean;
+  // onSubmiting: () => void;
+}
 
-const ActionsBoxUserEdit = () => (
+const ActionsBoxUserEdit = ({ loading }: Props) => (
   <Stack justifyContent="center" direction="row" gap={2}>
-    <Button
+    <LoadingButton
       type="submit"
+      loading={loading}
       variant={'contained'}
       sx={{
         backgroundColor: 'background.paper',
@@ -13,7 +19,7 @@ const ActionsBoxUserEdit = () => (
       }}
     >
       تحديث
-    </Button>
+    </LoadingButton>
   </Stack>
 );
 

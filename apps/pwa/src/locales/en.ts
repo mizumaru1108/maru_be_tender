@@ -143,6 +143,8 @@ const en = {
       password: {
         message: '',
         required: 'Password is required',
+        new_password: 'New password is required',
+        confirm_password: 'Confirm password must be the same as the new password',
       },
       license_number: {
         message: '',
@@ -228,6 +230,10 @@ const en = {
         required: 'Card Image is required',
         size: 'The file size must be less than 5 MB',
         fileExtension: 'The file extension must be one of the following: pdf, png, jpg, jpeg',
+      },
+      employee_name: {
+        message: '',
+        required: 'Employee Name is required',
       },
     },
 
@@ -479,27 +485,27 @@ const en = {
   },
   register_form2: {
     region: {
-      label: 'المنطقة*',
-      placeholder: 'الرجاء اختيار المنطقة',
+      label: 'Region',
+      placeholder: 'Please choose the Region',
       options: {},
     },
     city: {
-      label: 'المحافظة*',
-      placeholder: 'الرجاء اختيار المحافظة*',
+      label: 'Governorate',
+      placeholder: 'Please choose the Governorate',
       options: {},
     },
     center: {
-      label: 'مركز الإدارة',
-      placeholder: 'الرجاء اختيار المركز*',
+      label: 'Center Administrative',
+      placeholder: 'Please choose the Center Administrative',
       options: {},
     },
     mobile_number: {
-      label: 'جوال الجهة*',
-      placeholder: 'الرجاء كتابة رقم الجوال',
+      label: 'Mobile number*',
+      placeholder: 'Please enter the mobile number',
     },
     phone: {
-      label: 'الهاتف',
-      placeholder: 'الرجاء كتابة رقم الهاتف',
+      label: 'Phone*',
+      placeholder: 'Please enter the phone number',
     },
     twitter: {
       label: 'حساب تويتر',
@@ -940,6 +946,10 @@ const en = {
 
   // ACCOUNT_MANAGER PAGES
   account_manager: {
+    button: {
+      approveEdit: 'Approve Edit Request',
+      rejectEdit: 'Reject Edit Request',
+    },
     card: {
       suspended_partners: 'Automatically suspended partners',
       active_partners: 'Active Partners',
@@ -968,6 +978,7 @@ const en = {
         btn_account_review: 'Account review',
         btn_view_partner_projects: 'View partner projects',
         label_waiting_activation: 'Waiting for activation',
+        btn_view_edit_request: 'View Edit Request Client',
         label_active_account: 'Active account',
         label_canceled_account: 'Canceled account',
         label_pending: 'Pending',

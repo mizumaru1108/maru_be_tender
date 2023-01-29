@@ -12,16 +12,16 @@ type FormProps = {
   children?: React.ReactNode;
   onSubmit: (data: any) => void;
   defaultValues: UserInfoFormProps;
-  isEdit?: boolean;
 };
 
-const UserInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProps) => {
+const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
   const [changePassword, setChangePassword] = useState(false);
   const { translate } = useLocales();
   const RegisterSchema = Yup.object().shape({
     email: Yup.string()
       .required(translate('errors.register.email.required'))
       .email(translate('errors.register.email.email')),
+    employee_name: Yup.string().required(translate('errors.register.employee_name.required')),
     entity_mobile: Yup.string()
       .required(translate('errors.register.entity_mobile.required'))
       .test('len', translate('errors.register.entity_mobile.length'), (val) => {
@@ -31,6 +31,7 @@ const UserInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProps) 
 
         return val.length === 0 || val!.length === 9;
       }),
+    current_password: Yup.string().required(translate('errors.register.password.required')),
   });
   const PasswordChangeSchema = Yup.object().shape({
     email: Yup.string()
@@ -46,9 +47,12 @@ const UserInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProps) 
         return val.length === 0 || val!.length === 9;
       }),
     employee_name: Yup.string().required(translate('errors.register.employee_name.required')),
-    old_password: Yup.string().required('Old Password is required'),
-    new_password: Yup.string().required('New Password is required'),
-    confirm_password: Yup.string().oneOf([Yup.ref('new_password'), null], 'Passwords must match'),
+    current_password: Yup.string().required(translate('errors.register.password.required')),
+    new_password: Yup.string().required(translate('errors.register.password.new_password')),
+    confirm_password: Yup.string().oneOf(
+      [Yup.ref('new_password'), null],
+      translate('errors.register.password.confirm_password')
+    ),
   });
 
   const methods = useForm<UserInfoFormProps>({
@@ -75,6 +79,7 @@ const UserInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProps) 
     const filteredObj = Object.fromEntries(
       Object.entries(newPayload).filter(([key, value]) => value)
     );
+    delete filteredObj.confirm_password;
     onSubmit(filteredObj);
   };
 
@@ -83,7 +88,7 @@ const UserInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProps) 
     let newValues = { ...defaultValues };
     const newEntityPhone = defaultValues.entity_mobile?.replace('+966', '');
     newValues = { ...newValues, entity_mobile: newEntityPhone };
-    console.log({ newValues });
+    // console.log({ newValues });
 
     reset(newValues);
   }, [defaultValues, reset]);
@@ -92,16 +97,21 @@ const UserInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProps) 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7}>
-        <Grid item md={8} xs={12}>
+        <Grid item md={12} xs={12}>
           <RHFTextField
-            disabled={isEdit}
             name="email"
             label={translate('register_form2.email.label')}
             placeholder={translate('register_form2.email.placeholder')}
           />
         </Grid>
+        <Grid item md={8} xs={12}>
+          <RHFPassword
+            name="current_password"
+            label={translate('register_form2.password.label')}
+            placeholder={translate('register_form2.password.placeholder')}
+          />
+        </Grid>
         <Grid item md={4} xs={12} display="flex" alignItems="center">
-          {/* <Button>change password</Button> */}
           <Button
             size="large"
             onClick={() => setChangePassword(!changePassword)}
@@ -116,35 +126,18 @@ const UserInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProps) 
             {changePassword ? 'عدم تغيير كلمة المرور' : 'غير كلمة السر'}
           </Button>
         </Grid>
-        <Grid item md={12} xs={12}>
-          <RHFTextField
-            disabled={isEdit}
-            name="employee_name"
-            label={translate('register_form2.employee_name.label')}
-            placeholder={translate('register_form2.employee_name.placeholder')}
-          />
-        </Grid>
+
         {changePassword && (
           <>
-            <Grid item md={12} xs={12}>
+            <Grid item md={6} xs={12}>
               <RHFPassword
-                disabled={isEdit}
-                name="old_password"
-                label={translate('register_form2.old_password.title')}
-                placeholder={translate('register_form2.old_password.placeholder')}
-              />
-            </Grid>
-            <Grid item md={12} xs={12}>
-              <RHFPassword
-                disabled={isEdit}
                 name="new_password"
                 label={translate('register_form2.new_password.title')}
                 placeholder={translate('register_form2.new_password.placeholder')}
               />
             </Grid>
-            <Grid item md={12} xs={12}>
+            <Grid item md={6} xs={12}>
               <RHFPassword
-                disabled={isEdit}
                 name="confirm_password"
                 label={translate('register_form2.confirm_password.title')}
                 placeholder={translate('register_form2.confirm_password.placeholder')}
@@ -152,9 +145,15 @@ const UserInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProps) 
             </Grid>
           </>
         )}
-        <Grid item md={12} xs={12}>
+        <Grid item md={6} xs={12}>
           <RHFTextField
-            disabled={isEdit}
+            name="employee_name"
+            label={translate('register_form2.employee_name.label')}
+            placeholder={translate('register_form2.employee_name.placeholder')}
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFTextField
             name="entity_mobile"
             label={translate('register_form2.mobile_number.label')}
             // placeholder={translate('register_form2.mobile_number.placeholder')}

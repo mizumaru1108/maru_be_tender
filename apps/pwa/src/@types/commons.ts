@@ -101,3 +101,26 @@ export interface updateProposalStatusAndState {
   outter_status: OutterStatus;
   state: AppRole;
 }
+
+// for upload one file
+export interface UploadFilesJsonbDto {
+  url?: string | '' | null;
+  size?: number | undefined;
+  type?: string;
+  base64Data?: string;
+  fullName?: string;
+  fileExtension?: string;
+}
+
+//for bank information
+export interface bank_information {
+  id: string;
+  user_id: string;
+  bank_account_name: string | null;
+  bank_account_number: string | null;
+  bank_name: string | null;
+  proposal_id: string | null;
+  card_image: UploadFilesJsonbDto | null;
+  is_deleted: boolean | null;
+  color?: string | '';
+}

@@ -6,12 +6,15 @@ import Page from 'components/Page';
 import { TableAMCustom } from 'components/table';
 // hooks
 import { useQuery } from 'urql';
-import { tableInfoUpdateRequest } from 'queries/account_manager/clientNewRequest';
+import {
+  getEditRequestProfileList,
+  tableInfoUpdateRequest,
+} from 'queries/account_manager/clientNewRequest';
 import useAuth from 'hooks/useAuth';
 //
 import { IPropsTablesList } from 'components/table/type';
 import axiosInstance from '../../../utils/axios';
-import useLocales from '../../../hooks/useLocales';
+// import useLocales from '../../../hooks/useLocales';
 import { useNavigate } from 'react-router';
 
 // -------------------------------------------------------------------------------
@@ -34,7 +37,7 @@ function InfoUpdateRequestPage() {
   const [loading, setLoading] = useState(false);
 
   const [resultInfoUpdateQuery, reexecuteInfoUpdateRequest] = useQuery({
-    query: tableInfoUpdateRequest,
+    query: getEditRequestProfileList,
   });
 
   const {
@@ -48,12 +51,11 @@ function InfoUpdateRequestPage() {
       const rest = await axiosInstance.get('tender/client/edit-request/list', {
         headers: { 'x-hasura-role': activeRole! },
       });
-      console.log({ rest });
+      // console.log({ rest });
       if (rest.data) {
         setInfoUpdateRequest(rest.data.data);
         setLoading(false);
       }
-      // navigate('/client/my-profile');
     } catch (err) {
       console.log(err);
       setLoading(false);
@@ -62,24 +64,23 @@ function InfoUpdateRequestPage() {
 
   useEffect(() => {
     setLoading(true);
-    fetchingEditRequestList();
-    // if (resultInfoUpdate) {
-    //   const resultDataInfoUpdate = resultInfoUpdate?.user?.map((vcl: any) => {
-    //     const vcd = vcl.client_data;
-    //     return {
-    //       id: vcd.id,
-    //       partner_name: vcd.client_data.entity,
-    //       createdAt: vcd.client_data.created_at,
-    //       account_status: 'REVISED_ACCOUNT',
-    //       events: vcd.id,
-    //       update_status: true,
-    //     };
-    //   });
-    //   console.log({ resultDataInfoUpdate });
-    //   setInfoUpdateRequest(resultDataInfoUpdate);
-    // }
+    // fetchingEditRequestList();
+    if (resultInfoUpdate) {
+      const newEditRequestList = resultInfoUpdate?.edit_requests.map((item: any) => {
+        const vcd = item;
+        return {
+          id: vcd.id,
+          partner_name: vcd.user.client_data.entity,
+          createdAt: vcd.created_at,
+          status_id: vcd.status_id,
+        };
+      });
+      // console.log({ newEditRequestList });
+      setInfoUpdateRequest(newEditRequestList);
+      setLoading(false);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [resultInfoUpdate]);
 
   return (
     <Page title="Information Update Request">
@@ -93,11 +94,11 @@ function InfoUpdateRequestPage() {
               headline="account_manager.heading.info_update_request"
             />
           )}
-          {!infoUpdateRequest && !loading && (
+          {/* {!infoUpdateRequest && !loading && (
             <Stack textAlign="center">
               <Typography variant="h5">لا توجد بيانات إدخال ...</Typography>
             </Stack>
-          )}
+          )} */}
         </ContentStyle>
       </Container>
     </Page>

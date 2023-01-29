@@ -1,15 +1,19 @@
-import { Box, Button, IconButton, Stack, Typography } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { Box, IconButton, Stack, Typography } from '@mui/material';
 import Toast from 'components/toast';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { gettingUseInfoForEdit } from 'queries/client/gettingUserDataForEdit';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { useQuery } from 'urql';
 import { UserInfoFormProps } from '../../../@types/register';
+import {
+  setActiveConversationId,
+  setConversation,
+  setMessageGrouped,
+} from '../../../redux/slices/wschat';
 import axiosInstance from '../../../utils/axios';
-import ActionsBox from './ActionsBox';
 import ActionsBoxUserEdit from './ActionsBoxUserEdit';
 import UserInfoForm from './forms/UserInfoForm';
 const taps = [
@@ -21,18 +25,17 @@ const taps = [
 ];
 
 function ClientProfileEditForm() {
-  const theme = useTheme();
-  const { user, activeRole } = useAuth();
+  const { user, activeRole, logout } = useAuth();
   const id = user?.id;
   const navigate = useNavigate();
-  const [step, setStep] = useState(0);
   const { translate } = useLocales();
   const [result] = useQuery({ query: gettingUseInfoForEdit, variables: { id } });
-  const { data, fetching, error } = result;
+  const { data } = result;
   const initialValue = {
     form1: {
       email: '',
       old_password: '',
+      current_password: '',
       new_password: '',
       confirm_password: '',
       entity_mobile: '',
@@ -41,22 +44,19 @@ function ClientProfileEditForm() {
   };
   const [profileState, setProfileState] = useState(initialValue);
   const [open, setOpen] = useState(false);
-  const [isEdit, setIsEdit] = useState({
-    form1: false,
-  });
+  const [loading, setLoading] = useState(false);
   const [errorState, setErrorState] = useState({
     value: false,
     message: '',
   });
-  const onSubmit = () => {
-    setOpen(true);
-    window.scrollTo(0, 0);
-  };
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
     if (data?.user_by_pk) {
-      const { email, client_data, employee_name } = data?.user_by_pk;
+      const { email, client_data, employee_name, password } = data?.user_by_pk;
       const { entity_mobile } = client_data;
-      console.log('data:', data?.user_by_pk);
+      // console.log('data:', data?.user_by_pk);1
       setProfileState((prevState: any) => ({
         ...prevState,
         form1: {
@@ -64,16 +64,18 @@ function ClientProfileEditForm() {
           email,
           entity_mobile,
           employee_name,
+          current_password: password,
         },
       }));
     }
   }, [data]);
 
   const onSubmit1 = async (data: UserInfoFormProps) => {
+    setLoading(true);
     window.scrollTo(0, 0);
     console.log(data);
     try {
-      const rest = await axiosInstance.patch(
+      const rest: any = await axiosInstance.patch(
         'tender-user/update-profile',
         { ...data },
         {
@@ -81,14 +83,28 @@ function ClientProfileEditForm() {
         }
       );
       console.log({ rest });
-      navigate('/client/my-profile');
+      if (rest.status >= 200 && rest.status < 300) {
+        setOpen(true);
+        // timeout
+        setErrorState({
+          value: false,
+          message: '',
+        });
+        setTimeout(() => {
+          dispatch(setActiveConversationId(null));
+          dispatch(setConversation([]));
+          dispatch(setMessageGrouped([]));
+          logout();
+          navigate('/auth/login');
+        }, 3000);
+      }
     } catch (err) {
       setOpen(true);
       setErrorState({
         value: true,
-        message: err.response.data.message,
+        message: err.message,
       });
-      console.log(err);
+      console.log({ err });
     }
   };
 
@@ -124,31 +140,20 @@ function ClientProfileEditForm() {
       </Stack>
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="h4">تحرير معلومات المستخدم</Typography>
-        {/* <Button
-          // onClick={onSubmitEditRequest}
-          sx={{
-            color: '#fff',
-            backgroundColor: 'background.paper',
-          }}
-        >
-          إرسال التعديلات
-        </Button> */}
       </Stack>
       <Box sx={{ px: '100px', display: 'flex', flexDirection: 'column', gap: 4 }}>
         <Typography variant="h5">المعلومات الرئيسية</Typography>
-        <UserInfoForm onSubmit={onSubmit1} defaultValues={profileState.form1} isEdit={isEdit.form1}>
-          <ActionsBoxUserEdit />
+        <UserInfoForm onSubmit={onSubmit1} defaultValues={profileState.form1}>
+          <ActionsBoxUserEdit loading={loading} />
         </UserInfoForm>
       </Box>
       <Toast
         variant="outlined"
-        // toastType="success"
-        toastType={errorState ? 'error' : 'success'}
-        // message="تم التأكد من المعلومات أنها صحيحة, لحفظ تعديلاتك الرجاء الضغط على إرسال التعديلات أعلاه"
+        toastType={errorState.value ? 'error' : 'success'}
         message={
-          errorState
+          errorState.value
             ? errorState.message
-            : 'تم التأكد من المعلومات أنها صحيحة, لحفظ تعديلاتك الرجاء الضغط على إرسال التعديلات أعلاه'
+            : 'تم بنجاح تغيير معلومات المستخدم ، وإعادة التوجيه لتسجيل الدخول ...'
         }
         autoHideDuration={10000}
         isOpen={open}

@@ -23,6 +23,7 @@ const BankingInfoForm = ({ children, onSubmit, initialValue, onDelete, isEdit }:
   const [deleted_banks, setDeletedBank] = useState<any>([]);
   const [tmpBank, setTmpBank] = useState<any>(initialValue);
   const [tmpUpdatedBank, setTmpUpdatedBank] = useState<any>();
+  const [isUpdated, setIsUpdated] = useState(false);
 
   // useEffect(() => {
   //   window.scrollTo(0, 0);
@@ -73,12 +74,14 @@ const BankingInfoForm = ({ children, onSubmit, initialValue, onDelete, isEdit }:
       const newUpdatedBank = tmpBank.filter(
         (item: any, index: number) => item && !item.id && index === bankIndex
       );
+      // console.log({ newUpdatedBank });
       setTmpUpdatedBank(() => {
         const tmp = { ...newUpdatedBank[0] };
         return tmp;
       });
     } else if (!!id) {
       const newUpdatedBank = tmpBank.filter((item: any) => item && item.id === id);
+      // console.log({ newUpdatedBank });
       setTmpUpdatedBank(() => {
         const tmp = { ...newUpdatedBank[0] };
         return tmp;
@@ -88,10 +91,13 @@ const BankingInfoForm = ({ children, onSubmit, initialValue, onDelete, isEdit }:
     }
     setOpen(true);
   };
-
   const onSubmitForm5 = () => {
     let newData = {};
-    const updated_banks = tmpBank.filter((item: any) => item && item.id && item.id.length > 4);
+    // const updated_banks = tmpBank.filter((item: any) => item && item.id && item.id.length > 4);
+    const updated_banks = tmpBank.filter(
+      (item: any, index: number) =>
+        item && item.id && item.id.length > 4 && item !== initialValue[index]
+    );
     const created_banks = tmpBank.filter((item: any) => item && item.id && item.id.length <= 4);
     newData = { ...newData, updated_banks, created_banks, deleted_banks };
     // console.log({ tmpBank, deletedBank, updatedBank, createdBank });

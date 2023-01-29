@@ -21,3 +21,18 @@ query tableInfoUpdateRequest {
   }
 }
 `;
+
+export const getEditRequestProfileList = `
+query MyQuery {
+  edit_requests {
+    created_at
+    status_id
+    id
+    user {
+      client_data {
+        entity
+      }
+    }
+  }
+}
+`;

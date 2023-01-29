@@ -33,7 +33,9 @@ function MainPage() {
     proposal_item_budgets_aggregate,
   } = proposal;
 
-  React.useEffect(() => {}, [proposal]);
+  React.useEffect(() => {
+    console.log({ proposal });
+  }, [proposal]);
   const handleOpenProjectOwnerDetails = () => {
     const submiterId = proposal.user.id;
     const url = location.pathname.split('/').slice(0, 3).join('/');
@@ -274,6 +276,7 @@ function MainPage() {
                 bankAccountName={bank_informations[0]?.bank_account_name}
                 imageUrl={bank_informations[0].card_image.url}
                 size={bank_informations[0].card_image.size}
+                borderColor={bank_informations[0].card_image.border_color ?? 'transparent'}
               />
             </Stack>
           </Stack>

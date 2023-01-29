@@ -190,6 +190,8 @@ const ar = {
       password: {
         message: '',
         required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+        new_password: 'كلمة المرور مطلوبة',
+        confirm_password: 'كلمة المرور غير متطابقة',
       },
       ceo_name: {
         message: '',
@@ -241,6 +243,10 @@ const ar = {
         required: 'صورة البطاقة مطلوبة',
         size: 'حجم الملف يجب أن يكون أقل من 5 ميجا',
         fileExtension: 'يجب أن يكون الملف من نوع pdf, png, jpg, jpeg',
+      },
+      employee_name: {
+        message: '',
+        required: 'اسم الموظف مطلوب',
       },
     },
     cre_proposal: {
@@ -978,6 +984,10 @@ const ar = {
 
   // ACCOUNT_MANAGER PAGES
   account_manager: {
+    button: {
+      approveEdit: 'Approve Edit Request',
+      rejectEdit: 'Reject Edit Request',
+    },
     card: {
       suspended_partners: 'الشركاء  المعلقين آليا',
       active_partners: 'الشركاء المفعلين',
@@ -1005,6 +1015,7 @@ const ar = {
         btn_account_review: 'استعراض الحساب',
         btn_view_partner_projects: 'عرض مشاريع الشريك',
         label_waiting_activation: 'بانتظار التفعيل',
+        btn_view_edit_request: 'عرض طلب تعديل الشريك',
         label_active_account: 'حساب مفعل',
         label_canceled_account: 'حساب ملغى',
         label_pending: 'قيد الانتظار',

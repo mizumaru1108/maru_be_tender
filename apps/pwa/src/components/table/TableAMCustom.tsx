@@ -39,7 +39,7 @@ const TABLE_HEAD = [
 const TABLE_HEAD_EDIT = [
   { id: 'partner_name', label: 'account_manager.table.th.partner_name' },
   { id: 'createdAt', label: 'account_manager.table.th.createdAt' },
-  { id: 'account_edit', label: 'account_manager.table.th.account_status', align: 'left' },
+  { id: 'account_edit', label: 'account_manager.table.th.request_status', align: 'left' },
   { id: 'events', label: 'account_manager.table.th.events', align: 'left' },
   // { id: '', label: '', align: 'center' },
 ];
