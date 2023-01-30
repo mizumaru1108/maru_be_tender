@@ -30,6 +30,7 @@ export default function UploadMultiFile({
   onRemove,
   onRemoveAll,
   helperText,
+  placeholder,
   sx,
   ...other
 }: UploadMultiFileProps) {
@@ -52,14 +53,16 @@ export default function UploadMultiFile({
       >
         <input {...getInputProps()} />
 
-        <BlockContent />
+        <BlockContent placeholder={placeholder} />
       </DropZoneStyle>
 
-      {fileRejections.length > 0 && <RejectionFiles fileRejections={fileRejections} />}
+      {fileRejections && fileRejections.length > 0 && (
+        <RejectionFiles fileRejections={fileRejections} />
+      )}
 
       <MultiFilePreview files={files} showPreview={showPreview} onRemove={onRemove} />
 
-      {files.length > 0 && (
+      {files && files.length > 0 && (
         <Stack direction="row" justifyContent="flex-end" spacing={1.5}>
           <Button color="inherit" size="small" onClick={onRemoveAll}>
             Remove all

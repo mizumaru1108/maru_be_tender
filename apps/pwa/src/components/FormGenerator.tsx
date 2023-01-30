@@ -20,6 +20,7 @@ type FieldType =
   | 'repeaterLabel'
   | 'password'
   | 'checkboxMulti'
+  | 'uploadMulti'
   | 'numberField';
 
 // ----------------------------------------------------------------------

@@ -24,23 +24,24 @@ export default function RejectionFiles({ fileRejections }: Props) {
         bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
       }}
     >
-      {fileRejections.map(({ file, errors }) => {
-        const { path, size } = getFileData(file);
+      {fileRejections &&
+        fileRejections.map(({ file, errors }) => {
+          const { path, size } = getFileData(file);
 
-        return (
-          <Box key={path} sx={{ my: 1 }}>
-            <Typography variant="subtitle2" noWrap>
-              {path} - {size ? fData(size) : ''}
-            </Typography>
+          return (
+            <Box key={path} sx={{ my: 1 }}>
+              <Typography variant="subtitle2" noWrap>
+                {path} - {size ? fData(size) : ''}
+              </Typography>
 
-            {errors.map((error) => (
-              <Box key={error.code} component="li" sx={{ typography: 'caption' }}>
-                {error.message}
-              </Box>
-            ))}
-          </Box>
-        );
-      })}
+              {errors.map((error) => (
+                <Box key={error.code} component="li" sx={{ typography: 'caption' }}>
+                  {error.message}
+                </Box>
+              ))}
+            </Box>
+          );
+        })}
     </Paper>
   );
 }

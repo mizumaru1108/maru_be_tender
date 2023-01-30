@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import RHFSelect from './RHFSelect';
 import RHFDatePicker from './RHFDatePicker';
 import RHFTextField from './RHFTextField';
-import { RHFUploadSingleFile } from './RHFUpload';
+import { RHFUploadMultiFile, RHFUploadSingleFile } from './RHFUpload';
 import RHFRepeater from './RHFRepeater';
 import { FormSingleProps } from 'components/FormGenerator';
 import useLocales from 'hooks/useLocales';
@@ -93,6 +93,14 @@ function BaseField({
       )}
       {type === 'uploadBe' && (
         <RHFUploadSingleFileBe
+          name={name ?? ''}
+          placeholder={translate(placeholder)}
+          disabled={other.disabled}
+          {...other}
+        />
+      )}
+      {type === 'uploadMulti' && (
+        <RHFUploadMultiFile
           name={name ?? ''}
           placeholder={translate(placeholder)}
           disabled={other.disabled}

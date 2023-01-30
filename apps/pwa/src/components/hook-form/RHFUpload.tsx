@@ -15,6 +15,7 @@ import { getFileURL } from 'utils/getFileURL';
 import useAuth from 'hooks/useAuth';
 import axios from 'axios';
 import { TMRA_RAISE_URL } from 'config';
+import { encodeBase64Upload } from '../../utils/getBase64';
 // ----------------------------------------------------------------------
 
 interface Props extends Omit<UploadProps, 'file'> {
@@ -125,11 +126,70 @@ export function RHFUploadSingleFile({ name, placeholder, ...other }: Props) {
 
 interface RHFUploadMultiFileProps extends Omit<UploadMultiFileProps, 'files'> {
   name: string;
+  placeholder?: string;
 }
 
-export function RHFUploadMultiFile({ name, ...other }: RHFUploadMultiFileProps) {
-  const { control } = useFormContext();
+export function RHFUploadMultiFile({ name, placeholder, ...other }: RHFUploadMultiFileProps) {
+  const { control, getValues, setValue } = useFormContext();
 
+  // const handleDrop = useCallback<(acceptedFiles: File[]) => void>(
+  //   (acceptedFiles) => {
+  //     const images = getValues(name);
+  //     const newImages = acceptedFiles.map((file) =>{
+  //       const base64 = await encodeBase64Upload(file);
+  //       const preview = URL.createObjectURL(file);
+  //     }
+  //       // Object.assign(file, {
+  //       //   preview: URL.createObjectURL(file),
+  //       // })
+  //     );
+  //     if (images) {
+  //       setValue(name, [...images, ...newImages]);
+  //     } else {
+  //       setValue(name, [...newImages]);
+  //     }
+  //     // setValue(name, [...getValues(name), ...newImages]);
+  //     // console.log('images=', newImages);
+  //   },
+  //   [setValue]
+  // );
+
+  const handleDrop = async (acceptedFiles: File[]) => {
+    const images = getValues(name);
+    const newImages = await Promise.all(
+      acceptedFiles.map(async (file) => {
+        const base64Data = await encodeBase64Upload(file);
+        const preview = URL.createObjectURL(file);
+        // const fullName = file.name;
+        // const fileExtension = file.type;
+        // const size = file.size;
+        return {
+          ...file,
+          preview,
+          base64Data,
+          fullName: file.name,
+          fileExtension: file.type,
+          size: file.size,
+        };
+      })
+    );
+    if (images) {
+      setValue(name, [...images, ...newImages]);
+    } else {
+      setValue(name, [...newImages]);
+    }
+    // setValue(name, [...getValues(name), ...newImages]);
+    // console.log('images=', newImages);
+  };
+  const handleRemoveAll = () => {
+    setValue(name, []);
+    // console.debug('images=', []);
+  };
+  const handleRemove = (file: File | string) => {
+    const filteredItems = getValues(name)!.filter((_file: any) => _file !== file);
+    setValue(name, filteredItems);
+    // console.debug('images=', filteredItems);
+  };
   return (
     <Controller
       name={name}
@@ -139,8 +199,16 @@ export function RHFUploadMultiFile({ name, ...other }: RHFUploadMultiFileProps) 
 
         return (
           <UploadMultiFile
-            accept={{ 'image/*': [] }}
+            accept={{
+              // 'image/*': [],
+              'image/png': [],
+              'image/jpeg': [],
+              'image/jpg': [],
+              'application/pdf': [],
+            }}
             files={field.value}
+            showPreview
+            placeholder={placeholder ?? ''}
             error={checkError}
             helperText={
               checkError && (
@@ -150,6 +218,9 @@ export function RHFUploadMultiFile({ name, ...other }: RHFUploadMultiFileProps) 
               )
             }
             {...other}
+            onDrop={handleDrop}
+            onRemoveAll={handleRemoveAll}
+            onRemove={handleRemove}
           />
         );
       }}
