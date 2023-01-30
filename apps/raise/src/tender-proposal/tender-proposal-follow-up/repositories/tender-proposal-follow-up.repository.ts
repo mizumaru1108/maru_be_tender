@@ -1,5 +1,6 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Prisma, proposal_log } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
+import { Prisma, proposal_follow_up } from '@prisma/client';
+import { logUtil } from '../../../commons/utils/log-util';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
@@ -13,22 +14,38 @@ export class TenderProposalFollowUpRepository {
 
   async create(
     followUpCreatePayload: Prisma.proposal_follow_upUncheckedCreateInput,
+    fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
   ) {
+    this.logger.log(
+      'log',
+      `Createing new follow up with payload of ${logUtil(
+        followUpCreatePayload,
+      )}`,
+    );
     try {
-      return await this.prismaService.proposal_follow_up.create({
-        data: {
-          ...followUpCreatePayload,
-        },
-        include: {
-          proposal: {
-            include: {
-              user: true,
-              supervisor: true,
-              project_manager: true,
-            },
+      return await this.prismaService.$transaction(async (prisma) => {
+        const followUps = await prisma.proposal_follow_up.create({
+          data: {
+            ...followUpCreatePayload,
           },
-          user: true,
-        },
+          include: {
+            proposal: {
+              include: {
+                user: true,
+                supervisor: true,
+                project_manager: true,
+              },
+            },
+            user: true,
+          },
+        });
+
+        if (fileManagerCreateManyPayload) {
+          await prisma.file_manager.createMany({
+            data: fileManagerCreateManyPayload,
+          });
+        }
+        return followUps;
       });
     } catch (error) {
       console.log('error', error);
@@ -37,6 +54,69 @@ export class TenderProposalFollowUpRepository {
         TenderProposalFollowUpRepository.name,
         'Creating Follow Up Error:',
         `Creating Follow Up!`,
+      );
+      throw theError;
+    }
+  }
+
+  async fetchProposalById(id: string): Promise<proposal_follow_up | null> {
+    try {
+      return await this.prismaService.proposal_follow_up.findUnique({
+        where: {
+          id,
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalFollowUpRepository.name,
+        'finding follow up error details: ',
+        'finding follow up!',
+      );
+      throw theError;
+    }
+  }
+
+  async deleteFollowUps(
+    id: string[],
+    attachmentIds: string[],
+  ): Promise<number> {
+    this.logger.log('log', `deleting followup with id of ${id}`);
+    try {
+      return await this.prismaService.$transaction(async (prisma) => {
+        if (attachmentIds && attachmentIds.length > 0) {
+          await prisma.file_manager.updateMany({
+            where: {
+              id: {
+                in: [...attachmentIds],
+              },
+            },
+            data: {
+              is_deleted: true,
+            },
+          });
+        }
+
+        let deletedData: number = 0;
+        if (id && id.length > 0) {
+          const deletedFollowUp = await prisma.proposal_follow_up.deleteMany({
+            where: {
+              id: {
+                in: [...id],
+              },
+            },
+          });
+          deletedData = deletedFollowUp.count;
+        }
+
+        return deletedData;
+      });
+    } catch (err) {
+      const theError = prismaErrorThrower(
+        err,
+        TenderProposalFollowUpRepository.name,
+        'deleting error details: ',
+        'deleting follow up!',
       );
       throw theError;
     }

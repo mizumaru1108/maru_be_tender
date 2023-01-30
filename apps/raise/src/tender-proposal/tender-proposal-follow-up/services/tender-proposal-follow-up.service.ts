@@ -1,5 +1,10 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Prisma, proposal_follow_up } from '@prisma/client';
 import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
@@ -11,6 +16,9 @@ import { EmailService } from '../../../libs/email/email.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { TwilioService } from '../../../libs/twilio/services/twilio.service';
 import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
+import { isUploadFileJsonb } from '../../../tender-commons/utils/is-upload-file-jsonb';
+import { CreateNewFileHistoryMapper } from '../../../tender-file-manager/mappers/create-new-file-history';
+import { TenderFileManagerService } from '../../../tender-file-manager/services/tender-file-manager.service';
 import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
 import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
@@ -19,6 +27,11 @@ import { CreateProposalFollowUpDto } from '../dtos/requests/create-follow-up.dto
 import { RawCreateFollowUpDto } from '../dtos/responses/raw-create-follow-up.dto';
 import { CreateFollowUpMapper } from '../mappers/create-follow-up.mapper';
 import { TenderProposalFollowUpRepository } from '../repositories/tender-proposal-follow-up.repository';
+import { v4 as uuidv4 } from 'uuid';
+import { generateFileName } from '../../../tender-commons/utils/generate-filename';
+import { DeleteProposalFollowUpDto } from '../dtos/requests/delete-follow-up.dto';
+import { GenerateFollowUpMessageNotif } from '../utils/generate-follow-up-message-notif';
+import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 
 @Injectable()
 export class TenderProposalFollowUpService {
@@ -33,6 +46,7 @@ export class TenderProposalFollowUpService {
     private readonly twilioService: TwilioService,
     private readonly emailService: EmailService,
     private readonly notificationService: TenderNotificationService,
+    private readonly tenderFileManagerService: TenderFileManagerService,
     private readonly tenderProposalRepository: TenderProposalRepository,
   ) {
     const environment = this.configService.get('APP_ENV');
@@ -46,6 +60,7 @@ export class TenderProposalFollowUpService {
   ) {
     const uploadedFilePath: string[] = [];
     let tenderFileFollowUpObj: UploadFilesJsonbDto[] = [];
+
     try {
       const proposal = await this.tenderProposalRepository.fetchProposalById(
         payload.proposal_id,
@@ -78,15 +93,12 @@ export class TenderProposalFollowUpService {
       if (follow_up_attachment && follow_up_attachment.length > 0) {
         for (let i = 0; i < follow_up_attachment.length; i++) {
           /* project attachment */
-          let followUpFileName =
-            follow_up_attachment[i].fullName
-              .replace(/[^a-zA-Z0-9]/g, '')
-              .slice(0, 10) +
-            new Date().getTime() +
-            '.' +
-            follow_up_attachment[i].fileExtension.split('/')[1];
+          let followUpFileName = generateFileName(
+            follow_up_attachment[i].fullName,
+            follow_up_attachment[i].fileExtension as FileMimeTypeEnum,
+          );
 
-          let followUpFilePath = `tmra/${this.appEnv}/organization/tender-management/follow-ups/${proposal_id}/${currentUser.id}/${followUpFileName}`;
+          let followUpFilePath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposal_id}/follow-ups/${currentUser.id}/${followUpFileName}`;
 
           let followUpFileBuffer = Buffer.from(
             follow_up_attachment[i].base64Data.replace(/^data:.*;base64,/, ''),
@@ -132,8 +144,40 @@ export class TenderProposalFollowUpService {
 
       createFollowUpPayload.attachments = tenderFileFollowUpObj as any;
 
+      const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
+        [];
+
+      if (createFollowUpPayload.attachments instanceof Array) {
+        const tmp = createFollowUpPayload.attachments as any[];
+        for (let i = 0; i < tmp.length; i++) {
+          if (isUploadFileJsonb(tmp[i])) {
+            let tmpFileJsonb: UploadFilesJsonbDto = tmp[i];
+            const isExist = await this.tenderFileManagerService.findByUrl(
+              tmpFileJsonb.url,
+            );
+
+            if (!isExist) {
+              const payload: Prisma.file_managerUncheckedCreateInput = {
+                id: uuidv4(),
+                user_id: currentUser.id,
+                url: tmpFileJsonb.url,
+                mimetype: tmpFileJsonb.type,
+                size: tmpFileJsonb.size,
+                column_name: 'attachments',
+                table_name: 'proposal_follow_up',
+                name: tmpFileJsonb.url.split('/').pop() as string,
+              };
+              fileManagerCreateManyPayload.push(payload);
+            }
+          }
+        }
+      } else {
+        delete createFollowUpPayload.attachments;
+      }
+
       const createdFolllowUp = await this.followUpRepository.create(
         createFollowUpPayload,
+        fileManagerCreateManyPayload,
       );
 
       await this.sendChangeStateNotification(createdFolllowUp);
@@ -150,12 +194,58 @@ export class TenderProposalFollowUpService {
     }
   }
 
+  async delete(payload: DeleteProposalFollowUpDto): Promise<number> {
+    try {
+      const { id } = payload;
+      const attachmentIds: string[] = [];
+      const followupIds: string[] = [];
+
+      if (id.length > 0) {
+        for (let i = 0; i < id.length; i++) {
+          const followUp = await this.followUpRepository.fetchProposalById(
+            id[i],
+          );
+          if (!followUp) {
+            throw new NotFoundException(
+              `Follow Up with id of ${id[i]} not found!`,
+            );
+          }
+
+          followupIds.push(followUp.id);
+          if (followUp.attachments) {
+            if (followUp.attachments instanceof Array) {
+              const tmp = followUp.attachments as any[];
+              for (let i = 0; i < tmp.length; i++) {
+                if (isUploadFileJsonb(tmp[i])) {
+                  let tmpFileJsonb: UploadFilesJsonbDto = tmp[i];
+                  const isExist = await this.tenderFileManagerService.findByUrl(
+                    tmpFileJsonb.url,
+                  );
+                  if (isExist) {
+                    attachmentIds.push(isExist.id);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      const deletedCount = await this.followUpRepository.deleteFollowUps(
+        followupIds,
+        attachmentIds,
+      );
+      return deletedCount;
+    } catch (err) {
+      throw err;
+    }
+  }
+
   async sendChangeStateNotification(
     createdFolllowUp: RawCreateFollowUpDto['data'],
   ) {
-    const { proposal, user } = createdFolllowUp;
-    let subject = `Proposal Follow Up Notification`;
-    let content = `There's a New Follow Up on Project ${proposal.project_name} from ${user.employee_name}`;
+    const { subject, content, proposal, user } =
+      GenerateFollowUpMessageNotif(createdFolllowUp);
 
     const baseTemplateContext = {
       projectName: proposal.project_name,

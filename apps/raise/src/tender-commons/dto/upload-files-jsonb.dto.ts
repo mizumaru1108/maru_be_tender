@@ -1,10 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsUrl } from 'class-validator';
 
 export class UploadFilesJsonbDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  @IsUrl()
   url: string;
 
   @ApiProperty()

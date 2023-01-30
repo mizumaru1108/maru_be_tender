@@ -1,4 +1,12 @@
-import { Body, Controller, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpStatus,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import { proposal_follow_up } from '@prisma/client';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
@@ -7,6 +15,7 @@ import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import { CreateProposalFollowUpDto } from '../dtos/requests/create-follow-up.dto';
+import { DeleteProposalFollowUpDto } from '../dtos/requests/delete-follow-up.dto';
 
 import { TenderProposalFollowUpService } from '../services/tender-proposal-follow-up.service';
 
@@ -32,13 +41,28 @@ export class TenderProposalFollowUpController {
   async create(
     @CurrentUser() user: TenderCurrentUser,
     @Body() request: CreateProposalFollowUpDto,
-  ): Promise<BaseResponse<any>> {
+  ): Promise<BaseResponse<proposal_follow_up>> {
     const response = await this.followUpService.create(user, request);
 
     return baseResponseHelper(
       response,
       HttpStatus.OK,
       'Follow Up Successfully Added!',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_ceo')
+  @Patch('delete')
+  async delete(
+    @Body() request: DeleteProposalFollowUpDto,
+  ): Promise<BaseResponse<string>> {
+    const response = await this.followUpService.delete(request);
+
+    return baseResponseHelper(
+      `${response} Follow Up Deleted!`,
+      HttpStatus.OK,
+      'Follow Up Deleted Successfully!',
     );
   }
 }

@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma, proposal, proposal_item_budget } from '@prisma/client';
 import { nanoid } from 'nanoid';
+import { logUtil } from '../../../commons/utils/log-util';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -177,7 +178,7 @@ export class TenderProposalRepository {
 
   async fetchProposalById(proposalId: string): Promise<proposal | null> {
     try {
-      return await this.prismaService.proposal.findFirst({
+      return await this.prismaService.proposal.findUnique({
         where: {
           id: proposalId,
         },
@@ -329,6 +330,18 @@ export class TenderProposalRepository {
 
         if (updatedItemBudgetPayload && updatedItemBudgetPayload.length > 0) {
           for (let i = 0; i < updatedItemBudgetPayload.length; i++) {
+            const itemBudgetToUpdate =
+              await prismaTrans.proposal_item_budget.findUnique({
+                where: {
+                  id: updatedItemBudgetPayload[i].id as string,
+                },
+              });
+            if (!itemBudgetToUpdate) {
+              throw new BadRequestException(
+                'please make sure that item budget that you trying to update is exist!',
+              );
+            }
+
             await prismaTrans.proposal_item_budget.update({
               where: {
                 id: updatedItemBudgetPayload[i].id as string,

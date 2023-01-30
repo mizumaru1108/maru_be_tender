@@ -235,7 +235,7 @@ model proposal_comment {
 }
 
 model proposal_item_budget {
-  id          String    @id(map: "detail_project_budget_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id          String    @id(map: "detail_project_budget_pkey")
   amount      Decimal   @db.Decimal
   explanation String
   clause      String    @db.Char(255)
@@ -301,6 +301,7 @@ model user {
   email_record_email_record_receiver_idTouser              email_record[]          @relation("email_record_receiver_idTouser")
   email_record_email_record_sender_idTouser                email_record[]          @relation("email_record_sender_idTouser")
   employees_permissions_employees_permissionsTouser        employees_permissions[]
+  file_manager                                             file_manager[]
   message_messageTouser                                    message[]
   message_message_receiver_idTouser                        message[]               @relation("message_receiver_idTouser")
   notifications                                            notification[]          @relation("notification_user_idTouser")
@@ -653,4 +654,19 @@ model edit_requests {
   reviewer            user?               @relation("edit_requests_reviewer_idTouser", fields: [reviewer_id], references: [id], onDelete: Cascade, map: "edit_request_logs_reviwer_id_fkey")
   edit_request_status edit_request_status @relation(fields: [status_id], references: [id], onDelete: Cascade, map: "edit_request_logs_status_id_fkey")
   user                user                @relation("edit_requests_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade, map: "edit_request_logs_user_id_fkey")
+}
+
+model file_manager {
+  id          String   @id
+  name        String   @db.VarChar
+  size        Decimal  @db.Decimal
+  mimetype    String   @db.VarChar
+  url         String   @unique @db.VarChar
+  table_name  String   @db.VarChar
+  column_name String   @db.VarChar
+  user_id     String
+  is_deleted  Boolean  @default(false)
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @default(now()) @db.Timestamptz(6)
+  user        user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }

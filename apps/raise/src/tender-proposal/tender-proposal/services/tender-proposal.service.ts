@@ -44,6 +44,7 @@ import { ProposalCreateDto } from '../dtos/requests/proposal-create.dto';
 import { CreateProposalMapper } from '../mappers/create-proposal.mapper';
 import { UpdateProposalMapper } from '../mappers/update-proposal.mapper';
 import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
+import { logUtil } from '../../../commons/utils/log-util';
 
 @Injectable()
 export class TenderProposalService {
@@ -127,7 +128,7 @@ export class TenderProposalService {
           '.' +
           request.project_attachments.fileExtension.split('/')[1];
 
-        projectAttachmentPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}/${projectAttachmentfileName}`;
+        projectAttachmentPath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposalCreatePayload.id}/proposal-files/${userId}/${projectAttachmentfileName}`;
 
         projectAttachmentBuffer = Buffer.from(
           request.project_attachments.base64Data.replace(
@@ -179,7 +180,7 @@ export class TenderProposalService {
           '.' +
           request.letter_ofsupport_req.fileExtension.split('/')[1];
 
-        letterOfSupportPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}/${letterOfSupportfileName}`;
+        letterOfSupportPath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposalCreatePayload.id}/proposal-files/${userId}/${letterOfSupportfileName}`;
 
         letterOfSupportBuffer = Buffer.from(
           request.letter_ofsupport_req.base64Data.replace(
@@ -318,7 +319,7 @@ export class TenderProposalService {
           '.' +
           request.project_attachments.fileExtension.split('/')[1];
 
-        let projectAttachmentPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}/${projectAttachmentfileName}`;
+        let projectAttachmentPath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposal.id}/proposal-files/${userId}/${projectAttachmentfileName}`;
 
         projectAttachmentBuffer = Buffer.from(
           request.project_attachments.base64Data.replace(
@@ -407,7 +408,7 @@ export class TenderProposalService {
           '.' +
           request.letter_ofsupport_req.fileExtension.split('/')[1];
 
-        let letterOfSupportPath = `tmra/${this.appEnv}/organization/tender-management/proposal-files/${userId}/${letterOfSupportfileName}`;
+        let letterOfSupportPath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposal.id}/proposal-files/${userId}/${letterOfSupportfileName}`;
 
         letterOfSupportBuffer = Buffer.from(
           request.letter_ofsupport_req.base64Data.replace(
@@ -594,11 +595,9 @@ export class TenderProposalService {
         request,
       );
       proposalUpdatePayload = {
-        ...proposalUpdatePayload,
         ...mod.proposalUpdatePayload,
       };
       proposalLogCreateInput = {
-        ...proposalLogCreateInput,
         ...mod.proposalLogCreateInput,
       };
     }
@@ -616,26 +615,18 @@ export class TenderProposalService {
       );
 
       proposalUpdatePayload = {
-        ...proposalUpdatePayload,
         ...supervisorResult.proposalUpdatePayload,
       };
+
       proposalLogCreateInput = {
-        ...proposalLogCreateInput,
         ...supervisorResult.proposalLogCreateInput,
       };
 
-      createdItemBudgetPayload = [
-        ...createdItemBudgetPayload,
-        ...supervisorResult.createdItemBudgetPayload,
-      ];
-      updatedItemBudgetPayload = [
-        ...updatedItemBudgetPayload,
-        ...supervisorResult.updatedItemBudgetPayload,
-      ];
-      deletedItemBudgetIds = [
-        ...deletedItemBudgetIds,
-        ...supervisorResult.deletedItemBudgetIds,
-      ];
+      createdItemBudgetPayload = [...supervisorResult.createdItemBudgetPayload];
+
+      updatedItemBudgetPayload = [...supervisorResult.updatedItemBudgetPayload];
+
+      deletedItemBudgetIds = [...supervisorResult.deletedItemBudgetIds];
     }
 
     /* if user is project manager */
@@ -647,11 +638,9 @@ export class TenderProposalService {
         request,
       );
       proposalUpdatePayload = {
-        ...proposalUpdatePayload,
         ...pm.proposalUpdatePayload,
       };
       proposalLogCreateInput = {
-        ...proposalLogCreateInput,
         ...pm.proposalLogCreateInput,
       };
     }
@@ -664,11 +653,9 @@ export class TenderProposalService {
         request,
       );
       proposalUpdatePayload = {
-        ...proposalUpdatePayload,
         ...consultant.proposalUpdatePayload,
       };
       proposalLogCreateInput = {
-        ...proposalLogCreateInput,
         ...consultant.proposalLogCreateInput,
       };
     }
@@ -682,11 +669,9 @@ export class TenderProposalService {
         request,
       );
       proposalUpdatePayload = {
-        ...proposalUpdatePayload,
         ...ceo.proposalUpdatePayload,
       };
       proposalLogCreateInput = {
-        ...proposalLogCreateInput,
         ...ceo.proposalLogCreateInput,
       };
     }
@@ -1218,7 +1203,9 @@ export class TenderProposalService {
     };
     await this.tenderNotificationService.create(clientWebNotifPayload);
 
-    const clientPhone = isExistAndValidPhone(log.data.proposal.user.mobile_number);
+    const clientPhone = isExistAndValidPhone(
+      log.data.proposal.user.mobile_number,
+    );
     if (clientPhone) {
       this.twilioService.sendSMS({
         to: clientPhone,
@@ -1226,7 +1213,9 @@ export class TenderProposalService {
       });
     }
 
-    const reviewerPhone = isExistAndValidPhone(log.data.proposal.user.mobile_number);
+    const reviewerPhone = isExistAndValidPhone(
+      log.data.proposal.user.mobile_number,
+    );
     if (reviewerPhone) {
       this.twilioService.sendSMS({
         to: reviewerPhone,

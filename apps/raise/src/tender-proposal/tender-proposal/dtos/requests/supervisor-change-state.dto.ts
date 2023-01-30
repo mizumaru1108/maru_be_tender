@@ -7,6 +7,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
   Max,
   Min,
   ValidateNested,
@@ -16,6 +17,7 @@ export class ProposalItemBudgetDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  @IsUUID()
   id: string;
 
   @ApiProperty()
@@ -68,7 +70,7 @@ export class SupervisorChangeStatePayload {
   @ApiProperty()
   @IsNumber()
   @Min(1)
-  @Max(999999999999999999)
+  @Max(999999999999999999.99)
   number_of_payments_by_supervisor: number;
 
   @ApiProperty()
