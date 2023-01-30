@@ -16,14 +16,6 @@ import {
 import axiosInstance from '../../../utils/axios';
 import ActionsBoxUserEdit from './ActionsBoxUserEdit';
 import UserInfoForm from './forms/UserInfoForm';
-const taps = [
-  'register_first_tap',
-  'register_second_tap',
-  'register_third_tap',
-  'register_fourth_tap',
-  'register_fifth_tap',
-];
-
 function ClientProfileEditForm() {
   const { user, activeRole, logout } = useAuth();
   const id = user?.id;
@@ -38,7 +30,7 @@ function ClientProfileEditForm() {
       current_password: '',
       new_password: '',
       confirm_password: '',
-      entity_mobile: '',
+      mobile_number: '',
       employee_name: '',
     },
   };
@@ -54,15 +46,14 @@ function ClientProfileEditForm() {
 
   useEffect(() => {
     if (data?.user_by_pk) {
-      const { email, client_data, employee_name, password } = data?.user_by_pk;
-      const { entity_mobile } = client_data;
+      const { email, mobile_number, employee_name, password } = data?.user_by_pk;
       // console.log('data:', data?.user_by_pk);1
       setProfileState((prevState: any) => ({
         ...prevState,
         form1: {
           ...prevState.form1,
           email,
-          entity_mobile,
+          mobile_number,
           employee_name,
           current_password: password,
         },
@@ -99,6 +90,7 @@ function ClientProfileEditForm() {
         }, 3000);
       }
     } catch (err) {
+      setLoading(false);
       setOpen(true);
       setErrorState({
         value: true,

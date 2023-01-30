@@ -985,8 +985,8 @@ const ar = {
   // ACCOUNT_MANAGER PAGES
   account_manager: {
     button: {
-      approveEdit: 'Approve Edit Request',
-      rejectEdit: 'Reject Edit Request',
+      approveEdit: 'تمت الموافقة على طلب التعديل',
+      rejectEdit: 'تم رفض طلب التعديل',
     },
     card: {
       suspended_partners: 'الشركاء  المعلقين آليا',

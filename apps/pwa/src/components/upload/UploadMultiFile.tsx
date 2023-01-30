@@ -67,9 +67,9 @@ export default function UploadMultiFile({
           <Button color="inherit" size="small" onClick={onRemoveAll}>
             Remove all
           </Button>
-          <Button size="small" variant="contained" onClick={onUpload}>
+          {/* <Button size="small" variant="contained" onClick={onUpload}>
             Upload files
-          </Button>
+          </Button> */}
         </Stack>
       )}
 

@@ -53,7 +53,8 @@ export default function NonClientProfile() {
         <ContentStyle>
           <Stack direction="row" justifyContent="space-between">
             <Stack direction="column" sx={{ mb: '5px' }}>
-              <Typography variant="h5">{user?.fullName ?? 'N/A'}</Typography>
+              {user?.fullName && <Typography variant="h5">{user?.fullName}</Typography>}
+
               <Typography variant="h6" sx={{ color: '#1E1E1E' }}>
                 {role_url_map[`${role}`].toUpperCase() ?? 'N/A'} - N/A
               </Typography>
@@ -131,10 +132,10 @@ export default function NonClientProfile() {
                   </Typography>
                   <Typography sx={{ mb: '15px' }}>{data.profile.mobile_number || 'N/A'}</Typography>
                 </Stack>
-                <Stack direction="column">
+                {/* <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>كلمة السر</Typography>
                   <Typography sx={{ mb: '15px' }}>***********</Typography>
-                </Stack>
+                </Stack> */}
               </Stack>
             </Grid>
           </Grid>

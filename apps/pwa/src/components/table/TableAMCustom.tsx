@@ -200,9 +200,7 @@ export default function TableAMCustom({
                   if (editRequest) {
                     if (query === '') {
                       return v;
-                    } else if (
-                      v.user?.client_data?.entity!.toLowerCase().includes(query.toLowerCase())
-                    ) {
+                    } else if (v.partner_name?.toLowerCase().includes(query.toLowerCase())) {
                       return v;
                     }
                   } else {

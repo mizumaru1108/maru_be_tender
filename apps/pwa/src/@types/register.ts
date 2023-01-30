@@ -48,7 +48,7 @@ export type ConnectingValuesProps = {
   // confirm_password: string;
 };
 export type UserInfoFormProps = {
-  entity_mobile: string;
+  mobile_number: string;
   email: string;
   current_password: string;
   new_password?: string;

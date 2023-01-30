@@ -22,7 +22,7 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
       .required(translate('errors.register.email.required'))
       .email(translate('errors.register.email.email')),
     employee_name: Yup.string().required(translate('errors.register.employee_name.required')),
-    entity_mobile: Yup.string()
+    mobile_number: Yup.string()
       .required(translate('errors.register.entity_mobile.required'))
       .test('len', translate('errors.register.entity_mobile.length'), (val) => {
         if (val === undefined) {
@@ -37,7 +37,7 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
     email: Yup.string()
       .required(translate('errors.register.email.required'))
       .email(translate('errors.register.email.email')),
-    entity_mobile: Yup.string()
+    mobile_number: Yup.string()
       .required(translate('errors.register.entity_mobile.required'))
       .test('len', translate('errors.register.entity_mobile.length'), (val) => {
         if (val === undefined) {
@@ -69,12 +69,12 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
 
   const onSubmitForm = async (data: UserInfoFormProps) => {
     let newPayload = { ...data };
-    let newEntityMobile = getValues('entity_mobile');
+    let newEntityMobile = getValues('mobile_number');
 
     newEntityMobile.substring(0, 4) !== '+966'
-      ? (newEntityMobile = '+966'.concat(`${getValues('entity_mobile')}`))
-      : (newEntityMobile = getValues('entity_mobile'));
-    newPayload = { ...newPayload, entity_mobile: newEntityMobile };
+      ? (newEntityMobile = '+966'.concat(`${getValues('mobile_number')}`))
+      : (newEntityMobile = getValues('mobile_number'));
+    newPayload = { ...newPayload, mobile_number: newEntityMobile };
 
     const filteredObj = Object.fromEntries(
       Object.entries(newPayload).filter(([key, value]) => value)
@@ -86,8 +86,8 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
   useEffect(() => {
     window.scrollTo(0, 0);
     let newValues = { ...defaultValues };
-    const newEntityPhone = defaultValues.entity_mobile?.replace('+966', '');
-    newValues = { ...newValues, entity_mobile: newEntityPhone };
+    const newEntityPhone = defaultValues.mobile_number?.replace('+966', '');
+    newValues = { ...newValues, mobile_number: newEntityPhone };
     // console.log({ newValues });
 
     reset(newValues);
@@ -154,7 +154,7 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFTextField
-            name="entity_mobile"
+            name="mobile_number"
             label={translate('register_form2.mobile_number.label')}
             // placeholder={translate('register_form2.mobile_number.placeholder')}
             placeholder="xxx-xxx-xxx"

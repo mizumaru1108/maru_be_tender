@@ -55,6 +55,7 @@ export default function RHFTextField({ name, ...other }: Props) {
           helperText={error?.message}
           onChange={(e) => {
             const newDial = e.target.value.match(/\+?\d+/g)?.[0] ?? '';
+            const newNumber = e.target.value.match(/\+?\d+/g)?.[0].slice(0, 9) ?? '';
             // const newNumber = e.target.value.match(/\d+/g)?.[1] ?? '';
             const inputValue = e.target.value;
             let cleanedValue = inputValue.replace(/\s+/g, '').replace(/\D/g, '');
@@ -73,6 +74,8 @@ export default function RHFTextField({ name, ...other }: Props) {
                 ? newDial
                 : ['bank_account_number'].includes(name)
                 ? cleanedValue
+                : ['mobile_number'].includes(name)
+                ? newNumber
                 : e.target.value
             );
           }}
@@ -84,6 +87,7 @@ export default function RHFTextField({ name, ...other }: Props) {
               'ceo_mobile',
               'chairman_mobile',
               'pm_mobile',
+              'mobile_number',
             ].includes(name) ? (
               <InputAdornment
                 position="start"

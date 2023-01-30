@@ -54,7 +54,7 @@ function ClientProfile() {
         headers: { 'x-hasura-role': activeRole! },
       });
       // console.log({ rest });
-      console.log('res: ', rest);
+      // console.log('res: ', rest);
       if (!!rest) {
         setDisabelEdit((prev: any) => ({
           ...prev,
@@ -108,7 +108,7 @@ function ClientProfile() {
       aggregate: { count: completed_projects },
     },
   } = data!;
-  console.log({ disabelEdit });
+  // console.log({ disabelEdit });
 
   return (
     <Page title="My Profile">

@@ -39,11 +39,10 @@ export const gettingUserDataForEdit = `query MyQuery($id: String = "") {
 }
 `;
 
-export const gettingUseInfoForEdit = `query MyQuery($id: String = "") {
+export const gettingUseInfoForEdit = `
+query MyQuery($id: String = "") {
   user_by_pk(id: $id) {
-    client_data {
-      entity_mobile
-    }
+    mobile_number
     email
     employee_name
   }
