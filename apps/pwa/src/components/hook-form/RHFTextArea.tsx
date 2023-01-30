@@ -27,10 +27,13 @@ export default function RHFTextArea({ name, ...other }: Props) {
           rows={3}
           value={typeof field.value === 'number' && field.value === 0 ? '' : field.value}
           error={!!error}
-          helperText={
-            <Typography sx={{ backgroundColor: 'transparent' }}>{error?.message}</Typography>
-          }
+          helperText={error?.message}
           {...other}
+          sx={{
+            '& > .MuiFormHelperText-root': {
+              backgroundColor: 'white',
+            },
+          }}
         />
       )}
     />

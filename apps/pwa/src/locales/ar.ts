@@ -1416,6 +1416,7 @@ const ar = {
     no_notifications: 'لا إشعارات',
     proposal_accepted: 'إخطار قبول الاقتراح',
     proposal_rejected: 'الإخطار برفض الاقتراح',
+    proposal_item_budget_empty: 'يجب عليك ملء ميزانية المشروع أولا',
     proposal_reviewed: 'تم استلام الإخطار بالاقتراح',
     header: 'الإشعارات',
     tender_appointment: 'موعد العطاء الجديد',

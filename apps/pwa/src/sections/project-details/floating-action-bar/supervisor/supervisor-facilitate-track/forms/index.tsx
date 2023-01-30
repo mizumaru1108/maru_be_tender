@@ -77,57 +77,63 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
 
   const handleSubmit = async (data: any) => {
     const { notes, ...restStep1 } = step1;
-    accept({
-      proposal_id,
-      log: {
-        id: nanoid(),
-        proposal_id,
-        reviewer_id: user?.id,
-        action: 'accept',
-        message: 'تم قبول المشروع من قبل مشرف المشاريع ',
-        notes: notes,
-        user_role: 'PROJECT_SUPERVISOR',
-        state: 'PROJECT_SUPERVISOR',
-      },
-      new_values: {
-        inner_status: 'ACCEPTED_BY_SUPERVISOR',
-        outter_status: 'ONGOING',
-        state: 'PROJECT_MANAGER',
-        ...restStep1,
-        chairman_of_board_of_directors: step2.chairman_of_board_of_directors,
-        been_supported_before: step2.been_supported_before,
-        most_clents_projects: step2.most_clents_projects,
-        added_value: step3.added_value,
-        reasons_to_accept: step3.reasons_to_accept,
-        target_group_num: step3.target_group_num,
-        target_group_type: step3.target_group_type,
-        target_group_age: step3.target_group_age,
-        been_made_before: step3.been_made_before,
-        remote_or_insite: step3.remote_or_insite,
-      },
-      recommended_support: [
-        ...data.recommended_support.map((item: any) => ({
-          proposal_id,
-          clause: item.clause,
-          amount: item.amount,
-          explanation: item.explanation,
-          id: nanoid(),
-        })),
-      ],
-    }).then((res) => {
-      if (res.error) {
-        enqueueSnackbar(res.error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-        });
-      } else {
-        enqueueSnackbar(translate('proposal_accept'), {
-          variant: 'success',
-        });
-        navigate(`/project-supervisor/dashboard/app`);
-      }
+    console.log({
+      notes,
+      ...restStep1,
+      data,
     });
+
+    // accept({
+    //   proposal_id,
+    //   log: {
+    //     id: nanoid(),
+    //     proposal_id,
+    //     reviewer_id: user?.id,
+    //     action: 'accept',
+    //     message: 'تم قبول المشروع من قبل مشرف المشاريع ',
+    //     notes: notes,
+    //     user_role: 'PROJECT_SUPERVISOR',
+    //     state: 'PROJECT_SUPERVISOR',
+    //   },
+    //   new_values: {
+    //     inner_status: 'ACCEPTED_BY_SUPERVISOR',
+    //     outter_status: 'ONGOING',
+    //     state: 'PROJECT_MANAGER',
+    //     ...restStep1,
+    //     chairman_of_board_of_directors: step2.chairman_of_board_of_directors,
+    //     been_supported_before: step2.been_supported_before,
+    //     most_clents_projects: step2.most_clents_projects,
+    //     added_value: step3.added_value,
+    //     reasons_to_accept: step3.reasons_to_accept,
+    //     target_group_num: step3.target_group_num,
+    //     target_group_type: step3.target_group_type,
+    //     target_group_age: step3.target_group_age,
+    //     been_made_before: step3.been_made_before,
+    //     remote_or_insite: step3.remote_or_insite,
+    //   },
+    //   recommended_support: [
+    //     ...data.recommended_support.map((item: any) => ({
+    //       proposal_id,
+    //       clause: item.clause,
+    //       amount: item.amount,
+    //       explanation: item.explanation,
+    //       id: nanoid(),
+    //     })),
+    //   ],
+    // }).then((res) => {
+    //   if (res.error) {
+    //     enqueueSnackbar(res.error.message, {
+    //       variant: 'error',
+    //       preventDuplicate: true,
+    //       autoHideDuration: 3000,
+    //     });
+    //   } else {
+    //     enqueueSnackbar(translate('proposal_accept'), {
+    //       variant: 'success',
+    //     });
+    //     navigate(`/project-supervisor/dashboard/app`);
+    //   }
+    // });
   };
 
   return (

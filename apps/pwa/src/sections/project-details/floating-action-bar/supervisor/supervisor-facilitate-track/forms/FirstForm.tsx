@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Grid } from '@mui/material';
-import { FormProvider } from 'components/hook-form';
+import { Grid, MenuItem } from '@mui/material';
+import { FormProvider, RHFSelect } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import BaseField from 'components/hook-form/BaseField';
@@ -40,7 +40,9 @@ function FirstForm({ children, onSubmit }: any) {
   const { handleSubmit, watch, setValue, resetField } = methods;
 
   const onSubmitForm = async (data: SupervisorStep1) => {
-    onSubmit(data);
+    console.log('data', data);
+
+    // onSubmit(data);
   };
 
   const vat = watch('vat');
@@ -57,43 +59,27 @@ function FirstForm({ children, onSubmit }: any) {
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
         <Grid item md={6} xs={12}>
-          <BaseField
-            type="select"
+          <RHFSelect
             name="clause"
+            size="small"
             label="البند حسب التصنيف*"
             placeholder="الرجاء اختيار البند"
-            children={
-              <>
-                <option value="مشروع يخص المساجد" style={{ backgroundColor: '#fff' }}>
-                  مشروع يخص المساجد
-                </option>
-                <option value="مشروع يخص المنح الميسر" style={{ backgroundColor: '#fff' }}>
-                  مشروع يخص المنح الميسر
-                </option>
-                <option value="مشروع يخص المبادرات" style={{ backgroundColor: '#fff' }}>
-                  مشروع يخص المبادرات
-                </option>
-                <option value="مشروع يخص تعميدات" style={{ backgroundColor: '#fff' }}>
-                  مشروع يخص تعميدات
-                </option>
-              </>
-            }
-          />
+          >
+            <MenuItem value="مشروع يخص المساجد">مشروع يخص المساجد</MenuItem>
+            <MenuItem value="مشروع يخص المنح الميسر">مشروع يخص المنح الميسر</MenuItem>
+            <MenuItem value="مشروع يخص المبادرات">مشروع يخص المبادرات</MenuItem>
+            <MenuItem value="مشروع يخص تعميدات">مشروع يخص تعميدات</MenuItem>
+          </RHFSelect>
         </Grid>
         <Grid item md={6} xs={12}>
-          <BaseField
-            type="select"
+          <RHFSelect
             name="clasification_field"
             label="مجال التصنيف*"
             placeholder="الرجاء اختيار مجال التصنيف"
-            children={
-              <>
-                <option value="test" style={{ backgroundColor: '#fff' }}>
-                  عام
-                </option>
-              </>
-            }
-          />
+            size="small"
+          >
+            <MenuItem value="عام">عام</MenuItem>
+          </RHFSelect>
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
@@ -175,22 +161,13 @@ function FirstForm({ children, onSubmit }: any) {
           </Grid>
         )}
         <Grid item md={6} xs={12}>
-          {support_type === 'true' ? (
-            <BaseField
-              type="textField"
-              name="fsupport_by_supervisor"
-              label="مبلغ الدعم*"
-              placeholder="مبلغ الدعم"
-            />
-          ) : (
-            <BaseField
-              type="textField"
-              name="support_amount"
-              label="مبلغ الدعم*"
-              placeholder="مبلغ الدعم"
-              disabled
-            />
-          )}
+          <BaseField
+            type="textField"
+            name="fsupport_by_supervisor"
+            label="مبلغ الدعم*"
+            placeholder="مبلغ الدعم"
+            disabled={support_type === 'true' ? false : true}
+          />
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
@@ -201,39 +178,32 @@ function FirstForm({ children, onSubmit }: any) {
           />
         </Grid>
         <Grid item md={6} xs={12}>
-          <BaseField
-            type="select"
+          <RHFSelect
             name="accreditation_type_id"
             label="نوع الاعتماد*"
             placeholder="الرجاء اختيار نوع الاعتماد"
-            children={
-              <>
-                <option value="PLAN" style={{ backgroundColor: '#fff' }}>
-                  خطة
-                </option>
-                <option value="Incoming" style={{ backgroundColor: '#fff' }}>
-                  وارد
-                </option>
-              </>
-            }
-          />
+            size="small"
+          >
+            <MenuItem value="خطة">خطة</MenuItem>
+            <MenuItem value="وارد">وارد</MenuItem>
+          </RHFSelect>
         </Grid>
         <Grid item md={6} xs={12}>
-          <BaseField
+          <RHFSelect
             type="select"
+            size="small"
             name="support_goal_id"
             placeholder="الرجاء اختيار أهداف الدعم"
             label="اهداف الدعم*"
-            children={_supportGoals[`${proposal.project_track as keyof typeof _supportGoals}`].map(
+          >
+            {_supportGoals[`${proposal.project_track as keyof typeof _supportGoals}`].map(
               (item) => (
-                <>
-                  <option value={item.value} style={{ backgroundColor: '#fff' }}>
-                    {item.title}
-                  </option>
-                </>
+                <MenuItem value={item.value} key={item.value}>
+                  {item.title}
+                </MenuItem>
               )
             )}
-          />
+          </RHFSelect>
         </Grid>
         <Grid item md={12} xs={12}>
           <BaseField

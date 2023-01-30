@@ -34,6 +34,7 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
             'clasification_field',
             'support_goal_id',
             'reject_reason',
+            'accreditation_type_id',
           ].includes(name) ? (
             <TextField
               {...field}

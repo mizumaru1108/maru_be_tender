@@ -27,10 +27,12 @@ import { useQuery } from 'urql';
 import uuidv4 from 'utils/uuidv4';
 import { getOneProposal } from 'queries/commons/getOneProposal';
 import { useParams } from 'react-router';
+import { useSnackbar } from 'notistack';
 
 function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType) {
   const { translate } = useLocales();
   // const { proposal } = useSelector((state) => state.proposal);
+  const { enqueueSnackbar } = useSnackbar();
   const { id: pid } = useParams();
   const [basedBudget, setBasedBudget] = useState<
     | { id?: string; amount?: number | undefined | null; clause?: string; explanation?: string }[]
@@ -92,17 +94,17 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
     does_an_agreement: undefined,
     // fsupport_by_supervisor: undefined,
     // number_of_payments_by_supervisor: undefined,
-    // detail_project_budgets: [
-    //   {
-    //     clause: '',
-    //     explanation: '',
-    //     amount: 0,
-    //   },
-    // ],
+    detail_project_budgets: [
+      {
+        clause: '',
+        explanation: '',
+        amount: undefined,
+      },
+    ],
     notes: '',
     support_outputs: '',
     vat: undefined,
-    vat_percentage: undefined,
+    vat_percentage: 0,
     inclu_or_exclu: undefined,
     support_goal_id: '',
   };
@@ -122,58 +124,75 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
     control,
   } = methods;
 
-  const { fields, append, remove } = useFieldArray({
+  const vat = watch('vat');
+  const support_type = watch('support_type');
+
+  const {
+    fields: itemBudgets,
+    append,
+    remove,
+  } = useFieldArray({
     control,
     name: 'detail_project_budgets',
   });
 
-  const vat = watch('vat');
-  const support_type = watch('support_type');
-  const detail_proposal_budget = watch('detail_project_budgets');
-
-  const handleDeleteBudgets = (id: string, i: number) => {
-    const deleteValues = fields.filter((v) => v.id === id);
-    const newFilterItems = fields.filter((v) => v.id !== id);
-
-    remove(i);
-    setTempDeletedBudget([...tempDeletedBudget, ...deleteValues]);
-    setValue('detail_project_budgets', newFilterItems);
-  };
-
   const onSubmitForm = async (data: ProposalApprovePayloadSupervisor) => {
-    const created_proposal_budget = detail_proposal_budget.filter(
-      (item) => !basedBudget.find((i) => i.id === item.id)
-    );
-    const updated_proposal_budget = data.detail_project_budgets;
-    const deleted_proposal_budget = tempDeletedBudget;
+    if (data.detail_project_budgets.length) {
+      const created_proposal_budget = data.detail_project_budgets
+        .filter((item) => !basedBudget.find((i) => i.id === item.id))
+        .map((el) => ({
+          ...el,
+          amount: Number(el.amount),
+        }));
 
-    const { length } = updated_proposal_budget;
-    const totalFSupport = updated_proposal_budget
-      .map((el) => Number(el.amount))
-      .reduce((acc, curr) => acc + (curr || 0), 0);
+      const updated_proposal_budget = data.detail_project_budgets
+        .filter((item) => basedBudget.find((i) => i.id === item.id))
+        .map((el) => ({
+          ...el,
+          amount: Number(el.amount),
+        }));
 
-    delete data.detail_project_budgets;
+      const deleted_proposal_budget = tempDeletedBudget;
 
-    const newData = {
-      fsupport_by_supervisor: totalFSupport,
-      number_of_payments_by_supervisor: length,
-      created_proposal_budget,
-      updated_proposal_budget,
-      deleted_proposal_budget,
-      ...data,
-    };
+      const { length } = data.detail_project_budgets;
+      const totalFSupport = data.detail_project_budgets
+        .map((el) => Number(el.amount))
+        .reduce((acc, curr) => acc + (curr || 0), 0);
 
-    onSubmit(newData);
+      delete data.detail_project_budgets;
+
+      const newData = {
+        fsupport_by_supervisor: totalFSupport,
+        number_of_payments_by_supervisor: length,
+        created_proposal_budget,
+        updated_proposal_budget,
+        deleted_proposal_budget,
+        ...data,
+      };
+
+      // console.log('newData', newData);
+
+      onSubmit(newData);
+    } else {
+      enqueueSnackbar(translate('notification.proposal_item_budget_empty'), {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+
+      resetField('detail_project_budgets');
+    }
   };
 
   useEffect(() => {
-    if (!fetchingProposal && proposalData) {
-      setValue('detail_project_budgets', proposalData.proposal.proposal_item_budgets);
+    if (!fetchingProposal && proposalData && proposalData.proposal.proposal_item_budgets.length) {
       setBasedBudget(proposalData.proposal.proposal_item_budgets);
+      setValue('detail_project_budgets', proposalData.proposal.proposal_item_budgets);
     } else {
       resetField('detail_project_budgets');
     }
-  }, [proposalData, fetchingProposal, resetField, setValue]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [proposalData, fetchingProposal, setValue, resetField]);
 
   if (errorProposal) return <>Something when wrong on get proposal details</>;
 
@@ -214,7 +233,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                     placeholder="الرجاء اختيار مجال التصنيف"
                     size="small"
                   >
-                    <MenuItem value="test">Test</MenuItem>
+                    <MenuItem value="عام">عام</MenuItem>
                   </RHFSelect>
                 </Grid>
                 <Grid item md={6} xs={12}>
@@ -337,8 +356,8 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                 </Grid> */}
                 <Grid item xs={12}>
                   <Typography sx={{ mb: 2 }}>الموازنة التفصيلية للمشروع</Typography>
-                  {fields.map((v, i) => (
-                    <Grid container key={i} spacing={2} sx={{ mb: 2 }}>
+                  {itemBudgets.map((v, i) => (
+                    <Grid container key={v.id} spacing={2} sx={{ mb: 2 }}>
                       <Grid item xs={3}>
                         <Controller
                           name={`detail_project_budgets[${i}].clause`}
@@ -422,7 +441,22 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                         <IconButton
                           color="error"
                           variant="contained"
-                          onClick={() => handleDeleteBudgets(v.id, i)}
+                          onClick={() => {
+                            const idGetValues = getValues(`detail_project_budgets.${i}.id`);
+                            const deleteValues = basedBudget.filter(
+                              (item) => item.id === idGetValues
+                            );
+
+                            const existingData = tempDeletedBudget.find(
+                              (item) => item.id === idGetValues
+                            );
+
+                            if (!existingData) {
+                              setTempDeletedBudget([...tempDeletedBudget, ...deleteValues]);
+                            }
+
+                            remove(i);
+                          }}
                           disabled={
                             support_type === 'false' || support_type === undefined ? true : false
                           }
@@ -440,7 +474,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                     size="medium"
                     onClick={async () => {
                       append({
-                        amount: 0,
+                        amount: undefined,
                         clause: '',
                         explanation: '',
                         id: uuidv4(),

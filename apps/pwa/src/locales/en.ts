@@ -1373,6 +1373,7 @@ const en = {
     no_notifications: 'No Notifications',
     proposal_accepted: 'Proposal Accepted Notifcation',
     proposal_rejected: 'Proposal Rejected Notifcation',
+    proposal_item_budget_empty: 'You must fill project budget first!',
     proposal_reviewed: 'Proposal Reviewed Notifcation',
     header: 'Notifications',
     tender_appointment: 'Tender New Appointment',
