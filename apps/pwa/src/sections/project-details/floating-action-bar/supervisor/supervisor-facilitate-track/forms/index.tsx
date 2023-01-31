@@ -2,9 +2,11 @@ import { StepLabel, Stepper, Step } from '@mui/material';
 import { ModalDialogStepper } from 'components/modal-dialog/ModalDialogStepper';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
+import axiosInstance from 'utils/axios';
 import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import { updateProposalByFacilitatedSupervisor } from 'queries/project-supervisor/updateProposalByFacilitatedSupervisor';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import {
   setStepFive,
@@ -22,6 +24,7 @@ import FirstForm from './FirstForm';
 import ForthFrom from './ForthFrom';
 import SecondForm from './SecondForm';
 import ThirdForm from './ThirdForm';
+//
 
 const steps = [
   'معلومات الدعم',
@@ -36,7 +39,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
     (state) => state.supervisorAcceptingForm
   );
 
-  const { user } = useAuth();
+  const { user, activeRole } = useAuth();
 
   const { id: proposal_id } = useParams();
 
@@ -50,20 +53,30 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
 
   const dispatch = useDispatch();
 
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
   const handleSubmitFirstForm = (data: any) => {
+    setIsSubmitting(true);
     dispatch(setStepOne(data));
+    setIsSubmitting(false);
   };
 
   const handleSubmitSecondForm = (data: any) => {
+    setIsSubmitting(true);
     dispatch(setStepTwo(data));
+    setIsSubmitting(false);
   };
 
   const handleSubmitThirdForm = (data: any) => {
+    setIsSubmitting(true);
     dispatch(setStepThree(data));
+    setIsSubmitting(false);
   };
 
   const handleSubmitForthForm = (data: any) => {
+    setIsSubmitting(true);
     dispatch(setStepFour(data));
+    setIsSubmitting(false);
   };
 
   const handleSubmitFifthForm = async (data: any) => {
@@ -77,11 +90,90 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
 
   const handleSubmit = async (data: any) => {
     const { notes, ...restStep1 } = step1;
-    console.log({
-      notes,
-      ...restStep1,
-      data,
-    });
+
+    setIsSubmitting(true);
+
+    try {
+      const lenghtOfNumberOfPayments = step4.proposal_item_budgets.length;
+      const totalFSupport = step4.proposal_item_budgets
+        .map((el) => Number(el.amount))
+        .reduce((acc, curr) => acc + (curr || 0), 0);
+
+      const payload = {
+        proposal_id,
+        action: 'accept',
+        message: 'تم قبول المشروع من قبل مشرف المشاريع ',
+        notes,
+        supervisor_payload: {
+          ...restStep1,
+          fsupport_by_supervisor: totalFSupport,
+          number_of_payments_by_supervisor: lenghtOfNumberOfPayments,
+          // split 1
+          chairman_of_board_of_directors: step2.chairman_of_board_of_directors,
+          been_supported_before: step2.been_supported_before,
+          most_clents_projects: step2.most_clents_projects,
+          added_value: step3.added_value,
+          reasons_to_accept: step3.reasons_to_accept,
+          target_group_num: step3.target_group_num,
+          target_group_type: step3.target_group_type,
+          target_group_age: step3.target_group_age,
+          been_made_before: step3.been_made_before,
+          remote_or_insite: step3.remote_or_insite,
+          // item budgets
+          created_proposal_budget: step4.created_proposal_budget,
+          updated_proposal_budget: step4.updated_proposal_budget,
+          deleted_proposal_budget: step4.deleted_proposal_budget,
+          // recommended_support
+          created_recommended_support: data.created_recommended_support,
+          updated_recommended_support: data.updated_recommended_support,
+          deleted_recommended_support: data.deleted_recommended_support,
+        },
+      };
+
+      console.log('acceptSupervisorGrant', payload);
+
+      await axiosInstance
+        .patch('/tender-proposal/change-state', payload, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            enqueueSnackbar(translate('proposal_approved'), {
+              variant: 'success',
+            });
+          }
+
+          setIsSubmitting(false);
+          navigate(`/project-supervisor/dashboard/app`);
+        })
+        .catch((err) => {
+          if (typeof err.message === 'object') {
+            err.message.forEach((el: any) => {
+              enqueueSnackbar(el, {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            });
+          } else {
+            enqueueSnackbar(err.message, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
+          }
+
+          setIsSubmitting(false);
+        });
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+
+      setIsSubmitting(false);
+    }
 
     // accept({
     //   proposal_id,
@@ -156,7 +248,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
           {activeStep === 0 && (
             <FirstForm onSubmit={handleSubmitFirstForm}>
               <ActionBox
-                isLoading={isLoading}
+                isLoading={isSubmitting}
                 onClose={onClose}
                 step={activeStep}
                 onBack={onBack}
@@ -166,7 +258,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
           {activeStep === 1 && (
             <SecondForm onSubmit={handleSubmitSecondForm}>
               <ActionBox
-                isLoading={isLoading}
+                isLoading={isSubmitting}
                 onClose={onClose}
                 step={activeStep}
                 onBack={onBack}
@@ -176,7 +268,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
           {activeStep === 2 && (
             <ThirdForm onSubmit={handleSubmitThirdForm}>
               <ActionBox
-                isLoading={isLoading}
+                isLoading={isSubmitting}
                 onClose={onClose}
                 step={activeStep}
                 onBack={onBack}
@@ -186,7 +278,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
           {activeStep === 3 && (
             <ForthFrom onSubmit={handleSubmitForthForm}>
               <ActionBox
-                isLoading={isLoading}
+                isLoading={isSubmitting}
                 onClose={onClose}
                 step={activeStep}
                 onBack={onBack}
@@ -196,7 +288,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
           {activeStep === 4 && (
             <FifthForm onSubmit={handleSubmitFifthForm}>
               <ActionBox
-                isLoading={isLoading}
+                isLoading={isSubmitting}
                 onClose={onClose}
                 step={activeStep}
                 onBack={onBack}
@@ -206,7 +298,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
         </>
       }
       onClose={onClose}
-      styleContent={{ padding: '1em', backgroundColor: '#fff' }}
+      styleContent={{ padding: '2em', backgroundColor: '#fff' }}
     />
   );
 }

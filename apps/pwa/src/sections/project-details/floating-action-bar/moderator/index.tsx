@@ -105,6 +105,7 @@ function ModeratorActionBar() {
         },
         message: 'تم رفض المشروع من قبل مسوؤل الفرز',
         notes: data.notes,
+        reject_reason: data.reject_reason,
       };
 
       await axiosInstance

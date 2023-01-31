@@ -79,10 +79,10 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
     ),
     notes: Yup.string(),
     support_outputs: Yup.string().required('support_outputs is required!'),
-    vat: Yup.boolean(),
-    support_goal_id: Yup.string().required('Procedures is required!'),
-    vat_percentage: Yup.number(),
+    vat: Yup.boolean().required('vat is required!'),
+    vat_percentage: Yup.number().integer().min(1),
     inclu_or_exclu: Yup.boolean(),
+    support_goal_id: Yup.string().required('Procedures is required!'),
   });
 
   const defaultValues = {
@@ -169,8 +169,6 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
         deleted_proposal_budget,
         ...data,
       };
-
-      // console.log('newData', newData);
 
       onSubmit(newData);
     } else {
@@ -316,7 +314,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                       name="vat_percentage"
                       label="النسبة المئوية من الضريبة"
                       placeholder="النسبة المئوية من الضريبة"
-                      InputProps={{ inputProps: { min: 0 } }}
+                      InputProps={{ inputProps: { min: 1 } }}
                     />
                   </Grid>
                 )}
@@ -440,7 +438,6 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                       <Grid item xs={2}>
                         <IconButton
                           color="error"
-                          variant="contained"
                           onClick={() => {
                             const idGetValues = getValues(`detail_project_budgets.${i}.id`);
                             const deleteValues = basedBudget.filter(

@@ -1,6 +1,7 @@
 export type ActiveStep = 'STEP1' | 'STEP2' | 'STEP3' | 'STEP4' | 'STEP5';
 
 export interface ItemBudget {
+  id?: string;
   amount: number | undefined;
   explanation: string;
   clause: string;
@@ -13,8 +14,8 @@ export interface SupervisorStep1 {
   closing_report: string | undefined;
   need_picture: boolean | undefined;
   does_an_agreement: boolean | undefined;
-  fsupport_by_supervisor: number | undefined;
-  number_of_payments_by_supervisor: number | undefined;
+  fsupport_by_supervisor?: number | undefined;
+  number_of_payments_by_supervisor?: number | undefined;
   notes: string;
   support_outputs: string;
   vat: undefined;
@@ -56,8 +57,14 @@ export interface SupervisorStep3 {
 
 export interface SupervisorStep4 {
   proposal_item_budgets: ItemBudget[];
+  created_proposal_budget?: ItemBudget[];
+  updated_proposal_budget?: ItemBudget[];
+  deleted_proposal_budget?: ItemBudget[];
 }
 
 export interface SupervisorStep5 {
   recommended_support: ItemBudget[];
+  created_recommended_support?: ItemBudget[];
+  updated_recommended_support?: ItemBudget[];
+  deleted_recommended_support?: ItemBudget[];
 }

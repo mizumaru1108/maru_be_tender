@@ -232,7 +232,12 @@ function FloatinActionBar() {
           title="إرجاع المعاملة إلى مسؤول الفرز"
           onClose={handleCloseModal}
           onSubmit={stepBackProposal}
-          action={{ actionLabel: 'إرجاع', backgroundColor: '#0169DE', hoverColor: '#1482FE' }}
+          action={{
+            actionType: action,
+            actionLabel: 'إرجاع',
+            backgroundColor: '#0169DE',
+            hoverColor: '#1482FE',
+          }}
         />
       )}
       {action === 'REJECT' && (
@@ -240,7 +245,12 @@ function FloatinActionBar() {
           title="رفض المشروع"
           onClose={handleCloseModal}
           onSubmit={handleRejected}
-          action={{ actionLabel: 'رفض', backgroundColor: '#FF0000', hoverColor: '#FF4842' }}
+          action={{
+            actionType: action,
+            actionLabel: 'رفض',
+            backgroundColor: '#FF0000',
+            hoverColor: '#FF4842',
+          }}
         />
       )}
       {action === 'ACCEPT' && <FacilitateSupervisorAcceptingForm onClose={handleCloseModal} />}

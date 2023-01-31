@@ -17,12 +17,12 @@ function FirstForm({ children, onSubmit }: any) {
     closing_report: Yup.boolean().required('Procedures is required!'),
     need_picture: Yup.boolean().required('Procedures is required!'),
     does_an_agreement: Yup.boolean().required('Procedures is required!'),
-    fsupport_by_supervisor: Yup.number().required('Procedures is required!'),
-    number_of_payments_by_supervisor: Yup.number().required('Procedures is required!'),
+    fsupport_by_supervisor: Yup.number(),
+    // number_of_payments_by_supervisor: Yup.number(),
     notes: Yup.string(),
     support_outputs: Yup.string().required('Procedures is required!'),
     vat: Yup.boolean().required('vat is required!'),
-    vat_percentage: Yup.number(),
+    vat_percentage: Yup.number().integer().min(1),
     inclu_or_exclu: Yup.boolean(),
     accreditation_type_id: Yup.string().required('Procedures is required!'),
     support_goal_id: Yup.string().required('Procedures is required!'),
@@ -40,9 +40,7 @@ function FirstForm({ children, onSubmit }: any) {
   const { handleSubmit, watch, setValue, resetField } = methods;
 
   const onSubmitForm = async (data: SupervisorStep1) => {
-    console.log('data', data);
-
-    // onSubmit(data);
+    onSubmit(data);
   };
 
   const vat = watch('vat');
@@ -160,7 +158,7 @@ function FirstForm({ children, onSubmit }: any) {
             />
           </Grid>
         )}
-        <Grid item md={6} xs={12}>
+        {/* <Grid item md={6} xs={12}>
           <BaseField
             type="textField"
             name="fsupport_by_supervisor"
@@ -176,7 +174,7 @@ function FirstForm({ children, onSubmit }: any) {
             label="عدد الدفعات*"
             placeholder="1"
           />
-        </Grid>
+        </Grid> */}
         <Grid item md={6} xs={12}>
           <RHFSelect
             name="accreditation_type_id"

@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
-import { Button, Grid, Stack } from '@mui/material';
-import { FormProvider } from 'components/hook-form';
+import { Button, Grid, Stack, MenuItem } from '@mui/material';
+import { FormProvider, RHFTextField, RHFSelect } from 'components/hook-form';
 import BaseField from 'components/hook-form/BaseField';
 import ModalDialog from 'components/modal-dialog';
 import useLocales from 'hooks/useLocales';
@@ -25,11 +25,13 @@ function ProposalRejectingForm({ onSubmit, onClose, loading }: FormProps) {
   const validationSchema = Yup.object().shape({
     notes: Yup.string(),
     path: Yup.string().required('Path is required!'),
+    reject_reason: Yup.string().required(),
   });
 
   const defaultValues = {
     notes: '',
     path: '',
+    reject_reason: '',
   };
 
   const methods = useForm<FormData>({
@@ -57,28 +59,32 @@ function ProposalRejectingForm({ onSubmit, onClose, loading }: FormProps) {
         content={
           <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
             <Grid item md={12} xs={12}>
-              <BaseField
-                type="select"
-                name="path"
-                label="المسار"
-                placeholder="المسار"
-                children={
-                  <>
-                    <option value="MOSQUES" style={{ backgroundColor: '#fff' }}>
-                      مشروع يخص المساجد
-                    </option>
-                    <option value="CONCESSIONAL_GRANTS" style={{ backgroundColor: '#fff' }}>
-                      مشروع يخص المنح الميسر
-                    </option>
-                    <option value="INITIATIVES" style={{ backgroundColor: '#fff' }}>
-                      مشروع يخص المبادرات
-                    </option>
-                    <option value="BAPTISMS" style={{ backgroundColor: '#fff' }}>
-                      مشروع يخص تعميدات
-                    </option>
-                  </>
-                }
-              />
+              <RHFSelect type="select" name="path" label="المسار" placeholder="المسار" size="small">
+                <MenuItem value="MOSQUES">مشروع يخص المساجد</MenuItem>
+                <MenuItem value="CONCESSIONAL_GRANTS">مشروع يخص المنح الميسر</MenuItem>
+                <MenuItem value="INITIATIVES">مشروع يخص المبادرات</MenuItem>
+                <MenuItem value="BAPTISMS">مشروع يخص تعميدات</MenuItem>
+              </RHFSelect>
+            </Grid>
+            <Grid item xs={12}>
+              <RHFSelect
+                name="reject_reason"
+                size="small"
+                label="سبب الرفض *"
+                placeholder="الرجاء اختيار سبب المشروع المرفوض"
+              >
+                <MenuItem value="تكرار المشروع">تكرار المشروع</MenuItem>
+                <MenuItem value="للجهة مشروع آخر تحت الدراسة">للجهة مشروع آخر تحت الدراسة</MenuItem>
+                <MenuItem value="للجهة مشروع آخر مدعوم">للجهة مشروع آخر مدعوم</MenuItem>
+                <MenuItem value="عدم وجود تصريح">عدم وجود تصريح</MenuItem>
+                <MenuItem value="التصريح منتهي">التصريح منتهي</MenuItem>
+                <MenuItem value="لا يوجد خطاب طلب دعم">لا يوجد خطاب طلب دعم</MenuItem>
+                <MenuItem value="الخطاب موجه لجهة أخرى">الخطاب موجه لجهة أخرى</MenuItem>
+                <MenuItem value="لا يوجد مرفقات">لا يوجد مرفقات</MenuItem>
+                <MenuItem value="نواقص في المرفقات">نواقص في المرفقات</MenuItem>
+                <MenuItem value="الحساب البنكي غير صالح">الحساب البنكي غير صالح</MenuItem>
+                <MenuItem value="أخرى">أخرى</MenuItem>
+              </RHFSelect>
             </Grid>
             <Grid item md={12} xs={12}>
               <BaseField
