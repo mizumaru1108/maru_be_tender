@@ -42,7 +42,6 @@ import { notificationCount } from 'queries/commons/subNotificationCount';
 import Page500 from 'pages/Page500';
 import { useLocation, useNavigate } from 'react-router';
 import axiosInstance from 'utils/axios';
-// import 'moment/locale/ar';
 import 'moment/min/locales';
 import moment from 'moment';
 
@@ -62,6 +61,7 @@ import moment from 'moment';
 
 type NotificationItemProps = {
   id: string;
+  proposal_id: string;
   appointment_id: string;
   subject: string;
   content: string;
@@ -105,11 +105,14 @@ type NotificationItemProps = {
 };
 
 export default function NotificationsPopover() {
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
 
   const [activeTap, setActiveTap] = useState('1');
 
   const [open, setOpen] = useState<HTMLElement | null>(null);
+
+  const [currentNotifCount, setCurrentNotifCount] = useState<number | null>(null);
+  const [currentData, setCurrentData] = useState<any | null>(null);
 
   const [openAlert, setOpenAlert] = useState(false);
 
@@ -121,37 +124,55 @@ export default function NotificationsPopover() {
 
   let currentSubcription: any;
 
-  const [result] = useSubscription({
+  const empNotifications = {
     query: subNotification,
     variables: { user_id: user?.id },
-  });
+  };
+
+  const clientNotifications = {
+    query: subNotificationClient,
+    variables: { user_id: user?.id },
+  };
+
+  const accManagerNotifications = {
+    query: notifAccManager,
+    variables: { user_id: user?.id },
+  };
+
+  if (activeRole === 'tender_client' || activeRole === 'tender_project_supervisor') {
+    currentSubcription = clientNotifications;
+  } else if (activeRole === 'tender_accounts_manager') {
+    currentSubcription = accManagerNotifications;
+  } else {
+    currentSubcription = empNotifications;
+  }
 
   const [notifCount] = useSubscription({
     query: notificationCount,
     variables: { user_id: user?.id },
   });
 
-  const [clientNotification] = useSubscription({
-    query: subNotificationClient,
-    variables: { user_id: user?.id },
-  });
+  const [result] = useSubscription(currentSubcription);
 
-  const [AccManagerNotification] = useSubscription({
-    query: notifAccManager,
-    variables: { user_id: user?.id },
-  });
+  const { data, fetching, error } = result;
 
-  if (activeRole === 'tender_client' || activeRole === 'tender_project_supervisor') {
-    currentSubcription = clientNotification;
-  } else if (activeRole === 'tender_accounts_manager') {
-    currentSubcription = AccManagerNotification;
-  } else {
-    currentSubcription = result;
-  }
+  useEffect(() => {
+    if (
+      notifCount.data &&
+      notifCount.data.notification_aggregate &&
+      notifCount.data.notification_aggregate.aggregate &&
+      notifCount.data.notification_aggregate.aggregate.count &&
+      currentNotifCount !== notifCount.data.notification_aggregate.aggregate.count
+    ) {
+      setCurrentNotifCount(notifCount.data.notification_aggregate.aggregate.count);
+    }
+  }, [notifCount.data, currentNotifCount, notifCount]);
 
-  const { data, fetching, error } = currentSubcription;
-
-  useEffect(() => {}, [data, fetching]);
+  useEffect(() => {
+    if (data && currentData !== data) {
+      setCurrentData(data);
+    }
+  }, [data, currentData, result]);
 
   if (fetching) return <>.. Loading</>;
 
@@ -188,7 +209,7 @@ export default function NotificationsPopover() {
 
   // const totalUnRead = data?.notification?.filter((item: any) => item.read_status === false).length;
 
-  const totalUnReadToday = data?.notification?.filter((item: any) => {
+  const totalUnReadToday = currentData?.notification?.filter((item: any) => {
     const createdAt = new Date(item.created_at);
 
     if (createdAt.getTime() >= oneDayAgo) {
@@ -204,7 +225,7 @@ export default function NotificationsPopover() {
   //   }
   // }).length;
 
-  const totalToday = data?.notification?.filter((item: any) => {
+  const totalToday = currentData?.notification?.filter((item: any) => {
     const createdAt = new Date(item.created_at);
 
     if (createdAt.getTime() >= oneDayAgo) {
@@ -212,7 +233,7 @@ export default function NotificationsPopover() {
     }
   });
 
-  const totalPrevious = data?.notification?.filter((item: any) => {
+  const totalPrevious = currentData?.notification?.filter((item: any) => {
     const createdAt = new Date(item.created_at);
 
     if (createdAt.getTime() < oneDayAgo) {
@@ -229,10 +250,12 @@ export default function NotificationsPopover() {
   }
 
   // console.log('RESULT', data);
+  // console.log('current', currentData);
   // console.log('Subcription', currentSubcription);
   // console.log('ROLE', newActiveRole);
   // console.log('USER', user?.id);
   // console.log('notif Count', notifCount);
+  // console.log('current notif Count', currentNotifCount);
 
   return (
     <>
@@ -247,11 +270,8 @@ export default function NotificationsPopover() {
         </Alert>
       </Snackbar>
       <IconButtonAnimate onClick={handleOpen} sx={{ width: 40, height: 40 }}>
-        {notifCount?.data?.notification_aggregate?.aggregate?.count > 0 ? (
-          <Badge
-            badgeContent={notifCount?.data?.notification_aggregate?.aggregate?.count}
-            color="primary"
-          >
+        {currentNotifCount && currentNotifCount > 0 ? (
+          <Badge badgeContent={currentNotifCount} color="primary">
             <SvgIconStyle
               src={`/assets/icons/dashboard-header/notification-bar.svg`}
               sx={{ width: 25, height: 25, color: '#000' }}
@@ -327,7 +347,7 @@ export default function NotificationsPopover() {
                     <>
                       <Box>
                         {translate('notification.previous')}
-                        {notifCount?.data?.notification_aggregate?.aggregate?.count > 0 && (
+                        {currentNotifCount && currentNotifCount > 0 && (
                           <Box
                             component={'span'}
                             sx={{
@@ -339,7 +359,7 @@ export default function NotificationsPopover() {
                               fontSize: 12,
                             }}
                           >
-                            {notifCount?.data?.notification_aggregate?.aggregate?.count}
+                            {currentNotifCount}
                           </Box>
                         )}
                       </Box>
@@ -357,7 +377,7 @@ export default function NotificationsPopover() {
                 alignItems: 'end',
               }}
             >
-              {notifCount?.data?.notification_aggregate?.aggregate?.count > 0 && (
+              {currentNotifCount && currentNotifCount > 0 && (
                 <>
                   {/* <Tooltip title=" Mark all as read"> */}
                   <IconButton color="primary" onClick={handleMarkAllAsRead}>
@@ -377,22 +397,21 @@ export default function NotificationsPopover() {
           </Box>
 
           <Divider sx={{ borderStyle: 'dashed', mb: '10px' }} />
-          <TabPanel value="1">
+          <TabPanel value="1" sx={{ maxHeight: 350, overflowY: 'auto' }}>
             <Scrollbar sx={{ height: { xs: 340, sm: 'auto' } }}>
               <List disablePadding>
                 <>
-                  {data?.notification && totalToday?.length > 0 ? (
+                  {currentData && currentData?.notification && totalToday?.length > 0 ? (
                     <>
-                      {data.notification.map(
-                        (item: NotificationItemProps, index: Key | null | undefined) => (
+                      {currentData &&
+                        currentData.notification.map((item: NotificationItemProps, index: any) => (
                           <NotificationItem
                             key={index}
                             notification={item}
                             tabValue={activeTap}
                             onClose={handleClose}
                           />
-                        )
-                      )}
+                        ))}
                     </>
                   ) : (
                     <ListItemButton
@@ -421,18 +440,17 @@ export default function NotificationsPopover() {
             <Scrollbar sx={{ height: { xs: 340, sm: 'auto' } }}>
               <List disablePadding>
                 <>
-                  {data?.notification && totalPrevious.length > 0 ? (
+                  {currentData && currentData?.notification && totalPrevious.length > 0 ? (
                     <>
-                      {data.notification.map(
-                        (item: NotificationItemProps, index: Key | null | undefined) => (
+                      {currentData &&
+                        currentData.notification.map((item: NotificationItemProps, index: any) => (
                           <NotificationItem
                             key={index}
                             notification={item}
                             tabValue={activeTap}
                             onClose={handleClose}
                           />
-                        )
-                      )}
+                        ))}
                     </>
                   ) : (
                     <ListItemButton
@@ -475,14 +493,14 @@ function NotificationItem({
   onClose: () => void;
 }) {
   // const { description } = renderContent(notification);
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
 
   const navigate = useNavigate();
   const location = useLocation();
 
   const { activeRole } = useAuth();
 
-  const valueLocale = localStorage.getItem('i18nextLng');
+  // const valueLocale = localStorage.getItem('i18nextLng');
 
   const oneDay = 24 * 60 * 60 * 1000;
 
@@ -497,7 +515,7 @@ function NotificationItem({
   const getTimeMeeting = (createdAtMeeting: any) => Date.now() - createdAtMeeting.getTime();
 
   const handleNavigateProject = async (
-    id: string,
+    proposalId: string,
     notificationId: string,
     innerStatus: string,
     outterStatus: string,
@@ -519,7 +537,7 @@ function NotificationItem({
 
     let footer_action = '';
     let request_action = '';
-    if (activeRole === 'tender_ceo' && state === newActiveRole && outterStatus === 'ONGOING') {
+    if (activeRole === 'tender_ceo') {
       footer_action = 'show-details';
       request_action = 'project-management';
     } else if (
@@ -537,7 +555,7 @@ function NotificationItem({
     onClose();
 
     const x = location.pathname.split('/');
-    navigate(`/${x[1] + '/' + x[2]}/${request_action}/${id}/${footer_action}`);
+    navigate(`/${x[1] + '/' + x[2]}/${request_action}/${proposalId}/${footer_action}`);
   };
 
   const handleNavigateAppointment = async (id: string, notificationId: string) => {
@@ -603,7 +621,7 @@ function NotificationItem({
                         color: 'text.disabled',
                       }}
                     >
-                      {moment(notification.created_at).locale(`${valueLocale}`).fromNow()}
+                      {moment(notification.created_at).locale(`${currentLang.value}`).fromNow()}
                     </Typography>
                     <Stack direction="row" justifyContent="start">
                       {notification.type === 'PROPOSAL' && (
@@ -611,11 +629,11 @@ function NotificationItem({
                           style={{ textAlign: 'start', color: 'green' }}
                           onClick={() =>
                             handleNavigateProject(
-                              notification.proposal.id,
+                              notification.proposal_id,
                               notification.id,
-                              notification.proposal.inner_status,
-                              notification.proposal.outter_status,
-                              notification.proposal.state
+                              notification?.proposal?.inner_status,
+                              notification?.proposal?.outter_status,
+                              notification?.proposal?.state
                             )
                           }
                         >
@@ -664,7 +682,7 @@ function NotificationItem({
                         color: 'text.disabled',
                       }}
                     >
-                      {moment(notification.created_at).locale(`${valueLocale}`).fromNow()}
+                      {moment(notification.created_at).locale(`${currentLang.value}`).fromNow()}
                     </Typography>
                     {notification.type === 'PROPOSAL' && (
                       <Stack direction="row" justifyContent="start">
@@ -687,7 +705,7 @@ function NotificationItem({
           {/* ---------------------------Payment Today Item--------------------------- */}
           {notification?.proposal && notification.proposal.payments && (
             <>
-              {notification.proposal.payments.map((cheque, index) => (
+              {notification.proposal.payments.map((cheque: any, index: any) => (
                 <ListItemButton
                   sx={{
                     py: 1.5,
@@ -700,7 +718,7 @@ function NotificationItem({
                     primary={translate('notification.subject_payment')}
                     secondary={
                       <Stack direction="column">
-                        <Typography>{translate('notification.subject_payment')}</Typography>
+                        <Typography>{translate('notification.content_payment')}</Typography>
                         <Typography
                           variant="caption"
                           sx={{
@@ -710,9 +728,9 @@ function NotificationItem({
                             color: 'text.disabled',
                           }}
                         >
-                          {moment(notification.created_at).locale(`${valueLocale}`).fromNow()}
+                          {moment(notification.created_at).locale(`${currentLang.value}`).fromNow()}
                         </Typography>
-                        {cheque.cheques.map((item, index) => (
+                        {cheque.cheques.map((item: any, index: any) => (
                           <>
                             <Stack direction="row" justifyContent="start" key={index}>
                               <Button
@@ -761,7 +779,7 @@ function NotificationItem({
                       color: 'text.disabled',
                     }}
                   >
-                    {moment(notification.created_at).locale(`${valueLocale}`).fromNow()}
+                    {moment(notification.created_at).locale(`${currentLang.value}`).fromNow()}
                   </Typography>
                   <Stack direction="row" justifyContent="start">
                     {notification.type === 'PROPOSAL' && (
@@ -769,11 +787,11 @@ function NotificationItem({
                         style={{ textAlign: 'start', color: 'green' }}
                         onClick={() =>
                           handleNavigateProject(
-                            notification.proposal.id,
+                            notification.proposal_id,
                             notification.id,
-                            notification.proposal.inner_status,
-                            notification.proposal.outter_status,
-                            notification.proposal.state
+                            notification?.proposal?.inner_status,
+                            notification?.proposal?.outter_status,
+                            notification?.proposal?.state
                           )
                         }
                       >
@@ -821,7 +839,7 @@ function NotificationItem({
                         color: 'text.disabled',
                       }}
                     >
-                      {moment(notification.created_at).locale(`${valueLocale}`).fromNow()}
+                      {moment(notification.created_at).locale(`${currentLang.value}`).fromNow()}
                     </Typography>
                     {notification.type === 'APPOINTMENT' && (
                       <Stack direction="row" justifyContent="start">
@@ -844,7 +862,7 @@ function NotificationItem({
           {/* ---------------------------Payment Previous Item--------------------------- */}
           {notification?.proposal && notification.proposal.payments && (
             <>
-              {notification.proposal.payments.map((cheque, index) => (
+              {notification.proposal.payments.map((cheque: any, index: any) => (
                 <ListItemButton
                   sx={{
                     py: 1.5,
@@ -867,9 +885,9 @@ function NotificationItem({
                             color: 'text.disabled',
                           }}
                         >
-                          {moment(notification.created_at).locale(`${valueLocale}`).fromNow()}
+                          {moment(notification.created_at).locale(`${currentLang.value}`).fromNow()}
                         </Typography>
-                        {cheque.cheques.map((item, index) => (
+                        {cheque.cheques.map((item: any, index: any) => (
                           <>
                             <Stack direction="row" justifyContent="start" key={index}>
                               <Button

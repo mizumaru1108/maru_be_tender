@@ -17,8 +17,8 @@ function ClientFollowUpsPage() {
       ) : (
         proposal.follow_ups.map((item: any, index: any) => (
           <Grid item md={12} xs={12} key={index}>
-            {item.file && <FollowUpsFile {...item} />}
-            {item.action && <FollowUpsText {...item} />}
+            {item.attachments && <FollowUpsFile {...item} />}
+            {item.content && <FollowUpsText {...item} />}
           </Grid>
         ))
       )}

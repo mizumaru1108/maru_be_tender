@@ -34,7 +34,7 @@ export interface FollowUps {
   id: string;
   content: string;
   created_at: Date;
-  attachments: { url: string; size: number | undefined; type: string };
+  attachments: [{ url: string; size: number | undefined; type: string }];
   user: {
     employee_name: string;
     roles: {

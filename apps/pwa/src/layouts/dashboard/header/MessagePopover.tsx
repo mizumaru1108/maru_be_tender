@@ -95,6 +95,8 @@ export default function MessagePopover() {
   const { translate } = useLocales();
   const [messages, setMessages] = useState(_messages);
 
+  const [currentData, setCurrentData] = useState<any | null>(null);
+
   const [open, setOpen] = useState<HTMLElement | null>(null);
   const [activeTap, setActiveTap] = useState('1');
 
@@ -102,36 +104,44 @@ export default function MessagePopover() {
 
   const { user, activeRole } = useAuth();
 
-  let currentSubcription: any;
-
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     setOpen(event.currentTarget);
   };
 
-  const [result] = useSubscription({
+  let currentSubcription: any;
+
+  const empNotifications = {
     query: subNotification,
     variables: { user_id: user?.id },
-  });
+  };
 
-  const [clientNotification] = useSubscription({
+  const clientNotifications = {
     query: subNotificationClient,
     variables: { user_id: user?.id },
-  });
+  };
 
-  const [AccManagerNotification] = useSubscription({
+  const accManagerNotifications = {
     query: notifAccManager,
     variables: { user_id: user?.id },
-  });
+  };
 
   if (activeRole === 'tender_client' || activeRole === 'tender_project_supervisor') {
-    currentSubcription = clientNotification;
+    currentSubcription = clientNotifications;
   } else if (activeRole === 'tender_accounts_manager') {
-    currentSubcription = AccManagerNotification;
+    currentSubcription = accManagerNotifications;
   } else {
-    currentSubcription = result;
+    currentSubcription = empNotifications;
   }
 
-  const { data, fetching, error } = currentSubcription;
+  const [result] = useSubscription(currentSubcription);
+
+  const { data, fetching, error } = result;
+
+  useEffect(() => {
+    if (data && currentData !== data) {
+      setCurrentData(data);
+    }
+  }, [data, currentData]);
 
   const handleClose = () => {
     setOpen(null);
@@ -152,8 +162,6 @@ export default function MessagePopover() {
 
   const handleClearAll = () => {};
 
-  useEffect(() => {}, [data]);
-
   if (fetching) return <>.. Loading</>;
 
   const handleCloseAlert = () => {
@@ -167,11 +175,11 @@ export default function MessagePopover() {
   const oneDay = 24 * 60 * 60 * 1000;
   const oneDayAgo = Date.now() - oneDay;
 
-  const totalUnRead = data?.notifcation?.message?.filter(
+  const totalUnRead = currentData?.notifcation?.message?.filter(
     (item: any) => item.read_status === false
   ).length;
 
-  const totalUnReadToday = data?.notifcation?.message?.filter((item: any) => {
+  const totalUnReadToday = currentData?.notifcation?.message?.filter((item: any) => {
     const createdAt = new Date(item.created_at);
 
     if (createdAt.getTime() >= oneDayAgo) {
@@ -179,7 +187,7 @@ export default function MessagePopover() {
     }
   }).length;
 
-  const totalUnReadPrevious = data?.notifcation?.message?.filter((item: any) => {
+  const totalUnReadPrevious = currentData?.notifcation?.message?.filter((item: any) => {
     const createdAt = new Date(item.created_at);
 
     if (createdAt.getTime() < oneDayAgo) {
@@ -187,7 +195,7 @@ export default function MessagePopover() {
     }
   }).length;
 
-  const totalToday = data?.notifcation?.message?.filter((item: any) => {
+  const totalToday = currentData?.notifcation?.message?.filter((item: any) => {
     const createdAt = new Date(item.created_at);
 
     if (createdAt.getTime() >= oneDayAgo) {
@@ -195,7 +203,7 @@ export default function MessagePopover() {
     }
   });
 
-  const totalPrevious = data?.notifcation?.message?.filter((item: any) => {
+  const totalPrevious = currentData?.notifcation?.message?.filter((item: any) => {
     const createdAt = new Date(item.created_at);
 
     if (createdAt.getTime() < oneDayAgo) {
@@ -343,17 +351,16 @@ export default function MessagePopover() {
           </Box>
 
           <Divider sx={{ borderStyle: 'dashed', mb: '10px' }} />
-          <TabPanel value="1">
+          <TabPanel value="1" sx={{ maxHeight: 350, overflowY: 'auto' }}>
             <Scrollbar sx={{ height: { xs: 340, sm: 'auto' } }}>
               <List disablePadding>
                 <>
-                  {data?.notification?.message && totalToday?.length > 0 ? (
+                  {currentData && currentData?.notification?.message && totalToday?.length > 0 ? (
                     <>
-                      {data.notification.map(
-                        (item: NotificationItemProps, index: Key | null | undefined) => (
+                      {currentData &&
+                        currentData.notification.map((item: NotificationItemProps, index: any) => (
                           <NotificationItem key={index} message={item} tabValue={activeTap} />
-                        )
-                      )}
+                        ))}
                     </>
                   ) : (
                     <ListItemButton
@@ -378,17 +385,18 @@ export default function MessagePopover() {
               </Button>
             </Box> */}
           </TabPanel>
-          <TabPanel value="2">
+          <TabPanel value="2" sx={{ maxHeight: 350, overflowY: 'auto' }}>
             <Scrollbar sx={{ height: { xs: 340, sm: 'auto' } }}>
               <List disablePadding>
                 <>
-                  {data?.notification?.message && totalPrevious?.length > 0 ? (
+                  {currentData &&
+                  currentData?.notification?.message &&
+                  totalPrevious?.length > 0 ? (
                     <>
-                      {data.notification.map(
-                        (item: NotificationItemProps, index: Key | null | undefined) => (
+                      {currentData &&
+                        currentData.notification.map((item: NotificationItemProps, index: any) => (
                           <NotificationItem key={index} message={item} tabValue={activeTap} />
-                        )
-                      )}
+                        ))}
                     </>
                   ) : (
                     <ListItemButton

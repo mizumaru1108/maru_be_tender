@@ -1,13 +1,15 @@
 /* eslint-disable array-callback-return */
+import { Grid, Stack, Tab, Tabs, Container, Button, Checkbox } from '@mui/material';
 
-import { Grid, Stack, Tab, Tabs, Container } from '@mui/material';
 import React from 'react';
 import { useTheme } from '@mui/material/styles';
 import EmptyFollowUps from './EmptyFollowUps';
+import { useParams } from 'react-router';
 import FollowUpsFile from './FollowUpsFile';
 import FollowUpsText from './FollowUpsText';
-import { useSelector } from 'redux/store';
 import useLocales from 'hooks/useLocales';
+import { getProposal } from 'redux/slices/proposal';
+import { useDispatch, useSelector } from 'redux/store';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -43,7 +45,9 @@ function TabPanel(props: TabPanelProps) {
 }
 
 function EmployeeFollowUpsPage() {
-  const { proposal } = useSelector((state) => state.proposal);
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  const { proposal, isLoading, error } = useSelector((state) => state.proposal);
   const { translate } = useLocales();
 
   const theme = useTheme();
@@ -53,6 +57,14 @@ function EmployeeFollowUpsPage() {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setSwitchState(newValue);
   };
+
+  React.useEffect(() => {
+    dispatch(getProposal(id as string));
+  }, [dispatch, id]);
+
+  if (isLoading) return <>... Loading</>;
+
+  if (error) return <>{error}</>;
 
   return (
     <Grid container spacing={3}>
@@ -122,10 +134,12 @@ function EmployeeFollowUpsPage() {
                   }
                 })
                 .map((item, index) => (
-                  <Grid item md={12} xs={12} key={index}>
-                    {item.attachments && <FollowUpsFile {...item} />}
-                    {item.content && <FollowUpsText {...item} />}
-                  </Grid>
+                  <>
+                    <Grid item md={12} xs={12} key={index}>
+                      {item.attachments && <FollowUpsFile {...item} />}
+                      {item.content && <FollowUpsText {...item} />}
+                    </Grid>
+                  </>
                 ))
             )}
           </Grid>

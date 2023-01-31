@@ -45,7 +45,7 @@ type Log = {
 };
 
 function ProjectPath() {
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
   const [activeStep, setActiveStep] = React.useState(0);
   const [stepOn, setStepOn] = React.useState(1);
   const { id: proposal_id } = useParams();
@@ -54,7 +54,7 @@ function ProjectPath() {
     variables: { proposal_id },
   });
 
-  const valueLocale = localStorage.getItem('i18nextLng');
+  // const valueLocale = localStorage.getItem('i18nextLng');
 
   const { data: followUps, fetching, error } = result;
   const handleStep = (step: number) => () => {
@@ -106,7 +106,7 @@ function ProjectPath() {
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
                       {translate('project_already_reviewed_by_supervisor')}{' '}
-                      {moment(item.proposal.updated_at).locale(`${valueLocale}`).fromNow()}
+                      {moment(item.proposal.updated_at).locale(`${currentLang.value}`).fromNow()}
                     </Typography>
                   </Stack>
                 )}

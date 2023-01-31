@@ -63,10 +63,10 @@ const ProjectCard = ({
   const role = activeRole!;
   const navigate = useNavigate();
   const location = useLocation();
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
   const [_, updateAsigning] = useMutation(asignProposalToAUser);
 
-  const valueLocale = localStorage.getItem('i18nextLng');
+  // const valueLocale = localStorage.getItem('i18nextLng');
 
   const onDeleteDraftClick = () => {
     console.log('onDeleteDraftClick');
@@ -104,6 +104,7 @@ const ProjectCard = ({
       navigate(`${location.pathname}/${title.id}/${cardFooterButtonAction}`);
     }
   };
+
   return (
     <Card sx={{ backgroundColor: '#fff' }}>
       <CardContent>
@@ -279,7 +280,7 @@ const ProjectCard = ({
                   sx={{ fontSize: '15px !important' }}
                 >
                   {footer.createdAt
-                    ? moment(footer.createdAt).locale(`${valueLocale}`).format('LLLL')
+                    ? moment(footer.createdAt).locale(`${currentLang.value}`).format('LLLL')
                     : // ? `${footer.createdAt.getDay()}.${footer.createdAt.getMonth()}.${footer.createdAt.getFullYear()} في ${footer.createdAt.getHours()}:${footer.createdAt.getMinutes()}`
                       '5 ساعات'}
                 </Typography>

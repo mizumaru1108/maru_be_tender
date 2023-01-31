@@ -9,9 +9,11 @@ import { nanoid } from 'nanoid';
 import { FormProvider } from 'components/hook-form';
 import { LoadingButton } from '@mui/lab';
 import BaseField from 'components/hook-form/BaseField';
-import { addFollowups } from 'redux/slices/proposal';
+import { addFollowups, getProposal } from 'redux/slices/proposal';
 import { useDispatch } from 'redux/store';
 import { useSnackbar } from 'notistack';
+import { useState } from 'react';
+import axiosInstance from 'utils/axios';
 
 type Props = {
   open: boolean;
@@ -28,6 +30,7 @@ type FormData = {
 
 function FilePopup({ open, handleClose }: Props) {
   const dispatch = useDispatch();
+  const { id } = useParams();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -60,18 +63,33 @@ function FilePopup({ open, handleClose }: Props) {
 
   const { id: proposal_id } = useParams();
 
-  const { user } = useAuth();
+  const { user, activeRole } = useAuth();
 
-  const id = user?.id;
+  // const id = user?.id;
+  const role = activeRole!;
 
   const onSubmit = async (data: any) => {
     try {
-      await dispatch(addFollowups({ file: data.file, user_id: id, proposal_id, id: nanoid() }));
-      enqueueSnackbar('تم رفع الملف بنجاح', {
-        variant: 'success',
-      });
-      reset();
-      handleClose();
+      // await dispatch(addFollowups({follow_up_attachment: [data.file],proposal_id,follow_up_type: 'attachments',},role));
+      const response = await axiosInstance.post(
+        'tender-proposal/follow-up/create',
+        {
+          follow_up_attachment: [data.file],
+          proposal_id,
+          follow_up_type: 'attachments',
+        },
+        {
+          headers: { 'x-hasura-role': role },
+        }
+      );
+      if (response) {
+        dispatch(getProposal(id as string));
+        enqueueSnackbar('تم رفع الإجراء بنجاح', {
+          variant: 'success',
+        });
+        reset();
+        handleClose();
+      }
     } catch (error) {
       enqueueSnackbar(error.message, {
         variant: 'error',
@@ -95,7 +113,7 @@ function FilePopup({ open, handleClose }: Props) {
           <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
             <Grid item md={12} xs={12}>
               <BaseField
-                type="upload"
+                type="uploadBe"
                 name="file"
                 placeholder="الرجاء كتابة الإجراءات التي قمت بها  على المشروع "
               />

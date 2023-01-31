@@ -9,9 +9,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider } from 'components/hook-form';
 import BaseField from 'components/hook-form/BaseField';
 import { LoadingButton } from '@mui/lab';
-import { addFollowups } from 'redux/slices/proposal';
+import { addFollowups, getProposal } from 'redux/slices/proposal';
 import { useDispatch } from 'redux/store';
 import { useSnackbar } from 'notistack';
+import React from 'react';
+import axiosInstance from 'utils/axios';
 
 type Props = {
   open: boolean;
@@ -24,6 +26,7 @@ type FormData = {
 
 function ActionPopup({ open, handleClose }: Props) {
   const { enqueueSnackbar } = useSnackbar();
+  const { id } = useParams();
 
   const dispatch = useDispatch();
 
@@ -48,18 +51,29 @@ function ActionPopup({ open, handleClose }: Props) {
     formState: { isSubmitting },
   } = methods;
 
-  const { user } = useAuth();
+  const { user, activeRole } = useAuth();
 
-  const id = user?.id;
+  // const id = user?.id;
+  const role = activeRole!;
 
   const onSubmit = async (data: any) => {
     try {
-      await dispatch(addFollowups({ action: data.action, user_id: id, proposal_id, id: nanoid() }));
-      enqueueSnackbar('تم رفع الإجراء بنجاح', {
-        variant: 'success',
-      });
-      reset();
-      handleClose();
+      // addFollowups({ content: data.action, proposal_id, follow_up_type: 'plain' }, role)
+      const response = await axiosInstance.post(
+        'tender-proposal/follow-up/create',
+        { content: data.action, proposal_id, follow_up_type: 'plain' },
+        {
+          headers: { 'x-hasura-role': role },
+        }
+      );
+      if (response) {
+        dispatch(getProposal(id as string));
+        enqueueSnackbar('تم رفع الإجراء بنجاح', {
+          variant: 'success',
+        });
+        reset();
+        handleClose();
+      }
     } catch (error) {
       enqueueSnackbar(error.message, {
         variant: 'error',
@@ -68,6 +82,7 @@ function ActionPopup({ open, handleClose }: Props) {
       });
     }
   };
+
   return (
     <FormProvider methods={methods}>
       <ModalDialog

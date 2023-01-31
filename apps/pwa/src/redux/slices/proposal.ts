@@ -15,6 +15,7 @@ interface ProposalItme {
   isLoading: boolean;
   error: Error | string | null;
   activeTap: ActiveTap;
+  checkedItems: any;
   proposal: Proposal;
 }
 
@@ -22,6 +23,7 @@ const initialState: ProposalItme = {
   isLoading: false,
   error: null,
   activeTap: 'main',
+  checkedItems: [],
   proposal: {
     id: '-1',
     project_name: 'test',
@@ -159,6 +161,10 @@ const slice = createSlice({
     setActiveTap(state, action) {
       state.activeTap = action.payload;
     },
+    // SET CHECKED ITEMS FOLLOW UP
+    setCheckedItems(state, action) {
+      state.checkedItems = action.payload;
+    },
     // SET PAYMENTS
     setPayments(state, action) {
       state.proposal.payments = action.payload.payments;
@@ -192,7 +198,7 @@ const slice = createSlice({
 export default slice.reducer;
 
 // Actions
-export const { setProposal, setActiveTap } = slice.actions;
+export const { setProposal, setActiveTap, setCheckedItems } = slice.actions;
 
 export const getProposal = (id: string) => async () => {
   try {
@@ -303,16 +309,22 @@ export const addFollowups = (data: any) => async () => {
   }
 };
 
-// export function addFollowups(data:any) {
-//   return async () => {
+// export const addFollowups = (data: any, role: any) => async () => {
+//   try {
 //     dispatch(slice.actions.startLoading());
-//     try {
-//       const response = await axiosInstance.post('', {
-//         data,
-//       });
-//       dispatch(slice.actions.insertFollowUp(response.data));
-//     } catch (error) {
-//       dispatch(slice.actions.hasError(error));
-//     }
-//   };
-// }
+//     const response = await axiosInstance.post(
+//       'tender-proposal/follow-up/create',
+//       {
+//         ...data,
+//       },
+//       {
+//         headers: { 'x-hasura-role': role },
+//       }
+//     );
+//     dispatch(slice.actions.insertFollowUp(response.data.data));
+//     dispatch(slice.actions.endLoading());
+//   } catch (error) {
+//     dispatch(slice.actions.endLoading());
+//     throw error;
+//   }
+// };
