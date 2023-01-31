@@ -243,7 +243,7 @@ function FloatingActionBar() {
           content_type_id: 'TEXT',
           receiver_id: proposalSubmitter.id,
           owner_id: user?.id,
-          receiver_role_as: proposalSubmitter.roles[0].role.title,
+          receiver_role_as: proposalSubmitter.roles[0].role.id,
           sender_role_as: `tender_${proposalStateRole.toLowerCase()}`,
           created_at: moment().toISOString(),
           updated_at: moment().toISOString(),

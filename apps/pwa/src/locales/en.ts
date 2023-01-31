@@ -1319,11 +1319,41 @@ const en = {
   state: 'State',
   status: 'Status',
   project_owner_details: {
+    accordion: {
+      main_tab: {
+        header: 'Main Information',
+        entity_field: 'Entity Field',
+        headquarters: 'Headquarters',
+        date_of_establishment: 'Date of Establishment',
+        number_of_employees: 'Number of full-time employees of the facility',
+        number_of_beneficiaries: "Number of beneficiaries of the entity's service",
+      },
+      contact_tab: {
+        header: 'Contact Information',
+        email: 'Email',
+        entity_mobile: 'Entity Mobile',
+        governorate: 'Governorate',
+        region: 'Region',
+        center: 'Center (management)',
+        twitter: 'Twitter Account',
+        website: 'Website',
+        phone: 'The Phone',
+      },
+      license_tab: {
+        header: 'License Information',
+        license_number: 'License Number',
+        license_expiry_date: 'License Expiry Date',
+        licnese_issue_date: 'License Issue Date',
+        license_file: 'License File',
+        letter_of_support_file: 'Letter of Support Files',
+      },
+    },
     card_title: 'Partner Name',
     card_content:
       'The Association for Advocacy, Guidance and Community Awareness in the New Industrial Area in Riyadh',
     card_href: 'View all projects of the partner',
     client_details_header: 'Client Profile',
+    client_detail_profiles_header: 'Client Profile Detail',
     table_title: 'Projects by ',
     summary: {
       title_main: 'Main Information',

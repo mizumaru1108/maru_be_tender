@@ -73,7 +73,7 @@ export interface IEditedValues {
   client_field?: string | null;
   user_id?: string;
   license_file: UploadFilesJsonbDto;
-  board_ofdec_file?: UploadFilesJsonbDto;
+  board_ofdec_file?: UploadFilesJsonbDto[];
   chairman_name?: string | null;
   chairman_mobile?: string | null;
   updated_bank?: bank_information[] | [];

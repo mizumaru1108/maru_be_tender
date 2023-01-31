@@ -57,7 +57,8 @@ export interface Proposal {
     roles:
       | {
           role: {
-            title: string;
+            // title: string;
+            id: string;
           };
         }[]
       | [];

@@ -31,12 +31,14 @@ export default function UploadMultiFile({
   onRemoveAll,
   helperText,
   placeholder,
+  // disabled,
   sx,
   ...other
 }: UploadMultiFileProps) {
   const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = useDropzone({
     ...other,
   });
+  // console.log('fileRejections', fileRejections);
 
   return (
     <Box sx={{ width: '100%', ...sx }}>
@@ -60,7 +62,12 @@ export default function UploadMultiFile({
         <RejectionFiles fileRejections={fileRejections} />
       )}
 
-      <MultiFilePreview files={files} showPreview={showPreview} onRemove={onRemove} />
+      <MultiFilePreview
+        disabled={other.disabled}
+        files={files}
+        showPreview={showPreview}
+        onRemove={onRemove}
+      />
 
       {files && files.length > 0 && (
         <Stack direction="row" justifyContent="flex-end" spacing={1.5}>

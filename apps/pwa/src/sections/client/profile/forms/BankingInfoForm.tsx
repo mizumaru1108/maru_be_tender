@@ -25,12 +25,6 @@ const BankingInfoForm = ({ children, onSubmit, initialValue, onDelete, isEdit }:
   const [tmpUpdatedBank, setTmpUpdatedBank] = useState<any>();
   const [isUpdated, setIsUpdated] = useState(false);
 
-  // useEffect(() => {
-  //   window.scrollTo(0, 0);
-  //   console.log({ tmpBank });
-  //   console.log({ deletedBank });
-  // }, [tmpBank, deletedBank]);
-
   const onEdit = () => {
     console.log('edit');
   };

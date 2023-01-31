@@ -34,7 +34,7 @@ function MainPage() {
   } = proposal;
 
   React.useEffect(() => {
-    // console.log({ proposal });
+    console.log({ proposal });
   }, [proposal]);
   const handleOpenProjectOwnerDetails = () => {
     const submiterId = proposal.user.id;

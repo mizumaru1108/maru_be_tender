@@ -57,6 +57,7 @@ export const clientRoute = {
       children: [
         { element: <Navigate to="/client/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainClientPage /> },
+        { path: ':submiterId/:detailType', element: <ProjectOwnerDetails /> },
         {
           path: 'funding-project-request',
           element: <FundingProjectRequest />,
@@ -67,6 +68,7 @@ export const clientRoute = {
             { path: ':id/:actionType', element: <ProjectDetails /> },
 
             { path: ':id/owner/:submiterId', element: <ProjectOwnerDetails /> },
+            { path: ':id/owner/:submiterId/:detailType', element: <ProjectOwnerDetails /> },
           ],
         },
         {
