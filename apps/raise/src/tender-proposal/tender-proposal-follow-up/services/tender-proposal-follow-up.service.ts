@@ -149,30 +149,32 @@ export class TenderProposalFollowUpService {
 
       if (createFollowUpPayload.attachments instanceof Array) {
         const tmp = createFollowUpPayload.attachments as any[];
-        for (let i = 0; i < tmp.length; i++) {
-          if (isUploadFileJsonb(tmp[i])) {
-            let tmpFileJsonb: UploadFilesJsonbDto = tmp[i];
-            const isExist = await this.tenderFileManagerService.findByUrl(
-              tmpFileJsonb.url,
-            );
+        if (tmp.length > 0) {
+          for (let i = 0; i < tmp.length; i++) {
+            if (isUploadFileJsonb(tmp[i])) {
+              let tmpFileJsonb: UploadFilesJsonbDto = tmp[i];
+              const isExist = await this.tenderFileManagerService.findByUrl(
+                tmpFileJsonb.url,
+              );
 
-            if (!isExist) {
-              const payload: Prisma.file_managerUncheckedCreateInput = {
-                id: uuidv4(),
-                user_id: currentUser.id,
-                url: tmpFileJsonb.url,
-                mimetype: tmpFileJsonb.type,
-                size: tmpFileJsonb.size,
-                column_name: 'attachments',
-                table_name: 'proposal_follow_up',
-                name: tmpFileJsonb.url.split('/').pop() as string,
-              };
-              fileManagerCreateManyPayload.push(payload);
+              if (!isExist) {
+                const payload: Prisma.file_managerUncheckedCreateInput = {
+                  id: uuidv4(),
+                  user_id: currentUser.id,
+                  url: tmpFileJsonb.url,
+                  mimetype: tmpFileJsonb.type,
+                  size: tmpFileJsonb.size,
+                  column_name: 'attachments',
+                  table_name: 'proposal_follow_up',
+                  name: tmpFileJsonb.url.split('/').pop() as string,
+                };
+                fileManagerCreateManyPayload.push(payload);
+              }
             }
           }
+        } else {
+          delete createFollowUpPayload.attachments;
         }
-      } else {
-        delete createFollowUpPayload.attachments;
       }
 
       const createdFolllowUp = await this.followUpRepository.create(

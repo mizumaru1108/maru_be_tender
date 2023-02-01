@@ -285,15 +285,27 @@ export class TenderClientRepository {
 
   async createUpdateRequest(
     editRequestLogPayload: Prisma.edit_requestsUncheckedCreateInput,
+    fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
   ) {
     try {
       return await this.prismaService.$transaction(async (prisma) => {
-        return await prisma.edit_requests.create({
+        const createdEditRequest = await prisma.edit_requests.create({
           data: editRequestLogPayload,
           include: {
             user: true,
           },
         });
+
+        if (
+          fileManagerCreateManyPayload &&
+          fileManagerCreateManyPayload.length > 0
+        ) {
+          await prisma.file_manager.createMany({
+            data: fileManagerCreateManyPayload,
+          });
+        }
+
+        return createdEditRequest;
       });
     } catch (error) {
       const theError = prismaErrorThrower(

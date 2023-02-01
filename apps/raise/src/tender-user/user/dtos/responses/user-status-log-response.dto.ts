@@ -2,7 +2,6 @@ export interface IUserStatusLogResponseDto {
   data: {
     user_status: {
       id: string;
-      title: string;
     };
     account_manager_detail: {
       id: string;

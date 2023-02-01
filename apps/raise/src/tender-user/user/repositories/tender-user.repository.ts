@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, project_tracks, user, user_type } from '@prisma/client';
+import {
+  prisma,
+  Prisma,
+  project_tracks,
+  user,
+  user_type,
+} from '@prisma/client';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -386,7 +392,6 @@ export class TenderUserRepository {
             user_status: {
               select: {
                 id: true,
-                title: true,
               },
             },
             user_detail: {
@@ -429,7 +434,6 @@ export class TenderUserRepository {
               user_status: {
                 select: {
                   id: true,
-                  title: true,
                 },
               },
               user_detail: {
@@ -471,6 +475,7 @@ export class TenderUserRepository {
     userStatusLogData: Prisma.user_status_logUncheckedCreateInput[],
     rolesData?: Prisma.user_roleUncheckedCreateInput[],
     bankInfoData?: Prisma.bank_informationUncheckedCreateInput,
+    fileManagerCreateManyPayload?: Prisma.file_managerCreateManyInput[],
     uploadedFilesPath?: string[],
   ) {
     try {
@@ -513,6 +518,15 @@ export class TenderUserRepository {
             );
             await prismaSession.bank_information.create({
               data: bankInfoData,
+            });
+          }
+
+          if (
+            fileManagerCreateManyPayload &&
+            fileManagerCreateManyPayload.length > 0
+          ) {
+            await prismaSession.file_manager.createMany({
+              data: fileManagerCreateManyPayload,
             });
           }
 

@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsIn,
   IsNotEmpty,
   IsOptional,
@@ -37,4 +38,9 @@ export class CreateProposalFollowUpDto {
   @IsNotEmpty()
   @IsString()
   content?: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsBoolean()
+  employee_only: boolean;
 }

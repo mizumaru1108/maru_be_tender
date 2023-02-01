@@ -348,46 +348,46 @@ export class TenderStatisticsService {
       });
 
       for (const PU of pendingUsers) {
-        if (!partnersStatus[US.title]) partnersStatus[US.title] = 0;
+        if (!partnersStatus[US.id]) partnersStatus[US.id] = 0;
         if (PU.user.status_id === US.id) {
-          partnersStatus[US.title] = partnersStatus[US.title] + 1;
+          partnersStatus[US.id] = partnersStatus[US.id] + 1;
         }
 
         if (!PU.region) return;
         if (!partnersRegion[PU.region]) {
-          nestedPartnersRegion[US.title] = 1;
+          nestedPartnersRegion[US.id] = 1;
           partnersRegion[PU.region] = Object.assign({}, nestedPartnersRegion);
-          delete nestedPartnersRegion[US.title];
+          delete nestedPartnersRegion[US.id];
         } else {
-          if (!partnersRegion[PU.region][US.title]) {
-            nestedPartnersRegion[US.title] = 1;
+          if (!partnersRegion[PU.region][US.id]) {
+            nestedPartnersRegion[US.id] = 1;
             partnersRegion[PU.region] = Object.assign({}, nestedPartnersRegion);
-            delete nestedPartnersRegion[US.title];
+            delete nestedPartnersRegion[US.id];
           } else {
-            partnersRegion[PU.region][US.title] =
-              partnersRegion[PU.region][US.title] + 1;
+            partnersRegion[PU.region][US.id] =
+              partnersRegion[PU.region][US.id] + 1;
           }
         }
 
         if (!PU.governorate) return;
         if (!partnersGovernorate[PU.governorate]) {
-          nestedPartnersGovernorate[US.title] = 1;
+          nestedPartnersGovernorate[US.id] = 1;
           partnersGovernorate[PU.governorate] = Object.assign(
             {},
             nestedPartnersGovernorate,
           );
-          delete nestedPartnersGovernorate[US.title];
+          delete nestedPartnersGovernorate[US.id];
         } else {
-          if (!partnersGovernorate[PU.governorate][US.title]) {
-            nestedPartnersGovernorate[US.title] = 1;
+          if (!partnersGovernorate[PU.governorate][US.id]) {
+            nestedPartnersGovernorate[US.id] = 1;
             partnersGovernorate[PU.governorate] = Object.assign(
               {},
               nestedPartnersGovernorate,
             );
-            delete nestedPartnersGovernorate[US.title];
+            delete nestedPartnersGovernorate[US.id];
           } else {
-            partnersGovernorate[PU.governorate][US.title] =
-              partnersGovernorate[PU.governorate][US.title] + 1;
+            partnersGovernorate[PU.governorate][US.id] =
+              partnersGovernorate[PU.governorate][US.id] + 1;
           }
         }
       }

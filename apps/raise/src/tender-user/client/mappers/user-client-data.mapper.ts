@@ -7,7 +7,7 @@ export function UserClientDataMapper(
   prevCreateInput: Prisma.userCreateInput,
   request: RegisterTenderDto,
   lisceneFileObj: UploadFilesJsonbDto | undefined,
-  ofdecObj: UploadFilesJsonbDto | undefined,
+  ofdecObj: UploadFilesJsonbDto[] | undefined,
 ) {
   const userCreatePayload = prevCreateInput;
 
@@ -22,9 +22,7 @@ export function UserClientDataMapper(
       //   type: request.data.board_ofdec_file.type,
       //   size: request.data.board_ofdec_file.size,
       // },
-      board_ofdec_file: ofdecObj && {
-        ...ofdecObj,
-      },
+      board_ofdec_file: ofdecObj && (ofdecObj as any),
       center_administration: request.data.center_administration || null,
       ceo_mobile: request.data.ceo_mobile,
       chairman_name: request.data.chairman_name,

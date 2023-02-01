@@ -44,7 +44,10 @@ import { ProposalCreateDto } from '../dtos/requests/proposal-create.dto';
 import { CreateProposalMapper } from '../mappers/create-proposal.mapper';
 import { UpdateProposalMapper } from '../mappers/update-proposal.mapper';
 import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
-import { logUtil } from '../../../commons/utils/log-util';
+import { SupervisorRegularTrackAccMapper } from '../mappers/supervisor-regular-track-acc.mapper';
+import { SupervisorAccCreatedItemBudgetMapper } from '../mappers/supervisor-acc-created-item-budget-mapper';
+import { SupervisorGrantTrackAccMapper } from '../mappers/supervisor-grant-track-acc.mapper';
+import { SupervisorAccCreatedRecommendedSupportMapper } from '../mappers/supervisor-acc-created-recommend-support-mapper';
 
 @Injectable()
 export class TenderProposalService {
@@ -587,6 +590,12 @@ export class TenderProposalService {
       [];
     let deletedItemBudgetIds: string[] = [];
 
+    let createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[] =
+      [];
+    let updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[] =
+      [];
+    let deletedRecommendedSupportIds: string[] = [];
+
     /* if user is moderator */
     if (currentUser.choosenRole === 'tender_moderator') {
       const mod = await this.moderatorChangeState(
@@ -612,21 +621,27 @@ export class TenderProposalService {
         createdItemBudgetPayload,
         updatedItemBudgetPayload,
         deletedItemBudgetIds,
+        createdRecommendedSupportPayload,
+        updatedRecommendedSupportPayload,
+        deletedRecommendedSupportIds,
       );
 
-      proposalUpdatePayload = {
-        ...supervisorResult.proposalUpdatePayload,
-      };
-
-      proposalLogCreateInput = {
-        ...supervisorResult.proposalLogCreateInput,
-      };
+      proposalUpdatePayload = { ...supervisorResult.proposalUpdatePayload };
+      proposalLogCreateInput = { ...supervisorResult.proposalLogCreateInput };
 
       createdItemBudgetPayload = [...supervisorResult.createdItemBudgetPayload];
-
       updatedItemBudgetPayload = [...supervisorResult.updatedItemBudgetPayload];
-
       deletedItemBudgetIds = [...supervisorResult.deletedItemBudgetIds];
+
+      createdRecommendedSupportPayload = [
+        ...supervisorResult.createdRecommendedSupportPayload,
+      ];
+      updatedRecommendedSupportPayload = [
+        ...supervisorResult.updatedRecommendedSupportPayload,
+      ];
+      deletedRecommendedSupportIds = [
+        ...supervisorResult.deletedRecommendedSupportIds,
+      ];
     }
 
     /* if user is project manager */
@@ -686,6 +701,9 @@ export class TenderProposalService {
         createdItemBudgetPayload,
         updatedItemBudgetPayload,
         deletedItemBudgetIds,
+        createdRecommendedSupportPayload,
+        updatedRecommendedSupportPayload,
+        deletedRecommendedSupportIds,
       );
 
     const { proposal_logs } = updateProposalResult;
@@ -700,7 +718,6 @@ export class TenderProposalService {
     // 'ACCOUNTS_MANAGER' 'ADMIN'  'CASHIER' 'CLIENT'  'FINANCE';
   }
 
-  /* Moderator Done */
   async moderatorChangeState(
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
     proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
@@ -781,6 +798,9 @@ export class TenderProposalService {
     createdItemBudgetPayload: Prisma.proposal_item_budgetCreateManyInput[],
     updatedItemBudgetPayload: Prisma.proposal_item_budgetUncheckedUpdateInput[],
     deletedItemBudgetIds: string[],
+    createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[],
+    updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[],
+    deletedRecommendedSupportIds: string[],
   ) {
     /* supervisor only allowed to acc and reject and step back */
     if (
@@ -805,111 +825,84 @@ export class TenderProposalService {
         created_proposal_budget,
         deleted_proposal_budget,
         updated_proposal_budget,
+        created_recommended_support,
+        updated_recommended_support,
+        deleted_recommended_support,
       } = request.supervisor_payload;
 
+      proposalUpdatePayload = SupervisorRegularTrackAccMapper(
+        proposalUpdatePayload,
+        request.supervisor_payload,
+      );
+
+      /* if there's a new created item budget */
+      createdItemBudgetPayload = SupervisorAccCreatedItemBudgetMapper(
+        request.proposal_id,
+        created_proposal_budget,
+        createdItemBudgetPayload,
+      );
+
+      if (updated_proposal_budget && updated_proposal_budget.length > 0) {
+        for (let i = 0; i < updated_proposal_budget.length; i++) {
+          updatedItemBudgetPayload.push({
+            id: updated_proposal_budget[i].id,
+            amount: updated_proposal_budget[i].amount,
+            clause: updated_proposal_budget[i].clause,
+            explanation: updated_proposal_budget[i].explanation,
+          });
+        }
+      }
+
+      if (deleted_proposal_budget && deleted_proposal_budget.length > 0) {
+        for (const itemBudget of deleted_proposal_budget) {
+          deletedItemBudgetIds.push(itemBudget.id);
+        }
+      }
+
+      proposalUpdatePayload.inner_status =
+        InnerStatusEnum.ACCEPTED_BY_SUPERVISOR;
+      proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
+      proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+
+      /* custom logic if there's special logic for regular track */
       if (proposal.project_track !== 'CONCESSIONAL_GRANTS') {
-        /* proposal */
-        proposalUpdatePayload.inner_status =
-          InnerStatusEnum.ACCEPTED_BY_SUPERVISOR;
-        proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
-        proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
-
-        /* propsal supervisor payload */
-        if (request.supervisor_payload.inclu_or_exclu) {
-          proposalUpdatePayload.inclu_or_exclu =
-            request.supervisor_payload.inclu_or_exclu;
-        }
-
-        if (request.supervisor_payload.vat_percentage) {
-          proposalUpdatePayload.vat_percentage =
-            request.supervisor_payload.vat_percentage;
-        }
-
-        if (request.supervisor_payload.support_goal_id) {
-          proposalUpdatePayload.support_goal_id =
-            request.supervisor_payload.support_goal_id;
-        }
-
-        if (request.supervisor_payload.vat) {
-          proposalUpdatePayload.vat = request.supervisor_payload.vat;
-        }
-
-        if (request.supervisor_payload.support_outputs) {
-          proposalUpdatePayload.support_outputs =
-            request.supervisor_payload.support_outputs;
-        }
-
-        if (request.supervisor_payload.number_of_payments_by_supervisor) {
-          proposalUpdatePayload.number_of_payments_by_supervisor =
-            request.supervisor_payload.number_of_payments_by_supervisor;
-        }
-
-        if (request.supervisor_payload.fsupport_by_supervisor) {
-          proposalUpdatePayload.fsupport_by_supervisor =
-            request.supervisor_payload.fsupport_by_supervisor;
-        }
-
-        if (request.supervisor_payload.does_an_agreement) {
-          proposalUpdatePayload.does_an_agreement =
-            request.supervisor_payload.does_an_agreement;
-        }
-
-        if (request.supervisor_payload.need_picture) {
-          proposalUpdatePayload.need_picture =
-            request.supervisor_payload.need_picture;
-        }
-
-        if (request.supervisor_payload.closing_report) {
-          proposalUpdatePayload.closing_report =
-            request.supervisor_payload.closing_report;
-        }
-
-        if (request.supervisor_payload.support_type) {
-          proposalUpdatePayload.support_type =
-            request.supervisor_payload.support_type;
-        }
-
-        if (request.supervisor_payload.clause) {
-          proposalUpdatePayload.clause = request.supervisor_payload.clause;
-        }
-
-        if (request.supervisor_payload.clasification_field) {
-          proposalUpdatePayload.clasification_field =
-            request.supervisor_payload.clasification_field;
-        }
-
-        /* if there's a new created item budget */
-        if (created_proposal_budget && created_proposal_budget.length > 0) {
-          for (const itemBudget of created_proposal_budget) {
-            createdItemBudgetPayload.push({
-              id: uuidv4(),
-              amount: itemBudget.amount,
-              clause: itemBudget.clause,
-              explanation: itemBudget.explanation,
-              proposal_id: request.proposal_id,
-            });
-          }
-        }
-
-        if (updated_proposal_budget && updated_proposal_budget.length > 0) {
-          updatedItemBudgetPayload = [...updated_proposal_budget];
-        }
-
-        if (deleted_proposal_budget && deleted_proposal_budget.length > 0) {
-          for (const itemBudget of deleted_proposal_budget) {
-            deletedItemBudgetIds.push(itemBudget.id);
-          }
-        }
-
-        /* log */
-        proposalLogCreateInput.action = ProposalAction.ACCEPT;
-        proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
-        proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_SUPERVISOR;
       }
 
+      /* custom logic if the track is CONCESSIONAL_GRANTS */
       if (proposal.project_track === 'CONCESSIONAL_GRANTS') {
-        //
+        proposalUpdatePayload = SupervisorGrantTrackAccMapper(
+          proposalUpdatePayload,
+          request.supervisor_payload,
+        );
+
+        createdRecommendedSupportPayload =
+          SupervisorAccCreatedRecommendedSupportMapper(
+            request.proposal_id,
+            created_recommended_support,
+            createdRecommendedSupportPayload,
+          );
+
+        if (
+          updated_recommended_support &&
+          updated_recommended_support.length > 0
+        ) {
+          updatedRecommendedSupportPayload = updated_recommended_support;
+        }
+
+        if (
+          deleted_recommended_support &&
+          deleted_recommended_support.length > 0
+        ) {
+          for (const recommendSuppport of deleted_recommended_support) {
+            deletedRecommendedSupportIds.push(recommendSuppport.id);
+          }
+        }
       }
+
+      /* accept supervisor logs */
+      proposalLogCreateInput.action = ProposalAction.ACCEPT;
+      proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_SUPERVISOR;
     }
 
     /* reject (same for grants and not grants) DONE */
@@ -944,10 +937,12 @@ export class TenderProposalService {
       createdItemBudgetPayload,
       updatedItemBudgetPayload,
       deletedItemBudgetIds,
+      createdRecommendedSupportPayload,
+      updatedRecommendedSupportPayload,
+      deletedRecommendedSupportIds,
     };
   }
 
-  /* Project Manager Done */
   async projectManagerChangeState(
     proposal: proposal,
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
@@ -1222,387 +1217,6 @@ export class TenderProposalService {
         body: subject + ',' + employeeContent,
       });
     }
-  }
-
-  // async updateProposalByCmsUsers(
-  //   user: user,
-  //   body: any,
-  //   id: string,
-  //   role: string,
-  // ) {
-  //   const { action } = body;
-  //   if (action === ProposalAction.ACCEPT) {
-  //     return this.acceptProposal(id, body, role, user);
-  //   } else if (action === ProposalAction.REJECT) {
-  //     return this.rejectProposal(id, body, role, user);
-  //   } else if (action === ProposalAction.STEP_BACK) {
-  //     return this.proposalStepBack(id, body, role, user);
-  //   } else if (
-  //     action === ProposalAction.ACCEPT_AND_ASK_FOR_CONSULTION &&
-  //     role === TenderAppRoleEnum.PROJECT_MANAGER
-  //   ) {
-  //     const proposal = await this.updateProposalStatus(
-  //       id,
-  //       InnerStatusEnum.ACCEPTED_AND_NEED_CONSULTANT,
-  //     );
-  //     await this.createProposalLog(
-  //       body,
-  //       role,
-  //       proposal,
-  //       user.id,
-  //       `ProposalWasAccepteddBy@${user.employee_name}`,
-  //       ProposalAction.ACCEPT_AND_ASK_FOR_CONSULTION,
-  //     );
-  //     return proposal;
-  //   } else if (
-  //     (role === TenderAppRoleEnum.CEO ||
-  //       role === TenderAppRoleEnum.PROJECT_MANAGER ||
-  //       role === TenderAppRoleEnum.CASHIER ||
-  //       role === TenderAppRoleEnum.FINANCE) &&
-  //     action === ProposalAction.ASK_FOR_UPDATE
-  //   ) {
-  //     await this.updateRequestToTheSuperVisor(user, body, id, role);
-  //   } else {
-  //     throw new UnauthorizedException('There is no such action to do!');
-  //   }
-  // }
-
-  // async updateRequestToTheSuperVisor(
-  //   user: user,
-  //   body: any,
-  //   id: string,
-  //   role: string,
-  // ) {
-  //   const oldProposal = await this.prismaService.proposal.findUnique({
-  //     where: {
-  //       id,
-  //     },
-  //   });
-  //   const old_inner_status = oldProposal?.inner_status
-  //     ? oldProposal.inner_status
-  //     : undefined;
-  //   const proposal = await this.updateProposalStatus(
-  //     id,
-  //     InnerStatusEnum.ACCEPTED_BY_MODERATOR,
-  //     undefined,
-  //     OutterStatusEnum.UPDATE_REQUEST,
-  //     old_inner_status,
-  //   );
-  //   await this.createProposalLog(
-  //     body,
-  //     role,
-  //     proposal,
-  //     user.id,
-  //     `ProposalHasAnUpdateRequestBy@${user.employee_name}`,
-  //     ProposalAction.ASK_FOR_UPDATE,
-  //   );
-  //   return proposal;
-  // }
-
-  // async proposalStepBack(id: string, body: any, role: string, user: user) {
-  //   let proposal;
-  //   if (role === TenderAppRoleEnum.PROJECT_SUPERVISOR) {
-  //     proposal = await this.updateProposalStatus(
-  //       id,
-  //       InnerStatusEnum.CREATED_BY_CLIENT,
-  //       undefined,
-  //       OutterStatusEnum.ONGOING,
-  //     );
-  //     await this.createProposalLog(
-  //       body,
-  //       role,
-  //       proposal,
-  //       user.id,
-  //       `ProposalWasRolledBackBy@${user.employee_name}`,
-  //       ProposalAction.STEP_BACK,
-  //     );
-  //   } else if (role === TenderAppRoleEnum.PROJECT_MANAGER) {
-  //     proposal = await this.updateProposalStatus(
-  //       id,
-  //       InnerStatusEnum.ACCEPTED_BY_MODERATOR,
-  //       undefined,
-  //       OutterStatusEnum.ONGOING,
-  //     );
-  //     await this.createProposalLog(
-  //       body,
-  //       role,
-  //       proposal,
-  //       user.id,
-  //       `ProposalWasRolledBackBy@${user.employee_name}`,
-  //       ProposalAction.STEP_BACK,
-  //     );
-  //   } else if (role === TenderAppRoleEnum.CEO) {
-  //     proposal = await this.updateProposalStatus(
-  //       id,
-  //       InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER,
-  //       undefined,
-  //       OutterStatusEnum.ONGOING,
-  //     );
-  //     await this.createProposalLog(
-  //       body,
-  //       role,
-  //       proposal,
-  //       user.id,
-  //       `ProposalWasRolledBackBy@${user.employee_name}`,
-  //       ProposalAction.STEP_BACK,
-  //     );
-  //   } else {
-  //     throw new UnauthorizedException(
-  //       "User doesn't have the required role to access this resource!",
-  //     );
-  //   }
-  //   return proposal;
-  // }
-
-  // async rejectProposal(id: string, body: any, role: string, user: user) {
-  //   let proposal;
-  //   if (role === TenderAppRoleEnum.MODERATOR) {
-  //     proposal = await this.updateProposalStatus(
-  //       id,
-  //       InnerStatusEnum.REJECTED_BY_MODERATOR,
-  //       undefined,
-  //       OutterStatusEnum.CANCELED,
-  //     );
-  //     await this.createProposalLog(
-  //       body,
-  //       role,
-  //       proposal,
-  //       user.id,
-  //       `ProposalWasRejectedBy@${user.employee_name}`,
-  //       ProposalAction.REJECT,
-  //     );
-  //   } else if (role === TenderAppRoleEnum.PROJECT_SUPERVISOR) {
-  //     proposal = await this.updateProposalStatus(
-  //       id,
-  //       InnerStatusEnum.REJECTED_BY_SUPERVISOR,
-  //       undefined,
-  //       OutterStatusEnum.CANCELED,
-  //     );
-  //     await this.createProposalLog(
-  //       body,
-  //       role,
-  //       proposal,
-  //       user.id,
-  //       `ProposalWasRejectedBy@${user.employee_name}`,
-  //       ProposalAction.REJECT,
-  //     );
-  //   } else if (role === TenderAppRoleEnum.PROJECT_MANAGER) {
-  //     proposal = await this.updateProposalStatus(
-  //       id,
-  //       InnerStatusEnum.REJECTED_BY_PROJECT_MANAGER,
-  //       undefined,
-  //       OutterStatusEnum.CANCELED,
-  //     );
-  //     await this.createProposalLog(
-  //       body,
-  //       role,
-  //       proposal,
-  //       user.id,
-  //       `ProposalWasRejectedBy@${user.employee_name}`,
-  //       ProposalAction.REJECT,
-  //     );
-  //   } else if (role === TenderAppRoleEnum.CONSULTANT) {
-  //     proposal = await this.updateProposalStatus(
-  //       id,
-  //       InnerStatusEnum.REJECTED_BY_CONSULTANT,
-  //     );
-  //     await this.createProposalLog(
-  //       body,
-  //       role,
-  //       proposal,
-  //       user.id,
-  //       `ProposalWasRejectedBy@${user.employee_name}`,
-  //       ProposalAction.REJECT,
-  //     );
-  //   } else if (role === TenderAppRoleEnum.CEO) {
-  //     proposal = await this.updateProposalStatus(
-  //       id,
-  //       InnerStatusEnum.REJECTED_BY_CEO,
-  //       undefined,
-  //       OutterStatusEnum.CANCELED,
-  //     );
-  //     await this.createProposalLog(
-  //       body,
-  //       role,
-  //       proposal,
-  //       user.id,
-  //       `ProposalWasRejectedBy@${user.employee_name}`,
-  //       ProposalAction.REJECT,
-  //     );
-  //   } else {
-  //     throw new UnauthorizedException(
-  //       "User doesn't have the required role to access this resource!",
-  //     );
-  //   }
-  //   return proposal;
-  // }
-
-  // async acceptProposal(id: string, body: any, role: string, user: user) {
-  //   let proposal;
-  //   if (role === TenderAppRoleEnum.MODERATOR) {
-  //     proposal = await this.updateProposalStatus(
-  //       id,
-  //       InnerStatusEnum.ACCEPTED_BY_MODERATOR,
-  //       body.track_id,
-  //     );
-  //     await this.createProposalLog(
-  //       body,
-  //       role,
-  //       proposal,
-  //       user.id,
-  //       `ProposalWasAcceptedBy@${user.employee_name}`,
-  //       ProposalAction.ACCEPT,
-  //     );
-  //   } else if (role === TenderAppRoleEnum.PROJECT_SUPERVISOR) {
-  //     proposal = await this.updateProposalStatus(
-  //       id,
-  //       InnerStatusEnum.ACCEPTED_BY_SUPERVISOR,
-  //       body.track_id,
-  //     );
-  //     await this.createProposalLog(
-  //       body,
-  //       role,
-  //       proposal,
-  //       user.id,
-  //       `ProposalWasAcceptedBy@${user.employee_name}`,
-  //       ProposalAction.ACCEPT,
-  //     );
-  //     const track = await this.prismaService.track.findUnique({
-  //       where: { id: proposal.track_id as string },
-  //     });
-  //     if (!track)
-  //       throw new NotFoundException('this proposal does not belonge to track');
-  //     if (track.name === 'مسار المنح العام') {
-  //       const recommended_support_consultant =
-  //         body.consultant_form.recommended_support_consultant;
-  //       delete body.consultant_form.recommended_support_consultant;
-  //       const consultantForm = await this.prismaService.consultant_form.create({
-  //         data: {
-  //           ...body.consultant_form,
-  //           proposal_id: proposal.id,
-  //           supervisor_id: user.id,
-  //         },
-  //       });
-  //       for (let i = 0; i < recommended_support_consultant.length; i++) {
-  //         recommended_support_consultant[i].consultant_form_id =
-  //           consultantForm.id;
-  //       }
-  //       await this.prismaService.recommended_support_consultant.createMany({
-  //         data: recommended_support_consultant,
-  //       });
-  //     } else {
-  //       await this.prismaService.supervisor_form.create({
-  //         data: {
-  //           ...body.supervisor_form,
-  //           proposal_id: proposal.id,
-  //           supervisor_id: user.id,
-  //         },
-  //       });
-  //     }
-  //   } else if (role === TenderAppRoleEnum.PROJECT_MANAGER) {
-  //     proposal = await this.updateProposalStatus(
-  //       id,
-  //       InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER,
-  //     );
-  //     await this.createProposalLog(
-  //       body,
-  //       role,
-  //       proposal,
-  //       user.id,
-  //       `ProposalWasAcceptedBy@${user.employee_name}`,
-  //       ProposalAction.ACCEPT,
-  //     );
-  //   } else if (role === TenderAppRoleEnum.CONSULTANT) {
-  //     proposal = await this.updateProposalStatus(
-  //       id,
-  //       InnerStatusEnum.ACCEPTED_BY_CONSULTANT,
-  //     );
-  //     await this.createProposalLog(
-  //       body,
-  //       role,
-  //       proposal,
-  //       user.id,
-  //       `ProposalWasAcceptedBy@${user.employee_name}`,
-  //       ProposalAction.ACCEPT,
-  //     );
-  //     const projectManager = (await this.prismaService.user.findUnique({
-  //       where: {
-  //         id: proposal.project_manager_id as string,
-  //       },
-  //     })) as user;
-  //     if (!projectManager)
-  //       throw new NotFoundException(
-  //         'there is no project manager in this proposal',
-  //       );
-  //     await this.createProposalLog(
-  //       body,
-  //       role,
-  //       proposal,
-  //       projectManager.id,
-  //       `ProposalWasAcceptedBy@${projectManager.employee_name}`,
-  //       ProposalAction.ACCEPT,
-  //     );
-  //   } else if (role === TenderAppRoleEnum.CEO) {
-  //     proposal = await this.updateProposalStatus(
-  //       id,
-  //       InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION,
-  //     );
-  //     await this.createProposalLog(
-  //       body,
-  //       role,
-  //       proposal,
-  //       user.id,
-  //       `ProposalWasAcceptedBy@${user.employee_name}`,
-  //       ProposalAction.ACCEPT,
-  //     );
-  //   } else {
-  //     throw new UnauthorizedException(
-  //       "User doesn't have the required role to access this resource!",
-  //     );
-  //   }
-  //   return proposal;
-  // }
-
-  async updateProposalStatus(
-    id: string,
-    inner_status: string,
-    track_id?: string,
-    outter_status?: string,
-    old_inner_status?: string,
-  ) {
-    return this.prismaService.proposal.update({
-      where: {
-        id,
-      },
-      data: {
-        inner_status,
-        track_id,
-        outter_status,
-        old_inner_status,
-      },
-    });
-  }
-
-  async createProposalLog(
-    body: any,
-    user_role: string,
-    proposal: proposal,
-    reviewer_id: string,
-    message: string,
-    action: string,
-  ) {
-    await this.prismaService.proposal_log.create({
-      data: {
-        id: body.log_id,
-        proposal_id: proposal.id,
-        ...(body.notes && { notes: body.notes }),
-        message,
-        reviewer_id,
-        user_role,
-        client_user_id: proposal.submitter_user_id,
-        action,
-      },
-    });
   }
 
   async fetchTrack(limit: number, page: number) {

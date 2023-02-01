@@ -84,7 +84,6 @@ model employees_permissions {
 
 model inquiry_type {
   id         String       @id
-  tittle     String
   contact_us contact_us[]
 }
 
@@ -265,8 +264,7 @@ model proposal_log {
 }
 
 model proposal_state {
-  id    String @id
-  title String @unique
+  id String @id
 }
 
 model region {
@@ -320,7 +318,6 @@ model user {
 
 model user_type {
   id              String            @id
-  title           String            @unique(map: "user_type_user_type_tittle_key")
   proposal        proposal[]
   proposal_assign proposal_assign[]
   proposal_log    proposal_log[]
@@ -346,13 +343,13 @@ model proposal_follow_up {
   content        String?
   user_id        String
   submitter_role String
+  employee_only  Boolean
   proposal       proposal  @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
   user           user      @relation("proposal_follow_up_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model proposal_status {
   id       String     @id
-  title    String     @unique
   proposal proposal[]
 }
 
@@ -371,7 +368,6 @@ model client_log {
 
 model proposal_request {
   id       String     @id
-  title    String     @unique
   proposal proposal[]
 }
 
@@ -398,13 +394,11 @@ model supervisor {
 
 model proposal_beneficiaries {
   id       String     @id
-  title    String     @unique
   proposal proposal[]
 }
 
 model proposal_step {
   id       String     @id
-  title    String     @unique
   proposal proposal[]
 }
 
@@ -419,7 +413,6 @@ model cheque {
 
 model payment_status {
   id      String    @id
-  title   String?
   payment payment[]
 }
 
@@ -433,19 +426,16 @@ model propsal_bank_information {
 
 model correspondance_category {
   id        String      @id
-  title     String      @unique
   room_chat room_chat[]
 }
 
 model edit_request_status {
   id            String          @id
-  title         String          @unique
   edit_requests edit_requests[]
 }
 
 model project_tracks {
   id       String     @id(map: "project_kind_pkey") @unique(map: "project_kind_id_key")
-  title    String     @unique(map: "project_kind_title_key")
   proposal proposal[]
   user     user[]
 }
@@ -540,9 +530,9 @@ model recommended_support_consultant {
   clause      String
   explanation String
   amount      Int
-  id          String    @id
-  proposal_id String?
-  proposal    proposal? @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
+  id          String   @id
+  proposal_id String
+  proposal    proposal @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
 }
 
 model track {
@@ -567,7 +557,6 @@ model track_section {
 
 model user_status {
   id              String            @id(map: "client_status_pkey")
-  title           String            @unique(map: "client_status_title_key")
   client_log      client_log[]
   user            user[]
   user_status_log user_status_log[]
@@ -583,13 +572,11 @@ model user_role {
 
 model content_type {
   id      String    @id
-  title   String    @unique
   message message[]
 }
 
 model accreditation_type {
   id       String     @id
-  title    String     @unique
   proposal proposal[]
 }
 
@@ -603,7 +590,6 @@ model project_timeline {
 
 model support_goal {
   id       String     @id
-  title    String?    @unique
   proposal proposal[]
 }
 
@@ -657,16 +643,18 @@ model edit_requests {
 }
 
 model file_manager {
-  id          String   @id
-  name        String   @db.VarChar
-  size        Decimal  @db.Decimal
-  mimetype    String   @db.VarChar
-  url         String   @unique @db.VarChar
-  table_name  String   @db.VarChar
-  column_name String   @db.VarChar
-  user_id     String
-  is_deleted  Boolean  @default(false)
-  created_at  DateTime @default(now()) @db.Timestamptz(6)
-  updated_at  DateTime @default(now()) @db.Timestamptz(6)
-  user        user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  id                  String   @id
+  name                String   @db.VarChar
+  size                Decimal  @db.Decimal
+  mimetype            String   @db.VarChar
+  url                 String   @unique @db.VarChar
+  table_name          String   @db.VarChar
+  column_name         String   @db.VarChar
+  user_id             String
+  is_deleted          Boolean  @default(false)
+  created_at          DateTime @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime @default(now()) @db.Timestamptz(6)
+  proposal_id         String?
+  bank_information_id String?
+  user                user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }

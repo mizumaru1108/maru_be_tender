@@ -277,97 +277,158 @@ export class TenderProposalRepository {
     createdItemBudgetPayload: Prisma.proposal_item_budgetCreateManyInput[],
     updatedItemBudgetPayload: Prisma.proposal_item_budgetUncheckedUpdateInput[],
     deletedItemBudgetIds: string[],
+    createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[],
+    updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[],
+    deletedRecommendedSupportIds: string[],
   ) {
     try {
-      return await this.prismaService.$transaction(async (prismaTrans) => {
-        const proposal = await prismaTrans.proposal.update({
-          where: {
-            id: proposalId,
-          },
-          data: proposalUpdatePayload,
-        });
+      return await this.prismaService.$transaction(
+        async (prismaTrans) => {
+          const proposal = await prismaTrans.proposal.update({
+            where: {
+              id: proposalId,
+            },
+            data: proposalUpdatePayload,
+          });
 
-        const proposal_logs = await prismaTrans.proposal_log.create({
-          data: {
-            ...proposalLogCreateInput,
-            // get the last log.created_at, and create a new date, compare the time difference, and convert to minutes, if last log is null, then response time is null
-            response_time: lastLog
-              ? Math.round(
-                  (new Date().getTime() - lastLog.created_at.getTime()) / 60000,
-                )
-              : null,
-          },
-          include: {
-            proposal: {
-              select: {
-                id: true,
-                project_name: true,
-                submitter_user_id: true,
-                user: {
-                  select: {
-                    employee_name: true,
-                    email: true,
-                    mobile_number: true,
+          const proposal_logs = await prismaTrans.proposal_log.create({
+            data: {
+              ...proposalLogCreateInput,
+              // get the last log.created_at, and create a new date, compare the time difference, and convert to minutes, if last log is null, then response time is null
+              response_time: lastLog
+                ? Math.round(
+                    (new Date().getTime() - lastLog.created_at.getTime()) /
+                      60000,
+                  )
+                : null,
+            },
+            include: {
+              proposal: {
+                select: {
+                  id: true,
+                  project_name: true,
+                  submitter_user_id: true,
+                  user: {
+                    select: {
+                      employee_name: true,
+                      email: true,
+                      mobile_number: true,
+                    },
                   },
                 },
               },
-            },
-            reviewer: {
-              select: {
-                employee_name: true,
-                email: true,
-                mobile_number: true,
+              reviewer: {
+                select: {
+                  employee_name: true,
+                  email: true,
+                  mobile_number: true,
+                },
               },
             },
-          },
-        });
-
-        if (createdItemBudgetPayload && createdItemBudgetPayload.length > 0) {
-          await prismaTrans.proposal_item_budget.createMany({
-            data: createdItemBudgetPayload,
           });
-        }
 
-        if (updatedItemBudgetPayload && updatedItemBudgetPayload.length > 0) {
-          for (let i = 0; i < updatedItemBudgetPayload.length; i++) {
-            const itemBudgetToUpdate =
-              await prismaTrans.proposal_item_budget.findUnique({
+          /* Crud item budget -------------------------------------------------------------------------- */
+          if (createdItemBudgetPayload && createdItemBudgetPayload.length > 0) {
+            await prismaTrans.proposal_item_budget.createMany({
+              data: createdItemBudgetPayload,
+            });
+          }
+
+          if (updatedItemBudgetPayload && updatedItemBudgetPayload.length > 0) {
+            for (let i = 0; i < updatedItemBudgetPayload.length; i++) {
+              const itemBudgetToUpdate =
+                await prismaTrans.proposal_item_budget.findUnique({
+                  where: {
+                    id: updatedItemBudgetPayload[i].id as string,
+                  },
+                });
+              if (!itemBudgetToUpdate) {
+                throw new BadRequestException(
+                  'please make sure that item budget that you trying to update is exist!',
+                );
+              }
+
+              await prismaTrans.proposal_item_budget.update({
                 where: {
                   id: updatedItemBudgetPayload[i].id as string,
                 },
+                data: {
+                  ...updatedItemBudgetPayload[i],
+                },
               });
-            if (!itemBudgetToUpdate) {
-              throw new BadRequestException(
-                'please make sure that item budget that you trying to update is exist!',
-              );
             }
+          }
 
-            await prismaTrans.proposal_item_budget.update({
+          if (deletedItemBudgetIds && deletedItemBudgetIds.length > 0) {
+            await prismaTrans.proposal_item_budget.deleteMany({
               where: {
-                id: updatedItemBudgetPayload[i].id as string,
-              },
-              data: {
-                ...updatedItemBudgetPayload[i],
+                id: {
+                  in: [...deletedItemBudgetIds],
+                },
               },
             });
           }
-        }
+          /* Crud item budget -------------------------------------------------------------------------- */
 
-        if (deletedItemBudgetIds && deletedItemBudgetIds.length > 0) {
-          await prismaTrans.proposal_item_budget.deleteMany({
-            where: {
-              proposal_id: {
-                in: [...deletedItemBudgetIds],
+          /* Crud recommend support payload ------------------------------------------------------------ */
+          if (
+            createdRecommendedSupportPayload &&
+            createdRecommendedSupportPayload.length > 0
+          ) {
+            await prismaTrans.recommended_support_consultant.createMany({
+              data: createdRecommendedSupportPayload,
+            });
+          }
+
+          if (
+            updatedRecommendedSupportPayload &&
+            updatedRecommendedSupportPayload.length > 0
+          ) {
+            for (let i = 0; i < updatedRecommendedSupportPayload.length; i++) {
+              const itemBudgetToUpdate =
+                await prismaTrans.recommended_support_consultant.findUnique({
+                  where: {
+                    id: updatedRecommendedSupportPayload[i].id as string,
+                  },
+                });
+              if (!itemBudgetToUpdate) {
+                throw new BadRequestException(
+                  'please make sure that item budget that you trying to update is exist!',
+                );
+              }
+
+              await prismaTrans.recommended_support_consultant.update({
+                where: {
+                  id: updatedRecommendedSupportPayload[i].id as string,
+                },
+                data: {
+                  ...updatedRecommendedSupportPayload[i],
+                },
+              });
+            }
+          }
+
+          if (
+            deletedRecommendedSupportIds &&
+            deletedRecommendedSupportIds.length > 0
+          ) {
+            await prismaTrans.recommended_support_consultant.deleteMany({
+              where: {
+                id: {
+                  in: [...deletedRecommendedSupportIds],
+                },
               },
-            },
-          });
-        }
+            });
+          }
+          /* Crud recommend support payload ------------------------------------------------------------ */
 
-        return {
-          proposal,
-          proposal_logs,
-        };
-      });
+          return {
+            proposal,
+            proposal_logs,
+          };
+        },
+        { maxWait: 50000, timeout: 150000 },
+      );
     } catch (error) {
       const theError = prismaErrorThrower(
         error,

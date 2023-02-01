@@ -93,25 +93,6 @@ export class ClientEditRequestFieldDto {
   @IsString()
   website?: string;
 
-  // @ApiPropertyOptional()
-  // @IsOptional()
-  // @IsNotEmpty()
-  // @IsEmail()
-  // @IsString()
-  // email?: string;
-
-  // @ApiPropertyOptional()
-  // @IsOptional()
-  // @IsNotEmpty()
-  // @IsString()
-  // password?: string;
-
-  // @ApiPropertyOptional()
-  // @IsOptional()
-  // @IsNotEmpty()
-  // @IsString()
-  // old_password?: string;
-
   @ApiPropertyOptional()
   @IsOptional()
   @IsNotEmpty()
@@ -133,16 +114,13 @@ export class ClientEditRequestFieldDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsNotEmpty()
-  // @Type(() => any)
-  // @ValidateNested()
   license_file?: any;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
-  // @Type(() => any)
-  // @ValidateNested()
-  board_ofdec_file?: any;
+  @IsArray()
+  @IsNotEmpty({ each: true })
+  board_ofdec_file?: any[];
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -226,7 +204,7 @@ export class ClientEditRequestFieldDto {
   @IsOptional()
   @Type(() => ExistingClientBankInformation)
   updatedBanks?: ExistingClientBankInformation[];
-  
+
   @ApiPropertyOptional()
   @IsOptional()
   @Type(() => ExistingClientBankInformation)

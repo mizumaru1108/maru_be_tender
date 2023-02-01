@@ -12,6 +12,7 @@ export const CreateFollowUpMapper = (
     user_id: currentUser.id,
     proposal_id: request.proposal_id,
     submitter_role: currentUser.choosenRole,
+    employee_only: request.employee_only,
   };
 
   if (request.follow_up_type === 'plain') {

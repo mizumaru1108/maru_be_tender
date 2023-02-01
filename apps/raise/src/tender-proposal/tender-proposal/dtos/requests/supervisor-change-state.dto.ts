@@ -7,37 +7,39 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  IsUUID,
   Max,
   Min,
   ValidateNested,
 } from 'class-validator';
+import { CreateProjectBudgetDto } from './create-proposal-item-budget.dto';
+import { ExistingProjectBudgetDto } from './existing-proposal-item-budget.dto';
 
-export class ProposalItemBudgetDto {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  @IsUUID()
-  id: string;
+// export class ProposalItemBudgetDto {
+//   @ApiProperty()
+//   @IsString()
+//   @IsNotEmpty()
+//   @IsUUID()
+//   id: string;
 
-  @ApiProperty()
-  @IsNumber({ maxDecimalPlaces: 2 })
-  @Min(0.01)
-  @Max(999999999999999999.99)
-  amount: number;
+//   @ApiProperty()
+//   @IsNumber({ maxDecimalPlaces: 2 })
+//   @Min(0.01)
+//   @Max(999999999999999999.99)
+//   amount: number;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  explanation: string;
+//   @ApiProperty()
+//   @IsString()
+//   @IsNotEmpty()
+//   explanation: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  clause: string;
-}
+//   @ApiProperty()
+//   @IsString()
+//   @IsNotEmpty()
+//   clause: string;
+// }
 
 export class SupervisorChangeStatePayload {
+  /* exist on regular track but can be exist on GRANT Track */
   @ApiPropertyOptional()
   @IsOptional()
   @IsBoolean()
@@ -114,21 +116,110 @@ export class SupervisorChangeStatePayload {
   @ApiPropertyOptional()
   @IsOptional()
   @IsArray()
-  @Type(() => ProposalItemBudgetDto)
+  @Type(() => CreateProjectBudgetDto)
   @ValidateNested({ each: true })
-  created_proposal_budget?: ProposalItemBudgetDto[];
+  created_proposal_budget?: CreateProjectBudgetDto[];
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsArray()
-  @Type(() => ProposalItemBudgetDto)
+  @Type(() => ExistingProjectBudgetDto)
   @ValidateNested({ each: true })
-  updated_proposal_budget?: ProposalItemBudgetDto[];
+  updated_proposal_budget?: ExistingProjectBudgetDto[];
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsArray()
-  @Type(() => ProposalItemBudgetDto)
+  @Type(() => ExistingProjectBudgetDto)
   @ValidateNested({ each: true })
-  deleted_proposal_budget?: ProposalItemBudgetDto[];
+  deleted_proposal_budget?: ExistingProjectBudgetDto[];
+
+  /* ------------------------------------------------------------------------------------------- */
+
+  /* exist only on CONCESSIONAL_GRANTS */
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  accreditation_type_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  chairman_of_board_of_directors?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  most_clents_projects?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  been_supported_before?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  added_value?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  reasons_to_accept?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0.01)
+  @Max(999999999999999999.99)
+  target_group_num?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  target_group_type?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0.01)
+  @Max(999999999999999999.99)
+  target_group_age?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  been_made_before?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  remote_or_insite?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  @Type(() => CreateProjectBudgetDto)
+  @ValidateNested({ each: true })
+  created_recommended_support?: CreateProjectBudgetDto[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  @Type(() => ExistingProjectBudgetDto)
+  @ValidateNested({ each: true })
+  updated_recommended_support: ExistingProjectBudgetDto[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  @Type(() => ExistingProjectBudgetDto)
+  @ValidateNested({ each: true })
+  deleted_recommended_support?: ExistingProjectBudgetDto[];
 }

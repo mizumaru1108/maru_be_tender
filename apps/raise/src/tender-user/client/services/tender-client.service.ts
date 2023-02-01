@@ -43,6 +43,9 @@ import { CreateClientMapper } from '../mappers/create-client.mapper';
 import { UserClientDataMapper } from '../mappers/user-client-data.mapper';
 import { TenderClientRepository } from '../repositories/tender-client.repository';
 import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
+import { isUploadFileJsonb } from '../../../tender-commons/utils/is-upload-file-jsonb';
+import { finalUploadFileJson } from '../types';
+import { logUtil } from '../../../commons/utils/log-util';
 @Injectable()
 export class TenderClientService {
   private readonly appEnv: string;
@@ -107,9 +110,11 @@ export class TenderClientService {
       | undefined = undefined;
 
     let lisceneFileObj: UploadFilesJsonbDto | undefined = undefined;
-    let ofdecObj: UploadFilesJsonbDto | undefined = undefined;
+    let ofdecObj: UploadFilesJsonbDto[] = [];
     let bankCardObj: UploadFilesJsonbDto | undefined = undefined;
     let uploadedFilePath: string[] = [];
+    const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
+      [];
 
     const maxSize: number = 1024 * 1024 * 8; // 8MB
 
@@ -129,12 +134,21 @@ export class TenderClientService {
         maxSize,
         uploadedFilePath,
       );
-      uploadedFilePath = [
-        ...uploadedFilePath,
-        ...uploadResult.uploadedFilePath,
-      ];
+      uploadedFilePath = [...uploadResult.uploadedFilePath];
 
       lisceneFileObj = uploadResult.fileObj;
+
+      const payload: Prisma.file_managerUncheckedCreateInput = {
+        id: uuidv4(),
+        user_id: idFromFusionAuth,
+        name: uploadResult.fileObj.url.split('/').pop() as string,
+        url: uploadResult.fileObj.url,
+        mimetype: uploadResult.fileObj.type,
+        size: uploadResult.fileObj.size,
+        column_name: 'license_file',
+        table_name: 'client_data',
+      };
+      fileManagerCreateManyPayload.push(payload);
     }
 
     if (request.data.board_ofdec_file) {
@@ -158,12 +172,21 @@ export class TenderClientService {
         maxSize,
         uploadedFilePath,
       );
-      uploadedFilePath = [
-        ...uploadedFilePath,
-        ...uploadResult.uploadedFilePath,
-      ];
+      uploadedFilePath = [...uploadResult.uploadedFilePath];
 
-      ofdecObj = uploadResult.fileObj;
+      const payload: Prisma.file_managerUncheckedCreateInput = {
+        id: uuidv4(),
+        user_id: idFromFusionAuth,
+        name: uploadResult.fileObj.url.split('/').pop() as string,
+        url: uploadResult.fileObj.url,
+        mimetype: uploadResult.fileObj.type,
+        size: uploadResult.fileObj.size,
+        column_name: 'board_ofdec_file',
+        table_name: 'client_data',
+      };
+      fileManagerCreateManyPayload.push(payload);
+
+      ofdecObj.push(uploadResult.fileObj);
     }
 
     if (request.data.bank_informations) {
@@ -176,10 +199,7 @@ export class TenderClientService {
         maxSize,
         uploadedFilePath,
       );
-      uploadedFilePath = [
-        ...uploadedFilePath,
-        ...uploadResult.uploadedFilePath,
-      ];
+      uploadedFilePath = [...uploadResult.uploadedFilePath];
 
       bankCardObj = uploadResult.fileObj;
       bankCreatePayload = BankInformationsMapper(
@@ -187,6 +207,19 @@ export class TenderClientService {
         request.data.bank_informations,
         bankCardObj,
       );
+
+      const payload: Prisma.file_managerUncheckedCreateInput = {
+        id: uuidv4(),
+        user_id: idFromFusionAuth,
+        name: uploadResult.fileObj.url.split('/').pop() as string,
+        url: uploadResult.fileObj.url,
+        mimetype: uploadResult.fileObj.type,
+        size: uploadResult.fileObj.size,
+        column_name: 'card_image',
+        table_name: 'bank_information',
+        bank_information_id: bankCreatePayload.id,
+      };
+      fileManagerCreateManyPayload.push(payload);
     }
 
     userCreatePayload = UserClientDataMapper(
@@ -206,6 +239,7 @@ export class TenderClientService {
       createStatusLogPayload,
       undefined,
       bankCreatePayload,
+      fileManagerCreateManyPayload,
       uploadedFilePath,
     );
 
@@ -395,8 +429,14 @@ export class TenderClientService {
     let uploadedFilePath: string[] = [];
 
     try {
-      const { created_banks, updated_banks, deleted_banks, old_banks } =
-        editRequest;
+      const {
+        created_banks,
+        updated_banks,
+        deleted_banks,
+        old_banks, // current existing bank_information that will be displayed as bank_information at the old data
+        board_ofdec_file,
+        license_file,
+      } = editRequest;
       const clientData =
         await this.tenderClientRepository.findClientDataByUserId(user.id);
       if (!clientData) throw new NotFoundException('Client data not found!');
@@ -427,23 +467,28 @@ export class TenderClientService {
         bank_information: old_banks,
       } as ClientEditRequestFieldDto;
 
-      const fullPayloadRequest = this.sanitizeEditRequest(tmp);
+      const clientOldRequest = this.sanitizeEditRequest(tmp); // client_request (old data / previous data)
+      let clientNewRequest = this.sanitizeEditRequest(editRequest); // client_request (new data / data that requested to account manager to be approved)
       const createdBankInfo: ExistingClientBankInformation[] = [];
       const updatedBankInfo: ExistingClientBankInformation[] = [];
       const deletedBankInfo: ExistingClientBankInformation[] = [];
 
-      let fullPayloadFinal = this.sanitizeEditRequest(editRequest);
+      // for creating file manager
+      const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
+        [];
 
       let baseNewEditRequest = {
         id: uuidv4(),
         user_id: user.id,
         status_id: 'PENDING',
       };
+
       let newEditRequest: Prisma.edit_requestsUncheckedCreateInput | undefined =
         undefined;
 
       const maxSize: number = 1024 * 1024 * 6; // 6MB
 
+      // the bank_information that will be displayed as a bank_information at the new data
       const newBankInfo: ExistingClientBankInformation[] = [];
 
       if (old_banks && old_banks.length > 0) {
@@ -478,6 +523,19 @@ export class TenderClientService {
 
               uploadedFilePath = uploadResult.uploadedFilePath;
               cardImage = uploadResult.fileObj;
+
+              const payload: Prisma.file_managerUncheckedCreateInput = {
+                id: uuidv4(),
+                user_id: user.id,
+                name: uploadResult.fileObj.url.split('/').pop() as string,
+                url: uploadResult.fileObj.url,
+                mimetype: uploadResult.fileObj.type,
+                size: uploadResult.fileObj.size,
+                column_name: 'card_image',
+                table_name: 'bank_information',
+                bank_information_id: updated_banks[i].id,
+              };
+              fileManagerCreateManyPayload.push(payload);
             }
 
             let newData: Prisma.bank_informationUncheckedCreateInput = {
@@ -533,50 +591,273 @@ export class TenderClientService {
 
             uploadedFilePath = uploadResult.uploadedFilePath;
 
-            newBankInfo.push({
-              id: uuidv4(),
-              user_id: user.id,
-              bank_name: created_banks[i].bank_name,
-              bank_account_name: created_banks[i].bank_account_name,
-              bank_account_number: created_banks[i].bank_account_number,
-              card_image: uploadResult.fileObj,
-            });
+            const newBankId = uuidv4();
 
-            createdBankInfo.push({
-              id: uuidv4(),
+            const newBank: ExistingClientBankInformation = {
+              id: newBankId,
               user_id: user.id,
               bank_name: created_banks[i].bank_name,
               bank_account_name: created_banks[i].bank_account_name,
               bank_account_number: created_banks[i].bank_account_number,
               card_image: uploadResult.fileObj,
-            });
+            };
+
+            newBankInfo.push(newBank);
+            createdBankInfo.push(newBank);
+
+            const payload: Prisma.file_managerUncheckedCreateInput = {
+              id: uuidv4(),
+              user_id: user.id,
+              name: uploadResult.fileObj.url.split('/').pop() as string,
+              url: uploadResult.fileObj.url,
+              mimetype: uploadResult.fileObj.type,
+              size: uploadResult.fileObj.size,
+              column_name: 'card_image',
+              table_name: 'bank_information',
+              bank_information_id: newBankId,
+            };
+            fileManagerCreateManyPayload.push(payload);
           }
         }
 
-        fullPayloadRequest['bank_information'] = old_banks;
-        fullPayloadFinal['bank_information'] = newBankInfo;
-        fullPayloadFinal = {
-          ...fullPayloadFinal,
+        clientOldRequest['bank_information'] = old_banks;
+        clientNewRequest['bank_information'] = newBankInfo;
+        clientNewRequest = {
+          ...clientNewRequest,
           createdBanks: [...createdBankInfo],
           updatedBanks: [...updatedBankInfo],
           deletedBanks: deleted_banks,
         };
       }
 
+      const ofdecFromDb = clientData.board_ofdec_file;
+      // console.log({ ofdecFromDb });
+      const oldOfdec: finalUploadFileJson[] = [];
+      const newOfdec: finalUploadFileJson[] = [];
+      if (!!board_ofdec_file && board_ofdec_file.length > 0) {
+        // console.log(
+        //   'board_ofdec_file[] on request length = ',
+        //   board_ofdec_file.length,
+        // );
+        for (let i = 0; i < board_ofdec_file.length; i++) {
+          if (isTenderFilePayload(board_ofdec_file[i])) {
+            // console.log(
+            //   `board_ofdec_file[${i}] on request is a new file (base64), so we upload it first`,
+            // );
+            const uploadResult = await this.uploadClientFile(
+              user.id,
+              'Uploading ofdec File for user',
+              board_ofdec_file[i],
+              'ofdec',
+              [
+                FileMimeTypeEnum.JPG,
+                FileMimeTypeEnum.JPEG,
+                FileMimeTypeEnum.PNG,
+                FileMimeTypeEnum.PDF,
+              ],
+              maxSize,
+              uploadedFilePath,
+            );
+
+            // console.log('add uploaded file url to uploaded file path');
+            uploadedFilePath = uploadResult.uploadedFilePath;
+            // console.log({ uploadedFilePath });
+
+            let tmpCreatedOfdec: finalUploadFileJson = uploadResult.fileObj;
+            tmpCreatedOfdec.color = 'green';
+
+            // console.log(
+            //   `pushing the new file to the new uploaded file of board_ofdec_file[${i}] to newOfdec with green color flags`,
+            // );
+            newOfdec.push(tmpCreatedOfdec);
+            // console.log({ newOfdec });
+
+            const payload: Prisma.file_managerUncheckedCreateInput = {
+              id: uuidv4(),
+              user_id: user.id,
+              url: uploadResult.fileObj.url,
+              mimetype: uploadResult.fileObj.type,
+              size: uploadResult.fileObj.size,
+              column_name: 'board_ofdec_file',
+              table_name: 'client_data',
+              name: uploadResult.fileObj.url.split('/').pop() as string,
+            };
+            // console.log(
+            //   `create / push the uploaded file (board_ofdec_file[${i}]) to new file manager create payload`,
+            // );
+            fileManagerCreateManyPayload.push(payload);
+            // console.log({ fileManagerCreateManyPayload });
+          } else if (isUploadFileJsonb(board_ofdec_file[i])) {
+            // console.log(
+            //   `board_ofdec_file[${i}] on request is an old file (already uploaded / !== base64)`,
+            // );
+            // check if ofdecFromDb is array or not with (instance of array)
+            let tmpCreatedOfdec: finalUploadFileJson;
+            // console.log(
+            //   'checking the type of the old ofdec file on db (ofdecFromDb)',
+            // );
+            if (ofdecFromDb instanceof Array) {
+              // console.log(`ofdecFromDb is an instance of array`);
+              // console.log(
+              //   `checking if the board_ofdec_file[${i}] is exist on ofdecFromDb array`,
+              // );
+              // if ofdecFromDb is array then search board_ofdec_file[i] inside ofdecFromDb array
+              const isExist = ofdecFromDb.findIndex(
+                (oldValue: any) => oldValue.url === board_ofdec_file[i].url,
+              );
+              // if exist then it is unchanged (push to newOfdec and oldOfdec with color of transparent),
+              if (isExist > -1) {
+                // console.log(
+                //   `board_ofdec_file[${i}] (from frequest), is EXIST on ofdecFromDb array`,
+                // );
+                tmpCreatedOfdec = board_ofdec_file[i];
+                tmpCreatedOfdec.color = 'transparent';
+
+                // console.log(
+                //   `Pushing board_ofdec_file[${i}] to oldOfdec and newOfdec with transparent color `,
+                // );
+                newOfdec.push(tmpCreatedOfdec);
+                oldOfdec.push(tmpCreatedOfdec);
+                // console.log({ oldOfdec });
+                // console.log({ newOfdec });
+              } else {
+                // console.log(
+                //   `board_ofdec_file[${i}] (from frequest), is NOT EXIST on ofdecFromDb array`,
+                // );
+                tmpCreatedOfdec = board_ofdec_file[i];
+                tmpCreatedOfdec.color = 'red';
+                // console.log(
+                //   `Pushing board_ofdec_file[${i}] to oldOfdec with red color `,
+                // );
+                oldOfdec.push(tmpCreatedOfdec);
+                // console.log({ oldOfdec });
+              }
+            } else {
+              // console.log(`ofdecFromDb is an object`);
+              const tmpOfdec: UploadFilesJsonbDto = {
+                ...(ofdecFromDb as any),
+              };
+              // console.log({ tmpOfdec });
+              // console.log(
+              //   `check if the oldOfdec.url same as board_ofdec_file[${i}].url`,
+              // );
+              // console.log(`ofdecFromDb url ${tmpOfdec.url}`);
+              // console.log(
+              //   `board_ofdec_file[${i}].url ${board_ofdec_file[i].url}`,
+              // );
+              if (tmpOfdec.url === board_ofdec_file[i].url) {
+                // console.log(
+                //   `oldOfdec.url is SAME as the board_ofdec_file[${i}].url`,
+                // );
+                tmpCreatedOfdec = board_ofdec_file[i];
+                tmpCreatedOfdec.color = 'transparent';
+
+                // console.log(
+                //   `pushing board_ofdec_file[${i}] to oldOfdec and newOfdec array with transparent color`,
+                // );
+                oldOfdec.push(tmpCreatedOfdec);
+                newOfdec.push(tmpCreatedOfdec);
+                // console.log({ oldOfdec });
+                // console.log({ newOfdec });
+              } else {
+                // console.log(
+                //   `oldOfdec.url is NOT SAME as the board_ofdec_file[${i}].url`,
+                // );
+                tmpCreatedOfdec = board_ofdec_file[i];
+                tmpCreatedOfdec.color = 'red';
+                // console.log(
+                //   `pushing board_ofdec_file[${i}] to oldOfdec array with red color`,
+                // );
+                oldOfdec.push(tmpCreatedOfdec);
+                // console.log({ oldOfdec });
+              }
+            }
+          }
+        }
+      }
+
+      let oldLicenseFile: finalUploadFileJson =
+        clientOldRequest.license_file.url;
+      let newLicenseFile: finalUploadFileJson =
+        clientOldRequest.license_file.url;
+      if (!!license_file) {
+        if (isTenderFilePayload(license_file)) {
+          const uploadResult = await this.uploadClientFile(
+            user.id,
+            'Uploading license file for user',
+            license_file.card_image,
+            'liscene-file',
+            [FileMimeTypeEnum.JPG, FileMimeTypeEnum.JPEG, FileMimeTypeEnum.PNG],
+            maxSize,
+            uploadedFilePath,
+          );
+
+          uploadedFilePath = uploadResult.uploadedFilePath;
+
+          const payload: Prisma.file_managerUncheckedCreateInput = {
+            id: uuidv4(),
+            user_id: user.id,
+            name: uploadResult.fileObj.url.split('/').pop() as string,
+            url: uploadResult.fileObj.url,
+            mimetype: uploadResult.fileObj.type,
+            size: uploadResult.fileObj.size,
+            column_name: 'license_file',
+            table_name: 'client_data',
+          };
+          fileManagerCreateManyPayload.push(payload);
+
+          oldLicenseFile['color'] = 'red';
+          newLicenseFile = uploadResult.fileObj;
+          newLicenseFile['color'] = 'green';
+        }
+        if (isUploadFileJsonb(license_file)) {
+          let tmp: UploadFilesJsonbDto = license_file;
+          if (tmp.url !== clientOldRequest.license_file.url) {
+            oldLicenseFile['color'] = 'red';
+            newLicenseFile = license_file;
+            newLicenseFile['color'] = 'green';
+          } else {
+            oldLicenseFile['color'] = 'transparent';
+            newLicenseFile['color'] = 'transparent';
+          }
+        }
+      }
+
+      clientOldRequest.board_ofdec_file = oldOfdec;
+      clientNewRequest.board_ofdec_file = newOfdec;
+      clientOldRequest.license_file = oldLicenseFile;
+      clientNewRequest.license_file = newLicenseFile;
+
+      console.log('uploaded file', uploadedFilePath);
+      console.log('old request');
+      console.log(logUtil(clientOldRequest));
+      console.log('new request');
+      console.log(logUtil(clientNewRequest));
       newEditRequest = {
         ...baseNewEditRequest,
-        old_value: JSON.stringify(fullPayloadRequest),
-        new_value: JSON.stringify(fullPayloadFinal),
+        old_value: JSON.stringify(clientOldRequest),
+        new_value: JSON.stringify(clientNewRequest),
       };
 
-      const response = await this.tenderClientRepository.createUpdateRequest(
-        newEditRequest,
-      );
+      // console.log('final result:');
+      // console.log({ ofdecFromDb });
+      // console.log({ oldOfdec });
+      // console.log({ newOfdec });
+      // console.log({ fileManagerCreateManyPayload });
+      // console.log({ uploadedFilePath });
 
-      await this.sendEditRequestNotif(response);
+      throw new BadRequestException('iseng aje');
 
-      return response;
+      // const response = await this.tenderClientRepository.createUpdateRequest(
+      //   newEditRequest,
+      //   fileManagerCreateManyPayload,
+      // );
+
+      // await this.sendEditRequestNotif(response);
+
+      // return response;
     } catch (error) {
+      console.log({ uploadedFilePath });
       if (uploadedFilePath.length > 0) {
         this.logger.log(
           'log',
