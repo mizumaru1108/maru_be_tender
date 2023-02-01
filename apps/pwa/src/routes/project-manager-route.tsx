@@ -70,6 +70,7 @@ export const projectManagerRoute = {
         { element: <Navigate to="/project-manager/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainProjectManager /> },
         { path: 'amandment-request/:id', element: <AmandementRequest /> },
+        { path: ':submiterId/:detailType', element: <ProjectOwnerDetails /> },
         {
           path: 'current-project',
           children: [

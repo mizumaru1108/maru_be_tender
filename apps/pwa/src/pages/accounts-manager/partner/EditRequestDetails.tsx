@@ -78,7 +78,16 @@ function AccountPartnerDetails() {
         setLoading(false);
       }
     } catch (err) {
-      console.log(err);
+      // console.log(err);
+      enqueueSnackbar(err.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+      });
       setLoading(false);
     }
   };

@@ -53,6 +53,7 @@ export const ceoRoute = {
       path: 'dashboard',
       children: [
         { element: <Navigate to="/ceo/dashboard/app" replace />, index: true },
+        { path: ':submiterId/:detailType', element: <ProjectOwnerDetails /> },
         {
           path: 'amandment-request/:id',
           element: <AmandementRequest />,

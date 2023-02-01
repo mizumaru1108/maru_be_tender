@@ -52,6 +52,7 @@ export interface IEditedValues {
   num_of_beneficiaries?: number | null;
   num_of_employed_facility?: number | null;
   bank_information?: bank_information[] | [];
+  bank_informations?: bank_information[] | [];
   governorate?: string | null;
   region?: string | null;
   entity_mobile?: string | null;

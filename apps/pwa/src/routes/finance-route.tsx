@@ -62,6 +62,7 @@ export const financeRoute = {
         { element: <Navigate to="/finance/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainFinance /> },
         { path: 'amandement-request/:id', element: <AmandementRequest /> },
+        { path: ':submiterId/:detailType', element: <ProjectOwnerDetails /> },
         {
           path: 'current-project',
           children: [

@@ -68,7 +68,7 @@ function SummaryClientInfo({ dataClient }: SummaryClientInfoProps) {
       >
         <Button
           onClick={handleShowAllDetails}
-          disabled
+          // disabled
           sx={{
             background: '#0E8478',
             color: '#fff',

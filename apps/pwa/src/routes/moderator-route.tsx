@@ -66,7 +66,7 @@ export const moderatorRoute = {
       children: [
         { element: <Navigate to="/moderator/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainModeratorPage /> },
-        // { path: 'current-project/:id/owner/:submiterId', element: <ProjectOwnerDetails /> },
+        { path: ':submiterId/:detailType', element: <ProjectOwnerDetails /> },
         {
           path: 'current-project',
           children: [

@@ -64,6 +64,7 @@ export const projectSupervisorRoute = {
         { element: <Navigate to="/project-supervisor/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainProjectSupervisor /> },
         { path: 'amandment-request/:id', element: <AmandementRequest /> },
+        { path: ':submiterId/:detailType', element: <ProjectOwnerDetails /> },
         {
           path: 'current-project',
           children: [

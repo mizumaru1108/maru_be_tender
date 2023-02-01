@@ -46,21 +46,21 @@ function InfoUpdateRequestPage() {
     error: errorNewInfoUpdate,
   } = resultInfoUpdateQuery;
 
-  const fetchingEditRequestList = async () => {
-    try {
-      const rest = await axiosInstance.get('tender/client/edit-request/list', {
-        headers: { 'x-hasura-role': activeRole! },
-      });
-      // console.log({ rest });
-      if (rest.data) {
-        setInfoUpdateRequest(rest.data.data);
-        setLoading(false);
-      }
-    } catch (err) {
-      console.log(err);
-      setLoading(false);
-    }
-  };
+  // const fetchingEditRequestList = async () => {
+  //   try {
+  //     const rest = await axiosInstance.get('tender/client/edit-request/list', {
+  //       headers: { 'x-hasura-role': activeRole! },
+  //     });
+  //     // console.log({ rest });
+  //     if (rest.data) {
+  //       setInfoUpdateRequest(rest.data.data);
+  //       setLoading(false);
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //     setLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
     setLoading(true);
@@ -75,7 +75,6 @@ function InfoUpdateRequestPage() {
           status_id: vcd.status_id,
         };
       });
-      // console.log({ newEditRequestList });
       setInfoUpdateRequest(newEditRequestList);
       setLoading(false);
     }

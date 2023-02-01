@@ -17,6 +17,8 @@ import { useLocation, useNavigate, useParams } from 'react-router';
 import { useQuery } from 'urql';
 import { IEditedValues } from '../../../@types/client_data';
 import { gettingUserDataForEdit } from '../../../queries/client/gettingUserDataForEdit';
+import AdministrativeAccording from './accordion/AdministrativeAccording';
+import BankInformationAccording from './accordion/BankInformationAccording';
 import ContactAccordion from './accordion/ContactAccordion';
 import LicenseAccording from './accordion/LicenseAccording';
 import MainAccordion from './accordion/MainAccordion';
@@ -56,7 +58,7 @@ function DetailClientInfo() {
         newval.push(newValues.board_ofdec_file);
       }
       newValues.board_ofdec_file = newval;
-      // console.log('data', newValues);
+      console.log('data', newValues);
       setUserInfo(newValues);
     }
   }, [data]);
@@ -161,6 +163,8 @@ function DetailClientInfo() {
       <MainAccordion userInfo={userInfo} />
       <ContactAccordion userInfo={userInfo} />
       <LicenseAccording userInfo={userInfo} />
+      <AdministrativeAccording userInfo={userInfo} />
+      <BankInformationAccording userInfo={userInfo} />
     </Box>
   );
 }
