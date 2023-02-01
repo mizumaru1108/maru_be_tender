@@ -7,6 +7,7 @@ import FormGenerator from 'components/FormGenerator';
 import { AdministrativeInfoData } from '../form-data';
 import { AdministrativeValuesProps } from '../../../../@types/register';
 import React from 'react';
+import useLocales from '../../../../hooks/useLocales';
 
 type FormProps = {
   onSubmit: (data: any) => void;
@@ -16,21 +17,28 @@ type FormProps = {
 };
 
 const AdministrativeInfoForm = ({ onSubmit, defaultValues, children, isEdit }: FormProps) => {
+  const { translate } = useLocales();
   const RegisterSchema = Yup.object().shape({
     ceo_name: Yup.string().required('Executive Director is required'),
     ceo_mobile: Yup.string()
-      .required('CEO Mobile is required')
-      .matches(
-        /^\+9665[0-9]{8}$/,
-        `The CEO Mobile must be written in the exact way of +9665xxxxxxxx`
-      ),
+      .required(translate('errors.register.ceo_mobile.length'))
+      .test('len', translate('errors.register.ceo_mobile.length'), (val) => {
+        if (val === undefined) {
+          return true;
+        }
+
+        return val.length === 0 || val!.length === 9;
+      }),
     data_entry_name: Yup.string().required('Entery Data Name is required'),
     data_entry_mobile: Yup.string()
-      .required('Data Entry Mobile is required')
-      .matches(
-        /^\+9665[0-9]{8}$/,
-        `The Data Entry Mobile must be written in the exact way of +9665xxxxxxxx`
-      ),
+      .required(translate('errors.register.ceo_mobile.length'))
+      .test('len', translate('errors.register.ceo_mobile.length'), (val) => {
+        if (val === undefined) {
+          return true;
+        }
+
+        return val.length === 0 || val!.length === 9;
+      }),
     data_entry_mail: Yup.string().email().required('Entery Data Email is required'),
   });
 
@@ -62,7 +70,7 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, children, isEdit }: F
       data_entry_mobile: newDataEntryMobile,
       chairman_mobile: newChairmanMobile,
     };
-    console.log('newValues', newValues);
+    // console.log('newValues', newValues);
     reset({ ...newValues });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues]);
@@ -73,40 +81,40 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, children, isEdit }: F
           <RHFTextField
             disabled={isEdit}
             name="ceo_name"
-            label="register_form4.executive_director.label"
-            placeholder="register_form4.executive_director.placeholder"
+            label={translate('register_form4.executive_director.label')}
+            placeholder={translate('register_form4.executive_director.placeholder')}
           />
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFTextField
             disabled={isEdit}
             name="ceo_mobile"
-            label="register_form4.executive_director_mobile.label"
-            placeholder="register_form4.executive_director_mobile.placeholder"
+            label={translate('register_form4.executive_director_mobile.label')}
+            placeholder={translate('register_form4.executive_director_mobile.placeholder')}
           />
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFTextField
             disabled={isEdit}
             name="data_entry_name"
-            label="register_form4.entery_data_name.label"
-            placeholder="register_form4.entery_data_name.placeholder"
+            label={translate('register_form4.entery_data_name.label')}
+            placeholder={translate('register_form4.entery_data_name.placeholder')}
           />
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFTextField
             disabled={isEdit}
             name="data_entry_mobile"
-            label="register_form4.entery_data_phone.label"
-            placeholder="register_form4.entery_data_phone.placeholder"
+            label={translate('register_form4.entery_data_phone.label')}
+            placeholder={translate('register_form4.entery_data_phone.placeholder')}
           />
         </Grid>
         <Grid item md={12} xs={12}>
           <RHFTextField
             disabled={isEdit}
             name="data_entry_mail"
-            label="register_form4.entery_data_email.label"
-            placeholder="register_form4.entery_data_email.placeholder"
+            label={translate('register_form4.entery_data_email.label')}
+            placeholder={translate('register_form4.entery_data_email.placeholder')}
           />
         </Grid>
         {/* <FormGenerator data={AdministrativeInfoData} /> */}

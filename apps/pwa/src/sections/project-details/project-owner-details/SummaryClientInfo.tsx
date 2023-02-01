@@ -1,5 +1,6 @@
 import { Box, Button, Typography } from '@mui/material';
 import useLocales from 'hooks/useLocales';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import { ProjectOwnerDetails } from '../../../@types/project-details';
 
 // ----------------------------------------------------------------------
@@ -20,6 +21,15 @@ interface SummaryClientInfoProps {
 
 function SummaryClientInfo({ dataClient }: SummaryClientInfoProps) {
   const { translate } = useLocales();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const params = useParams();
+  const urls = location.pathname.split('/');
+  const url = `/${urls[1]}/dashboard/${params.submiterId}/details`;
+
+  const handleShowAllDetails = () => {
+    navigate(`${url}`);
+  };
 
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row', gap: 2 }}>
@@ -57,6 +67,8 @@ function SummaryClientInfo({ dataClient }: SummaryClientInfoProps) {
         }}
       >
         <Button
+          onClick={handleShowAllDetails}
+          disabled
           sx={{
             background: '#0E8478',
             color: '#fff',

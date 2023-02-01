@@ -7,6 +7,7 @@ import { LicenseValuesProps } from '../../../../@types/register';
 import useLocales from 'hooks/useLocales';
 import BaseField from 'components/hook-form/BaseField';
 import { useEffect, useMemo } from 'react';
+import { CustomFile } from '../../../../components/upload';
 
 type FormProps = {
   children?: React.ReactNode;
@@ -44,41 +45,42 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProp
         }
         return true;
       }),
-    board_ofdec_file: Yup.mixed()
-      .test('size', translate('errors.register.board_ofdec_file.size'), (value) => {
-        if (value) {
-          // const trueSize = value.size * 28;
-          if (value.size > 1024 * 1024 * 5) {
-            return false;
-          }
-        }
-        return true;
-      })
-      .test(
-        'fileExtension',
-        translate('errors.register.board_ofdec_file.fileExtension'),
-        (value) => {
-          if (value) {
-            if (
-              value.type !== 'application/pdf' &&
-              value.type !== 'application/msword' &&
-              value.type !==
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document' &&
-              value.type !== 'application/vnd.ms-excel' &&
-              value.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' &&
-              value.type !== 'application/vnd.ms-powerpoint' &&
-              value.type !==
-                'application/vnd.openxmlformats-officedocument.presentationml.presentation' &&
-              value.type !== 'image/png' &&
-              value.type !== 'image/jpeg' &&
-              value.type !== 'image/jpg'
-            ) {
-              return false;
-            }
-          }
-          return true;
-        }
-      ),
+    board_ofdec_file: Yup.array().min(1, 'Board of Dec File is required'),
+    // board_ofdec_file: Yup.mixed()
+    //   .test('size', translate('errors.register.board_ofdec_file.size'), (value) => {
+    //     if (value) {
+    //       // const trueSize = value.size * 28;
+    //       if (value.size > 1024 * 1024 * 5) {
+    //         return false;
+    //       }
+    //     }
+    //     return true;
+    //   })
+    //   .test(
+    //     'fileExtension',
+    //     translate('errors.register.board_ofdec_file.fileExtension'),
+    //     (value) => {
+    //       if (value) {
+    //         if (
+    //           value.type !== 'application/pdf' &&
+    //           value.type !== 'application/msword' &&
+    //           value.type !==
+    //             'application/vnd.openxmlformats-officedocument.wordprocessingml.document' &&
+    //           value.type !== 'application/vnd.ms-excel' &&
+    //           value.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' &&
+    //           value.type !== 'application/vnd.ms-powerpoint' &&
+    //           value.type !==
+    //             'application/vnd.openxmlformats-officedocument.presentationml.presentation' &&
+    //           value.type !== 'image/png' &&
+    //           value.type !== 'image/jpeg' &&
+    //           value.type !== 'image/jpg'
+    //         ) {
+    //           return false;
+    //         }
+    //       }
+    //       return true;
+    //     }
+    //   ),
   });
 
   const methods = useForm<LicenseValuesProps>({
@@ -89,12 +91,47 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProp
   const { handleSubmit, reset } = methods;
 
   const onSubmitForm = async (data: LicenseValuesProps) => {
+    // console.log('data', data);
     onSubmit(data);
   };
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    reset(defaultValues);
+    let newValues = { ...defaultValues };
+    let newLetters: any = [];
+    if (
+      defaultValues &&
+      defaultValues.board_ofdec_file &&
+      typeof defaultValues.board_ofdec_file !== 'string' &&
+      defaultValues.board_ofdec_file.length > 0
+    ) {
+      newLetters = [
+        ...newLetters,
+        ...defaultValues.board_ofdec_file.map((item: any) => {
+          const { url } = item;
+          return {
+            ...item,
+            preview: url,
+          };
+        }),
+      ];
+    } else if (
+      defaultValues &&
+      defaultValues.board_ofdec_file &&
+      typeof defaultValues.board_ofdec_file === 'object'
+    ) {
+      // newLetters = [...newLetters, { name: defaultValues.board_ofdec_file }];
+      newLetters.push({
+        ...(defaultValues &&
+          typeof defaultValues.board_ofdec_file === 'object' && {
+            ...(defaultValues.board_ofdec_file as object),
+          }),
+        preview: defaultValues.board_ofdec_file.url,
+      });
+    }
+    newValues = { ...newValues, board_ofdec_file: [...newLetters] };
+    console.log('NewVal', newValues);
+    reset(newValues);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues]);
 
@@ -144,8 +181,8 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProp
         </Grid>
         <Grid item md={12} xs={12}>
           <BaseField
-            // disabled={isEdit}
-            disabled
+            disabled={isEdit}
+            // disabled
             type="uploadBe"
             name="license_file"
             label="register_form3.license_file.label"
@@ -156,11 +193,11 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProp
         </Grid>
         <Grid item md={12} xs={12}>
           <BaseField
-            // disabled={isEdit}
-            disabled
-            type="uploadBe"
+            disabled={isEdit}
+            // disabled
+            type="uploadMulti"
             name="board_ofdec_file"
-            label="register_form3.resolution_file.label"
+            // label="register_form3.resolution_file.label"
           />
         </Grid>
         <Grid item md={12} xs={12} sx={{ mb: '10px' }}>

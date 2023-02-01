@@ -1,4 +1,5 @@
-export const gettingUserDataForEdit = `query MyQuery($id: String = "") {
+export const gettingUserDataForEdit = `
+query MyQuery($id: String = "") {
   user_by_pk(id: $id) {
     client_data {
       client_field

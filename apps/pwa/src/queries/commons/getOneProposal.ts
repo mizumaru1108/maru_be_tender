@@ -1,4 +1,5 @@
-export const getOneProposal = `query getOneProposal($id: String!) {
+export const getOneProposal = `
+query getOneProposal($id: String!) {
   proposal: proposal_by_pk(id: $id) {
     id
     project_name
@@ -14,7 +15,7 @@ export const getOneProposal = `query getOneProposal($id: String!) {
       mobile_number
       roles {
         role {
-          title
+          id
         }
       }
       client_data {

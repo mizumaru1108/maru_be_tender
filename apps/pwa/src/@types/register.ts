@@ -29,10 +29,9 @@ export type LicenseValuesProps = {
   license_number: string;
   license_issue_date: string;
   license_expired: string;
-  license_file: any;
-  board_ofdec_file?: any;
+  license_file: FileProp;
+  board_ofdec_file?: FileProp | FileProp[] | any;
 };
-
 export type ConnectingValuesProps = {
   region: string;
   governorate: string;

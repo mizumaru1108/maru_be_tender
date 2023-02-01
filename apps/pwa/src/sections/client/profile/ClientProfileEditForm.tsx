@@ -39,11 +39,11 @@ function ClientProfileEditForm() {
   const theme = useTheme();
   const { user, activeRole } = useAuth();
   const id = user?.id;
+  const [result] = useQuery({ query: gettingUserDataForEdit, variables: { id } });
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [step, setStep] = useState(0);
   const { translate } = useLocales();
-  const [result] = useQuery({ query: gettingUserDataForEdit, variables: { id } });
   const { data, fetching, error } = result;
   const initialValue = {
     form1: {
@@ -78,7 +78,7 @@ function ClientProfileEditForm() {
         fileExtension: '',
         fullName: '',
       },
-      board_ofdec_file: { size: undefined, url: '', type: '' },
+      board_ofdec_file: null,
     },
     form4: {
       ceo_name: '',
@@ -163,6 +163,12 @@ function ClientProfileEditForm() {
         data_entry_mail,
       } = client;
       setStartedValue({ bank_informations, email, ...client });
+      let newval: any = [];
+      if (board_ofdec_file instanceof Array && board_ofdec_file.length > 0) {
+        newval = [...board_ofdec_file];
+      } else if (typeof board_ofdec_file === 'object') {
+        newval.push(board_ofdec_file);
+      }
       setProfileState((prevState: any) => ({
         ...prevState,
         form1: {
@@ -199,10 +205,10 @@ function ClientProfileEditForm() {
             // size: undefined, url: license_file, type: 'application/pdf'
             ...license_file,
           },
-          board_ofdec_file: {
-            // size: undefined, url: board_ofdec_file, type: 'application/pdf'
-            ...board_ofdec_file,
-          },
+          board_ofdec_file: newval,
+          // {
+          //   ...board_ofdec_file,
+          // },
         },
         form4: {
           ...prevState.form4,
@@ -465,13 +471,14 @@ function ClientProfileEditForm() {
       ...profileState.form4,
       ...newBankInformation,
     };
-    console.log({ payload });
+    const filteredObj = Object.fromEntries(Object.entries(payload).filter(([key, value]) => value));
+    console.log({ filteredObj });
     try {
       const rest = await axiosInstance.post(
         'tender/client/edit-request/create',
         {
           // proposal_id: id,
-          ...payload,
+          ...filteredObj,
         },
         {
           headers: { 'x-hasura-role': activeRole! },
@@ -483,10 +490,6 @@ function ClientProfileEditForm() {
         navigate('/client/my-profile');
         setLoadingButtonState(false);
       }
-      // else {
-      //   alert('Something went wrong');
-      //   setLoadingButtonState(false);
-      // }
     } catch (err) {
       enqueueSnackbar(err.message, {
         variant: 'error',

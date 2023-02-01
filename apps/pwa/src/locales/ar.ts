@@ -1368,6 +1368,7 @@ const ar = {
     card_content: 'الجمعية للدعم والإرشاد والوعي الاجتماعي في منطقة الصناعة الجديدة في الرياض',
     card_href: 'عرض جميع المشاريع للشريك',
     client_details_header: 'ملف العميل',
+    client_detail_profiles_header: 'تفاصيل ملف العميل',
     table_title: 'المشاريع بواسطة',
     summary: {
       title_main: 'المعلومات الرئيسية',

@@ -129,7 +129,12 @@ interface RHFUploadMultiFileProps extends Omit<UploadMultiFileProps, 'files'> {
   placeholder?: string;
 }
 
-export function RHFUploadMultiFile({ name, placeholder, ...other }: RHFUploadMultiFileProps) {
+export function RHFUploadMultiFile({
+  name,
+  placeholder,
+  disabled,
+  ...other
+}: RHFUploadMultiFileProps) {
   const { control, getValues, setValue } = useFormContext();
 
   // const handleDrop = useCallback<(acceptedFiles: File[]) => void>(
@@ -206,9 +211,11 @@ export function RHFUploadMultiFile({ name, placeholder, ...other }: RHFUploadMul
               'image/jpg': [],
               'application/pdf': [],
             }}
+            maxSize={1024 * 1024 * 3}
             files={field.value}
             showPreview
             placeholder={placeholder ?? ''}
+            disabled={disabled}
             error={checkError}
             helperText={
               checkError && (

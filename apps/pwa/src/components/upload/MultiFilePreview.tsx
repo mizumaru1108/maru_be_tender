@@ -18,16 +18,22 @@ export default function MultiFilePreview({
   showPreview = false,
   files,
   onRemove,
+  disabled,
 }: UploadMultiFileProps) {
   const hasFile = (files && files.length > 0) ?? false;
-
+  // console.log('files', files);
   return (
     <List disablePadding sx={{ ...(hasFile && { my: 3 }) }}>
       <AnimatePresence>
         {files &&
+          typeof files !== 'string' &&
+          files.length > 0 &&
           files.map((file, index) => {
-            const { key, name, size, preview, fileExtension, fullName } = getFileData(file, index);
-            const extPrefix = fileExtension?.split('/')[0];
+            const { key, name, size, preview, fileExtension, fullName, type } = getFileData(
+              file,
+              index
+            );
+            const extPrefix = fileExtension ? fileExtension?.split('/')[0] : type?.split('/')[0];
             // console.log('extPrefix', extPrefix, preview);
             if (extPrefix === 'aplication') {
               return (
@@ -90,7 +96,7 @@ export default function MultiFilePreview({
                 >
                   <Image alt="preview" src={preview} ratio="1/1" />
 
-                  {onRemove && (
+                  {!disabled && onRemove && (
                     <IconButton
                       size="small"
                       onClick={() => onRemove(file)}
@@ -146,7 +152,7 @@ export default function MultiFilePreview({
                     <Iconify icon={'eva:close-fill'} />
                   </IconButton>
                 )} */}
-                {onRemove && (
+                {!disabled && onRemove && (
                   <IconButton
                     size="small"
                     onClick={() => onRemove(file)}
