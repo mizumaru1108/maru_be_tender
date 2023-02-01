@@ -14,7 +14,11 @@ import {
   rejectedPartners,
   suspendedPartners,
 } from 'queries/account_manager/statistic';
-import { tableNewRequest, tableInfoUpdateRequest } from 'queries/account_manager/clientNewRequest';
+import {
+  tableNewRequest,
+  tableInfoUpdateRequest,
+  getEditRequestProfileList,
+} from 'queries/account_manager/clientNewRequest';
 //
 import { PATH_ACCOUNTS_MANAGER } from '../../routes/paths';
 import { CardInsightProps } from 'components/card-insight/types';
@@ -83,8 +87,12 @@ function MainManagerPage() {
     query: tableNewRequest,
   });
 
+  // const [resultInfoUpdateQuery, reexecuteInfoUpdateRequest] = useQuery({
+  //   query: tableInfoUpdateRequest,
+  // });
+
   const [resultInfoUpdateQuery, reexecuteInfoUpdateRequest] = useQuery({
-    query: tableInfoUpdateRequest,
+    query: getEditRequestProfileList,
   });
 
   const {
@@ -151,21 +159,33 @@ function MainManagerPage() {
       setNewJoinRequestData(resultDataNR);
     }
 
-    if (resultInfoUpdate) {
-      const resultDataInfoUpdate = resultInfoUpdate?.user?.map((vcl: any) => {
-        const vcd = vcl.client_data;
+    // if (resultInfoUpdate) {
+    //   const resultDataInfoUpdate = resultInfoUpdate?.user?.map((vcl: any) => {
+    //     const vcd = vcl.client_data;
 
+    //     return {
+    //       id: vcd.id,
+    //       partner_name: vcd.client_data.entity,
+    //       createdAt: vcd.client_data.created_at,
+    //       account_status: 'REVISED_ACCOUNT',
+    //       events: vcd.id,
+    //       update_status: true,
+    //     };
+    //   });
+
+    //   setInfoUpdateRequest(resultDataInfoUpdate);
+    // }
+    if (resultInfoUpdate) {
+      const newEditRequestList = resultInfoUpdate?.edit_requests.map((item: any) => {
+        const vcd = item;
         return {
           id: vcd.id,
-          partner_name: vcd.client_data.entity,
-          createdAt: vcd.client_data.created_at,
-          account_status: 'REVISED_ACCOUNT',
-          events: vcd.id,
-          update_status: true,
+          partner_name: vcd.user.client_data.entity,
+          createdAt: vcd.created_at,
+          status_id: vcd.status_id,
         };
       });
-
-      setInfoUpdateRequest(resultDataInfoUpdate);
+      setInfoUpdateRequest(newEditRequestList);
     }
   }, [
     activePartnerData,
@@ -215,6 +235,7 @@ function MainManagerPage() {
           )}
           {infoUpdateRequest && (
             <TableAMCustom
+              editRequest={true}
               data={infoUpdateRequest}
               headline="account_manager.heading.info_update_request"
               view_all={PATH_ACCOUNTS_MANAGER.infoUpdateRequest}

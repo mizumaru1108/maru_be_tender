@@ -62,6 +62,7 @@ export const cashierRoute = {
         { element: <Navigate to="/cashier/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainCashier /> },
         { path: 'amandement-request/:id', element: <AmandementRequest /> },
+        { path: ':submiterId/:detailType', element: <ProjectOwnerDetails /> },
         {
           path: 'current-project',
           children: [

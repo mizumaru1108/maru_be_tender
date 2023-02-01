@@ -57,6 +57,7 @@ export const consultantRoute = {
       children: [
         { element: <Navigate to="/consultant/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainConsultant /> },
+        { path: ':submiterId/:detailType', element: <ProjectOwnerDetails /> },
         {
           path: 'current-project',
           children: [

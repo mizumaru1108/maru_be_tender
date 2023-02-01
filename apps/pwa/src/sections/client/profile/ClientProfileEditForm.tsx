@@ -489,8 +489,11 @@ function ClientProfileEditForm() {
         // mutate();
         navigate('/client/my-profile');
         setLoadingButtonState(false);
+      } else {
+        setLoadingButtonState(false);
       }
     } catch (err) {
+      setLoadingButtonState(false);
       enqueueSnackbar(err.message, {
         variant: 'error',
         preventDuplicate: true,

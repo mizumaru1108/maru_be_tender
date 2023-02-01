@@ -1347,6 +1347,18 @@ const en = {
         license_file: 'License File',
         letter_of_support_file: 'Letter of Support Files',
       },
+      administrative_tab: {
+        header: 'Administrative Information',
+        ceo_name: 'CEO Name',
+        ceo_mobile: 'CEO Mobile',
+        data_entry_name: 'Data Entry Name',
+        data_entry_mobile: 'Data Entry Mobile',
+        data_entry_email: 'Data Entry Email',
+      },
+      bank_tab: {
+        header: 'Bank Information',
+        bank_cards: 'Bank Cards',
+      },
     },
     card_title: 'Partner Name',
     card_content:
