@@ -149,7 +149,7 @@ export class BunnyService {
       : this.storageUrlMedia + '/' + path;
 
     const cdnUrl: string = includeCdn ? path : this.cdnUrl + '/' + path;
-    this.logger.log('log', `Deleting ${cdnUrl} from storage ...`);
+    this.logger.log('info', `Deleting ${cdnUrl} from storage ...`);
 
     const options: AxiosRequestConfig<any> = {
       method: 'DELETE',
@@ -189,12 +189,12 @@ export class BunnyService {
       ? uploadFileNameParser(file.originalname)
       : file.originalname;
 
-    this.logger.log('log', 'fileName before path: ', fileName);
+    this.logger.log('info', 'fileName before path: ', fileName);
 
     if (path) {
       fileName = path + '/' + fileName;
     }
-    this.logger.log('log', `path=${path} fileName after path=${fileName}`);
+    this.logger.log('info', `path=${path} fileName after path=${fileName}`);
 
     const mediaUrl = this.storageUrlMedia + '/' + fileName;
 

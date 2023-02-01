@@ -28,7 +28,7 @@ export class TenderFileManagerRepository {
           ...payload,
         },
       });
-      this.logger.log('log', 'File manager created successfully');
+      this.logger.log('info', 'File manager created successfully');
       return createdFile;
     } catch (error) {
       const theError = prismaErrorThrower(
@@ -54,7 +54,7 @@ export class TenderFileManagerRepository {
       const createdFiles = await this.prismaService.file_manager.createMany({
         data: payload,
       });
-      this.logger.log('log', 'File manager created successfully');
+      this.logger.log('info', 'File manager created successfully');
       return createdFiles;
     } catch (error) {
       const theError = prismaErrorThrower(

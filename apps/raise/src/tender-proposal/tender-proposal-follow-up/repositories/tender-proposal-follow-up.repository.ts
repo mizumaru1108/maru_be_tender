@@ -81,7 +81,7 @@ export class TenderProposalFollowUpRepository {
     id: string[],
     attachmentIds: string[],
   ): Promise<number> {
-    this.logger.log('log', `deleting followup with id of ${id}`);
+    this.logger.log('info', `deleting followup with id of ${id}`);
     try {
       return await this.prismaService.$transaction(async (prisma) => {
         if (attachmentIds && attachmentIds.length > 0) {

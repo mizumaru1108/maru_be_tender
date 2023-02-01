@@ -450,7 +450,7 @@ export class TenderClientRepository {
             }
           }
 
-          this.logger.log('log', 'Approving edit request status...');
+          this.logger.log('info', 'Approving edit request status...');
           const editRequestResult = await this.updateById(
             request_id,
             {

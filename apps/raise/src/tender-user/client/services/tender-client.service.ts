@@ -781,7 +781,10 @@ export class TenderClientService {
       if (!!license_file) {
         // console.log(logUtil(license_file));
         if (isTenderFilePayload(license_file)) {
-          console.log('liscene_file is a new file, uploading liscene file');
+          this.logger.log(
+            'info',
+            'liscene_file is a new file, uploading liscene file',
+          );
           const uploadResult = await this.uploadClientFile(
             user.id,
             'Uploading license file for user',
@@ -806,19 +809,25 @@ export class TenderClientService {
           };
           fileManagerCreateManyPayload.push(payload);
 
-          oldLicenseFile['color'] = 'red';
+          oldLicenseFile.color = 'red';
           newLicenseFile = uploadResult.fileObj;
-          newLicenseFile['color'] = 'green';
+          newLicenseFile.color = 'green';
         }
         if (isUploadFileJsonb(license_file)) {
+          this.logger.log(
+            'info',
+            `liscene file is an uploaded file (jsonb), ${logUtil(
+              license_file,
+            )}`,
+          );
           let tmp: UploadFilesJsonbDto = license_file;
           if (tmp.url !== clientOldRequest.license_file.url) {
-            oldLicenseFile['color'] = 'red';
+            oldLicenseFile.color = 'red';
             newLicenseFile = license_file;
-            newLicenseFile['color'] = 'green';
+            newLicenseFile.color = 'green';
           } else {
-            oldLicenseFile['color'] = 'transparent';
-            newLicenseFile['color'] = 'transparent';
+            oldLicenseFile.color = 'transparent';
+            newLicenseFile.color = 'transparent';
           }
         }
       }
