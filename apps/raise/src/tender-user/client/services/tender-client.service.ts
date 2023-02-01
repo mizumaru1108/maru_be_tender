@@ -776,16 +776,16 @@ export class TenderClientService {
         }
       }
 
-      let oldLicenseFile: finalUploadFileJson =
-        clientOldRequest.license_file.url;
-      let newLicenseFile: finalUploadFileJson =
-        clientOldRequest.license_file.url;
+      let oldLicenseFile: finalUploadFileJson = clientOldRequest.license_file;
+      let newLicenseFile: finalUploadFileJson = clientOldRequest.license_file;
       if (!!license_file) {
+        // console.log(logUtil(license_file));
         if (isTenderFilePayload(license_file)) {
+          console.log('liscene_file is a new file, uploading liscene file');
           const uploadResult = await this.uploadClientFile(
             user.id,
             'Uploading license file for user',
-            license_file.card_image,
+            license_file as TenderFilePayload,
             'liscene-file',
             [FileMimeTypeEnum.JPG, FileMimeTypeEnum.JPEG, FileMimeTypeEnum.PNG],
             maxSize,
@@ -828,11 +828,6 @@ export class TenderClientService {
       clientOldRequest.license_file = oldLicenseFile;
       clientNewRequest.license_file = newLicenseFile;
 
-      console.log('uploaded file', uploadedFilePath);
-      console.log('old request');
-      console.log(logUtil(clientOldRequest));
-      console.log('new request');
-      console.log(logUtil(clientNewRequest));
       newEditRequest = {
         ...baseNewEditRequest,
         old_value: JSON.stringify(clientOldRequest),
@@ -840,24 +835,26 @@ export class TenderClientService {
       };
 
       // console.log('final result:');
-      // console.log({ ofdecFromDb });
-      // console.log({ oldOfdec });
-      // console.log({ newOfdec });
-      // console.log({ fileManagerCreateManyPayload });
-      // console.log({ uploadedFilePath });
+      // console.log(logUtil(clientOldRequest));
+      // console.log(logUtil(clientNewRequest));
+      // console.log(logUtil(ofdecFromDb));
+      // console.log(logUtil(oldOfdec));
+      // console.log(logUtil(newOfdec));
+      // console.log(logUtil(fileManagerCreateManyPayload));
+      // console.log(logUtil(uploadedFilePath));
 
-      throw new BadRequestException('iseng aje');
+      const response = await this.tenderClientRepository.createUpdateRequest(
+        newEditRequest,
+        fileManagerCreateManyPayload,
+      );
 
-      // const response = await this.tenderClientRepository.createUpdateRequest(
-      //   newEditRequest,
-      //   fileManagerCreateManyPayload,
-      // );
+      await this.sendEditRequestNotif(response);
 
-      // await this.sendEditRequestNotif(response);
-
-      // return response;
+      return response;
     } catch (error) {
-      console.log({ uploadedFilePath });
+      this.logger.error(
+        `error occured, current uploaded files ${logUtil(uploadedFilePath)}`,
+      );
       if (uploadedFilePath.length > 0) {
         this.logger.log(
           'log',

@@ -23,8 +23,6 @@ export function ApproveEditRequestMapper(
     license_number,
     license_expired,
     license_issue_date,
-    license_file,
-    board_ofdec_file,
     ceo_mobile,
     ceo_name,
     data_entry_mobile,

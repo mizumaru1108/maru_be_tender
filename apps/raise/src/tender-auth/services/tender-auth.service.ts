@@ -76,7 +76,7 @@ export class TenderAuthService {
       mobile_number: clientPhone,
     });
     if (phoneExist) {
-      throw new ConflictException('Phone already exist in our app!');
+      throw new ConflictException('Entity Mobile exist in our app!');
     }
 
     if (dataEntryMobile === clientPhone) {
