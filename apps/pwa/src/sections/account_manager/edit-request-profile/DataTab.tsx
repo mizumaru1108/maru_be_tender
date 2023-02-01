@@ -266,12 +266,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                 fontWeight: theme.typography.fontWeightMedium,
                 textDecoration: 'underline',
                 cursor: 'pointer',
-                color:
-                  compareValues?.hasOwnProperty('license_file') && EditType === 'new-data'
-                    ? 'green'
-                    : compareValues?.hasOwnProperty('license_file') && EditType === 'previous-data'
-                    ? 'red'
-                    : 'black',
+                color: EditValues.license_file.color ?? '#000',
               }}
             >
               {EditValues.license_file.url ?? '-'}

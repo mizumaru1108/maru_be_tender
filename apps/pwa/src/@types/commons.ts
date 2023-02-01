@@ -110,6 +110,7 @@ export interface UploadFilesJsonbDto {
   base64Data?: string;
   fullName?: string;
   fileExtension?: string;
+  color?: string;
 }
 
 //for bank information
