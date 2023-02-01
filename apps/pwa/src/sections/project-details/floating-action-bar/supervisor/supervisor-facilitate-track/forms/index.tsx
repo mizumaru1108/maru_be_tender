@@ -102,7 +102,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
       const payload = {
         proposal_id,
         action: 'accept',
-        message: 'تم قبول المشروع من قبل مشرف المشاريع ',
+        message: 'تم قبول المشروع من قبل مشرف المشاريع',
         notes,
         supervisor_payload: {
           ...restStep1,

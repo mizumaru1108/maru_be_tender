@@ -54,7 +54,7 @@ function ProposalRejectingForm({ onSubmit, onClose, loading }: FormProps) {
         onClose={onClose}
         isOpen={true}
         showCloseIcon={true}
-        title={translate('accept_project')}
+        title={translate('reject_project')}
         styleContent={{ padding: '1em', backgroundColor: '#fff' }}
         content={
           <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>

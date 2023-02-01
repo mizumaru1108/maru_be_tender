@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Grid, Button, Stack } from '@mui/material';
-import { FormProvider } from 'components/hook-form';
+import { Grid, Button, Stack, MenuItem } from '@mui/material';
+import { FormProvider, RHFSelect } from 'components/hook-form';
 import BaseField from 'components/hook-form/BaseField';
 import ModalDialog from 'components/modal-dialog';
 import useLocales from 'hooks/useLocales';
@@ -80,50 +80,30 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
         content={
           <Grid container rowSpacing={3} columnSpacing={7} sx={{ mt: '10px' }}>
             <Grid item md={6} xs={12}>
-              <BaseField
-                type="select"
-                name="path"
-                label="المسار"
-                placeholder="المسار"
-                children={
-                  <>
-                    <option value="MOSQUES" style={{ backgroundColor: '#fff' }}>
-                      مشروع يخص المساجد
-                    </option>
-                    <option value="CONCESSIONAL_GRANTS" style={{ backgroundColor: '#fff' }}>
-                      مشروع يخص المنح الميسر
-                    </option>
-                    <option value="INITIATIVES" style={{ backgroundColor: '#fff' }}>
-                      مشروع يخص المبادرات
-                    </option>
-                    <option value="BAPTISMS" style={{ backgroundColor: '#fff' }}>
-                      مشروع يخص تعميدات
-                    </option>
-                  </>
-                }
-              />
+              <RHFSelect type="select" name="path" label="المسار" placeholder="المسار" size="small">
+                <MenuItem value="MOSQUES">مشروع يخص المساجد</MenuItem>
+                <MenuItem value="CONCESSIONAL_GRANTS">مشروع يخص المنح الميسر</MenuItem>
+                <MenuItem value="INITIATIVES">مشروع يخص المبادرات</MenuItem>
+                <MenuItem value="BAPTISMS">مشروع يخص تعميدات</MenuItem>
+              </RHFSelect>
             </Grid>
             <Grid item md={6} xs={12}>
-              <BaseField
+              <RHFSelect
                 type="select"
                 name="supervisors"
                 label="المشرفين"
                 placeholder="الرجاء تحديد المشرف"
-                children={
-                  <>
-                    <option value="all" style={{ backgroundColor: '#fff' }}>
-                      كل المشرفين
-                    </option>
-                    {data?.users &&
-                      data.users.map((item: any, index: any) => (
-                        <option key={index} value={item?.id} style={{ backgroundColor: '#fff' }}>
-                          {item.name}
-                        </option>
-                      ))}
-                  </>
-                }
+                size="small"
                 disabled={fetching}
-              />
+              >
+                <MenuItem value="all">جميع المشرفين</MenuItem>
+                {data?.users &&
+                  data.users.map((item: any, index: any) => (
+                    <MenuItem key={index} value={item?.id}>
+                      {item.name}
+                    </MenuItem>
+                  ))}
+              </RHFSelect>
             </Grid>
             <Grid item md={12} xs={12}>
               <BaseField

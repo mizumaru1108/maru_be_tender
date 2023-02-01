@@ -36,6 +36,7 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
             'reject_reason',
             'accreditation_type_id',
             'path',
+            'supervisors',
           ].includes(name) ? (
             <TextField
               {...field}

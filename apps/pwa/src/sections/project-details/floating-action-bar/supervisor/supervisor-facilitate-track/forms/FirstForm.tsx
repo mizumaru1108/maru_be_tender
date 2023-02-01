@@ -182,8 +182,8 @@ function FirstForm({ children, onSubmit }: any) {
             placeholder="الرجاء اختيار نوع الاعتماد"
             size="small"
           >
-            <MenuItem value="خطة">خطة</MenuItem>
-            <MenuItem value="وارد">وارد</MenuItem>
+            <MenuItem value="PLAN">خطة</MenuItem>
+            <MenuItem value="INCOMING">وارد</MenuItem>
           </RHFSelect>
         </Grid>
         <Grid item md={6} xs={12}>

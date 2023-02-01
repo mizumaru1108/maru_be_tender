@@ -92,8 +92,8 @@ export default function DashboardHeader({
         <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
           <AccountPopover />
           {activeRole !== 'tender_client' && <SwitchRole />}
-          <MessagePopover />
-          <NotificationsPopover />
+          {/* <MessagePopover /> */}
+          {/* <NotificationsPopover /> */}
           <LanguagePopover />
         </Stack>
       </Toolbar>
