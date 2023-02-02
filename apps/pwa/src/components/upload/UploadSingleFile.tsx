@@ -8,6 +8,8 @@ import { UploadProps } from './type';
 import Image from '../Image';
 import RejectionFiles from './RejectionFiles';
 import BlockContent from './BlockContent';
+import { CircularProgressWithLabel } from '../animate/variants/CircularProgress';
+import { convertBytesToMB } from '../../utils/convertByteToMBString';
 
 // ----------------------------------------------------------------------
 
@@ -28,6 +30,8 @@ interface Props extends UploadProps {
   placeholder?: string;
   uploading?: boolean;
   onRemove: () => void;
+  isCompressing?: boolean;
+  progress?: number;
 }
 
 export default function UploadSingleFile({
@@ -39,6 +43,8 @@ export default function UploadSingleFile({
   uploading,
   disabled,
   onRemove,
+  isCompressing,
+  progress,
   ...other
 }: Props) {
   const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = useDropzone({
@@ -48,6 +54,7 @@ export default function UploadSingleFile({
   return (
     <Grid container spacing={file.url === '' ? 0 : 5} sx={{ width: '100%', ...sx }}>
       <Grid item md={file.url === '' ? 12 : 10} xs={file.url === '' ? 12 : 10}>
+        {/* CircularProgressWithLabel */}
         <DropZoneStyle
           {...(!disabled && getRootProps())}
           sx={{
@@ -63,27 +70,45 @@ export default function UploadSingleFile({
               }),
           }}
         >
-          <input {...getInputProps()} />
-
-          {(file.url === '' || uploading) && (
+          {/* <input {...getInputProps()} /> */}
+          {isCompressing && <CircularProgressWithLabel value={progress ?? 0} />}
+          {!isCompressing && <input {...getInputProps()} />}
+          {((!isCompressing && file.url === '') || uploading) && (
             <BlockContent placeholder={placeholder} uploading={uploading} />
           )}
 
           {file && file.type.split('/')[0] === 'image' && !uploading && (
-            <Image
-              alt="file preview"
-              src={file.url}
-              sx={{
-                top: 8,
-                left: 8,
-                borderRadius: 1,
-                position: 'absolute',
-                width: 'calc(100% - 16px)',
-                height: 'calc(100% - 16px)',
-              }}
-            />
+            <>
+              <Image
+                alt="file preview"
+                src={file.url}
+                sx={{
+                  top: 8,
+                  left: 8,
+                  borderRadius: 1,
+                  position: 'absolute',
+                  width: 'calc(100% - 16px)',
+                  height: 'calc(100% - 16px)',
+                }}
+              />
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: 16,
+                  right: 16,
+                  borderRadius: 1,
+                  backgroundColor: '#0E8478',
+                  opacity: 0.8,
+                  py: 0.5,
+                  px: 1,
+                  color: 'white',
+                }}
+              >
+                {`File size ${convertBytesToMB(file.size ?? 0)}`}
+              </Box>
+            </>
           )}
-          {file && file.type === 'application/pdf' && !uploading && (
+          {!isCompressing && file && file.type === 'application/pdf' && !uploading && (
             <Box
               sx={{
                 flex: 1,
@@ -124,7 +149,7 @@ export default function UploadSingleFile({
           )}
         </DropZoneStyle>
       </Grid>
-      {file.url !== '' && (
+      {!isCompressing && file.url !== '' && (
         <Grid item md={2} xs={2}>
           <Button
             sx={{
@@ -141,7 +166,9 @@ export default function UploadSingleFile({
           </Button>
         </Grid>
       )}
-      {fileRejections.length > 0 && <RejectionFiles fileRejections={fileRejections} />}
+      {!isCompressing && fileRejections.length > 0 && (
+        <RejectionFiles fileRejections={fileRejections} />
+      )}
       {helperText && helperText}
     </Grid>
   );

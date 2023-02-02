@@ -472,7 +472,7 @@ function ClientProfileEditForm() {
       ...newBankInformation,
     };
     const filteredObj = Object.fromEntries(Object.entries(payload).filter(([key, value]) => value));
-    console.log({ filteredObj });
+    // console.log({ filteredObj });
     try {
       const rest = await axiosInstance.post(
         'tender/client/edit-request/create',

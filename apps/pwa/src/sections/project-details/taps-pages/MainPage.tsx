@@ -6,6 +6,7 @@ import BankImageComp from 'sections/shared/BankImageComp';
 import useLocales from '../../../hooks/useLocales';
 //
 import { fCurrencyNumber } from 'utils/formatNumber';
+import { FEATURE_PROJECT_DETAILS } from '../../../config';
 
 function MainPage() {
   const { translate } = useLocales();
@@ -251,7 +252,7 @@ function MainPage() {
                     textDecoration: 'underline',
                     cursor: 'pointer',
                   }}
-                  onClick={handleOpenProjectOwnerDetails}
+                  onClick={FEATURE_PROJECT_DETAILS ? handleOpenProjectOwnerDetails : undefined}
                 >
                   {translate('project_owner_details.card_href')}
                 </Typography>

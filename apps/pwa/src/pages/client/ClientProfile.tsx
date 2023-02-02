@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import BankImageComp from 'sections/shared/BankImageComp';
 import { useQuery } from 'urql';
+import { FEATURE_EDIT_CLIENT_INFORMATION } from '../../config';
 import axiosInstance from '../../utils/axios';
 
 const mockData = {
@@ -198,7 +199,7 @@ function ClientProfile() {
                   fontSize: isMobile ? '10px' : '15px',
                 }}
                 onClick={() => navigate('/client/my-profile/edit')}
-                disabled={disabelEdit.association_edit > 0}
+                disabled={disabelEdit.association_edit > 0 || !FEATURE_EDIT_CLIENT_INFORMATION}
               >
                 {/* تعديل معلومات الحساب */}
                 edit association information
@@ -291,6 +292,7 @@ function ClientProfile() {
                       bankName={item.bank_name}
                       accountNumber={item.bank_account_number}
                       bankAccountName={item.bank_account_name}
+                      borderColor={item?.color ?? 'transparent'}
                     />
                   </Grid>
                 ))}

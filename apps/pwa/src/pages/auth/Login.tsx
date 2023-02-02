@@ -11,6 +11,7 @@ import { ReactComponent as Logo } from '../../assets/logo.svg';
 import { LoginForm } from '../../sections/auth/login';
 import useLocales from 'hooks/useLocales';
 import Image from './background.jpg';
+import { FEATURE_SIGNUP } from '../../config';
 // ----------------------------------------------------------------------
 
 const RootStyle = styled('div')(({ theme }) => ({
@@ -74,7 +75,7 @@ export default function Login() {
               <Link
                 variant="subtitle2"
                 component={RouterLink}
-                to={PATH_AUTH.register}
+                to={FEATURE_SIGNUP ? PATH_AUTH.register : '#'}
                 sx={{ textDecorationLine: 'underline' }}
               >
                 {translate('register_one')}

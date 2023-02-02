@@ -52,11 +52,14 @@ function AddNewUser() {
     employee_name: Yup.string().required('Employee Name required'),
     email: Yup.string().required('Email is required'),
     mobile_number: Yup.string()
-      .required('Mobile Number is required')
-      .matches(
-        /^\+9665[0-9]{8}$/,
-        `The Mobile Number must be written in the exact way of +9665xxxxxxxx`
-      ),
+      .required(translate('errors.register.entity_mobile.required'))
+      .test('len', translate('errors.register.entity_mobile.length'), (val) => {
+        if (val === undefined) {
+          return true;
+        }
+
+        return val.length === 0 || val!.length === 9;
+      }),
     password: Yup.string().required('password is required'),
     user_roles: Yup.array().required('User Roles is required'),
     employee_path: Yup.string().required('Employee Path is required'),

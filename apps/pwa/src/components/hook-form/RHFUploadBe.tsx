@@ -11,6 +11,7 @@ import axios from 'axios';
 import { TMRA_RAISE_URL } from 'config';
 import { encodeBase64Upload, getBase64Upload } from '../../utils/getBase64';
 import { async } from '@firebase/util';
+import { useCompress } from '../../utils/compressFile';
 // ----------------------------------------------------------------------
 
 interface Props extends Omit<UploadProps, 'file'> {
@@ -24,48 +25,31 @@ interface Props extends Omit<UploadProps, 'file'> {
 export function RHFUploadSingleFileBe({ name, placeholder, disabled, ...other }: Props) {
   const { control, setValue } = useFormContext();
   const { user } = useAuth();
-  const [uploading, setUploading] = useState(false);
-  const id = user?.id;
-  // const handleDrop = useCallback(
-  //   async (acceptedFiles: File[]) => {
-  //     const file = acceptedFiles[0];
-  //     const userId = id;
-  //     const formdata = new FormData();
-  //     formdata.append('file', file);
-  //     formdata.append('userId', userId);
-  //     try {
-  //       setUploading(true);
-  //       const response = await axios.post(`${TMRA_RAISE_URL}/tender/uploads`, formdata);
-  //       if (response.data) {
-  //         setValue(name, {
-  //           url: getFileURL(response.data.data),
-  //           type: acceptedFiles[0].type,
-  //           size: acceptedFiles[0].size / 28,
-  //         });
-  //         setUploading(false);
-  //       }
-  //     } catch (e) {
-  //       setUploading(false);
-  //       alert(e.data.mesage);
-  //     }
-  //   },
-  //   [id, name, setValue]
-  // );
+  const { progress, isCompressing, compress } = useCompress();
 
+  const id = user?.id;
   const handleDrop = async (acceptedFiles: File[]) => {
-    // console.log('acceptedFiles', acceptedFiles);
-    const base64Data = await encodeBase64Upload(acceptedFiles[0]);
-    // const base64Data = await fileToBinary(acceptedFiles[0]);
-    const fullName = acceptedFiles[0].name;
-    const fileExtension = acceptedFiles[0].type;
-    setValue(name, {
-      url: URL.createObjectURL(acceptedFiles[0]),
-      type: acceptedFiles[0].type,
-      size: acceptedFiles[0].size,
-      base64Data,
-      fullName,
-      fileExtension,
+    const compressFile = compress(acceptedFiles[0], {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 900,
+      useWebWorker: false,
     });
+    compressFile
+      .then(async (compresedFile) => {
+        const fileBuffer = await encodeBase64Upload(compresedFile);
+
+        setValue(name, {
+          url: URL.createObjectURL(acceptedFiles[0]),
+          type: acceptedFiles[0].type,
+          size: fileBuffer.length,
+          base64Data: fileBuffer,
+          fullName: acceptedFiles[0].name,
+          fileExtension: acceptedFiles[0].type,
+        });
+      })
+      .catch((err) => {
+        console.error('Unable to compress file', err);
+      });
   };
 
   const onRemove = () => {
@@ -86,7 +70,9 @@ export function RHFUploadSingleFileBe({ name, placeholder, disabled, ...other }:
             placeholder={placeholder ?? ''}
             file={field.value}
             error={checkError}
-            disabled={disabled}
+            disabled={isCompressing ? true : disabled}
+            isCompressing={isCompressing}
+            progress={progress}
             helperText={
               checkError && (
                 <FormHelperText error sx={{ px: 2 }}>

@@ -114,7 +114,7 @@ const FundingProjectRequestForm = () => {
     setIsLoading(false);
     const newData = { ...data };
     const newExTime = Number(data.execution_time);
-    newData.execution_time = String(newExTime * 60);
+    newData.execution_time = newExTime * 60;
     if (isDraft) {
       onSavingDraft(newData);
     } else {
@@ -270,7 +270,6 @@ const FundingProjectRequestForm = () => {
     // }
   };
 
-  // on saving function and also update a draft one
   const onSavingDraft = async (data: any) => {
     // console.log('data', data);
     // console.log({ requestState });
@@ -441,6 +440,15 @@ const FundingProjectRequestForm = () => {
         }
       } catch (err) {
         console.log(err);
+        enqueueSnackbar(err.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
         setIsLoading(false);
       }
     }
@@ -448,44 +456,53 @@ const FundingProjectRequestForm = () => {
   const onLastSavingDraft = async (data: any) => {
     // console.log('data', data);
     setIsLoading(true);
-    const res = await axiosInstance.patch(
-      '/tender-proposal/save-draft',
-      {
-        ...(lastIndex >= 0 && { ...requestState.form1 }),
-        ...(lastIndex >= 1 && { ...requestState.form2 }),
-        ...(lastIndex >= 2 && { ...requestState.form3 }),
-        ...(lastIndex >= 3 && {
-          // ...requestState.form4,
-          amount_required_fsupport: requestState.form4.amount_required_fsupport,
-          detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
-        }),
-        ...(lastIndex < step && step >= 1 && { ...requestState.form1 }),
-        ...(lastIndex < step && step >= 2 && { ...requestState.form2 }),
-        ...(lastIndex < step && step >= 3 && { ...requestState.form3 }),
-        ...(lastIndex < step &&
-          step >= 4 && {
+    try {
+      const res = await axiosInstance.patch(
+        '/tender-proposal/save-draft',
+        {
+          ...(lastIndex >= 0 && { ...requestState.form1 }),
+          ...(lastIndex >= 1 && { ...requestState.form2 }),
+          ...(lastIndex >= 2 && { ...requestState.form3 }),
+          ...(lastIndex >= 3 && {
             // ...requestState.form4,
             amount_required_fsupport: requestState.form4.amount_required_fsupport,
             detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
           }),
-        // ...data,
-        proposal_bank_information_id: step === 4 ? data : undefined,
-        proposal_id: id,
-      },
-      {
-        headers: { 'x-hasura-role': activeRole! },
-        maxBodyLength: Infinity,
-        maxContentLength: Infinity,
+          ...(lastIndex < step && step >= 1 && { ...requestState.form1 }),
+          ...(lastIndex < step && step >= 2 && { ...requestState.form2 }),
+          ...(lastIndex < step && step >= 3 && { ...requestState.form3 }),
+          ...(lastIndex < step &&
+            step >= 4 && {
+              // ...requestState.form4,
+              amount_required_fsupport: requestState.form4.amount_required_fsupport,
+              detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
+            }),
+          // ...data,
+          proposal_bank_information_id: step === 4 ? data : undefined,
+          proposal_id: id,
+        },
+        {
+          headers: { 'x-hasura-role': activeRole! },
+          maxBodyLength: Infinity,
+          maxContentLength: Infinity,
+        }
+      );
+      if (res) {
+        const spreadUrl = location.pathname.split('/');
+        // history.push('/dashboard');
+        navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
       }
-    );
-    if (res) {
-      const spreadUrl = location.pathname.split('/');
-      // history.push('/dashboard');
-      navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
-    } else {
-      enqueueSnackbar(translate('Something went wrong'), {
+    } catch (err) {
+      enqueueSnackbar(err.message, {
         variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
       });
+      setIsLoading(false);
     }
   };
 
@@ -498,7 +515,6 @@ const FundingProjectRequestForm = () => {
     }
   };
 
-  // useEffect is responible for fetching the data when we are on a Draft project
   useEffect(() => {
     window.scrollTo(0, 0);
 

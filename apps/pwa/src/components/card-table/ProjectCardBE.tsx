@@ -20,6 +20,7 @@ import { useMutation } from 'urql';
 import { deleteDraftProposal } from 'queries/client/deleteDraftProposal';
 import axiosInstance from '../../utils/axios';
 import { LoadingButton } from '@mui/lab';
+import { FEATURE_PROJECT_SAVE_DRAFT } from '../../config';
 
 const cardFooterButtonActionLocal = {
   'show-project': 'show_project',
@@ -267,6 +268,7 @@ const ProjectCardBE = ({
                   <LoadingButton
                     variant="outlined"
                     loading={loading}
+                    disabled={!FEATURE_PROJECT_SAVE_DRAFT}
                     onClick={onDeleteDraftClick}
                     startIcon={<img alt="" src="/icons/trash-icon.svg" />}
                     sx={{
@@ -279,6 +281,7 @@ const ProjectCardBE = ({
                   <LoadingButton
                     loading={loading}
                     onClick={onContinuingDraftClick}
+                    disabled={!FEATURE_PROJECT_SAVE_DRAFT}
                     startIcon={<img alt="" src="/icons/edit-pencile-icon.svg" />}
                     sx={{ backgroundColor: 'text.tertiary', color: '#fff' }}
                   >

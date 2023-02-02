@@ -277,13 +277,13 @@ const ar = {
       letter_ofsupport_req: {
         message: '',
         required: 'خطاب طلب الدعم مطلوب',
-        fileSize: 'يجب أن يكون حجم الملف أقل من 5 ميغابايت',
+        fileSize: 'يجب أن يكون حجم الملف أقل من 30 ميغابايت',
         fileExtension: 'يجب أن يكون امتداد الملف واحد من الأمتدادات التالية: pdf, png, jpg, jpeg',
       },
       project_attachments: {
         message: '',
         required: 'مرفقات المشروع مطلوبة',
-        fileSize: 'يجب أن يكون حجم الملف أقل من 5 ميغابايت',
+        fileSize: 'يجب أن يكون حجم الملف أقل من 30 ميغابايت',
         fileExtension: 'يجب أن يكون امتداد الملف واحد من الأمتدادات التالية: pdf, png, jpg, jpeg',
       },
       project_beneficiaries_specific_type: {

@@ -2,6 +2,7 @@ import { LoadingButton } from '@mui/lab';
 import { Stack, Button, Box } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 import { ReactComponent as MovingBack } from '../../../../assets/move-back-icon.svg';
+import { FEATURE_PROJECT_SAVE_DRAFT } from '../../../../config';
 
 type PROPS = {
   onReturn: () => void;
@@ -50,7 +51,7 @@ const ActionBox = ({ onReturn, lastStep, step, isStep, isDraft, isLoad }: PROPS)
               borderColor: '#000',
             }}
             onClick={() => isDraft(true)}
-            disabled={step < 4 ? false : true}
+            disabled={!FEATURE_PROJECT_SAVE_DRAFT ? true : step < 4 ? false : true}
             // disabled
           >
             {translate('saving_as_draft')}

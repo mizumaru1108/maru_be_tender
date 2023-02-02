@@ -36,7 +36,7 @@ import UsersAndPermissionsToolbar from './list/UsersAndPermissionsToolbar';
 import UsersAndPermissionsTableRow from './list/UsersAndPermissionsTableRow';
 import { useQuery } from 'urql';
 import { getAllTheEmployees } from 'queries/admin/getAllTheEmployees';
-import { TMRA_RAISE_URL } from 'config';
+import { FEATURE_NEW_EMPLOYEE, TMRA_RAISE_URL } from 'config';
 import axios from 'axios';
 import axiosInstance from 'utils/axios';
 import useAuth from 'hooks/useAuth';
@@ -193,6 +193,7 @@ export default function UsersAndPermissionsTable() {
         <Button
           variant="contained"
           sx={{ px: '50px', fontSize: '16px' }}
+          disabled={!FEATURE_NEW_EMPLOYEE}
           onClick={() => {
             navigate('/admin/dashboard/users-and-permissions/add');
           }}

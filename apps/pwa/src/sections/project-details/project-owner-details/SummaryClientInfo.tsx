@@ -2,6 +2,7 @@ import { Box, Button, Typography } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { ProjectOwnerDetails } from '../../../@types/project-details';
+import { FEATURE_PROJECT_DETAILS } from '../../../config';
 
 // ----------------------------------------------------------------------
 const StylTextContent = {
@@ -68,7 +69,7 @@ function SummaryClientInfo({ dataClient }: SummaryClientInfoProps) {
       >
         <Button
           onClick={handleShowAllDetails}
-          // disabled
+          disabled={!FEATURE_PROJECT_DETAILS}
           sx={{
             background: '#0E8478',
             color: '#fff',

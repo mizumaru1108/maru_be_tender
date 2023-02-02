@@ -609,6 +609,7 @@ function AccountPartnerDetails() {
                             bankAccountName={`${v.bank_account_name}`}
                             imageUrl={v?.card_image?.url}
                             size={v?.card_image?.size}
+                            borderColor={v?.color ?? 'transparent'}
                           />
                         </Grid>
                       ))

@@ -166,6 +166,7 @@ function ModeratorProfile() {
                     bankName={'test'}
                     accountNumber={'000 999 888 777 666'}
                     bankAccountName={'test'}
+                    borderColor={'transparent'}
                   />
                 </Stack>
                 <Stack direction="column" flex={3}>
@@ -174,6 +175,7 @@ function ModeratorProfile() {
                     bankName={'test'}
                     accountNumber={'000 999 888 777 666'}
                     bankAccountName={'test'}
+                    borderColor={'transparent'}
                   />
                 </Stack>
               </Stack>

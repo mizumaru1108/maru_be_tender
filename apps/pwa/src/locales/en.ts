@@ -265,13 +265,13 @@ const en = {
       letter_ofsupport_req: {
         message: '',
         required: 'The letter of support is required',
-        fileSize: 'The file size must be less than 5 MB',
+        fileSize: 'The file size must be less than 30 MB',
         fileExtension: 'The file extension must be one of the following: pdf, png, jpg, jpeg',
       },
       project_attachments: {
         message: '',
         required: 'Project attachments are required',
-        fileSize: 'The file size must be less than 5 MB',
+        fileSize: 'The file size must be less than 30 MB',
         fileExtension: 'The file extension must be one of the following: pdf, png, jpg, jpeg',
       },
       project_beneficiaries_specific_type: {
