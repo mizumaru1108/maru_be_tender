@@ -38,10 +38,13 @@ export class ProposalCreateDto {
   project_implement_date: string;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  @IsNumberString()
-  execution_time: string;
+  @IsNumber(
+    { allowNaN: false, allowInfinity: false },
+    { message: 'Execution Time must be a number!' },
+  )
+  @Min(1)
+  @Max(999999999999)
+  execution_time: number;
 
   @ApiProperty()
   @IsString()
@@ -64,7 +67,10 @@ export class ProposalCreateDto {
   /* second form ---------------------------------------------------- */
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNumber({ maxDecimalPlaces: 2 })
+  @IsNumber(
+    { maxDecimalPlaces: 2, allowNaN: false, allowInfinity: false },
+    { message: 'num_ofproject_binicficiaries must be a number!' },
+  )
   @Min(0.01)
   @Max(999999999999999999.99)
   num_ofproject_binicficiaries?: number;
@@ -129,7 +135,10 @@ export class ProposalCreateDto {
   /* fourth form ---------------------------------------------------- */
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNumber({ maxDecimalPlaces: 2 })
+  @IsNumber(
+    { maxDecimalPlaces: 2, allowNaN: false, allowInfinity: false },
+    { message: 'amount_required_fsupport must be a number!' },
+  )
   @Min(0.01)
   @Max(999999999999999999.99)
   amount_required_fsupport?: number;

@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma, proposal } from '@prisma/client';
@@ -48,6 +49,12 @@ import { SupervisorRegularTrackAccMapper } from '../mappers/supervisor-regular-t
 import { SupervisorAccCreatedItemBudgetMapper } from '../mappers/supervisor-acc-created-item-budget-mapper';
 import { SupervisorGrantTrackAccMapper } from '../mappers/supervisor-grant-track-acc.mapper';
 import { SupervisorAccCreatedRecommendedSupportMapper } from '../mappers/supervisor-acc-created-recommend-support-mapper';
+import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
+import { generateFileName } from '../../../tender-commons/utils/generate-filename';
+import { isTenderFilePayload } from '../../../tender-commons/utils/is-tender-file-payload';
+import { isUploadFileJsonb } from '../../../tender-commons/utils/is-upload-file-jsonb';
+import { logUtil } from '../../../commons/utils/log-util';
+import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 
 @Injectable()
 export class TenderProposalService {
@@ -57,7 +64,6 @@ export class TenderProposalService {
   });
 
   constructor(
-    private readonly prismaService: PrismaService,
     private readonly emailService: EmailService,
     private readonly twilioService: TwilioService,
     private readonly configService: ConfigService,
@@ -71,39 +77,102 @@ export class TenderProposalService {
     this.appEnv = environment;
   }
 
+  async uploadProposalFile(
+    userId: string,
+    proposalId: string,
+    uploadMessage: string,
+    file: TenderFilePayload,
+    folderName: string,
+    AllowedFileTypes: FileMimeTypeEnum[],
+    maxSize: number = 1024 * 1024 * 4,
+    uploadedFilePath: string[],
+  ) {
+    try {
+      let fileName = generateFileName(
+        file.fullName,
+        file.fileExtension as FileMimeTypeEnum,
+      );
+
+      let filePath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposalId}/${userId}/${folderName}/${fileName}`;
+
+      let fileBuffer = Buffer.from(
+        file.base64Data.replace(/^data:.*;base64,/, ''),
+        'base64',
+      );
+
+      validateAllowedExtension(file.fileExtension, AllowedFileTypes);
+      validateFileSize(file.size, maxSize);
+
+      const imageUrl = await this.bunnyService.uploadFileBase64(
+        file.fullName,
+        fileBuffer,
+        filePath,
+        `${uploadMessage} ${userId}`,
+      );
+
+      uploadedFilePath.push(imageUrl);
+      let fileObj = {
+        url: imageUrl,
+        type: file.fileExtension,
+        size: file.size,
+      };
+
+      return {
+        uploadedFilePath,
+        fileObj,
+      };
+    } catch (error) {
+      if (uploadedFilePath.length > 0) {
+        this.logger.log(
+          'info',
+          `${uploadMessage} error, deleting all previous uploaded files: ${error}`,
+        );
+        uploadedFilePath.forEach(async (path) => {
+          await this.bunnyService.deleteMedia(path, true);
+        });
+      }
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalService.name,
+        `${uploadMessage}, error:`,
+        `${uploadMessage}`,
+      );
+      throw theError;
+    }
+  }
+
   async create(userId: string, request: ProposalCreateDto) {
     const proposalCreatePayload: Prisma.proposalUncheckedCreateInput =
       CreateProposalMapper(userId, request);
 
+    // this.logger.log('info', `request payload, ${logUtil(request)}`);
+
     const proposal_id = nanoid();
     proposalCreatePayload.id = proposal_id;
 
-    let projectAttachmentPath: string | undefined = undefined;
-    let projectAttachmentBuffer: Buffer | undefined = undefined;
-    let uploadedProjectAttachmentPath: string | undefined = undefined;
-    let letterOfSupportPath: string | undefined = undefined;
-    let letterOfSupportBuffer: Buffer | undefined = undefined;
-    let uploadedLetterOfSupportPath: string | undefined = undefined;
     let uploadedFilePath: string[] = [];
 
     let proposal_item_budgets:
       | Prisma.proposal_item_budgetCreateManyInput[]
       | undefined = undefined;
 
+    const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
+      [];
+
     /* validate and create path */
-    const maxSize: number = 1024 * 1024 * 512; // 512MB
+    const maxSize: number = 1024 * 1024 * 6; // 6 MB
     const allowedType: FileMimeTypeEnum[] = [
       FileMimeTypeEnum.JPG,
       FileMimeTypeEnum.JPEG,
       FileMimeTypeEnum.PNG,
       FileMimeTypeEnum.GIF,
       FileMimeTypeEnum.PDF,
-      FileMimeTypeEnum.DOC,
-      FileMimeTypeEnum.DOCX,
-      FileMimeTypeEnum.XLS,
-      FileMimeTypeEnum.XLSX,
-      FileMimeTypeEnum.PPT,
-      FileMimeTypeEnum.PPTX,
+      // FileMimeTypeEnum.DOC,
+      // FileMimeTypeEnum.DOCX,
+      // FileMimeTypeEnum.XLS,
+      // FileMimeTypeEnum.XLSX,
+      // FileMimeTypeEnum.PPT,
+      // FileMimeTypeEnum.PPTX,
     ];
 
     if (request.proposal_bank_information_id) {
@@ -121,107 +190,59 @@ export class TenderProposalService {
 
     // upload the project_attachments to bunny cloud service
     if (request.project_attachments) {
-      try {
-        /* project attachment */
-        let projectAttachmentfileName =
-          request.project_attachments.fullName
-            .replace(/[^a-zA-Z0-9]/g, '')
-            .slice(0, 10) +
-          new Date().getTime() +
-          '.' +
-          request.project_attachments.fileExtension.split('/')[1];
+      const uploadResult = await this.uploadProposalFile(
+        userId,
+        proposalCreatePayload.id,
+        'uploading project attachments',
+        request.project_attachments,
+        'project-attachments',
+        allowedType,
+        maxSize,
+        uploadedFilePath,
+      );
+      uploadedFilePath = uploadResult.uploadedFilePath;
+      proposalCreatePayload.project_attachments = uploadResult.fileObj;
 
-        projectAttachmentPath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposalCreatePayload.id}/proposal-files/${userId}/${projectAttachmentfileName}`;
-
-        projectAttachmentBuffer = Buffer.from(
-          request.project_attachments.base64Data.replace(
-            /^data:.*;base64,/,
-            '',
-          ),
-          'base64',
-        );
-
-        validateAllowedExtension(
-          request.project_attachments.fileExtension,
-          allowedType,
-        );
-        validateFileSize(request.project_attachments.size, maxSize);
-
-        const imageUrl = await this.bunnyService.uploadFileBase64(
-          request.project_attachments.fullName,
-          projectAttachmentBuffer,
-          projectAttachmentPath,
-          `Uploading Proposal Project Attachment from user ${userId}`,
-        );
-
-        uploadedProjectAttachmentPath = imageUrl;
-        uploadedFilePath.push(imageUrl);
-        proposalCreatePayload.project_attachments = {
-          url: imageUrl,
-          type: request.project_attachments.fileExtension,
-          size: request.project_attachments.size,
-        };
-      } catch (error) {
-        this.logger.error('Error while uploading project attachment: ' + error);
-        if (uploadedFilePath.length > 0) {
-          uploadedFilePath.forEach(async (path) => {
-            await this.bunnyService.deleteMedia(path, true);
-          });
-        }
-        throw error;
-      }
+      const payload: Prisma.file_managerUncheckedCreateInput = {
+        id: uuidv4(),
+        user_id: userId,
+        name: uploadResult.fileObj.url.split('/').pop() as string,
+        url: uploadResult.fileObj.url,
+        mimetype: uploadResult.fileObj.type,
+        size: uploadResult.fileObj.size,
+        column_name: 'project-attachments',
+        table_name: 'proposal',
+        proposal_id: proposalCreatePayload.id,
+      };
+      fileManagerCreateManyPayload.push(payload);
     }
 
     if (request.letter_ofsupport_req) {
-      try {
-        /* letter of support */
-        let letterOfSupportfileName =
-          request.letter_ofsupport_req.fullName
-            .replace(/[^a-zA-Z0-9]/g, '')
-            .slice(0, 10) +
-          new Date().getTime() +
-          '.' +
-          request.letter_ofsupport_req.fileExtension.split('/')[1];
+      const uploadResult = await this.uploadProposalFile(
+        userId,
+        proposalCreatePayload.id,
+        'uploading letter of support',
+        request.letter_ofsupport_req,
+        'letter-of-support-req',
+        allowedType,
+        maxSize,
+        uploadedFilePath,
+      );
+      uploadedFilePath = uploadResult.uploadedFilePath;
+      proposalCreatePayload.letter_ofsupport_req = uploadResult.fileObj;
 
-        letterOfSupportPath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposalCreatePayload.id}/proposal-files/${userId}/${letterOfSupportfileName}`;
-
-        letterOfSupportBuffer = Buffer.from(
-          request.letter_ofsupport_req.base64Data.replace(
-            /^data:.*;base64,/,
-            '',
-          ),
-          'base64',
-        );
-
-        validateAllowedExtension(
-          request.letter_ofsupport_req.fileExtension,
-          allowedType,
-        );
-        validateFileSize(request.project_attachments.size, maxSize);
-
-        const imageUrl = await this.bunnyService.uploadFileBase64(
-          request.letter_ofsupport_req.fullName,
-          letterOfSupportBuffer,
-          letterOfSupportPath,
-          `Uploading Proposal Letter of support from user ${userId}`,
-        );
-
-        uploadedLetterOfSupportPath = imageUrl;
-        uploadedFilePath.push(imageUrl);
-        proposalCreatePayload.letter_ofsupport_req = {
-          url: imageUrl,
-          type: request.letter_ofsupport_req.fileExtension,
-          size: request.letter_ofsupport_req.size,
-        };
-      } catch (error) {
-        this.logger.error('Error while uploading letter of support: ' + error);
-        if (uploadedFilePath.length > 0) {
-          uploadedFilePath.forEach(async (path) => {
-            await this.bunnyService.deleteMedia(path, true);
-          });
-        }
-        throw error;
-      }
+      const payload: Prisma.file_managerUncheckedCreateInput = {
+        id: uuidv4(),
+        user_id: userId,
+        name: uploadResult.fileObj.url.split('/').pop() as string,
+        url: uploadResult.fileObj.url,
+        mimetype: uploadResult.fileObj.type,
+        size: uploadResult.fileObj.size,
+        column_name: 'letter-of-support-req',
+        table_name: 'proposal',
+        proposal_id: proposalCreatePayload.id,
+      };
+      fileManagerCreateManyPayload.push(payload);
     }
 
     if (request.detail_project_budgets) {
@@ -234,9 +255,9 @@ export class TenderProposalService {
     // create proposal and the logs
     const createdProposal = await this.tenderProposalRepository.create(
       proposalCreatePayload,
-      uploadedProjectAttachmentPath,
-      uploadedLetterOfSupportPath,
       proposal_item_budgets,
+      fileManagerCreateManyPayload,
+      uploadedFilePath,
     );
 
     return createdProposal;
@@ -251,9 +272,11 @@ export class TenderProposalService {
       | Prisma.proposal_item_budgetCreateManyInput[]
       | undefined = undefined;
 
-    let projectAttachmentBuffer: Buffer | undefined = undefined;
-    let letterOfSupportBuffer: Buffer | undefined = undefined;
+    const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
+      [];
+
     let uploadedFilePath: string[] = [];
+    const deletedFileManagerUrls: string[] = []; // id of file manager that we want to mark as soft delete.
 
     // find proposal by id
     const proposal = await this.tenderProposalRepository.fetchProposalById(
@@ -296,182 +319,89 @@ export class TenderProposalService {
       FileMimeTypeEnum.PPTX,
     ];
 
-    // upload the project_attachments to bunny cloud service
-    if (
-      request.project_attachments &&
-      request.project_attachments.hasOwnProperty('base64Data') &&
-      typeof request.project_attachments.base64Data === 'string' &&
-      !!request.project_attachments.base64Data &&
-      request.project_attachments.hasOwnProperty('fullName') &&
-      typeof request.project_attachments.fullName === 'string' &&
-      !!request.project_attachments.fullName &&
-      request.project_attachments.hasOwnProperty('fileExtension') &&
-      typeof request.project_attachments.fileExtension === 'string' &&
-      !!request.project_attachments.fileExtension &&
-      request.project_attachments.fileExtension.match(
-        /^([a-z]+\/[a-z]+)(;[a-z]+=[a-z]+)*$/i,
-      )
-    ) {
-      try {
-        /* project attachment */
-        let projectAttachmentfileName =
-          request.project_attachments.fullName
-            .replace(/[^a-zA-Z0-9]/g, '')
-            .slice(0, 10) +
-          new Date().getTime() +
-          '.' +
-          request.project_attachments.fileExtension.split('/')[1];
+    if (isTenderFilePayload(request.project_attachments)) {
+      const uploadResult = await this.uploadProposalFile(
+        userId,
+        request.proposal_id,
+        'uploading project attachments',
+        request.project_attachments,
+        'project-attachments',
+        allowedType,
+        maxSize,
+        uploadedFilePath,
+      );
+      uploadedFilePath = uploadResult.uploadedFilePath;
+      updateProposalPayload.project_attachments = uploadResult.fileObj;
 
-        let projectAttachmentPath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposal.id}/proposal-files/${userId}/${projectAttachmentfileName}`;
+      const payload: Prisma.file_managerUncheckedCreateInput = {
+        id: uuidv4(),
+        user_id: userId,
+        name: uploadResult.fileObj.url.split('/').pop() as string,
+        url: uploadResult.fileObj.url,
+        mimetype: uploadResult.fileObj.type,
+        size: uploadResult.fileObj.size,
+        column_name: 'project-attachments',
+        table_name: 'proposal',
+        proposal_id: request.proposal_id,
+      };
+      fileManagerCreateManyPayload.push(payload);
 
-        projectAttachmentBuffer = Buffer.from(
-          request.project_attachments.base64Data.replace(
-            /^data:.*;base64,/,
-            '',
-          ),
-          'base64',
-        );
-
-        validateAllowedExtension(
-          request.project_attachments.fileExtension,
-          allowedType,
-        );
-        validateFileSize(request.project_attachments.size, maxSize);
-
-        console.log(
-          'New proposal project attachment exist, uploading to the server...',
-        );
-        const imageUrl = await this.bunnyService.uploadFileBase64(
-          request.project_attachments.fullName,
-          projectAttachmentBuffer,
-          projectAttachmentPath,
-          `Uploading Proposal Project Attachment from user ${userId}`,
-        );
-
-        uploadedFilePath.push(imageUrl);
-        updateProposalPayload.project_attachments = {
-          url: imageUrl,
-          type: request.project_attachments.fileExtension,
-          size: request.project_attachments.size,
+      if (isUploadFileJsonb(proposal.project_attachments)) {
+        const oldFile = proposal.project_attachments as {
+          url: string;
+          type: string;
+          size: number;
         };
-
-        if (
-          proposal.project_attachments &&
-          proposal.project_attachments.hasOwnProperty('url') &&
-          proposal.project_attachments.hasOwnProperty('type') &&
-          proposal.project_attachments.hasOwnProperty('size')
-        ) {
-          const oldFile = proposal.project_attachments as {
-            url: string;
-            type: string;
-            size: number;
-          };
-          if (!!oldFile.url) {
-            console.log(
-              'Old proposal project attachment exist, deleting from the server...',
-            );
-            await this.bunnyService.deleteMedia(oldFile.url, true);
-          }
+        if (!!oldFile.url) {
+          this.logger.log(
+            'info',
+            'Old proposal project attachment exist, it will marked as deleted files',
+          );
+          deletedFileManagerUrls.push(oldFile.url);
         }
-      } catch (error) {
-        console.log(
-          'upload project attachments failed, deleting all uploaded files before this file upload',
-        );
-        if (uploadedFilePath.length > 0) {
-          uploadedFilePath.forEach(async (path) => {
-            await this.bunnyService.deleteMedia(path, true);
-          });
-        }
-        throw error;
       }
     }
 
-    if (
-      request.letter_ofsupport_req &&
-      request.letter_ofsupport_req.hasOwnProperty('base64Data') &&
-      typeof request.letter_ofsupport_req.base64Data === 'string' &&
-      !!request.letter_ofsupport_req.base64Data &&
-      request.letter_ofsupport_req.hasOwnProperty('fullName') &&
-      typeof request.letter_ofsupport_req.fullName === 'string' &&
-      !!request.letter_ofsupport_req.fullName &&
-      request.letter_ofsupport_req.hasOwnProperty('fileExtension') &&
-      typeof request.letter_ofsupport_req.fileExtension === 'string' &&
-      !!request.letter_ofsupport_req.fileExtension &&
-      request.letter_ofsupport_req.fileExtension.match(
-        /^([a-z]+\/[a-z]+)(;[a-z]+=[a-z]+)*$/i,
-      )
-    ) {
-      try {
-        /* letter of support */
-        let letterOfSupportfileName =
-          request.letter_ofsupport_req.fullName
-            .replace(/[^a-zA-Z0-9]/g, '')
-            .slice(0, 10) +
-          new Date().getTime() +
-          '.' +
-          request.letter_ofsupport_req.fileExtension.split('/')[1];
+    if (isTenderFilePayload(request.letter_ofsupport_req)) {
+      const uploadResult = await this.uploadProposalFile(
+        userId,
+        request.proposal_id,
+        'uploading letter of support',
+        request.letter_ofsupport_req,
+        'letter-of-support-req',
+        allowedType,
+        maxSize,
+        uploadedFilePath,
+      );
+      uploadedFilePath = uploadResult.uploadedFilePath;
+      updateProposalPayload.letter_ofsupport_req = uploadResult.fileObj;
 
-        let letterOfSupportPath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposal.id}/proposal-files/${userId}/${letterOfSupportfileName}`;
+      const payload: Prisma.file_managerUncheckedCreateInput = {
+        id: uuidv4(),
+        user_id: userId,
+        name: uploadResult.fileObj.url.split('/').pop() as string,
+        url: uploadResult.fileObj.url,
+        mimetype: uploadResult.fileObj.type,
+        size: uploadResult.fileObj.size,
+        column_name: 'letter-of-support-req',
+        table_name: 'proposal',
+        proposal_id: request.proposal_id,
+      };
+      fileManagerCreateManyPayload.push(payload);
 
-        letterOfSupportBuffer = Buffer.from(
-          request.letter_ofsupport_req.base64Data.replace(
-            /^data:.*;base64,/,
-            '',
-          ),
-          'base64',
-        );
-
-        validateAllowedExtension(
-          request.letter_ofsupport_req.fileExtension,
-          allowedType,
-        );
-        validateFileSize(request.project_attachments.size, maxSize);
-
-        console.log(
-          'New proposal letter of support exist, uploading to the server...',
-        );
-
-        const imageUrl = await this.bunnyService.uploadFileBase64(
-          request.letter_ofsupport_req.fullName,
-          letterOfSupportBuffer,
-          letterOfSupportPath,
-          `Uploading Proposal Letter of support from user ${userId}`,
-        );
-
-        uploadedFilePath.push(imageUrl);
-        updateProposalPayload.letter_ofsupport_req = {
-          url: imageUrl,
-          type: request.letter_ofsupport_req.fileExtension,
-          size: request.letter_ofsupport_req.size,
+      if (isUploadFileJsonb(proposal.letter_ofsupport_req)) {
+        const oldFile = proposal.letter_ofsupport_req as {
+          url: string;
+          type: string;
+          size: number;
         };
-
-        if (
-          proposal.letter_ofsupport_req &&
-          proposal.letter_ofsupport_req.hasOwnProperty('url') &&
-          proposal.letter_ofsupport_req.hasOwnProperty('type') &&
-          proposal.letter_ofsupport_req.hasOwnProperty('size')
-        ) {
-          const oldFile = proposal.letter_ofsupport_req as {
-            url: string;
-            type: string;
-            size: number;
-          };
-          if (!!oldFile.url) {
-            console.log('deleting old letter of support file');
-            await this.bunnyService.deleteMedia(oldFile.url, true);
-          }
+        if (!!oldFile.url) {
+          this.logger.log(
+            'info',
+            'Old proposal letter of support req exist, it will marked as deleted files',
+          );
+          deletedFileManagerUrls.push(oldFile.url);
         }
-      } catch (error) {
-        this.logger.log(
-          'log',
-          'upload letter of support failed, deleting all uploaded files before this file upload',
-        );
-        if (uploadedFilePath.length > 0) {
-          uploadedFilePath.forEach(async (path) => {
-            await this.bunnyService.deleteMedia(path, true);
-          });
-        }
-        throw error;
       }
     }
 
@@ -487,6 +417,8 @@ export class TenderProposalService {
       proposal.id,
       updateProposalPayload,
       proposal_item_budgets,
+      fileManagerCreateManyPayload,
+      deletedFileManagerUrls,
       uploadedFilePath,
     );
 
@@ -494,13 +426,12 @@ export class TenderProposalService {
   }
 
   async deleteDraft(userId: string, proposal_id: string) {
+    const deletedFileManagerUrls: string[] = []; // id of file manager that we want to mark as soft delete.
+
     const proposal = await this.tenderProposalRepository.fetchProposalById(
       proposal_id,
     );
-
-    if (!proposal) {
-      throw new BadRequestException('Proposal not found');
-    }
+    if (!proposal) throw new BadRequestException('Proposal not found');
 
     if (proposal.submitter_user_id !== userId) {
       throw new BadRequestException(
@@ -508,49 +439,48 @@ export class TenderProposalService {
       );
     }
 
+    if (proposal.step === 'ZERO') {
+      throw new BadRequestException(
+        "You can't delete this proposal, it wasn't a draft!",
+      );
+    }
+
+    if (isUploadFileJsonb(proposal.project_attachments)) {
+      const oldFile = proposal.project_attachments as {
+        url: string;
+        type: string;
+        size: number;
+      };
+      if (!!oldFile.url) {
+        this.logger.log(
+          'info',
+          'Deleted Proposal has project attachment, pushing url to deleted flags',
+        );
+        // await this.bunnyService.deleteMedia(oldFile.url, true);
+        deletedFileManagerUrls.push(oldFile.url);
+      }
+    }
+
+    if (isUploadFileJsonb(proposal.letter_ofsupport_req)) {
+      const oldFile = proposal.letter_ofsupport_req as {
+        url: string;
+        type: string;
+        size: number;
+      };
+      if (!!oldFile.url) {
+        this.logger.log(
+          'info',
+          'Deleted Proposal has letter of support, pushing url to deleted flags',
+        );
+        // await this.bunnyService.deleteMedia(oldFile.url, true);
+        deletedFileManagerUrls.push(oldFile.url);
+      }
+    }
+
     const deletedProposal = await this.tenderProposalRepository.deleteProposal(
       proposal.id,
+      deletedFileManagerUrls,
     );
-
-    if (
-      deletedProposal.project_attachments &&
-      deletedProposal.project_attachments.hasOwnProperty('url') &&
-      deletedProposal.project_attachments.hasOwnProperty('type') &&
-      deletedProposal.project_attachments.hasOwnProperty('size')
-    ) {
-      const oldFile = deletedProposal.project_attachments as {
-        url: string;
-        type: string;
-        size: number;
-      };
-      if (!!oldFile.url) {
-        this.logger.log(
-          'log',
-          'Deleted Proposal has project attachment, deleting the files ...',
-        );
-        await this.bunnyService.deleteMedia(oldFile.url, true);
-      }
-    }
-
-    if (
-      deletedProposal.letter_ofsupport_req &&
-      deletedProposal.letter_ofsupport_req.hasOwnProperty('url') &&
-      deletedProposal.letter_ofsupport_req.hasOwnProperty('type') &&
-      deletedProposal.letter_ofsupport_req.hasOwnProperty('size')
-    ) {
-      const oldFile = deletedProposal.letter_ofsupport_req as {
-        url: string;
-        type: string;
-        size: number;
-      };
-      if (!!oldFile.url) {
-        this.logger.log(
-          'log',
-          'Deleted Proposal has letter of support, deleting the files ...',
-        );
-        await this.bunnyService.deleteMedia(oldFile.url, true);
-      }
-    }
 
     return deletedProposal;
   }

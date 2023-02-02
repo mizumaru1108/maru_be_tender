@@ -138,7 +138,6 @@ model proposal {
   project_idea                        String?
   project_implement_date              DateTime?                        @db.Date
   project_location                    String?
-  execution_time                      String?                          @db.VarChar
   num_ofproject_binicficiaries        Int?
   project_goals                       String?
   project_outputs                     String?
@@ -197,6 +196,7 @@ model proposal {
   old_inner_status                    String?                          @db.VarChar
   support_goal_id                     String?
   accreditation_type_id               String?
+  execution_time                      Decimal?                         @db.Decimal
   accreditation_type                  accreditation_type?              @relation(fields: [accreditation_type_id], references: [id])
   proposal_beneficiaries              proposal_beneficiaries?          @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
   project_tracks                      project_tracks?                  @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")

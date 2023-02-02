@@ -537,12 +537,12 @@ export class TenderUserRepository {
     } catch (error) {
       // delete the fusion auth user if the user creation failed
       this.logger.log(
-        'log',
+        'info',
         `Falied to store user data on db, deleting the user ${userData.id} from fusion auth`,
       );
       await this.fusionAuthService.fusionAuthDeleteUser(userData.id);
       this.logger.log(
-        'log',
+        'info',
         `deleting all uploaded files related for user ${userData.id}`,
       );
       if (uploadedFilesPath && uploadedFilesPath.length > 0) {

@@ -55,7 +55,6 @@ export class TenderClientService {
 
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly fusionAuthService: FusionAuthService,
     private readonly bunnyService: BunnyService,
     private readonly configService: ConfigService,
     private readonly emailService: EmailService,
@@ -162,12 +161,12 @@ export class TenderClientService {
           FileMimeTypeEnum.JPEG,
           FileMimeTypeEnum.PNG,
           FileMimeTypeEnum.PDF,
-          FileMimeTypeEnum.DOC,
-          FileMimeTypeEnum.DOCX,
-          FileMimeTypeEnum.XLS,
-          FileMimeTypeEnum.XLSX,
-          FileMimeTypeEnum.PPT,
-          FileMimeTypeEnum.PPTX,
+          // FileMimeTypeEnum.DOC,
+          // FileMimeTypeEnum.DOCX,
+          // FileMimeTypeEnum.XLS,
+          // FileMimeTypeEnum.XLSX,
+          // FileMimeTypeEnum.PPT,
+          // FileMimeTypeEnum.PPTX,
         ],
         maxSize,
         uploadedFilePath,
@@ -228,11 +227,6 @@ export class TenderClientService {
       lisceneFileObj,
       ofdecObj,
     );
-
-    // console.log(
-    //   'userCreatePayload',
-    //   JSON.stringify(userCreatePayload, null, 2),
-    // );
 
     const createdUser = await this.tenderUserRepository.createUser(
       userCreatePayload,
@@ -308,7 +302,13 @@ export class TenderClientService {
           await this.bunnyService.deleteMedia(path, true);
         });
       }
-      throw new InternalServerErrorException(`${uploadMessage} error`);
+      const theError = prismaErrorThrower(
+        error,
+        TenderClientService.name,
+        `${uploadMessage}, error:`,
+        `${uploadMessage}`,
+      );
+      throw theError;
     }
   }
 
@@ -844,13 +844,15 @@ export class TenderClientService {
       };
 
       // console.log('final result:');
-      // console.log(logUtil(clientOldRequest));
-      // console.log(logUtil(clientNewRequest));
+      console.log(logUtil(clientOldRequest));
+      console.log(logUtil(clientNewRequest));
       // console.log(logUtil(ofdecFromDb));
       // console.log(logUtil(oldOfdec));
       // console.log(logUtil(newOfdec));
       // console.log(logUtil(fileManagerCreateManyPayload));
       // console.log(logUtil(uploadedFilePath));
+
+      // throw new BadRequestException('iseng aja');
 
       const response = await this.tenderClientRepository.createUpdateRequest(
         newEditRequest,
