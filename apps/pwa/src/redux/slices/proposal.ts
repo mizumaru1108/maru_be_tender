@@ -76,7 +76,7 @@ const initialState: ProposalItme = {
     created_at: new Date('10-10-2022'),
     num_ofproject_binicficiaries: 0,
     region: 'test',
-    execution_time: '3 أشهر',
+    execution_time: 0,
     project_idea: 'test',
     project_goals: 'test',
     project_outputs: 'test',

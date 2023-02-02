@@ -65,7 +65,7 @@ const initialState: SupervisorAcceptingForm = {
     target_group_type: '',
     target_group_age: undefined,
     project_implement_date: new Date(),
-    execution_time: new Date(),
+    execution_time: 0,
     project_location: '',
     been_made_before: false,
     remote_or_insite: false,

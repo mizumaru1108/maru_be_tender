@@ -74,7 +74,7 @@ export interface Proposal {
   created_at: Date;
   num_ofproject_binicficiaries: number;
   region: string;
-  execution_time: string;
+  execution_time: number;
   project_idea: string;
   project_goals: string;
   project_outputs: string;

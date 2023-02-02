@@ -57,7 +57,7 @@ const FundingProjectRequestForm = () => {
       project_idea: '',
       project_location: '',
       project_implement_date: '',
-      execution_time: '',
+      execution_time: 0,
       project_beneficiaries: '',
       letter_ofsupport_req: {
         url: '',
@@ -538,7 +538,7 @@ const FundingProjectRequestForm = () => {
                 project_idea,
                 project_location,
                 project_implement_date,
-                execution_time: execution_time.trim(),
+                execution_time: execution_time,
                 project_beneficiaries,
                 letter_ofsupport_req: {
                   // size: undefined,
@@ -595,7 +595,7 @@ const FundingProjectRequestForm = () => {
               project_idea,
               project_location,
               project_implement_date,
-              execution_time: execution_time.trim(),
+              execution_time: execution_time,
               project_beneficiaries,
               letter_ofsupport_req: {
                 // size: undefined,

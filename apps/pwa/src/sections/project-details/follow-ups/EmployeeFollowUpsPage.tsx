@@ -37,7 +37,7 @@ function TabPanel(props: TabPanelProps) {
       id={`full-width-tabpanel-${index}`}
       aria-labelledby={`full-width-tab-${index}`}
       {...other}
-      sx={{ marginTop: '10px' }}
+      sx={{ marginTop: '5px' }}
     >
       {value === index && <>{children}</>}
     </Grid>
@@ -135,7 +135,7 @@ function EmployeeFollowUpsPage() {
             {proposal.follow_ups.length === 0 ||
             proposal.follow_ups.filter((items) => {
               for (const item of items.user.roles) {
-                return item.role !== 'CLIENT';
+                return item.role !== 'CLIENT' && items.employee_only === true;
               }
             }).length === 0 ? (
               <Grid item md={12} xs={12}>
@@ -145,7 +145,7 @@ function EmployeeFollowUpsPage() {
               proposal.follow_ups
                 .filter((items) => {
                   for (const item of items.user.roles) {
-                    return item.role !== 'CLIENT';
+                    return item.role !== 'CLIENT' && items.employee_only === true;
                   }
                 })
                 .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
@@ -179,7 +179,7 @@ function EmployeeFollowUpsPage() {
             {proposal.follow_ups.length === 0 ||
             proposal.follow_ups.filter((items) => {
               for (const item of items.user.roles) {
-                return item.role !== 'CLIENT';
+                return item.role !== 'CLIENT' && items.employee_only === false;
               }
             }).length === 0 ? (
               <Grid item md={12} xs={12}>
@@ -189,7 +189,7 @@ function EmployeeFollowUpsPage() {
               proposal.follow_ups
                 .filter((items) => {
                   for (const item of items.user.roles) {
-                    return item.role !== 'CLIENT';
+                    return item.role !== 'CLIENT' && items.employee_only === false;
                   }
                 })
                 .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())

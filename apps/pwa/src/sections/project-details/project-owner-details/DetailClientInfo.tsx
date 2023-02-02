@@ -164,7 +164,7 @@ function DetailClientInfo() {
       <ContactAccordion userInfo={userInfo} />
       <LicenseAccording userInfo={userInfo} />
       <AdministrativeAccording userInfo={userInfo} />
-      <BankInformationAccording userInfo={userInfo} />
+      {/* <BankInformationAccording userInfo={userInfo} /> */}
     </Box>
   );
 }

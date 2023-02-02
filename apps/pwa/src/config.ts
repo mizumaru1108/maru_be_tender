@@ -106,3 +106,73 @@ export const allLangs = [
 ];
 
 export const defaultLang = allLangs[1]; // Arabic
+
+/**
+ * CONFIGURATION FOR FEATURES FLAG DEPLOYMENT
+ */
+
+export const FEATURE_SIGNUP: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_SIGNUP &&
+  process.env.REACT_APP_CONFIG_FEATURE_SIGNUP === 'true'
+    ? true
+    : false;
+
+export const FEATURE_NEW_EMPLOYEE: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_NEW_EMPLOYEE &&
+  process.env.REACT_APP_CONFIG_FEATURE_NEW_EMPLOYEE === 'true'
+    ? true
+    : false;
+
+export const FEATURE_EDIT_PROFILE_BY_ADMIN: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_EDIT_PROFILE_BY_ADMIN &&
+  process.env.REACT_APP_CONFIG_FEATURE_EDIT_PROFILE_BY_ADMIN === 'true'
+    ? true
+    : false;
+
+export const FEATURE_EDIT_CLIENT_INFORMATION: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_EDIT_CLIENT_INFORMATION &&
+  process.env.REACT_APP_CONFIG_FEATURE_EDIT_CLIENT_INFORMATION === 'true'
+    ? true
+    : false;
+
+export const FEATURE_MESSAGING_SYSTEM: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_MESSAGING_SYSTEM &&
+  process.env.REACT_APP_CONFIG_FEATURE_MESSAGING_SYSTEM === 'true'
+    ? true
+    : false;
+
+export const FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL &&
+  process.env.REACT_APP_CONFIG_FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL === 'true'
+    ? true
+    : false;
+
+export const FEATURE_PORTAL_REPORTS: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_PORTAL_REPORTS &&
+  process.env.REACT_APP_CONFIG_FEATURE_PORTAL_REPORTS === 'true'
+    ? true
+    : false;
+
+export const FEATURE_DAILY_STATUS: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_DAILY_STATUS &&
+  process.env.REACT_APP_CONFIG_FEATURE_DAILY_STATUS === 'true'
+    ? true
+    : false;
+
+export const FEATURE_NOTIFICATION_SYSTEM: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_NOTIFICATION_SYSTEM &&
+  process.env.REACT_APP_CONFIG_FEATURE_NOTIFICATION_SYSTEM === 'true'
+    ? true
+    : false;
+
+export const FEATURE_PROJECT_DETAILS: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_PROJECT_DETAILS &&
+  process.env.REACT_APP_CONFIG_FEATURE_PROJECT_DETAILS === 'true'
+    ? true
+    : false;
+
+export const FEATURE_PROJECT_SAVE_DRAFT: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_PROJECT_SAVE_DRAFT &&
+  process.env.REACT_APP_CONFIG_FEATURE_PROJECT_SAVE_DRAFT === 'true'
+    ? true
+    : false;

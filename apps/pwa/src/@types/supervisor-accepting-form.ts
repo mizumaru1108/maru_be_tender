@@ -49,7 +49,7 @@ export interface SupervisorStep3 {
   target_group_type: string;
   target_group_age: number | undefined;
   project_implement_date: Date;
-  execution_time: Date;
+  execution_time: number;
   project_location: string;
   been_made_before: boolean;
   remote_or_insite: boolean;

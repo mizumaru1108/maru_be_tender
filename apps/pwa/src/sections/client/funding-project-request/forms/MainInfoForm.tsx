@@ -14,7 +14,7 @@ type FormValuesProps = {
   project_idea: string;
   project_location: string;
   project_implement_date: string;
-  execution_time: string;
+  execution_time: number;
   project_beneficiaries: string;
   letter_ofsupport_req: CustomFile | string | null;
   project_attachments: CustomFile | string | null;
@@ -38,7 +38,7 @@ const MainInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
     project_implement_date: Yup.string().required(
       translate('errors.cre_proposal.project_implement_date.required')
     ),
-    execution_time: Yup.string().required(translate('errors.cre_proposal.execution_time.required')),
+    execution_time: Yup.number().required(translate('errors.cre_proposal.execution_time.required')),
     project_beneficiaries: Yup.string().required(
       translate('errors.cre_proposal.project_beneficiaries.required')
     ),
@@ -129,7 +129,7 @@ const MainInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
     window.scrollTo(0, 0);
     let newValue = { ...defaultValues };
     const newTimeExecution = Number(newValue.execution_time) / 60;
-    newValue = { ...newValue, execution_time: newTimeExecution.toString() };
+    newValue = { ...newValue, execution_time: newTimeExecution };
     if (newTimeExecution === 0) {
       reset(defaultValues);
     } else {

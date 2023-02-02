@@ -22,7 +22,7 @@ function ThirdForm({ children, onSubmit }: any) {
     target_group_type: Yup.string().required('Procedures is required!'),
     target_group_age: Yup.number().required('Procedures is required!'),
     project_implement_date: Yup.string().required('Procedures is required!'),
-    execution_time: Yup.string().required('Procedures is required!'),
+    execution_time: Yup.number().required('Procedures is required!'),
     project_location: Yup.string().required('Procedures is required!'),
     been_made_before: Yup.boolean().required('Procedures is required!'),
     remote_or_insite: Yup.boolean().required('Procedures is required!'),
