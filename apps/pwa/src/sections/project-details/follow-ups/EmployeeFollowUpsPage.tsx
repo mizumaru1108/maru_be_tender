@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import { Grid, Stack, Tab, Tabs, Container, Button, Checkbox } from '@mui/material';
+import { Grid, Stack, Tab, Tabs, Container, Button, Checkbox, Typography } from '@mui/material';
 
 import React from 'react';
 import { useTheme } from '@mui/material/styles';
@@ -8,7 +8,7 @@ import { useParams } from 'react-router';
 import FollowUpsFile from './FollowUpsFile';
 import FollowUpsText from './FollowUpsText';
 import useLocales from 'hooks/useLocales';
-import { getProposal } from 'redux/slices/proposal';
+import { getProposal, setEmployeeOnly } from 'redux/slices/proposal';
 import { useDispatch, useSelector } from 'redux/store';
 
 interface TabPanelProps {
@@ -49,6 +49,8 @@ function EmployeeFollowUpsPage() {
   const dispatch = useDispatch();
   const { proposal, isLoading, error } = useSelector((state) => state.proposal);
   const { translate } = useLocales();
+  const datesEmployee = new Set();
+  const datesClient = new Set();
 
   const theme = useTheme();
 
@@ -59,12 +61,25 @@ function EmployeeFollowUpsPage() {
   };
 
   React.useEffect(() => {
+    if (switchState === 0) {
+      dispatch(setEmployeeOnly(true));
+    } else {
+      dispatch(setEmployeeOnly(false));
+    }
     dispatch(getProposal(id as string));
-  }, [dispatch, id]);
+  }, [dispatch, id, switchState]);
 
   if (isLoading) return <>... Loading</>;
 
   if (error) return <>{error}</>;
+
+  function formattedDate(date: Date) {
+    return date.toLocaleDateString('en-US', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  }
 
   return (
     <Grid container spacing={3}>
@@ -115,6 +130,50 @@ function EmployeeFollowUpsPage() {
       </Grid>
 
       <TabPanel value={switchState} index={0} dir={theme.direction}>
+        <Container sx={{ py: 2, width: '100%', mt: 4 }}>
+          <Grid container spacing={3}>
+            {proposal.follow_ups.length === 0 ||
+            proposal.follow_ups.filter((items) => {
+              for (const item of items.user.roles) {
+                return item.role !== 'CLIENT';
+              }
+            }).length === 0 ? (
+              <Grid item md={12} xs={12}>
+                <EmptyFollowUps />
+              </Grid>
+            ) : (
+              proposal.follow_ups
+                .filter((items) => {
+                  for (const item of items.user.roles) {
+                    return item.role !== 'CLIENT';
+                  }
+                })
+                .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+                .map((item, index) => (
+                  <Grid item md={12} xs={12} key={index}>
+                    {item.employee_only === true && (
+                      <React.Fragment>
+                        {!datesEmployee.has(formattedDate(new Date(item.created_at))) && (
+                          <React.Fragment>
+                            <Typography sx={{ textAlign: 'center', color: '#A4A4A4', mb: 2 }}>
+                              {formattedDate(new Date(item.created_at))}
+                            </Typography>
+                            <Typography visibility="hidden">
+                              <>{datesEmployee.add(formattedDate(new Date(item.created_at)))}</>
+                            </Typography>
+                          </React.Fragment>
+                        )}
+                        {item.attachments && <FollowUpsFile {...item} />}
+                        {item.content && <FollowUpsText {...item} />}
+                      </React.Fragment>
+                    )}
+                  </Grid>
+                ))
+            )}
+          </Grid>
+        </Container>
+      </TabPanel>
+      <TabPanel value={switchState} index={1} dir={theme.direction}>
         <Container sx={{ py: 2, width: '100%' }}>
           <Grid container spacing={3}>
             {proposal.follow_ups.length === 0 ||
@@ -133,41 +192,25 @@ function EmployeeFollowUpsPage() {
                     return item.role !== 'CLIENT';
                   }
                 })
-                .map((item, index) => (
-                  <>
-                    <Grid item md={12} xs={12} key={index}>
-                      {item.attachments && <FollowUpsFile {...item} />}
-                      {item.content && <FollowUpsText {...item} />}
-                    </Grid>
-                  </>
-                ))
-            )}
-          </Grid>
-        </Container>
-      </TabPanel>
-      <TabPanel value={switchState} index={1} dir={theme.direction}>
-        <Container sx={{ py: 2, width: '100%' }}>
-          <Grid container spacing={3}>
-            {proposal.follow_ups.length === 0 ||
-            proposal.follow_ups.filter((items) => {
-              for (const item of items.user.roles) {
-                return item.role === 'CLIENT';
-              }
-            }).length === 0 ? (
-              <Grid item md={12} xs={12}>
-                <EmptyFollowUps />
-              </Grid>
-            ) : (
-              proposal.follow_ups
-                .filter((items) => {
-                  for (const item of items.user.roles) {
-                    return item.role === 'CLIENT';
-                  }
-                })
+                .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
                 .map((item, index) => (
                   <Grid item md={12} xs={12} key={index}>
-                    {item.attachments && <FollowUpsFile {...item} />}
-                    {item.content && <FollowUpsText {...item} />}
+                    {item.employee_only === false && (
+                      <React.Fragment>
+                        {!datesClient.has(formattedDate(new Date(item.created_at))) && (
+                          <React.Fragment>
+                            <Typography sx={{ textAlign: 'center', color: '#A4A4A4', mb: 2 }}>
+                              {formattedDate(new Date(item.created_at))}
+                            </Typography>
+                            <Typography visibility="hidden">
+                              <>{datesClient.add(formattedDate(new Date(item.created_at)))}</>
+                            </Typography>
+                          </React.Fragment>
+                        )}
+                        {item.attachments && <FollowUpsFile {...item} />}
+                        {item.content && <FollowUpsText {...item} />}
+                      </React.Fragment>
+                    )}
                   </Grid>
                 ))
             )}

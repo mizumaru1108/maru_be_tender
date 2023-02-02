@@ -10,7 +10,7 @@ import { FormProvider } from 'components/hook-form';
 import { LoadingButton } from '@mui/lab';
 import BaseField from 'components/hook-form/BaseField';
 import { addFollowups, getProposal } from 'redux/slices/proposal';
-import { useDispatch } from 'redux/store';
+import { useDispatch, useSelector } from 'redux/store';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import axiosInstance from 'utils/axios';
@@ -33,6 +33,7 @@ function FilePopup({ open, handleClose }: Props) {
   const { id } = useParams();
 
   const { enqueueSnackbar } = useSnackbar();
+  const { employeeOnly } = useSelector((state) => state.proposal);
 
   const validationSchema = Yup.object().shape({
     file: Yup.object().shape({
@@ -77,6 +78,7 @@ function FilePopup({ open, handleClose }: Props) {
           follow_up_attachment: [data.file],
           proposal_id,
           follow_up_type: 'attachments',
+          employee_only: employeeOnly,
         },
         {
           headers: { 'x-hasura-role': role },

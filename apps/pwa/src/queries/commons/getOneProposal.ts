@@ -94,6 +94,7 @@ query getOneProposal($id: String!) {
     created_at
     attachments
     proposal_id
+    employee_only
     user {
       employee_name
       roles {

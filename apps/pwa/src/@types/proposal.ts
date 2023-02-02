@@ -32,6 +32,7 @@ export type PaymentStatus =
 
 export interface FollowUps {
   id: string;
+  employee_only: boolean;
   content: string;
   created_at: Date;
   attachments: [{ url: string; size: number | undefined; type: string }];

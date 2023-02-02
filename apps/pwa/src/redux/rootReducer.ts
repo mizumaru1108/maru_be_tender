@@ -12,6 +12,7 @@ import kanbanReducer from './slices/kanban';
 import branchReducer from './slices/branch';
 import proposal from './slices/proposal';
 import supervisorAcceptingForm from './slices/supervisorAcceptingForm';
+import notification from './slices/notification';
 
 // ----------------------------------------------------------------------
 
@@ -39,6 +40,7 @@ const rootReducer = combineReducers({
   // product: persistReducer(productPersistConfig, productReducer),
   // branch: branchReducer,
   proposal: proposal,
+  notification: notification,
   supervisorAcceptingForm: supervisorAcceptingForm,
 });
 

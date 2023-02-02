@@ -82,9 +82,9 @@ function FollowUpsFile(item: FollowUps) {
                     ) : (
                       <Typography color="#0E8478">المستخدم</Typography>
                     )}
-                    <Typography sx={{ color: 'gray', fontSize: '15px' }}>{`${
-                      new Date().getDate() - new Date(item.created_at).getDate()
-                    } ساعات`}</Typography>
+                    <Typography sx={{ color: 'gray', fontSize: '15px' }}>{`${new Date(
+                      item.created_at
+                    ).toLocaleString()}`}</Typography>
                   </Stack>
                   <Grid item md={1}>
                     <Box>{''}</Box>
@@ -188,9 +188,9 @@ function FollowUpsFile(item: FollowUps) {
                   ) : (
                     <Typography color="#0E8478">المستخدم</Typography>
                   )}
-                  <Typography sx={{ color: 'gray', fontSize: '15px' }}>{`${
-                    new Date().getDate() - new Date(item.created_at).getDate()
-                  } ساعات`}</Typography>
+                  <Typography sx={{ color: 'gray', fontSize: '15px' }}>{`${new Date(
+                    item.created_at
+                  ).toLocaleString()}`}</Typography>
                 </Stack>
               </Grid>
               <Grid item md={1}>

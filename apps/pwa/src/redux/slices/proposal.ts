@@ -16,6 +16,7 @@ interface ProposalItme {
   error: Error | string | null;
   activeTap: ActiveTap;
   checkedItems: any;
+  employeeOnly: boolean;
   proposal: Proposal;
 }
 
@@ -24,6 +25,7 @@ const initialState: ProposalItme = {
   error: null,
   activeTap: 'main',
   checkedItems: [],
+  employeeOnly: false,
   proposal: {
     id: '-1',
     project_name: 'test',
@@ -165,6 +167,10 @@ const slice = createSlice({
     setCheckedItems(state, action) {
       state.checkedItems = action.payload;
     },
+    // SET EMPLOYEE ONLY
+    setEmployeeOnly(state, action) {
+      state.employeeOnly = action.payload;
+    },
     // SET PAYMENTS
     setPayments(state, action) {
       state.proposal.payments = action.payload.payments;
@@ -198,7 +204,7 @@ const slice = createSlice({
 export default slice.reducer;
 
 // Actions
-export const { setProposal, setActiveTap, setCheckedItems } = slice.actions;
+export const { setProposal, setActiveTap, setCheckedItems, setEmployeeOnly } = slice.actions;
 
 export const getProposal = (id: string) => async () => {
   try {

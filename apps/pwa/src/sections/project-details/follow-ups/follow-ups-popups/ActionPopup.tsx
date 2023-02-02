@@ -10,7 +10,7 @@ import { FormProvider } from 'components/hook-form';
 import BaseField from 'components/hook-form/BaseField';
 import { LoadingButton } from '@mui/lab';
 import { addFollowups, getProposal } from 'redux/slices/proposal';
-import { useDispatch } from 'redux/store';
+import { useDispatch, useSelector } from 'redux/store';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import axiosInstance from 'utils/axios';
@@ -30,6 +30,7 @@ function ActionPopup({ open, handleClose }: Props) {
 
   const dispatch = useDispatch();
 
+  const { employeeOnly } = useSelector((state) => state.proposal);
   const { id: proposal_id } = useParams();
 
   const validationSchema = Yup.object().shape({
@@ -61,7 +62,7 @@ function ActionPopup({ open, handleClose }: Props) {
       // addFollowups({ content: data.action, proposal_id, follow_up_type: 'plain' }, role)
       const response = await axiosInstance.post(
         'tender-proposal/follow-up/create',
-        { content: data.action, proposal_id, follow_up_type: 'plain' },
+        { content: data.action, proposal_id, follow_up_type: 'plain', employee_only: employeeOnly },
         {
           headers: { 'x-hasura-role': role },
         }

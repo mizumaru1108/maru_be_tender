@@ -69,9 +69,9 @@ function FollowUpsText(item: FollowUps) {
               <Typography color="#0E8478">{`${item.user.employee_name} - ${translate(
                 `permissions.${item.user.roles[0].role}`
               )}`}</Typography>
-              <Typography sx={{ color: 'gray' }}>{`${
-                new Date().getDate() - new Date(item.created_at).getDate()
-              } ساعات`}</Typography>
+              <Typography sx={{ color: 'gray' }}>{`${new Date(
+                item.created_at
+              ).toLocaleString()}`}</Typography>
             </Stack>
             <Typography>{item.content}</Typography>
           </Box>
@@ -125,9 +125,9 @@ function FollowUpsText(item: FollowUps) {
                 <Typography color="#0E8478">{`${item.user.employee_name} - ${translate(
                   `permissions.${item.user.roles[0].role}`
                 )}`}</Typography>
-                <Typography sx={{ color: 'gray' }}>{`${
-                  new Date().getDate() - new Date(item.created_at).getDate()
-                } ساعات`}</Typography>
+                <Typography sx={{ color: 'gray' }}>{`${new Date(
+                  item.created_at
+                ).toLocaleString()}`}</Typography>
               </Stack>
               <Typography>{item.content}</Typography>
             </Box>

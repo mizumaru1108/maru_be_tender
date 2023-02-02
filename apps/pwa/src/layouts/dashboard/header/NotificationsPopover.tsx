@@ -1,6 +1,6 @@
 /* eslint-disable array-callback-return */
 import { noCase } from 'change-case';
-import { Key, useState, useEffect } from 'react';
+import React, { Key, useState, useEffect } from 'react';
 // @mui
 import {
   Box,
@@ -44,6 +44,8 @@ import { useLocation, useNavigate } from 'react-router';
 import axiosInstance from 'utils/axios';
 import 'moment/min/locales';
 import moment from 'moment';
+import { setNotifyCount } from 'redux/slices/notification';
+import { useDispatch, useSelector } from 'redux/store';
 
 // ----------------------------------------------------------------------
 // const _notifications = [...Array(3)].map((_, index) => ({
@@ -105,14 +107,28 @@ type NotificationItemProps = {
 };
 
 export default function NotificationsPopover() {
+  const dispatch = useDispatch();
+
+  const { notifyCount } = useSelector((state) => state.notification);
   const { translate, currentLang } = useLocales();
 
   const [activeTap, setActiveTap] = useState('1');
 
   const [open, setOpen] = useState<HTMLElement | null>(null);
 
-  const [currentNotifCount, setCurrentNotifCount] = useState<number | null>(null);
-  const [currentData, setCurrentData] = useState<any | null>(null);
+  const [currentNotifCount, setCurrentNotifCount] = useState<number>(0);
+
+  const [totalUnRead, setTotalUnRead] = useState<number>(0);
+
+  const [totalUnReadToday, setTotalUnReadToday] = useState<number>(0);
+
+  const [totalUnReadPrevious, setTotalUnReadPrevious] = useState<number>(0);
+
+  const [totalToday, setTotalToday] = useState<NotificationItemProps[] | []>([]);
+
+  const [totalPrevious, setTotalPrevious] = useState<NotificationItemProps[] | []>([]);
+
+  const [currentData, setCurrentData] = useState<NotificationItemProps[] | []>([]);
 
   const [openAlert, setOpenAlert] = useState(false);
 
@@ -155,91 +171,59 @@ export default function NotificationsPopover() {
   const [result] = useSubscription(currentSubcription);
 
   const { data, fetching, error } = result;
+  const { data: dataNotifCount, fetching: fetchingNotifCount, error: NotifCountError } = notifCount;
+
+  // if (!fetchingNotifCount && dataNotifCount) {
+  //   console.log(dataNotifCount);
+  //   setCurrentNotifCount(dataNotifCount.notification_aggregate.aggregate.count);
+  // }
+
+  // if (!fetching && data) {
+  //   console.log(data.notification);
+  // setCurrentData(data.notification);
+  // }
 
   useEffect(() => {
-    if (
-      notifCount.data &&
-      notifCount.data.notification_aggregate &&
-      notifCount.data.notification_aggregate.aggregate &&
-      notifCount.data.notification_aggregate.aggregate.count &&
-      currentNotifCount !== notifCount.data.notification_aggregate.aggregate.count
-    ) {
-      setCurrentNotifCount(notifCount.data.notification_aggregate.aggregate.count);
+    if (!fetchingNotifCount && dataNotifCount) {
+      console.log(dataNotifCount, 'COUNT SUBSCRIPTION');
+      dispatch(setNotifyCount(dataNotifCount));
     }
-  }, [notifCount.data, currentNotifCount, notifCount]);
 
-  useEffect(() => {
-    if (data && currentData !== data) {
-      setCurrentData(data);
+    if (!fetching && data) {
+      console.log(data.notification);
+      // setCurrentData(data.notification);
     }
-  }, [data, currentData, result]);
+  }, [data, fetching, dataNotifCount, fetchingNotifCount, dispatch]);
 
-  if (fetching) return <>.. Loading</>;
+  // console.log(notifyCount, 'COUNT DARI REDUX');
 
-  const handleClose = () => {
-    setOpen(null);
-  };
+  // const handleClose = () => {
+  //   setOpen(null);
+  // };
 
-  const handleMarkAllAsRead = async () => {
-    await axiosInstance.patch(
-      'tender/notification/read-mine',
-      {},
-      {
-        headers: { 'x-hasura-role': activeRole! },
-      }
-    );
-  };
+  // const handleMarkAllAsRead = async () => {
+  //   await axiosInstance.patch(
+  //     'tender/notification/read-mine',
+  //     {},
+  //     {
+  //       headers: { 'x-hasura-role': activeRole! },
+  //     }
+  //   );
+  // };
 
-  const handleClearAll = async () => {
-    await axiosInstance.patch(
-      'tender/notification/hide-all-mine',
-      {},
-      {
-        headers: { 'x-hasura-role': activeRole! },
-      }
-    );
-  };
+  // const handleClearAll = async () => {
+  //   await axiosInstance.patch(
+  //     'tender/notification/hide-all-mine',
+  //     {},
+  //     {
+  //       headers: { 'x-hasura-role': activeRole! },
+  //     }
+  //   );
+  // };
 
-  const handleTapChange = (event: React.SyntheticEvent, newValue: string) => {
-    setActiveTap(newValue);
-  };
-
-  const oneDay = 24 * 60 * 60 * 1000;
-  const oneDayAgo = Date.now() - oneDay;
-
-  // const totalUnRead = data?.notification?.filter((item: any) => item.read_status === false).length;
-
-  const totalUnReadToday = currentData?.notification?.filter((item: any) => {
-    const createdAt = new Date(item.created_at);
-
-    if (createdAt.getTime() >= oneDayAgo) {
-      return item.read_status === false;
-    }
-  }).length;
-
-  // const totalUnReadPrevious = data?.notification?.filter((item: any) => {
-  //   const createdAt = new Date(item.created_at);
-
-  //   if (createdAt.getTime() < oneDayAgo) {
-  //     return item.read_status === false;
-  //   }
-  // }).length;
-
-  const totalToday = currentData?.notification?.filter((item: any) => {
-    const createdAt = new Date(item.created_at);
-
-    if (createdAt.getTime() >= oneDayAgo) {
-      return item;
-    }
-  });
-
-  const totalPrevious = currentData?.notification?.filter((item: any) => {
-    const createdAt = new Date(item.created_at);
-
-    if (createdAt.getTime() < oneDayAgo) {
-      return item;
-    }
-  });
+  // const handleTapChange = (event: React.SyntheticEvent, newValue: string) => {
+  //   setActiveTap(newValue);
+  // };
 
   const handleCloseAlert = () => {
     setOpenAlert(false);
@@ -249,17 +233,88 @@ export default function NotificationsPopover() {
     setOpenAlert(true);
   }
 
-  // console.log('RESULT', data);
-  // console.log('current', currentData);
-  // console.log('Subcription', currentSubcription);
-  // console.log('ROLE', newActiveRole);
-  // console.log('USER', user?.id);
-  // console.log('notif Count', notifCount);
-  // console.log('current notif Count', currentNotifCount);
+  const oneDay = 24 * 60 * 60 * 1000;
+  const oneDayAgo = Date.now() - oneDay;
+
+  // if (currentData.length) {
+  //   const totalUnRead1 = currentData.filter((item: any) => item.read_status === false).length;
+  //   setTotalUnRead(totalUnRead1);
+  //   console.log(totalUnRead1, 'TOTAL UN READ');
+  // setTotalUnReadToday(
+  //   currentData?.filter((item: any) => {
+  //     const createdAt = new Date(item.created_at);
+  //     if (createdAt.getTime() >= oneDayAgo) {
+  //       return item.read_status === false;
+  //     }
+  //   }).length
+  // );
+  // const totalUnReadToday = currentData?.notification?.filter((item: any) => {
+  //   const createdAt = new Date(item.created_at);
+  //   if (createdAt.getTime() >= oneDayAgo) {
+  //     return item.read_status === false;
+  //   }
+  // }).length;
+  // setTotalUnReadPrevious(
+  //   currentData.filter((item: any) => {
+  //     const createdAt = new Date(item.created_at);
+  //     if (createdAt.getTime() < oneDayAgo) {
+  //       return item.read_status === false;
+  //     }
+  //   }).length
+  // );
+  // const totalUnReadPrevious = data?.notification?.filter((item: any) => {
+  //   const createdAt = new Date(item.created_at);
+  //   if (createdAt.getTime() < oneDayAgo) {
+  //     return item.read_status === false;
+  //   }
+  // }).length;
+  // setTotalToday(
+  //   currentData?.filter((item: any) => {
+  //     const createdAt = new Date(item.created_at);
+  //     if (createdAt.getTime() >= oneDayAgo) {
+  //       return item;
+  //     }
+  //   })
+  // );
+  // const totalToday = currentData?.notification?.filter((item: any) => {
+  //   const createdAt = new Date(item.created_at);
+  //   if (createdAt.getTime() >= oneDayAgo) {
+  //     return item;
+  //   }
+  // });
+  // const totalPrevious = currentData?.notification?.filter((item: any) => {
+  //   const createdAt = new Date(item.created_at);
+  //   if (createdAt.getTime() < oneDayAgo) {
+  //     return item;
+  //   }
+  // });
+  // }
 
   return (
     <>
-      <Snackbar
+      {/* <IconButtonAnimate onClick={handleOpen} sx={{ width: 40, height: 40 }}>
+        {!fetchingNotifCount && dataNotifCount ? (
+          <React.Fragment>
+            {currentNotifCount > 0 ? (
+              <Badge badgeContent={currentNotifCount} color="primary">
+                <SvgIconStyle
+                  src={`/assets/icons/dashboard-header/notification-bar.svg`}
+                  sx={{ width: 25, height: 25, color: '#000' }}
+                />
+              </Badge>
+            ) : (
+              <SvgIconStyle
+                src={`/assets/icons/dashboard-header/notification-bar.svg`}
+                sx={{ width: 25, height: 25, color: '#000' }}
+              />
+            )}
+          </React.Fragment>
+        ) : (
+          <React.Fragment>...loading!</React.Fragment>
+        )}
+      </IconButtonAnimate> */}
+
+      {/* <Snackbar
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         open={openAlert}
         autoHideDuration={6000}
@@ -303,12 +358,6 @@ export default function NotificationsPopover() {
               px: 2.5,
             }}
           >
-            {/* <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="subtitle1">الإشعارات</Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              لديك {totalUnRead} إشعارات غير مقروئة
-            </Typography>
-          </Box> */}
 
             <Box>
               <Typography variant="subtitle1">{translate('notification.header')}</Typography>
@@ -379,20 +428,16 @@ export default function NotificationsPopover() {
             >
               {currentNotifCount && currentNotifCount > 0 && (
                 <>
-                  {/* <Tooltip title=" Mark all as read"> */}
                   <IconButton color="primary" onClick={handleMarkAllAsRead}>
                     <Iconify icon="eva:done-all-fill" width={20} height={20} />
                     <Typography sx={{ ml: 0.5 }}>{translate('notification.read_all')}</Typography>
                   </IconButton>
-                  {/* </Tooltip> */}
                 </>
               )}
 
-              {/* <Tooltip title=" Mark all as read"> */}
               <IconButton color="error" onClick={handleClearAll}>
                 <Typography sx={{ ml: 0.5 }}>{translate('notification.clear_all')}</Typography>
               </IconButton>
-              {/* </Tooltip> */}
             </Box>
           </Box>
 
@@ -429,12 +474,6 @@ export default function NotificationsPopover() {
             </Scrollbar>
 
             <Divider sx={{ borderStyle: 'dashed' }} />
-
-            {/* <Box sx={{ p: 1 }}>
-              <Button fullWidth disableRipple>
-                {translate('view_all')}
-              </Button>
-            </Box> */}
           </TabPanel>
           <TabPanel value="2" sx={{ maxHeight: 350, overflowY: 'auto' }}>
             <Scrollbar sx={{ height: { xs: 340, sm: 'auto' } }}>
@@ -466,17 +505,9 @@ export default function NotificationsPopover() {
                 </>
               </List>
             </Scrollbar>
-
-            {/* <Divider sx={{ borderStyle: 'dashed' }} />
-
-            <Box sx={{ p: 1 }}>
-              <Button fullWidth disableRipple>
-                {translate('view_all')}
-              </Button>
-            </Box> */}
           </TabPanel>
         </TabContext>
-      </MenuPopover>
+      </MenuPopover> */}
     </>
   );
 }
