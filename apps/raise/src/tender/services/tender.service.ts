@@ -3,8 +3,6 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
@@ -15,10 +13,6 @@ import { BunnyService } from '../../libs/bunny/services/bunny.service';
 import { TwilioService } from '../../libs/twilio/services/twilio.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UploadFilesDto } from '../../tender-commons/dto/upload-files.dto';
-import {
-  appRoleMappers,
-  TenderFusionAuthRoles,
-} from '../../tender-commons/types';
 import { TenderRepository } from '../repositories/tender.repository';
 
 @Injectable()

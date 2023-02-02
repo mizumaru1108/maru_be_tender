@@ -38,20 +38,20 @@ export class TenderProposalRepository {
 
   async create(
     createProposalPayload: Prisma.proposalUncheckedCreateInput,
-    project_attachment_path: string | undefined,
-    letter_of_support_path: string | undefined,
     proposal_item_budgets:
       | Prisma.proposal_item_budgetCreateManyInput[]
       | undefined,
+    fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
+    uploadedFilePath: string[],
   ) {
     this.logger.log(
       'info',
-      'Creating proposal with payload: ',
-      createProposalPayload,
+      `Creating proposal with payload: \n ${logUtil(createProposalPayload)}`,
     );
     try {
       return await this.prismaService.$transaction(
         async (prisma) => {
+          this.logger.log('info', 'creating proposal...');
           const proposal = await prisma.proposal.create({
             data: {
               ...createProposalPayload,
@@ -59,11 +59,34 @@ export class TenderProposalRepository {
           });
 
           if (proposal_item_budgets) {
+            this.logger.log(
+              'info',
+              `Creating item budget with payload: \n ${logUtil(
+                proposal_item_budgets,
+              )}`,
+            );
             await prisma.proposal_item_budget.createMany({
               data: proposal_item_budgets,
             });
           }
 
+          if (
+            fileManagerCreateManyPayload &&
+            fileManagerCreateManyPayload.length > 0
+          ) {
+            this.logger.log(
+              'info',
+              `Creating file manager history with payload: \n ${logUtil(
+                fileManagerCreateManyPayload,
+              )}`,
+            );
+
+            await prisma.file_manager.createMany({
+              data: fileManagerCreateManyPayload,
+            });
+          }
+
+          this.logger.log('info', `Creating proposal log`);
           await prisma.proposal_log.create({
             data: {
               id: nanoid(),
@@ -77,20 +100,14 @@ export class TenderProposalRepository {
         { maxWait: 50000, timeout: 150000 },
       );
     } catch (error) {
-      // if error
-      if (project_attachment_path) {
-        this.logger.log(
-          'info',
-          'Proposal failed to be created, deleting project attachemmt!',
-        );
-        await this.bunnyService.deleteMedia(project_attachment_path, true);
-      }
-      if (letter_of_support_path) {
-        this.logger.log(
-          'info',
-          'Proposal failed to be created, deleting letter of support!',
-        );
-        await this.bunnyService.deleteMedia(letter_of_support_path, true);
+      this.logger.log(
+        'info',
+        `error on prisma occured deleting all uploaded files`,
+      );
+      if (uploadedFilePath && uploadedFilePath.length > 0) {
+        uploadedFilePath.forEach(async (path) => {
+          await this.bunnyService.deleteMedia(path, true);
+        });
       }
       const theError = prismaErrorThrower(
         error,
@@ -104,34 +121,92 @@ export class TenderProposalRepository {
 
   async saveDraft(
     proposal_id: string,
-    createProposalPayload: Prisma.proposalUncheckedUpdateInput,
+    updateProposalPayload: Prisma.proposalUncheckedUpdateInput,
     proposal_item_budgets:
       | Prisma.proposal_item_budgetCreateManyInput[]
       | undefined,
+    fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
+    deletedFileManagerUrls: string[],
     uploadedFilePath: string[],
   ) {
     try {
       return await this.prismaService.$transaction(
         async (prisma) => {
+          this.logger.log(
+            'info',
+            `updating proposal ${proposal_id} with payload of: \n ${logUtil(
+              updateProposalPayload,
+            )}`,
+          );
           const proposal = await prisma.proposal.update({
             where: {
               id: proposal_id,
             },
             data: {
-              ...createProposalPayload,
+              ...updateProposalPayload,
             },
           });
 
-          if (proposal_item_budgets) {
+          if (proposal_item_budgets && proposal_item_budgets.length > 0) {
+            this.logger.log('info', `deleteing previous item budget`);
             await prisma.proposal_item_budget.deleteMany({
               where: {
                 proposal_id: proposal.id,
               },
             });
 
+            this.logger.log(
+              'info',
+              `creating new item budgets with payload of: \n ${logUtil(
+                proposal_item_budgets,
+              )}`,
+            );
             await prisma.proposal_item_budget.createMany({
               data: proposal_item_budgets,
             });
+          }
+
+          if (
+            fileManagerCreateManyPayload &&
+            fileManagerCreateManyPayload.length > 0
+          ) {
+            this.logger.log(
+              'info',
+              `Creating file manager history with payload: \n ${logUtil(
+                fileManagerCreateManyPayload,
+              )}`,
+            );
+
+            await prisma.file_manager.createMany({
+              data: fileManagerCreateManyPayload,
+            });
+          }
+
+          if (deletedFileManagerUrls && deletedFileManagerUrls.length > 0) {
+            this.logger.log(
+              'info',
+              `There's a file that unused / deleted, setting flags delete to: \n${logUtil(
+                deletedFileManagerUrls,
+              )}`,
+            );
+            for (let i = 0; i < deletedFileManagerUrls.length; i++) {
+              const theFile = await prisma.file_manager.findUnique({
+                where: {
+                  url: deletedFileManagerUrls[i],
+                },
+              });
+
+              if (theFile) {
+                await prisma.file_manager.update({
+                  where: {
+                    id: theFile.id,
+                  },
+                  data: {
+                    is_deleted: true,
+                  },
+                });
+              }
+            }
           }
 
           return proposal;
@@ -140,7 +215,7 @@ export class TenderProposalRepository {
       );
     } catch (error) {
       this.logger.log(
-        'log',
+        'info',
         'saving data on db failed, deleting all uploaded files for this proposal',
       );
       if (uploadedFilePath.length > 0) {
@@ -158,12 +233,36 @@ export class TenderProposalRepository {
     }
   }
 
-  async deleteProposal(proposal_id: string) {
+  async deleteProposal(proposal_id: string, deletedFileManagerUrls: string[]) {
     try {
-      return await this.prismaService.proposal.delete({
-        where: {
-          id: proposal_id,
-        },
+      return await this.prismaService.$transaction(async (prisma) => {
+        if (deletedFileManagerUrls && deletedFileManagerUrls.length > 0) {
+          this.logger.log(
+            'info',
+            `There's a file that unused / deleted, setting flags delete to: \n${logUtil(
+              deletedFileManagerUrls,
+            )}`,
+          );
+          for (let i = 0; i < deletedFileManagerUrls.length; i++) {
+            const file = await prisma.file_manager.findUnique({
+              where: { url: deletedFileManagerUrls[i] },
+            });
+
+            if (file) {
+              await prisma.file_manager.update({
+                where: { url: deletedFileManagerUrls[i] },
+                data: { is_deleted: true },
+              });
+            }
+          }
+        }
+
+        this.logger.log('info', `deleting proposal ${proposal_id}`);
+        const deletedProposal = await prisma.proposal.delete({
+          where: { id: proposal_id },
+        });
+
+        return deletedProposal;
       });
     } catch (error) {
       const theError = prismaErrorThrower(
@@ -178,6 +277,7 @@ export class TenderProposalRepository {
 
   async fetchProposalById(proposalId: string): Promise<proposal | null> {
     try {
+      this.logger.log('info', `fetching proposal ${proposalId}`);
       return await this.prismaService.proposal.findUnique({
         where: {
           id: proposalId,

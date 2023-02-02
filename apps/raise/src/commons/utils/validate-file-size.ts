@@ -1,5 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
+import { convertBytesToMB } from './bytes-to-mb-converter';
 
 /**
  * Func to validate file size
@@ -19,7 +20,9 @@ export function validateFileSize(
 
   if (fileSize > max) {
     throw new BadRequestException(
-      `File size ${fileSize} is larger than ${maxSize} bytes`,
+      `File size ${convertBytesToMB(
+        fileSize,
+      )} is larger than ${convertBytesToMB(max)} bytes`,
     );
   }
   return true;

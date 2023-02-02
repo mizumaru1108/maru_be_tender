@@ -447,6 +447,15 @@ export class TenderClientRepository {
                   is_deleted: true,
                 },
               });
+              const { url } = deleted_bank[i].card_image as any;
+              await prisma.file_manager.update({
+                where: {
+                  url,
+                },
+                data: {
+                  is_deleted: true,
+                },
+              });
             }
           }
 

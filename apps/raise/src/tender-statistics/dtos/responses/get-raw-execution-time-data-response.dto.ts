@@ -5,7 +5,7 @@ export class GetRawExecutionTimeDataResponseDto {
   project_track: string | null;
 
   @ApiProperty()
-  execution_time: string | null;
+  execution_time: number | null;
 
   @ApiProperty()
   created_at: Date;

@@ -37,9 +37,13 @@ export class ProposalSaveDraftDto extends ProposalDeleteDraftDto {
   project_implement_date: string;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  execution_time: string;
+  @IsNumber(
+    { allowNaN: false, allowInfinity: false },
+    { message: 'Execution Time must be a number!' },
+  )
+  @Min(1)
+  @Max(999999999999)
+  execution_time: number;
 
   @ApiProperty()
   @IsString()
@@ -58,7 +62,10 @@ export class ProposalSaveDraftDto extends ProposalDeleteDraftDto {
   /* second form ---------------------------------------------------- */
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNumber({ maxDecimalPlaces: 2 })
+  @IsNumber(
+    { maxDecimalPlaces: 2, allowNaN: false, allowInfinity: false },
+    { message: 'num_ofproject_binicficiaries must be a number!' },
+  )
   @Min(0.01)
   @Max(999999999999999999.99)
   num_ofproject_binicficiaries?: number;
@@ -123,7 +130,10 @@ export class ProposalSaveDraftDto extends ProposalDeleteDraftDto {
   /* fourth form ---------------------------------------------------- */
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNumber({ maxDecimalPlaces: 2 })
+  @IsNumber(
+    { maxDecimalPlaces: 2, allowNaN: false, allowInfinity: false },
+    { message: 'amount_required_fsupport must be a number!' },
+  )
   @Min(0.01)
   @Max(999999999999999999.99)
   amount_required_fsupport?: number;
