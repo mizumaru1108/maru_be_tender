@@ -1,53 +1,60 @@
 import { client_data, Prisma } from '@prisma/client';
+import { finalUploadFileJson } from '../types';
 
 export function ApproveEditRequestMapper(
   oldClientData: client_data,
   newClientData: client_data,
 ): Prisma.client_dataUncheckedUpdateInput {
   const {
-    entity,
     authority,
-    headquarters,
-    date_of_esthablistmen,
-    num_of_beneficiaries,
-    num_of_employed_facility,
-    governorate,
-    region,
-    // entity_mobile,
     center_administration,
-    twitter_acount,
-    phone,
-    website,
-    // email,
-    // password,
-    license_number,
-    license_expired,
-    license_issue_date,
     ceo_mobile,
     ceo_name,
+    chairman_mobile,
+    chairman_name,
+    client_field,
+    data_entry_mail,
     data_entry_mobile,
     data_entry_name,
-    data_entry_mail,
-    client_field,
+    date_of_esthablistmen,
+    entity,
+    governorate,
+    headquarters,
+    license_expired,
+    license_file,
+    license_issue_date,
+    license_number,
+    num_of_beneficiaries,
+    num_of_employed_facility,
+    phone,
+    region,
+    twitter_acount,
+    website,
   } = newClientData;
 
   const updatePayload: Prisma.client_dataUncheckedUpdateInput = {};
-  // for (const key in newClientData) {
-  //   if (
-  //     newClientData.hasOwnProperty(key) &&
-  //     oldClientData[key as keyof client_data] !== newClientData[key]
-  //   ) {
-  //     updatePayload[key as keyof Prisma.client_dataUncheckedUpdateInput] =
-  //       newClientData[key];
-  //   }
-  // }
-
-  if (entity && entity !== oldClientData.entity) {
-    updatePayload.entity = entity;
-  }
 
   if (authority && authority !== oldClientData.authority) {
     updatePayload.authority = authority;
+  }
+
+  if (
+    center_administration &&
+    center_administration !== oldClientData.center_administration
+  ) {
+    updatePayload.center_administration = center_administration;
+  }
+
+  if (ceo_mobile && ceo_mobile !== oldClientData.ceo_mobile) {
+    updatePayload.ceo_mobile = ceo_mobile;
+  }
+
+  if (ceo_name && ceo_name !== oldClientData.ceo_name) {
+    updatePayload.ceo_name = ceo_name;
+  }
+
+  if (entity && entity !== oldClientData.entity) {
+    updatePayload.entity = entity;
   }
 
   if (headquarters && headquarters !== oldClientData.headquarters) {
@@ -83,13 +90,6 @@ export function ApproveEditRequestMapper(
     updatePayload.region = region;
   }
 
-  if (
-    center_administration &&
-    center_administration !== oldClientData.center_administration
-  ) {
-    updatePayload.center_administration = center_administration;
-  }
-
   if (twitter_acount && twitter_acount !== oldClientData.twitter_acount) {
     updatePayload.twitter_acount = twitter_acount;
   }
@@ -117,18 +117,17 @@ export function ApproveEditRequestMapper(
     updatePayload.license_issue_date = license_issue_date;
   }
 
-  // if (
-  //   license_file &&
-  //   JSON.stringify(license_file) !== oldClientData.license_file
-  // ) {
-  //   editRequest.push({
-  //     id: uuidv4(),
-  //     identifier: 'license_file',
-  //     old_value: '',
-  //     new_value: JSON.stringify(license_file),
-  //     ...baseEditRequest,
-  //   });
-  // }
+  if (license_file) {
+    let tmpLicense: finalUploadFileJson = license_file as any;
+    if (tmpLicense.hasOwnProperty('color') && tmpLicense.color === 'green') {
+      delete tmpLicense.color;
+      updatePayload.license_file = {
+        url: tmpLicense.url,
+        size: tmpLicense.size,
+        type: tmpLicense.type,
+      };
+    }
+  }
 
   // if (
   //   board_ofdec_file &&
@@ -143,12 +142,12 @@ export function ApproveEditRequestMapper(
   //   });
   // }
 
-  if (ceo_mobile && ceo_mobile !== oldClientData.ceo_mobile) {
-    updatePayload.ceo_mobile = ceo_mobile;
+  if (chairman_name && chairman_name !== oldClientData.chairman_name) {
+    updatePayload.chairman_name = chairman_name;
   }
 
-  if (ceo_name && ceo_name !== oldClientData.ceo_name) {
-    updatePayload.ceo_name = ceo_name;
+  if (chairman_mobile && chairman_mobile !== oldClientData.chairman_mobile) {
+    updatePayload.chairman_mobile = chairman_mobile;
   }
 
   if (

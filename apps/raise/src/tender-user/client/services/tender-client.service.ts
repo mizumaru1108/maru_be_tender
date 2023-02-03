@@ -774,6 +774,39 @@ export class TenderClientService {
             }
           }
         }
+
+        if (ofdecFromDb instanceof Array) {
+          ofdecFromDb.forEach((existingOfdec) => {
+            if (isUploadFileJsonb(existingOfdec)) {
+              // console.log({ existingOfdec });
+              let tmpExisting: finalUploadFileJson = existingOfdec as any;
+              const idx = newOfdec.findIndex(
+                (newData) => newData.url === tmpExisting.url,
+              );
+
+              if (idx === -1) {
+                tmpExisting.color = 'red';
+                oldOfdec.push(tmpExisting);
+                // console.log({ oldOfdec });
+              }
+            }
+          });
+        } else {
+          if (isUploadFileJsonb(ofdecFromDb)) {
+            let tmpExisting: finalUploadFileJson = ofdecFromDb as any;
+            // console.log({ ofdecFromDb });
+            // console.log({ newOfdec });
+            const idx = newOfdec.findIndex(
+              (newData) => newData.url === tmpExisting.url,
+            );
+
+            if (idx === -1) {
+              tmpExisting.color = 'red';
+              oldOfdec.push(tmpExisting);
+              // console.log({ oldOfdec });
+            }
+          }
+        }
       }
 
       let oldLicenseFile: finalUploadFileJson = clientOldRequest.license_file;
@@ -781,10 +814,10 @@ export class TenderClientService {
       if (!!license_file) {
         // console.log(logUtil(license_file));
         if (isTenderFilePayload(license_file)) {
-          this.logger.log(
-            'info',
-            'liscene_file is a new file, uploading liscene file',
-          );
+          // this.logger.log(
+          //   'info',
+          //   'liscene_file is a new file, uploading liscene file',
+          // );
           const uploadResult = await this.uploadClientFile(
             user.id,
             'Uploading license file for user',
@@ -814,12 +847,12 @@ export class TenderClientService {
           newLicenseFile.color = 'green';
         }
         if (isUploadFileJsonb(license_file)) {
-          this.logger.log(
-            'info',
-            `liscene file is an uploaded file (jsonb), ${logUtil(
-              license_file,
-            )}`,
-          );
+          // this.logger.log(
+          //   'info',
+          //   `liscene file is an uploaded file (jsonb), ${logUtil(
+          //     license_file,
+          //   )}`,
+          // );
           let tmp: UploadFilesJsonbDto = license_file;
           if (tmp.url !== clientOldRequest.license_file.url) {
             oldLicenseFile.color = 'red';
@@ -844,15 +877,13 @@ export class TenderClientService {
       };
 
       // console.log('final result:');
-      console.log(logUtil(clientOldRequest));
-      console.log(logUtil(clientNewRequest));
+      // console.log(logUtil(clientOldRequest));
+      // console.log(logUtil(clientNewRequest));
       // console.log(logUtil(ofdecFromDb));
       // console.log(logUtil(oldOfdec));
       // console.log(logUtil(newOfdec));
       // console.log(logUtil(fileManagerCreateManyPayload));
       // console.log(logUtil(uploadedFilePath));
-
-      // throw new BadRequestException('iseng aja');
 
       const response = await this.tenderClientRepository.createUpdateRequest(
         newEditRequest,
@@ -895,6 +926,7 @@ export class TenderClientService {
     let created_bank: Prisma.bank_informationCreateManyInput[] = [];
     let updated_bank: bank_information[] = [];
     let deleted_bank: bank_information[] = [];
+    let deletedFileManagerUrls: string[] = [];
 
     try {
       const { old_value, new_value, user_id } = requestData;
@@ -914,8 +946,61 @@ export class TenderClientService {
       delete newTmp.deletedBanks;
       new_data = newTmp;
 
+      const oldLicenseFile: finalUploadFileJson = old_data.license_file as any;
+
+      if (oldLicenseFile.color === 'red') {
+        deletedFileManagerUrls.push(oldLicenseFile.url);
+      }
+
       updateClientPayload = ApproveEditRequestMapper(old_data, new_data);
 
+      if (old_data.board_ofdec_file) {
+        let tmpOldOfdec: finalUploadFileJson[] =
+          old_data.board_ofdec_file as any;
+
+        for (let i = 0; i < tmpOldOfdec.length; i++) {
+          if (tmpOldOfdec[i].hasOwnProperty('color')) {
+            if (tmpOldOfdec[i].color === 'red') {
+              const index = deletedFileManagerUrls.findIndex(
+                (arrUrl) => arrUrl === tmpOldOfdec[i].url,
+              );
+
+              if (index === -1) deletedFileManagerUrls.push(tmpOldOfdec[i].url);
+            }
+          }
+        }
+      }
+
+      if (new_data.board_ofdec_file) {
+        let tmpArr: UploadFilesJsonbDto[] = [];
+        let tmpNewOfdec: finalUploadFileJson[] =
+          new_data.board_ofdec_file as any;
+
+        for (let i = 0; i < tmpNewOfdec.length; i++) {
+          if (tmpNewOfdec[i].hasOwnProperty('color')) {
+            if (tmpNewOfdec[i].color === 'red') {
+              const index = deletedFileManagerUrls.findIndex(
+                (arrUrl) => arrUrl === tmpNewOfdec[i].url,
+              );
+
+              if (index === -1) deletedFileManagerUrls.push(tmpNewOfdec[i].url);
+            }
+            delete tmpNewOfdec[i].color;
+            tmpArr.push(tmpNewOfdec[i]);
+          }
+        }
+
+        updateClientPayload.board_ofdec_file = tmpArr as any;
+      }
+
+      // updateClientPayload.board_ofdec_file = [new_data.board_ofdec_file];
+
+      // console.log({ deletedFileManagerUrls });
+      // console.log({ old_data });
+      // console.log({ new_data });
+      // console.log({ updateClientPayload });
+
+      // throw new BadRequestException('iseng aja');
       const response = await this.tenderClientRepository.approveEditRequests(
         requestId,
         reviewerId,
@@ -925,7 +1010,7 @@ export class TenderClientService {
         updated_bank,
         deleted_bank,
       );
-      console.log('response', response);
+      // // console.log('response', response);
 
       await this.sendResponseNotif(response);
       return response;

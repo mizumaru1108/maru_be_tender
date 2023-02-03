@@ -160,6 +160,18 @@ export class ClientEditRequestFieldDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  chairman_name?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  chairman_mobile?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsArray()
   @IsNotEmpty({ each: true })
   @ValidateNested({ each: true })

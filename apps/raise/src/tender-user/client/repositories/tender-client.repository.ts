@@ -3,16 +3,13 @@ import {
   bank_information,
   client_data,
   Prisma,
-  user,
   user_status,
 } from '@prisma/client';
-import { any } from 'joi';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
 import { SearchEditRequestFilter } from '../dtos/requests/search-edit-request-filter-request.dto';
-import { UpdateBankInfoPayload } from '../interfaces/update-bank-info-payload.interface';
 
 @Injectable()
 export class TenderClientRepository {
@@ -88,32 +85,31 @@ export class TenderClientRepository {
           user_id: userId,
         },
         select: {
-          entity: true,
           authority: true,
-          date_of_esthablistmen: true,
-          headquarters: true,
-          num_of_employed_facility: true,
-          num_of_beneficiaries: true,
-          region: true,
-          governorate: true,
+          board_ofdec_file: true,
           center_administration: true,
-          entity_mobile: true,
-          phone: true,
-          twitter_acount: true,
-          website: true,
-          license_number: true,
-          license_issue_date: true,
+          ceo_mobile: true,
+          ceo_name: true,
+          chairman_mobile: true,
+          chairman_name: true,
+          client_field: true,
+          data_entry_mail: true,
+          data_entry_mobile: true,
+          data_entry_name: true,
+          date_of_esthablistmen: true,
+          entity: true,
+          governorate: true,
+          headquarters: true,
           license_expired: true,
           license_file: true,
-          board_ofdec_file: true,
-          ceo_name: true,
-          ceo_mobile: true,
-          data_entry_name: true,
-          data_entry_mobile: true,
-          data_entry_mail: true,
-          // chairman_name: true,
-          // chairman_mobile: true,
-          client_field: true,
+          license_issue_date: true,
+          license_number: true,
+          num_of_beneficiaries: true,
+          num_of_employed_facility: true,
+          phone: true,
+          region: true,
+          twitter_acount: true,
+          website: true,
           user: {
             select: {
               status_id: true,
@@ -402,7 +398,8 @@ export class TenderClientRepository {
           });
 
           if (created_bank && created_bank.length > 0) {
-            console.log(
+            this.logger.log(
+              'info',
               `create .., payload: ${JSON.stringify(created_bank, null, 2)}`,
             );
             await prisma.bank_information.createMany({
@@ -412,7 +409,8 @@ export class TenderClientRepository {
 
           if (updated_bank && updated_bank.length > 0) {
             for (let i = 0; i < updated_bank.length; i++) {
-              console.log(
+              this.logger.log(
+                'info',
                 `updating bank ${updated_bank[i].id}, payload: ${JSON.stringify(
                   updated_bank[i],
                   null,
@@ -436,7 +434,8 @@ export class TenderClientRepository {
 
           if (deleted_bank && deleted_bank.length > 0) {
             for (let i = 0; i < deleted_bank.length; i++) {
-              console.log(
+              this.logger.log(
+                'info',
                 `setting flag delete for bank ${deleted_bank[i].id} ...`,
               );
               await prisma.bank_information.update({
