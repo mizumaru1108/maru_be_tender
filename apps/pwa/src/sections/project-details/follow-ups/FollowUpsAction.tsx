@@ -6,6 +6,7 @@ import ActionPopup from './follow-ups-popups/ActionPopup';
 import FilePopup from './follow-ups-popups/FilePopup';
 import useLocales from '../../../hooks/useLocales';
 import useAuth from 'hooks/useAuth';
+import { FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL } from 'config';
 
 function FollowUpsAction() {
   const { translate } = useLocales();
@@ -40,7 +41,7 @@ function FollowUpsAction() {
             <ActionPopup open={actoinOpen} handleClose={handleActionClose} />
             <FilePopup open={fileOpen} handleClose={handleFileClose} />
             <IconButtonAnimate
-              onClick={handleActionOpen}
+              onClick={FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL ? handleActionOpen : undefined}
               sx={{
                 backgroundColor: '#fff',
                 color: '#000',
@@ -52,7 +53,7 @@ function FollowUpsAction() {
               <Typography sx={{ fontWeight: 700 }}>{translate('add_action')}</Typography>
             </IconButtonAnimate>
             <IconButtonAnimate
-              onClick={handleFileOpen}
+              onClick={FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL ? handleActionOpen : undefined}
               sx={{
                 backgroundColor: '#fff',
                 color: '#000',

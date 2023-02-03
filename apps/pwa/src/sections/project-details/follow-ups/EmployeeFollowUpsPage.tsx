@@ -1,4 +1,3 @@
-/* eslint-disable array-callback-return */
 import { Grid, Stack, Tab, Tabs, Container, Button, Checkbox, Typography } from '@mui/material';
 
 import React from 'react';
@@ -81,6 +80,20 @@ function EmployeeFollowUpsPage() {
     });
   }
 
+  const followUpsEmployee = proposal.follow_ups.filter((items) => {
+    for (const item of items.user.roles) {
+      return item.role !== 'CLIENT' && items.employee_only === true;
+    }
+    return false;
+  });
+
+  const followUpsPartner = proposal.follow_ups.filter((items) => {
+    for (const item of items.user.roles) {
+      return item.role !== 'CLIENT' && items.employee_only === false;
+    }
+    return false;
+  });
+
   return (
     <Grid container spacing={3}>
       <Grid item md={12} xs={12} sx={{ alignSelf: 'center' }}>
@@ -130,24 +143,14 @@ function EmployeeFollowUpsPage() {
       </Grid>
 
       <TabPanel value={switchState} index={0} dir={theme.direction}>
-        <Container sx={{ py: 2, width: '100%', mt: 4 }}>
+        <Container sx={{ py: 2, width: '100%', mt: 1 }}>
           <Grid container spacing={3}>
-            {proposal.follow_ups.length === 0 ||
-            proposal.follow_ups.filter((items) => {
-              for (const item of items.user.roles) {
-                return item.role !== 'CLIENT' && items.employee_only === true;
-              }
-            }).length === 0 ? (
+            {proposal.follow_ups.length === 0 || followUpsEmployee.length === 0 ? (
               <Grid item md={12} xs={12}>
                 <EmptyFollowUps />
               </Grid>
             ) : (
-              proposal.follow_ups
-                .filter((items) => {
-                  for (const item of items.user.roles) {
-                    return item.role !== 'CLIENT' && items.employee_only === true;
-                  }
-                })
+              followUpsEmployee
                 .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
                 .map((item, index) => (
                   <Grid item md={12} xs={12} key={index}>
@@ -176,22 +179,12 @@ function EmployeeFollowUpsPage() {
       <TabPanel value={switchState} index={1} dir={theme.direction}>
         <Container sx={{ py: 2, width: '100%' }}>
           <Grid container spacing={3}>
-            {proposal.follow_ups.length === 0 ||
-            proposal.follow_ups.filter((items) => {
-              for (const item of items.user.roles) {
-                return item.role !== 'CLIENT' && items.employee_only === false;
-              }
-            }).length === 0 ? (
+            {proposal.follow_ups.length === 0 || followUpsPartner.length === 0 ? (
               <Grid item md={12} xs={12}>
                 <EmptyFollowUps />
               </Grid>
             ) : (
-              proposal.follow_ups
-                .filter((items) => {
-                  for (const item of items.user.roles) {
-                    return item.role !== 'CLIENT' && items.employee_only === false;
-                  }
-                })
+              followUpsPartner
                 .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
                 .map((item, index) => (
                   <Grid item md={12} xs={12} key={index}>

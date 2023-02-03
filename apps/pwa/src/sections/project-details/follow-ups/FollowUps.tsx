@@ -10,6 +10,7 @@ import axiosInstance from 'utils/axios';
 import { getProposal, setCheckedItems } from 'redux/slices/proposal';
 import { useDispatch, useSelector } from 'redux/store';
 import { useSnackbar } from 'notistack';
+import { FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL } from 'config';
 
 function FollowUps() {
   const { id } = useParams();
@@ -72,7 +73,7 @@ function FollowUps() {
                 px: 4,
                 ':hover': { backgroundColor: 'darkred' },
               }}
-              onClick={() => handleDelFollowUps()}
+              onClick={FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL ? () => handleDelFollowUps() : undefined}
             >
               DELETE
             </LoadingButton>

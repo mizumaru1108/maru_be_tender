@@ -1,4 +1,3 @@
-/* eslint-disable array-callback-return */
 import { noCase } from 'change-case';
 import { useState, useEffect, Key } from 'react';
 // @mui
@@ -185,6 +184,7 @@ export default function MessagePopover() {
     if (createdAt.getTime() >= oneDayAgo) {
       return item.read_status === false;
     }
+    return false;
   }).length;
 
   const totalUnReadPrevious = currentData?.notifcation?.message?.filter((item: any) => {
@@ -193,6 +193,8 @@ export default function MessagePopover() {
     if (createdAt.getTime() < oneDayAgo) {
       return item.read_status === false;
     }
+
+    return false;
   }).length;
 
   const totalToday = currentData?.notifcation?.message?.filter((item: any) => {
@@ -201,6 +203,7 @@ export default function MessagePopover() {
     if (createdAt.getTime() >= oneDayAgo) {
       return item;
     }
+    return false;
   });
 
   const totalPrevious = currentData?.notifcation?.message?.filter((item: any) => {
@@ -209,6 +212,7 @@ export default function MessagePopover() {
     if (createdAt.getTime() < oneDayAgo) {
       return item;
     }
+    return false;
   });
   // console.log('data', data);
 

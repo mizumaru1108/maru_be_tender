@@ -11,6 +11,7 @@ import { FollowUps } from './follow-ups';
 import { useDispatch, useSelector } from 'redux/store';
 import { setActiveTap } from 'redux/slices/proposal';
 import { ActiveTap } from '../../@types/proposal';
+import { FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL } from 'config';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -102,6 +103,7 @@ function ActionTap() {
                 borderRadius: '10px',
               },
             }}
+            // disabled={index === 3 && FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL}
           />
         ))}
       </Tabs>

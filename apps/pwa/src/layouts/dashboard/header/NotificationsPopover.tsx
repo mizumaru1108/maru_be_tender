@@ -1,4 +1,3 @@
-/* eslint-disable array-callback-return */
 import { noCase } from 'change-case';
 import React, { Key, useState, useEffect } from 'react';
 // @mui
@@ -46,6 +45,7 @@ import 'moment/min/locales';
 import moment from 'moment';
 import { setNotifyCount } from 'redux/slices/notification';
 import { useDispatch, useSelector } from 'redux/store';
+import { FEATURE_NOTIFICATION_SYSTEM } from 'config';
 
 // ----------------------------------------------------------------------
 // const _notifications = [...Array(3)].map((_, index) => ({
@@ -134,6 +134,8 @@ export default function NotificationsPopover() {
 
   const { user, activeRole } = useAuth();
 
+  const userId = user?.id;
+
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     setOpen(event.currentTarget);
   };
@@ -142,17 +144,17 @@ export default function NotificationsPopover() {
 
   const empNotifications = {
     query: subNotification,
-    variables: { user_id: user?.id },
+    variables: { user_id: userId },
   };
 
   const clientNotifications = {
     query: subNotificationClient,
-    variables: { user_id: user?.id },
+    variables: { user_id: userId },
   };
 
   const accManagerNotifications = {
     query: notifAccManager,
-    variables: { user_id: user?.id },
+    variables: { user_id: userId },
   };
 
   if (activeRole === 'tender_client' || activeRole === 'tender_project_supervisor') {
@@ -165,12 +167,12 @@ export default function NotificationsPopover() {
 
   const [notifCount] = useSubscription({
     query: notificationCount,
-    variables: { user_id: user?.id },
+    variables: { user_id: userId },
   });
 
-  const [result] = useSubscription(currentSubcription);
+  // const [result] = useSubscription(currentSubcription);
 
-  const { data, fetching, error } = result;
+  // const { data, fetching, error } = result;
   const { data: dataNotifCount, fetching: fetchingNotifCount, error: NotifCountError } = notifCount;
 
   // if (!fetchingNotifCount && dataNotifCount) {
@@ -184,16 +186,18 @@ export default function NotificationsPopover() {
   // }
 
   useEffect(() => {
+    // if(FEATURE_NOTIFICATION_SYSTEM){
     if (!fetchingNotifCount && dataNotifCount) {
-      console.log(dataNotifCount, 'COUNT SUBSCRIPTION');
       dispatch(setNotifyCount(dataNotifCount));
+      console.log(notifyCount, 'COUNT SUBSCRIPTION');
     }
 
-    if (!fetching && data) {
-      console.log(data.notification);
-      // setCurrentData(data.notification);
-    }
-  }, [data, fetching, dataNotifCount, fetchingNotifCount, dispatch]);
+    // if (!fetching && data) {
+    // console.log(data.notification);
+    // setCurrentData(data.notification);
+    // }
+    // }
+  }, [dataNotifCount, fetchingNotifCount, dispatch, notifyCount]);
 
   // console.log(notifyCount, 'COUNT DARI REDUX');
 
@@ -229,7 +233,7 @@ export default function NotificationsPopover() {
     setOpenAlert(false);
   };
 
-  if (error) {
+  if (NotifCountError) {
     setOpenAlert(true);
   }
 
@@ -292,7 +296,7 @@ export default function NotificationsPopover() {
 
   return (
     <>
-      {/* <IconButtonAnimate onClick={handleOpen} sx={{ width: 40, height: 40 }}>
+      {/* <IconButtonAnimate disabled={!FEATURE_NOTIFICATION_SYSTEM} onClick={handleOpen} sx={{ width: 40, height: 40 }}>
         {!fetchingNotifCount && dataNotifCount ? (
           <React.Fragment>
             {currentNotifCount > 0 ? (
@@ -324,7 +328,7 @@ export default function NotificationsPopover() {
           ...Opss, in notification popover component something went wrong
         </Alert>
       </Snackbar>
-      <IconButtonAnimate onClick={handleOpen} sx={{ width: 40, height: 40 }}>
+      <IconButtonAnimate disabled={!FEATURE_NOTIFICATION_SYSTEM} onClick={handleOpen} sx={{ width: 40, height: 40 }}>
         {currentNotifCount && currentNotifCount > 0 ? (
           <Badge badgeContent={currentNotifCount} color="primary">
             <SvgIconStyle
