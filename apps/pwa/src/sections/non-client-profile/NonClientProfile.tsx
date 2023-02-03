@@ -6,6 +6,7 @@ import useResponsive from 'hooks/useResponsive';
 import { useLocation, useNavigate } from 'react-router';
 import { useQuery } from 'urql';
 import { role_url_map } from '../../@types/commons';
+import { FEATURE_EDIT_CLIENT_INFORMATION } from '../../config';
 import useAuth from '../../hooks/useAuth';
 import useLocales from '../../hooks/useLocales';
 import { getNonClientDetails } from '../../queries/commons/getNonClientUserDetails';
@@ -56,7 +57,8 @@ export default function NonClientProfile() {
               {user?.fullName && <Typography variant="h5">{user?.fullName}</Typography>}
 
               <Typography variant="h6" sx={{ color: '#1E1E1E' }}>
-                {role_url_map[`${role}`].toUpperCase() ?? 'N/A'} - N/A
+                {/* {role_url_map[`${role}`].toUpperCase() ?? 'N/A'} - N/A */}
+                {role_url_map[`${role}`].toUpperCase() ?? 'N/A'}
               </Typography>
             </Stack>
             <Button
@@ -93,7 +95,12 @@ export default function NonClientProfile() {
                 height: '45px',
                 fontSize: isMobile ? '10px' : '15px',
               }}
-              onClick={() => navigate(`/${pathRole}/my-profile/edit`)}
+              disabled={!FEATURE_EDIT_CLIENT_INFORMATION}
+              onClick={() => {
+                if (FEATURE_EDIT_CLIENT_INFORMATION) {
+                  navigate(`/${pathRole}/my-profile/edit`);
+                }
+              }}
             >
               {translate('user_profile.label.edit_button')}
             </Button>

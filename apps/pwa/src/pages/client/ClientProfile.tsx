@@ -158,7 +158,7 @@ function ClientProfile() {
                   fontSize: isMobile ? '10px' : '15px',
                 }}
                 onClick={() => navigate('/client/my-profile/edit-user')}
-                // disabled
+                disabled={!FEATURE_EDIT_CLIENT_INFORMATION}
               >
                 {/* تعديل معلومات الحساب */}
                 edit user informaton
