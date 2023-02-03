@@ -1,4 +1,5 @@
-export const getProfileData = `query MyQuery($id: String = "") {
+export const getProfileData = `
+query MyQuery($id: String = "") {
   user_by_pk(id: $id) {
     client_data {
       headquarters
@@ -22,6 +23,8 @@ export const getProfileData = `query MyQuery($id: String = "") {
       license_expired
       license_issue_date
       license_file
+      chairman_name
+      chairman_mobile
     }
     bank_informations {
       bank_account_name

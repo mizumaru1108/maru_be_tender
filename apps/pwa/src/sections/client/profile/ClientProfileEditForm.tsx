@@ -86,6 +86,8 @@ function ClientProfileEditForm() {
       data_entry_name: '',
       data_entry_mobile: '',
       data_entry_mail: '',
+      chairman_name: '',
+      chairman_mobile: '',
     },
     form5: [
       {
@@ -161,6 +163,8 @@ function ClientProfileEditForm() {
         data_entry_name,
         data_entry_mobile,
         data_entry_mail,
+        chairman_name,
+        chairman_mobile,
       } = client;
       setStartedValue({ bank_informations, email, ...client });
       let newval: any = [];
@@ -217,6 +221,8 @@ function ClientProfileEditForm() {
           data_entry_name,
           data_entry_mobile,
           data_entry_mail,
+          chairman_name,
+          chairman_mobile,
         },
         form5: bank_informations,
       }));
@@ -377,6 +383,9 @@ function ClientProfileEditForm() {
             startedValue && startedValue.data_entry_mobile && startedValue.data_entry_mobile,
           data_entry_mail:
             startedValue && startedValue.data_entry_mail && startedValue.data_entry_mail,
+          chairman_name: startedValue && startedValue.chairman_name && startedValue.chairman_name,
+          chairman_mobile:
+            startedValue && startedValue.chairman_mobile && startedValue.chairman_mobile,
         },
       }));
     }

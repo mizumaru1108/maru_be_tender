@@ -57,6 +57,16 @@ function AdministrativeInfo({
       </Stack>
       <Stack direction="row" justifyContent="space-between">
         <Stack direction="column" flex={1}>
+          <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>اسم الرئيس:</Typography>
+          <Typography sx={{ fontSize: '18px' }}>{data.chairman_name}</Typography>
+        </Stack>
+        <Stack direction="column" flex={1}>
+          <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>الرئيس موبايل:</Typography>
+          <Typography sx={{ fontSize: '18px' }}>{data.chairman_mobile}</Typography>
+        </Stack>
+      </Stack>
+      <Stack direction="row" justifyContent="space-between">
+        <Stack direction="column" flex={1}>
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>اسم مدخل البيانات:</Typography>
           <Typography sx={{ fontSize: '18px' }}>{data.data_entry_name}</Typography>
         </Stack>

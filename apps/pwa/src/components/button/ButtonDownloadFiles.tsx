@@ -20,6 +20,8 @@ function ButtonDownloadFiles({ files }: Props) {
         flex: 1,
         '&:hover': { backgroundColor: '#00000014' },
         backgroundColor: '#93A3B014',
+        border: 3,
+        borderColor: files && files.color ? files.color : 'transparent',
       }}
     >
       <Stack

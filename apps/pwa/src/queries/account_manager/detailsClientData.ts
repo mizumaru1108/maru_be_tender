@@ -37,6 +37,8 @@ query detailsClientData($id: String!) {
       updated_at
       website
       data_entry_mobile
+      chairman_name
+      chairman_mobile
     }
     email
     status_id

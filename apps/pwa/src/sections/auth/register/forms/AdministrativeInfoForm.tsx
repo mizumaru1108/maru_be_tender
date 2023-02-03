@@ -78,6 +78,7 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, onReturn, done }: For
 
   const agree_on = watch('agree_on');
   const onSubmitForm = async (data: AdministrativeValuesProps) => {
+    // console.log('data', data);
     let newCeoMobile = getValues('ceo_mobile');
     let newDataEntryMobile = getValues('data_entry_mobile');
     let newChairmanMobile = getValues('chairman_mobile');
@@ -100,8 +101,8 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, onReturn, done }: For
       data_entry_mobile: newDataEntryMobile!,
       chairman_mobile: newChairmanMobile!,
     };
-
-    // reset({ ...payload });
+    // console.log('payload', payload);
+    reset({ ...payload });
     onSubmit({ ...payload });
   };
   React.useEffect(() => {

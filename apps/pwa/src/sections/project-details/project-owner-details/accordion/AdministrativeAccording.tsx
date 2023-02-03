@@ -78,6 +78,18 @@ function AdministrativeAccording({ userInfo }: Props) {
             </Grid>
             <Grid item xs={12} md={6}>
               <Typography sx={sxPropsText}>
+                {translate('project_owner_details.accordion.administrative_tab.chairman_name')}
+              </Typography>
+              <TextField disabled fullWidth value={userInfo?.chairman_name ?? '-'} />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography sx={sxPropsText}>
+                {translate('project_owner_details.accordion.administrative_tab.chairman_mobile')}
+              </Typography>
+              <TextField disabled fullWidth value={userInfo?.chairman_mobile ?? '-'} />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography sx={sxPropsText}>
                 {translate('project_owner_details.accordion.administrative_tab.data_entry_name')}
               </Typography>
               <TextField disabled fullWidth value={userInfo?.data_entry_name ?? '-'} />

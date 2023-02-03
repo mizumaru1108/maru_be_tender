@@ -1,10 +1,12 @@
 import { Box, Grid, Link, Stack, Typography, useTheme } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 import { type } from 'os';
+import React from 'react';
 import { useNavigate } from 'react-router';
 import { useSelector } from 'redux/store';
 import { IEditedValues } from '../../../@types/client_data';
 import { bank_information } from '../../../@types/commons';
+import ButtonDownloadFiles from '../../../components/button/ButtonDownloadFiles';
 import BankImageComp from '../../shared/BankImageComp';
 
 type DataTabProps = {
@@ -18,6 +20,25 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
   const { translate } = useLocales();
   const navigate = useNavigate();
   const theme = useTheme();
+  const [newValues, setNewValues] = React.useState<IEditedValues>(EditValues);
+
+  React.useEffect(() => {
+    const newVal = { ...EditValues };
+    const prefixCeoMobile = newVal?.ceo_mobile?.slice(0, 4);
+    const prefixEntriMobile = newVal.data_entry_mobile?.slice(0, 4);
+    const prefixChairmanMobile = newVal.chairman_mobile?.slice(0, 4);
+    if (prefixCeoMobile !== '+966') {
+      newVal.ceo_mobile = '+966' + newVal.ceo_mobile;
+    }
+    if (prefixEntriMobile !== '+966') {
+      newVal.data_entry_mobile = '+966' + newVal.data_entry_mobile;
+    }
+    if (prefixChairmanMobile !== '+966') {
+      newVal.chairman_mobile = '+966' + newVal.chairman_mobile;
+    }
+    setNewValues(newVal);
+    // console.log({ prefixCeoMobile });
+  }, [EditValues]);
 
   interface coloredBank extends bank_information {
     color?: string;
@@ -266,11 +287,57 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                 fontWeight: theme.typography.fontWeightMedium,
                 textDecoration: 'underline',
                 cursor: 'pointer',
-                color: EditValues.license_file.color ?? '#000',
+                // color:
+                //   (EditValues.license_file.color !== 'transparent' &&
+                //     EditValues.license_file.color) ??
+                //   '#000',
+                color:
+                  EditValues.license_file.color !== 'transparent'
+                    ? EditValues.license_file.color
+                    : '#000',
               }}
             >
               {EditValues.license_file.url ?? '-'}
             </Typography>
+          </Box>
+        </Stack>
+        {/* Record 0fDec file */}
+        <Stack spacing={2} direction="column" component="div" sx={{ mt: 4 }}>
+          <Box>
+            <Typography variant="body1" component="p" sx={{ color: '#93A3B0' }}>
+              {translate('account_manager.partner_details.board_ofdec_file')}:
+            </Typography>
+            <Grid container component="div">
+              {EditValues &&
+              EditValues.board_ofdec_file &&
+              EditValues.board_ofdec_file.length > 0 ? (
+                EditValues.board_ofdec_file.map((item, index) => (
+                  <Grid item xs={6} md={6} key={index}>
+                    <ButtonDownloadFiles files={item} />
+                  </Grid>
+                ))
+              ) : (
+                <Grid item xs={6} md={6}>
+                  {'-'}
+                </Grid>
+              )}
+            </Grid>
+            {/* <Typography
+              variant="h6"
+              component="p"
+              sx={{
+                mt: 1,
+                fontWeight: theme.typography.fontWeightMedium,
+                color:
+                  compareValues?.hasOwnProperty('entity') && EditType === 'new-data'
+                    ? 'green'
+                    : compareValues?.hasOwnProperty('entity') && EditType === 'previous-data'
+                    ? 'red'
+                    : 'black',
+              }}
+            >
+              {EditValues.entity ?? '-'}
+            </Typography> */}
           </Box>
         </Stack>
       </Grid>
@@ -322,7 +389,55 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                       : 'black',
                 }}
               >
-                {EditValues.ceo_mobile}
+                {newValues.ceo_mobile}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Box>
+              <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
+                {translate('account_manager.partner_details.chairman_name')}:
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                component="p"
+                sx={{
+                  mt: 1,
+                  fontWeight: theme.typography.fontWeightMedium,
+                  color:
+                    compareValues?.hasOwnProperty('chairman_name') && EditType === 'new-data'
+                      ? 'green'
+                      : compareValues?.hasOwnProperty('chairman_name') &&
+                        EditType === 'previous-data'
+                      ? 'red'
+                      : 'black',
+                }}
+              >
+                {EditValues.chairman_name ?? '-'}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Box>
+              <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
+                {translate('account_manager.partner_details.chairman_mobile')}:
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                component="p"
+                sx={{
+                  mt: 1,
+                  fontWeight: theme.typography.fontWeightMedium,
+                  color:
+                    compareValues?.hasOwnProperty('chairman_mobile') && EditType === 'new-data'
+                      ? 'green'
+                      : compareValues?.hasOwnProperty('chairman_mobile') &&
+                        EditType === 'previous-data'
+                      ? 'red'
+                      : 'black',
+                }}
+              >
+                {newValues.chairman_mobile ?? '-'}
               </Typography>
             </Box>
           </Grid>
@@ -370,7 +485,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                       : 'black',
                 }}
               >
-                {EditValues.data_entry_mobile ?? '-'}
+                {newValues.data_entry_mobile ?? '-'}
               </Typography>
             </Box>
           </Grid>

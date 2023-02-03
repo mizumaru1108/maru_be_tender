@@ -441,6 +441,34 @@ function AccountPartnerDetails() {
                     <Grid item xs={12} md={6}>
                       <Box>
                         <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
+                          {translate('account_manager.partner_details.chairman_name')}:
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          component="p"
+                          sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
+                        >
+                          {partnerDetails?.client_data.chairman_name ?? '-'}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <Box>
+                        <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
+                          {translate('account_manager.partner_details.chairman_mobile')}:
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          component="p"
+                          sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
+                        >
+                          {partnerDetails?.client_data.chairman_mobile ?? '-'}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <Box>
+                        <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
                           {translate('account_manager.partner_details.data_entry_name')}:
                         </Typography>
                         <Typography

@@ -17,6 +17,8 @@ export type AdministrativeValuesProps = {
   agree_on: boolean;
   ceo_name: string;
   ceo_mobile: string;
+  chairman_name: string;
+  chairman_mobile: string;
   data_entry_name: string;
   data_entry_mobile: string;
   data_entry_mail: string;

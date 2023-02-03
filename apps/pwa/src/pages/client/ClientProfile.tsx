@@ -102,6 +102,8 @@ function ClientProfile() {
         region,
         twitter_acount,
         website,
+        chairman_name,
+        chairman_mobile,
       },
       bank_informations,
     },
@@ -266,6 +268,8 @@ function ClientProfile() {
                 <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>جوال المدير التنفيذي:</Typography>
                   <Typography sx={{ mb: '15px' }}>{ceo_mobile}</Typography>
+                  <Typography sx={{ fontSize: '12px' }}>الرئيس موبايل:</Typography>
+                  <Typography sx={{ mb: '15px' }}>{chairman_mobile ?? '-'}</Typography>
                   <Typography sx={{ fontSize: '12px' }}>جوال مدخل البيانات:</Typography>
                   <Typography sx={{ mb: '15px' }}>{data_entry_mobile}</Typography>
                   <Typography sx={{ fontSize: '12px' }}>بريد مدخل البيانات:</Typography>
@@ -275,6 +279,8 @@ function ClientProfile() {
                 <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>اسم المدير التنفيذي:</Typography>
                   <Typography sx={{ mb: '15px' }}>{ceo_name}</Typography>
+                  <Typography sx={{ fontSize: '12px' }}>اسم الرئيس:</Typography>
+                  <Typography sx={{ mb: '15px' }}>{chairman_name ?? '-'}</Typography>
                   <Typography sx={{ fontSize: '12px' }}>اسم مدخل البيانات:</Typography>
                   <Typography sx={{ mb: '15px' }}>{data_entry_name}</Typography>
                 </Stack>

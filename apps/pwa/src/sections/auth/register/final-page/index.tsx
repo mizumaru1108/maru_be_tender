@@ -83,6 +83,7 @@ function FinalPage({
       board_ofdec_file: form3.board_ofdec_file,
       ...form4,
     };
+    // console.log({ newVal });
     try {
       await axios
         .post(`${TMRA_RAISE_URL}/tender-auth/register`, {

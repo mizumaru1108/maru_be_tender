@@ -29,6 +29,16 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, children, isEdit }: F
 
         return val.length === 0 || val!.length === 9;
       }),
+    chairman_name: Yup.string().required('Chairman Name is required'),
+    chairman_mobile: Yup.string()
+      .required(translate('errors.register.ceo_mobile.length'))
+      .test('len', translate('errors.register.ceo_mobile.length'), (val) => {
+        if (val === undefined) {
+          return true;
+        }
+
+        return val.length === 0 || val!.length === 9;
+      }),
     data_entry_name: Yup.string().required('Entery Data Name is required'),
     data_entry_mobile: Yup.string()
       .required(translate('errors.register.ceo_mobile.length'))
@@ -63,12 +73,18 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, children, isEdit }: F
     let newValues = { ...defaultValues };
     const newCeoMobile = defaultValues.ceo_mobile?.replace('+966', '');
     const newDataEntryMobile = defaultValues.data_entry_mobile?.replace('+966', '');
-    const newChairmanMobile = defaultValues.chairman_mobile?.replace('+966', '');
+    const newChairmanMobile =
+      defaultValues && defaultValues.chairman_mobile
+        ? defaultValues.chairman_mobile?.replace('+966', '')
+        : '';
+    const newChairmanName =
+      defaultValues && defaultValues.chairman_name ? defaultValues.chairman_name : '';
     newValues = {
       ...newValues,
       ceo_mobile: newCeoMobile,
       data_entry_mobile: newDataEntryMobile,
       chairman_mobile: newChairmanMobile,
+      chairman_name: newChairmanName,
     };
     // console.log('newValues', newValues);
     reset({ ...newValues });
@@ -89,6 +105,22 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, children, isEdit }: F
           <RHFTextField
             disabled={isEdit}
             name="ceo_mobile"
+            label={translate('register_form4.executive_director_mobile.label')}
+            placeholder={translate('register_form4.executive_director_mobile.placeholder')}
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFTextField
+            disabled={isEdit}
+            name="chairman_name"
+            label={translate('register_form4.executive_director.label')}
+            placeholder={translate('register_form4.executive_director.placeholder')}
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFTextField
+            disabled={isEdit}
+            name="chairman_mobile"
             label={translate('register_form4.executive_director_mobile.label')}
             placeholder={translate('register_form4.executive_director_mobile.placeholder')}
           />
