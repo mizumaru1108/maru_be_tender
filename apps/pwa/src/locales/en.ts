@@ -351,6 +351,7 @@ const en = {
     chip_canceled: 'The request is canceled',
     chip_completed: 'The request is complete',
     chip_pending: 'The request is pending',
+    maintenance_feature_flag: 'This feature is still in maintenance',
   },
   demo: {
     title: `English`,

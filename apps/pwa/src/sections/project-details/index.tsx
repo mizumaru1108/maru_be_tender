@@ -9,6 +9,8 @@ import ProjectStatus from './ProjectStatus';
 import FloatinActonBar from './floating-action-bar/FloatinActonBar';
 import { getProposal } from 'redux/slices/proposal';
 import { useDispatch, useSelector } from 'redux/store';
+//
+import { FEATURE_PROJECT_DETAILS } from 'config';
 
 function ProjectDetailsMainPage() {
   const { id, actionType } = useParams();
@@ -67,7 +69,7 @@ function ProjectDetailsMainPage() {
         {actionType && actionType !== 'show-project' && <FollowUpsAction />}
       </Stack>
       <ActionTap />
-      <FloatinActonBar />
+      {!FEATURE_PROJECT_DETAILS ? null : <FloatinActonBar />}
     </Box>
   );
 }

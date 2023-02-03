@@ -363,6 +363,7 @@ const ar = {
     chip_canceled: 'تم إلغاء الطلب',
     chip_completed: 'الطلب كامل',
     chip_pending: 'الطلب معلق',
+    maintenance_feature_flag: 'هذه الميزة لا تزال قيد الصيانة',
   },
   demo: {
     title: `Arabic`,

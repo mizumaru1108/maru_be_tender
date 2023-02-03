@@ -11,6 +11,8 @@ import { getDailyTrackBudget } from 'queries/project-supervisor/getTrackBudget';
 import moment from 'moment';
 import { fCurrencyNumber } from 'utils/formatNumber';
 import React, { useState, useEffect } from 'react';
+// config
+import { FEATURE_DAILY_STATUS } from 'config';
 
 export default function TrackBudget() {
   const { translate } = useLocales();
@@ -46,37 +48,46 @@ export default function TrackBudget() {
 
   return (
     <Grid container spacing={2}>
-      {!fetching && data ? (
-        <React.Fragment>
-          <Grid item md={12}>
-            <Typography variant="h4">
-              {translate('content.client.main_page.track_budget')}
-            </Typography>
-          </Grid>
-          <Grid item md={2} xs={12}>
-            <Box
-              sx={{
-                borderRadius: 1,
-                backgroundColor: '#fff',
-                p: 2,
-              }}
-            >
-              <Image
-                src={`/icons/rial-currency.svg`}
-                alt="icon_riyals"
-                sx={{ display: 'inline-flex' }}
-              />
-              <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
-                {translate('content.client.main_page.total_track_budget')}
-              </Typography>
-              <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                {fCurrencyNumber(valueTotal)}
-              </Typography>
-            </Box>
-          </Grid>
-        </React.Fragment>
+      {!FEATURE_DAILY_STATUS ? (
+        <Grid item md={12}>
+          <Typography variant="h4">{translate('content.client.main_page.track_budget')}</Typography>
+          <Typography variant="inherit" sx={{ fontStyle: 'italic' }}>
+            {translate('commons.maintenance_feature_flag')} ...
+          </Typography>
+        </Grid>
       ) : (
-        <>... Loading</>
+        <React.Fragment>
+          {!fetching && data ? (
+            <React.Fragment>
+              <Grid item md={12}>
+                <Typography variant="h4">
+                  {translate('content.client.main_page.track_budget')}
+                </Typography>
+              </Grid>
+              <Grid item md={2} xs={12}>
+                <Box
+                  sx={{
+                    borderRadius: 1,
+                    backgroundColor: '#fff',
+                    p: 2,
+                  }}
+                >
+                  <Image
+                    src={`/icons/rial-currency.svg`}
+                    alt="icon_riyals"
+                    sx={{ display: 'inline-flex' }}
+                  />
+                  <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
+                    {translate('content.client.main_page.total_track_budget')}
+                  </Typography>
+                  <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                    {fCurrencyNumber(valueTotal)}
+                  </Typography>
+                </Box>
+              </Grid>
+            </React.Fragment>
+          ) : null}
+        </React.Fragment>
       )}
     </Grid>
   );

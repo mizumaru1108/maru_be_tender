@@ -9,7 +9,7 @@ import useResponsive from '../../hooks/useResponsive';
 import useCollapseDrawer from '../../hooks/useCollapseDrawer';
 import useAuth from 'hooks/useAuth';
 // config
-import { HEADER, NAVBAR } from '../../config';
+import { HEADER, NAVBAR, FEATURE_MESSAGING_SYSTEM } from 'config';
 //
 import DashboardHeader from './header';
 import NavbarVertical from './navbar/NavbarVertical';
@@ -77,17 +77,19 @@ export default function DashboardLayout() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!fetching && data) {
-      const { room_chat } = data;
+    if (FEATURE_MESSAGING_SYSTEM) {
+      if (!fetching && data) {
+        const { room_chat } = data;
 
-      const newArr = room_chat.map((el: any) => ({
-        id: el.id,
-        correspondance_category_id: el.correspondance_category_id,
-        messages: el.messages,
-        unread_message: el.messages_aggregate.aggregate.count,
-      }));
+        const newArr = room_chat.map((el: any) => ({
+          id: el.id,
+          correspondance_category_id: el.correspondance_category_id,
+          messages: el.messages,
+          unread_message: el.messages_aggregate.aggregate.count,
+        }));
 
-      dispatch(setConversation(newArr));
+        dispatch(setConversation(newArr));
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, fetching]);

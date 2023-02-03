@@ -6,9 +6,23 @@ import { LoadingButton } from '@mui/lab';
 import useLocales from 'hooks/useLocales';
 // sections
 import HeaderTabs from './HeaderTabs';
+// configuration_feature_flag
+import { FEATURE_PORTAL_REPORTS } from 'config';
 
 // -------------------------------------------------------------------------------
 
 export default function MainPortalReports() {
-  return <HeaderTabs />;
+  const { translate } = useLocales();
+
+  return (
+    <>
+      {FEATURE_PORTAL_REPORTS ? (
+        <HeaderTabs />
+      ) : (
+        <Typography variant="inherit" sx={{ fontStyle: 'italic' }}>
+          {translate('commons.maintenance_feature_flag')} ...
+        </Typography>
+      )}
+    </>
+  );
 }

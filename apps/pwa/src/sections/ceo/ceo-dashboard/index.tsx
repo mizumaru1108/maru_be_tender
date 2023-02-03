@@ -49,7 +49,7 @@ function CeoDashboard() {
           <DailyStatistics />
         </Grid>
         <Grid item md={12}>
-          <Grid container spacing={4}>
+          <Grid container spacing={2}>
             <Grid item md={12} xs={12}>
               <Typography variant="h4">الميزانية الكلية للمؤسسة</Typography>
             </Grid>

@@ -500,9 +500,9 @@ export default function MessageContent() {
               </Box>
               <Stack
                 direction="row"
-                spacing={1}
+                spacing={2}
                 alignItems="center"
-                justifyContent="center"
+                justifyContent="space-between"
                 component="div"
                 sx={{
                   bgcolor: theme.palette.common.white,
@@ -525,15 +525,16 @@ export default function MessageContent() {
                 <TextField
                   size="small"
                   placeholder="write something"
-                  sx={{ width: '80%' }}
+                  // sx={{ width: '80%' }}
                   onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => handleKeyupMsg(e)}
                   onChange={(e) => {
                     setMessageValue(e.target.value);
                   }}
+                  fullWidth
                   value={messageValue}
                   autoFocus
                 />
-                <Box sx={{ justifyContent: 'flex-end', display: 'flex', direction: 'row' }}>
+                {/* <Box sx={{ justifyContent: 'flex-end', display: 'flex', direction: 'row' }}>
                   <Box
                     onClick={() => alert('upload attachment')}
                     sx={{
@@ -554,7 +555,7 @@ export default function MessageContent() {
                   >
                     <Image src="/assets/icons/upload-image-icon.svg" alt="logo" />
                   </Box>
-                </Box>
+                </Box> */}
               </Stack>
             </>
           )}
