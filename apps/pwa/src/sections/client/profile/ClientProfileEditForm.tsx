@@ -59,11 +59,11 @@ function ClientProfileEditForm() {
       region: '',
       governorate: '',
       center_administration: '',
-      entity_mobile: '',
+      // entity_mobile: '',
       phone: '',
       twitter_acount: '',
       website: '',
-      email: '',
+      // email: '',
       // password: '',
     },
     form3: {
@@ -133,7 +133,7 @@ function ClientProfileEditForm() {
   };
   useEffect(() => {
     if (data?.user_by_pk) {
-      const { client_data: client, bank_informations, email } = data?.user_by_pk;
+      const { client_data: client, bank_informations } = data?.user_by_pk;
       const {
         client_field,
         entity,
@@ -146,7 +146,7 @@ function ClientProfileEditForm() {
         region,
         governorate,
         center_administration,
-        entity_mobile,
+        // entity_mobile,
         phone,
         twitter_acount,
         website,
@@ -166,7 +166,7 @@ function ClientProfileEditForm() {
         chairman_name,
         chairman_mobile,
       } = client;
-      setStartedValue({ bank_informations, email, ...client });
+      setStartedValue({ bank_informations, ...client });
       let newval: any = [];
       if (board_ofdec_file instanceof Array && board_ofdec_file.length > 0) {
         newval = [...board_ofdec_file];
@@ -190,11 +190,11 @@ function ClientProfileEditForm() {
           region,
           governorate,
           center_administration,
-          entity_mobile,
+          // entity_mobile,
           phone,
           twitter_acount,
           website,
-          email: email.trim(),
+          // email: email.trim(),
           // password,
           // new_password: '',
           // confirm_password: '',

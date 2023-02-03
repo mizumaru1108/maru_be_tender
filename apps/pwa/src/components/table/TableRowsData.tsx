@@ -41,7 +41,7 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
       )}
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
         <Typography variant="subtitle2" noWrap>
-          {editRequest ? user?.client_data?.entity : partner_name}
+          {editRequest && user?.client_data?.entity}
           {partner_name}
         </Typography>
       </TableCell>

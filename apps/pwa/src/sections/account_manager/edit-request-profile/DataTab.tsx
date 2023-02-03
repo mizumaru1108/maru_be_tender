@@ -33,9 +33,10 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
     if (prefixEntriMobile !== '+966') {
       newVal.data_entry_mobile = '+966' + newVal.data_entry_mobile;
     }
-    if (prefixChairmanMobile !== '+966') {
+    if (newVal.chairman_mobile && prefixChairmanMobile !== '+966') {
       newVal.chairman_mobile = '+966' + newVal.chairman_mobile;
     }
+    // console.log({ newVal });
     setNewValues(newVal);
     // console.log({ prefixCeoMobile });
   }, [EditValues]);
@@ -292,9 +293,11 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                 //     EditValues.license_file.color) ??
                 //   '#000',
                 color:
-                  EditValues.license_file.color !== 'transparent'
-                    ? EditValues.license_file.color
-                    : '#000',
+                  compareValues?.hasOwnProperty('license_file') && EditType === 'new-data'
+                    ? 'green'
+                    : compareValues?.hasOwnProperty('license_file') && EditType === 'previous-data'
+                    ? 'red'
+                    : 'black',
               }}
             >
               {EditValues.license_file.url ?? '-'}
@@ -373,7 +376,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
           <Grid item xs={12} md={6}>
             <Box>
               <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
-                {translate('account_manager.partner_details.ceo_mobiles')}:
+                {translate('account_manager.partner_details.ceo_mobile')}:
               </Typography>
               <Typography
                 variant="subtitle1"

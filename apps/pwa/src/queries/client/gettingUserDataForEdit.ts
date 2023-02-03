@@ -12,7 +12,6 @@ query MyQuery($id: String = "") {
       region
       governorate
       center_administration
-      entity_mobile
       phone
       twitter_acount
       website
@@ -37,7 +36,6 @@ query MyQuery($id: String = "") {
       card_image
       id
     }
-    email
   }
 }
 `;
