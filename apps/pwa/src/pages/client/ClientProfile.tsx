@@ -294,7 +294,7 @@ function ClientProfile() {
                   <Grid item key={index} md={6} xs={12}>
                     <BankImageComp
                       enableButton={true}
-                      imageUrl={item.card_image}
+                      imageUrl={item.card_image.url ?? '#'}
                       bankName={item.bank_name}
                       accountNumber={item.bank_account_number}
                       bankAccountName={item.bank_account_name}
@@ -361,7 +361,7 @@ function ClientProfile() {
                   <Stack direction="column" gap={1} justifyContent="start" sx={{ mb: '10px' }}>
                     <Typography sx={{ color: '#93A3B0' }}>ملف الترخيص:</Typography>
                     <Typography>
-                      <a target="_blank" rel="noopener noreferrer" href={license_file}>
+                      <a target="_blank" rel="noopener noreferrer" href={license_file.url ?? '#'}>
                         اضغط هنا لرؤية ملف الترخيص
                       </a>
                     </Typography>
