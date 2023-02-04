@@ -200,9 +200,7 @@ const FundingProjectRequestForm = () => {
       }),
       // no need to save the proposal_bank_informations
       submitter_user_id: user?.id,
-      proposal_bank_id: data,
-      id: nanoid(),
-      step: STEP[step - 1],
+      proposal_bank_information_id: data,
     };
     // console.log({ createdProposel });
     try {
