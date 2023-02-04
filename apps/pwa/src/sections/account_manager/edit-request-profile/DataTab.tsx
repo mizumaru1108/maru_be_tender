@@ -292,16 +292,31 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                 //   (EditValues.license_file.color !== 'transparent' &&
                 //     EditValues.license_file.color) ??
                 //   '#000',
-                color:
-                  compareValues?.hasOwnProperty('license_file') && EditType === 'new-data'
-                    ? 'green'
-                    : compareValues?.hasOwnProperty('license_file') && EditType === 'previous-data'
-                    ? 'red'
-                    : 'black',
               }}
             >
-              {EditValues.license_file.url ?? '-'}
+              {/* {EditValues.license_file.url ?? '-'} */}
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href={EditValues.license_file.url ?? '#'}
+                style={{
+                  color:
+                    compareValues?.hasOwnProperty('license_file') && EditType === 'new-data'
+                      ? 'green'
+                      : compareValues?.hasOwnProperty('license_file') &&
+                        EditType === 'previous-data'
+                      ? 'red'
+                      : 'black',
+                }}
+              >
+                اضغط هنا لرؤية ملف الترخيص
+              </a>
             </Typography>
+            {/* <Typography>
+              <a target="_blank" rel="noopener noreferrer" href={license_file.url ?? '#'}>
+                اضغط هنا لرؤية ملف الترخيص
+              </a>
+            </Typography> */}
           </Box>
         </Stack>
         {/* Record 0fDec file */}
