@@ -396,7 +396,17 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.client_data.license_file.url ?? '-'}
+                        {partnerDetails?.client_data.license_file.url ? (
+                          <a
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href={partnerDetails?.client_data.license_file.url ?? '#'}
+                          >
+                            {translate('commons.view_license_file')}
+                          </a>
+                        ) : (
+                          '-'
+                        )}
                       </Typography>
                     </Box>
                   </Stack>

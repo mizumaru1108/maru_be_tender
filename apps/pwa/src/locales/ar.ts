@@ -364,6 +364,7 @@ const ar = {
     chip_completed: 'الطلب كامل',
     chip_pending: 'الطلب معلق',
     maintenance_feature_flag: 'هذه الميزة لا تزال قيد الصيانة',
+    view_license_file: 'اضغط هنا لرؤية ملف الترخيص',
   },
   demo: {
     title: `Arabic`,

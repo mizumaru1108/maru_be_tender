@@ -352,6 +352,7 @@ const en = {
     chip_completed: 'The request is complete',
     chip_pending: 'The request is pending',
     maintenance_feature_flag: 'This feature is still in maintenance',
+    view_license_file: 'Click here to view the license file',
   },
   demo: {
     title: `English`,
