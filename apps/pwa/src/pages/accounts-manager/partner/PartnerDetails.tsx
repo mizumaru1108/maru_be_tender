@@ -427,7 +427,7 @@ function AccountPartnerDetails() {
                     <Grid item xs={12} md={6}>
                       <Box>
                         <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
-                          {translate('account_manager.partner_details.ceo_mobiles')}:
+                          {translate('account_manager.partner_details.ceo_mobile')}:
                         </Typography>
                         <Typography
                           variant="subtitle1"
