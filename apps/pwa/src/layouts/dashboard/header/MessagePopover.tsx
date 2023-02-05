@@ -1,5 +1,5 @@
 import { noCase } from 'change-case';
-import { useState, useEffect, Key } from 'react';
+import React, { useState, useEffect, Key } from 'react';
 // @mui
 import {
   Box,
@@ -38,6 +38,7 @@ import {
 import useAuth from 'hooks/useAuth';
 import { useSubscription } from 'urql';
 import Page500 from 'pages/Page500';
+import { FEATURE_NOTIFICATION_SYSTEM } from 'config';
 
 // ----------------------------------------------------------------------
 const _messages = [...Array(2)].map((_, index) => ({
@@ -94,7 +95,7 @@ export default function MessagePopover() {
   const { translate } = useLocales();
   const [messages, setMessages] = useState(_messages);
 
-  const [currentData, setCurrentData] = useState<any | null>(null);
+  const [currentData, setCurrentData] = useState<NotificationItemProps[] | []>([]);
 
   const [open, setOpen] = useState<HTMLElement | null>(null);
   const [activeTap, setActiveTap] = useState('1');
@@ -136,11 +137,22 @@ export default function MessagePopover() {
 
   const { data, fetching, error } = result;
 
+  const memoResult = React.useMemo(() => data, [data]);
+  const memoResultError = React.useMemo(() => error, [error]);
+
+  // console.log(memoResult, 'RESULT');
+
   useEffect(() => {
-    if (data && currentData !== data) {
-      setCurrentData(data);
+    if (FEATURE_NOTIFICATION_SYSTEM) {
+      if (!fetching && memoResult) {
+        setCurrentData(memoResult.notification);
+      }
+
+      if (!fetching && memoResultError) {
+        setOpenAlert(true);
+      }
     }
-  }, [data, currentData]);
+  }, [data, currentData, fetching, memoResult, memoResultError]);
 
   const handleClose = () => {
     setOpen(null);
@@ -161,63 +173,86 @@ export default function MessagePopover() {
 
   const handleClearAll = () => {};
 
-  if (fetching) return <>.. Loading</>;
+  // if (fetching) return <>.. Loading</>;
 
   const handleCloseAlert = () => {
     setOpenAlert(false);
   };
 
-  if (error) {
-    setOpenAlert(true);
-  }
+  // if (error) {
+  //   setOpenAlert(true);
+  // }
 
   const oneDay = 24 * 60 * 60 * 1000;
   const oneDayAgo = Date.now() - oneDay;
 
-  const totalUnRead = currentData?.notifcation?.message?.filter(
-    (item: any) => item.read_status === false
-  ).length;
+  const totalUnRead = React.useMemo(() => {
+    if (!currentData) return 0;
 
-  const totalUnReadToday = currentData?.notifcation?.message?.filter((item: any) => {
-    const createdAt = new Date(item.created_at);
+    return currentData?.filter((item: any) => item?.message?.read_status === false).length;
+  }, [currentData]);
 
-    if (createdAt.getTime() >= oneDayAgo) {
-      return item.read_status === false;
-    }
-    return false;
-  }).length;
+  const totalUnReadToday = React.useMemo(() => {
+    if (!currentData) return 0;
 
-  const totalUnReadPrevious = currentData?.notifcation?.message?.filter((item: any) => {
-    const createdAt = new Date(item.created_at);
+    return currentData?.filter((item: any) => {
+      const createdAt = new Date(item?.message?.created_at);
 
-    if (createdAt.getTime() < oneDayAgo) {
-      return item.read_status === false;
-    }
+      if (createdAt.getTime() >= oneDayAgo) {
+        return item?.message?.read_status === false;
+      }
+      return false;
+    }).length;
+  }, [currentData, oneDayAgo]);
 
-    return false;
-  }).length;
+  const totalUnReadPrevious = React.useMemo(() => {
+    if (!currentData) return 0;
 
-  const totalToday = currentData?.notifcation?.message?.filter((item: any) => {
-    const createdAt = new Date(item.created_at);
+    return currentData?.filter((item: any) => {
+      const createdAt = new Date(item?.message?.created_at);
 
-    if (createdAt.getTime() >= oneDayAgo) {
-      return item;
-    }
-    return false;
-  });
+      if (createdAt.getTime() < oneDayAgo) {
+        return item?.message?.read_status === false;
+      }
 
-  const totalPrevious = currentData?.notifcation?.message?.filter((item: any) => {
-    const createdAt = new Date(item.created_at);
+      return false;
+    }).length;
+  }, [currentData, oneDayAgo]);
 
-    if (createdAt.getTime() < oneDayAgo) {
-      return item;
-    }
-    return false;
-  });
-  // console.log('data', data);
+  const totalToday = React.useMemo(
+    () =>
+      currentData?.filter((item: any) => {
+        const createdAt = new Date(item?.message?.created_at);
+
+        if (createdAt.getTime() >= oneDayAgo) {
+          return item?.message;
+        }
+        return false;
+      }),
+    [currentData, oneDayAgo]
+  );
+
+  const totalPrevious = React.useMemo(
+    () =>
+      currentData?.filter((item: any) => {
+        const createdAt = new Date(item?.message?.created_at);
+
+        if (createdAt.getTime() < oneDayAgo) {
+          return item?.message;
+        }
+        return false;
+      }),
+    [currentData, oneDayAgo]
+  );
+
+  // console.log('totalUnRead', totalUnRead);
+  // console.log('totalUnReadToday', totalUnReadToday);
+  // console.log('totalUnReadPrevious', totalUnReadPrevious);
+  // console.log('totalToday', totalToday);
+  // console.log('totalPrevious', totalPrevious);
 
   return (
-    <>
+    <React.Fragment>
       <Snackbar
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         open={openAlert}
@@ -228,7 +263,11 @@ export default function MessagePopover() {
           ...Opss, in message popover component something went wrong
         </Alert>
       </Snackbar>
-      <IconButtonAnimate onClick={handleOpen} sx={{ width: 40, height: 40 }}>
+      <IconButtonAnimate
+        disabled={!FEATURE_NOTIFICATION_SYSTEM}
+        onClick={handleOpen}
+        sx={{ width: 40, height: 40 }}
+      >
         {totalUnRead > 0 ? (
           <Badge badgeContent={totalUnRead} color="primary">
             <SvgIconStyle
@@ -279,7 +318,7 @@ export default function MessagePopover() {
               >
                 <Tab
                   label={
-                    <>
+                    <React.Fragment>
                       <Box>
                         {translate('notification.today')}
                         {totalUnReadToday > 0 && (
@@ -298,13 +337,13 @@ export default function MessagePopover() {
                           </Typography>
                         )}
                       </Box>
-                    </>
+                    </React.Fragment>
                   }
                   value="1"
                 />
                 <Tab
                   label={
-                    <>
+                    <React.Fragment>
                       <Box>
                         {translate('notification.previous')}
                         {totalUnReadPrevious > 0 && (
@@ -323,7 +362,7 @@ export default function MessagePopover() {
                           </Typography>
                         )}
                       </Box>
-                    </>
+                    </React.Fragment>
                   }
                   value="2"
                 />
@@ -338,14 +377,14 @@ export default function MessagePopover() {
               }}
             >
               {totalUnRead > 0 && (
-                <>
+                <React.Fragment>
                   {/* <Tooltip title=" Mark all as read"> */}
                   <IconButton color="primary" onClick={handleMarkAllAsRead}>
                     <Iconify icon="eva:done-all-fill" width={20} height={20} />
                     <Typography sx={{ ml: 0.5 }}>{translate('notification.read_all')}</Typography>
                   </IconButton>
                   {/* </Tooltip> */}
-                </>
+                </React.Fragment>
               )}
 
               <IconButton color="error" onClick={handleClearAll}>
@@ -358,14 +397,14 @@ export default function MessagePopover() {
           <TabPanel value="1" sx={{ maxHeight: 350, overflowY: 'auto' }}>
             <Scrollbar sx={{ height: { xs: 340, sm: 'auto' } }}>
               <List disablePadding>
-                <>
-                  {currentData && currentData?.notification?.message && totalToday?.length > 0 ? (
-                    <>
+                <React.Fragment>
+                  {currentData && totalToday?.length > 0 ? (
+                    <React.Fragment>
                       {currentData &&
-                        currentData.notification.map((item: NotificationItemProps, index: any) => (
+                        currentData.map((item: NotificationItemProps, index: any) => (
                           <NotificationItem key={index} message={item} tabValue={activeTap} />
                         ))}
-                    </>
+                    </React.Fragment>
                   ) : (
                     <ListItemButton
                       sx={{
@@ -377,7 +416,7 @@ export default function MessagePopover() {
                       <ListItemText primary={translate(`notification.no_notifications_today`)} />
                     </ListItemButton>
                   )}
-                </>
+                </React.Fragment>
               </List>
             </Scrollbar>
 
@@ -392,16 +431,14 @@ export default function MessagePopover() {
           <TabPanel value="2" sx={{ maxHeight: 350, overflowY: 'auto' }}>
             <Scrollbar sx={{ height: { xs: 340, sm: 'auto' } }}>
               <List disablePadding>
-                <>
-                  {currentData &&
-                  currentData?.notification?.message &&
-                  totalPrevious?.length > 0 ? (
-                    <>
+                <React.Fragment>
+                  {currentData && totalPrevious?.length > 0 ? (
+                    <React.Fragment>
                       {currentData &&
-                        currentData.notification.map((item: NotificationItemProps, index: any) => (
+                        currentData.map((item: NotificationItemProps, index: any) => (
                           <NotificationItem key={index} message={item} tabValue={activeTap} />
                         ))}
-                    </>
+                    </React.Fragment>
                   ) : (
                     <ListItemButton
                       sx={{
@@ -413,7 +450,7 @@ export default function MessagePopover() {
                       <ListItemText primary={translate(`notification.no_notifications`)} />
                     </ListItemButton>
                   )}
-                </>
+                </React.Fragment>
               </List>
             </Scrollbar>
 
@@ -427,7 +464,7 @@ export default function MessagePopover() {
           </TabPanel>
         </TabContext>
       </MenuPopover>
-    </>
+    </React.Fragment>
   );
 }
 
@@ -455,9 +492,9 @@ function NotificationItem({
 
   const createdAt = new Date(message.message.created_at);
   return (
-    <>
+    <React.Fragment>
       {tabValue === '1' ? (
-        <>
+        <React.Fragment>
           {createdAt.getTime() >= oneDayAgo && (
             <ListItemButton
               sx={{
@@ -494,9 +531,9 @@ function NotificationItem({
             </ListItemButton>
             // {/* )} */}
           )}
-        </>
+        </React.Fragment>
       ) : (
-        <>
+        <React.Fragment>
           <ListItemButton
             sx={{
               py: 1.5,
@@ -530,9 +567,9 @@ function NotificationItem({
               }
             />
           </ListItemButton>
-        </>
+        </React.Fragment>
       )}
-    </>
+    </React.Fragment>
   );
 }
 

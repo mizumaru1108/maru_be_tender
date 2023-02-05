@@ -110,23 +110,13 @@ export default function NotificationsPopover() {
   const dispatch = useDispatch();
 
   const { notifyCount } = useSelector((state) => state.notification);
-  const { translate, currentLang } = useLocales();
+  const { translate } = useLocales();
 
   const [activeTap, setActiveTap] = useState('1');
 
   const [open, setOpen] = useState<HTMLElement | null>(null);
 
-  const [currentNotifCount, setCurrentNotifCount] = useState<number>(0);
-
-  const [totalUnRead, setTotalUnRead] = useState<number>(0);
-
-  const [totalUnReadToday, setTotalUnReadToday] = useState<number>(0);
-
-  const [totalUnReadPrevious, setTotalUnReadPrevious] = useState<number>(0);
-
-  const [totalToday, setTotalToday] = useState<NotificationItemProps[] | []>([]);
-
-  const [totalPrevious, setTotalPrevious] = useState<NotificationItemProps[] | []>([]);
+  // const [totalUnRead, setTotalUnRead] = useState<number>(0);
 
   const [currentData, setCurrentData] = useState<NotificationItemProps[] | []>([]);
 
@@ -135,12 +125,11 @@ export default function NotificationsPopover() {
   const { user, activeRole } = useAuth();
 
   const userId = user?.id;
+  let currentSubcription: any;
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     setOpen(event.currentTarget);
   };
-
-  let currentSubcription: any;
 
   const empNotifications = {
     query: subNotification,
@@ -170,155 +159,139 @@ export default function NotificationsPopover() {
     variables: { user_id: userId },
   });
 
-  // const [result] = useSubscription(currentSubcription);
+  const [result] = useSubscription(currentSubcription);
 
-  // const { data, fetching, error } = result;
+  const { data, fetching, error } = result;
   const { data: dataNotifCount, fetching: fetchingNotifCount, error: NotifCountError } = notifCount;
 
-  // if (!fetchingNotifCount && dataNotifCount) {
-  //   console.log(dataNotifCount);
-  //   setCurrentNotifCount(dataNotifCount.notification_aggregate.aggregate.count);
-  // }
-
-  // if (!fetching && data) {
-  //   console.log(data.notification);
-  // setCurrentData(data.notification);
-  // }
+  const memoResult = React.useMemo(() => data, [data]);
+  const memoResultError = React.useMemo(() => error, [error]);
+  const memoNotifCount = React.useMemo(() => dataNotifCount, [dataNotifCount]);
 
   useEffect(() => {
-    // if(FEATURE_NOTIFICATION_SYSTEM){
-    if (!fetchingNotifCount && dataNotifCount) {
-      dispatch(setNotifyCount(dataNotifCount));
-      console.log(notifyCount, 'COUNT SUBSCRIPTION');
+    if (FEATURE_NOTIFICATION_SYSTEM) {
+      if (!fetchingNotifCount && memoNotifCount) {
+        dispatch(setNotifyCount(memoNotifCount.notification_aggregate.aggregate.count));
+      }
+
+      if (!fetching && memoResult) {
+        // console.log(data.notification);
+        setCurrentData(memoResult.notification);
+      }
+
+      if (!fetching && memoResultError) {
+        setOpenAlert(true);
+      }
     }
+  }, [
+    dataNotifCount,
+    dispatch,
+    fetchingNotifCount,
+    memoNotifCount,
+    data,
+    memoResult,
+    fetching,
+    memoResultError,
+  ]);
 
-    // if (!fetching && data) {
-    // console.log(data.notification);
-    // setCurrentData(data.notification);
-    // }
-    // }
-  }, [dataNotifCount, fetchingNotifCount, dispatch, notifyCount]);
+  const oneDay = 24 * 60 * 60 * 1000;
+  const oneDayAgo = Date.now() - oneDay;
 
-  // console.log(notifyCount, 'COUNT DARI REDUX');
+  // if (currentData && currentData.length > 0) {
+  //   const totalUnRead1 = currentData.filter((item: any) => item.read_status === false).length;
+  //   setTotalUnRead(totalUnRead1);
+  //   console.log(totalUnRead1, 'TOTAL UN READ');
+  const totalUnReadToday = React.useMemo(() => {
+    if (!currentData) return 0;
 
-  // const handleClose = () => {
-  //   setOpen(null);
-  // };
+    return currentData.filter((item: any) => {
+      const createdAt = new Date(item.created_at);
+      if (createdAt.getTime() >= oneDayAgo) {
+        return item.read_status === false;
+      }
+      return false;
+    }).length;
+  }, [currentData, oneDayAgo]);
 
-  // const handleMarkAllAsRead = async () => {
-  //   await axiosInstance.patch(
-  //     'tender/notification/read-mine',
-  //     {},
-  //     {
-  //       headers: { 'x-hasura-role': activeRole! },
-  //     }
-  //   );
-  // };
+  const totalUnReadPrevious = React.useMemo(() => {
+    if (!currentData) return 0;
 
-  // const handleClearAll = async () => {
-  //   await axiosInstance.patch(
-  //     'tender/notification/hide-all-mine',
-  //     {},
-  //     {
-  //       headers: { 'x-hasura-role': activeRole! },
-  //     }
-  //   );
-  // };
+    return currentData.filter((item: any) => {
+      const createdAt = new Date(item.created_at);
+      if (createdAt.getTime() < oneDayAgo) {
+        return item.read_status === false;
+      }
+      return false;
+    }).length;
+  }, [currentData, oneDayAgo]);
 
-  // const handleTapChange = (event: React.SyntheticEvent, newValue: string) => {
-  //   setActiveTap(newValue);
-  // };
+  const totalToday = React.useMemo(
+    () =>
+      currentData?.filter((item: any) => {
+        const createdAt = new Date(item.created_at);
+        if (createdAt.getTime() >= oneDayAgo) {
+          return item;
+        }
+        return false;
+      }),
+    [currentData, oneDayAgo]
+  );
+
+  const totalPrevious = React.useMemo(() => {
+    if (!currentData) return [];
+
+    return currentData?.filter((item: any) => {
+      const createdAt = new Date(item.created_at);
+      if (createdAt.getTime() < oneDayAgo) {
+        return item;
+      }
+      return false;
+    });
+  }, [currentData, oneDayAgo]);
+
+  // if (fetching) return <>.. Loading</>;
+
+  const handleClose = () => {
+    setOpen(null);
+  };
+
+  const handleMarkAllAsRead = async () => {
+    await axiosInstance.patch(
+      'tender/notification/read-mine',
+      {},
+      {
+        headers: { 'x-hasura-role': activeRole! },
+      }
+    );
+  };
+
+  const handleClearAll = async () => {
+    await axiosInstance.patch(
+      'tender/notification/hide-all-mine',
+      {},
+      {
+        headers: { 'x-hasura-role': activeRole! },
+      }
+    );
+  };
+
+  const handleTapChange = (event: React.SyntheticEvent, newValue: string) => {
+    setActiveTap(newValue);
+  };
 
   const handleCloseAlert = () => {
     setOpenAlert(false);
   };
 
-  if (NotifCountError) {
-    setOpenAlert(true);
-  }
-
-  const oneDay = 24 * 60 * 60 * 1000;
-  const oneDayAgo = Date.now() - oneDay;
-
-  // if (currentData.length) {
-  //   const totalUnRead1 = currentData.filter((item: any) => item.read_status === false).length;
-  //   setTotalUnRead(totalUnRead1);
-  //   console.log(totalUnRead1, 'TOTAL UN READ');
-  // setTotalUnReadToday(
-  //   currentData?.filter((item: any) => {
-  //     const createdAt = new Date(item.created_at);
-  //     if (createdAt.getTime() >= oneDayAgo) {
-  //       return item.read_status === false;
-  //     }
-  //   }).length
-  // );
-  // const totalUnReadToday = currentData?.notification?.filter((item: any) => {
-  //   const createdAt = new Date(item.created_at);
-  //   if (createdAt.getTime() >= oneDayAgo) {
-  //     return item.read_status === false;
-  //   }
-  // }).length;
-  // setTotalUnReadPrevious(
-  //   currentData.filter((item: any) => {
-  //     const createdAt = new Date(item.created_at);
-  //     if (createdAt.getTime() < oneDayAgo) {
-  //       return item.read_status === false;
-  //     }
-  //   }).length
-  // );
-  // const totalUnReadPrevious = data?.notification?.filter((item: any) => {
-  //   const createdAt = new Date(item.created_at);
-  //   if (createdAt.getTime() < oneDayAgo) {
-  //     return item.read_status === false;
-  //   }
-  // }).length;
-  // setTotalToday(
-  //   currentData?.filter((item: any) => {
-  //     const createdAt = new Date(item.created_at);
-  //     if (createdAt.getTime() >= oneDayAgo) {
-  //       return item;
-  //     }
-  //   })
-  // );
-  // const totalToday = currentData?.notification?.filter((item: any) => {
-  //   const createdAt = new Date(item.created_at);
-  //   if (createdAt.getTime() >= oneDayAgo) {
-  //     return item;
-  //   }
-  // });
-  // const totalPrevious = currentData?.notification?.filter((item: any) => {
-  //   const createdAt = new Date(item.created_at);
-  //   if (createdAt.getTime() < oneDayAgo) {
-  //     return item;
-  //   }
-  // });
+  // if (memoResultError) {
+  //   setOpenAlert(true);
   // }
 
-  return (
-    <>
-      {/* <IconButtonAnimate disabled={!FEATURE_NOTIFICATION_SYSTEM} onClick={handleOpen} sx={{ width: 40, height: 40 }}>
-        {!fetchingNotifCount && dataNotifCount ? (
-          <React.Fragment>
-            {currentNotifCount > 0 ? (
-              <Badge badgeContent={currentNotifCount} color="primary">
-                <SvgIconStyle
-                  src={`/assets/icons/dashboard-header/notification-bar.svg`}
-                  sx={{ width: 25, height: 25, color: '#000' }}
-                />
-              </Badge>
-            ) : (
-              <SvgIconStyle
-                src={`/assets/icons/dashboard-header/notification-bar.svg`}
-                sx={{ width: 25, height: 25, color: '#000' }}
-              />
-            )}
-          </React.Fragment>
-        ) : (
-          <React.Fragment>...loading!</React.Fragment>
-        )}
-      </IconButtonAnimate> */}
+  // console.log(currentData, 'Data');
 
-      {/* <Snackbar
+  return (
+    <React.Fragment>
+      <Snackbar
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         open={openAlert}
         autoHideDuration={6000}
@@ -328,9 +301,13 @@ export default function NotificationsPopover() {
           ...Opss, in notification popover component something went wrong
         </Alert>
       </Snackbar>
-      <IconButtonAnimate disabled={!FEATURE_NOTIFICATION_SYSTEM} onClick={handleOpen} sx={{ width: 40, height: 40 }}>
-        {currentNotifCount && currentNotifCount > 0 ? (
-          <Badge badgeContent={currentNotifCount} color="primary">
+      <IconButtonAnimate
+        disabled={!FEATURE_NOTIFICATION_SYSTEM}
+        onClick={handleOpen}
+        sx={{ width: 40, height: 40 }}
+      >
+        {notifyCount && notifyCount > 0 ? (
+          <Badge badgeContent={notifyCount} color="primary">
             <SvgIconStyle
               src={`/assets/icons/dashboard-header/notification-bar.svg`}
               sx={{ width: 25, height: 25, color: '#000' }}
@@ -362,7 +339,6 @@ export default function NotificationsPopover() {
               px: 2.5,
             }}
           >
-
             <Box>
               <Typography variant="subtitle1">{translate('notification.header')}</Typography>
               <TabList
@@ -372,12 +348,12 @@ export default function NotificationsPopover() {
               >
                 <Tab
                   label={
-                    <>
+                    <React.Fragment>
                       <Box>
                         {translate('notification.today')}
                         {totalUnReadToday > 0 && (
                           <Box
-                            component={'span'}
+                            component="span"
                             sx={{
                               backgroundColor: '#13B2A2',
                               color: '#fff',
@@ -391,18 +367,18 @@ export default function NotificationsPopover() {
                           </Box>
                         )}
                       </Box>
-                    </>
+                    </React.Fragment>
                   }
                   value="1"
                 />
                 <Tab
                   label={
-                    <>
+                    <React.Fragment>
                       <Box>
                         {translate('notification.previous')}
-                        {currentNotifCount && currentNotifCount > 0 && (
+                        {notifyCount && notifyCount > 0 && (
                           <Box
-                            component={'span'}
+                            component="span"
                             sx={{
                               backgroundColor: '#13B2A2',
                               color: '#fff',
@@ -412,11 +388,11 @@ export default function NotificationsPopover() {
                               fontSize: 12,
                             }}
                           >
-                            {currentNotifCount}
+                            {notifyCount}
                           </Box>
                         )}
                       </Box>
-                    </>
+                    </React.Fragment>
                   }
                   value="2"
                 />
@@ -430,13 +406,13 @@ export default function NotificationsPopover() {
                 alignItems: 'end',
               }}
             >
-              {currentNotifCount && currentNotifCount > 0 && (
-                <>
+              {notifyCount && notifyCount > 0 && (
+                <React.Fragment>
                   <IconButton color="primary" onClick={handleMarkAllAsRead}>
                     <Iconify icon="eva:done-all-fill" width={20} height={20} />
                     <Typography sx={{ ml: 0.5 }}>{translate('notification.read_all')}</Typography>
                   </IconButton>
-                </>
+                </React.Fragment>
               )}
 
               <IconButton color="error" onClick={handleClearAll}>
@@ -449,11 +425,11 @@ export default function NotificationsPopover() {
           <TabPanel value="1" sx={{ maxHeight: 350, overflowY: 'auto' }}>
             <Scrollbar sx={{ height: { xs: 340, sm: 'auto' } }}>
               <List disablePadding>
-                <>
-                  {currentData && currentData?.notification && totalToday?.length > 0 ? (
-                    <>
+                <React.Fragment>
+                  {currentData && totalToday?.length > 0 ? (
+                    <React.Fragment>
                       {currentData &&
-                        currentData.notification.map((item: NotificationItemProps, index: any) => (
+                        currentData.map((item: NotificationItemProps, index: any) => (
                           <NotificationItem
                             key={index}
                             notification={item}
@@ -461,7 +437,7 @@ export default function NotificationsPopover() {
                             onClose={handleClose}
                           />
                         ))}
-                    </>
+                    </React.Fragment>
                   ) : (
                     <ListItemButton
                       sx={{
@@ -473,7 +449,7 @@ export default function NotificationsPopover() {
                       <ListItemText primary={translate(`notification.no_notifications_today`)} />
                     </ListItemButton>
                   )}
-                </>
+                </React.Fragment>
               </List>
             </Scrollbar>
 
@@ -482,11 +458,11 @@ export default function NotificationsPopover() {
           <TabPanel value="2" sx={{ maxHeight: 350, overflowY: 'auto' }}>
             <Scrollbar sx={{ height: { xs: 340, sm: 'auto' } }}>
               <List disablePadding>
-                <>
-                  {currentData && currentData?.notification && totalPrevious.length > 0 ? (
-                    <>
+                <React.Fragment>
+                  {currentData && totalPrevious.length > 0 ? (
+                    <React.Fragment>
                       {currentData &&
-                        currentData.notification.map((item: NotificationItemProps, index: any) => (
+                        currentData.map((item: NotificationItemProps, index: any) => (
                           <NotificationItem
                             key={index}
                             notification={item}
@@ -494,7 +470,7 @@ export default function NotificationsPopover() {
                             onClose={handleClose}
                           />
                         ))}
-                    </>
+                    </React.Fragment>
                   ) : (
                     <ListItemButton
                       sx={{
@@ -506,13 +482,13 @@ export default function NotificationsPopover() {
                       <ListItemText primary={translate(`notification.no_notifications`)} />
                     </ListItemButton>
                   )}
-                </>
+                </React.Fragment>
               </List>
             </Scrollbar>
           </TabPanel>
         </TabContext>
-      </MenuPopover> */}
-    </>
+      </MenuPopover>
+    </React.Fragment>
   );
 }
 
@@ -627,9 +603,9 @@ function NotificationItem({
   };
 
   return (
-    <>
+    <React.Fragment>
       {tabValue === '1' ? (
-        <>
+        <React.Fragment>
           {/* ---------------------------Project Today Item--------------------------- */}
           {createdAt.getTime() >= oneDayAgo && (
             <ListItemButton
@@ -739,7 +715,7 @@ function NotificationItem({
           {/* ---------------------------End Appointment Today Item--------------------------- */}
           {/* ---------------------------Payment Today Item--------------------------- */}
           {notification?.proposal && notification.proposal.payments && (
-            <>
+            <React.Fragment>
               {notification.proposal.payments.map((cheque: any, index: any) => (
                 <ListItemButton
                   sx={{
@@ -766,29 +742,27 @@ function NotificationItem({
                           {moment(notification.created_at).locale(`${currentLang.value}`).fromNow()}
                         </Typography>
                         {cheque.cheques.map((item: any, index: any) => (
-                          <>
-                            <Stack direction="row" justifyContent="start" key={index}>
-                              <Button
-                                style={{ textAlign: 'start', color: 'blue' }}
-                                href={item.transfer_receipt}
-                                rel="noopened noreferrer"
-                                target="_blank"
-                              >
-                                {translate(`notification.proof_of_funds`)}
-                              </Button>
-                            </Stack>
-                          </>
+                          <Stack direction="row" justifyContent="start" key={index}>
+                            <Button
+                              style={{ textAlign: 'start', color: 'blue' }}
+                              href={item.transfer_receipt}
+                              rel="noopened noreferrer"
+                              target="_blank"
+                            >
+                              {translate(`notification.proof_of_funds`)}
+                            </Button>
+                          </Stack>
                         ))}
                       </Stack>
                     }
                   />
                 </ListItemButton>
               ))}
-            </>
+            </React.Fragment>
           )}
-        </>
+        </React.Fragment>
       ) : (
-        <>
+        <React.Fragment>
           {/* --------------------------- Project Previous Item--------------------------- */}
           <ListItemButton
             sx={{
@@ -896,7 +870,7 @@ function NotificationItem({
           {/* ---------------------------End Appointment Previous Item--------------------------- */}
           {/* ---------------------------Payment Previous Item--------------------------- */}
           {notification?.proposal && notification.proposal.payments && (
-            <>
+            <React.Fragment>
               {notification.proposal.payments.map((cheque: any, index: any) => (
                 <ListItemButton
                   sx={{
@@ -923,29 +897,27 @@ function NotificationItem({
                           {moment(notification.created_at).locale(`${currentLang.value}`).fromNow()}
                         </Typography>
                         {cheque.cheques.map((item: any, index: any) => (
-                          <>
-                            <Stack direction="row" justifyContent="start" key={index}>
-                              <Button
-                                style={{ textAlign: 'start', color: 'blue' }}
-                                href={item.transfer_receipt}
-                                rel="noopened noreferrer"
-                                target="_blank"
-                              >
-                                {translate(`notification.proof_of_funds`)}
-                              </Button>
-                            </Stack>
-                          </>
+                          <Stack direction="row" justifyContent="start" key={index}>
+                            <Button
+                              style={{ textAlign: 'start', color: 'blue' }}
+                              href={item.transfer_receipt}
+                              rel="noopened noreferrer"
+                              target="_blank"
+                            >
+                              {translate(`notification.proof_of_funds`)}
+                            </Button>
+                          </Stack>
                         ))}
                       </Stack>
                     }
                   />
                 </ListItemButton>
               ))}
-            </>
+            </React.Fragment>
           )}
-        </>
+        </React.Fragment>
       )}
-    </>
+    </React.Fragment>
   );
 }
 
