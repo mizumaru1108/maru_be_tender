@@ -62,7 +62,7 @@ function FollowUps() {
           </Typography>
         </Grid>
         <Grid>
-          {activeRole === 'tender_ceo' && (
+          {activeRole === 'tender_ceo' && FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL && (
             <LoadingButton
               loading={loading}
               disabled={disabled}
@@ -73,7 +73,7 @@ function FollowUps() {
                 px: 4,
                 ':hover': { backgroundColor: 'darkred' },
               }}
-              onClick={FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL ? () => handleDelFollowUps() : undefined}
+              onClick={() => handleDelFollowUps()}
             >
               DELETE
             </LoadingButton>

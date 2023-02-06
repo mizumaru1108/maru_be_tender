@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'redux/store';
 import { FEATURE_PROJECT_DETAILS } from 'config';
 
 function ProjectDetailsMainPage() {
-  const { id, actionType } = useParams();
+  const { id } = useParams();
 
   const dispatch = useDispatch();
 
@@ -66,7 +66,7 @@ function ProjectDetailsMainPage() {
             proposal.created_at
           ).toLocaleString()}`}
         </Typography>
-        {actionType && actionType !== 'show-project' && <FollowUpsAction />}
+        {/* {actionType && actionType !== 'show-project' && <FollowUpsAction />} */}
       </Stack>
       <ActionTap />
       {!FEATURE_PROJECT_DETAILS ? null : <FloatinActonBar />}

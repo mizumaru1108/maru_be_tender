@@ -253,6 +253,7 @@ const ar = {
       project_name: {
         message: '',
         required: 'اسم المشروع مطلوب',
+        greater_than_0: 'يجب أن يكون وقت التنفيذ أكبر من 0',
       },
       project_idea: {
         message: '',

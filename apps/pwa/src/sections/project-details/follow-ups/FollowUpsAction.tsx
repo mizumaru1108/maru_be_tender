@@ -55,7 +55,7 @@ function FollowUpsAction() {
                   <Typography sx={{ fontWeight: 700 }}>{translate('add_action')}</Typography>
                 </IconButtonAnimate>
                 <IconButtonAnimate
-                  onClick={FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL ? handleActionOpen : undefined}
+                  onClick={FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL ? handleFileOpen : undefined}
                   sx={{
                     backgroundColor: '#fff',
                     color: '#000',

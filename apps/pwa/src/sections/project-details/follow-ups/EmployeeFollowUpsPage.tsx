@@ -1,4 +1,14 @@
-import { Grid, Stack, Tab, Tabs, Container, Button, Checkbox, Typography } from '@mui/material';
+import {
+  Grid,
+  Stack,
+  Tab,
+  Tabs,
+  Container,
+  Button,
+  Checkbox,
+  Typography,
+  Box,
+} from '@mui/material';
 
 import React from 'react';
 import { useTheme } from '@mui/material/styles';
@@ -9,6 +19,7 @@ import FollowUpsText from './FollowUpsText';
 import useLocales from 'hooks/useLocales';
 import { getProposal, setEmployeeOnly } from 'redux/slices/proposal';
 import { useDispatch, useSelector } from 'redux/store';
+import FollowUpsAction from './FollowUpsAction';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -44,7 +55,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 function EmployeeFollowUpsPage() {
-  const { id } = useParams();
+  const { id, actionType } = useParams();
   const dispatch = useDispatch();
   const { proposal, isLoading, error } = useSelector((state) => state.proposal);
   const { translate } = useLocales();
@@ -210,6 +221,11 @@ function EmployeeFollowUpsPage() {
           </Grid>
         </Container>
       </TabPanel>
+      {actionType && actionType !== 'show-project' && (
+        <Box sx={{ m: 'auto', pt: 7 }}>
+          <FollowUpsAction />
+        </Box>
+      )}
     </Grid>
   );
 }
