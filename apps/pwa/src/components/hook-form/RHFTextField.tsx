@@ -1,7 +1,9 @@
 // form
 import { useFormContext, Controller } from 'react-hook-form';
 // @mui
-import { TextField, TextFieldProps, InputAdornment, useTheme } from '@mui/material';
+import { TextField, TextFieldProps, InputAdornment, useTheme, SxProps } from '@mui/material';
+import useLocales from '../../hooks/useLocales';
+import { Theme } from '@mui/material/styles';
 
 // ----------------------------------------------------------------------
 
@@ -10,9 +12,26 @@ type IProps = {
 };
 
 type Props = IProps & TextFieldProps;
-
 export default function RHFTextField({ name, ...other }: Props) {
   const theme = useTheme();
+  const { currentLang } = useLocales();
+
+  const sxStyling: SxProps<Theme> | undefined = {
+    mr: `${currentLang.value}` === 'ar' ? 1 : 1.5,
+    ml: `${currentLang.value}` === 'ar' ? 0 : 0,
+    px: 1.5,
+    height: 'auto',
+    borderRight:
+      `${currentLang.value}` === 'ar' ? 'none' : `1px solid ${theme.palette.text.disabled}`,
+    borderLeft:
+      `${currentLang.value}` === 'ar' ? `1px solid ${theme.palette.text.disabled}` : 'none',
+    color: theme.palette.text.disabled,
+    '& > .MuiTypography-root': {
+      color: theme.palette.text.disabled,
+    },
+  };
+
+  console.log('currentLang', currentLang.value);
   const { control, watch } = useFormContext();
   let project_beneficiaries = '';
   let condition = false;
@@ -92,14 +111,7 @@ export default function RHFTextField({ name, ...other }: Props) {
               <InputAdornment
                 position="start"
                 sx={{
-                  mr: 1.5,
-                  pr: 1.5,
-                  height: 'auto',
-                  borderRight: `1px solid ${theme.palette.text.disabled}`,
-                  color: theme.palette.text.disabled,
-                  '& > .MuiTypography-root': {
-                    color: theme.palette.text.disabled,
-                  },
+                  ...sxStyling,
                 }}
               >
                 +966
@@ -108,14 +120,7 @@ export default function RHFTextField({ name, ...other }: Props) {
               <InputAdornment
                 position="start"
                 sx={{
-                  mr: 1.5,
-                  pr: 1.5,
-                  height: 'auto',
-                  borderRight: `1px solid ${theme.palette.text.disabled}`,
-                  color: theme.palette.text.disabled,
-                  '& > .MuiTypography-root': {
-                    color: theme.palette.text.disabled,
-                  },
+                  ...sxStyling,
                 }}
               >
                 SA
@@ -124,6 +129,20 @@ export default function RHFTextField({ name, ...other }: Props) {
           }}
           {...other}
           sx={{
+            // direction: currentLang! === 'ar' ? 'rtl' : 'ltr',
+            direction:
+              [
+                'phone',
+                'data_entry_mobile',
+                'entity_mobile',
+                'ceo_mobile',
+                'chairman_mobile',
+                'pm_mobile',
+                'mobile_number',
+                'bank_account_number',
+              ].includes(name) && `${currentLang.value}` === 'ar'
+                ? 'rtl'
+                : 'ltr',
             '& > .MuiFormHelperText-root': {
               backgroundColor: 'white',
             },

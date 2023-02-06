@@ -1043,6 +1043,8 @@ const en = {
   proposal_approved: 'The project has been successfully accepted',
   proposal_rejected: 'The project was successfully rejected',
   proposal_stepback: 'The project has been change status',
+  proposal_created: 'The project has been created successfully',
+  proposal_saving_draft: 'The project has been saved as a draft',
   view_all: 'view all',
   // PORTAL REPORTS
   ceo_portal_reports: {

@@ -101,6 +101,21 @@ export default function AddBankModal({
     getValues,
   } = methods;
 
+  const onClonseModal = () => {
+    setValue('bank_account_number', '');
+    setValue('bank_account_name', '');
+    setValue('bank_name', '');
+    setValue('card_image', {
+      url: '',
+      size: undefined,
+      type: '',
+      base64Data: '',
+      fileExtension: '',
+      fullName: '',
+    });
+    handleClose();
+  };
+
   const onSubmitForm = async (data: FormValuesProps) => {
     let newData = { ...data };
     let newBankAccNumber = getValues('bank_account_number');
@@ -125,15 +140,6 @@ export default function AddBankModal({
     } else {
       onSubmit(newData);
     }
-    // const res = await addingNewBankInfo({
-    //   payload: {
-    //     bank_account_name: data.bank_account_name,
-    //     bank_account_number: data.bank_account_number,
-    //     bank_name: data.bank_name,
-    //     card_image: data.bank_account_card_image.url,
-    //     user_id: id,
-    //   },
-    // });
     handleClose();
   };
   React.useEffect(() => {
@@ -176,7 +182,7 @@ export default function AddBankModal({
         bacgroundColor: 'background.default',
       }}
       container={() => rootRef.current}
-      onClose={handleClose}
+      onClose={onClonseModal}
     >
       <Box
         sx={{
@@ -197,7 +203,7 @@ export default function AddBankModal({
               <Stack direction="row" justifyContent="center">
                 <Stack justifyContent="center" direction="row" gap={3}>
                   <Button
-                    onClick={handleClose}
+                    onClick={onClonseModal}
                     sx={{
                       color: 'text.primary',
                       width: { xs: '100%', sm: '200px' },

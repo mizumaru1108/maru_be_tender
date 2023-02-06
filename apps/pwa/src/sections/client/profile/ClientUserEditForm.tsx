@@ -87,7 +87,7 @@ function ClientProfileEditForm() {
           dispatch(setMessageGrouped([]));
           logout();
           navigate('/auth/login');
-        }, 3000);
+        }, 500);
       }
     } catch (err) {
       setLoading(false);

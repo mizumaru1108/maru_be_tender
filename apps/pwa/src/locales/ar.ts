@@ -1080,6 +1080,8 @@ const ar = {
   proposal_approved: 'تم قبول الطلب بنجاح',
   proposal_rejected: 'تم رفض الطلب بنجاح',
   proposal_stepback: 'تم تغيير حالة المشروع',
+  proposal_created: 'تم انشاء المشروع بنجاح',
+  proposal_saving_draft: 'تم حفظ المشروع كمسودة',
 
   // PORTAL REPORTS
   ceo_portal_reports: {

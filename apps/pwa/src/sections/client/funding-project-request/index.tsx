@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useMutation, useQuery } from 'urql';
 import axiosInstance from 'utils/axios';
+import Toast from '../../../components/toast';
 import {
   ConnectingInfoForm,
   MainInfoForm,
@@ -100,6 +101,11 @@ const FundingProjectRequestForm = () => {
     proposal_bank_id: '',
   };
 
+  // const [openToast, setOpenToast] = useState(false);
+  const [toast, setToast] = useState({
+    open: false,
+    message: '',
+  });
   const [requestState, setRequestState] = useState(defaultValues);
   const isMobile = useResponsive('down', 'sm');
   const [step, setStep] = useState(0);
@@ -220,7 +226,13 @@ const FundingProjectRequestForm = () => {
       if (rest) {
         const spreadUrl = location.pathname.split('/');
         // history.push('/dashboard');
-        navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/app`);
+        setToast({
+          open: true,
+          message: translate('proposal_created'),
+        });
+        setTimeout(() => {
+          navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/app`);
+        }, 1000);
       } else {
         setIsLoading(false);
         alert('Something went wrong');
@@ -229,43 +241,6 @@ const FundingProjectRequestForm = () => {
       console.log(err);
       setIsLoading(false);
     }
-
-    // // const { project_beneficiaries_specific_type, ...restData } = requestState.form1;
-
-    // setRequestState((prevRegisterState: any) => ({
-    //   ...prevRegisterState,
-    //   proposal_bank_id: data,
-    // }));
-    // if (id) {
-    //   const res = await updateDraft({
-    //     id,
-    //     update: {
-    //       ...requestState.form1,
-    //       ...requestState.form2,
-    //       ...requestState.form3,
-    //       amount_required_fsupport: requestState.form4.amount_required_fsupport,
-    //       proposal_item_budgets: requestState.form4.detail_project_budgets,
-    //       proposal_bank_id: data,
-    //       step: 'ZERO',
-    //     },
-    //   });
-    //   if (res.error === undefined) navigate('/client/dashboard/app');
-    // } else {
-    //   const res = await createProposal({
-    //     createdProposel: {
-    //       ...restData,
-    //       ...requestState.form2,
-    //       ...requestState.form3,
-    //       amount_required_fsupport: requestState.form4.amount_required_fsupport,
-    //       proposal_item_budgets: requestState.form4.detail_project_budgets,
-    //       proposal_bank_id: data,
-    //       submitter_user_id: user?.id,
-    //       id: nanoid(),
-    //       step: 'ZERO',
-    //     },
-    //   });
-    //   if (res.error === undefined) navigate('/client/dashboard/app');
-    // }
   };
 
   const onSavingDraft = async (data: any) => {
@@ -303,9 +278,6 @@ const FundingProjectRequestForm = () => {
       submitter_user_id: user?.id,
       id: nanoid(),
     };
-    // console.log({ proposalPayload });
-    // console.log({ tempValues });
-    // console.log({ requestState });
     const newAttachment = {
       ...(lastIndex === step &&
       step >= 0 &&
@@ -405,9 +377,16 @@ const FundingProjectRequestForm = () => {
         }
       );
       if (res) {
+        setToast({
+          open: true,
+          message: translate('proposal_saving_draft'),
+        });
         const spreadUrl = location.pathname.split('/');
         // history.push('/dashboard');
-        navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
+        setTimeout(() => {
+          navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
+        }, 1000);
+        // navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
       } else {
         enqueueSnackbar(translate('Something went wrong'), {
           variant: 'error',
@@ -431,7 +410,13 @@ const FundingProjectRequestForm = () => {
         if (rest) {
           const spreadUrl = location.pathname.split('/');
           // history.push('/dashboard');
-          navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
+          setToast({
+            open: true,
+            message: translate('proposal_saving_draft'),
+          });
+          setTimeout(() => {
+            navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
+          }, 1000);
         } else {
           setIsLoading(false);
           alert('Something went wrong');
@@ -488,7 +473,13 @@ const FundingProjectRequestForm = () => {
       if (res) {
         const spreadUrl = location.pathname.split('/');
         // history.push('/dashboard');
-        navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
+        setToast({
+          open: true,
+          message: translate('proposal_created'),
+        });
+        setTimeout(() => {
+          navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
+        }, 1000);
       }
     } catch (err) {
       enqueueSnackbar(err.message, {
@@ -768,6 +759,19 @@ const FundingProjectRequestForm = () => {
               /> */}
           </SupportingDurationInfoForm>
         )}
+        <Toast
+          variant="outlined"
+          // toastType="success"
+          toastType={'success'}
+          // message="تم التأكد من المعلومات أنها صحيحة, لحفظ تعديلاتك الرجاء الضغط على إرسال التعديلات أعلاه"
+          message={toast.message}
+          autoHideDuration={2000}
+          isOpen={toast.open}
+          position="bottom-right"
+          onClose={() => {
+            setToast({ open: false, message: '' });
+          }}
+        />
       </Container>
     </>
   );
