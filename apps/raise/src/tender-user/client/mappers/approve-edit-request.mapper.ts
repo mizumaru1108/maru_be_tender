@@ -120,7 +120,6 @@ export function ApproveEditRequestMapper(
   if (license_file) {
     let tmpLicense: finalUploadFileJson = license_file as any;
     if (tmpLicense.hasOwnProperty('color') && tmpLicense.color === 'green') {
-      delete tmpLicense.color;
       updatePayload.license_file = {
         url: tmpLicense.url,
         size: tmpLicense.size,

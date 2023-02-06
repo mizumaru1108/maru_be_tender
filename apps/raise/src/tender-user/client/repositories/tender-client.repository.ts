@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   bank_information,
   client_data,
@@ -7,6 +7,9 @@ import {
 } from '@prisma/client';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
+import { UploadFilesDto } from '../../../tender-commons/dto/upload-files.dto';
+import { isUploadFileJsonb } from '../../../tender-commons/utils/is-upload-file-jsonb';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
 import { SearchEditRequestFilter } from '../dtos/requests/search-edit-request-filter-request.dto';
@@ -384,6 +387,7 @@ export class TenderClientRepository {
     created_bank: Prisma.bank_informationCreateManyInput[],
     updated_bank: bank_information[],
     deleted_bank: bank_information[],
+    deletedFileManagerUrls: string[],
   ) {
     try {
       return await this.prismaService.$transaction(
@@ -417,6 +421,44 @@ export class TenderClientRepository {
                   2,
                 )}`,
               );
+              const oldBank = await prisma.bank_information.findUnique({
+                where: {
+                  id: updated_bank[i].id,
+                },
+              });
+
+              if (
+                oldBank &&
+                oldBank.card_image &&
+                isUploadFileJsonb(oldBank.card_image) &&
+                updated_bank[i].card_image &&
+                isUploadFileJsonb(updated_bank[i].card_image)
+              ) {
+                const tmpOldbank: UploadFilesJsonbDto =
+                  oldBank.card_image as any;
+                const tmpNewBank: UploadFilesJsonbDto = updated_bank[i]
+                  .card_image as any;
+
+                if (tmpOldbank.url !== tmpNewBank.url) {
+                  const oldData = await prisma.file_manager.findUnique({
+                    where: {
+                      url: tmpOldbank.url,
+                    },
+                  });
+
+                  if (oldData !== null) {
+                    await prisma.file_manager.update({
+                      where: {
+                        id: oldData.id,
+                      },
+                      data: {
+                        is_deleted: true,
+                      },
+                    });
+                  }
+                }
+              }
+
               await prisma.bank_information.update({
                 where: {
                   id: updated_bank[i].id,
@@ -424,7 +466,7 @@ export class TenderClientRepository {
                 data: {
                   user_id: updated_bank[i].user_id,
                   bank_name: updated_bank[i].bank_name,
-                  bank_account_name: updated_bank[i].bank_account_number,
+                  bank_account_name: updated_bank[i].bank_account_name,
                   bank_account_number: updated_bank[i].bank_account_number,
                   card_image: updated_bank[i].card_image,
                 } as Prisma.bank_informationUncheckedUpdateInput,
@@ -438,23 +480,58 @@ export class TenderClientRepository {
                 'info',
                 `setting flag delete for bank ${deleted_bank[i].id} ...`,
               );
-              await prisma.bank_information.update({
+              const oldBank = await prisma.bank_information.findUnique({
                 where: {
                   id: deleted_bank[i].id,
                 },
-                data: {
-                  is_deleted: true,
-                },
               });
+
+              if (!!oldBank) {
+                await prisma.bank_information.update({
+                  where: {
+                    id: deleted_bank[i].id,
+                  },
+                  data: {
+                    is_deleted: true,
+                  },
+                });
+              }
+
               const { url } = deleted_bank[i].card_image as any;
-              await prisma.file_manager.update({
+              const oldFileManager = prisma.file_manager.findUnique({
                 where: {
                   url,
                 },
-                data: {
-                  is_deleted: true,
-                },
               });
+
+              if (oldFileManager !== null) {
+                prisma.file_manager.update({
+                  where: {
+                    url,
+                  },
+                  data: {
+                    is_deleted: true,
+                  },
+                });
+              }
+            }
+          }
+
+          if (deletedFileManagerUrls && deletedFileManagerUrls.length > 0) {
+            for (let i = 0; i < deletedFileManagerUrls.length; i++) {
+              const fileManager = await prisma.file_manager.findFirst({
+                where: { url: deletedFileManagerUrls[i] },
+              });
+              if (fileManager) {
+                this.logger.log(
+                  'info',
+                  `setting deleted flag for ${deletedFileManagerUrls[i]}`,
+                );
+                await prisma.file_manager.update({
+                  where: { url: deletedFileManagerUrls[i] },
+                  data: { is_deleted: true },
+                });
+              }
             }
           }
 

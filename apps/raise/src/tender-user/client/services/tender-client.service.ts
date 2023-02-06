@@ -336,69 +336,63 @@ export class TenderClientService {
     };
 
     if (old_data.bank_information && old_data.bank_information.length > 0) {
+      /* loop the old bank */
       for (let i = 0; i < old_data.bank_information.length; i++) {
-        if (new_data.updatedBanks && new_data.updatedBanks.length > 0) {
-          const isExist = new_data.updatedBanks.findIndex(
+        /* loop the new_data.bank_information */
+        if (new_data.bank_information && new_data.bank_information.length > 0) {
+          /* find the old_data.bank_information[i] on the new_data.bank_information */
+          const isExist = new_data.bank_information.findIndex(
             (value: bank_information) =>
               value.id === old_data.bank_information[i].id,
           );
-          isExist !== -1
-            ? (old_data.bank_information[i]['color'] = 'blue')
-            : 'transparent';
-        } else {
-          old_data.bank_information[i]['color'] = 'transparent';
-        }
 
-        if (new_data.deletedBanks && new_data.deletedBanks.length > 0) {
-          const isExist = new_data.deletedBanks.findIndex(
-            (value: bank_information) =>
-              value.id === old_data.bank_information[i].id,
-          );
-          isExist !== -1
-            ? (old_data.bank_information[i]['color'] = 'red')
-            : 'transparent';
-        } else {
-          old_data.bank_information[i]['color'] = 'transparent';
+          /* if it not exist mark it red*/
+          if (isExist === -1) {
+            old_data.bank_information[i].color = 'red';
+          } else {
+            /* if exist find in updatedBanks, if exist then mark it blue if not mark it transparent */
+            if (new_data.updatedBanks && new_data.updatedBanks.length > 0) {
+              const isExist = new_data.updatedBanks.findIndex(
+                (value: bank_information) =>
+                  value.id === old_data.bank_information[i].id,
+              );
+              isExist > -1
+                ? (old_data.bank_information[i].color = 'blue')
+                : (old_data.bank_information[i].color = 'transparent');
+            }
+          }
         }
       }
     }
 
+    /* if new_data.bank_information is exist */
     if (new_data.bank_information && new_data.bank_information.length > 0) {
       for (let i = 0; i < new_data.bank_information.length; i++) {
-        if (new_data.createdBanks && new_data.createdBanks.length > 0) {
-          const isExist = new_data.createdBanks.findIndex(
-            (value: bank_information) =>
-              value.id === new_data.bank_information[i].id,
-          );
-          isExist === -1
-            ? (new_data.bank_information[i]['color'] = 'green')
-            : 'transparent';
-        } else {
-          new_data.bank_information[i]['color'] = 'transparent';
-        }
-
+        /* if there's an updated bank */
         if (new_data.updatedBanks && new_data.updatedBanks.length > 0) {
           const isExist = new_data.updatedBanks.findIndex(
             (value: bank_information) =>
               value.id === new_data.bank_information[i].id,
           );
+
+          /* if the new_data.bank_information[i] exist in updated bank, mark it blue, if not mark it transparent*/
           isExist !== -1
             ? (new_data.bank_information[i]['color'] = 'blue')
-            : 'transparent';
-        } else {
-          new_data.bank_information[i]['color'] = 'transparent';
+            : (new_data.bank_information[i]['color'] = 'transparent');
         }
 
-        if (new_data.deletedBanks && new_data.deletedBanks.length > 0) {
-          const isExist = new_data.deletedBanks.findIndex(
+        /* if created bank is exist loop it */
+        if (new_data.createdBanks && new_data.createdBanks.length > 0) {
+          /* find new_data.bank_information[i] in created bank */
+          const isExist = new_data.createdBanks.findIndex(
             (value: bank_information) =>
               value.id === new_data.bank_information[i].id,
           );
-          isExist !== -1
-            ? (new_data.bank_information[i]['color'] = 'red')
-            : 'transparent';
-        } else {
-          new_data.bank_information[i]['color'] = 'transparent';
+          /* if exist */
+          if (isExist > -1) {
+            /* then color it green */
+            new_data.bank_information[i].color = 'green';
+          }
         }
       }
     }
@@ -1009,6 +1003,7 @@ export class TenderClientService {
         created_bank,
         updated_bank,
         deleted_bank,
+        deletedFileManagerUrls,
       );
       // // console.log('response', response);
 
@@ -1026,14 +1021,44 @@ export class TenderClientService {
   }
 
   async rejectEditRequests(reviewer_id: string, request: RejectEditRequestDto) {
-    const requestData =
-      await this.tenderClientRepository.findEditRequestLogByRequestId(
-        request.requestId,
-      );
-    if (!requestData) {
-      throw new BadRequestException('No Request Data Found!');
-    }
     try {
+      const requestData =
+        await this.tenderClientRepository.findEditRequestLogByRequestId(
+          request.requestId,
+        );
+      if (!requestData) {
+        throw new BadRequestException('No Request Data Found!');
+      }
+
+      const { old_value, new_value, user_id } = requestData;
+
+      let old_data: client_data;
+      let new_data: client_data;
+      let updateClientPayload:
+        | Prisma.client_dataUncheckedUpdateInput
+        | undefined;
+      let created_bank: Prisma.bank_informationCreateManyInput[] = [];
+      let updated_bank: bank_information[] = [];
+      let deleted_bank: bank_information[] = [];
+      let deletedFileManagerUrls: string[] = [];
+
+      let oldTmp = JSON.parse(old_value);
+      delete oldTmp.bank_information;
+      old_data = oldTmp;
+
+      let newTmp = JSON.parse(new_value);
+      created_bank = newTmp['createdBanks'];
+      updated_bank = newTmp['updatedBanks'];
+      deleted_bank = newTmp['deletedBanks'];
+
+      delete newTmp.bank_information;
+      delete newTmp.createdBanks;
+      delete newTmp.updatedBanks;
+      delete newTmp.deletedBanks;
+      new_data = newTmp;
+
+      const oldLicenseFile: finalUploadFileJson = old_data.license_file as any;
+
       const updatePayload: Prisma.edit_requestsUncheckedUpdateInput = {
         status_id: 'REJECTED',
         reject_reason: request.reject_reason,
@@ -1068,7 +1093,7 @@ export class TenderClientService {
       accepted_at,
     } = editRequest;
 
-    console.log('edit request', editRequest);
+    // console.log('edit request', editRequest);
 
     const rejectedTime = !!rejected_at
       ? moment(rejected_at).format('llll')
