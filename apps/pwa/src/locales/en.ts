@@ -257,6 +257,7 @@ const en = {
       execution_time: {
         message: '',
         required: 'Execution time is required',
+        greater_than_0: 'Execution time must be greater than 0',
       },
       project_beneficiaries: {
         message: '',

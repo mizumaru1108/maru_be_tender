@@ -153,6 +153,7 @@ export const FEATURE_PORTAL_REPORTS: boolean =
     ? true
     : false;
 
+// Enable daily status
 export const FEATURE_DAILY_STATUS: boolean =
   process.env.REACT_APP_CONFIG_FEATURE_DAILY_STATUS &&
   process.env.REACT_APP_CONFIG_FEATURE_DAILY_STATUS === 'true'

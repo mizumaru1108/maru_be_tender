@@ -148,9 +148,9 @@ export default function MessagePopover() {
         setCurrentData(memoResult.notification);
       }
 
-      if (!fetching && memoResultError) {
-        setOpenAlert(true);
-      }
+      // if (!fetching && memoResultError) {
+      //   setOpenAlert(true);
+      // }
     }
   }, [data, currentData, fetching, memoResult, memoResultError]);
 

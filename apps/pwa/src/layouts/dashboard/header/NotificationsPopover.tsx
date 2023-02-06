@@ -179,9 +179,9 @@ export default function NotificationsPopover() {
         setCurrentData(memoResult.notification);
       }
 
-      if (!fetching && memoResultError) {
-        setOpenAlert(true);
-      }
+      // if (!fetching && memoResultError) {
+      //   setOpenAlert(true);
+      // }
     }
   }, [
     dataNotifCount,
@@ -376,7 +376,7 @@ export default function NotificationsPopover() {
                     <React.Fragment>
                       <Box>
                         {translate('notification.previous')}
-                        {notifyCount && notifyCount > 0 && (
+                        {totalUnReadPrevious > 0 && (
                           <Box
                             component="span"
                             sx={{
@@ -388,7 +388,7 @@ export default function NotificationsPopover() {
                               fontSize: 12,
                             }}
                           >
-                            {notifyCount}
+                            {totalUnReadPrevious}
                           </Box>
                         )}
                       </Box>
@@ -406,7 +406,7 @@ export default function NotificationsPopover() {
                 alignItems: 'end',
               }}
             >
-              {notifyCount && notifyCount > 0 && (
+              {notifyCount > 0 && (
                 <React.Fragment>
                   <IconButton color="primary" onClick={handleMarkAllAsRead}>
                     <Iconify icon="eva:done-all-fill" width={20} height={20} />

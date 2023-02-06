@@ -38,15 +38,12 @@ const MainInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
     project_implement_date: Yup.string().required(
       translate('errors.cre_proposal.project_implement_date.required')
     ),
-    execution_time: Yup.number().required(translate('errors.cre_proposal.execution_time.required')),
+    execution_time: Yup.number()
+      .required(translate('errors.cre_proposal.execution_time.required'))
+      .min(1, translate('errors.cre_proposal.execution_time.greater_than_0')),
     project_beneficiaries: Yup.string().required(
       translate('errors.cre_proposal.project_beneficiaries.required')
     ),
-    // letter_ofsupport_req: Yup.object().shape({
-    //   url: Yup.string().required(),
-    //   size: Yup.number(),
-    //   type: Yup.string().required(),
-    // }),
     letter_ofsupport_req: Yup.mixed()
       .test('size', translate('errors.cre_proposal.letter_ofsupport_req.fileSize'), (value) => {
         if (value) {
@@ -74,15 +71,9 @@ const MainInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
           return true;
         }
       ),
-    // project_attachments: Yup.object().shape({
-    //   url: Yup.string().required(),
-    //   size: Yup.number(),
-    //   type: Yup.string().required(),
-    // }),
     project_attachments: Yup.mixed()
       .test('size', translate('errors.cre_proposal.project_attachments.fileSize'), (value) => {
         if (value) {
-          // const trueSize = value.size * 28;
           if (value.size > 1024 * 1024 * 30) {
             return false;
           }
