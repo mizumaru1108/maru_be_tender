@@ -66,7 +66,24 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, children, isEdit }: F
 
   const agree_on = watch('agree_on');
   const onSubmitForm = async (data: AdministrativeValuesProps) => {
-    onSubmit(data);
+    const newData = { ...data };
+    // const newCeoMobile = data.ceo_mobile ? `+966${data.ceo_mobile}` : '';
+    const newCeoMobile =
+      data.ceo_mobile.split('')[4] === '+966' ? data.ceo_mobile : `+966${data.ceo_mobile}`;
+    const newDataEntryMobile =
+      data.data_entry_mobile.split('')[4] === '+966'
+        ? data.data_entry_mobile
+        : `+966${data.data_entry_mobile}`;
+    const newChairmanMobile =
+      data.chairman_mobile.split('')[4] === '+966'
+        ? data.chairman_mobile
+        : `+966${data.chairman_mobile}`;
+    newData.ceo_mobile = newCeoMobile;
+    newData.data_entry_mobile = newDataEntryMobile;
+    newData.chairman_mobile = newChairmanMobile;
+    console.log('newData', newData);
+    onSubmit(newData);
+    // onSubmit(data);
   };
   React.useEffect(() => {
     window.scrollTo(0, 0);

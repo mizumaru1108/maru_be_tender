@@ -19,7 +19,6 @@ type FormProps = {
 };
 
 const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProps) => {
-  // const [changePassword, setChangePassword] = useState(false);
   const { translate } = useLocales();
   const RegisterSchema = Yup.object().shape({
     region: Yup.string().required('Region name required'),
@@ -36,10 +35,6 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
       }),
     twitter_acount: Yup.string(),
     website: Yup.string(),
-    // email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-    // old_password: Yup.string().required('Old Password is required'),
-    // new_password: Yup.string().required('New Password is required'),
-    // confirm_password: Yup.string().oneOf([Yup.ref('new_password'), null], 'Passwords must match'),
   });
 
   const methods = useForm<ConnectingValuesProps>({
@@ -55,7 +50,12 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
   } = methods;
 
   const onSubmitForm = async (data: ConnectingValuesProps) => {
-    onSubmit(data);
+    const newData = { ...data };
+    const newPhone =
+      data && data.phone && data.phone.split('')[4] === '+966' ? data.phone : `+966${data.phone}`;
+    newData.phone = newPhone;
+    console.log({ newData });
+    onSubmit(newData);
   };
 
   useEffect(() => {
@@ -63,11 +63,11 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
     let newValues = { ...defaultValues };
     const newPhone = defaultValues.phone?.replace('+966', '');
     newValues = { ...newValues, phone: newPhone };
-    console.log({ newValues });
+    // console.log({ newValues });
     reset(newValues);
   }, [defaultValues, reset]);
   const region = watch('region') as RegionNames | '';
-  console.log({ region });
+  // console.log({ region });
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>

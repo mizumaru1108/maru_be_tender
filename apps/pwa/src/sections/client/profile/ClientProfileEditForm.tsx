@@ -480,6 +480,7 @@ function ClientProfileEditForm() {
       ...profileState.form4,
       ...newBankInformation,
     };
+    // console.log({ payload });
     const filteredObj = Object.fromEntries(Object.entries(payload).filter(([key, value]) => value));
     // console.log({ filteredObj });
     try {
