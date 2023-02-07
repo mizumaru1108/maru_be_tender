@@ -19,7 +19,6 @@ const BankingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
   const { translate } = useLocales();
 
   const RegisterSchema = Yup.object().shape({
-    // /^[a-zA-Z]{2}(?:0[2-9]|[1-8][0-9]|9[0-8])[a-zA-Z0-9\s]{4}[0-9\s]{6}[a-zA-Z0-9\s]{0,20}$/,
     bank_account_number: Yup.string()
       .min(27, translate('errors.register.bank_account_number.min'))
       .required(translate('errors.register.bank_account_number.required')),

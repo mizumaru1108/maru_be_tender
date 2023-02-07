@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Step,
   StepLabel,
@@ -49,7 +49,7 @@ const initialValue = {
     headquarters: '',
     num_of_employed_facility: 0,
     num_of_beneficiaries: 0,
-    // vat: false,
+    vat: false,
   },
   form2: {
     region: '',
@@ -61,6 +61,7 @@ const initialValue = {
     website: '',
     email: '',
     password: '',
+    used_numbers: [],
   },
   form3: {
     license_number: '',
@@ -74,7 +75,14 @@ const initialValue = {
       fileExtension: '',
       fullName: '',
     },
-    board_ofdec_file: { size: undefined, url: '', type: 'image/jpg' },
+    board_ofdec_file: {
+      url: '',
+      size: undefined,
+      type: '',
+      base64Data: '',
+      fileExtension: '',
+      fullName: '',
+    },
   },
   form4: {
     agree_on: false,
@@ -85,6 +93,7 @@ const initialValue = {
     data_entry_name: '',
     data_entry_mobile: '',
     data_entry_mail: '',
+    used_numbers: [],
   },
   form5: {
     bank_account_number: '',
@@ -92,6 +101,7 @@ const initialValue = {
     bank_name: '',
     card_image: { size: undefined, url: '', type: '' },
   },
+  used_numbers: [''],
 } as AccountValuesProps;
 export default function RegisterForm() {
   const { translate } = useLocales();
@@ -121,6 +131,7 @@ export default function RegisterForm() {
         ...prevRegisterState.form2,
         ...data,
       },
+      used_numbers: [...prevRegisterState.used_numbers!, ...data.used_numbers!],
     }));
     if (done) setStep(5);
   };
@@ -147,6 +158,7 @@ export default function RegisterForm() {
         ...prevRegisterState.form4,
         ...data,
       },
+      used_numbers: [...prevRegisterState.used_numbers!, ...data.used_numbers!],
     }));
     if (done) setStep(5);
   };
@@ -167,7 +179,9 @@ export default function RegisterForm() {
   const onReturn = () => {
     if (step > 0) setStep((prevStep) => prevStep - 1);
   };
-
+  useEffect(() => {
+    console.log('wathc used numbers', registerState.used_numbers);
+  }, [registerState.used_numbers]);
   return (
     <>
       {step !== 5 && (
@@ -219,7 +233,11 @@ export default function RegisterForm() {
       )}
       {step === 1 && (
         <Container sx={{ padding: '10px' }}>
-          <ConnectingInfoForm onSubmit={onSubmit2} defaultValues={registerState.form2}>
+          <ConnectingInfoForm
+            onSubmit={onSubmit2}
+            defaultValues={registerState.form2}
+            usedNumbers={registerState.used_numbers}
+          >
             <ActionsBox done={done} onReturn={onReturn} />
           </ConnectingInfoForm>
         </Container>
@@ -237,6 +255,7 @@ export default function RegisterForm() {
           onSubmit={onSubmit4}
           defaultValues={registerState.form4}
           done={done}
+          usedNumbers={registerState.used_numbers}
         />
       )}
       {step === 4 && (

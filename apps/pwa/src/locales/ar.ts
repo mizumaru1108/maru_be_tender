@@ -141,6 +141,7 @@ const ar = {
         message: '',
         required: 'عدد المستفيدين من خدمات الجهة مطلوب',
         length: 'رقم الجوال يجب أن يكون 9 أرقام',
+        equal: 'رقم الجوال يجب أن يكون مختلف عن رقم الهاتف',
       },
       entity_employee: {
         message: '',
@@ -150,6 +151,8 @@ const ar = {
         message: '',
         required: 'عدد المستفيدين من خدمات الجهة مطلوب',
         length: 'رقم الهاتف يجب أن يكون 9 أرقام',
+        exist: 'رقم الجوال موجود بالفعل',
+        equal: 'رقم الهاتف يجب أن يكون مختلف عن رقم الجوال',
       },
       license_number: {
         message: '',
@@ -172,8 +175,7 @@ const ar = {
       board_ofdec_file: {
         message: '',
         size: 'حجم الملف يجب أن يكون أقل من 5 ميجا',
-        fileExtension:
-          'يجب أن يكون الملف من نوع pdf, doc, docx, xls, xlsx, ppt, pptx, png, jpg, jpeg',
+        fileExtension: 'يجب أن يكون الملف من نوع pdf, png, jpg, jpeg',
       },
       twitter_acount: {
         message: '',
@@ -612,7 +614,7 @@ const ar = {
   },
   register_form5: {
     bank_account_number: {
-      label: 'أيبان الحساب البنكي*',
+      label: '*أيبان الحساب البنكي',
       placeholder: 'XX XXXX XXXX XXXX XXXX XXXX',
     },
     bank_account_name: {
@@ -624,7 +626,7 @@ const ar = {
       placeholder: 'اسم البنك',
     },
     bank_account_card_image: {
-      label: 'صورة بطاقة الحساب البنكي',
+      label: 'صورة بطاقة الحساب البنكي*',
       placeholder: 'صورة بطاقة الحساب البنكي',
     },
   },

@@ -15,9 +15,12 @@ type FormProps = {
   children?: React.ReactNode;
   onSubmit: (data: any) => void;
   defaultValues: ConnectingValuesProps;
+  usedNumbers?: string[];
 };
 
-const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
+const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: FormProps) => {
+  const tmpUsedNumbers: string[] = usedNumbers ?? [];
+  // console.log('tmpUsedNumbers', tmpUsedNumbers);
   const { translate } = useLocales();
 
   useEffect(() => {
@@ -26,49 +29,46 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
     const newEntityMobile = defaultValues.entity_mobile?.replace('+966', '');
     const newPhone = defaultValues.phone?.replace('+966', '');
     newValues = { ...newValues, entity_mobile: newEntityMobile, phone: newPhone };
-    console.log('newValues', newValues);
     if (!!newValues.entity_mobile) {
       reset(newValues);
     }
-    // if (!!defaultValues) {
-    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues]);
+  const phoneNumberValidation = Yup.string()
+    .notRequired()
+    .test('len', translate('errors.register.phone.length'), (val) => {
+      if (val === undefined) {
+        return true;
+      }
+      return val?.length === 0 || val!.length === 9;
+    })
+    .test('used', translate('errors.register.phone.exist'), (val) => {
+      const isUsed = tmpUsedNumbers.includes(`+966${val ?? ''}`);
+      return !isUsed;
+    });
+  const entityMobileValidation = Yup.string()
+    .required(translate('errors.register.entity_mobile.required'))
+    .test('len', translate('errors.register.entity_mobile.length'), (val) => {
+      const isLength = val?.length === 9;
+      return isLength;
+    })
+    .test('used', translate('errors.register.phone.exist'), (val) => {
+      const isUsed = tmpUsedNumbers.includes(`+966${val ?? ''}`);
+      return !isUsed;
+    });
   const RegisterSchema = Yup.object().shape(
     {
       region: Yup.string().required(translate('errors.register.region.required')),
       governorate: Yup.string().required(translate('errors.register.governorate.required')),
       center_administration: Yup.string(),
-      entity_mobile: Yup.string()
-        .required(translate('errors.register.entity_mobile.required'))
-        .test('len', translate('errors.register.entity_mobile.length'), (val) => {
-          if (val === undefined) {
-            return true;
-          }
-
-          return val.length === 0 || val!.length === 9;
-        }),
-      // .matches(
-      //   /^\+966[0-9]$/,
-      //   `The Entity Mobile must be written in the exact way of +966xxxxxxxx`
-      // ),
-      phone: Yup.string()
-        .nullable()
-        .notRequired()
-        .test('len', translate('errors.register.phone.length'), (val) => {
-          if (val === undefined) {
-            return true;
-          }
-          return val?.length === 0 || val!.length === 9;
-        }),
-      // .when('phone', {
-      //   is: (value: string) => value?.length,
-      //   then: (rule) =>
-      //     rule.matches(
-      //       /^\+966[0-9]$/,
-      //       `Phone number must be written in the exact way of +966xxxxxxxx`
-      //     ),
-      // }),
+      entity_mobile: entityMobileValidation.notOneOf(
+        [Yup.ref('phone'), null],
+        translate('errors.register.entity_mobile.equal')
+      ),
+      phone: phoneNumberValidation.notOneOf(
+        [Yup.ref('entity_mobile'), null],
+        translate('errors.register.phone.equal')
+      ),
       twitter_acount: Yup.string(),
       website: Yup.string(),
       email: Yup.string()
@@ -96,6 +96,8 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
   } = methods;
 
   const onSubmitForm = async (data: ConnectingValuesProps) => {
+    let newTmpNumbers: string[] = [...tmpUsedNumbers];
+
     let newEntityMobile = getValues('entity_mobile');
     let newPhoneValues = getValues('phone');
 
@@ -106,13 +108,15 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
     newPhoneValues!.substring(0, 4) !== '+966'
       ? (newPhoneValues = '+966'.concat(`${getValues('phone')}`))
       : (newPhoneValues = getValues('phone'));
-
+    newTmpNumbers.push(newEntityMobile);
+    newTmpNumbers.push(newPhoneValues!);
     const payload: ConnectingValuesProps = {
       ...data,
       phone: newPhoneValues!,
       entity_mobile: newEntityMobile!,
+      used_numbers: [...newTmpNumbers],
     };
-
+    console.log('payload', payload);
     // reset({ ...payload });
     onSubmit(payload);
   };
@@ -123,7 +127,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [defaultValues]);
   const region = watch('region') as RegionNames | '';
-  console.log('region', region);
+  // console.log('region', region);
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
@@ -179,7 +183,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
             name="entity_mobile"
             label={translate('register_form2.mobile_number.label')}
             // placeholder={translate('register_form2.mobile_number.placeholder')}
-            placeholder="xxx-xxx-xxx"
+            placeholder="xxx xxx xxx"
           />
         </Grid>
         <Grid item md={6} xs={12}>
@@ -187,7 +191,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) =>
             name="phone"
             label={translate('register_form2.phone.label')}
             // placeholder={translate('register_form2.phone.placeholder')}
-            placeholder="xxx-xxx-xxx"
+            placeholder="xxx xxx xxx"
           />
         </Grid>
         <Grid item md={6} xs={12}>

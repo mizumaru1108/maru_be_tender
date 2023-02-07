@@ -126,6 +126,7 @@ const en = {
         message: '',
         required: 'Mobile number is required',
         length: 'Mobile number must be 9 digits',
+        equal: 'Entity mobile must be different from the phone',
       },
       entity_employee: {
         message: '',
@@ -135,6 +136,8 @@ const en = {
         message: '',
         required: 'Phone number is required',
         length: 'Phone number must be 9 digits',
+        exist: 'Mobile number already exists',
+        equal: 'Phone number must be different from the entity mobile',
       },
       email: {
         message: '',
@@ -199,8 +202,7 @@ const en = {
       board_ofdec_file: {
         message: '',
         size: 'The file size must be less than 5 MB',
-        fileExtension:
-          'The file extension must be one of the following: pdf, doc, docx, xls, xlsx, ppt, pptx, png, jpg, jpeg',
+        fileExtension: 'The file extension must be one of the following: pdf, png, jpg, jpeg',
       },
       num_of_employed_facility: {
         message: '',
@@ -600,7 +602,7 @@ const en = {
   },
   register_form5: {
     bank_account_number: {
-      label: 'رقم الحساب البنكي*',
+      label: '*رقم الحساب البنكي',
       placeholder: 'XX XXXX XXXX XXXX XXXX XXXX',
     },
     bank_account_name: {
@@ -612,7 +614,7 @@ const en = {
       placeholder: 'اسم البنك',
     },
     bank_account_card_image: {
-      label: 'صورة بطاقة الحساب البنكي',
+      label: 'صورة بطاقة الحساب البنكي*',
       placeholder: 'صورة بطاقة الحساب البنكي',
     },
   },

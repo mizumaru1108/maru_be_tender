@@ -1,5 +1,6 @@
 import { IconButton, Stack, Typography } from '@mui/material';
 import { AdministrativeValuesProps } from 'sections/shared/types';
+import useLocales from '../../../../hooks/useLocales';
 
 function AdministrativeInfo({
   data,
@@ -8,6 +9,7 @@ function AdministrativeInfo({
   data: AdministrativeValuesProps;
   setStep: (val: number) => void;
 }) {
+  const { currentLang } = useLocales();
   return (
     <Stack direction="column" gap={2}>
       <Stack direction="row" justifyContent="space-between">
@@ -50,9 +52,13 @@ function AdministrativeInfo({
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>اسم المدير التنفيذي:</Typography>
           <Typography sx={{ fontSize: '18px' }}>{data.ceo_name}</Typography>
         </Stack>
-        <Stack direction="column" flex={1}>
+        <Stack direction="column" flex={1} alignItems="start">
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>جوال المدير التنفيذي:</Typography>
-          <Typography sx={{ fontSize: '18px' }}>{data.ceo_mobile}</Typography>
+          <Typography
+            sx={{ fontSize: '18px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+          >
+            {data.ceo_mobile}
+          </Typography>
         </Stack>
       </Stack>
       <Stack direction="row" justifyContent="space-between">
@@ -60,9 +66,13 @@ function AdministrativeInfo({
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>اسم الرئيس:</Typography>
           <Typography sx={{ fontSize: '18px' }}>{data.chairman_name}</Typography>
         </Stack>
-        <Stack direction="column" flex={1}>
+        <Stack direction="column" flex={1} alignItems="start">
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>الرئيس موبايل:</Typography>
-          <Typography sx={{ fontSize: '18px' }}>{data.chairman_mobile}</Typography>
+          <Typography
+            sx={{ fontSize: '18px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+          >
+            {data.chairman_mobile}
+          </Typography>
         </Stack>
       </Stack>
       <Stack direction="row" justifyContent="space-between">
@@ -70,9 +80,13 @@ function AdministrativeInfo({
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>اسم مدخل البيانات:</Typography>
           <Typography sx={{ fontSize: '18px' }}>{data.data_entry_name}</Typography>
         </Stack>
-        <Stack direction="column" flex={1}>
+        <Stack direction="column" flex={1} alignItems="start">
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>جوال مدخل البيانات:</Typography>
-          <Typography sx={{ fontSize: '18px' }}>{data.data_entry_mobile}</Typography>
+          <Typography
+            sx={{ fontSize: '18px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+          >
+            {data.data_entry_mobile}
+          </Typography>
         </Stack>
       </Stack>
       <Stack direction="column">

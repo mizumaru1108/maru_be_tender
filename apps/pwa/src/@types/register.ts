@@ -23,6 +23,7 @@ export type AdministrativeValuesProps = {
   data_entry_name: string;
   data_entry_mobile: string;
   data_entry_mail: string;
+  used_numbers?: string[];
 };
 
 export type LicenseValuesProps = {
@@ -42,6 +43,7 @@ export type ConnectingValuesProps = {
   website: string;
   email: string;
   password: string;
+  used_numbers?: string[];
   // new_password?: string;
   // old_password?: string;
   // confirm_password: string;
@@ -73,6 +75,7 @@ export type AccountValuesProps = {
   form3: LicenseValuesProps;
   form4: AdministrativeValuesProps;
   form5: BankingValuesProps;
+  used_numbers?: string[];
 };
 
 export type AccountEditValuesProps = {

@@ -1,5 +1,6 @@
 import { IconButton, Stack, Typography } from '@mui/material';
 import { ConnectingValuesProps } from 'sections/shared/types';
+import useLocales from '../../../../hooks/useLocales';
 
 function ConnectionInfo({
   data,
@@ -8,6 +9,7 @@ function ConnectionInfo({
   data: ConnectingValuesProps;
   setStep: (val: number) => void;
 }) {
+  const { currentLang } = useLocales();
   return (
     <Stack direction="column" gap={2}>
       <Stack direction="row" justifyContent="space-between">
@@ -60,15 +62,23 @@ function ConnectionInfo({
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>المركز (الإدارة):</Typography>
           <Typography sx={{ fontSize: '18px' }}>{data?.center_administration ?? '-'}</Typography>
         </Stack>
-        <Stack direction="column" flex={1}>
+        <Stack direction="column" flex={1} alignItems="start">
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>جوال الجهة:</Typography>
-          <Typography sx={{ fontSize: '18px' }}>{data.entity_mobile}</Typography>
+          <Typography
+            sx={{ fontSize: '18px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+          >
+            {data.entity_mobile}
+          </Typography>
         </Stack>
       </Stack>
       <Stack direction="row" justifyContent="space-between">
-        <Stack direction="column" flex={1}>
+        <Stack direction="column" flex={1} alignItems="start">
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>الهاتف:</Typography>
-          <Typography sx={{ fontSize: '18px' }}>{data?.phone ?? '-'}</Typography>
+          <Typography
+            sx={{ fontSize: '18px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+          >
+            {data?.phone ?? '-'}
+          </Typography>
         </Stack>
         <Stack direction="column" flex={1}>
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>حساب تويتر:</Typography>

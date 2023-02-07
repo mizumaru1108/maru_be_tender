@@ -31,7 +31,7 @@ export default function RHFTextField({ name, ...other }: Props) {
     },
   };
 
-  console.log('currentLang', currentLang.value);
+  // console.log('currentLang', currentLang.value);
   const { control, watch } = useFormContext();
   let project_beneficiaries = '';
   let condition = false;

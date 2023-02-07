@@ -63,14 +63,14 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
           if (value) {
             if (
               value.type !== 'application/pdf' &&
-              value.type !== 'application/msword' &&
-              value.type !==
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document' &&
-              value.type !== 'application/vnd.ms-excel' &&
-              value.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' &&
-              value.type !== 'application/vnd.ms-powerpoint' &&
-              value.type !==
-                'application/vnd.openxmlformats-officedocument.presentationml.presentation' &&
+              // value.type !== 'application/msword' &&
+              // value.type !==
+              //   'application/vnd.openxmlformats-officedocument.wordprocessingml.document' &&
+              // value.type !== 'application/vnd.ms-excel' &&
+              // value.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' &&
+              // value.type !== 'application/vnd.ms-powerpoint' &&
+              // value.type !==
+              //   'application/vnd.openxmlformats-officedocument.presentationml.presentation' &&
               value.type !== 'image/png' &&
               value.type !== 'image/jpeg' &&
               value.type !== 'image/jpg'

@@ -157,7 +157,7 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
             name="mobile_number"
             label={translate('register_form2.mobile_number.label')}
             // placeholder={translate('register_form2.mobile_number.placeholder')}
-            placeholder="xxx-xxx-xxx"
+            placeholder="xxx xxx xxx"
           />
         </Grid>
 

@@ -14,10 +14,23 @@ type FormProps = {
   onSubmit: (data: any) => void;
   defaultValues: AdministrativeValuesProps;
   done: boolean;
+  usedNumbers?: string[];
 };
 
-const AdministrativeInfoForm = ({ onSubmit, defaultValues, onReturn, done }: FormProps) => {
+const AdministrativeInfoForm = ({
+  onSubmit,
+  defaultValues,
+  onReturn,
+  done,
+  usedNumbers,
+}: FormProps) => {
+  const tmpUsedNumbers: string[] = usedNumbers ?? [];
+  console.log('tmpUsedNumbers', tmpUsedNumbers);
   const { translate } = useLocales();
+  // const tmpUserNumbers = React.useMemo(() => {
+  //   const { used_numbers } = defaultValues;
+  //   return used_numbers && used_numbers.length > 0 ? [...used_numbers] : [];
+  // }, [defaultValues]);
   const RegisterSchema = Yup.object().shape({
     ceo_name: Yup.string().required(translate('errors.register.ceo_name.required')),
     ceo_mobile: Yup.string()
@@ -28,6 +41,10 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, onReturn, done }: For
         }
 
         return val.length === 0 || val!.length === 9;
+      })
+      .test('used', translate('errors.register.phone.exist'), (val) => {
+        const isUsed = tmpUsedNumbers.includes(`+966${val ?? ''}`);
+        return !isUsed;
       }),
     chairman_name: Yup.string().required(translate('errors.register.chairman_name.required')),
     chairman_mobile: Yup.string()
@@ -38,11 +55,11 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, onReturn, done }: For
         }
 
         return val.length === 0 || val!.length === 9;
+      })
+      .test('used', translate('errors.register.phone.exist'), (val) => {
+        const isUsed = tmpUsedNumbers.includes(`+966${val ?? ''}`);
+        return !isUsed;
       }),
-    // .matches(
-    //   /^\+966[0-9]{8}$/,
-    //   `The CEO Mobile must be written in the exact way of +966xxxxxxxx`
-    // ),
     data_entry_name: Yup.string().required(translate('errors.register.data_entry_name.required')),
     data_entry_mobile: Yup.string()
       .required(translate('errors.register.data_entry_mobile.length'))
@@ -52,11 +69,11 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, onReturn, done }: For
         }
 
         return val.length === 0 || val!.length === 9;
+      })
+      .test('used', translate('errors.register.phone.exist'), (val) => {
+        const isUsed = tmpUsedNumbers.includes(`+966${val ?? ''}`);
+        return !isUsed;
       }),
-    // .matches(
-    //   /^\+9665[0-9]{8}$/,
-    //   `The Data Entry Mobile must be written in the exact way of +9665xxxxxxxx`
-    // ),
     data_entry_mail: Yup.string()
       .email(translate('errors.register.email.email'))
       .required(translate('errors.register.email.required')),
@@ -78,7 +95,7 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, onReturn, done }: For
 
   const agree_on = watch('agree_on');
   const onSubmitForm = async (data: AdministrativeValuesProps) => {
-    // console.log('data', data);
+    let newTmpNumbers: string[] = [...tmpUsedNumbers];
     let newCeoMobile = getValues('ceo_mobile');
     let newDataEntryMobile = getValues('data_entry_mobile');
     let newChairmanMobile = getValues('chairman_mobile');
@@ -95,15 +112,19 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, onReturn, done }: For
       ? (newChairmanMobile = '+966'.concat(`${getValues('chairman_mobile')}`))
       : (newChairmanMobile = getValues('chairman_mobile'));
 
+    newTmpNumbers && newTmpNumbers.push(newCeoMobile);
+    newTmpNumbers && newTmpNumbers.push(newDataEntryMobile);
+    newTmpNumbers && newTmpNumbers.push(newChairmanMobile);
     const payload: AdministrativeValuesProps = {
       ...data,
       ceo_mobile: newCeoMobile!,
       data_entry_mobile: newDataEntryMobile!,
       chairman_mobile: newChairmanMobile!,
+      used_numbers: [...newTmpNumbers],
     };
-    // console.log('payload', payload);
-    reset({ ...payload });
-    onSubmit({ ...payload });
+    console.log('payload', payload);
+    // reset({ ...payload });
+    onSubmit(payload);
   };
   React.useEffect(() => {
     window.scrollTo(0, 0);
@@ -117,7 +138,7 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, onReturn, done }: For
       data_entry_mobile: newDataEntryMobile,
       chairman_mobile: newChairmanMobile,
     };
-    console.log('newValues', newValues);
+    // console.log('newValues', newValues);
     reset({ ...newValues });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues]);
