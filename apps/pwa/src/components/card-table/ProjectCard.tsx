@@ -164,9 +164,10 @@ const ProjectCard = ({
             textOverflow: 'ellipsis',
             overflow: 'hidden',
             maxWidth: '500px',
+            fontSize: '14px !important',
           }}
         >
-          {content.organizationName}
+          {content.employee}
         </Typography>
         <Stack direction="row" justifyContent="space-between" sx={{ marginBottom: '10px' }}>
           <Stack direction="column" gap={1}>

@@ -21,5 +21,8 @@ query getProposals($limit: Int = 4, $offset: Int = 0, $order_by: [proposal_order
     project_idea
     project_name
     amount_required_fsupport
+    user {
+      employee_name
+    }
   }
 }`;

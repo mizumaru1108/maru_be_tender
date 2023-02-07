@@ -37,7 +37,7 @@ function FollowUpsAction() {
     <Stack direction="row" gap={1}>
       {activeRole !== 'tender_client' && (
         <>
-          <Stack direction="row" gap={1}>
+          <Stack direction="row" gap={2}>
             <ActionPopup open={actoinOpen} handleClose={handleActionClose} />
             <FilePopup open={fileOpen} handleClose={handleFileClose} />
             {!FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL ? null : (

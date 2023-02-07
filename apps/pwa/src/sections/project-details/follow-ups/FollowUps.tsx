@@ -40,7 +40,7 @@ function FollowUps() {
       if (response) {
         dispatch(setCheckedItems([]));
         dispatch(getProposal(id as string));
-        enqueueSnackbar('delete success', {
+        enqueueSnackbar(translate('content.client.main_page.delete_success'), {
           variant: 'success',
         });
         setLoading(false);
@@ -75,7 +75,7 @@ function FollowUps() {
               }}
               onClick={() => handleDelFollowUps()}
             >
-              DELETE
+              {translate('table_actions.delete_button_label').toUpperCase()}
             </LoadingButton>
           )}
         </Grid>

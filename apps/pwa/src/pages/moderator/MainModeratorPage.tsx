@@ -45,6 +45,7 @@ function MainManagerPage() {
   const { data: incomingData, fetching: incomingFetching, error: incomingError } = incoming;
 
   if (fetching || incomingFetching) return <>... Loading</>;
+
   return (
     <Page title="Moderator Dashboard">
       <Container>
@@ -92,7 +93,7 @@ function MainManagerPage() {
                         projectName: item.project_name,
                         organizationName: item.project_name,
                         sentSection: 'Moderator',
-                        employee: 'Moderator',
+                        employee: item.user.employee_name,
                       }}
                       footer={{ createdAt: new Date(item.created_at) }}
                       cardFooterButtonAction="show-details"

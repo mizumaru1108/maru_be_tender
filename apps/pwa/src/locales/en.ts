@@ -45,6 +45,7 @@ const en = {
         partner_followup: 'Partner follow-up',
         empty_text_followup: 'There are no follow ups',
         empty_add_comment_followup: 'Add a comment or upload a file',
+        delete_success: 'Delete is successfully',
       },
     },
     administrative: {

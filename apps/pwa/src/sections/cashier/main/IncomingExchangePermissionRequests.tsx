@@ -55,7 +55,7 @@ function IncomingExchangePermissionRequests() {
                 projectName: item.project_name,
                 organizationName: item.project_idea,
                 sentSection: 'Cahsier',
-                employee: 'Cahsier',
+                employee: item.user.employee_name,
               }}
               footer={{
                 createdAt: item.created_at,

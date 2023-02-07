@@ -64,7 +64,7 @@ function PaymentAdjustment() {
                 projectName: item.project_name,
                 organizationName: item.project_name,
                 sentSection: 'Supervisor',
-                employee: 'Supervisor',
+                employee: item.user.employee_name,
               }}
               footer={{ createdAt: new Date(item.created_at), payments: item.payments }}
               cardFooterButtonAction="completing-exchange-permission"

@@ -45,6 +45,7 @@ const ar = {
         partner_followup: 'متابعات الشريك',
         empty_text_followup: 'لا يوجد اي متابعات',
         empty_add_comment_followup: 'قم بإضافة تعليق او رفع ملف',
+        delete_success: 'تم الحذف بنجاح',
       },
     },
     administrative: {
