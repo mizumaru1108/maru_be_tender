@@ -44,8 +44,9 @@ import { UserClientDataMapper } from '../mappers/user-client-data.mapper';
 import { TenderClientRepository } from '../repositories/tender-client.repository';
 import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
 import { isUploadFileJsonb } from '../../../tender-commons/utils/is-upload-file-jsonb';
-import { finalUploadFileJson } from '../types';
+
 import { logUtil } from '../../../commons/utils/log-util';
+import { finalUploadFileJson } from '../../../tender-commons/dto/final-upload-file-jsonb.dto';
 @Injectable()
 export class TenderClientService {
   private readonly appEnv: string;
@@ -1043,21 +1044,78 @@ export class TenderClientService {
       let deletedFileManagerUrls: string[] = [];
 
       let oldTmp = JSON.parse(old_value);
-      delete oldTmp.bank_information;
-      old_data = oldTmp;
 
       let newTmp = JSON.parse(new_value);
       created_bank = newTmp['createdBanks'];
       updated_bank = newTmp['updatedBanks'];
       deleted_bank = newTmp['deletedBanks'];
 
+      if (created_bank && created_bank.length > 0) {
+        created_bank.forEach((createdBank) => {
+          if (isUploadFileJsonb(createdBank.card_image)) {
+            const tmpCreatedBank: UploadFilesJsonbDto =
+              createdBank.card_image as any;
+            deletedFileManagerUrls.push(tmpCreatedBank.url);
+          }
+        });
+      }
+
+      if (
+        updated_bank &&
+        updated_bank.length > 0 &&
+        oldTmp.bank_information &&
+        oldTmp.bank_information.length > 0
+      ) {
+        for (let i = 0; i < oldTmp.bank_information.length; i++) {
+          const isExist = updated_bank.findIndex(
+            (bank: bank_information) =>
+              bank.id === oldTmp.bank_information[i].id,
+          );
+
+          if (isExist > -1) {
+            const tmpOldCardImage: UploadFilesJsonbDto = oldTmp
+              .bank_information[isExist].card_image as any;
+            const tmpNewCardImage: UploadFilesJsonbDto = updated_bank[isExist]
+              .card_image as any;
+
+            if (tmpOldCardImage.url !== tmpNewCardImage.url) {
+              deletedFileManagerUrls.push(tmpNewCardImage.url);
+            }
+          }
+        }
+      }
+
+      if (isUploadFileJsonb(newTmp.license_file)) {
+        const tmpLicense: finalUploadFileJson = newTmp.license_file;
+        if (tmpLicense.color && tmpLicense.color === 'green') {
+          deletedFileManagerUrls.push(tmpLicense.url);
+        }
+      }
+
+      if (newTmp.board_ofdec_file instanceof Array) {
+        for (let i = 0; i < newTmp.board_ofdec_file.length; i++) {
+          if (isUploadFileJsonb(newTmp.board_ofdec_file[i])) {
+            const tmpOfdec: finalUploadFileJson = newTmp.board_ofdec_file[i];
+            if (tmpOfdec.color && tmpOfdec.color === 'green') {
+              deletedFileManagerUrls.push(tmpOfdec.url);
+            }
+          }
+        }
+      } else {
+        const tmpOfdec: finalUploadFileJson = newTmp.board_ofdec_file;
+        if (tmpOfdec.color && tmpOfdec.color === 'green') {
+          deletedFileManagerUrls.push(tmpOfdec.url);
+        }
+      }
+
+      delete oldTmp.bank_information;
+      old_data = oldTmp;
+
       delete newTmp.bank_information;
       delete newTmp.createdBanks;
       delete newTmp.updatedBanks;
       delete newTmp.deletedBanks;
       new_data = newTmp;
-
-      const oldLicenseFile: finalUploadFileJson = old_data.license_file as any;
 
       const updatePayload: Prisma.edit_requestsUncheckedUpdateInput = {
         status_id: 'REJECTED',
@@ -1069,6 +1127,7 @@ export class TenderClientService {
       const response = await this.tenderClientRepository.updateById(
         request.requestId,
         updatePayload,
+        deletedFileManagerUrls,
       );
 
       await this.sendResponseNotif(response);

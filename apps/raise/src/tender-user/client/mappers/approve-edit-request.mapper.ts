@@ -1,5 +1,5 @@
 import { client_data, Prisma } from '@prisma/client';
-import { finalUploadFileJson } from '../types';
+import { finalUploadFileJson } from '../../../tender-commons/dto/final-upload-file-jsonb.dto';
 
 export function ApproveEditRequestMapper(
   oldClientData: client_data,

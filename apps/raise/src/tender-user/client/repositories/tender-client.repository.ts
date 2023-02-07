@@ -338,11 +338,12 @@ export class TenderClientRepository {
   async updateById(
     id: string,
     updatePayload: Prisma.edit_requestsUncheckedUpdateInput,
+    deletedFileManagerUrls: string[],
     passedSession?: Prisma.TransactionClient,
   ) {
     try {
       if (passedSession) {
-        return await passedSession.edit_requests.update({
+        const updatedEditRequest = await passedSession.edit_requests.update({
           where: {
             id,
           },
@@ -354,18 +355,50 @@ export class TenderClientRepository {
             reviewer: true,
           },
         });
+
+        if (deletedFileManagerUrls && deletedFileManagerUrls.length > 0) {
+          await passedSession.file_manager.updateMany({
+            where: {
+              url: {
+                in: [...deletedFileManagerUrls],
+              },
+            },
+            data: {
+              is_deleted: true,
+            },
+          });
+        }
+
+        return updatedEditRequest;
       } else {
-        return await this.prismaService.edit_requests.update({
-          where: {
-            id,
-          },
-          data: {
-            ...updatePayload,
-          },
-          include: {
-            user: true,
-            reviewer: true,
-          },
+        return await this.prismaService.$transaction(async (prisma) => {
+          const updatedEditRequest = await prisma.edit_requests.update({
+            where: {
+              id,
+            },
+            data: {
+              ...updatePayload,
+            },
+            include: {
+              user: true,
+              reviewer: true,
+            },
+          });
+
+          if (deletedFileManagerUrls && deletedFileManagerUrls.length > 0) {
+            await prisma.file_manager.updateMany({
+              where: {
+                url: {
+                  in: [...deletedFileManagerUrls],
+                },
+              },
+              data: {
+                is_deleted: true,
+              },
+            });
+          }
+
+          return updatedEditRequest;
         });
       }
     } catch (error) {
@@ -543,6 +576,7 @@ export class TenderClientRepository {
               status_id: 'APPROVED',
               accepted_at: new Date(),
             },
+            [],
             prisma,
           );
 
