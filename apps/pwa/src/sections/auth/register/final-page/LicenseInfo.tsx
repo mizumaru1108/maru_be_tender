@@ -64,7 +64,11 @@ function LicenseInfo({
         <Stack direction="column" flex={1}>
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>ملف الترخيص:</Typography>
           <Typography sx={{ fontSize: '18px' }}>
-            <a target="_blank" rel="noopener noreferrer" href={data.license_file.url}>
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href={data.license_file && data.license_file.url && data.license_file.url}
+            >
               اضغط هنا لرؤية ملف الترخيص
             </a>
           </Typography>

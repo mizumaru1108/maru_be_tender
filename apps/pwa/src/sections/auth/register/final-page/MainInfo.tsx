@@ -1,4 +1,5 @@
 import { IconButton, Stack, Typography } from '@mui/material';
+import moment from 'moment';
 import { MainValuesProps } from 'sections/shared/types';
 function MainInfo({ data, setStep }: { data: MainValuesProps; setStep: (val: number) => void }) {
   return (
@@ -51,7 +52,11 @@ function MainInfo({ data, setStep }: { data: MainValuesProps; setStep: (val: num
       <Stack direction="row" justifyContent="space-between">
         <Stack direction="column" flex={1}>
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>تاريخ التأسيس:</Typography>
-          <Typography sx={{ fontSize: '20px' }}>{data.date_of_esthablistmen.toString()}</Typography>
+          {/* license_issue_date: moment().format('YYYY-MM-DD'), */}
+
+          <Typography sx={{ fontSize: '20px' }}>
+            {moment(data.date_of_esthablistmen).format('YYYY-MM-DD')}
+          </Typography>
         </Stack>
         <Stack direction="column" flex={1}>
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>المقر:</Typography>

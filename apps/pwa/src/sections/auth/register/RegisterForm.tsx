@@ -107,7 +107,7 @@ export default function RegisterForm() {
   const { translate } = useLocales();
   const isMobile = useResponsive('down', 'sm');
   const [step, setStep] = useState(0);
-  const [done, setDone] = useState(false);
+  const [done, setDone] = useState(true);
   const [registerState, setRegisterState] = useState(initialValue);
 
   const onSubmit1 = (data: MainValuesProps) => {

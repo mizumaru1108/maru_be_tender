@@ -127,11 +127,11 @@ const ar = {
       },
       region: {
         message: '',
-        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+        required: 'ذا الحقل الزامي',
       },
       governorate: {
         message: '',
-        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+        required: 'ذا الحقل الزامي',
       },
       center_administration: {
         message: '',
@@ -139,7 +139,7 @@ const ar = {
       },
       entity_mobile: {
         message: '',
-        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+        required: 'رقم الهاتف المحمول مطلوب',
         length: 'رقم الجوال يجب أن يكون 9 أرقام',
         equal: 'رقم الجوال يجب أن يكون مختلف عن رقم الهاتف',
       },
@@ -577,7 +577,7 @@ const ar = {
     },
 
     resolution_file: {
-      label: 'ملف قرار تشكيل مجلس الإدارة',
+      label: 'ملف قرار تشكيل مجلس الإدارة*',
       placeholder: 'ملف قرار تشكيل مجلس الإدارة',
     },
   },
