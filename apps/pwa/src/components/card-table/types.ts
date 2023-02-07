@@ -42,6 +42,13 @@ export type ProjectCardPropsBE = {
   project_name?: string;
   created_at: Date;
   project_idea?: string;
+  user: {
+    employee_name: string;
+    client_data: {
+      entity: string;
+    }
+  }
+  state?: string;
   payments?: any;
   outter_status?: 'CANCELED' | 'COMPLETED' | 'PENDING';
   cardFooterButtonAction:

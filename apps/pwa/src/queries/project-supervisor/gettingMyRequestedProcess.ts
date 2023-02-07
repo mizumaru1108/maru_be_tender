@@ -19,6 +19,13 @@ export const gettingMyRequestedProcess = `query gettingMyRequestedProcess($limit
     created_at
     project_idea
     project_name
+    state
+    user {
+      employee_name
+      client_data {
+        entity
+      }
+    }
   }
 }
 `;

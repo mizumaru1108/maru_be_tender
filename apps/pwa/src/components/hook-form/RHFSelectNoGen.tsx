@@ -29,9 +29,10 @@ export default function RHFSelectNoGenerator({ name, children, placeholder, ...o
           fullWidth
           SelectProps={{ native: true }}
           error={!!error}
-          helperText={
-            <Typography sx={{ backgroundColor: 'transparent' }}>{error?.message}</Typography>
-          }
+          // helperText={
+          //   <Typography sx={{ backgroundColor: 'transparent' }}>{error?.message}</Typography>
+          // }
+          helperText={error?.message}
           {...other}
         >
           {placeholder && (
