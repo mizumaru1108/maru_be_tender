@@ -8,7 +8,6 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { client_data } from '@prisma/client';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
@@ -22,7 +21,6 @@ import { ClientEditRequestFieldDto } from '../dtos/requests/client-edit-request-
 import { EditRequestByIdDto } from '../dtos/requests/edit-request-by-id.dto';
 import { RejectEditRequestDto } from '../dtos/requests/reject-edit-request.dto';
 import { SearchEditRequestFilter } from '../dtos/requests/search-edit-request-filter-request.dto';
-import { ClientEditRequestResponseDto } from '../dtos/responses/client-edit-request.response.dto';
 import { TenderClientService } from '../services/tender-client.service';
 
 @Controller('tender/client')

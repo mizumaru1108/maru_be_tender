@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, proposal } from '@prisma/client';
 import { nanoid } from 'nanoid';
 import { actionValidator } from '../../../tender-commons/utils/action-validator';
 import { ownershipErrorThrow } from '../../../tender-commons/utils/proposal-ownership-error-thrower';
@@ -12,9 +12,18 @@ import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-
 import { UpdatePaymentResponseDto } from '../dtos/responses/update-payment-response.dto';
 import { TenderProposalPaymentRepository } from '../repositories/tender-proposal-payment.repository';
 import { TenderProposalRepository } from '../../tender-proposal/repositories/tender-proposal.repository';
-import { appRoleMappers, TenderAppRole } from '../../../tender-commons/types';
+import {
+  appRoleMappers,
+  TenderAppRole,
+  TenderAppRoleEnum,
+} from '../../../tender-commons/types';
 import { CreateProposalPaymentDto } from '../dtos/requests/create-payment.dto';
 import { UpdatePaymentDto } from '../dtos/requests/update-payment.dto';
+import {
+  InnerStatusEnum,
+  OutterStatusEnum,
+} from '../../../tender-commons/types/proposal';
+import { CreateManyPaymentMapper } from '../mappers/create-many-payment.mapper';
 
 @Injectable()
 export class TenderProposalPaymentService {
@@ -26,7 +35,7 @@ export class TenderProposalPaymentService {
   async insertPayment(
     currentUserId: string,
     request: CreateProposalPaymentDto,
-  ): Promise<Prisma.paymentCreateManyInput[]> {
+  ): Promise<proposal> {
     const { payments, proposal_id } = request;
 
     const proposal = await this.tenderProposalRepository.fetchProposalById(
@@ -41,6 +50,10 @@ export class TenderProposalPaymentService {
       );
     }
 
+    if (!proposal.fsupport_by_supervisor) {
+      throw new BadRequestException('Amount for support is not defined!');
+    }
+
     if (!proposal.number_of_payments) {
       throw new BadRequestException('Proposal number of payments is not set!');
     }
@@ -52,24 +65,32 @@ export class TenderProposalPaymentService {
       );
     }
 
-    // map the payment
-    const createPaymentPayload: Prisma.paymentCreateManyArgs = {
-      data: payments.map((payment) => ({
-        id: nanoid(),
-        order: payment.order,
-        payment_amount: payment.payment_amount,
-        payment_date: new Date(payment.payment_date),
-        proposal_id,
-        status: 'SET_BY_SUPERVISOR',
-      })),
+    const mapResult = CreateManyPaymentMapper(request);
+
+    if (Number(proposal.fsupport_by_supervisor) !== mapResult.totalAmount) {
+      throw new BadRequestException(
+        'Amount required for support is not the same as the payload amount!',
+      );
+    }
+
+    const createPaymentPayload: Prisma.paymentCreateManyInput[] =
+      mapResult.payloads;
+
+    const proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput = {
+      inner_status: InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,
+      outter_status: OutterStatusEnum.ONGOING,
+      state: TenderAppRoleEnum.PROJECT_MANAGER,
     };
 
     // create the payment
-    await this.tenderProposalPaymentRepository.createManyPayment(
-      createPaymentPayload,
-    );
+    const updatedProposal =
+      await this.tenderProposalPaymentRepository.insertPayment(
+        proposal_id,
+        proposalUpdatePayload,
+        createPaymentPayload,
+      );
 
-    return createPaymentPayload.data as Prisma.paymentCreateManyInput[];
+    return updatedProposal;
   }
 
   async updatePayment(

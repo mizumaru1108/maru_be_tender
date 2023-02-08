@@ -9,7 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-class ProposalPaymentCreateDto {
+export class ProposalPaymentCreateDto {
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()

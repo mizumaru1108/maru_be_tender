@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { cheque, payment, Prisma } from '@prisma/client';
 import { nanoid } from 'nanoid';
+import { logUtil } from '../../../commons/utils/log-util';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { TenderAppRole } from '../../../tender-commons/types';
@@ -55,13 +56,37 @@ export class TenderProposalPaymentRepository {
     }
   }
 
-  async createManyPayment(createManyPayload: Prisma.paymentCreateManyArgs) {
-    this.logger.debug(`creating many payment...`);
+  async insertPayment(
+    proposal_id: string,
+    proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
+    createManyPaymentPayload: Prisma.paymentCreateManyInput[],
+  ) {
     try {
-      const result = await this.prismaService.payment.createMany(
-        createManyPayload,
-      );
-      return result;
+      return await this.prismaService.$transaction(async (prisma) => {
+        this.logger.log(
+          'info',
+          `updating proposal ${proposal_id} with payload of \n ${logUtil(
+            proposalUpdatePayload,
+          )}`,
+        );
+
+        const updatedProposal = await prisma.proposal.update({
+          where: { id: proposal_id },
+          data: proposalUpdatePayload,
+        });
+
+        this.logger.log(
+          'info',
+          `creating payments with payload of \n${logUtil(
+            createManyPaymentPayload,
+          )}`,
+        );
+        await this.prismaService.payment.createMany({
+          data: createManyPaymentPayload,
+        });
+
+        return updatedProposal;
+      });
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
@@ -72,6 +97,24 @@ export class TenderProposalPaymentRepository {
       throw theError;
     }
   }
+
+  // async createManyPayment(createManyPayload: Prisma.paymentCreateManyArgs) {
+  //   this.logger.debug(`creating many payment...`);
+  //   try {
+  //     const result = await this.prismaService.payment.createMany(
+  //       createManyPayload,
+  //     );
+  //     return result;
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderProposalPaymentRepository.name,
+  //       'createManyPayment error details: ',
+  //       'creating payment!',
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
   async updatePayment(
     paymentId: string,
