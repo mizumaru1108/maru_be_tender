@@ -137,7 +137,6 @@ export class TenderClientService {
         true,
       );
       uploadedFilePath = uploadResult.uploadedFilePath;
-
       lisceneFileObj = uploadResult.fileObj;
 
       const payload: Prisma.file_managerUncheckedCreateInput = {
@@ -195,8 +194,8 @@ export class TenderClientService {
     if (request.data.bank_informations) {
       const uploadResult = await this.uploadClientFile(
         idFromFusionAuth,
-        'Uploading Board Ofdec File for user',
-        request.data.board_ofdec_file,
+        'Uploading Bank Card Image File for user',
+        request.data.bank_informations.card_image,
         'bank-info',
         [FileMimeTypeEnum.JPG, FileMimeTypeEnum.JPEG, FileMimeTypeEnum.PNG],
         maxSize,

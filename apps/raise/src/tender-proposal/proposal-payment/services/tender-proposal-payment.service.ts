@@ -54,12 +54,12 @@ export class TenderProposalPaymentService {
       throw new BadRequestException('Amount for support is not defined!');
     }
 
-    if (!proposal.number_of_payments) {
+    if (!proposal.number_of_payments_by_supervisor) {
       throw new BadRequestException('Proposal number of payments is not set!');
     }
 
     // validate the length of the payment
-    if (payments.length !== Number(proposal.number_of_payments)) {
+    if (payments.length !== Number(proposal.number_of_payments_by_supervisor)) {
       throw new BadRequestException(
         'Number of payment is not equal to the defined payment on proposal!',
       );

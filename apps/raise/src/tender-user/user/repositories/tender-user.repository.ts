@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   prisma,
   Prisma,
@@ -17,6 +17,7 @@ import { UserStatus } from '../types/user_status';
 import { v4 as uuidv4 } from 'uuid';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { TenderAppRole } from '../../../tender-commons/types';
+import { logUtil } from '../../../commons/utils/log-util';
 
 @Injectable()
 export class TenderUserRepository {
@@ -483,8 +484,7 @@ export class TenderUserRepository {
         async (prismaSession) => {
           this.logger.log(
             'info',
-            'creating user...',
-            JSON.stringify(userData, null, 2),
+            `creating user with payload of \n${logUtil(userData)}`,
           );
           const user = await prismaSession.user.create({
             data: userData,
@@ -492,8 +492,9 @@ export class TenderUserRepository {
 
           this.logger.log(
             'info',
-            'creating user status log...',
-            JSON.stringify(userStatusLogData, null, 2),
+            `creating user status with payload of \n${logUtil(
+              userStatusLogData,
+            )}`,
           );
           await prismaSession.user_status_log.createMany({
             data: userStatusLogData,
@@ -502,8 +503,7 @@ export class TenderUserRepository {
           if (rolesData) {
             this.logger.log(
               'info',
-              'creating user_role...',
-              JSON.stringify(rolesData, null, 2),
+              `creating user_role with payload of \n${logUtil(rolesData)}`,
             );
             await prismaSession.user_role.createMany({
               data: rolesData,
@@ -513,8 +513,9 @@ export class TenderUserRepository {
           if (bankInfoData) {
             this.logger.log(
               'info',
-              'creating bank information...',
-              JSON.stringify(rolesData, null, 2),
+              `creating bank information with payload of \n ${logUtil(
+                bankInfoData,
+              )}`,
             );
             await prismaSession.bank_information.create({
               data: bankInfoData,
@@ -525,6 +526,12 @@ export class TenderUserRepository {
             fileManagerCreateManyPayload &&
             fileManagerCreateManyPayload.length > 0
           ) {
+            this.logger.log(
+              'info',
+              `file manager with payload of \n ${logUtil(
+                fileManagerCreateManyPayload,
+              )}`,
+            );
             await prismaSession.file_manager.createMany({
               data: fileManagerCreateManyPayload,
             });
