@@ -8,6 +8,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { client_data } from '@prisma/client';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
@@ -55,6 +56,20 @@ export class TenderClientController {
     const track = await this.tenderClientService.getUserTrack(user.id);
     return baseResponseHelper(
       track,
+      HttpStatus.OK,
+      'Successfully fetch current user track',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_client')
+  @Get('my-profile')
+  async getMyProfile(
+    @CurrentUser() user: ICurrentUser,
+  ): Promise<BaseResponse<any>> {
+    const response = await this.tenderClientService.getMyProfile(user.id);
+    return baseResponseHelper(
+      response,
       HttpStatus.OK,
       'Successfully fetch current user track',
     );

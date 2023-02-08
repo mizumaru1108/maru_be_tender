@@ -131,6 +131,68 @@ export class TenderClientRepository {
     }
   }
 
+  async findMyProfile(userId: string) {
+    try {
+      return await this.prismaService.user.findFirst({
+        where: {
+          id: userId,
+          // bank_information: {
+          //   every: {
+          //     is_deleted: {
+          //       equals: false,
+          //     },
+          //   },
+          // },
+        },
+        select: {
+          email: true,
+          client_data: {
+            select: {
+              headquarters: true,
+              entity: true,
+              num_of_beneficiaries: true,
+              num_of_employed_facility: true,
+              authority: true,
+              date_of_esthablistmen: true,
+              region: true,
+              governorate: true,
+              center_administration: true,
+              website: true,
+              twitter_acount: true,
+              phone: true,
+              ceo_mobile: true,
+              ceo_name: true,
+              data_entry_mobile: true,
+              data_entry_name: true,
+              data_entry_mail: true,
+              license_number: true,
+              license_expired: true,
+              license_issue_date: true,
+              license_file: true,
+              chairman_name: true,
+              chairman_mobile: true,
+              entity_mobile: true,
+              board_ofdec_file: true,
+            },
+          },
+          bank_information: {
+            where: {
+              is_deleted: false,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderClientRepository.name,
+        'findClientAndUser error details: ',
+        'find client and user!',
+      );
+      throw theError;
+    }
+  }
+
   async countMyPendingLogs(userId: string) {
     try {
       return await this.prismaService.edit_requests.count({

@@ -1,8 +1,12 @@
 import { Controller, Get, HttpStatus, Query, UseGuards } from '@nestjs/common';
+import { CurrentUser } from '../../commons/decorators/current-user.decorator';
 import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
 import { TenderRoles } from '../../tender-auth/decorators/tender-roles.decorator';
 import { TenderJwtGuard } from '../../tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../../tender-auth/guards/tender-roles.guard';
+import { ManualPaginatedResponse } from '../../tender-commons/helpers/manual-paginated-response.dto';
+import { manualPaginationHelper } from '../../tender-commons/helpers/manual-pagination-helper';
+import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
 import { BaseStatisticFilter } from '../dtos/requests/base-statistic-filter.dto';
 import { TenderStatisticsService } from '../services/tender-statistics.service';
 
@@ -108,24 +112,35 @@ export class TenderStatisticsController {
     return baseResponseHelper(budgetInfo, HttpStatus.OK, 'Average transaction');
   }
 
-  @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles(
-    'tender_accounts_manager',
-    'tender_admin',
-    'tender_cashier',
-    'tender_ceo',
-    'tender_consultant',
-    'tender_finance',
-    'tender_moderator',
-    'tender_project_manager',
-    'tender_project_supervisor',
-  ) // only internal users
-  @Get('average-employee-transaction-time')
-  async avarageEmployeeTransaction(@Query() query: BaseStatisticFilter) {
-    const budgetInfo =
-      await this.tenderStatisticsService.getTrackAverageTransaction(query);
-    return baseResponseHelper(budgetInfo, HttpStatus.OK, 'Average transaction');
-  }
+  // @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  // @TenderRoles(
+  //   'tender_accounts_manager',
+  //   'tender_admin',
+  //   'tender_cashier',
+  //   'tender_ceo',
+  //   'tender_consultant',
+  //   'tender_finance',
+  //   'tender_moderator',
+  //   'tender_project_manager',
+  //   'tender_project_supervisor',
+  // ) // only internal users
+  // @Get('average-employee-transaction-time')
+  // async avarageEmployeeTransaction(
+  //   @CurrentUser() currentUser: TenderCurrentUser,
+  //   @Query() filter: BaseStatisticFilter,
+  // ): Promise<ManualPaginatedResponse<any>> {
+  //   const response =
+  //     await this.tenderStatisticsService.getTrackAverageTransaction(filter);
+
+  //   return manualPaginationHelper(
+  //     response.data,
+  //     response.total,
+  //     filter.page || 1,
+  //     filter.limit || 10,
+  //     HttpStatus.OK,
+  //     'Success',
+  //   );
+  // }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles(

@@ -247,6 +247,12 @@ export class TenderClientService {
     };
   }
 
+  async getMyProfile(userId: string) {
+    const profile = await this.tenderClientRepository.findMyProfile(userId);
+    if (!profile) throw new BadRequestException('Profile not found!');
+    return profile;
+  }
+
   async findMyPendingLogCount(user_id: string) {
     const total = await this.tenderClientRepository.countMyPendingLogs(user_id);
     return {
