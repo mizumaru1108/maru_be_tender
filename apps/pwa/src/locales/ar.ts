@@ -588,11 +588,11 @@ const ar = {
       placeholder: 'الرجاء كتابة اسم المدير التنفيذي',
     },
     executive_director_mobile: {
-      label: '*جوال المدير التنفيذي',
+      label: 'جوال المدير التنفيذي*',
       placeholder: 'الرجاء كتابة جوال المدير التنفيذي',
     },
     chairman_name: {
-      label: '*اسم رئيس مجلس الإدارة',
+      label: 'اسم رئيس مجلس الإدارة*',
       placeholder: 'الرجاء كتابة اسم الرئيس',
     },
     chairman_mobile: {
@@ -604,7 +604,7 @@ const ar = {
       placeholder: 'الرجاء كتابة اسم مدخل البيانات',
     },
     entery_data_phone: {
-      label: '*جوال مدخل البيانات',
+      label: 'جوال مدخل البيانات*',
       placeholder: 'الرجاء كتابة جوال مدخل البيانات',
     },
     entery_data_email: {
@@ -615,7 +615,7 @@ const ar = {
   },
   register_form5: {
     bank_account_number: {
-      label: '*أيبان الحساب البنكي',
+      label: 'أيبان الحساب البنكي*',
       placeholder: 'XX XXXX XXXX XXXX XXXX XXXX',
     },
     bank_account_name: {
@@ -749,7 +749,7 @@ const ar = {
   },
   funding_project_request_form6: {
     bank_account_number: {
-      label: '*أيبان الحساب البنكي',
+      label: 'أيبان الحساب البنكي*',
       placeholder: 'رقم الحساب البنكي',
     },
     bank_account_name: {
