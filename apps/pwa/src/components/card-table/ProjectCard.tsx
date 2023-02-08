@@ -17,6 +17,7 @@ import useAuth from 'hooks/useAuth';
 import { asignProposalToAUser } from 'queries/commons/asignProposalToAUser';
 import { useMutation } from 'urql';
 import { FusionAuthRoles } from '../../@types/commons';
+import React from 'react';
 
 /**
  *
@@ -155,20 +156,27 @@ const ProjectCard = ({
         >
           {content.projectName}
         </Typography>
-        <Typography
-          variant="h6"
-          gutterBottom
-          sx={{
-            mb: 1.5,
-            wordWrap: 'unset',
-            textOverflow: 'ellipsis',
-            overflow: 'hidden',
-            maxWidth: '500px',
-            fontSize: '14px !important',
-          }}
-        >
-          {content.employee}
-        </Typography>
+        {content.organizationName && (
+          <React.Fragment>
+            <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+              {translate('project_management_headercell.clients_name')}
+            </Typography>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{
+                mb: 1.5,
+                wordWrap: 'unset',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                maxWidth: '500px',
+                fontSize: '14px !important',
+              }}
+            >
+              {content.organizationName}
+            </Typography>
+          </React.Fragment>
+        )}
         <Stack direction="row" justifyContent="space-between" sx={{ marginBottom: '10px' }}>
           <Stack direction="column" gap={1}>
             {content.createdAt && (
@@ -181,16 +189,28 @@ const ProjectCard = ({
                 </Typography>
               </>
             )}
-            {content.sentSection && (
-              <>
-                <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
-                  {translate('project_management_headercell.sent_section')}
-                </Typography>
-                <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
-                  {translate(`project_card.${content.sentSection.toLowerCase()}`)}
-                </Typography>
-              </>
-            )}
+            <Stack direction="row" gap={20}>
+              {content.employee && (
+                <Stack>
+                  <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+                    {translate('project_management_headercell.employee')}
+                  </Typography>
+                  <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
+                    {content.employee}
+                  </Typography>
+                </Stack>
+              )}
+              {content.sentSection && (
+                <Stack>
+                  <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+                    {translate('project_management_headercell.sent_section')}
+                  </Typography>
+                  <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
+                    {translate(`project_card.${content.sentSection.toLowerCase()}`)}
+                  </Typography>
+                </Stack>
+              )}
+            </Stack>
           </Stack>
 
           {/* the project status */}

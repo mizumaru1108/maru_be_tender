@@ -12,7 +12,7 @@ const data = [
     content: {
       projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
       organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
-      sentSection: 'مسار المساجد',
+      sentSection: 'cahsier',
       employee: 'اسم الموظف - مدير الإدارة',
     },
     footer: {
@@ -35,7 +35,7 @@ const data = [
     content: {
       projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
       organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
-      sentSection: 'مسار المساجد',
+      sentSection: 'cahsier',
       employee: 'اسم الموظف - مدير الإدارة',
     },
     footer: {
@@ -58,7 +58,7 @@ const data = [
     content: {
       projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
       organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
-      sentSection: 'مسار المساجد',
+      sentSection: 'cahsier',
       employee: 'اسم الموظف - مدير الإدارة',
     },
     footer: {
@@ -81,7 +81,7 @@ const data = [
     content: {
       projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
       organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
-      sentSection: 'مسار المساجد',
+      sentSection: 'cahsier',
       employee: 'اسم الموظف - مدير الإدارة',
     },
     footer: {
@@ -104,7 +104,7 @@ const data = [
     content: {
       projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
       organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
-      sentSection: 'مسار المساجد',
+      sentSection: 'cahsier',
       employee: 'اسم الموظف - مدير الإدارة',
     },
     footer: {
@@ -127,7 +127,7 @@ const data = [
     content: {
       projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
       organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
-      sentSection: 'مسار المساجد',
+      sentSection: 'cahsier',
       employee: 'اسم الموظف - مدير الإدارة',
     },
     footer: {
@@ -150,7 +150,7 @@ const data = [
     content: {
       projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
       organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
-      sentSection: 'مسار المساجد',
+      sentSection: 'cahsier',
       employee: 'اسم الموظف - مدير الإدارة',
     },
     footer: {
@@ -173,7 +173,7 @@ const data = [
     content: {
       projectName: 'مشروع صيانة جامع جمعية الدعوة الصناعية الجديدة بالرياض',
       organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
-      sentSection: 'مسار المساجد',
+      sentSection: 'cahsier',
       employee: 'اسم الموظف - مدير الإدارة',
     },
     footer: {

@@ -19,6 +19,13 @@ export const gettingIncomingRequests = `query MyQuery($limit: Int = 10, $order_b
     created_at
     project_idea
     project_name
+    user {
+      employee_name
+      client_data{
+        entity
+      }
+    }
+    state
   }
 }
 `;

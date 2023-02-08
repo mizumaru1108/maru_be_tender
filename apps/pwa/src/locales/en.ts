@@ -645,11 +645,11 @@ const en = {
       placeholder: 'Please choose the type of target group',
     },
     letter_support_request: {
-      label: 'Support request letter',
+      label: 'Support request letter*',
       placeholder: 'Support request letter',
     },
     project_attachments: {
-      label: 'Project Attachments',
+      label: 'Project Attachments*',
       placeholder: 'Project Attachments',
     },
   },
@@ -884,6 +884,8 @@ const en = {
     events: 'Events',
     days: 'Days',
     sent_section: 'Sent Section',
+    clients_name: 'Clients Name',
+    employee: 'Employee',
   },
   concessional_card_insights: {
     title: {
@@ -1414,6 +1416,10 @@ const en = {
     cahsier: 'Cahsier',
     finance: 'Finance',
     moderator: 'Moderator',
+    project_manager: 'Project Manager',
+    project_supervisor: 'Supervisor',
+    ceo: 'CEO',
+    consultant: 'Consultant',
   },
   nothing_payment: 'The Payments haven’t been set yet',
   notification: {

@@ -187,12 +187,12 @@ const ar = {
       },
       email: {
         message: '',
-        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+        required: 'البريد الالكتروني مطلوب',
         email: 'البريد الإلكتروني غير صحيح',
       },
       password: {
         message: '',
-        required: 'عدد المستفيدين من خدمات الجهة مطلوب',
+        required: 'كلمة المرور مطلوبة',
         new_password: 'كلمة المرور مطلوبة',
         confirm_password: 'كلمة المرور غير متطابقة',
       },
@@ -256,7 +256,6 @@ const ar = {
       project_name: {
         message: '',
         required: 'اسم المشروع مطلوب',
-        greater_than_0: 'يجب أن يكون وقت التنفيذ أكبر من 0',
       },
       project_idea: {
         message: '',
@@ -273,6 +272,7 @@ const ar = {
       execution_time: {
         message: '',
         required: 'مدة التنفيذ مطلوبة',
+        greater_than_0: 'يجب أن يكون وقت التنفيذ أكبر من 0',
       },
       project_beneficiaries: {
         message: '',
@@ -631,7 +631,7 @@ const ar = {
     },
   },
   funding_project_request_form1: {
-    step: 'معلومات عامة',
+    step: 'معلومات عامة*',
     project_name: {
       label: 'اسم المشروع*',
       placeholder: 'الرجاء كتابة اسم المشروع',
@@ -657,11 +657,11 @@ const ar = {
       placeholder: 'الرجاء اختيار نوع الفئة المستهدفة',
     },
     letter_support_request: {
-      label: 'خطاب طلب الدعم',
+      label: 'خطاب طلب الدعم*',
       placeholder: 'خطاب الدعم',
     },
     project_attachments: {
-      label: 'مرفقات المشروع',
+      label: 'مرفقات المشروع*',
       placeholder: 'مرفقات المشروع',
     },
   },
@@ -922,6 +922,8 @@ const ar = {
     events: 'الاحداث',
     days: 'أيام',
     sent_section: 'القسم المرسل',
+    clients_name: 'اسم العميل',
+    employee: 'موظف',
   },
   concessional_card_insights: {
     title: {
@@ -1457,6 +1459,10 @@ const ar = {
     cahsier: 'أمين الصندوق',
     finance: 'المالية',
     moderator: 'الوسيط',
+    project_manager: 'مدير المشروع',
+    project_supervisor: 'مشرف',
+    ceo: 'المدير التنفيذي',
+    consultant: 'مستشار',
   },
   nothing_payment: 'لم يتم تعيين المدفوعات حتى الآن',
   notification: {

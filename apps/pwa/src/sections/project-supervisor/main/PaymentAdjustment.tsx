@@ -62,7 +62,7 @@ function PaymentAdjustment() {
               title={{ id: item.id }}
               content={{
                 projectName: item.project_name,
-                organizationName: item.project_name,
+                organizationName: item.user.client_data.entity,
                 sentSection: 'Supervisor',
                 employee: item.user.employee_name,
               }}

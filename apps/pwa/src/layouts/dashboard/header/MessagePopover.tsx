@@ -379,17 +379,17 @@ export default function MessagePopover() {
               {totalUnRead > 0 && (
                 <React.Fragment>
                   {/* <Tooltip title=" Mark all as read"> */}
-                  <IconButton color="primary" onClick={handleMarkAllAsRead}>
+                  <Button variant="text" color="primary" onClick={handleMarkAllAsRead}>
                     <Iconify icon="eva:done-all-fill" width={20} height={20} />
                     <Typography sx={{ ml: 0.5 }}>{translate('notification.read_all')}</Typography>
-                  </IconButton>
+                  </Button>
                   {/* </Tooltip> */}
                 </React.Fragment>
               )}
 
-              <IconButton color="error" onClick={handleClearAll}>
+              <Button variant="text" color="error" onClick={handleClearAll}>
                 <Typography sx={{ ml: 0.5 }}>{translate('notification.clear_all')}</Typography>
-              </IconButton>
+              </Button>
             </Box>
           </Box>
 

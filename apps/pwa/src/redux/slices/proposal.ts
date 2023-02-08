@@ -221,26 +221,45 @@ export const getProposal = (id: string) => async () => {
 export const insertPaymentsBySupervisor = (data: any) => async () => {
   try {
     dispatch(slice.actions.startLoading);
-    const res = await graphQlAxiosInstance.post('', {
-      query: insertPayments,
-      variables: {
-        payments: data.payments,
-        proposalId: data.id,
-        approveProposalPayloads: {
-          inner_status: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
-          outter_status: 'ONGOING',
-          state: 'PROJECT_MANAGER',
-        },
+
+    const variables = {
+      payments_payload: data.payments,
+      proposal_id: data.proposal_id,
+      approve_proposal_payload: {
+        inner_status: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
+        outter_status: 'ONGOING',
+        state: 'PROJECT_MANAGER',
       },
+    };
+
+    const res = await axiosInstance.patch('/tender-proposal/change-state', variables, {
+      headers: { 'x-hasura-role': data.role },
     });
-    dispatch(slice.actions.endLoading);
-    console.log(res);
+    // const res = await graphQlAxiosInstance.post('', {
+    //   query: insertPayments,
+    //   variables: {
+    //     payments: data.payments,
+    //     proposalId: data.id,
+    //     approveProposalPayloads: {
+    //       inner_status: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
+    //       outter_status: 'ONGOING',
+    //       state: 'PROJECT_MANAGER',
+    //     },
+    //   },
+    // });
+
     dispatch(
       slice.actions.setPayments({
         payments: data.payments,
-        updatedData: res.data.data.update_proposal.returning[0],
+        // updatedData: res.data.data.update_proposal.returning[0],
+        updatedData: res.data.data,
       })
     );
+
+    dispatch(slice.actions.endLoading);
+
+    // return variables;
+    return res.data;
   } catch (error) {
     dispatch(slice.actions.endLoading);
     throw error;

@@ -48,6 +48,8 @@ const ProjectCardBE = ({
   project_name,
   created_at,
   project_idea,
+  user,
+  state,
   payments,
   outter_status: status,
   cardFooterButtonAction,
@@ -57,7 +59,7 @@ const ProjectCardBE = ({
   const daysSinceCreated = Math.ceil(
     (new Date().getTime() - created_at.getTime()) / (1000 * 3600 * 24)
   );
-  const { user, activeRole } = useAuth();
+  const { user: userAuth, activeRole } = useAuth();
   const role = activeRole!;
   const navigate = useNavigate();
   const location = useLocation();
@@ -112,7 +114,7 @@ const ProjectCardBE = ({
     ) {
       await updateAsigning({
         _set: {
-          [`${RolesMap[role]!}`]: user?.id,
+          [`${RolesMap[role]!}`]: userAuth?.id,
         },
         where: {
           id: {
@@ -174,10 +176,10 @@ const ProjectCardBE = ({
         >
           {project_name}
         </Typography>
-        {project_idea && cardFooterButtonAction !== 'draft' && (
+        {project_idea && cardFooterButtonAction === 'draft' && (
           <>
-            <Typography variant="h6" color="#93A3B0" sx={{ mt: '10px' }}>
-              {translate('table_filter.sortby_title')}:
+            <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+              {translate('project_idea')}
             </Typography>
             <Typography
               sx={{
@@ -193,6 +195,49 @@ const ProjectCardBE = ({
             </Typography>
           </>
         )}
+        {user && (
+          <React.Fragment>
+            <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+              {translate('project_management_headercell.clients_name')}
+            </Typography>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{
+                mb: 1.5,
+                wordWrap: 'unset',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                maxWidth: '500px',
+                fontSize: '14px !important',
+              }}
+            >
+              {user.client_data.entity}
+            </Typography>
+          </React.Fragment>
+        )}
+        <Stack direction="row" gap={12}>
+          {user && (
+            <Stack>
+              <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+                {translate('project_management_headercell.employee')}
+              </Typography>
+              <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
+                {user.employee_name}
+              </Typography>
+            </Stack>
+          )}
+          {state && (
+            <Stack>
+              <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+                {translate('project_management_headercell.sent_section')}
+              </Typography>
+              <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
+                {translate(`project_card.${state.toLowerCase()}`)}
+              </Typography>
+            </Stack>
+          )}
+        </Stack>
         <Divider sx={{ marginTop: '30px' }} />
       </CardContent>
 

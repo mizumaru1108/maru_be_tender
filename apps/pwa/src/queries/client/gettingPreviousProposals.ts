@@ -21,6 +21,7 @@ export const gettingPreviousProposals = `query MyQuery($limit: Int = 10, $offset
     project_name
     project_idea
     created_at
+    state
   }
 }
 `;

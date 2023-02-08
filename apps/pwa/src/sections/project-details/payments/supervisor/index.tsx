@@ -13,7 +13,6 @@ function SupervisorPaymentsPage() {
 
   const { proposal } = useSelector((state) => state.proposal);
 
-  console.log(proposal);
   const [{ data: spentBudget, fetching }] = useQuery({
     query: getTheSpentBudgetForSpecificProposal,
     variables: { proposal_id },
@@ -22,6 +21,7 @@ function SupervisorPaymentsPage() {
   React.useEffect(() => {}, [proposal.payments]);
 
   if (fetching) return <>... Loading</>;
+
   return (
     <Container>
       <Grid container spacing={2} sx={{ mt: '3px' }}>
@@ -81,9 +81,11 @@ function SupervisorPaymentsPage() {
             <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
               المبلغ المصروف
             </Typography>
-            <Typography
-              sx={{ color: 'text.tertiary', fontWeight: 700 }}
-            >{`${spentBudget.payment_aggregate.aggregate.spent_budget} ريال`}</Typography>
+            <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+              {fCurrencyNumber(
+                proposal.payments.reduce((acc, curr) => acc + (curr.payment_amount || 0), 0)
+              )}
+            </Typography>
           </Box>
         </Grid>
         <Grid item md={12}>

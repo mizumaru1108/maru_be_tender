@@ -151,7 +151,7 @@ function CardTable({
 
       {pagination && (
         <Grid item md={12} xs={12}>
-          <Stack direction="row" justifyContent="space-between">
+          <Stack direction="row" gap={20}>
             <Box flex={1} />
             <Stack direction="row" flex={2} gap={1} justifyContent="center">
               {Array.from(Array(pagesNumber).keys()).map((elem, index) => (
