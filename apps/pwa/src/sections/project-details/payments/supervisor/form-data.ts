@@ -7,12 +7,11 @@ export const PaymentsData = [
 
     repeaterFields: [
       {
-        type: 'textField',
+        type: 'numberField',
         name: 'payment_amount',
         label: 'مبلغ الدفعة*',
         placeholder: 'مبلغ الدعم',
         md: 5,
-        repeaterLabel: 'asd',
         xs: 12,
       },
       {

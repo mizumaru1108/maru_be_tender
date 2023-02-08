@@ -645,11 +645,11 @@ const en = {
       placeholder: 'Please choose the type of target group',
     },
     letter_support_request: {
-      label: 'Support request letter',
+      label: 'Support request letter*',
       placeholder: 'Support request letter',
     },
     project_attachments: {
-      label: 'Project Attachments',
+      label: 'Project Attachments*',
       placeholder: 'Project Attachments',
     },
   },

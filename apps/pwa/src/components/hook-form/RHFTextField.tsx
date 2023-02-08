@@ -143,9 +143,9 @@ export default function RHFTextField({ name, ...other }: Props) {
               ].includes(name) && `${currentLang.value}` === 'ar'
                 ? 'rtl'
                 : 'ltr',
-            '& > .MuiFormHelperText-root': {
-              backgroundColor: 'white',
-            },
+            // '& > .MuiFormHelperText-root': {
+            //   backgroundColor: 'white',
+            // },
           }}
         />
       )}

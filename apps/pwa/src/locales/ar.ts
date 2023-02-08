@@ -631,7 +631,7 @@ const ar = {
     },
   },
   funding_project_request_form1: {
-    step: 'معلومات عامة',
+    step: 'معلومات عامة*',
     project_name: {
       label: 'اسم المشروع*',
       placeholder: 'الرجاء كتابة اسم المشروع',
@@ -657,11 +657,11 @@ const ar = {
       placeholder: 'الرجاء اختيار نوع الفئة المستهدفة',
     },
     letter_support_request: {
-      label: 'خطاب طلب الدعم',
+      label: 'خطاب طلب الدعم*',
       placeholder: 'خطاب الدعم',
     },
     project_attachments: {
-      label: 'مرفقات المشروع',
+      label: 'مرفقات المشروع*',
       placeholder: 'مرفقات المشروع',
     },
   },
