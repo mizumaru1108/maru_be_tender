@@ -164,7 +164,7 @@ function AddNewUser() {
               <BaseField
                 type="textField"
                 name="employee_name"
-                label="اسم الموظف"
+                label="اسم الموظف*"
                 placeholder="الرجاء كتابة اسم الموظف"
               />
             </Grid>
@@ -172,7 +172,7 @@ function AddNewUser() {
               <BaseField
                 type="textField"
                 name="email"
-                label="البريد الإلكتروني"
+                label="البريد الإلكتروني*"
                 placeholder="الرجاء كتابة البريد الإلكتروني"
               />
             </Grid>
@@ -180,7 +180,7 @@ function AddNewUser() {
               <BaseField
                 type="password"
                 name="password"
-                label="كلمة المرور"
+                label="كلمة المرور*"
                 placeholder="الرجاء كتابة كلمة المرور"
               />
             </Grid>
@@ -188,7 +188,7 @@ function AddNewUser() {
               <BaseField
                 type="textField"
                 name="mobile_number"
-                label="رقم الجوال"
+                label="رقم الجوال*"
                 placeholder="الرجاء كتابة رقم الجوال"
               />
             </Grid>
@@ -196,7 +196,7 @@ function AddNewUser() {
               <BaseField
                 type="select"
                 name="employee_path"
-                label="مسار للموظف"
+                label="مسار للموظف*"
                 placeholder="الرجاء اختيار اسم الجهة"
               >
                 <>
@@ -222,7 +222,7 @@ function AddNewUser() {
               <BaseField
                 type="checkbox"
                 name="activate_user"
-                label="الحساب نشط"
+                label="الحساب نشط*"
                 placeholder="الحساب نشط"
               />
             </Grid>
@@ -230,7 +230,7 @@ function AddNewUser() {
               <BaseField
                 type="checkboxMulti"
                 name="user_roles"
-                label="صلاحيات الموظف"
+                label="صلاحيات الموظف*"
                 placeholder="صلاحيات الموظف"
                 options={PERMISSIONS.map((item, index) => ({
                   label: translate(`permissions.${item}`),

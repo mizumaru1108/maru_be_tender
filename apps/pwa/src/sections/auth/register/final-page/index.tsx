@@ -44,7 +44,7 @@ function FinalPage({
     setIsSending(true);
     const { form1, form2, form3, form4, form5 } = registerState;
     const { phone, center_administration, ...restForm2 } = form2;
-    const newVal = {
+    const newVal: any = {
       // employee_name: registerState.form1.entity,
       // employee_path: ,
       // bank_informations: [
@@ -83,6 +83,7 @@ function FinalPage({
       board_ofdec_file: form3.board_ofdec_file,
       ...form4,
     };
+    delete newVal.used_numbers;
     // console.log({ newVal });
     try {
       await axios

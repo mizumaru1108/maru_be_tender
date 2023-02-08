@@ -282,7 +282,7 @@ function ClientProfile() {
 
                 <Stack direction="column" alignItems="start">
                   <Typography sx={{ fontSize: '12px' }}>المركز (الإدارة):</Typography>
-                  <Typography sx={{ mb: '15px' }}>المركز (الإدارة):</Typography>
+                  <Typography sx={{ mb: '15px' }}>{center_administration}</Typography>
                   <Typography sx={{ fontSize: '12px' }}>البريد الإلكتروني:</Typography>
                   <Typography sx={{ mb: '15px' }}>{email}</Typography>
                   <Typography sx={{ fontSize: '12px' }}>الجوال</Typography>
