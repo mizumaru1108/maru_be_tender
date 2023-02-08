@@ -59,6 +59,7 @@ export class TenderClientService {
     private readonly bunnyService: BunnyService,
     private readonly configService: ConfigService,
     private readonly emailService: EmailService,
+    private readonly fusionAuthService: FusionAuthService,
     private readonly notificationService: TenderNotificationService,
     private readonly twilioService: TwilioService,
     private tenderUserRepository: TenderUserRepository,
@@ -133,8 +134,9 @@ export class TenderClientService {
         ],
         maxSize,
         uploadedFilePath,
+        true,
       );
-      uploadedFilePath = [...uploadResult.uploadedFilePath];
+      uploadedFilePath = uploadResult.uploadedFilePath;
 
       lisceneFileObj = uploadResult.fileObj;
 
@@ -171,8 +173,9 @@ export class TenderClientService {
         ],
         maxSize,
         uploadedFilePath,
+        true,
       );
-      uploadedFilePath = [...uploadResult.uploadedFilePath];
+      uploadedFilePath = uploadResult.uploadedFilePath;
 
       const payload: Prisma.file_managerUncheckedCreateInput = {
         id: uuidv4(),
@@ -198,8 +201,9 @@ export class TenderClientService {
         [FileMimeTypeEnum.JPG, FileMimeTypeEnum.JPEG, FileMimeTypeEnum.PNG],
         maxSize,
         uploadedFilePath,
+        true,
       );
-      uploadedFilePath = [...uploadResult.uploadedFilePath];
+      uploadedFilePath = uploadResult.uploadedFilePath;
 
       bankCardObj = uploadResult.fileObj;
       bankCreatePayload = BankInformationsMapper(
@@ -258,6 +262,7 @@ export class TenderClientService {
     AllowedFileTypes: FileMimeTypeEnum[],
     maxSize: number = 1024 * 1024 * 6,
     uploadedFilePath: string[],
+    onCreateUser?: boolean | undefined,
   ) {
     try {
       let fileName = generateFileName(
@@ -302,6 +307,13 @@ export class TenderClientService {
         uploadedFilePath.forEach(async (path) => {
           await this.bunnyService.deleteMedia(path, true);
         });
+      }
+      if (onCreateUser && userId) {
+        this.logger.log(
+          'info',
+          `Falied to store user data on db, deleting the user ${userId} from fusion auth`,
+        );
+        await this.fusionAuthService.fusionAuthDeleteUser(userId);
       }
       const theError = prismaErrorThrower(
         error,

@@ -1,8 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import * as _ from 'lodash';
 import moment from 'moment';
+import { logUtil } from '../../commons/utils/log-util';
 import { PrismaService } from '../../prisma/prisma.service';
+import { portalReportConvertMinutesToHours } from '../../tender-commons/utils/portal-report-convert-minutes-to-hour';
 import { BaseStatisticFilter } from '../dtos/requests/base-statistic-filter.dto';
-import { GetAverageTransactionResponseDto } from '../dtos/responses/get-average-transaction-response.dto';
+import { GetTrackAverageTransaction } from '../dtos/responses/get-average-transaction.dto';
 import {
   GetBeneficiariesReportDto,
   IGetBeneficiariesByTrackDto,
@@ -14,9 +17,7 @@ import {
   GetPartnersStatisticResponseDto,
   PartnerValue,
 } from '../dtos/responses/get-partner-statistic.dto';
-import { GetRawExecutionTimeDataResponseDto } from '../dtos/responses/get-raw-execution-time-data-response.dto';
 import { TenderStatisticsRepository } from '../repositories/tender-statistic.repository';
-import { groupBy as loadashGroupBy, map as loadashMap } from 'lodash';
 
 @Injectable()
 export class TenderStatisticsService {
@@ -729,37 +730,95 @@ export class TenderStatisticsService {
     return groupedData;
   }
 
-  async getAverageTransaction(request: BaseStatisticFilter): Promise<any> {
+  async getTrackAverageTransaction(request: BaseStatisticFilter) {
     try {
-      const { start_date, end_date } = request;
       const rawExecutionTime =
-        await this.tenderStatisticRepository.getRawProposalExecutionTime(
+        await this.tenderStatisticRepository.getTrackAverageTransaction(
           request,
         );
 
-      // Group the data by proposal.project_track
-      const groupedByProjectTrack = loadashGroupBy(
-        rawExecutionTime,
-        (log) => log.proposal.project_track,
-      );
+      const tracks = await this.tenderStatisticRepository.fetchAllTrack();
 
-      // Map over the grouped data to group again by proposal_id
-      const data = Object.entries(groupedByProjectTrack).map(
-        ([projectTrack, logs]) => {
-          const logByProposalId = loadashGroupBy(
-            logs,
-            (log) => log.proposal_id,
-          );
-          return {
-            project_track: projectTrack,
-            log_by_proposal_id: Object.entries(logByProposalId).map(
-              ([proposal_id, logs]) => ({ proposal_id, logs }),
+      const responseData: GetTrackAverageTransaction[] = [];
+
+      if (rawExecutionTime.length > 0) {
+        const lastRecord = rawExecutionTime[0].created_at;
+        const groupedData = _.groupBy(
+          rawExecutionTime,
+          'proposal.project_track',
+        );
+        // console.log(logUtil(groupedData));
+
+        for (const track of tracks) {
+          const data = groupedData[track.id];
+          let totalResponseTime = 0;
+          let averageResponseTime = 0;
+          let lastMonthTotalResponseTime = 0;
+          let lastMonthAverageResponseTime = 0;
+
+          if (data) {
+            totalResponseTime = data.reduce(
+              (sum, item) =>
+                item.response_time !== null ? sum + item.response_time : sum,
+              0,
+            );
+            averageResponseTime = totalResponseTime / data.length;
+
+            // console.log(lastRecord);
+            const lastMonth = moment(lastRecord).subtract(1, 'month');
+            // console.log(lastMonth);
+            const lastMonthData = data.filter((item) =>
+              moment(item.created_at).isSame(lastMonth, 'month'),
+            );
+
+            // console.log(logUtil(lastMonthData));
+
+            if (lastMonthData.length > 0) {
+              lastMonthTotalResponseTime = lastMonthData.reduce(
+                (sum, item) =>
+                  item.response_time !== null ? sum + item.response_time : sum,
+                0,
+              );
+              lastMonthAverageResponseTime =
+                lastMonthTotalResponseTime / lastMonthData.length;
+            }
+          }
+
+          responseData.push({
+            project_track: track.id,
+            raw_total_response_time: totalResponseTime,
+            total_response_time:
+              portalReportConvertMinutesToHours(totalResponseTime),
+            raw_average_response_time: averageResponseTime,
+            average_response_time:
+              portalReportConvertMinutesToHours(averageResponseTime),
+            raw_last_month_total_response_time: lastMonthTotalResponseTime,
+            last_month_total_response_time: portalReportConvertMinutesToHours(
+              lastMonthTotalResponseTime,
             ),
-          };
-        },
-      );
+            raw_last_month_average_response_time: lastMonthAverageResponseTime,
+            last_month_average_response_time: portalReportConvertMinutesToHours(
+              lastMonthAverageResponseTime,
+            ),
+          });
+        }
+      } else {
+        for (const track of tracks) {
+          responseData.push({
+            project_track: track.id,
+            raw_total_response_time: 0,
+            total_response_time: '0',
+            raw_average_response_time: 0,
+            average_response_time: '0',
+            raw_last_month_total_response_time: 0,
+            last_month_total_response_time: '0',
+            raw_last_month_average_response_time: 0,
+            last_month_average_response_time: '0',
+          });
+        }
+      }
 
-      return data;
+      return { data: responseData };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

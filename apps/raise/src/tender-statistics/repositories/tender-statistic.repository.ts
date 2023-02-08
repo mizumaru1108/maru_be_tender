@@ -5,6 +5,7 @@ import { ROOT_LOGGER } from '../../libs/root-logger';
 import { PrismaService } from '../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
 import { BaseStatisticFilter } from '../dtos/requests/base-statistic-filter.dto';
+import { GetRawTrackAverageTransaction } from '../dtos/responses/get-raw-average-transaction.dto';
 import { GetRawBeneficiariesDataResponseDto } from '../dtos/responses/get-raw-beneficiaries-data-response.dto';
 import { GetRawExecutionTimeDataResponseDto } from '../dtos/responses/get-raw-execution-time-data-response.dto';
 import { GetRawPartnerDatasResponseDto } from '../dtos/responses/get-raw-partner-datas.dto';
@@ -209,7 +210,9 @@ export class TenderStatisticsRepository {
     }
   }
 
-  async getRawProposalExecutionTime(filter: BaseStatisticFilter): Promise<any> {
+  async getTrackAverageTransaction(
+    filter: BaseStatisticFilter,
+  ): Promise<GetRawTrackAverageTransaction['data']> {
     try {
       const { start_date, end_date } = filter;
 
@@ -224,6 +227,59 @@ export class TenderStatisticsRepository {
               not: null,
               notIn: ['GENERAL', 'DEFAULT_TRACK'],
             },
+          },
+          response_time: {
+            not: null,
+          },
+        },
+        select: {
+          proposal: {
+            select: {
+              project_track: true,
+            },
+          },
+          proposal_id: true,
+          response_time: true,
+          created_at: true,
+        },
+        orderBy: {
+          created_at: 'desc',
+        },
+      });
+
+      return rawExecutionTime;
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderStatisticsRepository.name,
+        'findUsers Error:',
+        `finding users!`,
+      );
+      throw theError;
+    }
+  }
+
+  /* portal report tab 4 bottom section */
+  async getEmployeeAverageTransaction(
+    filter: BaseStatisticFilter,
+  ): Promise<GetRawTrackAverageTransaction['data']> {
+    try {
+      const { start_date, end_date } = filter;
+
+      const rawExecutionTime = await this.prismaService.proposal_log.findMany({
+        where: {
+          created_at: {
+            gte: moment(start_date).startOf('day').toDate(),
+            lte: moment(end_date).endOf('day').toDate(),
+          },
+          proposal: {
+            project_track: {
+              not: null,
+              notIn: ['GENERAL', 'DEFAULT_TRACK'],
+            },
+          },
+          response_time: {
+            not: null,
           },
         },
         select: {
@@ -240,6 +296,7 @@ export class TenderStatisticsRepository {
           },
           proposal_id: true,
           user_role: true,
+          response_time: true,
           created_at: true,
         },
         orderBy: {
@@ -254,6 +311,26 @@ export class TenderStatisticsRepository {
         TenderStatisticsRepository.name,
         'findUsers Error:',
         `finding users!`,
+      );
+      throw theError;
+    }
+  }
+
+  async fetchAllTrack() {
+    try {
+      return await this.prismaService.project_tracks.findMany({
+        where: {
+          id: {
+            notIn: ['GENERAL', 'DEFAULT_TRACK'],
+          },
+        },
+      });
+    } catch (err) {
+      const theError = prismaErrorThrower(
+        err,
+        TenderStatisticsRepository.name,
+        'findingTrack Error:',
+        `finding track!`,
       );
       throw theError;
     }

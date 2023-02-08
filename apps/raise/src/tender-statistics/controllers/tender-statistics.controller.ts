@@ -101,11 +101,29 @@ export class TenderStatisticsController {
     'tender_project_manager',
     'tender_project_supervisor',
   ) // only internal users
-  @Get('average-transaction')
+  @Get('average-track-transaction-time')
   async averageTransaction(@Query() query: BaseStatisticFilter) {
-    const budgetInfo = await this.tenderStatisticsService.getAverageTransaction(
-      query,
-    );
+    const budgetInfo =
+      await this.tenderStatisticsService.getTrackAverageTransaction(query);
+    return baseResponseHelper(budgetInfo, HttpStatus.OK, 'Average transaction');
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles(
+    'tender_accounts_manager',
+    'tender_admin',
+    'tender_cashier',
+    'tender_ceo',
+    'tender_consultant',
+    'tender_finance',
+    'tender_moderator',
+    'tender_project_manager',
+    'tender_project_supervisor',
+  ) // only internal users
+  @Get('average-employee-transaction-time')
+  async avarageEmployeeTransaction(@Query() query: BaseStatisticFilter) {
+    const budgetInfo =
+      await this.tenderStatisticsService.getTrackAverageTransaction(query);
     return baseResponseHelper(budgetInfo, HttpStatus.OK, 'Average transaction');
   }
 
