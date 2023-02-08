@@ -33,6 +33,7 @@ import { useSnackbar } from 'notistack';
 import { PartnerDetailsProps } from '../../../@types/client_data';
 import { PATH_ACCOUNTS_MANAGER } from 'routes/paths';
 import axiosInstance from '../../../utils/axios';
+import ButtonDownloadFiles from '../../../components/button/ButtonDownloadFiles';
 
 // -------------------------------------------------------------------------------
 
@@ -410,6 +411,31 @@ function AccountPartnerDetails() {
                       </Typography>
                     </Box>
                   </Stack>
+                  <Stack direction="column" component="div" sx={{ mt: 4 }}>
+                    <Typography variant="body1" component="p" sx={{ color: '#93A3B0', mb: 2 }}>
+                      {translate('account_manager.partner_details.board_ofdec_file')}:
+                    </Typography>
+                    <Grid container spacing={2}>
+                      {partnerDetails &&
+                      partnerDetails?.client_data &&
+                      partnerDetails?.client_data.board_ofdec_file &&
+                      partnerDetails?.client_data.board_ofdec_file.length > 0 ? (
+                        partnerDetails?.client_data.board_ofdec_file.map(
+                          (item: any, index: number) => (
+                            <Grid item xs={6} md={6} key={index}>
+                              <ButtonDownloadFiles files={item} />
+                            </Grid>
+                          )
+                        )
+                      ) : (
+                        <Grid item xs={6} md={6}>
+                          <ButtonDownloadFiles
+                            files={partnerDetails?.client_data.board_ofdec_file}
+                          />
+                        </Grid>
+                      )}
+                    </Grid>
+                  </Stack>
                 </Grid>
                 <Grid item xs={12} md={6}>
                   {/* Administrative Data */}
@@ -435,18 +461,22 @@ function AccountPartnerDetails() {
                       </Box>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                      <Box>
+                      <Stack direction="column" alignItems="start">
                         <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
                           {translate('account_manager.partner_details.ceo_mobile')}:
                         </Typography>
                         <Typography
                           variant="subtitle1"
                           component="p"
-                          sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
+                          sx={{
+                            mt: 1,
+                            fontWeight: theme.typography.fontWeightMedium,
+                            direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr',
+                          }}
                         >
                           {partnerDetails?.client_data.ceo_mobile}
                         </Typography>
-                      </Box>
+                      </Stack>
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <Box>
@@ -463,18 +493,22 @@ function AccountPartnerDetails() {
                       </Box>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                      <Box>
+                      <Stack direction="column" alignItems="start">
                         <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
                           {translate('account_manager.partner_details.chairman_mobile')}:
                         </Typography>
                         <Typography
                           variant="subtitle1"
                           component="p"
-                          sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
+                          sx={{
+                            mt: 1,
+                            fontWeight: theme.typography.fontWeightMedium,
+                            direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr',
+                          }}
                         >
                           {partnerDetails?.client_data.chairman_mobile ?? '-'}
                         </Typography>
-                      </Box>
+                      </Stack>
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <Box>
@@ -491,18 +525,22 @@ function AccountPartnerDetails() {
                       </Box>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                      <Box>
+                      <Stack direction="column" alignItems="start">
                         <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
                           {translate('account_manager.partner_details.mobile_data_entry')}:
                         </Typography>
                         <Typography
                           variant="subtitle1"
                           component="p"
-                          sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
+                          sx={{
+                            mt: 1,
+                            fontWeight: theme.typography.fontWeightMedium,
+                            direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr',
+                          }}
                         >
                           {partnerDetails?.client_data?.data_entry_mobile ?? '-'}
                         </Typography>
-                      </Box>
+                      </Stack>
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <Box>
@@ -566,7 +604,7 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.region ?? '-'}
+                          {partnerDetails?.client_data?.region ?? '-'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -612,19 +650,25 @@ function AccountPartnerDetails() {
                         </Typography>
                       </Box>
                     </Grid>
-                    <Grid item xs={12} md={6}>
-                      <Box>
+                    <Grid item xs={12} md={6} alignItems="start">
+                      {/* <Box> */}
+                      <Stack direction="column" alignItems="start">
                         <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
                           {translate('account_manager.partner_details.phone')}:
                         </Typography>
                         <Typography
                           variant="subtitle1"
                           component="p"
-                          sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
+                          sx={{
+                            mt: 1,
+                            fontWeight: theme.typography.fontWeightMedium,
+                            direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr',
+                          }}
                         >
                           {partnerDetails?.client_data.phone ?? '-'}
                         </Typography>
-                      </Box>
+                      </Stack>
+                      {/* </Box> */}
                     </Grid>
                   </Grid>
 

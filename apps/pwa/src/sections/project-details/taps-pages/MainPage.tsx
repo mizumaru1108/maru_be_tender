@@ -9,7 +9,7 @@ import { fCurrencyNumber } from 'utils/formatNumber';
 import { FEATURE_PROJECT_DETAILS } from '../../../config';
 
 function MainPage() {
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
   const { proposal } = useSelector((state) => state.proposal);
   const { id } = useParams();
   const location = useLocation();
@@ -223,11 +223,15 @@ function MainPage() {
               </Typography>
               <Typography sx={{ mb: '15px' }}>{email}</Typography>
             </Stack>
-            <Stack direction="column">
+            <Stack direction="column" alignItems="start">
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                 {translate('mobile_number')}
               </Typography>
-              <Typography sx={{ mb: '15px' }}>{mobile_number}</Typography>
+              <Typography
+                sx={{ mb: '15px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+              >
+                {mobile_number}
+              </Typography>
             </Stack>
             <Stack direction="column">
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>

@@ -22,68 +22,34 @@ interface Props extends Omit<UploadProps, 'file'> {
 
 // ----------------------------------------------------------------------
 
-export function RHFUploadSingleFileBe({ name, placeholder, disabled, ...other }: Props) {
+export function RHFUploadSingleImageBe({ name, placeholder, disabled, ...other }: Props) {
   const { control, setValue } = useFormContext();
   const { user } = useAuth();
   const { progress, isCompressing, compress } = useCompress();
 
   const id = user?.id;
   const handleDrop = async (acceptedFiles: File[]) => {
-    const fileType = acceptedFiles[0].type.split('/')[0];
-    // console.log('acceptedFiles[0].type', fileType);
-    if (fileType === 'application') {
-      const fileBuffer = await encodeBase64Upload(acceptedFiles[0]);
-      setValue(name, {
-        url: URL.createObjectURL(acceptedFiles[0]),
-        type: acceptedFiles[0].type,
-        size: fileBuffer.length,
-        base64Data: fileBuffer,
-        fullName: acceptedFiles[0].name,
-        fileExtension: acceptedFiles[0].type,
-      });
-    } else if (fileType === 'image') {
-      const compressFile = compress(acceptedFiles[0], {
-        maxSizeMB: 1,
-        maxWidthOrHeight: 900,
-        useWebWorker: false,
-      });
-      compressFile
-        .then(async (compresedFile) => {
-          const fileBuffer = await encodeBase64Upload(compresedFile);
-          setValue(name, {
-            url: URL.createObjectURL(acceptedFiles[0]),
-            type: acceptedFiles[0].type,
-            size: fileBuffer.length,
-            base64Data: fileBuffer,
-            fullName: acceptedFiles[0].name,
-            fileExtension: acceptedFiles[0].type,
-          });
-        })
-        .catch((err) => {
-          console.error('Unable to compress file', err);
-        });
-    }
-    // const compressFile = compress(acceptedFiles[0], {
-    //   maxSizeMB: 1,
-    //   maxWidthOrHeight: 900,
-    //   useWebWorker: false,
-    // });
-    // compressFile
-    //   .then(async (compresedFile) => {
-    //     const fileBuffer = await encodeBase64Upload(compresedFile);
+    const compressFile = compress(acceptedFiles[0], {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 900,
+      useWebWorker: false,
+    });
+    compressFile
+      .then(async (compresedFile) => {
+        const fileBuffer = await encodeBase64Upload(compresedFile);
 
-    //     setValue(name, {
-    //       url: URL.createObjectURL(acceptedFiles[0]),
-    //       type: acceptedFiles[0].type,
-    //       size: fileBuffer.length,
-    //       base64Data: fileBuffer,
-    //       fullName: acceptedFiles[0].name,
-    //       fileExtension: acceptedFiles[0].type,
-    //     });
-    //   })
-    //   .catch((err) => {
-    //     console.error('Unable to compress file', err);
-    //   });
+        setValue(name, {
+          url: URL.createObjectURL(acceptedFiles[0]),
+          type: acceptedFiles[0].type,
+          size: fileBuffer.length,
+          base64Data: fileBuffer,
+          fullName: acceptedFiles[0].name,
+          fileExtension: acceptedFiles[0].type,
+        });
+      })
+      .catch((err) => {
+        console.error('Unable to compress file', err);
+      });
   };
 
   const onRemove = () => {

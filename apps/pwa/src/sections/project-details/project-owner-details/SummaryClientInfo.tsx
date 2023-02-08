@@ -21,12 +21,18 @@ interface SummaryClientInfoProps {
 }
 
 function SummaryClientInfo({ dataClient }: SummaryClientInfoProps) {
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
   const urls = location.pathname.split('/');
   const url = `/${urls[1]}/dashboard/${params.submiterId}/details`;
+  const StylPhoneContent = {
+    fontWeight: 500,
+    fontSize: '22px',
+    fontFamily: 'Cairo',
+    direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr',
+  };
 
   const handleShowAllDetails = () => {
     navigate(`${url}`);
@@ -34,13 +40,21 @@ function SummaryClientInfo({ dataClient }: SummaryClientInfoProps) {
 
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row', gap: 2 }}>
-      <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box
+        sx={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+          alignItems: 'start',
+        }}
+      >
         <Typography sx={StylTextTitle}>
           {translate('project_owner_details.summary.title_main')}
         </Typography>
         <Typography sx={StylTextContent}>{dataClient.entity}</Typography>
         <Typography sx={StylTextContent}>{dataClient.user.email}</Typography>
-        <Typography sx={StylTextContent}>{dataClient.phone}</Typography>
+        <Typography sx={StylPhoneContent}>{dataClient.phone}</Typography>
       </Box>
       <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
         <Typography sx={StylTextTitle}>

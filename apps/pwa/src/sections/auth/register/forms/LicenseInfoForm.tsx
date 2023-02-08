@@ -27,7 +27,7 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
       .test('size', translate('errors.register.license_file.size'), (value) => {
         if (value) {
           // const trueSize = value.size * 28;
-          if (value.size > 1024 * 1024 * 30) {
+          if (value.size > 1024 * 1024 * 3) {
             return false;
           }
         }
@@ -50,7 +50,7 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
       .test('size', translate('errors.register.board_ofdec_file.size'), (value) => {
         if (value) {
           // const trueSize = value.size * 28;
-          if (value.size > 1024 * 1024 * 30) {
+          if (value.size > 1024 * 1024 * 3) {
             return false;
           }
         }
@@ -95,7 +95,7 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
     reset,
   } = methods;
   const agree_on = watch('license_file');
-  console.log({ agree_on });
+  // console.log({ agree_on });
 
   // const onSubmitForm = async (data: LicenseValuesProps) => {
   //   reset({ ...data });

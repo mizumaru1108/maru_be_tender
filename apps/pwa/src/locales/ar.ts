@@ -168,14 +168,15 @@ const ar = {
       },
       license_file: {
         message: '',
-        size: 'حجم الملف يجب أن يكون أقل من 5 ميجا',
+        size: 'حجم الملف يجب أن يكون أقل من 3 ميجا',
         fileExtension: 'يجب أن يكون الملف من نوع pdf, png, jpg, jpeg',
         required: 'ملف الرخصة مطلوب',
       },
       board_ofdec_file: {
         message: '',
-        size: 'حجم الملف يجب أن يكون أقل من 5 ميجا',
+        size: 'حجم الملف يجب أن يكون أقل من 3 ميجا',
         fileExtension: 'يجب أن يكون الملف من نوع pdf, png, jpg, jpeg',
+        required: 'ملف مجلس الإدارة مطلوب',
       },
       twitter_acount: {
         message: '',
@@ -244,7 +245,7 @@ const ar = {
       card_image: {
         message: '',
         required: 'صورة البطاقة مطلوبة',
-        size: 'حجم الملف يجب أن يكون أقل من 5 ميجا',
+        size: 'حجم الملف يجب أن يكون أقل من 3 ميجا',
         fileExtension: 'يجب أن يكون الملف من نوع pdf, png, jpg, jpeg',
       },
       employee_name: {
@@ -587,15 +588,15 @@ const ar = {
       placeholder: 'الرجاء كتابة اسم المدير التنفيذي',
     },
     executive_director_mobile: {
-      label: 'جوال المدير التنفيذي*',
+      label: '*جوال المدير التنفيذي',
       placeholder: 'الرجاء كتابة جوال المدير التنفيذي',
     },
     chairman_name: {
-      label: 'اسم رئيس مجلس الإدارة*',
+      label: '*اسم رئيس مجلس الإدارة',
       placeholder: 'الرجاء كتابة اسم الرئيس',
     },
     chairman_mobile: {
-      label: 'رئيس موبايل*',
+      label: 'جوال رئيس مجلس الإدارة*',
       placeholder: 'الرجاء كتابة رقم هاتف رئيس مجلس الإدارة',
     },
     entery_data_name: {
@@ -603,7 +604,7 @@ const ar = {
       placeholder: 'الرجاء كتابة اسم مدخل البيانات',
     },
     entery_data_phone: {
-      label: 'جوال مدخل البيانات*',
+      label: '*جوال مدخل البيانات',
       placeholder: 'الرجاء كتابة جوال مدخل البيانات',
     },
     entery_data_email: {
@@ -631,7 +632,7 @@ const ar = {
     },
   },
   funding_project_request_form1: {
-    step: 'معلومات عامة*',
+    step: 'معلومات عامة',
     project_name: {
       label: 'اسم المشروع*',
       placeholder: 'الرجاء كتابة اسم المشروع',
@@ -748,7 +749,7 @@ const ar = {
   },
   funding_project_request_form6: {
     bank_account_number: {
-      label: 'أيبان الحساب البنكي*',
+      label: '*أيبان الحساب البنكي',
       placeholder: 'رقم الحساب البنكي',
     },
     bank_account_name: {
@@ -1021,7 +1022,7 @@ const ar = {
       },
       td: {
         btn_account_review: 'استعراض الحساب',
-        btn_view_partner_projects: 'عرض مشاريع الشريك',
+        btn_view_partner_projects: 'عرض تفاصيل الحساب',
         label_waiting_activation: 'بانتظار التفعيل',
         btn_view_edit_request: 'عرض طلب تعديل الشريك',
         label_active_account: 'حساب مفعل',
@@ -1486,6 +1487,11 @@ const ar = {
     subject_payment: 'تهانينا ، لقد تم إرسال صندوق مشروعك!',
     content_payment: 'يرجى التحقق من حسابك وإثبات الأموال أدناه',
     proof_of_funds: 'الدليل على الأموال',
+  },
+  button: {
+    btn_final_save_as_draft: ' انهاء',
+    btn_create_proposal: ' انهاء',
+    btn_next_save_as_draft: 'التالي',
   },
 };
 

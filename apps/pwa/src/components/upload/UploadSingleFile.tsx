@@ -140,7 +140,8 @@ export default function UploadSingleFile({
                       {placeholder}
                     </Typography>
                     <Typography gutterBottom sx={{ fontSize: '13px' }}>
-                      {`${file.size !== undefined && Math.floor(file.size / 28)}KB`}
+                      {/* {`${file.size !== undefined && Math.floor(file.size / 28)}KB`} */}
+                      {`File size ${convertBytesToMB(file.size ?? 0)}`}
                     </Typography>
                   </Stack>
                 </Stack>

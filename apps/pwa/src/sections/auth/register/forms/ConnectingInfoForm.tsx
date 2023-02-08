@@ -116,7 +116,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
       entity_mobile: newEntityMobile!,
       used_numbers: [...newTmpNumbers],
     };
-    console.log('payload', payload);
+    // console.log('payload', payload);
     // reset({ ...payload });
     onSubmit(payload);
   };

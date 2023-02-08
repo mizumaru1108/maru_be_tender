@@ -27,7 +27,7 @@ const sxPropsText = {
 };
 
 function ContactAccordion({ userInfo }: Props) {
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
 
   return (
     <Accordion
@@ -106,7 +106,12 @@ function ContactAccordion({ userInfo }: Props) {
               <Typography sx={sxPropsText}>
                 {translate('project_owner_details.accordion.contact_tab.phone')}
               </Typography>
-              <TextField disabled fullWidth value={userInfo?.phone ?? '-'} />
+              <TextField
+                disabled
+                fullWidth
+                sx={{ direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+                value={userInfo?.phone ?? '-'}
+              />
             </Grid>
           </Grid>
         </Stack>

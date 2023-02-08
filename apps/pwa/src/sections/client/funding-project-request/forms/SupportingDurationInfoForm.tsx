@@ -175,10 +175,10 @@ const SupportingDurationInfoForm = ({
                 disabled={agreeOn ? false : true}
               >
                 {lastStep && proposal_id
-                  ? translate('update')
+                  ? translate('button.btn_final_save_as_draft')
                   : lastStep && !proposal_id
-                  ? translate('send')
-                  : translate('next')}
+                  ? translate('button.btn_create_proposal')
+                  : translate('button.btn_next_save_as_draft')}
               </LoadingButton>
             </Stack>
           </Box>

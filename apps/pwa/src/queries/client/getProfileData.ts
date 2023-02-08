@@ -25,6 +25,8 @@ query MyQuery($id: String = "") {
       license_file
       chairman_name
       chairman_mobile
+      entity_mobile
+      board_ofdec_file
     }
     bank_informations(where: {is_deleted: {_eq: false}}) {
       bank_account_name
@@ -32,6 +34,7 @@ query MyQuery($id: String = "") {
       bank_name
       card_image
     }
+    email
   }
   proposal_aggregate(where: {submitter_user_id: {_eq: $id}, _and: {outter_status: {_eq: COMPLETED}}}) {
     aggregate {

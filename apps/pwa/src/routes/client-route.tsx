@@ -68,7 +68,7 @@ export const clientRoute = {
             { path: ':id/:actionType', element: <ProjectDetails /> },
 
             { path: ':id/owner/:submiterId', element: <ProjectOwnerDetails /> },
-            { path: ':id/owner/:submiterId/:detailType', element: <ProjectOwnerDetails /> },
+            // { path: ':id/owner/:submiterId/:detailType', element: <ProjectOwnerDetails /> },
           ],
         },
         {

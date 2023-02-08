@@ -39,6 +39,7 @@ query detailsClientData($id: String!) {
       data_entry_mobile
       chairman_name
       chairman_mobile
+      board_ofdec_file
     }
     email
     status_id

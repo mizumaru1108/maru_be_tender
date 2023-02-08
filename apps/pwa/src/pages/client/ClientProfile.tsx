@@ -10,7 +10,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import BankImageComp from 'sections/shared/BankImageComp';
 import { useQuery } from 'urql';
+import ButtonDownloadFiles from '../../components/button/ButtonDownloadFiles';
 import { FEATURE_EDIT_CLIENT_INFORMATION } from '../../config';
+import useLocales from '../../hooks/useLocales';
 import axiosInstance from '../../utils/axios';
 
 const mockData = {
@@ -29,6 +31,8 @@ const mockData = {
 };
 function ClientProfile() {
   const { user, activeRole } = useAuth();
+  const { currentLang, translate } = useLocales();
+  const [newBoardOfDec, setNewBoardOfDec] = useState([]);
   const [result, _] = useQuery({
     query: getProfileData,
     variables: { id: user?.id },
@@ -70,9 +74,25 @@ function ClientProfile() {
   };
   useEffect(() => {
     fetchingEditRequest();
+    // const {
+    //   user_by_pk: {
+    //     client_data: { board_ofdec_file },
+    //   },
+    // } = data!;
+    // // console.log({ board_ofdec_file });
+    // let newDect: any = [];
+    // if (board_ofdec_file && typeof board_ofdec_file !== 'string' && board_ofdec_file.length > 0) {
+    //   newDect = board_ofdec_file.map((item: any) => ({
+    //     ...item,
+    //     url: item.file,
+    //     name: item.file_name,
+    //   }));
+    // } else {
+    //   newDect.push(board_ofdec_file);
+    // }
+    // setNewBoardOfDec(newDect);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   if (fetching) return <>Loading ....</>;
 
   if (error) return <>{error.message}</>;
@@ -89,7 +109,7 @@ function ClientProfile() {
         data_entry_mobile,
         data_entry_name,
         date_of_esthablistmen,
-        email,
+        // email,
         entity,
         governorate,
         license_expired,
@@ -104,14 +124,18 @@ function ClientProfile() {
         website,
         chairman_name,
         chairman_mobile,
+        entity_mobile,
+        board_ofdec_file,
       },
+      email,
       bank_informations,
     },
     proposal_aggregate: {
       aggregate: { count: completed_projects },
     },
   } = data!;
-  // console.log({ disabelEdit });
+  // console.log({ board_ofdec_file });
+  // console.log('type :', typeof board_ofdec_file);
 
   return (
     <Page title="My Profile">
@@ -243,35 +267,55 @@ function ClientProfile() {
                   <Typography sx={{ mb: '15px' }}>القرية (الهجرة)</Typography>
                 </Stack>
 
-                <Stack direction="column">
+                <Stack direction="column" alignItems="start">
                   <Typography sx={{ fontSize: '12px' }}>المحافظة:</Typography>
                   <Typography sx={{ mb: '15px' }}>{governorate}</Typography>
                   <Typography sx={{ fontSize: '12px' }}>حساب تويتر:</Typography>
                   <Typography sx={{ mb: '15px' }}>{twitter_acount}</Typography>
-                  <Typography sx={{ fontSize: '12px' }}>الجوال</Typography>
-                  <Typography sx={{ mb: '15px' }}>{phone}</Typography>
+                  <Typography sx={{ fontSize: '12px' }}>كيان المحمول</Typography>
+                  <Typography
+                    sx={{ mb: '15px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+                  >
+                    {entity_mobile}
+                  </Typography>
                 </Stack>
 
-                <Stack direction="column">
+                <Stack direction="column" alignItems="start">
                   <Typography sx={{ fontSize: '12px' }}>المركز (الإدارة):</Typography>
                   <Typography sx={{ mb: '15px' }}>المركز (الإدارة):</Typography>
                   <Typography sx={{ fontSize: '12px' }}>البريد الإلكتروني:</Typography>
                   <Typography sx={{ mb: '15px' }}>{email}</Typography>
-                  <Typography sx={{ fontSize: '12px' }}>الهاتف</Typography>
-                  <Typography sx={{ mb: '15px' }}>الهاتف</Typography>
+                  <Typography sx={{ fontSize: '12px' }}>الجوال</Typography>
+                  <Typography
+                    sx={{ mb: '15px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+                  >
+                    {phone}
+                  </Typography>
                 </Stack>
               </Stack>
               <Typography variant="h6" sx={{ color: '#1E1E1E', mb: '15px' }}>
                 بيانات الإدارية
               </Typography>
               <Stack direction="row" gap={3} justifyContent="space-between" sx={{ mb: '15px' }}>
-                <Stack direction="column">
+                <Stack direction="column" alignItems="start">
                   <Typography sx={{ fontSize: '12px' }}>جوال المدير التنفيذي:</Typography>
-                  <Typography sx={{ mb: '15px' }}>{ceo_mobile}</Typography>
+                  <Typography
+                    sx={{ mb: '15px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+                  >
+                    {ceo_mobile}
+                  </Typography>
                   <Typography sx={{ fontSize: '12px' }}>الرئيس موبايل:</Typography>
-                  <Typography sx={{ mb: '15px' }}>{chairman_mobile ?? '-'}</Typography>
+                  <Typography
+                    sx={{ mb: '15px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+                  >
+                    {chairman_mobile ?? '-'}
+                  </Typography>
                   <Typography sx={{ fontSize: '12px' }}>جوال مدخل البيانات:</Typography>
-                  <Typography sx={{ mb: '15px' }}>{data_entry_mobile}</Typography>
+                  <Typography
+                    sx={{ mb: '15px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+                  >
+                    {data_entry_mobile}
+                  </Typography>
                   <Typography sx={{ fontSize: '12px' }}>بريد مدخل البيانات:</Typography>
                   <Typography sx={{ mb: '15px' }}>{data_entry_mail}</Typography>
                 </Stack>
@@ -367,6 +411,38 @@ function ClientProfile() {
                     </Typography>
                   </Stack>
                 </Box>
+                {/* Record 0fDec file */}
+                <Stack direction="column" component="div" sx={{ mt: 4 }}>
+                  <Typography variant="body1" component="p" sx={{ color: '#93A3B0', mb: 2 }}>
+                    {translate('account_manager.partner_details.board_ofdec_file')}:
+                  </Typography>
+                  {/* <Grid container spacing={2}>
+                    {newBoardOfDec && newBoardOfDec.length > 0 ? (
+                      newBoardOfDec.map((item, index) => (
+                        <Grid item xs={6} md={6} key={index}>
+                          <ButtonDownloadFiles files={item} />
+                        </Grid>
+                      ))
+                    ) : (
+                      <Grid item xs={6} md={6}>
+                        {'-'}
+                      </Grid>
+                    )}
+                  </Grid> */}
+                  <Grid container spacing={2}>
+                    {board_ofdec_file &&
+                    typeof board_ofdec_file !== 'string' &&
+                    board_ofdec_file.length > 0 ? (
+                      board_ofdec_file.map((item: any, index: any) => (
+                        <Grid item xs={6} md={6} key={index}>
+                          <ButtonDownloadFiles files={item} />
+                        </Grid>
+                      ))
+                    ) : (
+                      <ButtonDownloadFiles files={board_ofdec_file} />
+                    )}
+                  </Grid>
+                </Stack>
               </Box>
             </Grid>
           </Grid>

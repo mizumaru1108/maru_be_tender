@@ -23,7 +23,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
   const RegisterSchema = Yup.object().shape({
     region: Yup.string().required('Region name required'),
     governorate: Yup.string().required('City name required'),
-    center_administration: Yup.string().required('Center is required'),
+    // center_administration: Yup.string().required('Center is required'),
     phone: Yup.string()
       .required(translate('errors.register.phone.required'))
       .test('len', translate('errors.register.phone.length'), (val) => {

@@ -203,6 +203,7 @@ const en = {
         message: '',
         size: 'The file size must be less than 5 MB',
         fileExtension: 'The file extension must be one of the following: pdf, png, jpg, jpeg',
+        required: 'Board of directors file is required',
       },
       num_of_employed_facility: {
         message: '',
@@ -575,15 +576,15 @@ const en = {
       placeholder: 'الرجاء كتابة اسم المدير التنفيذي',
     },
     executive_director_mobile: {
-      label: 'جوال المدير التنفيذي*',
+      label: '*جوال المدير التنفيذي',
       placeholder: 'الرجاء كتابة جوال المدير التنفيذي',
     },
     chairman_name: {
-      label: 'اسم رئيس مجلس الإدارة*',
+      label: '*اسم رئيس مجلس الإدارة',
       placeholder: 'الرجاء كتابة اسم الرئيس',
     },
     chairman_mobile: {
-      label: 'رئيس موبايل*',
+      label: 'جوال رئيس مجلس الإدارة*',
       placeholder: 'الرجاء كتابة رقم هاتف رئيس مجلس الإدارة',
     },
     entery_data_name: {
@@ -591,7 +592,7 @@ const en = {
       placeholder: 'الرجاء كتابة اسم مدخل البيانات',
     },
     entery_data_phone: {
-      label: 'جوال مدخل البيانات*',
+      label: '*جوال مدخل البيانات',
       placeholder: 'الرجاء كتابة جوال مدخل البيانات',
     },
     entery_data_email: {
@@ -1443,6 +1444,11 @@ const en = {
     subject_payment: 'congratulations, your project fund have been sent!',
     content_payment: 'Please check your account and proof of funds below',
     proof_of_funds: 'Proof of Funds',
+  },
+  button: {
+    btn_final_save_as_draft: 'Send',
+    btn_create_proposal: 'Send',
+    btn_next_save_as_draft: 'Next',
   },
 };
 

@@ -179,9 +179,9 @@ export default function RegisterForm() {
   const onReturn = () => {
     if (step > 0) setStep((prevStep) => prevStep - 1);
   };
-  useEffect(() => {
-    console.log('wathc used numbers', registerState.used_numbers);
-  }, [registerState.used_numbers]);
+  // useEffect(() => {
+  //   console.log('wathc used numbers', registerState.used_numbers);
+  // }, [registerState.used_numbers]);
   return (
     <>
       {step !== 5 && (

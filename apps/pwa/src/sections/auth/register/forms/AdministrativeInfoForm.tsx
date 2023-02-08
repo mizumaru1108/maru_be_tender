@@ -25,7 +25,7 @@ const AdministrativeInfoForm = ({
   usedNumbers,
 }: FormProps) => {
   const tmpUsedNumbers: string[] = usedNumbers ?? [];
-  console.log('tmpUsedNumbers', tmpUsedNumbers);
+  // console.log('tmpUsedNumbers', tmpUsedNumbers);
   const { translate } = useLocales();
   // const tmpUserNumbers = React.useMemo(() => {
   //   const { used_numbers } = defaultValues;
@@ -122,7 +122,7 @@ const AdministrativeInfoForm = ({
       chairman_mobile: newChairmanMobile!,
       used_numbers: [...newTmpNumbers],
     };
-    console.log('payload', payload);
+    // console.log('payload', payload);
     // reset({ ...payload });
     onSubmit(payload);
   };

@@ -226,13 +226,23 @@ const FundingProjectRequestForm = () => {
       if (rest) {
         const spreadUrl = location.pathname.split('/');
         // history.push('/dashboard');
-        setToast({
-          open: true,
-          message: translate('proposal_created'),
+        enqueueSnackbar(translate('proposal_created'), {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
         });
-        setTimeout(() => {
-          navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/app`);
-        }, 1000);
+        navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/app`);
+        // setToast({
+        //   open: true,
+        //   message: translate('proposal_created'),
+        // });
+        // setTimeout(() => {
+        //   navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/app`);
+        // }, 1000);
       } else {
         setIsLoading(false);
         alert('Something went wrong');
@@ -377,15 +387,26 @@ const FundingProjectRequestForm = () => {
         }
       );
       if (res) {
-        setToast({
-          open: true,
-          message: translate('proposal_saving_draft'),
-        });
         const spreadUrl = location.pathname.split('/');
-        // history.push('/dashboard');
-        setTimeout(() => {
-          navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
-        }, 1000);
+        enqueueSnackbar(translate('proposal_saving_draft'), {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+        navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
+        // setToast({
+        //   open: true,
+        //   message: translate('proposal_saving_draft'),
+        // });
+        // const spreadUrl = location.pathname.split('/');
+        // // history.push('/dashboard');
+        // setTimeout(() => {
+        //   navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
+        // }, 1000);
         // navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
       } else {
         enqueueSnackbar(translate('Something went wrong'), {
@@ -409,14 +430,23 @@ const FundingProjectRequestForm = () => {
         // console.log({ rest });
         if (rest) {
           const spreadUrl = location.pathname.split('/');
-          // history.push('/dashboard');
-          setToast({
-            open: true,
-            message: translate('proposal_saving_draft'),
+          enqueueSnackbar(translate('proposal_saving_draft'), {
+            variant: 'success',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
           });
-          setTimeout(() => {
-            navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
-          }, 1000);
+          navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
+          // setToast({
+          //   open: true,
+          //   message: translate('proposal_saving_draft'),
+          // });
+          // setTimeout(() => {
+          //   navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
+          // }, 1000);
         } else {
           setIsLoading(false);
           alert('Something went wrong');
@@ -472,14 +502,24 @@ const FundingProjectRequestForm = () => {
       );
       if (res) {
         const spreadUrl = location.pathname.split('/');
-        // history.push('/dashboard');
-        setToast({
-          open: true,
-          message: translate('proposal_created'),
+        enqueueSnackbar(translate('proposal_created'), {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
         });
-        setTimeout(() => {
-          navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
-        }, 1000);
+        navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
+
+        // setToast({
+        //   open: true,
+        //   message: translate('proposal_created'),
+        // });
+        // setTimeout(() => {
+        //   navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
+        // }, 1000);
       }
     } catch (err) {
       enqueueSnackbar(err.message, {

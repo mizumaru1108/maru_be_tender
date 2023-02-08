@@ -129,7 +129,6 @@ export default function RHFTextField({ name, ...other }: Props) {
           }}
           {...other}
           sx={{
-            // direction: currentLang! === 'ar' ? 'rtl' : 'ltr',
             direction:
               [
                 'phone',

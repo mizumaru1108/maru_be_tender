@@ -55,7 +55,7 @@ export default function AddBankModal({
     card_image: Yup.mixed()
       .test('size', translate('errors.register.card_image.size'), (value) => {
         if (value) {
-          if (value.size > 1024 * 1024 * 5) {
+          if (value.size > 1024 * 1024 * 3) {
             return false;
           }
         }

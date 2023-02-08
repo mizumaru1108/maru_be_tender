@@ -17,7 +17,7 @@ type DataTabProps = {
 };
 
 function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
   const navigate = useNavigate();
   const theme = useTheme();
   const [newValues, setNewValues] = React.useState<IEditedValues>(EditValues);
@@ -320,43 +320,23 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
           </Box>
         </Stack>
         {/* Record 0fDec file */}
-        <Stack spacing={2} direction="column" component="div" sx={{ mt: 4 }}>
-          <Box>
-            <Typography variant="body1" component="p" sx={{ color: '#93A3B0' }}>
-              {translate('account_manager.partner_details.board_ofdec_file')}:
-            </Typography>
-            <Grid container component="div">
-              {EditValues &&
-              EditValues.board_ofdec_file &&
-              EditValues.board_ofdec_file.length > 0 ? (
-                EditValues.board_ofdec_file.map((item, index) => (
-                  <Grid item xs={6} md={6} key={index}>
-                    <ButtonDownloadFiles files={item} />
-                  </Grid>
-                ))
-              ) : (
-                <Grid item xs={6} md={6}>
-                  {'-'}
+        <Stack direction="column" component="div" sx={{ mt: 4 }}>
+          <Typography variant="body1" component="p" sx={{ color: '#93A3B0', mb: 2 }}>
+            {translate('account_manager.partner_details.board_ofdec_file')}:
+          </Typography>
+          <Grid container spacing={2}>
+            {EditValues && EditValues.board_ofdec_file && EditValues.board_ofdec_file.length > 0 ? (
+              EditValues.board_ofdec_file.map((item, index) => (
+                <Grid item xs={6} md={6} key={index}>
+                  <ButtonDownloadFiles files={item} />
                 </Grid>
-              )}
-            </Grid>
-            {/* <Typography
-              variant="h6"
-              component="p"
-              sx={{
-                mt: 1,
-                fontWeight: theme.typography.fontWeightMedium,
-                color:
-                  compareValues?.hasOwnProperty('entity') && EditType === 'new-data'
-                    ? 'green'
-                    : compareValues?.hasOwnProperty('entity') && EditType === 'previous-data'
-                    ? 'red'
-                    : 'black',
-              }}
-            >
-              {EditValues.entity ?? '-'}
-            </Typography> */}
-          </Box>
+              ))
+            ) : (
+              <Grid item xs={6} md={6}>
+                {'-'}
+              </Grid>
+            )}
+          </Grid>
         </Stack>
       </Grid>
       <Grid item xs={12} md={6}>
@@ -389,7 +369,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
             </Box>
           </Grid>
           <Grid item xs={12} md={6}>
-            <Box>
+            <Stack direction="column" alignItems="start">
               <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
                 {translate('account_manager.partner_details.ceo_mobile')}:
               </Typography>
@@ -399,6 +379,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                 sx={{
                   mt: 1,
                   fontWeight: theme.typography.fontWeightMedium,
+                  direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr',
                   color:
                     compareValues?.hasOwnProperty('ceo_mobile') && EditType === 'new-data'
                       ? 'green'
@@ -409,7 +390,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
               >
                 {newValues.ceo_mobile}
               </Typography>
-            </Box>
+            </Stack>
           </Grid>
           <Grid item xs={12} md={6}>
             <Box>
@@ -436,7 +417,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
             </Box>
           </Grid>
           <Grid item xs={12} md={6}>
-            <Box>
+            <Stack direction="column" alignItems="start">
               <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
                 {translate('account_manager.partner_details.chairman_mobile')}:
               </Typography>
@@ -446,6 +427,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                 sx={{
                   mt: 1,
                   fontWeight: theme.typography.fontWeightMedium,
+                  direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr',
                   color:
                     compareValues?.hasOwnProperty('chairman_mobile') && EditType === 'new-data'
                       ? 'green'
@@ -457,7 +439,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
               >
                 {newValues.chairman_mobile ?? '-'}
               </Typography>
-            </Box>
+            </Stack>
           </Grid>
           <Grid item xs={12} md={6}>
             <Box>
@@ -484,7 +466,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
             </Box>
           </Grid>
           <Grid item xs={12} md={6}>
-            <Box>
+            <Stack direction="column" alignItems="start">
               <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
                 {translate('account_manager.partner_details.mobile_data_entry')}:
               </Typography>
@@ -494,6 +476,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                 sx={{
                   mt: 1,
                   fontWeight: theme.typography.fontWeightMedium,
+                  direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr',
                   color:
                     compareValues?.hasOwnProperty('data_entry_mobile') && EditType === 'new-data'
                       ? 'green'
@@ -505,7 +488,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
               >
                 {newValues.data_entry_mobile ?? '-'}
               </Typography>
-            </Box>
+            </Stack>
           </Grid>
           <Grid item xs={12} md={6}>
             <Box>
@@ -674,7 +657,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
             </Box>
           </Grid>
           <Grid item xs={12} md={6}>
-            <Box>
+            <Stack direction="column" alignItems="start">
               <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
                 {translate('account_manager.partner_details.phone')}:
               </Typography>
@@ -684,7 +667,6 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                 sx={{
                   mt: 1,
                   fontWeight: theme.typography.fontWeightMedium,
-
                   color:
                     compareValues?.hasOwnProperty('phone') && EditType === 'new-data'
                       ? 'green'
@@ -695,7 +677,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
               >
                 {EditValues.phone ?? '-'}
               </Typography>
-            </Box>
+            </Stack>
           </Grid>
         </Grid>
 

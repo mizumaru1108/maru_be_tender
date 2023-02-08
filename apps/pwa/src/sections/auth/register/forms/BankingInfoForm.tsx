@@ -30,7 +30,7 @@ const BankingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
       .test('size', translate('errors.register.card_image.size'), (value) => {
         if (value) {
           // const trueSize = value.size * 28;
-          if (value.size > 1024 * 1024 * 30) {
+          if (value.size > 1024 * 1024 * 3) {
             return false;
           }
         }

@@ -31,7 +31,7 @@ const sxPropsText = {
 };
 
 function AdministrativeAccording({ userInfo }: Props) {
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
 
   return (
     <Accordion
@@ -74,7 +74,12 @@ function AdministrativeAccording({ userInfo }: Props) {
               <Typography sx={sxPropsText}>
                 {translate('project_owner_details.accordion.administrative_tab.ceo_mobile')}
               </Typography>
-              <TextField disabled fullWidth value={userInfo?.ceo_mobile ?? '-'} />
+              <TextField
+                sx={{ direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+                disabled
+                fullWidth
+                value={userInfo?.ceo_mobile ?? '-'}
+              />
             </Grid>
             <Grid item xs={12} md={6}>
               <Typography sx={sxPropsText}>
@@ -86,7 +91,12 @@ function AdministrativeAccording({ userInfo }: Props) {
               <Typography sx={sxPropsText}>
                 {translate('project_owner_details.accordion.administrative_tab.chairman_mobile')}
               </Typography>
-              <TextField disabled fullWidth value={userInfo?.chairman_mobile ?? '-'} />
+              <TextField
+                sx={{ direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+                disabled
+                fullWidth
+                value={userInfo?.chairman_mobile ?? '-'}
+              />
             </Grid>
             <Grid item xs={12} md={6}>
               <Typography sx={sxPropsText}>
@@ -98,7 +108,14 @@ function AdministrativeAccording({ userInfo }: Props) {
               <Typography sx={sxPropsText}>
                 {translate('project_owner_details.accordion.administrative_tab.data_entry_mobile')}
               </Typography>
-              <TextField disabled fullWidth value={userInfo?.data_entry_mobile ?? '-'} />
+              <TextField
+                sx={{
+                  direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr',
+                }}
+                disabled
+                fullWidth
+                value={userInfo?.data_entry_mobile ?? '-'}
+              />
             </Grid>
             <Grid item xs={12} md={12}>
               <Typography sx={sxPropsText}>

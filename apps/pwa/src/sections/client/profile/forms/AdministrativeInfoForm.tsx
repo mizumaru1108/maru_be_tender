@@ -123,7 +123,7 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, children, isEdit }: F
             disabled={isEdit}
             name="ceo_mobile"
             label={translate('register_form4.executive_director_mobile.label')}
-            placeholder={translate('register_form4.executive_director_mobile.placeholder')}
+            placeholder={'xxx xxx xxx'}
           />
         </Grid>
         <Grid item md={6} xs={12}>
@@ -139,7 +139,7 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, children, isEdit }: F
             disabled={isEdit}
             name="chairman_mobile"
             label={translate('register_form4.executive_director_mobile.label')}
-            placeholder={translate('register_form4.executive_director_mobile.placeholder')}
+            placeholder={'xxx xxx xxx'}
           />
         </Grid>
         <Grid item md={6} xs={12}>
@@ -155,7 +155,7 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, children, isEdit }: F
             disabled={isEdit}
             name="data_entry_mobile"
             label={translate('register_form4.entery_data_phone.label')}
-            placeholder={translate('register_form4.entery_data_phone.placeholder')}
+            placeholder={'xxx xxx xxx'}
           />
         </Grid>
         <Grid item md={12} xs={12}>
