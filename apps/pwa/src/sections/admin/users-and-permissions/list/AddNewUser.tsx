@@ -14,7 +14,6 @@ import { LoadingButton } from '@mui/lab';
 import { PERMISSIONS } from '_mock/permissions';
 import { translateRect } from '@fullcalendar/common';
 import useLocales from 'hooks/useLocales';
-import { RHFTextField } from 'components/hook-form';
 
 type FormValuesProps = {
   employee_name: string;
