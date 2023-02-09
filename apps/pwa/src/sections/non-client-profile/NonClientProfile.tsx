@@ -12,7 +12,7 @@ import useLocales from '../../hooks/useLocales';
 import { getNonClientDetails } from '../../queries/commons/getNonClientUserDetails';
 
 export default function NonClientProfile() {
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
 
   const location = useLocation();
 
@@ -133,11 +133,15 @@ export default function NonClientProfile() {
                   <Typography sx={{ mb: '15px' }}>{data.profile.email || 'N/A'}</Typography>
                 </Stack>
 
-                <Stack direction="column">
+                <Stack direction="column" alignItems="start">
                   <Typography sx={{ fontSize: '12px' }}>
                     {translate('user_profile.fields.phone_number')}
                   </Typography>
-                  <Typography sx={{ mb: '15px' }}>{data.profile.mobile_number || 'N/A'}</Typography>
+                  <Typography
+                    sx={{ mb: '15px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+                  >
+                    {data.profile.mobile_number || 'N/A'}
+                  </Typography>
                 </Stack>
                 {/* <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>كلمة السر</Typography>

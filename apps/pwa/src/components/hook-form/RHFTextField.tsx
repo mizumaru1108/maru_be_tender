@@ -21,11 +21,11 @@ export default function RHFTextField({ name, ...other }: Props) {
     ml: `${currentLang.value}` === 'ar' ? 0 : 0,
     px: 1.5,
     height: 'auto',
-    borderRight: `1px solid ${theme.palette.text.disabled}`,
-    // borderRight:
-    //   `${currentLang.value}` === 'ar' ? 'none' : `1px solid ${theme.palette.text.disabled}`,
-    // borderLeft:
-    //   `${currentLang.value}` === 'ar' ? `1px solid ${theme.palette.text.disabled}` : 'none',
+    // borderRight: `1px solid ${theme.palette.text.disabled}`,
+    borderRight:
+      `${currentLang.value}` === 'ar' ? 'none' : `1px solid ${theme.palette.text.disabled}`,
+    borderLeft:
+      `${currentLang.value}` === 'ar' ? `1px solid ${theme.palette.text.disabled}` : 'none',
     // ...(currentLang.value === 'ar'
     //   ? {
     //       borderRight: `1px solid ${theme.palette.text.disabled}`,
@@ -136,26 +136,24 @@ export default function RHFTextField({ name, ...other }: Props) {
             ) : null,
           }}
           {...other}
-          // sx={
-          //   {
-          //     direction:
-          //       [
-          //         'phone',
-          //         'data_entry_mobile',
-          //         'entity_mobile',
-          //         'ceo_mobile',
-          //         'chairman_mobile',
-          //         'pm_mobile',
-          //         'mobile_number',
-          //         'bank_account_number',
-          //       ].includes(name) && `${currentLang.value}` === 'ar'
-          //         ? 'rtl'
-          //         : 'ltr',
-          //     '& > .MuiFormHelperText-root': {
-          //       backgroundColor: 'white',
-          //     },
-          //   }
-          // }
+          sx={{
+            direction:
+              [
+                'phone',
+                'data_entry_mobile',
+                'entity_mobile',
+                'ceo_mobile',
+                'chairman_mobile',
+                'pm_mobile',
+                'mobile_number',
+                'bank_account_number',
+              ].includes(name) && `${currentLang.value}` === 'ar'
+                ? 'rtl'
+                : 'ltr',
+            '& > .MuiFormHelperText-root': {
+              backgroundColor: 'white',
+            },
+          }}
         />
       )}
     />

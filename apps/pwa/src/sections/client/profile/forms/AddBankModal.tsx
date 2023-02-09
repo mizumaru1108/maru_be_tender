@@ -146,8 +146,10 @@ export default function AddBankModal({
     if (!!initialValues) {
       let newValues = { ...initialValues };
       const checkedBankName = listOfBank.find((bank: any) => {
-        console.log('bank.value', bank);
-        return bank === initialValues.bank_name;
+        // console.log('bank.value', bank);
+        const isCheck = bank === initialValues.bank_name;
+        return isCheck;
+        // return bank === initialValues.bank_name;
       });
       if (!checkedBankName) {
         newValues = { ...newValues, bank_name: '' };

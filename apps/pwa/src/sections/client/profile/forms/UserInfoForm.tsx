@@ -21,32 +21,32 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
     email: Yup.string()
       .required(translate('errors.register.email.required'))
       .email(translate('errors.register.email.email')),
-    employee_name: Yup.string().required(translate('errors.register.employee_name.required')),
-    mobile_number: Yup.string()
-      .required(translate('errors.register.entity_mobile.required'))
-      .test('len', translate('errors.register.entity_mobile.length'), (val) => {
-        if (val === undefined) {
-          return true;
-        }
+    // employee_name: Yup.string().required(translate('errors.register.employee_name.required')),
+    // mobile_number: Yup.string()
+    //   .required(translate('errors.register.entity_mobile.required'))
+    //   .test('len', translate('errors.register.entity_mobile.length'), (val) => {
+    //     if (val === undefined) {
+    //       return true;
+    //     }
 
-        return val.length === 0 || val!.length === 9;
-      }),
+    //     return val.length === 0 || val!.length === 9;
+    //   }),
     current_password: Yup.string().required(translate('errors.register.password.required')),
   });
   const PasswordChangeSchema = Yup.object().shape({
     email: Yup.string()
       .required(translate('errors.register.email.required'))
       .email(translate('errors.register.email.email')),
-    mobile_number: Yup.string()
-      .required(translate('errors.register.entity_mobile.required'))
-      .test('len', translate('errors.register.entity_mobile.length'), (val) => {
-        if (val === undefined) {
-          return true;
-        }
+    // mobile_number: Yup.string()
+    //   .required(translate('errors.register.entity_mobile.required'))
+    //   .test('len', translate('errors.register.entity_mobile.length'), (val) => {
+    //     if (val === undefined) {
+    //       return true;
+    //     }
 
-        return val.length === 0 || val!.length === 9;
-      }),
-    employee_name: Yup.string().required(translate('errors.register.employee_name.required')),
+    //     return val.length === 0 || val!.length === 9;
+    //   }),
+    // employee_name: Yup.string().required(translate('errors.register.employee_name.required')),
     current_password: Yup.string().required(translate('errors.register.password.required')),
     new_password: Yup.string().required(translate('errors.register.password.new_password')),
     confirm_password: Yup.string().oneOf(
@@ -69,12 +69,12 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
 
   const onSubmitForm = async (data: UserInfoFormProps) => {
     let newPayload = { ...data };
-    let newEntityMobile = getValues('mobile_number');
+    // let newEntityMobile = getValues('mobile_number');
 
-    newEntityMobile.substring(0, 4) !== '+966'
-      ? (newEntityMobile = '+966'.concat(`${getValues('mobile_number')}`))
-      : (newEntityMobile = getValues('mobile_number'));
-    newPayload = { ...newPayload, mobile_number: newEntityMobile };
+    // newEntityMobile.substring(0, 4) !== '+966'
+    //   ? (newEntityMobile = '+966'.concat(`${getValues('mobile_number')}`))
+    //   : (newEntityMobile = getValues('mobile_number'));
+    // newPayload = { ...newPayload, mobile_number: newEntityMobile };
 
     const filteredObj = Object.fromEntries(
       Object.entries(newPayload).filter(([key, value]) => value)
@@ -85,12 +85,11 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    let newValues = { ...defaultValues };
-    const newEntityPhone = defaultValues.mobile_number?.replace('+966', '');
-    newValues = { ...newValues, mobile_number: newEntityPhone };
-    // console.log({ newValues });
+    // let newValues = { ...defaultValues };
+    // const newEntityPhone = defaultValues.mobile_number?.replace('+966', '');
+    // newValues = { ...newValues, mobile_number: newEntityPhone };
 
-    reset(newValues);
+    reset(defaultValues);
   }, [defaultValues, reset]);
   // console.log({ region });
 
@@ -145,7 +144,7 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
             </Grid>
           </>
         )}
-        <Grid item md={6} xs={12}>
+        {/* <Grid item md={6} xs={12}>
           <RHFTextField
             name="employee_name"
             label={translate('register_form2.employee_name.label')}
@@ -159,7 +158,7 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
             // placeholder={translate('register_form2.mobile_number.placeholder')}
             placeholder="xxx xxx xxx"
           />
-        </Grid>
+        </Grid> */}
 
         <Grid item md={12} xs={12} sx={{ mb: '70px' }}>
           {children}

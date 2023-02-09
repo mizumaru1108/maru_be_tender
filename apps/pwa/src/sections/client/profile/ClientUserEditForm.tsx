@@ -46,16 +46,15 @@ function ClientProfileEditForm() {
 
   useEffect(() => {
     if (data?.user_by_pk) {
-      const { email, mobile_number, employee_name, password } = data?.user_by_pk;
+      const { email } = data?.user_by_pk;
       // console.log('data:', data?.user_by_pk);1
       setProfileState((prevState: any) => ({
         ...prevState,
         form1: {
           ...prevState.form1,
           email,
-          mobile_number,
-          employee_name,
-          current_password: password,
+          // mobile_number,
+          // employee_name,
         },
       }));
     }

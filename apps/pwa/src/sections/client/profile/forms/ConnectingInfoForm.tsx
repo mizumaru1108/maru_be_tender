@@ -124,7 +124,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
             disabled={isEdit}
             name="phone"
             label={translate('register_form2.phone.label')}
-            placeholder={translate('register_form2.phone.placeholder')}
+            placeholder={'xxx xxx xxx'}
           />
         </Grid>
         <Grid item md={12} xs={12}>

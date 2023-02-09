@@ -36,7 +36,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props,
 });
 
 function AddNewUser() {
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
 
   const { activeRole } = useAuth();
 
@@ -188,7 +188,8 @@ function AddNewUser() {
               <BaseField
                 type="textField"
                 name="mobile_number"
-                label="رقم الجوال*"
+                // label="*رقم الجوال"
+                label={currentLang.value === 'ar' ? '*رقم الجوال' : 'رقم الجوال*'}
                 placeholder="الرجاء كتابة رقم الجوال"
               />
             </Grid>

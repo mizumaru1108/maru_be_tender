@@ -203,7 +203,7 @@ const ar = {
       },
       ceo_mobile: {
         message: '',
-        required: 'رقم جوال المدير العام مطلوب',
+        required: '*رقم جوال المدير العام مطلوب',
         length: 'رقم جوال المدير العام يجب أن يكون 9 أرقام',
       },
       chairman_name: {
@@ -212,7 +212,7 @@ const ar = {
       },
       chairman_mobile: {
         message: '',
-        required: 'رقم جوال رئيس مجلس الإدارة مطلوب',
+        required: '*رقم جوال رئيس مجلس الإدارة مطلوب',
         length: 'رقم جوال رئيس مجلس الإدارة يجب أن يكون 9 أرقام',
       },
       data_entry_name: {
@@ -225,7 +225,7 @@ const ar = {
       },
       data_entry_mobile: {
         message: '',
-        required: 'رقم جوال مسؤول البيانات مطلوب',
+        required: '*رقم جوال مسؤول البيانات مطلوب',
         length: 'رقم جوال مسؤول البيانات يجب أن يكون 9 أرقام',
       },
       bank_account_number: {
@@ -518,13 +518,13 @@ const ar = {
       options: {},
     },
     mobile_number: {
-      label: 'جوال الجهة*',
+      label: '*جوال الجهة',
       placeholder: 'الرجاء كتابة الرقم, مثال: 966511111111+',
       options: {},
     },
     phone: {
-      label: 'الهاتف',
-      placeholder: 'الرجاء كتابة رقم الهاتف, مثال: 9661xxxxxxxx+',
+      label: '*الهاتف',
+      placeholder: 'xxx xxx xxxx',
     },
     twitter: {
       label: 'حساب تويتر',
@@ -588,7 +588,7 @@ const ar = {
       placeholder: 'الرجاء كتابة اسم المدير التنفيذي',
     },
     executive_director_mobile: {
-      label: 'جوال المدير التنفيذي*',
+      label: '*جوال المدير التنفيذي',
       placeholder: 'الرجاء كتابة جوال المدير التنفيذي',
     },
     chairman_name: {
@@ -604,7 +604,7 @@ const ar = {
       placeholder: 'الرجاء كتابة اسم مدخل البيانات',
     },
     entery_data_phone: {
-      label: 'جوال مدخل البيانات*',
+      label: '*جوال مدخل البيانات',
       placeholder: 'الرجاء كتابة جوال مدخل البيانات',
     },
     entery_data_email: {
@@ -615,7 +615,7 @@ const ar = {
   },
   register_form5: {
     bank_account_number: {
-      label: 'أيبان الحساب البنكي*',
+      label: '*أيبان الحساب البنكي',
       placeholder: 'XX XXXX XXXX XXXX XXXX XXXX',
     },
     bank_account_name: {
@@ -696,7 +696,7 @@ const ar = {
       placeholder: 'الرجاء كتابة اسم مدير الإدارة',
     },
     mobile_number: {
-      label: 'رقم الجوال*',
+      label: '*رقم الجوال',
       placeholder: 'الرجاء كتابة رقم الجوال',
     },
     email: {
@@ -749,8 +749,8 @@ const ar = {
   },
   funding_project_request_form6: {
     bank_account_number: {
-      label: 'أيبان الحساب البنكي*',
-      placeholder: 'رقم الحساب البنكي',
+      label: '*أيبان الحساب البنكي',
+      placeholder: 'XX XXXX XXXX XXXX XXXX XXXX',
     },
     bank_account_name: {
       label: 'اسم الحساب البنكي*',
