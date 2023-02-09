@@ -898,6 +898,7 @@ export class TenderClientService {
       // console.log(logUtil(uploadedFilePath));
 
       const response = await this.tenderClientRepository.createUpdateRequest(
+        user.id,
         newEditRequest,
         fileManagerCreateManyPayload,
       );

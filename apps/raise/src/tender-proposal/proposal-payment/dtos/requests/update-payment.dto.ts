@@ -8,6 +8,7 @@ import {
   ValidateNested,
   IsDate,
 } from 'class-validator';
+import { TenderFilePayload } from '../../../../tender-commons/dto/tender-file-payload.dto';
 import { UploadFilesJsonbDto } from '../../../../tender-commons/dto/upload-files-jsonb.dto';
 
 class CreateChequeDto {
@@ -25,8 +26,8 @@ class CreateChequeDto {
   @ApiProperty()
   @IsNotEmpty()
   @ValidateNested()
-  @Type(() => UploadFilesJsonbDto)
-  transfer_receipt: UploadFilesJsonbDto;
+  @Type(() => TenderFilePayload)
+  transfer_receipt: TenderFilePayload;
 }
 
 export class UpdatePaymentDto {

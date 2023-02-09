@@ -4,33 +4,63 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Prisma, proposal } from '@prisma/client';
-import { nanoid } from 'nanoid';
-import { actionValidator } from '../../../tender-commons/utils/action-validator';
-import { ownershipErrorThrow } from '../../../tender-commons/utils/proposal-ownership-error-thrower';
-import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
-import { UpdatePaymentResponseDto } from '../dtos/responses/update-payment-response.dto';
-import { TenderProposalPaymentRepository } from '../repositories/tender-proposal-payment.repository';
-import { TenderProposalRepository } from '../../tender-proposal/repositories/tender-proposal.repository';
+import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
+import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
+import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
+import { validateFileSize } from '../../../commons/utils/validate-file-size';
+import { BunnyService } from '../../../libs/bunny/services/bunny.service';
+import { EmailService } from '../../../libs/email/email.service';
+import { ROOT_LOGGER } from '../../../libs/root-logger';
+import { TwilioService } from '../../../libs/twilio/services/twilio.service';
+import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
 import {
   appRoleMappers,
   TenderAppRole,
   TenderAppRoleEnum,
 } from '../../../tender-commons/types';
-import { CreateProposalPaymentDto } from '../dtos/requests/create-payment.dto';
-import { UpdatePaymentDto } from '../dtos/requests/update-payment.dto';
 import {
   InnerStatusEnum,
   OutterStatusEnum,
 } from '../../../tender-commons/types/proposal';
+import { actionValidator } from '../../../tender-commons/utils/action-validator';
+import { generateFileName } from '../../../tender-commons/utils/generate-filename';
+import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
+import { ownershipErrorThrow } from '../../../tender-commons/utils/proposal-ownership-error-thrower';
+import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
+import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
+import { TenderProposalRepository } from '../../tender-proposal/repositories/tender-proposal.repository';
+import { CreateProposalPaymentDto } from '../dtos/requests/create-payment.dto';
+import { UpdatePaymentDto } from '../dtos/requests/update-payment.dto';
+import { UpdatePaymentResponseDto } from '../dtos/responses/update-payment-response.dto';
 import { CreateManyPaymentMapper } from '../mappers/create-many-payment.mapper';
-
+import { TenderProposalPaymentRepository } from '../repositories/tender-proposal-payment.repository';
+import { v4 as uuidv4 } from 'uuid';
+import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
+import { CreateChequeMapper } from '../mappers/create-cheque.mapper';
+import { TenderProposalLogRepository } from '../../tender-proposal-log/repositories/tender-proposal-log.repository';
 @Injectable()
 export class TenderProposalPaymentService {
+  private readonly appEnv: string;
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': TenderProposalPaymentService.name,
+  });
+
   constructor(
+    private readonly configService: ConfigService,
+    private readonly bunnyService: BunnyService,
+    private readonly emailService: EmailService,
+    private readonly twilioService: TwilioService,
+    private readonly notificationService: TenderNotificationService,
     private readonly tenderProposalRepository: TenderProposalRepository,
+    private readonly tenderProposalLogRepository: TenderProposalLogRepository,
     private readonly tenderProposalPaymentRepository: TenderProposalPaymentRepository,
-  ) {}
+  ) {
+    const environment = this.configService.get('APP_ENV');
+    if (!environment) envLoadErrorHelper('APP_ENV');
+    this.appEnv = environment;
+  }
 
   async insertPayment(
     currentUserId: string,
@@ -97,85 +127,179 @@ export class TenderProposalPaymentService {
     currentUser: TenderCurrentUser,
     request: UpdatePaymentDto,
   ): Promise<UpdatePaymentResponseDto> {
-    const { id: userId, choosenRole } = currentUser;
-    const { payment_id, action, cheque } = request;
+    let uploadedFilePath: string[] = [];
+    try {
+      const { id: userId, choosenRole } = currentUser;
+      const { payment_id, action, cheque } = request;
 
-    const payment = await this.tenderProposalPaymentRepository.findPaymentById(
-      payment_id,
-    );
-    if (!payment) throw new NotFoundException('Payment not found');
+      const payment =
+        await this.tenderProposalPaymentRepository.findPaymentById(payment_id);
+      if (!payment) throw new NotFoundException('Payment not found');
 
-    const proposal = await this.tenderProposalRepository.fetchProposalById(
-      payment.proposal_id,
-    );
-    if (!proposal) {
-      throw new NotFoundException('No proposal data found on this payment');
-    }
+      const proposal = await this.tenderProposalRepository.fetchProposalById(
+        payment.proposal_id,
+      );
+      if (!proposal) {
+        throw new NotFoundException('No proposal data found on this payment');
+      }
 
-    let status:
-      | 'SET_BY_SUPERVISOR'
-      | 'ISSUED_BY_SUPERVISOR'
-      | 'ACCEPTED_BY_PROJECT_MANAGER'
-      | 'ACCEPTED_BY_FINANCE'
-      | 'DONE'
-      | null = null;
+      const lastLog =
+        await this.tenderProposalLogRepository.findLastLogCreateAtByProposalId(
+          proposal.id,
+        );
 
-    let chequeData: Prisma.chequeCreateInput | null = null;
+      let status:
+        | 'SET_BY_SUPERVISOR'
+        | 'ISSUED_BY_SUPERVISOR'
+        | 'ACCEPTED_BY_PROJECT_MANAGER'
+        | 'ACCEPTED_BY_FINANCE'
+        | 'DONE'
+        | null = null;
 
-    if (choosenRole === 'tender_project_manager') {
-      if (proposal.project_manager_id !== userId) ownershipErrorThrow();
-      actionValidator(['accept', 'reject'], action);
-      if (action === 'accept') status = 'ACCEPTED_BY_PROJECT_MANAGER';
-      if (action === 'reject') status = 'SET_BY_SUPERVISOR';
-    }
+      let chequeObj: UploadFilesJsonbDto | undefined = undefined;
+      let chequeCreatePayload: Prisma.chequeUncheckedCreateInput | undefined =
+        undefined;
+      const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
+        [];
 
-    if (choosenRole === 'tender_finance') {
-      if (proposal.finance_id !== userId) ownershipErrorThrow();
-      actionValidator(['accept'], action);
-      if (action === 'accept') status = 'ACCEPTED_BY_FINANCE';
-      // !TODO: if (action is edit) do something, still abmigous, need to discuss.
-    }
+      if (choosenRole === 'tender_project_manager') {
+        if (proposal.project_manager_id !== userId) ownershipErrorThrow();
+        actionValidator(['accept', 'reject'], action);
+        if (action === 'accept') status = 'ACCEPTED_BY_PROJECT_MANAGER';
+        if (action === 'reject') status = 'SET_BY_SUPERVISOR';
+      }
 
-    if (choosenRole === 'tender_project_supervisor') {
-      if (proposal.supervisor_id !== userId) ownershipErrorThrow();
-      actionValidator(['issue'], action);
-      if (action === 'issue') status = 'ISSUED_BY_SUPERVISOR';
-    }
+      if (choosenRole === 'tender_finance') {
+        if (proposal.finance_id !== userId) ownershipErrorThrow();
+        actionValidator(['accept'], action);
+        if (action === 'accept') status = 'ACCEPTED_BY_FINANCE';
+        // !TODO: if (action is edit) do something, still abmigous, need to discuss.
+      }
 
-    if (choosenRole === 'tender_cashier') {
-      if (proposal.cashier_id !== userId) ownershipErrorThrow();
-      actionValidator(['upload_receipt'], action);
-      if (!cheque) throw new BadRequestException('Cheque data is required!');
-      if (action === 'upload_receipt') status = 'DONE';
-      chequeData = {
-        id: nanoid(),
-        deposit_date: cheque.deposit_date,
-        number: cheque.number,
-        transfer_receipt: {
-          url: cheque.transfer_receipt.url,
-          size: cheque.transfer_receipt.size,
-          type: cheque.transfer_receipt.type,
-        },
-        payment: {
-          connect: {
-            id: payment_id,
-          },
-        },
+      if (choosenRole === 'tender_project_supervisor') {
+        if (proposal.supervisor_id !== userId) ownershipErrorThrow();
+        actionValidator(['issue'], action);
+        if (action === 'issue') status = 'ISSUED_BY_SUPERVISOR';
+      }
+
+      if (choosenRole === 'tender_cashier') {
+        if (proposal.cashier_id !== userId) ownershipErrorThrow();
+        actionValidator(['upload_receipt'], action);
+        if (!cheque) throw new BadRequestException('Cheque data is required!');
+        if (action === 'upload_receipt') status = 'DONE';
+        const uploadResult = await this.uploadPaymentFileFile(
+          proposal.id,
+          `Uploading cheque for payment ${payment_id}`,
+          request.cheque.transfer_receipt,
+          'cheque',
+          [
+            FileMimeTypeEnum.JPG,
+            FileMimeTypeEnum.JPEG,
+            FileMimeTypeEnum.PNG,
+            FileMimeTypeEnum.PDF,
+          ],
+          undefined,
+          uploadedFilePath,
+        );
+        uploadedFilePath = uploadResult.uploadedFilePath;
+        chequeObj = uploadResult.fileObj;
+
+        const payload: Prisma.file_managerUncheckedCreateInput = {
+          id: uuidv4(),
+          user_id: userId,
+          name: uploadResult.fileObj.url.split('/').pop() as string,
+          url: uploadResult.fileObj.url,
+          mimetype: uploadResult.fileObj.type,
+          size: uploadResult.fileObj.size,
+          proposal_id: proposal.id,
+          column_name: 'transfer_receipt',
+          table_name: 'cheque',
+        };
+        fileManagerCreateManyPayload.push(payload);
+
+        chequeCreatePayload = CreateChequeMapper(request, chequeObj);
+      }
+
+      const response = await this.tenderProposalPaymentRepository.updatePayment(
+        payment_id,
+        status,
+        currentUser.id,
+        appRoleMappers[choosenRole] as TenderAppRole,
+        chequeCreatePayload,
+        fileManagerCreateManyPayload,
+        lastLog,
+      );
+
+      return {
+        updatedPayment: response.payment,
+        createdCheque: response.cheque,
+        createdLogs: response.logs,
       };
+    } catch (err) {
+      throw err;
     }
+  }
 
-    const response = await this.tenderProposalPaymentRepository.updatePayment(
-      payment_id,
-      status,
-      currentUser.id,
-      appRoleMappers[choosenRole] as TenderAppRole,
-      chequeData,
-    );
+  async uploadPaymentFileFile(
+    proposalId: string,
+    uploadMessage: string,
+    file: TenderFilePayload,
+    folderName: string,
+    AllowedFileTypes: FileMimeTypeEnum[],
+    maxSize: number = 1024 * 1024 * 6,
+    uploadedFilePath: string[],
+  ) {
+    try {
+      let fileName = generateFileName(
+        file.fullName,
+        file.fileExtension as FileMimeTypeEnum,
+      );
 
-    return {
-      updatedPayment: response.payment,
-      createdCheque: response.cheque,
-      createdLogs: response.logs,
-    };
+      let filePath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposalId}/${folderName}/${fileName}`;
+
+      let fileBuffer = Buffer.from(
+        file.base64Data.replace(/^data:.*;base64,/, ''),
+        'base64',
+      );
+
+      validateAllowedExtension(file.fileExtension, AllowedFileTypes);
+      validateFileSize(file.size, maxSize);
+
+      const imageUrl = await this.bunnyService.uploadFileBase64(
+        file.fullName,
+        fileBuffer,
+        filePath,
+        `${uploadMessage}`,
+      );
+
+      uploadedFilePath.push(imageUrl);
+      let fileObj = {
+        url: imageUrl,
+        type: file.fileExtension,
+        size: file.size,
+      };
+
+      return {
+        uploadedFilePath,
+        fileObj,
+      };
+    } catch (error) {
+      if (uploadedFilePath.length > 0) {
+        this.logger.log(
+          'log',
+          `${uploadMessage} error, deleting all previous uploaded files: ${error}`,
+        );
+        uploadedFilePath.forEach(async (path) => {
+          await this.bunnyService.deleteMedia(path, true);
+        });
+      }
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalPaymentService.name,
+        `${uploadMessage}, error:`,
+        `${uploadMessage}`,
+      );
+      throw theError;
+    }
   }
 }

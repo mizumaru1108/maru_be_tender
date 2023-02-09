@@ -345,6 +345,7 @@ export class TenderClientRepository {
   }
 
   async createUpdateRequest(
+    userId: string,
     editRequestLogPayload: Prisma.edit_requestsUncheckedCreateInput,
     fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
   ) {
@@ -365,6 +366,15 @@ export class TenderClientRepository {
             data: fileManagerCreateManyPayload,
           });
         }
+
+        await prisma.edit_requests.deleteMany({
+          where: {
+            user_id: userId,
+            status_id: {
+              in: ['APPROVED', 'REJECTED'],
+            },
+          },
+        });
 
         return createdEditRequest;
       });

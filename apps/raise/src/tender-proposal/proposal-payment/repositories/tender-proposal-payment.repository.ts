@@ -121,12 +121,19 @@ export class TenderProposalPaymentRepository {
     status: string | null,
     reviewerId: string,
     choosenRole: TenderAppRole,
-    chequeData?: Prisma.chequeCreateInput | null,
+    chequeCreatePayload: Prisma.chequeUncheckedCreateInput | undefined,
+    fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
+    lastLog: {
+      created_at: Date;
+    } | null,
   ) {
-    this.logger.debug(`updating payment by id of ${paymentId}...`);
     try {
       return await this.prismaService.$transaction(
         async (prisma) => {
+          this.logger.log(
+            'info',
+            `updating payment status of ${paymentId} to ${status}`,
+          );
           const payment = await prisma.payment.update({
             where: {
               id: paymentId,
@@ -137,12 +144,17 @@ export class TenderProposalPaymentRepository {
           });
 
           let cheque: cheque | null = null;
-          if (chequeData) {
+          if (chequeCreatePayload) {
+            this.logger.log(
+              'info',
+              `creating cheque records with payload of\n${chequeCreatePayload}`,
+            );
             cheque = await prisma.cheque.create({
-              data: chequeData,
+              data: chequeCreatePayload,
             });
           }
 
+          this.logger.log('info', `Creating Proposal Log`);
           const logs = await prisma.proposal_log.create({
             data: {
               id: nanoid(),
@@ -150,8 +162,27 @@ export class TenderProposalPaymentRepository {
               action: status,
               reviewer_id: reviewerId,
               state: choosenRole,
+              response_time: lastLog
+                ? Math.round(
+                    (new Date().getTime() - lastLog.created_at.getTime()) /
+                      60000,
+                  )
+                : null,
             },
           });
+
+          if (
+            fileManagerCreateManyPayload &&
+            fileManagerCreateManyPayload.length > 0
+          ) {
+            this.logger.log(
+              'info',
+              `Creating file manager with payload of \n${fileManagerCreateManyPayload}`,
+            );
+            await prisma.file_manager.createMany({
+              data: fileManagerCreateManyPayload,
+            });
+          }
 
           return {
             payment,
