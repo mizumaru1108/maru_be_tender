@@ -132,7 +132,7 @@ function FifthForm({ children, onSubmit }: any) {
                       helperText={error?.message}
                       sx={{
                         '& > .MuiFormHelperText-root': {
-                          backgroundColor: 'white',
+                          backgroundColor: 'transparent',
                         },
                       }}
                     />
@@ -157,7 +157,7 @@ function FifthForm({ children, onSubmit }: any) {
                       helperText={error?.message}
                       sx={{
                         '& > .MuiFormHelperText-root': {
-                          backgroundColor: 'white',
+                          backgroundColor: 'transparent',
                         },
                       }}
                     />
@@ -181,7 +181,7 @@ function FifthForm({ children, onSubmit }: any) {
                       helperText={error?.message}
                       sx={{
                         '& > .MuiFormHelperText-root': {
-                          backgroundColor: 'white',
+                          backgroundColor: 'transparent',
                         },
                       }}
                     />

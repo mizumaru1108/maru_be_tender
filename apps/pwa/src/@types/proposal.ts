@@ -82,6 +82,7 @@ export interface Proposal {
   project_risks: string;
   bank_informations: BankInformation[];
   amount_required_fsupport: number;
+  fsupport_by_supervisor: number;
   letter_ofsupport_req: { url: string; size: number | undefined; type: string };
   project_attachments: { url: string; size: number | undefined; type: string };
   project_beneficiaries: string;

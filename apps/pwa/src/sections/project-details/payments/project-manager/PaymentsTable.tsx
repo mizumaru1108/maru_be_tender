@@ -7,8 +7,10 @@ import { updatePaymentBySupervisorAndManagerAndFinance } from 'redux/slices/prop
 import React from 'react';
 import useLocales from 'hooks/useLocales';
 import { fCurrencyNumber } from 'utils/formatNumber';
+import useAuth from 'hooks/useAuth';
 
 function PaymentsTable() {
+  const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
 
   const dispatch = useDispatch();
@@ -20,16 +22,23 @@ function PaymentsTable() {
   const handleApprovalPayment = async (id: string) => {
     try {
       await dispatch(
-        updatePaymentBySupervisorAndManagerAndFinance({ id, status: 'ACCEPTED_BY_PROJECT_MANAGER' })
-      );
-      enqueueSnackbar('تم قبول أذن الصرف بنجاح', {
-        variant: 'success',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
+        updatePaymentBySupervisorAndManagerAndFinance({
+          id,
+          role: activeRole!,
+          action: 'accept',
+        })
+      ).then((res) => {
+        if (res.data.statusCode === 200) {
+          enqueueSnackbar('تم قبول أذن الصرف بنجاح', {
+            variant: 'success',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'right',
+            },
+          });
+        }
       });
     } catch (error) {
       enqueueSnackbar(error.message, {
@@ -47,16 +56,19 @@ function PaymentsTable() {
   const handleRejectPayment = async (id: string) => {
     try {
       await dispatch(
-        updatePaymentBySupervisorAndManagerAndFinance({ id, status: 'SET_BY_SUPERVISOR' })
-      );
-      enqueueSnackbar('تم رفض أذن الصرف بنجاح', {
-        variant: 'success',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
+        updatePaymentBySupervisorAndManagerAndFinance({ id, role: activeRole!, action: 'reject' })
+      ).then((res) => {
+        if (res.data.statusCode === 200) {
+          enqueueSnackbar('تم رفض أذن الصرف بنجاح', {
+            variant: 'success',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'right',
+            },
+          });
+        }
       });
     } catch (error) {
       enqueueSnackbar(error.message, {
@@ -77,7 +89,7 @@ function PaymentsTable() {
     <>
       {proposal.payments.map((item, index) => (
         <Grid item md={12} key={index} sx={{ mb: '20px' }}>
-          <Grid container direction="row" key={index}>
+          <Grid container direction="row" key={index} spacing={2} alignItems="center">
             <Grid item md={2}>
               <Typography variant="h6">
                 <Typography component="span">
@@ -140,7 +152,9 @@ function PaymentsTable() {
                       handleRejectPayment(item.id);
                     }}
                   >
-                    رفض إذن الصرف
+                    {translate(
+                      'content.administrative.project_details.payment.table.btn.exchange_permit_refuse'
+                    )}
                   </Button>
                 </Grid>
                 <Grid item md={2}>
@@ -154,7 +168,9 @@ function PaymentsTable() {
                       handleApprovalPayment(item.id);
                     }}
                   >
-                    اعتماد إذن الصرف
+                    {translate(
+                      'content.administrative.project_details.payment.table.btn.exchange_permit_approve'
+                    )}
                   </Button>
                 </Grid>
               </>

@@ -6,9 +6,11 @@ import { useSelector } from 'redux/store';
 import { useQuery } from 'urql';
 import PaymentsSetForm from './PaymentsSetForm';
 import PaymentsTable from './PaymentsTable';
+import useLocales from 'hooks/useLocales';
 import { fCurrencyNumber } from 'utils/formatNumber';
 
 function SupervisorPaymentsPage() {
+  const { translate } = useLocales();
   const { id: proposal_id } = useParams();
 
   const { proposal } = useSelector((state) => state.proposal);
@@ -82,14 +84,18 @@ function SupervisorPaymentsPage() {
               المبلغ المصروف
             </Typography>
             <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-              {fCurrencyNumber(
+              {/* {fCurrencyNumber(
                 proposal.payments.reduce((acc, curr) => acc + (curr.payment_amount || 0), 0)
-              )}
+              )} */}
+              {fCurrencyNumber(proposal.fsupport_by_supervisor)}
             </Typography>
           </Box>
         </Grid>
         <Grid item md={12}>
           <Typography variant="h4">تقسيم الدفعات</Typography>
+          <Typography variant="h4">
+            {translate('content.administrative.project_details.payment.heading.split_payments')}
+          </Typography>
         </Grid>
         {proposal.payments.length === 0 ? <PaymentsSetForm /> : <PaymentsTable />}
       </Grid>

@@ -57,6 +57,7 @@ const en = {
             iban: 'Iban',
             registered_payments: 'The number of registered payments',
             total_budget: 'The total budget of the project',
+            amount_spent: 'Amount spent',
             split_payments: 'Split payments',
           },
           table: {
@@ -67,6 +68,11 @@ const en = {
             },
             btn: {
               review_transfer_receipt: 'Review the transfer receipt',
+              exchange_permit_success: 'The exchange permit has been issued successfully',
+              exchange_permit_issued: 'Issuance of an exchange permit',
+              exchange_permit_refuse: 'Refuse permission to exchange',
+              exchange_permit_approve: 'Approval of the exchange authorization',
+              exchange_permit_accept_finance: 'Acceptance of exchange authorization',
             },
           },
         },
@@ -262,6 +268,11 @@ const en = {
         message: '',
         required: 'Execution time is required',
         greater_than_0: 'Execution time must be greater than 0',
+      },
+      vat_percentage: {
+        message: '',
+        required: 'Vat percentage is required',
+        greater_than_0: 'Vat percentage must be greater than or equal to 1',
       },
       project_beneficiaries: {
         message: '',

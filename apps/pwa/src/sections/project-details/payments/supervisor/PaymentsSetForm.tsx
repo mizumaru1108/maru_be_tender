@@ -65,47 +65,23 @@ function PaymentsSetForm() {
   const handleOnSubmit = async (data: any) => {
     setIsSubmitting(true);
     try {
-      const grandAmountTotal = data?.payments.reduce(
-        (acc: any, curr: { payment_amount: any }) => acc + (curr.payment_amount || 0),
-        0
-      );
-
-      const amountFSupport = proposal?.amount_required_fsupport;
-
-      if (grandAmountTotal > amountFSupport) {
-        enqueueSnackbar('Your payment exceeds the total budget', {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-        });
-
-        setIsSubmitting(false);
-      } else {
-        await dispatch(
-          insertPaymentsBySupervisor({
-            payments: data?.payments.map((item: any, index: any) => ({
-              id: uuidv4(),
-              payment_amount: item.payment_amount,
-              payment_date: item.payment_date,
-              status: 'SET_BY_SUPERVISOR',
-              proposal_id,
-              order: index + 1,
-            })),
+      await dispatch(
+        insertPaymentsBySupervisor({
+          payments: data?.payments.map((item: any, index: any) => ({
+            payment_amount: item.payment_amount,
+            payment_date: item.payment_date,
             proposal_id,
-            role: activeRole!,
-          })
-        ).then((res) => {
-          if (res.statusCode === 200) {
-            console.log('res', res);
-            setIsSubmitting(false);
-            enqueueSnackbar('تم إنشاء الدفعات بنجاح', { variant: 'success' });
-          }
-
-          // console.log('res', res);
-          // setIsSubmitting(false);
-          // enqueueSnackbar('تم إنشاء الدفعات بنجاح', { variant: 'success' });
-        });
-      }
+            order: index + 1,
+          })),
+          proposal_id,
+          role: activeRole!,
+        })
+      ).then((res) => {
+        if (res.statusCode === 201) {
+          setIsSubmitting(false);
+          enqueueSnackbar('تم إنشاء الدفعات بنجاح', { variant: 'success' });
+        }
+      });
     } catch (error) {
       if (typeof error.message === 'object') {
         error.message.forEach((el: any) => {

@@ -16,7 +16,7 @@ function ProjectBudget() {
         {translate('support_type')}
       </Typography>
       <Typography sx={{ mb: '20px' }}>
-        {proposal.support_type ? translate('full_support') : translate('partial_support')}
+        {!proposal.support_type ? translate('full_support') : translate('partial_support')}
       </Typography>
       <Box
         sx={{

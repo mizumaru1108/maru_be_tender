@@ -69,7 +69,10 @@ function ProjectPath() {
   React.useEffect(() => {
     if (followUps?.log) {
       setActiveStep(followUps.log.length - 1);
-      setStepUserRole(followUps.log[followUps.log.length - 1].user_role);
+
+      setStepUserRole(
+        followUps?.log.length ? followUps.log[followUps.log.length - 1].user_role : ''
+      );
     }
     // getDay();
   }, [followUps]);
@@ -82,25 +85,33 @@ function ProjectPath() {
       <Grid item md={8} xs={8} sx={{ backgroundColor: 'transparent', px: 6 }}>
         <Stack direction="column" gap={2} justifyContent="start">
           <Typography variant="h6">{translate(`review.order_status`)}</Typography>
-          {followUps.log.map((item: Log, index: number) => (
-            <React.Fragment key={index}>
-              {index === activeStep && (
-                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                  <Typography>{item.action}</Typography>
-                </Stack>
-              )}
-            </React.Fragment>
-          ))}
+          {followUps.log.length ? (
+            followUps.log.map((item: Log, index: number) => (
+              <React.Fragment key={index}>
+                {index === activeStep && (
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>{item.action}</Typography>
+                  </Stack>
+                )}
+              </React.Fragment>
+            ))
+          ) : (
+            <Typography variant="caption">-</Typography>
+          )}
           <Typography variant="h6">{translate(`review.classification_field`)}</Typography>
-          {followUps.log.map((item: Log, index: number) => (
-            <React.Fragment key={index}>
-              {index === activeStep && (
-                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                  <Typography>{item.notes}</Typography>
-                </Stack>
-              )}
-            </React.Fragment>
-          ))}
+          {followUps.log ? (
+            followUps.log.map((item: Log, index: number) => (
+              <React.Fragment key={index}>
+                {index === activeStep && (
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>{item.notes}</Typography>
+                  </Stack>
+                )}
+              </React.Fragment>
+            ))
+          ) : (
+            <Typography variant="caption">-</Typography>
+          )}
           <Divider />
           {stepUserRole !== 'PROJECT_SUPERVISOR' ? null : (
             <React.Fragment>

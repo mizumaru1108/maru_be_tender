@@ -68,6 +68,11 @@ const ar = {
             },
             btn: {
               review_transfer_receipt: 'استعراض ايصال التحويل',
+              exchange_permit_success: 'تم اصدار إذن الصرف بنجاح',
+              exchange_permit_issued: 'إصدار إذن صرف',
+              exchange_permit_refuse: 'رفض إذن الصرف',
+              exchange_permit_approve: 'اعتماد إذن الصرف',
+              exchange_permit_accept_finance: 'قبول إذن الصرف',
             },
           },
         },
@@ -274,6 +279,11 @@ const ar = {
         message: '',
         required: 'مدة التنفيذ مطلوبة',
         greater_than_0: 'يجب أن يكون وقت التنفيذ أكبر من 0',
+      },
+      vat_percentage: {
+        message: '',
+        required: 'نسبة ضريبة القيمة المضافة مطلوبة',
+        greater_than_0: 'يجب أن تكون النسبة المئوية لضريبة القيمة المضافة أكبر من أو تساوي 1',
       },
       project_beneficiaries: {
         message: '',
@@ -1361,7 +1371,7 @@ const ar = {
   partial_support: 'دعم جزئي',
   with: 'مع',
   amount: 'مقدار',
-  project_idea: '>فكرة المشروع:',
+  project_idea: 'فكرة المشروع:',
   project_goals: 'أهداف المشروع:',
   project_outputs: 'مخرجات المشروع:',
   project_strengths: 'نقاط القوة للمشروع:',

@@ -3,9 +3,13 @@ import { useSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'redux/store';
 import { updatePaymentBySupervisorAndManagerAndFinance } from 'redux/slices/proposal';
+import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
 
 function PaymentsTable() {
+  const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
+  const { translate } = useLocales();
 
   const dispatch = useDispatch();
 
@@ -16,19 +20,27 @@ function PaymentsTable() {
   const handleIssuePayment = async (data: any) => {
     try {
       await dispatch(
+        // updatePaymentBySupervisorAndManagerAndFinance({
+        //   id: data.id,
+        //   status: 'ISSUED_BY_SUPERVISOR',
+        // })
         updatePaymentBySupervisorAndManagerAndFinance({
           id: data.id,
-          status: 'ISSUED_BY_SUPERVISOR',
+          role: activeRole!,
+          action: 'issue',
         })
-      );
-      enqueueSnackbar('تم إصدار أذن الصرف بنجاح', {
-        variant: 'success',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
+      ).then((res) => {
+        if (res.data.statusCode === 200) {
+          enqueueSnackbar('تم إصدار أذن الصرف بنجاح', {
+            variant: 'success',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'right',
+            },
+          });
+        }
       });
     } catch (error) {
       enqueueSnackbar(error.message, {
@@ -56,16 +68,20 @@ function PaymentsTable() {
     <>
       {proposal.payments.map((item, index) => (
         <Grid item md={12} key={index} sx={{ mb: '20px' }}>
-          <Grid container direction="row" key={index}>
+          <Grid container direction="row" key={index} spacing={2} alignItems="center">
             <Grid item md={2}>
-              <Typography
-                variant="h6"
-                sx={{ alignSelf: 'center' }}
-              >{`الدفعة رقم ${item.order}`}</Typography>
+              <Typography variant="h6" sx={{ alignSelf: 'center' }}>
+                <Typography component="span">
+                  {translate('content.administrative.project_details.payment.table.td.batch_no')}
+                </Typography>
+                <Typography component="span">&nbsp;{item.order}</Typography>
+              </Typography>
             </Grid>
             <Grid item md={2}>
               <Stack direction="column">
-                <Typography sx={{ color: '#93A3B0' }}>مبلغ الدفعة:</Typography>
+                <Typography sx={{ color: '#93A3B0' }}>
+                  {translate('content.administrative.project_details.payment.table.td.payment_no')}:
+                </Typography>
                 <Typography sx={{ color: '#1E1E1E' }} variant="h6">
                   {item.payment_amount}
                 </Typography>
@@ -73,7 +89,9 @@ function PaymentsTable() {
             </Grid>
             <Grid item md={2}>
               <Stack direction="column">
-                <Typography sx={{ color: '#93A3B0' }}>تاريخ الدفعة:</Typography>
+                <Typography sx={{ color: '#93A3B0' }}>
+                  {translate('content.administrative.project_details.payment.table.td.batch_date')}:
+                </Typography>
                 <Typography sx={{ color: '#1E1E1E' }} variant="h6">
                   {new Date(item.payment_date).toISOString().substring(0, 10)}
                 </Typography>
@@ -82,7 +100,9 @@ function PaymentsTable() {
             {item.status !== 'SET_BY_SUPERVISOR' ? (
               <Grid item md={3}>
                 <Typography variant="h6" sx={{ color: '#0E8478' }}>
-                  تم اصدار إذن الصرف بنجاح
+                  {translate(
+                    'content.administrative.project_details.payment.table.btn.exchange_permit_success'
+                  )}
                 </Typography>
               </Grid>
             ) : (
@@ -99,7 +119,9 @@ function PaymentsTable() {
                     handleIssuePayment(item);
                   }}
                 >
-                  إصدار إذن صرف
+                  {translate(
+                    'content.administrative.project_details.payment.table.btn.exchange_permit_issued'
+                  )}
                 </Button>
               </Grid>
             )}
@@ -117,7 +139,9 @@ function PaymentsTable() {
                     textDecorationLine: 'underline',
                   }}
                 >
-                  استعراض ايصال التحويل
+                  {translate(
+                    'content.administrative.project_details.payment.table.btn.review_transfer_receipt'
+                  )}
                 </Button>
               </Grid>
             ) : (
@@ -125,7 +149,7 @@ function PaymentsTable() {
                 <Box>{''}</Box>
               </Grid>
             )}
-            <Grid item md={1} sx={{ textAlignLast: 'end' }}>
+            {/* <Grid item md={1} sx={{ textAlignLast: 'end' }}>
               <Button
                 sx={{
                   backgroundColor: '#0169DE',
@@ -152,7 +176,7 @@ function PaymentsTable() {
                   </defs>
                 </svg>
               </Button>
-            </Grid>
+            </Grid> */}
           </Grid>
         </Grid>
       ))}

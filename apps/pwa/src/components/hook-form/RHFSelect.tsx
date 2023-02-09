@@ -51,11 +51,11 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
                 </Typography>
               }
               {...other}
-              // sx={{
-              //   '& > .MuiFormHelperText-root': {
-              //     backgroundColor: 'white',
-              //   },
-              // }}
+              sx={{
+                '& > .MuiFormHelperText-root': {
+                  backgroundColor: 'transparent',
+                },
+              }}
             >
               {placeholder && (
                 <option value="" disabled selected>
@@ -76,11 +76,11 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
                 </Typography>
               }
               {...other}
-              // sx={{
-              //   '& > .MuiFormHelperText-root': {
-              //     backgroundColor: 'white',
-              //   },
-              // }}
+              sx={{
+                '& > .MuiFormHelperText-root': {
+                  backgroundColor: 'transparent',
+                },
+              }}
             >
               {!children &&
                 name === 'bank_name' &&

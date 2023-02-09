@@ -31,7 +31,7 @@ export default function RHFTextArea({ name, ...other }: Props) {
           {...other}
           sx={{
             '& > .MuiFormHelperText-root': {
-              backgroundColor: 'white',
+              backgroundColor: 'transparent',
             },
           }}
         />

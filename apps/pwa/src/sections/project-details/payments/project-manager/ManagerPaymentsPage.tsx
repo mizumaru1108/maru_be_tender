@@ -78,7 +78,7 @@ function ManagerPaymentsPage() {
                 color: theme.palette.primary.main,
               }}
             >
-              {proposal.number_of_payments ?? 0}&nbsp;
+              {proposal.number_of_payments_by_supervisor ?? 0}&nbsp;
             </Typography>
             <Typography
               component="span"

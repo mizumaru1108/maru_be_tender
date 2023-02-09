@@ -54,6 +54,7 @@ query getOneProposal($id: String!) {
    		id
     }
     amount_required_fsupport
+    fsupport_by_supervisor
     letter_ofsupport_req
     project_attachments
     project_beneficiaries

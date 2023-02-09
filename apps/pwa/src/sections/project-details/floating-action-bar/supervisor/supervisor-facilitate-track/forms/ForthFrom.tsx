@@ -133,7 +133,7 @@ function ForthFrom({ children, onSubmit }: any) {
                       helperText={error?.message}
                       sx={{
                         '& > .MuiFormHelperText-root': {
-                          backgroundColor: 'white',
+                          backgroundColor: 'transparent',
                         },
                       }}
                     />
@@ -158,7 +158,7 @@ function ForthFrom({ children, onSubmit }: any) {
                       helperText={error?.message}
                       sx={{
                         '& > .MuiFormHelperText-root': {
-                          backgroundColor: 'white',
+                          backgroundColor: 'transparent',
                         },
                       }}
                     />
@@ -182,7 +182,7 @@ function ForthFrom({ children, onSubmit }: any) {
                       helperText={error?.message}
                       sx={{
                         '& > .MuiFormHelperText-root': {
-                          backgroundColor: 'white',
+                          backgroundColor: 'transparent',
                         },
                       }}
                     />

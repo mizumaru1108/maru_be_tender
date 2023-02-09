@@ -47,7 +47,7 @@ function PaymentsTable() {
               </Stack>
             </Grid>
             {item.status !== 'SET_BY_SUPERVISOR' && (
-              <Grid item md={3} sx={{ textAlign: '-webkit-center', pt: '14px' }}>
+              <Grid item md={3}>
                 <Typography
                   sx={{
                     color: '#0E8478',

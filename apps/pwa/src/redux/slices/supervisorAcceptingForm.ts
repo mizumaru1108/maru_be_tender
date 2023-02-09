@@ -37,7 +37,7 @@ const initialState: SupervisorAcceptingForm = {
     notes: '',
     support_outputs: '',
     vat: undefined,
-    vat_percentage: 0,
+    vat_percentage: undefined,
     inclu_or_exclu: undefined,
     support_goal_id: '',
     accreditation_type_id: '',

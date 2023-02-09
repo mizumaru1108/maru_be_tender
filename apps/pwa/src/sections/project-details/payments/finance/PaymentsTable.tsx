@@ -7,8 +7,12 @@ import { updatePaymentBySupervisorAndManagerAndFinance } from 'redux/slices/prop
 import React from 'react';
 //
 import { fCurrencyNumber } from 'utils/formatNumber';
+import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
 
 function PaymentsTable() {
+  const { activeRole } = useAuth();
+  const { translate } = useLocales();
   const dispatch = useDispatch();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -18,16 +22,19 @@ function PaymentsTable() {
   const handleApprovalPayment = async (id: string) => {
     try {
       await dispatch(
-        updatePaymentBySupervisorAndManagerAndFinance({ id, status: 'ACCEPTED_BY_FINANCE' })
-      );
-      enqueueSnackbar('تم قبول أذن الصرف بنجاح', {
-        variant: 'success',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
+        updatePaymentBySupervisorAndManagerAndFinance({ id, role: activeRole!, action: 'accept' })
+      ).then((res) => {
+        if (res.data.statusCode === 200) {
+          enqueueSnackbar('تم قبول أذن الصرف بنجاح', {
+            variant: 'success',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'right',
+            },
+          });
+        }
       });
     } catch (error) {
       enqueueSnackbar(error.message, {
@@ -48,13 +55,20 @@ function PaymentsTable() {
     <>
       {proposal.payments.map((item, index) => (
         <Grid item md={12} key={index} sx={{ mb: '20px' }}>
-          <Grid container direction="row" key={index}>
+          <Grid container direction="row" key={index} spacing={2} alignItems="center">
             <Grid item md={2}>
-              <Typography variant="h6">{`الدفعة رقم ${item.order}`}</Typography>
+              <Typography variant="h6">
+                <Typography component="span">
+                  {translate('content.administrative.project_details.payment.table.td.batch_no')}
+                </Typography>
+                <Typography component="span">&nbsp;{item.order}</Typography>
+              </Typography>
             </Grid>
             <Grid item md={2}>
               <Stack direction="column">
-                <Typography sx={{ color: '#93A3B0' }}>مبلغ الدفعة:</Typography>
+                <Typography sx={{ color: '#93A3B0' }}>
+                  {translate('content.administrative.project_details.payment.table.td.payment_no')}:
+                </Typography>
                 <Typography sx={{ color: '#1E1E1E' }} variant="h6">
                   {fCurrencyNumber(item.payment_amount)}
                 </Typography>
@@ -62,20 +76,24 @@ function PaymentsTable() {
             </Grid>
             <Grid item md={2}>
               <Stack direction="column">
-                <Typography sx={{ color: '#93A3B0' }}>تاريخ الدفعة:</Typography>
+                <Typography sx={{ color: '#93A3B0' }}>
+                  {translate('content.administrative.project_details.payment.table.td.batch_date')}:
+                </Typography>
                 <Typography sx={{ color: '#1E1E1E' }} variant="h6">
                   {new Date(item.payment_date).toISOString().substring(0, 10)}
                 </Typography>
               </Stack>
             </Grid>
             {item.status !== 'SET_BY_SUPERVISOR' ? (
-              <Grid item md={2} sx={{ textAlign: '-webkit-center', pt: '14px' }}>
+              <Grid item md={2}>
                 <Typography
                   sx={{
                     color: '#0E8478',
                   }}
                 >
-                  تم اصدار إذن الصرف بنجاح
+                  {translate(
+                    'content.administrative.project_details.payment.table.btn.exchange_permit_success'
+                  )}
                 </Typography>
               </Grid>
             ) : (
@@ -92,13 +110,15 @@ function PaymentsTable() {
                     textDecorationLine: 'underline',
                   }}
                 >
-                  استعراض ايصال التحويل
+                  {translate(
+                    'content.administrative.project_details.payment.table.btn.review_transfer_receipt'
+                  )}
                 </Button>
               </Grid>
             )}
             {item.status === 'ACCEPTED_BY_PROJECT_MANAGER' && (
               <>
-                <Grid item md={2}>
+                {/* <Grid item md={2}>
                   <Button
                     variant="outlined"
                     startIcon={
@@ -131,8 +151,8 @@ function PaymentsTable() {
                   >
                     ارسال طلب تعديل
                   </Button>
-                </Grid>
-                <Grid item md={2}>
+                </Grid> */}
+                <Grid item>
                   <LoadingButton
                     variant="contained"
                     endIcon={<Check />}
@@ -141,7 +161,9 @@ function PaymentsTable() {
                       handleApprovalPayment(item.id);
                     }}
                   >
-                    قبول إذن الصرف
+                    {translate(
+                      'content.administrative.project_details.payment.table.btn.exchange_permit_accept_finance'
+                    )}
                   </LoadingButton>
                 </Grid>
               </>

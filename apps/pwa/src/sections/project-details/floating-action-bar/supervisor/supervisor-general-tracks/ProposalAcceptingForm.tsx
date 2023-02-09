@@ -78,9 +78,11 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
       })
     ),
     notes: Yup.string(),
-    support_outputs: Yup.string().required('support_outputs is required!'),
-    vat: Yup.boolean().required('vat is required!'),
-    vat_percentage: Yup.number().integer().min(1),
+    support_outputs: Yup.string().required('Procedures is required!'),
+    vat: Yup.boolean().required('Procedures is required!'),
+    vat_percentage: Yup.number()
+      .integer()
+      .min(1, translate('errors.cre_proposal.vat_percentage.greater_than_0')),
     inclu_or_exclu: Yup.boolean(),
     support_goal_id: Yup.string().required('Procedures is required!'),
   });
@@ -104,7 +106,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
     notes: '',
     support_outputs: '',
     vat: undefined,
-    vat_percentage: 0,
+    vat_percentage: undefined,
     inclu_or_exclu: undefined,
     support_goal_id: '',
   };
@@ -375,7 +377,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                               }
                               sx={{
                                 '& > .MuiFormHelperText-root': {
-                                  backgroundColor: 'white',
+                                  backgroundColor: 'transparent',
                                 },
                               }}
                             />
@@ -401,7 +403,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                               }
                               sx={{
                                 '& > .MuiFormHelperText-root': {
-                                  backgroundColor: 'white',
+                                  backgroundColor: 'transparent',
                                 },
                               }}
                             />
@@ -428,7 +430,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                               }
                               sx={{
                                 '& > .MuiFormHelperText-root': {
-                                  backgroundColor: 'white',
+                                  backgroundColor: 'transparent',
                                 },
                               }}
                             />

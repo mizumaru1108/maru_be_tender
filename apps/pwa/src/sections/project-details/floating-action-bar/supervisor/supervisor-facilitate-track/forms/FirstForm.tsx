@@ -8,8 +8,11 @@ import { useEffect, useMemo } from 'react';
 import { _supportGoals } from '_mock/_supportgoals';
 import { useSelector } from 'redux/store';
 import { SupervisorStep1 } from '../../../../../../@types/supervisor-accepting-form';
+import useLocales from 'hooks/useLocales';
 
 function FirstForm({ children, onSubmit }: any) {
+  const { translate } = useLocales();
+
   const validationSchema = Yup.object().shape({
     clause: Yup.string().required('Procedures is required!'),
     clasification_field: Yup.string().required('Procedures is required!'),
@@ -21,8 +24,10 @@ function FirstForm({ children, onSubmit }: any) {
     // number_of_payments_by_supervisor: Yup.number(),
     notes: Yup.string(),
     support_outputs: Yup.string().required('Procedures is required!'),
-    vat: Yup.boolean().required('vat is required!'),
-    vat_percentage: Yup.number().integer().min(1),
+    vat: Yup.boolean().required('Procedures is required!'),
+    vat_percentage: Yup.number()
+      .integer()
+      .min(1, translate('errors.cre_proposal.vat_percentage.greater_than_0')),
     inclu_or_exclu: Yup.boolean(),
     accreditation_type_id: Yup.string().required('Procedures is required!'),
     support_goal_id: Yup.string().required('Procedures is required!'),
@@ -39,13 +44,21 @@ function FirstForm({ children, onSubmit }: any) {
 
   const { handleSubmit, watch, setValue, resetField } = methods;
 
+  const vat = watch('vat');
+  const support_type = watch('support_type');
+  // const inclu_or_exclu = watch('inclu_or_exclu');
+
   const onSubmitForm = async (data: SupervisorStep1) => {
+    if (vat !== 'true') {
+      resetField('vat_percentage');
+      resetField('inclu_or_exclu');
+
+      delete data.vat_percentage;
+      delete data.inclu_or_exclu;
+    }
+
     onSubmit(data);
   };
-
-  const vat = watch('vat');
-
-  const support_type = watch('support_type');
 
   useEffect(() => {
     if (support_type === 'true') resetField('fsupport_by_supervisor');
@@ -138,7 +151,7 @@ function FirstForm({ children, onSubmit }: any) {
         {vat === 'true' && (
           <Grid item md={6} xs={12}>
             <BaseField
-              type="textField"
+              type="numberField"
               name="vat_percentage"
               label="النسبة المئوية من الضريبة"
               placeholder="النسبة المئوية من الضريبة"
