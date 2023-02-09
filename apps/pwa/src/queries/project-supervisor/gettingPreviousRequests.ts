@@ -22,6 +22,7 @@ export const gettingPreviousRequests = `query MyQuery($limit: Int = 10, $offset:
       employee_name
       client_data{
         entity
+        created_at
       }
     }
     state

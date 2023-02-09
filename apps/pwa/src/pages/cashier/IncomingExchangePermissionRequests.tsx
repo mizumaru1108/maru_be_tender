@@ -14,6 +14,7 @@ const data = [
       organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
       sentSection: 'cahsier',
       employee: 'اسم الموظف - مدير الإدارة',
+      createdAtClient: new Date(2022, 8, 2, 15, 58),
     },
     footer: {
       createdAt: new Date(2022, 8, 2, 15, 58),
@@ -37,6 +38,7 @@ const data = [
       organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
       sentSection: 'cahsier',
       employee: 'اسم الموظف - مدير الإدارة',
+      createdAtClient: new Date(2022, 8, 2, 15, 58),
     },
     footer: {
       createdAt: new Date(2022, 8, 2, 15, 58),
@@ -60,6 +62,7 @@ const data = [
       organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
       sentSection: 'cahsier',
       employee: 'اسم الموظف - مدير الإدارة',
+      createdAtClient: new Date(2022, 8, 2, 15, 58),
     },
     footer: {
       createdAt: new Date(2022, 8, 2, 15, 58),
@@ -83,6 +86,7 @@ const data = [
       organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
       sentSection: 'cahsier',
       employee: 'اسم الموظف - مدير الإدارة',
+      createdAtClient: new Date(2022, 8, 2, 15, 58),
     },
     footer: {
       createdAt: new Date(2022, 8, 2, 15, 58),
@@ -106,6 +110,7 @@ const data = [
       organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
       sentSection: 'cahsier',
       employee: 'اسم الموظف - مدير الإدارة',
+      createdAtClient: new Date(2022, 8, 2, 15, 58),
     },
     footer: {
       createdAt: new Date(2022, 8, 2, 15, 58),
@@ -129,6 +134,7 @@ const data = [
       organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
       sentSection: 'cahsier',
       employee: 'اسم الموظف - مدير الإدارة',
+      createdAtClient: new Date(2022, 8, 2, 15, 58),
     },
     footer: {
       createdAt: new Date(2022, 8, 2, 15, 58),
@@ -152,6 +158,7 @@ const data = [
       organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
       sentSection: 'cahsier',
       employee: 'اسم الموظف - مدير الإدارة',
+      createdAtClient: new Date(2022, 8, 2, 15, 58),
     },
     footer: {
       createdAt: new Date(2022, 8, 2, 15, 58),
@@ -175,6 +182,7 @@ const data = [
       organizationName: 'جمعية الدعوة الصناعية الجديدة بالرياض',
       sentSection: 'cahsier',
       employee: 'اسم الموظف - مدير الإدارة',
+      createdAtClient: new Date(2022, 8, 2, 15, 58),
     },
     footer: {
       createdAt: new Date(2022, 8, 2, 15, 58),

@@ -935,6 +935,8 @@ const ar = {
     sent_section: 'القسم المرسل',
     clients_name: 'اسم العميل',
     employee: 'موظف',
+    start_date: 'تاريخ البدء',
+    at: 'في',
   },
   concessional_card_insights: {
     title: {

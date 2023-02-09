@@ -24,6 +24,7 @@ export const gettingMyRequestedProcess = `query gettingMyRequestedProcess($limit
       employee_name
       client_data {
         entity
+        created_at
       }
     }
   }

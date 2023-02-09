@@ -23,6 +23,7 @@ export const gettingIncomingRequests = `query MyQuery($limit: Int = 10, $order_b
       employee_name
       client_data{
         entity
+        created_at
       }
     }
     state

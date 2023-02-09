@@ -131,6 +131,7 @@ const ProjectCardBE = ({
       navigate(`${location.pathname}/${id}/${cardFooterButtonAction}`);
     }
   };
+
   return (
     <Card sx={{ backgroundColor: '#fff' }}>
       <CardContent>
@@ -195,7 +196,7 @@ const ProjectCardBE = ({
             </Typography>
           </>
         )}
-        {user && (
+        {user.client_data.entity && (
           <React.Fragment>
             <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
               {translate('project_management_headercell.clients_name')}
@@ -216,8 +217,8 @@ const ProjectCardBE = ({
             </Typography>
           </React.Fragment>
         )}
-        <Stack direction="row" gap={12}>
-          {user && (
+        <Stack direction="row" gap={6}>
+          {role !== 'tender_moderator' && user.employee_name && (
             <Stack>
               <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
                 {translate('project_management_headercell.employee')}
@@ -234,6 +235,23 @@ const ProjectCardBE = ({
               </Typography>
               <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
                 {translate(`project_card.${state.toLowerCase()}`)}
+              </Typography>
+            </Stack>
+          )}
+          {user.client_data.created_at && cardFooterButtonAction !== 'draft' && (
+            <Stack>
+              <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+                {translate('project_management_headercell.start_date')}
+              </Typography>
+              <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
+                {`${new Date(user.client_data.created_at).getDay()}.${new Date(
+                  user.client_data.created_at
+                ).getMonth()}.${new Date(user.client_data.created_at).getFullYear()} ${translate(
+                  'project_management_headercell.at'
+                )} ${new Date(user.client_data.created_at).getHours()}:${new Date(
+                  user.client_data.created_at
+                ).getMinutes()}`}
+                {/* {`${user.client_data.created_at}`} */}
               </Typography>
             </Stack>
           )}

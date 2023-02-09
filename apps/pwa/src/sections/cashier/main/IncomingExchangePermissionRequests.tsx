@@ -53,9 +53,10 @@ function IncomingExchangePermissionRequests() {
               title={{ id: item.id }}
               content={{
                 projectName: item.project_name,
-                organizationName: item.project_idea,
+                organizationName: item.user.client_data.entity,
                 sentSection: 'Cahsier',
                 employee: item.user.employee_name,
+                createdAtClient: new Date(item.user.client_data.created_at),
               }}
               footer={{
                 createdAt: item.created_at,

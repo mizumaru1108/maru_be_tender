@@ -25,6 +25,7 @@ query gettingIncomingRequests($where: proposal_bool_exp = {}, $limit: Int = 10, 
       employee_name
       client_data{
         entity
+        created_at
       }
     }
     state

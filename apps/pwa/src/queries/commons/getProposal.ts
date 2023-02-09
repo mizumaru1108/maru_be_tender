@@ -26,6 +26,7 @@ query getProposals($limit: Int = 4, $offset: Int = 0, $order_by: [proposal_order
       employee_name
       client_data {
         entity
+        created_at
       }
     }
   }

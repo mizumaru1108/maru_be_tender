@@ -898,6 +898,8 @@ const en = {
     sent_section: 'Sent Section',
     clients_name: 'Clients Name',
     employee: 'Employee',
+    start_date: 'Start Date',
+    at: 'at',
   },
   concessional_card_insights: {
     title: {

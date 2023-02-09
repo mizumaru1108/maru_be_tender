@@ -16,6 +16,7 @@ type CardContentComp = {
   sentSection?: string;
   employee?: string;
   projectDetails?: string;
+  createdAtClient?: Date;
 };
 export type ProjectCardProps = {
   title: CardTitle;
@@ -46,8 +47,9 @@ export type ProjectCardPropsBE = {
     employee_name: string;
     client_data: {
       entity: string;
-    }
-  }
+      created_at: Date;
+    };
+  };
   state?: string;
   payments?: any;
   outter_status?: 'CANCELED' | 'COMPLETED' | 'PENDING';

@@ -106,6 +106,8 @@ const ProjectCard = ({
     }
   };
 
+  console.log(content, 'USER');
+
   return (
     <Card sx={{ backgroundColor: '#fff' }}>
       <CardContent>
@@ -186,11 +188,12 @@ const ProjectCard = ({
                 </Typography>
                 <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
                   {`${content.createdAt.getDay()}.${content.createdAt.getMonth()}.${content.createdAt.getFullYear()} في ${content.createdAt.getHours()}:${content.createdAt.getMinutes()}`}
+                  {/* {`${content.createdAt}`} */}
                 </Typography>
               </>
             )}
-            <Stack direction="row" gap={20}>
-              {content.employee && (
+            <Stack direction="row" gap={6}>
+              {role !== 'tender_moderator' && content.employee && (
                 <Stack>
                   <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
                     {translate('project_management_headercell.employee')}
@@ -207,6 +210,19 @@ const ProjectCard = ({
                   </Typography>
                   <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
                     {translate(`project_card.${content.sentSection.toLowerCase()}`)}
+                  </Typography>
+                </Stack>
+              )}
+              {content.createdAtClient && (
+                <Stack>
+                  <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+                    {translate('project_management_headercell.start_date')}
+                  </Typography>
+                  <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
+                    {`${content.createdAtClient.getDay()}.${content.createdAtClient.getMonth()}.${content.createdAtClient.getFullYear()} ${translate(
+                      'project_management_headercell.at'
+                    )} ${content.createdAtClient.getHours()}:${content.createdAtClient.getMinutes()}`}
+                    {/* {`${content.createdAtClient}`} */}
                   </Typography>
                 </Stack>
               )}
