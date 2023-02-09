@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { UserInfoFormProps } from '../../../../@types/register';
 import RHFPassword from '../../../../components/hook-form/RHFPassword';
+import useAuth from '../../../../hooks/useAuth';
 
 type FormProps = {
   children?: React.ReactNode;
@@ -17,36 +18,54 @@ type FormProps = {
 const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
   const [changePassword, setChangePassword] = useState(false);
   const { translate } = useLocales();
-  const RegisterSchema = Yup.object().shape({
+  const { activeRole } = useAuth();
+  const ClientInformationChangeSchema = Yup.object().shape({
     email: Yup.string()
       .required(translate('errors.register.email.required'))
       .email(translate('errors.register.email.email')),
-    // employee_name: Yup.string().required(translate('errors.register.employee_name.required')),
-    // mobile_number: Yup.string()
-    //   .required(translate('errors.register.entity_mobile.required'))
-    //   .test('len', translate('errors.register.entity_mobile.length'), (val) => {
-    //     if (val === undefined) {
-    //       return true;
-    //     }
-
-    //     return val.length === 0 || val!.length === 9;
-    //   }),
     current_password: Yup.string().required(translate('errors.register.password.required')),
   });
-  const PasswordChangeSchema = Yup.object().shape({
+  const EmployeeInformationChangeSchema = Yup.object().shape({
     email: Yup.string()
       .required(translate('errors.register.email.required'))
       .email(translate('errors.register.email.email')),
-    // mobile_number: Yup.string()
-    //   .required(translate('errors.register.entity_mobile.required'))
-    //   .test('len', translate('errors.register.entity_mobile.length'), (val) => {
-    //     if (val === undefined) {
-    //       return true;
-    //     }
+    employee_name: Yup.string().required(translate('errors.register.employee_name.required')),
+    mobile_number: Yup.string()
+      .required(translate('errors.register.entity_mobile.required'))
+      .test('len', translate('errors.register.entity_mobile.length'), (val) => {
+        if (val === undefined) {
+          return true;
+        }
 
-    //     return val.length === 0 || val!.length === 9;
-    //   }),
-    // employee_name: Yup.string().required(translate('errors.register.employee_name.required')),
+        return val.length === 0 || val!.length === 9;
+      }),
+    current_password: Yup.string().required(translate('errors.register.password.required')),
+  });
+  const ClientPasswordChangeSchema = Yup.object().shape({
+    email: Yup.string()
+      .required(translate('errors.register.email.required'))
+      .email(translate('errors.register.email.email')),
+    current_password: Yup.string().required(translate('errors.register.password.required')),
+    new_password: Yup.string().required(translate('errors.register.password.new_password')),
+    confirm_password: Yup.string().oneOf(
+      [Yup.ref('new_password'), null],
+      translate('errors.register.password.confirm_password')
+    ),
+  });
+  const EmployeePasswordChangeSchema = Yup.object().shape({
+    email: Yup.string()
+      .required(translate('errors.register.email.required'))
+      .email(translate('errors.register.email.email')),
+    mobile_number: Yup.string()
+      .required(translate('errors.register.entity_mobile.required'))
+      .test('len', translate('errors.register.entity_mobile.length'), (val) => {
+        if (val === undefined) {
+          return true;
+        }
+
+        return val.length === 0 || val!.length === 9;
+      }),
+    employee_name: Yup.string().required(translate('errors.register.employee_name.required')),
     current_password: Yup.string().required(translate('errors.register.password.required')),
     new_password: Yup.string().required(translate('errors.register.password.new_password')),
     confirm_password: Yup.string().oneOf(
@@ -56,7 +75,16 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
   });
 
   const methods = useForm<UserInfoFormProps>({
-    resolver: yupResolver(changePassword ? PasswordChangeSchema : RegisterSchema),
+    resolver: yupResolver(
+      // changePassword ? ClientPasswordChangeSchema : ClientInformationChangeSchema
+      changePassword && activeRole !== 'tender_client'
+        ? EmployeePasswordChangeSchema
+        : changePassword && activeRole === 'tender_client'
+        ? ClientPasswordChangeSchema
+        : !changePassword && activeRole !== 'tender_client'
+        ? EmployeeInformationChangeSchema
+        : ClientInformationChangeSchema
+    ),
     defaultValues: useMemo(() => defaultValues, [defaultValues]),
   });
 
@@ -85,12 +113,15 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    // let newValues = { ...defaultValues };
-    // const newEntityPhone = defaultValues.mobile_number?.replace('+966', '');
-    // newValues = { ...newValues, mobile_number: newEntityPhone };
-
-    reset(defaultValues);
-  }, [defaultValues, reset]);
+    if (activeRole !== 'tender_client') {
+      let newValues = { ...defaultValues };
+      const newEntityPhone = defaultValues.mobile_number?.replace('+966', '');
+      newValues = { ...newValues, mobile_number: newEntityPhone };
+      reset(newValues);
+    } else {
+      reset(defaultValues);
+    }
+  }, [defaultValues, reset, activeRole]);
   // console.log({ region });
 
   return (
@@ -140,6 +171,25 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
                 name="confirm_password"
                 label={translate('register_form2.confirm_password.title')}
                 placeholder={translate('register_form2.confirm_password.placeholder')}
+              />
+            </Grid>
+          </>
+        )}
+        {activeRole !== 'tender_client' && (
+          <>
+            <Grid item md={6} xs={12}>
+              <RHFTextField
+                name="employee_name"
+                label={translate('register_form2.employee_name.label')}
+                placeholder={translate('register_form2.employee_name.placeholder')}
+              />
+            </Grid>
+            <Grid item md={6} xs={12}>
+              <RHFTextField
+                name="mobile_number"
+                label={translate('register_form2.mobile_number.label')}
+                // placeholder={translate('register_form2.mobile_number.placeholder')}
+                placeholder="xxx xxx xxx"
               />
             </Grid>
           </>

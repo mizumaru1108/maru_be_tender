@@ -49,3 +49,12 @@ query MyQuery($id: String = "") {
     email
   }
 }`;
+
+export const gettingUseInfoForEditEmployee = `
+query MyQuery($id: String = "") {
+  user_by_pk(id: $id) {
+    mobile_number
+    email
+    employee_name
+  }
+}`;

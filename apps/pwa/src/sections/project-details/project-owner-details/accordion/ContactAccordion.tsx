@@ -83,7 +83,12 @@ function ContactAccordion({ userInfo }: Props) {
               <Typography sx={sxPropsText}>
                 {translate('project_owner_details.accordion.contact_tab.entity_mobile')}
               </Typography>
-              <TextField disabled fullWidth value={userInfo?.entity_mobile ?? '-'} />
+              <TextField
+                disabled
+                fullWidth
+                sx={{ direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+                value={userInfo?.entity_mobile ?? '-'}
+              />
             </Grid>
             <Grid item xs={12} md={6}>
               <Typography sx={sxPropsText}>

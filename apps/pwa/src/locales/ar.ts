@@ -532,6 +532,10 @@ const ar = {
       placeholder: 'الرجاء كتابة الرقم, مثال: 966511111111+',
       options: {},
     },
+    entity_mobile: {
+      label: '*جوال الجهة',
+      placeholder: 'xxx xxx xxx',
+    },
     phone: {
       label: '*الهاتف',
       placeholder: 'xxx xxx xxxx',

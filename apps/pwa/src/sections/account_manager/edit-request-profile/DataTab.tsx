@@ -680,6 +680,31 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
               </Typography>
             </Stack>
           </Grid>
+          <Grid item xs={12} md={6}>
+            <Stack direction="column" alignItems="start">
+              <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
+                {translate('account_manager.partner_details.phone')}:
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                component="p"
+                sx={{
+                  mt: 1,
+                  fontWeight: theme.typography.fontWeightMedium,
+                  direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr',
+                  color:
+                    compareValues?.hasOwnProperty('entity_mobile') && EditType === 'new-data'
+                      ? 'green'
+                      : compareValues?.hasOwnProperty('entity_mobile') &&
+                        EditType === 'previous-data'
+                      ? 'red'
+                      : 'black',
+                }}
+              >
+                {EditValues.entity_mobile ?? '-'}
+              </Typography>
+            </Stack>
+          </Grid>
         </Grid>
 
         {/* Bank Information */}

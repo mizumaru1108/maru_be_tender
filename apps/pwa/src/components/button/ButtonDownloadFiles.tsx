@@ -11,6 +11,7 @@ function ButtonDownloadFiles({ files }: Props) {
   const { translate } = useLocales();
   return (
     <Button
+      fullWidth
       component={Link}
       href={files.url ?? '#'}
       download="ملف مرفقات المشروع"
@@ -31,10 +32,10 @@ function ButtonDownloadFiles({ files }: Props) {
         direction={{ xs: 'column', md: 'row' }}
         sx={{
           textAlign: { xs: 'center', md: 'left' },
-          padding: '8px',
+          // padding: '8px',
           borderRadius: '10px',
         }}
-        flex={1}
+        // flex={1}
       >
         <Stack direction="row" gap={2}>
           <Stack direction="column" justifyContent="center">

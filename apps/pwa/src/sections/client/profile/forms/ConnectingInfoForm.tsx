@@ -53,8 +53,13 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
     const newData = { ...data };
     const newPhone =
       data && data.phone && data.phone.split('')[4] === '+966' ? data.phone : `+966${data.phone}`;
+    const newEntityMobile =
+      data && data.entity_mobile && data.entity_mobile.split('')[4] === '+966'
+        ? data.entity_mobile
+        : `+966${data.entity_mobile}`;
     newData.phone = newPhone;
-    console.log({ newData });
+    newData.entity_mobile = newEntityMobile;
+    // console.log({ newData });
     onSubmit(newData);
   };
 
@@ -62,7 +67,8 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
     window.scrollTo(0, 0);
     let newValues = { ...defaultValues };
     const newPhone = defaultValues.phone?.replace('+966', '');
-    newValues = { ...newValues, phone: newPhone };
+    const newEntityMobile = defaultValues.entity_mobile?.replace('+966', '');
+    newValues = { ...newValues, phone: newPhone, entity_mobile: newEntityMobile };
     // console.log({ newValues });
     reset(newValues);
   }, [defaultValues, reset]);
@@ -127,12 +133,20 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
             placeholder={'xxx xxx xxx'}
           />
         </Grid>
-        <Grid item md={12} xs={12}>
+        <Grid item md={6} xs={12}>
           <RHFTextField
             disabled={isEdit}
             name="twitter_acount"
             label={translate('register_form2.twitter.label')}
             placeholder={translate('register_form2.twitter.placeholder')}
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFTextField
+            disabled={isEdit}
+            name="entity_mobile"
+            label={translate('register_form2.entity_mobile.label')}
+            placeholder={'xxx xxx xxx'}
           />
         </Grid>
         <Grid item md={12} xs={12}>

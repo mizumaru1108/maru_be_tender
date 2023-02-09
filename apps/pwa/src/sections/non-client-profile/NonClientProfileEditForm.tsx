@@ -2,7 +2,7 @@ import { Box, IconButton, Stack, Typography } from '@mui/material';
 import Toast from 'components/toast';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
-import { gettingUseInfoForEdit } from 'queries/client/gettingUserDataForEdit';
+import { gettingUseInfoForEditEmployee } from 'queries/client/gettingUserDataForEdit';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
@@ -22,7 +22,7 @@ function NonClientProfileEditForm() {
   const id = user?.id;
   const navigate = useNavigate();
   const { translate } = useLocales();
-  const [result] = useQuery({ query: gettingUseInfoForEdit, variables: { id } });
+  const [result] = useQuery({ query: gettingUseInfoForEditEmployee, variables: { id } });
   const { data } = result;
   const initialValue = {
     form1: {
@@ -47,8 +47,8 @@ function NonClientProfileEditForm() {
 
   useEffect(() => {
     if (data?.user_by_pk) {
-      const { email, mobile_number, employee_name, password } = data?.user_by_pk;
-      // console.log('data:', data?.user_by_pk);1
+      const { email, mobile_number, employee_name } = data?.user_by_pk;
+      console.log('data:', data?.user_by_pk);
       setProfileState((prevState: any) => ({
         ...prevState,
         form1: {
@@ -56,7 +56,7 @@ function NonClientProfileEditForm() {
           email,
           mobile_number,
           employee_name,
-          current_password: password,
+          // current_password: password,
         },
       }));
     }
