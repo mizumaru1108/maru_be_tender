@@ -86,16 +86,23 @@ const BankingInfoForm = ({ children, onSubmit, initialValue, onDelete, isEdit }:
     setOpen(true);
   };
   const onSubmitForm5 = () => {
-    let newData = {};
-    // const updated_banks = tmpBank.filter((item: any) => item && item.id && item.id.length > 4);
-    const updated_banks = tmpBank.filter(
-      (item: any, index: number) =>
-        item && item.id && item.id.length > 4 && item !== initialValue[index]
-    );
-    const created_banks = tmpBank.filter((item: any) => item && item.id && item.id.length <= 4);
-    newData = { ...newData, updated_banks, created_banks, deleted_banks };
-    // console.log({ tmpBank, deletedBank, updatedBank, createdBank });
-    onSubmit(newData);
+    if (isEdit) {
+      setTmpBank(initialValue);
+      onSubmit(initialValue);
+      // console.log({ initialValue });
+    }
+    if (!isEdit) {
+      let newData = {};
+      // const updated_banks = tmpBank.filter((item: any) => item && item.id && item.id.length > 4);
+      const updated_banks = tmpBank.filter(
+        (item: any, index: number) =>
+          item && item.id && item.id.length > 4 && item !== initialValue[index]
+      );
+      const created_banks = tmpBank.filter((item: any) => item && item.id && item.id.length <= 4);
+      newData = { ...newData, updated_banks, created_banks, deleted_banks };
+      // console.log({ tmpBank, deletedBank, updatedBank, createdBank });
+      onSubmit(newData);
+    }
   };
   return (
     <Grid container rowSpacing={4} columnSpacing={7}>

@@ -58,7 +58,7 @@ function DetailClientInfo() {
         newval.push(newValues.board_ofdec_file);
       }
       newValues.board_ofdec_file = newval;
-      console.log('data', newValues);
+      // console.log('data', newValues);
       setUserInfo(newValues);
     }
   }, [data]);

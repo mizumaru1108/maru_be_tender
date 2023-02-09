@@ -28,6 +28,7 @@ query MyQuery($id: String = "") {
       data_entry_mail
       chairman_name
       chairman_mobile
+      entity_mobile
     }
     bank_informations(where: {is_deleted: {_eq: false}}) {
       bank_account_name
@@ -36,8 +37,10 @@ query MyQuery($id: String = "") {
       card_image
       id
     }
+    email
   }
 }
+
 `;
 
 export const gettingUseInfoForEdit = `

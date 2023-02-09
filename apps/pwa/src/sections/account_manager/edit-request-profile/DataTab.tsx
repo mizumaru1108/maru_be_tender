@@ -667,6 +667,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                 sx={{
                   mt: 1,
                   fontWeight: theme.typography.fontWeightMedium,
+                  direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr',
                   color:
                     compareValues?.hasOwnProperty('phone') && EditType === 'new-data'
                       ? 'green'
@@ -699,7 +700,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                   bankAccountName={`${v.bank_account_name}`}
                   imageUrl={v?.card_image?.url}
                   size={v?.card_image?.size}
-                  borderColor={v?.color}
+                  borderColor={v?.color ?? 'transparent'}
                 />
               </Grid>
             ))

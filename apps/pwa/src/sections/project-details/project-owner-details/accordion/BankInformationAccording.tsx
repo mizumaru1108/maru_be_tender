@@ -83,7 +83,7 @@ function BankInformationAccording({ userInfo }: Props) {
                         bankAccountName={`${item.bank_account_name}`}
                         imageUrl={item?.card_image?.url ?? ''}
                         size={item?.card_image?.size}
-                        borderColor={item?.color}
+                        borderColor={item?.color ?? 'transparent'}
                       />
                     </Grid>
                   </>

@@ -409,16 +409,19 @@ function ClientProfileEditForm() {
     // console.log({ data });
     window.scrollTo(0, 0);
     if (isEdit && isEdit.form5) {
+      let defaultBank: BankingValuesProps[] = [];
+      defaultBank.push(
+        ...(startedValue && startedValue.bank_informations && startedValue.bank_informations)
+      );
+      console.log({ defaultBank });
+      // console.log('startedValue.bank_information', startedValue);
       setIsEdit((prevIsEdit: any) => ({
         ...prevIsEdit,
         form5: false,
       }));
       setProfileState((prevProfileState: any) => ({
         ...prevProfileState,
-        form5: {
-          ...prevProfileState.form5,
-          ...(startedValue.bank_information && startedValue.bank_information),
-        },
+        form5: [...defaultBank],
       }));
     }
     if (isEdit && !isEdit.form5) {
@@ -449,30 +452,40 @@ function ClientProfileEditForm() {
       ...newBankInformation,
       old_banks: [...profileState.form5],
     };
-    if (
-      (profileState && profileState.updated_banks && profileState.updated_banks.length > 0) ||
-      (profileState && profileState.updated_banks && profileState.updated_banks.length > 0) ||
-      (profileState && profileState.deleted_banks && profileState.deleted_banks.length > 0)
-    ) {
-      if (profileState.updated_banks.length > 0) {
-        newBankInformation = {
-          ...newBankInformation,
-          updated_banks: profileState.updated_banks,
-        };
-      }
-      if (profileState.deleted_banks.length > 0) {
-        newBankInformation = {
-          ...newBankInformation,
-          deleted_banks: profileState.deleted_banks,
-        };
-      }
-      if (profileState.created_banks.length > 0) {
-        newBankInformation = {
-          ...newBankInformation,
-          created_banks: profileState.created_banks,
-        };
-      }
+    // console.log('profileState.updated_banks', profileState.updated_banks);
+    // console.log('profileState.deleted_banks', profileState.deleted_banks);
+    // console.log('profileState.created_banks', profileState.created_banks);
+    // newBankInformation = {
+    //   ...newBankInformation,
+    //   updated_banks: profileState.updated_banks,
+    //   deleted_banks: profileState.deleted_banks,
+    //   created_banks: profileState.created_banks,
+    // };
+    // console.log({ newBankInformation });
+    // if (
+    //   (profileState && profileState.updated_banks && profileState.updated_banks.length > 0) ||
+    //   (profileState && profileState.updated_banks && profileState.updated_banks.length > 0) ||
+    //   (profileState && profileState.deleted_banks && profileState.deleted_banks.length > 0)
+    // ) {
+    if (profileState.updated_banks.length > 0) {
+      newBankInformation = {
+        ...newBankInformation,
+        updated_banks: profileState.updated_banks,
+      };
     }
+    if (profileState.deleted_banks.length > 0) {
+      newBankInformation = {
+        ...newBankInformation,
+        deleted_banks: profileState.deleted_banks,
+      };
+    }
+    if (profileState.created_banks.length > 0) {
+      newBankInformation = {
+        ...newBankInformation,
+        created_banks: profileState.created_banks,
+      };
+    }
+    // }
     const payload = {
       ...profileState.form1,
       ...profileState.form2,
@@ -482,7 +495,7 @@ function ClientProfileEditForm() {
     };
     // console.log({ payload });
     const filteredObj = Object.fromEntries(Object.entries(payload).filter(([key, value]) => value));
-    // console.log({ filteredObj });
+    console.log({ filteredObj });
     try {
       const rest = await axiosInstance.post(
         'tender/client/edit-request/create',
