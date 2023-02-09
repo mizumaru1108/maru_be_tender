@@ -4,8 +4,12 @@ import { nanoid } from 'nanoid';
 import { logUtil } from '../../../commons/utils/log-util';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { TenderAppRole } from '../../../tender-commons/types';
+import {
+  TenderAppRole,
+  TenderAppRoleEnum,
+} from '../../../tender-commons/types';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
+import { InsertPaymentNotifMapper } from '../mappers/insert-payment-notif.mapper';
 
 @Injectable()
 export class TenderProposalPaymentRepository {
@@ -58,35 +62,100 @@ export class TenderProposalPaymentRepository {
 
   async insertPayment(
     proposal_id: string,
+    reviewer_id: string,
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
     createManyPaymentPayload: Prisma.paymentCreateManyInput[],
+    lastLog: {
+      created_at: Date;
+    } | null,
   ) {
     try {
-      return await this.prismaService.$transaction(async (prisma) => {
-        this.logger.log(
-          'info',
-          `updating proposal ${proposal_id} with payload of \n ${logUtil(
-            proposalUpdatePayload,
-          )}`,
-        );
+      return await this.prismaService.$transaction(
+        async (prisma) => {
+          this.logger.log(
+            'info',
+            `updating proposal ${proposal_id} with payload of \n ${logUtil(
+              proposalUpdatePayload,
+            )}`,
+          );
 
-        const updatedProposal = await prisma.proposal.update({
-          where: { id: proposal_id },
-          data: proposalUpdatePayload,
-        });
+          const updatedProposal = await prisma.proposal.update({
+            where: { id: proposal_id },
+            data: proposalUpdatePayload,
+          });
 
-        this.logger.log(
-          'info',
-          `creating payments with payload of \n${logUtil(
-            createManyPaymentPayload,
-          )}`,
-        );
-        await this.prismaService.payment.createMany({
-          data: createManyPaymentPayload,
-        });
+          this.logger.log('info', `Creating Proposal Log`);
+          const logs = await prisma.proposal_log.create({
+            data: {
+              id: nanoid(),
+              proposal_id: proposal_id,
+              action: 'accept',
+              reviewer_id,
+              state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
+              response_time: lastLog
+                ? Math.round(
+                    (new Date().getTime() - lastLog.created_at.getTime()) /
+                      60000,
+                  )
+                : null,
+            },
+            select: {
+              action: true,
+              created_at: true,
+              reviewer: {
+                select: {
+                  id: true,
+                  employee_name: true,
+                  email: true,
+                  mobile_number: true,
+                },
+              },
+              proposal: {
+                select: {
+                  user: {
+                    select: {
+                      id: true,
+                      employee_name: true,
+                      email: true,
+                      mobile_number: true,
+                    },
+                  },
+                },
+              },
+            },
+          });
 
-        return updatedProposal;
-      });
+          const insertNotif = InsertPaymentNotifMapper(logs);
+          if (
+            insertNotif.createManyWebNotifPayload &&
+            insertNotif.createManyWebNotifPayload.length > 0
+          ) {
+            this.logger.log(
+              'log',
+              `Creating new notification with payload of \n${insertNotif.createManyWebNotifPayload}`,
+            );
+            prisma.notification.createMany({
+              data: insertNotif.createManyWebNotifPayload,
+            });
+          }
+
+          this.logger.log(
+            'info',
+            `creating payments with payload of \n${logUtil(
+              createManyPaymentPayload,
+            )}`,
+          );
+          await this.prismaService.payment.createMany({
+            data: createManyPaymentPayload,
+          });
+
+          return {
+            insertNotif,
+            updatedProposal,
+          };
+        },
+        { maxWait: 50000, timeout: 150000 },
+      );
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
@@ -126,6 +195,7 @@ export class TenderProposalPaymentRepository {
     lastLog: {
       created_at: Date;
     } | null,
+    proposalUpdateInput: Prisma.proposalUpdateInput,
   ) {
     try {
       return await this.prismaService.$transaction(
@@ -151,6 +221,19 @@ export class TenderProposalPaymentRepository {
             );
             cheque = await prisma.cheque.create({
               data: chequeCreatePayload,
+            });
+          }
+
+          if (Object.keys(proposalUpdateInput).length > 0) {
+            this.logger.log(
+              'info',
+              `updating proposal with payload of \n${proposalUpdateInput}`,
+            );
+            await prisma.proposal.update({
+              where: {
+                id: payment.proposal_id,
+              },
+              data: proposalUpdateInput,
             });
           }
 

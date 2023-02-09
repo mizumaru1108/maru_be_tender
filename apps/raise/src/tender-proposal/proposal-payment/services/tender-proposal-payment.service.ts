@@ -40,6 +40,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
 import { CreateChequeMapper } from '../mappers/create-cheque.mapper';
 import { TenderProposalLogRepository } from '../../tender-proposal-log/repositories/tender-proposal-log.repository';
+import moment from 'moment';
+import { SendEmailDto } from '../../../libs/email/dtos/requests/send-email.dto';
+import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
+import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
+import { InsertPaymentNotifMapperResponse } from '../dtos/responses/insert-payment-notif-mapper-response.dto';
 @Injectable()
 export class TenderProposalPaymentService {
   private readonly appEnv: string;
@@ -95,6 +100,11 @@ export class TenderProposalPaymentService {
       );
     }
 
+    const lastLog =
+      await this.tenderProposalLogRepository.findLastLogCreateAtByProposalId(
+        proposal.id,
+      );
+
     const mapResult = CreateManyPaymentMapper(request);
 
     if (Number(proposal.fsupport_by_supervisor) !== mapResult.totalAmount) {
@@ -113,14 +123,18 @@ export class TenderProposalPaymentService {
     };
 
     // create the payment
-    const updatedProposal =
+    const insertResult =
       await this.tenderProposalPaymentRepository.insertPayment(
         proposal_id,
+        currentUserId,
         proposalUpdatePayload,
         createPaymentPayload,
+        lastLog,
       );
 
-    return updatedProposal;
+    await this.sendResponseNotif(insertResult.insertNotif);
+
+    return insertResult.updatedProposal;
   }
 
   async updatePayment(
@@ -161,6 +175,7 @@ export class TenderProposalPaymentService {
         undefined;
       const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
         [];
+      const proposalUpdateInput: Prisma.proposalUncheckedUpdateInput = {};
 
       if (choosenRole === 'tender_project_manager') {
         if (proposal.project_manager_id !== userId) ownershipErrorThrow();
@@ -170,8 +185,8 @@ export class TenderProposalPaymentService {
       }
 
       if (choosenRole === 'tender_finance') {
-        if (proposal.finance_id !== userId) ownershipErrorThrow();
         actionValidator(['accept'], action);
+        proposalUpdateInput.finance_id = userId;
         if (action === 'accept') status = 'ACCEPTED_BY_FINANCE';
         // !TODO: if (action is edit) do something, still abmigous, need to discuss.
       }
@@ -183,9 +198,10 @@ export class TenderProposalPaymentService {
       }
 
       if (choosenRole === 'tender_cashier') {
-        if (proposal.cashier_id !== userId) ownershipErrorThrow();
+        // if (proposal.cashier_id !== userId) ownershipErrorThrow();
         actionValidator(['upload_receipt'], action);
         if (!cheque) throw new BadRequestException('Cheque data is required!');
+        proposalUpdateInput.cashier_id = userId;
         if (action === 'upload_receipt') status = 'DONE';
         const uploadResult = await this.uploadPaymentFileFile(
           proposal.id,
@@ -228,6 +244,7 @@ export class TenderProposalPaymentService {
         chequeCreatePayload,
         fileManagerCreateManyPayload,
         lastLog,
+        proposalUpdateInput,
       );
 
       return {
@@ -300,6 +317,61 @@ export class TenderProposalPaymentService {
         `${uploadMessage}`,
       );
       throw theError;
+    }
+  }
+
+  async sendResponseNotif(insertNotif: InsertPaymentNotifMapperResponse) {
+    const {
+      subject,
+      clientContent,
+      clientEmail,
+      clientMobileNumber,
+      supervisorContent,
+      supervisorEmail,
+      supervisorMobileNumber,
+    } = insertNotif;
+
+    const baseSendEmail: Omit<SendEmailDto, 'to'> = {
+      mailType: 'plain',
+      from: 'no-reply@hcharity.org',
+    };
+
+    const clientEmailNotif: SendEmailDto = {
+      ...baseSendEmail,
+      to: clientEmail,
+      subject: subject,
+      content: clientContent,
+    };
+    this.emailService.sendMail(clientEmailNotif);
+
+    const clientPhone = isExistAndValidPhone(clientMobileNumber);
+    if (clientPhone) {
+      this.twilioService.sendSMS({
+        to: clientPhone,
+        body: subject + ', ' + clientContent,
+      });
+    }
+
+    if (supervisorContent) {
+      if (supervisorEmail) {
+        const supervisorEmailNotif: SendEmailDto = {
+          ...baseSendEmail,
+          to: supervisorEmail,
+          subject: subject,
+          content: supervisorContent,
+        };
+        this.emailService.sendMail(supervisorEmailNotif);
+      }
+
+      if (supervisorMobileNumber) {
+        const supervisorPhone = isExistAndValidPhone(supervisorMobileNumber);
+        if (supervisorPhone) {
+          this.twilioService.sendSMS({
+            to: supervisorPhone,
+            body: subject + ', ' + supervisorContent,
+          });
+        }
+      }
     }
   }
 }
