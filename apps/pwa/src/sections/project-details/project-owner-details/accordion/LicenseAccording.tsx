@@ -86,7 +86,11 @@ function LicenseAccording({ userInfo }: Props) {
               <Typography sx={sxPropsText}>
                 {translate('project_owner_details.accordion.license_tab.license_file')}
               </Typography>
-              <ButtonDownlaodLicense files={userInfo?.license_file ?? {}} />
+              <Grid container spacing={1}>
+                <Grid item xs={6} md={4}>
+                  <ButtonDownlaodLicense files={userInfo?.license_file ?? {}} />
+                </Grid>
+              </Grid>
               {/* <TextField disabled fullWidth value={userInfo?.num_of_beneficiaries ?? '-'} /> */}
             </Grid>
             <Grid item xs={12} md={12}>
@@ -94,12 +98,16 @@ function LicenseAccording({ userInfo }: Props) {
                 {translate('project_owner_details.accordion.license_tab.letter_of_support_file')}
               </Typography>
               {/* <TextField disabled fullWidth value={userInfo?.num_of_employed_facility ?? '-'} /> */}
-              {userInfo &&
-                userInfo?.board_ofdec_file &&
-                userInfo?.board_ofdec_file?.length > 0 &&
-                userInfo?.board_ofdec_file.map((file, index) => (
-                  <ButtonDownloadFiles key={index} files={file ?? {}} />
-                ))}
+              <Grid container spacing={1}>
+                {userInfo &&
+                  userInfo?.board_ofdec_file &&
+                  userInfo?.board_ofdec_file?.length > 0 &&
+                  userInfo?.board_ofdec_file.map((file, index) => (
+                    <Grid item xs={6} md={4} key={index}>
+                      <ButtonDownloadFiles files={file ?? {}} />
+                    </Grid>
+                  ))}
+              </Grid>
             </Grid>
           </Grid>
         </Stack>

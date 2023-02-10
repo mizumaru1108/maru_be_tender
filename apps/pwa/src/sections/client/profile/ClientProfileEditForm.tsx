@@ -146,7 +146,7 @@ function ClientProfileEditForm() {
         region,
         governorate,
         center_administration,
-        // entity_mobile,
+        entity_mobile,
         phone,
         twitter_acount,
         website,
@@ -190,7 +190,7 @@ function ClientProfileEditForm() {
           region,
           governorate,
           center_administration,
-          // entity_mobile,
+          entity_mobile,
           phone,
           twitter_acount,
           website,
@@ -452,21 +452,6 @@ function ClientProfileEditForm() {
       ...newBankInformation,
       old_banks: [...profileState.form5],
     };
-    // console.log('profileState.updated_banks', profileState.updated_banks);
-    // console.log('profileState.deleted_banks', profileState.deleted_banks);
-    // console.log('profileState.created_banks', profileState.created_banks);
-    // newBankInformation = {
-    //   ...newBankInformation,
-    //   updated_banks: profileState.updated_banks,
-    //   deleted_banks: profileState.deleted_banks,
-    //   created_banks: profileState.created_banks,
-    // };
-    // console.log({ newBankInformation });
-    // if (
-    //   (profileState && profileState.updated_banks && profileState.updated_banks.length > 0) ||
-    //   (profileState && profileState.updated_banks && profileState.updated_banks.length > 0) ||
-    //   (profileState && profileState.deleted_banks && profileState.deleted_banks.length > 0)
-    // ) {
     if (profileState.updated_banks.length > 0) {
       newBankInformation = {
         ...newBankInformation,
@@ -495,7 +480,7 @@ function ClientProfileEditForm() {
     };
     // console.log({ payload });
     const filteredObj = Object.fromEntries(Object.entries(payload).filter(([key, value]) => value));
-    console.log({ filteredObj });
+    // console.log({ filteredObj });
     try {
       const rest = await axiosInstance.post(
         'tender/client/edit-request/create',

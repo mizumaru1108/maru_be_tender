@@ -11,6 +11,7 @@ function ButtonDownlaodLicense({ files }: Props) {
   const { translate } = useLocales();
   return (
     <Button
+      fullWidth
       component={Link}
       href={files.url ?? '#'}
       download="ملف مرفقات المشروع"

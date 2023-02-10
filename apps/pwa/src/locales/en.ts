@@ -521,6 +521,10 @@ const en = {
       label: 'Mobile number*',
       placeholder: 'Please enter the mobile number',
     },
+    entity_mobile: {
+      label: 'Entity mobile*',
+      placeholder: 'Please enter the mobile number',
+    },
     phone: {
       label: 'Phone*',
       placeholder: 'Please enter the phone number',
