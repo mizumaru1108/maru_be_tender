@@ -706,7 +706,25 @@ export class TenderUserRepository {
 
         const fusionResult = await this.fusionAuthService.fusionAuthUpdateUser(
           userId,
-          request,
+          {
+            firstName:
+              request.employee_name && !!request.employee_name
+                ? (request.employee_name as string)
+                : undefined,
+            email:
+              request.email && !!request.email
+                ? (request.email as string)
+                : undefined,
+            mobilePhone:
+              request.mobile_number && !!request.mobile_number
+                ? (request.mobile_number as string)
+                : undefined,
+            address:
+              request.address && !!request.address
+                ? (request.address as string)
+                : undefined,
+            password: request.password,
+          },
         );
         return { prismaResult, fusionResult };
       });

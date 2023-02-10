@@ -115,3 +115,16 @@ export const appRoleToFusionAuthRoles = {
   PROJECT_MANAGER: 'tender_project_manager',
   PROJECT_SUPERVISOR: 'tender_project_supervisor',
 };
+
+export const appRoleToReadable = {
+  ACCOUNTS_MANAGER: 'Account Manager',
+  ADMIN: 'Admin',
+  CEO: 'Ceo',
+  CASHIER: 'Cashier',
+  CLIENT: 'Client',
+  CONSULTANT: 'Consultant',
+  FINANCE: 'Finance',
+  MODERATOR: 'Moderator',
+  PROJECT_MANAGER: 'Project Manager',
+  PROJECT_SUPERVISOR: 'Project Supervisor',
+};

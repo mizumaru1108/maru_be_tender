@@ -350,7 +350,7 @@ export class TenderClientService {
     const tmpDiffrence = ApproveEditRequestMapper(old_data, new_data);
 
     let diffrence = {
-      ...tmpDiffrence,
+      ...tmpDiffrence.updateClientPayload,
     };
 
     if (old_data.bank_information && old_data.bank_information.length > 0) {
@@ -448,7 +448,17 @@ export class TenderClientService {
         old_banks, // current existing bank_information that will be displayed as bank_information at the old data
         board_ofdec_file,
         license_file,
+        entity_mobile,
       } = editRequest;
+      if (entity_mobile) {
+        const isNumExist =
+          await this.tenderClientRepository.findClientByMobileNum(
+            entity_mobile,
+          );
+        if (isNumExist) {
+          throw new BadRequestException('Entity Mobile Already Used/Exist!');
+        }
+      }
       const clientData =
         await this.tenderClientRepository.findClientDataByUserId(user.id);
       if (!clientData) throw new NotFoundException('Client data not found!');
@@ -936,6 +946,7 @@ export class TenderClientService {
     let old_data: client_data;
     let new_data: client_data;
     let updateClientPayload: Prisma.client_dataUncheckedUpdateInput | undefined;
+    let updateUserPayload: Prisma.userUncheckedUpdateInput | undefined;
     let created_bank: Prisma.bank_informationCreateManyInput[] = [];
     let updated_bank: bank_information[] = [];
     let deleted_bank: bank_information[] = [];
@@ -965,7 +976,10 @@ export class TenderClientService {
         deletedFileManagerUrls.push(oldLicenseFile.url);
       }
 
-      updateClientPayload = ApproveEditRequestMapper(old_data, new_data);
+      const mapResult = ApproveEditRequestMapper(old_data, new_data);
+
+      updateClientPayload = mapResult.updateClientPayload;
+      updateUserPayload = mapResult.updateUserPayload;
 
       if (old_data.board_ofdec_file) {
         let tmpOldOfdec: finalUploadFileJson[] =
@@ -1006,6 +1020,13 @@ export class TenderClientService {
         updateClientPayload.board_ofdec_file = tmpArr as any;
       }
 
+      // if (!!updateClientPayload.entity) {
+      //   updateUserPayload.employee_name = updateClientPayload.entity;
+      // }
+
+      // if (!!updateClientPayload.entity_mobile) {
+      // }
+
       // updateClientPayload.board_ofdec_file = [new_data.board_ofdec_file];
 
       // console.log({ deletedFileManagerUrls });
@@ -1019,6 +1040,7 @@ export class TenderClientService {
         reviewerId,
         user_id,
         updateClientPayload,
+        updateUserPayload,
         created_bank,
         updated_bank,
         deleted_bank,

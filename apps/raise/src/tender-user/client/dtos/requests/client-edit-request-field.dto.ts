@@ -9,6 +9,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { ValidateKsaPhoneNumber966 } from '../../../../tender-commons/decorators/validate-ksa-phone-number-966.decorator';
 import { UploadFilesJsonbDto } from '../../../../tender-commons/dto/upload-files-jsonb.dto';
 import { CreateBankInformationDto } from './create-bank-information.dto';
 import { ExistingClientBankInformation } from './existing-bank-information.dto';
@@ -63,11 +64,12 @@ export class ClientEditRequestFieldDto {
   @IsString()
   region?: string;
 
-  // @ApiPropertyOptional()
-  // @IsOptional()
-  // @IsNotEmpty()
-  // @IsString()
-  // entity_mobile?: string;
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  @ValidateKsaPhoneNumber966()
+  entity_mobile?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

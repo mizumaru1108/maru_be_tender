@@ -5,6 +5,8 @@ import {
   Prisma,
   user_status,
 } from '@prisma/client';
+import { logUtil } from '../../../commons/utils/log-util';
+import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
@@ -22,7 +24,7 @@ export class TenderClientRepository {
 
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly tenderUserRepository: TenderUserRepository,
+    private readonly fusionAuthService: FusionAuthService,
   ) {}
 
   async validateStatus(status: string): Promise<user_status | null> {
@@ -101,6 +103,7 @@ export class TenderClientRepository {
           data_entry_name: true,
           date_of_esthablistmen: true,
           entity: true,
+          entity_mobile: true,
           governorate: true,
           headquarters: true,
           license_expired: true,
@@ -126,6 +129,24 @@ export class TenderClientRepository {
         TenderClientRepository.name,
         'findClientAndUser error details: ',
         'find client and user!',
+      );
+      throw theError;
+    }
+  }
+
+  async findClientByMobileNum(mobile_number: string) {
+    try {
+      return await this.prismaService.client_data.findFirst({
+        where: {
+          entity_mobile: mobile_number,
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderClientRepository.name,
+        'Find Client By Mobile Number error details: ',
+        'Finding Client By Mobile Number!',
       );
       throw theError;
     }
@@ -489,6 +510,7 @@ export class TenderClientRepository {
     reviewer_id: string,
     user_id: string,
     updateClientPayload: Prisma.client_dataUncheckedUpdateInput | undefined,
+    updateUserPayload: Prisma.userUncheckedUpdateInput | undefined,
     created_bank: Prisma.bank_informationCreateManyInput[],
     updated_bank: bank_information[],
     deleted_bank: bank_information[],
@@ -497,19 +519,57 @@ export class TenderClientRepository {
     try {
       return await this.prismaService.$transaction(
         async (prisma) => {
-          await prisma.client_data.update({
-            where: {
-              user_id,
-            },
-            data: {
-              ...updateClientPayload,
-            },
-          });
+          if (updateClientPayload) {
+            this.logger.log(
+              'info',
+              `updating client data with payload of \n${logUtil(
+                updateClientPayload,
+              )}`,
+            );
+            await prisma.client_data.update({
+              where: {
+                user_id,
+              },
+              data: {
+                ...updateClientPayload,
+              },
+            });
+          }
+
+          if (updateUserPayload) {
+            this.logger.log(
+              'info',
+              `updating client data with payload of ${logUtil(
+                updateUserPayload,
+              )}`,
+            );
+            await prisma.user.update({
+              where: {
+                id: user_id,
+              },
+              data: {
+                ...updateUserPayload,
+              },
+            });
+
+            await this.fusionAuthService.fusionAuthUpdateUser(user_id, {
+              firstName:
+                updateUserPayload.employee_name &&
+                !!updateUserPayload.employee_name
+                  ? (updateUserPayload.employee_name as string)
+                  : undefined,
+              mobilePhone:
+                updateUserPayload.mobile_number &&
+                !!updateUserPayload.mobile_number
+                  ? (updateUserPayload.mobile_number as string)
+                  : undefined,
+            });
+          }
 
           if (created_bank && created_bank.length > 0) {
             this.logger.log(
               'info',
-              `create .., payload: ${JSON.stringify(created_bank, null, 2)}`,
+              `create .., payload: ${logUtil(created_bank)}`,
             );
             await prisma.bank_information.createMany({
               data: created_bank,
@@ -520,10 +580,8 @@ export class TenderClientRepository {
             for (let i = 0; i < updated_bank.length; i++) {
               this.logger.log(
                 'info',
-                `updating bank ${updated_bank[i].id}, payload: ${JSON.stringify(
+                `updating bank ${updated_bank[i].id}, payload: ${logUtil(
                   updated_bank[i],
-                  null,
-                  2,
                 )}`,
               );
               const oldBank = await prisma.bank_information.findUnique({

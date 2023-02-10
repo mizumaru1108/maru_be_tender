@@ -33,10 +33,10 @@ export const InsertPaymentNotifMapper = (
 
   if (reviewer) {
     const supervisorWebNotifPayload: CreateNotificationDto = {
-      user_id: proposal.user.id,
+      user_id: reviewer.id,
       type: 'PROPOSAL',
       subject: subject,
-      content: clientContent,
+      content: supervisorContent,
     };
     createWebNotifPayload.push(supervisorWebNotifPayload);
   }
@@ -53,9 +53,10 @@ export const InsertPaymentNotifMapper = (
     clientMobileNumber: proposal.user.id,
     clientContent,
     createManyWebNotifPayload,
-    supervisorId: proposal.user.id,
-    supervisorEmail: proposal.user.id,
-    supervisorMobileNumber: proposal.user.id,
+    supervisorId: reviewer ? reviewer.id : '',
+    supervisorEmail: reviewer ? reviewer.email : '',
+    supervisorMobileNumber:
+      reviewer && reviewer.mobile_number ? reviewer.mobile_number : '',
     supervisorContent,
   };
 };

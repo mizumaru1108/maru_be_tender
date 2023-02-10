@@ -45,6 +45,7 @@ import { SendEmailDto } from '../../../libs/email/dtos/requests/send-email.dto';
 import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
 import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
 import { InsertPaymentNotifMapperResponse } from '../dtos/responses/insert-payment-notif-mapper-response.dto';
+import { UpdatePaymentNotifMapperResponse } from '../dtos/responses/update-payment-notif-mapper-response.dto';
 @Injectable()
 export class TenderProposalPaymentService {
   private readonly appEnv: string;
@@ -57,7 +58,6 @@ export class TenderProposalPaymentService {
     private readonly bunnyService: BunnyService,
     private readonly emailService: EmailService,
     private readonly twilioService: TwilioService,
-    private readonly notificationService: TenderNotificationService,
     private readonly tenderProposalRepository: TenderProposalRepository,
     private readonly tenderProposalLogRepository: TenderProposalLogRepository,
     private readonly tenderProposalPaymentRepository: TenderProposalPaymentRepository,
@@ -132,7 +132,7 @@ export class TenderProposalPaymentService {
         lastLog,
       );
 
-    await this.sendResponseNotif(insertResult.insertNotif);
+    this.sendInsertPaymentNotif(insertResult.insertNotif);
 
     return insertResult.updatedProposal;
   }
@@ -140,7 +140,7 @@ export class TenderProposalPaymentService {
   async updatePayment(
     currentUser: TenderCurrentUser,
     request: UpdatePaymentDto,
-  ): Promise<UpdatePaymentResponseDto> {
+  ): Promise<any> {
     let uploadedFilePath: string[] = [];
     try {
       const { id: userId, choosenRole } = currentUser;
@@ -239,6 +239,7 @@ export class TenderProposalPaymentService {
       const response = await this.tenderProposalPaymentRepository.updatePayment(
         payment_id,
         status,
+        action,
         currentUser.id,
         appRoleMappers[choosenRole] as TenderAppRole,
         chequeCreatePayload,
@@ -247,10 +248,10 @@ export class TenderProposalPaymentService {
         proposalUpdateInput,
       );
 
+      this.sendUpdatePaymentNotif(response.updateNotif);
       return {
         updatedPayment: response.payment,
         createdCheque: response.cheque,
-        createdLogs: response.logs,
       };
     } catch (err) {
       throw err;
@@ -320,7 +321,7 @@ export class TenderProposalPaymentService {
     }
   }
 
-  async sendResponseNotif(insertNotif: InsertPaymentNotifMapperResponse) {
+  sendInsertPaymentNotif(insertNotif: InsertPaymentNotifMapperResponse) {
     const {
       subject,
       clientContent,
@@ -353,7 +354,7 @@ export class TenderProposalPaymentService {
     }
 
     if (supervisorContent) {
-      if (supervisorEmail) {
+      if (supervisorEmail && supervisorEmail !== '') {
         const supervisorEmailNotif: SendEmailDto = {
           ...baseSendEmail,
           to: supervisorEmail,
@@ -363,12 +364,67 @@ export class TenderProposalPaymentService {
         this.emailService.sendMail(supervisorEmailNotif);
       }
 
-      if (supervisorMobileNumber) {
+      if (supervisorMobileNumber && supervisorMobileNumber !== '') {
         const supervisorPhone = isExistAndValidPhone(supervisorMobileNumber);
         if (supervisorPhone) {
           this.twilioService.sendSMS({
             to: supervisorPhone,
             body: subject + ', ' + supervisorContent,
+          });
+        }
+      }
+    }
+  }
+
+  sendUpdatePaymentNotif(insertNotif: UpdatePaymentNotifMapperResponse) {
+    const {
+      subject,
+      clientContent,
+      clientEmail,
+      clientMobileNumber,
+      reviewerContent,
+      reviewerEmail,
+      reviewerMobileNumber,
+    } = insertNotif;
+
+    const baseSendEmail: Omit<SendEmailDto, 'to'> = {
+      mailType: 'plain',
+      from: 'no-reply@hcharity.org',
+    };
+
+    const clientEmailNotif: SendEmailDto = {
+      ...baseSendEmail,
+      to: clientEmail,
+      subject: subject,
+      content: clientContent,
+    };
+    this.emailService.sendMail(clientEmailNotif);
+
+    const clientPhone = isExistAndValidPhone(clientMobileNumber);
+    if (clientPhone) {
+      this.twilioService.sendSMS({
+        to: clientPhone,
+        body: subject + ', ' + clientContent,
+      });
+    }
+
+    if (reviewerContent) {
+      if (reviewerEmail && reviewerEmail !== '') {
+        const reviewerEmailNotif: SendEmailDto = {
+          ...baseSendEmail,
+          to: reviewerEmail,
+          subject: subject,
+          content: reviewerContent,
+        };
+        this.emailService.sendMail(reviewerEmailNotif);
+      }
+
+      if (reviewerMobileNumber && reviewerMobileNumber !== '') {
+        const reviewerPhone = isExistAndValidPhone(reviewerMobileNumber);
+        if (reviewerPhone) {
+          this.twilioService.sendSMS({
+            to: reviewerPhone,
+            body: subject + ', ' + reviewerContent,
           });
         }
       }

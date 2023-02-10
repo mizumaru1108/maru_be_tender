@@ -10,6 +10,7 @@ import {
 } from '../../../tender-commons/types';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { InsertPaymentNotifMapper } from '../mappers/insert-payment-notif.mapper';
+import { UpdatePaymentNotifMapper } from '../mappers/update-payment-notif.mapper';
 
 @Injectable()
 export class TenderProposalPaymentRepository {
@@ -188,6 +189,7 @@ export class TenderProposalPaymentRepository {
   async updatePayment(
     paymentId: string,
     status: string | null,
+    action: 'accept' | 'reject' | 'edit' | 'upload_receipt' | 'issue',
     reviewerId: string,
     choosenRole: TenderAppRole,
     chequeCreatePayload: Prisma.chequeUncheckedCreateInput | undefined,
@@ -252,7 +254,50 @@ export class TenderProposalPaymentRepository {
                   )
                 : null,
             },
+            select: {
+              action: true,
+              created_at: true,
+              reviewer: {
+                select: {
+                  id: true,
+                  employee_name: true,
+                  email: true,
+                  mobile_number: true,
+                },
+              },
+              proposal: {
+                select: {
+                  user: {
+                    select: {
+                      id: true,
+                      employee_name: true,
+                      email: true,
+                      mobile_number: true,
+                    },
+                  },
+                },
+              },
+            },
           });
+
+          const updateNotif = UpdatePaymentNotifMapper(
+            payment,
+            logs,
+            action,
+            choosenRole,
+          );
+          if (
+            updateNotif.createManyWebNotifPayload &&
+            updateNotif.createManyWebNotifPayload.length > 0
+          ) {
+            this.logger.log(
+              'log',
+              `Creating new notification with payload of \n${updateNotif.createManyWebNotifPayload}`,
+            );
+            prisma.notification.createMany({
+              data: updateNotif.createManyWebNotifPayload,
+            });
+          }
 
           if (
             fileManagerCreateManyPayload &&
@@ -271,6 +316,7 @@ export class TenderProposalPaymentRepository {
             payment,
             cheque,
             logs,
+            updateNotif,
           };
         },
         { maxWait: 50000, timeout: 150000 },

@@ -20,6 +20,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { ROOT_LOGGER } from 'src/libs/root-logger';
 import { LoginRequestDto } from '../../../auth/dtos/login-request.dto';
 import { RegisterRequestDto } from '../../../auth/dtos/register-request.dto';
+import { logUtil } from '../../../commons/utils/log-util';
 // import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import {
   appRoleToFusionAuthRoles,
@@ -27,6 +28,7 @@ import {
 } from '../../../tender-commons/types';
 import { TenderCreateUserFusionAuthDto } from '../../../tender-user/user/dtos/requests/tender-create-user-fusion-auth.dto';
 import { UpdateUserPayload } from '../../../tender-user/user/interfaces/update-user-payload.interface';
+import { UpdateFusionAuthUserDto } from '../dtos/request/update-fusion-auth-user.dto';
 import {
   IQueryAxiosVerify,
   IVerifyEmailDto,
@@ -488,20 +490,21 @@ export class FusionAuthService {
     }
   }
 
-  async fusionAuthUpdateUser(userId: string, updateRequest: UpdateUserPayload) {
+  async fusionAuthUpdateUser(
+    userId: string,
+    updateRequest: UpdateFusionAuthUserDto,
+  ) {
     const user: IFusionAuthUser = {
-      firstName: updateRequest.employee_name as string | undefined,
-      password: updateRequest.password as string | undefined,
-      email: updateRequest.email as string | undefined,
-      mobilePhone: updateRequest.mobile_number as string | undefined,
+      firstName: updateRequest.firstName,
+      password: updateRequest.password,
+      email: updateRequest.email,
+      mobilePhone: updateRequest.mobilePhone,
     };
 
     this.logger.log(
       'info',
-      `updating user (${userId}) on FusionAuth, with payload : ${JSON.stringify(
+      `updating user (${userId}) on FusionAuth, with payload : ${logUtil(
         user,
-        null,
-        2,
       )}`,
     );
 
