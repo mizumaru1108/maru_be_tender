@@ -24,6 +24,8 @@ function FollowUps() {
   const [loading, setLoading] = useState(false);
   const [disabled, setDisabled] = useState(false);
 
+  const role = activeRole!;
+
   const handleDelFollowUps = async () => {
     try {
       setLoading(true);
@@ -39,7 +41,7 @@ function FollowUps() {
       );
       if (response) {
         dispatch(setCheckedItems([]));
-        dispatch(getProposal(id as string));
+        dispatch(getProposal(id as string, role as string));
         enqueueSnackbar(translate('content.client.main_page.delete_success'), {
           variant: 'success',
         });

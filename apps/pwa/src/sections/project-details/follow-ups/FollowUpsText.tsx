@@ -26,6 +26,22 @@ function FollowUpsText(item: FollowUps) {
     }
   };
 
+  function getRole(roles: any) {
+    const getActiveRole = role.substr(7);
+
+    const index = roles.findIndex((r: any) => r.role.toUpperCase() === getActiveRole.toUpperCase());
+
+    if (index === -1) {
+      return roles[0].role;
+    }
+
+    return roles[index].role;
+  }
+
+  // item.user.roles.map((role) => console.log(role.role));
+  // console.log(getRole(), 'ROLE');
+  // console.log(activeRole!.substr(7), 'ACTIVE ROLE');
+
   if (role === 'tender_client')
     return (
       <Grid container spacing={1}>
@@ -67,7 +83,7 @@ function FollowUpsText(item: FollowUps) {
           >
             <Stack direction="row" justifyContent="space-between">
               <Typography color="#0E8478">{`${item.user.employee_name} - ${translate(
-                `permissions.${item.user.roles[0].role}`
+                `permissions.${getRole(item.user.roles)}`
               )}`}</Typography>
               <Typography sx={{ color: 'gray' }}>{`${new Date(
                 item.created_at
@@ -123,7 +139,7 @@ function FollowUpsText(item: FollowUps) {
             >
               <Stack direction="row" justifyContent="space-between">
                 <Typography color="#0E8478">{`${item.user.employee_name} - ${translate(
-                  `permissions.${item.user.roles[0].role}`
+                  `permissions.${getRole(item.user.roles)}`
                 )}`}</Typography>
                 <Typography sx={{ color: 'gray' }}>{`${new Date(
                   item.created_at
@@ -132,9 +148,14 @@ function FollowUpsText(item: FollowUps) {
               <Typography>{item.content}</Typography>
             </Box>
           </Grid>
-          <Grid item xs={1}>
-            <Checkbox onChange={(event) => handleCheckboxChange(event, item.id)} value={item.id} />
-          </Grid>
+          {role === 'tender_ceo' && (
+            <Grid item xs={1}>
+              <Checkbox
+                onChange={(event) => handleCheckboxChange(event, item.id)}
+                value={item.id}
+              />
+            </Grid>
+          )}
         </Grid>
       </Grid>
     </Grid>

@@ -11,11 +11,15 @@ import { getProposal } from 'redux/slices/proposal';
 import { useDispatch, useSelector } from 'redux/store';
 //
 import { FEATURE_PROJECT_DETAILS } from 'config';
+import useAuth from 'hooks/useAuth';
 
 function ProjectDetailsMainPage() {
   const { id } = useParams();
 
   const dispatch = useDispatch();
+
+  const { activeRole } = useAuth();
+  const role = activeRole!;
 
   const { currentLang } = useLocales();
 
@@ -24,8 +28,8 @@ function ProjectDetailsMainPage() {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    dispatch(getProposal(id as string));
-  }, [dispatch, id]);
+    dispatch(getProposal(id as string, role as string));
+  }, [dispatch, id, role]);
 
   if (isLoading) return <>... Loading</>;
 

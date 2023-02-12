@@ -38,6 +38,18 @@ function FollowUpsFile(item: FollowUps) {
     }
   };
 
+  function getRole(roles: any) {
+    const getActiveRole = role.substr(7);
+
+    const index = roles.findIndex((r: any) => r.role.toUpperCase() === getActiveRole.toUpperCase());
+
+    if (index === -1) {
+      return roles[0].role;
+    }
+
+    return roles[index].role;
+  }
+
   if (role === 'tender_client')
     return (
       <>
@@ -77,7 +89,7 @@ function FollowUpsFile(item: FollowUps) {
                   <Stack direction="row" justifyContent="space-between" sx={{ mx: 1 }}>
                     {item.user ? (
                       <Typography color="#0E8478">{`${item.user.employee_name} - ${translate(
-                        `permissions.${item.user.roles[0].role}`
+                        `permissions.${getRole(item.user.roles)}`
                       )}`}</Typography>
                     ) : (
                       <Typography color="#0E8478">المستخدم</Typography>
@@ -183,7 +195,7 @@ function FollowUpsFile(item: FollowUps) {
                 <Stack direction="row" justifyContent="space-between" sx={{ ml: 1, mr: 10 }}>
                   {item.user ? (
                     <Typography color="#0E8478">{`${item.user.employee_name} - ${translate(
-                      `permissions.${item.user.roles[0].role}`
+                      `permissions.${getRole(item.user.roles)}`
                     )}`}</Typography>
                   ) : (
                     <Typography color="#0E8478">المستخدم</Typography>
@@ -247,12 +259,14 @@ function FollowUpsFile(item: FollowUps) {
                       </Stack>
                     </Button>
                   </Grid>
-                  <Grid item xs={1}>
-                    <Checkbox
-                      onChange={(event) => handleCheckboxChange(event, item.id)}
-                      value={item.id}
-                    />
-                  </Grid>
+                  {role === 'tender_ceo' && (
+                    <Grid item xs={1}>
+                      <Checkbox
+                        onChange={(event) => handleCheckboxChange(event, item.id)}
+                        value={item.id}
+                      />
+                    </Grid>
+                  )}
                 </Grid>
               </Grid>
             </Grid>

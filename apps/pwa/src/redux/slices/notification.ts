@@ -1,12 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getOneProposal } from 'queries/commons/getOneProposal';
-import { insertPayments } from 'queries/project-supervisor/insertPayments';
 import { dispatch } from 'redux/store';
 import graphQlAxiosInstance from 'utils/axisoGraphQlInstance';
 import { Notifications } from '../../@types/notification';
-import { updatePayment } from 'queries/project-supervisor/updatePayment';
-import { insertChequeUpdatePayment } from 'queries/Cashier/insertChequeUpdatePayment';
-import { createNewFollowUp } from 'queries/commons/createNewFollowUp';
 import axiosInstance from 'utils/axios';
 
 // ----------------------------------------------------------------------

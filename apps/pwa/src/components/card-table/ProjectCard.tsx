@@ -106,8 +106,6 @@ const ProjectCard = ({
     }
   };
 
-  console.log(content, 'USER');
-
   return (
     <Card sx={{ backgroundColor: '#fff' }}>
       <CardContent>

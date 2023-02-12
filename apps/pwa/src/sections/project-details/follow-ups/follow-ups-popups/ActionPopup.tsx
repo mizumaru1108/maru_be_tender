@@ -68,7 +68,7 @@ function ActionPopup({ open, handleClose }: Props) {
         }
       );
       if (response) {
-        dispatch(getProposal(id as string));
+        dispatch(getProposal(id as string, role as string));
         enqueueSnackbar('تم رفع الإجراء بنجاح', {
           variant: 'success',
         });

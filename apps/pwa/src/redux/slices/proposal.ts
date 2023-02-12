@@ -8,6 +8,7 @@ import { updatePayment } from 'queries/project-supervisor/updatePayment';
 import { insertChequeUpdatePayment } from 'queries/Cashier/insertChequeUpdatePayment';
 import { createNewFollowUp } from 'queries/commons/createNewFollowUp';
 import axiosInstance from 'utils/axios';
+import { useQuery } from 'urql';
 
 // ----------------------------------------------------------------------
 
@@ -207,10 +208,37 @@ export default slice.reducer;
 // Actions
 export const { setProposal, setActiveTap, setCheckedItems, setEmployeeOnly } = slice.actions;
 
-export const getProposal = (id: string) => async () => {
+// export const getProposal = (id: string, headers: any) => async () => {
+//   try {
+//     dispatch(slice.actions.startLoading);
+//     const res = await graphQlAxiosInstance.post('', {
+//       query: getOneProposal,
+//       variables: { id },
+//       headers: headers,
+//     });
+
+//     dispatch(slice.actions.setProposal(res.data.data.proposal));
+//     dispatch(slice.actions.endLoading);
+//   } catch (error) {
+//     dispatch(slice.actions.hasError(error));
+//   }
+// };
+
+export const getProposal = (id: string, role: string) => async () => {
   try {
     dispatch(slice.actions.startLoading);
-    const res = await graphQlAxiosInstance.post('', { query: getOneProposal, variables: { id } });
+    const res = await graphQlAxiosInstance.post(
+      '',
+      {
+        query: getOneProposal,
+        variables: { id },
+      },
+      {
+        headers: {
+          'x-hasura-role': `${role}`,
+        },
+      }
+    );
 
     dispatch(slice.actions.setProposal(res.data.data.proposal));
     dispatch(slice.actions.endLoading);
@@ -218,7 +246,6 @@ export const getProposal = (id: string) => async () => {
     dispatch(slice.actions.hasError(error));
   }
 };
-
 export const insertPaymentsBySupervisor = (data: any) => async () => {
   try {
     dispatch(slice.actions.startLoading);

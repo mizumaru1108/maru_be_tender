@@ -20,6 +20,7 @@ import useLocales from 'hooks/useLocales';
 import { getProposal, setEmployeeOnly } from 'redux/slices/proposal';
 import { useDispatch, useSelector } from 'redux/store';
 import FollowUpsAction from './FollowUpsAction';
+import useAuth from 'hooks/useAuth';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -56,6 +57,7 @@ function TabPanel(props: TabPanelProps) {
 
 function EmployeeFollowUpsPage() {
   const { id, actionType } = useParams();
+  const { activeRole } = useAuth();
   const dispatch = useDispatch();
   const { proposal, isLoading, error } = useSelector((state) => state.proposal);
   const { translate } = useLocales();
@@ -65,6 +67,8 @@ function EmployeeFollowUpsPage() {
   const theme = useTheme();
 
   const [switchState, setSwitchState] = React.useState(0);
+
+  const role = activeRole!;
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setSwitchState(newValue);
@@ -76,8 +80,8 @@ function EmployeeFollowUpsPage() {
     } else {
       dispatch(setEmployeeOnly(false));
     }
-    dispatch(getProposal(id as string));
-  }, [dispatch, id, switchState]);
+    dispatch(getProposal(id as string, role as string));
+  }, [dispatch, id, switchState, role]);
 
   if (isLoading) return <>... Loading</>;
 

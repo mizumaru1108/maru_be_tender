@@ -18,7 +18,6 @@ graphQlAxiosInstance.interceptors.response.use(
 graphQlAxiosInstance.interceptors.request.use(
   async (config) => {
     const controller = new AbortController();
-
     const acccessToken = localStorage.getItem('accessToken');
     const refreshToken = localStorage.getItem('refreshToken');
 
@@ -39,7 +38,7 @@ graphQlAxiosInstance.interceptors.request.use(
           ...config.headers,
         };
 
-        return config;
+        return { ...config };
       } else {
         return {
           ...config,
@@ -54,7 +53,7 @@ graphQlAxiosInstance.interceptors.request.use(
       ...config.headers,
     };
 
-    return config;
+    return { ...config };
   },
   function (error) {
     return Promise.reject(error);
