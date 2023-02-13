@@ -106,7 +106,7 @@ function NonClientProfileEditForm() {
       <Stack direction="row">
         <IconButton
           onClick={() => {
-            navigate('/client/my-profile');
+            navigate(-1);
           }}
         >
           <svg

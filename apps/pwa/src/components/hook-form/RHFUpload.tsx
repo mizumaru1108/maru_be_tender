@@ -15,7 +15,8 @@ import { getFileURL } from 'utils/getFileURL';
 import useAuth from 'hooks/useAuth';
 import axios from 'axios';
 import { TMRA_RAISE_URL } from 'config';
-import { encodeBase64Upload } from '../../utils/getBase64';
+import { encodeBase64Upload, fileToBinary } from '../../utils/getBase64';
+import { useCompress } from '../../utils/compressFile';
 // ----------------------------------------------------------------------
 
 interface Props extends Omit<UploadProps, 'file'> {
@@ -135,6 +136,7 @@ export function RHFUploadMultiFile({
   disabled,
   ...other
 }: RHFUploadMultiFileProps) {
+  const { progress, isCompressing, compress } = useCompress();
   const { control, getValues, setValue } = useFormContext();
 
   // const handleDrop = useCallback<(acceptedFiles: File[]) => void>(
@@ -163,21 +165,74 @@ export function RHFUploadMultiFile({
     const images = getValues(name);
     const newImages = await Promise.all(
       acceptedFiles.map(async (file) => {
-        const base64Data = await encodeBase64Upload(file);
+        const fileBuffer = await encodeBase64Upload(file);
+        const fileType = file.type.split('/')[0];
         const preview = URL.createObjectURL(file);
-        // const fullName = file.name;
-        // const fileExtension = file.type;
-        // const size = file.size;
+        // if (fileType === 'application') {
+        //   const base64Data = await encodeBase64Upload(file);
+        //   return {
+        //     ...file,
+        //     preview,
+        //     base64Data,
+        //     fullName: file.name,
+        //     fileExtension: file.type,
+        //     size: file.size,
+        //   };
+        // } else if (fileType === 'image') {
+        //   let tmpFile = {};
+        //   const compressFile = compress(file, {
+        //     maxSizeMB: 1,
+        //     maxWidthOrHeight: 900,
+        //     useWebWorker: false,
+        //   });
+        //   compressFile
+        //     .then(async (compresedFile) => {
+        //       const fileBuffer = await encodeBase64Upload(compresedFile);
+        //       // setValue(name, {
+        //       //   ...file,
+        //       //   preview,
+        //       //   base64Data: fileBuffer,
+        //       //   fullName: file.name,
+        //       //   fileExtension: file.type,
+        //       //   size: file.size,
+        //       // });
+        //       tmpFile = {
+        //         ...file,
+        //         preview,
+        //         base64Data: fileBuffer,
+        //         fullName: file.name,
+        //         fileExtension: file.type,
+        //         size: file.size,
+        //       };
+        //       console.log('tmpFile=', tmpFile);
+        //     })
+        //     .catch((err) => {
+        //       console.error('Unable to compress file', err);
+        //     });
+        //   // console.log('tmpFile=', tmpFile);
+        //   return tmpFile;
+        // } else {
+        //   const base64Data = await encodeBase64Upload(file);
+        //   return {
+        //     ...file,
+        //     preview,
+        //     base64Data,
+        //     fullName: file.name,
+        //     fileExtension: file.type,
+        //     size: file.size,
+        //   };
+        // }
         return {
           ...file,
           preview,
-          base64Data,
+          base64Data: fileBuffer,
           fullName: file.name,
           fileExtension: file.type,
           size: file.size,
         };
       })
     );
+    // console.log('newImages=', newImages);
     if (images) {
       setValue(name, [...images, ...newImages]);
     } else {

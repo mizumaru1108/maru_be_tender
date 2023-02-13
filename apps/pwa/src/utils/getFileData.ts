@@ -4,6 +4,7 @@ import { CustomFile } from '../components/upload/type';
 // ----------------------------------------------------------------------
 
 export default function getFileData(file: CustomFile | string, index?: number) {
+  // console.log('file', file);
   if (typeof file === 'string') {
     return {
       key: index ? `${file}-${index}` : file,
