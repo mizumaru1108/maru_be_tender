@@ -20,5 +20,10 @@ export const gettingIncomingRequests = `query MyQuery($limit: Int = 4, $project_
     project_idea
     project_name
   }
+  proposal_logs {
+    reviewer {
+      employee_name
+    }
+  }
 }
 `;

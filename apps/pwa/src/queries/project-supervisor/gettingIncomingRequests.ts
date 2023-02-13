@@ -18,6 +18,7 @@ export const gettingIncomingRequests = `query MyQuery($limit: Int = 10, $order_b
     id
     created_at
     project_idea
+    state
     project_name
     user {
       employee_name
@@ -26,7 +27,11 @@ export const gettingIncomingRequests = `query MyQuery($limit: Int = 10, $order_b
         created_at
       }
     }
-    state
+    proposal_logs {
+      reviewer {
+        employee_name
+      }
+    }
   }
 }
 `;

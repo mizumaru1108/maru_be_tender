@@ -1438,6 +1438,7 @@ const en = {
     project_supervisor: 'Supervisor',
     ceo: 'CEO',
     consultant: 'Consultant',
+    cashier: 'Cashier',
   },
   nothing_payment: 'The Payments haven’t been set yet',
   notification: {

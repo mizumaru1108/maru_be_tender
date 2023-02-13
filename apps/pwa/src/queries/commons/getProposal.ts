@@ -29,5 +29,10 @@ query getProposals($limit: Int = 4, $offset: Int = 0, $order_by: [proposal_order
         created_at
       }
     }
+    proposal_logs {
+      reviewer {
+        employee_name
+      }
+    }
   }
 }`;

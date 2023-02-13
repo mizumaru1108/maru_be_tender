@@ -27,6 +27,11 @@ export const gettingMyRequestedProcess = `query gettingMyRequestedProcess($limit
         created_at
       }
     }
+    proposal_logs {
+      reviewer {
+        employee_name
+      }
+    }
   }
 }
 `;

@@ -31,6 +31,11 @@ export const gettingPaymentAdjustment = `query MyQuery($where: proposal_bool_exp
     payments {
       id
     }
+    proposal_logs {
+      reviewer {
+        employee_name
+      }
+    }
   }
 }
 `;

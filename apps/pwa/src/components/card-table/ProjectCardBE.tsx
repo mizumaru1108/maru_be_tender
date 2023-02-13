@@ -49,6 +49,7 @@ const ProjectCardBE = ({
   created_at,
   project_idea,
   user,
+  proposal_logs,
   state,
   payments,
   outter_status: status,
@@ -131,6 +132,8 @@ const ProjectCardBE = ({
       navigate(`${location.pathname}/${id}/${cardFooterButtonAction}`);
     }
   };
+
+  console.log({ proposal_logs, project_name }, 'PORPOSAL LOGS');
 
   return (
     <Card sx={{ backgroundColor: '#fff' }}>
@@ -218,13 +221,13 @@ const ProjectCardBE = ({
           </React.Fragment>
         )}
         <Stack direction="row" gap={6}>
-          {role !== 'tender_moderator' && user.employee_name && (
+          {role !== 'tender_moderator' && proposal_logs[proposal_logs.length - 1].reviewer && (
             <Stack>
               <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
                 {translate('project_management_headercell.employee')}
               </Typography>
               <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
-                {user.employee_name}
+                Sent by {proposal_logs[proposal_logs.length - 1].reviewer.employee_name}
               </Typography>
             </Stack>
           )}

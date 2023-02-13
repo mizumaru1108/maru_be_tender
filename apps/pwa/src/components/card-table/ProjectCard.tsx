@@ -197,7 +197,7 @@ const ProjectCard = ({
                     {translate('project_management_headercell.employee')}
                   </Typography>
                   <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
-                    {content.employee}
+                    Sent by {content.employee}
                   </Typography>
                 </Stack>
               )}

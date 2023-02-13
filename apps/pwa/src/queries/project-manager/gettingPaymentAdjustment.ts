@@ -7,4 +7,9 @@ export const gettingPaymentAdjustment = `query MyQuery2($project_manager_id: Str
     }
     created_at
   }
+  proposal_logs {
+    reviewer {
+      employee_name
+    }
+  }
 }`;

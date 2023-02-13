@@ -20,5 +20,10 @@ export const gettingMyRequestedProcess = `query MyQuery($limit: Int = 4, $projec
     project_idea
     project_name
   }
+  proposal_logs {
+    reviewer {
+      employee_name
+    }
+  }
 }
 `;

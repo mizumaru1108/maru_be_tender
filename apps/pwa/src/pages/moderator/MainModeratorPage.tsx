@@ -92,7 +92,7 @@ function MainManagerPage() {
                       content={{
                         projectName: item.project_name,
                         organizationName: item.user.client_data.entity ?? '-',
-                        sentSection: 'Moderator',
+                        sentSection: item.state,
                         employee: item.user.employee_name,
                         createdAtClient: new Date(item.user.client_data.created_at),
                       }}

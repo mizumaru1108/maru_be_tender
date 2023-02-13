@@ -18,6 +18,7 @@ export const gettingPreviousRequests = `query MyQuery($limit: Int = 10, $offset:
     created_at
     project_idea
     project_name
+    state
     user {
       employee_name
       client_data{
@@ -25,6 +26,10 @@ export const gettingPreviousRequests = `query MyQuery($limit: Int = 10, $offset:
         created_at
       }
     }
-    state
+    proposal_logs {
+      reviewer {
+        employee_name
+      }
+    }
   }
 }`;

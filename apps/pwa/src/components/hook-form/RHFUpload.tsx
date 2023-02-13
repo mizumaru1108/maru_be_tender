@@ -272,7 +272,7 @@ export function RHFUploadMultiFile({
               'image/jpg': [],
               'application/pdf': [],
             }}
-            maxSize={1024 * 1024 * 10}
+            maxSize={1024 * 1024 * 3}
             files={field.value}
             showPreview
             placeholder={placeholder ?? ''}

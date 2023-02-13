@@ -50,6 +50,14 @@ export type ProjectCardPropsBE = {
       created_at: Date;
     };
   };
+  proposal_logs: [
+    {
+      reviewer: {
+        employee_name: string;
+      };
+      state: string;
+    }
+  ];
   state?: string;
   payments?: any;
   outter_status?: 'CANCELED' | 'COMPLETED' | 'PENDING';

@@ -1480,6 +1480,7 @@ const ar = {
     project_supervisor: 'مشرف',
     ceo: 'المدير التنفيذي',
     consultant: 'مستشار',
+    cashier: 'أمين الصندوق',
   },
   nothing_payment: 'لم يتم تعيين المدفوعات حتى الآن',
   notification: {
