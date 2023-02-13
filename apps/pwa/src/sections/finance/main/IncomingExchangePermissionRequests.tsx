@@ -4,8 +4,10 @@ import useAuth from 'hooks/useAuth';
 import { getProposals } from 'queries/commons/getProposal';
 import { useNavigate } from 'react-router';
 import { useQuery } from 'urql';
+import useLocales from 'hooks/useLocales';
 
 function IncomingExchangePermissionRequests() {
+  const { translate } = useLocales();
   const navigate = useNavigate();
   const [result] = useQuery({
     query: getProposals,
@@ -28,7 +30,7 @@ function IncomingExchangePermissionRequests() {
       <Grid item md={12} xs={12}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="h4" sx={{ mb: '20px' }}>
-            طلبات إذن الصرف الواردة
+            {translate('finance_pages.heading.outgoing_exchange_request')}
           </Typography>
           <Button
             sx={{
@@ -43,7 +45,7 @@ function IncomingExchangePermissionRequests() {
               navigate('/finance/dashboard/incoming-exchange-permission-requests');
             }}
           >
-            عرض الكل
+            {translate('finance_pages.heading.link_view_all')}
           </Button>
         </Stack>
       </Grid>

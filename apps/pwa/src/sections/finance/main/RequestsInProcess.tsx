@@ -5,8 +5,10 @@ import useAuth from 'hooks/useAuth';
 import { getProposals } from 'queries/commons/getProposal';
 import { useNavigate } from 'react-router';
 import { useQuery } from 'urql';
+import useLocales from 'hooks/useLocales';
 
 function RequestsInProcess() {
+  const { translate } = useLocales();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [result] = useQuery({
@@ -29,7 +31,7 @@ function RequestsInProcess() {
       <Grid item md={12} xs={12}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="h4" sx={{ mb: '20px' }}>
-            طلبات قيد الإجراء
+            {translate('finance_pages.heading.proccess_request')}
           </Typography>
           <Button
             sx={{
@@ -44,7 +46,7 @@ function RequestsInProcess() {
               navigate('/finance/dashboard/requests-in-process');
             }}
           >
-            عرض الكل
+            {translate('finance_pages.heading.link_view_all')}
           </Button>
         </Stack>
       </Grid>

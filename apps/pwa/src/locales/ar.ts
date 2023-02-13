@@ -1509,6 +1509,32 @@ const ar = {
     btn_create_proposal: ' انهاء',
     btn_next_save_as_draft: 'التالي',
   },
+
+  // Finance pages
+  finance_pages: {
+    heading: {
+      daily_stats: 'احصائيات يومية',
+      link_view_all: 'مشاهدة الكل',
+      outgoing_exchange_request: 'طلبات إذن الصرف الواردة',
+      proccess_request: 'طلبات قيد الإجراء',
+      projects: 'مشاريع',
+      batches: 'دفعات',
+    },
+    card: {
+      total_projects: 'عدد مشاريع الكلي',
+      new_incoming_projects: 'مشاريع جديدة واردة',
+    },
+    button: {
+      upload_receipt: 'رفع ايصال التحويل',
+      back: 'رجوع',
+      add: 'اضافة',
+    },
+    modal: {
+      heading: {
+        upload_receipt: 'رفع إيصال الشيك',
+      },
+    },
+  },
 };
 
 export default ar;

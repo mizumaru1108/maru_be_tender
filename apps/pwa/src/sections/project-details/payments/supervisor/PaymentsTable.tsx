@@ -30,7 +30,7 @@ function PaymentsTable() {
           action: 'issue',
         })
       ).then((res) => {
-        if (res.data.statusCode === 200) {
+        if (res.statusCode === 200) {
           enqueueSnackbar('تم إصدار أذن الصرف بنجاح', {
             variant: 'success',
             preventDuplicate: true,
@@ -129,7 +129,7 @@ function PaymentsTable() {
               <Grid item md={2}>
                 <Button
                   component={Link}
-                  href={item.cheques[0].transfer_receipt}
+                  href={item.cheques[0].transfer_receipt.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   download="صورة بطاقة الحساب البنكي"

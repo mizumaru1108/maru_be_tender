@@ -112,7 +112,11 @@ const initialState: ProposalItme = {
             id: 'test',
             number: 0,
             payment_id: 0,
-            transfer_receipt: 'test',
+            transfer_receipt: {
+              size: 0,
+              url: '',
+              type: '',
+            },
             deposit_date: new Date('10-10-2022'),
           },
         ],
@@ -331,21 +335,37 @@ export const updatePaymentBySupervisorAndManagerAndFinance = (data: any) => asyn
 export const insertChequeByCashier = (data: any) => async () => {
   try {
     dispatch(slice.actions.startLoading);
-    await graphQlAxiosInstance.post('', {
-      query: insertChequeUpdatePayment,
-      variables: {
-        cheque: data.cheque,
-        paymentId: data.paymentId,
-        newState: { status: 'DONE' },
-      },
+    // await graphQlAxiosInstance.post('', {
+    //   query: insertChequeUpdatePayment,
+    //   variables: {
+    //     cheque: data.cheque,
+    //     paymentId: data.paymentId,
+    //     newState: { status: 'DONE' },
+    //   },
+    // });
+
+    const variables = {
+      payment_id: data.id,
+      action: data.action,
+      cheque: data.cheque,
+    };
+
+    const res = await axiosInstance.patch('/tender/proposal/payment/update-payment', variables, {
+      headers: { 'x-hasura-role': data.role },
     });
+
+    if (res.data.statusCode === 200) {
+      dispatch(
+        slice.actions.insertCheque({
+          payment_id: data.id,
+          cheque: data.cheque,
+        })
+      );
+    }
+
     dispatch(slice.actions.endLoading);
-    dispatch(
-      slice.actions.insertCheque({
-        payment_id: data.paymentId,
-        cheque: data.cheque,
-      })
-    );
+
+    return res.data;
   } catch (error) {
     dispatch(slice.actions.endLoading);
     throw error;

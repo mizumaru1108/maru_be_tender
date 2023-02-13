@@ -1,11 +1,13 @@
 import { Typography, Grid, Stack, Button } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
 import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
 import { getProposals } from 'queries/commons/getProposal';
 import { useNavigate } from 'react-router';
 import { useQuery } from 'urql';
 
 function RequestsInProcess() {
+  const { translate } = useLocales();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [result] = useQuery({
@@ -28,8 +30,8 @@ function RequestsInProcess() {
     <Grid container spacing={3}>
       <Grid item md={12} xs={12}>
         <Stack direction="row" justifyContent="space-between">
-          <Typography variant="h4" sx={{ mb: '20px' }}>
-            طلبات قيد الإجراء
+          <Typography variant="h4">
+            {translate('finance_pages.heading.proccess_request')}
           </Typography>
           <Button
             sx={{
@@ -44,7 +46,7 @@ function RequestsInProcess() {
               navigate('/cashier/dashboard/requests-in-process');
             }}
           >
-            عرض الكل
+            {translate('finance_pages.heading.link_view_all')}
           </Button>
         </Stack>
       </Grid>

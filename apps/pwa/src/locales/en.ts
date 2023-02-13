@@ -1467,6 +1467,32 @@ const en = {
     btn_create_proposal: 'Send',
     btn_next_save_as_draft: 'Next',
   },
+
+  // Finance pages
+  finance_pages: {
+    heading: {
+      daily_stats: 'Daily Stats',
+      link_view_all: 'View All',
+      outgoing_exchange_request: 'Incoming exchange authorization requests',
+      proccess_request: 'Process requests',
+      projects: 'Projects',
+      batches: 'Batches',
+    },
+    card: {
+      total_projects: 'Total number of projects',
+      new_incoming_projects: 'New incoming projects',
+    },
+    button: {
+      upload_receipt: 'Upload the transfer receipt',
+      back: 'Back',
+      add: 'Addition',
+    },
+    modal: {
+      heading: {
+        upload_receipt: 'Raise the check receipt',
+      },
+    },
+  },
 };
 
 export default en;

@@ -60,38 +60,64 @@ export function RHFUploadSingleFile({ name, placeholder, ...other }: Props) {
   const { control, setValue } = useFormContext();
   const { user } = useAuth();
   const [uploading, setUploading] = useState(false);
-  const id = user?.id;
+  // const id = user?.id;
+
   const handleDrop = useCallback(
     async (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
-      const userId = id;
-      const formdata = new FormData();
-      formdata.append('file', file);
-      formdata.append('userId', userId);
+      // const userId = id;
+
+      setUploading(true);
+
       try {
-        setUploading(true);
-        const response = await axios.post(`${TMRA_RAISE_URL}/tender/uploads`, formdata);
-        if (response.data) {
-          setValue(name, {
-            url: getFileURL(response.data.data),
-            type: acceptedFiles[0].type,
-            size: acceptedFiles[0].size / 28,
-          });
-          setUploading(false);
-        }
-      } catch (e) {
+        const fileBuffer = await encodeBase64Upload(file);
+        const preview = URL.createObjectURL(file);
+
+        setValue(name, {
+          url: preview,
+          type: file.type,
+          size: file.size,
+          base64Data: fileBuffer,
+          fullName: file.name,
+          fileExtension: file.type,
+        });
+
         setUploading(false);
-        alert(e.data.mesage);
+      } catch (error) {
+        setUploading(false);
+        throw error.message;
       }
+
+      // const formdata = new FormData();
+      // formdata.append('file', file);
+      // formdata.append('userId', userId);
+      // try {
+      //   setUploading(true);
+      //   const response = await axios.post(`${TMRA_RAISE_URL}/tender/uploads`, formdata);
+      //   if (response.data) {
+      //     setValue(name, {
+      //       url: getFileURL(response.data.data),
+      //       type: acceptedFiles[0].type,
+      //       size: acceptedFiles[0].size / 28,
+      //     });
+      //     setUploading(false);
+      //   }
+      // } catch (e) {
+      //   setUploading(false);
+      //   alert(e.data.mesage);
+      // }
     },
-    [id, name, setValue]
+    [name, setValue]
   );
 
   const onRemove = () => {
     setValue(name, {
       url: '',
+      size: undefined,
       type: '',
-      size: '',
+      base64Data: undefined,
+      fullName: '',
+      fileExtension: '',
     });
   };
   return (

@@ -12,7 +12,7 @@ function FinancePaymentsPage() {
   const theme = useTheme();
 
   return (
-    <Grid container spacing={3} sx={{ mt: '8px' }}>
+    <Grid container spacing={3}>
       <Grid item md={12}>
         <Typography variant="h4">
           {translate('content.administrative.project_details.payment.heading.exchange_information')}
@@ -21,16 +21,13 @@ function FinancePaymentsPage() {
       <Grid item md={2} xs={12}>
         <Box
           sx={{
-            borderRadius: '8px',
+            borderRadius: 1,
             backgroundColor: '#fff',
-            py: '30px',
-            paddingRight: '40px',
-            paddingLeft: '5px',
-            height: '120px',
+            p: 2,
           }}
         >
           <img src={`/icons/rial-currency.svg`} alt="" />
-          <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
+          <Typography sx={{ color: '#93A3B0', fontSize: '10px', my: '5px' }}>
             {translate('content.administrative.project_details.payment.heading.project_budget')}
           </Typography>
           <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>{`${fCurrencyNumber(
@@ -41,12 +38,9 @@ function FinancePaymentsPage() {
       <Grid item md={2} xs={12}>
         <Box
           sx={{
-            borderRadius: '8px',
+            borderRadius: 1,
             backgroundColor: '#fff',
-            py: '30px',
-            paddingRight: '40px',
-            paddingLeft: '5px',
-            height: '120px',
+            p: 2,
           }}
         >
           <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
@@ -54,9 +48,6 @@ function FinancePaymentsPage() {
               'content.administrative.project_details.payment.heading.registered_payments'
             )}
           </Typography>
-          {/* <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>{`${
-            (proposal as Proposal).number_of_payments_by_supervisor ?? 0
-          } دفعات`}</Typography> */}
           <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
             <Typography
               component="span"
@@ -81,7 +72,7 @@ function FinancePaymentsPage() {
       </Grid>
 
       <Grid item md={12}>
-        <Typography variant="h4">
+        <Typography variant="h4" sx={{ mt: 2 }}>
           {translate('content.administrative.project_details.payment.heading.split_payments')}
         </Typography>
       </Grid>

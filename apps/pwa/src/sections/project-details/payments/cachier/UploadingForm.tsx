@@ -4,6 +4,7 @@ import { Button, Stack, Grid } from '@mui/material';
 import FormGenerator from 'components/FormGenerator';
 import { FormProvider } from 'components/hook-form';
 import ModalDialog from 'components/modal-dialog';
+import useLocales from 'hooks/useLocales';
 import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import { useForm } from 'react-hook-form';
@@ -12,8 +13,11 @@ import { useDispatch } from 'redux/store';
 import * as Yup from 'yup';
 import { UploadReceiptFormFields } from './form-data';
 import { UploadReceiptPayload } from './type';
+import useAuth from 'hooks/useAuth';
 
 function UploadingForm({ paymentId, onClose }: any) {
+  const { activeRole } = useAuth();
+  const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
 
   const dispatch = useDispatch();
@@ -23,13 +27,23 @@ function UploadingForm({ paymentId, onClose }: any) {
       url: Yup.string(),
       size: Yup.number(),
       type: Yup.string(),
+      base64Data: Yup.string(),
+      fullName: Yup.string(),
+      fileExtension: Yup.string(),
     }),
     checkTransferNumber: Yup.string().required('Check Transfer Number is required!'),
     depositDate: Yup.string().required('Deposit Date is required!'),
   });
 
   const defaultValues = {
-    transactionReceipt: { url: '', size: undefined, type: 'image/jpeg' },
+    transactionReceipt: {
+      url: '',
+      size: undefined,
+      type: '',
+      base64Data: undefined,
+      fullName: '',
+      fileExtension: '',
+    },
     depositDate: '',
     checkTransferNumber: '',
   };
@@ -48,37 +62,52 @@ function UploadingForm({ paymentId, onClose }: any) {
     try {
       await dispatch(
         insertChequeByCashier({
+          id: paymentId,
+          role: activeRole!,
+          action: 'upload_receipt',
           cheque: {
-            id: nanoid(),
-            payment_id: paymentId,
-            transfer_receipt: data.transactionReceipt.url,
+            transfer_receipt: data.transactionReceipt,
             deposit_date: data.depositDate,
             number: data.checkTransferNumber,
           },
-          paymentId: paymentId,
-          newState: { status: 'DONE' },
         })
-      );
-      enqueueSnackbar('تم إرسال الشيك بنجاح, بالإضافة إلى تعديل حالة الدفعة', {
-        variant: 'success',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
+      ).then(() => {
+        enqueueSnackbar('تم إرسال الشيك بنجاح, بالإضافة إلى تعديل حالة الدفعة', {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'right',
+          },
+        });
+
+        onClose();
       });
-      onClose();
     } catch (error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
-      });
+      if (typeof error.message === 'object') {
+        error.message.forEach((el: any) => {
+          enqueueSnackbar(el, {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'right',
+            },
+          });
+        });
+      } else {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'right',
+          },
+        });
+      }
     }
   };
 
@@ -87,7 +116,7 @@ function UploadingForm({ paymentId, onClose }: any) {
       <ModalDialog
         styleContent={{ padding: '1em', backgroundColor: '#fff' }}
         isOpen={true}
-        title="رفع إيصال الشيك"
+        title={translate('finance_pages.modal.heading.upload_receipt')}
         showCloseIcon={true}
         onClose={onClose}
         content={
@@ -106,7 +135,7 @@ function UploadingForm({ paymentId, onClose }: any) {
                 hieght: { xs: '100%', sm: '50px' },
               }}
             >
-              رجوع
+              {translate('finance_pages.button.back')}
             </Button>
             <LoadingButton
               loading={isSubmitting}
@@ -121,7 +150,7 @@ function UploadingForm({ paymentId, onClose }: any) {
                 '&:hover': { backgroundColor: '#13B2A2' },
               }}
             >
-              اضافة
+              {translate('finance_pages.button.add')}
             </LoadingButton>
           </Stack>
         }

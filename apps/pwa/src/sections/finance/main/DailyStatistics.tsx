@@ -24,7 +24,7 @@ function DailyStatistics() {
   return (
     <Grid container spacing={2}>
       <Grid item md={12}>
-        <Typography variant="h4">احصائيات يومية</Typography>
+        <Typography variant="h4">{translate('finance_pages.heading.daily_stats')}</Typography>
       </Grid>
       {!FEATURE_DAILY_STATUS ? (
         <Grid item md={12}>
@@ -39,17 +39,20 @@ function DailyStatistics() {
               sx={{
                 borderRadius: '8px',
                 backgroundColor: '#fff',
-                py: '30px',
-                paddingRight: '40px',
-                paddingLeft: '5px',
+                p: 2,
               }}
             >
               <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
-                عدد مشاريع الكلي
+                {translate('finance_pages.card.total_projects')}
               </Typography>
-              <Typography
-                sx={{ color: 'text.tertiary', fontWeight: 700 }}
-              >{`${data.incoming_requests.aggregate.count} مشاريع`}</Typography>
+              <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                <Typography component="span" sx={{ fontWeight: 700 }}>
+                  {data.incoming_requests.aggregate.count} &nbsp;
+                </Typography>
+                <Typography component="span" sx={{ fontWeight: 700 }}>
+                  {translate('finance_pages.heading.projects')}
+                </Typography>
+              </Typography>
             </Box>
           </Grid>
           <Grid item md={2} xs={12}>
@@ -57,17 +60,20 @@ function DailyStatistics() {
               sx={{
                 borderRadius: '8px',
                 backgroundColor: '#fff',
-                py: '30px',
-                paddingRight: '40px',
-                paddingLeft: '5px',
+                p: 2,
               }}
             >
               <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
-                مشاريع جديدة واردة
+                {translate('finance_pages.card.new_incoming_projects')}
               </Typography>
-              <Typography
-                sx={{ color: 'text.tertiary', fontWeight: 700 }}
-              >{`${data.incoming_requests.aggregate.count} مشاريع`}</Typography>
+              <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                <Typography component="span" sx={{ fontWeight: 700 }}>
+                  {data.incoming_requests.aggregate.count} &nbsp;
+                </Typography>
+                <Typography component="span" sx={{ fontWeight: 700 }}>
+                  {translate('finance_pages.heading.projects')}
+                </Typography>
+              </Typography>
             </Box>
           </Grid>
         </React.Fragment>
