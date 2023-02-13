@@ -40,4 +40,5 @@ export interface UploadMultiFileProps extends DropzoneOptions {
   onRemove?: (file: File | string) => void;
   onRemoveAll?: VoidFunction;
   placeholder?: string;
+  isCompressing?: boolean;
 }

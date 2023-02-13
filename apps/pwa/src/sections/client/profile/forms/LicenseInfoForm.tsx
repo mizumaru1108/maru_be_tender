@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { LicenseValuesProps } from '../../../../@types/register';
 import useLocales from 'hooks/useLocales';
 import BaseField from 'components/hook-form/BaseField';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CustomFile } from '../../../../components/upload';
 
 type FormProps = {
@@ -18,6 +18,7 @@ type FormProps = {
 
 const LicenseInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProps) => {
   const { translate } = useLocales();
+  const [tmpLicenseValues, setTmpLicenseValues] = useState<LicenseValuesProps>(defaultValues);
   const RegisterSchema = Yup.object().shape({
     license_number: Yup.string().required('License Number is required'),
     license_issue_date: Yup.string().required('License Issue Date is required'),
@@ -91,49 +92,53 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProp
   const { handleSubmit, reset } = methods;
 
   const onSubmitForm = async (data: LicenseValuesProps) => {
+    setTmpLicenseValues(data);
     // console.log('data', data);
     onSubmit(data);
   };
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    let newValues = { ...defaultValues };
-    let newLetters: any = [];
-    if (
-      defaultValues &&
-      defaultValues.board_ofdec_file &&
-      typeof defaultValues.board_ofdec_file !== 'string' &&
-      defaultValues.board_ofdec_file.length > 0
-    ) {
-      newLetters = [
-        ...newLetters,
-        ...defaultValues.board_ofdec_file.map((item: any) => {
-          const { url } = item;
-          return {
-            ...item,
-            preview: url,
-          };
-        }),
-      ];
-    } else if (
-      defaultValues &&
-      defaultValues.board_ofdec_file &&
-      typeof defaultValues.board_ofdec_file === 'object'
-    ) {
-      // newLetters = [...newLetters, { name: defaultValues.board_ofdec_file }];
-      newLetters.push({
-        ...(defaultValues &&
-          typeof defaultValues.board_ofdec_file === 'object' && {
-            ...(defaultValues.board_ofdec_file as object),
+    if (isEdit) {
+      reset(tmpLicenseValues);
+    } else {
+      let newValues = { ...defaultValues };
+      let newLetters: any = [];
+      if (
+        defaultValues &&
+        defaultValues.board_ofdec_file &&
+        typeof defaultValues.board_ofdec_file !== 'string' &&
+        defaultValues.board_ofdec_file.length > 0
+      ) {
+        newLetters = [
+          ...newLetters,
+          ...defaultValues.board_ofdec_file.map((item: any) => {
+            const { url } = item;
+            return {
+              ...item,
+              preview: url,
+            };
           }),
-        preview: defaultValues.board_ofdec_file.url,
-      });
+        ];
+      } else if (
+        defaultValues &&
+        defaultValues.board_ofdec_file &&
+        typeof defaultValues.board_ofdec_file === 'object'
+      ) {
+        // newLetters = [...newLetters, { name: defaultValues.board_ofdec_file }];
+        newLetters.push({
+          ...(defaultValues &&
+            typeof defaultValues.board_ofdec_file === 'object' && {
+              ...(defaultValues.board_ofdec_file as object),
+            }),
+          preview: defaultValues.board_ofdec_file.url,
+        });
+      }
+      newValues = { ...newValues, board_ofdec_file: [...newLetters] };
+      reset(newValues);
     }
-    newValues = { ...newValues, board_ofdec_file: [...newLetters] };
-    // console.log('NewVal', newValues);
-    reset(newValues);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultValues]);
+  }, [isEdit]);
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>

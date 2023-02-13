@@ -27,6 +27,7 @@ import useAuth from 'hooks/useAuth';
 import axiosInstance from '../../../utils/axios';
 import { LoadingButton } from '@mui/lab';
 import { useSnackbar } from 'notistack';
+import { FileProp } from '../../../components/upload';
 const taps = [
   'register_first_tap',
   'register_second_tap',
@@ -323,6 +324,10 @@ function ClientProfileEditForm() {
     window.scrollTo(0, 0);
     // console.log({ data });
     if (isEdit && isEdit.form3) {
+      let defaultBoardofDec: FileProp[] = [];
+      defaultBoardofDec.push(
+        ...(startedValue && startedValue.board_ofdec_file && startedValue.board_ofdec_file)
+      );
       setIsEdit((prevIsEdit: any) => ({
         ...prevIsEdit,
         form3: false,
@@ -340,10 +345,7 @@ function ClientProfileEditForm() {
           license_file: {
             ...(startedValue && startedValue.license_file && { ...startedValue.license_file }),
           },
-          board_ofdec_file: {
-            ...(startedValue &&
-              startedValue.board_ofdec_file && { ...startedValue.board_ofdec_file }),
-          },
+          board_ofdec_file: defaultBoardofDec,
         },
       }));
     }
@@ -413,7 +415,7 @@ function ClientProfileEditForm() {
       defaultBank.push(
         ...(startedValue && startedValue.bank_informations && startedValue.bank_informations)
       );
-      console.log({ defaultBank });
+      // console.log({ defaultBank });
       // console.log('startedValue.bank_information', startedValue);
       setIsEdit((prevIsEdit: any) => ({
         ...prevIsEdit,
@@ -480,6 +482,11 @@ function ClientProfileEditForm() {
     };
     // console.log({ payload });
     const filteredObj = Object.fromEntries(Object.entries(payload).filter(([key, value]) => value));
+    // console.log('startedValue.entity_mobile', startedValue.entity_mobile);
+    // console.log('filteredObj.entity_mobile', filteredObj.entity_mobile);
+    if (filteredObj.entity_mobile === startedValue.entity_mobile) {
+      delete filteredObj.entity_mobile;
+    }
     // console.log({ filteredObj });
     try {
       const rest = await axiosInstance.post(

@@ -1,7 +1,15 @@
 import { m, AnimatePresence } from 'framer-motion';
 // @mui
 import { alpha } from '@mui/material/styles';
-import { List, IconButton, ListItemText, ListItem, Box, Typography } from '@mui/material';
+import {
+  List,
+  IconButton,
+  ListItemText,
+  ListItem,
+  Box,
+  Typography,
+  CircularProgress,
+} from '@mui/material';
 // utils
 import { fData } from '../../utils/formatNumber';
 import getFileData from '../../utils/getFileData';
@@ -19,15 +27,17 @@ export default function MultiFilePreview({
   files,
   onRemove,
   disabled,
-}: UploadMultiFileProps) {
+}: // isCompressing,
+UploadMultiFileProps) {
   const hasFile = (files && files.length > 0) ?? false;
-  // console.log('files', files);
+  // console.log('isCompressing', isCompressing);
   return (
     <List disablePadding sx={{ ...(hasFile && { my: 3 }) }}>
       <AnimatePresence>
         {files &&
           typeof files !== 'string' &&
           files.length > 0 &&
+          // isCompressing &&
           files.map((file, index) => {
             const { key, name, size, preview, fileExtension, fullName, type } = getFileData(
               file,
@@ -95,6 +105,11 @@ export default function MultiFilePreview({
                   }}
                 >
                   <Image alt="preview" src={preview} ratio="1/1" />
+                  {/* {isCompressing ? (
+                    <CircularProgress size={24} />
+                  ) : (
+                    <Image alt="preview" src={preview} ratio="1/1" />
+                  )} */}
 
                   {!disabled && onRemove && (
                     <IconButton

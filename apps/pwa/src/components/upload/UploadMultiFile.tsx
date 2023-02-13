@@ -31,6 +31,7 @@ export default function UploadMultiFile({
   onRemoveAll,
   helperText,
   placeholder,
+  isCompressing,
   // disabled,
   sx,
   ...other
@@ -38,7 +39,7 @@ export default function UploadMultiFile({
   const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = useDropzone({
     ...other,
   });
-  // console.log('fileRejections', fileRejections);
+  // console.log('isCompressing', isCompressing);
 
   return (
     <Box sx={{ width: '100%', ...sx }}>
@@ -67,6 +68,7 @@ export default function UploadMultiFile({
         files={files}
         showPreview={showPreview}
         onRemove={onRemove}
+        isCompressing={isCompressing}
       />
 
       {files && files.length > 0 && (

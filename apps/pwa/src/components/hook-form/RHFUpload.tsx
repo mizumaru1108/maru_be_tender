@@ -191,71 +191,51 @@ export function RHFUploadMultiFile({
     const images = getValues(name);
     const newImages = await Promise.all(
       acceptedFiles.map(async (file) => {
-        const fileBuffer = await encodeBase64Upload(file);
         const fileType = file.type.split('/')[0];
         const preview = URL.createObjectURL(file);
-        // if (fileType === 'application') {
-        //   const base64Data = await encodeBase64Upload(file);
-        //   return {
-        //     ...file,
-        //     preview,
-        //     base64Data,
-        //     fullName: file.name,
-        //     fileExtension: file.type,
-        //     size: file.size,
-        //   };
-        // } else if (fileType === 'image') {
-        //   let tmpFile = {};
-        //   const compressFile = compress(file, {
-        //     maxSizeMB: 1,
-        //     maxWidthOrHeight: 900,
-        //     useWebWorker: false,
-        //   });
-        //   compressFile
-        //     .then(async (compresedFile) => {
-        //       const fileBuffer = await encodeBase64Upload(compresedFile);
-        //       // setValue(name, {
-        //       //   ...file,
-        //       //   preview,
-        //       //   base64Data: fileBuffer,
-        //       //   fullName: file.name,
-        //       //   fileExtension: file.type,
-        //       //   size: file.size,
-        //       // });
-        //       tmpFile = {
-        //         ...file,
-        //         preview,
-        //         base64Data: fileBuffer,
-        //         fullName: file.name,
-        //         fileExtension: file.type,
-        //         size: file.size,
-        //       };
-        //       console.log('tmpFile=', tmpFile);
-        //     })
-        //     .catch((err) => {
-        //       console.error('Unable to compress file', err);
-        //     });
-        //   // console.log('tmpFile=', tmpFile);
-        //   return tmpFile;
-        // } else {
-        //   const base64Data = await encodeBase64Upload(file);
-        //   return {
-        //     ...file,
-        //     preview,
-        //     base64Data,
-        //     fullName: file.name,
-        //     fileExtension: file.type,
-        //     size: file.size,
-        //   };
-        // }
-        return {
-          ...file,
-          preview,
-          base64Data: fileBuffer,
-          fullName: file.name,
-          fileExtension: file.type,
-          size: file.size,
-        };
+        if (fileType === 'application') {
+          const base64Data = await encodeBase64Upload(file);
+          return {
+            ...file,
+            preview,
+            base64Data,
+            fullName: file.name,
+            fileExtension: file.type,
+            size: file.size,
+          };
+        } else if (fileType === 'image') {
+          const compressFile = compress(file, {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 900,
+            useWebWorker: false,
+          });
+          const tmpFile = await compressFile
+            .then(async (compresedFile) => {
+              const fileBuffer = await encodeBase64Upload(compresedFile);
+              return {
+                ...file,
+                preview,
+                base64Data: fileBuffer,
+                fullName: file.name,
+                fileExtension: file.type,
+                size: file.size,
+              };
+            })
+            .catch((err) => {
+              console.error('Unable to compress file', err);
+            });
+          return tmpFile;
+        } else {
+          const base64Data = await encodeBase64Upload(file);
+          return {
+            ...file,
+            preview,
+            base64Data,
+            fullName: file.name,
+            fileExtension: file.type,
+            size: file.size,
+          };
+        }
       })
     );
     // console.log('newImages=', newImages);
@@ -292,11 +272,11 @@ export function RHFUploadMultiFile({
               'image/jpg': [],
               'application/pdf': [],
             }}
-            maxSize={1024 * 1024 * 3}
+            maxSize={1024 * 1024 * 10}
             files={field.value}
             showPreview
             placeholder={placeholder ?? ''}
-            disabled={disabled}
+            disabled={disabled || isCompressing}
             error={checkError}
             helperText={
               checkError && (
@@ -309,6 +289,7 @@ export function RHFUploadMultiFile({
             onDrop={handleDrop}
             onRemoveAll={handleRemoveAll}
             onRemove={handleRemove}
+            // isCompressing={isCompressing}
           />
         );
       }}
