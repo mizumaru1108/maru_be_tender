@@ -47,8 +47,8 @@ model client_data {
   data_entry_mobile        String?      @db.VarChar
   data_entry_name          String?      @db.VarChar
   data_entry_mail          String?      @db.VarChar
-  created_at               DateTime?    @default(now()) @db.Timestamptz(6)
-  updated_at               DateTime?    @default(now()) @db.Timestamptz(6)
+  created_at               DateTime?    @db.Timestamp(6)
+  updated_at               DateTime?    @db.Timestamp(6)
   client_field             String?      @db.VarChar
   user_id                  String       @unique
   license_file             Json?
@@ -273,47 +273,49 @@ model region {
 }
 
 model user {
-  id                                                       String                  @id @unique
-  employee_name                                            String?                 @db.VarChar
-  mobile_number                                            String?                 @db.VarChar
-  email                                                    String                  @unique @db.VarChar
-  updated_at                                               DateTime?               @default(now()) @db.Timestamptz(6)
-  created_at                                               DateTime?               @default(now()) @db.Timestamptz(6)
-  employee_path                                            String?                 @db.VarChar
-  last_login                                               DateTime?               @default(now()) @db.Timestamptz(6)
-  status_id                                                String
-  address                                                  String?
-  google_session                                           Json?
-  is_online                                                Boolean?
-  employee_track                                           project_tracks?         @relation(fields: [employee_path], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  status                                                   user_status             @relation(fields: [status_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_user_status_id_fkey")
-  appointment_appointment_employee_idTouser                appointment[]           @relation("appointment_employee_idTouser")
-  appointment_appointment_user_idTouser                    appointment[]           @relation("appointment_user_idTouser")
-  bank_information                                         bank_information[]
-  client_data                                              client_data?            @relation("client_data_user_idTouser")
-  client_log                                               client_log[]
-  contact_us_contact_us_receiver_idTouser                  contact_us[]            @relation("contact_us_receiver_idTouser")
-  contact_us_contact_us_sender_idTouser                    contact_us[]            @relation("contact_us_sender_idTouser")
-  edit_requests_edit_requests_reviewer_idTouser            edit_requests[]         @relation("edit_requests_reviewer_idTouser")
-  edit_requests_edit_requests_user_idTouser                edit_requests[]         @relation("edit_requests_user_idTouser")
-  email_record_email_record_receiver_idTouser              email_record[]          @relation("email_record_receiver_idTouser")
-  email_record_email_record_sender_idTouser                email_record[]          @relation("email_record_sender_idTouser")
-  employees_permissions_employees_permissionsTouser        employees_permissions[]
-  file_manager                                             file_manager[]
-  message_messageTouser                                    message[]
-  message_message_receiver_idTouser                        message[]               @relation("message_receiver_idTouser")
-  notifications                                            notification[]          @relation("notification_user_idTouser")
-  proposal_proposal_project_manager_idTouser               proposal[]              @relation("proposal_project_manager_idTouser")
-  proposal_proposalTouser                                  proposal[]
-  proposal_proposal_supervisor_idTouser                    proposal[]              @relation("proposal_supervisor_idTouser")
-  proposal_follow_up_proposal_follow_up_user_idTouser      proposal_follow_up[]    @relation("proposal_follow_up_user_idTouser")
-  proposal_log                                             proposal_log[]
-  room_chat_as_participant1                                room_chat[]             @relation("room_chat_participant1_user_idTouser")
-  room_chat_as_participant2                                room_chat[]             @relation("room_chat_participant2_user_idTouser")
-  schedule                                                 schedule[]
-  roles                                                    user_role[]
-  user_status_log_userTouser_status_log_account_manager_id user_status_log[]       @relation("userTouser_status_log_account_manager_id")
-  user_status_log_userTouser_status_log_user_id            user_status_log[]       @relation("userTouser_status_log_user_id")
+  id                                                            String                  @id @unique
+  employee_name                                                 String?                 @db.VarChar
+  mobile_number                                                 String?                 @db.VarChar
+  email                                                         String                  @unique @db.VarChar
+  updated_at                                                    DateTime?               @default(now()) @db.Timestamptz(6)
+  created_at                                                    DateTime?               @default(now()) @db.Timestamptz(6)
+  employee_path                                                 String?                 @db.VarChar
+  last_login                                                    DateTime?               @default(now()) @db.Timestamptz(6)
+  status_id                                                     String
+  address                                                       String?
+  google_session                                                Json?
+  is_online                                                     Boolean?
+  employee_track                                                project_tracks?         @relation(fields: [employee_path], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  status                                                        user_status             @relation(fields: [status_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_user_status_id_fkey")
+  appointment_appointment_employee_idTouser                     appointment[]           @relation("appointment_employee_idTouser")
+  appointment_appointment_user_idTouser                         appointment[]           @relation("appointment_user_idTouser")
+  bank_information                                              bank_information[]
+  client_data                                                   client_data?            @relation("client_data_user_idTouser")
+  client_log                                                    client_log[]
+  contact_us_contact_us_receiver_idTouser                       contact_us[]            @relation("contact_us_receiver_idTouser")
+  contact_us_contact_us_sender_idTouser                         contact_us[]            @relation("contact_us_sender_idTouser")
+  edit_requests_edit_requests_reviewer_idTouser                 edit_requests[]         @relation("edit_requests_reviewer_idTouser")
+  edit_requests_edit_requests_user_idTouser                     edit_requests[]         @relation("edit_requests_user_idTouser")
+  email_record_email_record_receiver_idTouser                   email_record[]          @relation("email_record_receiver_idTouser")
+  email_record_email_record_sender_idTouser                     email_record[]          @relation("email_record_sender_idTouser")
+  employees_permissions_employees_permissionsTouser             employees_permissions[]
+  file_manager                                                  file_manager[]
+  message_messageTouser                                         message[]
+  message_message_receiver_idTouser                             message[]               @relation("message_receiver_idTouser")
+  notifications                                                 notification[]          @relation("notification_user_idTouser")
+  proposal_proposal_project_manager_idTouser                    proposal[]              @relation("proposal_project_manager_idTouser")
+  proposal_proposalTouser                                       proposal[]
+  proposal_proposal_supervisor_idTouser                         proposal[]              @relation("proposal_supervisor_idTouser")
+  proposal_edit_request_proposal_edit_request_reviewer_idTouser proposal_edit_request[] @relation("proposal_edit_request_reviewer_idTouser")
+  proposal_edit_request_proposal_edit_request_user_idTouser     proposal_edit_request[] @relation("proposal_edit_request_user_idTouser")
+  proposal_follow_up_proposal_follow_up_user_idTouser           proposal_follow_up[]    @relation("proposal_follow_up_user_idTouser")
+  proposal_log                                                  proposal_log[]
+  room_chat_as_participant1                                     room_chat[]             @relation("room_chat_participant1_user_idTouser")
+  room_chat_as_participant2                                     room_chat[]             @relation("room_chat_participant2_user_idTouser")
+  schedule                                                      schedule[]
+  roles                                                         user_role[]
+  user_status_log_userTouser_status_log_account_manager_id      user_status_log[]       @relation("userTouser_status_log_account_manager_id")
+  user_status_log_userTouser_status_log_user_id                 user_status_log[]       @relation("userTouser_status_log_user_id")
 }
 
 model user_type {
@@ -657,4 +659,61 @@ model file_manager {
   proposal_id         String?
   bank_information_id String?
   user                user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model bank_information2 {
+  user_id             String
+  bank_account_name   String?  @db.VarChar
+  bank_account_number String?  @db.VarChar
+  bank_name           String?  @db.VarChar
+  proposal_id         String?
+  id                  String   @id @default("")
+  card_image          String?
+  is_deleted          Boolean? @default(false)
+}
+
+model client_data2 {
+  id                       String    @id
+  entity                   String?   @db.VarChar
+  authority                String?   @db.VarChar
+  headquarters             String?   @db.VarChar
+  date_of_esthablistmen    DateTime? @db.Date
+  num_of_beneficiaries     Int?
+  num_of_employed_facility Int?
+  governorate              String?
+  region                   String?   @db.VarChar
+  entity_mobile            String?   @db.VarChar
+  center_administration    String?   @db.VarChar
+  twitter_acount           String?   @db.VarChar
+  phone                    String?   @db.VarChar
+  website                  String?   @db.VarChar
+  password                 String?   @db.VarChar
+  license_number           String    @db.VarChar
+  license_expired          DateTime? @db.Date
+  license_issue_date       DateTime? @db.Date
+  ceo_mobile               String?   @db.VarChar
+  ceo_name                 String?   @db.VarChar
+  data_entry_mobile        String?   @db.VarChar
+  data_entry_name          String?   @db.VarChar
+  data_entry_mail          String?   @db.VarChar
+  created_at               DateTime? @db.Timestamp(6)
+  updated_at               DateTime? @db.Timestamp(6)
+  client_field             String?   @db.VarChar
+  user_id                  String
+  license_file             String?
+  board_ofdec_file         String?
+  chairman_name            String?   @db.VarChar
+  chairman_mobile          String?   @db.VarChar
+}
+
+model proposal_edit_request {
+  id          String   @id
+  detail      String
+  user_id     String
+  reviewer_id String
+  status      String
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @default(now()) @db.Timestamptz(6)
+  reviewer    user     @relation("proposal_edit_request_reviewer_idTouser", fields: [reviewer_id], references: [id], onDelete: Cascade)
+  user        user     @relation("proposal_edit_request_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
 }

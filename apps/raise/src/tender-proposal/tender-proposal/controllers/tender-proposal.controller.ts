@@ -48,6 +48,24 @@ export class TenderProposalController {
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_client')
+  @Post('send-amandement')
+  async sendAmandement(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() payload: ProposalCreateDto,
+  ) {
+    const createdProposal = await this.tenderProposalService.create(
+      currentUser.id,
+      payload,
+    );
+    return baseResponseHelper(
+      createdProposal,
+      HttpStatus.CREATED,
+      'Proposal created successfully',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_client')
   @Patch('save-draft')
   async saveDraft(
     @CurrentUser() currentUser: TenderCurrentUser,

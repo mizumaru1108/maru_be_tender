@@ -132,7 +132,7 @@ export class TenderProposalPaymentRepository {
             insertNotif.createManyWebNotifPayload.length > 0
           ) {
             this.logger.log(
-              'log',
+              'info',
               `Creating new notification with payload of \n${insertNotif.createManyWebNotifPayload}`,
             );
             prisma.notification.createMany({
