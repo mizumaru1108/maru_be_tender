@@ -30,6 +30,7 @@ function MainPage() {
     amount_required_fsupport,
     letter_ofsupport_req,
     project_attachments,
+    bank_information,
     support_type,
     proposal_item_budgets_aggregate,
   } = proposal;
@@ -276,12 +277,12 @@ function MainPage() {
               </Typography>
               <BankImageComp
                 enableButton={true}
-                bankName={bank_informations[0]?.bank_name}
-                accountNumber={bank_informations[0]?.bank_account_number}
-                bankAccountName={bank_informations[0]?.bank_account_name}
-                imageUrl={bank_informations[0].card_image.url}
-                size={bank_informations[0].card_image.size}
-                borderColor={bank_informations[0].card_image.border_color ?? 'transparent'}
+                bankName={bank_information?.bank_name}
+                accountNumber={bank_information?.bank_account_number}
+                bankAccountName={bank_information?.bank_account_name}
+                imageUrl={bank_information?.card_image.url}
+                size={bank_information?.card_image.size}
+                borderColor={bank_information?.card_image.border_color ?? 'transparent'}
               />
             </Stack>
           </Stack>

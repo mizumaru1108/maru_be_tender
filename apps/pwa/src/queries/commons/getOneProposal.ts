@@ -41,17 +41,11 @@ query getOneProposal($id: String!) {
     project_outputs
     project_strengths
     project_risks
-    bank_informations {
-      bank_account_name
-      bank_account_number
-      bank_name
-      card_image
-    }
-    recommended_supports{
-       amount
-   		clause
-   		explanation
-   		id
+    recommended_supports {
+      amount
+      clause
+      explanation
+      id
     }
     amount_required_fsupport
     fsupport_by_supervisor
@@ -91,20 +85,20 @@ query getOneProposal($id: String!) {
     }
     follow_ups: proposal_follow_ups(where: {proposal_id: {_eq: $id}}) {
       id
-    content
-    created_at
-    attachments
-    proposal_id
-    employee_only
-    user {
-      employee_name
-      roles {
-        role: user_type_id
+      content
+      created_at
+      attachments
+      proposal_id
+      employee_only
+      user {
+        employee_name
+        roles {
+          role: user_type_id
+        }
       }
     }
-    }
     added_value
-  	been_made_before
+    been_made_before
     been_supported_before
     chairman_of_board_of_directors
     most_clents_projects
@@ -115,6 +109,14 @@ query getOneProposal($id: String!) {
     target_group_age
     target_group_num
     target_group_type
+    bank_information {
+      bank_name
+      card_image
+      id
+      bank_account_name
+      bank_account_number
+    }
   }
 }
+
 `;
