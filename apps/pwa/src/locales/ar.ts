@@ -942,6 +942,7 @@ const ar = {
     employee: 'موظف',
     start_date: 'تاريخ البدء',
     at: 'في',
+    sent_by: 'أرسلت بواسطة',
   },
   concessional_card_insights: {
     title: {

@@ -219,16 +219,19 @@ const ProjectCardBE = ({
           </React.Fragment>
         )}
         <Stack direction="row" gap={6}>
-          {role !== 'tender_moderator' && user.employee_name && (
-            <Stack>
-              <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
-                {translate('project_management_headercell.employee')}
-              </Typography>
-              <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
-                {user.employee_name}
-              </Typography>
-            </Stack>
-          )}
+          {role !== 'tender_moderator' &&
+            proposal_logs &&
+            proposal_logs[proposal_logs.length - 1].reviewer && (
+              <Stack>
+                <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+                  {translate('project_management_headercell.employee')}
+                </Typography>
+                <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
+                  {translate('project_management_headercell.sent_by')}{' '}
+                  {proposal_logs[proposal_logs.length - 1].reviewer.employee_name}
+                </Typography>
+              </Stack>
+            )}
           {state && (
             <Stack>
               <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>

@@ -4,6 +4,7 @@ import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { useDispatch, useSelector } from 'redux/store';
 import { setCheckedItems } from 'redux/slices/proposal';
+import { submitterRoles, FusionAuthRoles } from '../../../@types/commons';
 
 function FollowUpsText(item: FollowUps) {
   const dispatch = useDispatch();
@@ -25,22 +26,6 @@ function FollowUpsText(item: FollowUps) {
       dispatch(setCheckedItems(checkedItems.filter((selectedId: any) => selectedId !== value)));
     }
   };
-
-  function getRole(roles: any) {
-    const getActiveRole = role.substr(7);
-
-    const index = roles.findIndex((r: any) => r.role.toUpperCase() === getActiveRole.toUpperCase());
-
-    if (index === -1) {
-      return roles[0].role;
-    }
-
-    return roles[index].role;
-  }
-
-  // item.user.roles.map((role) => console.log(role.role));
-  // console.log(getRole(), 'ROLE');
-  // console.log(activeRole!.substr(7), 'ACTIVE ROLE');
 
   if (role === 'tender_client')
     return (
@@ -83,7 +68,7 @@ function FollowUpsText(item: FollowUps) {
           >
             <Stack direction="row" justifyContent="space-between">
               <Typography color="#0E8478">{`${item.user.employee_name} - ${translate(
-                `permissions.${getRole(item.user.roles)}`
+                `permissions.${submitterRoles[item.submitter_role as FusionAuthRoles]}`
               )}`}</Typography>
               <Typography sx={{ color: 'gray' }}>{`${new Date(
                 item.created_at
@@ -139,7 +124,7 @@ function FollowUpsText(item: FollowUps) {
             >
               <Stack direction="row" justifyContent="space-between">
                 <Typography color="#0E8478">{`${item.user.employee_name} - ${translate(
-                  `permissions.${getRole(item.user.roles)}`
+                  `permissions.${submitterRoles[item.submitter_role as FusionAuthRoles]}`
                 )}`}</Typography>
                 <Typography sx={{ color: 'gray' }}>{`${new Date(
                   item.created_at

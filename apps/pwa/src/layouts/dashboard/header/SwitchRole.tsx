@@ -16,6 +16,8 @@ function SwitchRole() {
   const [role, setRole] = React.useState<FusionAuthRoles>(activeRole!);
 
   const handleChange = (event: SelectChangeEvent) => {
+    const roleIndex = roles?.indexOf(event.target.value as FusionAuthRoles);
+    localStorage.setItem('activeRoleIndex', roleIndex);
     changeActiveRole(event.target.value as FusionAuthRoles);
     setRole(event.target.value as FusionAuthRoles);
     navigate(`/${role_url_map[`${event.target.value as FusionAuthRoles}`]}/dashboard/app`);

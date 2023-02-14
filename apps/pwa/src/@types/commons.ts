@@ -49,6 +49,20 @@ export const role_url_map = {
   tender_project_supervisor: 'project-supervisor',
 };
 
+export const submitterRoles = {
+  cluster_admin: '',
+  tender_accounts_manager: 'ACCOUNT_MANAGER',
+  tender_admin: 'ADMIN',
+  tender_ceo: 'CEO',
+  tender_cashier: 'CASHIER',
+  tender_client: 'CLIENT',
+  tender_consultant: 'CONSULTANT',
+  tender_finance: 'FINANCE',
+  tender_moderator: 'MODERATOR',
+  tender_project_manager: 'PROJECT_MANAGER',
+  tender_project_supervisor: 'PROJECT_SUPERVISOR',
+};
+
 /* Pagination */
 export interface BasePaginateQuery {
   page?: number;

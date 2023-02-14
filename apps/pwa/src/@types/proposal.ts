@@ -38,6 +38,7 @@ export type PaymentStatus =
 
 export interface FollowUps {
   id: string;
+  submitter_role: string;
   employee_only: boolean;
   content: string;
   created_at: Date;
@@ -87,6 +88,7 @@ export interface Proposal {
   project_strengths: string;
   project_risks: string;
   bank_informations: BankInformation[];
+  bank_information?: BankInformation;
   amount_required_fsupport: number;
   fsupport_by_supervisor: number;
   letter_ofsupport_req: { url: string; size: number | undefined; type: string };

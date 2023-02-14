@@ -60,8 +60,10 @@ function RequestsInProcess() {
                 organizationName: item.user.client_data.entity,
                 sentSection: item.state,
                 employee:
+                  item.proposal_logs &&
                   item.proposal_logs[item.proposal_logs.length - 1].reviewer &&
                   item.proposal_logs[item.proposal_logs.length - 1].reviewer.employee_name,
+                // employee: item.user.employee_name,
               }}
               footer={{
                 createdAt: item.created_at,

@@ -905,6 +905,7 @@ const en = {
     employee: 'Employee',
     start_date: 'Start Date',
     at: 'at',
+    sent_by: 'Sent by',
   },
   concessional_card_insights: {
     title: {

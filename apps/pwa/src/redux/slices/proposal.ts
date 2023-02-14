@@ -278,7 +278,10 @@ export const insertPaymentsBySupervisor = (data: any) => async () => {
     if (res.data.statusCode === 201) {
       dispatch(
         slice.actions.setPayments({
-          payments: data.payments,
+          payments: data.payments.map((v: any) => ({
+            ...v,
+            status: 'SET_BY_SUPERVISOR',
+          })),
           // updatedData: res.data.data.update_proposal.returning[0],
           updatedData: res.data.data,
         })
