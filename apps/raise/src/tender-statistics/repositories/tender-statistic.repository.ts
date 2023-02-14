@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { Sql } from '@prisma/client/runtime';
 import moment from 'moment';
 import { ROOT_LOGGER } from '../../libs/root-logger';
 import { PrismaService } from '../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
+import { AverageEmployeeTransactionTimeFilter } from '../dtos/requests/average-employee-transaction-time-filter';
 import { BaseStatisticFilter } from '../dtos/requests/base-statistic-filter.dto';
+import { GetRawAverageEmployeeResponseTime } from '../dtos/responses/get-raw-average-employee-response-time.dto';
 import { GetRawTrackAverageTransaction } from '../dtos/responses/get-raw-average-transaction.dto';
 import { GetRawBeneficiariesDataResponseDto } from '../dtos/responses/get-raw-beneficiaries-data-response.dto';
-import { GetRawExecutionTimeDataResponseDto } from '../dtos/responses/get-raw-execution-time-data-response.dto';
 import { GetRawPartnerDatasResponseDto } from '../dtos/responses/get-raw-partner-datas.dto';
 import { GetRawStatusDatasResponseDto } from '../dtos/responses/get-raw-status.datas.dto';
 
@@ -259,52 +261,60 @@ export class TenderStatisticsRepository {
     }
   }
 
-  /* portal report tab 4 bottom section */
   async getEmployeeAverageTransaction(
-    filter: BaseStatisticFilter,
-  ): Promise<GetRawTrackAverageTransaction['data']> {
+    filter: AverageEmployeeTransactionTimeFilter,
+  ): Promise<GetRawAverageEmployeeResponseTime[]> {
     try {
-      const { start_date, end_date } = filter;
+      const {
+        start_date,
+        end_date,
+        limit = 10,
+        page = 1,
+        employee_name,
+      } = filter;
+      const offset = (page - 1) * limit;
 
-      const rawExecutionTime = await this.prismaService.proposal_log.findMany({
-        where: {
-          created_at: {
-            gte: moment(start_date).startOf('day').toDate(),
-            lte: moment(end_date).endOf('day').toDate(),
-          },
-          proposal: {
-            project_track: {
-              not: null,
-              notIn: ['GENERAL', 'DEFAULT_TRACK'],
-            },
-          },
-          response_time: {
-            not: null,
-          },
-        },
-        select: {
-          reviewer: {
-            select: {
-              id: true,
-              employee_name: true,
-            },
-          },
-          proposal: {
-            select: {
-              project_track: true,
-            },
-          },
-          proposal_id: true,
-          user_role: true,
-          response_time: true,
-          created_at: true,
-        },
-        orderBy: {
-          created_at: 'desc',
-        },
-      });
+      let whereClause: Sql = Prisma.sql`
+        proposal_log.created_at >= to_timestamp(${moment(start_date)
+          .startOf('day')
+          .toISOString()}, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')
+        AND proposal_log.created_at <= to_timestamp(${moment(end_date)
+          .startOf('day')
+          .toISOString()}, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')
+        AND proposal.project_track NOT IN ('GENERAL', 'DEFAULT_TRACK')
+        AND proposal_log.response_time IS NOT NULL`;
 
-      return rawExecutionTime;
+      if (employee_name && employee_name !== '') {
+        whereClause = Prisma.sql`${whereClause} AND employee_name LIKE '%' || ${employee_name} || '%'`;
+      }
+
+      // console.log({ whereClause });
+      return await this.prismaService.$queryRaw`
+      SELECT
+          MIN(reviewer.id) as id,
+          MIN(reviewer.employee_name) as employee_name,
+          MIN(proposal_log.user_role) as account_type,
+          MIN(proposal.project_track) as section,
+          COUNT(proposal_log.id) as total_transaction,
+          SUM(proposal_log.response_time) AS response_time,
+          AVG(proposal_log.response_time) AS average_response_time,
+          COUNT(*) over() as total
+        FROM
+          proposal_log
+          LEFT JOIN
+          "user" AS reviewer ON proposal_log.reviewer_id = reviewer.id
+          LEFT JOIN proposal ON proposal_log.proposal_id = proposal.id
+        WHERE
+          ${whereClause}
+        GROUP BY
+          proposal.project_track,
+          proposal_log.user_role
+        ORDER BY
+          total_transaction DESC,
+          average_response_time ASC
+        LIMIT ${limit}
+        OFFSET ${offset}
+      `;
     } catch (error) {
       const theError = prismaErrorThrower(
         error,

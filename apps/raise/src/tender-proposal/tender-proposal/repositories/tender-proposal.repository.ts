@@ -95,6 +95,9 @@ export class TenderProposalRepository {
               user_role: 'CLIENT',
             },
           });
+
+          // console.log({ proposal });
+          // throw new BadRequestException('debug');
           return proposal;
         },
         { maxWait: 50000, timeout: 150000 },
@@ -209,6 +212,8 @@ export class TenderProposalRepository {
             }
           }
 
+          // console.log({ proposal });
+          // throw new BadRequestException('debug');
           return proposal;
         },
         { maxWait: 50000, timeout: 150000 },

@@ -182,7 +182,7 @@ export class TenderProposalService {
           request.proposal_bank_information_id,
         );
       if (!isMyOwnBank) {
-        throw new BadRequestException('Bank account is not yours');
+        throw new BadRequestException('Bank account is not yours!');
       }
       proposalCreatePayload.proposal_bank_id =
         request.proposal_bank_information_id;
@@ -301,6 +301,8 @@ export class TenderProposalService {
       if (!isMyOwnBank) {
         throw new BadRequestException('Bank account is not yours');
       }
+      updateProposalPayload.proposal_bank_id =
+        request.proposal_bank_information_id;
     }
 
     /* validate and create path */

@@ -4,7 +4,12 @@ import moment from 'moment';
 import { logUtil } from '../../commons/utils/log-util';
 import { PrismaService } from '../../prisma/prisma.service';
 import { portalReportConvertMinutesToHours } from '../../tender-commons/utils/portal-report-convert-minutes-to-hour';
+import { AverageEmployeeTransactionTimeFilter } from '../dtos/requests/average-employee-transaction-time-filter';
 import { BaseStatisticFilter } from '../dtos/requests/base-statistic-filter.dto';
+import {
+  AverageEmployeeResponseTime,
+  GetAverageEmployeeResponseTime,
+} from '../dtos/responses/get-average-employee-response-time.dto';
 import { GetTrackAverageTransaction } from '../dtos/responses/get-average-transaction.dto';
 import {
   GetBeneficiariesReportDto,
@@ -17,6 +22,7 @@ import {
   GetPartnersStatisticResponseDto,
   PartnerValue,
 } from '../dtos/responses/get-partner-statistic.dto';
+import { GetRawAverageEmployeeResponseTime } from '../dtos/responses/get-raw-average-employee-response-time.dto';
 import { TenderStatisticsRepository } from '../repositories/tender-statistic.repository';
 
 @Injectable()
@@ -818,9 +824,46 @@ export class TenderStatisticsService {
         }
       }
 
-      return { data: responseData };
+      return [...responseData];
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  async getEmployeeAverageTransaction(
+    request: AverageEmployeeTransactionTimeFilter,
+  ): Promise<GetAverageEmployeeResponseTime> {
+    const response =
+      await this.tenderStatisticRepository.getEmployeeAverageTransaction(
+        request,
+      );
+
+    if (response.length > 0) {
+      return {
+        data: response.map((rawData: GetRawAverageEmployeeResponseTime) => {
+          const data: AverageEmployeeResponseTime = {
+            id: rawData.id.toString(),
+            employee_name: rawData.employee_name,
+            account_type: rawData.account_type,
+            section: rawData.section,
+            total_transaction: Number(rawData.total_transaction),
+            raw_response_time: Number(rawData.response_time),
+            response_time: portalReportConvertMinutesToHours(
+              Number(rawData.response_time),
+            ),
+            raw_average_response_time: Number(rawData.average_response_time),
+            average_response_time: portalReportConvertMinutesToHours(
+              Number(rawData.average_response_time),
+            ),
+          };
+          return data;
+        }),
+        total: Number(response[0].total),
+      };
+    }
+    return {
+      data: [],
+      total: 0,
+    };
   }
 }
