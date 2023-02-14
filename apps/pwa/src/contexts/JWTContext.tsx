@@ -109,7 +109,7 @@ function AuthProvider({ children }: AuthProviderProps) {
       try {
         const accessToken = localStorage.getItem('accessToken');
         const refreshToken = localStorage.getItem('refreshToken');
-
+        const activeRoleIndex = Number(localStorage.getItem('activeRoleIndex'));
         if (accessToken && isValidToken(accessToken)) {
           setSession(accessToken, refreshToken);
           const user = (await fusionAuthClient.retrieveUserUsingJWT(accessToken)) as {
@@ -121,7 +121,7 @@ function AuthProvider({ children }: AuthProviderProps) {
             payload: {
               isAuthenticated: true,
               user: user.response.user,
-              activeRole: user.response.user.registrations[0].roles[0],
+              activeRole: user.response.user.registrations[0].roles[activeRoleIndex],
               token: accessToken,
               refreshToken: refreshToken!,
             },
@@ -147,7 +147,7 @@ function AuthProvider({ children }: AuthProviderProps) {
               payload: {
                 isAuthenticated: true,
                 user: user.response.user,
-                activeRole: user.response.user.registrations[0].roles[0],
+                activeRole: user.response.user.registrations[0].roles[activeRoleIndex],
                 token: result.response.token,
                 refreshToken: result.response.refreshToken,
               },
@@ -212,7 +212,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         refreshToken: refreshToken,
       },
     });
-
+    localStorage.setItem('activeRoleIndex', '0');
     // dispatchState(setAuthenticated(true));
   };
 
@@ -227,7 +227,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('i18nextLng');
-
+    localStorage.removeItem('activeRoleIndex');
     dispatch({ type: Types.Logout });
   };
 

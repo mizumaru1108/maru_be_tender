@@ -85,6 +85,7 @@ query getOneProposal($id: String!) {
     }
     follow_ups: proposal_follow_ups(where: {proposal_id: {_eq: $id}}) {
       id
+      submitter_role
       content
       created_at
       attachments
