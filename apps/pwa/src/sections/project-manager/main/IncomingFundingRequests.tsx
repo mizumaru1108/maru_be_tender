@@ -36,9 +36,10 @@ function IncomingFundingRequests() {
                 projectName: item.project_name,
                 organizationName: item.user.client_data.entity,
                 sentSection: item.state,
-                employee:
-                  item.proposal_logs[item.proposal_logs.length - 1].reviewer &&
-                  item.proposal_logs[item.proposal_logs.length - 1].reviewer.employee_name,
+                employee: item.user.employee_name,
+                // employee:
+                //   item.proposal_logs[item.proposal_logs.length - 1].reviewer &&
+                //   item.proposal_logs[item.proposal_logs.length - 1].reviewer.employee_name,
                 createdAtClient: new Date(item.user.client_data.created_at),
               }}
               footer={{ createdAt: new Date(item.created_at) }}

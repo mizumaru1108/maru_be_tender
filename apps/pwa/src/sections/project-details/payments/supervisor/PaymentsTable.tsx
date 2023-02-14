@@ -40,6 +40,8 @@ function PaymentsTable() {
               horizontal: 'right',
             },
           });
+
+          window.location.reload();
         }
       });
     } catch (error) {
