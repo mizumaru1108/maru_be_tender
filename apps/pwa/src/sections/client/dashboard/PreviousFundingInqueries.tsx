@@ -43,7 +43,7 @@ function PreviousFundingInqueries({ completed_client_projects, pending_client_pr
   }, [completed_client_projects, pending_client_projects, tap]);
 
   return (
-    <Container>
+    <>
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="h4">
           {translate('content.client.main_page.previous_support_request')}
@@ -107,7 +107,7 @@ function PreviousFundingInqueries({ completed_client_projects, pending_client_pr
           <Typography>{translate('content.client.main_page.no_projects')}</Typography>
         </Grid>
       )}
-    </Container>
+    </>
   );
 }
 

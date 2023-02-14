@@ -13,7 +13,7 @@ function CurrentProjects({ current_projects }: any) {
 
   if (current_projects.length === 0)
     return (
-      <Container>
+      <>
         <Typography variant="h4">
           {translate('content.client.main_page.current_projects')}
         </Typography>
@@ -44,19 +44,30 @@ function CurrentProjects({ current_projects }: any) {
             </Stack>
           </Box>
         </Grid>
-      </Container>
+      </>
     );
   return (
-    <Container>
-      <Grid container columnSpacing={7} rowSpacing={5}>
+    <>
+      <Grid container spacing={5}>
         <Grid item md={12} xs={12}>
           <Typography variant="h4">
             {translate('content.client.main_page.current_projects')}
           </Typography>
         </Grid>
         {current_projects.map((item: any, index: any) => (
-          <Grid item md={12} xs={12} key={index}>
-            <Grid container columnSpacing={7} rowSpacing={5}>
+          <Grid item xs={12} md={6} key={index}>
+            <ProjectCard
+              destination="current-project"
+              title={{ id: `${item.id}` }}
+              content={{
+                projectName: item.project_name,
+                projectStatus: item.outter_status,
+                projectDetails: item.project_idea,
+              }}
+              footer={{ createdAt: new Date(item.created_at) }}
+              cardFooterButtonAction="show-details"
+            />
+            {/* <Grid container columnSpacing={7} rowSpacing={5}>
               <Grid item md={7} xs={12}>
                 <ProjectCard
                   destination="current-project"
@@ -134,11 +145,11 @@ function CurrentProjects({ current_projects }: any) {
                   </Stack>
                 </Stack>
               </Grid>
-            </Grid>
+            </Grid> */}
           </Grid>
         ))}
       </Grid>
-    </Container>
+    </>
   );
 }
 

@@ -98,22 +98,34 @@ function PaymentsTable() {
               </Grid>
             ) : (
               <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
-                <Button
-                  component={Link}
-                  href={item.cheques[0].transfer_receipt.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download="صورة الشيك"
-                  sx={{
-                    backgroundColor: 'transparent',
-                    color: '#000',
-                    textDecorationLine: 'underline',
-                  }}
-                >
-                  {translate(
-                    'content.administrative.project_details.payment.table.btn.review_transfer_receipt'
-                  )}
-                </Button>
+                {item.cheques.length ? (
+                  <Button
+                    component={Link}
+                    href={
+                      typeof item.cheques[0].transfer_receipt === 'string'
+                        ? item.cheques[0].transfer_receipt
+                        : item.cheques[0].transfer_receipt.url
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download="صورة الشيك"
+                    sx={{
+                      backgroundColor: 'transparent',
+                      color: '#000',
+                      textDecorationLine: 'underline',
+                    }}
+                  >
+                    {translate(
+                      'content.administrative.project_details.payment.table.btn.review_transfer_receipt'
+                    )}
+                  </Button>
+                ) : (
+                  <Typography color="error" sx={{ textAlign: 'start' }}>
+                    {translate(
+                      'content.administrative.project_details.payment.table.btn.not_found_cheques'
+                    )}
+                  </Typography>
+                )}
               </Grid>
             )}
             {item.status === 'ACCEPTED_BY_PROJECT_MANAGER' && (

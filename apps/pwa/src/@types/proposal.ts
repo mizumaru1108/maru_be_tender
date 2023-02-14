@@ -12,11 +12,13 @@ export interface Cheques {
   id: string;
   number: number;
   payment_id: number;
-  transfer_receipt: {
-    size: number;
-    type: string;
-    url: string;
-  };
+  transfer_receipt:
+    | string
+    | {
+        size: number;
+        type: string;
+        url: string;
+      };
   deposit_date: Date;
 }
 

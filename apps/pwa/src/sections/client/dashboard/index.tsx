@@ -6,6 +6,7 @@ import ClientCarousel from './ClientCarousel';
 import CurrentProjects from './CurrentProjects';
 import DraftProject from './DraftProject';
 import LoadingPage from './LoadingPage';
+import Statistic from './Statistic';
 import PreviousFundingInqueries from './PreviousFundingInqueries';
 
 function DashboardPage() {
@@ -17,20 +18,23 @@ function DashboardPage() {
   if (fetching) return <LoadingPage />;
   if (error) return <Page500 error={error.message} />;
   return (
-    <Grid container rowSpacing={8}>
+    <Grid container rowSpacing={6}>
       <Grid item md={12} xs={12}>
         <ClientCarousel />
+      </Grid>
+      <Grid item md={12} xs={12}>
+        <Statistic />
       </Grid>
       {data && (
         <>
           <Grid item md={12} xs={12}>
             <CurrentProjects current_projects={data.current_projects} />
           </Grid>
-          {data.draft_projects.length !== 0 && (
+          {data.draft_projects.length ? (
             <Grid item md={12} xs={12}>
               <DraftProject draft_projects={data.draft_projects} mutate={mutate} />
             </Grid>
-          )}
+          ) : null}
           <Grid item md={12} xs={12}>
             <PreviousFundingInqueries
               completed_client_projects={data.completed_client_projects}

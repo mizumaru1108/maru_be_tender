@@ -68,6 +68,7 @@ const ar = {
             },
             btn: {
               review_transfer_receipt: 'استعراض ايصال التحويل',
+              not_found_cheques: 'كان هناك خطأ في الدفع الخاص بك',
               exchange_permit_success: 'تم اصدار إذن الصرف بنجاح',
               exchange_permit_issued: 'إصدار إذن صرف',
               exchange_permit_refuse: 'رفض إذن الصرف',

@@ -68,6 +68,7 @@ const en = {
             },
             btn: {
               review_transfer_receipt: 'Review the transfer receipt',
+              not_found_cheques: 'There was an error in your payment',
               exchange_permit_success: 'The exchange permit has been issued successfully',
               exchange_permit_issued: 'Issuance of an exchange permit',
               exchange_permit_refuse: 'Refuse permission to exchange',
