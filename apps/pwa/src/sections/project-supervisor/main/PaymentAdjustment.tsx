@@ -14,6 +14,7 @@ function PaymentAdjustment() {
     query: getProposals,
     variables: {
       limit: 4,
+      order_by: { updated_at: 'desc' },
       where: {
         supervisor_id: { _eq: user?.id },
         _and: {

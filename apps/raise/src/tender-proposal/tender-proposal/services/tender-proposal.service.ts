@@ -977,7 +977,7 @@ export class TenderProposalService {
       proposalUpdatePayload.inner_status =
         InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION;
       proposalUpdatePayload.outter_status = 'ONGOING';
-      proposalUpdatePayload.state = TenderAppRoleEnum.CEO;
+      proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
 
       /* log */
       proposalLogCreateInput.action = ProposalAction.ACCEPT;

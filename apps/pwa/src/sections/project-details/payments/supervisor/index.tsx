@@ -92,7 +92,6 @@ function SupervisorPaymentsPage() {
           </Box>
         </Grid>
         <Grid item md={12}>
-          <Typography variant="h4">تقسيم الدفعات</Typography>
           <Typography variant="h4">
             {translate('content.administrative.project_details.payment.heading.split_payments')}
           </Typography>

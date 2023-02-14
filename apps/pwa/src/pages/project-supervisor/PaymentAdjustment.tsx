@@ -42,10 +42,10 @@ function PaymentAdjustment() {
               },
             ]}
             baseFilters={{
-              filter1: { supervisor_id: { _eq: user?.id } },
-              filter2: {
+              filter1: {
+                supervisor_id: { _eq: user?.id },
                 inner_status: {
-                  _eq: [
+                  _in: [
                     'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
                     'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
                   ],
