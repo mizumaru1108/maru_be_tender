@@ -37,7 +37,7 @@ function ProjectDetailsMainPage() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Stack direction="row" justifyContent="space-between">
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Button
           color="inherit"
           variant="contained"

@@ -84,15 +84,15 @@ function MainPage() {
             {translate('support_type')}
           </Typography>
           <Typography>
-            {support_type ? translate('full_support') : translate('partial_support')}&nbsp;
-            <Typography component="span">{translate('with')}&nbsp;</Typography>
+            {/* {support_type ? translate('full_support') : translate('partial_support')}&nbsp;
+            <Typography component="span">{translate('with')}&nbsp;</Typography> */}
             {/* <Typography component="span" sx={{ fontWeight: 'bold' }}>
               {fCurrencyNumber(proposal_item_budgets_aggregate.aggregate.sum.amount)}&nbsp;
             </Typography> */}
             <Typography component="span" sx={{ fontWeight: 'bold' }}>
               {fCurrencyNumber(amount_required_fsupport)}&nbsp;
             </Typography>
-            <Typography component="span">{translate('amount')}&nbsp;</Typography>
+            {/* <Typography component="span">{translate('amount')}&nbsp;</Typography> */}
           </Typography>
         </Stack>
       </Stack>

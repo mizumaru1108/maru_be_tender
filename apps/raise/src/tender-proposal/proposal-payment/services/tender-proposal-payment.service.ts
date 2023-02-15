@@ -132,7 +132,7 @@ export class TenderProposalPaymentService {
         lastLog,
       );
 
-    // this.sendInsertPaymentNotif(insertResult.insertNotif);
+    this.sendInsertPaymentNotif(insertResult.insertNotif);
 
     return insertResult.updatedProposal;
   }
@@ -248,7 +248,8 @@ export class TenderProposalPaymentService {
         proposalUpdateInput,
       );
 
-      // this.sendUpdatePaymentNotif(response.updateNotif);
+      this.sendUpdatePaymentNotif(response.updateNotif);
+
       return {
         updatedPayment: response.payment,
         createdCheque: response.cheque,

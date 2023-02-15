@@ -8,24 +8,20 @@ function ProjectStatus() {
 
   return (
     <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
       sx={{
         borderRadius: '10px',
         backgroundColor: '#0E847829',
-        px: '5px',
+        p: 1,
       }}
     >
-      <Typography
+      {/* <Typography
         variant="h6"
         sx={{
           color: '#0E8478',
         }}
       >
         {translate(`state`) + ' : ' + translate(`permissions.${proposal.state}`) || 'حالة المشروع'}
-      </Typography>
+      </Typography> */}
       <Typography
         sx={{
           color: {
@@ -34,6 +30,7 @@ function ProjectStatus() {
             PENDING: '#000',
             CANCELED: '#EB5757',
           }[`${proposal.outter_status}`],
+          fontWeight: 600,
         }}
       >
         {translate('status') + ' : ' + translate(`outter_status.${proposal.outter_status}`) ||

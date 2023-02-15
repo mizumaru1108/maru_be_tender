@@ -122,11 +122,7 @@ function PaymentsTable() {
                   </Typography>
                 )}
               </Grid>
-            ) : (
-              <Grid item md={3}>
-                <Box>{''}</Box>
-              </Grid>
-            )}
+            ) : null}
           </Grid>
         </Grid>
       ))}
