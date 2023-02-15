@@ -5,10 +5,13 @@ import { FileProp } from '../upload';
 
 interface Props {
   files: UploadFilesJsonbDto;
+  // fileType?: string;
 }
 
 function ButtonDownloadFiles({ files }: Props) {
   const { translate } = useLocales();
+  // console.log('files', files);
+  const fileType = files?.type ? files?.type!.split('/')[1] : 'pdf';
   return (
     <Button
       fullWidth
@@ -25,7 +28,7 @@ function ButtonDownloadFiles({ files }: Props) {
         borderColor: files && files.color ? files.color : 'transparent',
       }}
     >
-      <Stack
+      {/* <Stack
         spacing={2}
         alignItems="center"
         justifyContent="space-between"
@@ -36,10 +39,32 @@ function ButtonDownloadFiles({ files }: Props) {
           borderRadius: '10px',
         }}
         // flex={1}
+      > */}
+      <Stack
+        spacing={2}
+        alignItems="center"
+        justifyContent="space-between"
+        direction={{ xs: 'column', md: 'row' }}
+        sx={{
+          textAlign: { xs: 'center', md: 'left' },
+          padding: '8px',
+          borderRadius: '10px',
+        }}
+        flex={1}
       >
         <Stack direction="row" gap={2}>
           <Stack direction="column" justifyContent="center">
-            <img src={`/icons/doc-icon.svg`} alt="" />
+            {/* <img src={`/icons/doc-icon.svg`} alt="" /> */}
+            <img
+              src={
+                ['png', 'jpg', 'jpeg'].includes(fileType)
+                  ? '/icons/img-icon.png'
+                  : '/icons/pdf-icon.svg'
+                // files?.type === 'pdf' ? '/assets/icons/pdf-icon.svg' : '/assets/icons/img-icon.png'
+              }
+              style={{ width: 24, height: 24 }}
+              alt=""
+            />
           </Stack>
           <Stack direction="column">
             <Typography gutterBottom sx={{ fontSize: '13px' }}>

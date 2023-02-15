@@ -117,6 +117,8 @@ const BankingInfoForm = ({ children, onSubmit, initialValue, onDelete, isEdit }:
                 bankAccountName={item.bank_account_name}
                 bankName={item.bank_name}
                 imageUrl={item.card_image.url}
+                size={item.card_image.size}
+                type={item.card_image.type}
                 borderColor={item?.color ?? 'transparent'}
               />
               <Stack direction="row" justifyContent="space-around" gap={5} sx={{ mt: '10px' }}>

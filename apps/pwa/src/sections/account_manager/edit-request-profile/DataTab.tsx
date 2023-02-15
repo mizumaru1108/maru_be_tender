@@ -725,6 +725,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                   bankAccountName={`${v.bank_account_name}`}
                   imageUrl={v?.card_image?.url}
                   size={v?.card_image?.size}
+                  type={v?.card_image?.type}
                   borderColor={v?.color ?? 'transparent'}
                 />
               </Grid>
