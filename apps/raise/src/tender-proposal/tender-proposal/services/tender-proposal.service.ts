@@ -1,12 +1,10 @@
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma, proposal } from '@prisma/client';
 import { nanoid } from 'nanoid';
-import { PrismaService } from '../../../prisma/prisma.service';
 import {
   appRoleMappers,
   TenderAppRole,
@@ -29,32 +27,34 @@ import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
 import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
+import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
 import { validateFileSize } from '../../../commons/utils/validate-file-size';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
+import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
 import {
   InnerStatusEnum,
   OutterStatusEnum,
   ProposalAction,
 } from '../../../tender-commons/types/proposal';
-import { CreateItemBudgetsMapper } from '../mappers/create-item-budgets.mappers';
-import { IProposalLogsResponse } from '../../tender-proposal-log/interfaces/proposal-logs-response';
-import { TenderProposalLogRepository } from '../../tender-proposal-log/repositories/tender-proposal-log.repository';
-import { ProposalSaveDraftDto } from '../dtos/requests/proposal-save-draft';
-import { ProposalCreateDto } from '../dtos/requests/proposal-create.dto';
-import { CreateProposalMapper } from '../mappers/create-proposal.mapper';
-import { UpdateProposalMapper } from '../mappers/update-proposal.mapper';
-import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
-import { SupervisorRegularTrackAccMapper } from '../mappers/supervisor-regular-track-acc.mapper';
-import { SupervisorAccCreatedItemBudgetMapper } from '../mappers/supervisor-acc-created-item-budget-mapper';
-import { SupervisorGrantTrackAccMapper } from '../mappers/supervisor-grant-track-acc.mapper';
-import { SupervisorAccCreatedRecommendedSupportMapper } from '../mappers/supervisor-acc-created-recommend-support-mapper';
-import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
 import { generateFileName } from '../../../tender-commons/utils/generate-filename';
 import { isTenderFilePayload } from '../../../tender-commons/utils/is-tender-file-payload';
 import { isUploadFileJsonb } from '../../../tender-commons/utils/is-upload-file-jsonb';
-import { logUtil } from '../../../commons/utils/log-util';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
+import { IProposalLogsResponse } from '../../tender-proposal-log/interfaces/proposal-logs-response';
+import { TenderProposalLogRepository } from '../../tender-proposal-log/repositories/tender-proposal-log.repository';
+import { FetchAmandementFilterRequest } from '../dtos/requests/fetch-amandement-filter-request.dto';
+import { ProposalCreateDto } from '../dtos/requests/proposal-create.dto';
+import { ProposalSaveDraftDto } from '../dtos/requests/proposal-save-draft';
+import { SendAmandementDto } from '../dtos/requests/send-amandement.dto';
+import { CreateItemBudgetsMapper } from '../mappers/create-item-budgets.mappers';
+import { CreateProposalMapper } from '../mappers/create-proposal.mapper';
+import { ProposalUpdateRequestMapper } from '../mappers/proposal-update-request.mapper';
+import { SupervisorAccCreatedItemBudgetMapper } from '../mappers/supervisor-acc-created-item-budget-mapper';
+import { SupervisorAccCreatedRecommendedSupportMapper } from '../mappers/supervisor-acc-created-recommend-support-mapper';
+import { SupervisorGrantTrackAccMapper } from '../mappers/supervisor-grant-track-acc.mapper';
+import { SupervisorRegularTrackAccMapper } from '../mappers/supervisor-regular-track-acc.mapper';
+import { UpdateProposalMapper } from '../mappers/update-proposal.mapper';
 
 @Injectable()
 export class TenderProposalService {
@@ -68,8 +68,9 @@ export class TenderProposalService {
     private readonly twilioService: TwilioService,
     private readonly configService: ConfigService,
     private readonly bunnyService: BunnyService,
-    private readonly tenderProposalRepository: TenderProposalRepository,
-    private readonly tenderNotificationService: TenderNotificationService,
+    private readonly notificationService: TenderNotificationService,
+    private readonly proposalRepo: TenderProposalRepository,
+    private readonly notifService: TenderNotificationService,
     private readonly tenderProposalLogRepository: TenderProposalLogRepository,
   ) {
     const environment = this.configService.get('APP_ENV');
@@ -176,11 +177,10 @@ export class TenderProposalService {
     ];
 
     if (request.proposal_bank_information_id) {
-      const isMyOwnBank =
-        await this.tenderProposalRepository.validateOwnBankAccount(
-          userId,
-          request.proposal_bank_information_id,
-        );
+      const isMyOwnBank = await this.proposalRepo.validateOwnBankAccount(
+        userId,
+        request.proposal_bank_information_id,
+      );
       if (!isMyOwnBank) {
         throw new BadRequestException('Bank account is not yours!');
       }
@@ -253,7 +253,7 @@ export class TenderProposalService {
     }
 
     // create proposal and the logs
-    const createdProposal = await this.tenderProposalRepository.create(
+    const createdProposal = await this.proposalRepo.create(
       proposalCreatePayload,
       proposal_item_budgets,
       fileManagerCreateManyPayload,
@@ -279,7 +279,7 @@ export class TenderProposalService {
     const deletedFileManagerUrls: string[] = []; // id of file manager that we want to mark as soft delete.
 
     // find proposal by id
-    const proposal = await this.tenderProposalRepository.fetchProposalById(
+    const proposal = await this.proposalRepo.fetchProposalById(
       request.proposal_id,
     );
     if (!proposal) {
@@ -293,11 +293,10 @@ export class TenderProposalService {
     }
 
     if (request.proposal_bank_information_id) {
-      const isMyOwnBank =
-        await this.tenderProposalRepository.validateOwnBankAccount(
-          userId,
-          request.proposal_bank_information_id,
-        );
+      const isMyOwnBank = await this.proposalRepo.validateOwnBankAccount(
+        userId,
+        request.proposal_bank_information_id,
+      );
       if (!isMyOwnBank) {
         throw new BadRequestException('Bank account is not yours');
       }
@@ -415,7 +414,7 @@ export class TenderProposalService {
     }
 
     // create proposal and the logs
-    const updatedProposal = await this.tenderProposalRepository.saveDraft(
+    const updatedProposal = await this.proposalRepo.saveDraft(
       proposal.id,
       updateProposalPayload,
       proposal_item_budgets,
@@ -430,9 +429,7 @@ export class TenderProposalService {
   async deleteDraft(userId: string, proposal_id: string) {
     const deletedFileManagerUrls: string[] = []; // id of file manager that we want to mark as soft delete.
 
-    const proposal = await this.tenderProposalRepository.fetchProposalById(
-      proposal_id,
-    );
+    const proposal = await this.proposalRepo.fetchProposalById(proposal_id);
     if (!proposal) throw new BadRequestException('Proposal not found');
 
     if (proposal.submitter_user_id !== userId) {
@@ -479,7 +476,7 @@ export class TenderProposalService {
       }
     }
 
-    const deletedProposal = await this.tenderProposalRepository.deleteProposal(
+    const deletedProposal = await this.proposalRepo.deleteProposal(
       proposal.id,
       deletedFileManagerUrls,
     );
@@ -487,11 +484,67 @@ export class TenderProposalService {
     return deletedProposal;
   }
 
+  async sendAmandement(
+    userId: string,
+    request: SendAmandementDto,
+  ): Promise<proposal> {
+    /* object atleas has id, and one more payload, if not then throw err */
+    if (Object.keys(request).length < 2) {
+      throw new BadRequestException('Give at least one revision!');
+    }
+
+    const { proposal_id } = request;
+
+    const proposal = await this.proposalRepo.fetchProposalById(proposal_id);
+    if (!proposal) {
+      throw new BadRequestException('Proposal Not Found!');
+    }
+
+    const createProposalEditRequestPayload = ProposalUpdateRequestMapper(
+      proposal,
+      userId,
+      request,
+    );
+
+    const proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput = {
+      supervisor_id: userId,
+      outter_status: OutterStatusEnum.ON_REVISION,
+    };
+
+    const sendAmandementResult = await this.proposalRepo.sendAmandement(
+      proposal_id,
+      userId,
+      proposalUpdatePayload,
+      createProposalEditRequestPayload,
+    );
+
+    this.notificationService.sendSmsAndEmail(
+      sendAmandementResult.sendAmandementNotif,
+    );
+
+    return sendAmandementResult.updatedProposal;
+  }
+
+  async getAmandementById(amandementId: string) {
+    const amandement = await this.proposalRepo.findAmandementById(amandementId);
+    if (!amandement) {
+      throw new BadRequestException('Amandement Not Found!');
+    }
+    return JSON.parse(amandement);
+  }
+
+  async fetchAmandementList(
+    currentUser: TenderCurrentUser,
+    filter: FetchAmandementFilterRequest,
+  ) {
+    return await this.proposalRepo.findAmandementList(currentUser, filter);
+  }
+
   async changeProposalState(
     currentUser: TenderCurrentUser,
     request: ChangeProposalStateDto,
   ) {
-    const proposal = await this.tenderProposalRepository.fetchProposalById(
+    const proposal = await this.proposalRepo.fetchProposalById(
       request.proposal_id,
     );
 
@@ -576,78 +629,57 @@ export class TenderProposalService {
       ];
     }
 
-    /* if user is project manager */
     if (currentUser.choosenRole === 'tender_project_manager') {
       const pm = await this.projectManagerChangeState(
-        proposal,
         proposalUpdatePayload,
         proposalLogCreateInput,
         request,
       );
-      proposalUpdatePayload = {
-        ...pm.proposalUpdatePayload,
-      };
-      proposalLogCreateInput = {
-        ...pm.proposalLogCreateInput,
-      };
+      proposalUpdatePayload = { ...pm.proposalUpdatePayload };
+      proposalLogCreateInput = { ...pm.proposalLogCreateInput };
     }
 
     if (currentUser.choosenRole === 'tender_consultant') {
       const consultant = await this.consultantChangeState(
-        proposal,
         proposalUpdatePayload,
         proposalLogCreateInput,
         request,
       );
-      proposalUpdatePayload = {
-        ...consultant.proposalUpdatePayload,
-      };
-      proposalLogCreateInput = {
-        ...consultant.proposalLogCreateInput,
-      };
+      proposalUpdatePayload = { ...consultant.proposalUpdatePayload };
+      proposalLogCreateInput = { ...consultant.proposalLogCreateInput };
     }
 
-    /* if user is ceo */
     if (currentUser.choosenRole === 'tender_ceo') {
       const ceo = await this.ceoChangeState(
-        proposal,
         proposalUpdatePayload,
         proposalLogCreateInput,
         request,
       );
-      proposalUpdatePayload = {
-        ...ceo.proposalUpdatePayload,
-      };
-      proposalLogCreateInput = {
-        ...ceo.proposalLogCreateInput,
-      };
+      proposalUpdatePayload = { ...ceo.proposalUpdatePayload };
+      proposalLogCreateInput = { ...ceo.proposalLogCreateInput };
     }
 
     /* update proposal and create the logs */
-    const updateProposalResult =
-      await this.tenderProposalRepository.updateProposalState(
-        request.proposal_id,
-        proposalUpdatePayload,
-        proposalLogCreateInput,
-        lastLog,
-        createdItemBudgetPayload,
-        updatedItemBudgetPayload,
-        deletedItemBudgetIds,
-        createdRecommendedSupportPayload,
-        updatedRecommendedSupportPayload,
-        deletedRecommendedSupportIds,
-      );
+    const updateProposalResult = await this.proposalRepo.updateProposalState(
+      request.proposal_id,
+      proposalUpdatePayload,
+      proposalLogCreateInput,
+      lastLog,
+      createdItemBudgetPayload,
+      updatedItemBudgetPayload,
+      deletedItemBudgetIds,
+      createdRecommendedSupportPayload,
+      updatedRecommendedSupportPayload,
+      deletedRecommendedSupportIds,
+    );
 
     const { proposal_logs } = updateProposalResult;
     await this.sendChangeStateNotification(
-      {
-        data: proposal_logs,
-      },
+      { data: proposal_logs },
       currentUser.choosenRole,
     );
 
     return updateProposalResult.proposal;
-    // 'ACCOUNTS_MANAGER' 'ADMIN'  'CASHIER' 'CLIENT'  'FINANCE';
   }
 
   async moderatorChangeState(
@@ -669,7 +701,7 @@ export class TenderProposalService {
     }
 
     /* validate the sended track */
-    const track = await this.tenderProposalRepository.findTrackById(
+    const track = await this.proposalRepo.findTrackById(
       request.moderator_payload.project_track,
     );
     if (!track) {
@@ -876,7 +908,6 @@ export class TenderProposalService {
   }
 
   async projectManagerChangeState(
-    proposal: proposal,
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
     proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
     request: ChangeProposalStateDto,
@@ -954,9 +985,7 @@ export class TenderProposalService {
     };
   }
 
-  /* CEO DONE */
   async ceoChangeState(
-    proposal: proposal,
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
     proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
     request: ChangeProposalStateDto,
@@ -1017,9 +1046,7 @@ export class TenderProposalService {
     };
   }
 
-  /* Consultant Done */
   async consultantChangeState(
-    proposal: proposal,
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
     proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
     request: ChangeProposalStateDto,
@@ -1118,7 +1145,7 @@ export class TenderProposalService {
         subject,
         content: employeeContent,
       };
-      await this.tenderNotificationService.create(employeeWebNotifPayload);
+      await this.notifService.create(employeeWebNotifPayload);
     }
 
     const clientWebNotifPayload: CreateNotificationDto = {
@@ -1128,7 +1155,7 @@ export class TenderProposalService {
       subject,
       content: clientContent,
     };
-    await this.tenderNotificationService.create(clientWebNotifPayload);
+    await this.notifService.create(clientWebNotifPayload);
 
     const clientPhone = isExistAndValidPhone(
       log.data.proposal.user.mobile_number,
@@ -1152,6 +1179,6 @@ export class TenderProposalService {
   }
 
   async fetchTrack(limit: number, page: number) {
-    return await this.tenderProposalRepository.fetchTrack(limit, page);
+    return await this.proposalRepo.fetchTrack(limit, page);
   }
 }

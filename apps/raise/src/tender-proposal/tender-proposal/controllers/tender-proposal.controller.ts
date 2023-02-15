@@ -24,9 +24,12 @@ import { ProposalCreateDto } from '../dtos/requests/proposal-create.dto';
 import { ProposalDeleteDraftDto } from '../dtos/requests/proposal-delete-draft';
 import { ProposalSaveDraftDto } from '../dtos/requests/proposal-save-draft';
 import { TenderProposalService } from '../services/tender-proposal.service';
+import { SendAmandementDto } from '../dtos/requests/send-amandement.dto';
+import { FetchAmandementFilterRequest } from '../dtos/requests/fetch-amandement-filter-request.dto';
+import { GetByUUIDQueryParamDto } from '../../../commons/dtos/get-by-uuid-query-param.dto';
 @Controller('tender-proposal')
 export class TenderProposalController {
-  constructor(private readonly tenderProposalService: TenderProposalService) {}
+  constructor(private readonly proposalService: TenderProposalService) {}
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_client')
@@ -35,7 +38,7 @@ export class TenderProposalController {
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() payload: ProposalCreateDto,
   ) {
-    const createdProposal = await this.tenderProposalService.create(
+    const createdProposal = await this.proposalService.create(
       currentUser.id,
       payload,
     );
@@ -47,38 +50,20 @@ export class TenderProposalController {
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_client')
+  @TenderRoles('tender_project_supervisor')
   @Post('send-amandement')
   async sendAmandement(
     @CurrentUser() currentUser: TenderCurrentUser,
-    @Body() payload: ProposalCreateDto,
+    @Body() payload: SendAmandementDto,
   ) {
-    const createdProposal = await this.tenderProposalService.create(
+    const createdProposal = await this.proposalService.sendAmandement(
       currentUser.id,
       payload,
     );
     return baseResponseHelper(
       createdProposal,
       HttpStatus.CREATED,
-      'Proposal created successfully',
-    );
-  }
-
-  @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_client')
-  @Patch('save-draft')
-  async saveDraft(
-    @CurrentUser() currentUser: TenderCurrentUser,
-    @Body() request: ProposalSaveDraftDto,
-  ) {
-    const updateResponse = await this.tenderProposalService.saveDraft(
-      currentUser.id,
-      request,
-    );
-    return baseResponseHelper(
-      updateResponse,
-      HttpStatus.OK,
-      'Proposal updated successfully',
+      'Proposal amandement has been sended successfully',
     );
   }
 
@@ -89,7 +74,7 @@ export class TenderProposalController {
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: ProposalDeleteDraftDto,
   ) {
-    const deletedDraft = await this.tenderProposalService.deleteDraft(
+    const deletedDraft = await this.proposalService.deleteDraft(
       currentUser.id,
       request.proposal_id,
     );
@@ -100,12 +85,46 @@ export class TenderProposalController {
     );
   }
 
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_project_supervisor', 'tender_client')
+  @Get('amandement-lists')
+  async fetchAmandementList(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Query() payload: FetchAmandementFilterRequest,
+  ) {
+    const result = await this.proposalService.fetchAmandementList(
+      currentUser,
+      payload,
+    );
+
+    return manualPaginationHelper(
+      result.data,
+      result.total,
+      payload.page || 1,
+      payload.limit || 10,
+      HttpStatus.OK,
+      'Success',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_project_supervisor', 'tender_client')
+  @Get('amandement')
+  async getAmandementById(@Query() payload: GetByUUIDQueryParamDto) {
+    const result = await this.proposalService.getAmandementById(payload.id);
+    return baseResponseHelper(
+      result,
+      HttpStatus.OK,
+      'Proposal Fetched Successfully!',
+    );
+  }
+
   @UseGuards(TenderJwtGuard)
   @Get('fetch-track')
   async fetchTrack(
     @Query() { limit = 10, page = 1 }: BaseFilterRequest,
   ): Promise<BaseResponse<any>> {
-    const result = await this.tenderProposalService.fetchTrack(limit, page);
+    const result = await this.proposalService.fetchTrack(limit, page);
 
     return manualPaginationHelper(
       result.data,
@@ -137,7 +156,7 @@ export class TenderProposalController {
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: ChangeProposalStateDto,
   ) {
-    const proposal = await this.tenderProposalService.changeProposalState(
+    const proposal = await this.proposalService.changeProposalState(
       currentUser,
       request,
     );
@@ -148,24 +167,21 @@ export class TenderProposalController {
     );
   }
 
-  // @UseGuards(TenderJwtGuard)
-  // @Patch('proposal-action')
-  // async updateProposalByCmsUsers(
-  //   @CurrentUser() currentUser: user,
-  //   @Body() body: UpdateProposalByCmsUsers,
-  //   @Req() request: any,
-  // ) {
-  //   const updateResponse =
-  //     await this.tenderProposalService.updateProposalByCmsUsers(
-  //       currentUser,
-  //       body,
-  //       request.query.id,
-  //       request.headers['x-hasura-role'],
-  //     );
-  //   return baseResponseHelper(
-  //     updateResponse,
-  //     HttpStatus.OK,
-  //     'Proposal updated successfully',
-  //   );
-  // }
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_client')
+  @Patch('save-draft')
+  async saveDraft(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() request: ProposalSaveDraftDto,
+  ) {
+    const updateResponse = await this.proposalService.saveDraft(
+      currentUser.id,
+      request,
+    );
+    return baseResponseHelper(
+      updateResponse,
+      HttpStatus.OK,
+      'Proposal updated successfully',
+    );
+  }
 }

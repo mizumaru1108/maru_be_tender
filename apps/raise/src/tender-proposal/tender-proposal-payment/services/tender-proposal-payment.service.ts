@@ -2,27 +2,27 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-  NotFoundException,
+  NotFoundException
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma, proposal } from '@prisma/client';
+import { v4 as uuidv4 } from 'uuid';
 import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
 import { validateFileSize } from '../../../commons/utils/validate-file-size';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
-import { EmailService } from '../../../libs/email/email.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
-import { TwilioService } from '../../../libs/twilio/services/twilio.service';
 import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
+import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
 import {
   appRoleMappers,
   TenderAppRole,
-  TenderAppRoleEnum,
+  TenderAppRoleEnum
 } from '../../../tender-commons/types';
 import {
   InnerStatusEnum,
-  OutterStatusEnum,
+  OutterStatusEnum
 } from '../../../tender-commons/types/proposal';
 import { actionValidator } from '../../../tender-commons/utils/action-validator';
 import { generateFileName } from '../../../tender-commons/utils/generate-filename';
@@ -30,22 +30,14 @@ import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-t
 import { ownershipErrorThrow } from '../../../tender-commons/utils/proposal-ownership-error-thrower';
 import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
+import { TenderProposalLogRepository } from '../../tender-proposal-log/repositories/tender-proposal-log.repository';
 import { TenderProposalRepository } from '../../tender-proposal/repositories/tender-proposal.repository';
 import { CreateProposalPaymentDto } from '../dtos/requests/create-payment.dto';
 import { UpdatePaymentDto } from '../dtos/requests/update-payment.dto';
-import { UpdatePaymentResponseDto } from '../dtos/responses/update-payment-response.dto';
+import { CreateChequeMapper } from '../mappers/create-cheque.mapper';
 import { CreateManyPaymentMapper } from '../mappers/create-many-payment.mapper';
 import { TenderProposalPaymentRepository } from '../repositories/tender-proposal-payment.repository';
-import { v4 as uuidv4 } from 'uuid';
-import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
-import { CreateChequeMapper } from '../mappers/create-cheque.mapper';
-import { TenderProposalLogRepository } from '../../tender-proposal-log/repositories/tender-proposal-log.repository';
-import moment from 'moment';
-import { SendEmailDto } from '../../../libs/email/dtos/requests/send-email.dto';
-import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
-import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
-import { InsertPaymentNotifMapperResponse } from '../dtos/responses/insert-payment-notif-mapper-response.dto';
-import { UpdatePaymentNotifMapperResponse } from '../dtos/responses/update-payment-notif-mapper-response.dto';
+  
 @Injectable()
 export class TenderProposalPaymentService {
   private readonly appEnv: string;
@@ -56,8 +48,9 @@ export class TenderProposalPaymentService {
   constructor(
     private readonly configService: ConfigService,
     private readonly bunnyService: BunnyService,
-    private readonly emailService: EmailService,
-    private readonly twilioService: TwilioService,
+    // private readonly emailService: EmailService,
+    // private readonly twilioService: TwilioService,
+    private readonly notificationService: TenderNotificationService,
     private readonly tenderProposalRepository: TenderProposalRepository,
     private readonly tenderProposalLogRepository: TenderProposalLogRepository,
     private readonly tenderProposalPaymentRepository: TenderProposalPaymentRepository,
@@ -132,7 +125,8 @@ export class TenderProposalPaymentService {
         lastLog,
       );
 
-    // this.sendInsertPaymentNotif(insertResult.insertNotif);
+    // this.sendPaymentNotif(insertResult.insertNotif);
+    this.notificationService.sendSmsAndEmail(insertResult.insertNotif);
 
     return insertResult.updatedProposal;
   }
@@ -248,7 +242,7 @@ export class TenderProposalPaymentService {
         proposalUpdateInput,
       );
 
-      // this.sendUpdatePaymentNotif(response.updateNotif);
+      this.notificationService.sendSmsAndEmail(response.updateNotif);
       return {
         updatedPayment: response.payment,
         createdCheque: response.cheque,
@@ -321,113 +315,58 @@ export class TenderProposalPaymentService {
     }
   }
 
-  sendInsertPaymentNotif(insertNotif: InsertPaymentNotifMapperResponse) {
-    const {
-      subject,
-      clientContent,
-      clientEmail,
-      clientMobileNumber,
-      supervisorContent,
-      supervisorEmail,
-      supervisorMobileNumber,
-    } = insertNotif;
+  // sendPaymentNotif(notifPayload: CommonNotifMapperResponse) {
+  //   const {
+  //     subject,
+  //     clientContent,
+  //     clientEmail,
+  //     clientMobileNumber,
+  //     reviewerContent,
+  //     reviewerEmail,
+  //     reviewerMobileNumber,
+  //   } = notifPayload;
 
-    const baseSendEmail: Omit<SendEmailDto, 'to'> = {
-      mailType: 'plain',
-      from: 'no-reply@hcharity.org',
-    };
+  //   const baseSendEmail: Omit<SendEmailDto, 'to'> = {
+  //     mailType: 'plain',
+  //     from: 'no-reply@hcharity.org',
+  //   };
 
-    const clientEmailNotif: SendEmailDto = {
-      ...baseSendEmail,
-      to: clientEmail,
-      subject: subject,
-      content: clientContent,
-    };
-    this.emailService.sendMail(clientEmailNotif);
+  //   const clientEmailNotif: SendEmailDto = {
+  //     ...baseSendEmail,
+  //     to: clientEmail,
+  //     subject: subject,
+  //     content: clientContent,
+  //   };
+  //   this.emailService.sendMail(clientEmailNotif);
 
-    const clientPhone = isExistAndValidPhone(clientMobileNumber);
-    if (clientPhone) {
-      this.twilioService.sendSMS({
-        to: clientPhone,
-        body: subject + ', ' + clientContent,
-      });
-    }
+  //   const clientPhone = isExistAndValidPhone(clientMobileNumber);
+  //   if (clientPhone) {
+  //     this.twilioService.sendSMS({
+  //       to: clientPhone,
+  //       body: subject + ', ' + clientContent,
+  //     });
+  //   }
 
-    if (supervisorContent) {
-      if (supervisorEmail && supervisorEmail !== '') {
-        const supervisorEmailNotif: SendEmailDto = {
-          ...baseSendEmail,
-          to: supervisorEmail,
-          subject: subject,
-          content: supervisorContent,
-        };
-        this.emailService.sendMail(supervisorEmailNotif);
-      }
+  //   if (reviewerContent) {
+  //     if (reviewerEmail && reviewerEmail !== '') {
+  //       const reviewerEmailNotif: SendEmailDto = {
+  //         ...baseSendEmail,
+  //         to: reviewerEmail,
+  //         subject: subject,
+  //         content: reviewerContent,
+  //       };
+  //       this.emailService.sendMail(reviewerEmailNotif);
+  //     }
 
-      if (supervisorMobileNumber && supervisorMobileNumber !== '') {
-        const supervisorPhone = isExistAndValidPhone(supervisorMobileNumber);
-        if (supervisorPhone) {
-          this.twilioService.sendSMS({
-            to: supervisorPhone,
-            body: subject + ', ' + supervisorContent,
-          });
-        }
-      }
-    }
-  }
-
-  sendUpdatePaymentNotif(insertNotif: UpdatePaymentNotifMapperResponse) {
-    const {
-      subject,
-      clientContent,
-      clientEmail,
-      clientMobileNumber,
-      reviewerContent,
-      reviewerEmail,
-      reviewerMobileNumber,
-    } = insertNotif;
-
-    const baseSendEmail: Omit<SendEmailDto, 'to'> = {
-      mailType: 'plain',
-      from: 'no-reply@hcharity.org',
-    };
-
-    const clientEmailNotif: SendEmailDto = {
-      ...baseSendEmail,
-      to: clientEmail,
-      subject: subject,
-      content: clientContent,
-    };
-    this.emailService.sendMail(clientEmailNotif);
-
-    const clientPhone = isExistAndValidPhone(clientMobileNumber);
-    if (clientPhone) {
-      this.twilioService.sendSMS({
-        to: clientPhone,
-        body: subject + ', ' + clientContent,
-      });
-    }
-
-    if (reviewerContent) {
-      if (reviewerEmail && reviewerEmail !== '') {
-        const reviewerEmailNotif: SendEmailDto = {
-          ...baseSendEmail,
-          to: reviewerEmail,
-          subject: subject,
-          content: reviewerContent,
-        };
-        this.emailService.sendMail(reviewerEmailNotif);
-      }
-
-      if (reviewerMobileNumber && reviewerMobileNumber !== '') {
-        const reviewerPhone = isExistAndValidPhone(reviewerMobileNumber);
-        if (reviewerPhone) {
-          this.twilioService.sendSMS({
-            to: reviewerPhone,
-            body: subject + ', ' + reviewerContent,
-          });
-        }
-      }
-    }
-  }
+  //     if (reviewerMobileNumber && reviewerMobileNumber !== '') {
+  //       const reviewerPhone = isExistAndValidPhone(reviewerMobileNumber);
+  //       if (reviewerPhone) {
+  //         this.twilioService.sendSMS({
+  //           to: reviewerPhone,
+  //           body: subject + ', ' + reviewerContent,
+  //         });
+  //       }
+  //     }
+  //   }
+  // }
 }

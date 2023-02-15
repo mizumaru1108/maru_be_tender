@@ -72,18 +72,18 @@ export enum InnerStatusEnum {
 }
 
 export type OutterStatus =
-  | 'COMPLETED'
   | 'PENDING'
   | 'CANCELED'
+  | 'COMPLETED'
   | 'ONGOING'
-  | 'UPDATE_REQUEST';
+  | 'ON_REVISION';
 
 export enum OutterStatusEnum {
-  CANCELED = 'CANCELED',
   PENDING = 'PENDING',
-  ONGOING = 'ONGOING',
+  CANCELED = 'CANCELED',
   COMPLETED = 'COMPLETED',
-  UPDATE_REQUEST = 'UPDATE_REQUEST',
+  ONGOING = 'ONGOING',
+  ON_REVISION = 'ON_REVISION',
 }
 
 export enum ProposalAction {
@@ -91,7 +91,7 @@ export enum ProposalAction {
   REJECT = 'reject',
   STEP_BACK = 'step_back',
   ACCEPT_AND_ASK_FOR_CONSULTION = 'accept_and_ask_for_consultaion',
-  ASK_FOR_UPDATE = 'ask_for_update',
+  SEND_BACK_FOR_REVISION = 'send_back_for_revision',
 }
 
 export type ProposalItemBudget = {

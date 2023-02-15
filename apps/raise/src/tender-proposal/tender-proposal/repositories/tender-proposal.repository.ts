@@ -1,11 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma, proposal, proposal_item_budget } from '@prisma/client';
 import { nanoid } from 'nanoid';
+import { UserDefinedMessageList } from 'twilio/lib/rest/api/v2010/account/call/userDefinedMessage';
 import { logUtil } from '../../../commons/utils/log-util';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { TenderAppRoleEnum } from '../../../tender-commons/types';
+import { ProposalAction } from '../../../tender-commons/types/proposal';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
+import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
+import { FetchAmandementFilterRequest } from '../dtos/requests/fetch-amandement-filter-request.dto';
+import { NewAmandementNotifMapper } from '../mappers/new-amandement-notif-mapper';
 @Injectable()
 export class TenderProposalRepository {
   private readonly logger = ROOT_LOGGER.child({
@@ -280,6 +286,228 @@ export class TenderProposalRepository {
     }
   }
 
+  async sendAmandement(
+    id: string,
+    reviewer_id: string,
+    proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
+    createProposalEditRequestPayload: Prisma.proposal_edit_requestUncheckedCreateInput,
+  ) {
+    try {
+      return await this.prismaService.$transaction(
+        async (prisma) => {
+          this.logger.log(
+            'info',
+            `Updating proposal ${id}, with payload of\n${proposalUpdatePayload}`,
+          );
+          const updatedProposal = await prisma.proposal.update({
+            where: { id },
+            data: proposalUpdatePayload,
+          });
+
+          this.logger.log(
+            'info',
+            `Creating new proposal edit request with payload of \n${createProposalEditRequestPayload}`,
+          );
+          await prisma.proposal_edit_request.create({
+            data: createProposalEditRequestPayload,
+          });
+
+          const lastLog = await prisma.proposal_log.findFirst({
+            where: { proposal_id: id },
+            select: {
+              created_at: true,
+            },
+            orderBy: {
+              created_at: 'desc',
+            },
+            take: 1,
+          });
+
+          const createdLog = await prisma.proposal_log.create({
+            data: {
+              id: nanoid(),
+              proposal_id: id,
+              user_role: TenderAppRoleEnum.PROJECT_SUPERVISOR,
+              reviewer_id,
+              action: ProposalAction.SEND_BACK_FOR_REVISION, //revised
+              state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
+              response_time: lastLog?.created_at
+                ? Math.round(
+                    (new Date().getTime() - lastLog.created_at.getTime()) /
+                      60000,
+                  )
+                : null,
+            },
+            select: {
+              action: true,
+              created_at: true,
+              reviewer: {
+                select: {
+                  id: true,
+                  employee_name: true,
+                  email: true,
+                  mobile_number: true,
+                },
+              },
+              proposal: {
+                select: {
+                  project_name: true,
+                  user: {
+                    select: {
+                      id: true,
+                      employee_name: true,
+                      email: true,
+                      mobile_number: true,
+                    },
+                  },
+                },
+              },
+            },
+          });
+
+          const sendAmandementNotif = NewAmandementNotifMapper(createdLog);
+          if (
+            sendAmandementNotif.createManyWebNotifPayload &&
+            sendAmandementNotif.createManyWebNotifPayload.length > 0
+          ) {
+            this.logger.log(
+              'info',
+              `Creating new notification with payload of \n${sendAmandementNotif.createManyWebNotifPayload}`,
+            );
+            prisma.notification.createMany({
+              data: sendAmandementNotif.createManyWebNotifPayload,
+            });
+          }
+
+          return {
+            updatedProposal,
+            sendAmandementNotif,
+          };
+        },
+        { maxWait: 50000, timeout: 150000 },
+      );
+    } catch (err) {
+      const theError = prismaErrorThrower(
+        err,
+        TenderProposalRepository.name,
+        'Send Amandement error details: ',
+        'Sending Amandement!',
+      );
+      throw theError;
+    }
+  }
+
+  async findAmandementById(amandementId: string): Promise<string | null> {
+    try {
+      this.logger.log('info', `Finding amandement with id of ${amandementId}`);
+      const raw = await this.prismaService.$queryRaw<
+        {
+          detail: string;
+        }[]
+      >`SELECT detail FROM proposal_edit_request WHERE id = ${amandementId}`;
+      return raw[0].detail || null;
+    } catch (err) {
+      const theError = prismaErrorThrower(
+        err,
+        TenderProposalRepository.name,
+        'Send Amandement error details: ',
+        'Sending Amandement!',
+      );
+      throw theError;
+    }
+  }
+
+  async findAmandementList(
+    currentUser: TenderCurrentUser,
+    filter: FetchAmandementFilterRequest,
+  ) {
+    try {
+      const { entity, project_name, status_id, page = 1, limit = 10 } = filter;
+      const offset = (page - 1) * limit;
+
+      let whereClause: Prisma.proposal_edit_requestWhereInput = {};
+
+      if (currentUser.choosenRole === 'tender_project_supervisor') {
+        whereClause = {
+          ...whereClause,
+          reviewer_id: currentUser.id,
+        };
+      } else {
+        whereClause = {
+          ...whereClause,
+          user_id: currentUser.id,
+        };
+      }
+
+      if (entity) {
+        whereClause = {
+          ...whereClause,
+          user: {
+            client_data: {
+              entity: {
+                contains: entity,
+                mode: 'insensitive',
+              },
+            },
+          },
+        };
+      }
+
+      if (project_name) {
+        whereClause = {
+          ...whereClause,
+          proposal: {
+            project_name: {
+              contains: project_name,
+              mode: 'insensitive',
+            },
+          },
+        };
+      }
+
+      if (status_id) {
+        whereClause = {
+          ...whereClause,
+          status_id: status_id,
+        };
+      }
+
+      const data = await this.prismaService.proposal_edit_request.findMany({
+        where: whereClause,
+        select: {
+          id: true,
+          user: { select: { employee_name: true } },
+          reviewer: { select: { employee_name: true } },
+          proposal: { select: { project_name: true } },
+          status_id: true,
+          created_at: true,
+        },
+        take: limit,
+        skip: offset,
+        orderBy: {
+          created_at: 'desc',
+        },
+      });
+
+      const total = await this.prismaService.proposal_edit_request.count({
+        where: whereClause,
+      });
+
+      return {
+        data,
+        total,
+      };
+    } catch (err) {
+      const theError = prismaErrorThrower(
+        err,
+        TenderProposalRepository.name,
+        'updateProposal error details: ',
+        'updating proposal!',
+      );
+      throw theError;
+    }
+  }
+
   async fetchProposalById(proposalId: string): Promise<proposal | null> {
     try {
       this.logger.log('info', `fetching proposal ${proposalId}`);
@@ -294,34 +522,6 @@ export class TenderProposalRepository {
         TenderProposalRepository.name,
         'fetchProposalById error details: ',
         'finding proposal!',
-      );
-      throw theError;
-    }
-  }
-
-  async updateStepFour(
-    proposalId: string,
-    itemBudgetPayloads: proposal_item_budget[],
-  ) {
-    try {
-      await this.prismaService.$transaction([
-        // delete all previous item budget
-        this.prismaService.proposal_item_budget.deleteMany({
-          where: {
-            proposal_id: proposalId,
-          },
-        }),
-        // create a new one
-        this.prismaService.proposal_item_budget.createMany({
-          data: itemBudgetPayloads,
-        }),
-      ]);
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        TenderProposalRepository.name,
-        'updateStepFour error details: ',
-        'updating proposal step four!',
       );
       throw theError;
     }

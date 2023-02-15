@@ -1,24 +1,26 @@
 import moment from 'moment';
+import { CommonNotifMapperResponse } from '../../../tender-commons/dto/common-notif-mapper-response.dto';
+import { CommonProposalLogNotifResponse } from '../../../tender-commons/dto/common-proposal-log-notif-response.dto';
 import { CreateManyNotificationDto } from '../../../tender-notification/dtos/requests/create-many-notification.dto';
 import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
 import { createManyNotificationMapper } from '../../../tender-notification/mappers/create-many-notification.mapper';
-import { InsertPaymentLogResponse } from '../dtos/responses/insert-payment-log-response.dto';
-import { InsertPaymentNotifMapperResponse } from '../dtos/responses/insert-payment-notif-mapper-response.dto';
 
-export const InsertPaymentNotifMapper = (
-  logs: InsertPaymentLogResponse['data'],
-): InsertPaymentNotifMapperResponse => {
+export const NewAmandementNotifMapper = (
+  logs: CommonProposalLogNotifResponse['data'],
+): CommonNotifMapperResponse => {
   const { proposal, reviewer, created_at } = logs;
 
   const logTime = moment(created_at).format('llll');
 
-  const subject = `Payment Request Approved`;
+  const subject = `New Amandement Request`;
 
-  const clientContent = `Your Payment Request has been approved by ${
+  const clientContent = `Your proposal ${
+    proposal.project_name
+  } has been asked for revision by ${
     reviewer ? 'Supervisor (' + reviewer.employee_name + ')' : 'Supervisor'
   } at ${logTime}`;
 
-  const supervisorContent = `You have successfully approve payment of ${proposal.user.employee_name}`;
+  const reviewerContent = `Successfully send amandement request for project ${proposal.project_name} to ${proposal.user.employee_name} at ${logTime}`;
 
   const clientWebNotifPayload: CreateNotificationDto = {
     user_id: proposal.user.id,
@@ -35,8 +37,8 @@ export const InsertPaymentNotifMapper = (
     const supervisorWebNotifPayload: CreateNotificationDto = {
       user_id: reviewer.id,
       type: 'PROPOSAL',
-      subject: subject,
-      content: supervisorContent,
+      subject: subject + 'Sended',
+      content: reviewerContent,
     };
     createWebNotifPayload.push(supervisorWebNotifPayload);
   }
@@ -53,10 +55,10 @@ export const InsertPaymentNotifMapper = (
     clientMobileNumber: proposal.user.mobile_number || '',
     clientContent,
     createManyWebNotifPayload,
-    supervisorId: reviewer ? reviewer.id : '',
-    supervisorEmail: reviewer ? reviewer.email : '',
-    supervisorMobileNumber:
+    reviewerId: reviewer ? reviewer.id : '',
+    reviewerEmail: reviewer ? reviewer.email : '',
+    reviewerMobileNumber:
       reviewer && reviewer.mobile_number ? reviewer.mobile_number : '',
-    supervisorContent,
+    reviewerContent,
   };
 };

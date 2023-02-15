@@ -4,6 +4,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { isExistAndValidPhone } from '../../commons/utils/is-exist-and-valid-phone';
+import { SendEmailDto } from '../../libs/email/dtos/requests/send-email.dto';
+import { EmailService } from '../../libs/email/email.service';
+import { TwilioService } from '../../libs/twilio/services/twilio.service';
+import { CommonNotifMapperResponse } from '../../tender-commons/dto/common-notif-mapper-response.dto';
 import { CreateManyNotificationDto } from '../dtos/requests/create-many-notification.dto';
 import { CreateNotificationDto } from '../dtos/requests/create-notification.dto';
 import { createManyNotificationMapper } from '../mappers/create-many-notification.mapper';
@@ -14,6 +19,8 @@ import { TenderNotificationRepository } from '../repository/tender-notification.
 export class TenderNotificationService {
   constructor(
     private readonly tenderNotificationRepository: TenderNotificationRepository,
+    private readonly twilioService: TwilioService,
+    private readonly emailService: EmailService,
   ) {}
 
   async create(payload: CreateNotificationDto) {
@@ -69,5 +76,60 @@ export class TenderNotificationService {
 
   async hideAllMine(userId: string) {
     return await this.tenderNotificationRepository.hideAllMine(userId);
+  }
+
+  sendSmsAndEmail(notifPayload: CommonNotifMapperResponse) {
+    const {
+      subject,
+      clientContent,
+      clientEmail,
+      clientMobileNumber,
+      reviewerContent,
+      reviewerEmail,
+      reviewerMobileNumber,
+    } = notifPayload;
+
+    const baseSendEmail: Omit<SendEmailDto, 'to'> = {
+      mailType: 'plain',
+      from: 'no-reply@hcharity.org',
+    };
+
+    const clientEmailNotif: SendEmailDto = {
+      ...baseSendEmail,
+      to: clientEmail,
+      subject: subject,
+      content: clientContent,
+    };
+    this.emailService.sendMail(clientEmailNotif);
+
+    const clientPhone = isExistAndValidPhone(clientMobileNumber);
+    if (clientPhone) {
+      this.twilioService.sendSMS({
+        to: clientPhone,
+        body: subject + ', ' + clientContent,
+      });
+    }
+
+    if (reviewerContent) {
+      if (reviewerEmail && reviewerEmail !== '') {
+        const reviewerEmailNotif: SendEmailDto = {
+          ...baseSendEmail,
+          to: reviewerEmail,
+          subject: subject,
+          content: reviewerContent,
+        };
+        this.emailService.sendMail(reviewerEmailNotif);
+      }
+
+      if (reviewerMobileNumber && reviewerMobileNumber !== '') {
+        const reviewerPhone = isExistAndValidPhone(reviewerMobileNumber);
+        if (reviewerPhone) {
+          this.twilioService.sendSMS({
+            to: reviewerPhone,
+            body: subject + ', ' + reviewerContent,
+          });
+        }
+      }
+    }
   }
 }

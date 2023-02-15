@@ -9,7 +9,6 @@ import {
 } from 'class-validator';
 import { ProposalAction } from '../../../../tender-commons/types/proposal';
 
-import { SetupPaymentPayloadDto } from '../../../dtos/requests/setup-payment-payload.dto';
 import { ModeratorChangeStatePayload } from './moderator-change-state.dto';
 import { SupervisorChangeStatePayload } from './supervisor-change-state.dto';
 
@@ -51,14 +50,4 @@ export class ChangeProposalStateDto {
   @IsString()
   @IsOptional()
   message?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  amandements?: any | undefined;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @Type(() => SetupPaymentPayloadDto)
-  @ValidateNested()
-  setupPaymentPayload?: SetupPaymentPayloadDto;
 }

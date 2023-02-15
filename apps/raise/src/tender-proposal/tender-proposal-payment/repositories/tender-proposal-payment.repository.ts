@@ -113,6 +113,7 @@ export class TenderProposalPaymentRepository {
               },
               proposal: {
                 select: {
+                  project_name: true,
                   user: {
                     select: {
                       id: true,
@@ -267,6 +268,7 @@ export class TenderProposalPaymentRepository {
               },
               proposal: {
                 select: {
+                  project_name: true,
                   user: {
                     select: {
                       id: true,

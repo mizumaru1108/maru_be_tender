@@ -1,5 +1,7 @@
 import { payment } from '@prisma/client';
 import moment from 'moment';
+import { CommonNotifMapperResponse } from '../../../tender-commons/dto/common-notif-mapper-response.dto';
+import { CommonProposalLogNotifResponse } from '../../../tender-commons/dto/common-proposal-log-notif-response.dto';
 import {
   appRoleToReadable,
   TenderAppRole,
@@ -7,15 +9,13 @@ import {
 import { CreateManyNotificationDto } from '../../../tender-notification/dtos/requests/create-many-notification.dto';
 import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
 import { createManyNotificationMapper } from '../../../tender-notification/mappers/create-many-notification.mapper';
-import { InsertPaymentLogResponse } from '../dtos/responses/insert-payment-log-response.dto';
-import { UpdatePaymentNotifMapperResponse } from '../dtos/responses/update-payment-notif-mapper-response.dto';
 
 export const UpdatePaymentNotifMapper = (
   payment: payment,
-  logs: InsertPaymentLogResponse['data'],
+  logs: CommonProposalLogNotifResponse['data'],
   action: 'accept' | 'reject' | 'edit' | 'upload_receipt' | 'issue',
   choosenRole: TenderAppRole,
-): UpdatePaymentNotifMapperResponse => {
+): CommonNotifMapperResponse => {
   const { proposal, reviewer, created_at } = logs;
 
   const logTime = moment(created_at).format('llll');
