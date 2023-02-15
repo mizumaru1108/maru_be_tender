@@ -215,6 +215,7 @@ model proposal {
   payment                             payment[]
   proposal_assign                     proposal_assign[]
   proposal_comment                    proposal_comment[]
+  proposal_edit_request               proposal_edit_request[]
   proposal_follow_up                  proposal_follow_up[]
   proposal_item_budget                proposal_item_budget[]
   proposal_log                        proposal_log[]
@@ -432,8 +433,9 @@ model correspondance_category {
 }
 
 model edit_request_status {
-  id            String          @id
-  edit_requests edit_requests[]
+  id                    String                  @id
+  edit_requests         edit_requests[]
+  proposal_edit_request proposal_edit_request[]
 }
 
 model project_tracks {
@@ -707,13 +709,17 @@ model client_data2 {
 }
 
 model proposal_edit_request {
-  id          String   @id
-  detail      String
-  user_id     String
-  reviewer_id String
-  status      String
-  created_at  DateTime @default(now()) @db.Timestamptz(6)
-  updated_at  DateTime @default(now()) @db.Timestamptz(6)
-  reviewer    user     @relation("proposal_edit_request_reviewer_idTouser", fields: [reviewer_id], references: [id], onDelete: Cascade)
-  user        user     @relation("proposal_edit_request_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
+  id                  String              @id
+  detail              String
+  user_id             String
+  reviewer_id         String
+  status_id           String
+  created_at          DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime            @default(now()) @db.Timestamptz(6)
+  proposal_id         String
+  draft               String?             @db.VarChar
+  proposal            proposal            @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
+  reviewer            user                @relation("proposal_edit_request_reviewer_idTouser", fields: [reviewer_id], references: [id], onDelete: Cascade)
+  edit_request_status edit_request_status @relation(fields: [status_id], references: [id], onDelete: Cascade)
+  user                user                @relation("proposal_edit_request_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
 }
