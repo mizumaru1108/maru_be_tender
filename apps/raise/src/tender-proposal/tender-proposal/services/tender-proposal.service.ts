@@ -794,7 +794,7 @@ export class TenderProposalService {
       proposalUpdatePayload.inner_status =
         InnerStatusEnum.ACCEPTED_BY_SUPERVISOR;
       proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
-      proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+      proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_MANAGER;
 
       /* custom logic if there's special logic for regular track */
       if (proposal.project_track !== 'CONCESSIONAL_GRANTS') {

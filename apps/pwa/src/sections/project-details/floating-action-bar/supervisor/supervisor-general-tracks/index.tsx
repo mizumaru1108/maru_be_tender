@@ -349,7 +349,9 @@ function FloatingActionBar() {
             <Box>{''}</Box>
           </Grid>
           <Grid item md={5}>
-            <Stack direction="row" gap={2} justifyContent="space-around">
+            <Box>{''}</Box>
+            {/* disabled other than accept reject button */}
+            {/* <Stack direction="row" gap={2} justifyContent="space-around">
               <Button
                 variant="outlined"
                 color="inherit"
@@ -406,7 +408,7 @@ function FloatingActionBar() {
                   اعادة المشروع للشريك لرفعه في وقت اخر
                 </MenuItem>
               </Menu>
-            </Stack>
+            </Stack> */}
           </Grid>
         </Grid>
       </Box>
