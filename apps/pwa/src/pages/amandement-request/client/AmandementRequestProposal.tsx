@@ -16,6 +16,11 @@ import EditRequestTabs from '../../../sections/account_manager/EditRequestTabs';
 import axiosInstance from '../../../utils/axios';
 import ActionButtonEditRequest from '../../../sections/account_manager/edit-request-profile/ActionButtonEditRequest';
 import RejectedEditRequestPopUp from '../../../sections/account_manager/edit-request-profile/RejectedEditRequestPopUp';
+import ProposalAmandementHeader from '../../../sections/amandement-request/proposal/ProposalAmandementHeader';
+import { AmandementProposal } from '../../../@types/proposal';
+import { useQuery } from 'urql';
+import { getOneAmandement } from '../../../queries/commons/getOneAmandementProposal';
+import ActionButtonAmandementProposal from '../../../sections/amandement-request/proposal/ActionButtonAmandementProposal';
 
 // -------------------------------------------------------------------------------
 
@@ -36,14 +41,15 @@ interface ITmpValues {
 
 // -------------------------------------------------------------------------------
 
-function EditRequestDetails() {
+function AmandementRequestProposal() {
   const { user, activeRole } = useAuth();
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
-  //tmp for old & new values edit
+  //tmp variable
+  const [AmandementProposal, setAmandementProposal] = useState<AmandementProposal | null>(null);
   const [tmpEditValues, setTmpEditValues] = useState<ITmpValues | null>(null);
 
   // Routes
@@ -54,60 +60,38 @@ function EditRequestDetails() {
   const { currentLang, translate } = useLocales();
 
   //For status edit request
+  const proposal_id = params.id as string;
   const EditStatus = params.editStatus as string;
 
-  const fetchingData = async () => {
-    try {
-      const rest = await axiosInstance.get(
-        `/tender/client/edit-request/find?requestId=${params.requestId as string}`,
-        {
-          headers: { 'x-hasura-role': activeRole! },
-        }
-      );
-      if (rest) {
-        setTmpEditValues((prev: any) => ({
-          ...prev,
-          old_data: rest.data.data.old_data,
-          new_data: rest.data.data.new_data,
-          difference: rest.data.data.diffrence,
-        }));
-        // console.log({ rest });
-        setLoading(false);
-      } else {
-        alert('Something went wrong');
-        setLoading(false);
-      }
-    } catch (err) {
-      // console.log(err);
-      enqueueSnackbar(err.message, {
-        variant: 'error',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'center',
-        },
-      });
-      setLoading(false);
-    }
-  };
+  //Variable for use Query gql
+  const [result, reexecute] = useQuery({
+    query: getOneAmandement,
+    variables: {
+      id: params.proposal_id,
+    },
+  });
+  const { data, fetching, error } = result;
 
   useEffect(() => {
-    setLoading(true);
-    // const newId = params.partnerId as string;
-    fetchingData();
+    // setLoading(true);
+    if (!!data) {
+      // console.log('data', data.proposal);
+      setAmandementProposal(data.proposal);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
+  // console.log('AmandementProposal', AmandementProposal);
   return (
     <Page title="Partner Details">
       <Container>
         <ContentStyle sx={{ alignItems: 'center' }}>
-          <EditedRequestStatus EditStatus={EditStatus} />
-          {loading && <Skeleton variant="rectangular" sx={{ height: 500, borderRadius: 2 }} />}
-          {!loading && !!tmpEditValues && (
+          {/* <EditedRequestStatus EditStatus={EditStatus} /> */}
+          <ProposalAmandementHeader />
+          {fetching && <Skeleton variant="rectangular" sx={{ height: 500, borderRadius: 2 }} />}
+          <Divider />
+          <ActionButtonAmandementProposal isLoad={false} />
+          {/* {!fetching && !!tmpEditValues && (
             <>
-              <Divider />
               <EditRequestTabs EditValues={tmpEditValues} />
               {EditStatus === 'PENDING' && (
                 <ActionButtonEditRequest
@@ -124,11 +108,11 @@ function EditRequestDetails() {
             requestId={params.requestId ?? '-'}
             open={open}
             handleClose={() => setOpen(false)}
-          />
+          /> */}
         </ContentStyle>
       </Container>
     </Page>
   );
 }
 
-export default EditRequestDetails;
+export default AmandementRequestProposal;

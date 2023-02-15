@@ -391,7 +391,14 @@ function FloatingActionBar() {
                   horizontal: 'right',
                 }}
               >
-                <MenuItem disabled={true}>ارسال طلب تعديل الى الشريك</MenuItem>
+                <MenuItem
+                  disabled={true}
+                  // onClick={() => {
+                  //   navigate(`/project-supervisor/dashboard/proposal-amandment-request/${pid}`);
+                  // }}
+                >
+                  ارسال طلب تعديل الى الشريك
+                </MenuItem>
                 <MenuItem onClick={() => setAction('STEP_BACK')}>
                   ارجاع المعاملة الى مسؤول الفرز
                 </MenuItem>
