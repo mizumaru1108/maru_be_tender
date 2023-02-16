@@ -7,22 +7,16 @@ import TrackBudget from './TrackBudget';
 
 function Main() {
   return (
-    <Grid container>
+    <Grid container spacing={4}>
       <Grid item md={12}>
         <DailyStatistics />
       </Grid>
       <Grid item md={12}>
         <TrackBudget />
       </Grid>
-      <Grid item md={12}>
-        <RequestsInProcess />
-      </Grid>
-      <Grid item md={12}>
-        <IncomingFundingRequests />
-      </Grid>
-      <Grid item md={12}>
-        <ExchangePermission />
-      </Grid>
+      <RequestsInProcess />
+      <IncomingFundingRequests />
+      <ExchangePermission />
     </Grid>
   );
 }

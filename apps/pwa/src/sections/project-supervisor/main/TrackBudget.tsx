@@ -10,7 +10,7 @@ import { getDailyTrackBudget } from 'queries/project-supervisor/getTrackBudget';
 //
 import moment from 'moment';
 import { fCurrencyNumber } from 'utils/formatNumber';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 // config
 import { FEATURE_DAILY_STATUS } from 'config';
 
@@ -18,39 +18,27 @@ export default function TrackBudget() {
   const { translate } = useLocales();
   const { user } = useAuth();
 
-  const [valueTotal, setValueTotal] = useState<number>(0);
-
   const [result] = useQuery({
     query: getDailyTrackBudget,
     variables: {
-      first_date: moment().startOf('day').toISOString(),
-      // first_date: '2022-01-18T17:00:00.000Z',
-      second_date: moment().endOf('day').toISOString(),
+      // first_date: moment().startOf('day').toISOString(),
+      // first_date: '2022-01-01T17:00:00.000Z',
+      // second_date: moment().endOf('day').toISOString(),
     },
   });
 
   const { data, fetching, error } = result;
 
-  useEffect(() => {
-    if (!fetching && data) {
-      const newArr = data?.totalBudget.map(
-        (el: { amount_required_fsupport: number }) => el.amount_required_fsupport
-      );
-
-      const totalValue = newArr.reduce((acc: number, curr: number) => acc + (curr || 0), 0);
-
-      setValueTotal(totalValue);
-    }
-  }, [data, fetching]);
-
-  // if (fetching) return <>... Loading</>;
-  // if (error) return <>{error.message}</>;
+  if (fetching) return <>... Loading</>;
+  if (error) return <>{error.message}</>;
 
   return (
     <Grid container spacing={2}>
+      <Grid item md={12}>
+        <Typography variant="h4">{translate('content.client.main_page.track_budget')}</Typography>
+      </Grid>
       {!FEATURE_DAILY_STATUS ? (
         <Grid item md={12}>
-          <Typography variant="h4">{translate('content.client.main_page.track_budget')}</Typography>
           <Typography variant="inherit" sx={{ fontStyle: 'italic' }}>
             {translate('commons.maintenance_feature_flag')} ...
           </Typography>
@@ -77,11 +65,34 @@ export default function TrackBudget() {
                     alt="icon_riyals"
                     sx={{ display: 'inline-flex' }}
                   />
-                  <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
-                    {translate('content.client.main_page.total_track_budget')}
+                  <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
+                    {translate('content.administrative.statistic.heading.totalBudget')}
                   </Typography>
                   <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                    {fCurrencyNumber(valueTotal)}
+                    {fCurrencyNumber(data.totalBudget.aggregate.sum.amount_required_fsupport)}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item md={2} xs={12}>
+                <Box
+                  sx={{
+                    borderRadius: 1,
+                    backgroundColor: '#fff',
+                    p: 2,
+                  }}
+                >
+                  <Image
+                    src={`/icons/rial-currency.svg`}
+                    alt="icon_riyals"
+                    sx={{ display: 'inline-flex' }}
+                  />
+                  <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
+                    {translate('content.administrative.statistic.heading.totalAcceptingBudget')}
+                  </Typography>
+                  <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                    {fCurrencyNumber(
+                      data.totalAcceptingBudget.aggregate.sum.fsupport_by_supervisor
+                    )}
                   </Typography>
                 </Box>
               </Grid>

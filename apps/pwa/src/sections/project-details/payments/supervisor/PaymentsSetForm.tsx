@@ -81,7 +81,7 @@ function PaymentsSetForm() {
           setIsSubmitting(false);
           enqueueSnackbar('تم إنشاء الدفعات بنجاح', { variant: 'success' });
 
-          window.location.reload();
+          // window.location.reload();
         }
       });
     } catch (error) {

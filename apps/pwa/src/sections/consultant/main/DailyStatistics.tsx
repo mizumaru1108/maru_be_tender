@@ -26,7 +26,7 @@ function DailyStatistics() {
   return (
     <Grid container spacing={2}>
       <Grid item md={12}>
-        <Typography variant="h4">احصائيات يومية</Typography>
+        <Typography variant="h4">{translate('account_manager.heading.daily_stats')}</Typography>
       </Grid>
       {!FEATURE_DAILY_STATUS ? (
         <Grid item md={12}>
@@ -36,99 +36,33 @@ function DailyStatistics() {
         </Grid>
       ) : (
         <React.Fragment>
-          <Grid item md={2.4} xs={12}>
-            <Box
-              sx={{
-                borderRadius: '8px',
-                backgroundColor: '#fff',
-                py: '30px',
-                paddingRight: '40px',
-                paddingLeft: '5px',
-              }}
-            >
-              <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
-                عدد مشاريع الكلي
-              </Typography>
-              <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>{`${
-                data.incoming_requests.aggregate.count +
-                data.pending_projects.aggregate.count +
-                data.accepted_projects.aggregate.count +
-                data.rejected_projects.aggregate.count
-              } مشاريع`}</Typography>
-            </Box>
-          </Grid>
-          <Grid item md={2.4} xs={12}>
-            <Box
-              sx={{
-                borderRadius: '8px',
-                backgroundColor: '#fff',
-                py: '30px',
-                paddingRight: '40px',
-                paddingLeft: '5px',
-              }}
-            >
-              <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
-                مشاريع جديدة واردة
-              </Typography>
-              <Typography
-                sx={{ color: 'text.tertiary', fontWeight: 700 }}
-              >{`${data.incoming_requests.aggregate.count} مشاريع`}</Typography>
-            </Box>
-          </Grid>
-          <Grid item md={2.4} xs={12}>
-            <Box
-              sx={{
-                borderRadius: '8px',
-                backgroundColor: '#fff',
-                py: '30px',
-                paddingRight: '40px',
-                paddingLeft: '5px',
-              }}
-            >
-              <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
-                مشاريع معلقة
-              </Typography>
-              <Typography
-                sx={{ color: 'text.tertiary', fontWeight: 700 }}
-              >{`${data.pending_projects.aggregate.count} مشاريع`}</Typography>
-            </Box>
-          </Grid>
-          <Grid item md={2.4} xs={12}>
-            <Box
-              sx={{
-                borderRadius: '8px',
-                backgroundColor: '#fff',
-                py: '30px',
-                paddingRight: '40px',
-                paddingLeft: '5px',
-              }}
-            >
-              <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
-                مشاريع مقبولة
-              </Typography>
-              <Typography
-                sx={{ color: 'text.tertiary', fontWeight: 700 }}
-              >{`${data.accepted_projects.aggregate.count} مشاريع`}</Typography>
-            </Box>
-          </Grid>
-          <Grid item md={2.4} xs={12}>
-            <Box
-              sx={{
-                borderRadius: '8px',
-                backgroundColor: '#fff',
-                py: '30px',
-                paddingRight: '40px',
-                paddingLeft: '5px',
-              }}
-            >
-              <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
-                مشاريع مرفوضة
-              </Typography>
-              <Typography
-                sx={{ color: 'text.tertiary', fontWeight: 700 }}
-              >{`${data.rejected_projects.aggregate.count} مشاريع`}</Typography>
-            </Box>
-          </Grid>
+          {!fetching && data ? (
+            <React.Fragment>
+              {Object.keys(data).map((item, i) => {
+                const title = translate(`${item}`);
+                const value = data[`${item}`].aggregate.count;
+
+                return (
+                  <Grid item md={2} xs={12} key={i}>
+                    <Box
+                      sx={{
+                        borderRadius: 1,
+                        backgroundColor: '#fff',
+                        p: 2,
+                      }}
+                    >
+                      <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
+                        {title}
+                      </Typography>
+                      <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                        {`${value} ${translate('projects')}`}
+                      </Typography>
+                    </Box>
+                  </Grid>
+                );
+              })}
+            </React.Fragment>
+          ) : null}
         </React.Fragment>
       )}
     </Grid>

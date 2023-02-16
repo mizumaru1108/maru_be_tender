@@ -30,13 +30,17 @@ function PaymentAdjustment() {
   });
   const { data, fetching, error } = result;
   if (fetching) {
-    return <>...Loading</>;
+    return (
+      <Grid item md={12}>
+        ...Loading
+      </Grid>
+    );
   }
   const props = data?.data ?? [];
-  if (!props || props.length === 0) return <></>;
+  if (!props || props.length === 0) return null;
 
   return (
-    <>
+    <Grid item md={12}>
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="h4" sx={{ mb: '20px' }}>
           {translate('payment_adjustment')}
@@ -80,7 +84,7 @@ function PaymentAdjustment() {
           </Grid>
         ))}
       </Grid>
-    </>
+    </Grid>
   );
 }
 

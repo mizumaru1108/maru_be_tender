@@ -38,7 +38,7 @@ function CardTableBE({
   const [params, setParams] = useState({
     limit: limitShowCard ? limitShowCard : 6,
     // offset: (page - 1) * (limitShowCard ? limitShowCard : 6),
-    order_by: { created_at: 'desc' },
+    order_by: { updated_at: 'desc' },
     where: whereFilterGenerator(
       Object.keys(filtersStateObjectArray).map((item, index) => filtersStateObjectArray[item])
     ),

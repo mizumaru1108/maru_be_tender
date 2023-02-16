@@ -14,7 +14,7 @@ export default function RequestsInProcess() {
     query: getProposals,
     variables: {
       limit: 4,
-      order_by: { created_at: 'desc' },
+      order_by: { updated_at: 'desc' },
       where: {
         supervisor_id: { _eq: user?.id },
         _and: { inner_status: { _eq: 'ACCEPTED_BY_MODERATOR' } },
@@ -22,11 +22,16 @@ export default function RequestsInProcess() {
     },
   });
   const { data, fetching, error } = result;
-  if (fetching) return <>...Loading</>;
+  if (fetching)
+    return (
+      <Grid item md={12}>
+        ...Loading
+      </Grid>
+    );
   const props = data?.data ?? [];
-  if (!props || props.length === 0) return <></>;
+  if (!props || props.length === 0) return null;
   return (
-    <>
+    <Grid item md={12}>
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="h4" sx={{ mb: '20px' }}>
           {translate('content.client.main_page.process_request')}
@@ -70,6 +75,6 @@ export default function RequestsInProcess() {
           </Grid>
         ))}
       </Grid>
-    </>
+    </Grid>
   );
 }

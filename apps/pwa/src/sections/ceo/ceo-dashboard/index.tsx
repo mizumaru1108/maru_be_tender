@@ -49,14 +49,10 @@ function CeoDashboard() {
           <DailyStatistics />
         </Grid>
         <Grid item md={12}>
-          <Grid container spacing={2}>
-            <Grid item md={12} xs={12}>
-              <Typography variant="h4">الميزانية الكلية للمؤسسة</Typography>
-            </Grid>
-            <Grid item md={12} xs={12}>
-              <TrackBudget data={dailyStatistic} />
-            </Grid>
-          </Grid>
+          <TrackBudget />
+        </Grid>
+        <Grid item md={12}>
+          <DashboardProjectManagement />
         </Grid>
         {/* <Grid item md={6}>
           <Mosques />
@@ -71,7 +67,6 @@ function CeoDashboard() {
           <Initiatives />
         </Grid> */}
       </Grid>
-      <DashboardProjectManagement />
     </>
   );
 }

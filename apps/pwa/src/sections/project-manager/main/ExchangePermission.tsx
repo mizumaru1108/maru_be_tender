@@ -3,13 +3,15 @@ import { ProjectCard } from 'components/card-table';
 import useAuth from 'hooks/useAuth';
 import { getProposals } from 'queries/commons/getProposal';
 import { useQuery } from 'urql';
+import useLocales from 'hooks/useLocales';
 
 function ExchangePermission() {
+  const { translate } = useLocales();
   const { user } = useAuth();
   const [result] = useQuery({
     query: getProposals,
     variables: {
-      order_by: { created_at: 'asc' },
+      order_by: { updated_at: 'desc' },
       limit: 4,
       offset: 0,
       where: {
@@ -20,14 +22,18 @@ function ExchangePermission() {
   });
   const { data, fetching, error } = result;
   if (fetching) {
-    return <>...Loading</>;
+    return (
+      <Grid item md={12}>
+        ...Loading
+      </Grid>
+    );
   }
   const props = data?.data ?? [];
-  if (!props || props.length === 0) return <></>;
+  if (!props || props.length === 0) return null;
   return (
-    <Box sx={{ mt: '20px' }}>
+    <Grid item md={12}>
       <Typography variant="h4" sx={{ mb: '20px' }}>
-        إذن الصرف
+        {translate('exchange_permission')}
       </Typography>
       <Grid container rowSpacing={3} columnSpacing={3}>
         {props.map((item: any, index: any) => (
@@ -52,7 +58,7 @@ function ExchangePermission() {
           </Grid>
         ))}
       </Grid>
-    </Box>
+    </Grid>
   );
 }
 

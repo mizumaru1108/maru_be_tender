@@ -10,7 +10,7 @@ function IncomingConultationRequests() {
     query: getProposals,
     variables: {
       limit: 4,
-      order_by: { created_at: 'desc' },
+      order_by: { updated_at: 'desc' },
       where: { inner_status: { _eq: 'ACCEPTED_AND_NEED_CONSULTANT' } },
     },
   });

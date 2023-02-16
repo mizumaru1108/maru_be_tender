@@ -176,7 +176,7 @@ export default function ProjectManagementTable({
   return (
     <>
       {headline && (
-        <Typography variant="h4" sx={{ mr: 2 }}>
+        <Typography variant="h4" sx={{ mr: 2, mb: 2 }}>
           {translate(`${headline}`)}
         </Typography>
       )}

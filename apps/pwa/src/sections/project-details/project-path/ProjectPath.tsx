@@ -98,19 +98,23 @@ function ProjectPath() {
           ) : (
             <Typography variant="caption">-</Typography>
           )}
-          <Typography variant="h6">{translate(`review.classification_field`)}</Typography>
-          {followUps.log ? (
-            followUps.log.map((item: Log, index: number) => (
-              <React.Fragment key={index}>
-                {index === activeStep && (
-                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                    <Typography>{item.notes}</Typography>
-                  </Stack>
-                )}
-              </React.Fragment>
-            ))
-          ) : (
-            <Typography variant="caption">-</Typography>
+          {stepUserRole !== 'PROJECT_SUPERVISOR' && (
+            <React.Fragment>
+              <Typography variant="h6">{translate(`review.notes`)}</Typography>
+              {followUps.log ? (
+                followUps.log.map((item: Log, index: number) => (
+                  <React.Fragment key={index}>
+                    {index === activeStep && (
+                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                        <Typography>{item.notes}</Typography>
+                      </Stack>
+                    )}
+                  </React.Fragment>
+                ))
+              ) : (
+                <Typography variant="caption">-</Typography>
+              )}
+            </React.Fragment>
           )}
           <Divider />
           {stepUserRole !== 'PROJECT_SUPERVISOR' ? null : (
@@ -140,7 +144,11 @@ function ProjectPath() {
                       <React.Fragment key={index}>
                         {index === activeStep && (
                           <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                            <Typography>{item.proposal.closing_report ? 'Yes' : 'No'}</Typography>
+                            <Typography>
+                              {item.proposal.closing_report
+                                ? `${translate('review.yes')}`
+                                : `${translate('review.no')}`}
+                            </Typography>
                           </Stack>
                         )}
                       </React.Fragment>
@@ -155,7 +163,9 @@ function ProjectPath() {
                         {index === activeStep && (
                           <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                             <Typography>
-                              {item.proposal.does_an_agreement ? 'Yes' : 'No'}
+                              {item.proposal.does_an_agreement
+                                ? `${translate('review.yes')}`
+                                : `${translate('review.no')}`}
                             </Typography>
                           </Stack>
                         )}
@@ -170,7 +180,11 @@ function ProjectPath() {
                       <React.Fragment key={index}>
                         {index === activeStep && (
                           <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                            <Typography>{item.proposal.vat ? 'Yes' : 'No'}</Typography>
+                            <Typography>
+                              {item.proposal.vat
+                                ? `${translate('review.yes')}`
+                                : `${translate('review.no')}`}
+                            </Typography>
                           </Stack>
                         )}
                       </React.Fragment>
@@ -198,7 +212,11 @@ function ProjectPath() {
                       <React.Fragment key={index}>
                         {index === activeStep && (
                           <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                            <Typography>{item.proposal.inclu_or_exclu ? 'Yes' : 'No'}</Typography>
+                            <Typography>
+                              {item.proposal.inclu_or_exclu
+                                ? `${translate('review.yes')}`
+                                : `${translate('review.no')}`}
+                            </Typography>
                           </Stack>
                         )}
                       </React.Fragment>
@@ -213,7 +231,8 @@ function ProjectPath() {
                         {index === activeStep && (
                           <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                             <Typography>
-                              {item.proposal.number_of_payments_by_supervisor} SAR
+                              {item.proposal.number_of_payments_by_supervisor}{' '}
+                              {translate('review.sar')}
                             </Typography>
                           </Stack>
                         )}
@@ -228,7 +247,9 @@ function ProjectPath() {
                       <React.Fragment key={index}>
                         {index === activeStep && (
                           <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                            <Typography>{item.proposal.fsupport_by_supervisor} SAR</Typography>
+                            <Typography>
+                              {item.proposal.fsupport_by_supervisor} {translate('review.sar')}
+                            </Typography>
                           </Stack>
                         )}
                       </React.Fragment>
@@ -242,7 +263,11 @@ function ProjectPath() {
                       <React.Fragment key={index}>
                         {index === activeStep && (
                           <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                            <Typography>{item.proposal.support_type ? 'Yes' : 'No'}</Typography>
+                            <Typography>
+                              {item.proposal.support_type
+                                ? `${translate('review.yes')}`
+                                : `${translate('review.no')}`}
+                            </Typography>
                           </Stack>
                         )}
                       </React.Fragment>
@@ -256,7 +281,9 @@ function ProjectPath() {
                   <React.Fragment key={index}>
                     {index === activeStep && (
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                        <Typography>{item.proposal.support_goal_id}</Typography>
+                        <Typography>
+                          {translate(`review.support_goals.${item.proposal.support_goal_id}`)}
+                        </Typography>
                       </Stack>
                     )}
                   </React.Fragment>
@@ -309,29 +336,33 @@ function ProjectPath() {
             <Stepper activeStep={followUps.log.length - 1} orientation="vertical">
               {followUps.log.map((item: Log, index: number) => (
                 <Step key={index}>
-                  <Button
-                    sx={{ padding: '0px', ':hover': { backgroundColor: '#fff' } }}
-                    onClick={handleStep(index, item)}
-                  >
-                    <Stack direction="row" gap={2}>
-                      {index === activeStep ? (
-                        <PanoramaFishEyeIcon sx={{ color: '#000', alignSelf: 'center' }} />
-                      ) : (
-                        <CircleIcon sx={{ alignSelf: 'center' }} />
-                      )}
-
+                  <Stack direction="row" gap={2}>
+                    {index === followUps.log.length - 1 ? (
+                      <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
+                    ) : (
+                      <PanoramaFishEyeIcon sx={{ color: '#000', alignSelf: 'center' }} />
+                    )}
+                    <Button
+                      sx={{
+                        padding: '0px',
+                        justifyContent: 'start',
+                        alignSelf: 'center',
+                        ':hover': { backgroundColor: '#fff' },
+                      }}
+                      onClick={handleStep(index, item)}
+                    >
                       <Typography
                         sx={{
                           fontSize: index === activeStep ? '17px' : '12px',
-                          fontWeight: index === stepOn ? 800 : 400,
+                          fontWeight: index === activeStep ? 800 : 400,
                           color: '#000',
                           alignSelf: 'center',
                         }}
                       >
                         {translate(`permissions.${item.user_role}`)}
                       </Typography>
-                    </Stack>
-                  </Button>
+                    </Button>
+                  </Stack>
                 </Step>
               ))}
             </Stepper>

@@ -41,7 +41,7 @@ function PaymentsTable() {
             },
           });
 
-          window.location.reload();
+          // window.location.reload();
         }
       });
     } catch (error) {
