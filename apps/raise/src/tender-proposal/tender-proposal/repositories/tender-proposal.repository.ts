@@ -1,5 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Prisma, proposal, proposal_item_budget } from '@prisma/client';
+import {
+  Prisma,
+  proposal,
+  proposal_edit_request,
+  proposal_item_budget,
+} from '@prisma/client';
 import { nanoid } from 'nanoid';
 import { UserDefinedMessageList } from 'twilio/lib/rest/api/v2010/account/call/userDefinedMessage';
 import { logUtil } from '../../../commons/utils/log-util';
@@ -275,6 +280,10 @@ export class TenderProposalRepository {
               });
             }
 
+            await prisma.proposal_edit_request.delete({
+              where: { proposal_id },
+            });
+
             return {
               proposal,
               notif: sendRevisionNotif,
@@ -483,12 +492,35 @@ export class TenderProposalRepository {
     }
   }
 
+  async findAmandementByProposalId(
+    proposalId: string,
+  ): Promise<proposal_edit_request | null> {
+    try {
+      this.logger.log(
+        'info',
+        `Finding amandement with proposal id of ${proposalId}`,
+      );
+      const raw = await this.prismaService.$queryRaw<
+        proposal_edit_request[]
+      >`SELECT * FROM proposal_edit_request WHERE proposal_id = ${proposalId}`;
+      return raw[0] || null;
+    } catch (err) {
+      const theError = prismaErrorThrower(
+        err,
+        TenderProposalRepository.name,
+        'Find Amandement By ProposalId error details: ',
+        'Finding Amandement By ProposalId!',
+      );
+      throw theError;
+    }
+  }
+
   async findAmandementList(
     currentUser: TenderCurrentUser,
     filter: FetchAmandementFilterRequest,
   ) {
     try {
-      const { entity, project_name, status_id, page = 1, limit = 10 } = filter;
+      const { entity, project_name, page = 1, limit = 10 } = filter;
       const offset = (page - 1) * limit;
 
       let whereClause: Prisma.proposal_edit_requestWhereInput = {};
@@ -531,13 +563,6 @@ export class TenderProposalRepository {
         };
       }
 
-      if (status_id) {
-        whereClause = {
-          ...whereClause,
-          status_id: status_id,
-        };
-      }
-
       const data = await this.prismaService.proposal_edit_request.findMany({
         where: whereClause,
         select: {
@@ -545,7 +570,6 @@ export class TenderProposalRepository {
           user: { select: { employee_name: true } },
           reviewer: { select: { employee_name: true } },
           proposal: { select: { project_name: true } },
-          status_id: true,
           created_at: true,
         },
         take: limit,

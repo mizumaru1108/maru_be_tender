@@ -14,30 +14,6 @@ import {
 import { CreateProjectBudgetDto } from './create-proposal-item-budget.dto';
 import { ExistingProjectBudgetDto } from './existing-proposal-item-budget.dto';
 
-// export class ProposalItemBudgetDto {
-//   @ApiProperty()
-//   @IsString()
-//   @IsNotEmpty()
-//   @IsUUID()
-//   id: string;
-
-//   @ApiProperty()
-//   @IsNumber({ maxDecimalPlaces: 2 })
-//   @Min(0.01)
-//   @Max(999999999999999999.99)
-//   amount: number;
-
-//   @ApiProperty()
-//   @IsString()
-//   @IsNotEmpty()
-//   explanation: string;
-
-//   @ApiProperty()
-//   @IsString()
-//   @IsNotEmpty()
-//   clause: string;
-// }
-
 export class SupervisorChangeStatePayload {
   /* exist on regular track but can be exist on GRANT Track */
   @ApiPropertyOptional()
