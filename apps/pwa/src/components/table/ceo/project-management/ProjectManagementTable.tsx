@@ -64,23 +64,23 @@ export default function ProjectManagementTable({
   const projectTracks = [
     {
       value: '',
-      title: 'All Tracks', //translate('table_filter.button_group.all_tracks'),
+      title: `${translate('commons.track_type.all_tracks')}`, //translate('table_filter.button_group.all_tracks'),
     },
     {
       value: 'Mosques Department',
-      title: 'The track of the mosques', //translate('table_filter.button_group.mosques_track'),
+      title: `${translate('commons.track_type.mosques_track')}`, //translate('table_filter.button_group.mosques_track'),
     },
     {
       value: 'Facilitated Scholarship Track',
-      title: 'Facilitated Scholarship Track', //translate('table_filter.button_group.scholarships_track'),
+      title: `${translate('commons.track_type.scholarships_track')}`, //translate('table_filter.button_group.scholarships_track'),
     },
     {
       value: 'Initiatives Track',
-      title: 'Initiatives Track', //translate('table_filter.button_group.initiatives_track'),
+      title: `${translate('commons.track_type.initiatives_track')}`, //translate('table_filter.button_group.initiatives_track'),
     },
     {
       value: 'Baptismal Track',
-      title: 'Baptismal Track', //translate('table_filter.button_group.baptismal_track'),
+      title: `${translate('commons.track_type.baptism_track')}`, //translate('table_filter.button_group.baptismal_track'),
     },
   ];
 
