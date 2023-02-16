@@ -14,7 +14,7 @@ import { FEATURE_PROJECT_DETAILS } from 'config';
 import useAuth from 'hooks/useAuth';
 
 function ProjectDetailsMainPage() {
-  const { id } = useParams();
+  const { id, actionType } = useParams();
 
   const dispatch = useDispatch();
 
@@ -70,7 +70,7 @@ function ProjectDetailsMainPage() {
             proposal.created_at
           ).toLocaleString()}`}
         </Typography>
-        {/* {actionType && actionType !== 'show-project' && <FollowUpsAction />} */}
+        {actionType && actionType !== 'show-project' && <FollowUpsAction />}
       </Stack>
       <ActionTap />
       {!FEATURE_PROJECT_DETAILS ? null : <FloatinActonBar />}

@@ -951,6 +951,7 @@ const ar = {
     start_date: 'تاريخ البدء',
     at: 'في',
     sent_by: 'أرسلت بواسطة',
+    project_delay: 'تأخير المشروع',
   },
   concessional_card_insights: {
     title: {

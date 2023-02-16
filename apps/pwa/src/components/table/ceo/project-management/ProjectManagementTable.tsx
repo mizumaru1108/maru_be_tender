@@ -64,19 +64,23 @@ export default function ProjectManagementTable({
   const projectTracks = [
     {
       value: '',
-      title: 'مسار المساجد', //translate('table_filter.button_group.all_tracks'),
+      title: 'All Tracks', //translate('table_filter.button_group.all_tracks'),
     },
     {
       value: 'Mosques Department',
-      title: 'مسار المنح ميسر', //translate('table_filter.button_group.mosques_track'),
+      title: 'The track of the mosques', //translate('table_filter.button_group.mosques_track'),
     },
     {
       value: 'Facilitated Scholarship Track',
-      title: 'مسار المبادرات', //translate('table_filter.button_group.scholarships_track'),
+      title: 'Facilitated Scholarship Track', //translate('table_filter.button_group.scholarships_track'),
     },
     {
       value: 'Initiatives Track',
-      title: 'مسار التعميدات', //translate('table_filter.button_group.initiatives_track'),
+      title: 'Initiatives Track', //translate('table_filter.button_group.initiatives_track'),
+    },
+    {
+      value: 'Baptismal Track',
+      title: 'Baptismal Track', //translate('table_filter.button_group.baptismal_track'),
     },
   ];
 
@@ -189,6 +193,7 @@ export default function ProjectManagementTable({
               variant="text"
               onClick={() => setSelectedTrack(item.value)}
               sx={{
+                fontSize: '12px',
                 backgroundColor: selectedTrack === item.value ? 'primary.main' : 'inherit',
                 color: selectedTrack === item.value ? 'white' : 'grey.600',
                 '&:hover': {
@@ -204,14 +209,14 @@ export default function ProjectManagementTable({
         <Box>
           <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
             <Box display="flex" alignItems="center">
-              <Typography variant="body2" sx={{ color: 'grey.600' }}>
+              <Typography variant="body2" sx={{ fontSize: '12px', color: 'grey.600' }}>
                 {translate('table_filter.sortby_title')} &nbsp;
               </Typography>
               <Select
                 value={sortValue}
                 onChange={(e) => setSortValue(e.target.value as string)}
                 size="small"
-                sx={{ width: 200 }}
+                sx={{ fontSize: '12px', width: 200 }}
               >
                 {sortOptions.map((item) => (
                   <MenuItem key={item.value} value={item.value}>

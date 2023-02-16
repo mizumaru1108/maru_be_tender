@@ -261,7 +261,7 @@ function FloatingActionBar() {
             </LoadingButton>
           </Stack>
           {/* disabled other than accept reject button */}
-          {/* <LoadingButton
+          <LoadingButton
             variant="contained"
             onClick={handleClick}
             sx={{ backgroundColor: '#0169DE', ':hover': { backgroundColor: '#1482FE' } }}
@@ -286,10 +286,11 @@ function FloatingActionBar() {
             }}
           >
             <MenuItem
-              onClick={() => {
-                navigate(`/ceo/dashboard/amandment-request/${proposal_id}`);
-                handleClose();
-              }}
+            disabled={true}
+              // onClick={() => {
+              //   navigate(`/ceo/dashboard/amandment-request/${proposal_id}`);
+              //   handleClose();
+              // }}
             >
               {translate('proposal_amandement.button_label')}
             </MenuItem>
@@ -301,7 +302,7 @@ function FloatingActionBar() {
             >
               ارجاع المعاملة الى مدير الإدارة
             </MenuItem>
-          </Menu> */}
+          </Menu>
         </Stack>
       </Box>
 

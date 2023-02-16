@@ -188,24 +188,26 @@ function ModeratorActionBar() {
               {translate('project_rejected')}
             </LoadingButton>
             {/* disabled other than accept reject button */}
-            {/* <Button
+            <Button
+              disabled={true}
               variant="outlined"
               color="primary"
               sx={{ my: { xs: '1.3em', md: '0' }, ':hover': { backgroundColor: '#fff' } }}
             >
               {translate('send_message_to_partner')}
-            </Button> */}
+            </Button>
           </Stack>
 
           {/* disabled other than accept reject button */}
-          {/* <Button
+          <Button
+            disabled={true}
             variant="contained"
             onClick={() => {}}
             sx={{ backgroundColor: '#0169DE', ':hover': { backgroundColor: '#1482FE' } }}
             endIcon={<Iconify icon="eva:edit-2-outline" />}
           >
             {translate('submit_amendment_request')}
-          </Button> */}
+          </Button>
         </Stack>
       </Box>
       {action === 'accept' && (

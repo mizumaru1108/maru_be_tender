@@ -225,11 +225,11 @@ function EmployeeFollowUpsPage() {
           </Grid>
         </Container>
       </TabPanel>
-      {actionType && actionType !== 'show-project' && (
+      {/* {actionType && actionType !== 'show-project' && (
         <Box sx={{ m: 'auto', pt: 7 }}>
           <FollowUpsAction />
         </Box>
-      )}
+      )} */}
     </Grid>
   );
 }

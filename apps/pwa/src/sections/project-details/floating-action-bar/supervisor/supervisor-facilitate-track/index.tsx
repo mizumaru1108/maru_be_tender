@@ -178,7 +178,7 @@ function FloatinActionBar() {
           <Grid item md={5}>
             <Box>{''}</Box>
             {/* disabled other than accept reject button */}
-            {/* <Stack direction="row" gap={2} justifyContent="space-around">
+            <Stack direction="row" gap={2} justifyContent="space-around">
               <Button
                 variant="outlined"
                 color="inherit"
@@ -225,7 +225,7 @@ function FloatinActionBar() {
                   ارجاع المعاملة الى مسؤول الفرز
                 </MenuItem>
               </Menu>
-            </Stack> */}
+            </Stack>
           </Grid>
         </Grid>
       </Box>

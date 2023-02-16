@@ -167,7 +167,8 @@ function ConsultantFloatingActionBar() {
       >
         <Stack direction={{ sm: 'column', md: 'row' }} justifyContent="space-between">
           {/* disabled other than accept reject button */}
-          {/* <Button
+          <Button
+            disabled={true}
             variant="contained"
             onClick={() => {
               console.log('asdasdasdasd');
@@ -176,7 +177,7 @@ function ConsultantFloatingActionBar() {
             endIcon={<Iconify icon="eva:edit-2-outline" />}
           >
             {translate('submit_amendment_request')}
-          </Button> */}
+          </Button>
           <Stack flexDirection={{ sm: 'column', md: 'row' }}>
             <LoadingButton
               variant="contained"

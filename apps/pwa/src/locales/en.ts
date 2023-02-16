@@ -914,6 +914,7 @@ const en = {
     start_date: 'Start Date',
     at: 'at',
     sent_by: 'Sent by',
+    project_delay: 'Project Delay',
   },
   concessional_card_insights: {
     title: {

@@ -32,6 +32,7 @@ function CeoProjectManagement() {
           projectSection: project.projectSection || 'N/A',
           associationName: (project.associationName.client_data.entity as string) || 'N/A',
           createdAt: (project.createdAt as string) || 'N/A',
+          // projectDelay: 'N/A',
         }))
       );
     }
@@ -55,6 +56,11 @@ function CeoProjectManagement() {
       label: translate('project_management_headercell.date_created'),
       align: 'left',
     },
+    // {
+    //   id: 'projectDelay',
+    //   label: translate('project_management_headercell.project_delay'),
+    //   align: 'left',
+    // },
     { id: 'events', label: translate('project_management_headercell.events'), align: 'left' },
   ];
 

@@ -318,9 +318,9 @@ function FloatingActionBar() {
           border: `1px solid ${theme.palette.grey[400]}`,
         }}
       >
-        <Grid container rowSpacing={5} alignItems="center" justifyContent="flex-start">
+        <Grid container rowSpacing={5} alignItems="center" justifyContent="space-between">
           {/* disabled other than accept reject button */}
-          {/* <Grid item md={5} xs={12}>
+          <Grid item md={2} xs={12}>
             <LoadingButton
               id="demo-positioned-button"
               aria-controls={open ? 'demo-positioned-menu' : undefined}
@@ -354,10 +354,11 @@ function FloatingActionBar() {
               }}
             >
               <MenuItem
-                onClick={() => {
-                  navigate(`/project-manager/dashboard/amandment-request/${proposal_id}`);
-                  handleClose();
-                }}
+                disabled={true}
+                // onClick={() => {
+                //   navigate(`/project-manager/dashboard/amandment-request/${proposal_id}`);
+                //   handleClose();
+                // }}
               >
                 {translate('proposal_amandement.button_label')}
               </MenuItem>
@@ -375,9 +376,9 @@ function FloatingActionBar() {
             <Grid item md={3} xs={4}>
               {''}
             </Grid>
-          )} */}
+          )}
           {/* <Grid item md={data.user.track === 'CONCESSIONAL_GRANTS' ? 7 : 4} xs={12}> */}
-          <Grid item md={4} xs={12}>
+          <Grid item md={7} xs={12}>
             <Stack direction="row" gap={2} justifyContent="flex-start">
               <LoadingButton
                 onClick={() => setAction('ACCEPT')}
@@ -400,7 +401,7 @@ function FloatingActionBar() {
                 {translate('reject_project')}
               </LoadingButton>
               {/* disabled other than accept reject button */}
-              {/* {data.user.track === 'CONCESSIONAL_GRANTS' && (
+              {data.user.track === 'CONCESSIONAL_GRANTS' && (
                 <Button
                   variant="outlined"
                   color="inherit"
@@ -410,7 +411,7 @@ function FloatingActionBar() {
                 >
                   عرض المشروع على المستشارين
                 </Button>
-              )} */}
+              )}
             </Stack>
           </Grid>
         </Grid>
