@@ -97,7 +97,7 @@ export class TenderProposalFollowUpRepository {
           });
         }
 
-        let deletedData: number = 0;
+        let deletedData = 0;
         if (id && id.length > 0) {
           const deletedFollowUp = await prisma.proposal_follow_up.deleteMany({
             where: {

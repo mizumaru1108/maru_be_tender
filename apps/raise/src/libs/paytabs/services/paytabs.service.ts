@@ -25,7 +25,7 @@ export class PaytabsService {
     serverKey?: string,
   ): Promise<PaytabsCreateTransactionResponse> {
     // console.log('paytabsPaymentRequest', paytabsPaymentRequest);
-    let auth: string = '';
+    let auth = '';
     const keyFromEnv = this.configService.get<string>('PAYTABS_SERVER_KEY');
 
     if (keyFromEnv) {

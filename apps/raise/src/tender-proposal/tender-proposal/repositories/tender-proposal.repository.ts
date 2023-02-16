@@ -222,30 +222,13 @@ export class TenderProposalRepository {
           }
 
           if (createLog) {
-            const lastLog = await prisma.proposal_log.findFirst({
-              where: { proposal_id },
-              select: {
-                created_at: true,
-              },
-              orderBy: {
-                created_at: 'desc',
-              },
-              take: 1,
-            });
-
             const createdLog = await prisma.proposal_log.create({
               data: {
                 id: nanoid(),
                 proposal_id,
                 user_role: TenderAppRoleEnum.CLIENT,
-                action: ProposalAction.SEND_BACK_FOR_REVISION, //revised
+                action: ProposalAction.SEND_REVISED_VERSION, //revised
                 state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
-                response_time: lastLog?.created_at
-                  ? Math.round(
-                      (new Date().getTime() - lastLog.created_at.getTime()) /
-                        60000,
-                    )
-                  : null,
               },
               select: {
                 action: true,
@@ -831,7 +814,7 @@ export class TenderProposalRepository {
   async fetchTrack(limit: number, page: number) {
     const offset = (page - 1) * limit;
 
-    let query: Prisma.project_tracksWhereInput = {
+    const query: Prisma.project_tracksWhereInput = {
       id: { notIn: ['DEFAULT_TRACK', 'GENERAL'] },
     };
 

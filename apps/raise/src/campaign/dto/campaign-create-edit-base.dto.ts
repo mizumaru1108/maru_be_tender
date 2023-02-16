@@ -28,7 +28,7 @@ export class CampaignCreateEditBaseDto {
   @IsNotEmpty()
   @ValidateObjectIdDecorator()
   projectId?: string;
-  
+
   @ApiProperty()
   @IsOptional()
   @IsString()
@@ -80,26 +80,26 @@ export class CampaignCreateEditBaseDto {
   @IsString()
   @IsNotEmpty()
   isPublished?: string;
-  
+
   @ApiProperty()
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateMilestoneDto)
   milestone: CreateMilestoneDto[];
- 
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   @IsNotEmpty()
   creatorUserId?: string;
- 
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   @IsNotEmpty()
   islamCharityType?: string;
- 
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsBoolean()

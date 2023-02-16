@@ -4,6 +4,6 @@ import { PaymentXenditController } from './payment-xendit.controller';
 
 @Module({
   providers: [PaymentXenditService],
-  controllers: [PaymentXenditController]
+  controllers: [PaymentXenditController],
 })
 export class PaymentXenditModule {}

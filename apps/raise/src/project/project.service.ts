@@ -158,7 +158,7 @@ export class ProjectService {
       newProjectScheme.appliedAt = new Date();
     }
 
-    let tmpPath: string[] = []; // for implementing db transaction later on
+    const tmpPath: string[] = []; // for implementing db transaction later on
     try {
       const processImages = request.images.map(async (image, index) => {
         const path = await this.bunnyService.generatePath(
@@ -243,7 +243,7 @@ export class ProjectService {
     );
     updateCampaignData.updaterUserId = userId;
 
-    let tmpPath: string[] = []; //for implement db transaction later
+    const tmpPath: string[] = []; //for implement db transaction later
     try {
       const processImages = request.updatedImage.map(async (image, index) => {
         if (image.newImage) {
@@ -436,7 +436,7 @@ export class ProjectService {
     request: ProjectStatusUpdateDto,
   ): Promise<Project> {
     // set base query (updaterUserId, applierUserId, updatedAt)
-    let baseQuery = {
+    const baseQuery = {
       updaterUserId: userId,
       applierUserId: userId,
       updatedAt: new Date(),
@@ -642,7 +642,7 @@ export class ProjectService {
 
   async getAllProjectPublished(organizationId: string) {
     const ObjectId = require('mongoose').Types.ObjectId;
-    let data: any = {};
+    const data: any = {};
 
     const dataProject = await this.projectModel.aggregate([
       { $match: { organizationId: ObjectId(organizationId) } },

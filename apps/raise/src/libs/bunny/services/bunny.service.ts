@@ -54,7 +54,7 @@ export class BunnyService {
   ): Promise<string> {
     let path: string;
     const sanitizedName = sanitizeString(imageFullName);
-    let random = generateRandomNumberString(4);
+    const random = generateRandomNumberString(4);
 
     if (spesificId) {
       path =

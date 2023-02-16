@@ -1,4 +1,9 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
 import { Model, Types } from 'mongoose';
@@ -171,22 +176,22 @@ export class ZakatService {
 
   async getSummary(organizationId: string) {
     this.logger.debug(`getSummary organizationId=${organizationId}`);
-    
+
     const getOrganization = await this.organizationModel.findOne({
       _id: organizationId,
     });
 
-    if (!getOrganization) throw new HttpException('Organization not found', HttpStatus.NOT_FOUND);
+    if (!getOrganization)
+      throw new HttpException('Organization not found', HttpStatus.NOT_FOUND);
 
     // Zakat Details
-    const zakatCampaign = await this.campaignModel.findOne(
-      {
-        organizationId: new Types.ObjectId(organizationId),
-        campaignType: 'zakat'
-      }
-    );
+    const zakatCampaign = await this.campaignModel.findOne({
+      organizationId: new Types.ObjectId(organizationId),
+      campaignType: 'zakat',
+    });
 
-    if (!zakatCampaign) throw new HttpException('Campaign not found', HttpStatus.NOT_FOUND);
+    if (!zakatCampaign)
+      throw new HttpException('Campaign not found', HttpStatus.NOT_FOUND);
 
     const donationList = await this.donationLogsModel.aggregate([
       {
@@ -200,13 +205,17 @@ export class ZakatService {
         $group: {
           _id: { nonprofitRealmId: '$nonprofitRealmId' },
           total: { $sum: '$amount' },
-          listDonationId: { $addToSet: '$_id' }
+          listDonationId: { $addToSet: '$_id' },
         },
       },
     ]);
 
-    const total_receive: number = donationList.length ? donationList[0].total : 0;
-    const list_donation_id: any[] = donationList.length ? donationList[0].listDonationId : [];
+    const total_receive: number = donationList.length
+      ? donationList[0].total
+      : 0;
+    const list_donation_id: any[] = donationList.length
+      ? donationList[0].listDonationId
+      : [];
 
     let zakat_logs: {
       total: number;
@@ -222,29 +231,29 @@ export class ZakatService {
     const getZakatLogs = await this.zakatLogModel.aggregate([
       {
         $match: {
-          donationLogId: { $in: list_donation_id }
-        }
+          donationLogId: { $in: list_donation_id },
+        },
       },
       {
         $group: {
           _id: { type: '$type' },
           total: {
             $sum: {
-              $toDouble: '$totalAmount'
-            }
-          }
-        }
+              $toDouble: '$totalAmount',
+            },
+          },
+        },
       },
       {
         $addFields: {
           type: '$_id.type',
-        }
+        },
       },
       {
         $project: {
-          _id: 0
-        }
-      }
+          _id: 0,
+        },
+      },
     ]);
 
     if (getZakatLogs && getZakatLogs.length) {
@@ -253,7 +262,7 @@ export class ZakatService {
 
     return {
       total_receive,
-      zakat_logs
+      zakat_logs,
     };
   }
 
@@ -273,14 +282,13 @@ export class ZakatService {
     }
 
     // Zakat Details
-    const zakatCampaign = await this.campaignModel.findOne(
-      {
-        organizationId: new Types.ObjectId(organizationId),
-        campaignType: 'zakat'
-      }
-    );
+    const zakatCampaign = await this.campaignModel.findOne({
+      organizationId: new Types.ObjectId(organizationId),
+      campaignType: 'zakat',
+    });
 
-    if (!zakatCampaign) throw new HttpException('Campaign not found', HttpStatus.NOT_FOUND);
+    if (!zakatCampaign)
+      throw new HttpException('Campaign not found', HttpStatus.NOT_FOUND);
 
     const zakatDonationList = await this.donationLogsModel.aggregate([
       {
@@ -370,14 +378,13 @@ export class ZakatService {
     }
 
     // Zakat Details
-    const zakatCampaign = await this.campaignModel.findOne(
-      {
-        organizationId: new Types.ObjectId(organizationId),
-        campaignType: 'zakat'
-      }
-    );
+    const zakatCampaign = await this.campaignModel.findOne({
+      organizationId: new Types.ObjectId(organizationId),
+      campaignType: 'zakat',
+    });
 
-    if (!zakatCampaign) throw new HttpException('Campaign not found', HttpStatus.NOT_FOUND);
+    if (!zakatCampaign)
+      throw new HttpException('Campaign not found', HttpStatus.NOT_FOUND);
 
     const zakatDonationList = await this.donationLogsModel.aggregate([
       {
@@ -483,7 +490,7 @@ export class ZakatService {
 
   async createExpense(expenseDto: ExpenseDto): Promise<Expense> {
     const createdExpense = new this.expenseModel(expenseDto);
-    let now: Date = new Date();
+    const now: Date = new Date();
     createdExpense.createdDate = now;
     return createdExpense.save();
   }
@@ -593,7 +600,7 @@ export class ZakatService {
         .exec();
 
       //console.log('debug', getCampaign);
-      let dataAmount = paymentDto.amount * parseFloat(paymentDto.quantity); // let's assume it will be multiple by 1 (price)
+      const dataAmount = paymentDto.amount * parseFloat(paymentDto.quantity); // let's assume it will be multiple by 1 (price)
       if (!getCampaign) {
         txtMessage = `request rejected campaignId not found`;
         return {
@@ -736,8 +743,8 @@ export class ZakatService {
       console.log('OwnerUserId=>', ownerUserId);
 
       //insert data to donation_log
-      let objectIdDonation = new Types.ObjectId();
-      let now: Date = new Date();
+      const objectIdDonation = new Types.ObjectId();
+      const now: Date = new Date();
       const getDonationLog = await new this.donationLogsModel({
         _id: objectIdDonation,
         nonprofitRealmId: ObjectId(paymentDto.organizationId),
@@ -790,7 +797,7 @@ export class ZakatService {
       }
 
       //insert data to paymentData
-      let objectIdPayment = new Types.ObjectId();
+      const objectIdPayment = new Types.ObjectId();
       // this.logger.debug(isAnonymous.toString);
       if (isAnonymous) {
         // donor.donorLogId = objectIdDonation;

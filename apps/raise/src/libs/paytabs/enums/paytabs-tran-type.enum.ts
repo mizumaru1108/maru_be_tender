@@ -1,5 +1,5 @@
 /**
- * Rerences: 
+ * Rerences:
  * https://support.paytabs.com/en/support/solutions/articles/60000709775-transactions-api
  * https://support.paytabs.com/en/support/solutions/articles/60000711310-what-is-the-tran-type-transaction-type-
  */

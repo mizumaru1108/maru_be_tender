@@ -59,7 +59,7 @@ export class TenderMessagesService {
 
     const sender = await this.tenderUserRepository.findUserById(senderId);
     if (!sender) throw new BadRequestException('Sender not found!');
-    let validUserRole = appRoleMappers[userRole as TenderFusionAuthRoles];
+    const validUserRole = appRoleMappers[userRole as TenderFusionAuthRoles];
     if (!validUserRole) {
       throw new BadRequestException('You do not have this role!');
     }
@@ -76,7 +76,7 @@ export class TenderMessagesService {
     const partnerRole: string[] = partner.roles.map(
       (role) => role.user_type_id,
     );
-    let validPartnerRole =
+    const validPartnerRole =
       appRoleMappers[partnerSelectedRole as TenderFusionAuthRoles];
     if (!validPartnerRole) {
       throw new BadRequestException('Partner does not have this role!');
@@ -189,13 +189,13 @@ export class TenderMessagesService {
         allowedType.push(FileMimeTypeEnum.PPTX);
       }
 
-      let fileName =
+      const fileName =
         attachment.fullName +
         new Date().getTime() +
         '.' +
         attachment.fileExtension.split('/')[1];
 
-      let path = `tmra/${this.appEnv}/organization/tender-management/room-chat-attachment/${roomChat.id}/${fileName}`;
+      const path = `tmra/${this.appEnv}/organization/tender-management/room-chat-attachment/${roomChat.id}/${fileName}`;
 
       validateAllowedExtension(attachment.fileExtension, allowedType);
       validateFileSize(attachment.base64Data.length, maxSize);

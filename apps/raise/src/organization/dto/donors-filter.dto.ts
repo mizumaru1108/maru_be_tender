@@ -1,6 +1,5 @@
-import { IsString } from "class-validator";
-import { BaseFilterRequest } from "src/commons/dtos/base-filter-request.dto";
-
+import { IsString } from 'class-validator';
+import { BaseFilterRequest } from 'src/commons/dtos/base-filter-request.dto';
 
 export class DonorsFilterDto extends BaseFilterRequest {
   @IsString()

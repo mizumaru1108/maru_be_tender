@@ -12,7 +12,7 @@ export class ManagerService {
   constructor(
     @InjectModel(ManagerChartData.name)
     private managerChartDataModel: Model<ManagerChartDataDocument>,
-    ) {}
+  ) {}
 
   async getChartData() {
     const managerChartDataDto = new ManagerChartDataDto();
@@ -112,7 +112,8 @@ export class ManagerService {
       .sort({ date: 1 });
 
     if (isDocumentArray(managerDailyDataDocList)) {
-      const managerDailyDataList = managerDailyDataDocList as ManagerChartData[];
+      const managerDailyDataList =
+        managerDailyDataDocList as ManagerChartData[];
       managerMoneyPaidDailyData.name = 'Daily (last 7 days)';
       managerDonationDailyData.name = 'Daily (last 7 days)';
       const managerMoneyPaidDailyDataSum = managerDailyDataList.reduce(

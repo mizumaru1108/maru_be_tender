@@ -32,10 +32,7 @@ import {
   PaymentGateway,
   PaymentGatewaySchema,
 } from '../donation/schema/paymentGateway.schema';
-import {
-  ZakatLog,
-  ZakatLogSchema,
-} from '../zakat/schemas/zakat_log.schema';
+import { ZakatLog, ZakatLogSchema } from '../zakat/schemas/zakat_log.schema';
 import { Anonymous, AnonymousSchema } from '../donor/schema/anonymous.schema';
 import { PaymentStripeController } from './payment-stripe.controller';
 import { PaymentStripeService } from './payment-stripe.service';
@@ -83,12 +80,8 @@ import { PaymentStripeService } from './payment-stripe.service';
         name: PaymentGateway.name,
         schema: PaymentGatewaySchema,
       },
-      { name: User.name, 
-        schema: UserSchema 
-      },
-      { name: ZakatLog.name, 
-        schema: ZakatLogSchema
-      },
+      { name: User.name, schema: UserSchema },
+      { name: ZakatLog.name, schema: ZakatLogSchema },
     ]),
   ],
   controllers: [PaymentStripeController],

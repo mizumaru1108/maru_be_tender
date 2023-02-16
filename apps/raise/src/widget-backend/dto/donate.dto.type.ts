@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 export const GiftImagePayload = z.object({
   base64Data: z.string(),
@@ -10,20 +10,19 @@ export const GiftImagePayload = z.object({
 });
 export type GiftImagePayload = z.infer<typeof GiftImagePayload>;
 
-
 export const GiftDetails = z.object({
   giftType: GiftImagePayload,
   cardType: GiftImagePayload,
-})
+});
 
 export type GiftDetails = z.infer<typeof GiftDetails>;
 
 export const PaymentDetails = z.object({
-  paymentMethod: z.enum(["stripe", "paypal", "payoneer", "paytabs"]),
+  paymentMethod: z.enum(['stripe', 'paypal', 'payoneer', 'paytabs']),
   payment_id: z.string().optional(),
   payment_receipt_link: z.string(),
-  paymentStatus: z.enum(["success", "failed"])
-})
+  paymentStatus: z.enum(['success', 'failed']),
+});
 
 export type PaymentDetails = z.infer<typeof PaymentDetails>;
 
@@ -37,12 +36,12 @@ export const CreateQuickDonationDto = z.object({
   donatePurpose: z.string().optional(),
   receiverPhone: z.string().optional(),
   receiverName: z.string().optional(),
-  regularity: z.enum(["Once", "Daily", "Weekly", "Monthly"]),
-  donationForm: z.enum(["Quick", "Unit", "Money", "Gift", "Dynamic"]),
-  donationType: z.enum(["Just", "Gift"]),
+  regularity: z.enum(['Once', 'Daily', 'Weekly', 'Monthly']),
+  donationForm: z.enum(['Quick', 'Unit', 'Money', 'Gift', 'Dynamic']),
+  donationType: z.enum(['Just', 'Gift']),
   // giftDetail: GiftDetails,
   paymentDetail: PaymentDetails,
-  donationDate: z.date()
-})
+  donationDate: z.date(),
+});
 
 export type CreateQuickDonationDto = z.infer<typeof CreateQuickDonationDto>;

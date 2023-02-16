@@ -4,10 +4,7 @@ import { Module } from '@nestjs/common';
 import { ReferralController } from './referral.controller';
 import { ReferralService } from './referral.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import {
-  Referral,
-  ReferralSchema,
-} from './referral.schema';
+import { Referral, ReferralSchema } from './referral.schema';
 
 @Module({
   imports: [
@@ -18,7 +15,7 @@ import {
       },
     ]),
   ],
-  providers: [ ReferralService],
-  controllers: [ ReferralController],
+  providers: [ReferralService],
+  controllers: [ReferralController],
 })
 export class ReferralModule {}

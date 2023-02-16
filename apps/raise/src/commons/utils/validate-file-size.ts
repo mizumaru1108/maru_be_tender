@@ -13,7 +13,7 @@ export function validateFileSize(
   fileOrFileSize: MulterFile | number,
   maxSize?: number,
 ): boolean {
-  let max = maxSize ? maxSize : 1024 * 1024 * 3; // default is 3MB
+  const max = maxSize ? maxSize : 1024 * 1024 * 3; // default is 3MB
 
   const fileSize =
     typeof fileOrFileSize === 'number' ? fileOrFileSize : fileOrFileSize.size;

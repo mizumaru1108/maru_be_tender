@@ -7,7 +7,6 @@ export type DonorDocument = Donor & Document;
 
 @Schema({ collection: 'donor' })
 export class Donor {
-
   @Prop()
   organizationId: string;
 

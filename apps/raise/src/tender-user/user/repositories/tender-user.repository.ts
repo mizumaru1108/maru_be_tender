@@ -1,23 +1,17 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import {
-  prisma,
-  Prisma,
-  project_tracks,
-  user,
-  user_type,
-} from '@prisma/client';
+import { Injectable } from '@nestjs/common';
+import { Prisma, project_tracks, user, user_type } from '@prisma/client';
+import { v4 as uuidv4 } from 'uuid';
+import { logUtil } from '../../../commons/utils/log-util';
+import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { TenderAppRole } from '../../../tender-commons/types';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { SearchUserFilterRequest } from '../dtos/requests/search-user-filter-request.dto';
 import { FindUserResponse } from '../dtos/responses/find-user-response.dto';
 import { UpdateUserPayload } from '../interfaces/update-user-payload.interface';
 import { UserStatus } from '../types/user_status';
-import { v4 as uuidv4 } from 'uuid';
-import { BunnyService } from '../../../libs/bunny/services/bunny.service';
-import { TenderAppRole } from '../../../tender-commons/types';
-import { logUtil } from '../../../commons/utils/log-util';
 
 @Injectable()
 export class TenderUserRepository {
@@ -307,7 +301,7 @@ export class TenderUserRepository {
           orderBy: order_by,
         });
 
-      let mappedUserSingleRole: FindUserResponse['data'] = [];
+      const mappedUserSingleRole: FindUserResponse['data'] = [];
 
       if (single_role) {
         for (const user of users) {

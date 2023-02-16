@@ -72,7 +72,7 @@ export class DonationLog {
   @Prop()
   ipAddress: string;
 
-  @Prop({ type: () => Date})
+  @Prop({ type: () => Date })
   createdAt: Date;
 
   @Prop({ type: () => Date })

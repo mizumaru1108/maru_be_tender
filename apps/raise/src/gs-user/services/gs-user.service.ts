@@ -1,12 +1,15 @@
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { ConflictException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { User } from '../../user/schema/user.schema';
 import { Donor } from 'src/donor/schema/donor.schema';
 import { GsUserRepository } from '../repositories/gs-user.repositories';
-import {
-  RegisterFromFusionAuthDto,
-} from '../../user/dtos/register-from-fusion-auth.dto';
+import { RegisterFromFusionAuthDto } from '../../user/dtos/register-from-fusion-auth.dto';
 import { RoleEnum } from '../../user/enums/role-enum';
 
 @Injectable()
@@ -32,13 +35,15 @@ export class GsUserService {
 
   async registerFromFusion(request: RegisterFromFusionAuthDto): Promise<User> {
     const existingUser = await this.userModel.findOne({
-      email: request.email
-    })
+      email: request.email,
+    });
 
     if (existingUser) {
-      throw new ConflictException('A user account with that email already exists')
+      throw new ConflictException(
+        'A user account with that email already exists',
+      );
     }
-    
+
     const newUser = new this.userModel({
       _id: request._id,
       firstname: request.firstname,

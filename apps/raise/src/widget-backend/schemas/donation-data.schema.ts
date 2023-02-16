@@ -1,5 +1,5 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
 export type DonationDocument = Donation & Document;
 
@@ -42,24 +42,22 @@ export class Donation {
   donationCategory?: string;
 
   @Prop()
-  regularity: "Once" | "Daily" | "Weekly" | "Monthly";
+  regularity: 'Once' | 'Daily' | 'Weekly' | 'Monthly';
 
   @Prop()
-  donationForm: "Quick" | "Unit" | "Money" | "Gift" | "Dynamic";
+  donationForm: 'Quick' | 'Unit' | 'Money' | 'Gift' | 'Dynamic';
 
   @Prop()
-  donationType: "Just" | "Gift";
+  donationType: 'Just' | 'Gift';
 
   @Prop()
-  paymentMethod: "stripe" | "paypal" | "payoneer" | "paytabs";
+  paymentMethod: 'stripe' | 'paypal' | 'payoneer' | 'paytabs';
 
   @Prop()
   receipt_link: string;
 
   @Prop()
-  paymentStatus: "succeeded" | "failed"
-
-
+  paymentStatus: 'succeeded' | 'failed';
 }
 
 export const DonationSchema = SchemaFactory.createForClass(Donation);

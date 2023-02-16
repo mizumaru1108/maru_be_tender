@@ -4,7 +4,10 @@ import { DonorService } from './donor.service';
 import { Donor, DonorSchema } from './schema/donor.schema';
 import { Volunteer, VolunteerSchema } from './schema/volunteer.schema';
 
-import { Organization, OrganizationSchema } from 'src/organization/schema/organization.schema';
+import {
+  Organization,
+  OrganizationSchema,
+} from 'src/organization/schema/organization.schema';
 
 import {
   CampaignVendorLog,

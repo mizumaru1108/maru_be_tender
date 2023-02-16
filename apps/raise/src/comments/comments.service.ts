@@ -100,7 +100,7 @@ export class CommentsService {
     }
 
     if (request.campaignId || request.projectId || request.itemId) {
-      let badRequest = () => {
+      const badRequest = () => {
         throw new BadRequestException(
           'User can only create comment in one place at a time',
         );
@@ -283,7 +283,7 @@ export class CommentsService {
     userId: string,
     request: DeleteCommentsDto,
   ): Promise<Comment[] | undefined> {
-    let deletedCommets: Comment[] = [];
+    const deletedCommets: Comment[] = [];
     const session = await this.connection.startSession();
 
     try {
@@ -345,7 +345,7 @@ export class CommentsService {
     const session = await this.connection.startSession();
     try {
       session.startTransaction(); // start mongodb transaction
-      let deletedCommets: Comment[] = [];
+      const deletedCommets: Comment[] = [];
 
       const promises = request.commentIds.map(async (commentId, index) => {
         const comment = await this.commentModel.findOne({

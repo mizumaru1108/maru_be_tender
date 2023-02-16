@@ -1,11 +1,15 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { ArrayNotEmpty, IsArray, IsEmail, IsEnum, IsOptional, IsString } from "class-validator";
-import { IsActive } from "../enums";
-
-
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { IsActive } from '../enums';
 
 export class NonProfitAppearancePageDto {
-
   @IsString()
   @IsOptional()
   ownerUserId: string;
@@ -55,6 +59,4 @@ export class NonProfitAppearancePageDto {
   privacyPolicy: string[];
 }
 
-export class EditNonProfitAppearancePageDto extends NonProfitAppearancePageDto {
-
-}
+export class EditNonProfitAppearancePageDto extends NonProfitAppearancePageDto {}

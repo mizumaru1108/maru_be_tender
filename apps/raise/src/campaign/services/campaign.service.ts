@@ -80,7 +80,7 @@ export class CampaignService {
     campaignScheme.createdAt = dayjs().toISOString();
     campaignScheme.contentLanguage = request.contentLanguage;
 
-    let tmpPath: string[] = []; // for implementing db transaction later on
+    const tmpPath: string[] = []; // for implementing db transaction later on
     try {
       const processImages = request.images.map(async (image, index) => {
         const path = await this.bunnyService.generatePath(
@@ -197,7 +197,7 @@ export class CampaignService {
     updateCampaignData.updaterUserId = userId;
     updateCampaignData.updatedAt = dayjs().toISOString();
 
-    let tmpPath: string[] = []; //for implement db transaction later
+    const tmpPath: string[] = []; //for implement db transaction later
     try {
       const processImages = request.updatedImage.map(async (image, index) => {
         if (image.newImage) {
@@ -574,7 +574,7 @@ export class CampaignService {
       maxTotalDonation,
     } = filter;
 
-    let query: FilterQuery<any> = {};
+    const query: FilterQuery<any> = {};
     if (
       maxDonationCount < minDonationCount ||
       maxTotalDonation < minTotalDonation
@@ -1407,9 +1407,9 @@ export class CampaignService {
     ]);
 
     //get history of vendor campaign completion
-    let buff = [];
+    const buff = [];
     for (let i = 0; i < data.length; i++) {
-      let num = await this.campaignVendorLogModel.aggregate([
+      const num = await this.campaignVendorLogModel.aggregate([
         { $match: { creatorUserId: data[i]['creatorId'], isFinished: 'N' } },
         { $group: { _id: null, count: { $count: {} } } },
       ]);

@@ -3,9 +3,9 @@ import { ManualPaginatedResponse } from './manual-paginated-response.dto';
 
 export function manualPaginationHelper<T>(
   data: T,
-  total: number = 1,
-  page: number = 1,
-  limit: number = 10,
+  total = 1,
+  page = 1,
+  limit = 10,
   statusCode: number = HttpStatus.OK,
   message = 'Success',
 ): ManualPaginatedResponse<T> {

@@ -35,7 +35,7 @@ export class GsAuthService {
     if (!fusionAuthRes || !fusionAuthRes.user || !fusionAuthRes.user.id) {
       throw new BadRequestException('Failed to fetch user!');
     }
-    
+
     const registeredUser = await this.gsUserService.registerFromFusion({
       _id: fusionAuthRes.user.id,
       firstname: fusionAuthRes.user.firstName,
@@ -45,7 +45,7 @@ export class GsAuthService {
       state: registerRequest.state,
       address: registerRequest.address,
       mobile: registerRequest.mobile,
-      organizationId: registerRequest.organizationId
+      organizationId: registerRequest.organizationId,
     });
 
     const verifyEmail = await this.fusionAuthService.fusionEmailVerification({
@@ -53,8 +53,8 @@ export class GsAuthService {
       userId: fusionAuthRes.user.id,
       organizationId: registerRequest.organizationId,
       organizationEmail: registerRequest.organizationEmail,
-      domainUrl: registerRequest.domainUrl
-    })
+      domainUrl: registerRequest.domainUrl,
+    });
 
     return {
       user: registeredUser,
@@ -62,6 +62,6 @@ export class GsAuthService {
       url: registerRequest.domainUrl,
       token: fusionAuthRes.token,
       refreshToken: fusionAuthRes.refreshToken,
-    }
+    };
   }
 }

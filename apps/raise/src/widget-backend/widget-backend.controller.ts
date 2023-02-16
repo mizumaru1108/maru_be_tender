@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { WidgetBackendService } from './widget-backend.service';
 import { CreateWidgetBackendDto } from './dto/create-widget-backend.dto';
 import axios from 'axios';
@@ -7,19 +15,19 @@ import { resourceLimits } from 'worker_threads';
 
 @Controller('widget-backend')
 export class WidgetBackendController {
-  constructor(private readonly widgetBackendService: WidgetBackendService) { }
+  constructor(private readonly widgetBackendService: WidgetBackendService) {}
 
   @Post('donation/add')
   async create(@Body() donationData: any) {
     console.log('widget-backend', donationData);
-    let paymentData: any = {
+    const paymentData: any = {
       amount: donationData.donationAmount,
       currency: donationData.currency,
       description: donationData.description,
-      token: donationData.token
-    }
+      token: donationData.token,
+    };
     const chargeDetails = await StripePayment(paymentData);
-    if (chargeDetails != false && chargeDetails.status == "succeeded") {
+    if (chargeDetails != false && chargeDetails.status == 'succeeded') {
       delete donationData['token'];
       donationData['receipt_link'] = chargeDetails.receipt_url;
       donationData['paymentStatus'] = chargeDetails.status;
@@ -33,9 +41,9 @@ export class WidgetBackendController {
           'Access-Control-Allow-Origin': '*',
         },
         body: {
-          message: 'Payment transaction failed'
-        }
-      }
+          message: 'Payment transaction failed',
+        },
+      };
     }
   }
 
@@ -50,7 +58,10 @@ export class WidgetBackendController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWidgetBackendDto: CreateWidgetBackendDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateWidgetBackendDto: CreateWidgetBackendDto,
+  ) {
     return this.widgetBackendService.update(+id, updateWidgetBackendDto);
   }
 
@@ -61,25 +72,27 @@ export class WidgetBackendController {
 }
 
 const StripePayment = async (chargeDetails: any) => {
-
   const headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
-    'Authorization': 'Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc'
-  }
-  console.log('stripe payment param', chargeDetails)
+    Authorization: 'Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc',
+  };
+  console.log('stripe payment param', chargeDetails);
   const chargeData = {
     amount: chargeDetails.amount * 100,
     currency: chargeDetails.currency,
     description: chargeDetails.description,
-    source: chargeDetails.token
-  }
+    source: chargeDetails.token,
+  };
 
   try {
-    const result = await axios.post('https://api.stripe.com/v1/charges', stringify(chargeData), { headers: headers })
+    const result = await axios.post(
+      'https://api.stripe.com/v1/charges',
+      stringify(chargeData),
+      { headers: headers },
+    );
     return result.data;
   } catch (error) {
-    console.log('catch error', error)
+    console.log('catch error', error);
     return false;
   }
-
-}
+};

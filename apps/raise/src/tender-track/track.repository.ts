@@ -20,8 +20,10 @@ export class TenderTrackRepository {
   async createTrackSection(createPayload: Prisma.track_sectionCreateArgs) {
     this.logger.debug('create new track record...');
     try {
-      if(!createPayload.data.is_leaf && createPayload.data.budget > 0)
-        throw new BadRequestException('can not create section with budget unless it is leaf')
+      if (!createPayload.data.is_leaf && createPayload.data.budget > 0)
+        throw new BadRequestException(
+          'can not create section with budget unless it is leaf',
+        );
       await this.incrementParentsBudget(
         createPayload,
         createPayload.data.budget as number,
@@ -46,8 +48,10 @@ export class TenderTrackRepository {
       });
       if (!oldSection)
         throw new NotFoundException('there is no such recrod to update');
-        if(!oldSection.is_leaf && updatePayload.data.budget as number > 0)
-          throw new BadRequestException('can not create section with budget unless it is leaf')
+      if (!oldSection.is_leaf && (updatePayload.data.budget as number) > 0)
+        throw new BadRequestException(
+          'can not create section with budget unless it is leaf',
+        );
       const newBudget: number = (updatePayload.data.budget as number) || 0;
       const budgetDiff = Math.abs(newBudget - oldSection.budget);
       if (newBudget > oldSection.budget)

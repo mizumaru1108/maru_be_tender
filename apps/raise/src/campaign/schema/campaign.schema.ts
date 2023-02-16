@@ -169,12 +169,12 @@ export class Campaign {
 
   @Prop({ default: [] })
   contentLanguage: {
-    language: string,
-    value: string,
-    active: boolean,
-    title: string,
-    description: string,
-  }[]
+    language: string;
+    value: string;
+    active: boolean;
+    title: string;
+    description: string;
+  }[];
 
   /**
    * Map from create request to campaign document,
@@ -227,7 +227,7 @@ export class Campaign {
 
     // if milestone is defined, then use it, else use default
     if (request.milestone) {
-      let totalRepresentational: number = 0;
+      let totalRepresentational = 0;
       const milestones: CampaignMilestone[] = request.milestone.map(
         (milestone) => {
           totalRepresentational += milestone.representationalValue;

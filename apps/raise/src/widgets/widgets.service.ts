@@ -118,7 +118,7 @@ export class WidgetsService {
     }
 
     const createdBasket = new this.basketModel(basketDto);
-    let now: Date = new Date();
+    const now: Date = new Date();
     createdBasket.createdAt = now;
     createdBasket.updatedAt = now;
     createdBasket.donorId = new Types.ObjectId(basketDto.donorId);
@@ -142,7 +142,7 @@ export class WidgetsService {
     if (basketDto.currency) updates.currency = basketDto.currency;
     if (basketDto.amount) updates.amount = basketDto.amount;
     if (basketDto.unit) updates.unit = basketDto.unit;
-    let now: Date = new Date();
+    const now: Date = new Date();
     basketDto.updatedAt = now.toISOString();
 
     const basketUpdated = await this.basketModel.findOneAndUpdate(
@@ -206,7 +206,7 @@ export class WidgetsService {
     if (basketProjectDto.donorId) updates.donorId = basketProjectDto.donorId;
 
     const createdBasket = new this.basketModel(basketProjectDto);
-    let now: Date = new Date();
+    const now: Date = new Date();
     createdBasket.createdAt = now;
     createdBasket.updatedAt = now;
     createdBasket.donorId = new Types.ObjectId(basketProjectDto.donorId);

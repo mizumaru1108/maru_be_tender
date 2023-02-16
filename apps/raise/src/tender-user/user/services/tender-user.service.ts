@@ -124,7 +124,7 @@ export class TenderUserService {
     }
 
     // map as a create input
-    let status = activate_user
+    const status = activate_user
       ? UserStatusEnum.ACTIVE_ACCOUNT
       : UserStatusEnum.WAITING_FOR_ACTIVATION;
     const createUserPayload: Prisma.userCreateInput = {
@@ -412,7 +412,7 @@ export class TenderUserService {
   ) {
     let subject = '';
     let clientContent = '';
-    let employeeContent = `You have changed the account status of ${status_log.user_detail.email} to ${status_log.user_status.id}`;
+    const employeeContent = `You have changed the account status of ${status_log.user_detail.email} to ${status_log.user_status.id}`;
     if (status_log.user_status.id === UserStatusEnum.ACTIVE_ACCOUNT) {
       subject = 'Your account has been activated!';
       clientContent = `Your account (${status_log.user_detail.email}) has been activated by the Account Manager`;

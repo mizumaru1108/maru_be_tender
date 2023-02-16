@@ -33,7 +33,7 @@ export class BaseResponse<T> implements IBaseResponse<T> {
   @ApiProperty()
   meta?: Record<string, any>;
 
-  constructor(data?: T, code: number = 200, message: string = 'Success') {
+  constructor(data?: T, code = 200, message = 'Success') {
     this.data = data;
     this.statusCode = code;
     this.message = message;

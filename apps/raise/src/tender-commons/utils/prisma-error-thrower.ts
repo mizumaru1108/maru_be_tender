@@ -24,7 +24,7 @@ export function prismaErrorThrower(
   loggerMessage: string,
   errorThrowMessage: string,
 ) {
-  let logger = ROOT_LOGGER.child({
+  const logger = ROOT_LOGGER.child({
     'log.logger': serviceName,
   });
 
@@ -36,7 +36,7 @@ export function prismaErrorThrower(
     error instanceof Prisma.PrismaClientUnknownRequestError ||
     error instanceof Prisma.NotFoundError
   ) {
-    let instance: string = '';
+    let instance = '';
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       instance = 'PrismaClientKnownRequestError';
     }

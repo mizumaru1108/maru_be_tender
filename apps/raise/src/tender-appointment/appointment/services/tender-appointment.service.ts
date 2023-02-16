@@ -137,10 +137,10 @@ export class TenderAppointmentService {
       );
 
     // Notification
-    let subject = `Tender's New Appointment`;
-    let appointmentTime = `${dayOfWeek}, ${date} at ${start_time} - ${end_time}`;
-    let clientContent = `New Appointment request from ${currentUser.email}, on ${appointmentTime}`;
-    let employeeContent = `Successfully sent appointment invitation to ${client.email}, details:  ${appointmentTime}`;
+    const subject = `Tender's New Appointment`;
+    const appointmentTime = `${dayOfWeek}, ${date} at ${start_time} - ${end_time}`;
+    const clientContent = `New Appointment request from ${currentUser.email}, on ${appointmentTime}`;
+    const employeeContent = `Successfully sent appointment invitation to ${client.email}, details:  ${appointmentTime}`;
 
     // via email
     const clientEmailPayload: SendEmailDto = {
@@ -261,12 +261,12 @@ export class TenderAppointmentService {
       updated_at,
     } = updatedAppointment;
 
-    let clientEmailPayload: SendEmailDto = {
+    const clientEmailPayload: SendEmailDto = {
       mailType: 'plain',
       to: client.email,
       from: 'no-reply@hcharity.org',
     };
-    let employeeEmailPayload: SendEmailDto = {
+    const employeeEmailPayload: SendEmailDto = {
       mailType: 'plain',
       to: employee.email,
       from: 'no-reply@hcharity.org',

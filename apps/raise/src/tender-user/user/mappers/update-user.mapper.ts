@@ -11,7 +11,7 @@ export const updateUserMapper = (
   request: UpdateUserDto,
   currentUser: TenderCurrentUser,
 ) => {
-  let updateUserPayload: UpdateUserPayload = {};
+  const updateUserPayload: UpdateUserPayload = {};
 
   if (
     request.employee_name &&

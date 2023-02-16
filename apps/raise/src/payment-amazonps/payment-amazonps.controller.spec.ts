@@ -9,7 +9,9 @@ describe('PaymentAmazonpsController', () => {
       controllers: [PaymentAmazonpsController],
     }).compile();
 
-    controller = module.get<PaymentAmazonpsController>(PaymentAmazonpsController);
+    controller = module.get<PaymentAmazonpsController>(
+      PaymentAmazonpsController,
+    );
   });
 
   it('should be defined', () => {

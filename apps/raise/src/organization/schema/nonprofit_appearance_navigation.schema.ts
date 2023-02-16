@@ -7,7 +7,6 @@ export type AppearanceNavigationDocument = AppearanceNavigation & Document;
 
 @Schema({ collection: 'nonprofitAppearanceNavigation' })
 export class AppearanceNavigation {
-
   @Prop()
   id?: string;
 
@@ -129,6 +128,8 @@ export class AppearanceNavigation {
   featuresItem?: string[];
 }
 
-export const AppearanceNavigationSchema = SchemaFactory.createForClass(AppearanceNavigation)
+export const AppearanceNavigationSchema = SchemaFactory.createForClass(
+  AppearanceNavigation,
+)
   .plugin(paginate)
   .plugin(aggregatePaginate);

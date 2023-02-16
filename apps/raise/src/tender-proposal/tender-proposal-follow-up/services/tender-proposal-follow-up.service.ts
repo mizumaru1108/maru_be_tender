@@ -93,14 +93,14 @@ export class TenderProposalFollowUpService {
       if (follow_up_attachment && follow_up_attachment.length > 0) {
         for (let i = 0; i < follow_up_attachment.length; i++) {
           /* project attachment */
-          let followUpFileName = generateFileName(
+          const followUpFileName = generateFileName(
             follow_up_attachment[i].fullName,
             follow_up_attachment[i].fileExtension as FileMimeTypeEnum,
           );
 
-          let followUpFilePath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposal_id}/follow-ups/${currentUser.id}/${followUpFileName}`;
+          const followUpFilePath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposal_id}/follow-ups/${currentUser.id}/${followUpFileName}`;
 
-          let followUpFileBuffer = Buffer.from(
+          const followUpFileBuffer = Buffer.from(
             follow_up_attachment[i].base64Data.replace(/^data:.*;base64,/, ''),
             'base64',
           );
@@ -127,7 +127,7 @@ export class TenderProposalFollowUpService {
           );
 
           uploadedFilePath.push(imageUrl);
-          let newFileFollowUpObj = [
+          const newFileFollowUpObj = [
             {
               url: imageUrl,
               type: follow_up_attachment[i].fileExtension,
@@ -152,7 +152,7 @@ export class TenderProposalFollowUpService {
         if (tmp.length > 0) {
           for (let i = 0; i < tmp.length; i++) {
             if (isUploadFileJsonb(tmp[i])) {
-              let tmpFileJsonb: UploadFilesJsonbDto = tmp[i];
+              const tmpFileJsonb: UploadFilesJsonbDto = tmp[i];
               const isExist = await this.tenderFileManagerService.findByUrl(
                 tmpFileJsonb.url,
               );
@@ -219,7 +219,7 @@ export class TenderProposalFollowUpService {
               const tmp = followUp.attachments as any[];
               for (let i = 0; i < tmp.length; i++) {
                 if (isUploadFileJsonb(tmp[i])) {
-                  let tmpFileJsonb: UploadFilesJsonbDto = tmp[i];
+                  const tmpFileJsonb: UploadFilesJsonbDto = tmp[i];
                   const isExist = await this.tenderFileManagerService.findByUrl(
                     tmpFileJsonb.url,
                   );

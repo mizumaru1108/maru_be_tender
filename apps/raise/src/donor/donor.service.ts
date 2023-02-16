@@ -173,7 +173,7 @@ export class DonorService {
     newVendor.vendorId = validatedDto!.vendorId;
 
     if (validatedDto!.images && validatedDto!.images.length > 0) {
-      let folderType: string = '';
+      let folderType = '';
       for (let i = 0; i < validatedDto!.images.length; i++) {
         if (i === 0) folderType = 'coverImage';
         if (i === 1 || i === 2 || i === 3) folderType = 'image';
@@ -319,9 +319,9 @@ export class DonorService {
 
       const donationLogId = new Types.ObjectId(); // as _id of donation Log, an ref for donation details
       // if there's 5 campaign, 2 items, and 1 project, then it will create 8 donation details, and 1 donation log, 1 payment data
-      let donationDetail: DonationDetail[] = [];
+      const donationDetail: DonationDetail[] = [];
 
-      let itemToPay: IPaymentGatewayItems[] = [];
+      const itemToPay: IPaymentGatewayItems[] = [];
       let totalAmount = 0;
 
       const mapDonationDetails = request.donationDetails.map(
@@ -412,7 +412,7 @@ export class DonorService {
       let paytabsResponse: PaytabsCreateTransactionResponse | null = null;
 
       if (pgData.name === 'STRIPE') {
-        let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+        const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
         itemToPay.forEach((item) => {
           lineItems.push({
             // !TODO: Please Checkout https://dashboard.stripe.com/test/products/prod_LZhxCI76m6SsBq
@@ -511,7 +511,7 @@ export class DonorService {
         throw new BadRequestException('Payment gateway not supported');
       }
 
-      let now = moment().toISOString();
+      const now = moment().toISOString();
 
       const createdDonationLogData = await new this.donationLogModel({
         _id: donationLogId,
@@ -616,7 +616,7 @@ export class DonorService {
     }
     // update item quantity
     let onTransaction = Number(item.totalNeedOnTransaction);
-    let updatedOnTransaction = (onTransaction += qty);
+    const updatedOnTransaction = (onTransaction += qty);
     item.totalNeedOnTransaction = updatedOnTransaction.toString();
     item.totalNeed = (Number(item.totalNeed) - qty).toString();
     const updateTotalNeed = await item.save({ session: mongoSession });
@@ -953,8 +953,8 @@ export class DonorService {
       throw new BadRequestException(`Paytabs payment failed!`);
     }
 
-    let objectIdDonation = new Types.ObjectId();
-    let now = moment().toISOString();
+    const objectIdDonation = new Types.ObjectId();
+    const now = moment().toISOString();
 
     /* Save to donation log */
     const donationLog = await new this.donationLogModel({
@@ -1099,7 +1099,7 @@ export class DonorService {
         donationLog &&
         donationLog.purchaseQty
       ) {
-        let updatedQty = Number(item.totalNeed) - donationLog.purchaseQty;
+        const updatedQty = Number(item.totalNeed) - donationLog.purchaseQty;
         item.totalNeed = updatedQty.toString();
       }
     }
@@ -1367,13 +1367,13 @@ export class DonorService {
           campaignName: { $first: '$campaign.campaignName' },
           campaignType: { $first: '$campaign.campaignType' },
           organizationName: { $first: '$organization.name' },
-          contentLanguage: { $first: '$campaign.contentLanguage' }
+          contentLanguage: { $first: '$campaign.contentLanguage' },
         },
       },
       {
         $project: {
           campaign: 0,
-        }
+        },
       },
       {
         $sort: sortData,
@@ -1386,7 +1386,7 @@ export class DonorService {
           donorUserId: donorUserId,
           organizationId: orgsId,
           campaignId: { $ne: null },
-          type: 'cart'
+          type: 'cart',
         },
       },
       {
@@ -1433,13 +1433,13 @@ export class DonorService {
           campaignName: { $first: '$campaign.campaignName' },
           campaignType: { $first: '$campaign.campaignType' },
           organizationName: { $first: '$organization.name' },
-          contentLanguage: { $first: '$campaign.contentLanguage' }
+          contentLanguage: { $first: '$campaign.contentLanguage' },
         },
       },
       {
         $project: {
           campaign: 0,
-        }
+        },
       },
       {
         $sort: sortData,
@@ -1498,31 +1498,34 @@ export class DonorService {
           campaignName: { $first: '$campaign.campaignName' },
           campaignType: { $first: '$campaign.campaignType' },
           organizationName: { $first: '$organization.name' },
-          contentLanguage: { $first: '$campaign.contentLanguage' }
+          contentLanguage: { $first: '$campaign.contentLanguage' },
         },
       },
       {
         $project: {
           campaign: 0,
-        }
+        },
       },
       {
         $sort: sortData,
       },
     ]);
-    
+
     const allDonationsUser = donationLogList.concat(donationLogsCart);
 
     const allGroupDonations = allDonationsUser
       .concat(zakatDonationLogs)
-      .sort((objA, objB) => moment(objB.date).valueOf() - moment(objA.date).valueOf());
+      .sort(
+        (objA, objB) =>
+          moment(objB.date).valueOf() - moment(objA.date).valueOf(),
+      );
 
     return allGroupDonations;
   }
 
   @ApiOperation({ summary: 'Get Total donationbyId' })
   async getTotalDonation(donorUserId: string, currencyCode: string) {
-    let currency = currencyCode ?? 'USD';
+    const currency = currencyCode ?? 'USD';
     this.logger.debug('Get Donation logs...');
     const donationId = await this.donorModel.findOne({
       ownerUserId: donorUserId,
@@ -1590,7 +1593,7 @@ export class DonorService {
 
   async getHistoryAllSuccess(donorId: string) {
     const ObjectId = require('mongoose').Types.ObjectId;
-    let data: any = {};
+    const data: any = {};
 
     // const dataDonor = await this.donorModel.findOne({
     //   ownerUserId: donorId,
@@ -2157,41 +2160,43 @@ export class DonorService {
    * Get Insight Donor Dashboard
    */
 
-  async insightSummaryDonors (
+  async insightSummaryDonors(
     donorId: string,
     organizationId: string,
     period: string,
     startDate?: string,
-    endDate?: string
+    endDate?: string,
   ) {
-
     // Initiate for donation Campaigns
-    let
-      total_campaign_program: number = 0,
-      total_campaign_amount: number = 0,
+    let total_campaign_program = 0,
+      total_campaign_amount = 0,
       total_donation_period: {
         frequenceType: string;
         categories: string[];
-        data: {
-          name: string;
-          data: number[];
-        }[] | [];
+        data:
+          | {
+              name: string;
+              data: number[];
+            }[]
+          | [];
       } | null = null;
 
     // Initiate for donation Campaigns
-    let
-      total_zakat_donation: number = 0,
-      total_zakat_amount: number = 0,
+    let total_zakat_donation = 0,
+      total_zakat_amount = 0,
       total_zakat_period: {
         frequenceType: string;
         categories: string[];
-        data: {
-          name: string;
-          data: number[];
-        }[] | [];
+        data:
+          | {
+              name: string;
+              data: number[];
+            }[]
+          | [];
       } | null = null;
 
-    if (!donorId) throw new BadRequestException('Request rejected donorId must be fill');
+    if (!donorId)
+      throw new BadRequestException('Request rejected donorId must be fill');
 
     const getOrganization = await this.organizationModel.findOne({
       _id: organizationId,
@@ -2199,14 +2204,16 @@ export class DonorService {
 
     if (!period) period = 'today';
 
-    if (
-      period === 'custom' &&
-      (!startDate || !endDate)
-    ) {
-      throw new BadRequestException('Request rejected must fill start date or end date');
-    };
+    if (period === 'custom' && (!startDate || !endDate)) {
+      throw new BadRequestException(
+        'Request rejected must fill start date or end date',
+      );
+    }
 
-    if (!getOrganization) throw new BadRequestException('Request rejected organizationId not found');
+    if (!getOrganization)
+      throw new BadRequestException(
+        'Request rejected organizationId not found',
+      );
 
     const getDateQuery = (filterBy: string) => {
       switch (filterBy) {
@@ -2263,14 +2270,14 @@ export class DonorService {
           return {
             $exists: true,
             $gt: today,
-            $lt: moment().toDate()
+            $lt: moment().toDate(),
           };
         case 'custom':
           return {
             $exists: true,
             $gt: moment(startDate!).toDate(),
             $lt: moment(endDate!).toDate(),
-          }
+          };
         default:
           const sevenDaysAgo: Date = moment().subtract(7, 'd').toDate();
 
@@ -2290,7 +2297,7 @@ export class DonorService {
           donorId: donorId,
           campaignId: { $ne: null },
           createdAt: getDateQuery(period),
-        }
+        },
       },
       {
         $project: {
@@ -2298,7 +2305,7 @@ export class DonorService {
           campaignId: { $toObjectId: '$campaignId' },
           amount: 1,
           donorId: 1,
-        }
+        },
       },
       {
         $lookup: {
@@ -2354,7 +2361,7 @@ export class DonorService {
           campaignTarget: { $first: '$campaign.amountTarget' },
           user: { $first: '$user' },
           user_anonymous: { $first: '$user_anonymous' },
-        }
+        },
       },
       {
         $addFields: {
@@ -2382,7 +2389,7 @@ export class DonorService {
               ],
             },
           },
-        }
+        },
       },
       {
         $project: {
@@ -2390,9 +2397,9 @@ export class DonorService {
           user: 0,
           campaign: 0,
           user_anonymous: 0,
-        }
+        },
       },
-      { $sort: { createdAt: -1 } }
+      { $sort: { createdAt: -1 } },
     ]);
 
     const donationLogsCartList = await this.donationLogsModel.aggregate([
@@ -2404,7 +2411,7 @@ export class DonorService {
           campaignId: { $ne: null },
           type: 'cart',
           createdAt: getDateQuery(period),
-        }
+        },
       },
       {
         $project: {
@@ -2412,7 +2419,7 @@ export class DonorService {
           amount: 1,
           campaignId: 1,
           donorUserId: 1,
-        }
+        },
       },
       {
         $lookup: {
@@ -2468,7 +2475,7 @@ export class DonorService {
           campaignTarget: { $first: '$campaign.amountTarget' },
           user: { $first: '$user' },
           user_anonymous: { $first: '$user_anonymous' },
-        }
+        },
       },
       {
         $addFields: {
@@ -2496,7 +2503,7 @@ export class DonorService {
               ],
             },
           },
-        }
+        },
       },
       {
         $project: {
@@ -2504,9 +2511,9 @@ export class DonorService {
           user: 0,
           campaign: 0,
           user_anonymous: 0,
-        }
+        },
       },
-      { $sort: { createdAt: -1 } }
+      { $sort: { createdAt: -1 } },
     ]);
 
     // For Zakat
@@ -2517,7 +2524,7 @@ export class DonorService {
           donorUserId: donorId,
           campaignId: new Types.ObjectId('6299ed6a9f1ad428563563ed'),
           createdAt: getDateQuery(period),
-        }
+        },
       },
       {
         $project: {
@@ -2525,7 +2532,7 @@ export class DonorService {
           amount: 1,
           campaignId: 1,
           donorUserId: 1,
-        }
+        },
       },
       {
         $lookup: {
@@ -2581,7 +2588,7 @@ export class DonorService {
           campaignTarget: { $first: '$campaign.amountTarget' },
           user: { $first: '$user' },
           user_anonymous: { $first: '$user_anonymous' },
-        }
+        },
       },
       {
         $addFields: {
@@ -2609,7 +2616,7 @@ export class DonorService {
               ],
             },
           },
-        }
+        },
       },
       {
         $project: {
@@ -2617,58 +2624,66 @@ export class DonorService {
           user: 0,
           campaign: 0,
           user_anonymous: 0,
-        }
+        },
       },
-      { $sort: { createdAt: -1 } }
+      { $sort: { createdAt: -1 } },
     ]);
 
     // Return all donations campaign
-    const allDonationLogs =
-      donationList.concat(donationLogsCartList)
-      .sort((objA, objB) => moment(objB.date).valueOf() - moment(objA.date).valueOf());
+    const allDonationLogs = donationList
+      .concat(donationLogsCartList)
+      .sort(
+        (objA, objB) =>
+          moment(objB.date).valueOf() - moment(objA.date).valueOf(),
+      );
 
     // Return all zakat log by userId
-    const allZakatLogUser = zakatLogs.sort((objA, objB) => moment(objB.date).valueOf() - moment(objA.date).valueOf());
-    
+    const allZakatLogUser = zakatLogs.sort(
+      (objA, objB) => moment(objB.date).valueOf() - moment(objA.date).valueOf(),
+    );
+
     if (allDonationLogs.length) {
       // Return program campaign
-      const allProgramsCampaign = allDonationLogs.map(el => {
+      const allProgramsCampaign = allDonationLogs.map((el) => {
         return {
           campaignId: el.campaignId.toString(),
           campaignName: el.campaignName,
           campaignType: el.campaignType,
           campaignProgress: el.campaignProgress.toString(),
           campaignTarget: el.campaignTarget.toString(),
-        }
+        };
       });
 
-      total_campaign_program = allProgramsCampaign
-        .filter((v, i, a) => a.findIndex(v2 => (v2.campaignId === v.campaignId)) === i).length;
+      total_campaign_program = allProgramsCampaign.filter(
+        (v, i, a) => a.findIndex((v2) => v2.campaignId === v.campaignId) === i,
+      ).length;
 
       // Return total amount program
       total_campaign_amount = allDonationLogs
-        .map(v => v.totalAmount)
+        .map((v) => v.totalAmount)
         .reduce((amountA, amountB) => amountA + amountB);
 
       // Return line chart data
-      const categories = allDonationLogs.map(el => el.date);
+      const categories = allDonationLogs.map((el) => el.date);
       const objReduceDonation = allDonationLogs.reduce((results, org) => {
         (results[org.campaignName] = results[org.campaignName] || []).push(org);
-  
+
         return results;
       }, {});
 
-      const campaignCategories = allProgramsCampaign
-        .filter((v, i, a) => a.findIndex(v2 => (v2.campaignId === v.campaignId)) === i);
+      const campaignCategories = allProgramsCampaign.filter(
+        (v, i, a) => a.findIndex((v2) => v2.campaignId === v.campaignId) === i,
+      );
 
-      const getLineCartData = campaignCategories.map(v => {
-        const totalAmount = objReduceDonation[v.campaignName]
-          .map((el: { totalAmount: number; }) => el.totalAmount);
-        
+      const getLineCartData = campaignCategories.map((v) => {
+        const totalAmount = objReduceDonation[v.campaignName].map(
+          (el: { totalAmount: number }) => el.totalAmount,
+        );
+
         return {
           name: v.campaignName,
-          data: totalAmount
-        }
+          data: totalAmount,
+        };
       });
 
       const lineChartDatas = getLineCartData.map((value, i) => {
@@ -2677,37 +2692,40 @@ export class DonorService {
         const current = getLineCartData[i]?.data.length;
         const next = getLineCartData[i + 1]?.data.length;
 
-        const newData: any[] = [ ...value.data ];
+        const newData: any[] = [...value.data];
 
         if (i === 0) {
           for (let index = 0; index < catLength - current; index++) {
             newData.push(0);
-          };
-        } else if (value.name === campaignCategories[campaignCategories.length - 1].campaignName) {
+          }
+        } else if (
+          value.name ===
+          campaignCategories[campaignCategories.length - 1].campaignName
+        ) {
           for (let index = 0; index < catLength - current; index++) {
             newData.unshift(0);
-          };
+          }
         } else if (prev && next) {
           for (let index = 0; index < prev; index++) {
             newData.unshift(0);
-          };
+          }
 
           for (let index = 0; index < next; index++) {
             newData.push(0);
-          };
+          }
         }
 
         return {
           name: value.name,
           data: newData,
-        }
+        };
       });
 
       total_donation_period = {
         frequenceType: String(moment().year()),
         categories,
-        data: lineChartDatas
-      }
+        data: lineChartDatas,
+      };
     }
 
     if (allZakatLogUser.length) {
@@ -2716,37 +2734,41 @@ export class DonorService {
 
       // Return total amount program
       total_zakat_amount = allZakatLogUser
-        .map(v => v.totalAmount)
+        .map((v) => v.totalAmount)
         .reduce((amountA, amountB) => amountA + amountB);
 
       // Return line chart data
-      const zakatCategories = allZakatLogUser.map(el => el.date);
+      const zakatCategories = allZakatLogUser.map((el) => el.date);
       const objReduceDonation = allZakatLogUser.reduce((results, org) => {
         (results[org.campaignName] = results[org.campaignName] || []).push(org);
-  
+
         return results;
       }, {});
 
       const zakatCampaign = allZakatLogUser
-        .map(el => {
+        .map((el) => {
           return {
             campaignId: el.campaignId.toString(),
             campaignName: el.campaignName,
             campaignType: el.campaignType,
             campaignProgress: el.campaignProgress.toString(),
             campaignTarget: el.campaignTarget.toString(),
-          }
+          };
         })
-        .filter((v, i, a) => a.findIndex(v2 => (v2.campaignId === v.campaignId)) === i);
+        .filter(
+          (v, i, a) =>
+            a.findIndex((v2) => v2.campaignId === v.campaignId) === i,
+        );
 
-      const getLineCartData = zakatCampaign.map(v => {
-        const totalAmount = objReduceDonation[v.campaignName]
-          .map((el: { totalAmount: number; }) => el.totalAmount);
-        
+      const getLineCartData = zakatCampaign.map((v) => {
+        const totalAmount = objReduceDonation[v.campaignName].map(
+          (el: { totalAmount: number }) => el.totalAmount,
+        );
+
         return {
           name: v.campaignName,
-          data: totalAmount
-        }
+          data: totalAmount,
+        };
       });
 
       const lineChartZakats = getLineCartData.map((value, i) => {
@@ -2755,37 +2777,40 @@ export class DonorService {
         const current = getLineCartData[i]?.data.length;
         const next = getLineCartData[i + 1]?.data.length;
 
-        const newData: any[] = [ ...value.data ];
+        const newData: any[] = [...value.data];
 
         if (i === 0) {
           for (let index = 0; index < catLength - current; index++) {
             newData.push(0);
-          };
-        } else if (value.name === zakatCategories[zakatCategories.length - 1].campaignName) {
+          }
+        } else if (
+          value.name ===
+          zakatCategories[zakatCategories.length - 1].campaignName
+        ) {
           for (let index = 0; index < catLength - current; index++) {
             newData.unshift(0);
-          };
+          }
         } else if (prev && next) {
           for (let index = 0; index < prev; index++) {
             newData.unshift(0);
-          };
+          }
 
           for (let index = 0; index < next; index++) {
             newData.push(0);
-          };
+          }
         }
 
         return {
           name: value.name,
           data: newData,
-        }
+        };
       });
 
       total_zakat_period = {
         frequenceType: String(moment().year()),
         categories: zakatCategories,
-        data: lineChartZakats
-      }
+        data: lineChartZakats,
+      };
     }
 
     return {
@@ -2797,8 +2822,8 @@ export class DonorService {
       zakat: {
         total_zakat_donation,
         total_zakat_amount,
-        total_zakat_period
+        total_zakat_period,
       },
-    }
+    };
   }
 }

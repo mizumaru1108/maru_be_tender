@@ -4,6 +4,6 @@ import { PaymentAmazonpsController } from './payment-amazonps.controller';
 
 @Module({
   providers: [PaymentAmazonpsService],
-  controllers: [PaymentAmazonpsController]
+  controllers: [PaymentAmazonpsController],
 })
 export class PaymentAmazonpsModule {}

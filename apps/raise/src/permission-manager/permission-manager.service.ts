@@ -24,7 +24,7 @@ export class PermissionManagerService {
     );
     return response;
   }
-  
+
   async grantNonprofitPermission(request: UpsertUserPermission) {
     const response = await this.authzedService.createRelationship(
       request.organizationId,

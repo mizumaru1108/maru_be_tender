@@ -3,10 +3,10 @@ import { Types } from 'mongoose';
 import { ZakatLogDto } from 'src/zakat/dto/zakat_log.dto';
 
 export class PaymentRequestDto {
-  @IsString ()
+  @IsString()
   organizationId: Types.ObjectId;
   campaignId: Types.ObjectId;
-  @IsString ()
+  @IsString()
   donorId: Types.ObjectId;
   type: string;
   amount: number;

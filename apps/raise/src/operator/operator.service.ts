@@ -77,7 +77,7 @@ export class OperatorService {
       sort = { _id: -1 };
     }
     this.logger.debug('Get list all operator with its project...');
-    var operatorAggregation = this.operatorModel.aggregate([
+    const operatorAggregation = this.operatorModel.aggregate([
       {
         $match: filterQuery,
       },

@@ -8,8 +8,7 @@ export class AppointmentFilterRequest extends BaseFilterRequest {
   @IsString()
   @IsNotEmpty()
   @IsIn(['tentative', 'confirmed', 'declined', 'done'], {
-    message:
-      'Status must be one of tentative, confirmed, declined, done',
+    message: 'Status must be one of tentative, confirmed, declined, done',
   })
   status?: 'tentative' | 'confirmed' | 'declined' | 'done';
 }

@@ -49,7 +49,7 @@ export class AppearancePage {
 
   @Prop()
   privacyPolicy: string[];
-
 }
 
-export const AppearancePageSchema = SchemaFactory.createForClass(AppearancePage);
+export const AppearancePageSchema =
+  SchemaFactory.createForClass(AppearancePage);

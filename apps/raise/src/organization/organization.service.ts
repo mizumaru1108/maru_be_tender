@@ -718,7 +718,7 @@ export class OrganizationService {
       };
     }
 
-    let now: Date = new Date();
+    const now: Date = new Date();
 
     paymentGatewayDto.name = paymentGatewayDto.name.toUpperCase();
     paymentGatewayDto.updatedAt = now.toISOString();
@@ -775,7 +775,7 @@ export class OrganizationService {
     const paymentGatewayCreated = new this.paymentGatewayModel(
       paymentGatewayDto,
     );
-    let now: Date = new Date();
+    const now: Date = new Date();
     paymentGatewayDto.createdAt = now.toISOString();
     paymentGatewayDto.updatedAt = now.toISOString();
     paymentGatewayDto.organizationId = new Types.ObjectId(organizationId);
@@ -796,10 +796,10 @@ export class OrganizationService {
     this.logger.debug(`getInsightSummary organizationId=${organizationId}`);
 
     // Variable return insight campaign
-    let total_donation: number = 0,
-      total_donor: number = 0,
-      total_returning_donor: number = 0,
-      total_program: number = 0,
+    let total_donation = 0,
+      total_donor = 0,
+      total_returning_donor = 0,
+      total_program = 0,
       donor_list: {
         _id: string;
         name: string;
@@ -1524,7 +1524,7 @@ export class OrganizationService {
     //   markAsRead: false,
     // });
 
-    var filterData = {};
+    let filterData = {};
     console.log(type);
     if (type) {
       filterData = {
@@ -1603,7 +1603,7 @@ export class OrganizationService {
     }
 
     const notifCreated = await this.notificationsModel.create(notificationDto);
-    let now: Date = new Date();
+    const now: Date = new Date();
     notifCreated.organizationId = new Types.ObjectId(organizationId);
     notifCreated.createdAt = now;
     notifCreated.updatedAt = now;
@@ -1841,7 +1841,7 @@ export class OrganizationService {
     this.logger.debug('Create Landingpage Organization...');
     nonProfitAppearanceNavigationDto.organizationId = organizationId;
     nonProfitAppearanceNavigationDto.page = 'LANDINGPAGE';
-    let now: Date = new Date();
+    const now: Date = new Date();
     nonProfitAppearanceNavigationDto.whyUs = whyUsPath;
     nonProfitAppearanceNavigationDto.mission = missionPath;
     nonProfitAppearanceNavigationDto.createdAt = now.toISOString();
@@ -1886,7 +1886,7 @@ export class OrganizationService {
       const photoThumbnail =
         nonProfitAppearanceNavigationAboutUsDto.photoThumbnailUl[0];
       if (!!photoThumbnail && photoThumbnail) {
-        let path: string = '';
+        let path = '';
         try {
           path = await this.bunnyService.generatePath(
             nonProfitAppearanceNavigationAboutUsDto.organizationId!,
@@ -1941,7 +1941,7 @@ export class OrganizationService {
       const iconForValues =
         nonProfitAppearanceNavigationAboutUsDto.iconForValuesUl[0];
       if (!!iconForValues && iconForValues) {
-        let path: string = '';
+        let path = '';
         try {
           path = await this.bunnyService.generatePath(
             nonProfitAppearanceNavigationAboutUsDto.organizationId!,
@@ -2083,7 +2083,7 @@ export class OrganizationService {
     this.logger.debug('Create AboutUs Organization...');
     nonProfitAppearanceNavigationAboutUsDto.organizationId = organizationId;
     nonProfitAppearanceNavigationAboutUsDto.page = 'ABOUTUS';
-    let now: Date = new Date();
+    const now: Date = new Date();
     nonProfitAppearanceNavigationAboutUsDto.createdAt = now.toISOString();
     nonProfitAppearanceNavigationAboutUsDto.updatedAt = now.toISOString();
     nonProfitAppearanceNavigationAboutUsDto.companyValues = companyPath;
@@ -2233,7 +2233,7 @@ export class OrganizationService {
     nonProfitAppearanceNavBlogDto.organizationId = organizationId;
     nonProfitAppearanceNavBlogDto.news = newsPath;
     nonProfitAppearanceNavBlogDto.page = 'BLOG';
-    let now: Date = new Date();
+    const now: Date = new Date();
     nonProfitAppearanceNavBlogDto.createdAt = now.toISOString();
     nonProfitAppearanceNavBlogDto.updatedAt = now.toISOString();
     const appearanceCreateBlog = await this.appearanceNavigationModel.create(
@@ -2538,7 +2538,7 @@ export class OrganizationService {
       }
     }
 
-    let now: Date = new Date();
+    const now: Date = new Date();
     editNonProfitAppearanceNavigationDto.organizationId = organizationId;
     editNonProfitAppearanceNavigationDto.updatedAt = now.toISOString();
     editNonProfitAppearanceNavigationDto.mission = missionPath;
@@ -2802,7 +2802,7 @@ export class OrganizationService {
     }
 
     this.logger.debug('Edit AboutUs Organization...');
-    let now: Date = new Date();
+    const now: Date = new Date();
     editNonProfApprceNaviAboutUsDto.updatedAt = now.toISOString();
     editNonProfApprceNaviAboutUsDto.companyValues = companyPath;
     editNonProfApprceNaviAboutUsDto.featuresItem = featuresPath;
@@ -2951,7 +2951,7 @@ export class OrganizationService {
     }
 
     this.logger.debug('Edit AboutUs Organization...');
-    let now: Date = new Date();
+    const now: Date = new Date();
     editNonProfitAppearanceNavBlogDto.updatedAt = now.toISOString();
     editNonProfitAppearanceNavBlogDto.news = newsPath;
     const blogUpdated = await this.appearanceNavigationModel.findOneAndUpdate(
@@ -3047,7 +3047,7 @@ export class OrganizationService {
     }
 
     nonProfitAppearancePageDto.organizationId = organizationId;
-    let now: Date = new Date();
+    const now: Date = new Date();
     nonProfitAppearancePageDto.createdAt = now.toISOString();
     nonProfitAppearancePageDto.updatedAt = now.toISOString();
     this.logger.debug('Create ContactUs Organization...');
@@ -3074,7 +3074,7 @@ export class OrganizationService {
     }
 
     this.logger.debug('Edit ContactUs Organization...');
-    let now: Date = new Date();
+    const now: Date = new Date();
     editNonProfitAppearancePageDto.updatedAt = now.toISOString();
     const appearanceEditContactUs =
       await this.appearancePageModel.findOneAndUpdate(
@@ -3385,7 +3385,7 @@ export class OrganizationService {
     for (const dt in chartData) {
       const dataList: object[] = [];
       for (const dt2 in chartData[dt]) {
-        let dataEl: any = {};
+        const dataEl: any = {};
         dataEl[dt2] = chartData[dt][dt2];
         dataList.push(dataEl);
       }
@@ -3417,7 +3417,7 @@ export class OrganizationService {
     for (const dt in chartDataZakat) {
       const dataListZakat: object[] = [];
       for (const dt2 in chartDataZakat[dt]) {
-        let dataEl: any = {};
+        const dataEl: any = {};
         dataEl[dt2] = chartDataZakat[dt][dt2];
         dataListZakat.push(dataEl);
       }

@@ -16,10 +16,10 @@ export class Operator {
   public name?: string;
 
   @Prop({ type: () => String })
-  public createdAt?: String;
+  public createdAt?: string;
 
   @Prop({ type: () => String })
-  public ownerUserId?: String;
+  public ownerUserId?: string;
 }
 
 export const OperatorSchema = SchemaFactory.createForClass(Operator)

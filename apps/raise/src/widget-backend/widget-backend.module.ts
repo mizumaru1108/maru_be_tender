@@ -9,11 +9,11 @@ import { Donation, DonationSchema } from './schemas/donation-data.schema';
     MongooseModule.forFeature([
       {
         name: Donation.name,
-        schema: DonationSchema
-      }
-    ])
+        schema: DonationSchema,
+      },
+    ]),
   ],
   controllers: [WidgetBackendController],
-  providers: [WidgetBackendService]
+  providers: [WidgetBackendService],
 })
-export class WidgetBackendModule { }
+export class WidgetBackendModule {}

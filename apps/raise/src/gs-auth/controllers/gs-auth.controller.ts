@@ -23,7 +23,7 @@ export class GsAuthController {
   @Post('register')
   async register(
     @Body() registerRequest: GSRegisterRequestDto,
-  ):Promise<BaseResponse<User>> {
+  ): Promise<BaseResponse<User>> {
     const registeredUser = await this.gsAuthService.register(registerRequest);
 
     return baseResponseHelper<any>(

@@ -43,7 +43,7 @@ export class TenderService {
       FileMimeTypeEnum.XLS,
       FileMimeTypeEnum.XLSX,
     ];
-    let uploadedFileLinks: string = 'Uploaded file links: \n';
+    let uploadedFileLinks = 'Uploaded file links: \n';
     try {
       const processFiles = files.map(async (file, index) => {
         // if the optionalFolderPath = "profile-pics" exist the url will be

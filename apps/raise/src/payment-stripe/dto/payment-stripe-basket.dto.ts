@@ -1,11 +1,11 @@
 import { IsString } from 'class-validator';
-import { IsArray } from "class-validator";
-import { Types } from "mongoose";
+import { IsArray } from 'class-validator';
+import { Types } from 'mongoose';
 
 export class PaymentRequestCartDto {
-  @IsString ()
+  @IsString()
   organizationId: Types.ObjectId;
-  @IsString ()
+  @IsString()
   donorId: Types.ObjectId;
   type: string;
   total_amount: number;
@@ -20,6 +20,6 @@ export class PaymentRequestCartDto {
   data_basket: {
     _id: string;
     organizationId: Types.ObjectId;
-    amount: number
+    amount: number;
   }[];
 }

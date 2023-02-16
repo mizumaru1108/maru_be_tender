@@ -59,7 +59,7 @@ export class TenderMessagesRepository {
       receiver: user | null;
     }
   > {
-    let uploadedFileUrl: string = ''; // temporary variable to store the uploaded file url (for revert if transaction failed)
+    let uploadedFileUrl = ''; // temporary variable to store the uploaded file url (for revert if transaction failed)
 
     try {
       return await this.prismaService.$transaction(async (prisma) => {
@@ -250,7 +250,7 @@ export class TenderMessagesRepository {
         },
       });
 
-      let logs: string = '';
+      let logs = '';
       if (messages.length && grouped.length === 0) {
         logs = `${messages.length} Messages fetched`;
       }

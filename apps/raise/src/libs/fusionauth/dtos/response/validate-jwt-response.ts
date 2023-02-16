@@ -25,7 +25,7 @@ export interface IVerifyEmailDto {
   organizationId?: string;
   organizationEmail?: string;
   verificationId?: string;
-  userId: UUID
+  userId: UUID;
 }
 
 export interface IQueryAxiosVerify {

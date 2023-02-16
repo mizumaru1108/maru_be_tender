@@ -6,11 +6,10 @@ import { Donation, DonationDocument } from './schemas/donation-data.schema';
 
 @Injectable()
 export class WidgetBackendService {
-
   constructor(
     @InjectModel(Donation.name)
-    private donationModel: Model<DonationDocument>
-  ) { }
+    private donationModel: Model<DonationDocument>,
+  ) {}
 
   async create(donationData: any) {
     // const checkDonor = await this.donationModel.findOne({
@@ -27,7 +26,7 @@ export class WidgetBackendService {
         },
         body: JSON.stringify({
           data: donationData.receiption_link,
-          message: "Donation created successfully."
+          message: 'Donation created successfully.',
         }),
       };
     } catch (error) {
@@ -37,7 +36,7 @@ export class WidgetBackendService {
           'Access-Control-Allow-Origin': '*',
         },
         body: JSON.stringify({
-          message: "Donation failed"
+          message: 'Donation failed',
         }),
       };
     }

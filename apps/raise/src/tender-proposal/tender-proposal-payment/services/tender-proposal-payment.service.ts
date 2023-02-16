@@ -262,14 +262,14 @@ export class TenderProposalPaymentService {
     uploadedFilePath: string[],
   ) {
     try {
-      let fileName = generateFileName(
+      const fileName = generateFileName(
         file.fullName,
         file.fileExtension as FileMimeTypeEnum,
       );
 
-      let filePath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposalId}/${folderName}/${fileName}`;
+      const filePath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposalId}/${folderName}/${fileName}`;
 
-      let fileBuffer = Buffer.from(
+      const fileBuffer = Buffer.from(
         file.base64Data.replace(/^data:.*;base64,/, ''),
         'base64',
       );
@@ -285,7 +285,7 @@ export class TenderProposalPaymentService {
       );
 
       uploadedFilePath.push(imageUrl);
-      let fileObj = {
+      const fileObj = {
         url: imageUrl,
         type: file.fileExtension,
         size: file.size,

@@ -13,6 +13,7 @@ import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
+import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
 import { validateFileSize } from '../../../commons/utils/validate-file-size';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
@@ -26,6 +27,7 @@ import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-paylo
 import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
 import { generateFileName } from '../../../tender-commons/utils/generate-filename';
 import { isTenderFilePayload } from '../../../tender-commons/utils/is-tender-file-payload';
+import { isUploadFileJsonb } from '../../../tender-commons/utils/is-upload-file-jsonb';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
 import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
@@ -42,8 +44,6 @@ import { BankInformationsMapper } from '../mappers/bank_information.mapper';
 import { CreateClientMapper } from '../mappers/create-client.mapper';
 import { UserClientDataMapper } from '../mappers/user-client-data.mapper';
 import { TenderClientRepository } from '../repositories/tender-client.repository';
-import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
-import { isUploadFileJsonb } from '../../../tender-commons/utils/is-upload-file-jsonb';
 
 import { logUtil } from '../../../commons/utils/log-util';
 import { finalUploadFileJson } from '../../../tender-commons/dto/final-upload-file-jsonb.dto';
@@ -111,7 +111,7 @@ export class TenderClientService {
       | undefined = undefined;
 
     let lisceneFileObj: UploadFilesJsonbDto | undefined = undefined;
-    let ofdecObj: UploadFilesJsonbDto[] = [];
+    const ofdecObj: UploadFilesJsonbDto[] = [];
     let bankCardObj: UploadFilesJsonbDto | undefined = undefined;
     let uploadedFilePath: string[] = [];
     const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
@@ -270,14 +270,14 @@ export class TenderClientService {
     onCreateUser?: boolean | undefined,
   ) {
     try {
-      let fileName = generateFileName(
+      const fileName = generateFileName(
         file.fullName,
         file.fileExtension as FileMimeTypeEnum,
       );
 
-      let filePath = `tmra/${this.appEnv}/organization/tender-management/client-data/${userId}/${folderName}/${fileName}`;
+      const filePath = `tmra/${this.appEnv}/organization/tender-management/client-data/${userId}/${folderName}/${fileName}`;
 
-      let fileBuffer = Buffer.from(
+      const fileBuffer = Buffer.from(
         file.base64Data.replace(/^data:.*;base64,/, ''),
         'base64',
       );
@@ -293,7 +293,7 @@ export class TenderClientService {
       );
 
       uploadedFilePath.push(imageUrl);
-      let fileObj = {
+      const fileObj = {
         url: imageUrl,
         type: file.fileExtension,
         size: file.size,
@@ -349,7 +349,7 @@ export class TenderClientService {
 
     const tmpDiffrence = ApproveEditRequestMapper(old_data, new_data);
 
-    let diffrence = {
+    const diffrence = {
       ...tmpDiffrence.updateClientPayload,
     };
 
@@ -484,7 +484,7 @@ export class TenderClientService {
         Object.entries(clientData).filter(([k]) => !exclude.includes(k)),
       );
 
-      let tmp = {
+      const tmp = {
         ...newClientDataObject,
         bank_information: old_banks,
       } as ClientEditRequestFieldDto;
@@ -499,7 +499,7 @@ export class TenderClientService {
       const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
         [];
 
-      let baseNewEditRequest = {
+      const baseNewEditRequest = {
         id: uuidv4(),
         user_id: user.id,
         status_id: 'PENDING',
@@ -560,7 +560,7 @@ export class TenderClientService {
               fileManagerCreateManyPayload.push(payload);
             }
 
-            let newData: Prisma.bank_informationUncheckedCreateInput = {
+            const newData: Prisma.bank_informationUncheckedCreateInput = {
               id: oldData.id,
               user_id: user.id,
               bank_account_name:
@@ -685,7 +685,7 @@ export class TenderClientService {
             uploadedFilePath = uploadResult.uploadedFilePath;
             // console.log({ uploadedFilePath });
 
-            let tmpCreatedOfdec: finalUploadFileJson = uploadResult.fileObj;
+            const tmpCreatedOfdec: finalUploadFileJson = uploadResult.fileObj;
             tmpCreatedOfdec.color = 'green';
 
             // console.log(
@@ -801,7 +801,7 @@ export class TenderClientService {
           ofdecFromDb.forEach((existingOfdec) => {
             if (isUploadFileJsonb(existingOfdec)) {
               // console.log({ existingOfdec });
-              let tmpExisting: finalUploadFileJson = existingOfdec as any;
+              const tmpExisting: finalUploadFileJson = existingOfdec as any;
               const idx = newOfdec.findIndex(
                 (newData) => newData.url === tmpExisting.url,
               );
@@ -815,7 +815,7 @@ export class TenderClientService {
           });
         } else {
           if (isUploadFileJsonb(ofdecFromDb)) {
-            let tmpExisting: finalUploadFileJson = ofdecFromDb as any;
+            const tmpExisting: finalUploadFileJson = ofdecFromDb as any;
             // console.log({ ofdecFromDb });
             // console.log({ newOfdec });
             const idx = newOfdec.findIndex(
@@ -831,7 +831,7 @@ export class TenderClientService {
         }
       }
 
-      let oldLicenseFile: finalUploadFileJson = clientOldRequest.license_file;
+      const oldLicenseFile: finalUploadFileJson = clientOldRequest.license_file;
       let newLicenseFile: finalUploadFileJson = clientOldRequest.license_file;
       if (!!license_file) {
         // console.log(logUtil(license_file));
@@ -875,7 +875,7 @@ export class TenderClientService {
           //     license_file,
           //   )}`,
           // );
-          let tmp: UploadFilesJsonbDto = license_file;
+          const tmp: UploadFilesJsonbDto = license_file;
           if (tmp.url !== clientOldRequest.license_file.url) {
             oldLicenseFile.color = 'red';
             newLicenseFile = license_file;
@@ -950,16 +950,16 @@ export class TenderClientService {
     let created_bank: Prisma.bank_informationCreateManyInput[] = [];
     let updated_bank: bank_information[] = [];
     let deleted_bank: bank_information[] = [];
-    let deletedFileManagerUrls: string[] = [];
+    const deletedFileManagerUrls: string[] = [];
 
     try {
       const { old_value, new_value, user_id } = requestData;
 
-      let oldTmp = JSON.parse(old_value);
+      const oldTmp = JSON.parse(old_value);
       delete oldTmp.bank_information;
       old_data = oldTmp;
 
-      let newTmp = JSON.parse(new_value);
+      const newTmp = JSON.parse(new_value);
       created_bank = newTmp['createdBanks'];
       updated_bank = newTmp['updatedBanks'];
       deleted_bank = newTmp['deletedBanks'];
@@ -982,7 +982,7 @@ export class TenderClientService {
       updateUserPayload = mapResult.updateUserPayload;
 
       if (old_data.board_ofdec_file) {
-        let tmpOldOfdec: finalUploadFileJson[] =
+        const tmpOldOfdec: finalUploadFileJson[] =
           old_data.board_ofdec_file as any;
 
         for (let i = 0; i < tmpOldOfdec.length; i++) {
@@ -999,8 +999,8 @@ export class TenderClientService {
       }
 
       if (new_data.board_ofdec_file) {
-        let tmpArr: UploadFilesJsonbDto[] = [];
-        let tmpNewOfdec: finalUploadFileJson[] =
+        const tmpArr: UploadFilesJsonbDto[] = [];
+        const tmpNewOfdec: finalUploadFileJson[] =
           new_data.board_ofdec_file as any;
 
         for (let i = 0; i < tmpNewOfdec.length; i++) {
@@ -1073,19 +1073,19 @@ export class TenderClientService {
 
       const { old_value, new_value, user_id } = requestData;
 
-      let old_data: client_data;
-      let new_data: client_data;
-      let updateClientPayload:
-        | Prisma.client_dataUncheckedUpdateInput
-        | undefined;
+      // let old_data: client_data;
+      // let new_data: client_data;
+      // let updateClientPayload:
+      //   | Prisma.client_dataUncheckedUpdateInput
+      //   | undefined;
       let created_bank: Prisma.bank_informationCreateManyInput[] = [];
       let updated_bank: bank_information[] = [];
       let deleted_bank: bank_information[] = [];
-      let deletedFileManagerUrls: string[] = [];
+      const deletedFileManagerUrls: string[] = [];
 
-      let oldTmp = JSON.parse(old_value);
+      const oldTmp = JSON.parse(old_value);
 
-      let newTmp = JSON.parse(new_value);
+      const newTmp = JSON.parse(new_value);
       created_bank = newTmp['createdBanks'];
       updated_bank = newTmp['updatedBanks'];
       deleted_bank = newTmp['deletedBanks'];
@@ -1149,13 +1149,13 @@ export class TenderClientService {
       }
 
       delete oldTmp.bank_information;
-      old_data = oldTmp;
+      // const old_data: client_data = oldTmp;
 
       delete newTmp.bank_information;
       delete newTmp.createdBanks;
       delete newTmp.updatedBanks;
       delete newTmp.deletedBanks;
-      new_data = newTmp;
+      // const new_data: client_data = newTmp;
 
       const updatePayload: Prisma.edit_requestsUncheckedUpdateInput = {
         status_id: 'REJECTED',
@@ -1281,10 +1281,10 @@ export class TenderClientService {
     editRequest: RawCreateEditRequestResponse['data'],
   ) {
     const { user } = editRequest;
-    let clientSubject = `New Edit Request Submitted Success!`;
-    let accManagersubject = `New Edit Request Submitted Success!`;
-    let clientContent = `Your edit request is submitted successfully!, please wait until account manager is reponded to your request`;
-    let accManagerContent = `There's a new Edit Request from ${user.employee_name}`;
+    const clientSubject = `New Edit Request Submitted Success!`;
+    const accManagersubject = `New Edit Request Submitted Success!`;
+    const clientContent = `Your edit request is submitted successfully!, please wait until account manager is reponded to your request`;
+    const accManagerContent = `There's a new Edit Request from ${user.employee_name}`;
 
     const baseSendEmail: Omit<SendEmailDto, 'to'> = {
       mailType: 'plain',
@@ -1309,7 +1309,7 @@ export class TenderClientService {
     };
     await this.notificationService.create(clientWebNotifPayload);
 
-    let clientPhone = isExistAndValidPhone(user.mobile_number);
+    const clientPhone = isExistAndValidPhone(user.mobile_number);
     if (clientPhone) {
       this.twilioService.sendSMS({
         to: clientPhone,
@@ -1338,7 +1338,7 @@ export class TenderClientService {
         };
         await this.notificationService.create(accManagerWebNotif);
 
-        let accManagerPhone = isExistAndValidPhone(
+        const accManagerPhone = isExistAndValidPhone(
           accountManagers[i].mobile_number,
         );
 

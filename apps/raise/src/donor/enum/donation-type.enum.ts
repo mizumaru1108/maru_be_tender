@@ -4,5 +4,5 @@ export enum DonationType {
   PROJECT = 'project',
   MIXED = 'mixed',
   CART = 'cart',
-  ZAKAT = 'zakat'
+  ZAKAT = 'zakat',
 }

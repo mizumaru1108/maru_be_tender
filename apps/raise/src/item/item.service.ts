@@ -34,7 +34,7 @@ export class ItemService {
 
   async create(rawCreateItemDto: CreateItemDto): Promise<Item> {
     let createItemDto: CreateItemDto;
-    let decimal = require('mongoose').Types.Decimal128;
+    const decimal = require('mongoose').Types.Decimal128;
     try {
       createItemDto = CreateItemDto.parse(rawCreateItemDto);
     } catch (err) {
@@ -59,7 +59,7 @@ export class ItemService {
     const appEnv = this.configService.get('APP_ENV');
     const path: string[] = [];
 
-    let folderType: string = '';
+    let folderType = '';
 
     createdItem.category = createItemDto.category;
     createdItem.projectId = createItemDto.projectId;
@@ -86,7 +86,7 @@ export class ItemService {
         remove: /[*+~.()'"!:@]/g,
       });
 
-      let random = Math.random().toString().substr(2, 4);
+      const random = Math.random().toString().substr(2, 4);
       // folder type is the same because any campaign image can be "Set as Cover"
       if (i == 0) {
         folderType = 'item-photo';

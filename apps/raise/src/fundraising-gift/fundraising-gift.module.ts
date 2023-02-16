@@ -4,6 +4,6 @@ import { FundraisingGiftController } from './fundraising-gift.controller';
 
 @Module({
   providers: [FundraisingGiftService],
-  controllers: [FundraisingGiftController]
+  controllers: [FundraisingGiftController],
 })
 export class FundraisingGiftModule {}

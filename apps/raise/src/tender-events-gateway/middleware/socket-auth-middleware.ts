@@ -24,7 +24,7 @@ export const SocketAuthMiddleware = (
       next(new WsUnauthorizedException('Access token is required!'));
     }
 
-    let jwtToken = socket.handshake.query.accessToken as string;
+    const jwtToken = socket.handshake.query.accessToken as string;
 
     try {
       const validToken = await fusionAuthService.fusionAuthValidateToken(
@@ -107,7 +107,7 @@ export const SocketAuthMiddleware = (
         error instanceof Prisma.PrismaClientUnknownRequestError ||
         error instanceof Prisma.NotFoundError
       ) {
-        let instance: string = '';
+        let instance = '';
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
           instance = 'PrismaClientKnownRequestError';
         }

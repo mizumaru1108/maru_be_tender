@@ -323,7 +323,7 @@ export class FusionAuthService {
 
     // change the tender app role to fusion auth roles
     if (registerRequest.user_roles) {
-      let tmpRoles: string[] = registerRequest.user_roles.map(
+      const tmpRoles: string[] = registerRequest.user_roles.map(
         (role) => appRoleToFusionAuthRoles[role as TenderAppRole],
       );
       role = tmpRoles;
@@ -402,7 +402,7 @@ export class FusionAuthService {
       email: requestVerify.email,
     };
 
-    let variableSendEmail: SendRequest = {
+    const variableSendEmail: SendRequest = {
       requestData: {
         domainUrl: requestVerify.domainUrl,
         organizationEmail: requestVerify.organizationEmail,

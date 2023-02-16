@@ -1,8 +1,7 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
-import { BaseFilterRequest } from "src/commons/dtos/base-filter-request.dto";
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { BaseFilterRequest } from 'src/commons/dtos/base-filter-request.dto';
 
 export class DonorListDto extends BaseFilterRequest {
-
   @IsNotEmpty()
   @IsString()
   organizationId: string;
@@ -30,5 +29,4 @@ export class DonorListDto extends BaseFilterRequest {
   @IsOptional()
   @IsString()
   type: string;
-
 }

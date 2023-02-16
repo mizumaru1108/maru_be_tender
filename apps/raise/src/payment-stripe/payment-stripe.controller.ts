@@ -5,7 +5,7 @@ import { PaymentStripeService } from './payment-stripe.service';
 
 @Controller('stripe')
 export class PaymentStripeController {
-  constructor(private readonly paymentStripeService: PaymentStripeService) { }
+  constructor(private readonly paymentStripeService: PaymentStripeService) {}
 
   @Post('/request')
   async request(@Body() payment: PaymentRequestDto) {
@@ -43,13 +43,8 @@ export class PaymentStripeController {
     return await this.paymentStripeService.reqPayStripe(payment);
   }
 
-
   @Post('/payStripeWebHook')
-  async payStripWebHook(
-    @Body() payLoad: any,
-    @Req() req: any
-  ) {
+  async payStripWebHook(@Body() payLoad: any, @Req() req: any) {
     return await this.paymentStripeService.payStripWebHook(payLoad);
   }
-
 }

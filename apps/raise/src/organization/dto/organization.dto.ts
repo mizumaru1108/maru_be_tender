@@ -1,9 +1,5 @@
-import { ApiProperty,  } from '@nestjs/swagger';
-import {
-  IsString,
-  IsNotEmpty,
-  IsArray,
-} from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsNotEmpty, IsArray } from 'class-validator';
 export class OrganizationDto {
   organizationEmail: string;
   name: string;

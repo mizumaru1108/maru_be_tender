@@ -1,9 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsString,
-  IsNotEmpty,
-  IsOptional,
-} from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
 
 import { Types } from 'mongoose';
@@ -28,52 +24,52 @@ export class PaymentGateWayDto {
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  createdAt: string
+  createdAt: string;
 
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  updatedAt: string
+  updatedAt: string;
 
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  payementMethod: string
+  payementMethod: string;
 
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  profileName: string
+  profileName: string;
 
   @ApiProperty()
   @IsString()
-  apiKey: string
+  apiKey: string;
 
   @ApiProperty()
   @IsString()
-  clientKey: string
+  clientKey: string;
 
   @ApiProperty()
   @IsString()
-  serverKey: string
+  serverKey: string;
 
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  isActive: string
+  isActive: string;
 
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  isDeleted: string
+  isDeleted: string;
 
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  isLiveMode: string
+  isLiveMode: string;
 
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  isTestMode: string
+  isTestMode: string;
 }
