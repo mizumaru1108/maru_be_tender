@@ -16,6 +16,7 @@ import { useSnackbar } from 'notistack';
 import uuidv4 from 'utils/uuidv4';
 import useAuth from 'hooks/useAuth';
 import { useState } from 'react';
+import moment from 'moment';
 
 type FormValuesProps = {
   payments: {
@@ -60,10 +61,29 @@ function PaymentsSetForm() {
     defaultValues,
   });
 
-  const { handleSubmit } = methods;
+  const { handleSubmit, setError } = methods;
 
   const handleOnSubmit = async (data: any) => {
     setIsSubmitting(true);
+
+    // for (let i = 1; i < data?.payments.length; i++) {
+    //   const previousDate = moment(data?.payments[i - 1].payment_date);
+    //   const currentDate = moment(data?.payments[i].payment_date);
+
+    //   if (currentDate.isBefore(previousDate)) {
+    //     enqueueSnackbar(`Payment ${i + 1} date is less than payment ${i} date.`, {
+    //       variant: 'error',
+    //       preventDuplicate: true,
+    //       autoHideDuration: 3000,
+    //     });
+
+    //     setError(`payments.${i}.payment_date`, { type: 'focus' }, { shouldFocus: true });
+
+    //     setIsSubmitting(false);
+    //     break;
+    //   }
+    // }
+
     try {
       await dispatch(
         insertPaymentsBySupervisor({
@@ -80,7 +100,6 @@ function PaymentsSetForm() {
         if (res.statusCode === 201) {
           setIsSubmitting(false);
           enqueueSnackbar('تم إنشاء الدفعات بنجاح', { variant: 'success' });
-
           // window.location.reload();
         }
       });

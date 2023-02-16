@@ -26,7 +26,7 @@ function DailyStatistics() {
   if (fetching) return <>... Loading</>;
   if (error) return <>{error.message}</>;
 
-  console.log('data', data);
+  // console.log('data', data);
 
   return (
     <Grid container spacing={2}>

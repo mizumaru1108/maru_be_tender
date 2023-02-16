@@ -213,7 +213,7 @@ export const ThirdFormData = [
     options: [
       { label: 'حضوري', value: false },
       { label: 'اونلاين', value: true },
-      { label: 'كلاهما', value: true },
+      // { label: 'كلاهما', value: true },
     ],
     md: 6,
     xs: 12,

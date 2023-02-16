@@ -47,11 +47,6 @@ export default function TrackBudget() {
         <React.Fragment>
           {!fetching && data ? (
             <React.Fragment>
-              <Grid item md={12}>
-                <Typography variant="h4">
-                  {translate('content.client.main_page.track_budget')}
-                </Typography>
-              </Grid>
               <Grid item md={2} xs={12}>
                 <Box
                   sx={{

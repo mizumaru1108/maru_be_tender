@@ -36,6 +36,7 @@ function MainManagerPage() {
   const [incoming] = useQuery({
     query: getProposals,
     variables: {
+      order_by: { updated_at: 'desc' },
       where: {
         outter_status: { _eq: 'ONGOING' },
         _and: { inner_status: { _eq: 'CREATED_BY_CLIENT' } },
