@@ -492,28 +492,29 @@ export class TenderProposalRepository {
     }
   }
 
-  async findAmandementByProposalId(
-    proposalId: string,
-  ): Promise<proposal_edit_request | null> {
-    try {
-      this.logger.log(
-        'info',
-        `Finding amandement with proposal id of ${proposalId}`,
-      );
-      const raw = await this.prismaService.$queryRaw<
-        proposal_edit_request[]
-      >`SELECT * FROM proposal_edit_request WHERE proposal_id = ${proposalId}`;
-      return raw[0] || null;
-    } catch (err) {
-      const theError = prismaErrorThrower(
-        err,
-        TenderProposalRepository.name,
-        'Find Amandement By ProposalId error details: ',
-        'Finding Amandement By ProposalId!',
-      );
-      throw theError;
-    }
-  }
+  // async findAmandementByProposalId(
+  //   proposalId: string,
+  // ): Promise<proposal_edit_request | null> {
+  //   try {
+  //     this.logger.log(
+  //       'info',
+  //       `Finding amandement with proposal id of ${proposalId}`,
+  //     );
+  //     const raw = await this.prismaService.$queryRaw<
+  //       proposal_edit_request[]
+  //     >`SELECT * FROM proposal_edit_request WHERE proposal_id = ${proposalId}`;
+  //     console.log({ raw });
+  //     return raw[0] || null;
+  //   } catch (err) {
+  //     const theError = prismaErrorThrower(
+  //       err,
+  //       TenderProposalRepository.name,
+  //       'Find Amandement By ProposalId error details: ',
+  //       'Finding Amandement By ProposalId!',
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
   async findAmandementList(
     currentUser: TenderCurrentUser,
