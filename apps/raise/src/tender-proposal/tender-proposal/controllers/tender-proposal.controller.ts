@@ -27,6 +27,7 @@ import { TenderProposalService } from '../services/tender-proposal.service';
 import { SendAmandementDto } from '../dtos/requests/send-amandement.dto';
 import { FetchAmandementFilterRequest } from '../dtos/requests/fetch-amandement-filter-request.dto';
 import { GetByUUIDQueryParamDto } from '../../../commons/dtos/get-by-uuid-query-param.dto';
+import { SendRevisionDto } from '../dtos/requests/send-revision.dto';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(private readonly proposalService: TenderProposalService) {}
@@ -174,8 +175,28 @@ export class TenderProposalController {
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: ProposalSaveDraftDto,
   ) {
-    const updateResponse = await this.proposalService.saveDraft(
+    const updateResponse = await this.proposalService.clientUpdateProposal(
       currentUser.id,
+      request,
+      undefined,
+    );
+    return baseResponseHelper(
+      updateResponse,
+      HttpStatus.OK,
+      'Proposal updated successfully',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_client')
+  @Patch('send-revision')
+  async sendRevision(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() request: SendRevisionDto,
+  ) {
+    const updateResponse = await this.proposalService.clientUpdateProposal(
+      currentUser.id,
+      undefined,
       request,
     );
     return baseResponseHelper(

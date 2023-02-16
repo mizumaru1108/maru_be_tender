@@ -187,24 +187,25 @@ function ModeratorActionBar() {
             >
               {translate('project_rejected')}
             </LoadingButton>
-            {/* here where Yayan should complete from  "send_message_to_partner"*/}
-            <Button
+            {/* disabled other than accept reject button */}
+            {/* <Button
               variant="outlined"
               color="primary"
               sx={{ my: { xs: '1.3em', md: '0' }, ':hover': { backgroundColor: '#fff' } }}
             >
               {translate('send_message_to_partner')}
-            </Button>
+            </Button> */}
           </Stack>
 
-          <Button
+          {/* disabled other than accept reject button */}
+          {/* <Button
             variant="contained"
             onClick={() => {}}
             sx={{ backgroundColor: '#0169DE', ':hover': { backgroundColor: '#1482FE' } }}
             endIcon={<Iconify icon="eva:edit-2-outline" />}
           >
             {translate('submit_amendment_request')}
-          </Button>
+          </Button> */}
         </Stack>
       </Box>
       {action === 'accept' && (

@@ -1,9 +1,6 @@
 import { Box, Button, Grid, useTheme } from '@mui/material';
 import useLocales from 'hooks/useLocales';
-import { useSnackbar } from 'notistack';
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
-import useAuth from '../../../hooks/useAuth';
 import ConfirmApprovedEditRequest from './ConfirmApprovedEditRequest';
 
 interface Props {
@@ -12,14 +9,9 @@ interface Props {
 }
 
 function ActionButtonEditRequest({ EditStatus, setOpen }: Props) {
-  const { activeRole } = useAuth();
   const [openModal, setOpenModal] = useState(false);
-  const { enqueueSnackbar } = useSnackbar();
   const { translate } = useLocales();
-  const navigate = useNavigate();
   const theme = useTheme();
-  const params = useParams();
-  // const [open, setOpen] = useState(false);
 
   const handleRejected = () => {
     setOpen();

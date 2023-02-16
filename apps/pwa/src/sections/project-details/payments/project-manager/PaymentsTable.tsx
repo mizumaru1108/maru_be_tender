@@ -118,7 +118,20 @@ function PaymentsTable() {
                 </Typography>
               </Stack>
             </Grid>
-            {item.status === 'DONE' && (
+            {item.status === 'ACCEPTED_BY_PROJECT_MANAGER' ? (
+              <Grid item md={2}>
+                <Typography
+                  sx={{
+                    color: '#0E8478',
+                  }}
+                >
+                  {translate(
+                    'content.administrative.project_details.payment.table.btn.exchange_permit_success'
+                  )}
+                </Typography>
+              </Grid>
+            ) : null}
+            {item.status === 'DONE' ? (
               <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                 {item.cheques.length ? (
                   <Button
@@ -149,8 +162,8 @@ function PaymentsTable() {
                   </Typography>
                 )}
               </Grid>
-            )}
-            {item.status === 'ISSUED_BY_SUPERVISOR' && (
+            ) : null}
+            {item.status === 'ISSUED_BY_SUPERVISOR' ? (
               <>
                 <Grid item md={2}>
                   <Button
@@ -186,7 +199,7 @@ function PaymentsTable() {
                   </Button>
                 </Grid>
               </>
-            )}
+            ) : null}
           </Grid>
         </Grid>
       ))}

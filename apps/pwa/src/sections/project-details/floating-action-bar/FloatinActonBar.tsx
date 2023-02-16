@@ -45,9 +45,10 @@ function FloatinActonBar() {
         actionType === 'show-details' &&
         ['tender_consultant'].includes(role) && <ConsultantFloatingActionBar />}
 
-      {activeTap &&
+      {/* disabled other than accept reject button */}
+      {/* {activeTap &&
         actionType === 'reject-project' &&
-        ['tender_ceo', 'tender_project_manager'].includes(role) && <RejectProjectsActionBar />}
+        ['tender_ceo', 'tender_project_manager'].includes(role) && <RejectProjectsActionBar />} */}
     </>
   );
 }

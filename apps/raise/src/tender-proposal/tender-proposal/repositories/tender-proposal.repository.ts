@@ -11,7 +11,9 @@ import { ProposalAction } from '../../../tender-commons/types/proposal';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import { FetchAmandementFilterRequest } from '../dtos/requests/fetch-amandement-filter-request.dto';
+import { UpdateMyProposalResponseDto } from '../dtos/responses/update-my-proposal-response.dto';
 import { NewAmandementNotifMapper } from '../mappers/new-amandement-notif-mapper';
+import { SendRevisionNotifMapper } from '../mappers/send-revision-notif-mapper';
 @Injectable()
 export class TenderProposalRepository {
   private readonly logger = ROOT_LOGGER.child({
@@ -128,7 +130,7 @@ export class TenderProposalRepository {
     }
   }
 
-  async saveDraft(
+  async updateMyProposal(
     proposal_id: string,
     updateProposalPayload: Prisma.proposalUncheckedUpdateInput,
     proposal_item_budgets:
@@ -137,7 +139,8 @@ export class TenderProposalRepository {
     fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
     deletedFileManagerUrls: string[],
     uploadedFilePath: string[],
-  ) {
+    createLog: boolean,
+  ): Promise<UpdateMyProposalResponseDto> {
     try {
       return await this.prismaService.$transaction(
         async (prisma) => {
@@ -218,9 +221,89 @@ export class TenderProposalRepository {
             }
           }
 
+          if (createLog) {
+            const lastLog = await prisma.proposal_log.findFirst({
+              where: { proposal_id },
+              select: {
+                created_at: true,
+              },
+              orderBy: {
+                created_at: 'desc',
+              },
+              take: 1,
+            });
+
+            const createdLog = await prisma.proposal_log.create({
+              data: {
+                id: nanoid(),
+                proposal_id,
+                user_role: TenderAppRoleEnum.CLIENT,
+                action: ProposalAction.SEND_BACK_FOR_REVISION, //revised
+                state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
+                response_time: lastLog?.created_at
+                  ? Math.round(
+                      (new Date().getTime() - lastLog.created_at.getTime()) /
+                        60000,
+                    )
+                  : null,
+              },
+              select: {
+                action: true,
+                created_at: true,
+                proposal: {
+                  select: {
+                    project_name: true,
+                    user: {
+                      select: {
+                        id: true,
+                        employee_name: true,
+                        email: true,
+                        mobile_number: true,
+                      },
+                    },
+                    supervisor: {
+                      select: {
+                        id: true,
+                        employee_name: true,
+                        email: true,
+                        mobile_number: true,
+                      },
+                    },
+                  },
+                },
+              },
+            });
+
+            const sendRevisionNotif = SendRevisionNotifMapper({
+              ...createdLog,
+              reviewer: createdLog.proposal.supervisor,
+            });
+
+            if (
+              sendRevisionNotif.createManyWebNotifPayload &&
+              sendRevisionNotif.createManyWebNotifPayload.length > 0
+            ) {
+              this.logger.log(
+                'info',
+                `Creating new notification for revision sent, with payload of \n${sendRevisionNotif.createManyWebNotifPayload}`,
+              );
+              prisma.notification.createMany({
+                data: sendRevisionNotif.createManyWebNotifPayload,
+              });
+            }
+
+            return {
+              proposal,
+              notif: sendRevisionNotif,
+            };
+          }
+
           // console.log({ proposal });
           // throw new BadRequestException('debug');
-          return proposal;
+          return {
+            proposal,
+            notif: undefined,
+          };
         },
         { maxWait: 50000, timeout: 150000 },
       );

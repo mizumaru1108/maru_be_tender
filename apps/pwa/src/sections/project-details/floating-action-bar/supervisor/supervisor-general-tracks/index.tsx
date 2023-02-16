@@ -349,7 +349,9 @@ function FloatingActionBar() {
             <Box>{''}</Box>
           </Grid>
           <Grid item md={5}>
-            <Stack direction="row" gap={2} justifyContent="space-around">
+            <Box>{''}</Box>
+            {/* disabled other than accept reject button */}
+            {/* <Stack direction="row" gap={2} justifyContent="space-around">
               <Button
                 variant="outlined"
                 color="inherit"
@@ -391,7 +393,14 @@ function FloatingActionBar() {
                   horizontal: 'right',
                 }}
               >
-                <MenuItem disabled={true}>ارسال طلب تعديل الى الشريك</MenuItem>
+                <MenuItem
+                  disabled={true}
+                  // onClick={() => {
+                  //   navigate(`/project-supervisor/dashboard/proposal-amandment-request/${pid}`);
+                  // }}
+                >
+                  ارسال طلب تعديل الى الشريك
+                </MenuItem>
                 <MenuItem onClick={() => setAction('STEP_BACK')}>
                   ارجاع المعاملة الى مسؤول الفرز
                 </MenuItem>
@@ -399,7 +408,7 @@ function FloatingActionBar() {
                   اعادة المشروع للشريك لرفعه في وقت اخر
                 </MenuItem>
               </Menu>
-            </Stack>
+            </Stack> */}
           </Grid>
         </Grid>
       </Box>

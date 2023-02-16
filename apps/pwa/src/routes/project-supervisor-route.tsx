@@ -27,6 +27,9 @@ const ProjectOwnerDetails = Loadable(
 const AmandementRequest = Loadable(
   lazy(() => import('pages/amandement-request/AmandementRequest'))
 );
+const ProposalAmandementRequest = Loadable(
+  lazy(() => import('pages/amandement-request/client/AmandementRequestProposal'))
+);
 
 const NonClientProfile = Loadable(
   lazy(() => import('sections/non-client-profile/NonClientProfile'))
@@ -64,6 +67,7 @@ export const projectSupervisorRoute = {
         { element: <Navigate to="/project-supervisor/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainProjectSupervisor /> },
         { path: 'amandment-request/:id', element: <AmandementRequest /> },
+        { path: 'proposal-amandment-request/:proposal_id', element: <ProposalAmandementRequest /> },
         { path: ':submiterId/:detailType', element: <ProjectOwnerDetails /> },
         {
           path: 'current-project',

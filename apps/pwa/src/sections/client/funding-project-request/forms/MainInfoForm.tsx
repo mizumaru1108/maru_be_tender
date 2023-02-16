@@ -60,10 +60,10 @@ const MainInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
         (value) => {
           if (value) {
             if (
-              value.type !== 'application/pdf' &&
-              value.type !== 'image/png' &&
-              value.type !== 'image/jpeg' &&
-              value.type !== 'image/jpg'
+              value.type !== 'application/pdf'
+              // value.type !== 'image/png' &&
+              // value.type !== 'image/jpeg' &&
+              // value.type !== 'image/jpg'
             ) {
               return false;
             }
@@ -86,10 +86,10 @@ const MainInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
         (value) => {
           if (value) {
             if (
-              value.type !== 'application/pdf' &&
-              value.type !== 'image/png' &&
-              value.type !== 'image/jpeg' &&
-              value.type !== 'image/jpg'
+              value.type !== 'application/pdf'
+              // value.type !== 'image/png' &&
+              // value.type !== 'image/jpeg' &&
+              // value.type !== 'image/jpg'
             ) {
               return false;
             }

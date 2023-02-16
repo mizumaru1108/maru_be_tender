@@ -55,6 +55,8 @@ import { SupervisorAccCreatedRecommendedSupportMapper } from '../mappers/supervi
 import { SupervisorGrantTrackAccMapper } from '../mappers/supervisor-grant-track-acc.mapper';
 import { SupervisorRegularTrackAccMapper } from '../mappers/supervisor-regular-track-acc.mapper';
 import { UpdateProposalMapper } from '../mappers/update-proposal.mapper';
+import { SendRevisionDto } from '../dtos/requests/send-revision.dto';
+import { SendRevisionMapper } from '../mappers/send-revision.mapper';
 
 @Injectable()
 export class TenderProposalService {
@@ -263,28 +265,180 @@ export class TenderProposalService {
     return createdProposal;
   }
 
-  async saveDraft(userId: string, request: ProposalSaveDraftDto) {
-    // create payload for update proposal
-    const updateProposalPayload: Prisma.proposalUncheckedUpdateInput =
-      UpdateProposalMapper(request);
+  // async saveDraft(userId: string, request: ProposalSaveDraftDto) {
+  //   // create payload for update proposal
+  //   const updateProposalPayload: Prisma.proposalUncheckedUpdateInput =
+  //     UpdateProposalMapper(request);
 
-    let proposal_item_budgets:
-      | Prisma.proposal_item_budgetCreateManyInput[]
-      | undefined = undefined;
+  //   let proposal_item_budgets:
+  //     | Prisma.proposal_item_budgetCreateManyInput[]
+  //     | undefined = undefined;
 
-    const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
-      [];
+  //   const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
+  //     [];
 
-    let uploadedFilePath: string[] = [];
-    const deletedFileManagerUrls: string[] = []; // id of file manager that we want to mark as soft delete.
+  //   let uploadedFilePath: string[] = [];
+  //   const deletedFileManagerUrls: string[] = []; // id of file manager that we want to mark as soft delete.
+
+  //   // find proposal by id
+  //   const proposal = await this.proposalRepo.fetchProposalById(
+  //     request.proposal_id,
+  //   );
+  //   if (!proposal) {
+  //     throw new BadRequestException(`Proposal not found`);
+  //   }
+
+  //   if (proposal.submitter_user_id !== userId) {
+  //     throw new BadRequestException(
+  //       `You are not allowed to edit this proposal`,
+  //     );
+  //   }
+
+  //   if (request.proposal_bank_information_id) {
+  //     const isMyOwnBank = await this.proposalRepo.validateOwnBankAccount(
+  //       userId,
+  //       request.proposal_bank_information_id,
+  //     );
+  //     if (!isMyOwnBank) {
+  //       throw new BadRequestException('Bank account is not yours');
+  //     }
+  //     updateProposalPayload.proposal_bank_id =
+  //       request.proposal_bank_information_id;
+  //   }
+
+  //   /* validate and create path */
+  //   const maxSize: number = 1024 * 1024 * 512; // 512MB
+  //   const allowedType: FileMimeTypeEnum[] = [
+  //     FileMimeTypeEnum.JPG,
+  //     FileMimeTypeEnum.JPEG,
+  //     FileMimeTypeEnum.PNG,
+  //     FileMimeTypeEnum.GIF,
+  //     FileMimeTypeEnum.PDF,
+  //     FileMimeTypeEnum.DOC,
+  //     FileMimeTypeEnum.DOCX,
+  //     FileMimeTypeEnum.XLS,
+  //     FileMimeTypeEnum.XLSX,
+  //     FileMimeTypeEnum.PPT,
+  //     FileMimeTypeEnum.PPTX,
+  //   ];
+
+  //   if (isTenderFilePayload(request.project_attachments)) {
+  //     const uploadResult = await this.uploadProposalFile(
+  //       userId,
+  //       request.proposal_id,
+  //       'uploading project attachments',
+  //       request.project_attachments,
+  //       'project-attachments',
+  //       allowedType,
+  //       maxSize,
+  //       uploadedFilePath,
+  //     );
+  //     uploadedFilePath = uploadResult.uploadedFilePath;
+  //     updateProposalPayload.project_attachments = uploadResult.fileObj;
+
+  //     const payload: Prisma.file_managerUncheckedCreateInput = {
+  //       id: uuidv4(),
+  //       user_id: userId,
+  //       name: uploadResult.fileObj.url.split('/').pop() as string,
+  //       url: uploadResult.fileObj.url,
+  //       mimetype: uploadResult.fileObj.type,
+  //       size: uploadResult.fileObj.size,
+  //       column_name: 'project-attachments',
+  //       table_name: 'proposal',
+  //       proposal_id: request.proposal_id,
+  //     };
+  //     fileManagerCreateManyPayload.push(payload);
+
+  //     if (isUploadFileJsonb(proposal.project_attachments)) {
+  //       const oldFile = proposal.project_attachments as {
+  //         url: string;
+  //         type: string;
+  //         size: number;
+  //       };
+  //       if (!!oldFile.url) {
+  //         this.logger.log(
+  //           'info',
+  //           'Old proposal project attachment exist, it will marked as deleted files',
+  //         );
+  //         deletedFileManagerUrls.push(oldFile.url);
+  //       }
+  //     }
+  //   }
+
+  //   if (isTenderFilePayload(request.letter_ofsupport_req)) {
+  //     const uploadResult = await this.uploadProposalFile(
+  //       userId,
+  //       request.proposal_id,
+  //       'uploading letter of support',
+  //       request.letter_ofsupport_req,
+  //       'letter-of-support-req',
+  //       allowedType,
+  //       maxSize,
+  //       uploadedFilePath,
+  //     );
+  //     uploadedFilePath = uploadResult.uploadedFilePath;
+  //     updateProposalPayload.letter_ofsupport_req = uploadResult.fileObj;
+
+  //     const payload: Prisma.file_managerUncheckedCreateInput = {
+  //       id: uuidv4(),
+  //       user_id: userId,
+  //       name: uploadResult.fileObj.url.split('/').pop() as string,
+  //       url: uploadResult.fileObj.url,
+  //       mimetype: uploadResult.fileObj.type,
+  //       size: uploadResult.fileObj.size,
+  //       column_name: 'letter-of-support-req',
+  //       table_name: 'proposal',
+  //       proposal_id: request.proposal_id,
+  //     };
+  //     fileManagerCreateManyPayload.push(payload);
+
+  //     if (isUploadFileJsonb(proposal.letter_ofsupport_req)) {
+  //       const oldFile = proposal.letter_ofsupport_req as {
+  //         url: string;
+  //         type: string;
+  //         size: number;
+  //       };
+  //       if (!!oldFile.url) {
+  //         this.logger.log(
+  //           'info',
+  //           'Old proposal letter of support req exist, it will marked as deleted files',
+  //         );
+  //         deletedFileManagerUrls.push(oldFile.url);
+  //       }
+  //     }
+  //   }
+
+  //   if (request.detail_project_budgets) {
+  //     proposal_item_budgets = CreateItemBudgetsMapper(
+  //       proposal.id,
+  //       request.detail_project_budgets,
+  //     );
+  //   }
+
+  //   // create proposal and the logs
+  //   const updatedProposal = await this.proposalRepo.updateMyProposal(
+  //     proposal.id,
+  //     updateProposalPayload,
+  //     proposal_item_budgets,
+  //     fileManagerCreateManyPayload,
+  //     deletedFileManagerUrls,
+  //     uploadedFilePath,
+  //   );
+
+  //   return updatedProposal;
+  // }
+
+  async clientUpdateProposal(
+    userId: string,
+    saveDraftPayload?: ProposalSaveDraftDto,
+    sendRevisionPayload?: SendRevisionDto,
+  ) {
+    const proposalId =
+      saveDraftPayload?.proposal_id || sendRevisionPayload?.proposal_id || '';
 
     // find proposal by id
-    const proposal = await this.proposalRepo.fetchProposalById(
-      request.proposal_id,
-    );
-    if (!proposal) {
-      throw new BadRequestException(`Proposal not found`);
-    }
+    const proposal = await this.proposalRepo.fetchProposalById(proposalId);
+    if (!proposal) throw new BadRequestException(`Proposal not found`);
 
     if (proposal.submitter_user_id !== userId) {
       throw new BadRequestException(
@@ -292,16 +446,48 @@ export class TenderProposalService {
       );
     }
 
-    if (request.proposal_bank_information_id) {
-      const isMyOwnBank = await this.proposalRepo.validateOwnBankAccount(
-        userId,
-        request.proposal_bank_information_id,
-      );
-      if (!isMyOwnBank) {
-        throw new BadRequestException('Bank account is not yours');
+    const project_attachments: any =
+      saveDraftPayload?.project_attachments ||
+      sendRevisionPayload?.project_attachments;
+
+    const letter_ofsupport_req: any =
+      saveDraftPayload?.letter_ofsupport_req ||
+      sendRevisionPayload?.letter_ofsupport_req;
+
+    let updateProposalPayload: Prisma.proposalUncheckedUpdateInput = {};
+
+    let uploadedFilePath: string[] = [];
+    const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
+      [];
+    const deletedFileManagerUrls: string[] = []; // id of file manager that we want to mark as soft delete.
+
+    let proposal_item_budgets:
+      | Prisma.proposal_item_budgetCreateManyInput[]
+      | undefined = undefined;
+
+    if (!!saveDraftPayload) {
+      updateProposalPayload = UpdateProposalMapper(saveDraftPayload);
+      if (saveDraftPayload.proposal_bank_information_id) {
+        const isMyOwnBank = await this.proposalRepo.validateOwnBankAccount(
+          userId,
+          saveDraftPayload.proposal_bank_information_id,
+        );
+        if (!isMyOwnBank) {
+          throw new BadRequestException('Bank account is not yours');
+        }
+        updateProposalPayload.proposal_bank_id =
+          saveDraftPayload.proposal_bank_information_id;
       }
-      updateProposalPayload.proposal_bank_id =
-        request.proposal_bank_information_id;
+      if (saveDraftPayload.detail_project_budgets) {
+        proposal_item_budgets = CreateItemBudgetsMapper(
+          proposal.id,
+          saveDraftPayload.detail_project_budgets,
+        );
+      }
+    }
+
+    if (!!sendRevisionPayload) {
+      updateProposalPayload = SendRevisionMapper(sendRevisionPayload);
     }
 
     /* validate and create path */
@@ -320,12 +506,12 @@ export class TenderProposalService {
       FileMimeTypeEnum.PPTX,
     ];
 
-    if (isTenderFilePayload(request.project_attachments)) {
+    if (isTenderFilePayload(project_attachments)) {
       const uploadResult = await this.uploadProposalFile(
         userId,
-        request.proposal_id,
+        proposalId,
         'uploading project attachments',
-        request.project_attachments,
+        project_attachments,
         'project-attachments',
         allowedType,
         maxSize,
@@ -343,7 +529,7 @@ export class TenderProposalService {
         size: uploadResult.fileObj.size,
         column_name: 'project-attachments',
         table_name: 'proposal',
-        proposal_id: request.proposal_id,
+        proposal_id: proposalId,
       };
       fileManagerCreateManyPayload.push(payload);
 
@@ -363,12 +549,12 @@ export class TenderProposalService {
       }
     }
 
-    if (isTenderFilePayload(request.letter_ofsupport_req)) {
+    if (isTenderFilePayload(letter_ofsupport_req)) {
       const uploadResult = await this.uploadProposalFile(
         userId,
-        request.proposal_id,
+        proposalId,
         'uploading letter of support',
-        request.letter_ofsupport_req,
+        letter_ofsupport_req,
         'letter-of-support-req',
         allowedType,
         maxSize,
@@ -386,7 +572,7 @@ export class TenderProposalService {
         size: uploadResult.fileObj.size,
         column_name: 'letter-of-support-req',
         table_name: 'proposal',
-        proposal_id: request.proposal_id,
+        proposal_id: proposalId,
       };
       fileManagerCreateManyPayload.push(payload);
 
@@ -406,23 +592,18 @@ export class TenderProposalService {
       }
     }
 
-    if (request.detail_project_budgets) {
-      proposal_item_budgets = CreateItemBudgetsMapper(
-        proposal.id,
-        request.detail_project_budgets,
-      );
-    }
-
     // create proposal and the logs
-    const updatedProposal = await this.proposalRepo.saveDraft(
+    const updatedProposal = await this.proposalRepo.updateMyProposal(
       proposal.id,
       updateProposalPayload,
       proposal_item_budgets,
       fileManagerCreateManyPayload,
       deletedFileManagerUrls,
       uploadedFilePath,
+      !!sendRevisionPayload ? true : false,
     );
 
+    if(!!sendRevisionPayload && updatedProposal.notif) this.notifService.sendSmsAndEmail(updatedProposal.notif);
     return updatedProposal;
   }
 
@@ -498,6 +679,12 @@ export class TenderProposalService {
     const proposal = await this.proposalRepo.fetchProposalById(proposal_id);
     if (!proposal) {
       throw new BadRequestException('Proposal Not Found!');
+    }
+
+    if (proposal.outter_status === OutterStatusEnum.ON_REVISION) {
+      throw new BadRequestException(
+        'You cant send amandement that already on revision',
+      );
     }
 
     const createProposalEditRequestPayload = ProposalUpdateRequestMapper(
@@ -826,7 +1013,7 @@ export class TenderProposalService {
       proposalUpdatePayload.inner_status =
         InnerStatusEnum.ACCEPTED_BY_SUPERVISOR;
       proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
-      proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+      proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_MANAGER;
 
       /* custom logic if there's special logic for regular track */
       if (proposal.project_track !== 'CONCESSIONAL_GRANTS') {

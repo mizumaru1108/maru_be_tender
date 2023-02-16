@@ -88,7 +88,8 @@ function LicenseAccording({ userInfo }: Props) {
               </Typography>
               <Grid container spacing={1}>
                 <Grid item xs={6} md={4}>
-                  <ButtonDownlaodLicense files={userInfo?.license_file ?? {}} />
+                  {/* <ButtonDownlaodLicense files={userInfo?.license_file ?? {}} /> */}{' '}
+                  <ButtonDownloadFiles files={userInfo?.license_file ?? {}} />
                 </Grid>
               </Grid>
               {/* <TextField disabled fullWidth value={userInfo?.num_of_beneficiaries ?? '-'} /> */}

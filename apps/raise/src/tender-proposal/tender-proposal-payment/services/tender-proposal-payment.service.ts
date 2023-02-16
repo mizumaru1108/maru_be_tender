@@ -2,7 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma, proposal } from '@prisma/client';
@@ -18,11 +18,11 @@ import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-js
 import {
   appRoleMappers,
   TenderAppRole,
-  TenderAppRoleEnum
+  TenderAppRoleEnum,
 } from '../../../tender-commons/types';
 import {
   InnerStatusEnum,
-  OutterStatusEnum
+  OutterStatusEnum,
 } from '../../../tender-commons/types/proposal';
 import { actionValidator } from '../../../tender-commons/utils/action-validator';
 import { generateFileName } from '../../../tender-commons/utils/generate-filename';
@@ -37,7 +37,7 @@ import { UpdatePaymentDto } from '../dtos/requests/update-payment.dto';
 import { CreateChequeMapper } from '../mappers/create-cheque.mapper';
 import { CreateManyPaymentMapper } from '../mappers/create-many-payment.mapper';
 import { TenderProposalPaymentRepository } from '../repositories/tender-proposal-payment.repository';
-  
+
 @Injectable()
 export class TenderProposalPaymentService {
   private readonly appEnv: string;
@@ -125,7 +125,6 @@ export class TenderProposalPaymentService {
         lastLog,
       );
 
-    // this.sendPaymentNotif(insertResult.insertNotif);
     this.notificationService.sendSmsAndEmail(insertResult.insertNotif);
 
     return insertResult.updatedProposal;
@@ -243,6 +242,7 @@ export class TenderProposalPaymentService {
       );
 
       this.notificationService.sendSmsAndEmail(response.updateNotif);
+
       return {
         updatedPayment: response.payment,
         createdCheque: response.cheque,

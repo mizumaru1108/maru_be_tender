@@ -131,6 +131,41 @@ export interface Proposal {
   follow_ups: FollowUps[];
 }
 
+export type AmandementProposal = Omit<
+  Proposal,
+  | 'project_name'
+  | 'project_track'
+  | 'user'
+  | 'created_at'
+  | 'region'
+  | 'execution_time'
+  | 'bank_informations'
+  | 'bank_information'
+  | 'fsupport_by_supervisor'
+  | 'inner_status'
+  | 'outter_status'
+  | 'state'
+  | 'added_value'
+  | 'been_made_before'
+  | 'been_supported_before'
+  | 'chairman_of_board_of_directors'
+  | 'most_clents_projects'
+  | 'reasons_to_accept'
+  | 'remote_or_insite'
+  | 'target_group_age'
+  | 'target_group_num'
+  | 'target_group_type'
+  | 'recommended_supports'
+  | 'clause'
+  | 'payments'
+  | 'number_of_payments'
+  | 'number_of_payments_by_supervisor'
+  | 'support_type'
+  | 'proposal_item_budgets'
+  | 'proposal_item_budgets_aggregate'
+  | 'follow_ups'
+>;
+
 export type ActiveTap =
   | 'main'
   | 'project-budget'

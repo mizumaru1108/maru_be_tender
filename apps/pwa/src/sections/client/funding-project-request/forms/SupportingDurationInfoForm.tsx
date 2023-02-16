@@ -111,6 +111,7 @@ const SupportingDurationInfoForm = ({
               bankName={item.bank_name}
               imageUrl={item.card_image.url}
               size={item.card_image.size}
+              type={item.card_image.type}
               borderColor={item?.color ?? 'transparent'}
             />
           </Box>

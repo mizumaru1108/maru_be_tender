@@ -1,7 +1,17 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+  ValidateNested,
+} from 'class-validator';
+import { TenderFilePayload } from '../../../../tender-commons/dto/tender-file-payload.dto';
 
-export class SendAmandementDto {
+export class SendRevisionDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -53,7 +63,7 @@ export class SendAmandementDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  project_implement_date?: string;
+  project_implement_date?: Date;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -63,25 +73,29 @@ export class SendAmandementDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0.01)
+  @Max(999999999999999999.99)
   @IsNotEmpty()
-  num_ofproject_binicficiaries?: string;
+  num_ofproject_binicficiaries?: number;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0.01)
+  @Max(999999999999999999.99)
   @IsNotEmpty()
-  amount_required_fsupport?: string;
+  amount_required_fsupport?: number;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  letter_ofsupport_req?: string;
+  @Type(() => TenderFilePayload)
+  @ValidateNested()
+  letter_ofsupport_req?: TenderFilePayload;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  project_attachments?: string;
+  @Type(() => TenderFilePayload)
+  @ValidateNested()
+  project_attachments?: TenderFilePayload;
 }

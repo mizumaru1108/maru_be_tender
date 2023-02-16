@@ -134,8 +134,8 @@ function ClientProfile() {
       aggregate: { count: completed_projects },
     },
   } = data!;
-  // console.log({ board_ofdec_file });
-  // console.log('type :', typeof board_ofdec_file);
+  console.log({ board_ofdec_file });
+  console.log('type :', typeof board_ofdec_file);
 
   return (
     <Page title="My Profile">
@@ -342,6 +342,8 @@ function ClientProfile() {
                       bankName={item.bank_name}
                       accountNumber={item.bank_account_number}
                       bankAccountName={item.bank_account_name}
+                      size={item?.card_image?.size ?? 0}
+                      type={item?.card_image?.type ?? ''}
                       borderColor={item?.color ?? 'transparent'}
                     />
                   </Grid>

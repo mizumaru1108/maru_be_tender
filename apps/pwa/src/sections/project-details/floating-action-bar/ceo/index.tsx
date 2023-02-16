@@ -260,7 +260,8 @@ function FloatingActionBar() {
               {translate('project_rejected')}
             </LoadingButton>
           </Stack>
-          <LoadingButton
+          {/* disabled other than accept reject button */}
+          {/* <LoadingButton
             variant="contained"
             onClick={handleClick}
             sx={{ backgroundColor: '#0169DE', ':hover': { backgroundColor: '#1482FE' } }}
@@ -300,7 +301,7 @@ function FloatingActionBar() {
             >
               ارجاع المعاملة الى مدير الإدارة
             </MenuItem>
-          </Menu>
+          </Menu> */}
         </Stack>
       </Box>
 

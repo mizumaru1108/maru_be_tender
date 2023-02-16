@@ -68,9 +68,9 @@ function RejectProject() {
         p: 3,
         borderRadius: 1,
         position: 'sticky',
-        width: '50%',
+        // width: '50%',
         bottom: 24,
-        left: '40%',
+        // left: '40%',
         border: `1px`,
       }}
     >

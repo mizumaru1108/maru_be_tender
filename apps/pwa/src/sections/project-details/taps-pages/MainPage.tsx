@@ -7,6 +7,7 @@ import useLocales from '../../../hooks/useLocales';
 //
 import { fCurrencyNumber } from 'utils/formatNumber';
 import { FEATURE_PROJECT_DETAILS } from '../../../config';
+import ButtonDownloadFiles from '../../../components/button/ButtonDownloadFiles';
 
 function MainPage() {
   const { translate, currentLang } = useLocales();
@@ -84,15 +85,15 @@ function MainPage() {
             {translate('support_type')}
           </Typography>
           <Typography>
-            {support_type ? translate('full_support') : translate('partial_support')}&nbsp;
-            <Typography component="span">{translate('with')}&nbsp;</Typography>
+            {/* {support_type ? translate('full_support') : translate('partial_support')}&nbsp;
+            <Typography component="span">{translate('with')}&nbsp;</Typography> */}
             {/* <Typography component="span" sx={{ fontWeight: 'bold' }}>
               {fCurrencyNumber(proposal_item_budgets_aggregate.aggregate.sum.amount)}&nbsp;
             </Typography> */}
             <Typography component="span" sx={{ fontWeight: 'bold' }}>
               {fCurrencyNumber(amount_required_fsupport)}&nbsp;
             </Typography>
-            <Typography component="span">{translate('amount')}&nbsp;</Typography>
+            {/* <Typography component="span">{translate('amount')}&nbsp;</Typography> */}
           </Typography>
         </Stack>
       </Stack>
@@ -122,7 +123,9 @@ function MainPage() {
             <Typography sx={{ mb: '10px' }}>{project_risks}</Typography>
           </Stack>
           <Stack direction="row" justifyContent="space-between" gap={3}>
-            <Button
+            <ButtonDownloadFiles files={letter_ofsupport_req} />
+            <ButtonDownloadFiles files={project_attachments} />
+            {/* <Button
               component={Link}
               href={letter_ofsupport_req.url}
               download="ملف خطاب طلب الدعم"
@@ -213,7 +216,7 @@ function MainPage() {
                   style={{ width: 25, height: 25 }}
                 />
               </Stack>
-            </Button>
+            </Button> */}
           </Stack>
         </Grid>
         <Grid item md={4} xs={12}>
@@ -282,6 +285,7 @@ function MainPage() {
                 bankAccountName={bank_information?.bank_account_name}
                 imageUrl={bank_information?.card_image.url}
                 size={bank_information?.card_image.size}
+                type={bank_information?.card_image.type}
                 borderColor={bank_information?.card_image.border_color ?? 'transparent'}
               />
             </Stack>
