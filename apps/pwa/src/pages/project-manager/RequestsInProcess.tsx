@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles';
 import CardTableBE from 'components/card-table/CardTableBE';
 import { getProposals } from 'queries/commons/getProposal';
 import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -15,6 +16,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 }));
 
 function RequestsInProcess() {
+  const { translate } = useLocales();
   const { user } = useAuth();
 
   return (
@@ -23,7 +25,7 @@ function RequestsInProcess() {
         <ContentStyle>
           <CardTableBE
             resource={getProposals}
-            title="طلبات قيد الإجراء"
+            title={translate('content.client.main_page.process_request')}
             cardFooterButtonAction="show-details"
             alphabeticalOrder={true}
             filters={[

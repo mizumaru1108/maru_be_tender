@@ -17,6 +17,7 @@ export const gettingIncomingRequests = `query MyQuery($limit: Int = 10, $order_b
   data: proposal(limit: $limit, order_by: $order_by, offset: $offset, where: $where) {
     id
     created_at
+    updated_at
     project_idea
     state
     project_name

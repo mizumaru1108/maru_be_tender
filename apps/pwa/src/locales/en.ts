@@ -49,6 +49,14 @@ const en = {
       },
     },
     administrative: {
+      statistic: {
+        heading: {
+          proposalStatistic: 'Project Statistic',
+          totalProposal: 'Total projects',
+          totalBudget: 'Total budgets',
+          totalAcceptingBudget: 'Total accepting budgets',
+        },
+      },
       project_details: {
         payment: {
           heading: {

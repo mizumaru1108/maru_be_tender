@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles';
 import CardTableBE from 'components/card-table/CardTableBE';
 import { getProposals } from 'queries/commons/getProposal';
 import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -15,6 +16,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 }));
 
 function ExchangePermission() {
+  const { translate } = useLocales();
   const { user } = useAuth();
   return (
     <Page title="Previous Funding Requests">
@@ -22,7 +24,7 @@ function ExchangePermission() {
         <ContentStyle>
           <CardTableBE
             resource={getProposals}
-            title="إذن الصرف"
+            title={translate('exchange_permission')}
             cardFooterButtonAction="completing-exchange-permission"
             alphabeticalOrder={true}
             filters={[

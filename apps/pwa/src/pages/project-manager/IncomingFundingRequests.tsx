@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles';
 import CardTableBE from 'components/card-table/CardTableBE';
 import { getProposals } from 'queries/commons/getProposal';
 import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -15,6 +16,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 }));
 
 function IncomingFundingRequests() {
+  const { translate } = useLocales();
   const { user } = useAuth();
 
   return (
@@ -23,7 +25,7 @@ function IncomingFundingRequests() {
         <ContentStyle>
           <CardTableBE
             resource={getProposals}
-            title="طلبات الدعم الواردة"
+            title={translate('incoming_support_requests')}
             cardFooterButtonAction="show-details"
             alphabeticalOrder={true}
             filters={[

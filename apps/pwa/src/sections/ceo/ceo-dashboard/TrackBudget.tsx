@@ -1,88 +1,100 @@
+// component
 import { Box, Grid, Stack, Typography, useTheme } from '@mui/material';
 import Label from 'components/Label';
+import Image from 'components/Image';
+// hooks
+import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
+// urql + query
+import { useQuery } from 'urql';
+import { getDailyTrackBudget } from 'queries/project-supervisor/getTrackBudget';
 //
-import { FEATURE_DAILY_STATUS } from 'config';
-import React from 'react';
+import moment from 'moment';
 import { fCurrencyNumber } from 'utils/formatNumber';
+import React from 'react';
+// config
+import { FEATURE_DAILY_STATUS } from 'config';
 
-type Props = {
-  data: {
-    subtitle: string;
-    type?: {
-      label?: string;
-      value?: number;
-    };
-    compareValue?: string;
-    color?: string;
-  }[];
-};
-function TrackBudget({ data }: Props) {
+function TrackBudget() {
   const theme = useTheme();
   const { translate } = useLocales();
+  const { user } = useAuth();
+
+  const [result] = useQuery({
+    query: getDailyTrackBudget,
+    variables: {
+      // first_date: moment().startOf('day').toISOString(),
+      // first_date: '2022-01-01T17:00:00.000Z',
+      // second_date: moment().endOf('day').toISOString(),
+    },
+  });
+
+  const { data, fetching, error } = result;
+
+  if (fetching) return <>... Loading</>;
+  if (error) return <>{error.message}</>;
+
   return (
-    <Grid container spacing={FEATURE_DAILY_STATUS ? 5 : 2}>
+    <Grid container spacing={2} sx={{ mt: '1px' }}>
+      <Grid item md={12}>
+        <Typography variant="h4">{translate('content.client.main_page.track_budget')}</Typography>
+      </Grid>
       {!FEATURE_DAILY_STATUS ? (
-        <Grid item md={12} sx={{ mb: 3 }}>
+        <Grid item md={12} sx={{ mb: 0 }}>
           <Typography variant="inherit" sx={{ fontStyle: 'italic' }}>
             {translate('commons.maintenance_feature_flag')} ...
           </Typography>
         </Grid>
       ) : (
         <React.Fragment>
-          {data.map((item, index) => (
-            <Grid item md={2.4} xs={12} key={index} sx={{ mb: 3 }}>
-              <Stack
-                component="div"
-                spacing={1}
-                sx={{
-                  textAlign: 'left',
-                  backgroundColor: '#fff',
-                  padding: '20px',
-                  borderRadius: '5px',
-                }}
-                key={index}
-              >
+          {!fetching && data ? (
+            <React.Fragment>
+              <Grid item md={2} xs={12}>
                 <Box
                   sx={{
-                    display: 'flex',
-                    justifyContent: 'flex-start',
+                    borderRadius: 1,
+                    backgroundColor: '#fff',
+                    p: 2,
                   }}
                 >
-                  <img src="/assets/icons/currency-icon.svg" alt="currency-icon" />
+                  <Image
+                    src={`/icons/rial-currency.svg`}
+                    alt="icon_riyals"
+                    sx={{ display: 'inline-flex' }}
+                  />
+                  <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
+                    {translate('content.administrative.statistic.heading.totalBudget')}
+                  </Typography>
+                  <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                    {fCurrencyNumber(data.totalBudget.aggregate.sum.amount_required_fsupport)}
+                  </Typography>
                 </Box>
-                {item.subtitle && (
-                  <Typography variant="subtitle2" sx={{ color: theme.palette.grey[500] }}>
-                    {item.subtitle}
-                    {/* {translate(item.subtitle)} */}
+              </Grid>
+              <Grid item md={2} xs={12}>
+                <Box
+                  sx={{
+                    borderRadius: 1,
+                    backgroundColor: '#fff',
+                    p: 2,
+                  }}
+                >
+                  <Image
+                    src={`/icons/rial-currency.svg`}
+                    alt="icon_riyals"
+                    sx={{ display: 'inline-flex' }}
+                  />
+                  <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
+                    {translate('content.administrative.statistic.heading.totalAcceptingBudget')}
                   </Typography>
-                )}
-                {item.type && (
-                  <Typography variant="h4" component="p" sx={{ color: theme.palette.primary.main }}>
-                    {fCurrencyNumber(item.type?.value!)}
+                  <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                    {fCurrencyNumber(
+                      data.totalAcceptingBudget.aggregate.sum.fsupport_by_supervisor
+                    )}
                   </Typography>
-                )}
-                {item.compareValue && (
-                  <Box>
-                    <Label
-                      color={
-                        (item.color === 'up' && 'primary') ||
-                        (item.color === 'stable' && 'warning') ||
-                        (item.color === 'down' && 'error') ||
-                        'default'
-                      }
-                      sx={{ mr: 1 }}
-                    >
-                      {item.compareValue} {translate(item.type?.label)}
-                    </Label>
-                    <Typography variant="caption" sx={{ color: theme.palette.grey[500] }}>
-                      {translate('section_portal_reports.since_last_weeks')}
-                    </Typography>
-                  </Box>
-                )}
-              </Stack>
-            </Grid>
-          ))}
+                </Box>
+              </Grid>
+            </React.Fragment>
+          ) : null}
         </React.Fragment>
       )}
     </Grid>

@@ -3,8 +3,11 @@ import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
 import CardTableBE from 'components/card-table/CardTableBE';
 import { getProposals } from 'queries/commons/getProposal';
+import useLocales from 'hooks/useLocales';
 
 function PreviousFundingRequests() {
+  const { translate } = useLocales();
+
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -19,7 +22,7 @@ function PreviousFundingRequests() {
         <ContentStyle>
           <CardTableBE
             resource={getProposals}
-            title="طلبات الدعم سابقة"
+            title={translate('content.client.main_page.process_request')}
             cardFooterButtonAction="show-project"
             destination="previous-funding-requests"
             dateFilter={true}

@@ -14,15 +14,9 @@ function Main() {
       <Grid item md={12}>
         <TrackBudget />
       </Grid>
-      <Grid item md={12}>
-        <RequestsInProcess />
-      </Grid>
-      <Grid item md={12}>
-        <IncomingFundingRequests />
-      </Grid>
-      <Grid item md={12}>
-        <PaymentAdjustment />
-      </Grid>
+      <RequestsInProcess />
+      <IncomingFundingRequests />
+      <PaymentAdjustment />
     </Grid>
   );
 }

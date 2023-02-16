@@ -49,6 +49,14 @@ const ar = {
       },
     },
     administrative: {
+      statistic: {
+        heading: {
+          proposalStatistic: 'إحصائية المشروع',
+          totalProposal: 'إجمالي المشاريع',
+          totalBudget: 'الميزانية الإجمالية',
+          totalAcceptingBudget: 'إجمالي الميزانية المقبولة',
+        },
+      },
       project_details: {
         payment: {
           heading: {

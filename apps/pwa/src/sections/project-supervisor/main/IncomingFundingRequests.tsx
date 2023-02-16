@@ -12,7 +12,7 @@ function IncomingFundingRequests() {
     query: getProposals,
     variables: {
       limit: 4,
-      order_by: { created_at: 'desc' },
+      order_by: { updated_at: 'desc' },
       where: {
         supervisor_id: { _is_null: true },
         _and: { inner_status: { _eq: 'ACCEPTED_BY_MODERATOR' } },
@@ -21,12 +21,16 @@ function IncomingFundingRequests() {
   });
   const { data, fetching, error } = result;
   if (fetching) {
-    return <>...Loading</>;
+    return (
+      <Grid item md={12}>
+        ...Loading
+      </Grid>
+    );
   }
   const props = data?.data ?? [];
-  if (!props || props.length === 0) return <></>;
+  if (!props || props.length === 0) return null;
   return (
-    <>
+    <Grid item md={12}>
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="h4" sx={{ mb: '20px' }}>
           {translate('incoming_funding_requests_project_supervisor')}
@@ -70,7 +74,7 @@ function IncomingFundingRequests() {
           </Grid>
         ))}
       </Grid>
-    </>
+    </Grid>
   );
 }
 
