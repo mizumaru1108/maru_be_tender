@@ -186,7 +186,7 @@ function FloatinActionBar() {
                 endIcon={<Iconify icon="eva:message-circle-outline" />}
                 onClick={() => setAction('SEND_CLIENT_MESSAGE')}
                 sx={{ flex: 1 }}
-                disabled={true}
+                // disabled={true}
               >
                 {translate('partner_details.send_messages')}
               </Button>
@@ -231,8 +231,8 @@ function FloatinActionBar() {
                 >
                   ارسال طلب تعديل الى الشريك
                 </MenuItem>
-                <MenuItem disabled={true}>ارسال طلب تعديل الى المشرف</MenuItem>
-                <MenuItem disabled={true} onClick={() => setAction('STEP_BACK')}>
+                <MenuItem>ارسال طلب تعديل الى المشرف</MenuItem>
+                <MenuItem onClick={() => setAction('STEP_BACK')}>
                   ارجاع المعاملة الى مسؤول الفرز
                 </MenuItem>
               </Menu>

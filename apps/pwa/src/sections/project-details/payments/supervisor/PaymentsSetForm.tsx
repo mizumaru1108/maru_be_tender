@@ -86,53 +86,92 @@ function PaymentsSetForm() {
             },
           ],
         });
-
         setIsSubmitting(false);
         break;
-      }
-    }
-    // console.log({ data });
-
-    try {
-      await dispatch(
-        insertPaymentsBySupervisor({
-          payments: data?.payments.map((item: any, index: any) => ({
-            payment_amount: item.payment_amount,
-            payment_date: item.payment_date,
-            proposal_id,
-            order: index + 1,
-          })),
-          proposal_id,
-          role: activeRole!,
-        })
-      ).then((res) => {
-        if (res.statusCode === 201) {
-          setIsSubmitting(false);
-          enqueueSnackbar('تم إنشاء الدفعات بنجاح', { variant: 'success' });
-          window.location.reload();
-        }
-      });
-    } catch (error) {
-      if (typeof error.message === 'object') {
-        error.message.forEach((el: any) => {
-          enqueueSnackbar(el, {
-            variant: 'error',
-            preventDuplicate: true,
-            autoHideDuration: 3000,
-          });
-        });
-
-        setIsSubmitting(false);
       } else {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-        });
+        try {
+          await dispatch(
+            insertPaymentsBySupervisor({
+              payments: data?.payments.map((item: any, index: any) => ({
+                payment_amount: item.payment_amount,
+                payment_date: item.payment_date,
+                proposal_id,
+                order: index + 1,
+              })),
+              proposal_id,
+              role: activeRole!,
+            })
+          ).then((res) => {
+            if (res.statusCode === 201) {
+              setIsSubmitting(false);
+              enqueueSnackbar('تم إنشاء الدفعات بنجاح', { variant: 'success' });
+              window.location.reload();
+            }
+          });
+        } catch (error) {
+          if (typeof error.message === 'object') {
+            error.message.forEach((el: any) => {
+              enqueueSnackbar(el, {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            });
 
-        setIsSubmitting(false);
+            setIsSubmitting(false);
+          } else {
+            enqueueSnackbar(error.message, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
+
+            setIsSubmitting(false);
+          }
+        }
       }
     }
+
+    // try {
+    //   await dispatch(
+    //     insertPaymentsBySupervisor({
+    //       payments: data?.payments.map((item: any, index: any) => ({
+    //         payment_amount: item.payment_amount,
+    //         payment_date: item.payment_date,
+    //         proposal_id,
+    //         order: index + 1,
+    //       })),
+    //       proposal_id,
+    //       role: activeRole!,
+    //     })
+    //   ).then((res) => {
+    //     if (res.statusCode === 201) {
+    //       setIsSubmitting(false);
+    //       enqueueSnackbar('تم إنشاء الدفعات بنجاح', { variant: 'success' });
+    //       window.location.reload();
+    //     }
+    //   });
+    // } catch (error) {
+    //   if (typeof error.message === 'object') {
+    //     error.message.forEach((el: any) => {
+    //       enqueueSnackbar(el, {
+    //         variant: 'error',
+    //         preventDuplicate: true,
+    //         autoHideDuration: 3000,
+    //       });
+    //     });
+
+    //     setIsSubmitting(false);
+    //   } else {
+    //     enqueueSnackbar(error.message, {
+    //       variant: 'error',
+    //       preventDuplicate: true,
+    //       autoHideDuration: 3000,
+    //     });
+
+    //     setIsSubmitting(false);
+    //   }
+    // }
   };
 
   return (

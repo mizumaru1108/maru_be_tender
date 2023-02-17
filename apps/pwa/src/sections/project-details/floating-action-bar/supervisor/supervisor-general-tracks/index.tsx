@@ -357,7 +357,7 @@ function FloatingActionBar() {
                 color="inherit"
                 endIcon={<Iconify icon="eva:message-circle-outline" />}
                 sx={{ flex: 1 }}
-                disabled={true}
+                // disabled={true}
                 onClick={handleMessage}
               >
                 {translate('account_manager.partner_details.send_messages')}
@@ -401,10 +401,10 @@ function FloatingActionBar() {
                 >
                   ارسال طلب تعديل الى الشريك
                 </MenuItem>
-                <MenuItem disabled={true} onClick={() => setAction('STEP_BACK')}>
+                <MenuItem onClick={() => setAction('STEP_BACK')}>
                   ارجاع المعاملة الى مسؤول الفرز
                 </MenuItem>
-                <MenuItem disabled={true} onClick={() => setAction('PENDING_REQUEST')}>
+                <MenuItem onClick={() => setAction('PENDING_REQUEST')}>
                   اعادة المشروع للشريك لرفعه في وقت اخر
                 </MenuItem>
               </Menu>
