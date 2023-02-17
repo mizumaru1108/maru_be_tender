@@ -7,6 +7,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsIn,
   Max,
   Min,
   ValidateNested,
@@ -175,8 +176,11 @@ export class SupervisorChangeStatePayload {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsBoolean()
-  remote_or_insite?: boolean;
+  @IsString()
+  @IsIn(['remote', 'insite', 'both'], {
+    message: 'Activity must be remote, insite or both',
+  })
+  remote_or_insite?: 'remote' | 'insite' | 'both';
 
   @ApiPropertyOptional()
   @IsOptional()

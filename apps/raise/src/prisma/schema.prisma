@@ -192,7 +192,7 @@ model proposal {
   target_group_type                   String?
   target_group_age                    Int?
   been_made_before                    Boolean?
-  remote_or_insite                    Boolean?
+  remote_or_insite                    String?                          @db.VarChar
   old_inner_status                    String?                          @db.VarChar
   support_goal_id                     String?
   accreditation_type_id               String?
