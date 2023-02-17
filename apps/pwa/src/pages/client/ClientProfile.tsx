@@ -304,7 +304,7 @@ function ClientProfile() {
                   >
                     {ceo_mobile}
                   </Typography>
-                  <Typography sx={{ fontSize: '12px' }}>الرئيس موبايل:</Typography>
+                  <Typography sx={{ fontSize: '12px' }}>جوال رئيس مجلس الإدارة:</Typography>
                   <Typography
                     sx={{ mb: '15px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
                   >
@@ -323,7 +323,7 @@ function ClientProfile() {
                 <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>اسم المدير التنفيذي:</Typography>
                   <Typography sx={{ mb: '15px' }}>{ceo_name}</Typography>
-                  <Typography sx={{ fontSize: '12px' }}>اسم الرئيس:</Typography>
+                  <Typography sx={{ fontSize: '12px' }}>اسم رئيس مجلس الإدارة:</Typography>
                   <Typography sx={{ mb: '15px' }}>{chairman_name ?? '-'}</Typography>
                   <Typography sx={{ fontSize: '12px' }}>اسم مدخل البيانات:</Typography>
                   <Typography sx={{ mb: '15px' }}>{data_entry_name}</Typography>

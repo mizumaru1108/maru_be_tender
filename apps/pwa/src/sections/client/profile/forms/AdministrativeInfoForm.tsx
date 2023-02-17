@@ -130,15 +130,15 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, children, isEdit }: F
           <RHFTextField
             disabled={isEdit}
             name="chairman_name"
-            label={translate('register_form4.executive_director.label')}
-            placeholder={translate('register_form4.executive_director.placeholder')}
+            label={translate('register_form4.chairman_name.label')}
+            placeholder={translate('register_form4.chairman_name.placeholder')}
           />
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFTextField
             disabled={isEdit}
             name="chairman_mobile"
-            label={translate('register_form4.executive_director_mobile.label')}
+            label={translate('register_form4.chairman_mobile.label')}
             placeholder={'xxx xxx xxx'}
           />
         </Grid>
