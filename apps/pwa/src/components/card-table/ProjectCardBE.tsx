@@ -133,8 +133,6 @@ const ProjectCardBE = ({
       navigate(`${location.pathname}/${id}/${cardFooterButtonAction}`);
     }
   };
-  // console.log('proposal_logs', proposal_logs);
-  console.log({ status });
 
   return (
     <Card sx={{ backgroundColor: '#fff' }}>
@@ -242,8 +240,9 @@ const ProjectCardBE = ({
           </React.Fragment>
         )}
         <Stack direction="row" gap={6}>
-          {/* {role !== 'tender_moderator' &&
+          {role !== 'tender_moderator' &&
             proposal_logs &&
+            proposal_logs.length > 0 &&
             proposal_logs[proposal_logs.length - 1].reviewer && (
               <Stack>
                 <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
@@ -254,8 +253,8 @@ const ProjectCardBE = ({
                   {proposal_logs[proposal_logs.length - 1].reviewer.employee_name}
                 </Typography>
               </Stack>
-            )} */}
-          {role !== 'tender_moderator' &&
+            )}
+          {/* {role !== 'tender_moderator' &&
             proposal_logs &&
             proposal_logs.length > 0 &&
             proposal_logs.map((log: any) => {
@@ -274,7 +273,7 @@ const ProjectCardBE = ({
               } else {
                 return null;
               }
-            })}
+            })} */}
           {state && (
             <Stack>
               <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
