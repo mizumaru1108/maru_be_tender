@@ -401,7 +401,7 @@ function FloatingActionBar() {
                 >
                   ارسال طلب تعديل الى الشريك
                 </MenuItem>
-                <MenuItem onClick={() => setAction('STEP_BACK')}>
+                <MenuItem disabled={true} onClick={() => setAction('STEP_BACK')}>
                   ارجاع المعاملة الى مسؤول الفرز
                 </MenuItem>
                 <MenuItem disabled={true} onClick={() => setAction('PENDING_REQUEST')}>

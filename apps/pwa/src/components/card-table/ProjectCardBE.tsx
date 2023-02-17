@@ -73,6 +73,7 @@ const ProjectCardBE = ({
     CANCELED: { color: '#FF4842', backgroundColor: '#FF484229', title: 'commons.chip_canceled' },
     COMPLETED: { color: '#0E8478', backgroundColor: '#0E847829', title: 'commons.chip_completed' },
     PENDING: { color: '#FFC107', backgroundColor: '#FFC10729', title: 'commons.chip_pending' },
+    ON_REVISION: { color: '#FFC107', backgroundColor: '#FFC10729', title: 'commons.chip_pending' },
   };
 
   const onDeleteDraftClick = async () => {
@@ -132,6 +133,8 @@ const ProjectCardBE = ({
       navigate(`${location.pathname}/${id}/${cardFooterButtonAction}`);
     }
   };
+  // console.log('proposal_logs', proposal_logs);
+  console.log({ status });
 
   return (
     <Card sx={{ backgroundColor: '#fff' }}>
@@ -152,6 +155,26 @@ const ProjectCardBE = ({
               sx={{ fontWeight: 900, backgroundColor: '#1E1E1E29', borderRadius: '10px' }}
             />
           )}
+          {/* {role !== 'tender_moderator' &&
+            proposal_logs &&
+            proposal_logs.length > 0 &&
+            proposal_logs.map((log: any) => {
+              if (log.reviewer) {
+                return (
+                  <Stack>
+                    <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+                      {translate('project_management_headercell.employee')}
+                    </Typography>
+                    <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
+                      {translate('project_management_headercell.sent_by')}{' '}
+                      {log.reviewer.employee_name}
+                    </Typography>
+                  </Stack>
+                );
+              } else {
+                return null;
+              }
+            })} */}
           {destination === 'previous-funding-requests' && status && (
             <Chip
               label={translate(`${inquiryStatusStyle[status].title}`)}
@@ -219,7 +242,7 @@ const ProjectCardBE = ({
           </React.Fragment>
         )}
         <Stack direction="row" gap={6}>
-          {role !== 'tender_moderator' &&
+          {/* {role !== 'tender_moderator' &&
             proposal_logs &&
             proposal_logs[proposal_logs.length - 1].reviewer && (
               <Stack>
@@ -231,7 +254,27 @@ const ProjectCardBE = ({
                   {proposal_logs[proposal_logs.length - 1].reviewer.employee_name}
                 </Typography>
               </Stack>
-            )}
+            )} */}
+          {role !== 'tender_moderator' &&
+            proposal_logs &&
+            proposal_logs.length > 0 &&
+            proposal_logs.map((log: any) => {
+              if (log.reviewer) {
+                return (
+                  <Stack>
+                    <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+                      {translate('project_management_headercell.employee')}
+                    </Typography>
+                    <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
+                      {translate('project_management_headercell.sent_by')}{' '}
+                      {log.reviewer.employee_name}
+                    </Typography>
+                  </Stack>
+                );
+              } else {
+                return null;
+              }
+            })}
           {state && (
             <Stack>
               <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>

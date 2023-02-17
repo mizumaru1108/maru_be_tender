@@ -1,7 +1,9 @@
 import { Grid, Stack, Typography } from '@mui/material';
 import { useSelector } from 'redux/store';
+import useLocales from '../../../hooks/useLocales';
 
 function SupervisorRevision() {
+  const { translate } = useLocales();
   const { proposal } = useSelector((state) => state.proposal);
 
   return (
@@ -42,7 +44,12 @@ function SupervisorRevision() {
         <Stack direction="row" justifyContent="space-between">
           <Stack direction="column" gap={2}>
             <Typography variant="h6">عن بُعد أو حضوري؟</Typography>
-            <Typography>{proposal.remote_or_insite ? 'عن بعد' : 'حضوري'}</Typography>
+            {/* <Typography>{proposal.remote_or_insite ? 'عن بعد' : 'حضوري'}</Typography> */}
+            <Typography>
+              {proposal.remote_or_insite
+                ? translate(`remote_or_insite.${proposal.remote_or_insite}`)
+                : '-'}
+            </Typography>
           </Stack>
           <Stack direction="column" gap={2}>
             <Typography variant="h6">أعمار الفئة المستهدفة</Typography>

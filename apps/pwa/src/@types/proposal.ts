@@ -75,6 +75,8 @@ export interface Proposal {
       governorate: string; // the values of the orign
       date_of_esthablistmen: Date;
       num_of_beneficiaries: number;
+      ceo_name: string;
+      chairman_name: string;
     };
     bank_informations: BankInformation[];
   };
@@ -103,7 +105,8 @@ export interface Proposal {
   chairman_of_board_of_directors: string;
   most_clents_projects: string;
   reasons_to_accept: string;
-  remote_or_insite: boolean;
+  // remote_or_insite: boolean;
+  remote_or_insite: string;
   target_group_age: number;
   target_group_num: number;
   target_group_type: string;
@@ -165,6 +168,22 @@ export type AmandementProposal = Omit<
   | 'proposal_item_budgets_aggregate'
   | 'follow_ups'
 >;
+
+export type AmandementFields = {
+  amount_required_fsupport: string;
+  letter_ofsupport_req: string;
+  num_ofproject_binicficiaries: string;
+  project_attachments: string;
+  project_beneficiaries: string;
+  project_goals: string;
+  project_idea: string;
+  project_implement_date: string;
+  project_location: string;
+  project_outputs: string;
+  project_risks: string;
+  project_strengths: string;
+  notes: string;
+};
 
 export type ActiveTap =
   | 'main'

@@ -387,6 +387,7 @@ const ar = {
     chip_canceled: 'تم إلغاء الطلب',
     chip_completed: 'الطلب كامل',
     chip_pending: 'الطلب معلق',
+    chip_on_revision: 'الطلب قيد المراجعة',
     maintenance_feature_flag: 'هذه الميزة لا تزال قيد الصيانة',
     view_license_file: 'اضغط هنا لرؤية ملف الترخيص',
   },
@@ -1537,6 +1538,11 @@ const ar = {
     btn_final_save_as_draft: ' انهاء',
     btn_create_proposal: ' انهاء',
     btn_next_save_as_draft: 'التالي',
+  },
+  remote_or_insite: {
+    remote: 'عن بعد',
+    insite: 'حضوري',
+    both: 'عن بعد وحضوري',
   },
 
   // Finance pages

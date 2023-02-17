@@ -44,6 +44,8 @@ const initialState: ProposalItme = {
         governorate: 'test',
         date_of_esthablistmen: new Date('10-10-2022'),
         num_of_beneficiaries: 0,
+        chairman_name: 'test',
+        ceo_name: 'test',
       },
       bank_informations: [
         {
@@ -70,7 +72,7 @@ const initialState: ProposalItme = {
         id: 'test',
       },
     ],
-    remote_or_insite: false,
+    remote_or_insite: 'both',
     target_group_age: 0,
     target_group_num: 0,
     target_group_type: '',

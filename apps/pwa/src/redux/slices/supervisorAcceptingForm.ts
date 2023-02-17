@@ -68,7 +68,7 @@ const initialState: SupervisorAcceptingForm = {
     execution_time: 0,
     project_location: '',
     been_made_before: false,
-    remote_or_insite: false,
+    remote_or_insite: 'both',
   },
   step4: { proposal_item_budgets: [{ amount: undefined, clause: '', explanation: '' }] },
   step5: {
@@ -106,6 +106,8 @@ const slice = createSlice({
       state.step2.governorate = action.payload.user.client_data.governorate;
       state.step2.date_of_esthablistmen = action.payload.user.client_data.date_of_esthablistmen;
       state.step2.num_of_beneficiaries = action.payload.user.client_data.num_of_beneficiaries;
+      state.step2.chairman_of_board_of_directors = action.payload.user.client_data.chairman_name;
+      state.step2.ceo = action.payload.user.client_data.ceo_name;
       state.step3.project_name = action.payload.project_name;
       state.step3.project_idea = action.payload.project_idea;
       state.step3.project_goals = action.payload.project_goals;

@@ -132,6 +132,7 @@ function FloatinActionBar() {
 
   useEffect(() => {
     dispatch(setStepsData(proposal));
+    console.log({ proposal });
   }, [dispatch, proposal]);
   return (
     <>
@@ -220,8 +221,18 @@ function FloatinActionBar() {
                   horizontal: 'right',
                 }}
               >
+                <MenuItem
+                  disabled={true}
+                  // onClick={() => {
+                  //   navigate(
+                  //     `/project-supervisor/dashboard/proposal-amandment-request/${proposal_id}`
+                  //   );
+                  // }}
+                >
+                  ارسال طلب تعديل الى الشريك
+                </MenuItem>
                 <MenuItem disabled={true}>ارسال طلب تعديل الى المشرف</MenuItem>
-                <MenuItem onClick={() => setAction('STEP_BACK')}>
+                <MenuItem disabled={true} onClick={() => setAction('STEP_BACK')}>
                   ارجاع المعاملة الى مسؤول الفرز
                 </MenuItem>
               </Menu>

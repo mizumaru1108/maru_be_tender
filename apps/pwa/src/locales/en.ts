@@ -376,6 +376,7 @@ const en = {
     chip_canceled: 'The request is canceled',
     chip_completed: 'The request is complete',
     chip_pending: 'The request is pending',
+    chip_on_revision: 'The request is on revision',
     maintenance_feature_flag: 'This feature is still in maintenance',
     view_license_file: 'Click here to view the license file',
   },
@@ -1496,7 +1497,11 @@ const en = {
     btn_create_proposal: 'Send',
     btn_next_save_as_draft: 'Next',
   },
-
+  remote_or_insite: {
+    remote: 'Online',
+    insite: 'My Attendance',
+    both: 'Online and My Attendance',
+  },
   // Finance pages
   finance_pages: {
     heading: {

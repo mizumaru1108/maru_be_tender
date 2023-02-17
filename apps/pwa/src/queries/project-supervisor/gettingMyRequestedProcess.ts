@@ -8,7 +8,8 @@
 // }
 // `;
 
-export const gettingMyRequestedProcess = `query gettingMyRequestedProcess($limit: Int = 10, $offset: Int = 0, $order_by: [proposal_order_by!] = {}, $where: proposal_bool_exp = {}) {
+export const gettingMyRequestedProcess = `
+query gettingMyRequestedProcess($limit: Int = 10, $offset: Int = 0, $order_by: [proposal_order_by!] = {}, $where: proposal_bool_exp = {}) {
   proposal_aggregate(where: $where) {
     aggregate {
       count

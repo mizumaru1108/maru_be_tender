@@ -61,28 +61,37 @@ function PaymentsSetForm() {
     defaultValues,
   });
 
-  const { handleSubmit, setError } = methods;
+  const { handleSubmit, setError, setValue, reset } = methods;
 
   const handleOnSubmit = async (data: any) => {
     setIsSubmitting(true);
+    for (let i = 1; i < data?.payments.length; i++) {
+      const previousDate = moment(data?.payments[i - 1].payment_date);
+      const currentDate = moment(data?.payments[i].payment_date);
 
-    // for (let i = 1; i < data?.payments.length; i++) {
-    //   const previousDate = moment(data?.payments[i - 1].payment_date);
-    //   const currentDate = moment(data?.payments[i].payment_date);
+      if (currentDate.isBefore(previousDate)) {
+        enqueueSnackbar(`Payment ${i + 1} date is less than payment ${i} date.`, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
 
-    //   if (currentDate.isBefore(previousDate)) {
-    //     enqueueSnackbar(`Payment ${i + 1} date is less than payment ${i} date.`, {
-    //       variant: 'error',
-    //       preventDuplicate: true,
-    //       autoHideDuration: 3000,
-    //     });
+        setError(`payments.${i}.payment_date`, { type: 'focus' }, { shouldFocus: true });
+        reset({
+          payments: [
+            ...data?.payments.slice(0, i),
+            {
+              payment_amount: data.payments[i].payment_amount,
+              payment_date: '',
+            },
+          ],
+        });
 
-    //     setError(`payments.${i}.payment_date`, { type: 'focus' }, { shouldFocus: true });
-
-    //     setIsSubmitting(false);
-    //     break;
-    //   }
-    // }
+        setIsSubmitting(false);
+        break;
+      }
+    }
+    // console.log({ data });
 
     try {
       await dispatch(
@@ -100,7 +109,7 @@ function PaymentsSetForm() {
         if (res.statusCode === 201) {
           setIsSubmitting(false);
           enqueueSnackbar('تم إنشاء الدفعات بنجاح', { variant: 'success' });
-          // window.location.reload();
+          window.location.reload();
         }
       });
     } catch (error) {

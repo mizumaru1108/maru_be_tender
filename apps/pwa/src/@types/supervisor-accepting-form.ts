@@ -52,7 +52,8 @@ export interface SupervisorStep3 {
   execution_time: number;
   project_location: string;
   been_made_before: boolean;
-  remote_or_insite: boolean;
+  // remote_or_insite: boolean;
+  remote_or_insite: string;
 }
 
 export interface SupervisorStep4 {

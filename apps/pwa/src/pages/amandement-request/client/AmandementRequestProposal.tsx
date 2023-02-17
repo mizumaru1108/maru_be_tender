@@ -1,6 +1,16 @@
 import { useEffect, useState } from 'react';
 // material
-import { Box, Container, Divider, Skeleton, styled, Typography, useTheme } from '@mui/material';
+import {
+  Box,
+  Container,
+  Divider,
+  Grid,
+  Skeleton,
+  Stack,
+  styled,
+  Typography,
+  useTheme,
+} from '@mui/material';
 // components
 import Page from 'components/Page';
 // sections
@@ -17,20 +27,29 @@ import axiosInstance from '../../../utils/axios';
 import ActionButtonEditRequest from '../../../sections/account_manager/edit-request-profile/ActionButtonEditRequest';
 import RejectedEditRequestPopUp from '../../../sections/account_manager/edit-request-profile/RejectedEditRequestPopUp';
 import ProposalAmandementHeader from '../../../sections/amandement-request/proposal/ProposalAmandementHeader';
-import { AmandementProposal } from '../../../@types/proposal';
+import { AmandementFields, AmandementProposal } from '../../../@types/proposal';
 import { useQuery } from 'urql';
 import { getOneAmandement } from '../../../queries/commons/getOneAmandementProposal';
 import ActionButtonAmandementProposal from '../../../sections/amandement-request/proposal/ActionButtonAmandementProposal';
+import AmandementForms from '../forms/AmandementForms';
+import ConfirmAmandement from '../forms/ConfirmAmandement';
 
 // -------------------------------------------------------------------------------
 
+// const ContentStyle = styled('div')(({ theme }) => ({
+//   maxWidth: '100%',
+//   minHeight: '100vh',
+//   display: 'flex',
+//   justifyContent: 'start',
+//   flexDirection: 'column',
+//   rowGap: 24,
+// }));
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
   minHeight: '100vh',
   display: 'flex',
   justifyContent: 'start',
   flexDirection: 'column',
-  rowGap: 24,
 }));
 
 interface ITmpValues {
@@ -47,10 +66,12 @@ function AmandementRequestProposal() {
   const { enqueueSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [isLoad, setIsLoad] = useState(false);
+  const [selectedLength, setSelectedLength] = useState(0);
 
   //tmp variable
   const [AmandementProposal, setAmandementProposal] = useState<AmandementProposal | null>(null);
-  const [tmpEditValues, setTmpEditValues] = useState<ITmpValues | null>(null);
+  const [tmpValues, setTmpValues] = useState<AmandementFields | null>(null);
 
   // Routes
   const params = useParams();
@@ -58,10 +79,6 @@ function AmandementRequestProposal() {
 
   // Language
   const { currentLang, translate } = useLocales();
-
-  //For status edit request
-  const proposal_id = params.id as string;
-  const EditStatus = params.editStatus as string;
 
   //Variable for use Query gql
   const [result, reexecute] = useQuery({
@@ -78,8 +95,7 @@ function AmandementRequestProposal() {
       // console.log('data', data.proposal);
       setAmandementProposal(data.proposal);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [data]);
   // console.log('AmandementProposal', AmandementProposal);
   return (
     <Page title="Partner Details">
@@ -89,26 +105,33 @@ function AmandementRequestProposal() {
           <ProposalAmandementHeader />
           {fetching && <Skeleton variant="rectangular" sx={{ height: 500, borderRadius: 2 }} />}
           <Divider />
-          <ActionButtonAmandementProposal isLoad={false} />
-          {/* {!fetching && !!tmpEditValues && (
-            <>
-              <EditRequestTabs EditValues={tmpEditValues} />
-              {EditStatus === 'PENDING' && (
-                <ActionButtonEditRequest
-                  EditStatus={EditStatus}
-                  setOpen={() => {
-                    setOpen(true);
-                  }}
-                />
-              )}
-            </>
-          )}
-
-          <RejectedEditRequestPopUp
-            requestId={params.requestId ?? '-'}
-            open={open}
-            handleClose={() => setOpen(false)}
-          /> */}
+          <Container sx={{ padding: '10px' }}>
+            <AmandementForms
+              defaultValues={AmandementProposal}
+              selectedLength={(length) => {
+                setSelectedLength(length);
+              }}
+              openConfirm={() => {
+                setOpen(true);
+              }}
+              onSubmit={(data) => {
+                // console.log('data', data);
+                setTmpValues(data);
+              }}
+            >
+              <ActionButtonAmandementProposal
+                isLoad={isLoad}
+                isDisabled={selectedLength === 0 ?? false}
+              />
+            </AmandementForms>
+            <ConfirmAmandement
+              open={open}
+              handleClose={() => {
+                setOpen(false);
+              }}
+              defaultValues={tmpValues ?? undefined}
+            />
+          </Container>
         </ContentStyle>
       </Container>
     </Page>
