@@ -197,7 +197,7 @@ export class CampaignService {
     updateCampaignData.updaterUserId = userId;
     updateCampaignData.updatedAt = dayjs().toISOString();
 
-    const tmpPath: string[] = []; //for implement db transaction later
+    // const tmpPath: string[] = []; //for implement db transaction later
     try {
       const processImages = request.updatedImage.map(async (image, index) => {
         if (image.newImage) {

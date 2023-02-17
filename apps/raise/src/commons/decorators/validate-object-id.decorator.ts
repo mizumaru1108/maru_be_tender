@@ -22,13 +22,15 @@ export function ValidateObjectIdDecorator(
           // if the value is [] then it will be splitted
           if (validationOptions && validationOptions.each) {
             if (!isValidObjectId(value)) {
-              throw new BadRequestException(`${value} is an invalid ObjectId!`);
+              throw new BadRequestException(
+                `invalid ${args.property}, ${value} is an invalid ObjectId!`,
+              );
             }
           } else {
             // if the value is [] than it will readed as array because it's the validationOption.each is false
             if (typeof value !== 'string') {
               throw new BadRequestException(
-                `${propertyName} must be a string!`,
+                `invalid ${args.property}, ${propertyName} must be a string!`,
               );
             }
             if (!isValidObjectId(value)) {

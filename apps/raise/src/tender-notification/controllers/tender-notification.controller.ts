@@ -52,6 +52,7 @@ export class TenderNotificationController {
     );
   }
 
+  /* DEPRECATED FOR NOW */
   @UseGuards(TenderJwtGuard)
   @Patch('hide')
   async hide(
@@ -70,10 +71,43 @@ export class TenderNotificationController {
     );
   }
 
+  /* DEPRECATED FOR NOW */
   @UseGuards(TenderJwtGuard)
   @Patch('hide-all-mine')
   async hideAllMine(@CurrentUser() currentUser: TenderCurrentUser) {
     const readResponse = await this.tenderNotificationService.hideAllMine(
+      currentUser.id,
+    );
+
+    return baseResponseHelper(
+      readResponse,
+      HttpStatus.OK,
+      'All my notifications read successfully',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard)
+  @Patch('delete')
+  async delete(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() request: BaseNotificationDto,
+  ) {
+    const readResponse = await this.tenderNotificationService.delete(
+      currentUser.id,
+      request.notificationId,
+    );
+
+    return baseResponseHelper(
+      readResponse,
+      HttpStatus.OK,
+      'Notification read successfully',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard)
+  @Patch('delete-all-mine')
+  async deleteAllMine(@CurrentUser() currentUser: TenderCurrentUser) {
+    const readResponse = await this.tenderNotificationService.deleteAllMine(
       currentUser.id,
     );
 

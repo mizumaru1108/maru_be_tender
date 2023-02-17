@@ -149,4 +149,40 @@ export class TenderNotificationRepository {
       throw theError;
     }
   }
+
+  async deleteById(notificationId: string): Promise<notification> {
+    try {
+      return await this.prismaService.notification.delete({
+        where: {
+          id: notificationId,
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderNotificationRepository.name,
+        'Read Notification error:',
+        `Reading Notification!`,
+      );
+      throw theError;
+    }
+  }
+
+  async deleteAllMine(userId: string) {
+    try {
+      return await this.prismaService.notification.deleteMany({
+        where: {
+          user_id: userId,
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderNotificationRepository.name,
+        'Read Notification error:',
+        `Reading Notification!`,
+      );
+      throw theError;
+    }
+  }
 }

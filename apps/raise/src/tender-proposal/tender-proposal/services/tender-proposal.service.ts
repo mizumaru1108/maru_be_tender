@@ -91,14 +91,14 @@ export class TenderProposalService {
     uploadedFilePath: string[],
   ) {
     try {
-      let fileName = generateFileName(
+      const fileName = generateFileName(
         file.fullName,
         file.fileExtension as FileMimeTypeEnum,
       );
 
-      let filePath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposalId}/${userId}/${folderName}/${fileName}`;
+      const filePath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposalId}/${userId}/${folderName}/${fileName}`;
 
-      let fileBuffer = Buffer.from(
+      const fileBuffer = Buffer.from(
         file.base64Data.replace(/^data:.*;base64,/, ''),
         'base64',
       );
@@ -114,7 +114,7 @@ export class TenderProposalService {
       );
 
       uploadedFilePath.push(imageUrl);
-      let fileObj = {
+      const fileObj = {
         url: imageUrl,
         type: file.fileExtension,
         size: file.size,
@@ -1134,12 +1134,12 @@ export class TenderProposalService {
         ? log.data.action
         : 'review';
 
-    let subject = `Proposal ${actions}ed Notification`;
+    const subject = `Proposal ${actions}ed Notification`;
     let clientContent = `Your proposal (${log.data.proposal.project_name}), has been ${actions}ed by ${reviewerRole} at (${log.data.created_at})`;
     if (log.data.reviewer) {
       clientContent = `Your proposal (${log.data.proposal.project_name}), has been ${actions}ed by ${reviewerRole} (${log.data.reviewer.employee_name}) at (${log.data.created_at})`;
     }
-    let employeeContent = `Your review has been submitted for proposal (${log.data.proposal.project_name}) at (${log.data.created_at}), and already been notified to the user ${log.data.proposal.user.employee_name} (${log.data.proposal.user.email})`;
+    const employeeContent = `Your review has been submitted for proposal (${log.data.proposal.project_name}) at (${log.data.created_at}), and already been notified to the user ${log.data.proposal.user.employee_name} (${log.data.proposal.user.email})`;
 
     // email notification
     if (log.data.reviewer) {

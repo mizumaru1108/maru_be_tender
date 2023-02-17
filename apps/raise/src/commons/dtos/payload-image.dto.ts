@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsString,
-  IsNotEmpty,
-  Matches,
-  IsOptional,
-  IsDataURI,
-} from 'class-validator';
+import { IsDataURI, IsNotEmpty, IsString, Matches } from 'class-validator';
 
 export class PayloadImage {
   @ApiProperty()

@@ -40,14 +40,14 @@ export class TenderProposalFollowUpService {
     'log.logger': TenderProposalFollowUpService.name,
   });
   constructor(
-    private readonly followUpRepository: TenderProposalFollowUpRepository,
     private readonly bunnyService: BunnyService,
     private readonly configService: ConfigService,
     private readonly twilioService: TwilioService,
     private readonly emailService: EmailService,
-    private readonly notificationService: TenderNotificationService,
+    private readonly notifService: TenderNotificationService,
     private readonly tenderFileManagerService: TenderFileManagerService,
     private readonly tenderProposalRepository: TenderProposalRepository,
+    private readonly followUpRepo: TenderProposalFollowUpRepository,
   ) {
     const environment = this.configService.get('APP_ENV');
     if (!environment) envLoadErrorHelper('APP_ENV');
@@ -177,7 +177,7 @@ export class TenderProposalFollowUpService {
         }
       }
 
-      const createdFolllowUp = await this.followUpRepository.create(
+      const createdFolllowUp = await this.followUpRepo.create(
         createFollowUpPayload,
         fileManagerCreateManyPayload,
       );
@@ -204,9 +204,7 @@ export class TenderProposalFollowUpService {
 
       if (id.length > 0) {
         for (let i = 0; i < id.length; i++) {
-          const followUp = await this.followUpRepository.fetchProposalById(
-            id[i],
-          );
+          const followUp = await this.followUpRepo.fetchProposalById(id[i]);
           if (!followUp) {
             throw new NotFoundException(
               `Follow Up with id of ${id[i]} not found!`,
@@ -233,7 +231,7 @@ export class TenderProposalFollowUpService {
         }
       }
 
-      const deletedCount = await this.followUpRepository.deleteFollowUps(
+      const deletedCount = await this.followUpRepo.deleteFollowUps(
         followupIds,
         attachmentIds,
       );
@@ -287,7 +285,7 @@ export class TenderProposalFollowUpService {
       ...baseWebNotif,
       user_id: proposal.submitter_user_id,
     };
-    await this.notificationService.create(clientWebNotifPayload);
+    await this.notifService.create(clientWebNotifPayload);
 
     const clientPhone = isExistAndValidPhone(proposal.user.mobile_number);
     if (clientPhone) {
@@ -314,7 +312,7 @@ export class TenderProposalFollowUpService {
         ...baseWebNotif,
         user_id: proposal.project_manager.id,
       };
-      await this.notificationService.create(projectManagerWebNotif);
+      await this.notifService.create(projectManagerWebNotif);
 
       const pmPhone = isExistAndValidPhone(
         proposal.project_manager.mobile_number,
@@ -344,7 +342,7 @@ export class TenderProposalFollowUpService {
         ...baseWebNotif,
         user_id: proposal.supervisor.id,
       };
-      await this.notificationService.create(supervisorWebNotif);
+      await this.notifService.create(supervisorWebNotif);
 
       const supervisorPhone = isExistAndValidPhone(
         proposal.supervisor.mobile_number,

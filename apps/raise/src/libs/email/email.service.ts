@@ -145,7 +145,7 @@ export class EmailService {
     to: string,
     subject: string,
     template: string,
-    data: {},
+    data: Record<string, any>,
     from?: string,
   ): Promise<boolean> {
     this.logger.debug(`Sending email to ${to}`);
@@ -170,7 +170,7 @@ export class EmailService {
     to: string,
     subject: string,
     template: string,
-    data: {},
+    data: Record<string, any>,
     attachment: any, // array of objects
     from?: string,
   ): Promise<boolean> {

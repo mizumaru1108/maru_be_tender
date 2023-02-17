@@ -78,6 +78,24 @@ export class TenderNotificationService {
     return await this.tenderNotificationRepository.hideAllMine(userId);
   }
 
+  async delete(userId: string, notificationId: string) {
+    const response = await this.tenderNotificationRepository.findById(
+      notificationId,
+    );
+    if (!response) throw new NotFoundException('Notification not found');
+    if (response.user_id !== userId) {
+      throw new ForbiddenException("This notification aren't yours");
+    }
+    const updatedNotif = await this.tenderNotificationRepository.deleteById(
+      notificationId,
+    );
+    return updatedNotif;
+  }
+
+  async deleteAllMine(userId: string) {
+    return await this.tenderNotificationRepository.deleteAllMine(userId);
+  }
+
   sendSmsAndEmail(notifPayload: CommonNotifMapperResponse) {
     const {
       subject,

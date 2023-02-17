@@ -1,18 +1,15 @@
 import { Module } from '@nestjs/common';
-import { ContactsService } from './contacts.service';
-import { ContactsController } from './contacts.controller';
-import { MailerModule } from '@nestjs-modules/mailer';
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import { join } from 'path';
 import { MongooseModule } from '@nestjs/mongoose';
-import {
-  Organization,
-  OrganizationSchema,
-} from 'src/organization/schema/organization.schema';
 import {
   Notifications,
   NotificationsSchema,
 } from 'src/organization/schema/notifications.schema';
+import {
+  Organization,
+  OrganizationSchema,
+} from 'src/organization/schema/organization.schema';
+import { ContactsController } from './contacts.controller';
+import { ContactsService } from './contacts.service';
 
 @Module({
   imports: [

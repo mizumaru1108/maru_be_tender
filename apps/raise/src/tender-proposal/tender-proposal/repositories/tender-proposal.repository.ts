@@ -372,7 +372,9 @@ export class TenderProposalRepository {
         async (prisma) => {
           this.logger.log(
             'info',
-            `Updating proposal ${id}, with payload of\n${proposalUpdatePayload}`,
+            `Updating proposal ${id}, with payload of\n${logUtil(
+              proposalUpdatePayload,
+            )}`,
           );
           const updatedProposal = await prisma.proposal.update({
             where: { id },
@@ -381,7 +383,9 @@ export class TenderProposalRepository {
 
           this.logger.log(
             'info',
-            `Creating new proposal edit request with payload of \n${createProposalEditRequestPayload}`,
+            `Creating new proposal edit request with payload of \n${logUtil(
+              createProposalEditRequestPayload,
+            )}`,
           );
           await prisma.proposal_edit_request.create({
             data: createProposalEditRequestPayload,
@@ -447,7 +451,9 @@ export class TenderProposalRepository {
           ) {
             this.logger.log(
               'info',
-              `Creating new notification with payload of \n${sendAmandementNotif.createManyWebNotifPayload}`,
+              `Creating new notification with payload of \n${logUtil(
+                sendAmandementNotif.createManyWebNotifPayload,
+              )}`,
             );
             prisma.notification.createMany({
               data: sendAmandementNotif.createManyWebNotifPayload,

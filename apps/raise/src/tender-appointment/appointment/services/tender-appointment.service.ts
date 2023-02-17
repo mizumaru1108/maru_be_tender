@@ -21,6 +21,7 @@ import { AppointmentFilterRequest } from '../dtos/requests/appointment-filter-re
 import { CreateAppointmentDto } from '../dtos/requests/create-appointment.dto';
 import { InvitationResponseDto } from '../dtos/requests/response-invitation.dto';
 import { TenderAppointmentRepository } from '../repositories/tender-appointment.repository';
+import { Credentials } from 'google-auth-library';
 
 @Injectable()
 export class TenderAppointmentService {
@@ -86,7 +87,7 @@ export class TenderAppointmentService {
     ).toISOString();
 
     const result = await this.googleCalendarService.createEvent(
-      currentUser.googleSession!,
+      currentUser.googleSession as Credentials, // consider that is exist because the guard will not allowed if it's undefined
       "Tender's Appointment",
       "Tender's Appointment",
       startTime,

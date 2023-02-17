@@ -36,7 +36,8 @@ export class TenderProposalFollowUpController {
     'tender_moderator',
     'tender_project_manager',
     'tender_project_supervisor',
-  ) // only internal users
+    'tender_client',
+  )
   @Post('create')
   async create(
     @CurrentUser() user: TenderCurrentUser,
@@ -52,7 +53,7 @@ export class TenderProposalFollowUpController {
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_ceo')
+  @TenderRoles('tender_ceo', 'tender_project_manager')
   @Patch('delete')
   async delete(
     @Body() request: DeleteProposalFollowUpDto,
