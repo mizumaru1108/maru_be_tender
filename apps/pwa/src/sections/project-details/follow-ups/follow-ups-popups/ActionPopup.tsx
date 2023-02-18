@@ -58,29 +58,60 @@ function ActionPopup({ open, handleClose }: Props) {
   const role = activeRole!;
 
   const onSubmit = async (data: any) => {
-    try {
-      // addFollowups({ content: data.action, proposal_id, follow_up_type: 'plain' }, role)
-      const response = await axiosInstance.post(
-        'tender-proposal/follow-up/create',
-        { content: data.action, proposal_id, follow_up_type: 'plain', employee_only: employeeOnly },
-        {
-          headers: { 'x-hasura-role': role },
+    if (role === 'tender_client') {
+      try {
+        const response = await axiosInstance.post(
+          'tender-proposal/follow-up/create',
+          { content: data.action, proposal_id, follow_up_type: 'plain', employee_only: false },
+          {
+            headers: { 'x-hasura-role': role },
+          }
+        );
+        if (response) {
+          dispatch(getProposal(id as string, role as string));
+          enqueueSnackbar('تم رفع الإجراء بنجاح', {
+            variant: 'success',
+          });
+          reset();
+          handleClose();
         }
-      );
-      if (response) {
-        dispatch(getProposal(id as string, role as string));
-        enqueueSnackbar('تم رفع الإجراء بنجاح', {
-          variant: 'success',
+      } catch (error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
         });
-        reset();
-        handleClose();
       }
-    } catch (error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-      });
+    } else {
+      try {
+        // addFollowups({ content: data.action, proposal_id, follow_up_type: 'plain' }, role)
+        const response = await axiosInstance.post(
+          'tender-proposal/follow-up/create',
+          {
+            content: data.action,
+            proposal_id,
+            follow_up_type: 'plain',
+            employee_only: employeeOnly,
+          },
+          {
+            headers: { 'x-hasura-role': role },
+          }
+        );
+        if (response) {
+          dispatch(getProposal(id as string, role as string));
+          enqueueSnackbar('تم رفع الإجراء بنجاح', {
+            variant: 'success',
+          });
+          reset();
+          handleClose();
+        }
+      } catch (error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+      }
     }
   };
 

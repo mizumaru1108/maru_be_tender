@@ -64,6 +64,7 @@ export default function RequestsInProcess() {
                 // employee: item.user.employee_name,
                 employee:
                   item.proposal_logs &&
+                  item.proposal_logs.length > 0 &&
                   item.proposal_logs[item.proposal_logs.length - 1].reviewer &&
                   item.proposal_logs[item.proposal_logs.length - 1].reviewer.employee_name,
                 createdAtClient: new Date(item.user.client_data.created_at),

@@ -133,7 +133,7 @@ function FollowUpsText(item: FollowUps) {
               <Typography>{item.content}</Typography>
             </Box>
           </Grid>
-          {role === 'tender_ceo' && (
+          {(role === 'tender_ceo' || role === 'tender_project_manager') && (
             <Grid item xs={1}>
               <Checkbox
                 onChange={(event) => handleCheckboxChange(event, item.id)}

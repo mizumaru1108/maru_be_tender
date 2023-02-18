@@ -382,6 +382,7 @@ const ar = {
       initiatives_track: 'مسار المبادرات',
       baptism_track: 'مسار الاستقطاب',
       syeikh_track: 'مسار السيوخ',
+      concessional_grants: 'مسار المنح الميسرة',
     },
     filter_button_label: 'تصفية',
     chip_canceled: 'تم إلغاء الطلب',
@@ -952,7 +953,7 @@ const ar = {
     start_date: 'تاريخ البدء',
     at: 'في',
     sent_by: 'أرسلت بواسطة',
-    project_delay: 'تأخير المشروع',
+    projects_delay: 'تأخير المشاريع',
   },
   concessional_card_insights: {
     title: {
@@ -1360,6 +1361,7 @@ const ar = {
     MODERATOR: 'مسؤول الفرز',
     ACCOUNTS_MANAGER: 'إدارة الشركاء (مشرف الحسابات)',
     ADMIN: 'سوبر ادمن',
+    CLIENT: 'عميل',
   },
   review: {
     order_status: 'حالة الطلب',

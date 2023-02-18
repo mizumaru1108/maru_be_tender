@@ -248,7 +248,7 @@ function FollowUpsFile(item: FollowUps) {
                       </Stack>
                     </Button>
                   </Grid>
-                  {role === 'tender_ceo' && (
+                  {(role === 'tender_ceo' || role === 'tender_project_manager') && (
                     <Grid item xs={1}>
                       <Checkbox
                         onChange={(event) => handleCheckboxChange(event, item.id)}

@@ -371,6 +371,7 @@ const en = {
       initiatives_track: 'Initiatives Track',
       baptism_track: 'Baptism Track',
       syeikh_track: "Syeikh's Track",
+      concessional_grants: 'Concessional Grants Track',
     },
     filter_button_label: 'Filter',
     chip_canceled: 'The request is canceled',
@@ -915,7 +916,7 @@ const en = {
     start_date: 'Start Date',
     at: 'at',
     sent_by: 'Sent by',
-    project_delay: 'Project Delay',
+    projects_delay: 'Project Delay',
   },
   concessional_card_insights: {
     title: {
@@ -1315,6 +1316,7 @@ const en = {
     MODERATOR: 'Moderator',
     ACCOUNTS_MANAGER: 'Accounts Manager',
     ADMIN: 'Super Admin',
+    CLIENT: 'Client',
   },
   review: {
     order_status: 'Order Status',

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 import { Grid, Typography } from '@mui/material';
 import useAuth from 'hooks/useAuth';
@@ -55,6 +55,14 @@ function FollowUps() {
     }
   };
 
+  useEffect(() => {
+    if (checkedItems.length > 0) {
+      setDisabled(false);
+    } else {
+      setDisabled(true);
+    }
+  }, [checkedItems]);
+
   return (
     <Grid container spacing={4}>
       <Grid item md={12} xs={12} display="flex" justifyContent="space-between">
@@ -64,26 +72,27 @@ function FollowUps() {
           </Typography>
         </Grid>
         <Grid>
-          {activeRole === 'tender_ceo' && FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL && (
-            <LoadingButton
-              loading={loading}
-              disabled={disabled}
-              sx={{
-                background: disabled ? '#ddd' : 'red',
-                color: '#fff',
-                py: 1.5,
-                px: 4,
-                ':hover': { backgroundColor: 'darkred' },
-              }}
-              onClick={() => handleDelFollowUps()}
-            >
-              {translate('table_actions.delete_button_label').toUpperCase()}
-            </LoadingButton>
-          )}
+          {(role === 'tender_ceo' || role === 'tender_project_manager') &&
+            FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL && (
+              <LoadingButton
+                loading={loading}
+                disabled={disabled}
+                sx={{
+                  background: disabled ? '#ddd' : 'red',
+                  color: '#fff',
+                  py: 1.5,
+                  px: 4,
+                  ':hover': { backgroundColor: 'darkred' },
+                }}
+                onClick={() => handleDelFollowUps()}
+              >
+                {translate('table_actions.delete_button_label').toUpperCase()}
+              </LoadingButton>
+            )}
         </Grid>
       </Grid>
       <Grid item md={12} xs={12}>
-        {activeRole === 'tender_client' ? <ClientFollowUpsPage /> : <EmployeeFollowUpsPage />}
+        {role === 'tender_client' ? <ClientFollowUpsPage /> : <EmployeeFollowUpsPage />}
       </Grid>
     </Grid>
   );
