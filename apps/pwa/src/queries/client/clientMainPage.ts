@@ -1,4 +1,5 @@
-export const clientMainPage = `query clientMainPage {
+export const clientMainPage = `
+query clientMainPage {
   current_projects: proposal(where: {_and: [
     { step: { _neq: FIRST } },
     { step: { _neq: SECOND } },
@@ -34,6 +35,9 @@ export const clientMainPage = `query clientMainPage {
     created_at
     project_idea
     outter_status
+  }
+    amandement_proposal:proposal(where: {outter_status: {_eq: ON_REVISION}, _and: {step: {_eq: ZERO}}}, order_by: {created_at: desc}, limit: 10) {
+    id
   }
 }
 `;

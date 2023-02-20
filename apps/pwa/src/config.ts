@@ -177,3 +177,9 @@ export const FEATURE_PROJECT_SAVE_DRAFT: boolean =
   process.env.REACT_APP_CONFIG_FEATURE_PROJECT_SAVE_DRAFT === 'true'
     ? true
     : false;
+
+export const FEATURE_AMANDEMENT_PROPOSAL: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_AMANDEMENT_PROPOSAL &&
+  process.env.REACT_APP_CONFIG_FEATURE_AMANDEMENT_PROPOSAL === 'true'
+    ? true
+    : false;

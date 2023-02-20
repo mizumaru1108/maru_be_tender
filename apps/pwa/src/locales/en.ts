@@ -27,6 +27,7 @@ const en = {
         required_budget: 'Required Budget',
         spent_budget: 'Spent Budget',
         draft_projects: 'Draft saved projects',
+        amandement_projects: 'Amandement project request',
         project_idea: 'Project Idea',
         complete_the_project: 'Complete the order',
         delete_draft: 'Delete draft',
@@ -464,6 +465,7 @@ const en = {
   dont_have_account: "You don't have an account?",
   register_one: 'register from here',
   show_details: 'Studying The Project',
+  revision_the_project: 'Revision of the project',
   show_project: 'Project Review',
   completing_exchange_permission: 'Completion of the disbursement authorization',
   pending: 'Request Pending',
@@ -679,6 +681,10 @@ const en = {
       label: 'Project Attachments*',
       placeholder: 'Project Attachments',
     },
+    notes: {
+      label: 'Notes',
+      placeholder: 'Notes',
+    },
   },
   funding_project_request_form2: {
     step: 'Detailed information about the project',
@@ -831,6 +837,7 @@ const en = {
   incoming_exchange_permission_requests: 'Incoming Exchange Permission Requests',
   requests_in_process: 'Requests in Process',
   incoming_funding_requests_project_supervisor: 'Incoming Funding Requests',
+  amandement_requests_project_supervisor: 'Amandement Requests',
   payment_adjustment: 'Payment Adjustment',
   appointments_with_partners: 'Appointments With Partners',
   exchange_permission: 'Exchange Permission',
@@ -1443,6 +1450,7 @@ const en = {
     ONGOING: 'ONGOING',
     PENDING: 'PENDING',
     CANCELED: 'CANCELED',
+    ON_REVISION: 'ON REVISION',
   },
   project_beneficiaries: {
     KIDS: 'KIDS',

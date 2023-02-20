@@ -8,6 +8,7 @@ import DraftProject from './DraftProject';
 import LoadingPage from './LoadingPage';
 import Statistic from './Statistic';
 import PreviousFundingInqueries from './PreviousFundingInqueries';
+import AmandementProposal from './AmandementProposal';
 
 function DashboardPage() {
   const [result, mutate] = useQuery({
@@ -35,10 +36,17 @@ function DashboardPage() {
               <DraftProject draft_projects={data.draft_projects} mutate={mutate} />
             </Grid>
           ) : null}
+          {data.amandement_proposal.length ? (
+            <Grid item md={12} xs={12}>
+              {/* <CurrentProjects current_projects={data.amandement_proposal} /> */}
+              <AmandementProposal />
+            </Grid>
+          ) : null}
           <Grid item md={12} xs={12}>
             <PreviousFundingInqueries
               completed_client_projects={data.completed_client_projects}
               pending_client_projects={data.pending_client_projects}
+              amandement_proposal={data.amandement_proposal}
             />
           </Grid>
         </>

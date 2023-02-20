@@ -17,6 +17,7 @@ import FacilitateSupervisorAcceptingForm from './forms';
 import { useDispatch, useSelector } from 'redux/store';
 import { setStepsData } from 'redux/slices/supervisorAcceptingForm';
 import PendingProposalRequestSending from '../PendingProposalRequestSending';
+import { FEATURE_AMANDEMENT_PROPOSAL } from '../../../../../config';
 
 function FloatinActionBar() {
   const dispatch = useDispatch();
@@ -222,12 +223,12 @@ function FloatinActionBar() {
                 }}
               >
                 <MenuItem
-                  disabled={true}
-                  // onClick={() => {
-                  //   navigate(
-                  //     `/project-supervisor/dashboard/proposal-amandment-request/${proposal_id}`
-                  //   );
-                  // }}
+                  disabled={FEATURE_AMANDEMENT_PROPOSAL ? false : true}
+                  onClick={() => {
+                    navigate(
+                      `/project-supervisor/dashboard/proposal-amandment-request/${proposal_id}`
+                    );
+                  }}
                 >
                   ارسال طلب تعديل الى الشريك
                 </MenuItem>

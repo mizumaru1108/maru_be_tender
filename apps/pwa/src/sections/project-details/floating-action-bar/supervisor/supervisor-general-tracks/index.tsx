@@ -26,6 +26,7 @@ import uuidv4 from 'utils/uuidv4';
 import moment from 'moment';
 import axiosInstance from 'utils/axios';
 import PendingProposalRequestSending from '../PendingProposalRequestSending';
+import { FEATURE_AMANDEMENT_PROPOSAL } from '../../../../../config';
 
 function FloatingActionBar() {
   const { id: pid } = useParams();
@@ -394,10 +395,10 @@ function FloatingActionBar() {
                 }}
               >
                 <MenuItem
-                  disabled={true}
-                  // onClick={() => {
-                  //   navigate(`/project-supervisor/dashboard/proposal-amandment-request/${pid}`);
-                  // }}
+                  disabled={FEATURE_AMANDEMENT_PROPOSAL ? false : true}
+                  onClick={() => {
+                    navigate(`/project-supervisor/dashboard/proposal-amandment-request/${pid}`);
+                  }}
                 >
                   ارسال طلب تعديل الى الشريك
                 </MenuItem>

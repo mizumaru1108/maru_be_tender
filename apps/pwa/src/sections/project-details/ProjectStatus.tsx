@@ -28,6 +28,7 @@ function ProjectStatus() {
             COMPLETED: '#0E8478',
             ONGOING: '#0E8478',
             PENDING: '#000',
+            ON_REVISION: '#F2994A',
             CANCELED: '#EB5757',
           }[`${proposal.outter_status}`],
           fontWeight: 600,

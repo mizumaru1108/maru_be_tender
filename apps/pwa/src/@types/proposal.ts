@@ -169,6 +169,20 @@ export type AmandementProposal = Omit<
   | 'follow_ups'
 >;
 
+export type AmandementProposalList = {
+  id: string;
+  user: {
+    employee_name: string;
+  };
+  reviewer: {
+    employee_name: string;
+  };
+  proposal: {
+    project_name: string;
+  };
+  created_at: Date;
+};
+
 export type AmandementFields = {
   amount_required_fsupport: string;
   letter_ofsupport_req: string;
