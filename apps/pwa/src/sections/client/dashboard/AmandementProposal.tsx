@@ -28,10 +28,23 @@ function AmandementProposal() {
 
   const navigate = useNavigate();
 
-  const fetchingData = async () => {
+  // const fetchingData = async (role: any) => {
+  //   try {
+  //     const rest = await axiosInstance.get('/tender-proposal/amandement-lists', {
+  //       headers: { 'x-hasura-role': activeRole! },
+  //     });
+  //     if (rest) {
+  //       setTmpValues(rest.data.data);
+  //     }
+  //   } catch (error) {
+  //     console.log('error', error.message);
+  //   }
+  // };
+  // create usecallback for fetchingData
+  const fetchingData = React.useCallback(async () => {
     try {
       const rest = await axiosInstance.get('/tender-proposal/amandement-lists', {
-        headers: { 'x-hasura-role': activeRole! },
+        headers: { 'x-hasura-role': role },
       });
       if (rest) {
         setTmpValues(rest.data.data);
@@ -39,11 +52,11 @@ function AmandementProposal() {
     } catch (error) {
       console.log('error', error.message);
     }
-  };
+  }, [role]);
 
   React.useEffect(() => {
     fetchingData();
-  }, []);
+  }, [fetchingData]);
 
   return (
     <Container>
@@ -82,7 +95,7 @@ function AmandementProposal() {
                       gutterBottom
                       sx={{ fontSize: '15px !important' }}
                     >
-                      {item.id}
+                      {/* {item.id} */}
                     </Typography>
                   </Stack>
 
