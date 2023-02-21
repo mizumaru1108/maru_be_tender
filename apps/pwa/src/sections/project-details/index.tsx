@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'redux/store';
 //
 import { FEATURE_PROJECT_DETAILS } from 'config';
 import useAuth from 'hooks/useAuth';
+import AmandementProposalDialog from '../client/funding-project-request/AmandementProposalDialog';
 
 function ProjectDetailsMainPage() {
   const { id, actionType } = useParams();
@@ -54,6 +55,9 @@ function ProjectDetailsMainPage() {
             height={25}
           />
         </Button>
+        {role === 'tender_client' && proposal.outter_status === 'ON_REVISION' && (
+          <AmandementProposalDialog />
+        )}
         <ProjectStatus />
       </Stack>
       <Stack direction="column" justifyContent="space-between">

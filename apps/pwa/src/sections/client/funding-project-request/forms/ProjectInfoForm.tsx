@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import FormGenerator from 'components/FormGenerator';
 import { ProjectInfoData } from '../Forms-Data';
 import useLocales from 'hooks/useLocales';
+import { AmandementFields } from '../../../../@types/proposal';
 type FormValuesProps = {
   num_ofproject_binicficiaries: number;
   project_goals: string;
@@ -19,8 +20,9 @@ type Props = {
   onSubmit: (data: any) => void;
   children?: React.ReactNode;
   defaultValues: any;
+  revised?: AmandementFields;
 };
-const ProjectInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
+const ProjectInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => {
   const { translate } = useLocales();
   const CreatingProposalForm2 = Yup.object().shape({
     num_ofproject_binicficiaries: Yup.number()

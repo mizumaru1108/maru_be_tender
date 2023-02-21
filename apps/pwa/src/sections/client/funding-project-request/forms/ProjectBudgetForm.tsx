@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { ProjectBudgetData } from '../Forms-Data';
 import FormGenerator from 'components/FormGenerator';
 import useLocales from 'hooks/useLocales';
+import { AmandementFields } from '../../../../@types/proposal';
 type FormValuesProps = {
   amount_required_fsupport: number;
   detail_project_budgets: {
@@ -20,9 +21,10 @@ type Props = {
   onSubmit: (data: any) => void;
   children?: React.ReactNode;
   defaultValues: any;
+  revised?: AmandementFields;
 };
 
-const ProjectBudgetForm = ({ onSubmit, children, defaultValues }: Props) => {
+const ProjectBudgetForm = ({ onSubmit, children, defaultValues, revised }: Props) => {
   const { translate } = useLocales();
   const [budgetError, setBudgetError] = useState(false);
   useEffect(() => {

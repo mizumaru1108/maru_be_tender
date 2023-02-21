@@ -8,6 +8,7 @@ import FormGenerator from 'components/FormGenerator';
 import { MainFormData } from '../Forms-Data';
 import { CustomFile } from 'components/upload';
 import useLocales from 'hooks/useLocales';
+import { AmandementFields } from '../../../../@types/proposal';
 
 type FormValuesProps = {
   project_name: string;
@@ -25,9 +26,10 @@ type Props = {
   onSubmit: (data: any) => void;
   children?: React.ReactNode;
   defaultValues: any;
+  revised?: AmandementFields;
 };
 
-const MainInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
+const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => {
   const { translate } = useLocales();
   const CreatingProposalForm1 = Yup.object().shape({
     project_name: Yup.string().required(translate('errors.cre_proposal.project_name.required')),

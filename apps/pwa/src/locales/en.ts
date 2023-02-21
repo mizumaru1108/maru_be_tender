@@ -27,7 +27,7 @@ const en = {
         required_budget: 'Required Budget',
         spent_budget: 'Spent Budget',
         draft_projects: 'Draft saved projects',
-        amandement_projects: 'Amandement project request',
+        amandement_projects: 'Project modification',
         project_idea: 'Project Idea',
         complete_the_project: 'Complete the order',
         delete_draft: 'Delete draft',
@@ -472,6 +472,7 @@ const en = {
   completed: 'Completed Order',
   canceled: 'Request Canceled',
   create_a_new_support_request: 'Create a new support request',
+
   register_form1: {
     vat: {
       label: 'ضريبة القيمة المضافة',
@@ -1087,6 +1088,7 @@ const en = {
   proposal_rejected: 'The project was successfully rejected',
   proposal_stepback: 'The project has been change status',
   proposal_created: 'The project has been created successfully',
+  proposal_revised: 'The project has been revised successfully',
   proposal_saving_draft: 'The project has been saved as a draft',
   view_all: 'view all',
   // PORTAL REPORTS
@@ -1259,6 +1261,14 @@ const en = {
       headline: 'Submit an Amandment Request to the Moderator',
       sub_headline:
         'Write the appropriate notes to inform the Moderator of the matters required of him',
+    },
+    dialog: {
+      header: 'Edit request',
+      body: 'Modify the fields specified by the employee to complete the work on your request. To view and modify the fields,',
+      click_here: 'Click here',
+    },
+    notes: {
+      label: 'Edit Notes',
     },
   },
   client_appointments: 'Appointments with the company',

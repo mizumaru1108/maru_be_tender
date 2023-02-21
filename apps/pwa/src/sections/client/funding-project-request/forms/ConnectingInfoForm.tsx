@@ -8,6 +8,7 @@ import BaseField from 'components/hook-form/BaseField';
 import { REGION } from '_mock/region';
 import { RegionNames } from '../../../../@types/region';
 import useLocales from 'hooks/useLocales';
+import { AmandementFields } from '../../../../@types/proposal';
 type FormValuesProps = {
   pm_name: string;
   pm_mobile: string;
@@ -20,9 +21,10 @@ type Props = {
   onSubmit: (data: any) => void;
   children?: React.ReactNode;
   defaultValues: any;
+  revised?: AmandementFields;
 };
 
-const ConnectingInfoForm = ({ onSubmit, children, defaultValues }: Props) => {
+const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => {
   const { translate } = useLocales();
   useEffect(() => {
     window.scrollTo(0, 0);

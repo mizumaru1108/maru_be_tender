@@ -5,10 +5,10 @@ import { useQuery } from 'urql';
 import ClientCarousel from './ClientCarousel';
 import CurrentProjects from './CurrentProjects';
 import DraftProject from './DraftProject';
+import ListAmandementRequest from './ListAmandementRequest';
 import LoadingPage from './LoadingPage';
-import Statistic from './Statistic';
 import PreviousFundingInqueries from './PreviousFundingInqueries';
-import AmandementProposal from './AmandementProposal';
+import Statistic from './Statistic';
 
 function DashboardPage() {
   const [result, mutate] = useQuery({
@@ -39,7 +39,7 @@ function DashboardPage() {
           {data.amandement_proposal.length ? (
             <Grid item md={12} xs={12}>
               {/* <CurrentProjects current_projects={data.amandement_proposal} /> */}
-              <AmandementProposal />
+              <ListAmandementRequest />
             </Grid>
           ) : null}
           <Grid item md={12} xs={12}>

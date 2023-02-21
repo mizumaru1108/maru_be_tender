@@ -20,27 +20,13 @@ import { AmandementProposalList } from '../../../@types/proposal';
 import useAuth from '../../../hooks/useAuth';
 import axiosInstance from '../../../utils/axios';
 
-function AmandementProposal() {
+function ListAmandementRequest() {
   const { translate, currentLang } = useLocales();
   const { activeRole } = useAuth();
   const role = activeRole!;
   const [tmpValues, setTmpValues] = React.useState<AmandementProposalList[] | null>(null);
 
   const navigate = useNavigate();
-
-  // const fetchingData = async (role: any) => {
-  //   try {
-  //     const rest = await axiosInstance.get('/tender-proposal/amandement-lists', {
-  //       headers: { 'x-hasura-role': activeRole! },
-  //     });
-  //     if (rest) {
-  //       setTmpValues(rest.data.data);
-  //     }
-  //   } catch (error) {
-  //     console.log('error', error.message);
-  //   }
-  // };
-  // create usecallback for fetchingData
   const fetchingData = React.useCallback(async () => {
     try {
       const rest = await axiosInstance.get('/tender-proposal/amandement-lists', {
@@ -74,7 +60,7 @@ function AmandementProposal() {
             },
           }}
           onClick={() => {
-            navigate('/client/dashboard/draft-funding-requests');
+            // navigate('/client/dashboard/draft-funding-requests');
           }}
         >
           {translate('view_all')}
@@ -257,6 +243,18 @@ function AmandementProposal() {
                             color: '#fff',
                           }}
                           // onClick={handleOnClick}
+                          onClick={() => {
+                            // navigate(
+                            //   `/client/dashboard/amandement_projects/${
+                            //     item.proposal.id ?? 'vqSwfnk3UQ2DYYOMySC2_'
+                            //   }`
+                            // );
+                            navigate(
+                              `/client/dashboard/previous-funding-requests/${
+                                item.proposal.id ?? 'vqSwfnk3UQ2DYYOMySC2_'
+                              }/show-project`
+                            );
+                          }}
                         >
                           {/* {translate('continue_studying_the_project')} */}
                           {translate('revision_the_project')}
@@ -273,4 +271,4 @@ function AmandementProposal() {
   );
 }
 
-export default AmandementProposal;
+export default ListAmandementRequest;

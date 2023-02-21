@@ -169,6 +169,18 @@ export type AmandementProposal = Omit<
   | 'follow_ups'
 >;
 
+export interface AmandmentRequestForm extends AmandementProposal {
+  project_name: string;
+  execution_time: number;
+  project_beneficiaries_specific_type: string;
+  pm_name: string;
+  pm_mobile: string;
+  pm_email: string;
+  region: string;
+  governorate: string;
+  proposal_item_budget: ItemBudget[];
+}
+
 export type AmandementProposalList = {
   id: string;
   user: {
@@ -179,6 +191,7 @@ export type AmandementProposalList = {
   };
   proposal: {
     project_name: string;
+    id: string;
   };
   created_at: Date;
 };

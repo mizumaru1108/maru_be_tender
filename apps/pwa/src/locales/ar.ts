@@ -27,7 +27,8 @@ const ar = {
         not_determined: 'لم تحدد بعد',
         spent_budget: 'الميزانية المصروفة',
         draft_projects: 'مشاريع محفوظة كمسودة',
-        amandement_projects: 'طلبات تعديل المشروع',
+        amandement_projects_text: 'قم بتعديل مشروعك',
+        amandement_projects: 'تعديل المشروع',
         project_idea: 'فكرة المشروع',
         complete_the_project: 'أكمل الطلب',
         delete_draft: 'حذف المسودة',
@@ -1123,6 +1124,7 @@ const ar = {
   proposal_rejected: 'تم رفض الطلب بنجاح',
   proposal_stepback: 'تم تغيير حالة المشروع',
   proposal_created: 'تم انشاء المشروع بنجاح',
+  proposal_revised: 'تم تعديل المشروع بنجاح',
   proposal_saving_draft: 'تم حفظ المشروع كمسودة',
 
   // PORTAL REPORTS
@@ -1305,6 +1307,14 @@ const ar = {
       page_name: 'مشرف المشاريع - تعديلات الطلبات',
       headline: 'ارسال طلب تعديل مسؤول الفرز',
       sub_headline: 'قم بكتابة الملاحظات المناسبة لإعلام مسؤول الفرز بالامور المطلوبة منه',
+    },
+    dialog: {
+      header: 'طلب تعديل',
+      body: 'قم بتعديل الحقول المحددة من قبل الموظف لإكمال العمل على طلبك. لعرض وتعديل الحقول،',
+      click_here: 'انقر هنا',
+    },
+    notes: {
+      label: 'ملاحظات على الطلب',
     },
   },
   client_appointments: 'المواعيد مع المؤسسة',
