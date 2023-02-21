@@ -28,6 +28,7 @@ import { SendAmandementDto } from '../dtos/requests/send-amandement.dto';
 import { FetchAmandementFilterRequest } from '../dtos/requests/fetch-amandement-filter-request.dto';
 import { GetByUUIDQueryParamDto } from '../../../commons/dtos/get-by-uuid-query-param.dto';
 import { SendRevisionDto } from '../dtos/requests/send-revision.dto';
+import { GetByIdDto } from '../../../commons/dtos/get-by-id.dto';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(private readonly proposalService: TenderProposalService) {}
@@ -111,7 +112,7 @@ export class TenderProposalController {
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_project_supervisor', 'tender_client')
   @Get('amandement')
-  async getAmandementById(@Query() payload: GetByUUIDQueryParamDto) {
+  async getAmandementById(@Query() payload: GetByIdDto) {
     const result = await this.proposalService.getAmandementById(payload.id);
     return baseResponseHelper(
       result,

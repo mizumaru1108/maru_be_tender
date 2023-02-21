@@ -479,10 +479,10 @@ export class TenderProposalRepository {
   }
 
   async findAmandementById(
-    amandementId: string,
+    proposal_id: string,
   ): Promise<{ proposal: proposal; detail: string } | null> {
     try {
-      this.logger.log('info', `Finding amandement with id of ${amandementId}`);
+      this.logger.log('info', `Finding amandement with proposal_id of ${proposal_id}`);
       const raw = await this.prismaService.$queryRaw<
         {
           detail: string;
@@ -490,7 +490,7 @@ export class TenderProposalRepository {
         }[]
       >`SELECT edit_request.detail, row_to_json(p.*) as proposal FROM proposal_edit_request edit_request
       JOIN proposal p ON p.id = edit_request.proposal_id
-      WHERE edit_request.id = ${amandementId} AND p.id = edit_request.proposal_id`;
+      WHERE edit_request.proposal_id = ${proposal_id} AND p.id = edit_request.proposal_id`;
       // console.log(logUtil(raw));
       return raw[0] || null;
     } catch (err) {
