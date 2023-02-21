@@ -70,7 +70,7 @@ function ProjectDetailsMainPage() {
             proposal.created_at
           ).toLocaleString()}`}
         </Typography>
-        {actionType && actionType !== 'show-project' && <FollowUpsAction />}
+        {actionType && actionType !== 'show-project' ? <FollowUpsAction /> : null}
       </Stack>
       <ActionTap />
       {!FEATURE_PROJECT_DETAILS ? null : <FloatinActonBar />}

@@ -132,17 +132,17 @@ function FilePopup({ open, handleClose }: Props) {
     }
   };
   return (
-    <FormProvider methods={methods}>
-      <ModalDialog
-        maxWidth="md"
-        title={
-          <Stack display="flex">
-            <Typography variant="h6" fontWeight="bold" color="#000000">
-              إضافة تعليق
-            </Typography>
-          </Stack>
-        }
-        content={
+    <ModalDialog
+      maxWidth="md"
+      title={
+        <Stack display="flex">
+          <Typography variant="h6" fontWeight="bold" color="#000000">
+            إضافة تعليق
+          </Typography>
+        </Stack>
+      }
+      content={
+        <FormProvider methods={methods}>
           <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
             <Grid item md={12} xs={12}>
               <BaseField
@@ -152,42 +152,42 @@ function FilePopup({ open, handleClose }: Props) {
               />
             </Grid>
           </Grid>
-        }
-        isOpen={open}
-        onClose={handleClose}
-        styleContent={{ padding: '1em', backgroundColor: '#fff' }}
-        actionBtn={
-          <Stack direction="row" justifyContent="space-around" gap={4}>
-            <Button
-              sx={{
-                color: '#000',
-                size: 'large',
-                width: { xs: '100%', sm: '200px' },
-                hieght: { xs: '100%', sm: '50px' },
-                ':hover': { backgroundColor: '#efefef' },
-              }}
-              onClick={handleClose}
-            >
-              رجوع
-            </Button>
-            <LoadingButton
-              onClick={handleSubmit(onSubmit)}
-              sx={{
-                color: '#fff',
-                width: { xs: '100%', sm: '200px' },
-                hieght: { xs: '100%', sm: '50px' },
-                backgroundColor: '#0E8478',
-                ':hover': { backgroundColor: '#13B2A2' },
-              }}
-              loading={isSubmitting}
-            >
-              اضافة
-            </LoadingButton>
-          </Stack>
-        }
-        showCloseIcon={true}
-      />
-    </FormProvider>
+        </FormProvider>
+      }
+      isOpen={open}
+      onClose={handleClose}
+      styleContent={{ padding: '1em', backgroundColor: '#fff' }}
+      actionBtn={
+        <Stack direction="row" justifyContent="space-around" gap={4}>
+          <Button
+            sx={{
+              color: '#000',
+              size: 'large',
+              width: { xs: '100%', sm: '200px' },
+              hieght: { xs: '100%', sm: '50px' },
+              ':hover': { backgroundColor: '#efefef' },
+            }}
+            onClick={handleClose}
+          >
+            رجوع
+          </Button>
+          <LoadingButton
+            onClick={handleSubmit(onSubmit)}
+            sx={{
+              color: '#fff',
+              width: { xs: '100%', sm: '200px' },
+              hieght: { xs: '100%', sm: '50px' },
+              backgroundColor: '#0E8478',
+              ':hover': { backgroundColor: '#13B2A2' },
+            }}
+            loading={isSubmitting}
+          >
+            اضافة
+          </LoadingButton>
+        </Stack>
+      }
+      showCloseIcon={true}
+    />
   );
 }
 

@@ -133,7 +133,6 @@ function FloatinActionBar() {
 
   useEffect(() => {
     dispatch(setStepsData(proposal));
-    console.log({ proposal });
   }, [dispatch, proposal]);
   return (
     <>

@@ -13,7 +13,7 @@ function FollowUpsAction() {
 
   const { activeRole } = useAuth();
 
-  const [actoinOpen, setActionOpen] = useState(false);
+  const [actionOpen, setActionOpen] = useState(false);
 
   const [fileOpen, setFileOpen] = useState(false);
 
@@ -34,11 +34,11 @@ function FollowUpsAction() {
   };
 
   return (
-    <Stack direction="row" gap={1}>
+    <>
       {/* {activeRole !== 'tender_client' && (
         <> */}
-      <Stack direction="row" gap={2}>
-        <ActionPopup open={actoinOpen} handleClose={handleActionClose} />
+      <Stack direction="row" spacing={2} sx={{ py: 1 }}>
+        <ActionPopup open={actionOpen} handleClose={handleActionClose} />
         <FilePopup open={fileOpen} handleClose={handleFileClose} />
         {!FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL ? null : (
           <React.Fragment>
@@ -71,9 +71,7 @@ function FollowUpsAction() {
           </React.Fragment>
         )}
       </Stack>
-      {/* </>
-      )} */}
-    </Stack>
+    </>
   );
 }
 
