@@ -558,8 +558,10 @@ export class TenderProposalService {
     return sendAmandementResult.updatedProposal;
   }
 
-  async getAmandementById(amandementId: string) {
-    const amandement = await this.proposalRepo.findAmandementById(amandementId);
+  async getAmandementByProposalId(proposalId: string) {
+    const amandement = await this.proposalRepo.findAmandementByProposalId(
+      proposalId,
+    );
     if (!amandement) {
       throw new BadRequestException('Amandement Not Found!');
     }

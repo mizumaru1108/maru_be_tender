@@ -478,21 +478,46 @@ export class TenderProposalRepository {
     }
   }
 
-  async findAmandementById(
-    proposal_id: string,
-  ): Promise<{ proposal: proposal; detail: string } | null> {
+  async findAmandementByProposalId(proposal_id: string): Promise<any> {
     try {
-      this.logger.log('info', `Finding amandement with proposal_id of ${proposal_id}`);
-      const raw = await this.prismaService.$queryRaw<
-        {
-          detail: string;
-          proposal: proposal;
-        }[]
-      >`SELECT edit_request.detail, row_to_json(p.*) as proposal FROM proposal_edit_request edit_request
-      JOIN proposal p ON p.id = edit_request.proposal_id
-      WHERE edit_request.proposal_id = ${proposal_id} AND p.id = edit_request.proposal_id`;
-      // console.log(logUtil(raw));
-      return raw[0] || null;
+      this.logger.log(
+        'info',
+        `Finding amandement with proposal_id of ${proposal_id}`,
+      );
+      return await this.prismaService.proposal_edit_request.findFirst({
+        where: {
+          proposal_id: proposal_id,
+        },
+        select: {
+          detail: true,
+          proposal: {
+            select: {
+              id: true,
+              project_implement_date: true,
+              project_location: true,
+              num_ofproject_binicficiaries: true,
+              project_idea: true,
+              project_goals: true,
+              project_outputs: true,
+              project_strengths: true,
+              project_risks: true,
+              amount_required_fsupport: true,
+              letter_ofsupport_req: true,
+              project_attachments: true,
+              project_beneficiaries: true,
+              project_name: true,
+              execution_time: true,
+              project_beneficiaries_specific_type: true,
+              pm_name: true,
+              pm_mobile: true,
+              pm_email: true,
+              region: true,
+              governorate: true,
+              proposal_item_budget: true,
+            },
+          },
+        },
+      });
     } catch (err) {
       const theError = prismaErrorThrower(
         err,
