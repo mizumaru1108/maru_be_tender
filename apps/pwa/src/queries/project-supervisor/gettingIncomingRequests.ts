@@ -32,6 +32,7 @@ export const gettingIncomingRequests = `query MyQuery($limit: Int = 10, $order_b
       reviewer {
         employee_name
       }
+      created_at
     }
   }
 }

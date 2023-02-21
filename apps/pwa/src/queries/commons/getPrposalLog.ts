@@ -4,6 +4,7 @@ export const getProposalLog = `query getProposalLog($proposal_id: String = "") {
     action
     message
     notes
+    created_at
     user_role
     proposal: proposal {
       inclu_or_exclu
@@ -21,7 +22,8 @@ export const getProposalLog = `query getProposalLog($proposal_id: String = "") {
       fsupport_by_supervisor
       updated_at
       created_at
-    }
+      state
+  }
   }
 }
 `;

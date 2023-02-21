@@ -76,9 +76,15 @@ function PaymentAdjustment() {
                   item.proposal_logs.length > 0 &&
                   item.proposal_logs[item.proposal_logs.length - 1].reviewer &&
                   item.proposal_logs[item.proposal_logs.length - 1].reviewer.employee_name,
-                createdAtClient: new Date(item.user.client_data.created_at),
+                createdAtClient: new Date(item.created_at),
               }}
-              footer={{ createdAt: new Date(item.created_at), payments: item.payments }}
+              footer={{
+                createdAt:
+                  item.proposal_logs &&
+                  item.proposal_logs.length > 0 &&
+                  new Date(item.proposal_logs[item.proposal_logs.length - 1].created_at),
+                payments: item.payments,
+              }}
               cardFooterButtonAction="completing-exchange-permission"
               destination="payment-adjustment"
             />

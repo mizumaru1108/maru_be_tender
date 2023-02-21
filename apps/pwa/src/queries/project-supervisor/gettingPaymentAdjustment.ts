@@ -35,6 +35,7 @@ export const gettingPaymentAdjustment = `query MyQuery($where: proposal_bool_exp
       reviewer {
         employee_name
       }
+      created_at
     }
   }
 }

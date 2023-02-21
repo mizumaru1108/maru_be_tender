@@ -10,12 +10,20 @@ import { useEffect, useState } from 'react';
 import { useQuery } from 'urql';
 import { GetProjectList } from '../../../queries/ceo/get-project-list';
 import useLocales from '../../../hooks/useLocales';
-import { useSelector } from 'redux/store';
+import { useDispatch, useSelector } from 'redux/store';
+import { setTracks } from 'redux/slices/proposal';
 
 function DashboardProjectManagement() {
   const { translate, currentLang } = useLocales();
-  const [projectManagementData, setProjectManagementData] = useState<ProjectManagement[]>([]);
+  const dispatch = useDispatch();
   const { tracks } = useSelector((state) => state.proposal);
+  const [projectManagementData, setProjectManagementData] = useState<ProjectManagement[]>([]);
+  const [filteredTrack, setFilteredTrack] = useState([
+    'MOSQUES',
+    'CONCESSIONAL_GRANTS',
+    'INITIATIVES',
+    'BAPTISMS',
+  ]);
 
   const [projectList, fetchProject] = useQuery({
     query: GetProjectList,
@@ -27,6 +35,8 @@ function DashboardProjectManagement() {
   if (error) {
     console.log(error);
   }
+
+  // dispatch(setTracks(['MOSQUES', 'CONCESSIONAL_GRANTS', 'INITIATIVES', 'BAPTISMS']));
 
   function getDelayProjects(getDate: any) {
     const ignoredUnits = ['second', 'seconds', 'minute', 'minutes', 'hour', 'hours'];
@@ -70,6 +80,10 @@ function DashboardProjectManagement() {
     }
     // eslint-disable-next-line
   }, [projectDatas, currentLang]);
+
+  useEffect(() => {
+    dispatch(setTracks(filteredTrack));
+  }, [dispatch, filteredTrack]);
 
   const headerCells: ProjectManagementTableHeader[] = [
     { id: 'projectNumber', label: translate('project_management_headercell.project_number') },
