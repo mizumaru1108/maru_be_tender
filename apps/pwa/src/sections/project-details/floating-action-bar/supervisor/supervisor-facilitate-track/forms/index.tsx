@@ -94,10 +94,10 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
     setIsSubmitting(true);
 
     try {
-      const lenghtOfNumberOfPayments = step4.proposal_item_budgets.length;
-      const totalFSupport = step4.proposal_item_budgets
-        .map((el) => Number(el.amount))
-        .reduce((acc, curr) => acc + (curr || 0), 0);
+      const lenghtOfNumberOfPayments = data.recommended_support.length;
+      const totalFSupport = data.recommended_support
+        .map((el: { amount: any }) => Number(el.amount))
+        .reduce((acc: any, curr: any) => acc + (curr || 0), 0);
 
       const payload = {
         proposal_id,

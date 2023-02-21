@@ -23,6 +23,8 @@ query getOneProposal($id: String!) {
         governorate
         date_of_esthablistmen
         num_of_beneficiaries
+        ceo_name
+        chairman_name
       }
       bank_informations {
         id
@@ -119,5 +121,6 @@ query getOneProposal($id: String!) {
     }
   }
 }
+
 
 `;

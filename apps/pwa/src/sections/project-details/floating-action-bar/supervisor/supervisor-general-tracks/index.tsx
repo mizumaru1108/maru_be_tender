@@ -26,6 +26,7 @@ import uuidv4 from 'utils/uuidv4';
 import moment from 'moment';
 import axiosInstance from 'utils/axios';
 import PendingProposalRequestSending from '../PendingProposalRequestSending';
+import { FEATURE_AMANDEMENT_PROPOSAL } from '../../../../../config';
 
 function FloatingActionBar() {
   const { id: pid } = useParams();
@@ -357,7 +358,7 @@ function FloatingActionBar() {
                 color="inherit"
                 endIcon={<Iconify icon="eva:message-circle-outline" />}
                 sx={{ flex: 1 }}
-                disabled={true}
+                // disabled={true}
                 onClick={handleMessage}
               >
                 {translate('account_manager.partner_details.send_messages')}
@@ -394,17 +395,17 @@ function FloatingActionBar() {
                 }}
               >
                 <MenuItem
-                  disabled={true}
-                  // onClick={() => {
-                  //   navigate(`/project-supervisor/dashboard/proposal-amandment-request/${pid}`);
-                  // }}
+                  disabled={FEATURE_AMANDEMENT_PROPOSAL ? false : true}
+                  onClick={() => {
+                    navigate(`/project-supervisor/dashboard/proposal-amandment-request/${pid}`);
+                  }}
                 >
                   ارسال طلب تعديل الى الشريك
                 </MenuItem>
                 <MenuItem onClick={() => setAction('STEP_BACK')}>
                   ارجاع المعاملة الى مسؤول الفرز
                 </MenuItem>
-                <MenuItem disabled={true} onClick={() => setAction('PENDING_REQUEST')}>
+                <MenuItem onClick={() => setAction('PENDING_REQUEST')}>
                   اعادة المشروع للشريك لرفعه في وقت اخر
                 </MenuItem>
               </Menu>

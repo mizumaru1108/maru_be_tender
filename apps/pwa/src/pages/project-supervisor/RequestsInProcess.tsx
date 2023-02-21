@@ -52,6 +52,7 @@ function RequestsInProcess() {
                     'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
                   ],
                 },
+                outter_status: { _neq: 'ON_REVISION' },
               },
             }}
             destination={'requests-in-process'}

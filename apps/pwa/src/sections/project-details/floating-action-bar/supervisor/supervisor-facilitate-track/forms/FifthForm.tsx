@@ -15,7 +15,7 @@ import uuidv4 from 'utils/uuidv4';
 import { useSnackbar } from 'notistack';
 
 function FifthForm({ children, onSubmit }: any) {
-  const { step5 } = useSelector((state) => state.supervisorAcceptingForm);
+  const { step5, step1 } = useSelector((state) => state.supervisorAcceptingForm);
   const { proposal } = useSelector((state) => state.proposal);
 
   const { translate } = useLocales();
@@ -70,19 +70,45 @@ function FifthForm({ children, onSubmit }: any) {
 
   const onSubmitForm = async (data: SupervisorStep5) => {
     if (data.recommended_support.length) {
-      data.created_recommended_support = data.recommended_support
-        .filter((item) => !basedBudget.find((i) => i.id === item.id))
-        .map((el) => ({
-          ...el,
-          amount: Number(el.amount),
-        }));
+      // data.created_recommended_support = data.recommended_support
+      //   .filter((item) => !basedBudget.find((i) => i.id === item.id))
+      //   .map((el) => ({
+      //     ...el,
+      //     amount: Number(el.amount),
+      //   }));
 
-      data.updated_recommended_support = data.recommended_support
-        .filter((item) => basedBudget.find((i) => i.id === item.id))
-        .map((el) => ({
-          ...el,
-          amount: Number(el.amount),
-        }));
+      // data.updated_recommended_support = data.recommended_support
+      //   .filter((item) => basedBudget.find((i) => i.id === item.id))
+      //   .map((el) => ({
+      //     ...el,
+      //     amount: Number(el.amount),
+      //   }));
+
+      data.created_recommended_support = [
+        ...data.recommended_support
+          .filter((item) => !basedBudget.find((i) => i.id === item.id))
+          .map((el) => ({
+            ...el,
+            amount: Number(el.amount),
+          })),
+        ...data.recommended_support
+          .filter((item) => basedBudget.find((i) => i.id === item.id))
+          .map((el) => ({
+            ...el,
+            amount: Number(el.amount),
+          })),
+      ];
+
+      if (proposal.recommended_supports.length) {
+        data.updated_recommended_support = proposal.recommended_supports
+          .filter((item) => data.created_recommended_support?.find((i) => i.id === item.id))
+          .map((el) => ({
+            ...el,
+            amount: Number(el.amount),
+          }));
+      } else {
+        data.updated_recommended_support = [];
+      }
 
       data.deleted_recommended_support = tempDeletedBudget;
 
@@ -99,9 +125,9 @@ function FifthForm({ children, onSubmit }: any) {
   };
 
   useEffect(() => {
-    if (proposal && proposal.recommended_supports.length) {
-      setBasedBudget(proposal.recommended_supports);
-      setValue('recommended_support', proposal.recommended_supports);
+    if (proposal && proposal.proposal_item_budgets.length) {
+      setBasedBudget(proposal.proposal_item_budgets);
+      setValue('recommended_support', proposal.proposal_item_budgets);
     } else {
       resetField('recommended_support');
     }
@@ -116,7 +142,7 @@ function FifthForm({ children, onSubmit }: any) {
         <Grid item xs={12}>
           {recommendedSupportItems.map((v, i) => (
             <Grid container key={v.id} spacing={3} sx={{ mb: 2 }}>
-              <Grid item xs={3}>
+              <Grid item xs={step1.support_type ? 3 : 4}>
                 <Controller
                   name={`recommended_support.${i}.clause`}
                   control={control}
@@ -135,6 +161,7 @@ function FifthForm({ children, onSubmit }: any) {
                           backgroundColor: 'transparent',
                         },
                       }}
+                      disabled={!step1.support_type}
                     />
                   )}
                 />
@@ -160,11 +187,12 @@ function FifthForm({ children, onSubmit }: any) {
                           backgroundColor: 'transparent',
                         },
                       }}
+                      disabled={!step1.support_type}
                     />
                   )}
                 />
               </Grid>
-              <Grid item xs={3}>
+              <Grid item xs={step1.support_type ? 3 : 4}>
                 <Controller
                   name={`recommended_support.${i}.amount`}
                   control={control}
@@ -184,48 +212,55 @@ function FifthForm({ children, onSubmit }: any) {
                           backgroundColor: 'transparent',
                         },
                       }}
+                      disabled={!step1.support_type}
                     />
                   )}
                 />
               </Grid>
-              <Grid item xs={2}>
-                <IconButton
-                  color="error"
-                  onClick={() => {
-                    const idGetValues = getValues(`recommended_support.${i}.id`);
-                    const deleteValues = basedBudget.filter((item) => item.id === idGetValues);
+              {!step1.support_type ? null : (
+                <Grid item xs={2}>
+                  <IconButton
+                    color="error"
+                    onClick={() => {
+                      const idGetValues = getValues(`recommended_support.${i}.id`);
+                      const deleteValues = basedBudget.filter((item) => item.id === idGetValues);
 
-                    const existingData = tempDeletedBudget.find((item) => item.id === idGetValues);
+                      const existingData = tempDeletedBudget.find(
+                        (item) => item.id === idGetValues
+                      );
 
-                    if (!existingData) {
-                      setTempDeletedBudget([...tempDeletedBudget, ...deleteValues]);
-                    }
+                      if (!existingData) {
+                        setTempDeletedBudget([...tempDeletedBudget, ...deleteValues]);
+                      }
 
-                    remove(i);
-                  }}
-                >
-                  <CloseIcon />
-                </IconButton>
-              </Grid>
+                      remove(i);
+                    }}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                </Grid>
+              )}
             </Grid>
           ))}
-          <Button
-            type="button"
-            variant="contained"
-            color="inherit"
-            fullWidth
-            size="medium"
-            onClick={async () => {
-              append({
-                amount: undefined,
-                clause: '',
-                explanation: '',
-                id: uuidv4(),
-              });
-            }}
-          >
-            {translate('add_new_line')}
-          </Button>
+          {!step1.support_type ? null : (
+            <Button
+              type="button"
+              variant="contained"
+              color="inherit"
+              fullWidth
+              size="medium"
+              onClick={async () => {
+                append({
+                  amount: undefined,
+                  clause: '',
+                  explanation: '',
+                  id: uuidv4(),
+                });
+              }}
+            >
+              {translate('add_new_line')}
+            </Button>
+          )}
         </Grid>
         <Grid item xs={12}>
           {children}

@@ -117,7 +117,7 @@ function ForthFrom({ children, onSubmit }: any) {
           <Typography sx={{ mb: 2 }}>الموازنة التفصيلية للمشروع</Typography>
           {itemBudgets.map((v, i) => (
             <Grid container key={v.id} spacing={3} sx={{ mb: 2 }}>
-              <Grid item xs={3}>
+              <Grid item xs={4}>
                 <Controller
                   name={`proposal_item_budgets.${i}.clause`}
                   control={control}
@@ -131,6 +131,7 @@ function ForthFrom({ children, onSubmit }: any) {
                       label={translate('funding_project_request_form4.item.label')}
                       placeholder={translate('funding_project_request_form4.item.placeholder')}
                       helperText={error?.message}
+                      disabled={true}
                       sx={{
                         '& > .MuiFormHelperText-root': {
                           backgroundColor: 'transparent',
@@ -155,6 +156,7 @@ function ForthFrom({ children, onSubmit }: any) {
                         'funding_project_request_form4.explanation.placeholder'
                       )}
                       error={!!error}
+                      disabled={true}
                       helperText={error?.message}
                       sx={{
                         '& > .MuiFormHelperText-root': {
@@ -165,7 +167,7 @@ function ForthFrom({ children, onSubmit }: any) {
                   )}
                 />
               </Grid>
-              <Grid item xs={3}>
+              <Grid item xs={4}>
                 <Controller
                   name={`proposal_item_budgets.${i}.amount`}
                   control={control}
@@ -185,11 +187,12 @@ function ForthFrom({ children, onSubmit }: any) {
                           backgroundColor: 'transparent',
                         },
                       }}
+                      disabled={true}
                     />
                   )}
                 />
               </Grid>
-              <Grid item xs={2}>
+              {/* <Grid item xs={2}>
                 <IconButton
                   color="error"
                   onClick={() => {
@@ -207,10 +210,10 @@ function ForthFrom({ children, onSubmit }: any) {
                 >
                   <CloseIcon />
                 </IconButton>
-              </Grid>
+              </Grid> */}
             </Grid>
           ))}
-          <Button
+          {/* <Button
             type="button"
             variant="contained"
             color="inherit"
@@ -226,7 +229,7 @@ function ForthFrom({ children, onSubmit }: any) {
             }}
           >
             {translate('add_new_line')}
-          </Button>
+          </Button> */}
         </Grid>
         <Grid item xs={12}>
           {children}

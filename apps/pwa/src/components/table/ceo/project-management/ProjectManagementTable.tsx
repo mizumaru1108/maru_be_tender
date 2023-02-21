@@ -26,6 +26,8 @@ import useTable, { getComparator } from 'hooks/useTable';
 
 import { ProjectManagement, ProjectManagementTableProps } from './project-management';
 import ProjectManagementTableRow from './ProjectManagementRow';
+import { setTracks } from 'redux/slices/proposal';
+import { useDispatch, useSelector } from 'redux/store';
 
 export default function ProjectManagementTable({
   data,
@@ -34,9 +36,12 @@ export default function ProjectManagementTable({
   isLoading,
 }: ProjectManagementTableProps) {
   const { translate } = useLocales();
+  const dispatch = useDispatch();
+
+  const { tracks } = useSelector((state) => state.proposal);
   const [tableData, setTableData] = useState<ProjectManagement[]>([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
-  const [selectedTrack, setSelectedTrack] = useState<string>('');
+  const [selectedTrack, setSelectedTrack] = useState<string | null>('ALL');
   const [sortValue, setSortValue] = useState<string>('projectName-asc');
   const [selectedSortValue, setSelectedSortValue] = useState<string>('projectName');
   const [selectedSortOrder, setSelectedSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -63,23 +68,27 @@ export default function ProjectManagementTable({
 
   const projectTracks = [
     {
-      value: '',
+      value: 'ALL',
       title: `${translate('commons.track_type.all_tracks')}`, //translate('table_filter.button_group.all_tracks'),
     },
     {
-      value: 'Mosques Department',
+      value: 'MOSQUES',
       title: `${translate('commons.track_type.mosques_track')}`, //translate('table_filter.button_group.mosques_track'),
     },
+    // {
+    //   value: 'SCHOLARSHIPS',
+    //   title: `${translate('commons.track_type.scholarships_track')}`, //translate('table_filter.button_group.scholarships_track'),
+    // },
     {
-      value: 'Facilitated Scholarship Track',
-      title: `${translate('commons.track_type.scholarships_track')}`, //translate('table_filter.button_group.scholarships_track'),
+      value: 'CONCESSIONAL_GRANTS',
+      title: `${translate('commons.track_type.concessional_grants')}`, //translate('table_filter.button_group.concessional_grants'),
     },
     {
-      value: 'Initiatives Track',
+      value: 'INITIATIVES',
       title: `${translate('commons.track_type.initiatives_track')}`, //translate('table_filter.button_group.initiatives_track'),
     },
     {
-      value: 'Baptismal Track',
+      value: 'BAPTISMS',
       title: `${translate('commons.track_type.baptism_track')}`, //translate('table_filter.button_group.baptismal_track'),
     },
   ];
@@ -177,6 +186,15 @@ export default function ProjectManagementTable({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleTracks = (value: any) => {
+    if (value !== 'ALL') {
+      dispatch(setTracks(value));
+    } else {
+      dispatch(setTracks(['MOSQUES', 'CONCESSIONAL_GRANTS', 'INITIATIVES', 'BAPTISMS']));
+    }
+    setSelectedTrack(value);
+  };
+
   return (
     <>
       {headline && (
@@ -191,7 +209,7 @@ export default function ProjectManagementTable({
             <Button
               key={item.value}
               variant="text"
-              onClick={() => setSelectedTrack(item.value)}
+              onClick={() => handleTracks(item.value)}
               sx={{
                 fontSize: '12px',
                 backgroundColor: selectedTrack === item.value ? 'primary.main' : 'inherit',

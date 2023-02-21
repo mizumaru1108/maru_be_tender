@@ -61,6 +61,7 @@ function RequestsInProcess() {
                 sentSection: item.state,
                 employee:
                   item.proposal_logs &&
+                  item.proposal_logs.length > 0 &&
                   item.proposal_logs[item.proposal_logs.length - 1].reviewer &&
                   item.proposal_logs[item.proposal_logs.length - 1].reviewer.employee_name,
                 // employee: item.user.employee_name,

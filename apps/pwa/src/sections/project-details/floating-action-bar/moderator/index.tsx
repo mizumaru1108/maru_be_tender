@@ -189,7 +189,7 @@ function ModeratorActionBar() {
             </LoadingButton>
             {/* disabled other than accept reject button */}
             <Button
-              disabled={true}
+              // disabled={true}
               variant="outlined"
               color="primary"
               sx={{ my: { xs: '1.3em', md: '0' }, ':hover': { backgroundColor: '#fff' } }}

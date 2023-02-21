@@ -13,7 +13,7 @@ function FollowUpsAction() {
 
   const { activeRole } = useAuth();
 
-  const [actoinOpen, setActionOpen] = useState(false);
+  const [actionOpen, setActionOpen] = useState(false);
 
   const [fileOpen, setFileOpen] = useState(false);
 
@@ -34,46 +34,44 @@ function FollowUpsAction() {
   };
 
   return (
-    <Stack direction="row" gap={1}>
-      {activeRole !== 'tender_client' && (
-        <>
-          <Stack direction="row" gap={2}>
-            <ActionPopup open={actoinOpen} handleClose={handleActionClose} />
-            <FilePopup open={fileOpen} handleClose={handleFileClose} />
-            {!FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL ? null : (
-              <React.Fragment>
-                <IconButtonAnimate
-                  onClick={FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL ? handleActionOpen : undefined}
-                  sx={{
-                    backgroundColor: '#fff',
-                    color: '#000',
-                    ':hover': { backgroundColor: '#fff' },
-                    borderRadius: '5px',
-                  }}
-                >
-                  <Iconify icon="eva:edit-2-outline" />
-                  <Typography sx={{ fontWeight: 700 }}>{translate('add_action')}</Typography>
-                </IconButtonAnimate>
-                <IconButtonAnimate
-                  onClick={FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL ? handleFileOpen : undefined}
-                  sx={{
-                    backgroundColor: '#fff',
-                    color: '#000',
-                    ':hover': { backgroundColor: '#fff' },
-                    borderRadius: '5px',
-                    border: '0.5px dashed',
-                    borderColor: 'gray',
-                  }}
-                >
-                  <img src="/icons/add-action-follow-up-icon.svg" alt="" />
-                  <Typography sx={{ fontWeight: 700 }}>{translate('upload_a_new_file')}</Typography>
-                </IconButtonAnimate>
-              </React.Fragment>
-            )}
-          </Stack>
-        </>
-      )}
-    </Stack>
+    <>
+      {/* {activeRole !== 'tender_client' && (
+        <> */}
+      <Stack direction="row" spacing={2} sx={{ py: 1 }}>
+        <ActionPopup open={actionOpen} handleClose={handleActionClose} />
+        <FilePopup open={fileOpen} handleClose={handleFileClose} />
+        {!FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL ? null : (
+          <React.Fragment>
+            <IconButtonAnimate
+              onClick={FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL ? handleActionOpen : undefined}
+              sx={{
+                backgroundColor: '#fff',
+                color: '#000',
+                ':hover': { backgroundColor: '#fff' },
+                borderRadius: '5px',
+              }}
+            >
+              <Iconify icon="eva:edit-2-outline" />
+              <Typography sx={{ fontWeight: 700 }}>{translate('add_action')}</Typography>
+            </IconButtonAnimate>
+            <IconButtonAnimate
+              onClick={FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL ? handleFileOpen : undefined}
+              sx={{
+                backgroundColor: '#fff',
+                color: '#000',
+                ':hover': { backgroundColor: '#fff' },
+                borderRadius: '5px',
+                border: '0.5px dashed',
+                borderColor: 'gray',
+              }}
+            >
+              <img src="/icons/add-action-follow-up-icon.svg" alt="" />
+              <Typography sx={{ fontWeight: 700 }}>{translate('upload_a_new_file')}</Typography>
+            </IconButtonAnimate>
+          </React.Fragment>
+        )}
+      </Stack>
+    </>
   );
 }
 

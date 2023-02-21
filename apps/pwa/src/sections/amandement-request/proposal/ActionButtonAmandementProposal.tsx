@@ -11,8 +11,9 @@ interface Props {
   // EditStatus: string;
   // setOpen: () => void;
   isLoad: boolean;
+  isDisabled: boolean;
 }
-function ActionButtonAmandementProposal({ isLoad }: Props) {
+function ActionButtonAmandementProposal({ isLoad, isDisabled }: Props) {
   const { translate } = useLocales();
   const navigate = useNavigate();
   const theme = useTheme();
@@ -54,6 +55,7 @@ function ActionButtonAmandementProposal({ isLoad }: Props) {
             loading={isLoad}
             type="submit"
             variant="outlined"
+            disabled={isDisabled}
             endIcon={!isLoad && <CheckOutlinedIcon />}
             sx={{
               backgroundColor: 'background.paper',

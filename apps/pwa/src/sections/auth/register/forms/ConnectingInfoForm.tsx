@@ -35,7 +35,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues]);
   const phoneNumberValidation = Yup.string()
-    .notRequired()
+    .required(translate('errors.register.phone.required'))
     .test('len', translate('errors.register.phone.length'), (val) => {
       if (val === undefined) {
         return true;

@@ -25,7 +25,7 @@ function ThirdForm({ children, onSubmit }: any) {
     execution_time: Yup.number().required('Procedures is required!'),
     project_location: Yup.string().required('Procedures is required!'),
     been_made_before: Yup.boolean().required('Procedures is required!'),
-    remote_or_insite: Yup.boolean().required('Procedures is required!'),
+    remote_or_insite: Yup.string().required('Procedures is required!'),
   });
 
   const { step3 } = useSelector((state) => state.supervisorAcceptingForm);
@@ -43,6 +43,7 @@ function ThirdForm({ children, onSubmit }: any) {
 
   const onSubmitForm = async (data: SupervisorStep3) => {
     onSubmit(data);
+    // console.log({ data });
   };
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>

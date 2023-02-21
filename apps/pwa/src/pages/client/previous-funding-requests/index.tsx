@@ -22,7 +22,7 @@ function PreviousFundingRequests() {
             resource={gettingPreviousProposals}
             title="طلبات دعم سابقة"
             dateFilter={true}
-            cardFooterButtonAction="show-details"
+            cardFooterButtonAction="show-project"
             taps={{
               key: 'outter_status',
               options: [

@@ -27,6 +27,7 @@ const ar = {
         not_determined: 'لم تحدد بعد',
         spent_budget: 'الميزانية المصروفة',
         draft_projects: 'مشاريع محفوظة كمسودة',
+        amandement_projects: 'طلبات تعديل المشروع',
         project_idea: 'فكرة المشروع',
         complete_the_project: 'أكمل الطلب',
         delete_draft: 'حذف المسودة',
@@ -382,11 +383,13 @@ const ar = {
       initiatives_track: 'مسار المبادرات',
       baptism_track: 'مسار الاستقطاب',
       syeikh_track: 'مسار السيوخ',
+      concessional_grants: 'مسار المنح الميسرة',
     },
     filter_button_label: 'تصفية',
     chip_canceled: 'تم إلغاء الطلب',
     chip_completed: 'الطلب كامل',
     chip_pending: 'الطلب معلق',
+    chip_on_revision: 'الطلب قيد المراجعة',
     maintenance_feature_flag: 'هذه الميزة لا تزال قيد الصيانة',
     view_license_file: 'اضغط هنا لرؤية ملف الترخيص',
   },
@@ -475,6 +478,7 @@ const ar = {
   add_new_line: 'إنشاء سطر جديد',
   create_new_account: 'إنشاء حساب جديد',
   show_details: 'دراسة المشروع',
+  revision_the_project: 'مراجعة المشروع',
   show_project: 'استعراض المشروع',
   completing_exchange_permission: 'إتمام إذن الصرف',
   pending: 'الطلب معلق',
@@ -688,6 +692,10 @@ const ar = {
       label: 'مرفقات المشروع*',
       placeholder: 'مرفقات المشروع',
     },
+    notes: {
+      label: 'ملاحظات',
+      placeholder: 'ملاحظات',
+    },
   },
   funding_project_request_form2: {
     step: 'معلومات تفصيلية عن المشروع',
@@ -840,6 +848,7 @@ const ar = {
   incoming_exchange_permission_requests: 'طلبات إذن الصرف الواردة',
   requests_in_process: 'طلبات قيد الاجراء',
   incoming_funding_requests_project_supervisor: 'طلبات الدعم الواردة',
+  amandement_requests_project_supervisor: 'طلبات التعديل',
   payment_adjustment: 'ضبط الدفعات',
   appointments_with_partners: 'المواعيد مع الشركاء',
   exchange_permission: 'إذن الصرف',
@@ -951,7 +960,7 @@ const ar = {
     start_date: 'تاريخ البدء',
     at: 'في',
     sent_by: 'أرسلت بواسطة',
-    project_delay: 'تأخير المشروع',
+    projects_delay: 'تأخير المشاريع',
   },
   concessional_card_insights: {
     title: {
@@ -1359,6 +1368,7 @@ const ar = {
     MODERATOR: 'مسؤول الفرز',
     ACCOUNTS_MANAGER: 'إدارة الشركاء (مشرف الحسابات)',
     ADMIN: 'سوبر ادمن',
+    CLIENT: 'عميل',
   },
   review: {
     order_status: 'حالة الطلب',
@@ -1483,6 +1493,7 @@ const ar = {
     ONGOING: 'جاري التنفيذ',
     PENDING: 'ريثما',
     CANCELED: 'ألغيت',
+    ON_REVISION: 'في المراجعة',
   },
   project_beneficiaries: {
     KIDS: 'أطفال',
@@ -1537,6 +1548,11 @@ const ar = {
     btn_final_save_as_draft: ' انهاء',
     btn_create_proposal: ' انهاء',
     btn_next_save_as_draft: 'التالي',
+  },
+  remote_or_insite: {
+    remote: 'عن بعد',
+    insite: 'حضوري',
+    both: 'عن بعد وحضوري',
   },
 
   // Finance pages

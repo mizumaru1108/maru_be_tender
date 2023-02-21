@@ -34,7 +34,7 @@ function ProjectDetailsMainPage() {
   if (isLoading) return <>... Loading</>;
 
   if (error) return <>{error}</>;
-
+  // console.log('proposal', proposal.outter_status);
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -70,7 +70,7 @@ function ProjectDetailsMainPage() {
             proposal.created_at
           ).toLocaleString()}`}
         </Typography>
-        {actionType && actionType !== 'show-project' && <FollowUpsAction />}
+        {actionType && actionType !== 'show-project' ? <FollowUpsAction /> : null}
       </Stack>
       <ActionTap />
       {!FEATURE_PROJECT_DETAILS ? null : <FloatinActonBar />}

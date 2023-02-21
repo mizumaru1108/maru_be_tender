@@ -5,7 +5,7 @@ type CardFooter = {
 
 type CardTitle = {
   id: string;
-  inquiryStatus?: 'canceled' | 'completed' | 'pending';
+  inquiryStatus?: 'canceled' | 'completed' | 'pending' | 'on_revision';
 };
 
 type CardContentComp = {

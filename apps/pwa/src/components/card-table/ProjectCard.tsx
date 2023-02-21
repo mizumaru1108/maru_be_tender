@@ -31,6 +31,7 @@ const inquiryStatusStyle = {
   canceled: { color: '#FF4842', backgroundColor: '#FF484229' },
   completed: { color: '#0E8478', backgroundColor: '#0E847829' },
   pending: { color: '#FFC107', backgroundColor: '#FFC10729' },
+  on_revision: { color: '#FFC107', backgroundColor: '#FFC10729' }, // this is the same as pending
 };
 
 const cardFooterButtonActionLocal = {

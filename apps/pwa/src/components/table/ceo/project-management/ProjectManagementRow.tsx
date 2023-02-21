@@ -29,7 +29,8 @@ export default function ProjectManagementTableRow({
       <TableCell padding="checkbox">
         <Checkbox checked={selected} onClick={onSelectRow} />
       </TableCell>
-      <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+      {/* <TableCell sx={{ display: 'flex', alignItems: 'center' }}> */}
+      <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
           {row.projectNumber ?? '-'}
         </Typography>
@@ -50,8 +51,15 @@ export default function ProjectManagementTableRow({
           {row.projectSection ? translate(row.projectSection) : '-'}
         </Typography>
       </TableCell>
-      <TableCell>
-        {row.createdAt ? moment(row.createdAt).format('DD.MM.YYYY, HH:MM a') : '-'}
+      <TableCell align="left">
+        <Typography variant="subtitle2" noWrap>
+          {row.createdAt ? moment(row.createdAt).format('DD.MM.YYYY, HH:MM a') : '-'}
+        </Typography>
+      </TableCell>
+      <TableCell align="left">
+        <Typography variant="subtitle2" noWrap sx={{ color: 'red' }}>
+          {row.projectDelay ? `${row.projectDelay}` : ''}
+        </Typography>
       </TableCell>
       <TableCell align="left">
         <Button

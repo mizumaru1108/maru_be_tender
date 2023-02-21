@@ -7,7 +7,7 @@ export interface ProjectManagement extends BasePaginateResponse {
   associationName?: string;
   projectSection?: string;
   createdAt?: Date | string;
-  projectDelay?: string;
+  projectDelay?: Date | string;
 }
 
 export interface ProjectManagementTableHeader {

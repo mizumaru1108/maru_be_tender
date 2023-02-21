@@ -17,6 +17,7 @@ interface ProposalItme {
   error: Error | string | null;
   activeTap: ActiveTap;
   checkedItems: any;
+  tracks: string[];
   employeeOnly: boolean;
   proposal: Proposal;
 }
@@ -26,6 +27,7 @@ const initialState: ProposalItme = {
   error: null,
   activeTap: 'main',
   checkedItems: [],
+  tracks: ['MOSQUES', 'CONCESSIONAL_GRANTS', 'INITIATIVES', 'BAPTISMS'],
   employeeOnly: false,
   proposal: {
     id: '-1',
@@ -44,6 +46,8 @@ const initialState: ProposalItme = {
         governorate: 'test',
         date_of_esthablistmen: new Date('10-10-2022'),
         num_of_beneficiaries: 0,
+        chairman_name: 'test',
+        ceo_name: 'test',
       },
       bank_informations: [
         {
@@ -70,7 +74,7 @@ const initialState: ProposalItme = {
         id: 'test',
       },
     ],
-    remote_or_insite: false,
+    remote_or_insite: 'both',
     target_group_age: 0,
     target_group_num: 0,
     target_group_type: '',
@@ -173,6 +177,10 @@ const slice = createSlice({
     setCheckedItems(state, action) {
       state.checkedItems = action.payload;
     },
+    // SET TRACKS FOR PROJECT MANAGEMENT
+    setTracks(state, action) {
+      state.tracks = action.payload;
+    },
     // SET EMPLOYEE ONLY
     setEmployeeOnly(state, action) {
       state.employeeOnly = action.payload;
@@ -210,7 +218,8 @@ const slice = createSlice({
 export default slice.reducer;
 
 // Actions
-export const { setProposal, setActiveTap, setCheckedItems, setEmployeeOnly } = slice.actions;
+export const { setProposal, setActiveTap, setCheckedItems, setTracks, setEmployeeOnly } =
+  slice.actions;
 
 // export const getProposal = (id: string, headers: any) => async () => {
 //   try {

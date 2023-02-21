@@ -27,6 +27,7 @@ const en = {
         required_budget: 'Required Budget',
         spent_budget: 'Spent Budget',
         draft_projects: 'Draft saved projects',
+        amandement_projects: 'Amandement project request',
         project_idea: 'Project Idea',
         complete_the_project: 'Complete the order',
         delete_draft: 'Delete draft',
@@ -371,11 +372,13 @@ const en = {
       initiatives_track: 'Initiatives Track',
       baptism_track: 'Baptism Track',
       syeikh_track: "Syeikh's Track",
+      concessional_grants: 'Concessional Grants Track',
     },
     filter_button_label: 'Filter',
     chip_canceled: 'The request is canceled',
     chip_completed: 'The request is complete',
     chip_pending: 'The request is pending',
+    chip_on_revision: 'The request is on revision',
     maintenance_feature_flag: 'This feature is still in maintenance',
     view_license_file: 'Click here to view the license file',
   },
@@ -462,6 +465,7 @@ const en = {
   dont_have_account: "You don't have an account?",
   register_one: 'register from here',
   show_details: 'Studying The Project',
+  revision_the_project: 'Revision of the project',
   show_project: 'Project Review',
   completing_exchange_permission: 'Completion of the disbursement authorization',
   pending: 'Request Pending',
@@ -677,6 +681,10 @@ const en = {
       label: 'Project Attachments*',
       placeholder: 'Project Attachments',
     },
+    notes: {
+      label: 'Notes',
+      placeholder: 'Notes',
+    },
   },
   funding_project_request_form2: {
     step: 'Detailed information about the project',
@@ -829,6 +837,7 @@ const en = {
   incoming_exchange_permission_requests: 'Incoming Exchange Permission Requests',
   requests_in_process: 'Requests in Process',
   incoming_funding_requests_project_supervisor: 'Incoming Funding Requests',
+  amandement_requests_project_supervisor: 'Amandement Requests',
   payment_adjustment: 'Payment Adjustment',
   appointments_with_partners: 'Appointments With Partners',
   exchange_permission: 'Exchange Permission',
@@ -914,7 +923,7 @@ const en = {
     start_date: 'Start Date',
     at: 'at',
     sent_by: 'Sent by',
-    project_delay: 'Project Delay',
+    projects_delay: 'Project Delay',
   },
   concessional_card_insights: {
     title: {
@@ -1314,6 +1323,7 @@ const en = {
     MODERATOR: 'Moderator',
     ACCOUNTS_MANAGER: 'Accounts Manager',
     ADMIN: 'Super Admin',
+    CLIENT: 'Client',
   },
   review: {
     order_status: 'Order Status',
@@ -1440,6 +1450,7 @@ const en = {
     ONGOING: 'ONGOING',
     PENDING: 'PENDING',
     CANCELED: 'CANCELED',
+    ON_REVISION: 'ON REVISION',
   },
   project_beneficiaries: {
     KIDS: 'KIDS',
@@ -1496,7 +1507,11 @@ const en = {
     btn_create_proposal: 'Send',
     btn_next_save_as_draft: 'Next',
   },
-
+  remote_or_insite: {
+    remote: 'Online',
+    insite: 'My Attendance',
+    both: 'Online and My Attendance',
+  },
   // Finance pages
   finance_pages: {
     heading: {

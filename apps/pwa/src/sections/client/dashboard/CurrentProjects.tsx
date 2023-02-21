@@ -36,7 +36,7 @@ function CurrentProjects({ current_projects }: any) {
               <Button
                 sx={{ textAlign: 'center', margin: '0 auto', textDecorationLine: 'underline' }}
                 onClick={() => {
-                  navigate('/client.main_page/dashboard/funding-project-request');
+                  navigate('/client/dashboard/funding-project-request');
                 }}
               >
                 {translate('content.client.main_page.apply_new_support_request')}
