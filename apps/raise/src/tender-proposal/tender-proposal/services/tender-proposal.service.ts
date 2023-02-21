@@ -315,6 +315,7 @@ export class TenderProposalService {
         updateProposalPayload.proposal_bank_id =
           saveDraftPayload.proposal_bank_information_id;
       }
+
       if (saveDraftPayload.detail_project_budgets) {
         proposal_item_budgets = CreateItemBudgetsMapper(
           proposal.id,
@@ -325,6 +326,12 @@ export class TenderProposalService {
 
     if (!!sendRevisionPayload) {
       updateProposalPayload = SendRevisionMapper(sendRevisionPayload);
+      if (sendRevisionPayload.detail_project_budgets) {
+        proposal_item_budgets = CreateItemBudgetsMapper(
+          proposal.id,
+          sendRevisionPayload.detail_project_budgets,
+        );
+      }
       updateProposalPayload.outter_status = OutterStatusEnum.ONGOING;
     }
 

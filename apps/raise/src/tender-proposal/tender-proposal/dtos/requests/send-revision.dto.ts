@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -10,6 +11,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { TenderFilePayload } from '../../../../tender-commons/dto/tender-file-payload.dto';
+import { CreateProjectBudgetDto } from './create-proposal-item-budget.dto';
 
 export class SendRevisionDto {
   @ApiProperty()
@@ -98,4 +100,11 @@ export class SendRevisionDto {
   @Type(() => TenderFilePayload)
   @ValidateNested()
   project_attachments?: TenderFilePayload;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  @ValidateNested()
+  @Type(() => CreateProjectBudgetDto)
+  detail_project_budgets?: CreateProjectBudgetDto[];
 }
