@@ -478,15 +478,21 @@ export class TenderProposalRepository {
     }
   }
 
-  async findAmandementById(amandementId: string): Promise<string | null> {
+  async findAmandementById(
+    amandementId: string,
+  ): Promise<{ proposal: proposal; detail: string } | null> {
     try {
       this.logger.log('info', `Finding amandement with id of ${amandementId}`);
       const raw = await this.prismaService.$queryRaw<
         {
           detail: string;
+          proposal: proposal;
         }[]
-      >`SELECT detail FROM proposal_edit_request WHERE id = ${amandementId}`;
-      return raw[0].detail || null;
+      >`SELECT edit_request.detail, row_to_json(p.*) as proposal FROM proposal_edit_request edit_request
+      JOIN proposal p ON p.id = edit_request.proposal_id
+      WHERE edit_request.id = ${amandementId} AND p.id = edit_request.proposal_id`;
+      // console.log(logUtil(raw));
+      return raw[0] || null;
     } catch (err) {
       const theError = prismaErrorThrower(
         err,
@@ -576,7 +582,7 @@ export class TenderProposalRepository {
           id: true,
           user: { select: { employee_name: true } },
           reviewer: { select: { employee_name: true } },
-          proposal: { select: { project_name: true } },
+          proposal: { select: { id: true, project_name: true } },
           created_at: true,
         },
         take: limit,

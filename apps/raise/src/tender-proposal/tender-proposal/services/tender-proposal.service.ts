@@ -563,7 +563,10 @@ export class TenderProposalService {
     if (!amandement) {
       throw new BadRequestException('Amandement Not Found!');
     }
-    return JSON.parse(amandement);
+    return {
+      proposal: amandement.proposal,
+      detail: JSON.parse(amandement.detail),
+    };
   }
 
   async fetchAmandementList(
