@@ -10,6 +10,7 @@ import Page500 from 'pages/Page500';
 import { Link } from 'react-router-dom';
 import { getProposals } from 'queries/commons/getProposal';
 import moment from 'moment';
+import useAuth from 'hooks/useAuth';
 
 type Role =
   | 'CLIENT'
@@ -24,6 +25,7 @@ type Log = {
   message: string;
   notes: string;
   action: 'accept' | 'reject' | 'pending' | 'accept_and_need_consultant' | 'one_step_back';
+  created_at: Date;
   user_role: Role;
   proposal: {
     clasification_field: string;
@@ -41,11 +43,13 @@ type Log = {
     vat_percentage: number;
     created_at: any;
     updated_at: any;
+    state: string;
   };
 };
 
 function ProjectPath() {
   const { translate, currentLang } = useLocales();
+  const { activeRole } = useAuth();
   const [activeStep, setActiveStep] = React.useState(0);
   const [stepOn, setStepOn] = React.useState(1);
   const [stepUserRole, setStepUserRole] = React.useState('');
@@ -63,16 +67,22 @@ function ProjectPath() {
     setStepOn(step);
     setActiveStep(step);
 
-    setStepUserRole(item.user_role);
+    if (item !== undefined) {
+      setStepUserRole(item.user_role);
+    } else {
+      // setStepUserRole(followUps.log[followUps.log.length - 1].proposal.state);
+      setStepUserRole('');
+    }
   };
 
   React.useEffect(() => {
     if (followUps?.log) {
-      setActiveStep(followUps.log.length - 1);
+      setActiveStep(followUps.log.length);
+      // setActiveStep(followUps.log.length - 1);
 
-      setStepUserRole(
-        followUps?.log.length ? followUps.log[followUps.log.length - 1].user_role : ''
-      );
+      // setStepUserRole(
+      //   followUps?.log.length ? followUps.log[followUps.log.length - 1].user_role : ''
+      // );
     }
     // getDay();
   }, [followUps]);
@@ -80,12 +90,22 @@ function ProjectPath() {
   if (fetching) return <>.. Loading</>;
   if (error) return <Page500 error={error.message} />;
 
+  const formattedDateTime = (getDate: Date) => {
+    const formattedDate = `${new Date(getDate).getDate()}.${
+      new Date(getDate).getMonth() + 1
+    }.${new Date(getDate).getFullYear()} ${translate(
+      'project_management_headercell.at'
+    )} ${new Date(getDate).getHours()}:${new Date(getDate).getMinutes()}`;
+
+    return formattedDate;
+  };
+
   return (
     <Grid container spacing={2}>
       <Grid item md={8} xs={8} sx={{ backgroundColor: 'transparent', px: 6 }}>
         <Stack direction="column" gap={2} justifyContent="start">
           <Typography variant="h6">{translate(`review.order_status`)}</Typography>
-          {followUps.log.length ? (
+          {followUps.log.length !== activeStep ? (
             followUps.log.map((item: Log, index: number) => (
               <React.Fragment key={index}>
                 {index === activeStep && (
@@ -96,12 +116,12 @@ function ProjectPath() {
               </React.Fragment>
             ))
           ) : (
-            <Typography variant="caption">-</Typography>
+            <Typography>Waiting review...</Typography>
           )}
           {stepUserRole !== 'PROJECT_SUPERVISOR' && (
             <React.Fragment>
               <Typography variant="h6">{translate(`review.notes`)}</Typography>
-              {followUps.log ? (
+              {followUps.log.length !== activeStep ? (
                 followUps.log.map((item: Log, index: number) => (
                   <React.Fragment key={index}>
                     {index === activeStep && (
@@ -112,7 +132,7 @@ function ProjectPath() {
                   </React.Fragment>
                 ))
               ) : (
-                <Typography variant="caption">-</Typography>
+                <Typography>Waiting review...</Typography>
               )}
             </React.Fragment>
           )}
@@ -333,38 +353,107 @@ function ProjectPath() {
         <Stack direction="column" gap={2} justifyContent="start" sx={{ paddingBottom: '10px' }}>
           <Typography variant="h6">مسار المشروع</Typography>
           <Box sx={{ width: '100%', padding: '10px', maxHeight: '450px', overflowY: 'scroll' }}>
-            <Stepper activeStep={followUps.log.length - 1} orientation="vertical">
+            <Stepper
+              activeStep={
+                activeRole! === 'tender_moderator' ? followUps.log.length - 1 : followUps.log.length
+              }
+              orientation="vertical"
+            >
               {followUps.log.map((item: Log, index: number) => (
                 <Step key={index}>
                   <Stack direction="row" gap={2}>
-                    {index === followUps.log.length - 1 ? (
+                    {/* {followUps.log.length === 1 && followUps.log[0] === 'Moderator' ? (
                       <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
                     ) : (
                       <PanoramaFishEyeIcon sx={{ color: '#000', alignSelf: 'center' }} />
-                    )}
-                    <Button
-                      sx={{
-                        padding: '0px',
-                        justifyContent: 'start',
-                        alignSelf: 'center',
-                        ':hover': { backgroundColor: '#fff' },
-                      }}
-                      onClick={handleStep(index, item)}
-                    >
-                      <Typography
+                    )} */}
+                    <PanoramaFishEyeIcon sx={{ color: '#000', alignSelf: 'center' }} />
+                    <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
+                      <Button
                         sx={{
-                          fontSize: index === activeStep ? '17px' : '12px',
-                          fontWeight: index === activeStep ? 800 : 400,
-                          color: '#000',
-                          alignSelf: 'center',
+                          padding: '0px',
+                          justifyContent: 'start',
+                          ':hover': { backgroundColor: '#fff' },
                         }}
+                        onClick={handleStep(index, item)}
                       >
-                        {translate(`permissions.${item.user_role}`)}
+                        <Typography
+                          sx={{
+                            fontSize: index === activeStep ? '17px' : '12px',
+                            fontWeight: index === activeStep ? 800 : 400,
+                            color: '#000',
+                            alignSelf: 'center',
+                          }}
+                        >
+                          {translate(`permissions.${item.user_role}`)}
+                        </Typography>
+                      </Button>
+                      <Typography sx={{ fontSize: '12px' }}>
+                        {formattedDateTime(item.created_at)}
                       </Typography>
-                    </Button>
+                    </Stack>
                   </Stack>
                 </Step>
               ))}
+              {followUps.log.length ? (
+                <Step>
+                  <Stack direction="row" gap={2} sx={{ mt: 1 }}>
+                    <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
+                    <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
+                      <Button
+                        sx={{
+                          padding: '0px',
+                          justifyContent: 'start',
+                          ':hover': { backgroundColor: '#fff' },
+                        }}
+                        onClick={handleStep(
+                          followUps.log.length,
+                          followUps.log[followUps.log.length]
+                        )}
+                      >
+                        <Typography
+                          sx={{
+                            fontSize: followUps.log.length === activeStep ? '17px' : '12px',
+                            fontWeight: followUps.log.length === activeStep ? 800 : 400,
+                            color: '#000',
+                            alignSelf: 'center',
+                          }}
+                        >
+                          {translate(
+                            `permissions.${followUps.log[followUps.log.length - 1].proposal.state}`
+                          )}
+                        </Typography>
+                      </Button>
+                    </Stack>
+                  </Stack>
+                </Step>
+              ) : (
+                <Step>
+                  <Stack direction="row" gap={2} sx={{ mt: 1 }}>
+                    <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
+                    <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
+                      <Button
+                        sx={{
+                          padding: '0px',
+                          justifyContent: 'start',
+                          ':hover': { backgroundColor: '#fff' },
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontSize: '17px',
+                            fontWeight: 800,
+                            color: '#000',
+                            alignSelf: 'center',
+                          }}
+                        >
+                          {translate(`permissions.MODERATOR`)}
+                        </Typography>
+                      </Button>
+                    </Stack>
+                  </Stack>
+                </Step>
+              )}
             </Stepper>
           </Box>
         </Stack>

@@ -30,6 +30,7 @@ export const gettingPreviousRequests = `query MyQuery($limit: Int = 10, $offset:
       reviewer {
         employee_name
       }
+      created_at
     }
   }
 }`;

@@ -21,14 +21,16 @@ query gettingIncomingRequests($where: proposal_bool_exp = {}, $limit: Int = 10, 
     id
     created_at
     project_name
+    state
     user {
       employee_name
       client_data{
         entity
-        created_at
       }
     }
-    state
+    proposal_logs {
+      created_at
+    }
   } 
 }
 `;

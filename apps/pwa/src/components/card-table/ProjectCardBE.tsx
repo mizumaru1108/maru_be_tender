@@ -138,6 +138,16 @@ const ProjectCardBE = ({
     }
   };
 
+  const formattedDateTime = (getDate: Date) => {
+    const formattedDate = `${new Date(getDate).getDate()}.${
+      new Date(getDate).getMonth() + 1
+    }.${new Date(getDate).getFullYear()} ${translate(
+      'project_management_headercell.at'
+    )} ${new Date(getDate).getHours()}:${new Date(getDate).getMinutes()}`;
+
+    return formattedDate;
+  };
+
   return (
     <Card sx={{ backgroundColor: '#fff' }}>
       <CardContent>
@@ -258,6 +268,26 @@ const ProjectCardBE = ({
                 </Typography>
               </Stack>
             )}
+          {/* {role !== 'tender_moderator' &&
+            proposal_logs &&
+            proposal_logs.length > 0 &&
+            proposal_logs.map((log: any) => {
+              if (log.reviewer) {
+                return (
+                  <Stack>
+                    <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+                      {translate('project_management_headercell.employee')}
+                    </Typography>
+                    <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
+                      {translate('project_management_headercell.sent_by')}{' '}
+                      {log.reviewer.employee_name}
+                    </Typography>
+                  </Stack>
+                );
+              } else {
+                return null;
+              }
+            })} */}
           {state && (
             <Stack>
               <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
@@ -268,20 +298,14 @@ const ProjectCardBE = ({
               </Typography>
             </Stack>
           )}
-          {user.client_data.created_at && cardFooterButtonAction !== 'draft' && (
+          {created_at && cardFooterButtonAction !== 'draft' && (
             <Stack>
               <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
                 {translate('project_management_headercell.start_date')}
               </Typography>
               <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
-                {`${new Date(user.client_data.created_at).getDay()}.${new Date(
-                  user.client_data.created_at
-                ).getMonth()}.${new Date(user.client_data.created_at).getFullYear()} ${translate(
-                  'project_management_headercell.at'
-                )} ${new Date(user.client_data.created_at).getHours()}:${new Date(
-                  user.client_data.created_at
-                ).getMinutes()}`}
-                {/* {`${user.client_data.created_at}`} */}
+                {formattedDateTime(created_at)}
+                {/* {`${new Date(created_at)}`} */}
               </Typography>
             </Stack>
           )}
@@ -330,10 +354,9 @@ const ProjectCardBE = ({
                   gutterBottom
                   sx={{ fontSize: '15px !important' }}
                 >
-                  {created_at
-                    ? moment(created_at).format('LLLL')
-                    : // ? `${footer.created_at.getDay()}.${footer.created_at.getMonth()}.${footer.created_at.getFullYear()} في ${footer.created_at.getHours()}:${footer.created_at.getMinutes()}`
-                      '5 ساعات'}
+                  {proposal_logs && proposal_logs.length > 0
+                    ? moment(proposal_logs[proposal_logs.length - 1].created_at).format('LLLL')
+                    : moment(created_at).format('LLLL')}
                 </Typography>
               </Stack>
               <Chip

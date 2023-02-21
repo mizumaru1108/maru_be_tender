@@ -32,6 +32,7 @@ query gettingMyRequestedProcess($limit: Int = 10, $offset: Int = 0, $order_by: [
       reviewer {
         employee_name
       }
+      created_at
     }
   }
 }

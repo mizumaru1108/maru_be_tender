@@ -33,6 +33,7 @@ query getProposals($limit: Int = 4, $offset: Int = 0, $order_by: [proposal_order
       reviewer {
         employee_name
       }
+      created_at
     }
   }
 }

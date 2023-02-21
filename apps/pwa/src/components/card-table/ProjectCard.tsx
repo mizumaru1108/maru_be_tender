@@ -186,7 +186,9 @@ const ProjectCard = ({
                   {translate('project_management_headercell.date_created')}
                 </Typography>
                 <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
-                  {`${content.createdAt.getDay()}.${content.createdAt.getMonth()}.${content.createdAt.getFullYear()} في ${content.createdAt.getHours()}:${content.createdAt.getMinutes()}`}
+                  {`${content.createdAt.getDate()}.${
+                    content.createdAt.getMonth() + 1
+                  }.${content.createdAt.getFullYear()} في ${content.createdAt.getHours()}:${content.createdAt.getMinutes()}`}
                   {/* {`${content.createdAt}`} */}
                 </Typography>
               </>
@@ -218,7 +220,9 @@ const ProjectCard = ({
                     {translate('project_management_headercell.start_date')}
                   </Typography>
                   <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
-                    {`${content.createdAtClient.getDay()}.${content.createdAtClient.getMonth()}.${content.createdAtClient.getFullYear()} ${translate(
+                    {`${content.createdAtClient.getDate()}.${
+                      content.createdAtClient.getMonth() + 1
+                    }.${content.createdAtClient.getFullYear()} ${translate(
                       'project_management_headercell.at'
                     )} ${content.createdAtClient.getHours()}:${content.createdAtClient.getMinutes()}`}
                     {/* {`${content.createdAtClient}`} */}
@@ -317,8 +321,7 @@ const ProjectCard = ({
                 >
                   {footer.createdAt
                     ? moment(footer.createdAt).locale(`${currentLang.value}`).format('LLLL')
-                    : // ? `${footer.createdAt.getDay()}.${footer.createdAt.getMonth()}.${footer.createdAt.getFullYear()} في ${footer.createdAt.getHours()}:${footer.createdAt.getMinutes()}`
-                      '5 ساعات'}
+                    : moment(content.createdAtClient).locale(`${currentLang.value}`).format('LLLL')}
                 </Typography>
               </Stack>
               {cardFooterButtonAction === 'draft' ? (

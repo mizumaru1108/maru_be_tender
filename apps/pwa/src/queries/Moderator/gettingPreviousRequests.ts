@@ -29,6 +29,9 @@ query gettingIncomingRequests($where: proposal_bool_exp = {}, $limit: Int = 3, $
         created_at
       }
     }
+    proposal_logs {
+      created_at
+    }
     state
     outter_status
   } 

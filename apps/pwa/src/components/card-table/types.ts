@@ -47,7 +47,6 @@ export type ProjectCardPropsBE = {
     employee_name: string;
     client_data: {
       entity: string;
-      created_at: Date;
     };
   };
   proposal_logs: [
@@ -55,6 +54,7 @@ export type ProjectCardPropsBE = {
       reviewer: {
         employee_name: string;
       };
+      created_at: Date;
       state: string;
     }
   ];
