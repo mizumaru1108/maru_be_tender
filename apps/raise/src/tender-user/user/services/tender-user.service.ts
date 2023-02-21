@@ -400,7 +400,6 @@ export class TenderUserService {
     const response = await this.tenderUserRepository.changeUserStatus(
       request.user_id,
       request.status,
-      undefined,
       accManagerId,
     );
     await this.sendChangeStatusNotification(response.user_status_log);

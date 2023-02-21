@@ -45,7 +45,7 @@ export class TenderUserController {
     );
   }
 
-  @UseGuards(TenderJwtGuard)
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles(
     'tender_accounts_manager',
     'tender_admin',

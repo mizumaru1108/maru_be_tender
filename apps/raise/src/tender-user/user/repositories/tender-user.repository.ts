@@ -364,19 +364,18 @@ export class TenderUserRepository {
   async changeUserStatus(
     userId: string,
     status: UserStatus,
-    passedSession?: Prisma.TransactionClient,
     reviewer_id?: string,
   ) {
     this.logger.log('info', `Changing user ${userId} status to ${status}`);
     try {
-      if (passedSession) {
-        const user = await passedSession.user.update({
+      return await this.prismaService.$transaction(async (prismaSession) => {
+        const user = await prismaSession.user.update({
           where: { id: userId },
           data: {
             status_id: status,
           },
         });
-        const user_status_log = await passedSession.user_status_log.create({
+        const user_status_log = await prismaSession.user_status_log.create({
           data: {
             id: uuidv4(),
             user_id: userId,
@@ -410,50 +409,7 @@ export class TenderUserRepository {
           user,
           user_status_log,
         };
-      } else {
-        return await this.prismaService.$transaction(async (prismaSession) => {
-          const user = await prismaSession.user.update({
-            where: { id: userId },
-            data: {
-              status_id: status,
-            },
-          });
-          const user_status_log = await prismaSession.user_status_log.create({
-            data: {
-              id: uuidv4(),
-              user_id: userId,
-              status_id: status,
-              account_manager_id: reviewer_id,
-            },
-            select: {
-              user_status: {
-                select: {
-                  id: true,
-                },
-              },
-              user_detail: {
-                select: {
-                  id: true,
-                  email: true,
-                  mobile_number: true,
-                },
-              },
-              account_manager_detail: {
-                select: {
-                  id: true,
-                  email: true,
-                  mobile_number: true,
-                },
-              },
-            },
-          });
-
-          return {
-            user,
-            user_status_log,
-          };
-        });
-      }
+      });
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
