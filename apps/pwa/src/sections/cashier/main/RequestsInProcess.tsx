@@ -14,6 +14,7 @@ function RequestsInProcess() {
     query: getProposals,
     variables: {
       limit: 10,
+      order_by: { updated_at: 'desc' },
       where: {
         cashier_id: { _eq: user?.id },
         _and: { inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' } },

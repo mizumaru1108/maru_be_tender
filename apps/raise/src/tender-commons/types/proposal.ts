@@ -93,6 +93,7 @@ export enum ProposalAction {
   ACCEPT_AND_ASK_FOR_CONSULTION = 'accept_and_ask_for_consultaion',
   SEND_BACK_FOR_REVISION = 'send_back_for_revision',
   SEND_REVISED_VERSION = 'send_revised_version',
+  STUDY_AGAIN = 'study_again',
 }
 
 export type ProposalItemBudget = {

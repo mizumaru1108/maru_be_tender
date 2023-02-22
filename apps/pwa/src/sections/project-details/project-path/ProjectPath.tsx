@@ -126,7 +126,7 @@ function ProjectPath() {
                   <React.Fragment key={index}>
                     {index === activeStep && (
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                        <Typography>{item.notes}</Typography>
+                        <Typography>{item.notes ?? '-'}</Typography>
                       </Stack>
                     )}
                   </React.Fragment>

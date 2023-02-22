@@ -11,6 +11,7 @@ function IncomingExchangePermissionRequests() {
   const [result] = useQuery({
     query: getProposals,
     variables: {
+      order_by: { updated_at: 'desc' },
       limit: 4,
       where: {
         cashier_id: { _is_null: true },

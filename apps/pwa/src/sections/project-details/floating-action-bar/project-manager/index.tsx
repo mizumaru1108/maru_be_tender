@@ -268,7 +268,7 @@ function FloatingActionBar() {
             });
           }
 
-          setIsSubmittingStepback(true);
+          setIsSubmittingStepback(false);
           navigate(`/project-manager/dashboard/app`);
         })
         .catch((err) => {
@@ -288,7 +288,7 @@ function FloatingActionBar() {
             });
           }
 
-          setIsSubmittingStepback(true);
+          setIsSubmittingStepback(false);
         });
     } catch (error) {
       enqueueSnackbar(error.message, {
@@ -297,7 +297,7 @@ function FloatingActionBar() {
         autoHideDuration: 3000,
       });
 
-      setIsSubmittingStepback(true);
+      setIsSubmittingStepback(false);
     }
   };
 

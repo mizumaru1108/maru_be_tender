@@ -102,7 +102,7 @@ function SupervisorPaymentsPage() {
             {/* {fCurrencyNumber(
                 proposal.payments.reduce((acc, curr) => acc + (curr.payment_amount || 0), 0)
               )} */}
-            {fCurrencyNumber(proposal.fsupport_by_supervisor)}
+            {fCurrencyNumber(spentBudget.payment_aggregate.aggregate.sum.payment_amount || 0)}
           </Typography>
         </Box>
       </Grid>

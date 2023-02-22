@@ -1,7 +1,7 @@
 import { Box, Container, Divider, Stack, Typography } from '@mui/material';
-import { Proposal } from '../../../@types/proposal';
 import { useSelector } from 'redux/store';
-import React from 'react';
+import { ItemBudget } from '../../../@types/proposal';
+import React, { useEffect, useState } from 'react';
 //
 import { fCurrencyNumber } from 'utils/formatNumber';
 import useLocales from 'hooks/useLocales';
@@ -9,6 +9,28 @@ import useLocales from 'hooks/useLocales';
 function ProjectBudget() {
   const { proposal } = useSelector((state) => state.proposal);
   const { translate } = useLocales();
+
+  const [itemBudgetsValue, setItemBudgetValue] = useState<ItemBudget[] | []>([]);
+  const [summaryAmount, setSummaryAmount] = useState<number>(0);
+
+  useEffect(() => {
+    const projectTrack = proposal.project_track;
+    let valueToItem: ItemBudget[], valueSummary: number;
+
+    if (projectTrack === 'CONCESSIONAL_GRANTS') {
+      valueToItem = proposal.recommended_supports;
+      valueSummary = valueToItem.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+
+      setItemBudgetValue(valueToItem);
+      setSummaryAmount(valueSummary);
+    } else {
+      valueToItem = proposal.proposal_item_budgets;
+      valueSummary = proposal.proposal_item_budgets_aggregate.aggregate.sum.amount;
+
+      setItemBudgetValue(valueToItem);
+      setSummaryAmount(valueSummary);
+    }
+  }, [proposal]);
 
   return (
     <Container>
@@ -40,22 +62,32 @@ function ProjectBudget() {
           المبلغ
         </Typography>
       </Box>
-      {proposal.proposal_item_budgets.map((item, index) => (
-        <React.Fragment key={index}>
-          <Stack direction="row" key={index} gap={3} sx={{ padding: '10px' }}>
-            <Typography flex={2} sx={{ color: '#1E1E1E' }}>
-              {item.clause}
-            </Typography>
-            <Typography flex={3} sx={{ color: '#1E1E1E' }}>
-              {item.explanation}
-            </Typography>
-            <Typography flex={2} sx={{ color: '#1E1E1E' }}>
-              {fCurrencyNumber(item.amount)}
-            </Typography>
-          </Stack>
-          <Divider />
-        </React.Fragment>
-      ))}
+      {itemBudgetsValue.length ? (
+        itemBudgetsValue.map((item, index) => (
+          <React.Fragment key={index}>
+            <Stack direction="row" key={index} gap={3} sx={{ padding: '10px' }}>
+              <Typography flex={2} sx={{ color: '#1E1E1E' }}>
+                {item.clause}
+              </Typography>
+              <Typography flex={3} sx={{ color: '#1E1E1E' }}>
+                {item.explanation}
+              </Typography>
+              <Typography flex={2} sx={{ color: '#1E1E1E' }}>
+                {fCurrencyNumber(item.amount)}
+              </Typography>
+            </Stack>
+            <Divider />
+          </React.Fragment>
+        ))
+      ) : (
+        <Typography
+          flex={2}
+          variant="body2"
+          sx={{ color: '#1E1E1E', mt: 2, ml: 1, fontStyle: 'italic' }}
+        >
+          {translate('content.client.main_page.no_budgets_projects')}
+        </Typography>
+      )}
       <Box
         sx={{
           mt: '20px',
@@ -71,9 +103,7 @@ function ProjectBudget() {
         <Box flex={2} />
         <Box flex={2} />
         <Typography variant="h6" flex={2.8}>
-          {`المبلغ الإجمالي : ${fCurrencyNumber(
-            (proposal as Proposal).proposal_item_budgets_aggregate.aggregate.sum.amount
-          )}`}
+          {`المبلغ الإجمالي : ${fCurrencyNumber(summaryAmount)}`}
         </Typography>
       </Box>
     </Container>

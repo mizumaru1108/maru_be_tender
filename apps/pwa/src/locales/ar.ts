@@ -20,6 +20,7 @@ const ar = {
       main_page: {
         current_projects: 'موازنة المشروع',
         no_current_projects: 'لا يوجد اي مشاريع حالية',
+        no_budgets_projects: 'لا توجد بيانات ميزانيات المشروع',
         apply_new_support_request: 'تقديم طلب دعم جديد',
         current_budget: 'موازنة المشروع',
         required_budget: 'الميزانية المطلوبة',
@@ -1123,6 +1124,7 @@ const ar = {
   proposal_approved: 'تم قبول الطلب بنجاح',
   proposal_rejected: 'تم رفض الطلب بنجاح',
   proposal_stepback: 'تم تغيير حالة المشروع',
+  proposal_studyagain: 'تم إعادة المشروع للدراسة من جديد',
   proposal_created: 'تم انشاء المشروع بنجاح',
   proposal_revised: 'تم تعديل المشروع بنجاح',
   proposal_saving_draft: 'تم حفظ المشروع كمسودة',

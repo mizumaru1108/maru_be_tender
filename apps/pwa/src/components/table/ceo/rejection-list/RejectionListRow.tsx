@@ -31,7 +31,7 @@ export default function RejectionListTableRow({ row, selected, onSelectRow }: Re
       </TableCell>
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
-          {row.project_track}
+          {translate(`${row.project_track}`)}
         </Typography>
       </TableCell>
       <TableCell>{new Date(row.created_at).toISOString().substring(0, 10)}</TableCell>

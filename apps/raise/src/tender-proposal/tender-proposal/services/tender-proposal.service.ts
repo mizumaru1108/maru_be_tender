@@ -965,6 +965,7 @@ export class TenderProposalService {
         ProposalAction.REJECT,
         ProposalAction.STEP_BACK,
         ProposalAction.ACCEPT_AND_ASK_FOR_CONSULTION,
+        ProposalAction.STUDY_AGAIN,
       ].indexOf(request.action) < 0
     ) {
       throw new BadRequestException(
@@ -1025,6 +1026,20 @@ export class TenderProposalService {
       proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
     }
 
+    if (request.action === ProposalAction.STUDY_AGAIN) {
+      /* proposal */
+      proposalUpdatePayload.inner_status = InnerStatusEnum.CREATED_BY_CLIENT;
+      proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
+      proposalUpdatePayload.state = TenderAppRoleEnum.MODERATOR;
+      proposalUpdatePayload.project_manager_id = null;
+      proposalUpdatePayload.supervisor_id = null;
+
+      /* log */
+      proposalLogCreateInput.action = ProposalAction.STUDY_AGAIN;
+      proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_MANAGER;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
+    }
+
     return {
       proposalUpdatePayload,
       proposalLogCreateInput,
@@ -1042,6 +1057,7 @@ export class TenderProposalService {
         ProposalAction.ACCEPT,
         ProposalAction.REJECT,
         ProposalAction.STEP_BACK,
+        ProposalAction.STUDY_AGAIN,
       ].indexOf(request.action) < 0
     ) {
       throw new BadRequestException(
@@ -1086,6 +1102,19 @@ export class TenderProposalService {
       proposalLogCreateInput.user_role = TenderAppRoleEnum.CEO;
     }
 
+    if (request.action === ProposalAction.STUDY_AGAIN) {
+      /* proposal */
+      proposalUpdatePayload.inner_status = InnerStatusEnum.CREATED_BY_CLIENT;
+      proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
+      proposalUpdatePayload.state = TenderAppRoleEnum.MODERATOR;
+      proposalUpdatePayload.project_manager_id = null;
+      proposalUpdatePayload.supervisor_id = null;
+      /* log */
+      proposalLogCreateInput.action = ProposalAction.STUDY_AGAIN;
+      proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.CEO;
+    }
+
     return {
       proposalUpdatePayload,
       proposalLogCreateInput,
@@ -1099,7 +1128,11 @@ export class TenderProposalService {
   ) {
     /* Consultant only allowed to acc and reject and step back */
     if (
-      [ProposalAction.ACCEPT, ProposalAction.REJECT].indexOf(request.action) < 0
+      [
+        ProposalAction.ACCEPT,
+        ProposalAction.REJECT,
+        ProposalAction.STEP_BACK,
+      ].indexOf(request.action) < 0
     ) {
       throw new BadRequestException(
         `You are not allowed to perform this action ${request.action}`,
@@ -1128,6 +1161,19 @@ export class TenderProposalService {
 
       /* log */
       proposalLogCreateInput.action = ProposalAction.REJECT;
+      proposalLogCreateInput.state = TenderAppRoleEnum.CONSULTANT;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.CONSULTANT;
+    }
+
+    if (request.action === ProposalAction.STEP_BACK) {
+      /* proposal */
+      proposalUpdatePayload.inner_status =
+        InnerStatusEnum.ACCEPTED_BY_SUPERVISOR;
+      proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
+      proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_MANAGER;
+
+      /* log */
+      proposalLogCreateInput.action = ProposalAction.STEP_BACK;
       proposalLogCreateInput.state = TenderAppRoleEnum.CONSULTANT;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.CONSULTANT;
     }

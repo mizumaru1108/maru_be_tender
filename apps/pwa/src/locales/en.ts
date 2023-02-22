@@ -20,6 +20,7 @@ const en = {
       main_page: {
         current_projects: 'Current Projects',
         no_current_projects: 'There are no current projects',
+        no_budgets_projects: 'There are no project budgets data.',
         apply_new_support_request: 'Submit a new support request',
         current_budget: 'project budget',
         approved_budget: 'approved budget',
@@ -1087,6 +1088,7 @@ const en = {
   proposal_approved: 'The project has been successfully accepted',
   proposal_rejected: 'The project was successfully rejected',
   proposal_stepback: 'The project has been change status',
+  proposal_studyagain: 'The project has been re-examined',
   proposal_created: 'The project has been created successfully',
   proposal_revised: 'The project has been revised successfully',
   proposal_saving_draft: 'The project has been saved as a draft',
