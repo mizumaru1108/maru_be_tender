@@ -40,7 +40,7 @@ const NonClientProfileEdit = Loadable(
 const Searching = Loadable(lazy(() => import('pages/searching')));
 const BookingAMeeting = Loadable(lazy(() => import('pages/project-manager/BookingAMeeting')));
 
-const CeoRejectionListPage = Loadable(lazy(() => import('pages/ceo/CeoRejectionListPage')));
+const CeoRejectionListPage = Loadable(lazy(() => import('pages/project-manager/RejectionList')));
 
 export const projectManagerRoute = {
   path: 'project-manager',

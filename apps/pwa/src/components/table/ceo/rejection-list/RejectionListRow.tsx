@@ -2,9 +2,11 @@ import { TableRow, Checkbox, TableCell, Typography, Button } from '@mui/material
 import useLocales from 'hooks/useLocales';
 import { useNavigate } from 'react-router';
 import { RejectedProjectsRow } from './types';
+import useAuth from 'hooks/useAuth';
 
 export default function RejectionListTableRow({ row, selected, onSelectRow }: RejectedProjectsRow) {
   const { translate } = useLocales();
+  const { activeRole } = useAuth();
 
   const navigate = useNavigate();
   return (
@@ -35,7 +37,13 @@ export default function RejectionListTableRow({ row, selected, onSelectRow }: Re
       <TableCell>{new Date(row.created_at).toISOString().substring(0, 10)}</TableCell>
       <TableCell align="left">
         <Button
-          onClick={() => navigate(`/ceo/dashboard/rejection-list/${row.id}/reject-project`)}
+          onClick={() => {
+            navigate(
+              `/${
+                activeRole === 'tender_ceo' ? 'ceo' : 'project-manager'
+              }/dashboard/rejection-list/${row.id}/reject-project`
+            );
+          }}
           size="small"
           variant="contained"
           sx={{ backgroundColor: '#0E8478', color: 'white' }}

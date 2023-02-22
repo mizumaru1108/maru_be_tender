@@ -25,7 +25,7 @@ function RejectProject() {
     setAction('');
   };
 
-  const backToStudy = () => {
+  const backToStudy = async (data: any) => {
     update({
       proposal_id,
       new_values: {
@@ -41,8 +41,9 @@ function RejectProject() {
         reviewer_id: user?.id!,
         action: 'step_back',
         message: 'تم إرجاع المشروع للدراسة من جديد',
-        user_role: 'PROJECT_MANAGER',
-        state: 'PROJECT_MANAGER',
+        user_role: activeRole === 'tender_ceo' ? 'CEO' : 'PROJECT_MANAGER',
+        state: activeRole === 'tender_ceo' ? 'CEO' : 'PROJECT_MANAGER',
+        notes: data.notes,
       },
     }).then((res) => {
       if (res.error) {
