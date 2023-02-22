@@ -93,7 +93,12 @@ function RejectProject() {
           title="إرجاع المشروع للدراسة من جديد"
           onClose={handleCloseModal}
           onSubmit={backToStudy}
-          action={{ actionLabel: 'إرجاع', backgroundColor: '#0169DE', hoverColor: '#1482FE' }}
+          action={{
+            actionLabel: 'إرجاع',
+            backgroundColor: '#0169DE',
+            hoverColor: '#1482FE',
+            actionType: 'STEP_BACK',
+          }}
         />
       )}
     </Box>
