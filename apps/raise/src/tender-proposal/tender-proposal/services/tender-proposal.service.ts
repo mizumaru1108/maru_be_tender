@@ -351,7 +351,7 @@ export class TenderProposalService {
       FileMimeTypeEnum.PPTX,
     ];
 
-    if (isTenderFilePayload(project_attachments)) {
+    if (!!project_attachments && isTenderFilePayload(project_attachments)) {
       const uploadResult = await this.uploadProposalFile(
         userId,
         proposalId,
@@ -394,7 +394,7 @@ export class TenderProposalService {
       }
     }
 
-    if (isTenderFilePayload(letter_ofsupport_req)) {
+    if (!!letter_ofsupport_req && isTenderFilePayload(letter_ofsupport_req)) {
       const uploadResult = await this.uploadProposalFile(
         userId,
         proposalId,
@@ -450,7 +450,8 @@ export class TenderProposalService {
 
     if (!!sendRevisionPayload && updatedProposal.notif)
       this.notifService.sendSmsAndEmail(updatedProposal.notif);
-    return updatedProposal;
+
+    return updatedProposal.proposal;
   }
 
   async deleteDraft(userId: string, proposal_id: string) {
