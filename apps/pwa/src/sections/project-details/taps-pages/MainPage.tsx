@@ -8,13 +8,25 @@ import useLocales from '../../../hooks/useLocales';
 import { fCurrencyNumber } from 'utils/formatNumber';
 import { FEATURE_PROJECT_DETAILS } from '../../../config';
 import ButtonDownloadFiles from '../../../components/button/ButtonDownloadFiles';
+import useAuth from '../../../hooks/useAuth';
+import { AmandementFields, AmandmentRequestForm } from '../../../@types/proposal';
+import { useSnackbar } from 'notistack';
+import axiosInstance from '../../../utils/axios';
+
+type ITmpValues = {
+  data: AmandmentRequestForm;
+  revised: AmandementFields;
+};
 
 function MainPage() {
   const { translate, currentLang } = useLocales();
+  const { activeRole } = useAuth();
   const { proposal } = useSelector((state) => state.proposal);
   const { id } = useParams();
+  const { enqueueSnackbar } = useSnackbar();
   const location = useLocation();
   const navigate = useNavigate();
+  const [tmpValues, setTmpValues] = React.useState<ITmpValues | null>(null);
 
   const {
     project_location,
@@ -34,11 +46,40 @@ function MainPage() {
     bank_information,
     support_type,
     proposal_item_budgets_aggregate,
+    outter_status,
   } = proposal;
 
-  React.useEffect(() => {
-    // console.log({ proposal });
-  }, [proposal]);
+  const fetchingData = React.useCallback(async () => {
+    try {
+      const rest = await axiosInstance.get(`/tender-proposal/amandement?id=${id as string}`, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
+      // console.log('rest', rest);
+      if (rest) {
+        setTmpValues({
+          data: rest.data.data.proposal,
+          revised: rest.data.data.detail,
+        });
+      }
+    } catch (err) {
+      console.log("this proposal doesn't have any amandeme", err);
+      // enqueueSnackbar(err.message, {
+      //   variant: 'error',
+      //   preventDuplicate: true,
+      //   autoHideDuration: 3000,
+      //   anchorOrigin: {
+      //     vertical: 'bottom',
+      //     horizontal: 'center',
+      //   },
+      // });
+    }
+  }, [activeRole, id]);
+
+  // React.useEffect(() => {
+  //   if (activeRole === 'tender_project_supervisor' && outter_status !== 'ON_REVISION') {
+  //     fetchingData();
+  //   }
+  // }, [activeRole, outter_status, fetchingData]);
   const handleOpenProjectOwnerDetails = () => {
     const submiterId = proposal.user.id;
     const url = location.pathname.split('/').slice(0, 3).join('/');
@@ -47,6 +88,7 @@ function MainPage() {
     navigate(`${url}/current-project/${id}/owner/${submiterId}`);
     // console.log({ url, destination });
   };
+  console.log('tmpValues', tmpValues);
   return (
     <Box sx={{ display: 'flex', gap: 3, flexDirection: 'column' }}>
       <Stack direction="row" gap={6}>

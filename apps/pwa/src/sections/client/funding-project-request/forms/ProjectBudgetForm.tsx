@@ -1,13 +1,14 @@
 import * as Yup from 'yup';
 import { useEffect, useState } from 'react';
 import { Alert, Grid } from '@mui/material';
-import { FormProvider } from 'components/hook-form';
+import { FormProvider, RHFRepeater, RHFTextField } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ProjectBudgetData } from '../Forms-Data';
 import FormGenerator from 'components/FormGenerator';
 import useLocales from 'hooks/useLocales';
 import { AmandementFields } from '../../../../@types/proposal';
+import BaseField from '../../../../components/hook-form/BaseField';
 type FormValuesProps = {
   amount_required_fsupport: number;
   detail_project_budgets: {
@@ -27,6 +28,8 @@ type Props = {
 const ProjectBudgetForm = ({ onSubmit, children, defaultValues, revised }: Props) => {
   const { translate } = useLocales();
   const [budgetError, setBudgetError] = useState(false);
+  const isDisabled =
+    !!revised && revised.hasOwnProperty('amount_required_fsupport') ? false : !!revised && true;
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -76,6 +79,48 @@ const ProjectBudgetForm = ({ onSubmit, children, defaultValues, revised }: Props
       onSubmit(data);
     } else setBudgetError(true);
   };
+  // const ProjectBudgetData = [
+  //   {
+  //     type: 'numberField',
+  //     name: 'amount_required_fsupport',
+  //     label: 'funding_project_request_form4.amount_required_fsupport.label',
+  //     placeholder: 'funding_project_request_form4.amount_required_fsupport.placeholder',
+  //     md: 12,
+  //     xs: 12,
+  //   },
+  //   {
+  //     type: 'repeater',
+  //     name: 'detail_project_budgets',
+  //     repeaterFields: [
+  //       {
+  //         type: 'textField',
+  //         name: 'clause',
+  //         label: 'funding_project_request_form4.item.label',
+  //         placeholder: 'funding_project_request_form4.item.placeholder',
+  //         md: 3,
+  //         xs: 12,
+  //       },
+  //       {
+  //         type: 'textField',
+  //         name: 'explanation',
+  //         label: 'funding_project_request_form4.explanation.label',
+  //         placeholder: 'funding_project_request_form4.explanation.placeholder',
+  //         md: 5,
+  //         xs: 12,
+  //       },
+  //       {
+  //         type: 'numberField',
+  //         name: 'amount',
+  //         label: 'funding_project_request_form4.amount.label',
+  //         placeholder: 'funding_project_request_form4.amount.placeholder',
+  //         md: 3,
+  //         xs: 12,
+  //       },
+  //     ],
+  //     enableAddButton: true,
+  //     enableRemoveButton: true,
+  //   },
+  // ];
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(handleOnSubmit)}>
       <Grid container rowSpacing={4} columnSpacing={2}>
@@ -84,7 +129,65 @@ const ProjectBudgetForm = ({ onSubmit, children, defaultValues, revised }: Props
             <Alert severity="error">{translate('budget_error_message')}</Alert>
           </Grid>
         )}
-        <FormGenerator data={ProjectBudgetData} />
+        {/* <FormGenerator data={ProjectBudgetData} /> */}
+        {/* <RHFRepeater
+          name={name}
+          repeaterFields={repeaterFields}
+          enableAddButton={enableAddButton}
+          enableRemoveButton={enableRemoveButton}
+          {...other}
+        /> */}
+        <Grid item md={12} xs={12}>
+          <RHFTextField
+            disabled={
+              !!revised && revised.hasOwnProperty('amount_required_fsupport')
+                ? false
+                : !!revised && true
+            }
+            name="amount_required_fsupport"
+            label={translate('funding_project_request_form4.amount_required_fsupport.label')}
+            placeholder={translate(
+              'funding_project_request_form4.amount_required_fsupport.placeholder'
+            )}
+            type="number"
+          />
+        </Grid>
+        <BaseField
+          type="repeater"
+          disabled={isDisabled}
+          name="detail_project_budgets"
+          repeaterFields={[
+            {
+              disabled: isDisabled,
+              type: 'textField',
+              name: 'clause',
+              label: 'funding_project_request_form4.item.label',
+              placeholder: 'funding_project_request_form4.item.placeholder',
+              md: 3,
+              xs: 12,
+            },
+            {
+              disabled: isDisabled,
+              type: 'textField',
+              name: 'explanation',
+              label: 'funding_project_request_form4.explanation.label',
+              placeholder: 'funding_project_request_form4.explanation.placeholder',
+              md: 5,
+              xs: 12,
+            },
+            {
+              disabled: isDisabled,
+              type: 'numberField',
+              name: 'amount',
+              label: 'funding_project_request_form4.amount.label',
+              placeholder: 'funding_project_request_form4.amount.placeholder',
+              md: 3,
+              xs: 12,
+            },
+          ]}
+          enableAddButton={true}
+          enableRemoveButton={true}
+        />
         <Grid item xs={12}>
           {children}
         </Grid>

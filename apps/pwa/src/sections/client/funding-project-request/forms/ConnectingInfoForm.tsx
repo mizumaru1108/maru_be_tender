@@ -90,6 +90,7 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
       <Grid container rowSpacing={4} columnSpacing={7}>
         <Grid item md={12} xs={12}>
           <BaseField
+            disabled={!!revised && revised.hasOwnProperty('pm_name') ? false : !!revised && true}
             type="textField"
             name="pm_name"
             label="funding_project_request_form3.project_manager_name.label"
@@ -98,6 +99,7 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
+            disabled={!!revised && revised.hasOwnProperty('pm_mobile') ? false : !!revised && true}
             type="textField"
             name="pm_mobile"
             label="funding_project_request_form3.mobile_number.label"
@@ -106,6 +108,7 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
+            disabled={!!revised && revised.hasOwnProperty('pm_email') ? false : !!revised && true}
             type="textField"
             name="pm_email"
             label="funding_project_request_form3.email.label"
@@ -114,6 +117,7 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
+            disabled={!!revised && revised.hasOwnProperty('region') ? false : !!revised && true}
             type="selectWithoutGenerator"
             name="region"
             label="funding_project_request_form3.region.label"
@@ -130,6 +134,9 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
+            disabled={
+              !!revised && revised.hasOwnProperty('governorate') ? false : !!revised && true
+            }
             type="selectWithoutGenerator"
             name="governorate"
             label="funding_project_request_form3.city.label"

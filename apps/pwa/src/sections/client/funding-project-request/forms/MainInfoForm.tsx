@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import { useEffect, useMemo } from 'react';
 import { Grid } from '@mui/material';
-import { FormProvider } from 'components/hook-form';
+import { FormProvider, RHFDatePicker, RHFTextField } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import FormGenerator from 'components/FormGenerator';
@@ -9,6 +9,11 @@ import { MainFormData } from '../Forms-Data';
 import { CustomFile } from 'components/upload';
 import useLocales from 'hooks/useLocales';
 import { AmandementFields } from '../../../../@types/proposal';
+import RHFSelectNoGenerator from '../../../../components/hook-form/RHFSelectNoGen';
+import { REGION } from '../../../../_mock/region';
+import BaseField from '../../../../components/hook-form/BaseField';
+import { RHFUploadSingleFileBe } from '../../../../components/hook-form/RHFUploadBe';
+import { borderColor } from '@mui/system';
 
 type FormValuesProps = {
   project_name: string;
@@ -135,7 +140,154 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container rowSpacing={4} columnSpacing={7}>
-        <FormGenerator data={MainFormData} />
+        {/* <FormGenerator data={MainFormData} /> */}
+        <Grid item md={12} xs={12}>
+          <RHFTextField
+            disabled={
+              !!revised && revised.hasOwnProperty('project_name') ? false : !!revised && true
+            }
+            name="project_name"
+            label={translate('funding_project_request_form1.project_name.label')}
+            placeholder={translate('funding_project_request_form1.project_name.placeholder')}
+          />
+        </Grid>
+        <Grid item md={12} xs={12}>
+          <RHFTextField
+            disabled={
+              !!revised && revised.hasOwnProperty('project_idea') ? false : !!revised && true
+            }
+            name="project_idea"
+            label={translate('funding_project_request_form1.project_idea.label')}
+            placeholder={translate('funding_project_request_form1.project_idea.placeholder')}
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFSelectNoGenerator
+            disabled={
+              !!revised && revised.hasOwnProperty('project_location') ? false : !!revised && true
+            }
+            name="project_location"
+            label={translate('funding_project_request_form1.project_applying_place.label')}
+            placeholder={translate(
+              'funding_project_request_form1.project_applying_place.placeholder'
+            )}
+          >
+            <>
+              {Object.keys(REGION).map((item, index) => (
+                <option key={index} value={item} style={{ backgroundColor: '#fff' }}>
+                  {item}
+                </option>
+              ))}
+            </>
+          </RHFSelectNoGenerator>
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFDatePicker
+            disabled={
+              !!revised && revised.hasOwnProperty('project_implement_date')
+                ? false
+                : !!revised && true
+            }
+            name="project_implement_date"
+            label={translate('funding_project_request_form1.project_applying_date.label')}
+            placeholder={translate(
+              'funding_project_request_form1.project_applying_date.placeholder'
+            )}
+            InputProps={{
+              inputProps: {
+                min: new Date(new Date().setDate(new Date().getDate() + 1))
+                  .toISOString()
+                  .split('T')[0],
+              },
+            }}
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFTextField
+            disabled={
+              !!revised && revised.hasOwnProperty('execution_time') ? false : !!revised && true
+            }
+            name="execution_time"
+            type={'number'}
+            label={translate('funding_project_request_form1.applying_duration.label')}
+            placeholder={translate('funding_project_request_form1.applying_duration.placeholder')}
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFSelectNoGenerator
+            disabled={
+              !!revised && revised.hasOwnProperty('project_beneficiaries')
+                ? false
+                : !!revised && true
+            }
+            name="project_beneficiaries"
+            label={translate('funding_project_request_form1.target_group_type.label')}
+            placeholder={translate('funding_project_request_form1.target_group_type.placeholder')}
+          >
+            <>
+              <option value="GENERAL" style={{ backgroundColor: '#fff' }}>
+                أخرى
+              </option>
+              <option value="MIDDLE_AGED" style={{ backgroundColor: '#fff' }}>
+                شباب
+              </option>
+              <option value="KIDS" style={{ backgroundColor: '#fff' }}>
+                أشبال
+              </option>
+              <option value="MEN" style={{ backgroundColor: '#fff' }}>
+                رجال
+              </option>
+              <option value="WOMEN" style={{ backgroundColor: '#fff' }}>
+                فتيات
+              </option>
+              <option value="ELDERLY" style={{ backgroundColor: '#fff' }}>
+                كبار السن
+              </option>
+            </>
+          </RHFSelectNoGenerator>
+        </Grid>
+        <Grid item md={12} xs={12}>
+          <RHFTextField
+            disabled={!!revised && revised.hasOwnProperty('project_beneficiaries_specific_type')}
+            name="project_beneficiaries_specific_type"
+            label={translate('نوع الفئة المستهدفة الخارجية')}
+            placeholder={translate('الرجاء كتابة نوع الفئة المستهدفة')}
+          />
+        </Grid>
+        <Grid item md={12} xs={12}>
+          <BaseField
+            type="uploadLabel"
+            label={translate('funding_project_request_form1.letter_support_request.label')}
+          />
+        </Grid>
+        <Grid item md={12} xs={12}>
+          <RHFUploadSingleFileBe
+            disabled={
+              !!revised && revised.hasOwnProperty('letter_ofsupport_req')
+                ? false
+                : !!revised && true
+            }
+            name="letter_ofsupport_req"
+            placeholder={translate(
+              'funding_project_request_form1.letter_support_request.placeholder'
+            )}
+          />
+        </Grid>
+        <Grid item md={12} xs={12}>
+          <BaseField
+            type="uploadLabel"
+            label={translate('funding_project_request_form1.project_attachments.label')}
+          />
+        </Grid>
+        <Grid item md={12} xs={12}>
+          <RHFUploadSingleFileBe
+            disabled={
+              !!revised && revised.hasOwnProperty('project_attachments') ? false : !!revised && true
+            }
+            name="project_attachments"
+            placeholder={translate('funding_project_request_form1.project_attachments.placeholder')}
+          />
+        </Grid>
         <Grid item xs={12}>
           {children}
         </Grid>

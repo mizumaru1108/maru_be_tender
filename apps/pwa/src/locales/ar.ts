@@ -552,7 +552,7 @@ const ar = {
       placeholder: 'xxx xxx xxx',
     },
     phone: {
-      label: '*الهاتف',
+      label: 'الهاتف',
       placeholder: 'xxx xxx xxxx',
     },
     twitter: {

@@ -81,7 +81,7 @@ function ListAmandementRequest() {
                       gutterBottom
                       sx={{ fontSize: '15px !important' }}
                     >
-                      {/* {item.id} */}
+                      {item.proposal.id}
                     </Typography>
                   </Stack>
 

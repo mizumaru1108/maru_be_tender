@@ -541,7 +541,7 @@ const en = {
       placeholder: 'Please enter the mobile number',
     },
     phone: {
-      label: 'Phone*',
+      label: 'Phone',
       placeholder: 'Please enter the phone number',
     },
     twitter: {
