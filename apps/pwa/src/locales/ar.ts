@@ -1414,6 +1414,13 @@ const ar = {
       EMPLOYMENT_INITIATIVES: 'مبادرات التوظيف',
       OTHER_INITIATIVES: 'المبادرات الأخرى',
     },
+    action: {
+      accept: 'يقبل',
+      reject: 'يرفض',
+      step_back: 'أرسل مرة أخرى',
+      send_back_for_revision: 'أرسل مرة أخرى للمراجعة',
+      study_again: 'ادرس مجددا',
+    },
   },
   project_already_reviewed_by_supervisor: 'تمت مراجعة هذا المشروع بالفعل من قبل المشرف',
   show_modified_fields: 'إظهار الحقول المعدلة',

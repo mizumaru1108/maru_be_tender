@@ -33,6 +33,7 @@ function ConsultantFloatingActionBar() {
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSubmittingRejected, setIsSubmittingRejected] = useState<boolean>(false);
+  const [isSubmittingStepback, setIsSubmittingStepback] = useState<boolean>(false);
 
   const handleCloseModal = () => {
     setAction('');
@@ -152,6 +153,63 @@ function ConsultantFloatingActionBar() {
     }
   };
 
+  const stepBackProposal = async (values: any) => {
+    setIsSubmittingStepback(true);
+
+    try {
+      const payload = {
+        proposal_id: proposal_id,
+        action: 'step_back',
+        message: 'تم إرجاع المشروع خطوة للوراء',
+        notes: values.notes,
+      };
+
+      console.log('payloadStepbackToManager', payload);
+
+      await axiosInstance
+        .patch('/tender-proposal/change-state', payload, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            enqueueSnackbar(translate('proposal_stepback'), {
+              variant: 'success',
+            });
+          }
+
+          setIsSubmittingStepback(false);
+          navigate(`/consultant/dashboard/app`);
+        })
+        .catch((err) => {
+          if (typeof err.message === 'object') {
+            err.message.forEach((el: any) => {
+              enqueueSnackbar(el, {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            });
+          } else {
+            enqueueSnackbar(err.message, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
+          }
+
+          setIsSubmittingStepback(false);
+        });
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+
+      setIsSubmittingStepback(false);
+    }
+  };
+
   return (
     <>
       <Box
@@ -168,10 +226,9 @@ function ConsultantFloatingActionBar() {
         <Stack direction={{ sm: 'column', md: 'row' }} justifyContent="space-between">
           {/* disabled other than accept reject button */}
           <Button
-            disabled={true}
             variant="contained"
             onClick={() => {
-              console.log('asdasdasdasd');
+              setAction('STEP_BACK');
             }}
             sx={{ backgroundColor: '#0169DE', ':hover': { backgroundColor: '#1482FE' } }}
             endIcon={<Iconify icon="eva:edit-2-outline" />}
@@ -215,6 +272,20 @@ function ConsultantFloatingActionBar() {
             backgroundColor: '#FF0000',
             hoverColor: '#FF4842',
           }}
+        />
+      )}
+      {action === 'STEP_BACK' && (
+        <NotesModal
+          title="إرجاع المعاملة إلى مشرف المشروع"
+          onClose={handleCloseModal}
+          onSubmit={stepBackProposal}
+          action={{
+            actionType: action,
+            actionLabel: 'إرجاع',
+            backgroundColor: '#0169DE',
+            hoverColor: '#1482FE',
+          }}
+          loading={isSubmittingStepback}
         />
       )}
       {action === 'ACCEPT' && (

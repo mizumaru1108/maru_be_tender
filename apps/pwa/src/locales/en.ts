@@ -1369,6 +1369,13 @@ const en = {
       EMPLOYMENT_INITIATIVES: 'Employment initiatives',
       OTHER_INITIATIVES: 'Other Initiatives',
     },
+    action: {
+      accept: 'ACCEPT',
+      reject: 'REJECT',
+      step_back: 'SEND BACK',
+      send_back_for_revision: 'SEND BACK FOR REVISION',
+      study_again: 'STUDY AGAIN',
+    },
   },
   project_already_reviewed_by_supervisor: 'This project already reviewed by Supervisor',
   show_modified_fields: 'Show Modified Fields',

@@ -59,33 +59,41 @@ function ProjectPath() {
     variables: { proposal_id },
   });
 
-  // const valueLocale = localStorage.getItem('i18nextLng');
-
   const { data: followUps, fetching, error } = result;
   const handleStep = (step: number, item: Log) => () => {
     window.scrollTo(115, 115);
     setStepOn(step);
     setActiveStep(step);
+    // setStepUserRole(item.user_role);
 
     if (item !== undefined) {
       setStepUserRole(item.user_role);
     } else {
-      // setStepUserRole(followUps.log[followUps.log.length - 1].proposal.state);
       setStepUserRole('');
     }
   };
 
-  React.useEffect(() => {
-    if (followUps?.log) {
-      setActiveStep(followUps.log.length);
-      // setActiveStep(followUps.log.length - 1);
+  const lastLog = followUps?.log && followUps?.log[followUps?.log.length - 1];
+  const hasNonRejectAction = lastLog?.action && lastLog?.action !== 'reject';
+  const hasRejectAction = lastLog?.action && lastLog?.action === 'reject';
 
-      // setStepUserRole(
-      //   followUps?.log.length ? followUps.log[followUps.log.length - 1].user_role : ''
-      // );
+  React.useEffect(() => {
+    if (hasNonRejectAction) {
+      setActiveStep(followUps.log.length);
+    } else if (hasRejectAction) {
+      setActiveStep(followUps.log.length - 1);
     }
+
+    // if (followUps?.log) {
+    // setActiveStep(followUps.log.length - 1);
+
+    // setStepUserRole(
+    //   followUps?.log.length ? followUps.log[followUps.log.length - 1].user_role : ''
+    // );
+    // }
+
     // getDay();
-  }, [followUps]);
+  }, [followUps, hasNonRejectAction, hasRejectAction]);
 
   if (fetching) return <>.. Loading</>;
   if (error) return <Page500 error={error.message} />;
@@ -110,7 +118,7 @@ function ProjectPath() {
               <React.Fragment key={index}>
                 {index === activeStep && (
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                    <Typography>{item.action}</Typography>
+                    <Typography>{translate(`review.action.${item.action}`) ?? '-'}</Typography>
                   </Stack>
                 )}
               </React.Fragment>
@@ -218,7 +226,7 @@ function ProjectPath() {
                       <React.Fragment key={index}>
                         {index === activeStep && (
                           <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                            <Typography>{item.proposal.vat_percentage || 0}</Typography>
+                            <Typography>{item.proposal.vat_percentage ?? 0}</Typography>
                           </Stack>
                         )}
                       </React.Fragment>
@@ -302,7 +310,8 @@ function ProjectPath() {
                     {index === activeStep && (
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                         <Typography>
-                          {translate(`review.support_goals.${item.proposal.support_goal_id}`)}
+                          {translate(`review.support_goals.${item.proposal.support_goal_id}`) ??
+                            '-'}
                         </Typography>
                       </Stack>
                     )}
@@ -315,7 +324,7 @@ function ProjectPath() {
                   <React.Fragment key={index}>
                     {index === activeStep && (
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                        <Typography>{item.notes}</Typography>
+                        <Typography>{item.notes ?? '-'}</Typography>
                       </Stack>
                     )}
                   </React.Fragment>
@@ -327,7 +336,7 @@ function ProjectPath() {
                   <React.Fragment key={index}>
                     {index === activeStep && (
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                        <Typography>{item.proposal.support_outputs}</Typography>
+                        <Typography>{item.proposal.support_outputs ?? '-'}</Typography>
                       </Stack>
                     )}
                   </React.Fragment>
@@ -353,106 +362,104 @@ function ProjectPath() {
         <Stack direction="column" gap={2} justifyContent="start" sx={{ paddingBottom: '10px' }}>
           <Typography variant="h6">مسار المشروع</Typography>
           <Box sx={{ width: '100%', padding: '10px', maxHeight: '450px', overflowY: 'scroll' }}>
-            <Stepper
-              activeStep={
-                activeRole! === 'tender_moderator' ? followUps.log.length - 1 : followUps.log.length
-              }
-              orientation="vertical"
-            >
+            <Stepper activeStep={followUps.log.length} orientation="vertical">
               {followUps.log.map((item: Log, index: number) => (
                 <Step key={index}>
-                  <Stack direction="row" gap={2}>
-                    {/* {followUps.log.length === 1 && followUps.log[0] === 'Moderator' ? (
-                      <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
-                    ) : (
-                      <PanoramaFishEyeIcon sx={{ color: '#000', alignSelf: 'center' }} />
-                    )} */}
-                    <PanoramaFishEyeIcon sx={{ color: '#000', alignSelf: 'center' }} />
-                    <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
-                      <Button
-                        sx={{
-                          padding: '0px',
-                          justifyContent: 'start',
-                          ':hover': { backgroundColor: '#fff' },
-                        }}
-                        onClick={handleStep(index, item)}
-                      >
-                        <Typography
-                          sx={{
-                            fontSize: index === activeStep ? '17px' : '12px',
-                            fontWeight: index === activeStep ? 800 : 400,
-                            color: '#000',
-                            alignSelf: 'center',
-                          }}
-                        >
-                          {translate(`permissions.${item.user_role}`)}
-                        </Typography>
-                      </Button>
-                      <Typography sx={{ fontSize: '12px' }}>
-                        {formattedDateTime(item.created_at)}
-                      </Typography>
-                    </Stack>
+                  <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
+                    <Button
+                      sx={{
+                        padding: '0px',
+                        justifyContent: 'start',
+                        ':hover': { backgroundColor: '#fff' },
+                      }}
+                      onClick={handleStep(index, item)}
+                    >
+                      <Stack direction="row" gap={2}>
+                        <PanoramaFishEyeIcon sx={{ color: '#000', alignSelf: 'center' }} />
+                        <Stack>
+                          <Typography
+                            sx={{
+                              fontSize: index === activeStep ? '17px' : '12px',
+                              fontWeight: index === activeStep ? 800 : 400,
+                              color: '#000',
+                              alignSelf: 'start',
+                            }}
+                          >
+                            {translate(`permissions.${item.user_role}`)}
+                          </Typography>
+                          <Typography sx={{ fontSize: '12px', color: '#000', alignSelf: 'start' }}>
+                            {formattedDateTime(item.created_at)}
+                          </Typography>
+                        </Stack>
+                      </Stack>
+                    </Button>
                   </Stack>
                 </Step>
               ))}
-              {followUps.log.length ? (
-                <Step>
-                  <Stack direction="row" gap={2} sx={{ mt: 1 }}>
-                    <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
-                    <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
-                      <Button
-                        sx={{
-                          padding: '0px',
-                          justifyContent: 'start',
-                          ':hover': { backgroundColor: '#fff' },
-                        }}
-                        onClick={handleStep(
-                          followUps.log.length,
-                          followUps.log[followUps.log.length]
-                        )}
-                      >
-                        <Typography
+              {(activeRole! === 'tender_moderator' || hasNonRejectAction) && (
+                <>
+                  {followUps.log.length ? (
+                    <Step>
+                      <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
+                        <Button
                           sx={{
-                            fontSize: followUps.log.length === activeStep ? '17px' : '12px',
-                            fontWeight: followUps.log.length === activeStep ? 800 : 400,
-                            color: '#000',
-                            alignSelf: 'center',
+                            padding: '0px',
+                            justifyContent: 'start',
+                            ':hover': { backgroundColor: '#fff' },
                           }}
-                        >
-                          {translate(
-                            `permissions.${followUps.log[followUps.log.length - 1].proposal.state}`
+                          onClick={handleStep(
+                            followUps.log.length,
+                            followUps.log[followUps.log.length]
                           )}
-                        </Typography>
-                      </Button>
-                    </Stack>
-                  </Stack>
-                </Step>
-              ) : (
-                <Step>
-                  <Stack direction="row" gap={2} sx={{ mt: 1 }}>
-                    <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
-                    <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
-                      <Button
-                        sx={{
-                          padding: '0px',
-                          justifyContent: 'start',
-                          ':hover': { backgroundColor: '#fff' },
-                        }}
-                      >
-                        <Typography
+                        >
+                          <Stack direction="row" gap={2} sx={{ mt: 1 }}>
+                            <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
+                            <Typography
+                              sx={{
+                                fontSize: followUps.log.length === activeStep ? '17px' : '12px',
+                                fontWeight: followUps.log.length === activeStep ? 800 : 400,
+                                color: '#000',
+                                alignSelf: 'center',
+                              }}
+                            >
+                              {translate(
+                                `permissions.${
+                                  followUps.log[followUps.log.length - 1].proposal.state
+                                }`
+                              )}
+                            </Typography>
+                          </Stack>
+                        </Button>
+                      </Stack>
+                    </Step>
+                  ) : (
+                    // <Step>
+                    <Stack direction="row" gap={2} sx={{ mt: 1 }}>
+                      <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
+                      <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
+                        <Button
                           sx={{
-                            fontSize: '17px',
-                            fontWeight: 800,
-                            color: '#000',
-                            alignSelf: 'center',
+                            padding: '0px',
+                            justifyContent: 'start',
+                            ':hover': { backgroundColor: '#fff' },
                           }}
                         >
-                          {translate(`permissions.MODERATOR`)}
-                        </Typography>
-                      </Button>
+                          <Typography
+                            sx={{
+                              fontSize: '17px',
+                              fontWeight: 800,
+                              color: '#000',
+                              alignSelf: 'center',
+                            }}
+                          >
+                            {translate(`permissions.MODERATOR`)}
+                          </Typography>
+                        </Button>
+                      </Stack>
                     </Stack>
-                  </Stack>
-                </Step>
+                    // </Step>
+                  )}
+                </>
               )}
             </Stepper>
           </Box>
