@@ -108,6 +108,7 @@ const slice = createSlice({
       state.step2.num_of_beneficiaries = action.payload.user.client_data.num_of_beneficiaries;
       state.step2.chairman_of_board_of_directors = action.payload.user.client_data.chairman_name;
       state.step2.ceo = action.payload.user.client_data.ceo_name;
+      state.step2.been_supported_before = action.payload.been_supported_before || false;
       state.step3.project_name = action.payload.project_name;
       state.step3.project_idea = action.payload.project_idea;
       state.step3.project_goals = action.payload.project_goals;
@@ -116,6 +117,7 @@ const slice = createSlice({
       state.step3.project_implement_date = action.payload.project_implement_date;
       state.step3.execution_time = action.payload.execution_time;
       state.step3.project_location = action.payload.project_location;
+      state.step3.been_made_before = action.payload.been_made_before || false;
       state.step4.proposal_item_budgets = action.payload.proposal_item_budgets;
     },
     // STEP ONE

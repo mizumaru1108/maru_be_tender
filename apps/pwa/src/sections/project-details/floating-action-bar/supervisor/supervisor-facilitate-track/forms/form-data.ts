@@ -202,8 +202,8 @@ export const ThirdFormData = [
     name: 'been_made_before',
     label: 'هل سبق إقامة المشروع؟',
     options: [
-      { label: 'نعم', value: false },
-      { label: 'لا', value: true },
+      { label: 'نعم', value: true },
+      { label: 'لا', value: false },
     ],
     md: 6,
     xs: 12,

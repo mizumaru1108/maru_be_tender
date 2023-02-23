@@ -1,7 +1,7 @@
 // form
 import { useFormContext, Controller } from 'react-hook-form';
 // @mui
-import { TextField, TextFieldProps, Typography } from '@mui/material';
+import { TextField, TextFieldProps, useTheme } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ type Props = IProps & TextFieldProps;
 
 export default function RHFTextArea({ name, ...other }: Props) {
   const { control } = useFormContext();
+  const theme = useTheme();
 
   return (
     <Controller
@@ -33,6 +34,25 @@ export default function RHFTextArea({ name, ...other }: Props) {
             '& > .MuiFormHelperText-root': {
               backgroundColor: 'transparent',
             },
+            ...(!other.disabled && {
+              '& label.Mui-focused': {
+                color: theme.palette.grey[800],
+              },
+              '& .MuiInputLabel-root': {
+                color: theme.palette.grey[800],
+              },
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'inherit',
+                },
+                '&:hover fieldset': {
+                  borderColor: theme.palette.primary.main,
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: theme.palette.primary.main,
+                },
+              },
+            }),
           }}
         />
       )}

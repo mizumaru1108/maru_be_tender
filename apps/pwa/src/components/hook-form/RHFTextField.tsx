@@ -61,6 +61,27 @@ export default function RHFTextField({ name, ...other }: Props) {
             error={!!error}
             helperText={error?.message}
             {...other}
+            sx={{
+              ...(!other.disabled && {
+                '& label.Mui-focused': {
+                  color: theme.palette.grey[800],
+                },
+                '& .MuiInputLabel-root': {
+                  color: theme.palette.grey[800],
+                },
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: 'inherit',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: theme.palette.primary.main,
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: theme.palette.primary.main,
+                  },
+                },
+              }),
+            }}
           />
         )}
       />
@@ -153,6 +174,25 @@ export default function RHFTextField({ name, ...other }: Props) {
             '& > .MuiFormHelperText-root': {
               backgroundColor: 'white',
             },
+            ...(!other.disabled && {
+              '& label.Mui-focused': {
+                color: theme.palette.grey[800],
+              },
+              '& .MuiInputLabel-root': {
+                color: theme.palette.grey[800],
+              },
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'inherit',
+                },
+                '&:hover fieldset': {
+                  borderColor: theme.palette.primary.main,
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: theme.palette.primary.main,
+                },
+              },
+            }),
           }}
         />
       )}

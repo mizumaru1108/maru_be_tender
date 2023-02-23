@@ -43,7 +43,6 @@ function ThirdForm({ children, onSubmit }: any) {
 
   const onSubmitForm = async (data: SupervisorStep3) => {
     onSubmit(data);
-    // console.log({ data });
   };
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>

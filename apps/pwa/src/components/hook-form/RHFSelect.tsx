@@ -1,7 +1,7 @@
 // form
 import { useFormContext, Controller } from 'react-hook-form';
 // @mui
-import { TextField, TextFieldProps, Typography, MenuItem } from '@mui/material';
+import { TextField, TextFieldProps, Typography, MenuItem, useTheme } from '@mui/material';
 //
 import { LIST_OF_BANK } from 'sections/auth/register/RegisterFormData';
 
@@ -16,6 +16,7 @@ type Props = IProps & TextFieldProps;
 
 export default function RHFSelect({ name, children, placeholder, ...other }: Props) {
   const { control } = useFormContext();
+  const theme = useTheme();
 
   return (
     <Controller
@@ -55,6 +56,25 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
                 '& > .MuiFormHelperText-root': {
                   backgroundColor: 'transparent',
                 },
+                ...(!other.disabled && {
+                  '& label.Mui-focused': {
+                    color: theme.palette.grey[800],
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: theme.palette.grey[800],
+                  },
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: 'inherit',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: theme.palette.primary.main,
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: theme.palette.primary.main,
+                    },
+                  },
+                }),
               }}
             >
               {placeholder && (
@@ -80,6 +100,25 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
                 '& > .MuiFormHelperText-root': {
                   backgroundColor: 'transparent',
                 },
+                ...(!other.disabled && {
+                  '& label.Mui-focused': {
+                    color: theme.palette.grey[800],
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: theme.palette.grey[800],
+                  },
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: 'inherit',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: theme.palette.primary.main,
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: theme.palette.primary.main,
+                    },
+                  },
+                }),
               }}
             >
               {!children &&
