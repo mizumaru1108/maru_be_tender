@@ -280,10 +280,6 @@ export class TenderProposalRepository {
               });
             }
 
-            await prisma.proposal_edit_request.delete({
-              where: { proposal_id },
-            });
-
             return {
               proposal,
               notif: sendRevisionNotif,
@@ -387,6 +383,11 @@ export class TenderProposalRepository {
               createProposalEditRequestPayload,
             )}`,
           );
+
+          await prisma.proposal_edit_request.delete({
+            where: { proposal_id: id },
+          });
+
           await prisma.proposal_edit_request.create({
             data: createProposalEditRequestPayload,
           });
