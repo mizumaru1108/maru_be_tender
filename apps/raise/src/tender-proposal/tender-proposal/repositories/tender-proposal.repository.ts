@@ -147,6 +147,7 @@ export class TenderProposalRepository {
     createLog: boolean,
   ): Promise<UpdateMyProposalResponseDto> {
     try {
+      throw new BadRequestException('debug');
       return await this.prismaService.$transaction(
         async (prisma) => {
           this.logger.log(
@@ -286,8 +287,6 @@ export class TenderProposalRepository {
             };
           }
 
-          // console.log({ proposal });
-          // throw new BadRequestException('debug');
           return {
             proposal,
             notif: undefined,
@@ -530,29 +529,28 @@ export class TenderProposalRepository {
     }
   }
 
-  // async findAmandementByProposalId(
-  //   proposalId: string,
-  // ): Promise<proposal_edit_request | null> {
-  //   try {
-  //     this.logger.log(
-  //       'info',
-  //       `Finding amandement with proposal id of ${proposalId}`,
-  //     );
-  //     const raw = await this.prismaService.$queryRaw<
-  //       proposal_edit_request[]
-  //     >`SELECT * FROM proposal_edit_request WHERE proposal_id = ${proposalId}`;
-  //     console.log({ raw });
-  //     return raw[0] || null;
-  //   } catch (err) {
-  //     const theError = prismaErrorThrower(
-  //       err,
-  //       TenderProposalRepository.name,
-  //       'Find Amandement By ProposalId error details: ',
-  //       'Finding Amandement By ProposalId!',
-  //     );
-  //     throw theError;
-  //   }
-  // }
+  async findAmandementDetailByProposalId(
+    proposalId: string,
+  ): Promise<{ detail: string } | null> {
+    try {
+      this.logger.log(
+        'info',
+        `Finding amandement with proposal id of ${proposalId}`,
+      );
+      const raw = await this.prismaService.$queryRaw<
+        { detail: string }[]
+      >`SELECT detail FROM proposal_edit_request WHERE proposal_id = ${proposalId}`;
+      return raw[0] || null;
+    } catch (err) {
+      const theError = prismaErrorThrower(
+        err,
+        TenderProposalRepository.name,
+        'Find Amandement By ProposalId error details: ',
+        'Finding Amandement By ProposalId!',
+      );
+      throw theError;
+    }
+  }
 
   async findAmandementList(
     currentUser: TenderCurrentUser,

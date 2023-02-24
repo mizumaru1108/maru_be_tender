@@ -10,7 +10,6 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { TenderFilePayload } from '../../../../tender-commons/dto/tender-file-payload.dto';
 import { CreateProjectBudgetDto } from './create-proposal-item-budget.dto';
 
 export class SendRevisionDto {
@@ -19,11 +18,11 @@ export class SendRevisionDto {
   @IsNotEmpty()
   proposal_id: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  notes?: string;
+  // @ApiPropertyOptional()
+  // @IsOptional()
+  // @IsString()
+  // @IsNotEmpty()
+  // notes?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -91,15 +90,11 @@ export class SendRevisionDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @Type(() => TenderFilePayload)
-  @ValidateNested()
-  letter_ofsupport_req?: TenderFilePayload;
+  letter_ofsupport_req?: any;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @Type(() => TenderFilePayload)
-  @ValidateNested()
-  project_attachments?: TenderFilePayload;
+  project_attachments?: any;
 
   @ApiPropertyOptional()
   @IsOptional()

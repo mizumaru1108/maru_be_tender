@@ -326,6 +326,26 @@ export class TenderProposalService {
 
     if (!!sendRevisionPayload) {
       updateProposalPayload = SendRevisionMapper(sendRevisionPayload);
+      if (Object.keys(updateProposalPayload).length === 0) {
+        throw new BadRequestException(
+          'You must change at least one value that defined by supervisor',
+        );
+      }
+      const amandementDetail =
+        await this.proposalRepo.findAmandementDetailByProposalId(proposalId);
+      if (!amandementDetail) {
+        throw new BadRequestException('Failed to fetch amandement detail!');
+      }
+      const rawAllowedKeys = JSON.parse(amandementDetail.detail);
+      const allowedKeys = Object.keys(rawAllowedKeys);
+      const keySet = new Set(allowedKeys);
+      for (let key of Object.keys(updateProposalPayload)) {
+        if (!keySet.has(key)) {
+          throw new BadRequestException(
+            'You are just allowed to change what defined by the supervisor!',
+          );
+        }
+      }
       if (sendRevisionPayload.detail_project_budgets) {
         proposal_item_budgets = CreateItemBudgetsMapper(
           proposal.id,
