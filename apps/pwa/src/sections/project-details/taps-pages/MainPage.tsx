@@ -54,7 +54,7 @@ function MainPage() {
       const rest = await axiosInstance.get(`/tender-proposal/amandement?id=${id as string}`, {
         headers: { 'x-hasura-role': activeRole! },
       });
-      // console.log('rest', rest);
+      console.log('rest', rest);
       if (rest) {
         setTmpValues({
           data: rest.data.data.proposal,
@@ -75,11 +75,11 @@ function MainPage() {
     }
   }, [activeRole, id]);
 
-  // React.useEffect(() => {
-  //   if (activeRole === 'tender_project_supervisor' && outter_status !== 'ON_REVISION') {
-  //     fetchingData();
-  //   }
-  // }, [activeRole, outter_status, fetchingData]);
+  React.useEffect(() => {
+    if (activeRole === 'tender_project_supervisor' && outter_status !== 'ON_REVISION') {
+      fetchingData();
+    }
+  }, [activeRole, outter_status, fetchingData]);
   const handleOpenProjectOwnerDetails = () => {
     const submiterId = proposal.user.id;
     const url = location.pathname.split('/').slice(0, 3).join('/');
@@ -93,11 +93,26 @@ function MainPage() {
     <Box sx={{ display: 'flex', gap: 3, flexDirection: 'column' }}>
       <Stack direction="row" gap={6}>
         <Stack direction="column">
-          <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
+          <Typography
+            sx={{
+              color:
+                tmpValues?.revised?.num_ofproject_binicficiaries !== undefined
+                  ? 'green'
+                  : '#93A3B0',
+              fontSize: '12px',
+              mb: '5px',
+            }}
+          >
             {translate('number_of_beneficiaries_of_the_project')}
           </Typography>
           <Typography sx={{ mb: '20px' }}>{num_ofproject_binicficiaries}</Typography>
-          <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
+          <Typography
+            sx={{
+              color: '#93A3B0',
+              fontSize: '12px',
+              mb: '5px',
+            }}
+          >
             {translate('implementation_period')}
           </Typography>
           <Typography>{execution_time}</Typography>
@@ -143,30 +158,61 @@ function MainPage() {
       <Grid container columnSpacing={7}>
         <Grid item md={8} xs={12}>
           <Stack direction="column">
-            <Typography sx={{ color: '#93A3B0', fontSize: '12px' }}>
+            <Typography
+              sx={{
+                color: tmpValues?.revised?.project_idea !== undefined ? 'green' : '#93A3B0',
+                fontSize: '12px',
+              }}
+            >
               {translate('project_idea')}
             </Typography>
             <Typography sx={{ mb: '10px' }}>{project_idea}</Typography>
-            <Typography sx={{ color: '#93A3B0', fontSize: '12px' }}>
+            <Typography
+              sx={{
+                color: tmpValues?.revised?.project_goals !== undefined ? 'green' : '#93A3B0',
+                fontSize: '12px',
+              }}
+            >
               {translate('project_goals')}
             </Typography>
             <Typography sx={{ mb: '10px' }}>{project_goals}</Typography>
-            <Typography sx={{ color: '#93A3B0', fontSize: '12px' }}>
+            <Typography
+              sx={{
+                color: tmpValues?.revised?.project_outputs !== undefined ? 'green' : '#93A3B0',
+                fontSize: '12px',
+              }}
+            >
               {translate('project_outputs')}
             </Typography>
             <Typography sx={{ mb: '10px' }}>{project_outputs}</Typography>
-            <Typography sx={{ color: '#93A3B0', fontSize: '12px' }}>
+            <Typography
+              sx={{
+                color: tmpValues?.revised?.project_strengths !== undefined ? 'green' : '#93A3B0',
+                fontSize: '12px',
+              }}
+            >
               {translate('project_strengths')}
             </Typography>
             <Typography sx={{ mb: '10px' }}>{project_strengths}</Typography>
-            <Typography sx={{ color: '#93A3B0', fontSize: '12px' }}>
+            <Typography
+              sx={{
+                color: tmpValues?.revised?.project_risks !== undefined ? 'green' : '#93A3B0',
+                fontSize: '12px',
+              }}
+            >
               {translate('project_risks')}
             </Typography>
             <Typography sx={{ mb: '10px' }}>{project_risks}</Typography>
           </Stack>
           <Stack direction="row" justifyContent="space-between" gap={3}>
-            <ButtonDownloadFiles files={letter_ofsupport_req} />
-            <ButtonDownloadFiles files={project_attachments} />
+            <ButtonDownloadFiles
+              files={letter_ofsupport_req}
+              border={tmpValues?.revised.letter_ofsupport_req !== undefined ? 'green' : undefined}
+            />
+            <ButtonDownloadFiles
+              files={project_attachments}
+              border={tmpValues?.revised.project_attachments !== undefined ? 'green' : undefined}
+            />
             {/* <Button
               component={Link}
               href={letter_ofsupport_req.url}
@@ -308,9 +354,30 @@ function MainPage() {
                 </Typography>
               </Stack>
             </Box>
-            <Box sx={{ backgroundColor: '#fff', py: '30px', pl: '10px', mb: '15px' }}>
+            <Box
+              sx={{
+                backgroundColor: '#fff',
+                border: `1px solid ${
+                  tmpValues?.revised?.amount_required_fsupport !== undefined ? 'green' : '#fff'
+                }`,
+                // borderColor:
+                //   tmpValues?.revised?.amount_required_fsupport !== undefined ? 'green' : '#fff',
+                py: '30px',
+                pl: '10px',
+                mb: '15px',
+              }}
+            >
               <Stack direction="column">
-                <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
+                <Typography
+                  sx={{
+                    color:
+                      tmpValues?.revised?.amount_required_fsupport !== undefined
+                        ? 'green'
+                        : '#93A3B0',
+                    fontSize: '12px',
+                    mb: '5px',
+                  }}
+                >
                   {translate('amount_required_for_support')}
                 </Typography>
                 <Typography>{fCurrencyNumber(amount_required_fsupport)}</Typography>

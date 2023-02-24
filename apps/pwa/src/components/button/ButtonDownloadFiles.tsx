@@ -6,9 +6,10 @@ import { FileProp } from '../upload';
 interface Props {
   files: UploadFilesJsonbDto;
   // fileType?: string;
+  border?: string;
 }
 
-function ButtonDownloadFiles({ files }: Props) {
+function ButtonDownloadFiles({ files, border }: Props) {
   const { translate } = useLocales();
   // console.log('files', files);
   const fileType = files?.type ? files?.type!.split('/')[1] : 'pdf';
@@ -25,7 +26,7 @@ function ButtonDownloadFiles({ files }: Props) {
         '&:hover': { backgroundColor: '#00000014' },
         backgroundColor: '#93A3B014',
         border: 3,
-        borderColor: files && files.color ? files.color : 'transparent',
+        borderColor: files && files.color ? files.color : !!border ? border : 'transparent',
       }}
     >
       {/* <Stack
