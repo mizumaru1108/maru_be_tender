@@ -234,6 +234,7 @@ export class TenderProposalRepository {
                 user_role: TenderAppRoleEnum.CLIENT,
                 action: ProposalAction.SEND_REVISED_VERSION, //revised
                 state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
+                notes: 'Proposal has been revised',
               },
               select: {
                 action: true,
@@ -360,6 +361,7 @@ export class TenderProposalRepository {
     reviewer_id: string,
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
     createProposalEditRequestPayload: Prisma.proposal_edit_requestUncheckedCreateInput,
+    notes: string,
   ) {
     try {
       return await this.prismaService.$transaction(
@@ -409,6 +411,7 @@ export class TenderProposalRepository {
               reviewer_id,
               action: ProposalAction.SEND_BACK_FOR_REVISION, //revised
               state: TenderAppRoleEnum.CLIENT,
+              notes: notes,
               response_time: lastLog?.created_at
                 ? Math.round(
                     (new Date().getTime() - lastLog.created_at.getTime()) /

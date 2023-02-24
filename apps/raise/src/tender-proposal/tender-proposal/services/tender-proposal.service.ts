@@ -554,13 +554,6 @@ export class TenderProposalService {
       );
     }
 
-    // const isPedingExist = await this.proposalRepo.findAmandementByProposalId(
-    //   proposal_id,
-    // );
-    // if (isPedingExist) {
-    //   throw new BadRequestException('Proposal already asked for revision!');
-    // }
-
     const createProposalEditRequestPayload = ProposalUpdateRequestMapper(
       proposal,
       userId,
@@ -577,6 +570,7 @@ export class TenderProposalService {
       userId,
       proposalUpdatePayload,
       createProposalEditRequestPayload,
+      request.notes,
     );
 
     this.notificationService.sendSmsAndEmail(
