@@ -63,6 +63,7 @@ const AmandementForms = ({
     project_attachments: Yup.string().required(
       translate('errors.cre_proposal.project_attachments.required')
     ),
+    notes: Yup.string().required(translate('errors.cre_proposal.notes.required')),
   });
 
   const methods = useForm<AmandementFields>({

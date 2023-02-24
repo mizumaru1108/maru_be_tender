@@ -363,6 +363,10 @@ const en = {
           message: 'Amount must be a positive number with no commas',
           required: 'Amount is required',
         },
+        notes: {
+          message: '',
+          required: 'Notes is required',
+        },
       },
     },
   },

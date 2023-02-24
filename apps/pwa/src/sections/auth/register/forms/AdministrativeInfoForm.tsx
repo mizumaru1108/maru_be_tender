@@ -95,26 +95,31 @@ const AdministrativeInfoForm = ({
 
   const agree_on = watch('agree_on');
   const onSubmitForm = async (data: AdministrativeValuesProps) => {
-    let newTmpNumbers: string[] = [...tmpUsedNumbers];
+    let newTmpNumbers: string[] = [];
     let newCeoMobile = getValues('ceo_mobile');
     let newDataEntryMobile = getValues('data_entry_mobile');
     let newChairmanMobile = getValues('chairman_mobile');
 
-    newCeoMobile.substring(0, 4) !== '+966'
-      ? (newCeoMobile = '+966'.concat(`${getValues('ceo_mobile')}`))
-      : (newCeoMobile = getValues('ceo_mobile'));
+    if (!!newCeoMobile) {
+      newCeoMobile.substring(0, 4) !== '+966'
+        ? (newCeoMobile = '+966'.concat(`${getValues('ceo_mobile')}`))
+        : (newCeoMobile = getValues('ceo_mobile'));
+      newTmpNumbers && newTmpNumbers.push(newCeoMobile);
+    }
 
-    newDataEntryMobile.substring(0, 4) !== '+966'
-      ? (newDataEntryMobile = '+966'.concat(`${getValues('data_entry_mobile')}`))
-      : (newDataEntryMobile = getValues('data_entry_mobile'));
+    if (!!newDataEntryMobile) {
+      newDataEntryMobile.substring(0, 4) !== '+966'
+        ? (newDataEntryMobile = '+966'.concat(`${getValues('data_entry_mobile')}`))
+        : (newDataEntryMobile = getValues('data_entry_mobile'));
+      newTmpNumbers && newTmpNumbers.push(newDataEntryMobile);
+    }
+    if (!!newChairmanMobile) {
+      newChairmanMobile.substring(0, 4) !== '+966'
+        ? (newChairmanMobile = '+966'.concat(`${getValues('chairman_mobile')}`))
+        : (newChairmanMobile = getValues('chairman_mobile'));
+      newTmpNumbers && newTmpNumbers.push(newChairmanMobile);
+    }
 
-    newChairmanMobile.substring(0, 4) !== '+966'
-      ? (newChairmanMobile = '+966'.concat(`${getValues('chairman_mobile')}`))
-      : (newChairmanMobile = getValues('chairman_mobile'));
-
-    newTmpNumbers && newTmpNumbers.push(newCeoMobile);
-    newTmpNumbers && newTmpNumbers.push(newDataEntryMobile);
-    newTmpNumbers && newTmpNumbers.push(newChairmanMobile);
     const payload: AdministrativeValuesProps = {
       ...data,
       ceo_mobile: newCeoMobile!,

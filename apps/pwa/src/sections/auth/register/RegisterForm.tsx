@@ -101,7 +101,10 @@ const initialValue = {
     bank_name: '',
     card_image: { size: undefined, url: '', type: '' },
   },
-  used_numbers: [''],
+  used_numbers: {
+    form2: [],
+    form4: [],
+  },
 } as AccountValuesProps;
 export default function RegisterForm() {
   const { translate } = useLocales();
@@ -131,7 +134,11 @@ export default function RegisterForm() {
         ...prevRegisterState.form2,
         ...data,
       },
-      used_numbers: [...prevRegisterState.used_numbers!, ...data.used_numbers!],
+      used_numbers: {
+        // ...prevRegisterState.used_numbers,
+        form2: [...data.used_numbers!],
+        form4: [...prevRegisterState.used_numbers!.form4],
+      },
     }));
     if (done) setStep(5);
   };
@@ -158,7 +165,12 @@ export default function RegisterForm() {
         ...prevRegisterState.form4,
         ...data,
       },
-      used_numbers: [...prevRegisterState.used_numbers!, ...data.used_numbers!],
+      // used_numbers: [...prevRegisterState.used_numbers!, ...data.used_numbers!],
+      used_numbers: {
+        // ...prevRegisterState.used_numbers,
+        form2: [...prevRegisterState.used_numbers!.form2],
+        form4: [...data.used_numbers!],
+      },
     }));
     if (done) setStep(5);
   };
@@ -236,7 +248,7 @@ export default function RegisterForm() {
           <ConnectingInfoForm
             onSubmit={onSubmit2}
             defaultValues={registerState.form2}
-            usedNumbers={registerState.used_numbers}
+            usedNumbers={registerState.used_numbers?.form4}
           >
             <ActionsBox done={done} onReturn={onReturn} />
           </ConnectingInfoForm>
@@ -255,7 +267,7 @@ export default function RegisterForm() {
           onSubmit={onSubmit4}
           defaultValues={registerState.form4}
           done={done}
-          usedNumbers={registerState.used_numbers}
+          usedNumbers={registerState.used_numbers?.form2}
         />
       )}
       {step === 4 && (

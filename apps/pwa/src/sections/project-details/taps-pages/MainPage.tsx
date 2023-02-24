@@ -54,7 +54,7 @@ function MainPage() {
       const rest = await axiosInstance.get(`/tender-proposal/amandement?id=${id as string}`, {
         headers: { 'x-hasura-role': activeRole! },
       });
-      console.log('rest', rest);
+      // console.log('rest', rest);
       if (rest) {
         setTmpValues({
           data: rest.data.data.proposal,
@@ -88,7 +88,7 @@ function MainPage() {
     navigate(`${url}/current-project/${id}/owner/${submiterId}`);
     // console.log({ url, destination });
   };
-  console.log('tmpValues', tmpValues);
+  // console.log('tmpValues', tmpValues);
   return (
     <Box sx={{ display: 'flex', gap: 3, flexDirection: 'column' }}>
       <Stack direction="row" gap={6}>

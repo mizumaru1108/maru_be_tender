@@ -375,6 +375,10 @@ const ar = {
           message: 'المبلغ يجب أن يكون رقم موجب يدون أية فواصل',
           required: 'القيمة مطلوبة',
         },
+        notes: {
+          message: '',
+          required: 'ملاحظات مطلوبة',
+        },
       },
     },
   },
@@ -463,7 +467,7 @@ const ar = {
   contact_support: 'تواصل مع الدعم ',
   register_first_tap: 'المعلومات الرئيسية',
   register_second_tap: 'معلومات الاتصال',
-  register_third_tap: 'معلومات الترخيص',
+  register_third_tap: 'اسم مدير المشروع',
   register_fourth_tap: 'بيانات الإدارية',
   register_fifth_tap: 'المعلومات البنكية',
   email_label: 'البريد الإلكتروني',
@@ -724,7 +728,8 @@ const ar = {
     },
   },
   funding_project_request_form3: {
-    step: 'معلومات الاتصال',
+    // step: 'معلومات الاتصال',
+    step: 'اسم مدير المشروع',
     project_manager_name: {
       label: 'اسم مدير الإدارة*',
       placeholder: 'الرجاء كتابة اسم مدير الإدارة',
