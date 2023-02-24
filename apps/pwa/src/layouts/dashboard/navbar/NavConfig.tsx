@@ -71,6 +71,7 @@ const ICONS = {
     main: getIcon('main'),
     project_management: getIcon('project-management'),
     rejection_list: getIcon('rejection-list'),
+    client_list: getIcon('users-and-permissions'),
     portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
   },
@@ -283,6 +284,11 @@ const navConfig = {
           title: 'rejection_list',
           path: PATH_CEO.rejection_list,
           icon: ICONS.tender_ceo.rejection_list,
+        },
+        {
+          title: 'client_list',
+          path: PATH_CEO.client_list,
+          icon: ICONS.tender_ceo.client_list,
         },
         {
           title: 'portal_reports',

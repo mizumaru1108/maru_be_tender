@@ -4,11 +4,13 @@ import DashboardLayout from '../layouts/dashboard';
 import AuthGuard from 'guards/AuthGuard';
 import RoleBasedGuard from 'guards/RoleBasedGuard';
 import { Loadable } from './Loadable';
+import ProjectOwnerDetailsMainPage from 'sections/project-details/project-owner-details/ProjectOwnerDetailsMainPage';
 
 const MainCeoPage = Loadable(lazy(() => import('pages/ceo/MainCeoPage')));
 const CeoMessagePage = Loadable(lazy(() => import('pages/ceo/CeoMessagePage')));
 const CeoProjectManagementPage = Loadable(lazy(() => import('pages/ceo/CeoProjectManagementPage')));
 const CeoRejectionListPage = Loadable(lazy(() => import('pages/ceo/CeoRejectionListPage')));
+const CeoClientListPage = Loadable(lazy(() => import('pages/ceo/CeoClientListPage')));
 const CeoPortalReportPage = Loadable(lazy(() => import('pages/PortalReports')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
 const ProjectOwnerDetails = Loadable(
@@ -113,6 +115,20 @@ export const ceoRoute = {
             },
           ],
         },
+        {
+          path: 'client-list',
+          children: [
+            {
+              path: '',
+              element: <CeoClientListPage />,
+            },
+            {
+              path: ':id/owner/:submiterId',
+              element: <ProjectOwnerDetails />,
+            },
+          ],
+        },
+        // { path: 'client-list', element: <CeoClientListPage /> },
         { path: 'portal-reports', element: <CeoPortalReportPage /> },
         { path: 'messages', element: <CeoMessagePage /> },
       ],

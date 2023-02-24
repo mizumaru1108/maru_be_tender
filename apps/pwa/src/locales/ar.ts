@@ -101,6 +101,7 @@ const ar = {
     },
   },
   errors: {
+    notes: 'ملاحظة مطلوبة',
     login: {
       email: {
         message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
@@ -1267,6 +1268,7 @@ const ar = {
 
   // amandement
   proposal_amandement: {
+    send_to_project_manager: 'أرسل طلب التعديل إلى مدير المشروع',
     button_label: 'ارسال طلب تعديل الى المشرف',
     forms: {
       notes: 'ملاحظات على الطلب',

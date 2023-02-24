@@ -118,7 +118,9 @@ function ProjectPath() {
               <React.Fragment key={index}>
                 {index === activeStep && (
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                    <Typography>{translate(`review.action.${item.action}`) ?? '-'}</Typography>
+                    <Typography>
+                      {item.action ? translate(`review.action.${item.action}`) : '-'}
+                    </Typography>
                   </Stack>
                 )}
               </React.Fragment>
@@ -310,8 +312,9 @@ function ProjectPath() {
                     {index === activeStep && (
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                         <Typography>
-                          {translate(`review.support_goals.${item.proposal.support_goal_id}`) ??
-                            '-'}
+                          {item.proposal.support_goal_id
+                            ? translate(`review.support_goals.${item.proposal.support_goal_id}`)
+                            : '-'}
                         </Typography>
                       </Stack>
                     )}
