@@ -75,7 +75,10 @@ export type AccountValuesProps = {
   form3: LicenseValuesProps;
   form4: AdministrativeValuesProps;
   form5: BankingValuesProps;
-  used_numbers?: string[];
+  used_numbers?: {
+    form2: string[];
+    form4: string[];
+  };
 };
 
 export type AccountEditValuesProps = {

@@ -89,6 +89,7 @@ export const PATH_CEO = {
   app: path(ROOTS_CEO, '/dashboard/app'),
   project_management: path(ROOTS_CEO, '/dashboard/project-management'),
   rejection_list: path(ROOTS_CEO, '/dashboard/rejection-list'),
+  client_list: path(ROOTS_CEO, '/dashboard/client-list'),
   portal_reports: path(ROOTS_CEO, '/dashboard/portal-reports'),
   messages: path(ROOTS_CEO, '/dashboard/messages'),
 };

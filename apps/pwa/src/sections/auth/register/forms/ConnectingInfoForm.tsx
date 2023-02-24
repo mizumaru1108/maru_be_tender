@@ -20,7 +20,7 @@ type FormProps = {
 
 const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: FormProps) => {
   const tmpUsedNumbers: string[] = usedNumbers ?? [];
-  // console.log('tmpUsedNumbers', tmpUsedNumbers);
+  // console.log('tmpUsedNumbers', usedNumbers);
   const { translate } = useLocales();
 
   useEffect(() => {
@@ -36,6 +36,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
   }, [defaultValues]);
   const phoneNumberValidation = Yup.string()
     // .required(translate('errors.register.phone.required'))
+    .nullable()
     .notRequired()
     .test('len', translate('errors.register.phone.length'), (val) => {
       if (val === undefined) {
@@ -97,20 +98,22 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
   } = methods;
 
   const onSubmitForm = async (data: ConnectingValuesProps) => {
-    let newTmpNumbers: string[] = [...tmpUsedNumbers];
+    let newTmpNumbers: string[] = [];
 
     let newEntityMobile = getValues('entity_mobile');
     let newPhoneValues = getValues('phone');
-
-    newEntityMobile.substring(0, 4) !== '+966'
-      ? (newEntityMobile = '+966'.concat(`${getValues('entity_mobile')}`))
-      : (newEntityMobile = getValues('entity_mobile'));
-
-    newPhoneValues!.substring(0, 4) !== '+966'
-      ? (newPhoneValues = '+966'.concat(`${getValues('phone')}`))
-      : (newPhoneValues = getValues('phone'));
-    newTmpNumbers.push(newEntityMobile);
-    newTmpNumbers.push(newPhoneValues!);
+    if (!!newEntityMobile) {
+      newEntityMobile.substring(0, 4) !== '+966'
+        ? (newEntityMobile = '+966'.concat(`${getValues('entity_mobile')}`))
+        : (newEntityMobile = getValues('entity_mobile'));
+      newTmpNumbers.push(newEntityMobile);
+    }
+    if (!!newPhoneValues) {
+      newPhoneValues!.substring(0, 4) !== '+966'
+        ? (newPhoneValues = '+966'.concat(`${getValues('phone')}`))
+        : (newPhoneValues = getValues('phone'));
+      newTmpNumbers.push(newPhoneValues!);
+    }
     const payload: ConnectingValuesProps = {
       ...data,
       phone: newPhoneValues!,

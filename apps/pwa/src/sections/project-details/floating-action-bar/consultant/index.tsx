@@ -1,4 +1,4 @@
-import { Box, Stack, useTheme, Button } from '@mui/material';
+import { Box, Stack, useTheme, Button, MenuItem, Menu, Grid } from '@mui/material';
 import Iconify from 'components/Iconify';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
@@ -8,7 +8,7 @@ import { useNavigate, useParams } from 'react-router';
 import { useMutation } from 'urql';
 import { useSnackbar } from 'notistack';
 import { UpdateAction } from '../../../../@types/project-details';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import NotesModal from 'components/notes-modal';
 //
 import axiosInstance from 'utils/axios';
@@ -34,6 +34,18 @@ function ConsultantFloatingActionBar() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSubmittingRejected, setIsSubmittingRejected] = useState<boolean>(false);
   const [isSubmittingStepback, setIsSubmittingStepback] = useState<boolean>(false);
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleCloseModal = () => {
     setAction('');
@@ -225,7 +237,7 @@ function ConsultantFloatingActionBar() {
       >
         <Stack direction={{ sm: 'column', md: 'row' }} justifyContent="space-between">
           {/* disabled other than accept reject button */}
-          <Button
+          {/* <Button
             variant="contained"
             onClick={() => {
               setAction('STEP_BACK');
@@ -234,7 +246,59 @@ function ConsultantFloatingActionBar() {
             endIcon={<Iconify icon="eva:edit-2-outline" />}
           >
             {translate('submit_amendment_request')}
-          </Button>
+          </Button> */}
+          <Grid item md={2} xs={12}>
+            <LoadingButton
+              id="demo-positioned-button"
+              aria-controls={open ? 'demo-positioned-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? 'true' : undefined}
+              variant="contained"
+              endIcon={<Iconify icon="eva:edit-2-outline" />}
+              sx={{
+                flex: 1,
+                backgroundColor: '#0169DE',
+                '&:hover': { backgroundColor: '#1482FE' },
+              }}
+              onClick={handleClick}
+              loading={isSubmittingStepback}
+            >
+              {translate('partner_details.submit_amendment_request')}
+            </LoadingButton>
+            <Menu
+              id="demo-positioned-menu"
+              aria-labelledby="demo-positioned-button"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+            >
+              <MenuItem
+                disabled={true}
+                // onClick={() => {
+                //   navigate(`/project-manager/dashboard/amandment-request/${proposal_id}`);
+                //   handleClose();
+                // }}
+              >
+                {translate('proposal_amandement.button_label')}
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleClose();
+                  setAction('STEP_BACK');
+                }}
+              >
+                {translate('proposal_amandement.send_to_project_manager')}
+              </MenuItem>
+            </Menu>
+          </Grid>
           <Stack flexDirection={{ sm: 'column', md: 'row' }}>
             <LoadingButton
               variant="contained"

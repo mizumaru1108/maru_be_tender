@@ -155,7 +155,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
   // on submit for the fourth step
   const onSubmitform4 = async (data: any) => {
     // console.log('data form 4', data);
-    // setIsLoading(true);
+    setIsLoading(true);
     let newValue = { ...data };
     newValue = {
       ...newValue,

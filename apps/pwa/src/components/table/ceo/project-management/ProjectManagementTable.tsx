@@ -28,6 +28,7 @@ import { ProjectManagement, ProjectManagementTableProps } from './project-manage
 import ProjectManagementTableRow from './ProjectManagementRow';
 import { setTracks } from 'redux/slices/proposal';
 import { useDispatch, useSelector } from 'redux/store';
+import Scrollbar from 'components/Scrollbar';
 
 export default function ProjectManagementTable({
   data,
@@ -273,76 +274,78 @@ export default function ProjectManagementTable({
         </Box>
       )}
       {!isLoading && (
-        <TableContainer sx={{ minWidth: 800, position: 'relative' }}>
-          {selected.length > 0 && (
-            <TableSelectedActions
-              numSelected={selected.length}
-              rowCount={tableData.length}
-              onSelectAllRows={(checked) =>
-                onSelectAllRows(checked, tableData.map((row) => row.id) as string[])
-              }
-              actions={
-                <Tooltip title="Delete">
-                  <IconButton color="primary" onClick={() => setDeleteDialogOpen(true)}>
-                    <Iconify icon={'eva:trash-2-outline'} />
-                  </IconButton>
-                </Tooltip>
-              }
-            />
-          )}
-          <Table
-            size="medium"
-            sx={{ bgcolor: '#FFFFFF', borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
-          >
-            <TableHeadCustom
-              order={order}
-              orderBy={orderBy}
-              headLabel={headerCell}
-              rowCount={tableData.length}
-              onSort={onSort}
-              onSelectAllRows={(checked) =>
-                onSelectAllRows(checked, tableData.map((row) => row.id) as string[])
-              }
+        <Scrollbar>
+          <TableContainer sx={{ minWidth: 800, position: 'relative' }}>
+            {selected.length > 0 && (
+              <TableSelectedActions
+                numSelected={selected.length}
+                rowCount={tableData.length}
+                onSelectAllRows={(checked) =>
+                  onSelectAllRows(checked, tableData.map((row) => row.id) as string[])
+                }
+                actions={
+                  <Tooltip title="Delete">
+                    <IconButton color="primary" onClick={() => setDeleteDialogOpen(true)}>
+                      <Iconify icon={'eva:trash-2-outline'} />
+                    </IconButton>
+                  </Tooltip>
+                }
+              />
+            )}
+            <Table
+              size="medium"
+              sx={{ bgcolor: '#FFFFFF', borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
+            >
+              <TableHeadCustom
+                order={order}
+                orderBy={orderBy}
+                headLabel={headerCell}
+                rowCount={tableData.length}
+                onSort={onSort}
+                onSelectAllRows={(checked) =>
+                  onSelectAllRows(checked, tableData.map((row) => row.id) as string[])
+                }
+                sx={{
+                  minWidth: '100%',
+                  '& .MuiTableCell-root': {
+                    bgcolor: '#FFFFFF',
+                    borderRadius: 0,
+                  },
+                  '& .MuiTableCell-root:first-of-type, .MuiTableCell-root:last-of-type': {
+                    boxShadow: 'none !important',
+                  },
+                }}
+              />
+              <TableBody>
+                {data.length > 0 &&
+                  data
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((projectManagement, key) => (
+                      <ProjectManagementTableRow
+                        key={projectManagement.id}
+                        row={projectManagement}
+                        selected={selected.includes(projectManagement.id as string)}
+                        onSelectRow={() => onSelectRow(projectManagement.id as string)}
+                      />
+                    ))}
+              </TableBody>
+            </Table>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={dataFiltered.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={onChangePage}
+              onRowsPerPageChange={onChangeRowsPerPage}
               sx={{
-                minWidth: '100%',
-                '& .MuiTableCell-root': {
-                  bgcolor: '#FFFFFF',
-                  borderRadius: 0,
-                },
-                '& .MuiTableCell-root:first-of-type, .MuiTableCell-root:last-of-type': {
-                  boxShadow: 'none !important',
-                },
+                bgcolor: 'rgba(147, 163, 176, 0.16)',
+                borderBottomRightRadius: 10,
+                borderBottomLeftRadius: 10,
               }}
             />
-            <TableBody>
-              {data.length > 0 &&
-                data
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((projectManagement, key) => (
-                    <ProjectManagementTableRow
-                      key={projectManagement.id}
-                      row={projectManagement}
-                      selected={selected.includes(projectManagement.id as string)}
-                      onSelectRow={() => onSelectRow(projectManagement.id as string)}
-                    />
-                  ))}
-            </TableBody>
-          </Table>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={dataFiltered.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={onChangePage}
-            onRowsPerPageChange={onChangeRowsPerPage}
-            sx={{
-              bgcolor: 'rgba(147, 163, 176, 0.16)',
-              borderBottomRightRadius: 10,
-              borderBottomLeftRadius: 10,
-            }}
-          />
-        </TableContainer>
+          </TableContainer>
+        </Scrollbar>
       )}
       <Dialog
         open={deleteDialogOpen}

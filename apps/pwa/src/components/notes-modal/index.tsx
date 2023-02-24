@@ -5,6 +5,7 @@ import { FormProvider, RHFTextField, RHFSelect } from 'components/hook-form';
 import ModalDialog from 'components/modal-dialog';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
+import useLocales from 'hooks/useLocales';
 //
 import useAuth from 'hooks/useAuth';
 
@@ -30,13 +31,14 @@ interface FormInput {
 
 function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
   const { activeRole } = useAuth();
+  const { translate } = useLocales();
 
   const validationSchema = Yup.object().shape({
     ...(action.actionType === 'REJECT' &&
       ['tender_project_manager', 'tender_project_supervisor'].includes(activeRole!) && {
         reject_reason: Yup.string().required(),
       }),
-    notes: Yup.string(),
+    notes: Yup.string().required(translate('errors.notes')),
   });
 
   const defaultValues = {
@@ -112,6 +114,7 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
                 name="notes"
                 label="الملاحظات"
                 placeholder="اكتب ملاحظاتك هنا"
+                required
               />
             </Grid>
           </Grid>

@@ -100,6 +100,7 @@ const en = {
     },
   },
   errors: {
+    notes: 'Note is required',
     login: {
       email: {
         message: 'Email must be a valid email address',
@@ -361,6 +362,10 @@ const en = {
         amount: {
           message: 'Amount must be a positive number with no commas',
           required: 'Amount is required',
+        },
+        notes: {
+          message: '',
+          required: 'Notes is required',
         },
       },
     },
@@ -904,6 +909,7 @@ const en = {
 
   // TENDER_CEO PAGES
   rejection_list: 'Rejection List', // navigation
+  client_list: 'Client List', // navigation
   project_management: 'Project Management', // navigation
   project_management_table: {
     headline: 'Project Management',
@@ -1223,6 +1229,7 @@ const en = {
   },
 
   proposal_amandement: {
+    send_to_project_manager: 'Send the modification request to the project manager',
     button_label: 'send an edit request to Supervisor',
     forms: {
       notes: 'Notes on Order',
