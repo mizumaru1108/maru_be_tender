@@ -147,7 +147,6 @@ export class TenderProposalRepository {
     createLog: boolean,
   ): Promise<UpdateMyProposalResponseDto> {
     try {
-      throw new BadRequestException('debug');
       return await this.prismaService.$transaction(
         async (prisma) => {
           this.logger.log(
