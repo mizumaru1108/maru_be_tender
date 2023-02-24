@@ -408,7 +408,7 @@ export class TenderProposalRepository {
               user_role: TenderAppRoleEnum.PROJECT_SUPERVISOR,
               reviewer_id,
               action: ProposalAction.SEND_BACK_FOR_REVISION, //revised
-              state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
+              state: TenderAppRoleEnum.CLIENT,
               response_time: lastLog?.created_at
                 ? Math.round(
                     (new Date().getTime() - lastLog.created_at.getTime()) /

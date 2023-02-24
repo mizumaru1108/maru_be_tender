@@ -7,11 +7,10 @@ export class SendAmandementDto {
   @IsNotEmpty()
   proposal_id: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  notes?: string;
+  notes: string;
 
   @ApiPropertyOptional()
   @IsOptional()

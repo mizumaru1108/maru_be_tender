@@ -18,12 +18,6 @@ export class SendRevisionDto {
   @IsNotEmpty()
   proposal_id: string;
 
-  // @ApiPropertyOptional()
-  // @IsOptional()
-  // @IsString()
-  // @IsNotEmpty()
-  // notes?: string;
-
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
