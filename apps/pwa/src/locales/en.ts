@@ -999,6 +999,12 @@ const en = {
       section_za: 'Section (Z-A)',
       project_number_lowest: 'Project Number (Lowest)',
       project_number_highest: 'Project Number (Highest)',
+      client_name_az: 'Client Name (A-Z)',
+      client_name_za: 'Client Name (Z-A)',
+      email_az: 'Email (A-Z)',
+      email_za: 'Email (Z-A)',
+      governorate_az: 'Governorate (A-Z)',
+      governorate_za: 'Governorate (Z-A)',
     },
   },
 

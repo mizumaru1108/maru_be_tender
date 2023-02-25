@@ -95,53 +95,33 @@ export default function ClientListTable() {
   const sortOptions = [
     {
       value: 'entity asc',
-      title: 'Client Name (ASC)',
-      // title: translate('table_filter.sortby_options.date_created_oldest'),
+      // title: 'Client Name (ASC)',
+      title: translate('table_filter.sortby_options.client_name_az'),
     },
     {
       value: 'entity desc',
-      title: 'Client Name (DESC)',
-      // title: translate('table_filter.sortby_options.date_created_newest'),
-    },
-    {
-      value: 'data_entry_mobile asc',
-      title: 'Number Phone (ASC)',
-      // title: translate('table_filter.sortby_options.project_name_az'),
-    },
-    {
-      value: 'data_entry_mobile desc',
-      title: 'Number Phone (DESC)',
-      // title: translate('table_filter.sortby_options.project_name_za'),
+      // title: 'Client Name (DESC)',
+      title: translate('table_filter.sortby_options.client_name_za'),
     },
     {
       value: 'data_entry_mail asc',
-      title: 'Email (ASC)',
-      // title: translate('table_filter.sortby_options.association_name_az'),
+      // title: 'Email (ASC)',
+      title: translate('table_filter.sortby_options.email_az'),
     },
     {
       value: 'data_entry_mail desc',
-      title: 'Email (DESC)',
-      // title: translate('table_filter.sortby_options.association_name_za'),
+      // title: 'Email (DESC)',
+      title: translate('table_filter.sortby_options.email_za'),
     },
     {
       value: 'governorate asc',
-      title: 'governorate (ASC)',
-      // title: translate('table_filter.sortby_options.section_az'),
+      // title: 'governorate (ASC)',
+      title: translate('table_filter.sortby_options.governorate_az'),
     },
     {
       value: 'governorate desc',
-      title: 'governorate (DESC)',
-      // title: translate('table_filter.sortby_options.section_za'),
-    },
-    {
-      value: 'total_proposal asc',
-      title: 'Total Proposal (ASC)',
-      // title: translate('table_filter.sortby_options.project_number_lowest'),
-    },
-    {
-      value: 'total_proposal desc',
-      title: 'Total Proposal (DESC)',
-      // title: translate('table_filter.sortby_options.project_number_highest'),
+      // title: 'governorate (DESC)',
+      title: translate('table_filter.sortby_options.governorate_za'),
     },
   ];
 

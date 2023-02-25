@@ -947,6 +947,7 @@ const ar = {
 
   // TENDER_CEO PAGES
   rejection_list: 'قائمة الرفض', //navigation
+  client_list: 'قائمة العملاء', // navigation
   project_management: 'إدارة المشروع', //navigation
   project_management_table: {
     headline: 'إدارة المشروع',
@@ -1036,6 +1037,12 @@ const ar = {
       section_za: 'القسم (ي-أ)',
       project_number_lowest: 'رقم المشروع (الأقل)',
       project_number_highest: 'رقم المشروع (الأعلى)',
+      client_name_az: 'اسم العميل (أ-ي)',
+      client_name_za: 'اسم العميل (ي-أ)',
+      email_az: 'بريد إلكتروني (أ-ي)',
+      email_za: 'بريد إلكتروني (ي-أ)',
+      governorate_az: 'محافظة (أ-ي)',
+      governorate_za: 'محافظة (ي-أ)',
     },
   },
 

@@ -1,4 +1,4 @@
-export const allClientData = `query allClientData ($limit: Int = 10, $offset: Int = 0, $order_by: [client_data_order_by!] = {}) {
+export const allClientData = `query allClientData ($limit: Int = 10, $offset: Int = 0, $order_by: [client_data_order_by!] = {entity: "asc"}) {
   client_data (limit: $limit, offset: $offset, order_by: $order_by){
     id
     entity
