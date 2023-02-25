@@ -126,7 +126,7 @@ function ProjectPath() {
               </React.Fragment>
             ))
           ) : (
-            <Typography>Waiting review...</Typography>
+            <Typography>{translate('review.waiting')}</Typography>
           )}
           {stepUserRole !== 'PROJECT_SUPERVISOR' && (
             <React.Fragment>
@@ -142,7 +142,7 @@ function ProjectPath() {
                   </React.Fragment>
                 ))
               ) : (
-                <Typography>Waiting review...</Typography>
+                <Typography>{translate('review.waiting')}</Typography>
               )}
             </React.Fragment>
           )}

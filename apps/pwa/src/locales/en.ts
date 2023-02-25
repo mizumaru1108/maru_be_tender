@@ -917,6 +917,17 @@ const en = {
   rejection_list_table: {
     headline: 'Rejection List',
   },
+  client_list_table: {
+    headline: 'Client List',
+  },
+  client_list_headercell: {
+    client_name: 'Client Name',
+    number_phone: 'Number Phone',
+    email: 'Email',
+    governorate: 'Governorate',
+    total_proposal: 'Total Proposal',
+    events: 'Events',
+  },
   project_management_headercell: {
     project_number: 'Project Number',
     project_name: 'Project Name',
@@ -1345,6 +1356,7 @@ const en = {
     CLIENT: 'Client',
   },
   review: {
+    waiting: 'Waiting Review...',
     order_status: 'Order Status',
     notes: 'Notes',
     review_by_supervisor: 'Review by Supervisor',

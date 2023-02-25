@@ -954,6 +954,17 @@ const ar = {
   rejection_list_table: {
     headline: 'قائمة الرفض',
   },
+  client_list_table: {
+    headline: 'قائمة العملاء',
+  },
+  client_list_headercell: {
+    client_name: 'اسم العميل',
+    number_phone: 'رقم الهاتف',
+    email: 'بريد إلكتروني',
+    governorate: 'محافظة',
+    total_proposal: 'إجمالي الاقتراح',
+    events: 'الاحداث',
+  },
   project_management_headercell: {
     project_number: 'رقم المشروع',
     project_name: 'اسم المشروع',
@@ -1390,6 +1401,7 @@ const ar = {
     CLIENT: 'عميل',
   },
   review: {
+    waiting: 'بانتظار المراجعة',
     order_status: 'حالة الطلب',
     notes: 'ملحوظة',
     review_by_supervisor: 'مراجعة من قبل المشرف',
@@ -1423,7 +1435,7 @@ const ar = {
     },
     action: {
       accept: 'يقبل',
-      reject: 'يرفض',
+      reject: 'تم الرفض',
       step_back: 'أرسل مرة أخرى',
       send_back_for_revision: 'أرسل مرة أخرى للمراجعة',
       study_again: 'ادرس مجددا',
@@ -1436,7 +1448,7 @@ const ar = {
   number_of_beneficiaries_of_the_project: 'عدد المستفيدين من المشروع:',
   implementation_period: 'مدة التنفيذ:',
   target_group_type: 'نوع الفئة المستهدفة:',
-  support_type: 'نوع الدعم:',
+  support_type: 'مبلغ الدعم:',
   full_support: 'دعم كامل',
   partial_support: 'دعم جزئي',
   with: 'مع',
@@ -1540,7 +1552,7 @@ const ar = {
     supervisor: 'مشرف',
     cahsier: 'أمين الصندوق',
     finance: 'المالية',
-    moderator: 'الوسيط',
+    moderator: 'العميل',
     project_manager: 'مدير المشروع',
     project_supervisor: 'مشرف',
     ceo: 'المدير التنفيذي',

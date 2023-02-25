@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 // @mui
 import {
   Box,
+  Button,
   Card,
+  MenuItem,
+  Select,
+  Stack,
   Table,
   TableBody,
   TableContainer,
@@ -20,31 +24,32 @@ import { ClientsList } from './types';
 import ClientListRow from './ClientListRow';
 import { allClientData } from 'queries/ceo/getAllClientsData';
 import TableSkeleton from '../../TableSkeleton';
+import Iconify from 'components/Iconify';
 
 const TABLE_HEAD = [
-  { id: 'id', label: 'Client ID' },
+  { id: 'entity', label: 'client_list_headercell.client_name' },
   {
-    id: 'entity',
-    label: 'project_management_headercell.association_name',
+    id: 'data_entry_mobile',
+    label: 'client_list_headercell.number_phone',
     align: 'left',
   },
   {
     id: 'data_entry_mail',
-    label: 'Email',
+    label: 'client_list_headercell.email',
     align: 'left',
   },
   {
-    id: 'data_entry_mobile',
-    label: 'Mobile Number',
+    id: 'governorate',
+    label: 'client_list_headercell.governorate',
     align: 'left',
   },
   {
-    id: 'created_at',
-    label: 'project_management_headercell.date_created',
+    id: 'total_proposal',
+    label: 'client_list_headercell.total_proposal',
     align: 'left',
     flexWrap: 'nowrap',
   },
-  { id: 'events', label: 'project_management_headercell.events', align: 'left' },
+  { id: 'events', label: 'client_list_headercell.events', align: 'left' },
 ];
 
 export default function ClientListTable() {
@@ -66,13 +71,14 @@ export default function ClientListTable() {
   } = useTable();
 
   const { translate } = useLocales();
+  const [sortOrder, setSortOrder] = useState<any>({ entity: 'asc' });
 
   const [{ data, fetching, error }, mutate] = useQuery({
     query: allClientData,
     variables: {
       limit: rowsPerPage,
       offset: page * rowsPerPage,
-      // order_by: orderBy,
+      order_by: sortOrder,
     },
   });
 
@@ -83,6 +89,61 @@ export default function ClientListTable() {
   const [filterRole, setFilterRole] = useState('all');
 
   const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } = useTabs('all');
+
+  const [sortValue, setSortValue] = useState<string>('entity asc');
+
+  const sortOptions = [
+    {
+      value: 'entity asc',
+      title: 'Client Name (ASC)',
+      // title: translate('table_filter.sortby_options.date_created_oldest'),
+    },
+    {
+      value: 'entity desc',
+      title: 'Client Name (DESC)',
+      // title: translate('table_filter.sortby_options.date_created_newest'),
+    },
+    {
+      value: 'data_entry_mobile asc',
+      title: 'Number Phone (ASC)',
+      // title: translate('table_filter.sortby_options.project_name_az'),
+    },
+    {
+      value: 'data_entry_mobile desc',
+      title: 'Number Phone (DESC)',
+      // title: translate('table_filter.sortby_options.project_name_za'),
+    },
+    {
+      value: 'data_entry_mail asc',
+      title: 'Email (ASC)',
+      // title: translate('table_filter.sortby_options.association_name_az'),
+    },
+    {
+      value: 'data_entry_mail desc',
+      title: 'Email (DESC)',
+      // title: translate('table_filter.sortby_options.association_name_za'),
+    },
+    {
+      value: 'governorate asc',
+      title: 'governorate (ASC)',
+      // title: translate('table_filter.sortby_options.section_az'),
+    },
+    {
+      value: 'governorate desc',
+      title: 'governorate (DESC)',
+      // title: translate('table_filter.sortby_options.section_za'),
+    },
+    {
+      value: 'total_proposal asc',
+      title: 'Total Proposal (ASC)',
+      // title: translate('table_filter.sortby_options.project_number_lowest'),
+    },
+    {
+      value: 'total_proposal desc',
+      title: 'Total Proposal (DESC)',
+      // title: translate('table_filter.sortby_options.project_number_highest'),
+    },
+  ];
 
   const handleFilterName = (filterName: string) => {
     setFilterName(filterName);
@@ -108,6 +169,14 @@ export default function ClientListTable() {
     (!dataFiltered.length && !!filterRole) ||
     (!dataFiltered.length && !!filterStatus);
 
+  const handleSortData = (event: any) => {
+    const { value } = event.target;
+    setSortValue(event.target.value as string);
+    const [key, order] = value.split(' ');
+    const newOrder = { [key]: order };
+    setSortOrder(newOrder);
+  };
+
   useEffect(() => {
     if (data?.client_data) {
       setTableData(
@@ -116,7 +185,9 @@ export default function ClientListTable() {
           entity: item.entity,
           data_entry_mail: item.data_entry_mail,
           data_entry_mobile: item.data_entry_mobile,
-          created_at: item.created_at,
+          governorate: item.governorate,
+          user_id: item.user_id,
+          total_proposal: item.user.proposals_aggregate.aggregate.count,
         }))
       );
       setTotal(data.total.aggregate.count as number);
@@ -129,15 +200,50 @@ export default function ClientListTable() {
 
   if (error) return <>...Opss, something went wrong</>;
 
-  console.log({ data, tableData });
-
   return (
     <Box>
       <Typography variant="h3" gutterBottom sx={{ marginBottom: '50px' }}>
-        {/* {translate('rejection_list_table.headline')} */}
-        CLIENT LIST
+        {translate('client_list_table.headline')}
       </Typography>
-      <Card sx={{ backgroundColor: '#fff' }}>
+      <Box>
+        <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2}>
+          <Box display="flex" alignItems="center">
+            <Typography variant="body2" sx={{ fontSize: '14px', color: 'grey.600' }}>
+              {translate('table_filter.sortby_title')} &nbsp;
+            </Typography>
+            <Select
+              value={sortValue}
+              onChange={handleSortData}
+              size="small"
+              sx={{ fontSize: '14px', width: 200 }}
+            >
+              {sortOptions.map((item) => (
+                <MenuItem key={item.value} value={item.value}>
+                  {item.title}
+                </MenuItem>
+              ))}
+            </Select>
+          </Box>
+          <Box>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: 'black',
+                color: 'white',
+                p: 1,
+                '&:hover': {
+                  backgroundColor: 'black',
+                  color: 'white',
+                },
+              }}
+            >
+              {translate('commons.filter_button_label')}
+              <Iconify icon="bx:bx-filter-alt" sx={{ ml: 1 }} />
+            </Button>
+          </Box>
+        </Stack>
+      </Box>
+      <Card sx={{ backgroundColor: '#fff', mt: 2 }}>
         <Scrollbar>
           <TableContainer sx={{ minWidth: 800, position: 'relative' }}>
             <Table size={dense ? 'small' : 'medium'}>
@@ -151,7 +257,7 @@ export default function ClientListTable() {
                 onSelectAllRows={(checked) =>
                   onSelectAllRows(
                     checked,
-                    tableData.map((row) => row.id)
+                    tableData.map((row) => row?.user_id)
                   )
                 }
               />
@@ -161,10 +267,10 @@ export default function ClientListTable() {
                   ? [...Array(rowsPerPage)].map((item, index) => <TableSkeleton key={index} />)
                   : dataFiltered.map((row) => (
                       <ClientListRow
-                        key={row.id}
+                        key={row.user_id}
                         row={row}
-                        selected={selected.includes(row.id)}
-                        onSelectRow={() => onSelectRow(row.id)}
+                        selected={selected.includes(row?.user_id)}
+                        onSelectRow={() => onSelectRow(row?.user_id)}
                       />
                     ))}
 

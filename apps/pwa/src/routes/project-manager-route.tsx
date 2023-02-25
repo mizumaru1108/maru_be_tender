@@ -4,6 +4,7 @@ import DashboardLayout from '../layouts/dashboard';
 import AuthGuard from 'guards/AuthGuard';
 import RoleBasedGuard from 'guards/RoleBasedGuard';
 import { Loadable } from './Loadable';
+import CeoClientListPage from 'pages/ceo/CeoClientListPage';
 
 const MainProjectManager = Loadable(lazy(() => import('pages/project-manager/MainPage')));
 const IncomingFundingRequestsProjectManager = Loadable(
@@ -76,7 +77,7 @@ export const projectManagerRoute = {
           children: [
             { path: ':id/:actionType', element: <ProjectDetails /> },
 
-            { path: ':id/owner/:submiterId', element: <ProjectOwnerDetails /> },
+            { path: 'owner/:submiterId', element: <ProjectOwnerDetails /> },
           ],
         },
         {
@@ -104,6 +105,19 @@ export const projectManagerRoute = {
             {
               path: ':id/:actionType',
               element: <ProjectDetails />,
+            },
+          ],
+        },
+        {
+          path: 'client-list',
+          children: [
+            {
+              path: '',
+              element: <CeoClientListPage />,
+            },
+            {
+              path: 'owner/:submiterId',
+              element: <ProjectOwnerDetails />,
             },
           ],
         },

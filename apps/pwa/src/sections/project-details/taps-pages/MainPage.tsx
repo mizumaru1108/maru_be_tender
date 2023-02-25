@@ -85,7 +85,7 @@ function MainPage() {
     const url = location.pathname.split('/').slice(0, 3).join('/');
     // const destination = location.pathname.split('/').slice(3, 4).join('/');
     // const url = location.pathname;
-    navigate(`${url}/current-project/${id}/owner/${submiterId}`);
+    navigate(`${url}/current-project/owner/${submiterId}`);
     // console.log({ url, destination });
   };
   // console.log('tmpValues', tmpValues);

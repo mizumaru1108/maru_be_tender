@@ -1,9 +1,10 @@
 export type ClientsList = {
-  id: string;
+  id?: string;
+  governorate: string;
   entity: string;
   data_entry_mail: string;
   data_entry_mobile: string;
-  created_at: Date;
+  total_proposal: number;
   user_id: string;
 };
 

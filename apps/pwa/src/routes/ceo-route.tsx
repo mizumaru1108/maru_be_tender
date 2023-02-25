@@ -123,7 +123,7 @@ export const ceoRoute = {
               element: <CeoClientListPage />,
             },
             {
-              path: ':id/owner/:submiterId',
+              path: 'owner/:submiterId',
               element: <ProjectOwnerDetails />,
             },
           ],

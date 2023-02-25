@@ -4,7 +4,7 @@ import Iconify from 'components/Iconify';
 import useLocales from 'hooks/useLocales';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import CardTableBE from '../../../components/card-table/CardTableBE';
-import { getProposals } from '../../../queries/commons/getProposal';
+import { getOwnerProposals } from '../../../queries/commons/getProposal';
 import SummaryClientInfo from './SummaryClientInfo';
 import { ProjectOwnerDetails } from '../../../@types/project-details';
 import moment from 'moment';
@@ -82,7 +82,7 @@ function ProjectOwnerDetailsMainPage() {
       <SummaryClientInfo dataClient={userInfo} />
       <Divider sx={{ marginTop: '30px' }} />
       <CardTableBE
-        resource={getProposals}
+        resource={getOwnerProposals}
         title={translate('project_owner_details.table_title') + userInfo.entity}
         cardFooterButtonAction="show-project"
         destination={destination as any}

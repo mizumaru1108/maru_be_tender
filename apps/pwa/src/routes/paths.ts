@@ -40,6 +40,7 @@ export const PATH_ADMIN = {
   beneficiaries: path(ROOTS_ADMIN, '/dashboard/beneficiaries'),
   portal_reports: path(ROOTS_ADMIN, '/dashboard/portal-reports'),
   messages: path(ROOTS_ADMIN, '/dashboard/messages'),
+  client_list: path(ROOTS_ADMIN, '/dashboard/client-list'),
 };
 export const PATH_CLIENT = {
   root: ROOTS_CLIENT,
@@ -105,6 +106,7 @@ export const PATH_PROJECT_MANAGER = {
   messages: path(ROOTS_PROJECT_MANAGER, '/dashboard/messages'),
   appointments_with_partners: path(ROOTS_PROJECT_MANAGER, '/dashboard/appointments-with-partners'),
   rejection_list: path(ROOTS_PROJECT_MANAGER, '/dashboard/rejection-list'),
+  client_list: path(ROOTS_PROJECT_MANAGER, '/dashboard/client-list'),
 };
 
 export const PATH_MODERATOR = {

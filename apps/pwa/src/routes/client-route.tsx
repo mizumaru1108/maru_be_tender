@@ -73,8 +73,7 @@ export const clientRoute = {
           children: [
             { path: ':id/:actionType', element: <ProjectDetails /> },
 
-            { path: ':id/owner/:submiterId', element: <ProjectOwnerDetails /> },
-            // { path: ':id/owner/:submiterId/:detailType', element: <ProjectOwnerDetails /> },
+            { path: 'owner/:submiterId', element: <ProjectOwnerDetails /> },
           ],
         },
         {

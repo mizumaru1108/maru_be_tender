@@ -16,17 +16,7 @@ export default function ClientListTableRow({ row, selected, onSelectRow }: Clien
       </TableCell>
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
-          {row.id}
-        </Typography>
-      </TableCell>
-      <TableCell align="left">
-        <Typography variant="subtitle2" noWrap>
           {row.entity}
-        </Typography>
-      </TableCell>
-      <TableCell align="left">
-        <Typography variant="subtitle2" noWrap>
-          {row.data_entry_mail}
         </Typography>
       </TableCell>
       <TableCell align="left">
@@ -36,18 +26,28 @@ export default function ClientListTableRow({ row, selected, onSelectRow }: Clien
       </TableCell>
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
-          {new Date(row.created_at).toISOString().substring(0, 10)}
+          {row.data_entry_mail}
+        </Typography>
+      </TableCell>
+      <TableCell align="left">
+        <Typography variant="subtitle2" noWrap>
+          {row.governorate}
+        </Typography>
+      </TableCell>
+      <TableCell align="left">
+        <Typography variant="subtitle2" noWrap>
+          {row.total_proposal}
         </Typography>
       </TableCell>
       <TableCell align="left">
         <Button
-          // onClick={() => {
-          //   navigate(
-          //     `/${activeRole === 'tender_ceo' ? 'ceo' : 'project-manager'}/dashboard/client-list/${
-          //       row.id
-          //     }/owner/${row.user_id}`
-          //   );
-          // }}
+          onClick={() => {
+            navigate(
+              `/${
+                activeRole === 'tender_ceo' ? 'ceo' : 'project-manager'
+              }/dashboard/client-list/owner/${row.user_id}`
+            );
+          }}
           size="small"
           variant="contained"
           sx={{ backgroundColor: '#0E8478', color: 'white' }}

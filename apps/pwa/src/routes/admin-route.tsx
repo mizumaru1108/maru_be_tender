@@ -4,6 +4,8 @@ import DashboardLayout from '../layouts/dashboard';
 import AuthGuard from 'guards/AuthGuard';
 import RoleBasedGuard from 'guards/RoleBasedGuard';
 import { Loadable } from './Loadable';
+import CeoClientListPage from 'pages/ceo/CeoClientListPage';
+import ProjectOwnerDetails from 'pages/project-details/ProjectOwnerDetails';
 
 const Main = Loadable(lazy(() => import('pages/admin/MainPage')));
 const TransactionProgression = Loadable(lazy(() => import('pages/admin/TransactionProgression')));
@@ -76,6 +78,19 @@ export const adminRoute = {
         { path: 'mobile-settings', element: <MobileSettings /> },
         { path: 'system-messages', element: <SystemMessages /> },
         { path: 'system-configuration', element: <SystemConfiguration /> },
+        {
+          path: 'client-list',
+          children: [
+            {
+              path: '',
+              element: <CeoClientListPage />,
+            },
+            {
+              path: 'owner/:submiterId',
+              element: <ProjectOwnerDetails />,
+            },
+          ],
+        },
         {
           path: 'users-and-permissions',
           children: [

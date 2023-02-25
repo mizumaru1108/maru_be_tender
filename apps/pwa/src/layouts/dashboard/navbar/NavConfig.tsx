@@ -328,6 +328,11 @@ const navConfig = {
           icon: ICONS.tender_project_manager.previous_funding_requests,
         },
         {
+          title: 'client_list',
+          path: PATH_PROJECT_MANAGER.client_list,
+          icon: ICONS.tender_ceo.client_list,
+        },
+        {
           title: 'rejection_list',
           path: PATH_PROJECT_MANAGER.rejection_list,
           icon: ICONS.tender_ceo.rejection_list,
@@ -514,6 +519,11 @@ const navConfig = {
           title: 'system_configuration',
           path: PATH_ADMIN.system_configuration,
           icon: ICONS.tender_admin.system_configuration,
+        },
+        {
+          title: 'client_list',
+          path: PATH_ADMIN.client_list,
+          icon: ICONS.tender_admin.users_and_permissions,
         },
         {
           title: 'users_and_permissions',

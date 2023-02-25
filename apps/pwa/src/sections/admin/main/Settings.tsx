@@ -8,6 +8,7 @@ const data = [
   { name: 'application-and-admission-settings', title: 'إعدادات التقديم والقبول' },
   { name: 'mobile-settings', title: 'إعدادات الجوال' },
   { name: 'system-messages', title: 'رسائل النظام' },
+  { name: 'client-list', title: 'قائمة العملاء' },
   { name: 'users-and-permissions', title: 'المستخدمين والصلاحيات' },
   { name: 'authority', title: 'الجهة المشرفة' },
   { name: 'entity-area', title: 'مجال الجهة' },
