@@ -7,6 +7,7 @@
 
 const ar = {
   pages: {
+    options_btn: 'أكثر',
     common: {
       messages: 'الرسائل',
       portal_reports: 'تقارير الموقع',
@@ -1142,17 +1143,31 @@ const ar = {
         account_status: 'حالة الحساب',
         request_status: 'حالة الطلب',
         events: 'الاحداث',
+        actions: 'أجراءات',
+        more_actions: 'المزيد من الإجراءات',
       },
       td: {
         btn_account_review: 'استعراض الحساب',
         btn_view_partner_projects: 'عرض تفاصيل الحساب',
-        label_waiting_activation: 'بانتظار التفعيل',
         btn_view_edit_request: 'عرض طلب تعديل الشريك',
+        label_waiting_activation: 'بانتظار التفعيل',
         label_active_account: 'حساب مفعل',
         label_canceled_account: 'حساب ملغى',
+        label_rejected_account: 'حساب مرفوض',
         label_pending: 'قيد الانتظار',
         label_approved: 'مقبول',
         label_rejected: 'مرفوض',
+        label_client_profile: 'صفحة الزبون الشخصية',
+        label_reset_password: 'إعادة تعيين كلمة المرور',
+        label_deactivate_account: 'تعطيل الحساب',
+        label_question_deactivate: 'هل أنت متأكد من إلغاء تنشيط الحساب لـ',
+        label_question_reset_password: 'هل أنت متأكد من إرسال إعادة تعيين كلمة المرور إلى',
+        label_question_information:
+          'نظرًا للمشروع الجاري على هذا الحساب ، لا يمكنك إلغاء تنشيط هذا الحساب',
+        label_btn_acc_reset_password: 'نعم ، أرسل إعادة تعيين كلمة المرور',
+        label_btn_acc_deactivate_account: 'نعم ، حساب معطل',
+        label_btn_acc_information: 'العودة إلى الصفحة الرئيسية',
+        label_cancel: 'يلغي',
       },
     },
     accept_project: 'قبول المشروع',

@@ -9,6 +9,7 @@ export type IPropsTablesList = {
   update_status?: boolean | false;
   status_id?: string | null;
   user?: userTypes | null;
+  email?: string | null;
 };
 type userTypes = {
   client_data?: {

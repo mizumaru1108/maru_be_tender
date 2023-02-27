@@ -1,16 +1,32 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { useState } from 'react';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { TableRow, Checkbox, TableCell, Typography, Button } from '@mui/material';
+import {
+  TableRow,
+  Checkbox,
+  TableCell,
+  Typography,
+  Button,
+  IconButton,
+  Tooltip,
+  Menu,
+  MenuItem,
+} from '@mui/material';
 // components
 import Label from '../Label';
 import Iconify from '../Iconify';
+import { LoadingButton } from '@mui/lab';
+import ConfirmationModals from 'components/confirmation-modals';
 // hooks
 import { IPropsTablesList } from './type';
 import moment from 'moment';
 import useLocales from 'hooks/useLocales';
+import useAuth from 'hooks/useAuth';
 import { PATH_ACCOUNTS_MANAGER } from 'routes/paths';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
+import axiosInstance from 'utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -24,113 +40,271 @@ type Props = {
   editRequest?: boolean;
 };
 
+type UserStatus =
+  | 'WAITING_FOR_ACTIVATION'
+  | 'SUSPENDED_ACCOUNT'
+  | 'CANCELED_ACCOUNT'
+  | 'ACTIVE_ACCOUNT'
+  | 'REVISED_ACCOUNT'
+  | 'WAITING_FOR_EDITING_APPROVAL';
+
+interface ChangeStatusRequest {
+  status: UserStatus;
+  user_id: string;
+}
+
+// ----------------------------------------------------------------------
+
 export default function ProductTableRow({ row, selected, onSelectRow, editRequest }: Props) {
   const theme = useTheme();
   const { translate } = useLocales();
   const navigate = useNavigate();
-  // console.log({ editRequest });
+  const location = useLocation();
+  const { enqueueSnackbar } = useSnackbar();
+  const { activeRole } = useAuth();
 
-  const { partner_name, createdAt, account_status, events, update_status, id, status_id, user } =
-    row;
+  const [action, setAction] = useState('');
+
+  const url = location.pathname.split('/').slice(0, 3).join('/');
+
+  // Menu item
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const openMenuItem = Boolean(anchorEl);
+  const [isSubmitting, setIsSubimitting] = useState<boolean>(false);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleCloseModal = () => {
+    setAction('');
+  };
+
+  const handleChangeStatus = async (
+    id: string,
+    status: 'ACTIVE_ACCOUNT' | 'SUSPENDED_ACCOUNT' | 'CANCELED_ACCOUNT'
+  ) => {
+    setIsSubimitting(true);
+
+    try {
+      // await axiosInstance.patch<ChangeStatusRequest, any>(
+      //   '/tender-user/update-status',
+      //   {
+      //     status: status,
+      //     user_id: id,
+      //   } as ChangeStatusRequest,
+      //   {
+      //     headers: { 'x-hasura-role': activeRole! },
+      //   }
+      // );
+
+      let notif = '';
+      if (status === 'ACTIVE_ACCOUNT') {
+        notif = 'account_manager.partner_details.notification.activate_account';
+      } else if (status === 'SUSPENDED_ACCOUNT') {
+        notif = 'account_manager.partner_details.notification.disabled_account';
+      } else if (status === 'CANCELED_ACCOUNT') {
+        notif = 'account_manager.partner_details.notification.deleted_account';
+      }
+
+      console.log({
+        status: status,
+        user_id: id,
+      } as ChangeStatusRequest);
+
+      setIsSubimitting(false);
+      enqueueSnackbar(`${translate(notif)}`, {
+        variant: 'success',
+      });
+      handleClose();
+      handleCloseModal();
+    } catch (err) {
+      setIsSubimitting(false);
+      enqueueSnackbar(
+        `${err.statusCode < 500 && err.message ? err.message : 'something went wrong!'}`,
+        {
+          variant: 'error',
+        }
+      );
+      handleClose();
+      handleCloseModal();
+      console.log(err);
+    }
+  };
+
+  const {
+    partner_name,
+    createdAt,
+    account_status,
+    events,
+    update_status,
+    id,
+    status_id,
+    user,
+    email,
+  } = row;
   return (
-    <TableRow hover selected={selected}>
-      {!editRequest && (
-        <TableCell padding="checkbox">
-          <Checkbox checked={selected} onClick={onSelectRow} />
+    <React.Fragment>
+      <TableRow hover selected={selected}>
+        {!editRequest && (
+          <TableCell padding="checkbox">
+            <Checkbox checked={selected} onClick={onSelectRow} />
+          </TableCell>
+        )}
+        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+          <Typography variant="subtitle2" noWrap>
+            {editRequest && user?.client_data?.entity}
+            {partner_name}
+          </Typography>
         </TableCell>
-      )}
-      <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Typography variant="subtitle2" noWrap>
-          {editRequest && user?.client_data?.entity}
-          {partner_name}
-        </Typography>
-      </TableCell>
-      <TableCell>{moment(createdAt).format('DD-MM-YYYY')}</TableCell>
-      <TableCell align="left">
-        <Label
-          variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
-          color={
-            (((!account_status && !editRequest) ||
-              account_status === 'WAITING_FOR_ACTIVATION' ||
-              account_status === 'REVISED_ACCOUNT') &&
-              !editRequest &&
-              'warning') ||
-            (account_status === 'ACTIVE_ACCOUNT' && !editRequest && 'success') ||
-            (editRequest && status_id === 'PENDING' && 'warning') ||
-            (editRequest && status_id === 'APPROVED' && 'success') ||
-            (editRequest && status_id === 'REJECTED' && 'error') ||
-            'error'
-          }
-          sx={{ textTransform: 'capitalize' }}
-        >
-          {(account_status === 'ACTIVE_ACCOUNT' &&
-            !editRequest &&
-            translate('account_manager.table.td.label_active_account')) ||
-            ((account_status === 'WAITING_FOR_ACTIVATION' ||
-              account_status === 'REVISED_ACCOUNT') &&
-              !editRequest &&
-              translate('account_manager.table.td.label_waiting_activation')) ||
-            (account_status !== 'waiting' &&
-              !editRequest &&
-              account_status !== 'approved' &&
-              translate('account_manager.table.td.label_canceled_account'))}
-          {(editRequest &&
-            status_id === 'PENDING' &&
-            translate('account_manager.table.td.label_pending')) ||
-            (editRequest &&
-              status_id === 'APPROVED' &&
-              translate('account_manager.table.td.label_approved')) ||
-            (editRequest &&
-              status_id === 'REJECTED' &&
-              translate('account_manager.table.td.label_rejected'))}
-        </Label>
-      </TableCell>
-      {update_status ? (
+        <TableCell>{moment(createdAt).format('DD-MM-YYYY')}</TableCell>
         <TableCell align="left">
-          <Button
-            onClick={() =>
-              editRequest
-                ? navigate(
-                    PATH_ACCOUNTS_MANAGER.partnerEditProfileDetails(
-                      id as string,
-                      status_id as string
-                    )
-                  )
-                : navigate(PATH_ACCOUNTS_MANAGER.partnerDetails(id as string))
+          <Label
+            variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
+            color={
+              (((!account_status && !editRequest) ||
+                account_status === 'WAITING_FOR_ACTIVATION' ||
+                account_status === 'REVISED_ACCOUNT') &&
+                !editRequest &&
+                'warning') ||
+              (account_status === 'ACTIVE_ACCOUNT' && !editRequest && 'success') ||
+              (editRequest && status_id === 'PENDING' && 'warning') ||
+              (editRequest && status_id === 'APPROVED' && 'success') ||
+              (editRequest && status_id === 'REJECTED' && 'error') ||
+              'error'
             }
-            color="inherit"
-            variant="outlined"
-            size="medium"
+            sx={{ textTransform: 'capitalize' }}
           >
-            {editRequest
-              ? translate('account_manager.table.td.btn_view_edit_request')
-              : translate('account_manager.table.td.btn_view_partner_projects')}
-            <Iconify icon={'bx:briefcase'} width={20} height={20} sx={{ ml: 1 }} />
-          </Button>
+            {!editRequest
+              ? (account_status === 'ACTIVE_ACCOUNT' &&
+                  translate('account_manager.table.td.label_active_account')) ||
+                ((account_status === 'WAITING_FOR_ACTIVATION' ||
+                  account_status === 'REVISED_ACCOUNT') &&
+                  translate('account_manager.table.td.label_waiting_activation')) ||
+                (account_status !== 'WAITING_FOR_ACTIVATION' &&
+                account_status !== 'ACTIVE_ACCOUNT' &&
+                account_status === 'CANCELED_ACCOUNT'
+                  ? translate('account_manager.table.td.label_canceled_account')
+                  : translate('account_manager.table.td.label_rejected_account'))
+              : (status_id === 'PENDING' && translate('account_manager.table.td.label_pending')) ||
+                (status_id === 'APPROVED' &&
+                  translate('account_manager.table.td.label_approved')) ||
+                (status_id === 'REJECTED' && translate('account_manager.table.td.label_rejected'))}
+          </Label>
         </TableCell>
-      ) : (
         <TableCell align="left">
-          <Button
-            onClick={() =>
-              editRequest
-                ? navigate(
-                    PATH_ACCOUNTS_MANAGER.partnerEditProfileDetails(
-                      id as string,
-                      status_id as string
-                    )
-                  )
-                : navigate(PATH_ACCOUNTS_MANAGER.partnerDetails(id as string))
-            }
-            color="inherit"
-            size="small"
-          >
-            {editRequest
-              ? translate('account_manager.table.td.btn_view_edit_request')
-              : translate('account_manager.table.td.btn_view_partner_projects')}
-            <Iconify icon={'eva:eye-outline'} width={20} height={20} sx={{ ml: 1 }} />
-          </Button>
+          {editRequest ? (
+            <Button
+              onClick={() => {
+                navigate(
+                  PATH_ACCOUNTS_MANAGER.partnerEditProfileDetails(id as string, status_id as string)
+                );
+              }}
+              color="inherit"
+              variant="outlined"
+              size="medium"
+              endIcon={<Iconify icon={'bx:briefcase'} width={20} height={20} />}
+            >
+              {translate('account_manager.table.td.btn_view_edit_request')}
+            </Button>
+          ) : (
+            <React.Fragment>
+              <LoadingButton
+                color="inherit"
+                variant="outlined"
+                size="medium"
+                endIcon={<Iconify icon={'eva:eye-outline'} width={20} height={20} />}
+                aria-controls={openMenuItem ? 'basic-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={openMenuItem ? 'true' : undefined}
+                onClick={handleClick}
+                loading={isSubmitting}
+              >
+                {translate('account_manager.table.td.btn_account_review')}
+              </LoadingButton>
+              <Menu
+                id="menuItemList"
+                anchorEl={anchorEl}
+                open={openMenuItem}
+                onClose={handleClose}
+                MenuListProps={{
+                  'aria-labelledby': 'long-button',
+                }}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+                PaperProps={{
+                  style: {
+                    borderRadius: 2,
+                  },
+                }}
+              >
+                <MenuItem
+                  onClick={() => {
+                    navigate(`${url}/partner/owner/${id as string}`);
+                  }}
+                >
+                  <Iconify icon={'eva:person-outline'} width={20} height={20} sx={{ mr: 1 }} />
+                  <Typography variant="subtitle2">
+                    {translate('account_manager.table.td.label_client_profile')}
+                  </Typography>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setAction('RESET_PASSWORD');
+                    handleClose();
+                  }}
+                >
+                  <Iconify icon={'eva:edit-2-outline'} width={18} height={18} sx={{ mr: 1 }} />
+                  <Typography variant="subtitle2">
+                    {translate('account_manager.table.td.label_reset_password')}
+                  </Typography>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setAction('DEACTIVATE_ACCOUNT');
+                    handleClose();
+                  }}
+                >
+                  <Iconify icon={'eva:slash-outline'} width={16} height={16} sx={{ mr: 1 }} />
+                  <Typography variant="subtitle2">
+                    {translate('account_manager.table.td.label_deactivate_account')}
+                  </Typography>
+                </MenuItem>
+              </Menu>
+            </React.Fragment>
+          )}
         </TableCell>
-      )}
-    </TableRow>
+
+        {action === 'DEACTIVATE_ACCOUNT' && (
+          <ConfirmationModals
+            type="DEACTIVATE_ACCOUNT"
+            onSubmit={() => handleChangeStatus(id as string, 'SUSPENDED_ACCOUNT')}
+            onClose={handleCloseModal}
+            partner_name={partner_name!}
+            loading={isSubmitting}
+          />
+        )}
+
+        {action === 'RESET_PASSWORD' && (
+          <ConfirmationModals
+            type="RESET_PASSWORD"
+            onSubmit={() =>
+              console.log({
+                id,
+                partner_name,
+                email,
+              })
+            }
+            onClose={handleCloseModal}
+            partner_name={partner_name!}
+            loading={isSubmitting}
+          />
+        )}
+      </TableRow>
+    </React.Fragment>
   );
 }

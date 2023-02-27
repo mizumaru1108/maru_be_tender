@@ -33,14 +33,14 @@ const TABLE_HEAD = [
   { id: 'partner_name', label: 'account_manager.table.th.partner_name' },
   { id: 'createdAt', label: 'account_manager.table.th.createdAt' },
   { id: 'account_status', label: 'account_manager.table.th.account_status', align: 'left' },
-  { id: 'events', label: 'account_manager.table.th.events', align: 'left' },
+  { id: 'events', label: 'account_manager.table.th.actions', align: 'left' },
   // { id: '', label: '', align: 'center' },
 ];
 const TABLE_HEAD_EDIT = [
   { id: 'partner_name', label: 'account_manager.table.th.partner_name' },
   { id: 'createdAt', label: 'account_manager.table.th.createdAt' },
   { id: 'account_edit', label: 'account_manager.table.th.request_status', align: 'left' },
-  { id: 'events', label: 'account_manager.table.th.events', align: 'left' },
+  { id: 'events', label: 'account_manager.table.th.actions', align: 'left' },
   // { id: '', label: '', align: 'center' },
 ];
 
@@ -77,8 +77,8 @@ export default function TableAMCustom({
     onChangePage,
     onChangeRowsPerPage,
   } = useTable({
-    defaultOrderBy: 'partner_name',
-    defaultOrder: 'asc',
+    defaultOrderBy: 'createdAt',
+    defaultOrder: 'desc',
     defaultRowsPerPage: lengthRowsPerPage ? lengthRowsPerPage : 5,
     defaultCurrentPage: 0,
   });

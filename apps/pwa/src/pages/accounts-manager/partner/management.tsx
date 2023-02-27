@@ -47,9 +47,10 @@ function PartnerManagementPage() {
       const resultAllClientData = resultAllClientRequest?.user.map((v: any) => ({
         id: v.id,
         partner_name: v.client_data.entity,
-        createdAt: v.client_data.created_at,
+        createdAt: v.client_data.updated_at,
         account_status: v.status_id,
         events: v.id,
+        email: v.email,
       }));
       setClientData(resultAllClientData);
     }

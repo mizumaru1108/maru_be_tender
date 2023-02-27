@@ -31,6 +31,10 @@ const NonClientProfileEdit = Loadable(
   lazy(() => import('sections/non-client-profile/NonClientProfileEdit'))
 );
 
+const ProjectOwnerDetails = Loadable(
+  lazy(() => import('pages/project-details/ProjectOwnerDetails'))
+);
+
 export const accoutsManagerRoute = {
   path: 'accounts-manager',
   element: (
@@ -45,12 +49,14 @@ export const accoutsManagerRoute = {
       path: 'dashboard',
       children: [
         { path: 'app', element: <MainManagerPage /> },
+        { path: ':submiterId/:detailType', element: <ProjectOwnerDetails /> },
         { path: 'new/join-request', element: <NewJoinRequestPage /> },
         { path: 'info/update-request', element: <InfoUpdateRequestPage /> },
         {
           path: 'partner',
           children: [
             { path: 'management', element: <PartnerManagementPage /> },
+            { path: 'owner/:submiterId', element: <ProjectOwnerDetails /> },
             {
               path: ':partnerId',
               element: <PartnerDetailsPage />,

@@ -102,6 +102,7 @@ function MainManagerPage() {
     fetching: fetchingNewRequest,
     error: errorNewRequest,
   } = resultNewRequestQuery;
+
   const {
     data: resultInfoUpdate,
     fetching: fetchingInfoUpdate,
@@ -156,6 +157,7 @@ function MainManagerPage() {
         createdAt: v.client_data.created_at,
         account_status: 'WAITING_FOR_ACTIVATION',
         events: v.id,
+        email: v.email,
       }));
 
       setNewJoinRequestData(resultDataNR);

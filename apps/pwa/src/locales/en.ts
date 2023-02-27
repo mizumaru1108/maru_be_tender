@@ -7,6 +7,7 @@
 
 const en = {
   pages: {
+    options_btn: 'More',
     common: {
       messages: 'Messages',
       portal_reports: 'Portal Reports',
@@ -1110,17 +1111,31 @@ const en = {
         account_status: 'Account Status',
         request_status: 'Request Status',
         events: 'Events',
+        actions: 'Actions',
+        more_actions: 'More Actions',
       },
       td: {
         btn_account_review: 'Account review',
         btn_view_partner_projects: 'View partner projects',
-        label_waiting_activation: 'Waiting for activation',
         btn_view_edit_request: 'View Edit Request Client',
+        label_waiting_activation: 'Waiting for activation',
         label_active_account: 'Active account',
         label_canceled_account: 'Canceled account',
+        label_rejected_account: 'Rejected account',
         label_pending: 'Pending',
         label_approved: 'Approved',
         label_rejected: 'Rejected',
+        label_client_profile: 'Client Profile',
+        label_reset_password: 'Reset Password',
+        label_deactivate_account: 'Deactivate Account',
+        label_question_deactivate: 'Are you sure to Deactivated account for',
+        label_question_reset_password: 'Are you sure to send Reset Password to',
+        label_question_information:
+          'Due to the on-going project on this account you can’t deactivated this account.',
+        label_btn_acc_reset_password: 'Yes, sent Reset Password',
+        label_btn_acc_deactivate_account: 'Yes, Deactivated Account',
+        label_btn_acc_information: 'Back to Homepage',
+        label_cancel: 'Cancel',
       },
     },
     accept_project: 'Accept Project',

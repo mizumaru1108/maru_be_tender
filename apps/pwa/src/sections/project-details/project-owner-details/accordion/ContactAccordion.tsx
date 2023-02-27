@@ -28,7 +28,6 @@ const sxPropsText = {
 
 function ContactAccordion({ userInfo }: Props) {
   const { translate, currentLang } = useLocales();
-  console.log('userInfo', userInfo);
 
   return (
     <Accordion
