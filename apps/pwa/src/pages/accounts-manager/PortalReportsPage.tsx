@@ -3,8 +3,10 @@ import { styled } from '@mui/material/styles';
 import { Container, Typography } from '@mui/material';
 // sections
 import PortalReportsSection from 'sections/portal-reports';
+import useLocales from '../../hooks/useLocales';
 
 function PortalReportsPage() {
+  const { translate } = useLocales();
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -15,7 +17,8 @@ function PortalReportsPage() {
   }));
 
   return (
-    <Page title="Portal Reports Page">
+    // <Page title="Portal Reports Page">
+    <Page title={translate('pages.common.portal_reports')}>
       <Container>
         <ContentStyle>
           <PortalReportsSection />

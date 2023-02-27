@@ -7,12 +7,78 @@
 
 const en = {
   pages: {
+    common: {
+      messages: 'Messages',
+      portal_reports: 'Portal Reports',
+      mobile_settings: 'Mobile Settings',
+      previous_funding_requests: 'Previous Funding Requests',
+      incoming_funding_requests: 'Incoming Funding Requests',
+    },
+    account_manager: {
+      update_request: 'Information Update Request',
+      join_request: 'Incoming Join Request',
+      main: 'Account Manager Dashboard',
+      partner_details: 'Partner Details',
+      partner_management: 'Partner Management',
+      edit_request_details: 'Edit Request Details',
+      send_amandement: 'Partner Amandement Request',
+    },
+    admin: {
+      application_and_admission: 'Application and Admission Settings',
+      authority_table: 'Authority | Table',
+      bank_new_table: 'Bank New | Table',
+      beneficiaries_table: 'Beneficiaries | Table',
+      rejections_list_ceo: 'Ceo - Rejection List',
+      entity_class_table: 'Entity Classification | Table',
+      entity_area_table: 'Entity Field Area | Table',
+      bank_name_table: 'Bank Name | Table',
+      gregorian_table: 'Gregorian Year | Table',
+      regions_project_location_table: 'Regions Project Location | Table',
+      system_configuration: 'System Configuration',
+      system_messages: 'System Messages',
+      tracks_budget: 'Tracks Budget',
+      transaction_progression: 'Transaction Progression',
+      users_permissions_table: 'Users And Permissions | Table',
+      add_new_employee: 'Add New Employee | Admin',
+      main: 'Admin | Main Page',
+    },
+    amandement_request: {
+      client: 'Amandement Request',
+    },
     auth: {
       login: 'Login Page',
       register: 'Register Page',
+      new_password: 'New Password',
+      reset_password: 'Reset Password',
+      verify_code: 'Verify Code',
+    },
+    cashier: {
+      previous_funding_request: 'Previous Funding Requests',
+      main: 'The Cashier | Main Page',
+      requests_in_process: 'Requests In Process',
+    },
+    ceo: {
+      client_list: 'Ceo Client List Page',
+      rejection_list: 'Rejection List',
+      project_management: 'Project Management',
+      main: 'Dashboard | Ceo',
     },
     client: {
       main: 'Main Client Dashboard',
+      draft_funding_requests: 'Draft Funding Requests',
+      previous_funding_requests: 'Previous Funding Requests',
+      appointments_with: 'Appointments With the Company',
+      adjust_time: 'Adjust Your Time',
+      amandement_request_form: 'Amandement Request | Form',
+      my_profile: 'My Profile',
+      profile_editing: 'Profile Editing',
+      user_info_editing: 'User Info Editing',
+      contact_and_support: 'Contact and Support',
+      funding_requests: 'Funding Project Requests',
+    },
+    consultant: {
+      // new translation
+      main: 'Dashboard | Consultant',
     },
   },
   content: {

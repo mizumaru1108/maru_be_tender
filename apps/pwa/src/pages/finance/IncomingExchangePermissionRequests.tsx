@@ -4,8 +4,10 @@ import { styled } from '@mui/material/styles';
 import { ProjectCardProps } from 'components/card-table/types';
 import CardTableBE from 'components/card-table/CardTableBE';
 import { getProposals } from 'queries/commons/getProposal';
+import useLocales from '../../hooks/useLocales';
 
 function IncomingExchangePermissionRequests() {
+  const { translate } = useLocales();
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -15,7 +17,8 @@ function IncomingExchangePermissionRequests() {
     gap: 20,
   }));
   return (
-    <Page title="Previous Funding Requests">
+    // <Page title="Incoming Exchange Permission Requests">
+    <Page title={translate('pages.finance.incoming_exchange')}>
       <Container>
         <ContentStyle>
           <CardTableBE

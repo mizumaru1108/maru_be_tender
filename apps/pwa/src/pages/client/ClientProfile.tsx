@@ -138,7 +138,8 @@ function ClientProfile() {
   console.log('type :', typeof board_ofdec_file);
 
   return (
-    <Page title="My Profile">
+    // <Page title="My Profile">
+    <Page title={translate('pages.client.my_profile')}>
       <Container>
         <ContentStyle>
           <Stack direction="row" justifyContent="space-between">

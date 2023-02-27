@@ -16,7 +16,8 @@ const FundingProjectRequest = () => {
   }));
 
   return (
-    <Page title="Fundin Project Request">
+    // <Page title="Funding Project Requests">
+    <Page title={translate('pages.client.funding_requests')}>
       <Container>
         <ContentStyle>
           <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>

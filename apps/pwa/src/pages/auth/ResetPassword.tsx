@@ -30,7 +30,8 @@ export default function ResetPassword() {
   const { translate } = useLocales();
 
   return (
-    <Page title="Reset Password">
+    // <Page title="Reset Password">
+    <Page title={translate('pages.auth.reset_password')}>
       <LogoOnlyLayout />
 
       <Container>

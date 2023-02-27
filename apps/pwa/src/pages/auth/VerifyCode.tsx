@@ -7,6 +7,7 @@ import LogoOnlyLayout from '../../layouts/LogoOnlyLayout';
 import Page from '../../components/Page';
 // sections
 import { VerifyCodeForm } from '../../sections/auth/verify-code';
+import useLocales from '../../hooks/useLocales';
 
 // ----------------------------------------------------------------------
 
@@ -23,8 +24,10 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function VerifyCode() {
+  const { translate } = useLocales();
   return (
-    <Page title="Verify Code">
+    // <Page title="Verify Code">
+    <Page title={translate('pages.auth.verify_code')}>
       <LogoOnlyLayout />
 
       <Container>

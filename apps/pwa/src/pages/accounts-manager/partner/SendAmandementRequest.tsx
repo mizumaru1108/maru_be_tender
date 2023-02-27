@@ -132,7 +132,8 @@ export default function AccountSendAmandementRequest() {
   }, [data]);
 
   return (
-    <Page title="Partner Amandement Request">
+    // <Page title="Partner Amandement Request">
+    <Page title={translate('pages.account_manager.send_amandement')}>
       <Container>
         <ContentStyle>
           {fetching && <Skeleton variant="rectangular" sx={{ height: 500, borderRadius: 2 }} />}

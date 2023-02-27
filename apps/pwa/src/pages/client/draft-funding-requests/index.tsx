@@ -3,8 +3,10 @@ import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
 import { gettingSavedProjects } from 'queries/client/gettingSavedProjects';
 import CardTableBE from 'components/card-table/CardTableBE';
+import useLocales from '../../../hooks/useLocales';
 
 function DraftsFundingRequest() {
+  const { translate } = useLocales();
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     maxHeight: '100vh',
@@ -14,7 +16,8 @@ function DraftsFundingRequest() {
     gap: 20,
   }));
   return (
-    <Page title="Draft Funding Requests">
+    // <Page title="Draft Funding Requests">
+    <Page title={translate('pages.client.draft_funding_requests')}>
       <Container>
         <ContentStyle>
           <CardTableBE

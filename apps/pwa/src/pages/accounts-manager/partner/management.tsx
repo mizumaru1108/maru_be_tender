@@ -10,6 +10,7 @@ import useAuth from 'hooks/useAuth';
 import { getAllClient } from 'queries/account_manager/partnerManagement';
 //
 import { IPropsTablesList } from 'components/table/type';
+import useLocales from '../../../hooks/useLocales';
 
 // -------------------------------------------------------------------------------
 
@@ -26,6 +27,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 function PartnerManagementPage() {
   const { user } = useAuth();
+  const { translate } = useLocales();
   const [clientData, setClientData] = useState<IPropsTablesList[] | null>(null);
   const [activeButton, setActiveButton] = useState<string>('ALL_CLIENT');
 
@@ -57,7 +59,8 @@ function PartnerManagementPage() {
     return <Skeleton variant="rectangular" sx={{ height: 250, borderRadius: 2 }} />;
 
   return (
-    <Page title="Partner Management">
+    // <Page title="Partner Management">
+    <Page title={translate('pages.account_manager.partner_management')}>
       <Container>
         <ContentStyle>
           {clientData && (

@@ -121,7 +121,8 @@ function AmandementRequestProposal() {
     }
   }, [data]);
   return (
-    <Page title="Partner Details">
+    // <Page title="Amandement Request">
+    <Page title={translate('pages.amandement_request.client')}>
       <Container>
         <ContentStyle sx={{ alignItems: 'center' }}>
           <ProposalAmandementHeader />

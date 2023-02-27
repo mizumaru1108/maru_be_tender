@@ -100,7 +100,8 @@ function EditRequestDetails() {
   }, []);
 
   return (
-    <Page title="Partner Details">
+    // <Page title="Partner Details">
+    <Page title={translate('pages.account_manager.edit_request_details')}>
       <Container>
         <ContentStyle sx={{ alignItems: 'center' }}>
           <EditedRequestStatus EditStatus={EditStatus} />

@@ -213,7 +213,8 @@ function AccountPartnerDetails() {
   }, [data]);
 
   return (
-    <Page title="Partner Details">
+    // <Page title="Partner Details">
+    <Page title={translate('pages.account_manager.partner_details')}>
       <Container>
         <ContentStyle>
           {fetching && <Skeleton variant="rectangular" sx={{ height: 500, borderRadius: 2 }} />}

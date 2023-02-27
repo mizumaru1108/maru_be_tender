@@ -1,6 +1,7 @@
 import { Box, Container, styled, Typography } from '@mui/material';
 import Page from 'components/Page';
 import SystemConfiqurationForm from 'sections/admin/system-confiquration/SystemConfiqurationForm';
+import useLocales from '../../hooks/useLocales';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -12,8 +13,10 @@ const ContentStyle = styled('div')(({ theme }) => ({
 }));
 
 function SystemConfiguration() {
+  const { translate } = useLocales();
   return (
-    <Page title="System Configuration">
+    // <Page title="System Configuration">
+    <Page title={translate('pages.admin.system_configuration')}>
       <Container>
         <ContentStyle>
           <Box sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>

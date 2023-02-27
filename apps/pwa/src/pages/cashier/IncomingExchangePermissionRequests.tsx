@@ -3,6 +3,7 @@ import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
 import { CardTable } from 'components/card-table';
 import { ProjectCardProps } from 'components/card-table/types';
+import useLocales from '../../hooks/useLocales';
 
 const data = [
   {
@@ -200,6 +201,7 @@ const data = [
 ] as ProjectCardProps[];
 
 function IncomingExchangePermissionRequests() {
+  const { translate } = useLocales();
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -209,7 +211,8 @@ function IncomingExchangePermissionRequests() {
     gap: 20,
   }));
   return (
-    <Page title="Previous Funding Requests">
+    // <Page title="Previous Funding Requests">
+    <Page title={translate('pages.cashier.previous_funding_request')}>
       <Container>
         <ContentStyle>
           <CardTable

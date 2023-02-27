@@ -39,7 +39,7 @@ function MessagesPage() {
   const { translate } = useLocales();
 
   return (
-    <Page title="Message Page">
+    <>
       {FEATURE_MESSAGING_SYSTEM ? (
         <Stack direction="row" spacing={1} component="div" justifyContent="space-between">
           <ContentStyle>
@@ -56,7 +56,7 @@ function MessagesPage() {
           </Typography>
         </Container>
       )}
-    </Page>
+    </>
   );
 }
 

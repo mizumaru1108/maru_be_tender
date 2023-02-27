@@ -1,6 +1,7 @@
 import { Box, styled } from '@mui/material';
 import Page from 'components/Page';
 import BeneficiariesTable from 'sections/admin/beneficiaries';
+import useLocales from '../../hooks/useLocales';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -12,8 +13,10 @@ const ContentStyle = styled('div')(({ theme }) => ({
 }));
 
 function Beneficiaries() {
+  const { translate } = useLocales();
   return (
-    <Page title="Beneficiaries : Table">
+    // <Page title="Beneficiaries : Table">
+    <Page title={translate('pages.admin.beneficiaries_table')}>
       <ContentStyle>
         <Box sx={{ px: '30px' }}>
           <BeneficiariesTable />

@@ -9,6 +9,7 @@ import { useQuery } from 'urql';
 import { tableNewRequest } from 'queries/account_manager/clientNewRequest';
 //
 import { IPropsTablesList } from 'components/table/type';
+import useLocales from '../../../hooks/useLocales';
 
 // -------------------------------------------------------------------------------
 
@@ -24,6 +25,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // -------------------------------------------------------------------------------
 
 function NewJoinRequestPage() {
+  const { translate } = useLocales();
   const [newJoinRequestData, setNewJoinRequestData] = useState<IPropsTablesList[] | null>(null);
 
   // Table New Request
@@ -52,7 +54,7 @@ function NewJoinRequestPage() {
   }, [resultNewRequest]);
 
   return (
-    <Page title="Incoming Join Request">
+    <Page title={translate('pages.account_manager.join_request')}>
       <Container>
         <ContentStyle>
           {fetchingNewRequest && (

@@ -1,6 +1,7 @@
 import { Box, Container, styled, Typography } from '@mui/material';
 import Page from 'components/Page';
 import MobileSettingsForm from 'sections/admin/mobile-settings/MobileSettingsForm';
+import useLocales from '../../hooks/useLocales';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -12,8 +13,10 @@ const ContentStyle = styled('div')(({ theme }) => ({
 }));
 
 function MobileSettings() {
+  const { translate } = useLocales();
   return (
-    <Page title="Mobile Settings">
+    // <Page title="Mobile Settings">
+    <Page title={translate('pages.common.mobile_settings')}>
       <Container>
         <ContentStyle>
           <Box sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>

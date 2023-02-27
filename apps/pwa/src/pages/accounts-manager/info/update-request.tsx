@@ -16,6 +16,7 @@ import { IPropsTablesList } from 'components/table/type';
 import axiosInstance from '../../../utils/axios';
 // import useLocales from '../../../hooks/useLocales';
 import { useNavigate } from 'react-router';
+import useLocales from '../../../hooks/useLocales';
 
 // -------------------------------------------------------------------------------
 
@@ -31,6 +32,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // -------------------------------------------------------------------------------
 
 function InfoUpdateRequestPage() {
+  const { translate } = useLocales();
   const [infoUpdateRequest, setInfoUpdateRequest] = useState<IPropsTablesList[] | null>(null);
   const { user, activeRole } = useAuth();
   const navigate = useNavigate();
@@ -82,7 +84,7 @@ function InfoUpdateRequestPage() {
   }, [resultInfoUpdate]);
 
   return (
-    <Page title="Information Update Request">
+    <Page title={translate('pages.account_manager.update_request')}>
       <Container>
         <ContentStyle>
           {loading && <Skeleton variant="rectangular" sx={{ height: 250, borderRadius: 2 }} />}

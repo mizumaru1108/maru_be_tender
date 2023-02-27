@@ -80,7 +80,8 @@ const AmandementRequest = () => {
   }, [fetchingData]);
 
   return (
-    <Page title="Fundin Project Request">
+    // <Page title="Fundin Project Request">
+    <Page title={translate('pages.client.amandement_request_form')}>
       <Container>
         <ContentStyle>
           <Grid container spacing={3}>

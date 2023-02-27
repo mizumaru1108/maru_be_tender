@@ -9,6 +9,7 @@ import Page from '../../components/Page';
 import { NewPasswordForm } from '../../sections/auth/new-password';
 // assets
 import { SentIcon } from '../../assets';
+import useLocales from '../../hooks/useLocales';
 
 // ----------------------------------------------------------------------
 
@@ -25,8 +26,10 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function NewPassword() {
+  const { translate } = useLocales();
   return (
-    <Page title="New Password">
+    // <Page title="New Password">
+    <Page title={translate('pages.auth.new_password')}>
       <LogoOnlyLayout />
 
       <Container>

@@ -1,6 +1,7 @@
 import { Box, styled } from '@mui/material';
 import Page from 'components/Page';
 import GregorianYearTable from 'sections/admin/gregorian-year';
+import useLocales from '../../hooks/useLocales';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -12,8 +13,10 @@ const ContentStyle = styled('div')(({ theme }) => ({
 }));
 
 function GregorianYear() {
+  const { translate } = useLocales();
   return (
-    <Page title="Bank Name : Table">
+    // <Page title="Gregorian Year : Table">
+    <Page title={translate('pages.admin.gregorian_table')}>
       <ContentStyle>
         <Box sx={{ px: '30px' }}>
           <GregorianYearTable />

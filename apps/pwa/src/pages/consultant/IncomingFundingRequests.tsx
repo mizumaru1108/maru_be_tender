@@ -5,8 +5,10 @@ import { CardTable } from 'components/card-table';
 import { IncomingConultationRequests } from 'pages/client/mock-data';
 import CardTableBE from 'components/card-table/CardTableBE';
 import { getProposals } from 'queries/commons/getProposal';
+import useLocales from '../../hooks/useLocales';
 
 function IncomingFundingRequests() {
+  const { translate } = useLocales();
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -16,7 +18,8 @@ function IncomingFundingRequests() {
     gap: 20,
   }));
   return (
-    <Page title="Previous Funding Requests">
+    // <Page title="incoming Funding Requests">
+    <Page title={translate('pages.common.incoming_funding_requests')}>
       <Container>
         <ContentStyle>
           <CardTableBE

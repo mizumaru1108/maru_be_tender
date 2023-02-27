@@ -3,6 +3,7 @@ import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
 import { CardTable } from 'components/card-table';
 import { ProjectCardProps } from 'components/card-table/types';
+import useLocales from '../../hooks/useLocales';
 
 const data = [
   {
@@ -248,6 +249,7 @@ const data = [
 ] as ProjectCardProps[];
 
 function RequestsInProcess() {
+  const { translate } = useLocales();
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -257,7 +259,8 @@ function RequestsInProcess() {
     gap: 20,
   }));
   return (
-    <Page title="Previous Funding Requests">
+    // <Page title="Requests In Process">
+    <Page title={translate('pages.cashier.requests_in_process')}>
       <Container>
         <ContentStyle>
           <CardTable

@@ -23,6 +23,7 @@ import {
 import { PATH_ACCOUNTS_MANAGER } from '../../routes/paths';
 import { CardInsightProps } from 'components/card-insight/types';
 import { IPropsTablesList } from 'components/table/type';
+import useLocales from '../../hooks/useLocales';
 
 // -------------------------------------------------------------------------------
 
@@ -39,6 +40,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 function MainManagerPage() {
   const { user } = useAuth();
+  const { translate } = useLocales();
 
   const [cardInsightData, setCardInsightData] = useState<CardInsightProps | null>(null);
   const [newJoinRequestData, setNewJoinRequestData] = useState<IPropsTablesList[] | null>(null);
@@ -197,7 +199,8 @@ function MainManagerPage() {
   ]);
 
   return (
-    <Page title="Account Manager Dashboard">
+    // <Page title="Account Manager Dashboard">
+    <Page title={translate('pages.account_manager.main')}>
       <Container>
         <ContentStyle>
           {fetchingNumberRequest &&

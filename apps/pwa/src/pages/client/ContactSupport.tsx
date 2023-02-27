@@ -3,8 +3,10 @@ import { Typography } from '@mui/material';
 import { Box, Container } from '@mui/system';
 import Page from 'components/Page';
 import ContactSupportForm from 'sections/client/contact-and-support/ContactSupportForm';
+import useLocales from '../../hooks/useLocales';
 
 const ContactSupport = () => {
+  const { translate } = useLocales();
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -13,7 +15,8 @@ const ContactSupport = () => {
     flexDirection: 'column',
   }));
   return (
-    <Page title="Contact And Support">
+    // <Page title="Contact And Support">
+    <Page title={translate('pages.client.contact_and_support')}>
       <Container>
         <ContentStyle>
           <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
