@@ -645,7 +645,7 @@ export class TenderProposalRepository {
   async fetchProposalById(proposalId: string): Promise<proposal | null> {
     try {
       this.logger.log('info', `fetching proposal ${proposalId}`);
-      return await this.prismaService.proposal.findUnique({
+      return await this.prismaService.proposal.findFirst({
         where: {
           id: proposalId,
         },
