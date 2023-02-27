@@ -38,12 +38,20 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
       ['tender_project_manager', 'tender_project_supervisor'].includes(activeRole!) && {
         reject_reason: Yup.string().required(),
       }),
-    notes: Yup.string().required(translate('errors.notes')),
+    ...(action.actionType === 'STEP_BACK' &&
+      [
+        'tender_project_manager',
+        'tender_project_supervisor',
+        'tender_consultant',
+        'tender_ceo',
+      ].includes(activeRole!) && {
+        notes: Yup.string().required(translate('errors.notes')),
+      }),
   });
 
   const defaultValues = {
     ...(action.actionType === 'REJECT' && { reject_reason: '' }),
-    notes: '',
+    ...(action.actionType === 'STEP_BACK' && { notes: '' }),
   };
 
   const methods = useForm<FormInput>({
@@ -114,7 +122,7 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
                 name="notes"
                 label="الملاحظات"
                 placeholder="اكتب ملاحظاتك هنا"
-                required
+                required={action.actionType === 'STEP_BACK' ? true : false}
               />
             </Grid>
           </Grid>

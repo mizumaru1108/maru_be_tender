@@ -1611,9 +1611,9 @@ const ar = {
   },
   outter_status: {
     COMPLETED: 'منجز',
-    ONGOING: 'جاري التنفيذ',
-    PENDING: 'ريثما',
-    CANCELED: 'ألغيت',
+    ONGOING: 'تحت التشغيل',
+    PENDING: 'معلقة',
+    CANCELED: 'ملغي',
     ON_REVISION: 'في المراجعة',
   },
   project_beneficiaries: {

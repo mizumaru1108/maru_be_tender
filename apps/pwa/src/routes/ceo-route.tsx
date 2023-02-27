@@ -65,7 +65,7 @@ export const ceoRoute = {
           children: [
             { path: ':id/:actionType', element: <ProjectDetails /> },
 
-            { path: ':id/owner/:submiterId', element: <ProjectOwnerDetails /> },
+            { path: 'owner/:submiterId', element: <ProjectOwnerDetails /> },
           ],
         },
         {

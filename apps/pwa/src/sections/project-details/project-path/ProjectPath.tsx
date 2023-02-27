@@ -131,7 +131,8 @@ function ProjectPath() {
           ) : (
             <Typography>{translate('review.waiting')}</Typography>
           )}
-          {stepUserRole !== 'PROJECT_SUPERVISOR' && (
+          {(stepUserRole !== 'PROJECT_SUPERVISOR' ??
+            stepActionType === 'send_back_for_revision') && (
             <React.Fragment>
               <Typography variant="h6">{translate(`review.notes`)}</Typography>
               {followUps.log.length !== activeStep ? (

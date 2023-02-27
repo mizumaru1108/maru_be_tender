@@ -6,6 +6,7 @@ import RoleBasedGuard from 'guards/RoleBasedGuard';
 import { Loadable } from './Loadable';
 import CeoClientListPage from 'pages/ceo/CeoClientListPage';
 import ProjectOwnerDetails from 'pages/project-details/ProjectOwnerDetails';
+import ProjectDetails from 'pages/project-details/ProjectDetails';
 
 const Main = Loadable(lazy(() => import('pages/admin/MainPage')));
 const TransactionProgression = Loadable(lazy(() => import('pages/admin/TransactionProgression')));
@@ -78,6 +79,14 @@ export const adminRoute = {
         { path: 'mobile-settings', element: <MobileSettings /> },
         { path: 'system-messages', element: <SystemMessages /> },
         { path: 'system-configuration', element: <SystemConfiguration /> },
+        {
+          path: 'current-project',
+          children: [
+            { path: ':id/:actionType', element: <ProjectDetails /> },
+
+            { path: 'owner/:submiterId', element: <ProjectOwnerDetails /> },
+          ],
+        },
         {
           path: 'client-list',
           children: [

@@ -17,7 +17,8 @@ function ProjectOwnerDetailsMainPage() {
   const { submiterId } = useParams();
   const location = useLocation();
   const url = location.pathname.split('/');
-  const destination = url[3];
+  // const destination = url[3] === 'current-project' ? url[3] : 'current-project';
+  const destination = 'current-project';
 
   const [userInfo, setUserInfo] = React.useState<ProjectOwnerDetails>({
     entity: 'maru',

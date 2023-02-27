@@ -71,7 +71,7 @@ export default function ClientListTable() {
   } = useTable();
 
   const { translate } = useLocales();
-  const [sortOrder, setSortOrder] = useState<any>({ entity: 'asc' });
+  const [sortOrder, setSortOrder] = useState<any>({ employee_name: 'asc' });
 
   const [{ data, fetching, error }, mutate] = useQuery({
     query: allClientData,
@@ -90,26 +90,26 @@ export default function ClientListTable() {
 
   const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } = useTabs('all');
 
-  const [sortValue, setSortValue] = useState<string>('entity asc');
+  const [sortValue, setSortValue] = useState<string>('employee_name asc');
 
   const sortOptions = [
     {
-      value: 'entity asc',
+      value: 'employee_name asc',
       // title: 'Client Name (ASC)',
       title: translate('table_filter.sortby_options.client_name_az'),
     },
     {
-      value: 'entity desc',
+      value: 'employee_name desc',
       // title: 'Client Name (DESC)',
       title: translate('table_filter.sortby_options.client_name_za'),
     },
     {
-      value: 'data_entry_mail asc',
+      value: 'email asc',
       // title: 'Email (ASC)',
       title: translate('table_filter.sortby_options.email_az'),
     },
     {
-      value: 'data_entry_mail desc',
+      value: 'email desc',
       // title: 'Email (DESC)',
       title: translate('table_filter.sortby_options.email_za'),
     },
@@ -153,21 +153,29 @@ export default function ClientListTable() {
     const { value } = event.target;
     setSortValue(event.target.value as string);
     const [key, order] = value.split(' ');
-    const newOrder = { [key]: order };
-    setSortOrder(newOrder);
+    if (key === 'governorate') {
+      const newOrder = { client_data: { [key]: order } };
+      setSortOrder(newOrder);
+    } else {
+      const newOrder = { [key]: order };
+
+      setSortOrder(newOrder);
+    }
+    // const newOrder = { [key]: order };
+    // setSortOrder(newOrder);
   };
 
   useEffect(() => {
-    if (data?.client_data) {
+    if (data?.user) {
       setTableData(
-        data.client_data.map((item: any, index: any) => ({
+        data.user.map((item: any, index: any) => ({
           id: item.id,
-          entity: item.entity,
-          data_entry_mail: item.data_entry_mail,
-          data_entry_mobile: item.data_entry_mobile,
-          governorate: item.governorate,
-          user_id: item.user_id,
-          total_proposal: item.user.proposals_aggregate.aggregate.count,
+          entity: item.employee_name,
+          data_entry_mail: item.email,
+          data_entry_mobile: item.mobile_number,
+          governorate: item?.client_data?.governorate,
+          user_id: item.id,
+          total_proposal: item.proposals_aggregate.aggregate.count,
         }))
       );
       setTotal(data.total.aggregate.count as number);
