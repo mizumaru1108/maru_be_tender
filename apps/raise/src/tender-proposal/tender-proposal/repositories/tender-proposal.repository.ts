@@ -384,15 +384,27 @@ export class TenderProposalRepository {
             )}`,
           );
 
+          this.logger.log(
+            'info',
+            `Find existing edit request by proposal id of ${id}`,
+          );
           const oldData = await prisma.proposal_edit_request.findFirst({
             where: { proposal_id: id },
           });
           if (oldData) {
+            this.logger.log(
+              'info',
+              `deleting old proposal edit request with porposal id of ${id}`,
+            );
             await prisma.proposal_edit_request.delete({
               where: { proposal_id: id },
             });
           }
 
+          this.logger.log(
+            'info',
+            `creating new proposal edit request with payload of ${createProposalEditRequestPayload}`,
+          );
           await prisma.proposal_edit_request.create({
             data: createProposalEditRequestPayload,
           });
@@ -472,7 +484,7 @@ export class TenderProposalRepository {
             sendAmandementNotif,
           };
         },
-        { maxWait: 50000, timeout: 150000 },
+        { maxWait: 500000, timeout: 1500000 },
       );
     } catch (err) {
       const theError = prismaErrorThrower(

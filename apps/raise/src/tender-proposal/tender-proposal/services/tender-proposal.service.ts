@@ -561,7 +561,7 @@ export class TenderProposalService {
     userId: string,
     request: SendAmandementDto,
   ): Promise<proposal> {
-    /* object atleas has id, and one more payload, if not then throw err */
+    /* object atleas has id, and one more payload (notes), if not then throw err */
     if (Object.keys(request).length < 2) {
       throw new BadRequestException('Give at least one revision!');
     }
