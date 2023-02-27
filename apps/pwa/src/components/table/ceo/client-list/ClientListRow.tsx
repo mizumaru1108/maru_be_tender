@@ -3,6 +3,7 @@ import useLocales from 'hooks/useLocales';
 import { useNavigate } from 'react-router';
 import { ClientListsRow } from './types';
 import useAuth from 'hooks/useAuth';
+import { role_url_map } from '../../../../@types/commons';
 
 export default function ClientListTableRow({ row, selected, onSelectRow }: ClientListsRow) {
   const { translate } = useLocales();
@@ -11,9 +12,9 @@ export default function ClientListTableRow({ row, selected, onSelectRow }: Clien
   const navigate = useNavigate();
   return (
     <TableRow hover selected={selected}>
-      <TableCell padding="checkbox">
+      {/* <TableCell padding="checkbox">
         <Checkbox checked={selected} onClick={onSelectRow} />
-      </TableCell>
+      </TableCell> */}
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
           {row.entity}
@@ -42,11 +43,7 @@ export default function ClientListTableRow({ row, selected, onSelectRow }: Clien
       <TableCell align="left">
         <Button
           onClick={() => {
-            navigate(
-              `/${
-                activeRole === 'tender_ceo' ? 'ceo' : 'project-manager'
-              }/dashboard/client-list/owner/${row.user_id}`
-            );
+            navigate(`/${role_url_map[activeRole!]}/dashboard/client-list/owner/${row.user_id}`);
           }}
           size="small"
           variant="contained"

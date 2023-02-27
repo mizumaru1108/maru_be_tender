@@ -234,12 +234,12 @@ export default function ClientListTable() {
                 rowCount={tableData.length}
                 numSelected={selected.length}
                 onSort={onSort}
-                onSelectAllRows={(checked) =>
-                  onSelectAllRows(
-                    checked,
-                    tableData.map((row) => row?.user_id)
-                  )
-                }
+                // onSelectAllRows={(checked) =>
+                //   onSelectAllRows(
+                //     checked,
+                //     tableData.map((row) => row?.user_id)
+                //   )
+                // }
               />
 
               <TableBody>
@@ -250,7 +250,7 @@ export default function ClientListTable() {
                         key={row.user_id}
                         row={row}
                         selected={selected.includes(row?.user_id)}
-                        onSelectRow={() => onSelectRow(row?.user_id)}
+                        // onSelectRow={() => onSelectRow(row?.user_id)}
                       />
                     ))}
 
