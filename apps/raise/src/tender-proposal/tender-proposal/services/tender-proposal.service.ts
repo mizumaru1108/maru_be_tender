@@ -57,6 +57,7 @@ import { SupervisorRegularTrackAccMapper } from '../mappers/supervisor-regular-t
 import { UpdateProposalMapper } from '../mappers/update-proposal.mapper';
 import { SendRevisionDto } from '../dtos/requests/send-revision.dto';
 import { SendRevisionMapper } from '../mappers/send-revision.mapper';
+import { logUtil } from '../../../commons/utils/log-util';
 
 @Injectable()
 export class TenderProposalService {
@@ -324,37 +325,6 @@ export class TenderProposalService {
       }
     }
 
-    if (!!sendRevisionPayload) {
-      updateProposalPayload = SendRevisionMapper(sendRevisionPayload);
-      if (Object.keys(updateProposalPayload).length === 0) {
-        throw new BadRequestException(
-          'You must change at least one value that defined by supervisor',
-        );
-      }
-      const amandementDetail =
-        await this.proposalRepo.findAmandementDetailByProposalId(proposalId);
-      if (!amandementDetail) {
-        throw new BadRequestException('Failed to fetch amandement detail!');
-      }
-      const rawAllowedKeys = JSON.parse(amandementDetail.detail);
-      const allowedKeys = Object.keys(rawAllowedKeys);
-      const keySet = new Set(allowedKeys);
-      for (let key of Object.keys(updateProposalPayload)) {
-        if (!keySet.has(key)) {
-          throw new BadRequestException(
-            'You are just allowed to change what defined by the supervisor!',
-          );
-        }
-      }
-      if (sendRevisionPayload.detail_project_budgets) {
-        proposal_item_budgets = CreateItemBudgetsMapper(
-          proposal.id,
-          sendRevisionPayload.detail_project_budgets,
-        );
-      }
-      updateProposalPayload.outter_status = OutterStatusEnum.ONGOING;
-    }
-
     /* validate and create path */
     const maxSize: number = 1024 * 1024 * 512; // 512MB
     const allowedType: FileMimeTypeEnum[] = [
@@ -454,6 +424,61 @@ export class TenderProposalService {
           );
           deletedFileManagerUrls.push(oldFile.url);
         }
+      }
+    }
+
+    if (!!sendRevisionPayload) {
+      try {
+        if (Object.keys(updateProposalPayload).length > 0) {
+          let restOfPayload = SendRevisionMapper(sendRevisionPayload);
+          updateProposalPayload = {
+            ...updateProposalPayload,
+            ...restOfPayload,
+          };
+        } else {
+          updateProposalPayload = SendRevisionMapper(sendRevisionPayload);
+        }
+        if (Object.keys(updateProposalPayload).length === 0) {
+          throw new BadRequestException(
+            'You must change at least one value that defined by supervisor',
+          );
+        }
+        const amandementDetail =
+          await this.proposalRepo.findAmandementDetailByProposalId(proposalId);
+        if (!amandementDetail) {
+          throw new BadRequestException('Failed to fetch amandement detail!');
+        }
+        const rawAllowedKeys = JSON.parse(amandementDetail.detail);
+        const allowedKeys = Object.keys(rawAllowedKeys);
+        const keySet = new Set(allowedKeys);
+        // console.log({ allowedKeys });
+        // console.log('update proposal key', Object.keys(updateProposalPayload));
+        for (let key of Object.keys(updateProposalPayload)) {
+          if (!keySet.has(key)) {
+            throw new BadRequestException(
+              'You are just allowed to change what defined by the supervisor!',
+            );
+          }
+        }
+        if (sendRevisionPayload.detail_project_budgets) {
+          proposal_item_budgets = CreateItemBudgetsMapper(
+            proposal.id,
+            sendRevisionPayload.detail_project_budgets,
+          );
+        }
+        updateProposalPayload.outter_status = OutterStatusEnum.ONGOING;
+      } catch (err) {
+        if (uploadedFilePath.length > 0) {
+          this.logger.log('info', `error details \n ${logUtil(err)}`);
+          this.logger.log(
+            'info',
+            `error orccured during send revision, deleting all previous uploaded files`,
+          );
+          uploadedFilePath.forEach(async (path) => {
+            await this.bunnyService.deleteMedia(path, true);
+          });
+        }
+        throw err;
       }
     }
 

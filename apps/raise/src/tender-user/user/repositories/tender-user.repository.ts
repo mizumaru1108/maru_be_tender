@@ -59,6 +59,22 @@ export class TenderUserRepository {
     }
   }
 
+  async findByEmail(email: string): Promise<user | null> {
+    try {
+      return await this.prismaService.user.findFirst({
+        where: { email },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderUserRepository.name,
+        'Finding User by Email Error:',
+        `Finding User by Email!`,
+      );
+      throw theError;
+    }
+  }
+
   async findByRole(role: TenderAppRole) {
     try {
       return await this.prismaService.user.findMany({

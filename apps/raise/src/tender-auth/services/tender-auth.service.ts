@@ -3,7 +3,10 @@ import {
   ConflictException,
   Injectable,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { LoginRequestDto } from '../../auth/dtos';
+import { logUtil } from '../../commons/utils/log-util';
+import { EmailService } from '../../libs/email/email.service';
 import { FusionAuthService } from '../../libs/fusionauth/services/fusion-auth.service';
 import { TenderClientRepository } from '../../tender-user/client/repositories/tender-client.repository';
 import { TenderClientService } from '../../tender-user/client/services/tender-client.service';
@@ -18,6 +21,8 @@ export class TenderAuthService {
     private readonly tenderClientService: TenderClientService,
     private readonly tenderUserRepository: TenderUserRepository,
     private readonly tenderClientRepository: TenderClientRepository,
+    private readonly emailService: EmailService,
+    private readonly configService: ConfigService,
   ) {}
 
   async login(loginRequest: LoginRequestDto): Promise<TenderLoginResponseDto> {
@@ -131,5 +136,28 @@ export class TenderAuthService {
     );
 
     return result;
+  }
+
+  async forgotPasswordRequest(email: string) {
+    const user = await this.tenderUserRepository.findByEmail(email);
+    if (!user) throw new BadRequestException('User not found!');
+
+    const response = await this.fusionAuthService.forgotPasswordRequest(email);
+
+    // console.log(logUtil(response));
+
+    this.emailService.sendMail({
+      mailType: 'template',
+      to: email,
+      subject: 'Reset Password',
+      templateContext: {
+        name: user.employee_name,
+        resetUrl: `${this.configService.get<string>(
+          'tenderAppConfig.baseUrl',
+        )}/reset-password/${response}`,
+      },
+      templatePath: 'tender/en/account/forget_password',
+    });
+    return response;
   }
 }

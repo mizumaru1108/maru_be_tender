@@ -62,6 +62,7 @@ import { TenderNotificationModule } from './tender-notification/tender-notificat
 import { gapiConfig } from './commons/configs/gapi-config';
 import { twilioConfig } from './commons/configs/twilio-config';
 import { TenderFileManagerModule } from './tender-file-manager/tender-file-manager.module';
+import { tenderAppConfig } from './commons/configs/tender-app-config';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -98,6 +99,7 @@ import { TenderFileManagerModule } from './tender-file-manager/tender-file-manag
         nodeMailerConfig,
         gapiConfig,
         twilioConfig,
+        tenderAppConfig,
       ],
       isGlobal: true,
     }),

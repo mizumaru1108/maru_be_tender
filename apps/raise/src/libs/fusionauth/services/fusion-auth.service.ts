@@ -6,6 +6,10 @@ import FusionAuthClient, {
   User as IFusionAuthUser,
   UserRegistration as IFusionAuthUserRegistration,
   ValidateResponse,
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
+  ChangePasswordRequest,
+  ChangePasswordResponse,
 } from '@fusionauth/typescript-client';
 import ClientResponse from '@fusionauth/typescript-client/build/src/ClientResponse';
 import {
@@ -451,6 +455,71 @@ export class FusionAuthService {
           return data;
         }
       }
+    } catch (error) {
+      this.logger.debug('Error', error);
+      if (error.response.status < 500) {
+        console.log(error.response.data);
+        throw new BadRequestException(
+          `Verify Failed, more details: ${
+            error.response.data.fieldErrors
+              ? JSON.stringify(error.response.data.fieldErrors)
+              : JSON.stringify(error.response.data)
+          }`,
+        );
+      } else {
+        console.log(error);
+        throw new Error('Something went wrong!');
+      }
+    }
+  }
+
+  async forgotPasswordRequest(email: string): Promise<string> {
+    const forgotPasswordUrl = this.fusionAuthUrl + '/api/user/forgot-password';
+
+    const payload: ForgotPasswordRequest = {
+      applicationId: this.fusionAuthAppId,
+      sendForgotPasswordEmail: false,
+      loginId: email,
+    };
+
+    const axiosOptions: AxiosRequestConfig<any> = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.fusionAuthAdminKey,
+        'X-FusionAuth-TenantId': this.fusionAuthTenantId,
+      },
+      url: forgotPasswordUrl,
+      data: payload,
+    };
+    try {
+      const response = await axios(axiosOptions);
+      // console.log({ response });
+      return response.data.changePasswordId;
+    } catch (error) {
+      this.logger.debug('Error', error);
+      throw error;
+    }
+  }
+
+  async submitChangePassword(
+    email: string,
+    changePasswordId: string,
+    newPassword: string,
+    oldPassword?: string,
+  ): Promise<ClientResponse<ChangePasswordResponse>> {
+    try {
+      const payload: ChangePasswordRequest = {
+        applicationId: this.fusionAuthAppId,
+        loginId: email,
+        changePasswordId: changePasswordId,
+      };
+      if (oldPassword) payload.currentPassword = oldPassword;
+      if (newPassword) payload.password = newPassword;
+      return await this.fusionAuthClient.changePassword(
+        changePasswordId,
+        payload,
+      );
     } catch (error) {
       this.logger.debug('Error', error);
       if (error.response.status < 500) {

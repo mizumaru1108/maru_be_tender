@@ -384,9 +384,14 @@ export class TenderProposalRepository {
             )}`,
           );
 
-          await prisma.proposal_edit_request.delete({
+          const oldData = await prisma.proposal_edit_request.findFirst({
             where: { proposal_id: id },
           });
+          if (oldData) {
+            await prisma.proposal_edit_request.delete({
+              where: { proposal_id: id },
+            });
+          }
 
           await prisma.proposal_edit_request.create({
             data: createProposalEditRequestPayload,
