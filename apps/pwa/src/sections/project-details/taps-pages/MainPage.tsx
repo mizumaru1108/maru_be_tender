@@ -62,7 +62,7 @@ function MainPage() {
         });
       }
     } catch (err) {
-      console.log("this proposal doesn't have any amandeme", err);
+      console.log("currnetly, this proposal doesn't have any amandemen", err);
       // enqueueSnackbar(err.message, {
       //   variant: 'error',
       //   preventDuplicate: true,

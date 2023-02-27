@@ -35,7 +35,7 @@ function ActionButtonAmandementProposal({ isLoad, isDisabled }: Props) {
         p: 3,
         borderRadius: 1,
         position: 'sticky',
-        width: '40%',
+        width: '53%',
         bottom: 24,
         border: `1px solid ${theme.palette.grey[400]}`,
       }}
@@ -86,7 +86,7 @@ function ActionButtonAmandementProposal({ isLoad, isDisabled }: Props) {
               sx={{
                 color: 'text.primary',
                 width: { xs: '100%', sm: '200px' },
-                hieght: { xs: '100%', sm: '50px' },
+                // hieght: { xs: '100%', sm: '50px' },
               }}
             >
               {translate('going_back_one_step')}

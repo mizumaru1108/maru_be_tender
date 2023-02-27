@@ -53,6 +53,7 @@ function ProjectPath() {
   const [activeStep, setActiveStep] = React.useState(0);
   const [stepOn, setStepOn] = React.useState(1);
   const [stepUserRole, setStepUserRole] = React.useState('');
+  const [stepActionType, setStepActionType] = React.useState('');
   const { id: proposal_id } = useParams();
   const [result] = useQuery({
     query: getProposalLog,
@@ -68,8 +69,10 @@ function ProjectPath() {
 
     if (item !== undefined) {
       setStepUserRole(item.user_role);
+      setStepActionType(item.action);
     } else {
       setStepUserRole('');
+      setStepActionType('');
     }
   };
 
@@ -147,7 +150,7 @@ function ProjectPath() {
             </React.Fragment>
           )}
           <Divider />
-          {stepUserRole !== 'PROJECT_SUPERVISOR' ? null : (
+          {stepUserRole === 'PROJECT_SUPERVISOR' && stepActionType !== 'send_back_for_revision' ? (
             <React.Fragment>
               <Typography variant="h6">{translate(`review.review_by_supervisor`)}</Typography>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
@@ -346,7 +349,7 @@ function ProjectPath() {
                 ))}
               </Stack>
             </React.Fragment>
-          )}
+          ) : null}
 
           {/* <Stack direction="row" justifyContent="center">
             <Link
