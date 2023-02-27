@@ -149,7 +149,8 @@ export class TenderAuthService {
     this.emailService.sendMail({
       mailType: 'template',
       to: email,
-      subject: 'Reset Password',
+      from: 'no-reply@hcharity.org',
+      subject: 'Reset Your Password',
       templateContext: {
         name: user.employee_name,
         resetUrl: `${this.configService.get<string>(
