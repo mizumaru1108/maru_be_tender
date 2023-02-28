@@ -28,7 +28,8 @@ export default function Page404() {
   const { translate } = useLocales();
 
   return (
-    <Page title="404 Page Not Found">
+    // <Page title="404 Page Not Found">
+    <Page title={translate('pages.common.page_not_found')}>
       <Container component={MotionContainer}>
         <ContentStyle sx={{ textAlign: 'center', alignItems: 'center' }}>
           <m.div variants={varBounce().in}>

@@ -451,12 +451,14 @@ const navConfig = {
         },
 
         {
-          title: 'incoming_support_requests',
+          // title: 'incoming_support_requests',
+          title: 'incoming_funding_requests',
           path: PATH_MODERATOR.incoming_support_requests,
           icon: ICONS.tender_moderator.incoming_support_requests,
         },
         {
-          title: 'previous_support_requests',
+          // title: 'previous_support_requests',
+          title: 'previous_funding_requests',
           path: PATH_MODERATOR.previous_support_requests,
           icon: ICONS.tender_moderator.previous_support_requests,
         },

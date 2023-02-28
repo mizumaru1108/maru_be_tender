@@ -3,8 +3,10 @@ import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
 import CardTableBE from 'components/card-table/CardTableBE';
 import { gettingPreviousRequests } from 'queries/project-supervisor/gettingPreviousRequests';
+import useLocales from '../../hooks/useLocales';
 
 function PreviousFundingRequests() {
+  const { translate } = useLocales();
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -14,7 +16,8 @@ function PreviousFundingRequests() {
     gap: 20,
   }));
   return (
-    <Page title="طلبات الدعم سابقة">
+    // <Page title="طلبات الدعم سابقة">
+    <Page title={translate('pages.common.previous_funding_requests')}>
       <Container>
         <ContentStyle>
           <CardTableBE

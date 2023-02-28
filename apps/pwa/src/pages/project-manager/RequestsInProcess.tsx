@@ -20,7 +20,8 @@ function RequestsInProcess() {
   const { user } = useAuth();
 
   return (
-    <Page title="Requests in Proccess | Project-Manager">
+    // <Page title="Requests in Proccess | Project-Manager">
+    <Page title={translate('pages.common.request_in_process')}>
       <Container>
         <ContentStyle>
           <CardTableBE

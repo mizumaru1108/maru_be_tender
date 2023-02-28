@@ -74,7 +74,8 @@ function PortalReports() {
     },
   ];
   return (
-    <Page title="Contact And Support">
+    // <Page title="Contact And Support">
+    <Page title={translate('pages.common.portal_reports')}>
       <Container>
         <ContentStyle>
           <Grid container direction="row">

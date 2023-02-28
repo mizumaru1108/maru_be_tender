@@ -5,6 +5,7 @@ import Page from 'components/Page';
 import useResponsive from 'hooks/useResponsive';
 import { useNavigate } from 'react-router';
 import BankImageComp from 'sections/shared/BankImageComp';
+import useLocales from '../../hooks/useLocales';
 
 const mockData = {
   project_name: 'اسم الشريك - جمعية الدعوة والإرشاد وتوعية الجاليات',
@@ -21,6 +22,7 @@ const mockData = {
   license_file: 'image.',
 };
 function ModeratorProfile() {
+  const { translate } = useLocales();
   const navigate = useNavigate();
   const isMobile = useResponsive('down', 'sm');
   const ContentStyle = styled('div')(({ theme }) => ({
@@ -33,7 +35,8 @@ function ModeratorProfile() {
   }));
 
   return (
-    <Page title="My Profile">
+    // <Page title="My Profile">
+    <Page title={translate('pages.common.my_profile')}>
       <Container>
         <ContentStyle>
           <Stack direction="row" justifyContent="space-between">

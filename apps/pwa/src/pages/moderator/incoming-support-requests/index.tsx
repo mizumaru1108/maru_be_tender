@@ -20,7 +20,8 @@ function IncomingSupportRequests() {
   }));
 
   return (
-    <Page title="Incoming Support Requests | Moderator">
+    // <Page title="Incoming Support Requests | Moderator">
+    <Page title={translate('pages.common.incoming_funding_requests')}>
       <Container>
         <ContentStyle>
           <CardTableBE

@@ -3,8 +3,10 @@ import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
 import CardTableBE from 'components/card-table/CardTableBE';
 import { gettingIncomingRequests } from 'queries/project-supervisor/gettingIncomingRequests';
+import useLocales from '../../hooks/useLocales';
 
 function IncomingFundingRequests() {
+  const { translate } = useLocales();
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -14,7 +16,8 @@ function IncomingFundingRequests() {
     gap: 20,
   }));
   return (
-    <Page title="Incoming Funding Requests | Supervisor">
+    // <Page title="Incoming Funding Requests | Supervisor">
+    <Page title={translate('pages.common.incoming_funding_requests')}>
       <Container>
         <ContentStyle>
           <CardTableBE

@@ -20,7 +20,8 @@ function IncomingFundingRequests() {
   const { user } = useAuth();
 
   return (
-    <Page title="Incoming Funding Requests | Project-Manager">
+    // <Page title="Incoming Funding Requests | Project-Manager">
+    <Page title={translate('pages.common.incoming_funding_requests')}>
       <Container>
         <ContentStyle>
           <CardTableBE

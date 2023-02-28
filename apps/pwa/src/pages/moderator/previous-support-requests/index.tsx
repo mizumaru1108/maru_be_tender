@@ -18,7 +18,8 @@ function PreviousSupportRequests() {
   }));
 
   return (
-    <Page title="Previous Support Requests | Moderator">
+    // <Page title="Previous Support Requests | Moderator">
+    <Page title={translate('pages.common.previous_funding_requests')}>
       <Container>
         <ContentStyle>
           <CardTableBE

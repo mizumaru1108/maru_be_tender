@@ -3,8 +3,10 @@ import { Typography } from '@mui/material';
 import { Box, Container } from '@mui/system';
 import Page from 'components/Page';
 import FundingProjectRequestForm from 'sections/client/funding-project-request';
+import useLocales from '../../hooks/useLocales';
 
 const FundingProjectRequest = () => {
+  const { translate } = useLocales();
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -14,7 +16,8 @@ const FundingProjectRequest = () => {
   }));
 
   return (
-    <Page title="Fundin Project Request">
+    // <Page title="Fundin Project Request">
+    <Page title={translate('pages.common.funding_requests')}>
       <Container>
         <ContentStyle>
           <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>

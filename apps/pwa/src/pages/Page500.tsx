@@ -8,6 +8,7 @@ import Page from '../components/Page';
 import { MotionContainer, varBounce } from '../components/animate';
 // assets
 import { SeverErrorIllustration } from '../assets';
+import useLocales from '../hooks/useLocales';
 
 // ----------------------------------------------------------------------
 
@@ -24,8 +25,10 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function Page500({ error }: { error?: string }) {
+  const { translate } = useLocales();
   return (
-    <Page title="500 Internal Server Error">
+    // <Page title="500 Internal Server Error">
+    <Page title={translate('pages.common.internal_server_error')}>
       <Container component={MotionContainer}>
         <ContentStyle sx={{ textAlign: 'center', alignItems: 'center' }}>
           <m.div variants={varBounce().in}>

@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles';
 import CardTableBE from 'components/card-table/CardTableBE';
 import { getProposals } from 'queries/commons/getProposal';
 import useAuth from 'hooks/useAuth';
+import useLocales from '../../hooks/useLocales';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -16,8 +17,10 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 function RequestsInProcess() {
   const { user } = useAuth();
+  const { translate } = useLocales();
   return (
-    <Page title="Previous Funding Requests">
+    // <Page title="Previous Funding Requests">
+    <Page title={translate('pages.common.request_in_process')}>
       <Container>
         <ContentStyle>
           <CardTableBE

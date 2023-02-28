@@ -18,7 +18,7 @@ function PortalReportsPage() {
 
   return (
     // <Page title="Portal Reports Page">
-    <Page title={translate('pages.common.portal_reports')}>
+    <Page title={translate('pages.account_manager.portal_report')}>
       <Container>
         <ContentStyle>
           <PortalReportsSection />

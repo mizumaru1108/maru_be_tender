@@ -48,7 +48,8 @@ function MainManagerPage() {
   if (fetching || incomingFetching) return <>... Loading</>;
 
   return (
-    <Page title="Moderator Dashboard">
+    // <Page title="Moderator Dashboard">
+    <Page title={translate('pages.moderator.main')}>
       <Container>
         <ContentStyle>
           <CardInsight

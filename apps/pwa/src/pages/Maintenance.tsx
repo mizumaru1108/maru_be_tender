@@ -6,6 +6,7 @@ import { Button, Typography, Container } from '@mui/material';
 import Page from '../components/Page';
 // assets
 import { MaintenanceIllustration } from '../assets';
+import useLocales from '../hooks/useLocales';
 
 // ----------------------------------------------------------------------
 
@@ -22,8 +23,10 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function Maintenance() {
+  const { translate } = useLocales();
   return (
-    <Page title="Maintenance">
+    // <Page title="Maintenance">
+    <Page title={translate('pages.common.maintenance')}>
       <Container>
         <ContentStyle sx={{ textAlign: 'center', alignItems: 'center' }}>
           <Typography variant="h3" paragraph>

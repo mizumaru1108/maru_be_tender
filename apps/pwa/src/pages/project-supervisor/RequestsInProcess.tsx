@@ -4,10 +4,11 @@ import { styled } from '@mui/material/styles';
 import CardTableBE from 'components/card-table/CardTableBE';
 import { gettingMyRequestedProcess } from 'queries/project-supervisor/gettingMyRequestedProcess';
 import useAuth from 'hooks/useAuth';
+import useLocales from '../../hooks/useLocales';
 
 function RequestsInProcess() {
   const { user } = useAuth();
-
+  const { translate } = useLocales();
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -18,7 +19,8 @@ function RequestsInProcess() {
   }));
 
   return (
-    <Page title="Requests In Process | Supervisor">
+    // <Page title="Requests In Process | Supervisor">
+    <Page title={translate('pages.common.request_in_process')}>
       <Container>
         <ContentStyle>
           <CardTableBE

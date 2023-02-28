@@ -13,11 +13,9 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 function CeoRejectionList() {
   return (
-    <Page title="Rejected Projects | Table">
-      <ContentStyle>
-        <RejectionListTable />
-      </ContentStyle>
-    </Page>
+    <ContentStyle>
+      <RejectionListTable />
+    </ContentStyle>
   );
 }
 

@@ -17,7 +17,8 @@ function PreviousFundingRequests() {
     gap: 20,
   }));
   return (
-    <Page title="Previous Funding Requests | Project-Manager">
+    // <Page title="Previous Funding Requests | Project-Manager">
+    <Page title={translate('pages.common.previous_funding_requests')}>
       <Container>
         <ContentStyle>
           <CardTableBE

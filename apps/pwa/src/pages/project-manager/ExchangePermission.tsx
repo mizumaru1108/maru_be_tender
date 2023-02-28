@@ -19,7 +19,8 @@ function ExchangePermission() {
   const { translate } = useLocales();
   const { user } = useAuth();
   return (
-    <Page title="Previous Funding Requests">
+    // <Page title="Previous Funding Requests">
+    <Page title={translate('pages.common.exchange_permission')}>
       <Container>
         <ContentStyle>
           <CardTableBE

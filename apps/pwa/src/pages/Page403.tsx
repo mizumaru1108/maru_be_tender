@@ -8,6 +8,7 @@ import Page from '../components/Page';
 import { MotionContainer, varBounce } from '../components/animate';
 // assets
 import { ForbiddenIllustration } from '../assets';
+import useLocales from '../hooks/useLocales';
 
 // ----------------------------------------------------------------------
 
@@ -24,8 +25,10 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function Page403() {
+  const { translate } = useLocales();
   return (
-    <Page title="403 Forbidden">
+    // <Page title="403 Forbidden">
+    <Page title={translate('pages.common.forbidden')}>
       <Container component={MotionContainer}>
         <ContentStyle sx={{ textAlign: 'center', alignItems: 'center' }}>
           <m.div variants={varBounce().in}>

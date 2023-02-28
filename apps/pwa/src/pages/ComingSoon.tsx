@@ -9,6 +9,7 @@ import InputStyle from '../components/InputStyle';
 import SocialsButton from '../components/SocialsButton';
 // assets
 import { ComingSoonIllustration } from '../assets';
+import useLocales from '../hooks/useLocales';
 
 // ----------------------------------------------------------------------
 
@@ -38,9 +39,11 @@ const SeparatorStyle = styled(Typography)(({ theme }) => ({
 
 export default function ComingSoon() {
   const countdown = useCountdown(new Date('07/07/2024 21:30'));
+  const { translate } = useLocales();
 
   return (
-    <Page title="Coming Soon">
+    // <Page title="Coming Soon">
+    <Page title={translate('pages.common.comming_soon')}>
       <Container>
         <ContentStyle sx={{ textAlign: 'center' }}>
           <Typography variant="h3" paragraph>

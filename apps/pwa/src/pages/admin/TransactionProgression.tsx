@@ -15,7 +15,7 @@ function TransactionProgression() {
   }));
 
   return (
-    <Page title={translate('pages.admmin.transaction_progression')}>
+    <Page title={translate('pages.admin.transaction_progression')}>
       <Container>
         <ContentStyle>TransactionProgression</ContentStyle>
       </Container>

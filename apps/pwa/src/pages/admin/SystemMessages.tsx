@@ -17,7 +17,7 @@ function SystemMessages() {
 
   return (
     // <Page title="System Messages">
-    <Page title={translate('pages.admmin.system_messages')}>
+    <Page title={translate('pages.admin.system_messages')}>
       <Container>
         <ContentStyle>SystemMessages</ContentStyle>
       </Container>

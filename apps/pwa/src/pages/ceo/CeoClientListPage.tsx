@@ -17,7 +17,7 @@ function CeoClientListPage() {
 
   return (
     // <Page title="Ceo Client List Page | Ceo">
-    <Page title={translate('pages.ceo.client_list')}>
+    <Page title={translate('pages.common.client_list')}>
       <Container>
         <ContentStyle>
           <CeoClientList />

@@ -1,6 +1,7 @@
 import { styled } from '@mui/material/styles';
 import Page from 'components/Page';
 import MessagesPage from '../../components/message';
+import useLocales from '../../hooks/useLocales';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -9,8 +10,10 @@ const ContentStyle = styled('div')(({ theme }) => ({
 }));
 
 function ModeratorMessages() {
+  const { translate } = useLocales();
   return (
-    <Page title="Messages">
+    // <Page title="Messages">
+    <Page title={translate('pages.common.messages')}>
       <ContentStyle>
         <MessagesPage />
       </ContentStyle>

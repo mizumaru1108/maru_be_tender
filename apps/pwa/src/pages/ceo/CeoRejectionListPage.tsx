@@ -17,7 +17,7 @@ function CeoRejectionListPage() {
 
   return (
     // <Page title="Ceo - Rejection List">
-    <Page title={translate('pages.ceo.rejection_list')}>
+    <Page title={translate('pages.common.rejection_list')}>
       <Container>
         <ContentStyle>
           <CeoRejectionList />

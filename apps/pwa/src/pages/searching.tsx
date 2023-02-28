@@ -7,8 +7,10 @@ import { previousRequest } from 'queries/Moderator/supportRequest';
 import { useEffect, useState } from 'react';
 import { useQuery } from 'urql';
 import { CardTableSearching } from '../components/card-table';
+import useLocales from '../hooks/useLocales';
 
 function PreviousSupportRequests() {
+  const { translate } = useLocales();
   const [supportRequests, setSupportRequests] = useState<ProjectCardProps[]>([]);
 
   const [incoming, fetchIncoming] = useQuery({
@@ -63,7 +65,8 @@ function PreviousSupportRequests() {
   }, [incomingData]);
 
   return (
-    <Page title="Searching Page">
+    // <Page title="Searching Page">
+    <Page title={translate('pages.common.search')}>
       <Container>
         <ContentStyle>
           <CardTableSearching

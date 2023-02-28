@@ -139,7 +139,7 @@ function ClientProfile() {
 
   return (
     // <Page title="My Profile">
-    <Page title={translate('pages.client.my_profile')}>
+    <Page title={translate('pages.common.my_profile')}>
       <Container>
         <ContentStyle>
           <Stack direction="row" justifyContent="space-between">

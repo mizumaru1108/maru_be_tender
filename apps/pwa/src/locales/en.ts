@@ -14,6 +14,20 @@ const en = {
       mobile_settings: 'Mobile Settings',
       previous_funding_requests: 'Previous Funding Requests',
       incoming_funding_requests: 'Incoming Funding Requests',
+      request_in_process: 'Requests In Process',
+      funding_requests: 'Funding Project Requests',
+      my_profile: 'My Profile',
+      rejection_list: 'Rejection List',
+      client_list: 'Client List',
+      exchange_permission: 'Exchange Permission Requests',
+      payment_adjustment: 'Payment Adjustment',
+      //
+      comming_soon: 'Comming Soon',
+      maintenance: 'Maintenance',
+      forbidden: '403 Forbidden',
+      page_not_found: '404 Page Not Found',
+      internal_server_error: '500 Internal Server Error',
+      search: 'Search',
     },
     account_manager: {
       update_request: 'Information Update Request',
@@ -59,27 +73,38 @@ const en = {
       requests_in_process: 'Requests In Process',
     },
     ceo: {
-      client_list: 'Ceo Client List Page',
-      rejection_list: 'Rejection List',
       project_management: 'Project Management',
       main: 'Dashboard | Ceo',
     },
     client: {
       main: 'Main Client Dashboard',
       draft_funding_requests: 'Draft Funding Requests',
-      previous_funding_requests: 'Previous Funding Requests',
       appointments_with: 'Appointments With the Company',
       adjust_time: 'Adjust Your Time',
       amandement_request_form: 'Amandement Request | Form',
-      my_profile: 'My Profile',
       profile_editing: 'Profile Editing',
       user_info_editing: 'User Info Editing',
       contact_and_support: 'Contact and Support',
-      funding_requests: 'Funding Project Requests',
     },
     consultant: {
-      // new translation
       main: 'Dashboard | Consultant',
+    },
+    finance: {
+      main: 'The Finance | Main Page',
+      incoming_exchange: 'Incoming Exchange Permission Requests',
+    },
+    moderator: {
+      main: 'Dashboard | Moderator',
+    },
+    project_details: { details: 'Project Details', owner_details: 'Owner Details' },
+    project_manager: {
+      // new translation
+      main: 'Dashboard | Project Manager',
+      appointments: 'Appointments With Partners',
+      book_a_meeting: 'Booking a Meeting',
+    },
+    project_supervisor: {
+      main: 'Dashboard | Project Supervisor',
     },
   },
   content: {

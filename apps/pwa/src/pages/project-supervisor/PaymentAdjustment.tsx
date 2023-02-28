@@ -4,9 +4,11 @@ import { styled } from '@mui/material/styles';
 import CardTableBE from 'components/card-table/CardTableBE';
 import { gettingPaymentAdjustment } from 'queries/project-supervisor/gettingPaymentAdjustment';
 import useAuth from 'hooks/useAuth';
+import useLocales from '../../hooks/useLocales';
 
 function PaymentAdjustment() {
   const { user } = useAuth();
+  const { translate } = useLocales();
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -16,7 +18,8 @@ function PaymentAdjustment() {
     gap: 20,
   }));
   return (
-    <Page title="Previous Funding Requests">
+    // <Page title="Previous Funding Requests">
+    <Page title={translate('pages.common.payment_adjustment')}>
       <Container>
         <ContentStyle>
           <CardTableBE
