@@ -118,11 +118,29 @@ function MainPage() {
           <Typography>{execution_time}</Typography>
         </Stack>
         <Stack direction="column">
-          <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
+          <Typography
+            sx={{
+              color:
+                tmpValues?.revised?.num_ofproject_binicficiaries !== undefined
+                  ? 'green'
+                  : '#93A3B0',
+              fontSize: '12px',
+              mb: '5px',
+            }}
+          >
             {translate('where_to_implement_the_project')}
           </Typography>
           <Typography sx={{ mb: '20px' }}>{project_location}</Typography>
-          <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
+          <Typography
+            sx={{
+              color:
+                tmpValues?.revised?.num_ofproject_binicficiaries !== undefined
+                  ? 'green'
+                  : '#93A3B0',
+              fontSize: '12px',
+              mb: '5px',
+            }}
+          >
             {translate('target_group_type')}
           </Typography>
           <Typography>
@@ -132,13 +150,31 @@ function MainPage() {
           </Typography>
         </Stack>
         <Stack direction="column">
-          <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
+          <Typography
+            sx={{
+              color:
+                tmpValues?.revised?.num_ofproject_binicficiaries !== undefined
+                  ? 'green'
+                  : '#93A3B0',
+              fontSize: '12px',
+              mb: '5px',
+            }}
+          >
             {translate('project_implementation_date')}
           </Typography>
           <Typography sx={{ mb: '20px' }}>
             {new Date(project_implement_date).toISOString().substring(0, 10)}
           </Typography>
-          <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
+          <Typography
+            sx={{
+              color:
+                tmpValues?.revised?.num_ofproject_binicficiaries !== undefined
+                  ? 'green'
+                  : '#93A3B0',
+              fontSize: '12px',
+              mb: '5px',
+            }}
+          >
             {translate('support_type')}
           </Typography>
           <Typography>
