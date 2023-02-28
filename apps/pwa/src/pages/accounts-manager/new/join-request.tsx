@@ -47,6 +47,7 @@ function NewJoinRequestPage() {
         createdAt: v.client_data.created_at,
         account_status: 'WAITING_FOR_ACTIVATION',
         events: v.id,
+        email: v.email,
       }));
 
       setNewJoinRequestData(resultDataNR);

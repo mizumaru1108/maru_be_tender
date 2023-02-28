@@ -82,7 +82,8 @@ export default function ConfirmationModals({
                     `${translate(
                       'account_manager.table.td.label_btn_acc_reset_password'
                     )} "${partner_name}" ?`) ||
-                  (type === 'INFORMATION' && `${translate('label_btn_acc_information')}`)}
+                  (type === 'INFORMATION' &&
+                    `${translate('account_manager.table.td.label_btn_acc_information')}`)}
               </LoadingButton>
               <Button variant="contained" color="error" size="medium" onClick={onClose}>
                 {translate('account_manager.table.td.label_cancel')}

@@ -71,6 +71,7 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openMenuItem = Boolean(anchorEl);
   const [isSubmitting, setIsSubimitting] = useState<boolean>(false);
+  const [isSubmittingReset, setIsSubimittingReset] = useState<boolean>(false);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -91,16 +92,16 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
     setIsSubimitting(true);
 
     try {
-      // await axiosInstance.patch<ChangeStatusRequest, any>(
-      //   '/tender-user/update-status',
-      //   {
-      //     status: status,
-      //     user_id: id,
-      //   } as ChangeStatusRequest,
-      //   {
-      //     headers: { 'x-hasura-role': activeRole! },
-      //   }
-      // );
+      await axiosInstance.patch<ChangeStatusRequest, any>(
+        '/tender-user/update-status',
+        {
+          status: status,
+          user_id: id,
+        } as ChangeStatusRequest,
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
 
       let notif = '';
       if (status === 'ACTIVE_ACCOUNT') {
@@ -111,25 +112,70 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
         notif = 'account_manager.partner_details.notification.deleted_account';
       }
 
-      console.log({
-        status: status,
-        user_id: id,
-      } as ChangeStatusRequest);
-
       setIsSubimitting(false);
       enqueueSnackbar(`${translate(notif)}`, {
         variant: 'success',
       });
       handleClose();
       handleCloseModal();
+
+      window.location.reload();
     } catch (err) {
       setIsSubimitting(false);
+
       enqueueSnackbar(
         `${err.statusCode < 500 && err.message ? err.message : 'something went wrong!'}`,
         {
           variant: 'error',
         }
       );
+
+      setAction('INFORMATION');
+      console.log(err);
+    }
+  };
+
+  const handleResetPassword = async (email: string) => {
+    setIsSubimittingReset(true);
+
+    try {
+      const res = await axiosInstance.post(
+        '/tender-auth/forgot-password-request',
+        { email },
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
+
+      if (res.status === 201) {
+        setIsSubimittingReset(false);
+        enqueueSnackbar(
+          `${translate('account_manager.partner_details.notification.reset_password')}`,
+          {
+            variant: 'success',
+          }
+        );
+        handleClose();
+        handleCloseModal();
+      }
+    } catch (err) {
+      if (typeof err.message === 'object') {
+        err.message.forEach((el: any) => {
+          enqueueSnackbar(el, {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          });
+        });
+      } else {
+        enqueueSnackbar(err.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+      }
+
+      setIsSubimittingReset(false);
       handleClose();
       handleCloseModal();
       console.log(err);
@@ -222,7 +268,7 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
                 aria-haspopup="true"
                 aria-expanded={openMenuItem ? 'true' : undefined}
                 onClick={handleClick}
-                loading={isSubmitting}
+                loading={isSubmitting || isSubmittingReset}
               >
                 {translate('account_manager.table.td.btn_account_review')}
               </LoadingButton>
@@ -244,7 +290,8 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
               >
                 <MenuItem
                   onClick={() => {
-                    navigate(`${url}/partner/owner/${id as string}`);
+                    // navigate(`${url}/partner/owner/${id as string}`);
+                    navigate(PATH_ACCOUNTS_MANAGER.partnerDetails(id as string));
                   }}
                 >
                   <Iconify icon={'eva:person-outline'} width={20} height={20} sx={{ mr: 1 }} />
@@ -263,13 +310,24 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
                     {translate('account_manager.table.td.label_reset_password')}
                   </Typography>
                 </MenuItem>
+                <MenuItem onClick={() => handleChangeStatus(id as string, 'ACTIVE_ACCOUNT')}>
+                  <Iconify
+                    icon={'eva:checkmark-circle-outline'}
+                    width={18}
+                    height={18}
+                    sx={{ mr: 1 }}
+                  />
+                  <Typography variant="subtitle2">
+                    {translate('account_manager.partner_details.btn_activate_account')}
+                  </Typography>
+                </MenuItem>
                 <MenuItem
                   onClick={() => {
                     setAction('DEACTIVATE_ACCOUNT');
                     handleClose();
                   }}
                 >
-                  <Iconify icon={'eva:slash-outline'} width={16} height={16} sx={{ mr: 1 }} />
+                  <Iconify icon={'eva:slash-outline'} width={18} height={18} sx={{ mr: 1 }} />
                   <Typography variant="subtitle2">
                     {translate('account_manager.table.td.label_deactivate_account')}
                   </Typography>
@@ -292,16 +350,19 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
         {action === 'RESET_PASSWORD' && (
           <ConfirmationModals
             type="RESET_PASSWORD"
-            onSubmit={() =>
-              console.log({
-                id,
-                partner_name,
-                email,
-              })
-            }
+            onSubmit={() => handleResetPassword(email!)}
             onClose={handleCloseModal}
             partner_name={partner_name!}
-            loading={isSubmitting}
+            loading={isSubmittingReset}
+          />
+        )}
+
+        {action === 'INFORMATION' && (
+          <ConfirmationModals
+            type="INFORMATION"
+            onSubmit={() => window.location.reload()}
+            onClose={handleCloseModal}
+            partner_name={partner_name!}
           />
         )}
       </TableRow>
