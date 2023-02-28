@@ -53,6 +53,7 @@ function FloatingActionBar() {
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSubmittingRejected, setIsSubmittingRejected] = useState<boolean>(false);
+  const [isSubmittingStepback, setIsSubmittingStepback] = useState<boolean>(false);
 
   const dispatch = useDispatch();
   const { proposal } = useSelector((state) => state.proposal);
@@ -192,39 +193,96 @@ function FloatingActionBar() {
     }
   };
 
-  const stepBackProposal = () => {
-    reject({
-      proposal_id: pid,
-      new_values: {
-        inner_status: 'CREATED_BY_CLIENT',
-        outter_status: 'ONGOING',
-        state: 'MODERATOR',
-        supervisor_id: null,
-        project_track: null,
-      },
-      log: {
-        id: nanoid(),
+  // const stepBackProposal = () => {
+  //   reject({
+  //     proposal_id: pid,
+  //     new_values: {
+  //       inner_status: 'CREATED_BY_CLIENT',
+  //       outter_status: 'ONGOING',
+  //       state: 'MODERATOR',
+  //       supervisor_id: null,
+  //       project_track: null,
+  //     },
+  //     log: {
+  //       id: nanoid(),
+  //       proposal_id: pid,
+  //       reviewer_id: user?.id!,
+  //       action: 'step_back',
+  //       message: 'تم إرجاع المشروع خطوة للوراء',
+  //       user_role: 'PROJECT_SUPERVISOR',
+  //       state: 'PROJECT_SUPERVISOR',
+  //     },
+  //   }).then((res) => {
+  //     if (res.error) {
+  //       enqueueSnackbar(res.error.message, {
+  //         variant: 'error',
+  //         preventDuplicate: true,
+  //         autoHideDuration: 3000,
+  //       });
+  //     } else {
+  //       enqueueSnackbar('تم إرجاع المعاملة لمسوؤل الفرز بنجاح', {
+  //         variant: 'success',
+  //       });
+  //       navigate(`/project-supervisor/dashboard/app`);
+  //     }
+  //   });
+  // };
+
+  const stepBackProposal = async (data: any) => {
+    setIsSubmittingStepback(true);
+
+    try {
+      const payload = {
         proposal_id: pid,
-        reviewer_id: user?.id!,
         action: 'step_back',
         message: 'تم إرجاع المشروع خطوة للوراء',
-        user_role: 'PROJECT_SUPERVISOR',
-        state: 'PROJECT_SUPERVISOR',
-      },
-    }).then((res) => {
-      if (res.error) {
-        enqueueSnackbar(res.error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
+        notes: data.notes,
+      };
+
+      console.log('payloadStepBackSupervisor', payload);
+
+      await axiosInstance
+        .patch('/tender-proposal/change-state', payload, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            enqueueSnackbar(translate('proposal_stepback'), {
+              variant: 'success',
+            });
+          }
+
+          setIsSubmittingStepback(false);
+          navigate(`/project-supervisor/dashboard/app`);
+        })
+        .catch((err) => {
+          if (typeof err.message === 'object') {
+            err.message.forEach((el: any) => {
+              enqueueSnackbar(el, {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            });
+          } else {
+            enqueueSnackbar(err.message, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
+          }
+
+          setIsSubmittingStepback(false);
         });
-      } else {
-        enqueueSnackbar('تم إرجاع المعاملة لمسوؤل الفرز بنجاح', {
-          variant: 'success',
-        });
-        navigate(`/project-supervisor/dashboard/app`);
-      }
-    });
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+
+      setIsSubmittingStepback(false);
+    }
   };
 
   const handleMessage = () => {

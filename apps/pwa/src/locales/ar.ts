@@ -1061,6 +1061,7 @@ const ar = {
     date_created: 'تاريخ الانشاء',
     events: 'الاحداث',
     days: 'أيام',
+    day: 'يوم',
     sent_section: 'القسم المرسل',
     clients_name: 'اسم العميل',
     employee: 'موظف',

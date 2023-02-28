@@ -110,7 +110,6 @@ function ProjectPath() {
 
     return formattedDate;
   };
-
   return (
     <Grid container spacing={2}>
       <Grid item md={8} xs={8} sx={{ backgroundColor: 'transparent', px: 6 }}>
@@ -131,8 +130,7 @@ function ProjectPath() {
           ) : (
             <Typography>{translate('review.waiting')}</Typography>
           )}
-          {(stepUserRole !== 'PROJECT_SUPERVISOR' ??
-            stepActionType === 'send_back_for_revision') && (
+          {stepUserRole !== 'PROJECT_SUPERVISOR' && (
             <React.Fragment>
               <Typography variant="h6">{translate(`review.notes`)}</Typography>
               {followUps.log.length !== activeStep ? (
@@ -150,8 +148,26 @@ function ProjectPath() {
               )}
             </React.Fragment>
           )}
+          {stepUserRole === 'PROJECT_SUPERVISOR' &&
+            stepActionType === ('step_back' || 'send_back_for_revision') && (
+              <React.Fragment>
+                <Typography variant="h6">{translate(`review.notes`)}</Typography>
+                {followUps.log.length !== activeStep &&
+                  followUps.log.map((item: Log, index: number) => (
+                    <React.Fragment key={index}>
+                      {index === activeStep && (
+                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                          <Typography>{item.notes ?? '-'}</Typography>
+                        </Stack>
+                      )}
+                    </React.Fragment>
+                  ))}
+              </React.Fragment>
+            )}
           <Divider />
-          {stepUserRole === 'PROJECT_SUPERVISOR' && stepActionType !== 'send_back_for_revision' ? (
+          {stepUserRole === 'PROJECT_SUPERVISOR' &&
+          stepActionType !== 'send_back_for_revision' &&
+          stepActionType !== 'step_back' ? (
             <React.Fragment>
               <Typography variant="h6">{translate(`review.review_by_supervisor`)}</Typography>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>

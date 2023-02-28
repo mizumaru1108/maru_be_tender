@@ -1,5 +1,5 @@
 export const getProposalLog = `query getProposalLog($proposal_id: String = "") {
-  log: proposal_log(where: {proposal_id: {_eq: $proposal_id}, user_role: {_neq: "CLIENT"}}) {
+  log: proposal_log(where: {proposal_id: {_eq: $proposal_id}, user_role: {_neq: "CLIENT"}}, order_by: {created_at: asc}) {
     id
     action
     message

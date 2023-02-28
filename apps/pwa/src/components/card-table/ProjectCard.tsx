@@ -8,6 +8,7 @@ import {
   Divider,
   Box,
   Grid,
+  Chip,
 } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 import { useLocation, useNavigate } from 'react-router';
@@ -67,8 +68,18 @@ const ProjectCard = ({
   const location = useLocation();
   const { translate, currentLang } = useLocales();
   const [_, updateAsigning] = useMutation(asignProposalToAUser);
-
   // const valueLocale = localStorage.getItem('i18nextLng');
+
+  let daysSinceCreated = 0;
+  if (footer && footer.createdAt) {
+    daysSinceCreated = Math.ceil(
+      (new Date().getTime() - footer.createdAt.getTime()) / (1000 * 3600 * 24) - 1
+    );
+  } else if (content && content.createdAtClient) {
+    daysSinceCreated = Math.ceil(
+      (new Date().getTime() - content.createdAtClient.getTime()) / (1000 * 3600 * 24) - 1
+    );
+  }
 
   const onDeleteDraftClick = () => {
     console.log('onDeleteDraftClick');
@@ -303,7 +314,7 @@ const ProjectCard = ({
             </Grid>
           )}
           <Grid item md={12}>
-            <Stack direction="row" justifyContent="space-between">
+            <Stack direction="row" justifyContent="space-between" gap={2}>
               <Stack direction="column">
                 <Typography
                   variant="h6"
@@ -324,6 +335,24 @@ const ProjectCard = ({
                     : moment(content.createdAtClient).locale(`${currentLang.value}`).format('LLLL')}
                 </Typography>
               </Stack>
+              <Chip
+                label={`${daysSinceCreated} ${
+                  daysSinceCreated < 2 ? translate('project_management_headercell.day') : translate('project_management_headercell.days')
+                }`}
+                sx={{
+                  alignSelf: 'end',
+                  fontWeight: 500,
+                  backgroundColor:
+                    daysSinceCreated < 3
+                      ? '#0E84782E'
+                      : daysSinceCreated < 5
+                      ? '#FFC10729'
+                      : '#FF484229',
+                  color:
+                    daysSinceCreated < 3 ? '#0E8478' : daysSinceCreated < 5 ? '#FFC107' : '#FF4842',
+                  borderRadius: '10px',
+                }}
+              />
               {cardFooterButtonAction === 'draft' ? (
                 <Stack direction="row" gap={2}>
                   <Button

@@ -6,7 +6,7 @@ import useAuth from 'hooks/useAuth';
 import { role_url_map } from '../../../../@types/commons';
 
 export default function ClientListTableRow({ row, selected, onSelectRow }: ClientListsRow) {
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
   const { activeRole } = useAuth();
 
   const navigate = useNavigate();
@@ -21,7 +21,11 @@ export default function ClientListTableRow({ row, selected, onSelectRow }: Clien
         </Typography>
       </TableCell>
       <TableCell align="left">
-        <Typography variant="subtitle2" noWrap>
+        <Typography
+          variant="subtitle2"
+          noWrap
+          sx={{ direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+        >
           {row.data_entry_mobile}
         </Typography>
       </TableCell>

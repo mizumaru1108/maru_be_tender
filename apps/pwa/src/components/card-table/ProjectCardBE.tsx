@@ -57,9 +57,23 @@ const ProjectCardBE = ({
   destination, // it refers to the url that I came from and the url that I have to go to
   mutate,
 }: ProjectCardPropsBE) => {
-  const daysSinceCreated = Math.ceil(
-    (new Date().getTime() - created_at.getTime()) / (1000 * 3600 * 24)
-  );
+  // const daysSinceCreated = Math.ceil(
+  //   (new Date().getTime() - created_at.getTime()) / (1000 * 3600 * 24)
+  // );
+
+  function daysSinceCreated() {
+    let getCreatedAt = new Date();
+    if (proposal_logs && proposal_logs.length > 0) {
+      getCreatedAt = new Date(proposal_logs[proposal_logs.length - 1].created_at);
+    } else {
+      getCreatedAt = created_at;
+    }
+    const daysSince = Math.ceil(
+      (new Date().getTime() - getCreatedAt.getTime()) / (1000 * 3600 * 24) - 1
+    );
+    return daysSince;
+  }
+
   const { user: userAuth, activeRole } = useAuth();
   const role = activeRole!;
   const navigate = useNavigate();
@@ -360,18 +374,26 @@ const ProjectCardBE = ({
                 </Typography>
               </Stack>
               <Chip
-                label={`${daysSinceCreated} ${translate('project_management_headercell.days')}`}
+                label={`${daysSinceCreated()} ${
+                  daysSinceCreated() < 2
+                    ? translate('project_management_headercell.day')
+                    : translate('project_management_headercell.days')
+                }`}
                 sx={{
                   alignSelf: 'end',
                   fontWeight: 500,
                   backgroundColor:
-                    daysSinceCreated < 3
+                    daysSinceCreated() < 3
                       ? '#0E84782E'
-                      : daysSinceCreated < 5
+                      : daysSinceCreated() < 5
                       ? '#FFC10729'
                       : '#FF484229',
                   color:
-                    daysSinceCreated < 3 ? '#0E8478' : daysSinceCreated < 5 ? '#FFC107' : '#FF4842',
+                    daysSinceCreated() < 3
+                      ? '#0E8478'
+                      : daysSinceCreated() < 5
+                      ? '#FFC107'
+                      : '#FF4842',
                   borderRadius: '10px',
                 }}
               />
