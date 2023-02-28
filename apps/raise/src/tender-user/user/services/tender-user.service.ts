@@ -397,6 +397,17 @@ export class TenderUserService {
   }
 
   async updateUserStatus(accManagerId: string, request: UserStatusUpdateDto) {
+    if (request.status === UserStatusEnum.SUSPENDED_ACCOUNT) {
+      const haveProposal = await this.tenderUserRepository.isUserHasProposal(
+        request.user_id,
+      );
+
+      if (haveProposal.length > 0) {
+        throw new BadRequestException(
+          'Cant suspend user, user still have ongoing proposal!',
+        );
+      }
+    }
     const response = await this.tenderUserRepository.changeUserStatus(
       request.user_id,
       request.status,

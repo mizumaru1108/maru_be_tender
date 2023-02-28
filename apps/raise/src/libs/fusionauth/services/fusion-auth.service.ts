@@ -503,37 +503,42 @@ export class FusionAuthService {
   }
 
   async submitChangePassword(
-    email: string,
     changePasswordId: string,
     newPassword: string,
     oldPassword?: string,
-  ): Promise<ClientResponse<ChangePasswordResponse>> {
+  ) {
+    const changePasswordUrl = `${this.fusionAuthUrl}/api/user/change-password/${changePasswordId}`;
+    const payload: ChangePasswordRequest = {
+      applicationId: this.fusionAuthAppId,
+      password: newPassword,
+    };
+    if (oldPassword) payload.currentPassword = oldPassword;
+    const axiosOptions: AxiosRequestConfig<any> = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.fusionAuthAdminKey,
+        'X-FusionAuth-TenantId': this.fusionAuthTenantId,
+      },
+      url: changePasswordUrl,
+      data: payload,
+    };
     try {
-      const payload: ChangePasswordRequest = {
-        applicationId: this.fusionAuthAppId,
-        loginId: email,
-        changePasswordId: changePasswordId,
-      };
-      if (oldPassword) payload.currentPassword = oldPassword;
-      if (newPassword) payload.password = newPassword;
-      return await this.fusionAuthClient.changePassword(
-        changePasswordId,
-        payload,
-      );
+      const response = await axios(axiosOptions);
+      return response;
     } catch (error) {
-      this.logger.debug('Error', error);
-      if (error.response.status < 500) {
-        console.log(error.response.data);
-        throw new BadRequestException(
-          `Verify Failed, more details: ${
-            error.response.data.fieldErrors
-              ? JSON.stringify(error.response.data.fieldErrors)
-              : JSON.stringify(error.response.data)
-          }`,
-        );
+      if (error.statusCode === 404 || error.statusCode === 400) {
+        if (error.statusCode === 404) {
+          if (oldPassword) {
+            throw new BadRequestException('Invalid Old Password!');
+          } else {
+            throw new BadRequestException('Token Expired!');
+          }
+        }
       } else {
-        console.log(error);
-        throw new Error('Something went wrong!');
+        throw new Error(
+          'Something went wrong when submitting change password!',
+        );
       }
     }
   }

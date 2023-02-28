@@ -12,6 +12,7 @@ import { TenderClientRepository } from '../../tender-user/client/repositories/te
 import { TenderClientService } from '../../tender-user/client/services/tender-client.service';
 import { TenderUserRepository } from '../../tender-user/user/repositories/tender-user.repository';
 import { RegisterTenderDto } from '../dtos/requests/register-tender.dto';
+import { SubmitChangePasswordDto } from '../dtos/requests/submit-change-password.dto';
 import { TenderLoginResponseDto } from '../dtos/responses/tender-login-response.dto';
 
 @Injectable()
@@ -144,8 +145,6 @@ export class TenderAuthService {
 
     const response = await this.fusionAuthService.forgotPasswordRequest(email);
 
-    // console.log(logUtil(response));
-
     this.emailService.sendMail({
       mailType: 'template',
       to: email,
@@ -160,5 +159,13 @@ export class TenderAuthService {
       templatePath: 'tender/en/account/forget_password',
     });
     return response;
+  }
+
+  async submitChangePassword(request: SubmitChangePasswordDto) {
+    await this.fusionAuthService.submitChangePassword(
+      request.changePasswordId,
+      request.newPassword,
+      request.oldPassword,
+    );
   }
 }

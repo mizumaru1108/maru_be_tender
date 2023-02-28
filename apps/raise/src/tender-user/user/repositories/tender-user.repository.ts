@@ -75,6 +75,38 @@ export class TenderUserRepository {
     }
   }
 
+  async isUserHasProposal(userId: string) {
+    try {
+      return await this.prismaService.proposal.findMany({
+        where: {
+          AND: [
+            {
+              outter_status: {
+                in: ['ONGOING', 'ON_REVISION', 'PENDING'],
+              },
+            },
+            {
+              OR: [
+                { submitter_user_id: userId },
+                { finance_id: userId },
+                { cashier_id: userId },
+                { project_manager_id: userId },
+                { supervisor_id: userId },
+              ],
+            },
+          ],
+        },
+      });
+    } catch (err) {
+      const theError = prismaErrorThrower(
+        err,
+        TenderUserRepository.name,
+        'Finding ongoing proposal on user Error:',
+        `Finding ongoing proposal on this user!`,
+      );
+      throw theError;
+    }
+  }
   async findByRole(role: TenderAppRole) {
     try {
       return await this.prismaService.user.findMany({

@@ -11,6 +11,7 @@ import { TenderLoginResponseDto } from '../dtos/responses/tender-login-response.
 import { TenderJwtGuard } from '../guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../guards/tender-roles.guard';
 import { TenderAuthService } from '../services/tender-auth.service';
+import { SubmitChangePasswordDto } from '../dtos/requests/submit-change-password.dto';
 
 @Controller('tender-auth')
 export class TenderAuthController {
@@ -54,23 +55,21 @@ export class TenderAuthController {
     return baseResponseHelper(
       createdClient,
       HttpStatus.CREATED,
-      'Client has been registered successfully!',
+      'Forgot password already submitted!',
     );
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_client')
-  @Post('submit-forgot-password')
+  @Post('submit-change-password')
   async submitForgotPassword(
-    @Body() request: ForgotPasswordRequestDto,
-  ): Promise<BaseResponse<any>> {
-    const createdClient = await this.tenderAuthService.forgotPasswordRequest(
-      request.email,
-    );
+    @Body() request: SubmitChangePasswordDto,
+  ): Promise<BaseResponse<string>> {
+    await this.tenderAuthService.submitChangePassword(request);
     return baseResponseHelper(
-      createdClient,
+      'Password Changed Successfully!',
       HttpStatus.CREATED,
-      'Client has been registered successfully!',
+      'Client password successfully changed!',
     );
   }
 }
