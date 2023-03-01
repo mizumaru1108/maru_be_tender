@@ -59,8 +59,6 @@ export class TenderAuthController {
     );
   }
 
-  @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_client')
   @Post('submit-change-password')
   async submitForgotPassword(
     @Body() request: SubmitChangePasswordDto,
