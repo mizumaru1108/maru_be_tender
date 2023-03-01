@@ -1,19 +1,14 @@
-import { Model } from 'mongoose';
-import { Injectable, HttpException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { FusionAuthClient } from '@fusionauth/typescript-client';
+import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
-import { User, UserDocument } from './schema/user.schema';
-import {
-  RegFromFusionAuthTenderDto,
-  RegisterFromFusionAuthDto,
-  RegisterFromFusionAuthTenderDto,
-} from './dtos/register-from-fusion-auth.dto';
-import { RoleEnum } from './enums/role-enum';
 import { Donor } from 'src/donor/schema/donor.schema';
 import { PrismaService } from '../prisma/prisma.service';
-import { RegisterTendersDto } from 'src/auth/dtos';
+import { RegisterFromFusionAuthDto } from './dtos/register-from-fusion-auth.dto';
+import { RoleEnum } from './enums/role-enum';
+import { User, UserDocument } from './schema/user.schema';
 
 @Injectable()
 export class UserService {
@@ -148,13 +143,13 @@ export class UserService {
     currentPassword: string,
     newPassword: string,
   ) {
-    console.log(email);
+    // console.log(email);
     const fusionauth = new FusionAuthClient(
       this.configService.get('FUSIONAUTH_ADMIN_KEY', ''),
       this.configService.get('FUSIONAUTH_URL', ''),
       this.configService.get('FUSIONAUTH_TENANT_ID', ''),
     );
-    console.log(this.configService.get('FUSIONAUTH_URL', ''));
+    // console.log(this.configService.get('FUSIONAUTH_URL', ''));
     try {
       const changePassword = await fusionauth.changePasswordByIdentity({
         applicationId: 'b5ee66f1-cc1c-4185-97a9-e562ce8e98f6',
