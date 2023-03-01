@@ -5,11 +5,13 @@ export interface IUserStatusLogResponseDto {
     };
     account_manager_detail: {
       id: string;
+      employee_name: string | null;
       mobile_number: string | null;
       email: string;
     } | null;
     user_detail: {
       id: string;
+      employee_name: string | null;
       mobile_number: string | null;
       email: string;
     };

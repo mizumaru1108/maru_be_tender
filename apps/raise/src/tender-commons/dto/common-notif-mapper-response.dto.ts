@@ -15,6 +15,10 @@ export class CommonNotifMapperResponse {
   @ApiProperty()
   clientContent: string;
   @ApiProperty()
+  clientEmailTemplatePath?: string;
+  @ApiProperty()
+  clientEmailTemplateContext?: Record<string, any>;
+  @ApiProperty()
   createManyWebNotifPayload: Prisma.notificationCreateManyInput[];
   @ApiPropertyOptional()
   reviewerId?: string;
@@ -24,4 +28,8 @@ export class CommonNotifMapperResponse {
   reviewerMobileNumber?: string;
   @ApiPropertyOptional()
   reviewerContent?: string;
+  @ApiProperty()
+  reviewerEmailTemplatePath?: string;
+  @ApiProperty()
+  reviewerEmailTemplateContext?: Record<string, any>;
 }

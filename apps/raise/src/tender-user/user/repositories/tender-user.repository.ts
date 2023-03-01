@@ -439,6 +439,7 @@ export class TenderUserRepository {
             user_detail: {
               select: {
                 id: true,
+                employee_name: true,
                 email: true,
                 mobile_number: true,
               },
@@ -446,6 +447,7 @@ export class TenderUserRepository {
             account_manager_detail: {
               select: {
                 id: true,
+                employee_name: true,
                 email: true,
                 mobile_number: true,
               },

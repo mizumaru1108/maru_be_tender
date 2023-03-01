@@ -456,6 +456,15 @@ export class TenderUserService {
       subject,
       content: clientContent,
     };
+
+    if (status_log.user_status.id === UserStatusEnum.SUSPENDED_ACCOUNT) {
+      clientEmailNotifPayload.mailType = 'template';
+      clientEmailNotifPayload.templatePath =
+        'tender/en/account/account_deactivation';
+      clientEmailNotifPayload.templateContext = {
+        name: status_log.user_detail.employee_name || 'Client...',
+      };
+    }
     this.emailService.sendMail(clientEmailNotifPayload);
 
     const clientWebNotifPayload: CreateNotificationDto = {

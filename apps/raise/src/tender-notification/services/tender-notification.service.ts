@@ -102,22 +102,32 @@ export class TenderNotificationService {
       clientContent,
       clientEmail,
       clientMobileNumber,
+      clientEmailTemplatePath,
+      clientEmailTemplateContext,
       reviewerContent,
       reviewerEmail,
       reviewerMobileNumber,
+      reviewerEmailTemplateContext,
+      reviewerEmailTemplatePath,
     } = notifPayload;
 
-    const baseSendEmail: Omit<SendEmailDto, 'to'> = {
-      mailType: 'plain',
+    const baseSendEmail: Omit<SendEmailDto, 'to' | 'mailType'> = {
+      subject,
       from: 'no-reply@hcharity.org',
     };
 
     const clientEmailNotif: SendEmailDto = {
       ...baseSendEmail,
+      mailType:
+        clientEmailTemplateContext && clientEmailTemplatePath
+          ? 'template'
+          : 'plain',
       to: clientEmail,
-      subject: subject,
-      content: clientContent,
     };
+    if (clientEmailTemplateContext && clientEmailTemplatePath) {
+      clientEmailNotif.templateContext = clientEmailTemplateContext;
+      clientEmailNotif.templatePath = clientEmailTemplatePath;
+    }
     this.emailService.sendMail(clientEmailNotif);
 
     const clientPhone = isExistAndValidPhone(clientMobileNumber);
@@ -132,10 +142,16 @@ export class TenderNotificationService {
       if (reviewerEmail && reviewerEmail !== '') {
         const reviewerEmailNotif: SendEmailDto = {
           ...baseSendEmail,
+          mailType:
+            reviewerEmailTemplateContext && reviewerEmailTemplatePath
+              ? 'template'
+              : 'plain',
           to: reviewerEmail,
-          subject: subject,
-          content: reviewerContent,
         };
+        if (reviewerEmailTemplateContext && reviewerEmailTemplatePath) {
+          clientEmailNotif.templateContext = reviewerEmailTemplateContext;
+          clientEmailNotif.templatePath = reviewerEmailTemplatePath;
+        }
         this.emailService.sendMail(reviewerEmailNotif);
       }
 
