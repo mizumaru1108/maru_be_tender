@@ -468,6 +468,14 @@ const ar = {
         },
       },
     },
+    reset_password: {
+      password: {
+        old_required: 'كلمة المرور القديمة مطلوبة',
+        new_required: 'مطلوب كلمة مرور جديدة',
+      },
+      success_reset_password: 'تم تغيير كلمة المرور الخاصة بك بنجاح',
+      something_wrong: 'هناك خطأ ما',
+    },
   },
   commons: {
     track_type: {
@@ -475,7 +483,7 @@ const ar = {
       mosques_track: 'مسار المساجد',
       scholarships_track: 'مسار الجامعات',
       initiatives_track: 'مسار المبادرات',
-      baptism_track: 'مسار المعمودية',
+      baptism_track: 'مسار الاستقطاب',
       syeikh_track: 'مسار السيوخ',
       concessional_grants: 'مسار المنح الميسرة',
     },
@@ -559,12 +567,15 @@ const ar = {
   register_fifth_tap: 'المعلومات البنكية',
   email_label: 'البريد الإلكتروني',
   password_label: 'كلمة السر',
+  old_password_label: 'كلمة المرور القديمة',
+  new_password_label: 'كلمة المرور الجديدة',
+  placeholder_reset_password: 'اكتب كلمة المرور الخاصة بك هنا',
   remember_me: 'تذكرني',
   forget_the_password: 'نسيت كلمة المرور',
-
   forgot_your_password: 'نسيت رقمك السري؟',
   forgot_password_details:
     'يرجى إدخال عنوان البريد الإلكتروني المرتبط بحسابك وسنرسل لك عبر البريد الإلكتروني رابطًا لإعادة تعيين كلمة المرور الخاصة بك.',
+  reset_password_details: 'الرجاء إدخال كلمة المرور القديمة والجديدة لحسابك المرتبط بهذا التطبيق',
   login: 'تسجيل الدخول',
   the_login_message: 'الرجاء إدخال عنوان البريد الإلكتروني',
   dont_have_account: 'ليس لديك حساب في المنصة؟',
@@ -1183,7 +1194,7 @@ const ar = {
         label_pending: 'قيد الانتظار',
         label_approved: 'مقبول',
         label_rejected: 'مرفوض',
-        label_client_profile: 'صفحة الزبون الشخصية',
+        label_client_profile: 'صفحة العميل الشخصية',
         label_reset_password: 'إعادة تعيين كلمة المرور',
         label_deactivate_account: 'تعطيل الحساب',
         label_question_deactivate: 'هل أنت متأكد من إلغاء تنشيط الحساب لـ',

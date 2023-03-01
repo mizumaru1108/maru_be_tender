@@ -461,6 +461,15 @@ const en = {
         },
       },
     },
+
+    reset_password: {
+      password: {
+        old_required: 'Old password is required',
+        new_required: 'New password is required',
+      },
+      success_reset_password: 'Your password has been changed successfully!',
+      something_wrong: 'Opss, something went wrong.',
+    },
   },
   commons: {
     track_type: {
@@ -552,11 +561,16 @@ const en = {
   register_fifth_tap: 'Banking info',
   email_label: 'E-mail',
   password_label: 'The password',
+  old_password_label: 'Old Password',
+  new_password_label: 'New Password',
+  placeholder_reset_password: 'Type your password here',
   remember_me: 'remember me',
   forget_the_password: 'forget the password',
   forgot_your_password: 'Forgot your password?',
   forgot_password_details:
     'Please enter the email address associated with your account and We will email you a link to reset your password.',
+  reset_password_details:
+    'Please enter old and new password for your account associated with this application',
   login: 'Login',
   create_new_account: 'Create a new account',
   the_login_message: 'Please enter your email address to login.',
