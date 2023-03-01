@@ -1546,6 +1546,7 @@ const en = {
   mobile_number: 'Mobile number:',
   governorate: 'Governorate:',
   amount_required_for_support: 'Amount required for support:',
+  amount_required_for_support2: 'المبلغ المطلوب للدعم',
   selected_bank: 'Selected bank:',
   support_letter_file: 'Support letter file',
   project_attachment_file: 'Project attachment file',

@@ -1583,6 +1583,7 @@ const ar = {
   mobile_number: 'رقم الجوال:',
   governorate: 'المحافظة:',
   amount_required_for_support: 'المبلغ المطلوب للدعم:',
+  amount_required_for_support2: 'المبلغ المطلوب للدعم',
   selected_bank: 'المصرف المختار:',
   support_letter_file: 'ملف خطاب طلب الدعم',
   project_attachment_file: 'ملف مرفقات المشروع',

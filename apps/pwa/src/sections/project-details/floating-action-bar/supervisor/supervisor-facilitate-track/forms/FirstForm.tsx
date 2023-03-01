@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Grid, MenuItem } from '@mui/material';
+import { Grid, MenuItem, Typography } from '@mui/material';
 import { FormProvider, RHFSelect } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
@@ -9,6 +9,8 @@ import { _supportGoals } from '_mock/_supportgoals';
 import { useSelector } from 'redux/store';
 import { SupervisorStep1 } from '../../../../../../@types/supervisor-accepting-form';
 import useLocales from 'hooks/useLocales';
+//
+import { fCurrencyNumber } from 'utils/formatNumber';
 
 function FirstForm({ children, onSubmit }: any) {
   const { translate } = useLocales();
@@ -61,9 +63,10 @@ function FirstForm({ children, onSubmit }: any) {
   };
 
   useEffect(() => {
-    if (support_type === 'true') resetField('fsupport_by_supervisor');
-    if (support_type === 'false')
-      setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
+    setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
+    // if (support_type === 'true') resetField('fsupport_by_supervisor');
+    // if (support_type === 'false')
+    //   setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
   }, [proposal.amount_required_fsupport, resetField, setValue, support_type]);
 
   return (
@@ -147,7 +150,15 @@ function FirstForm({ children, onSubmit }: any) {
             ]}
           />
         </Grid>
-        <Grid item md={6} xs={12} />
+        <Grid item md={6} xs={12}>
+          <BaseField
+            type="textField"
+            name="fsupport_by_supervisor"
+            label="مبلغ الدعم*"
+            placeholder="مبلغ الدعم"
+            disabled={true}
+          />
+        </Grid>
         {vat === 'true' && (
           <Grid item md={6} xs={12}>
             <BaseField

@@ -17,19 +17,25 @@ function ProjectBudget() {
     const projectTrack = proposal.project_track;
     let valueToItem: ItemBudget[], valueSummary: number;
 
-    if (projectTrack === 'CONCESSIONAL_GRANTS') {
-      valueToItem = proposal.recommended_supports;
-      valueSummary = valueToItem.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+    valueToItem = proposal.proposal_item_budgets;
+    valueSummary = proposal.proposal_item_budgets_aggregate.aggregate.sum.amount;
 
-      setItemBudgetValue(valueToItem);
-      setSummaryAmount(valueSummary);
-    } else {
-      valueToItem = proposal.proposal_item_budgets;
-      valueSummary = proposal.proposal_item_budgets_aggregate.aggregate.sum.amount;
+    setItemBudgetValue(valueToItem);
+    setSummaryAmount(valueSummary);
 
-      setItemBudgetValue(valueToItem);
-      setSummaryAmount(valueSummary);
-    }
+    // if (projectTrack === 'CONCESSIONAL_GRANTS') {
+    //   valueToItem = proposal.recommended_supports;
+    //   valueSummary = valueToItem.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+
+    //   setItemBudgetValue(valueToItem);
+    //   setSummaryAmount(valueSummary);
+    // } else {
+    //   valueToItem = proposal.proposal_item_budgets;
+    //   valueSummary = proposal.proposal_item_budgets_aggregate.aggregate.sum.amount;
+
+    //   setItemBudgetValue(valueToItem);
+    //   setSummaryAmount(valueSummary);
+    // }
   }, [proposal]);
 
   return (

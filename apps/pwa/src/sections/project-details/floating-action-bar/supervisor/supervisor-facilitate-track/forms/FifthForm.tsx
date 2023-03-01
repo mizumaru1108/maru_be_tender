@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import { useMemo, useState, useEffect } from 'react';
 import FormGenerator from 'components/FormGenerator';
 import { FifthFormData } from './form-data';
-import { SupervisorStep5 } from '../../../../../../@types/supervisor-accepting-form';
+import { SupervisorStep4 } from '../../../../../../@types/supervisor-accepting-form';
 import { useSelector } from 'redux/store';
 //
 import useLocales from 'hooks/useLocales';
@@ -15,7 +15,7 @@ import uuidv4 from 'utils/uuidv4';
 import { useSnackbar } from 'notistack';
 
 function FifthForm({ children, onSubmit }: any) {
-  const { step5, step1 } = useSelector((state) => state.supervisorAcceptingForm);
+  const { step4, step1 } = useSelector((state) => state.supervisorAcceptingForm);
   const { proposal } = useSelector((state) => state.proposal);
 
   const { translate } = useLocales();
@@ -29,7 +29,7 @@ function FifthForm({ children, onSubmit }: any) {
   >([]);
 
   const validationSchema = Yup.object().shape({
-    recommended_support: Yup.array().of(
+    proposal_item_budgets: Yup.array().of(
       Yup.object().shape({
         clause: Yup.string().required(
           translate('errors.cre_proposal.detail_project_budgets.clause.required')
@@ -45,9 +45,9 @@ function FifthForm({ children, onSubmit }: any) {
     ),
   });
 
-  const methods = useForm<SupervisorStep5>({
+  const methods = useForm<SupervisorStep4>({
     resolver: yupResolver(validationSchema),
-    defaultValues: useMemo(() => step5, [step5]),
+    defaultValues: useMemo(() => step4, [step4]),
   });
 
   const {
@@ -65,52 +65,26 @@ function FifthForm({ children, onSubmit }: any) {
     remove,
   } = useFieldArray({
     control,
-    name: 'recommended_support',
+    name: 'proposal_item_budgets',
   });
 
-  const onSubmitForm = async (data: SupervisorStep5) => {
-    if (data.recommended_support.length) {
-      // data.created_recommended_support = data.recommended_support
-      //   .filter((item) => !basedBudget.find((i) => i.id === item.id))
-      //   .map((el) => ({
-      //     ...el,
-      //     amount: Number(el.amount),
-      //   }));
+  const onSubmitForm = async (data: SupervisorStep4) => {
+    if (data.proposal_item_budgets.length) {
+      data.created_proposal_budget = data.proposal_item_budgets
+        .filter((item) => !basedBudget.find((i) => i.id === item.id))
+        .map((el) => ({
+          ...el,
+          amount: Number(el.amount),
+        }));
 
-      // data.updated_recommended_support = data.recommended_support
-      //   .filter((item) => basedBudget.find((i) => i.id === item.id))
-      //   .map((el) => ({
-      //     ...el,
-      //     amount: Number(el.amount),
-      //   }));
+      data.updated_proposal_budget = data.proposal_item_budgets
+        .filter((item) => basedBudget.find((i) => i.id === item.id))
+        .map((el) => ({
+          ...el,
+          amount: Number(el.amount),
+        }));
 
-      data.created_recommended_support = [
-        ...data.recommended_support
-          .filter((item) => !basedBudget.find((i) => i.id === item.id))
-          .map((el) => ({
-            ...el,
-            amount: Number(el.amount),
-          })),
-        ...data.recommended_support
-          .filter((item) => basedBudget.find((i) => i.id === item.id))
-          .map((el) => ({
-            ...el,
-            amount: Number(el.amount),
-          })),
-      ];
-
-      if (proposal.recommended_supports.length) {
-        data.updated_recommended_support = proposal.recommended_supports
-          .filter((item) => data.created_recommended_support?.find((i) => i.id === item.id))
-          .map((el) => ({
-            ...el,
-            amount: Number(el.amount),
-          }));
-      } else {
-        data.updated_recommended_support = [];
-      }
-
-      data.deleted_recommended_support = tempDeletedBudget;
+      data.deleted_proposal_budget = tempDeletedBudget;
 
       onSubmit(data);
     } else {
@@ -120,16 +94,16 @@ function FifthForm({ children, onSubmit }: any) {
         autoHideDuration: 3000,
       });
 
-      resetField('recommended_support');
+      resetField('proposal_item_budgets');
     }
   };
 
   useEffect(() => {
     if (proposal && proposal.proposal_item_budgets.length) {
       setBasedBudget(proposal.proposal_item_budgets);
-      setValue('recommended_support', proposal.proposal_item_budgets);
+      setValue('proposal_item_budgets', proposal.proposal_item_budgets);
     } else {
-      resetField('recommended_support');
+      resetField('proposal_item_budgets');
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -142,9 +116,9 @@ function FifthForm({ children, onSubmit }: any) {
         <Grid item xs={12}>
           {recommendedSupportItems.map((v, i) => (
             <Grid container key={v.id} spacing={3} sx={{ mb: 2 }}>
-              <Grid item xs={step1.support_type ? 3 : 4}>
+              <Grid item xs={3}>
                 <Controller
-                  name={`recommended_support.${i}.clause`}
+                  name={`proposal_item_budgets.${i}.clause`}
                   control={control}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
@@ -161,14 +135,14 @@ function FifthForm({ children, onSubmit }: any) {
                           backgroundColor: 'transparent',
                         },
                       }}
-                      disabled={!step1.support_type}
+                      // disabled={!step1.support_type}
                     />
                   )}
                 />
               </Grid>
               <Grid item xs={4}>
                 <Controller
-                  name={`recommended_support.${i}.explanation`}
+                  name={`proposal_item_budgets.${i}.explanation`}
                   control={control}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
@@ -187,14 +161,14 @@ function FifthForm({ children, onSubmit }: any) {
                           backgroundColor: 'transparent',
                         },
                       }}
-                      disabled={!step1.support_type}
+                      // disabled={!step1.support_type}
                     />
                   )}
                 />
               </Grid>
-              <Grid item xs={step1.support_type ? 3 : 4}>
+              <Grid item xs={3}>
                 <Controller
-                  name={`recommended_support.${i}.amount`}
+                  name={`proposal_item_budgets.${i}.amount`}
                   control={control}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
@@ -212,55 +186,49 @@ function FifthForm({ children, onSubmit }: any) {
                           backgroundColor: 'transparent',
                         },
                       }}
-                      disabled={!step1.support_type}
+                      // disabled={!step1.support_type}
                     />
                   )}
                 />
               </Grid>
-              {!step1.support_type ? null : (
-                <Grid item xs={2}>
-                  <IconButton
-                    color="error"
-                    onClick={() => {
-                      const idGetValues = getValues(`recommended_support.${i}.id`);
-                      const deleteValues = basedBudget.filter((item) => item.id === idGetValues);
+              <Grid item xs={2}>
+                <IconButton
+                  color="error"
+                  onClick={() => {
+                    const idGetValues = getValues(`proposal_item_budgets.${i}.id`);
+                    const deleteValues = basedBudget.filter((item) => item.id === idGetValues);
 
-                      const existingData = tempDeletedBudget.find(
-                        (item) => item.id === idGetValues
-                      );
+                    const existingData = tempDeletedBudget.find((item) => item.id === idGetValues);
 
-                      if (!existingData) {
-                        setTempDeletedBudget([...tempDeletedBudget, ...deleteValues]);
-                      }
+                    if (!existingData) {
+                      setTempDeletedBudget([...tempDeletedBudget, ...deleteValues]);
+                    }
 
-                      remove(i);
-                    }}
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                </Grid>
-              )}
+                    remove(i);
+                  }}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Grid>
             </Grid>
           ))}
-          {!step1.support_type ? null : (
-            <Button
-              type="button"
-              variant="contained"
-              color="inherit"
-              fullWidth
-              size="medium"
-              onClick={async () => {
-                append({
-                  amount: undefined,
-                  clause: '',
-                  explanation: '',
-                  id: uuidv4(),
-                });
-              }}
-            >
-              {translate('add_new_line')}
-            </Button>
-          )}
+          <Button
+            type="button"
+            variant="contained"
+            color="inherit"
+            fullWidth
+            size="medium"
+            onClick={async () => {
+              append({
+                amount: undefined,
+                clause: '',
+                explanation: '',
+                id: uuidv4(),
+              });
+            }}
+          >
+            {translate('add_new_line')}
+          </Button>
         </Grid>
         <Grid item xs={12}>
           {children}

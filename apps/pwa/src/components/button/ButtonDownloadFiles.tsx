@@ -14,7 +14,7 @@ function ButtonDownloadFiles({ files, border }: Props) {
   // console.log('files', files);
   const fileType = files?.type ? files?.type!.split('/')[1] : 'pdf';
   const fileName = files && files.url ? (files?.url.split('/').pop() as string) : '';
-  console.log('fileName', fileName);
+  // console.log('fileName', fileName);
   return (
     <Button
       fullWidth

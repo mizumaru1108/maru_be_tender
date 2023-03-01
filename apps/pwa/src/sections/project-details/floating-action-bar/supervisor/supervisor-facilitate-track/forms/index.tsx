@@ -94,8 +94,8 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
     setIsSubmitting(true);
 
     try {
-      const lenghtOfNumberOfPayments = data.recommended_support.length;
-      const totalFSupport = data.recommended_support
+      const lenghtOfNumberOfPayments = data.proposal_item_budgets.length;
+      const totalFSupport = data.proposal_item_budgets
         .map((el: { amount: any }) => Number(el.amount))
         .reduce((acc: any, curr: any) => acc + (curr || 0), 0);
 
@@ -120,13 +120,13 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
           been_made_before: step3.been_made_before,
           remote_or_insite: step3.remote_or_insite,
           // item budgets
-          created_proposal_budget: step4.created_proposal_budget,
-          updated_proposal_budget: step4.updated_proposal_budget,
-          deleted_proposal_budget: step4.deleted_proposal_budget,
+          created_proposal_budget: data.created_proposal_budget, // step4.created_proposal_budget,
+          updated_proposal_budget: data.updated_proposal_budget, // step4.updated_proposal_budget,
+          deleted_proposal_budget: data.deleted_proposal_budget, // step4.deleted_proposal_budget,
           // recommended_support
-          created_recommended_support: data.created_recommended_support,
-          updated_recommended_support: data.updated_recommended_support,
-          deleted_recommended_support: data.deleted_recommended_support,
+          created_recommended_support: [], // data.created_recommended_support
+          updated_recommended_support: [], // data.updated_recommended_support
+          deleted_recommended_support: [], // data.deleted_recommended_support
         },
       };
 

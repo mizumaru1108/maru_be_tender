@@ -59,6 +59,7 @@ export const SecondFormData = [
     type: 'radioGroup',
     label: 'هل دعمت سابقًا؟',
     name: 'been_supported_before',
+    disabled: true,
     options: [
       { label: 'نعم', value: true },
       { label: 'لا', value: false },

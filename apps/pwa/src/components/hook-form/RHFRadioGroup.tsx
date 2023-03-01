@@ -8,6 +8,7 @@ import {
   RadioGroupProps,
   FormControlLabel,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { Stack } from '@mui/system';
 
@@ -16,6 +17,7 @@ import { Stack } from '@mui/system';
 type IProps = {
   label: string;
   name: string;
+  disabled?: boolean;
   options: {
     label: string;
     value: any;
@@ -26,6 +28,7 @@ type Props = IProps & RadioGroupProps;
 
 export default function RHFRadioGroup({ name, options, label, ...other }: Props) {
   const { control } = useFormContext();
+  const theme = useTheme();
 
   return (
     <Controller
@@ -33,7 +36,15 @@ export default function RHFRadioGroup({ name, options, label, ...other }: Props)
       control={control}
       render={({ field, fieldState: { error } }) => (
         <Stack direction="column">
-          <Typography>{label}</Typography>
+          <Typography
+            sx={{
+              ...(other.disabled && {
+                color: theme.palette.grey[500],
+              }),
+            }}
+          >
+            {label}
+          </Typography>
           <RadioGroup {...field} row {...other}>
             {options.map((option) => (
               <FormControlLabel
@@ -41,6 +52,7 @@ export default function RHFRadioGroup({ name, options, label, ...other }: Props)
                 value={option.value}
                 control={<Radio />}
                 label={option.label}
+                disabled={!!other.disabled}
               />
             ))}
           </RadioGroup>

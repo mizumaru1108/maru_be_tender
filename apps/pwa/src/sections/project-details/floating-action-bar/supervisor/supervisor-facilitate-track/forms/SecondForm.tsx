@@ -15,7 +15,7 @@ function SecondForm({ children, onSubmit }: any) {
     region: Yup.string().required('Procedures is required!'),
     governorate: Yup.string().required('Procedures is required!'),
     date_of_esthablistmen: Yup.string().required('Procedures is required!'),
-    chairman_of_board_of_directors: Yup.string().required('Procedures is required!'),
+    chairman_of_board_of_directors: Yup.string(),
     ceo: Yup.string().required('Procedures is required!'),
     been_supported_before: Yup.boolean().required('Procedures is required!'),
     most_clents_projects: Yup.string().required('Procedures is required!'),

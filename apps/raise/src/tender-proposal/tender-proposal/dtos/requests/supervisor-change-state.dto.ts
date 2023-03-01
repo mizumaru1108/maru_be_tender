@@ -123,7 +123,7 @@ export class SupervisorChangeStatePayload {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
+  // @IsNotEmpty()
   chairman_of_board_of_directors?: string;
 
   @ApiPropertyOptional()
