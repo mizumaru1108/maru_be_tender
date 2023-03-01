@@ -13,6 +13,8 @@ function ButtonDownloadFiles({ files, border }: Props) {
   const { translate } = useLocales();
   // console.log('files', files);
   const fileType = files?.type ? files?.type!.split('/')[1] : 'pdf';
+  const fileName = files && files.url ? (files?.url.split('/').pop() as string) : '';
+  console.log('fileName', fileName);
   return (
     <Button
       fullWidth
@@ -29,18 +31,6 @@ function ButtonDownloadFiles({ files, border }: Props) {
         borderColor: files && files.color ? files.color : !!border ? border : 'transparent',
       }}
     >
-      {/* <Stack
-        spacing={2}
-        alignItems="center"
-        justifyContent="space-between"
-        direction={{ xs: 'column', md: 'row' }}
-        sx={{
-          textAlign: { xs: 'center', md: 'left' },
-          // padding: '8px',
-          borderRadius: '10px',
-        }}
-        // flex={1}
-      > */}
       <Stack
         spacing={2}
         alignItems="center"
@@ -61,7 +51,6 @@ function ButtonDownloadFiles({ files, border }: Props) {
                 ['png', 'jpg', 'jpeg'].includes(fileType)
                   ? '/icons/img-icon.png'
                   : '/icons/pdf-icon.svg'
-                // files?.type === 'pdf' ? '/assets/icons/pdf-icon.svg' : '/assets/icons/img-icon.png'
               }
               style={{ width: 24, height: 24 }}
               alt=""
@@ -69,7 +58,7 @@ function ButtonDownloadFiles({ files, border }: Props) {
           </Stack>
           <Stack direction="column">
             <Typography gutterBottom sx={{ fontSize: '13px' }}>
-              {translate('project_attachment_file')}
+              {fileName ?? '-'}
             </Typography>
             <Typography gutterBottom sx={{ fontSize: '13px' }}>
               {files.size !== undefined ? `${files.size.toFixed(2)}KB` : '126KB'}

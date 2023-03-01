@@ -43,11 +43,11 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
         return true;
       }
       return val?.length === 0 || val!.length === 9;
-    })
-    .test('used', translate('errors.register.phone.exist'), (val) => {
-      const isUsed = tmpUsedNumbers.includes(`+966${val ?? ''}`);
-      return !isUsed;
     });
+  // .test('used', translate('errors.register.phone.exist'), (val) => {
+  //   const isUsed = tmpUsedNumbers.includes(`+966${val ?? ''}`);
+  //   return !isUsed;
+  // });
   const entityMobileValidation = Yup.string()
     .required(translate('errors.register.entity_mobile.required'))
     .test('len', translate('errors.register.entity_mobile.length'), (val) => {
@@ -67,10 +67,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
         [Yup.ref('phone'), null],
         translate('errors.register.entity_mobile.equal')
       ),
-      phone: phoneNumberValidation.notOneOf(
-        [Yup.ref('entity_mobile'), null],
-        translate('errors.register.phone.equal')
-      ),
+      phone: phoneNumberValidation,
       twitter_acount: Yup.string(),
       website: Yup.string(),
       email: Yup.string()

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Box } from '@mui/material';
@@ -65,6 +65,10 @@ export default function DashboardLayout() {
   const verticalLayout = themeLayout === 'vertical';
 
   const { user } = useAuth();
+
+  const location = useLocation();
+  const urlArr: string[] = location.pathname.split('/');
+  // console.log('urlArr', urlArr);
 
   // urql + subscription
   const [resultConversation] = useSubscription({
@@ -136,9 +140,16 @@ export default function DashboardLayout() {
       <NavbarVertical isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
 
       <MainStyle>
-        <CheakClientActivation>
+        {/* <CheakClientActivation>
           <Outlet />
-        </CheakClientActivation>
+        </CheakClientActivation> */}
+        {urlArr.includes('messages') ? (
+          <Outlet />
+        ) : (
+          <CheakClientActivation>
+            <Outlet />
+          </CheakClientActivation>
+        )}
       </MainStyle>
     </Box>
   );
