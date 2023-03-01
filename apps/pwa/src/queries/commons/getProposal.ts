@@ -17,6 +17,7 @@ query getProposals($limit: Int = 4, $offset: Int = 0, $order_by: [proposal_order
   }
   data: proposal(limit: $limit, offset: $offset, order_by: $order_by, where: $where) {
     id
+    updated_at
     created_at
     project_idea
     project_name
@@ -48,6 +49,7 @@ query getProposals($limit: Int = 4, $offset: Int = 0, $order_by: [proposal_order
   } 
   data: proposal(limit: $limit, offset: $offset, order_by: $order_by, where: $where) {
     id
+    updated_at
     created_at
     project_idea
     project_name

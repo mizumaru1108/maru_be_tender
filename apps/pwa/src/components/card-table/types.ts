@@ -41,6 +41,7 @@ export type ProjectCardPropsBE = {
   id: string;
   inquiryStatus?: 'canceled' | 'completed' | 'pending';
   project_name?: string;
+  updated_at: Date;
   created_at: Date;
   project_idea?: string;
   user: {

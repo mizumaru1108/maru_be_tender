@@ -51,10 +51,7 @@ function IncomingFundingRequests() {
                 createdAtClient: new Date(item.created_at),
               }}
               footer={{
-                createdAt:
-                  item.proposal_logs &&
-                  item.proposal_logs.length > 0 &&
-                  new Date(item.proposal_logs[item.proposal_logs.length - 1].created_at),
+                createdAt: new Date(item.updated_at),
               }}
               cardFooterButtonAction="show-details"
               destination="incoming-funding-requests"

@@ -74,7 +74,7 @@ function ProposalOnAmandement() {
                   item.proposal_logs[item.proposal_logs.length - 1].reviewer.employee_name,
                 createdAtClient: new Date(item.user.client_data.created_at),
               }}
-              footer={{ createdAt: new Date(item.created_at) }}
+              footer={{ createdAt: new Date(item.updated_at) }}
               cardFooterButtonAction="show-project"
               destination="incoming-funding-requests"
             />

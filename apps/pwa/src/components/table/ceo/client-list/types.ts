@@ -1,9 +1,9 @@
 export type ClientsList = {
   id?: string;
   governorate: string;
-  entity: string;
-  data_entry_mail: string;
-  data_entry_mobile: string;
+  client_name: string;
+  email: string;
+  number_phone: string;
   total_proposal: number;
   user_id: string;
 };

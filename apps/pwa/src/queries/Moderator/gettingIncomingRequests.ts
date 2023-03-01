@@ -20,6 +20,7 @@ query gettingIncomingRequests($where: proposal_bool_exp = {}, $limit: Int = 10, 
   data: proposal(where: $where, limit: $limit, offset: $offset, order_by: $order_by) {
     id
     created_at
+    updated_at
     project_name
     state
     user {

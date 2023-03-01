@@ -46,6 +46,7 @@ const ProjectCardBE = ({
   id,
   inquiryStatus,
   project_name,
+  updated_at,
   created_at,
   project_idea,
   user,
@@ -63,10 +64,10 @@ const ProjectCardBE = ({
 
   function daysSinceCreated() {
     let getCreatedAt = new Date();
-    if (proposal_logs && proposal_logs.length > 0) {
-      getCreatedAt = new Date(proposal_logs[proposal_logs.length - 1].created_at);
+    if (updated_at) {
+      getCreatedAt = new Date(updated_at);
     } else {
-      getCreatedAt = created_at;
+      getCreatedAt = new Date(created_at);
     }
     const daysSince = Math.ceil(
       (new Date().getTime() - getCreatedAt.getTime()) / (1000 * 3600 * 24) - 1
@@ -368,8 +369,8 @@ const ProjectCardBE = ({
                   gutterBottom
                   sx={{ fontSize: '15px !important' }}
                 >
-                  {proposal_logs && proposal_logs.length > 0
-                    ? moment(proposal_logs[proposal_logs.length - 1].created_at).format('LLLL')
+                  {updated_at
+                    ? moment(updated_at).format('LLLL')
                     : moment(created_at).format('LLLL')}
                 </Typography>
               </Stack>

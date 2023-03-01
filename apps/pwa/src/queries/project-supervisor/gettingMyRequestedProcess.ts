@@ -17,6 +17,7 @@ query gettingMyRequestedProcess($limit: Int = 10, $offset: Int = 0, $order_by: [
   }
   data: proposal(limit: $limit, offset: $offset, order_by: $order_by, where: $where) {
     id
+    updated_at
     created_at
     project_idea
     project_name
