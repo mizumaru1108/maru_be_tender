@@ -475,7 +475,7 @@ const ar = {
       mosques_track: 'مسار المساجد',
       scholarships_track: 'مسار الجامعات',
       initiatives_track: 'مسار المبادرات',
-      baptism_track: 'مسار الاستقطاب',
+      baptism_track: 'مسار المعمودية',
       syeikh_track: 'مسار السيوخ',
       concessional_grants: 'مسار المنح الميسرة',
     },

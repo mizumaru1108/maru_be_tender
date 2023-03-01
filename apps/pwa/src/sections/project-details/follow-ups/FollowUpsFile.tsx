@@ -39,6 +39,19 @@ function FollowUpsFile(item: FollowUps) {
     }
   };
 
+  function filename(url: string) {
+    return url.split('/').pop() as string;
+  }
+
+  function fileTypes(typeFile: string) {
+    const fileType = typeFile ? typeFile.split('/')[1] : 'pdf';
+    console.log({ fileType });
+    return ['png', 'jpg', 'jpeg'].includes(fileType)
+      ? '/icons/img-icon.png'
+      : '/icons/pdf-icon.svg';
+  }
+
+  console.log(item.attachments, 'atachment');
   if (role === 'tender_client')
     return (
       <>
@@ -115,15 +128,19 @@ function FollowUpsFile(item: FollowUps) {
                         }}
                         flex={1}
                       >
-                        <Stack direction="row" gap={2}>
+                        <Stack direction="column" justifyContent="center">
+                          {/* <img src={`/icons/doc-icon.svg`} alt="" /> */}
                           <img
-                            src={`/assets/icons/doc-icon.svg`}
+                            src={
+                              fileTypes(file.type)
+                              // files?.type === 'pdf' ? '/assets/icons/pdf-icon.svg' : '/assets/icons/img-icon.png'
+                            }
+                            style={{ width: 24, height: 24 }}
                             alt=""
-                            style={{ width: '50px' }}
                           />
                           <Stack direction="column">
                             <Typography gutterBottom sx={{ fontSize: '13px' }}>
-                              ملف خطاب طلب الدعم
+                              {filename(file.url)}
                             </Typography>
                             <Typography gutterBottom sx={{ fontSize: '13px' }}>
                               {`${formatBytes(file.size)}`}
@@ -225,15 +242,19 @@ function FollowUpsFile(item: FollowUps) {
                         }}
                         flex={1}
                       >
-                        <Stack direction="row" gap={2}>
+                        <Stack direction="column" justifyContent="center">
+                          {/* <img src={`/icons/doc-icon.svg`} alt="" /> */}
                           <img
-                            src={`/assets/icons/doc-icon.svg`}
+                            src={
+                              fileTypes(file.type)
+                              // files?.type === 'pdf' ? '/assets/icons/pdf-icon.svg' : '/assets/icons/img-icon.png'
+                            }
+                            style={{ width: 24, height: 24 }}
                             alt=""
-                            style={{ width: '50px' }}
                           />
                           <Stack direction="column">
                             <Typography gutterBottom sx={{ fontSize: '13px' }}>
-                              ملف خطاب طلب الدعم
+                              {filename(file.url)}
                             </Typography>
                             <Typography gutterBottom sx={{ fontSize: '13px' }}>
                               {`${formatBytes(file.size)}`}
