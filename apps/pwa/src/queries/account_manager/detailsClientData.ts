@@ -1,15 +1,6 @@
 export const detailsClientData = `
 query detailsClientData($id: String!) {
   user_by_pk(id: $id) {
-    bank_informations {
-        bank_account_name
-        bank_account_number
-        bank_name
-        card_image
-        id
-        proposal_id
-        user_id
-      }
     client_data {
       board_ofdec_file
       center_administration
@@ -40,11 +31,30 @@ query detailsClientData($id: String!) {
       chairman_name
       chairman_mobile
       board_ofdec_file
+      user {
+        roles {
+          role {
+            id
+          }
+        }
+      }
     }
     email
     status_id
+    bank_informations {
+      bank_account_name
+      bank_account_number
+      bank_name
+      card_image
+      id
+      proposal_id
+      user_id
+    }
+    employee_name
   }
 }
+
+
 `;
 
 export const changeClientStatus = `

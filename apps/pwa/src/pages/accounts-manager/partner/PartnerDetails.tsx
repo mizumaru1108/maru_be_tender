@@ -19,7 +19,7 @@ import Label from 'components/Label';
 // sections
 import BankImageComp from 'sections/shared/BankImageComp';
 // hooks
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import useLocales from 'hooks/useLocales';
 import { useQuery, useMutation } from 'urql';
 import useAuth from 'hooks/useAuth';
@@ -34,6 +34,11 @@ import { PartnerDetailsProps } from '../../../@types/client_data';
 import { PATH_ACCOUNTS_MANAGER } from 'routes/paths';
 import axiosInstance from '../../../utils/axios';
 import ButtonDownloadFiles from '../../../components/button/ButtonDownloadFiles';
+import { Conversation } from '../../../@types/wschat';
+import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment';
+import uuidv4 from '../../../utils/uuidv4';
+import { addConversation, setActiveConversationId } from '../../../redux/slices/wschat';
 
 // -------------------------------------------------------------------------------
 
@@ -66,6 +71,7 @@ function AccountPartnerDetails() {
   const { user, activeRole } = useAuth();
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
+  const location = useLocation();
 
   // Routes
   const params = useParams();
@@ -94,6 +100,10 @@ function AccountPartnerDetails() {
   const [suspendedResult, suspendedClient] = useMutation(changeClientStatus);
   const [deleteResult, deleteClient] = useMutation(deleteClientData);
   const [isSubmitting, setIsSubimitting] = useState(false);
+
+  //Messages
+  const dispatch = useDispatch();
+  const { conversations } = useSelector((state: any) => state.wschat);
 
   /* old GQL */
   // const handleActivateAccount = async (id: string) => {
@@ -203,6 +213,83 @@ function AccountPartnerDetails() {
   //     );
   //   }
   // };
+  // console.log({ activeRole });
+  const handleMessage = () => {
+    const x = location.pathname.split('/');
+    const urlToMessage = `/${x[1]}/${x[2]}/messages`;
+    const activeRoleIndex: number = Number(localStorage.getItem('activeRoleIndex')) ?? 0;
+    // console.log({ selectedRole });
+
+    const valueToConversation: Conversation = {
+      id: uuidv4(),
+      correspondance_category_id: 'EXTERNAL',
+      messages: [
+        {
+          content: null,
+          attachment: null,
+          content_title: null,
+          content_type_id: 'TEXT',
+          receiver_id: params.partnerId,
+          owner_id: user?.id,
+          // receiver_role_as: partnerDetails.client_data.user.roles[activeRoleIndex].role.id,
+          receiver_role_as: `tender_${partnerDetails.client_data.user.roles[
+            activeRoleIndex
+          ].role.id.toLowerCase()}`,
+          sender_role_as: activeRole!,
+          created_at: moment().toISOString(),
+          updated_at: moment().toISOString(),
+          read_status: false,
+          receiver: {
+            employee_name: partnerDetails.employee_name,
+          },
+          sender: {
+            employee_name: user?.firstName,
+          },
+        },
+      ],
+    };
+
+    const valueNewConversation = conversations;
+    let hasConversationId: string | undefined = undefined;
+
+    if (valueNewConversation.length) {
+      for (let index = 0; index < valueNewConversation.length; index++) {
+        const { messages } = valueNewConversation[index];
+        const findReceiverId = messages.find(
+          (el: any) =>
+            el.owner_id === valueToConversation.messages[0].receiver_id ||
+            el.receiver_id === valueToConversation.messages[0].receiver_id
+        );
+
+        if (findReceiverId) {
+          hasConversationId = valueNewConversation[index].id;
+        }
+      }
+    }
+
+    if (hasConversationId) {
+      dispatch(setActiveConversationId(hasConversationId));
+      handleReadMessages(hasConversationId);
+      navigate(urlToMessage);
+    } else {
+      dispatch(addConversation(valueToConversation));
+      dispatch(setActiveConversationId(valueToConversation.id!));
+      handleReadMessages(valueToConversation.id!);
+      navigate(urlToMessage);
+    }
+  };
+
+  const handleReadMessages = async (conversationId: string) => {
+    await axiosInstance.patch(
+      '/tender/messages/toogle-read',
+      {
+        roomId: conversationId,
+      },
+      {
+        headers: { 'x-hasura-role': activeRole! },
+      }
+    );
+  };
 
   useEffect(() => {
     if (data) {
@@ -210,7 +297,8 @@ function AccountPartnerDetails() {
       setDynamicState(data?.user_by_pk?.status_id);
     }
   }, [data]);
-
+  // console.log({ partnerDetails });
+  if (!data) return <>Loading...</>;
   return (
     // <Page title="Partner Details">
     <Page title={translate('pages.account_manager.partner_details')}>
@@ -752,7 +840,8 @@ function AccountPartnerDetails() {
                       variant="outlined"
                       color="inherit"
                       endIcon={<Iconify icon="eva:message-circle-outline" />}
-                      onClick={() => navigate(PATH_ACCOUNTS_MANAGER.messages)}
+                      // onClick={() => navigate(PATH_ACCOUNTS_MANAGER.messages)}
+                      onClick={handleMessage}
                     >
                       {translate('account_manager.partner_details.send_messages')}
                     </Button>
