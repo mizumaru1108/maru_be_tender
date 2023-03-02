@@ -170,9 +170,9 @@ export default function ClientListTable() {
       setTableData(
         data.user.map((item: any, index: any) => ({
           id: item.id,
-          entity: item.employee_name,
-          data_entry_mail: item.email,
-          data_entry_mobile: item.mobile_number,
+          client_name: item.employee_name,
+          email: item.email,
+          number_phone: item.mobile_number,
           governorate: item?.client_data?.governorate,
           user_id: item.id,
           total_proposal: item.proposals_aggregate.aggregate.count,

@@ -51,7 +51,7 @@ export default function ClientListTableRow({ row, selected, onSelectRow }: Clien
           }}
           size="small"
           variant="contained"
-          sx={{ backgroundColor: '#0E8478', color: 'white' }}
+          sx={{ backgroundColor: '#0E8478', color: 'white', flexWrap: 'no-wrap' }}
         >
           {translate('table_actions.view_details')}
         </Button>

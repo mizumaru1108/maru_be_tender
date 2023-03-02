@@ -1,4 +1,4 @@
-export const allClientData = `query allClientData ($limit: Int = 10, $offset: Int = 0, $_eq: user_type_enum = CLIENT, , $order_by: [user_order_by!] = {employee_name: "asc"}) {
+export const allClientData = `query allClientData ($limit: Int = 10, $offset: Int = 0, $_eq: user_type_enum = CLIENT, , $order_by: [user_order_by!] = {employee_name: asc}) {
   user(limit: $limit, offset: $offset, where: {roles: {user_type_id: {_eq: $_eq}}}, order_by: $order_by) {
     id
     email
