@@ -28,6 +28,7 @@ import { ProposalSaveDraftDto } from '../dtos/requests/proposal-save-draft';
 import { SendAmandementDto } from '../dtos/requests/send-amandement.dto';
 import { SendRevisionDto } from '../dtos/requests/send-revision.dto';
 import { TenderProposalService } from '../services/tender-proposal.service';
+import { AskAmandementRequestDto } from '../dtos/requests/ask-amandement-request.dto';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(private readonly proposalService: TenderProposalService) {}
@@ -87,6 +88,32 @@ export class TenderProposalController {
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles(
+    'tender_admin',
+    'tender_cashier',
+    'tender_ceo',
+    'tender_consultant',
+    'tender_finance',
+    'tender_moderator',
+    'tender_project_manager',
+  )
+  @Post('ask-amandement-request')
+  async askForAmandementRequest(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() request: AskAmandementRequestDto,
+  ) {
+    const result = await this.proposalService.askAmandementRequest(
+      currentUser,
+      request,
+    );
+    return baseResponseHelper(
+      result,
+      HttpStatus.OK,
+      'Draft deleted successfully',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_project_supervisor', 'tender_client')
   @Get('amandement-lists')
   async fetchAmandementList(
@@ -94,6 +121,28 @@ export class TenderProposalController {
     @Query() payload: FetchAmandementFilterRequest,
   ) {
     const result = await this.proposalService.fetchAmandementList(
+      currentUser,
+      payload,
+    );
+
+    return manualPaginationHelper(
+      result.data,
+      result.total,
+      payload.page || 1,
+      payload.limit || 10,
+      HttpStatus.OK,
+      'Success',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_project_supervisor')
+  @Get('amandement-request-lists')
+  async fetchAmandementRequestList(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Query() payload: FetchAmandementFilterRequest,
+  ) {
+    const result = await this.proposalService.fetchAmandementRequestList(
       currentUser,
       payload,
     );

@@ -84,6 +84,7 @@ export enum OutterStatusEnum {
   COMPLETED = 'COMPLETED',
   ONGOING = 'ONGOING',
   ON_REVISION = 'ON_REVISION',
+  ASKED_FOR_AMANDEMENT = 'ASKED_FOR_AMANDEMENT',
 }
 
 export enum ProposalAction {
@@ -94,6 +95,7 @@ export enum ProposalAction {
   SEND_BACK_FOR_REVISION = 'send_back_for_revision',
   SEND_REVISED_VERSION = 'send_revised_version',
   STUDY_AGAIN = 'study_again',
+  ASK_FOR_AMANDEMENT_REQUEST = 'ask_for_amandement_request',
 }
 
 export type ProposalItemBudget = {

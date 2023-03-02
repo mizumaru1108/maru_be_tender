@@ -14,4 +14,10 @@ export class FetchAmandementFilterRequest extends BaseFilterRequest {
   @IsString()
   @IsNotEmpty()
   entity?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  employee_name?: string;
 }

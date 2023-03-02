@@ -11,7 +11,10 @@ import { logUtil } from '../../../commons/utils/log-util';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { TenderAppRoleEnum } from '../../../tender-commons/types';
+import {
+  appRoleMappers,
+  TenderAppRoleEnum,
+} from '../../../tender-commons/types';
 import { ProposalAction } from '../../../tender-commons/types/proposal';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
@@ -307,8 +310,8 @@ export class TenderProposalRepository {
       const theError = prismaErrorThrower(
         error,
         TenderProposalRepository.name,
-        'Saving Draft Proposal error details: ',
-        'Saving Proposal Draft!',
+        'Asking for supervisor amandement error details: ',
+        'Asking for supervisor amandement!',
       );
       throw theError;
     }
@@ -351,6 +354,108 @@ export class TenderProposalRepository {
         TenderProposalRepository.name,
         'Deleting Draft Proposal error details: ',
         'Deleting Draft Proposal!',
+      );
+      throw theError;
+    }
+  }
+
+  async askForAmandementRequest(
+    currentUser: TenderCurrentUser,
+    id: string,
+    createAskEditRequestPayload: Prisma.proposal_asked_edit_requestUncheckedCreateInput,
+    proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
+  ) {
+    try {
+      return await this.prismaService.$transaction(
+        async (prisma) => {
+          this.logger.log(
+            'info',
+            `Updating proposal ${id}, with payload of\n${logUtil(
+              proposalUpdatePayload,
+            )}`,
+          );
+          const updatedProposal = await prisma.proposal.update({
+            where: { id },
+            data: proposalUpdatePayload,
+          });
+
+          this.logger.log(
+            'info',
+            `Creating new proposal asked edit request with payload of \n${logUtil(
+              createAskEditRequestPayload,
+            )}`,
+          );
+
+          await prisma.proposal_asked_edit_request.create({
+            data: createAskEditRequestPayload,
+          });
+
+          const lastLog = await prisma.proposal_log.findFirst({
+            where: { proposal_id: id },
+            select: {
+              created_at: true,
+            },
+            orderBy: {
+              created_at: 'desc',
+            },
+            take: 1,
+          });
+
+          await prisma.proposal_log.create({
+            data: {
+              id: nanoid(),
+              proposal_id: id,
+              user_role: appRoleMappers[currentUser.choosenRole],
+              reviewer_id: currentUser.id,
+              action: ProposalAction.ASK_FOR_AMANDEMENT_REQUEST, //ask to supervisor for amandement request
+              state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
+              notes: 'asking for supervisor to send amandement for client',
+              response_time: lastLog?.created_at
+                ? Math.round(
+                    (new Date().getTime() - lastLog.created_at.getTime()) /
+                      60000,
+                  )
+                : null,
+            },
+            select: {
+              action: true,
+              created_at: true,
+              reviewer: {
+                select: {
+                  id: true,
+                  employee_name: true,
+                  email: true,
+                  mobile_number: true,
+                },
+              },
+              proposal: {
+                select: {
+                  project_name: true,
+                  user: {
+                    select: {
+                      id: true,
+                      employee_name: true,
+                      email: true,
+                      mobile_number: true,
+                    },
+                  },
+                },
+              },
+            },
+          });
+
+          return {
+            updatedProposal,
+          };
+        },
+        { maxWait: 500000, timeout: 1500000 },
+      );
+    } catch (err) {
+      const theError = prismaErrorThrower(
+        err,
+        TenderProposalRepository.name,
+        'Saving Draft Proposal error details: ',
+        'Saving Proposal Draft!',
       );
       throw theError;
     }
@@ -636,6 +741,93 @@ export class TenderProposalRepository {
       });
 
       const total = await this.prismaService.proposal_edit_request.count({
+        where: whereClause,
+      });
+
+      return {
+        data,
+        total,
+      };
+    } catch (err) {
+      const theError = prismaErrorThrower(
+        err,
+        TenderProposalRepository.name,
+        'updateProposal error details: ',
+        'updating proposal!',
+      );
+      throw theError;
+    }
+  }
+
+  async fetchAmandementRequestList(
+    currentUser: TenderCurrentUser,
+    filter: FetchAmandementFilterRequest,
+  ) {
+    try {
+      const { project_name, employee_name, page = 1, limit = 10 } = filter;
+      const offset = (page - 1) * limit;
+
+      let whereClause: Prisma.proposal_asked_edit_requestWhereInput = {};
+
+      if (employee_name) {
+        whereClause = {
+          ...whereClause,
+          sender: {
+            employee_name: {
+              contains: employee_name,
+              mode: 'insensitive',
+            },
+          },
+        };
+      }
+
+      if (project_name) {
+        whereClause = {
+          ...whereClause,
+          proposal: {
+            project_name: {
+              contains: project_name,
+              mode: 'insensitive',
+            },
+          },
+        };
+      }
+
+      const data =
+        await this.prismaService.proposal_asked_edit_request.findMany({
+          where: whereClause,
+          select: {
+            id: true,
+            notes: true,
+            sender_role: true,
+            sender: {
+              select: {
+                employee_name: true,
+                mobile_number: true,
+                email: true,
+              },
+            },
+            supervisor: {
+              select: {
+                employee_name: true,
+                mobile_number: true,
+                email: true,
+              },
+            },
+            proposal: {
+              select: {
+                project_name: true,
+              },
+            },
+          },
+          take: limit,
+          skip: offset,
+          orderBy: {
+            created_at: 'desc',
+          },
+        });
+
+      const total = await this.prismaService.proposal_asked_edit_request.count({
         where: whereClause,
       });
 

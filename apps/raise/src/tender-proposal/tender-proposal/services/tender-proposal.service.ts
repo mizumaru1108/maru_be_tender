@@ -58,6 +58,8 @@ import { UpdateProposalMapper } from '../mappers/update-proposal.mapper';
 import { SendRevisionDto } from '../dtos/requests/send-revision.dto';
 import { SendRevisionMapper } from '../mappers/send-revision.mapper';
 import { logUtil } from '../../../commons/utils/log-util';
+import { AskAmandementRequestDto } from '../dtos/requests/ask-amandement-request.dto';
+import { CreateProposalAskedEditRequestMapper } from '../mappers/create-proposal-asked-edit-request.mapper';
 
 @Injectable()
 export class TenderProposalService {
@@ -557,6 +559,43 @@ export class TenderProposalService {
     return deletedProposal;
   }
 
+  async askAmandementRequest(
+    currentUser: TenderCurrentUser,
+    request: AskAmandementRequestDto,
+  ) {
+    const { proposal_id } = request;
+    const proposal = await this.proposalRepo.fetchProposalById(proposal_id);
+    if (!proposal) throw new BadRequestException('Proposal Not Found!');
+
+    if (proposal.outter_status === OutterStatusEnum.ON_REVISION) {
+      throw new BadRequestException(
+        'Proposal aready asked for client to be revised!',
+      );
+    }
+
+    if (proposal.outter_status === OutterStatusEnum.ASKED_FOR_AMANDEMENT) {
+      throw new BadRequestException(
+        'Proposal already asked to supervisor for an amandement to the user!',
+      );
+    }
+
+    const createAskEditRequestPayload = CreateProposalAskedEditRequestMapper(
+      currentUser,
+      request,
+    );
+
+    const proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput = {
+      outter_status: OutterStatusEnum.ASKED_FOR_AMANDEMENT,
+    };
+
+    return await this.proposalRepo.askForAmandementRequest(
+      currentUser,
+      proposal_id,
+      createAskEditRequestPayload,
+      proposalUpdatePayload,
+    );
+  }
+
   async sendAmandement(
     userId: string,
     request: SendAmandementDto,
@@ -623,6 +662,13 @@ export class TenderProposalService {
     filter: FetchAmandementFilterRequest,
   ) {
     return await this.proposalRepo.findAmandementList(currentUser, filter);
+  }
+
+  async fetchAmandementRequestList(
+    currentUser: TenderCurrentUser,
+    filter: FetchAmandementFilterRequest,
+  ) {
+    return await this.proposalRepo.fetchAmandementRequestList(currentUser, filter);
   }
 
   async changeProposalState(
