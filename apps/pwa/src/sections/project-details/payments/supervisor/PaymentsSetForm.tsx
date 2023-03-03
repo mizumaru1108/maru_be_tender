@@ -70,6 +70,8 @@ function PaymentsSetForm() {
       const currentDate = moment(data?.payments[i].payment_date);
 
       if (currentDate.isBefore(previousDate)) {
+        const errorObject = data?.payments[i];
+
         enqueueSnackbar(`Payment ${i + 1} date is less than payment ${i} date.`, {
           variant: 'error',
           preventDuplicate: true,
@@ -77,15 +79,16 @@ function PaymentsSetForm() {
         });
 
         setError(`payments.${i}.payment_date`, { type: 'focus' }, { shouldFocus: true });
-        reset({
-          payments: [
-            ...data?.payments.slice(0, i),
-            {
-              payment_amount: data.payments[i].payment_amount,
-              payment_date: '',
-            },
-          ],
-        });
+
+        const newValuePayments = data?.payments.map(
+          (obj: { payment_date: string; payment_amount: number }) =>
+            obj.payment_date === errorObject.payment_date &&
+            obj.payment_amount === errorObject.payment_amount
+              ? { payment_date: '', payment_amount: obj.payment_amount }
+              : obj
+        );
+
+        reset({ payments: newValuePayments });
         setIsSubmitting(false);
         break;
       } else {
@@ -128,6 +131,8 @@ function PaymentsSetForm() {
 
             setIsSubmitting(false);
           }
+
+          // window.location.reload();
         }
       }
     }
