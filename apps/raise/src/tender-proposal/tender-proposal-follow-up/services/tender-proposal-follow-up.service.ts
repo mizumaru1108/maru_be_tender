@@ -256,7 +256,7 @@ export class TenderProposalFollowUpService {
       mailType: 'template',
       from: 'no-reply@hcharity.org',
       subject,
-      templatePath: 'tender/ar/proposal/project_followup',
+      templatePath: 'tender/AR/proposal/project_followup',
     };
 
     const baseWebNotif: Omit<CreateNotificationDto, 'user_id'> = {

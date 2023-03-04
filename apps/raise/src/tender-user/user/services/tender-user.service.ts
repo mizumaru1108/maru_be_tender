@@ -54,6 +54,7 @@ export class TenderUserService {
       activate_user,
       employee_path,
       user_roles,
+      selectLang,
     } = request;
 
     // admin only created by the system.
@@ -101,7 +102,12 @@ export class TenderUserService {
       email,
     });
     if (emailExist) {
+      if(selectLang === "EN"){
       throw new ConflictException('Email already exist in our app!');
+      }
+      else {
+        throw new ConflictException('البريد الإلكتروني مُسجل بالفعل في تطبيقنا!');
+      }
     }
 
     const phoneExist = await this.tenderUserRepository.findUser({
@@ -460,7 +466,7 @@ export class TenderUserService {
     if (status_log.user_status.id === UserStatusEnum.SUSPENDED_ACCOUNT) {
       clientEmailNotifPayload.mailType = 'template';
       clientEmailNotifPayload.templatePath =
-        'tender/en/account/account_deactivation';
+        'tender/EN/account/account_deactivation';
       clientEmailNotifPayload.templateContext = {
         name: status_log.user_detail.employee_name || 'Client...',
       };

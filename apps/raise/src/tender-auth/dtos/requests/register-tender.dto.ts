@@ -48,6 +48,12 @@ export class bankData {
 
 // for registering
 class registerClient {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  selectLang?: 'AR' | 'EN';
+
   @ApiProperty()
   @IsEmail()
   @IsNotEmpty()

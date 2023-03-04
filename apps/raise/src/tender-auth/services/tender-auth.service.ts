@@ -68,6 +68,7 @@ export class TenderAuthService {
         email,
         employee_path,
         status,
+        selectLang,
       },
     } = registerRequest;
 
@@ -75,7 +76,13 @@ export class TenderAuthService {
       email: registerRequest.data.email,
     });
     if (emailExist) {
-      throw new ConflictException('Email already exist in our app!');
+      if (selectLang === 'EN') {
+        throw new ConflictException('Email already exist in our app!');
+      } else {
+        throw new ConflictException(
+          'البريد الإلكتروني مُسجل بالفعل في تطبيقنا!',
+        );
+      }
     }
 
     const phoneExist = await this.tenderUserRepository.findUser({
@@ -156,7 +163,7 @@ export class TenderAuthService {
           'tenderAppConfig.baseUrl',
         )}/reset-password/${response}`,
       },
-      templatePath: 'tender/en/account/forget_password',
+      templatePath: 'tender/EN/account/forget_password',
     });
     return response;
   }

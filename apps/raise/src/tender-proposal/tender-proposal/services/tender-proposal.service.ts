@@ -668,7 +668,10 @@ export class TenderProposalService {
     currentUser: TenderCurrentUser,
     filter: FetchAmandementFilterRequest,
   ) {
-    return await this.proposalRepo.fetchAmandementRequestList(currentUser, filter);
+    return await this.proposalRepo.fetchAmandementRequestList(
+      currentUser,
+      filter,
+    );
   }
 
   async changeProposalState(
@@ -1302,7 +1305,7 @@ export class TenderProposalService {
       to: log.data.proposal.user.email,
       from: 'no-reply@hcharity.org',
       subject,
-      templatePath: `tender/ar/proposal/${
+      templatePath: `tender/AR/proposal/${
         log.data.action === 'reject' ? 'project_declined' : 'project_approved'
       }`,
       templateContext: {

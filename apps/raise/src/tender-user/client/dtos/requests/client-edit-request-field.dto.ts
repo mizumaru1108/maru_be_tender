@@ -18,6 +18,12 @@ import { UpdateBankInformationDto } from './update-bank-information.dto';
 export class ClientEditRequestFieldDto {
   @ApiPropertyOptional()
   @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  selectLang?: 'AR' | 'EN';
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNotEmpty()
   @IsString()
   entity?: string;

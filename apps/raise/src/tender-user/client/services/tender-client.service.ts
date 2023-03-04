@@ -449,6 +449,7 @@ export class TenderClientService {
         board_ofdec_file,
         license_file,
         entity_mobile,
+        selectLang,
       } = editRequest;
       if (entity_mobile) {
         const isNumExist =
@@ -456,7 +457,13 @@ export class TenderClientService {
             entity_mobile,
           );
         if (isNumExist) {
-          throw new BadRequestException('Entity Mobile Already Used/Exist!');
+          if (selectLang === 'EN') {
+            throw new BadRequestException('Entity Mobile Already Used/Exist!');
+          } else {
+            throw new BadRequestException(
+              'رقم الجوال  المستخدم وموجود بالفعل!',
+            );
+          }
         }
       }
       const clientData =
