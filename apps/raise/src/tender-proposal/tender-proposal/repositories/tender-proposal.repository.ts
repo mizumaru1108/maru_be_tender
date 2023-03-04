@@ -816,7 +816,7 @@ export class TenderProposalRepository {
             },
             proposal: {
               select: {
-                    id: true
+                id: true,
                 project_name: true,
               },
             },
