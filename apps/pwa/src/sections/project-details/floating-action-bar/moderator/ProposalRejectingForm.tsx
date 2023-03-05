@@ -25,7 +25,7 @@ function ProposalRejectingForm({ onSubmit, onClose, loading }: FormProps) {
   const validationSchema = Yup.object().shape({
     notes: Yup.string(),
     path: Yup.string().required('Path is required!'),
-    reject_reason: Yup.string().required(),
+    reject_reason: Yup.string().required(translate('reject_reason.moderator.required')),
   });
 
   const defaultValues = {

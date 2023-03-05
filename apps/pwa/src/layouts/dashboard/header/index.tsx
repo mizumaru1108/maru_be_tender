@@ -12,7 +12,7 @@ import { HEADER, NAVBAR } from '../../../config';
 import Iconify from '../../../components/Iconify';
 import { IconButtonAnimate } from '../../../components/animate';
 //
-import Searchbar from './Searchbar';
+import Searchbar from './SearchbarV3_2_0';
 import AccountPopover from './AccountPopover';
 import LanguagePopover from './LanguagePopover';
 // import ContactsPopover from './ContactsPopover';

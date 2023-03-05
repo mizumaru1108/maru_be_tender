@@ -29,7 +29,7 @@ function ProposalOnAmandement() {
   if (fetching) {
     return (
       <Grid item md={12}>
-        ...Loading
+        {translate('pages.common.loading')}
       </Grid>
     );
   }

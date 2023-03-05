@@ -24,7 +24,7 @@ function DailyStatistics() {
 
   const { data, fetching, error } = result;
 
-  if (fetching) return <>... Loading</>;
+  if (fetching) return <>{translate('pages.common.loading')}</>;
   if (error) return <>{error.message}</>;
 
   return (

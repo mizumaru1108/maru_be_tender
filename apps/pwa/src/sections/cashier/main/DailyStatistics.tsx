@@ -18,7 +18,7 @@ function DailyStatistics() {
     variables: { first_date, second_date },
   });
   const { data, fetching, error } = result;
-  if (fetching) return <>... Loading</>;
+  if (fetching) return <>{translate('pages.common.loading')}</>;
   if (error) return <>{error.message}</>;
   return (
     <Grid container spacing={2}>

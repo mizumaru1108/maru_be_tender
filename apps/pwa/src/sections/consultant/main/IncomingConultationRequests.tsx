@@ -3,8 +3,10 @@ import { ProjectCard } from 'components/card-table';
 import { getProposals } from 'queries/commons/getProposal';
 import { useNavigate } from 'react-router';
 import { useQuery } from 'urql';
+import useLocales from 'hooks/useLocales';
 
 function IncomingConultationRequests() {
+  const { translate } = useLocales();
   const navigate = useNavigate();
   const [result] = useQuery({
     query: getProposals,
@@ -16,7 +18,7 @@ function IncomingConultationRequests() {
   });
   const { data, fetching, error } = result;
   if (fetching) {
-    return <>...Loading</>;
+    return <>{translate('pages.common.loading')}</>;
   }
   const props = data?.data ?? [];
   if (!props || props.length === 0) return <></>;

@@ -73,11 +73,11 @@ const ProjectCard = ({
   let daysSinceCreated = 0;
   if (footer && footer.createdAt) {
     daysSinceCreated = Math.ceil(
-      (new Date().getTime() - footer.createdAt.getTime()) / (1000 * 3600 * 24) - 1
+      (new Date().getTime() - new Date(footer.createdAt).getTime()) / (1000 * 3600 * 24) - 1
     );
   } else if (content && content.createdAtClient) {
     daysSinceCreated = Math.ceil(
-      (new Date().getTime() - content.createdAtClient.getTime()) / (1000 * 3600 * 24) - 1
+      (new Date().getTime() - new Date(content.createdAtClient).getTime()) / (1000 * 3600 * 24) - 1
     );
   }
 
@@ -337,7 +337,9 @@ const ProjectCard = ({
               </Stack>
               <Chip
                 label={`${daysSinceCreated} ${
-                  daysSinceCreated < 2 ? translate('project_management_headercell.day') : translate('project_management_headercell.days')
+                  daysSinceCreated < 2
+                    ? translate('project_management_headercell.day')
+                    : translate('project_management_headercell.days')
                 }`}
                 sx={{
                   alignSelf: 'end',

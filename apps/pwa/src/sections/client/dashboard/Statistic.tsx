@@ -26,7 +26,7 @@ export default function Statistics() {
 
   const { data, fetching, error } = resQuery;
 
-  if (fetching) return <>... Loading</>;
+  if (fetching) return <>{translate('pages.common.loading')}</>;
   if (error) return <>{error.message}</>;
 
   return (

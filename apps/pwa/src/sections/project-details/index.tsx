@@ -22,7 +22,7 @@ function ProjectDetailsMainPage() {
   const { activeRole } = useAuth();
   const role = activeRole!;
 
-  const { currentLang } = useLocales();
+  const { translate, currentLang } = useLocales();
 
   const { proposal, isLoading, error } = useSelector((state) => state.proposal);
 
@@ -70,9 +70,9 @@ function ProjectDetailsMainPage() {
           {proposal.project_name}
         </Typography>
         <Typography sx={{ color: '#93A3B0', fontSize: '14px', mb: '5px' }}>
-          {` Created by ${proposal.user.employee_name} - ${new Date(
-            proposal.created_at
-          ).toLocaleString()}`}
+          {` ${translate('pages.project_details.created_by')} ${
+            proposal.user.employee_name
+          } - ${new Date(proposal.created_at).toLocaleString()}`}
         </Typography>
         {actionType && actionType !== 'show-project' ? <FollowUpsAction /> : null}
       </Stack>

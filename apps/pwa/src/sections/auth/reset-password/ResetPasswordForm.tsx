@@ -59,7 +59,7 @@ export default function ResetPasswordForm() {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3}>
-        <RHFTextField name="email" label="Email address" />
+        <RHFTextField name="email" label={translate('pages.common.email')} />
 
         <LoadingButton
           fullWidth

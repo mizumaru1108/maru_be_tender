@@ -22,7 +22,7 @@ function RequestsInProcess() {
   });
   const { data, fetching, error } = result;
   if (fetching) {
-    return <>...Loading</>;
+    return <>{translate('pages.common.loading')}</>;
   }
   const props = data?.data ?? [];
   if (!props || props.length === 0) return <></>;

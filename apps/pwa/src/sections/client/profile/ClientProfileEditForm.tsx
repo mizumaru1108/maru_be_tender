@@ -501,6 +501,15 @@ function ClientProfileEditForm() {
       );
       // console.log({ rest });
       if (rest) {
+        enqueueSnackbar(translate('pages.client.success'), {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
         // mutate();
         navigate('/client/my-profile');
         setLoadingButtonState(false);
@@ -659,7 +668,7 @@ function ClientProfileEditForm() {
           {/* </BankingInfoForm> */}
         </Box>
       )}
-      <Toast
+      {/* <Toast
         variant="outlined"
         // toastType="success"
         toastType={errorState.value ? 'error' : 'success'}
@@ -675,7 +684,7 @@ function ClientProfileEditForm() {
         onClose={() => {
           setOpen(false);
         }}
-      />
+      /> */}
     </Box>
   );
 }

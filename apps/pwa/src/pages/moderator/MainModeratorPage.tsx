@@ -45,7 +45,7 @@ function MainManagerPage() {
   });
   const { data: incomingData, fetching: incomingFetching, error: incomingError } = incoming;
 
-  if (fetching || incomingFetching) return <>... Loading</>;
+  if (fetching || incomingFetching) return <>{translate('pages.common.loading')}</>;
 
   return (
     // <Page title="Moderator Dashboard">

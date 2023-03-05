@@ -188,7 +188,7 @@ function ClientProfile() {
                 disabled={!FEATURE_EDIT_CLIENT_INFORMATION}
               >
                 {/* تعديل معلومات الحساب */}
-                edit user informaton
+                {translate('pages.client.edit_user_information')}
               </Button>
               <LoadingButton
                 loading={loadingEditButton}
@@ -229,7 +229,7 @@ function ClientProfile() {
                 disabled={disabelEdit.association_edit > 0 || !FEATURE_EDIT_CLIENT_INFORMATION}
               >
                 {/* تعديل معلومات الحساب */}
-                edit association information
+                {translate('pages.client.edit_association_information')}
               </LoadingButton>
             </Stack>
           </Stack>

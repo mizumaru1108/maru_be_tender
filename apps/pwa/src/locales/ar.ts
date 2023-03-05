@@ -9,6 +9,7 @@ const ar = {
   pages: {
     options_btn: 'أكثر',
     common: {
+      loading: 'تحميل…',
       messages: 'الرسائل',
       portal_reports: 'تقارير البوابة',
       mobile_settings: 'إعدادات الجوال',
@@ -62,6 +63,7 @@ const ar = {
       new_password: 'كلمة المرور الجديدة',
       reset_password: 'إعادة تعيين كلمة المرور',
       verify_code: 'تحقق من الرمز',
+      email: 'عنوان البريد الإلكتروني',
     },
     cashier: {
       previous_funding_request: 'طلبات الدعم السابقة',
@@ -73,6 +75,9 @@ const ar = {
       main: ' الرئيسية | المدير التنفيذي',
     },
     client: {
+      success: 'نجاح',
+      edit_user_information: 'تعديل بيانات المستخدم',
+      edit_association_information: 'تعديل بيانات الاشتراك',
       main: 'الرئيسية',
       draft_funding_requests: 'طلبات دعم مسودة',
       appointments_with: 'المواعيد مع المؤسسة',
@@ -92,7 +97,11 @@ const ar = {
     moderator: {
       main: 'الرئيسية | المشرف',
     },
-    project_details: { details: 'تفاصيل المشروع', owner_details: 'تفاصيل المالك' },
+    project_details: {
+      details: 'تفاصيل المشروع',
+      owner_details: 'تفاصيل المالك',
+      created_by: 'أنشئت بواسطة',
+    },
     project_manager: {
       main: 'الرئيسية | مدير المشروع',
       appointments: 'المواعيد مع المؤسسة',
@@ -478,6 +487,8 @@ const ar = {
     },
   },
   commons: {
+    supervising_authority_name: 'اسم الجهة المشرفة',
+    project_tracks: 'مسارات المشروع',
     track_type: {
       all_tracks: 'جميع المسارات',
       mosques_track: 'مسار المساجد',
@@ -1263,9 +1274,9 @@ const ar = {
   proposal_rejected: 'تم رفض الطلب بنجاح',
   proposal_stepback: 'تم تغيير حالة المشروع',
   proposal_studyagain: 'تم إعادة المشروع للدراسة من جديد',
-  proposal_created: 'تم انشاء المشروع بنجاح',
+  proposal_created: 'نجاح',
   proposal_revised: 'تم تعديل المشروع بنجاح',
-  proposal_saving_draft: 'تم حفظ المشروع كمسودة',
+  proposal_saving_draft: 'نجاح',
 
   // PORTAL REPORTS
   ceo_portal_reports: {
@@ -1738,6 +1749,11 @@ const ar = {
       heading: {
         upload_receipt: 'رفع إيصال الشيك',
       },
+    },
+  },
+  reject_reason: {
+    moderator: {
+      required: 'يجب عليك تقديم سبب الرفض!',
     },
   },
 };

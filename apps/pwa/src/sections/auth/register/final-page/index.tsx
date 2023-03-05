@@ -28,7 +28,7 @@ function FinalPage({
   setStep: (val: number) => void;
 }) {
   const { login } = useAuth();
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [errors, setErrors] = useState('');
@@ -82,6 +82,7 @@ function FinalPage({
       license_file: form3.license_file,
       board_ofdec_file: form3.board_ofdec_file,
       ...form4,
+      selectLang: currentLang.value, //possible value: "ar" || "en"
     };
     delete newVal.used_numbers;
     // console.log({ newVal });

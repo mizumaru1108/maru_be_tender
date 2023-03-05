@@ -16,11 +16,13 @@ import {
 import axiosInstance from '../../utils/axios';
 import ActionsBoxUserEdit from '../client/profile/ActionsBoxUserEdit';
 import UserInfoForm from '../client/profile/forms/UserInfoForm';
+import { useSnackbar } from 'notistack';
 
 function NonClientProfileEditForm() {
   const { user, activeRole, logout } = useAuth();
   const id = user?.id;
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
   const { translate } = useLocales();
   const [result] = useQuery({ query: gettingUseInfoForEditEmployee, variables: { id } });
   const { data } = result;
@@ -78,6 +80,15 @@ function NonClientProfileEditForm() {
       if (rest.status >= 200 && rest.status < 300) {
         setOpen(true);
         // timeout
+        enqueueSnackbar(translate('pages.client.success'), {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
         setErrorState({
           value: false,
           message: '',
@@ -93,6 +104,15 @@ function NonClientProfileEditForm() {
     } catch (err) {
       setLoading(false);
       setOpen(true);
+      enqueueSnackbar(err.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+      });
       setErrorState({
         value: true,
         message: err.message,
@@ -140,7 +160,7 @@ function NonClientProfileEditForm() {
           <ActionsBoxUserEdit loading={loading} />
         </UserInfoForm>
       </Box>
-      <Toast
+      {/* <Toast
         variant="outlined"
         toastType={errorState.value ? 'error' : 'success'}
         message={
@@ -154,7 +174,7 @@ function NonClientProfileEditForm() {
         onClose={() => {
           setOpen(false);
         }}
-      />
+      /> */}
     </Box>
   );
 }

@@ -9,6 +9,7 @@ const en = {
   pages: {
     options_btn: 'More',
     common: {
+      loading: 'Loading...',
       messages: 'Messages',
       portal_reports: 'Portal Reports',
       mobile_settings: 'Mobile Settings',
@@ -66,6 +67,7 @@ const en = {
       new_password: 'New Password',
       reset_password: 'Reset Password',
       verify_code: 'Verify Code',
+      email: 'Email address',
     },
     cashier: {
       previous_funding_request: 'Previous Funding Requests',
@@ -77,6 +79,9 @@ const en = {
       main: 'Dashboard | Ceo',
     },
     client: {
+      success: 'Success',
+      edit_user_information: 'Edit User Information',
+      edit_association_information: 'Edit Association Information',
       main: 'Main Client Dashboard',
       draft_funding_requests: 'Draft Funding Requests',
       appointments_with: 'Appointments With the Company',
@@ -96,7 +101,11 @@ const en = {
     moderator: {
       main: 'Dashboard | Moderator',
     },
-    project_details: { details: 'Project Details', owner_details: 'Owner Details' },
+    project_details: {
+      details: 'Project Details',
+      owner_details: 'Owner Details',
+      created_by: 'Created by',
+    },
     project_manager: {
       // new translation
       main: 'Dashboard | Project Manager',
@@ -472,6 +481,8 @@ const en = {
     },
   },
   commons: {
+    supervising_authority_name: 'Supervisor Authority Name',
+    project_tracks: 'Project tracks',
     track_type: {
       all_tracks: 'All Tracks',
       mosques_track: 'Mosques Track',
@@ -1234,9 +1245,9 @@ const en = {
   proposal_rejected: 'The project was successfully rejected',
   proposal_stepback: 'The project has been change status',
   proposal_studyagain: 'The project has been re-examined',
-  proposal_created: 'The project has been created successfully',
+  proposal_created: 'Success',
   proposal_revised: 'The project has been revised successfully',
-  proposal_saving_draft: 'The project has been saved as a draft',
+  proposal_saving_draft: 'Success',
   view_all: 'view all',
   // PORTAL REPORTS
   ceo_portal_reports: {
@@ -1702,6 +1713,11 @@ const en = {
       heading: {
         upload_receipt: 'Raise the check receipt',
       },
+    },
+  },
+  reject_reason: {
+    moderator: {
+      required: 'You must provide a reject reason!',
     },
   },
 };

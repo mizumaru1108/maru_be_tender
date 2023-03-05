@@ -50,6 +50,7 @@ function FilterModalMessage({
     p: 4,
     h: '1000px',
   };
+
   return (
     <Modal
       open={open}
@@ -62,7 +63,11 @@ function FilterModalMessage({
           <Typography>{translate('commons.filter_button_label')}</Typography>
           {supervisors && (
             <TextField
-              label={supervisors.name}
+              label={
+                supervisors.name === 'Supervising Authority  Name'
+                  ? translate('commons.supervising_authority_name')
+                  : supervisors.name
+              }
               InputLabelProps={{ shrink: true }}
               SelectProps={{ native: true }}
               select
@@ -86,7 +91,11 @@ function FilterModalMessage({
 
           {projectTracks && (
             <TextField
-              label={projectTracks.name}
+              label={
+                projectTracks.name === 'Project Tracks'
+                  ? translate('commons.project_tracks')
+                  : projectTracks.name
+              }
               InputLabelProps={{ shrink: true }}
               SelectProps={{ native: true }}
               select
