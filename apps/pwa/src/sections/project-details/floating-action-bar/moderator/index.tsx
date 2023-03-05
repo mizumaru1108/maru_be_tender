@@ -199,7 +199,7 @@ function ModeratorActionBar() {
           </Stack>
 
           {/* disabled other than accept reject button */}
-          <Button
+          {/* <Button
             disabled={true}
             variant="contained"
             onClick={() => {}}
@@ -207,7 +207,7 @@ function ModeratorActionBar() {
             endIcon={<Iconify icon="eva:edit-2-outline" />}
           >
             {translate('submit_amendment_request')}
-          </Button>
+          </Button> */}
         </Stack>
       </Box>
       {action === 'accept' && (

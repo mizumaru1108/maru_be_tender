@@ -1,14 +1,17 @@
 import { LoadingButton } from '@mui/lab';
 import { Button, Stack, Typography } from '@mui/material';
 import ModalDialog from 'components/modal-dialog';
+import useLocales from '../../hooks/useLocales';
 
 type Props = {
   open: boolean;
   handleClose: () => void;
   onSumbit: () => void;
+  message: string;
 };
 
-function ConfirmationModal({ open, handleClose, onSumbit }: Props) {
+function ConfirmationModal({ open, handleClose, onSumbit, message }: Props) {
+  const { translate } = useLocales();
   const handleAccepted = async () => {
     onSumbit();
   };
@@ -19,7 +22,7 @@ function ConfirmationModal({ open, handleClose, onSumbit }: Props) {
       title={
         <Stack display="flex">
           <Typography variant="h6" fontWeight="bold" color="#000000">
-            تأكيد طلب التعديل
+            {message}
           </Typography>
         </Stack>
       }
@@ -36,7 +39,8 @@ function ConfirmationModal({ open, handleClose, onSumbit }: Props) {
             }}
             onClick={handleClose}
           >
-            رجوع
+            {/* رجوع */}
+            {translate('button.cancel')}
           </Button>
           <LoadingButton
             onClick={handleAccepted}
@@ -49,7 +53,8 @@ function ConfirmationModal({ open, handleClose, onSumbit }: Props) {
             }}
             // loading={loading}
           >
-            اضافة
+            {/* اضافة */}
+            {translate('button.confirm')}
           </LoadingButton>
         </Stack>
       }

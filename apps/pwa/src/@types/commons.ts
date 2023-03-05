@@ -107,7 +107,13 @@ export type InnerStatus =
   | 'REJECTED_BY_PROJECT_MANAGER_WITH_COMMENT'
   | 'REVISED_BY_CLIENT';
 
-export type OutterStatus = 'COMPLETED' | 'PENDING' | 'CANCELED' | 'ONGOING' | 'ON_REVISION';
+export type OutterStatus =
+  | 'COMPLETED'
+  | 'PENDING'
+  | 'CANCELED'
+  | 'ONGOING'
+  | 'ON_REVISION'
+  | 'ASKED_FOR_AMANDEMENT';
 
 /* Querry types */
 export interface updateProposalStatusAndState {

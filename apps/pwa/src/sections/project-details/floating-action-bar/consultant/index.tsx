@@ -281,11 +281,11 @@ function ConsultantFloatingActionBar() {
               }}
             >
               <MenuItem
-                disabled={true}
-                // onClick={() => {
-                //   navigate(`/project-manager/dashboard/amandment-request/${proposal_id}`);
-                //   handleClose();
-                // }}
+                // disabled={true}
+                onClick={() => {
+                  navigate(`/project-manager/dashboard/amandment-request/${proposal_id}`);
+                  handleClose();
+                }}
               >
                 {translate('proposal_amandement.button_label')}
               </MenuItem>

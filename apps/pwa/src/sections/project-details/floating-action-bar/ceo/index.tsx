@@ -286,11 +286,11 @@ function FloatingActionBar() {
             }}
           >
             <MenuItem
-            disabled={true}
-              // onClick={() => {
-              //   navigate(`/ceo/dashboard/amandment-request/${proposal_id}`);
-              //   handleClose();
-              // }}
+              // disabled={true}
+              onClick={() => {
+                navigate(`/ceo/dashboard/amandment-request/${proposal_id}`);
+                handleClose();
+              }}
             >
               {translate('proposal_amandement.button_label')}
             </MenuItem>

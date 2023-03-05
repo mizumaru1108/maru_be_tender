@@ -1,5 +1,6 @@
 import { Grid } from '@mui/material';
 import DailyStatistics from './DailyStatistics';
+import IncomingAmandementRequest from './IncomingAmandementRequest';
 import IncomingFundingRequests from './IncomingFundingRequests';
 import PaymentAdjustment from './PaymentAdjustment';
 import ProposalOnAmandement from './ProposalOnAmandement';
@@ -19,6 +20,7 @@ function Main() {
       <IncomingFundingRequests />
       <PaymentAdjustment />
       <ProposalOnAmandement />
+      <IncomingAmandementRequest />
     </Grid>
   );
 }

@@ -20,14 +20,16 @@ import RHFTextArea from 'components/hook-form/RHFTextArea';
 import useAuth from 'hooks/useAuth';
 import { useSnackbar } from 'notistack';
 import { useForm } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
 
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { PATH_ACCOUNTS_MANAGER } from 'routes/paths';
 import { BaseAmandementRequest } from './types';
 import useLocales from '../../hooks/useLocales';
 import { LoadingButton } from '@mui/lab';
+import ConfirmationModal from '../../components/modal-dialog/ConfirmationModal';
+import axiosInstance from '../../utils/axios';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -59,6 +61,12 @@ export default function AmandementRequest() {
 
   const navigate = useNavigate();
 
+  const location = useLocation();
+
+  const [open, setOpen] = React.useState(false);
+  const [isLoad, setIsLoad] = React.useState(false);
+  const [tmpValues, setTmpValues] = React.useState<BaseAmandementRequest>();
+
   const sendNotesSchema = Yup.object().shape({
     notes: Yup.string().required('Notes messages is required'),
   });
@@ -78,7 +86,38 @@ export default function AmandementRequest() {
   } = methods;
 
   const onSubmit = (data: BaseAmandementRequest) => {
-    console.log(data.notes);
+    // console.log(data.notes);
+    setTmpValues(data);
+    setOpen(true);
+  };
+  const onSubmtModal = async () => {
+    const urls = location.pathname.split('/');
+    const dashboardUrl = `/${urls[1]}/${urls[2]}/app`;
+    if (tmpValues) {
+      setIsLoad(true);
+      try {
+        const res = await axiosInstance.post(
+          '/tender-proposal/ask-amandement-request',
+          {
+            proposal_id: id,
+            notes: tmpValues.notes,
+          },
+          {
+            headers: { 'x-hasura-role': activeRole! },
+          }
+        );
+        enqueueSnackbar('Amandement request has been sent', {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+        navigate(dashboardUrl);
+      } catch (error) {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      } finally {
+        setIsLoad(false);
+      }
+    }
   };
   return (
     <Page title={translate(`proposal_amandement.${role}.page_name`)}>
@@ -136,7 +175,7 @@ export default function AmandementRequest() {
                     type="submit"
                     variant="contained"
                     endIcon={<Iconify icon="eva:checkmark-outline" />}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isLoad}
                   >
                     {translate('account_manager.partner_details.btn_amndreq_send_request')}
                   </LoadingButton>
@@ -145,11 +184,20 @@ export default function AmandementRequest() {
                     endIcon={<Iconify icon="eva:diagonal-arrow-right-up-outline" />}
                     sx={{ backgroundColor: '#000000', ':hover': { backgroundColor: '#000' } }}
                     onClick={() => navigate(PATH_ACCOUNTS_MANAGER.infoUpdateRequest)}
+                    disabled={isSubmitting || isLoad}
                   >
                     {translate('account_manager.partner_details.btn_amndreq_back')}
                   </Button>
                 </Stack>
               </FormProvider>
+              <ConfirmationModal
+                open={open}
+                message={translate('modal.confirm_amandement')}
+                handleClose={() => {
+                  setOpen(false);
+                }}
+                onSumbit={onSubmtModal}
+              />
             </Grid>
           </Grid>
         </ContentStyle>
