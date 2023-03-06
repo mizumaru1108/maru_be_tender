@@ -4,7 +4,7 @@ import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { nanoid } from 'nanoid';
 import { AcceptProposalByConsultant } from 'queries/consultant/AcceptProposalByConsultant';
-import { useNavigate, useParams } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import { useMutation } from 'urql';
 import { useSnackbar } from 'notistack';
 import { UpdateAction } from '../../../../@types/project-details';
@@ -13,6 +13,11 @@ import NotesModal from 'components/notes-modal';
 //
 import axiosInstance from 'utils/axios';
 import { LoadingButton } from '@mui/lab';
+import uuidv4 from 'utils/uuidv4';
+import { addConversation, setActiveConversationId, setMessageGrouped } from 'redux/slices/wschat';
+import { dispatch, useSelector } from 'redux/store';
+import moment from 'moment';
+import { Conversation } from '../../../../@types/wschat';
 
 function ConsultantFloatingActionBar() {
   const { enqueueSnackbar } = useSnackbar();
@@ -22,6 +27,11 @@ function ConsultantFloatingActionBar() {
   const { translate } = useLocales();
 
   const navigate = useNavigate();
+
+  const { proposal } = useSelector((state) => state.proposal);
+  const { conversations } = useSelector((state) => state.wschat);
+  const location = useLocation();
+  const activeRoleIndex: number = Number(localStorage.getItem('activeRoleIndex')) ?? 0;
 
   const [action, setAction] = useState<UpdateAction>('');
 
@@ -222,6 +232,80 @@ function ConsultantFloatingActionBar() {
     }
   };
 
+  const handleMessage = () => {
+    const proposalSubmitter = proposal.user;
+    const proposalStateRole = proposal.state;
+    const x = location.pathname.split('/');
+    const urlToMessage = `/${x[1]}/${x[2]}/messages`;
+
+    const valueToConversation: Conversation = {
+      id: uuidv4(),
+      correspondance_category_id: 'EXTERNAL',
+      messages: [
+        {
+          content: null,
+          attachment: null,
+          content_title: null,
+          content_type_id: 'TEXT',
+          receiver_id: proposalSubmitter.id,
+          owner_id: user?.id,
+          receiver_role_as: `tender_${proposalSubmitter.roles[0].role.id}`,
+          sender_role_as: `tender_${proposalStateRole.toLowerCase()}`,
+          created_at: moment().toISOString(),
+          updated_at: moment().toISOString(),
+          read_status: false,
+          receiver: {
+            employee_name: proposalSubmitter.employee_name,
+          },
+          sender: {
+            employee_name: user?.firstName,
+          },
+        },
+      ],
+    };
+
+    const valueNewConversation = conversations;
+    let hasConversationId: string | undefined = undefined;
+
+    if (valueNewConversation.length) {
+      for (let index = 0; index < valueNewConversation.length; index++) {
+        const { messages } = valueNewConversation[index];
+        const findReceiverId = messages.find(
+          (el) =>
+            el.owner_id === valueToConversation.messages[0].receiver_id ||
+            el.receiver_id === valueToConversation.messages[0].receiver_id
+        );
+
+        if (findReceiverId) {
+          hasConversationId = valueNewConversation[index].id;
+        }
+      }
+    }
+
+    if (hasConversationId) {
+      dispatch(setActiveConversationId(hasConversationId));
+      handleReadMessages(hasConversationId);
+      navigate(urlToMessage);
+    } else {
+      dispatch(addConversation(valueToConversation));
+      dispatch(setActiveConversationId(valueToConversation.id!));
+      handleReadMessages(valueToConversation.id!);
+      navigate(urlToMessage);
+    }
+  };
+
+  const handleReadMessages = async (conversationId: string) => {
+    await axiosInstance.patch(
+      '/tender/messages/toogle-read',
+      {
+        roomId: conversationId,
+      },
+      {
+        headers: { 'x-hasura-role': `tender_${proposal.state.toLowerCase()}` },
+      }
+    );
+  };
+
   return (
     <>
       <Box
@@ -321,6 +405,18 @@ function ConsultantFloatingActionBar() {
               loading={isSubmitting}
             >
               {translate('project_acceptance')}
+            </LoadingButton>
+            <LoadingButton
+              variant="outlined"
+              color="inherit"
+              endIcon={<Iconify icon="eva:message-circle-outline" />}
+              // onClick={() => setAction('SEND_CLIENT_MESSAGE')}
+              onClick={handleMessage}
+              sx={{ flex: 1 }}
+              // disabled={true}
+              loading={isSubmitting}
+            >
+              {translate('partner_details.send_messages')}
             </LoadingButton>
           </Stack>
         </Stack>
