@@ -202,6 +202,7 @@ const en = {
   },
   errors: {
     notes: 'Note is required',
+    empty_data: 'No data found.',
     login: {
       email: {
         message: 'Email must be a valid email address',
@@ -352,7 +353,7 @@ const en = {
         message: '',
         required: 'Card Image is required',
         size: 'The file size must be less than 5 MB',
-        fileExtension: 'The file extension must be one of the following: pdf, png, jpg, jpeg',
+        fileExtension: 'The file extension must be one of the following: png, jpg, jpeg',
       },
       employee_name: {
         message: '',
@@ -497,6 +498,7 @@ const en = {
     chip_completed: 'The request is complete',
     chip_pending: 'The request is pending',
     chip_on_revision: 'The request is on revision',
+    chip_asked_for_amandement: 'The request is asked for amandement',
     maintenance_feature_flag: 'This feature is still in maintenance',
     view_license_file: 'Click here to view the license file',
   },
@@ -962,6 +964,7 @@ const en = {
   requests_in_process: 'Requests in Process',
   incoming_funding_requests_project_supervisor: 'Incoming Funding Requests',
   amandement_requests_project_supervisor: 'Amandement Requests',
+  incoming_amandement_requests: 'Incoming Amandement Requests',
   payment_adjustment: 'Payment Adjustment',
   appointments_with_partners: 'Appointments With Partners',
   exchange_permission: 'Exchange Permission',
@@ -1338,9 +1341,12 @@ const en = {
     total_budget_for_the_course: 'The total budget for the track',
     riyals: 'SAR',
     hours: 'Hours',
+    minutes: 'minutes',
+    seconds: 'seconds',
     spent_budget: 'Spent Budget',
     reserved_budget: 'Reserved Budget',
     since_last_weeks: 'Since last week',
+    since_last_months: 'Since last months',
   },
 
   // Message Page
@@ -1533,6 +1539,7 @@ const en = {
       step_back: 'SEND BACK',
       send_back_for_revision: 'SEND BACK FOR REVISION',
       study_again: 'STUDY AGAIN',
+      ask_for_amandement_request: 'ASK FOR AMENDMENT REQUEST',
     },
   },
   project_already_reviewed_by_supervisor: 'This project already reviewed by Supervisor',
@@ -1629,6 +1636,7 @@ const en = {
     PENDING: 'PENDING',
     CANCELED: 'CANCELED',
     ON_REVISION: 'ON REVISION',
+    ASKED_FOR_AMANDEMENT: 'ASKED FOR AMANDEMENT',
   },
   project_beneficiaries: {
     KIDS: 'KIDS',
@@ -1684,6 +1692,11 @@ const en = {
     btn_final_save_as_draft: 'Send',
     btn_create_proposal: 'Send',
     btn_next_save_as_draft: 'Next',
+    confirm: 'Confirm',
+    cancel: 'Cancel',
+  },
+  modal: {
+    confirm_amandement: 'Do amendment request',
   },
   remote_or_insite: {
     remote: 'Online',
@@ -1719,6 +1732,18 @@ const en = {
     moderator: {
       required: 'You must provide a reject reason!',
     },
+  },
+  search_component: {
+    placeholder: 'ex. Mohammad Zayin',
+    by_project_name: 'Name of Project',
+    by_client_name: 'Name of Client',
+    by_project_status: 'Project Status',
+    by_track_name: 'Name of Track',
+    ascending: 'Ascending',
+    descending: 'Descending',
+    project_type: 'Project`s Type',
+    type_order: 'Type',
+    search: 'Search',
   },
 };
 

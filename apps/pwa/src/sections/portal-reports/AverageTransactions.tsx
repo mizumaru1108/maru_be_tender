@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Typography, Box, Grid, CircularProgress, Card, useTheme } from '@mui/material';
+import { Typography, Box, Grid, CircularProgress, Card, useTheme, Stack } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 // component
 import LineCharts from 'components/line-charts';
 import EmptyChart from './EmptyChart';
 import Label from 'components/Label';
+// utils
+import { convertMinutestoHours } from 'utils/formatTime';
 // types
 import { IPropsAvgTransactions } from './types';
 
@@ -27,26 +29,27 @@ export default function AverageTransaction({ data, loading }: IPropsAvgComponent
     if (data.length) {
       const newData = data.map((el) => {
         const colorIndicator =
-          el.total_execution_time_data_count > el.total_execution_last_week_data_count
-            ? el.total_execution_time_data_count < el.total_execution_last_week_data_count
+          el.raw_total_response_time > el.raw_last_month_total_response_time
+            ? el.raw_total_response_time < el.raw_last_month_total_response_time
               ? 'down'
               : 'up'
             : 'stable';
-
         const seriesData = [
           {
             name: 'Total',
-            data: [el.total_execution_last_week_data_count, el.total_execution_time_data_count],
+            data: [
+              convertMinutestoHours(el.raw_last_month_total_response_time).hours,
+              convertMinutestoHours(el.raw_total_response_time).hours,
+            ],
           },
         ];
-
         return {
           ...el,
+          fe_average_response_time: convertMinutestoHours(el.raw_average_response_time),
           color: colorIndicator,
           series_data: seriesData,
         };
       });
-
       setAvgTransactionData(newData);
     }
   }, [data, loading]);
@@ -84,44 +87,58 @@ export default function AverageTransaction({ data, loading }: IPropsAvgComponent
                         alignItems="center"
                         component="div"
                       >
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12}>
                           <Typography variant="h6">{translate(item.project_track)}</Typography>
                           <Typography
-                            variant="h4"
                             component="p"
-                            sx={{ color: theme.palette.primary.main }}
+                            sx={{ color: theme.palette.primary.main, mt: 0.5, mb: 1.5 }}
                           >
-                            {(item.average + item.average_last_week).toFixed(0)}&nbsp;
-                            {translate('section_portal_reports.hours')}
+                            <Typography variant="h5" component="span">
+                              {item.fe_average_response_time?.hours}{' '}
+                              {translate('section_portal_reports.hours')}
+                            </Typography>
+                            &nbsp;&nbsp;&nbsp;
+                            <Typography variant="h5" component="span">
+                              {item.fe_average_response_time?.minutes}{' '}
+                              {translate('section_portal_reports.minutes')}
+                            </Typography>
+                            &nbsp;&nbsp;&nbsp;
+                            <Typography variant="h5" component="span">
+                              {item.fe_average_response_time?.seconds}{' '}
+                              {translate('section_portal_reports.seconds')}
+                            </Typography>
                           </Typography>
-                          <Label
-                            color={
-                              (item.total_execution_time_data_count >
-                                item.total_execution_last_week_data_count &&
-                                'primary') ||
-                              (item.total_execution_time_data_count ===
-                                item.total_execution_last_week_data_count &&
-                                'warning') ||
-                              (item.total_execution_time_data_count <
-                                item.total_execution_last_week_data_count &&
-                                'error') ||
-                              'default'
-                            }
-                            sx={{ mr: 1, mt: 1.5 }}
-                          >
-                            {item.total_execution_time - item.total_execution_last_week}{' '}
-                            {translate('section_portal_reports.hours')}
-                          </Label>
-                          <Typography
-                            variant="caption"
-                            sx={{ color: theme.palette.grey[500], display: 'flex', mt: 1 }}
-                          >
-                            {translate('section_portal_reports.since_last_weeks')}
-                          </Typography>
+                          <Stack component="div" direction="row" alignItems="center" spacing={1.5}>
+                            <Label
+                              color={
+                                (item.raw_total_response_time >
+                                  item.raw_last_month_total_response_time &&
+                                  'primary') ||
+                                (item.raw_total_response_time ===
+                                  item.raw_last_month_total_response_time &&
+                                  'warning') ||
+                                (item.raw_total_response_time <
+                                  item.raw_last_month_total_response_time &&
+                                  'error') ||
+                                'default'
+                              }
+                            >
+                              {
+                                convertMinutestoHours(
+                                  item.raw_total_response_time -
+                                    item.raw_last_month_total_response_time
+                                ).hours
+                              }{' '}
+                              {translate('section_portal_reports.hours')}
+                            </Label>
+                            <Typography variant="caption" sx={{ color: theme.palette.grey[600] }}>
+                              {translate('section_portal_reports.since_last_months')}
+                            </Typography>
+                          </Stack>
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        {/* <Grid item xs={12} md={6}>
                           <LineCharts key={i} color={item.color} series_data={item.series_data} />
-                        </Grid>
+                        </Grid> */}
                       </Grid>
                     </Card>
                   </Grid>

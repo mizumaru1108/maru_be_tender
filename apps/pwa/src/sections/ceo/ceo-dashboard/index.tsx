@@ -6,6 +6,7 @@ import Concessional from './Concessional';
 import Initiatives from './Initiatives';
 import Mosques from './Mosques';
 import DashboardProjectManagement from './ProjectManagement';
+import ProposalOnAmandementTable from '../../../components/table/ceo/proposal-on-amandement/ProposalOnAmandementTable';
 const dailyStatistic = [
   {
     subtitle: 'الميزانية الكلية للمؤسسة',
@@ -53,6 +54,9 @@ function CeoDashboard() {
         </Grid>
         <Grid item md={12}>
           <DashboardProjectManagement />
+        </Grid>
+        <Grid item md={12}>
+          <ProposalOnAmandementTable />
         </Grid>
         {/* <Grid item md={6}>
           <Mosques />

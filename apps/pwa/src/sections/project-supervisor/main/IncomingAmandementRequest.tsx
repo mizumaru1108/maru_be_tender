@@ -1,22 +1,26 @@
-import { Typography, Grid, Box } from '@mui/material';
+import { Typography, Grid, Box, Stack, Button } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
 import { getProposals } from 'queries/commons/getProposal';
+import { useNavigate } from 'react-router';
 import { useQuery } from 'urql';
 import useLocales from 'hooks/useLocales';
+import useAuth from '../../../hooks/useAuth';
 
-function IncomingFundingRequests() {
+function IncomingAmandementRequest() {
+  const navigate = useNavigate();
   const { translate } = useLocales();
+  const { user } = useAuth();
   const [result] = useQuery({
     query: getProposals,
     variables: {
-      order_by: { updated_at: 'desc' },
       limit: 4,
-      offset: 0,
+      order_by: { updated_at: 'desc' },
       where: {
-        project_manager_id: { _is_null: true },
+        supervisor_id: { _eq: user?.id },
         _and: {
-          inner_status: { _in: ['ACCEPTED_BY_SUPERVISOR', 'REJECTED_BY_CONSULTANT'] },
-          outter_status: { _nin: ['ON_REVISION', 'ASKED_FOR_AMANDEMENT'] },
+          outter_status: {
+            _eq: 'ASKED_FOR_AMANDEMENT',
+          },
         },
       },
     },
@@ -33,17 +37,34 @@ function IncomingFundingRequests() {
   if (!props || props.length === 0) return null;
   return (
     <Grid item md={12}>
-      <Typography variant="h4" sx={{ mb: '20px' }}>
-        {translate('incoming_funding_requests_project_supervisor')}
-      </Typography>
-      <Grid container rowSpacing={3} columnSpacing={3}>
-        {props?.map((item: any, index: any) => (
+      <Stack direction="row" justifyContent="space-between">
+        <Typography variant="h4" sx={{ mb: '20px' }}>
+          {translate('incoming_amandement_requests')}
+        </Typography>
+        <Button
+          sx={{
+            backgroundColor: 'transparent',
+            color: '#93A3B0',
+            textDecoration: 'underline',
+            ':hover': {
+              backgroundColor: 'transparent',
+            },
+          }}
+          onClick={() => {
+            // navigate('/project-supervisor/dashboard/incoming-funding-requests');
+          }}
+        >
+          {translate('view_all')}
+        </Button>
+      </Stack>
+      <Grid container spacing={2}>
+        {props.map((item: any, index: any) => (
           <Grid item md={6} key={index}>
             <ProjectCard
               title={{ id: item.id }}
               content={{
                 projectName: item.project_name,
-                organizationName: item.user.client_data.entity,
+                organizationName: item.user.client_data.entity ?? '-',
                 sentSection: item.state,
                 // employee: item.user.employee_name,
                 employee:
@@ -51,11 +72,9 @@ function IncomingFundingRequests() {
                   item.proposal_logs.length > 0 &&
                   item.proposal_logs[item.proposal_logs.length - 1].reviewer &&
                   item.proposal_logs[item.proposal_logs.length - 1].reviewer.employee_name,
-                createdAtClient: new Date(item.created_at),
+                createdAtClient: new Date(item.user.client_data.created_at),
               }}
-              footer={{
-                createdAt: new Date(item.updated_at),
-              }}
+              footer={{ createdAt: new Date(item.updated_at) }}
               cardFooterButtonAction="show-details"
               destination="incoming-funding-requests"
             />
@@ -66,4 +85,4 @@ function IncomingFundingRequests() {
   );
 }
 
-export default IncomingFundingRequests;
+export default IncomingAmandementRequest;

@@ -4,6 +4,7 @@ import IncomingFundingRequests from './IncomingFundingRequests';
 import ExchangePermission from './ExchangePermission';
 import RequestsInProcess from './RequestsInProcess';
 import TrackBudget from './TrackBudget';
+import ProposalOnAmandement from './ProposalOnAmandement';
 
 function Main() {
   return (
@@ -17,6 +18,7 @@ function Main() {
       <RequestsInProcess />
       <IncomingFundingRequests />
       <ExchangePermission />
+      <ProposalOnAmandement />
     </Grid>
   );
 }

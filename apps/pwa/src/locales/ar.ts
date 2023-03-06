@@ -198,6 +198,7 @@ const ar = {
   },
   errors: {
     notes: 'ملاحظة مطلوبة',
+    empty_data: 'لاتوجد بيانات',
     login: {
       email: {
         message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
@@ -360,7 +361,7 @@ const ar = {
         message: '',
         required: 'صورة البطاقة مطلوبة',
         size: 'حجم الملف يجب أن يكون أقل من 3 ميجا',
-        fileExtension: 'يجب أن يكون الملف من نوع pdf, png, jpg, jpeg',
+        fileExtension: 'يجب أن يكون الملف من نوع png, jpg, jpeg',
       },
       employee_name: {
         message: '',
@@ -502,6 +503,7 @@ const ar = {
     chip_canceled: 'تم إلغاء الطلب',
     chip_completed: 'الطلب كامل',
     chip_pending: 'الطلب معلق',
+    chip_asked_for_amandement: 'تم طلب تعديلات',
     chip_on_revision: 'الطلب قيد المراجعة',
     maintenance_feature_flag: 'هذه الميزة لا تزال قيد الصيانة',
     view_license_file: 'اضغط هنا لرؤية ملف الترخيص',
@@ -966,6 +968,7 @@ const ar = {
   requests_in_process: 'طلبات قيد الاجراء',
   incoming_funding_requests_project_supervisor: 'طلبات الدعم الواردة',
   amandement_requests_project_supervisor: 'طلبات التعديل',
+  incoming_amandement_requests: 'طلبات التعديل الواردة',
   payment_adjustment: 'ضبط الدفعات',
   appointments_with_partners: 'المواعيد مع الشركاء',
   exchange_permission: 'إذن الصرف',
@@ -1367,9 +1370,12 @@ const ar = {
     total_budget_for_the_course: 'الميزانية الكلية للمسار',
     riyals: 'ريال',
     hours: 'ساعة',
+    minutes: 'دقائق',
+    seconds: 'ثواني',
     spent_budget: 'الميزانية المصروفة',
     reserved_budget: 'الميزانية المحجوزة',
     since_last_weeks: 'منذ الأسابيع الماضية',
+    since_last_months: 'منذ الأشهر الماضية',
     initiatives_track: 'مسار المبادرات',
     facilitated_scholarship_track: 'مسار المنح الميسر',
     the_path_of_the_mosques: 'مسار المساجد',
@@ -1571,6 +1577,7 @@ const ar = {
       step_back: 'أرسل مرة أخرى',
       send_back_for_revision: 'أرسل مرة أخرى للمراجعة',
       study_again: 'ادرس مجددا',
+      ask_for_amandement_request: 'طلب تعديل',
     },
   },
   project_already_reviewed_by_supervisor: 'تمت مراجعة هذا المشروع بالفعل من قبل المشرف',
@@ -1665,6 +1672,7 @@ const ar = {
     PENDING: 'معلقة',
     CANCELED: 'ملغي',
     ON_REVISION: 'في المراجعة',
+    ASKED_FOR_AMANDEMENT: 'طلب تعديل',
   },
   project_beneficiaries: {
     KIDS: 'أطفال',
@@ -1719,6 +1727,11 @@ const ar = {
     btn_final_save_as_draft: ' انهاء',
     btn_create_proposal: ' انهاء',
     btn_next_save_as_draft: 'التالي',
+    confirm: 'تأكيد',
+    cancel: 'إلغاء',
+  },
+  modal: {
+    confirm_amandement: 'طلب تعديل',
   },
   remote_or_insite: {
     remote: 'عن بعد',
@@ -1755,6 +1768,18 @@ const ar = {
     moderator: {
       required: 'يجب عليك تقديم سبب الرفض!',
     },
+  },
+  search_component: {
+    placeholder: 'مثال محمد زين',
+    by_project_name: 'اسم المشروع',
+    by_client_name: 'اسم العميل',
+    by_project_status: 'حالة المشروع',
+    by_track_name: 'اسم المسار',
+    ascending: 'تصاعدي',
+    descending: 'تنازلي',
+    project_type: 'نوع المشروع',
+    type_order: 'يكتب',
+    search: 'يبحث',
   },
 };
 

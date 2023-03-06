@@ -143,6 +143,7 @@ export default function MessageContent() {
       );
 
       listMessageGrouped = concatValue;
+      console.log('receiver:', valuesMessage.receiver_role_as);
 
       postMessage({
         correspondence_type_id: corespondenceType,

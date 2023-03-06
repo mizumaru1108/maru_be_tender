@@ -148,6 +148,7 @@ function AmandementRequestProposal() {
             </AmandementForms>
             <ConfirmationModal
               open={open}
+              message={translate('modal.confirm_amandement')}
               handleClose={() => {
                 setOpen(false);
               }}

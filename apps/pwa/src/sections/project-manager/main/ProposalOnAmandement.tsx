@@ -5,7 +5,7 @@ import { getProposals } from 'queries/commons/getProposal';
 import { useQuery } from 'urql';
 import useLocales from 'hooks/useLocales';
 
-function RequestsInProcess() {
+function ProposalOnAmandement() {
   const { translate } = useLocales();
   const { user } = useAuth();
   const [result] = useQuery({
@@ -17,8 +17,9 @@ function RequestsInProcess() {
       where: {
         project_manager_id: { _eq: user?.id },
         _and: {
-          inner_status: { _in: ['ACCEPTED_BY_SUPERVISOR', 'REJECTED_BY_CONSULTANT'] },
-          outter_status: { _nin: ['ON_REVISION', 'ASKED_FOR_AMANDEMENT'] },
+          outter_status: {
+            _eq: 'ASKED_FOR_AMANDEMENT',
+          },
         },
       },
     },
@@ -35,7 +36,7 @@ function RequestsInProcess() {
   return (
     <Grid item md={12}>
       <Typography variant="h4" sx={{ mb: '20px' }}>
-        {translate('content.client.main_page.process_request')}
+        {translate('amandement_requests_project_supervisor')}
       </Typography>
       <Grid container rowSpacing={3} columnSpacing={3}>
         {props?.map((item: any, index: any) => (
@@ -57,7 +58,7 @@ function RequestsInProcess() {
               footer={{
                 createdAt: new Date(item.updated_at),
               }}
-              cardFooterButtonAction="show-details"
+              cardFooterButtonAction="show-project"
               destination="requests-in-process"
             />
           </Grid>
@@ -67,4 +68,4 @@ function RequestsInProcess() {
   );
 }
 
-export default RequestsInProcess;
+export default ProposalOnAmandement;

@@ -16,7 +16,10 @@ function ExchangePermission() {
       offset: 0,
       where: {
         project_manager_id: { _eq: user?.id },
-        _and: { inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' } },
+        _and: {
+          inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' },
+          outter_status: { _nin: ['ON_REVISION', 'ASKED_FOR_AMANDEMENT'] },
+        },
       },
     },
   });

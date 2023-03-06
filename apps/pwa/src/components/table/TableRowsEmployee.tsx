@@ -3,17 +3,15 @@
 import { useTheme } from '@mui/material/styles';
 import { TableRow, Checkbox, TableCell, Typography } from '@mui/material';
 // hooks
-import { IPropsPortalReportEmployee } from './type';
+import { IPropsAvgEmployeeEfectiveness } from '../../sections/portal-reports/types';
 import useLocales from 'hooks/useLocales';
 import { useNavigate } from 'react-router-dom';
-
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: IPropsPortalReportEmployee;
+  row: IPropsAvgEmployeeEfectiveness;
   selected?: boolean;
   onSelectRow?: VoidFunction;
-  // actions?: React.ReactNode;
   share?: boolean;
   shareLink?: string;
 };
@@ -23,7 +21,14 @@ export default function TableRowsEmployee({ row, selected, onSelectRow }: Props)
   const { translate } = useLocales();
   const navigate = useNavigate();
 
-  const { employee_name, account_type, id, number_of_clock, sections } = row;
+  const {
+    employee_name,
+    account_type,
+    id,
+    average_response_time,
+    section,
+    raw_average_response_time,
+  } = row;
 
   return (
     <TableRow hover selected={selected}>
@@ -37,17 +42,17 @@ export default function TableRowsEmployee({ row, selected, onSelectRow }: Props)
       </TableCell>
       <TableCell>
         <Typography variant="subtitle2" noWrap>
-          {account_type}
+          {account_type ? translate(`permissions.${account_type}`) : '-'}
         </Typography>
       </TableCell>
       <TableCell>
         <Typography variant="subtitle2" noWrap>
-          {sections}
+          {section ? translate(`${section}`) : '-'}
         </Typography>
       </TableCell>
       <TableCell>
         <Typography variant="subtitle2" noWrap>
-          {number_of_clock}
+          {average_response_time}
         </Typography>
       </TableCell>
     </TableRow>

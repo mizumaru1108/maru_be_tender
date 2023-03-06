@@ -29,6 +29,7 @@ function ProjectStatus() {
             ONGOING: '#0E8478',
             PENDING: '#000',
             ON_REVISION: '#F2994A',
+            ASKED_FOR_AMANDEMENT: '#F2994A',
             CANCELED: '#EB5757',
           }[`${proposal.outter_status}`],
           fontWeight: 600,

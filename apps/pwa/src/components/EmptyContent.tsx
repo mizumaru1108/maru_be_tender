@@ -1,9 +1,10 @@
 // @mui
 import { styled } from '@mui/material/styles';
-import { Typography, Box, BoxProps, Button } from '@mui/material';
+import { Typography, Box, BoxProps, useTheme } from '@mui/material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 //
 import Image from './Image';
+import useLocales from 'hooks/useLocales';
 
 // ----------------------------------------------------------------------
 
@@ -27,6 +28,9 @@ interface Props extends BoxProps {
 }
 
 export default function EmptyContent({ title, description, img, actionButton, ...other }: Props) {
+  const { translate } = useLocales();
+  const theme = useTheme();
+
   return (
     <RootStyle {...other}>
       <Image
@@ -37,8 +41,12 @@ export default function EmptyContent({ title, description, img, actionButton, ..
         sx={{ height: 240, mb: 3 }}
       />
 
-      <Typography variant="h4" gutterBottom>
-        {title}
+      <Typography
+        variant="h6"
+        sx={{ color: theme.palette.grey[600], fontStyle: 'italic' }}
+        gutterBottom
+      >
+        {translate('errors.empty_data')}
       </Typography>
 
       {description && (
@@ -47,7 +55,6 @@ export default function EmptyContent({ title, description, img, actionButton, ..
         </Typography>
       )}
       {actionButton && actionButton}
-
     </RootStyle>
   );
 }

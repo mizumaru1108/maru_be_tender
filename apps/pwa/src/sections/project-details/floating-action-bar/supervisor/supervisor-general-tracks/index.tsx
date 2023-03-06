@@ -58,6 +58,7 @@ function FloatingActionBar() {
   const dispatch = useDispatch();
   const { proposal } = useSelector((state) => state.proposal);
   const { conversations } = useSelector((state) => state.wschat);
+  const activeRoleIndex: number = Number(localStorage.getItem('activeRoleIndex')) ?? 0;
 
   const open = Boolean(anchorEl);
 
@@ -293,7 +294,7 @@ function FloatingActionBar() {
 
     const valueToConversation: Conversation = {
       id: uuidv4(),
-      correspondance_category_id: 'EXTERNAL',
+      correspondance_category_id: 'INTERNAL',
       messages: [
         {
           content: null,
@@ -302,7 +303,10 @@ function FloatingActionBar() {
           content_type_id: 'TEXT',
           receiver_id: proposalSubmitter.id,
           owner_id: user?.id,
-          receiver_role_as: proposalSubmitter.roles[0].role.id,
+          // receiver_role_as: proposalSubmitter.roles[0].role.id,
+          receiver_role_as: `tender_${proposalSubmitter.roles[
+            activeRoleIndex
+          ].role.id.toLowerCase()}`,
           sender_role_as: `tender_${proposalStateRole.toLowerCase()}`,
           created_at: moment().toISOString(),
           updated_at: moment().toISOString(),
