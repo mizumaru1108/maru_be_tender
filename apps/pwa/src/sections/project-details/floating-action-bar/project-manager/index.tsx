@@ -60,7 +60,7 @@ function FloatingActionBar() {
 
   const [, update] = useMutation(updateProposalByProjectManager);
 
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
 
   const theme = useTheme();
 
@@ -91,6 +91,7 @@ function FloatingActionBar() {
         action: 'accept',
         message: 'تم قبول المشروع من قبل مدير المشاريع ',
         notes: values.notes,
+        selectLang: currentLang.value,
       };
 
       console.log('payloadApprovalGeneralPM', payload);
@@ -148,6 +149,7 @@ function FloatingActionBar() {
         action: 'accept_and_ask_for_consultaion',
         message: 'تم قبول المشروع من قبل مدير المشاريع وإحالته إلى قسم الاستشاريين ',
         notes: values.notes,
+        selectLang: currentLang.value,
       };
 
       console.log('payloadApprovalConsultant', payload);
@@ -206,6 +208,7 @@ function FloatingActionBar() {
         message: 'تم رفض المشروع من قبل مدير المشاريع',
         notes: values.notes,
         reject_reason: values.reject_reason ?? null,
+        selectLang: currentLang.value,
       };
 
       console.log('payloadRejectPM', payload);
@@ -263,6 +266,7 @@ function FloatingActionBar() {
         action: 'step_back',
         message: 'تم إرجاع المشروع خطوة للوراء',
         notes: values.notes,
+        selectLang: currentLang.value,
       };
 
       console.log('payloadStepbackToSupervisor', payload);

@@ -45,7 +45,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
 
   const navigate = useNavigate();
 
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -104,6 +104,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
         action: 'accept',
         message: 'تم قبول المشروع من قبل مشرف المشاريع',
         notes,
+        selectLang: currentLang.value,
         supervisor_payload: {
           ...restStep1,
           fsupport_by_supervisor: totalFSupport,

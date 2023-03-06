@@ -34,7 +34,7 @@ import moment from 'moment';
 
 export default function MessageContent() {
   const theme = useTheme();
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user, activeRole } = useAuth();
 
@@ -92,6 +92,7 @@ export default function MessageContent() {
     partner_selected_role: string;
     current_user_selected_role: string;
     content: string;
+    selectLang: string;
   }) => {
     let getPayload = payload;
 
@@ -152,6 +153,7 @@ export default function MessageContent() {
         partner_id: valuesMessage.receiver_id!,
         partner_selected_role: valuesMessage.receiver_role_as!,
         content: messageValue,
+        selectLang: currentLang.value,
       });
     } else {
       const values: IMassageGrouped = {
@@ -190,6 +192,7 @@ export default function MessageContent() {
         partner_id: values.messages[0].receiver_id!,
         partner_selected_role: values.messages[0].receiver_role_as!,
         content: messageValue,
+        selectLang: currentLang.value,
       });
     }
 
@@ -535,7 +538,7 @@ export default function MessageContent() {
                   value={messageValue}
                   autoFocus
                 />
-                {/* <Box sx={{ justifyContent: 'flex-end', display: 'flex', direction: 'row' }}>
+                <Box sx={{ justifyContent: 'flex-end', display: 'flex', direction: 'row' }}>
                   <Box
                     onClick={() => alert('upload attachment')}
                     sx={{
@@ -556,7 +559,7 @@ export default function MessageContent() {
                   >
                     <Image src="/assets/icons/upload-image-icon.svg" alt="logo" />
                   </Box>
-                </Box> */}
+                </Box>
               </Stack>
             </>
           )}

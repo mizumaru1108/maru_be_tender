@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from 'redux/store';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import axiosInstance from 'utils/axios';
+import useLocales from '../../../../hooks/useLocales';
 
 type Props = {
   open: boolean;
@@ -31,6 +32,7 @@ type FormData = {
 function FilePopup({ open, handleClose }: Props) {
   const dispatch = useDispatch();
   const { id } = useParams();
+  const { currentLang } = useLocales();
 
   const { enqueueSnackbar } = useSnackbar();
   const { employeeOnly } = useSelector((state) => state.proposal);
@@ -79,6 +81,7 @@ function FilePopup({ open, handleClose }: Props) {
             proposal_id,
             follow_up_type: 'attachments',
             employee_only: false,
+            selectLang: currentLang.value,
           },
           {
             headers: { 'x-hasura-role': role },
@@ -109,6 +112,7 @@ function FilePopup({ open, handleClose }: Props) {
             proposal_id,
             follow_up_type: 'attachments',
             employee_only: employeeOnly,
+            selectLang: currentLang.value,
           },
           {
             headers: { 'x-hasura-role': role },

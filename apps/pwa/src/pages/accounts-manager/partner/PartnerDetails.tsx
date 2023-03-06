@@ -52,6 +52,7 @@ type UserStatus =
 interface ChangeStatusRequest {
   status: UserStatus;
   user_id: string;
+  selectLang: 'ar' | 'en';
 }
 
 // -------------------------------------------------------------------------------
@@ -139,6 +140,7 @@ function AccountPartnerDetails() {
         {
           status: status,
           user_id: id,
+          selectLang: currentLang.value,
         } as ChangeStatusRequest,
         {
           headers: { 'x-hasura-role': activeRole! },

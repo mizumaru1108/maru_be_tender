@@ -16,7 +16,7 @@ import axiosInstance from 'utils/axios';
 function RejectProject() {
   const [action, setAction] = React.useState('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
 
   const navigate = useNavigate();
 
@@ -41,6 +41,7 @@ function RejectProject() {
         action: 'study_again',
         message: 'تم إرجاع المشروع للدراسة من جديد',
         notes: data.notes,
+        selectLang: currentLang.value,
       };
 
       await axiosInstance

@@ -29,7 +29,7 @@ function ModeratorActionBar() {
 
   const theme = useTheme();
 
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -59,6 +59,7 @@ function ModeratorActionBar() {
         },
         message: 'تم قبول المشروع من قبل مسوؤل الفرز',
         notes: data.notes,
+        selectLang: currentLang.value,
       };
       await axiosInstance
         .patch('/tender-proposal/change-state', payload, {
@@ -115,6 +116,7 @@ function ModeratorActionBar() {
         message: 'تم رفض المشروع من قبل مسوؤل الفرز',
         notes: data.notes,
         reject_reason: data.reject_reason,
+        selectLang: currentLang.value,
       };
 
       await axiosInstance

@@ -30,6 +30,7 @@ import Image from 'components/Image';
 import { NewMessageModalFormProps, NewMessageModalFormValues, UserDataTracks } from './types';
 import { Conversation } from '../../../@types/wschat';
 import moment from 'moment';
+import { LoadingButton } from '@mui/lab';
 
 export default function NewMessageModalForm({
   user,
@@ -115,6 +116,7 @@ export default function NewMessageModalForm({
         limit: 6,
       };
     }
+    console.log({ params });
 
     setLoadingUser(true);
     const { data } = await axiosInstance.get('/tender-user/find-users', {
@@ -215,6 +217,45 @@ export default function NewMessageModalForm({
     }
   };
 
+  const findUserByName = async () => {
+    const hide_internal = corespondence === 'external' ? 1 : 0;
+    const hide_external = corespondence === 'internal' ? 1 : 0;
+    let params = {};
+    if (corespondence === 'external') {
+      params = {
+        hide_internal,
+        limit: 6,
+      };
+    } else {
+      params = {
+        employee_path: selectedTrack,
+        hide_internal,
+        hide_external,
+        limit: 6,
+      };
+    }
+    setLoadingUser(true);
+    const { data } = await axiosInstance.get('/tender-user/find-users', {
+      params: {
+        ...params,
+        employee_name: searchValue,
+      },
+      headers: { 'x-hasura-role': activeRole! },
+    });
+
+    if (data.statusCode === 200) {
+      setListUser(data.data);
+      setPage(data.currentPage);
+      setTotalDataUser(data.total);
+      setHasNextPage(data.hasNextPage);
+
+      const pagesNumber = Math.ceil(data.total / data.limit);
+      setPageNumber(pagesNumber);
+
+      setLoadingUser(false);
+    }
+  };
+
   const handleChangeSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
   };
@@ -296,7 +337,7 @@ export default function NewMessageModalForm({
           </>
         ) : (
           <>
-            <Typography>{translate('new_message_modal.form.label.track_type')}</Typography>
+            {/* <Typography>{translate('new_message_modal.form.label.track_type')}</Typography>
             <TextField
               select
               fullWidth
@@ -316,7 +357,32 @@ export default function NewMessageModalForm({
                   {translate('content.messages.text_field.placeholder_list_tracks')}
                 </Typography>
               )}
-            </TextField>
+            </TextField> */}
+            <Typography>{translate('new_message_modal.form.label.search_employee')}</Typography>
+            <TextField
+              autoFocus
+              placeholder="ex. Mohammad Zayin"
+              size="small"
+              onChange={handleChangeSearch}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="start">
+                    <Iconify
+                      icon="eva:search-fill"
+                      sx={{ color: 'text.disabled', width: 20, height: 20 }}
+                    />
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <LoadingButton
+              variant="contained"
+              sx={{ width: { md: 200, xs: '100%' } }}
+              onClick={findUserByName}
+              loading={loadingUser}
+            >
+              <Typography>{translate('new_message_modal.form.label.search_employee')}</Typography>
+            </LoadingButton>
           </>
         )}
         <Typography sx={{ pt: 1 }}>

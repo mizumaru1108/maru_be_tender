@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from 'redux/store';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import axiosInstance from 'utils/axios';
+import useLocales from '../../../../hooks/useLocales';
 
 type Props = {
   open: boolean;
@@ -27,6 +28,7 @@ type FormData = {
 function ActionPopup({ open, handleClose }: Props) {
   const { enqueueSnackbar } = useSnackbar();
   const { id } = useParams();
+  const { currentLang } = useLocales();
 
   const dispatch = useDispatch();
 
@@ -62,7 +64,13 @@ function ActionPopup({ open, handleClose }: Props) {
       try {
         const response = await axiosInstance.post(
           'tender-proposal/follow-up/create',
-          { content: data.action, proposal_id, follow_up_type: 'plain', employee_only: false },
+          {
+            content: data.action,
+            proposal_id,
+            follow_up_type: 'plain',
+            employee_only: false,
+            selectLang: currentLang.value,
+          },
           {
             headers: { 'x-hasura-role': role },
           }
@@ -92,6 +100,7 @@ function ActionPopup({ open, handleClose }: Props) {
             proposal_id,
             follow_up_type: 'plain',
             employee_only: employeeOnly,
+            selectLang: currentLang.value,
           },
           {
             headers: { 'x-hasura-role': role },

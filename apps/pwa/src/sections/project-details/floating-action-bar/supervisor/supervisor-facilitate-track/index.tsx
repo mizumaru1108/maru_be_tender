@@ -38,7 +38,7 @@ function FloatinActionBar() {
 
   const { user, activeRole } = useAuth();
 
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
 
   const theme = useTheme();
 
@@ -111,6 +111,7 @@ function FloatinActionBar() {
         action: 'step_back',
         message: 'تم إرجاع المشروع خطوة للوراء',
         notes: data.notes,
+        selectLang: currentLang.value,
       };
 
       console.log('payloadStepBackSupervisor', payload);

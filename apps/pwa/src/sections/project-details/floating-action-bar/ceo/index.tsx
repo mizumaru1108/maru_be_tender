@@ -31,7 +31,7 @@ function FloatingActionBar() {
   const location = useLocation();
   const activeRoleIndex: number = Number(localStorage.getItem('activeRoleIndex')) ?? 0;
 
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -70,6 +70,7 @@ function FloatingActionBar() {
         action: 'accept',
         message: 'تم قبول المشروع من قبل الرئيس التنفيذي ',
         notes: data.notes,
+        selectLang: currentLang.value,
       };
 
       console.log('payloadApprovalCeo', payload);
@@ -127,6 +128,7 @@ function FloatingActionBar() {
         action: 'reject',
         message: 'تم قبول المشروع من قبل الرئيس التنفيذي ',
         notes: data.notes,
+        selectLang: currentLang.value,
       };
 
       console.log('payloadRejectedCeo', payload);
@@ -184,6 +186,7 @@ function FloatingActionBar() {
         action: 'step_back',
         message: 'تم إرجاع المشروع خطوة للوراء',
         notes: data.notes,
+        selectLang: currentLang.value,
       };
 
       console.log('payloadStepBackCeo', payload);

@@ -51,13 +51,14 @@ type UserStatus =
 interface ChangeStatusRequest {
   status: UserStatus;
   user_id: string;
+  selectLang: 'ar' | 'en';
 }
 
 // ----------------------------------------------------------------------
 
 export default function ProductTableRow({ row, selected, onSelectRow, editRequest }: Props) {
   const theme = useTheme();
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
   const navigate = useNavigate();
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
@@ -97,6 +98,7 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
         {
           status: status,
           user_id: id,
+          selectLang: currentLang.value,
         } as ChangeStatusRequest,
         {
           headers: { 'x-hasura-role': activeRole! },
@@ -141,7 +143,7 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
     try {
       const res = await axiosInstance.post(
         '/tender-auth/forgot-password-request',
-        { email },
+        { email, selectLang: currentLang.value },
         {
           headers: { 'x-hasura-role': activeRole! },
         }

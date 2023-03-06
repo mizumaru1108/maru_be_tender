@@ -24,7 +24,7 @@ function ConsultantFloatingActionBar() {
 
   const { user, activeRole } = useAuth();
 
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
 
   const navigate = useNavigate();
 
@@ -70,6 +70,7 @@ function ConsultantFloatingActionBar() {
         action: 'accept',
         message: 'تم قبول المشروع من قبل لجنة المستشارين ',
         notes: values.notes,
+        selectLang: currentLang.value,
       };
 
       console.log('payloadApprovalConsultant', payload);
@@ -127,6 +128,7 @@ function ConsultantFloatingActionBar() {
         action: 'reject',
         message: 'تم قبول المشروع من قبل مدير المشاريع ',
         notes: values.notes,
+        selectLang: currentLang.value,
       };
 
       console.log('payloadRejectedConsultant', payload);
@@ -184,6 +186,7 @@ function ConsultantFloatingActionBar() {
         action: 'step_back',
         message: 'تم إرجاع المشروع خطوة للوراء',
         notes: values.notes,
+        selectLang: currentLang.value,
       };
 
       console.log('payloadStepbackToManager', payload);

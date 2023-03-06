@@ -43,7 +43,7 @@ function FloatingActionBar() {
 
   const [, reject] = useMutation(ProposalRejectBySupervisor);
 
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
 
   const theme = useTheme();
 
@@ -88,6 +88,7 @@ function FloatingActionBar() {
         supervisor_payload: {
           ...restValues,
         },
+        selectLang: currentLang.value,
       };
 
       console.log('acceptSupervisor', payload);
@@ -146,6 +147,7 @@ function FloatingActionBar() {
         message: 'تم رفض المشروع من قبل مشرف المشاريع',
         notes: values.notes,
         reject_reason: values.reject_reason,
+        selectLang: currentLang.value,
       };
 
       console.log('rejectedSupervisor', payload);
@@ -238,6 +240,7 @@ function FloatingActionBar() {
         action: 'step_back',
         message: 'تم إرجاع المشروع خطوة للوراء',
         notes: data.notes,
+        selectLang: currentLang.value,
       };
 
       console.log('payloadStepBackSupervisor', payload);

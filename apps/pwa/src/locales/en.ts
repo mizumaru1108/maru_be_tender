@@ -1357,7 +1357,8 @@ const en = {
       label: {
         track_type: 'Track Type',
         employees: 'Employees',
-        search_employee: 'Search the Client name',
+        // search_employee: 'Search the Client name',
+        search_employee: 'Search the Partner name',
       },
     },
   },
