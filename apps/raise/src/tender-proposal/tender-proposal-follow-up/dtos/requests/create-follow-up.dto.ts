@@ -17,6 +17,12 @@ export class CreateProposalFollowUpDto {
   @IsString()
   proposal_id: string;
 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  selectLang?: 'ar' | 'en';
+
   @ApiProperty()
   @IsNotEmpty()
   @IsString()

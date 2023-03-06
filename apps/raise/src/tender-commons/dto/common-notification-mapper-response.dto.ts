@@ -5,7 +5,9 @@ export class CommonNotificationMapperResponse {
   @ApiProperty()
   logTime: string;
   @ApiProperty()
-  subject: string;
+  clientSubject: string;
+  @ApiProperty()
+  reviwerSubject?: string; // optional, if u want to have a diffrent subject between client and reviewer
   @ApiProperty()
   clientId: string[];
   @ApiProperty()
@@ -13,11 +15,11 @@ export class CommonNotificationMapperResponse {
   @ApiProperty()
   clientMobileNumber: string[];
   @ApiProperty()
-  clientContent: string[];
+  clientContent: string;
   @ApiProperty()
   clientEmailTemplatePath?: string;
   @ApiProperty()
-  clientEmailTemplateContext?: Record<string, any>;
+  clientEmailTemplateContext?: Record<string, any>[];
   @ApiProperty()
   createManyWebNotifPayload: Prisma.notificationCreateManyInput[];
   @ApiPropertyOptional()
@@ -31,5 +33,5 @@ export class CommonNotificationMapperResponse {
   @ApiProperty()
   reviewerEmailTemplatePath?: string;
   @ApiProperty()
-  reviewerEmailTemplateContext?: Record<string, any>;
+  reviewerEmailTemplateContext?: Record<string, any>[];
 }

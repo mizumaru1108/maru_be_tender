@@ -1,8 +1,20 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsEnum, IsUUID } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsNotEmpty,
+  IsString,
+  IsEnum,
+  IsUUID,
+  IsOptional,
+} from 'class-validator';
 import { UserStatusEnum } from '../../types/user_status';
 
 export class UserStatusUpdateDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  selectLang?: 'ar' | 'en';
+
   @ApiProperty()
   @IsNotEmpty()
   @IsString()

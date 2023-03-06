@@ -16,6 +16,9 @@ export const createNotificationMapper = (
     subject: request.subject,
     type: request.type,
   };
+  if (request.specific_type) {
+    createNotificationPayload.specific_type = request.specific_type;
+  }
   if (request.message_id) {
     createNotificationPayload.message = {
       connect: {

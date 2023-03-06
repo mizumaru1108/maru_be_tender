@@ -149,7 +149,9 @@ export class TenderAppointmentService {
       to: appointment.client.email,
       from: 'no-reply@hcharity.org',
       subject,
-      templatePath: 'tender/AR/appointment/appointment_invitation',
+      templatePath: `tender/${
+        request.selectLang || 'ar'
+      }/appointment/appointment_invitation`,
       templateContext: {
         clientUserName: appointment.client.employee_name,
         employeeUsername: appointment.employee.employee_name || 'Tender Admin',

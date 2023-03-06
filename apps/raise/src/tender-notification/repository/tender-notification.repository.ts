@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { notification, Prisma } from '@prisma/client';
-import { FusionAuthService } from '../../libs/fusionauth/services/fusion-auth.service';
 import { ROOT_LOGGER } from '../../libs/root-logger';
 import { PrismaService } from '../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';

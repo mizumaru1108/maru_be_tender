@@ -102,11 +102,12 @@ export class TenderUserService {
       email,
     });
     if (emailExist) {
-      if(selectLang === "EN"){
-      throw new ConflictException('Email already exist in our app!');
-      }
-      else {
-        throw new ConflictException('البريد الإلكتروني مُسجل بالفعل في تطبيقنا!');
+      if (selectLang === 'en') {
+        throw new ConflictException('Email already exist in our app!');
+      } else {
+        throw new ConflictException(
+          'البريد الإلكتروني مُسجل بالفعل في تطبيقنا!',
+        );
       }
     }
 
@@ -419,12 +420,16 @@ export class TenderUserService {
       request.status,
       accManagerId,
     );
-    await this.sendChangeStatusNotification(response.user_status_log);
+    await this.sendChangeStatusNotification(
+      response.user_status_log,
+      request.selectLang,
+    );
     return response;
   }
 
   async sendChangeStatusNotification(
     status_log: IUserStatusLogResponseDto['data'],
+    selected_language?: 'ar' | 'en',
   ) {
     let subject = '';
     let clientContent = '';
@@ -465,8 +470,9 @@ export class TenderUserService {
 
     if (status_log.user_status.id === UserStatusEnum.SUSPENDED_ACCOUNT) {
       clientEmailNotifPayload.mailType = 'template';
-      clientEmailNotifPayload.templatePath =
-        'tender/EN/account/account_deactivation';
+      clientEmailNotifPayload.templatePath = `tender/${
+        selected_language || 'ar'
+      }/account/account_deactivation`;
       clientEmailNotifPayload.templateContext = {
         name: status_log.user_detail.employee_name || 'Client...',
       };
@@ -475,6 +481,7 @@ export class TenderUserService {
 
     const clientWebNotifPayload: CreateNotificationDto = {
       type: 'ACCOUNT',
+      specific_type: 'NEW_SUSPENDED_ACCOUNT',
       user_id: status_log.user_detail.id,
       subject,
       content: clientContent,
@@ -503,6 +510,7 @@ export class TenderUserService {
 
       const employeeWebNotifPayload: CreateNotificationDto = {
         type: 'ACCOUNT',
+        specific_type: 'NEW_SUSPENDED_ACCOUNT',
         user_id: status_log.account_manager_detail.id,
         subject,
         content: employeeContent,

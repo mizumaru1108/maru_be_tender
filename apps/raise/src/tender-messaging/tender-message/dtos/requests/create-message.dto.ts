@@ -12,6 +12,12 @@ import { TenderFilePayload } from '../../../../tender-commons/dto/tender-file-pa
 import { MessageType } from '../../types';
 
 export class CreateMessageDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  selectLang?: 'ar' | 'en';
+  
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

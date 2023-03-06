@@ -107,6 +107,7 @@ export class TenderUserRepository {
       throw theError;
     }
   }
+  
   async findByRole(role: TenderAppRole) {
     try {
       return await this.prismaService.user.findMany({

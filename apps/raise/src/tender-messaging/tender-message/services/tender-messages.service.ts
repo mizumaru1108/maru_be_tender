@@ -1,17 +1,23 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { message, Prisma, room_chat, user } from '@prisma/client';
+import moment from 'moment';
 import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
 import { validateFileSize } from '../../../commons/utils/validate-file-size';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
+import { CommonNotificationMapperResponse } from '../../../tender-commons/dto/common-notification-mapper-response.dto';
 import {
   appRoleMappers,
+  appRolesMappers,
   appRoleToFusionAuthRoles,
   TenderAppRole,
   TenderFusionAuthRoles,
 } from '../../../tender-commons/types';
+import { v4 as uuidv4 } from 'uuid';
+import { TenderNotificationRepository } from '../../../tender-notification/repository/tender-notification.repository';
+import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
 
 import { TenderUserRepository } from '../../../tender-user/user/repositories/tender-user.repository';
 import { TenderRoomChatRepository } from '../../tender-room-chat/repositories/tender-room-chat.repository';
@@ -28,6 +34,8 @@ export class TenderMessagesService {
     private readonly tenderMessagesRepository: TenderMessagesRepository,
     private readonly tenderRoomChatRepository: TenderRoomChatRepository,
     private readonly tenderUserRepository: TenderUserRepository,
+    private readonly tenderNotifRepo: TenderNotificationRepository,
+    private readonly notificationService: TenderNotificationService,
     private readonly configService: ConfigService,
   ) {
     const environment = this.configService.get('APP_ENV');
@@ -241,6 +249,47 @@ export class TenderMessagesService {
             })
           : null,
     };
+
+    const createManyWebNotif: Prisma.notificationCreateManyInput[] = [];
+
+    const notifPayload: CommonNotificationMapperResponse = {
+      logTime: moment(new Date().getTime()).format('llll'),
+      clientSubject: 'New Messages!',
+      clientId: [partner.id],
+      clientEmail: [partner.id],
+      clientMobileNumber: [partner.mobile_number || ''],
+      clientEmailTemplatePath: `tender/${
+        request.selectLang || 'ar'
+      }/account/new_message`,
+      clientEmailTemplateContext: [
+        {
+          senderUsername: sender.employee_name,
+          messageContent:
+            contentType === 'TEXT' ? content : 'see attachment on the link',
+          receiverUsername: partner.employee_name,
+          messagePageLink: `${this.configService.get<string>(
+            'tenderAppConfig.baseUrl',
+          )}/${
+            appRolesMappers[partnerSelectedRole as TenderFusionAuthRoles]
+          }/dashboard/messages`,
+        },
+      ],
+      clientContent: 'New Messages!',
+      createManyWebNotifPayload: createManyWebNotif,
+    };
+
+    createManyWebNotif.push({
+      id: uuidv4(),
+      user_id: partner.id,
+      content: `Ther's new incoming message from ${sender.employee_name}`,
+      subject: `New message`,
+      type: 'ACCOUNT',
+      specific_type: 'NEW_MESSAGE',
+    });
+
+    await this.tenderNotifRepo.createMany(createManyWebNotif);
+
+    this.notificationService.sendSmsAndEmailBatch(notifPayload);
 
     return summary;
   }

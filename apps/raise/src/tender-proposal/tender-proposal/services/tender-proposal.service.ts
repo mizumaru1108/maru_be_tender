@@ -811,6 +811,7 @@ export class TenderProposalService {
     await this.sendChangeStateNotification(
       { data: proposal_logs },
       currentUser.choosenRole,
+      request.selectLang,
     );
 
     return updateProposalResult.proposal;
@@ -1275,6 +1276,7 @@ export class TenderProposalService {
   async sendChangeStateNotification(
     log: IProposalLogsResponse,
     reviewerRole: string,
+    selected_language?: 'ar' | 'en',
   ) {
     const actions =
       log.data.action && ['accept', 'reject'].indexOf(log.data.action) > -1
@@ -1305,7 +1307,7 @@ export class TenderProposalService {
       to: log.data.proposal.user.email,
       from: 'no-reply@hcharity.org',
       subject,
-      templatePath: `tender/AR/proposal/${
+      templatePath: `tender/${selected_language || 'ar'}/proposal/${
         log.data.action === 'reject' ? 'project_declined' : 'project_approved'
       }`,
       templateContext: {
@@ -1320,6 +1322,7 @@ export class TenderProposalService {
     if (log.data.reviewer_id) {
       const employeeWebNotifPayload: CreateNotificationDto = {
         type: 'PROPOSAL',
+        specific_type: `PROJECT_${actions.toUpperCase()}ED`,
         user_id: log.data.reviewer_id,
         proposal_id: log.data.proposal_id,
         subject,
@@ -1330,6 +1333,7 @@ export class TenderProposalService {
 
     const clientWebNotifPayload: CreateNotificationDto = {
       type: 'PROPOSAL',
+      specific_type: `PROJECT_${actions.toUpperCase()}ED`,
       user_id: log.data.proposal.submitter_user_id,
       proposal_id: log.data.proposal_id,
       subject,

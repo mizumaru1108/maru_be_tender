@@ -12,7 +12,7 @@ export class TenderCreateUserDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  selectLang?: 'AR' | 'EN';
+  selectLang?: 'ar' | 'en';
 
   @ApiProperty()
   @IsString()

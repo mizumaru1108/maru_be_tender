@@ -14,6 +14,12 @@ export class CreateAppointmentDto {
   @IsString()
   authCode?: string;
 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  selectLang?: 'ar' | 'en';
+
   @ApiProperty()
   @IsNotEmpty()
   @IsString()

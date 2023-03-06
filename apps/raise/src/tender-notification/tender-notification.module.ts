@@ -7,6 +7,6 @@ import { TenderNotificationService } from './services/tender-notification.servic
 @Module({
   controllers: [TenderNotificationController],
   providers: [TenderNotificationService, TenderNotificationRepository],
-  exports: [TenderNotificationService],
+  exports: [TenderNotificationService, TenderNotificationRepository],
 })
 export class TenderNotificationModule {}

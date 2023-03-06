@@ -13,6 +13,12 @@ import { ModeratorChangeStatePayload } from './moderator-change-state.dto';
 import { SupervisorChangeStatePayload } from './supervisor-change-state.dto';
 
 export class ChangeProposalStateDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  selectLang?: 'ar' | 'en';
+
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

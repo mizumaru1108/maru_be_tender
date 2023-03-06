@@ -51,6 +51,7 @@ export class TenderAuthController {
   ): Promise<BaseResponse<any>> {
     const createdClient = await this.tenderAuthService.forgotPasswordRequest(
       request.email,
+      request.selectLang,
     );
     return baseResponseHelper(
       createdClient,

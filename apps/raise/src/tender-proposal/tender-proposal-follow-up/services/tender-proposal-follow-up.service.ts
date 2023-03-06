@@ -182,7 +182,7 @@ export class TenderProposalFollowUpService {
         fileManagerCreateManyPayload,
       );
 
-      await this.sendChangeStateNotification(createdFolllowUp);
+      await this.sendFollowUpNotif(createdFolllowUp, payload.selectLang);
 
       return createdFolllowUp;
     } catch (error) {
@@ -241,8 +241,9 @@ export class TenderProposalFollowUpService {
     }
   }
 
-  async sendChangeStateNotification(
+  async sendFollowUpNotif(
     createdFolllowUp: RawCreateFollowUpDto['data'],
+    selected_lang?: 'ar' | 'en',
   ) {
     const { subject, content, proposal, user } =
       GenerateFollowUpMessageNotif(createdFolllowUp);
@@ -256,7 +257,7 @@ export class TenderProposalFollowUpService {
       mailType: 'template',
       from: 'no-reply@hcharity.org',
       subject,
-      templatePath: 'tender/AR/proposal/project_followup',
+      templatePath: `tender/${selected_lang || 'ar'}/proposal/project_followup`,
     };
 
     const baseWebNotif: Omit<CreateNotificationDto, 'user_id'> = {

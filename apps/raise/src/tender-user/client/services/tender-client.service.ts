@@ -8,7 +8,7 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { ICurrentUser } from '../../../user/interfaces/current-user.interface';
 
 import { ConfigService } from '@nestjs/config';
-import { bank_information, client_data, Prisma } from '@prisma/client';
+import { bank_information, client_data, Prisma, user } from '@prisma/client';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
@@ -47,6 +47,8 @@ import { TenderClientRepository } from '../repositories/tender-client.repository
 
 import { logUtil } from '../../../commons/utils/log-util';
 import { finalUploadFileJson } from '../../../tender-commons/dto/final-upload-file-jsonb.dto';
+import { CommonNotificationMapperResponse } from '../../../tender-commons/dto/common-notification-mapper-response.dto';
+import { TenderNotificationRepository } from '../../../tender-notification/repository/tender-notification.repository';
 @Injectable()
 export class TenderClientService {
   private readonly appEnv: string;
@@ -62,6 +64,7 @@ export class TenderClientService {
     private readonly fusionAuthService: FusionAuthService,
     private readonly notificationService: TenderNotificationService,
     private readonly twilioService: TwilioService,
+    private readonly tenderNotifRepo: TenderNotificationRepository,
     private tenderUserRepository: TenderUserRepository,
     private tenderClientRepository: TenderClientRepository,
   ) {
@@ -232,7 +235,9 @@ export class TenderClientService {
       ofdecObj,
     );
 
-    const createdUser = await this.tenderUserRepository.createUser(
+    const createManyWebNotif: Prisma.notificationCreateManyInput[] = [];
+
+    const createUserResult = await this.tenderUserRepository.createUser(
       userCreatePayload,
       createStatusLogPayload,
       undefined,
@@ -241,8 +246,82 @@ export class TenderClientService {
       uploadedFilePath,
     );
 
+    const createdUser: (user & any[]) | user =
+      createUserResult instanceof Array
+        ? createUserResult[0]
+        : createUserResult;
+
+    createManyWebNotif.push({
+      id: uuidv4(),
+      user_id: createdUser.id,
+      content: 'Account Successfully Registered!',
+      subject: 'Account Registered Successfully!',
+      type: 'ACCOUNT',
+      specific_type: 'NEW_ACCOUNT_CREATED',
+    });
+
+    const accountsManager = await this.tenderUserRepository.findByRole(
+      'ACCOUNTS_MANAGER',
+    );
+
+    const accountManagerSubject = "There's new Account Created!";
+    const accountManagerContent: string = `There's new Account Created!, account name: ${createdUser.employee_name}`;
+    const accountManagerIds: string[] = [];
+    const accountMangerEmails: string[] = [];
+    const accountManagerMobileNumbers: string[] = [];
+
+    if (accountsManager.length > 0) {
+      accountsManager.forEach((accManager) => {
+        accountManagerIds.push(accManager.id);
+        accountMangerEmails.push(accManager.email);
+        accountManagerMobileNumbers.push(accManager.mobile_number || '');
+        createManyWebNotif.push({
+          id: uuidv4(),
+          user_id: accManager.id,
+          content: accountManagerContent,
+          subject: accountManagerSubject,
+          type: 'ACCOUNT',
+          specific_type: 'NEW_ACCOUNT_CREATED',
+        });
+      });
+    }
+
+    const notifPayload: CommonNotificationMapperResponse = {
+      logTime: moment(new Date().getTime()).format('llll'),
+      clientSubject: 'Account Created Successfully!',
+      clientId:
+        createdUser instanceof Array ? [createdUser[0].id] : [createdUser.id],
+      clientEmail:
+        createdUser instanceof Array
+          ? [createdUser[0].email]
+          : [createdUser.email],
+      clientMobileNumber:
+        createdUser instanceof Array
+          ? [createdUser[0].mobile_number]
+          : [createdUser.mobile_number],
+      clientEmailTemplatePath: `tender/${
+        request.data.selectLang || 'ar'
+      }/account/account_created`,
+      clientEmailTemplateContext: [
+        {
+          name: createdUser.employee_name,
+        },
+      ],
+      clientContent: 'Your account has registered successfully!',
+      reviewerId: accountManagerIds,
+      reviewerEmail: accountMangerEmails,
+      reviewerContent: accountManagerContent,
+      reviewerMobileNumber: accountManagerMobileNumbers,
+      reviwerSubject: accountManagerSubject,
+      createManyWebNotifPayload: createManyWebNotif,
+    };
+
+    await this.tenderNotifRepo.createMany(createManyWebNotif);
+
+    this.notificationService.sendSmsAndEmailBatch(notifPayload);
+
     return {
-      createdUser: createdUser instanceof Array ? createdUser[0] : createdUser,
+      createdUser,
     };
   }
 
@@ -457,7 +536,7 @@ export class TenderClientService {
             entity_mobile,
           );
         if (isNumExist) {
-          if (selectLang === 'EN') {
+          if (selectLang === 'en') {
             throw new BadRequestException('Entity Mobile Already Used/Exist!');
           } else {
             throw new BadRequestException(

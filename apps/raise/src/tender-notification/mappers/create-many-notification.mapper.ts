@@ -17,6 +17,10 @@ export const createManyNotificationMapper = (
       appointment_id: payload.appointment_id || null,
       proposal_id: payload.proposal_id || null,
     };
+
+    if (payload.specific_type) {
+      notification.specific_type = payload.specific_type;
+    }
     return notification;
   });
 };

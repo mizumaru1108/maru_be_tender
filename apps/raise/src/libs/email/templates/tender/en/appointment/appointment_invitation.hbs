@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Inter"
+      rel="stylesheet"
+    />
+    <style>
+      .container {
+        height: 100%;
+        width: 100%;
+      }
+      .card {
+        position: relative;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        transition: 0.3s;
+        width: 640px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin: auto;
+      }
+      .cardHeader {
+        padding-top: 20px;
+        background-color: #fff;
+        width: 100%;
+      }
+      .cardHeader p {
+        color: #931267;
+        font-family: Inter, Helvetica, sans-serif;
+        font-weight: 700;
+        font-size: 1.5em;
+        text-align: left;
+        margin: 0;
+      }
+
+      .cardHeader li {
+        font-family: Inter, Helvetica, sans-serif;
+        font-weight: 700;
+        font-size: 1em;
+        text-align: left;
+        margin: 0;
+        list-style: none;
+        cursor: pointer;
+      }
+
+      .cardHeader li:hover {
+        color: #a4a4a4;
+        text-decoration: underline;
+      }
+      .cardHeader img {
+        width: 15%;
+      }
+
+      .navbar {
+        display: flex;
+        gap: 30px;
+      }
+      .cardBody {
+        background-color: #fff;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        /* padding-left: 10px;
+        padding-right: 10px; */
+      }
+      .icon {
+        margin-right: 5px;
+        margin-left: 5px;
+      }
+      .wrapper {
+        font-family: Inter, Helvetica, sans-serif;
+        display: flex;
+        flex-direction: column;
+        padding: 30px;
+      }
+      .wrapper span {
+        cursor: pointer;
+        color: #00aa55;
+      }
+
+      .wrapper span:hover {
+        cursor: pointer;
+        color: #038544;
+      }
+
+      .wrapperFooter {
+        display: flex;
+        flex-direction: row;
+        padding: 30px;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .cardBody p {
+        font-weight: 450;
+        line-height: 1.25;
+        text-align: justify;
+        margin-block-end: 10px;
+        margin-block-start: 10px;
+        padding-right: 50px;
+      }
+      .cardBody img {
+        width: 80%;
+        align-self: left;
+        padding-bottom: 15px;
+      }
+      .cardBody button {
+        background-color: #0e8478;
+        color: white;
+        font-weight: 500;
+        font-size: medium;
+        border: none;
+        border-radius: 7px;
+        margin: 10px 0;
+        padding: 15px 20px;
+        width: 35%;
+        cursor: pointer;
+      }
+      .cardBody button:hover {
+        background-color: #1da799;
+      }
+      .cardFooter {
+        margin: 0;
+        align-items: center;
+        background-color: #fff;
+        height: 100px;
+      }
+      .cardFooter img {
+        height: 3.3vh;
+      }
+      .cardFooter p {
+        font-family: Inter, Helvetica, sans-serif;
+        font-weight: 450;
+        text-align: center;
+        color: #931267;
+        margin: 0;
+        /* padding-top: 8px; */
+      }
+      .cardFooter a {
+        color: #fff;
+        text-decoration: underline;
+      }
+      .cardFooter a:hover {
+        color: rgba(255, 255, 255, 0.704);
+        text-decoration: none;
+      }
+
+      .endingParagraph p {
+        text-align: left;
+      }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div class="cardHeader">
+          <img
+            src="https://media.tmra.io/tender-assets/tender-logo.png"
+            alt="Logo Tmra Tender"
+            style="margin-left: 36px"
+          />
+          <nav>
+            <ul class="navbar">
+              <li>Home</li>
+              <li>Support</li>
+            </ul>
+          </nav>
+        </div>
+        <div class="cardBody">
+          <div class="wrapper">
+            <h1 style="font-size: 1.6em; padding-right: 50px">
+              You have been to a meeting with {{employeeUsername}}
+            </h1>
+            <p>Hi {{clientUserName}},</p>
+            <p>
+              You have been invited to a meeting with {{employeeUsername}} Time
+              : {{appointmentDate}}
+            </p>
+
+            <p>Your friend,<br />Team Tender</p>
+
+            <button>Go to Appointment</button>
+
+            <div style="margin-top: 32px">
+              <p>
+                This email was sent to
+                <span>olivia@gs.com</span>. If you'd rather not receive this
+                kind of email, you can <span>unsubscribe</span> or
+                <span>manage your email preferences</span>.
+              </p>
+              <p style="color: gray">
+                © 2077 Tender , 100 Smith Street, Melbourne VIC 3000
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="cardFooter">
+          <div class="wrapperFooter">
+            <img
+              src="https://media.tmra.io/tender-assets/tender-logo.png"
+              alt="Logo Tmra Tender"
+              style="height: 6.3vh"
+            />
+            <div>
+              <img
+                class="icon"
+                src="https://media.tmra.io/tender-assets/tender-twitter-logo.png"
+                alt="Thumbnail Twitter"
+              />
+              <img
+                class="icon"
+                src="https://media.tmra.io/tender-assets/tender-facebook-logo.png"
+                alt="Thumbnail Facebook"
+              />
+              <img
+                class="icon"
+                src="https://media.tmra.io/tender-assets/tender-instagram-logo.png"
+                alt="Thumbnail Instagram"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

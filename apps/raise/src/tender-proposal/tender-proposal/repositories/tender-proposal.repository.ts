@@ -409,7 +409,7 @@ export class TenderProposalRepository {
               reviewer_id: currentUser.id,
               action: ProposalAction.ASK_FOR_AMANDEMENT_REQUEST, //ask to supervisor for amandement request
               state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
-              notes: 'asking for supervisor to send amandement for client',
+              notes: createAskEditRequestPayload.notes,
               response_time: lastLog?.created_at
                 ? Math.round(
                     (new Date().getTime() - lastLog.created_at.getTime()) /

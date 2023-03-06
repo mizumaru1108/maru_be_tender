@@ -16,6 +16,12 @@ export class CreateNotificationDto {
   })
   type: 'PROPOSAL' | 'MESSAGE' | 'APPOINTMENT' | 'ACCOUNT';
 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  specific_type?: string;
+
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

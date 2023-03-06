@@ -20,7 +20,7 @@ export class ClientEditRequestFieldDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  selectLang?: 'AR' | 'EN';
+  selectLang?: 'ar' | 'en';
 
   @ApiPropertyOptional()
   @IsOptional()

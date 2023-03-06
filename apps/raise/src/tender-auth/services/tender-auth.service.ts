@@ -76,7 +76,7 @@ export class TenderAuthService {
       email: registerRequest.data.email,
     });
     if (emailExist) {
-      if (selectLang === 'EN') {
+      if (selectLang === 'en') {
         throw new ConflictException('Email already exist in our app!');
       } else {
         throw new ConflictException(
@@ -146,7 +146,7 @@ export class TenderAuthService {
     return result;
   }
 
-  async forgotPasswordRequest(email: string) {
+  async forgotPasswordRequest(email: string, selected_language?: 'ar' | 'en') {
     const user = await this.tenderUserRepository.findByEmail(email);
     if (!user) throw new BadRequestException('User not found!');
 
@@ -163,7 +163,9 @@ export class TenderAuthService {
           'tenderAppConfig.baseUrl',
         )}/reset-password/${response}`,
       },
-      templatePath: 'tender/EN/account/forget_password',
+      templatePath: `tender/${
+        selected_language || 'ar'
+      }/account/forget_password`,
     });
     return response;
   }

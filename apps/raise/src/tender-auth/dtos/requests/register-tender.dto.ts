@@ -52,7 +52,7 @@ class registerClient {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  selectLang?: 'AR' | 'EN';
+  selectLang?: 'ar' | 'en';
 
   @ApiProperty()
   @IsEmail()
