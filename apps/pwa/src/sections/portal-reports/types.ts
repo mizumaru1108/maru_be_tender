@@ -130,12 +130,31 @@ export interface IPropsLineChart {
 
 export interface IPropsAvgTransactions {
   project_track: string;
-  total_execution_time: number;
-  total_execution_time_data_count: number;
-  average: number;
-  total_execution_last_week: number;
-  average_last_week: number;
-  total_execution_last_week_data_count: number;
+  raw_total_response_time: number;
+  total_response_time: string;
+  raw_average_response_time: number;
+  average_response_time: string;
+  fe_average_response_time?: {
+    hours: number;
+    minutes: number;
+    seconds: number;
+  };
+  raw_last_month_total_response_time: number;
+  last_month_total_response_time: string;
+  raw_last_month_average_response_time: number;
+  last_month_average_response_time: string;
   color?: string;
   series_data?: ApexAxisChartSeries | ApexNonAxisChartSeries;
+}
+
+export interface IPropsAvgEmployeeEfectiveness {
+  id: string | null;
+  employee_name: string | null;
+  account_type: string | null;
+  section: string | null;
+  total_transaction: number;
+  raw_response_time: number;
+  response_time: string | null;
+  raw_average_response_time: number;
+  average_response_time: string | null;
 }

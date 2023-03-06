@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 // material
 import {
   Table,
@@ -13,19 +13,21 @@ import {
   DialogContent,
   Typography,
   Button,
-  Stack,
-  Select,
-  MenuItem,
 } from '@mui/material';
 // components
-import { TableHeadCustom, TableRowsEmployee, TableSelectedActions } from 'components/table';
+import {
+  TableHeadCustom,
+  TableRowsEmployee,
+  TableSelectedActions,
+  TableNoData,
+} from 'components/table';
 import Iconify from 'components/Iconify';
 import SearchbarTable from 'components/table/SearchbarTable';
 // hooks
 import useTable, { getComparator } from 'hooks/useTable';
 import useLocales from 'hooks/useLocales';
-//
-import { IPropsPortalReportEmployee } from 'components/table/type';
+// types
+import { IPropsAvgEmployeeEfectiveness } from './types';
 
 // -------------------------------------------------------------------------------
 
@@ -34,7 +36,7 @@ const TABLE_HEAD = [
   { id: 'account_type', label: 'section_portal_reports.table.th.account_type' },
   { id: 'section', label: 'section_portal_reports.table.th.section', align: 'left' },
   {
-    id: 'number_of_clock',
+    id: 'raw_average_response_time',
     label: 'section_portal_reports.table.th.number_of_clock',
     align: 'left',
   },
@@ -42,60 +44,10 @@ const TABLE_HEAD = [
 
 // -------------------------------------------------------------------------------
 
-export default function TableEmployee({
-  data,
-  lengthRowsPerPage,
-}: {
-  data: IPropsPortalReportEmployee[];
-  lengthRowsPerPage?: number;
-}) {
+export default function TableEmployee({ data }: { data: IPropsAvgEmployeeEfectiveness[] }) {
   const { translate } = useLocales();
-  const [tableData, setTableData] = useState<IPropsPortalReportEmployee[]>([]);
+  const [tableData, setTableData] = useState<IPropsAvgEmployeeEfectiveness[]>([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
-  const [sortValue, setSortValue] = useState<string>('projectName-asc');
-
-  const sortOptions = [
-    {
-      value: 'createdAt-asc',
-      title: translate('table_filter.sortby_options.date_created_oldest'),
-    },
-    {
-      value: 'createdAt-desc',
-      title: translate('table_filter.sortby_options.date_created_newest'),
-    },
-    {
-      value: 'projectName-asc',
-      title: translate('table_filter.sortby_options.project_name_az'),
-    },
-    {
-      value: 'projectName-desc',
-      title: translate('table_filter.sortby_options.project_name_za'),
-    },
-    {
-      value: 'associationName-asc',
-      title: translate('table_filter.sortby_options.association_name_az'),
-    },
-    {
-      value: 'associationName-desc',
-      title: translate('table_filter.sortby_options.association_name_za'),
-    },
-    {
-      value: 'projectSection-asc',
-      title: translate('table_filter.sortby_options.section_az'),
-    },
-    {
-      value: 'projectSection-desc',
-      title: translate('table_filter.sortby_options.section_za'),
-    },
-    {
-      value: 'projectNumber-asc',
-      title: translate('table_filter.sortby_options.project_number_lowest'),
-    },
-    {
-      value: 'projectNumber-desc',
-      title: translate('table_filter.sortby_options.project_number_highest'),
-    },
-  ];
 
   const {
     page,
@@ -111,9 +63,9 @@ export default function TableEmployee({
     onChangePage,
     onChangeRowsPerPage,
   } = useTable({
-    defaultOrderBy: 'employee_name',
+    defaultOrderBy: 'raw_average_response_time',
     defaultOrder: 'asc',
-    defaultRowsPerPage: lengthRowsPerPage ? lengthRowsPerPage : 5,
+    defaultRowsPerPage: 5,
     defaultCurrentPage: 0,
   });
 
@@ -122,7 +74,7 @@ export default function TableEmployee({
     comparator,
     filterName,
   }: {
-    tableData: IPropsPortalReportEmployee[];
+    tableData: IPropsAvgEmployeeEfectiveness[];
     comparator: (a: any, b: any) => number;
     filterName: string;
   }) => {
@@ -169,52 +121,8 @@ export default function TableEmployee({
   }, []);
 
   return (
-    <>
-      <Stack spacing={2} direction="row" justifyContent="space-between" component="div">
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          spacing={2}
-          component="div"
-        >
-          <Box display="flex" alignItems="center">
-            <Typography variant="body2" sx={{ color: 'grey.600' }}>
-              {translate('table_filter.sortby_title')} &nbsp;
-            </Typography>
-            <Select
-              value={sortValue}
-              onChange={(e) => setSortValue(e.target.value as string)}
-              size="small"
-              sx={{ width: 200 }}
-            >
-              {sortOptions.map((item) => (
-                <MenuItem key={item.value} value={item.value}>
-                  {item.title}
-                </MenuItem>
-              ))}
-            </Select>
-          </Box>
-          <Box>
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: 'black',
-                color: 'white',
-                p: 1,
-                '&:hover': {
-                  backgroundColor: 'black',
-                  color: 'white',
-                },
-              }}
-            >
-              {translate('commons.filter_button_label')}
-              <Iconify icon="bx:bx-filter-alt" sx={{ ml: 1 }} />
-            </Button>
-          </Box>
-        </Stack>
-        <SearchbarTable func={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)} />
-      </Stack>
+    <React.Fragment>
+      <SearchbarTable func={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)} />
       <TableContainer sx={{ minWidth: 800, position: 'relative' }}>
         {selected.length > 0 && (
           <TableSelectedActions
@@ -257,7 +165,7 @@ export default function TableEmployee({
             }}
           />
           <TableBody>
-            {dataFiltered.length > 0 &&
+            {dataFiltered.length > 0 ? (
               dataFiltered
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .filter((v) => {
@@ -271,10 +179,13 @@ export default function TableEmployee({
                   <TableRowsEmployee
                     key={key}
                     row={x}
-                    selected={selected.includes(x.employee_name as string)}
-                    onSelectRow={() => onSelectRow(x.employee_name as string)}
+                    selected={selected.includes(x.average_response_time as string)}
+                    onSelectRow={() => onSelectRow(x.average_response_time as string)}
                   />
-                ))}
+                ))
+            ) : (
+              <TableNoData isNotFound={!dataFiltered.length} />
+            )}
           </TableBody>
         </Table>
         <TablePagination
@@ -292,7 +203,7 @@ export default function TableEmployee({
           }}
         />
       </TableContainer>
-      <Dialog
+      {/* <Dialog
         open={deleteDialogOpen}
         onClose={() => {
           setDeleteDialogOpen(false);
@@ -322,7 +233,7 @@ export default function TableEmployee({
             </Button>
           </Box>
         </DialogContent>
-      </Dialog>
-    </>
+      </Dialog> */}
+    </React.Fragment>
   );
 }

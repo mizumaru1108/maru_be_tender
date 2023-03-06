@@ -202,6 +202,7 @@ const en = {
   },
   errors: {
     notes: 'Note is required',
+    empty_data: 'No data found.',
     login: {
       email: {
         message: 'Email must be a valid email address',
@@ -1340,9 +1341,12 @@ const en = {
     total_budget_for_the_course: 'The total budget for the track',
     riyals: 'SAR',
     hours: 'Hours',
+    minutes: 'minutes',
+    seconds: 'seconds',
     spent_budget: 'Spent Budget',
     reserved_budget: 'Reserved Budget',
     since_last_weeks: 'Since last week',
+    since_last_months: 'Since last months',
   },
 
   // Message Page

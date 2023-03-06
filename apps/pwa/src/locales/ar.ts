@@ -198,6 +198,7 @@ const ar = {
   },
   errors: {
     notes: 'ملاحظة مطلوبة',
+    empty_data: 'لاتوجد بيانات',
     login: {
       email: {
         message: 'يجب أن يكون البريد الإلكتروني عنوان بريد إلكتروني صالحًا',
@@ -1369,9 +1370,12 @@ const ar = {
     total_budget_for_the_course: 'الميزانية الكلية للمسار',
     riyals: 'ريال',
     hours: 'ساعة',
+    minutes: 'دقائق',
+    seconds: 'ثواني',
     spent_budget: 'الميزانية المصروفة',
     reserved_budget: 'الميزانية المحجوزة',
     since_last_weeks: 'منذ الأسابيع الماضية',
+    since_last_months: 'منذ الأشهر الماضية',
     initiatives_track: 'مسار المبادرات',
     facilitated_scholarship_track: 'مسار المنح الميسر',
     the_path_of_the_mosques: 'مسار المساجد',

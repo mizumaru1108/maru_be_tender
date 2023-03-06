@@ -22,6 +22,7 @@ import AverageTransaction from './AverageTransactions';
 import CardBudgetInfoTracks from './CardBudgetInfoTracks';
 import PartnersInformation from './PartnersInformation';
 import ProjectsInformation from './ProjectsInformation';
+import AchievementEffectiveness from './AchievementEffectiveness';
 // utils
 import axiosInstance from 'utils/axios';
 import useAuth from 'hooks/useAuth';
@@ -33,6 +34,7 @@ import {
   IPartnerDatas,
   IPropsBudgetInfo,
   IPropsAvgTransactions,
+  IPropsAvgEmployeeEfectiveness,
 } from './types';
 import EmptyChart from './EmptyChart';
 
@@ -93,7 +95,12 @@ export default function HeaderTabs() {
   const [partnersData, setPartnersData] = useState<IPartnerDatas | null>(null);
   const [budgetInfoData, setBudgetInfoData] = useState<IPropsBudgetInfo[] | []>([]);
   const [avgTransactionCard, setAvgTransactionCard] = useState<IPropsAvgTransactions[] | []>([]);
+  const [avgEmployeeEffective, setAvgEmployeeEffective] = useState<
+    IPropsAvgEmployeeEfectiveness[] | []
+  >([]);
 
+  // const [defaultPage, setDefaultPage] = useState<number>(1);
+  // const [defaultLimit, setDefaultLimit] = useState<number>(5);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -183,8 +190,6 @@ export default function HeaderTabs() {
         })
         .then((res) => {
           if (res.status === 200) {
-            console.log('res.data.data', res.data.data);
-
             setBudgetInfoData(res.data.data as IPropsBudgetInfo[]);
           }
         });
@@ -201,9 +206,12 @@ export default function HeaderTabs() {
       setIsSubmitting(true);
 
       await axiosInstance
-        .get(`/statistics/average-transaction?start_date=${startDate}&end_date=${endDate}`, {
-          headers: { 'x-hasura-role': activeRole! },
-        })
+        .get(
+          `/statistics/average-track-transaction-time?start_date=${startDate}&end_date=${endDate}`,
+          {
+            headers: { 'x-hasura-role': activeRole! },
+          }
+        )
         .then((res) => {
           if (res.status === 200) {
             setAvgTransactionCard(res.data.data);
@@ -217,9 +225,33 @@ export default function HeaderTabs() {
     }
   };
 
+  const handleResAverageEmployee = async (startDate: string, endDate: string) => {
+    try {
+      setIsSubmitting(true);
+
+      await axiosInstance
+        .get(
+          `/statistics/average-employee-transaction-time?start_date=${startDate}&end_date=${endDate}&limit=${100}`,
+          {
+            headers: { 'x-hasura-role': activeRole! },
+          }
+        )
+        .then((res) => {
+          if (res.status === 200) {
+            setAvgEmployeeEffective(res.data.data);
+          }
+        });
+
+      setIsSubmitting(false);
+    } catch (error) {
+      console.error(error);
+      setIsSubmitting(false);
+    }
+  };
+
   const handleSubmitDate = async (start_date: Dayjs, end_date: Dayjs, value_tab: number) => {
-    const startDate = start_date?.format('YYYY-MM-DD');
-    const endDate = end_date?.format('YYYY-MM-DD');
+    const startDate = start_date.toISOString();
+    const endDate = end_date.toISOString();
 
     switch (value_tab) {
       case 0:
@@ -233,8 +265,8 @@ export default function HeaderTabs() {
         break;
       case 3:
         handleResAverageTransaction(startDate, endDate);
+        handleResAverageEmployee(startDate, endDate);
         break;
-
       default:
         break;
     }
@@ -242,8 +274,8 @@ export default function HeaderTabs() {
 
   useEffect(() => {
     if (!valueStartDate || !valueEndDate) {
-      const initStartDate: Dayjs = dayjs();
-      const initEndDate: Dayjs = dayjs().startOf('date');
+      const initStartDate: Dayjs = dayjs().startOf('days');
+      const initEndDate: Dayjs = dayjs();
 
       setValueStartDate(initStartDate);
       setValueEndDate(initEndDate);
@@ -442,6 +474,7 @@ export default function HeaderTabs() {
               <TabPanel value={valueTab} index={3} dir={theme.direction}>
                 <ContentStyle sx={{ mt: 3 }}>
                   <AverageTransaction data={avgTransactionCard} loading={isSubmitting} />
+                  <AchievementEffectiveness data={avgEmployeeEffective} loading={isSubmitting} />
                 </ContentStyle>
               </TabPanel>
             </>
