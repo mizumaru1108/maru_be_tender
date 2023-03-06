@@ -1729,6 +1729,18 @@ const en = {
       required: 'You must provide a reject reason!',
     },
   },
+  search_component: {
+    placeholder: 'ex. Mohammad Zayin',
+    by_project_name: 'Name of Project',
+    by_client_name: 'Name of Client',
+    by_project_status: 'Project Status',
+    by_track_name: 'Name of Track',
+    ascending: 'Ascending',
+    descending: 'Descending',
+    project_type: 'Project`s Type',
+    type_order: 'Type',
+    search: 'Search',
+  },
 };
 
 export default en;

@@ -1765,6 +1765,18 @@ const ar = {
       required: 'يجب عليك تقديم سبب الرفض!',
     },
   },
+  search_component: {
+    placeholder: 'مثال محمد زين',
+    by_project_name: 'اسم المشروع',
+    by_client_name: 'اسم العميل',
+    by_project_status: 'حالة المشروع',
+    by_track_name: 'اسم المسار',
+    ascending: 'تصاعدي',
+    descending: 'تنازلي',
+    project_type: 'نوع المشروع',
+    type_order: 'يكتب',
+    search: 'يبحث',
+  },
 };
 
 export default ar;

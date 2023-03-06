@@ -2,12 +2,8 @@
 // @mui
 import { styled } from '@mui/material/styles';
 import {
-  Card,
   Divider,
   Input /*Slide, Button, InputAdornment, ClickAwayListener*/,
-  InputAdornment,
-  MenuItem,
-  Select,
   Box,
   Checkbox,
   FormControlLabel,
@@ -16,9 +12,10 @@ import {
   Radio,
   RadioGroup,
   FormControl,
-  FormLabel,
   FormGroup,
   FormHelperText,
+  Button,
+  ClickAwayListener,
 } from '@mui/material';
 // utils
 import cssStyles from '../../../utils/cssStyles';
@@ -27,6 +24,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from 'hooks/useAuth';
 import { role_url_map } from '../../../@types/commons';
+import useLocales from '../../../hooks/useLocales';
 // components
 // import Iconify from '../../../components/Iconify';
 // import { IconButtonAnimate } from '../../../components/animate';
@@ -70,6 +68,7 @@ export default function Searchbar() {
   //   setOpen(false);
   // };
   const navigate = useNavigate();
+  const { translate, currentLang } = useLocales();
 
   const { activeRole } = useAuth();
   const role = activeRole!;
@@ -111,122 +110,164 @@ export default function Searchbar() {
     }
   };
 
+  const handleSearch = () => {
+    navigate(`/${role_url_map[`${role}`]}/searching`);
+    setShow(false);
+    const getValue = {
+      order: value,
+      filter: text,
+      type: state,
+    };
+    console.log(getValue);
+  };
+
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue((event.target as HTMLInputElement).value);
   };
 
   return (
-    <SearchbarStyle>
-      <Box
-        sx={{
-          mr: 1,
-          fontWeight: 400,
-          border: '1px solid rgba(145, 158, 171, 0.32)',
-          borderRadius: show ? '15px' : '50px',
-          color: '#919EAB',
-          background: '#fff',
-          fontSize: '14px',
-          padding: '3px 12px',
-          transition: '0.3s',
-          // width: '70%',
-        }}
-      >
+    <ClickAwayListener onClickAway={() => setShow(false)}>
+      <SearchbarStyle>
         <Box
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
+            mr: 1,
+            fontWeight: 400,
+            border: '1px solid rgba(145, 158, 171, 0.32)',
+            borderRadius: show ? '15px' : '50px',
+            color: '#919EAB',
+            background: '#fff',
+            fontSize: '14px',
+            padding: '3px 12px',
+            transition: '0.3s',
+            width: '250px',
           }}
         >
-          <Iconify icon={'eva:search-fill'} sx={{ color: '#0E8478', width: 25, height: 25 }} />
-          <Divider
-            orientation="vertical"
-            variant="middle"
-            flexItem
-            sx={{ height: 20, mx: '8px', color: '#0E8478' }}
-          />
-          <Input
-            sx={{ width: '100%' }}
-            disableUnderline={true}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="ex. Jane Cooper"
-            onKeyUp={handleKeyUp}
-          />
-          <Iconify
-            icon={'il:arrow-down'}
-            sx={{
-              alignItems: 'center',
-              color: 'text.disabled',
-              width: 20,
-              height: 20,
-              pt: 1,
-              mx: '8px',
-              cursor: 'pointer',
-              transition: '0.3s',
-              transform: show ? 'rotate(0deg)' : 'rotate(-90deg)',
-            }}
-            onClick={handleClick}
-          />
-        </Box>
-        {show ? (
           <Box
             sx={{
-              transition: show ? '0.3s' : '0.3s',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
             }}
           >
-            <Divider orientation="horizontal" flexItem />
-            <Stack direction="column">
-              <Typography sx={{ mt: 1, color: '#0E8478', fontWeight: 600 }}>
-                Project's Type
-              </Typography>
-              {/* <FormControlLabel value="project" control={<Checkbox />} label="Name of Project" />
+            <Iconify icon={'eva:search-fill'} sx={{ color: '#0E8478', width: 25, height: 25 }} />
+            <Divider
+              orientation="vertical"
+              variant="middle"
+              flexItem
+              sx={{ height: 20, mx: '8px', color: '#0E8478' }}
+            />
+            <Input
+              sx={{ width: '100%' }}
+              disableUnderline={true}
+              onChange={(e) => setText(e.target.value)}
+              placeholder={translate('search_component.placeholder')}
+              onKeyUp={handleKeyUp}
+            />
+            {currentLang.value === 'en' ? (
+              <Iconify
+                icon={'il:arrow-right'}
+                sx={{
+                  alignItems: 'center',
+                  color: 'text.disabled',
+                  width: 20,
+                  height: 20,
+                  pt: '5px',
+                  mx: '8px',
+                  cursor: 'pointer',
+                  transition: '0.3s',
+                  transform: show ? 'rotate(90deg)' : 'rotate(0deg)',
+                }}
+                onClick={handleClick}
+              />
+            ) : (
+              <Iconify
+                icon={'il:arrow-left'}
+                sx={{
+                  alignItems: 'center',
+                  color: 'text.disabled',
+                  width: 20,
+                  height: 20,
+                  pt: '5px',
+                  mx: '8px',
+                  cursor: 'pointer',
+                  transition: '0.3s',
+                  transform: show ? 'rotate(-90deg)' : 'rotate(0deg)',
+                }}
+                onClick={handleClick}
+              />
+            )}
+          </Box>
+          {show ? (
+            <Box
+              sx={{
+                transition: show ? '0.3s' : '0.3s',
+              }}
+            >
+              <Divider orientation="horizontal" flexItem />
+              <Stack direction="column">
+                <Typography sx={{ mt: 1, color: '#0E8478', fontWeight: 600 }}>
+                  {translate('search_component.project_type')}
+                </Typography>
+                {/* <FormControlLabel value="project" control={<Checkbox />} label="Name of Project" />
               <FormControlLabel value="client" control={<Checkbox />} label="Name of Client" />
               <FormControlLabel value="status" control={<Checkbox />} label="Project Status" />
               <FormControlLabel value="track" control={<Checkbox />} label="Name of Track" /> */}
-              <FormControl
-                required
-                error={error}
-                component="fieldset"
-                sx={{ m: 3 }}
-                variant="standard"
-              >
-                <FormGroup>
+                <FormControl required error={error} component="fieldset" variant="standard">
+                  <FormGroup>
+                    <FormControlLabel
+                      control={
+                        <Checkbox checked={project} onChange={handleChange} name="project" />
+                      }
+                      label={translate('search_component.by_project_name')}
+                    />
+                    <FormControlLabel
+                      control={<Checkbox checked={client} onChange={handleChange} name="client" />}
+                      label={translate('search_component.by_client_name')}
+                    />
+                    <FormControlLabel
+                      control={<Checkbox checked={status} onChange={handleChange} name="status" />}
+                      label={translate('search_component.by_project_status')}
+                    />
+                    <FormControlLabel
+                      control={<Checkbox checked={track} onChange={handleChange} name="track" />}
+                      label={translate('search_component.by_track_name')}
+                    />
+                  </FormGroup>
+                  {/* <FormHelperText>You can display an error</FormHelperText> */}
+                </FormControl>
+                <Typography sx={{ mt: 1, color: '#0E8478', fontWeight: 600 }}>
+                  {translate('search_component.type_order')}
+                </Typography>
+                {/* <FormControlLabel control={<Checkbox />} label="Ascending" /> */}
+                {/* <FormControlLabel control={<Checkbox />} label="Descending" /> */}
+                <RadioGroup
+                  aria-labelledby="type"
+                  name="type"
+                  value={value}
+                  onChange={handleRadioChange}
+                >
                   <FormControlLabel
-                    control={<Checkbox checked={project} onChange={handleChange} name="project" />}
-                    label="Name of Project"
+                    value="asc"
+                    control={<Radio />}
+                    label={translate('search_component.ascending')}
                   />
                   <FormControlLabel
-                    control={<Checkbox checked={client} onChange={handleChange} name="client" />}
-                    label="Name of Client"
+                    value="desc"
+                    control={<Radio />}
+                    label={translate('search_component.descending')}
                   />
-                  <FormControlLabel
-                    control={<Checkbox checked={status} onChange={handleChange} name="status" />}
-                    label="Project Status"
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={track} onChange={handleChange} name="track" />}
-                    label="Name of Track"
-                  />
-                </FormGroup>
-                {/* <FormHelperText>You can display an error</FormHelperText> */}
-              </FormControl>
-              <Typography sx={{ mt: 1, color: '#0E8478', fontWeight: 600 }}>Type</Typography>
-              {/* <FormControlLabel control={<Checkbox />} label="Ascending" /> */}
-              {/* <FormControlLabel control={<Checkbox />} label="Descending" /> */}
-              <RadioGroup
-                aria-labelledby="type"
-                name="type"
-                value={value}
-                onChange={handleRadioChange}
-              >
-                <FormControlLabel value="asc" control={<Radio />} label="Ascending" />
-                <FormControlLabel value="desc" control={<Radio />} label="Descending" />
-              </RadioGroup>
-            </Stack>
-          </Box>
-        ) : null}
-      </Box>
-      {/* <Input
+                </RadioGroup>
+              </Stack>
+
+              <Stack direction="row" justifyContent="flex-end">
+                <Button sx={{ my: 2 }} variant="contained" onClick={() => handleSearch()}>
+                  {translate('search_component.search')}
+                </Button>
+              </Stack>
+            </Box>
+          ) : null}
+        </Box>
+        {/* <Input
         autoFocus
         fullWidth
         disableUnderline
@@ -254,10 +295,8 @@ export default function Searchbar() {
           padding: '8px 12px',
         }}
       /> */}
-      {/* <Button variant="contained" onClick={handleClose}>
-              Search
-            </Button> */}
-    </SearchbarStyle>
+      </SearchbarStyle>
+    </ClickAwayListener>
     // <ClickAwayListener onClickAway={handleClose}>
     //   <div>
     //     {!isOpen && (
