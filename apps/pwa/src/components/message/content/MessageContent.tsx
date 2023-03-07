@@ -538,7 +538,7 @@ export default function MessageContent() {
                   value={messageValue}
                   autoFocus
                 />
-                <Box sx={{ justifyContent: 'flex-end', display: 'flex', direction: 'row' }}>
+                {/* <Box sx={{ justifyContent: 'flex-end', display: 'flex', direction: 'row' }}>
                   <Box
                     onClick={() => alert('upload attachment')}
                     sx={{
@@ -559,7 +559,7 @@ export default function MessageContent() {
                   >
                     <Image src="/assets/icons/upload-image-icon.svg" alt="logo" />
                   </Box>
-                </Box>
+                </Box> */}
               </Stack>
             </>
           )}

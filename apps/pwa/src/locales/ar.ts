@@ -1320,9 +1320,11 @@ const ar = {
       total_number_beneficiaries: 'العدد الكلي للمستفيدين من المشاريع',
       type_beneficiaries_project: 'نوع المتسفيدين من المشاريع',
       gender: {
+        adults: 'البالغين',
         general: 'أخرى',
         men: 'رجال',
         woman: 'فتيات',
+        women: 'نحيف',
         middle_aged: 'شباب',
         kids: 'أشبال',
         elderly: 'كبار السن',

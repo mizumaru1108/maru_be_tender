@@ -1291,9 +1291,11 @@ const en = {
       total_number_beneficiaries: 'Total number of project beneficiaries',
       type_beneficiaries_project: 'Type of beneficiaries of the projects',
       gender: {
+        adults: 'Adults',
         general: 'General',
         men: 'Men',
         woman: 'Woman',
+        women: 'Women',
         middle_aged: 'Teen',
         kids: 'Kids',
         elderly: 'Elderly',

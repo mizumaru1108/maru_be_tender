@@ -89,6 +89,7 @@ function MainPage() {
     // console.log({ url, destination });
   };
   // console.log('tmpValues', tmpValues);
+  // console.log({ project_beneficiaries });
   return (
     <Box sx={{ display: 'flex', gap: 3, flexDirection: 'column' }}>
       <Stack direction="row" gap={6}>
@@ -120,10 +121,7 @@ function MainPage() {
         <Stack direction="column">
           <Typography
             sx={{
-              color:
-                tmpValues?.revised?.num_ofproject_binicficiaries !== undefined
-                  ? 'green'
-                  : '#93A3B0',
+              color: tmpValues?.revised?.project_location !== undefined ? 'green' : '#93A3B0',
               fontSize: '12px',
               mb: '5px',
             }}
@@ -133,10 +131,7 @@ function MainPage() {
           <Typography sx={{ mb: '20px' }}>{project_location}</Typography>
           <Typography
             sx={{
-              color:
-                tmpValues?.revised?.num_ofproject_binicficiaries !== undefined
-                  ? 'green'
-                  : '#93A3B0',
+              color: tmpValues?.revised?.project_beneficiaries !== undefined ? 'green' : '#93A3B0',
               fontSize: '12px',
               mb: '5px',
             }}
@@ -152,10 +147,7 @@ function MainPage() {
         <Stack direction="column">
           <Typography
             sx={{
-              color:
-                tmpValues?.revised?.num_ofproject_binicficiaries !== undefined
-                  ? 'green'
-                  : '#93A3B0',
+              color: tmpValues?.revised?.project_implement_date !== undefined ? 'green' : '#93A3B0',
               fontSize: '12px',
               mb: '5px',
             }}
@@ -168,9 +160,7 @@ function MainPage() {
           <Typography
             sx={{
               color:
-                tmpValues?.revised?.num_ofproject_binicficiaries !== undefined
-                  ? 'green'
-                  : '#93A3B0',
+                tmpValues?.revised?.amount_required_fsupport !== undefined ? 'green' : '#93A3B0',
               fontSize: '12px',
               mb: '5px',
             }}
