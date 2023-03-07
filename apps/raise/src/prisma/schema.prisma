@@ -736,3 +736,18 @@ model proposal_asked_edit_request {
   sender        user     @relation("proposal_asked_edit_request_sender_idTouser", fields: [sender_id], references: [id], onDelete: Cascade)
   supervisor    user?    @relation("proposal_asked_edit_request_supervisor_idTouser", fields: [supervisor_id], references: [id], onDelete: Cascade)
 }
+
+model user2 {
+  id             String    @id
+  employee_name  String?   @db.VarChar
+  mobile_number  String?   @db.VarChar
+  email          String    @db.VarChar
+  updated_at     DateTime? @default(dbgenerated("'2023-03-06 11:19:58.365921+00'::timestamp with time zone")) @db.Timestamptz(6)
+  created_at     DateTime? @default(dbgenerated("'2023-03-06 11:19:58.365921+00'::timestamp with time zone")) @db.Timestamptz(6)
+  employee_path  String?   @db.VarChar
+  last_login     DateTime? @default(dbgenerated("'2023-03-06 11:19:58.365921+00'::timestamp with time zone")) @db.Timestamptz(6)
+  status_id      String
+  address        String?
+  google_session Json?
+  is_online      Boolean?
+}

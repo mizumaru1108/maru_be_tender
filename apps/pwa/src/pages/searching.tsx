@@ -60,7 +60,6 @@ function PreviousSupportRequests() {
       })) as ProjectCardProps[];
       previousSupport.push(...prev);
       setSupportRequests(previousSupport);
-      console.log('hasil set state : ', previousSupport);
     }
   }, [incomingData]);
 

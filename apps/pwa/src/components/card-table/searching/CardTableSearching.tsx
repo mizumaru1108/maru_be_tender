@@ -112,7 +112,7 @@ function CardTableSearching({
         </Stack>
       </Grid>
       {filter && (
-        <Grid item md={12} xs={12} display="flex" direction="row">
+        <Grid item md={12} xs={12}>
           {filter.project && (
             <Box sx={themeBox}>
               <Typography sx={{ ml: 2 }}> Key : {filter.project} </Typography>

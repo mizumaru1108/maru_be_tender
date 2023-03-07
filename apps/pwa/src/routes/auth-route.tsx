@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 import { Loadable } from './Loadable';
 import GuestGuard from '../guards/GuestGuard';
+import { Navigate } from 'react-router-dom';
 
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));
 const Register = Loadable(lazy(() => import('../pages/auth/Register')));
@@ -32,7 +33,8 @@ export const authRoute = {
     {
       path: 'reset-password',
       children: [
-        { path: '', element: <ResetPassword /> },
+        // { path: '', element: <ResetPassword /> },
+        { path: '', element: <Navigate to="/auth/login" replace /> },
         {
           path: ':id',
           element: <NewResetPassword />,
