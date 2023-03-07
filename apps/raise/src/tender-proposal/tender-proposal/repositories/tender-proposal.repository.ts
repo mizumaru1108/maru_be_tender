@@ -15,7 +15,11 @@ import {
   appRoleMappers,
   TenderAppRoleEnum,
 } from '../../../tender-commons/types';
-import { ProposalAction } from '../../../tender-commons/types/proposal';
+import {
+  InnerStatusEnum,
+  OutterStatusEnum,
+  ProposalAction,
+} from '../../../tender-commons/types/proposal';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import { FetchAmandementFilterRequest } from '../dtos/requests/fetch-amandement-filter-request.dto';
@@ -776,8 +780,101 @@ export class TenderProposalRepository {
 
       const offset = (page - 1) * limit;
 
-      const whereClause: Prisma.proposalWhereInput = {};
+      let whereClause: Prisma.proposalWhereInput = {};
       const orClauses: Prisma.proposalWhereInput[] = [];
+
+      /* filter whereClause based on existing permissions on hasura */
+      if (currentUser.choosenRole === 'tender_client') {
+        whereClause = {
+          ...whereClause,
+          submitter_user_id: currentUser.id,
+        };
+      } else {
+        whereClause = {
+          ...whereClause,
+          step: 'ZERO',
+        };
+
+        if (
+          [
+            'tender_project_supervisor',
+            'tender_project_manager',
+            'tender_cashier',
+            'tender_finance',
+          ].indexOf(currentUser.choosenRole) > -1
+        ) {
+          const reviewer = await this.prismaService.user.findUnique({
+            where: {
+              id: currentUser.id,
+            },
+          });
+          if (!reviewer || !reviewer.employee_path) {
+            throw new BadRequestException('cant find track of this user');
+          }
+
+          if (reviewer.employee_path !== 'GENERAL') {
+            whereClause = {
+              ...whereClause,
+              project_track: reviewer.employee_path,
+            };
+          }
+        }
+
+        if (currentUser.choosenRole === 'tender_project_supervisor') {
+          whereClause = {
+            ...whereClause,
+            OR: [{ supervisor_id: currentUser.id }, { supervisor_id: null }],
+          };
+        }
+
+        if (currentUser.choosenRole === 'tender_cashier') {
+          whereClause = {
+            ...whereClause,
+            OR: [{ cashier_id: currentUser.id }, { cashier_id: null }],
+          };
+        }
+
+        if (currentUser.choosenRole === 'tender_finance') {
+          whereClause = {
+            ...whereClause,
+            OR: [{ finance_id: currentUser.id }, { finance_id: null }],
+          };
+        }
+
+        if (currentUser.choosenRole === 'tender_project_manager') {
+          whereClause = {
+            ...whereClause,
+            OR: [
+              { project_manager_id: currentUser.id },
+              { project_manager_id: null },
+            ],
+          };
+        }
+
+        if (currentUser.choosenRole === 'tender_ceo') {
+          whereClause = {
+            ...whereClause,
+            OR: [
+              { outter_status: OutterStatusEnum.CANCELED },
+              {
+                inner_status: {
+                  in: [
+                    InnerStatusEnum.ACCEPTED_BY_CONSULTANT,
+                    InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER,
+                  ],
+                },
+              },
+            ],
+          };
+        }
+      }
+
+      if (currentUser.choosenRole === 'tender_consultant') {
+        whereClause = {
+          ...whereClause,
+          inner_status: InnerStatusEnum.ACCEPTED_AND_NEED_CONSULTANT,
+        };
+      }
 
       if (employee_name) {
         orClauses.push({
@@ -812,8 +909,8 @@ export class TenderProposalRepository {
 
       const data = await this.prismaService.proposal.findMany({
         where: {
-          OR: [...orClauses],
-          // AND: [whereClause, { OR: [...orClauses] }],
+          // OR: [...orClauses],
+          AND: [whereClause, { OR: [...orClauses] }],
         },
         take: limit,
         skip: offset,
@@ -824,8 +921,8 @@ export class TenderProposalRepository {
 
       const total = await this.prismaService.proposal.count({
         where: {
-          // AND: [whereClause, { OR: [...orClauses] }],
-          OR: [...orClauses],
+          AND: [whereClause, { OR: [...orClauses] }],
+          // OR: [...orClauses],
         },
       });
 
