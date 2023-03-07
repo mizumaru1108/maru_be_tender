@@ -14,6 +14,7 @@ function RequestsInProcess() {
   const [result] = useQuery({
     query: getProposals,
     variables: {
+      order_by: { updated_at: 'desc' },
       where: {
         inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' },
         _and: { finance_id: { _eq: user?.id } },

@@ -13,6 +13,7 @@ function IncomingExchangePermissionRequests() {
     query: getProposals,
     variables: {
       limit: 4,
+      order_by: { updated_at: 'desc' },
       where: {
         inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' },
         _and: { finance_id: { _is_null: true } },
