@@ -161,7 +161,7 @@ export class TenderAuthService {
         name: user.employee_name,
         resetUrl: `${this.configService.get<string>(
           'tenderAppConfig.baseUrl',
-        )}/reset-password/${response}`,
+        )}/auth/reset-password/${response}`,
       },
       templatePath: `tender/${
         selected_language || 'ar'

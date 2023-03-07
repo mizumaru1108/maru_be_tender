@@ -19,6 +19,7 @@ import { ProposalAction } from '../../../tender-commons/types/proposal';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import { FetchAmandementFilterRequest } from '../dtos/requests/fetch-amandement-filter-request.dto';
+import { FetchProposalFilterRequest } from '../dtos/requests/fetch-proposal-filter-request.dto';
 import { UpdateMyProposalResponseDto } from '../dtos/responses/update-my-proposal-response.dto';
 import { NewAmandementNotifMapper } from '../mappers/new-amandement-notif-mapper';
 import { SendRevisionNotifMapper } from '../mappers/send-revision-notif-mapper';
@@ -742,6 +743,90 @@ export class TenderProposalRepository {
 
       const total = await this.prismaService.proposal_edit_request.count({
         where: whereClause,
+      });
+
+      return {
+        data,
+        total,
+      };
+    } catch (err) {
+      const theError = prismaErrorThrower(
+        err,
+        TenderProposalRepository.name,
+        'updateProposal error details: ',
+        'updating proposal!',
+      );
+      throw theError;
+    }
+  }
+
+  async fetchProposalList(
+    currentUser: TenderCurrentUser,
+    filter: FetchProposalFilterRequest,
+  ) {
+    try {
+      const {
+        project_track,
+        employee_name,
+        project_name,
+        page = 1,
+        limit = 10,
+        sort,
+      } = filter;
+
+      const offset = (page - 1) * limit;
+
+      const whereClause: Prisma.proposalWhereInput = {};
+      const orClauses: Prisma.proposalWhereInput[] = [];
+
+      if (employee_name) {
+        orClauses.push({
+          user: {
+            employee_name: {
+              contains: employee_name,
+              mode: 'insensitive',
+            },
+          },
+        });
+      }
+
+      if (project_name) {
+        orClauses.push({
+          project_name: {
+            contains: project_name,
+            mode: 'insensitive',
+          },
+        });
+      }
+
+      if (project_track) {
+        orClauses.push({
+          project_track: {
+            contains: project_track,
+            mode: 'insensitive',
+          },
+        });
+      }
+
+      // console.log(logUtil(orClauses));
+
+      const data = await this.prismaService.proposal.findMany({
+        where: {
+          OR: [...orClauses],
+          // AND: [whereClause, { OR: [...orClauses] }],
+        },
+        take: limit,
+        skip: offset,
+        orderBy: {
+          project_name: sort,
+        },
+      });
+
+      const total = await this.prismaService.proposal.count({
+        where: {
+          // AND: [whereClause, { OR: [...orClauses] }],
+          OR: [...orClauses],
+        },
       });
 
       return {

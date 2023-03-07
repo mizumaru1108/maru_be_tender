@@ -60,6 +60,7 @@ import { SendRevisionMapper } from '../mappers/send-revision.mapper';
 import { logUtil } from '../../../commons/utils/log-util';
 import { AskAmandementRequestDto } from '../dtos/requests/ask-amandement-request.dto';
 import { CreateProposalAskedEditRequestMapper } from '../mappers/create-proposal-asked-edit-request.mapper';
+import { FetchProposalFilterRequest } from '../dtos/requests/fetch-proposal-filter-request.dto';
 
 @Injectable()
 export class TenderProposalService {
@@ -662,6 +663,13 @@ export class TenderProposalService {
     filter: FetchAmandementFilterRequest,
   ) {
     return await this.proposalRepo.findAmandementList(currentUser, filter);
+  }
+
+  async fetchProposalList(
+    currentUser: TenderCurrentUser,
+    filter: FetchProposalFilterRequest,
+  ) {
+    return await this.proposalRepo.fetchProposalList(currentUser, filter);
   }
 
   async fetchAmandementRequestList(

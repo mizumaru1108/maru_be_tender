@@ -29,6 +29,7 @@ import { SendAmandementDto } from '../dtos/requests/send-amandement.dto';
 import { SendRevisionDto } from '../dtos/requests/send-revision.dto';
 import { TenderProposalService } from '../services/tender-proposal.service';
 import { AskAmandementRequestDto } from '../dtos/requests/ask-amandement-request.dto';
+import { FetchProposalFilterRequest } from '../dtos/requests/fetch-proposal-filter-request.dto';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(private readonly proposalService: TenderProposalService) {}
@@ -152,6 +153,27 @@ export class TenderProposalController {
       result.total,
       payload.page || 1,
       payload.limit || 10,
+      HttpStatus.OK,
+      'Success',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard)
+  @Get('list')
+  async fetchProposalList(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Query() filter: FetchProposalFilterRequest,
+  ) {
+    const result = await this.proposalService.fetchProposalList(
+      currentUser,
+      filter,
+    );
+
+    return manualPaginationHelper(
+      result.data,
+      result.total,
+      filter.page || 1,
+      filter.limit || 10,
       HttpStatus.OK,
       'Success',
     );
