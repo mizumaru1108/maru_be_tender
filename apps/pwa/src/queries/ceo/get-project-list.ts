@@ -1,6 +1,6 @@
 export const GetProjectList = `
 query GetProjectList ($track: [project_tracks_enum!]) {
-  proposal(where: {state: {_eq: CEO}, inner_status: {_in: [ACCEPTED_BY_PROJECT_MANAGER, ACCEPTED_BY_CONSULTANT]}, project_track: {_in: $track}}) {
+  proposal(where: {state: {_eq: CEO}, inner_status: {_in: [ACCEPTED_BY_PROJECT_MANAGER, ACCEPTED_BY_CONSULTANT]},outter_status:{_in:[ONGOING]}, project_track: {_in: $track}}) {
     projectNumber: id
     projectName: project_name
     projectSection: project_track
@@ -11,7 +11,7 @@ query GetProjectList ($track: [project_tracks_enum!]) {
     }
     createdAt: created_at
   }
-  proposal_aggregate(where: {state: {_eq: CEO}, inner_status: {_in: [ACCEPTED_BY_PROJECT_MANAGER, ACCEPTED_BY_CONSULTANT]}, project_track: {_in: $track}}, limit: 5) {
+  proposal_aggregate(where: {state: {_eq: CEO}, inner_status: {_in: [ACCEPTED_BY_PROJECT_MANAGER, ACCEPTED_BY_CONSULTANT]}, outter_status:{_in:[ONGOING]}, project_track: {_in: $track}}, limit: 5) {
     aggregate {
       totalData: count
     }

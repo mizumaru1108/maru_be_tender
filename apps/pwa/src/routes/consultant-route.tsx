@@ -23,6 +23,9 @@ const NonClientProfileEdit = Loadable(
   lazy(() => import('sections/non-client-profile/NonClientProfileEdit'))
 );
 const Searching = Loadable(lazy(() => import('pages/searching')));
+const AmandementRequest = Loadable(
+  lazy(() => import('pages/amandement-request/AmandementRequest'))
+);
 
 export const consultantRoute = {
   path: 'consultant',
@@ -57,6 +60,7 @@ export const consultantRoute = {
       children: [
         { element: <Navigate to="/consultant/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainConsultant /> },
+        { path: 'amandment-request/:id', element: <AmandementRequest /> },
         { path: ':submiterId/:detailType', element: <ProjectOwnerDetails /> },
         {
           path: 'current-project',

@@ -9,6 +9,7 @@ query MyQuery($id: String = "") {
       phone
       license_number
       license_issue_date
+      headquarters
       user {
         email
       }

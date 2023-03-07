@@ -370,7 +370,7 @@ function ConsultantFloatingActionBar() {
               <MenuItem
                 // disabled={true}
                 onClick={() => {
-                  navigate(`/project-manager/dashboard/amandment-request/${proposal_id}`);
+                  navigate(`/consultant/dashboard/amandment-request/${proposal_id}`);
                   handleClose();
                 }}
               >

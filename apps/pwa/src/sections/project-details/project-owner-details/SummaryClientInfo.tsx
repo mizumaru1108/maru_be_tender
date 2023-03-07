@@ -70,7 +70,7 @@ function SummaryClientInfo({ dataClient }: SummaryClientInfoProps) {
         </Typography>
         <Typography sx={StylTextContent}>{dataClient.license_number}</Typography>
         <Typography sx={StylTextContent}>{dataClient.license_issue_date}</Typography>
-        <Typography sx={StylTextContent}>{'Classification'}</Typography>
+        <Typography sx={StylTextContent}>{dataClient.headquarters}</Typography>
       </Box>
       <Box
         sx={{

@@ -32,6 +32,7 @@ function ProjectOwnerDetailsMainPage() {
     center_administration: 'Jakarta Selatan',
     license_number: '123456789',
     license_issue_date: moment().format('YYYY-MM-DD'),
+    headquarters: 'Jakarta',
   });
 
   const [result, _] = useQuery({
