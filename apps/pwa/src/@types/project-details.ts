@@ -38,4 +38,5 @@ export interface ProjectOwnerDetails {
   center_administration: string;
   license_number: string;
   license_issue_date: string;
+  headquarters: string;
 }
