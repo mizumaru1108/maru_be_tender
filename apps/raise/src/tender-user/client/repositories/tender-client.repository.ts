@@ -5,6 +5,7 @@ import {
   Prisma,
   user_status,
 } from '@prisma/client';
+import { Sql } from '@prisma/client/runtime';
 import { logUtil } from '../../../commons/utils/log-util';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
@@ -16,6 +17,7 @@ import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-t
 import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
 import { SearchClientProposalFilter } from '../dtos/requests/search-client-proposal-filter-request.dto';
 import { SearchEditRequestFilter } from '../dtos/requests/search-edit-request-filter-request.dto';
+import { SearchSpecificClientProposalFilter } from '../dtos/requests/search-specific-client-proposal-filter-request.dto';
 
 @Injectable()
 export class TenderClientRepository {
@@ -273,16 +275,31 @@ export class TenderClientRepository {
     }
   }
 
-  async findClientProposals(filter: SearchClientProposalFilter) {
-    const { page = 1, limit = 10, sort = 'desc', sorting_field } = filter;
+  async findClientProposalById(filter: SearchSpecificClientProposalFilter) {
+    const {
+      user_id,
+      page = 1,
+      limit = 10,
+      sort = 'desc',
+      sorting_field,
+    } = filter;
 
     const offset = (page - 1) * limit;
 
-    let query: Prisma.client_dataWhereInput = {};
+    let query: Prisma.proposalWhereInput = {
+      step: 'ZERO',
+    };
 
-    const order_by: Prisma.client_dataOrderByWithRelationInput = {};
+    if (user_id) {
+      query = {
+        ...query,
+        submitter_user_id: user_id,
+      };
+    }
+
+    const order_by: Prisma.proposalOrderByWithRelationInput = {};
     const field =
-      sorting_field as keyof Prisma.client_dataOrderByWithRelationInput;
+      sorting_field as keyof Prisma.proposalOrderByWithRelationInput;
     if (sorting_field) {
       order_by[field] = sort;
     } else {
@@ -290,26 +307,16 @@ export class TenderClientRepository {
     }
 
     try {
-      const response = await this.prismaService.client_data.findMany({
+      const response = await this.prismaService.proposal.findMany({
         where: {
           ...query,
-        },
-        select: {
-          user: {
-            select: {
-              employee_name: true,
-              mobile_number: true,
-              proposals: true,
-            },
-          },
-          governorate: true,
         },
         skip: offset,
         take: limit,
         orderBy: order_by,
       });
 
-      const count = await this.prismaService.client_data.count({
+      const count = await this.prismaService.proposal.count({
         where: {
           ...query,
         },
@@ -325,6 +332,45 @@ export class TenderClientRepository {
         TenderUserRepository.name,
         'findUsers Error:',
         `finding users!`,
+      );
+      throw theError;
+    }
+  }
+
+  async findClientProposals(filter: SearchClientProposalFilter) {
+    const { page = 1, limit = 10, sort = 'desc', sorting_field } = filter;
+
+    const offset = (page - 1) * limit;
+    let whereClause: Sql;
+    let query: Prisma.client_dataWhereInput = {};
+
+    const order_by: Prisma.client_dataOrderByWithRelationInput = {};
+    const field =
+      sorting_field as keyof Prisma.client_dataOrderByWithRelationInput;
+    if (sorting_field) {
+      order_by[field] = sort;
+    } else {
+      order_by.created_at = sort;
+    }
+
+    try {
+      const response: any = await this.prismaService.$queryRaw`
+      SELECT "user".id, "user".employee_name, "user".mobile_number, "user".email, COUNT(proposal.id) AS proposal_count, COUNT(*) OVER() AS total_count
+      FROM client_data
+      JOIN "user" ON client_data.user_id = "user".id
+      LEFT JOIN proposal ON proposal.submitter_user_id = client_data.user_id AND proposal.step = 'ZERO'
+      GROUP BY client_data.id, "user".id
+      LIMIT ${limit} OFFSET ${offset};
+    `;
+
+      // console.log(logUtil(response));
+      return response;
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderUserRepository.name,
+        'findClientProposals Error:',
+        `findClientProposals users!`,
       );
       throw theError;
     }

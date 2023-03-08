@@ -1,5 +1,4 @@
 import { Body, Controller, HttpStatus, Post, UseGuards } from '@nestjs/common';
-import { user } from '@prisma/client';
 import { LoginRequestDto } from '../../auth/dtos';
 import { BaseResponse } from '../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
@@ -45,12 +44,29 @@ export class TenderAuthController {
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_accounts_manager')
+  @Post('reset-password-request')
+  async resetPasswordRequest(
+    @Body() request: ForgotPasswordRequestDto,
+  ): Promise<BaseResponse<any>> {
+    const createdClient = await this.tenderAuthService.changePasswordRequest(
+      request.email,
+      false,
+      request.selectLang,
+    );
+    return baseResponseHelper(
+      createdClient,
+      HttpStatus.CREATED,
+      'Forgot password already submitted!',
+    );
+  }
+
   @Post('forgot-password-request')
   async forgotPasswordRequest(
     @Body() request: ForgotPasswordRequestDto,
   ): Promise<BaseResponse<any>> {
-    const createdClient = await this.tenderAuthService.forgotPasswordRequest(
+    const createdClient = await this.tenderAuthService.changePasswordRequest(
       request.email,
+      true,
       request.selectLang,
     );
     return baseResponseHelper(

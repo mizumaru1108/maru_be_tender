@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../../commons/dtos/base-response';
+import { GetByUUIDQueryParamDto } from '../../../commons/dtos/get-by-uuid-query-param.dto';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
 import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
 import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
@@ -22,6 +23,7 @@ import { EditRequestByIdDto } from '../dtos/requests/edit-request-by-id.dto';
 import { RejectEditRequestDto } from '../dtos/requests/reject-edit-request.dto';
 import { SearchClientProposalFilter } from '../dtos/requests/search-client-proposal-filter-request.dto';
 import { SearchEditRequestFilter } from '../dtos/requests/search-edit-request-filter-request.dto';
+import { SearchSpecificClientProposalFilter } from '../dtos/requests/search-specific-client-proposal-filter-request.dto';
 import { TenderClientService } from '../services/tender-client.service';
 
 @Controller('tender/client')
@@ -79,8 +81,8 @@ export class TenderClientController {
   @Get('proposal/list')
   async findProposalList(
     @Query() filter: SearchClientProposalFilter,
-  ): Promise<ManualPaginatedResponse<any>> {
-    const response = await this.tenderClientService.findEditRequests(filter);
+  ): Promise<any> {
+    const response = await this.tenderClientService.findClientProposals(filter);
 
     return manualPaginationHelper(
       response.data,
@@ -90,6 +92,28 @@ export class TenderClientController {
       HttpStatus.OK,
       'Success',
     );
+    // return response;
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_ceo', 'tender_project_manager', 'tender_admin')
+  @Get('proposals')
+  async findClientProposalById(
+    @Query() filter: SearchSpecificClientProposalFilter,
+  ): Promise<any> {
+    const response = await this.tenderClientService.findClientProposalById(
+      filter,
+    );
+
+    return manualPaginationHelper(
+      response.data,
+      response.total,
+      filter.page || 1,
+      filter.limit || 10,
+      HttpStatus.OK,
+      'Success',
+    );
+    // return response;
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)

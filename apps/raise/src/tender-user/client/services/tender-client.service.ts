@@ -50,6 +50,7 @@ import { finalUploadFileJson } from '../../../tender-commons/dto/final-upload-fi
 import { CommonNotificationMapperResponse } from '../../../tender-commons/dto/common-notification-mapper-response.dto';
 import { TenderNotificationRepository } from '../../../tender-notification/repository/tender-notification.repository';
 import { SearchClientProposalFilter } from '../dtos/requests/search-client-proposal-filter-request.dto';
+import { SearchSpecificClientProposalFilter } from '../dtos/requests/search-specific-client-proposal-filter-request.dto';
 @Injectable()
 export class TenderClientService {
   private readonly appEnv: string;
@@ -507,11 +508,35 @@ export class TenderClientService {
     };
   }
 
+  async findClientProposalById(filter: SearchSpecificClientProposalFilter) {
+    const proposals = await this.tenderClientRepository.findClientProposalById(
+      filter,
+    );
+    return proposals;
+  }
   async findClientProposals(request: SearchClientProposalFilter) {
     const response = await this.tenderClientRepository.findClientProposals(
       request,
     );
-    return response;
+    if (response.length > 0) {
+      return {
+        data: response.map((res: any) => {
+          return {
+            id: res.id,
+            employee_name: res.employee_name,
+            mobile_number: res.mobile_number,
+            email: res.email,
+            proposal_count: Number(res.proposal_count),
+          };
+        }),
+        total: Number(response[0].total_count),
+      };
+    } else {
+      return {
+        data: [],
+        total: 0,
+      };
+    }
   }
 
   async findEditRequests(request: SearchEditRequestFilter) {

@@ -146,7 +146,11 @@ export class TenderAuthService {
     return result;
   }
 
-  async forgotPasswordRequest(email: string, selected_language?: 'ar' | 'en') {
+  async changePasswordRequest(
+    email: string,
+    forgotPassword: boolean,
+    selected_language?: 'ar' | 'en',
+  ) {
     const user = await this.tenderUserRepository.findByEmail(email);
     if (!user) throw new BadRequestException('User not found!');
 
@@ -159,9 +163,13 @@ export class TenderAuthService {
       subject: 'Reset Your Password',
       templateContext: {
         name: user.employee_name,
-        resetUrl: `${this.configService.get<string>(
-          'tenderAppConfig.baseUrl',
-        )}/auth/reset-password/${response}`,
+        resetUrl: forgotPassword
+          ? `${this.configService.get<string>(
+              'tenderAppConfig.baseUrl',
+            )}/auth/forgot-password/${response}`
+          : `${this.configService.get<string>(
+              'tenderAppConfig.baseUrl',
+            )}/auth/reset-password/${response}`,
       },
       templatePath: `tender/${
         selected_language || 'ar'
