@@ -59,6 +59,7 @@ export default function ResetPasswordForm() {
       if (status === 201) {
         enqueueSnackbar(translate('errors.reset_password.success_reset_password'), {
           variant: 'success',
+          autoHideDuration: 3000,
         });
 
         navigate('/auth/login');

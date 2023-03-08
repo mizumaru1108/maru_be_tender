@@ -142,7 +142,7 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
 
     try {
       const res = await axiosInstance.post(
-        '/tender-auth/forgot-password-request',
+        '/tender-auth/reset-password-request',
         { email, selectLang: currentLang.value },
         {
           headers: { 'x-hasura-role': activeRole! },
@@ -155,6 +155,7 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
           `${translate('account_manager.partner_details.notification.reset_password')}`,
           {
             variant: 'success',
+            autoHideDuration: 3000,
           }
         );
         handleClose();
