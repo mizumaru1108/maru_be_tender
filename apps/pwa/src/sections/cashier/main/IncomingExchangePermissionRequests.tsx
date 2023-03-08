@@ -26,7 +26,7 @@ function IncomingExchangePermissionRequests() {
   const props = data?.data ?? [];
   if (props.length === 0) return <></>;
   return (
-    <Grid container>
+    <Grid container spacing={3}>
       <Grid item md={12} xs={12}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="h4" sx={{ mb: '20px' }}>

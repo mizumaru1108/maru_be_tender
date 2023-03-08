@@ -274,8 +274,8 @@ export default function HeaderTabs() {
 
   useEffect(() => {
     if (!valueStartDate || !valueEndDate) {
-      const initStartDate: Dayjs = dayjs().startOf('days');
-      const initEndDate: Dayjs = dayjs();
+      const initStartDate: Dayjs = dayjs().subtract(1, 'days').startOf('days');
+      const initEndDate: Dayjs = dayjs().subtract(1, 'days').endOf('days');
 
       setValueStartDate(initStartDate);
       setValueEndDate(initEndDate);
