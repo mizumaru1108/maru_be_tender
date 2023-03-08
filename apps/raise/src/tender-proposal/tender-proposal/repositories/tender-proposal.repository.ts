@@ -773,6 +773,7 @@ export class TenderProposalRepository {
         project_track,
         employee_name,
         project_name,
+        outter_status,
         page = 1,
         limit = 10,
         sort,
@@ -905,6 +906,18 @@ export class TenderProposalRepository {
         });
       }
 
+      if (outter_status) {
+        const outterFilter: string = outter_status
+          .replace(/[^\w\s]|_/g, '')
+          .toLowerCase();
+        orClauses.push({
+          outter_status: {
+            contains: outterFilter,
+            mode: 'insensitive',
+          },
+        });
+      }
+
       // console.log(logUtil(orClauses));
 
       const data = await this.prismaService.proposal.findMany({
@@ -914,6 +927,9 @@ export class TenderProposalRepository {
         },
         take: limit,
         skip: offset,
+        include: {
+          user: true,
+        },
         orderBy: {
           project_name: sort,
         },

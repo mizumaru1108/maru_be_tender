@@ -20,6 +20,7 @@ import { ICurrentUser } from '../../../user/interfaces/current-user.interface';
 import { ClientEditRequestFieldDto } from '../dtos/requests/client-edit-request-field.dto';
 import { EditRequestByIdDto } from '../dtos/requests/edit-request-by-id.dto';
 import { RejectEditRequestDto } from '../dtos/requests/reject-edit-request.dto';
+import { SearchClientProposalFilter } from '../dtos/requests/search-client-proposal-filter-request.dto';
 import { SearchEditRequestFilter } from '../dtos/requests/search-edit-request-filter-request.dto';
 import { TenderClientService } from '../services/tender-client.service';
 
@@ -70,6 +71,24 @@ export class TenderClientController {
       response,
       HttpStatus.OK,
       'Successfully fetch current user track',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_ceo', 'tender_project_manager', 'tender_admin')
+  @Get('proposal/list')
+  async findProposalList(
+    @Query() filter: SearchClientProposalFilter,
+  ): Promise<ManualPaginatedResponse<any>> {
+    const response = await this.tenderClientService.findEditRequests(filter);
+
+    return manualPaginationHelper(
+      response.data,
+      response.total,
+      filter.page || 1,
+      filter.limit || 10,
+      HttpStatus.OK,
+      'Success',
     );
   }
 

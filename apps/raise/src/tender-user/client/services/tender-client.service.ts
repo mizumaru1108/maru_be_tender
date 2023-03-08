@@ -49,6 +49,7 @@ import { logUtil } from '../../../commons/utils/log-util';
 import { finalUploadFileJson } from '../../../tender-commons/dto/final-upload-file-jsonb.dto';
 import { CommonNotificationMapperResponse } from '../../../tender-commons/dto/common-notification-mapper-response.dto';
 import { TenderNotificationRepository } from '../../../tender-notification/repository/tender-notification.repository';
+import { SearchClientProposalFilter } from '../dtos/requests/search-client-proposal-filter-request.dto';
 @Injectable()
 export class TenderClientService {
   private readonly appEnv: string;
@@ -504,6 +505,13 @@ export class TenderClientService {
       new_data,
       diffrence,
     };
+  }
+
+  async findClientProposals(request: SearchClientProposalFilter) {
+    const response = await this.tenderClientRepository.findClientProposals(
+      request,
+    );
+    return response;
   }
 
   async findEditRequests(request: SearchEditRequestFilter) {

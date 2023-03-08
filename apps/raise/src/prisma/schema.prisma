@@ -306,7 +306,7 @@ model user {
   message_message_receiver_idTouser                                           message[]                     @relation("message_receiver_idTouser")
   notifications                                                               notification[]                @relation("notification_user_idTouser")
   proposal_proposal_project_manager_idTouser                                  proposal[]                    @relation("proposal_project_manager_idTouser")
-  proposal_proposalTouser                                                     proposal[]
+  proposals                                                                   proposal[]
   proposal_proposal_supervisor_idTouser                                       proposal[]                    @relation("proposal_supervisor_idTouser")
   proposal_asked_edit_request_proposal_asked_edit_request_sender_idTouser     proposal_asked_edit_request[] @relation("proposal_asked_edit_request_sender_idTouser")
   proposal_asked_edit_request_proposal_asked_edit_request_supervisor_idTouser proposal_asked_edit_request[] @relation("proposal_asked_edit_request_supervisor_idTouser")

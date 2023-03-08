@@ -14,6 +14,7 @@ import { UploadFilesDto } from '../../../tender-commons/dto/upload-files.dto';
 import { isUploadFileJsonb } from '../../../tender-commons/utils/is-upload-file-jsonb';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
+import { SearchClientProposalFilter } from '../dtos/requests/search-client-proposal-filter-request.dto';
 import { SearchEditRequestFilter } from '../dtos/requests/search-edit-request-filter-request.dto';
 
 @Injectable()
@@ -267,6 +268,63 @@ export class TenderClientRepository {
         TenderClientRepository.name,
         'findClientAndUser error details: ',
         'find client and user!',
+      );
+      throw theError;
+    }
+  }
+
+  async findClientProposals(filter: SearchClientProposalFilter) {
+    const { page = 1, limit = 10, sort = 'desc', sorting_field } = filter;
+
+    const offset = (page - 1) * limit;
+
+    let query: Prisma.client_dataWhereInput = {};
+
+    const order_by: Prisma.client_dataOrderByWithRelationInput = {};
+    const field =
+      sorting_field as keyof Prisma.client_dataOrderByWithRelationInput;
+    if (sorting_field) {
+      order_by[field] = sort;
+    } else {
+      order_by.created_at = sort;
+    }
+
+    try {
+      const response = await this.prismaService.client_data.findMany({
+        where: {
+          ...query,
+        },
+        select: {
+          user: {
+            select: {
+              employee_name: true,
+              mobile_number: true,
+              proposals: true,
+            },
+          },
+          governorate: true,
+        },
+        skip: offset,
+        take: limit,
+        orderBy: order_by,
+      });
+
+      const count = await this.prismaService.client_data.count({
+        where: {
+          ...query,
+        },
+      });
+
+      return {
+        data: response,
+        total: count,
+      };
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderUserRepository.name,
+        'findUsers Error:',
+        `finding users!`,
       );
       throw theError;
     }

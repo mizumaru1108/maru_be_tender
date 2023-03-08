@@ -67,8 +67,13 @@ export class TenderProposalFollowUpService {
       );
       if (!proposal) throw new BadRequestException('Proposal Not Found!');
 
-      const { proposal_id, follow_up_type, content, follow_up_attachment } =
-        payload;
+      const {
+        proposal_id,
+        follow_up_type,
+        content,
+        follow_up_attachment,
+        employee_only,
+      } = payload;
 
       if (follow_up_type === 'plain' && !content) {
         throw new BadRequestException(
@@ -182,7 +187,11 @@ export class TenderProposalFollowUpService {
         fileManagerCreateManyPayload,
       );
 
-      await this.sendFollowUpNotif(createdFolllowUp, payload.selectLang);
+      await this.sendFollowUpNotif(
+        createdFolllowUp,
+        employee_only,
+        payload.selectLang,
+      );
 
       return createdFolllowUp;
     } catch (error) {
@@ -243,6 +252,7 @@ export class TenderProposalFollowUpService {
 
   async sendFollowUpNotif(
     createdFolllowUp: RawCreateFollowUpDto['data'],
+    employee_only: boolean,
     selected_lang?: 'ar' | 'en',
   ) {
     const { subject, content, proposal, user } =
@@ -272,28 +282,30 @@ export class TenderProposalFollowUpService {
     };
 
     /* the client on this proposal ------------------------------------------------------------------------------------------------ */
-    const clientEmailNotif: SendEmailDto = {
-      ...baseSendEmail,
-      to: proposal.user.email,
-      templateContext: {
-        ...baseTemplateContext,
-        receiverName: proposal.user.employee_name,
-      },
-    };
-    this.emailService.sendMail(clientEmailNotif);
+    if (employee_only === false) {
+      const clientEmailNotif: SendEmailDto = {
+        ...baseSendEmail,
+        to: proposal.user.email,
+        templateContext: {
+          ...baseTemplateContext,
+          receiverName: proposal.user.employee_name,
+        },
+      };
+      this.emailService.sendMail(clientEmailNotif);
 
-    const clientWebNotifPayload: CreateNotificationDto = {
-      ...baseWebNotif,
-      user_id: proposal.submitter_user_id,
-    };
-    await this.notifService.create(clientWebNotifPayload);
+      const clientWebNotifPayload: CreateNotificationDto = {
+        ...baseWebNotif,
+        user_id: proposal.submitter_user_id,
+      };
+      await this.notifService.create(clientWebNotifPayload);
 
-    const clientPhone = isExistAndValidPhone(proposal.user.mobile_number);
-    if (clientPhone) {
-      this.twilioService.sendSMS({
-        ...baseSendSms,
-        to: clientPhone,
-      });
+      const clientPhone = isExistAndValidPhone(proposal.user.mobile_number);
+      if (clientPhone) {
+        this.twilioService.sendSMS({
+          ...baseSendSms,
+          to: clientPhone,
+        });
+      }
     }
     /* ----------------------------------------------------------------------------------------------------------------------------------- */
 
