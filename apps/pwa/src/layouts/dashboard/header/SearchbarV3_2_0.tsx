@@ -25,12 +25,9 @@ import { useNavigate } from 'react-router-dom';
 import useAuth from 'hooks/useAuth';
 import { role_url_map } from '../../../@types/commons';
 import useLocales from '../../../hooks/useLocales';
-// components
-// import Iconify from '../../../components/Iconify';
-// import { IconButtonAnimate } from '../../../components/animate';
-
+import { useDispatch, useSelector } from 'redux/store';
+import { setSort, setFiltered } from 'redux/slices/searching';
 // ----------------------------------------------------------------------
-
 const APPBAR_MOBILE = 64;
 const APPBAR_DESKTOP = 92;
 
@@ -58,26 +55,19 @@ const SearchbarStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function Searchbar() {
-  // const [isOpen, setOpen] = useState(false);
-
-  // const handleOpen = () => {
-  //   setOpen((prev) => !prev);
-  // };
-
-  // const handleClose = () => {
-  //   setOpen(false);
-  // };
   const navigate = useNavigate();
   const { translate, currentLang } = useLocales();
 
   const { activeRole } = useAuth();
   const role = activeRole!;
+
+  const dispatch = useDispatch();
+  const { sort, filtered } = useSelector((state) => state.searching);
   const [show, setShow] = React.useState(false);
-  const [value, setValue] = React.useState('asc');
+  const [sortBy, setSortBy] = React.useState('asc');
   const [text, setText] = React.useState('');
-  const [projectType, setprojectType] = React.useState('');
   const [state, setState] = React.useState({
-    project: true,
+    project: false,
     client: false,
     status: false,
     track: false,
@@ -91,8 +81,12 @@ export default function Searchbar() {
   };
 
   const { project, client, status, track } = state;
-  const error = [project, client, status, track].filter((v) => v).length !== 1;
-
+  const filteredState = Object.fromEntries(
+    Object.entries({ project, client, status, track }).filter(([_, v]) => v)
+  );
+  const error = Object.keys(filteredState).length !== 1;
+  // const keys = Object.keys(filteredState);
+  // const error = [project, client, status, track].filter((v) => v).length !== 1;
   const handleClick = () => {
     setShow(!show);
   };
@@ -101,28 +95,102 @@ export default function Searchbar() {
     if (event.key === 'Enter') {
       navigate(`/${role_url_map[`${role}`]}/searching`);
       setShow(false);
-      const getValue = {
-        order: value,
-        filter: text,
-        type: state,
-      };
-      console.log(getValue);
+      // Object.keys(filteredState).forEach((key) => {
+      //   switch (key) {
+      //     case 'project':
+      //       // console.log('ada dari project');
+      //       dispatch(setProjectName(`project_name=${text}`));
+      //       break;
+      //     case 'client':
+      //       // console.log('ada dari client');
+      //       dispatch(setClientName(`client_name=${text}`));
+      //       break;
+      //     case 'status':
+      //       // console.log('ada dari status');
+      //       dispatch(setProjectStatus(`project_status=${text}`));
+      //       break;
+      //     case 'track':
+      //       // console.log('ada dari track');
+      //       dispatch(setTrackName(`project_track=${text}`));
+      //       break;
+      //     default:
+      //       break;
+      //   }
+
+      // });
+
+      const filters = Object.keys(filteredState);
+      const newFilters = filters.map((filter) => {
+        if (filter === 'project') {
+          return `project_name=${text}`;
+        } else if (filter === 'client') {
+          return `client_name=${text}`;
+        } else if (filter === 'status') {
+          return `project_status=${text}`;
+        } else if (filter === 'track') {
+          return `project_track=${text}`;
+        }
+        return false;
+      });
+      dispatch(setSort(sortBy));
     }
+    // console.log({ project_name, client_name, project_status, track_name, sort });
   };
 
   const handleSearch = () => {
     navigate(`/${role_url_map[`${role}`]}/searching`);
     setShow(false);
-    const getValue = {
-      order: value,
-      filter: text,
-      type: state,
-    };
-    console.log(getValue);
+    // Object.keys(filteredState).forEach((key) => {
+    //   switch (key) {
+    //     case 'project':
+    //       // console.log('ada dari project');
+    //       dispatch(setProjectName(`project_name=${text}`));
+    //       break;
+    //     case 'client':
+    //       // console.log('ada dari client');
+    //       dispatch(setClientName(`client_name=${text}`));
+    //       break;
+    //     case 'status':
+    //       // console.log('ada dari status');
+    //       dispatch(setProjectStatus(`project_status=${text}`));
+    //       break;
+    //     case 'track':
+    //       // console.log('ada dari track');
+    //       dispatch(setTrackName(`project_track=${text}`));
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // });
+
+    const filters = Object.keys(filteredState);
+    const newFilters = filters.map((filter) => {
+      if (filter === 'project') {
+        return `project_name=${text}`;
+      } else if (filter === 'client') {
+        return `employee_name=${text}`;
+      } else if (filter === 'status') {
+        return `outter_status=${text}`;
+      } else if (filter === 'track') {
+        return `project_track=${text}`;
+      }
+      return false;
+    });
+
+    const joinFilter = newFilters.join('&');
+    if (text) {
+      dispatch(setFiltered(joinFilter));
+    } else {
+      dispatch(setFiltered(null));
+    }
+    dispatch(setSort(sortBy));
   };
 
+  // console.log('FILTER REDUX', filtered);
+  // console.log({ sort });
+
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue((event.target as HTMLInputElement).value);
+    setSortBy((event.target as HTMLInputElement).value);
   };
 
   return (
@@ -243,7 +311,7 @@ export default function Searchbar() {
                 <RadioGroup
                   aria-labelledby="type"
                   name="type"
-                  value={value}
+                  value={sortBy}
                   onChange={handleRadioChange}
                 >
                   <FormControlLabel

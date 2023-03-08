@@ -33,6 +33,8 @@ const inquiryStatusStyle = {
   completed: { color: '#0E8478', backgroundColor: '#0E847829' },
   pending: { color: '#FFC107', backgroundColor: '#FFC10729' },
   on_revision: { color: '#FFC107', backgroundColor: '#FFC10729' }, // this is the same as pending
+  asked_for_amandement: { color: '#FFC107', backgroundColor: '#FFC10729' }, // this is the same as pending
+  ongoing: { color: '#0E8478', backgroundColor: '#0E847829' },
 };
 
 const cardFooterButtonActionLocal = {
@@ -148,7 +150,7 @@ const ProjectCard = ({
                   mb: '0px',
                 }}
               >
-                {translate(title.inquiryStatus)}
+                {translate(`outter_status.${title.inquiryStatus.toUpperCase()}`)}
               </Typography>
             </Box>
           )}

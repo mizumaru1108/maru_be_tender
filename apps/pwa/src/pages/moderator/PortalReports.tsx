@@ -90,7 +90,7 @@ function PortalReports() {
                 barRenderBorderRadius={12}
               />
             </Grid>
-            <Grid item xs={12} md={12} sx={{ heigh: '200px' }}>
+            <Grid item xs={12} md={12} sx={{ height: '200px' }}>
               <BarChart
                 headline={'حسب المنطقة'}
                 data={series1}

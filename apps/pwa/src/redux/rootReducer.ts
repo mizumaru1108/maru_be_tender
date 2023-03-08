@@ -13,6 +13,7 @@ import branchReducer from './slices/branch';
 import proposal from './slices/proposal';
 import supervisorAcceptingForm from './slices/supervisorAcceptingForm';
 import notification from './slices/notification';
+import searching from './slices/searching';
 
 // ----------------------------------------------------------------------
 
@@ -41,6 +42,7 @@ const rootReducer = combineReducers({
   // branch: branchReducer,
   proposal: proposal,
   notification: notification,
+  searching: searching,
   supervisorAcceptingForm: supervisorAcceptingForm,
 });
 

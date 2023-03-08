@@ -63,7 +63,13 @@ export const projectManagerRoute = {
     },
     {
       path: 'searching',
-      element: <Searching />,
+      children: [
+        { path: '', element: <Searching /> },
+        {
+          path: ':id/:actionType',
+          element: <ProjectDetails />,
+        },
+      ],
     },
     {
       path: 'dashboard',

@@ -3,6 +3,22 @@ import { ApexOptions } from 'apexcharts';
 import Chart from 'react-apexcharts';
 import useLocales from '../../hooks/useLocales';
 import { IBarCartProps } from './types';
+import EnLocale from 'apexcharts/dist/locales/en.json';
+import ArLocale from 'apexcharts/dist/locales/ar.json';
+
+interface CustomApexOptions extends ApexOptions {
+  chart?: Partial<ApexOptions['chart']> & {
+    menu?: {
+      width?: number;
+      padding?: {
+        top?: number;
+        right?: number;
+        bottom?: number;
+        left?: number;
+      };
+    };
+  };
+}
 
 export default function BarChart({
   data,
@@ -18,7 +34,7 @@ export default function BarChart({
   barRenderColumnWidth,
   barRenderBorderRadius,
 }: IBarCartProps) {
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
 
   const xAxisDatasTranslate = xAxisDatas?.map((v) => translate(v));
 
@@ -27,11 +43,28 @@ export default function BarChart({
     data: v.data,
   }));
 
-  var options: ApexOptions = {
+  var options: CustomApexOptions = {
     chart: {
+      locales: currentLang.value === 'en' ? [EnLocale] : [ArLocale],
+      defaultLocale: currentLang.value === 'en' ? 'en' : 'ar',
       type: 'bar',
       // height: 400,
       width: !customApexChartOptions && chartBarWidth ? chartBarWidth : '100%',
+      toolbar: {
+        show: true,
+        tools: {
+          download: true,
+        },
+      },
+      menu: {
+        width: 200,
+        padding: {
+          top: 6,
+          right: 6,
+          bottom: 6,
+          left: 6,
+        },
+      },
     },
     plotOptions: barRenderOptions ?? {
       bar: {

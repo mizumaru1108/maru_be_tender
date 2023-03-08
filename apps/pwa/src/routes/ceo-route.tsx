@@ -49,7 +49,13 @@ export const ceoRoute = {
     },
     {
       path: 'searching',
-      children: [{ path: '', element: <Searching /> }],
+      children: [
+        { path: '', element: <Searching /> },
+        {
+          path: ':id/:actionType',
+          element: <ProjectDetails />,
+        },
+      ],
     },
     {
       path: 'dashboard',

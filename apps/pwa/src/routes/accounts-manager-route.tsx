@@ -3,6 +3,7 @@ import DashboardLayout from '../layouts/dashboard';
 import AuthGuard from 'guards/AuthGuard';
 import RoleBasedGuard from 'guards/RoleBasedGuard';
 import { Loadable } from './Loadable';
+import ProjectDetails from 'pages/project-details/ProjectDetails';
 
 const MainManagerPage = Loadable(lazy(() => import('pages/accounts-manager/MainManagerPage')));
 const NewJoinRequestPage = Loadable(lazy(() => import('pages/accounts-manager/new/join-request')));
@@ -34,6 +35,7 @@ const NonClientProfileEdit = Loadable(
 const ProjectOwnerDetails = Loadable(
   lazy(() => import('pages/project-details/ProjectOwnerDetails'))
 );
+const Searching = Loadable(lazy(() => import('pages/searching')));
 
 export const accoutsManagerRoute = {
   path: 'accounts-manager',
@@ -77,6 +79,16 @@ export const accoutsManagerRoute = {
       children: [
         { path: '', element: <NonClientProfile /> },
         { path: 'edit', element: <NonClientProfileEdit /> },
+      ],
+    },
+    {
+      path: 'searching',
+      children: [
+        { path: '', element: <Searching /> },
+        {
+          path: ':id/:actionType',
+          element: <ProjectDetails />,
+        },
       ],
     },
   ],

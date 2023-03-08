@@ -1,21 +1,23 @@
 import { Container } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import CardTable from 'components/card-table/CardTable';
 import { filterInterface, ProjectCardProps } from 'components/card-table/types';
 import Page from 'components/Page';
-import useAuth from 'hooks/useAuth';
+import { previousRequest } from 'queries/Moderator/supportRequest';
 import { useEffect, useState } from 'react';
-import axiosInstance from 'utils/axios';
+import { useQuery } from 'urql';
 import { CardTableSearching } from '../components/card-table';
 import useLocales from '../hooks/useLocales';
-import { useSelector } from 'redux/store';
-import CardSearching from 'components/card-table/searching/CardSearching';
 
 function PreviousSupportRequests() {
   const { translate } = useLocales();
-  const { activeRole } = useAuth();
-  const { sort, filtered } = useSelector((state) => state.searching);
   const [supportRequests, setSupportRequests] = useState<ProjectCardProps[]>([]);
-  const [data, setData] = useState([]);
+
+  const [incoming, fetchIncoming] = useQuery({
+    query: previousRequest,
+  });
+
+  const { data: incomingData, fetching: fetchingIncoming, error: errorIncoming } = incoming;
 
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
@@ -26,41 +28,51 @@ function PreviousSupportRequests() {
     gap: 20,
   }));
 
-  // tender-proposal/list?limit=5&page=1&project_track=mosque
+  const filter: filterInterface = {
+    name: 'filter',
+    options: [
+      {
+        label: 'filter',
+        value: 'a to z',
+      },
+    ],
+  };
 
-  // const getData = async () => {
-  //   try {
-  //     const res = await axiosInstance.get(`tender-proposal/list?limit=5&page=1&${filtered}`, {
-  //       headers: { 'x-hasura-role': activeRole! },
-  //     });
-  //     setData(res.data);
-  //   } catch (error) {
-  //     return error;
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getData();
-  // }, []);
-
-  // useEffect(() => {}, [data]);
-
-  // console.log(data, 'DATA');
+  useEffect(() => {
+    const previousSupport = [];
+    if (incomingData) {
+      const prev = incomingData.proposal.map((item: any) => ({
+        title: {
+          id: item.id,
+          inquiryStatus:
+            item.outter_status.toLowerCase() === 'ongoing'
+              ? 'completed'
+              : item.outter_status.toLowerCase(),
+        },
+        content: {
+          projectName: item.project_name,
+          employee: item.user.employee_name,
+          sentSection: item.state,
+        },
+        footer: {
+          createdAt: item.created_at,
+        },
+      })) as ProjectCardProps[];
+      previousSupport.push(...prev);
+      setSupportRequests(previousSupport);
+    }
+  }, [incomingData]);
 
   return (
     // <Page title="Searching Page">
     <Page title={translate('pages.common.search')}>
       <Container>
         <ContentStyle>
-          {/* <CardTableSearching
+          <CardTableSearching
             data={supportRequests} // For testing, later on we will send the query to it
             title="نتيجة البحث"
             // dateFilter={true}
             // taps={['كل المشاريع', 'مشاريع منتهية', 'مشاريع معلقة']}
-            cardFooterButtonAction="show-project"
-          /> */}
-          <CardSearching
-            title={translate('pages.common.search')}
             cardFooterButtonAction="show-project"
           />
         </ContentStyle>

@@ -39,6 +39,7 @@ const NonClientProfileEdit = Loadable(
 const SectionTracks = Loadable(
   lazy(() => import('sections/admin/track-budget/section-track/SectionTracks'))
 );
+const Searching = Loadable(lazy(() => import('pages/searching')));
 
 export const adminRoute = {
   path: 'admin',
@@ -56,6 +57,16 @@ export const adminRoute = {
       children: [
         { path: '', element: <NonClientProfile /> },
         { path: 'edit', element: <NonClientProfileEdit /> },
+      ],
+    },
+    {
+      path: 'searching',
+      children: [
+        { path: '', element: <Searching /> },
+        {
+          path: ':id/:actionType',
+          element: <ProjectDetails />,
+        },
       ],
     },
     {
