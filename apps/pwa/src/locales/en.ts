@@ -1424,6 +1424,12 @@ const en = {
       sub_headline:
         'Write the appropriate notes to inform the project supervisor of the matters required of him',
     },
+    tender_consultant: {
+      page_name: 'Consultant - Amandment Request',
+      headline: 'Submit an amendment request to the project supervisor',
+      sub_headline:
+        'Write the appropriate notes to inform the project supervisor of the matters required of him',
+    },
     tender_project_supervisor: {
       page_name: 'Project Supervisor - Amandment Request',
       headline: 'Submit an Amandment Request to the Moderator',
@@ -1573,6 +1579,7 @@ const en = {
   project_attachment_file: 'Project attachment file',
   add_action: 'Add action',
   upload_a_new_file: 'Upload a new file',
+  upload_select_drop: 'Select or drop your file here',
   state: 'State',
   status: 'Status',
   project_owner_details: {
@@ -1651,6 +1658,7 @@ const en = {
   },
   copy_of_the_bank_account_card: 'A copy of the bank account card',
   message_is_empty: 'Message is empty',
+  message_sent_failed: 'Message sent failed',
   you_can_create_new_message_for_new_conversation:
     'You can create new message for new conversation',
   page_not_found: 'Sorry, page not found',

@@ -82,9 +82,10 @@ export default function NewMessageModalForm({
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedTrack(event.target.value);
 
-    if (event.target.value !== '') {
-      findUserTracks(event.target.value);
-    }
+    // if (event.target.value !== '') {
+    //   findUserTracks(event.target.value);
+    //   setSearchValue('');
+    // }
   };
 
   const getAllProposalTracks = async () => {
@@ -174,10 +175,18 @@ export default function NewMessageModalForm({
         };
       }
     }
+    if (searchValue !== '') {
+      params = {
+        ...params,
+        employee_name: searchValue,
+      };
+    }
 
     setLoadingUser(true);
     const { data } = await axiosInstance.get('/tender-user/find-users', {
-      params,
+      params: {
+        ...params,
+      },
       headers: { 'x-hasura-role': activeRole! },
     });
 
@@ -198,6 +207,7 @@ export default function NewMessageModalForm({
     setLoadingUser(true);
     const { data } = await axiosInstance.get('/tender-user/find-users', {
       params: {
+        employee_path: selectedTrack,
         hide_external: 1,
         limit: 6,
       },
@@ -234,11 +244,16 @@ export default function NewMessageModalForm({
         limit: 6,
       };
     }
+    if (searchValue !== '') {
+      params = {
+        ...params,
+        employee_name: searchValue,
+      };
+    }
     setLoadingUser(true);
     const { data } = await axiosInstance.get('/tender-user/find-users', {
       params: {
         ...params,
-        employee_name: searchValue,
       },
       headers: { 'x-hasura-role': activeRole! },
     });
@@ -292,16 +307,16 @@ export default function NewMessageModalForm({
 
   useEffect(() => {
     window.scrollTo(0, 0);
-
-    [
-      'tender_project_manager',
-      'tender_consultant',
-      'tender_ceo',
-      'tender_finance',
-      'tender_cashier',
-    ].includes(activeRole)
-      ? findUserInternal()
-      : getAllProposalTracks();
+    getAllProposalTracks();
+    // [
+    //   'tender_project_manager',
+    //   'tender_consultant',
+    //   'tender_ceo',
+    //   'tender_finance',
+    //   'tender_cashier',
+    // ].includes(activeRole)
+    //   ? findUserInternal()
+    //   : getAllProposalTracks();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -337,52 +352,114 @@ export default function NewMessageModalForm({
           </>
         ) : (
           <>
-            {/* <Typography>{translate('new_message_modal.form.label.track_type')}</Typography>
-            <TextField
-              select
-              fullWidth
-              size="small"
-              label={translate('content.messages.text_field.placeholder_list_tracks')}
-              value={selectedTrack}
-              onChange={handleChange}
-            >
-              {listTrack ? (
-                listTrack.map((option, index) => (
-                  <MenuItem key={index} value={option.id}>
-                    {translate(option.id)}
-                  </MenuItem>
-                ))
-              ) : (
-                <Typography variant="caption">
-                  {translate('content.messages.text_field.placeholder_list_tracks')}
-                </Typography>
-              )}
-            </TextField> */}
-            <Typography>{translate('new_message_modal.form.label.search_employee')}</Typography>
-            <TextField
-              autoFocus
-              placeholder="ex. Mohammad Zayin"
-              size="small"
-              onChange={handleChangeSearch}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="start">
-                    <Iconify
-                      icon="eva:search-fill"
-                      sx={{ color: 'text.disabled', width: 20, height: 20 }}
-                    />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <LoadingButton
-              variant="contained"
-              sx={{ width: { md: 200, xs: '100%' } }}
-              onClick={findUserByName}
-              loading={loadingUser}
-            >
-              <Typography>{translate('new_message_modal.form.label.search_employee')}</Typography>
-            </LoadingButton>
+            {corespondence === 'internal' && (
+              <>
+                <Typography>{translate('new_message_modal.form.label.track_type')}</Typography>
+                <TextField
+                  select
+                  fullWidth
+                  size="small"
+                  label={translate('content.messages.text_field.placeholder_list_tracks')}
+                  value={selectedTrack}
+                  onChange={handleChange}
+                >
+                  {listTrack ? (
+                    listTrack.map((option, index) => (
+                      <MenuItem key={index} value={option.id}>
+                        {translate(option.id)}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <Typography variant="caption">
+                      {translate('content.messages.text_field.placeholder_list_tracks')}
+                    </Typography>
+                  )}
+                </TextField>
+              </>
+            )}
+            {corespondence === 'external' && (
+              <>
+                <Typography>{translate('new_message_modal.form.label.search_employee')}</Typography>
+                <TextField
+                  autoFocus
+                  placeholder="ex. Mohammad Zayin"
+                  size="small"
+                  onChange={handleChangeSearch}
+                  // onKeyUp={(e) => {}}
+                  // when press enter do handle findUserByName
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      findUserByName();
+                    }
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="start">
+                        <Iconify
+                          icon="eva:search-fill"
+                          sx={{ color: 'text.disabled', width: 20, height: 20 }}
+                        />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                <LoadingButton
+                  variant="contained"
+                  sx={{ width: { md: 200, xs: '100%' } }}
+                  onClick={findUserByName}
+                  // disabled={corespondence === 'internal' ? !selectedTrack : false}
+                  loading={loadingUser}
+                >
+                  <Typography>
+                    {translate('new_message_modal.form.label.search_employee')}
+                  </Typography>
+                </LoadingButton>
+              </>
+            )}
+            {corespondence === 'internal' && selectedTrack && (
+              <>
+                <Typography>{translate('new_message_modal.form.label.search_employee')}</Typography>
+                <TextField
+                  autoFocus
+                  placeholder="ex. Mohammad Zayin"
+                  size="small"
+                  onChange={handleChangeSearch}
+                  value={searchValue}
+                  // onKeyUp={(e) => {}}
+                  // when press enter do handle findUserByName
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      if (!searchValue) {
+                        findUserInternal();
+                      } else {
+                        findUserByName();
+                      }
+                    }
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="start">
+                        <Iconify
+                          icon="eva:search-fill"
+                          sx={{ color: 'text.disabled', width: 20, height: 20 }}
+                        />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                <LoadingButton
+                  variant="contained"
+                  sx={{ width: { md: 200, xs: '100%' } }}
+                  onClick={findUserByName}
+                  disabled={corespondence === 'internal' ? !selectedTrack : false}
+                  loading={loadingUser}
+                >
+                  <Typography>
+                    {translate('new_message_modal.form.label.search_employee')}
+                  </Typography>
+                </LoadingButton>
+              </>
+            )}
           </>
         )}
         <Typography sx={{ pt: 1 }}>
@@ -404,7 +481,7 @@ export default function NewMessageModalForm({
           <Box>
             <Grid container spacing={2} sx={{ pb: 1 }}>
               {listUser
-                .filter((el) => el.employee_name.toLowerCase().includes(searchValue.toLowerCase()))
+                // .filter((el) => el.employee_name.toLowerCase().includes(searchValue.toLowerCase()))
                 .map((v, i) => (
                   <Grid item xs={6} key={i}>
                     <Stack
@@ -461,7 +538,7 @@ export default function NewMessageModalForm({
                     </Stack>
                   </Grid>
                 ))}
-              {!listUser.filter((el) =>
+              {/* {!listUser.filter((el) =>
                 el.employee_name.toLowerCase().includes(searchValue.toLowerCase())
               ).length && (
                 <Label
@@ -471,11 +548,48 @@ export default function NewMessageModalForm({
                 >
                   {translate('content.messages.empty_user_data')}
                 </Label>
+              )} */}
+              {totalDataUser === 0 && (
+                <Label
+                  color="warning"
+                  sx={{ mx: 2, mt: 2, mb: 1, py: 2, px: 1.5, fontStyle: 'italic' }}
+                  startIcon={<Iconify icon={'eva:info-outline'} width={16} height={16} />}
+                >
+                  {translate('content.messages.empty_user_data')}
+                </Label>
               )}
             </Grid>
-            {listUser.filter((el) =>
+            {/* {listUser.filter((el) =>
               el.employee_name.toLowerCase().includes(searchValue.toLowerCase())
             ).length ? (
+              <Stack
+                direction="row"
+                spacing={1.5}
+                justifyContent="flex-start"
+                sx={{ mt: 3, mb: 1 }}
+              >
+                {Array.from(Array(pageNumber).keys()).map((elem, index) => (
+                  <Button
+                    key={index}
+                    size="small"
+                    sx={{
+                      color: index === page - 1 ? '#fff' : 'rgba(147, 163, 176, 0.8)',
+                      backgroundColor:
+                        index === page - 1 ? 'background.paper' : 'rgba(147, 163, 176, 0.16)',
+                      '&:hover': {
+                        color: theme.palette.common.white,
+                      },
+                      minWidth: 30,
+                      borderRadius: 0.25,
+                    }}
+                    onClick={() => paginateUserList(elem + 1)}
+                  >
+                    {index + 1}
+                  </Button>
+                ))}
+              </Stack>
+            ) : null} */}
+            {totalDataUser > 0 ? (
               <Stack
                 direction="row"
                 spacing={1.5}

@@ -13,7 +13,10 @@ function IncomingConultationRequests() {
     variables: {
       limit: 4,
       order_by: { updated_at: 'desc' },
-      where: { inner_status: { _eq: 'ACCEPTED_AND_NEED_CONSULTANT' } },
+      where: {
+        inner_status: { _eq: 'ACCEPTED_AND_NEED_CONSULTANT' },
+        outter_status: { _nin: ['ASKED_FOR_AMANDEMENT', 'ON_REVISION'] },
+      },
     },
   });
   const { data, fetching, error } = result;

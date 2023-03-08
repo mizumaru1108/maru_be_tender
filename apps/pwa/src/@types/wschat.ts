@@ -1,3 +1,5 @@
+import { FileProp } from '../components/upload';
+
 export type ChatState = {
   conversations: Conversation[];
   isEstablishingConnection: boolean;
@@ -19,11 +21,7 @@ export type TextMessage = {
   content?: string | null;
   content_title?: string | null;
   content_type_id?: string;
-  attachment?: {
-    size: number;
-    url: string;
-    type: string;
-  } | null;
+  attachment?: FileProp | null;
   created_at?: Date | string;
   updated_at?: Date | string;
   owner_id?: string | null;
@@ -44,11 +42,7 @@ export type ImageMessage = {
   content?: string | null;
   content_title?: string | null;
   content_type_id?: string | null;
-  attachment?: {
-    size: number;
-    url: string;
-    type: string;
-  } | null;
+  attachment?: FileProp | null;
   created_at?: Date | string;
   updated_at?: Date | string;
   owner_id?: string | null;

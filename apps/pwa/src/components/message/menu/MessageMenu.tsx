@@ -92,6 +92,8 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
     }
   }, [conversations, newConversation, activeConversationId, dispatch]);
 
+  // console.log('valueTabItem', valueTabItem);
+
   return (
     <Stack display="flex" spacing={3} sx={{ margin: 2.5 }}>
       <MessageMenuHeader onClickFilter={() => setOpen(true)} />
