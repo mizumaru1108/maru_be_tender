@@ -176,10 +176,47 @@ export type CardTableSearchingProps = {
     | 'draft'; // Without the action bar at the end of the page, but with the ability to continue or remove the project.
 };
 
+export type CardSearchingProps = {
+  title: string;
+  limitShowCard?: number;
+  data?: ProjectCardProps[];
+  pagination?: boolean;
+  cardFooterButtonAction:
+    | 'show-project' // Without the action bar at the end of the page.
+    | 'show-details' // With the action bar at the end if the page.
+    | 'completing-exchange-permission' // With the action bar at the end if the page.
+    | 'draft'; // Without the action bar at the end of the page, but with the ability to continue or remove the project.
+};
+
+export type NewCardTableProps = {
+  title: string;
+  limitShowCard?: number;
+  data?: ProjectCardProps[];
+  pagination?: boolean;
+  url: string;
+  headersProps: { [key: string]: string };
+  cardFooterButtonAction:
+    | 'show-project' // Without the action bar at the end of the page.
+    | 'show-details' // With the action bar at the end if the page.
+    | 'completing-exchange-permission' // With the action bar at the end if the page.
+    | 'draft'; // Without the action bar at the end of the page, but with the ability to continue or remove the project.
+};
+
 export type SearchingProposal = {
   project: string;
   theYear: string;
   detailReport: string;
   geoRange: string;
   theField: string;
+};
+
+export type FilteredValues = {
+  data?: any;
+  hasNextPage?: boolean;
+  hasPrevPage?: boolean;
+  limit?: number;
+  message?: string;
+  nextPage?: number;
+  prevPage?: number;
+  total: number;
 };

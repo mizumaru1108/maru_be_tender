@@ -1,25 +1,27 @@
 import { Box, Button, Grid, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { CardSearchingProps, FilteredValues } from '../types';
+import { NewCardTableProps, FilteredValues } from './types';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { useQuery } from 'urql';
 import { useTheme } from '@mui/material/styles';
-import ProjectTableBE from '../ProjectCardBE';
-import CardTableNoData from '../CardTableNoData';
-import LoadingPage from '../LoadingPage';
+import ProjectTableBE from './ProjectCardBE';
+import CardTableNoData from './CardTableNoData';
+import LoadingPage from './LoadingPage';
 import useLocales from 'hooks/useLocales';
 import axiosInstance from 'utils/axios';
 import useAuth from 'hooks/useAuth';
 import { useSelector } from 'redux/store';
-import ProjectCard from '../ProjectCard';
+import ProjectCard from './ProjectCard';
 
-function CardSearching({
+function NewCardTable({
   title,
   limitShowCard,
   pagination = true,
   cardFooterButtonAction,
-}: CardSearchingProps) {
+  url,
+  headersProps,
+}: NewCardTableProps) {
   const { activeRole } = useAuth();
   const [page, setPage] = useState(1);
   const { translate } = useLocales();
@@ -42,12 +44,9 @@ function CardSearching({
   const getData = async () => {
     try {
       setLoading(true);
-      const res = await axiosInstance.get(
-        `tender-proposal/list?limit=${params.limit}&page=${page}&sort=${sort}&${filtered}`,
-        {
-          headers: { 'x-hasura-role': activeRole! },
-        }
-      );
+      const res = await axiosInstance.get(url, {
+        headers: headersProps,
+      });
       if (res.data.statusCode === 200) {
         setData(res.data);
       }
@@ -59,7 +58,7 @@ function CardSearching({
   };
 
   // It is used for the number of the pages that are rendered
-  const pagesNumber = Math.ceil(data.total / params.limit);
+  const pagesNumber = Math.ceil(data?.total / params.limit);
 
   // The data showed in a single page
   const dataSinglePage = data?.data.slice(
@@ -85,8 +84,6 @@ function CardSearching({
 
   useEffect(() => {}, [data]);
 
-  // console.log(data, 'DATA');
-
   return (
     <Grid container rowSpacing={3} columnSpacing={2}>
       <Grid item md={12} xs={12}>
@@ -105,13 +102,12 @@ function CardSearching({
                 sentSection: item.state,
                 employee: item.user.employee_name,
                 createdAtClient: new Date(item.created_at),
-                projectStatus: item.outter_status,
               }}
               footer={{
                 createdAt: new Date(item.updated_at),
               }}
               cardFooterButtonAction={cardFooterButtonAction}
-              // destination="current-project"
+              destination="current-project"
             />
           </Grid>
         ))
@@ -170,4 +166,4 @@ function CardSearching({
   );
 }
 
-export default CardSearching;
+export default NewCardTable;

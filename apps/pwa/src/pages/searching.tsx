@@ -26,27 +26,6 @@ function PreviousSupportRequests() {
     gap: 20,
   }));
 
-  // tender-proposal/list?limit=5&page=1&project_track=mosque
-
-  // const getData = async () => {
-  //   try {
-  //     const res = await axiosInstance.get(`tender-proposal/list?limit=5&page=1&${filtered}`, {
-  //       headers: { 'x-hasura-role': activeRole! },
-  //     });
-  //     setData(res.data);
-  //   } catch (error) {
-  //     return error;
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getData();
-  // }, []);
-
-  // useEffect(() => {}, [data]);
-
-  // console.log(data, 'DATA');
-
   return (
     // <Page title="Searching Page">
     <Page title={translate('pages.common.search')}>

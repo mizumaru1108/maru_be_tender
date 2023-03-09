@@ -104,7 +104,7 @@ function EmployeeFollowUpsPage() {
 
   const followUpsPartner = proposal.follow_ups.filter((items) => {
     for (const item of items.user.roles) {
-      return item.role !== 'CLIENT' && items.employee_only === false;
+      return item.role && items.employee_only === false;
     }
     return false;
   });

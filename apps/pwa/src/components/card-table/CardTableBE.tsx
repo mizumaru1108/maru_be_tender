@@ -89,8 +89,6 @@ function CardTableBE({
     window.scrollTo(0, 0);
   }, [params, page, data]);
 
-  console.log(data, 'DATA MODERATOR');
-
   return (
     <Grid container rowSpacing={3} columnSpacing={2}>
       <FilterModalBE

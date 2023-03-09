@@ -132,6 +132,10 @@ export const ceoRoute = {
               path: 'owner/:submiterId',
               element: <ProjectOwnerDetails />,
             },
+            {
+              path: ':id/:actionType',
+              element: <ProjectDetails />,
+            },
           ],
         },
         // { path: 'client-list', element: <CeoClientListPage /> },

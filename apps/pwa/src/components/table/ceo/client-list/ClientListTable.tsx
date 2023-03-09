@@ -25,6 +25,8 @@ import ClientListRow from './ClientListRow';
 import { allClientData } from 'queries/ceo/getAllClientsData';
 import TableSkeleton from '../../TableSkeleton';
 import Iconify from 'components/Iconify';
+import axiosInstance from 'utils/axios';
+import useAuth from 'hooks/useAuth';
 
 const TABLE_HEAD = [
   { id: 'entity', label: 'client_list_headercell.client_name' },
@@ -71,22 +73,25 @@ export default function ClientListTable() {
   } = useTable();
 
   const { translate } = useLocales();
+  const { activeRole } = useAuth();
   const [sortOrder, setSortOrder] = useState<any>({ employee_name: 'asc' });
 
-  const [{ data, fetching, error }, mutate] = useQuery({
-    query: allClientData,
-    variables: {
-      limit: rowsPerPage,
-      offset: page * rowsPerPage,
-      order_by: sortOrder,
-    },
-  });
+  // const [{ data, fetching, error }, mutate] = useQuery({
+  //   query: allClientData,
+  //   variables: {
+  //     limit: rowsPerPage,
+  //     offset: page * rowsPerPage,
+  //     order_by: sortOrder,
+  //   },
+  // });
 
   const [tableData, setTableData] = useState<Array<ClientsList>>([]);
 
   const [filterName, setFilterName] = useState('');
 
   const [filterRole, setFilterRole] = useState('all');
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } = useTabs('all');
 
@@ -125,6 +130,39 @@ export default function ClientListTable() {
     },
   ];
 
+  const getDataClient = async () => {
+    let currentPage = page + 1;
+    try {
+      setIsLoading(true);
+      const response = await axiosInstance.get(
+        // `tender/client/proposal/list?page=1&limit=5`,
+        `tender/client/proposal/list?page=${currentPage}&limit=${rowsPerPage}`,
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
+      if (response.data.statusCode === 200) {
+        setTableData(
+          response.data.data.map((item: any, index: any) => ({
+            id: item.id,
+            client_name: item.employee_name,
+            email: item.email,
+            number_phone: item.mobile_number,
+            governorate: item.governorate,
+            user_id: item.id,
+            total_proposal: item.proposal_count,
+          }))
+        );
+        setTotal(response.data.total as number);
+        setIsLoading(false);
+      }
+      return response.data;
+    } catch (error) {
+      setIsLoading(false);
+      return <>...Opss, something went wrong</>;
+    }
+  };
+
   const handleFilterName = (filterName: string) => {
     setFilterName(filterName);
     setPage(0);
@@ -161,32 +199,32 @@ export default function ClientListTable() {
 
       setSortOrder(newOrder);
     }
-    // const newOrder = { [key]: order };
-    // setSortOrder(newOrder);
   };
 
-  useEffect(() => {
-    if (data?.user) {
-      setTableData(
-        data.user.map((item: any, index: any) => ({
-          id: item.id,
-          client_name: item.employee_name,
-          email: item.email,
-          number_phone: item.mobile_number,
-          governorate: item?.client_data?.governorate,
-          user_id: item.id,
-          total_proposal: item.proposals_aggregate.aggregate.count,
-        }))
-      );
-      setTotal(data.total.aggregate.count as number);
-    }
-  }, [data, setTotal]);
+  // useEffect(() => {
+  //   if (datas?.data) {
+  //     setTableData(
+  //       datas.data.map((item: any, index: any) => ({
+  //         id: item.id,
+  //         client_name: item.employee_name,
+  //         email: item.email,
+  //         number_phone: item.mobile_number,
+  //         governorate: item.governorate,
+  //         user_id: item.id,
+  //         total_proposal: item.proposal_count,
+  //       }))
+  //     );
+  //     setTotal(datas.total as number);
+  //   }
+  // }, [datas, setTotal]);
 
   useEffect(() => {
-    mutate();
-  }, [mutate, page, rowsPerPage, orderBy]);
+    getDataClient();
+    // mutate();
+    // eslint-disable-next-line
+  }, [page, rowsPerPage, orderBy]);
 
-  if (error) return <>...Opss, something went wrong</>;
+  // if (error) return <>...Opss, something went wrong</>;
 
   return (
     <Box>
@@ -251,7 +289,7 @@ export default function ClientListTable() {
               />
 
               <TableBody>
-                {fetching
+                {isLoading
                   ? [...Array(rowsPerPage)].map((item, index) => <TableSkeleton key={index} />)
                   : dataFiltered.map((row) => (
                       <ClientListRow

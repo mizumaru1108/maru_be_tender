@@ -10,9 +10,13 @@ import { ProjectOwnerDetails } from '../../../@types/project-details';
 import moment from 'moment';
 import { getSummaryProjectOwner } from '../../../queries/client/getSummaryProjectOwner';
 import { useQuery } from 'urql';
+import axiosInstance from 'utils/axios';
+import useAuth from 'hooks/useAuth';
+import NewCardTable from 'components/card-table/NewCardTable';
 
 function ProjectOwnerDetailsMainPage() {
   const { currentLang, translate } = useLocales();
+  const { activeRole } = useAuth();
   const navigate = useNavigate();
   const { submiterId } = useParams();
   const location = useLocation();
@@ -20,6 +24,7 @@ function ProjectOwnerDetailsMainPage() {
   // const destination = url[3] === 'current-project' ? url[3] : 'current-project';
   const destination = 'current-project';
 
+  // const [isLoading, setIsLoading] = React.useState(false);
   const [userInfo, setUserInfo] = React.useState<ProjectOwnerDetails>({
     entity: 'maru',
     // email: 'maru@gmail.com',
@@ -35,6 +40,32 @@ function ProjectOwnerDetailsMainPage() {
     headquarters: 'Jakarta',
   });
 
+  const DATA_URL = `tender/client/proposals?user_id=${submiterId}`;
+
+  const HEADERS = { 'x-hasura-role': activeRole! };
+
+  // const getAllProposalByClient = async () => {
+  //   try {
+  //     setIsLoading(true);
+  //     const response = await axiosInstance.get(
+  //       // `tender/client/proposal/list?page=1&limit=5`,
+  //       `tender/client/proposals?user_id=${submiterId}`,
+  //       {
+  //         headers: { 'x-hasura-role': activeRole! },
+  //       }
+  //     );
+  //     if (response.data.statusCode === 200) {
+  //       console.log(response.data);
+
+  //       setIsLoading(false);
+  //     }
+  //     return response.data;
+  //   } catch (error) {
+  //     setIsLoading(false);
+  //     throw error;
+  //   }
+  // };
+
   const [result, _] = useQuery({
     query: getSummaryProjectOwner,
     variables: { id: submiterId },
@@ -43,10 +74,12 @@ function ProjectOwnerDetailsMainPage() {
   const { fetching, data, error } = result;
 
   React.useEffect(() => {
+    // getAllProposalByClient();
     if (data) {
       // console.log('data', data.user_by_pk.client_data);
       setUserInfo(data.user_by_pk.client_data);
     }
+    // eslint-disable-next-line
   }, [data, submiterId]);
 
   if (fetching) return <>Loading ....</>;
@@ -83,7 +116,7 @@ function ProjectOwnerDetailsMainPage() {
       </Stack>
       <SummaryClientInfo dataClient={userInfo} />
       <Divider sx={{ marginTop: '30px' }} />
-      <CardTableBE
+      {/* <CardTableBE
         resource={getOwnerProposals}
         title={translate('project_owner_details.table_title') + userInfo.entity}
         cardFooterButtonAction="show-project"
@@ -93,6 +126,12 @@ function ProjectOwnerDetailsMainPage() {
           submitter_user_id: { submitter_user_id: { _eq: submiterId } },
           // outter_status: { outter_status: { _neq: 'ONGOING' } },
         }}
+      /> */}
+      <NewCardTable
+        title={translate('project_owner_details.table_title') + userInfo.entity}
+        cardFooterButtonAction="show-project"
+        url={DATA_URL}
+        headersProps={HEADERS}
       />
       {/* <ActionTap /> */}
       {/* <FloatinActonBar /> */}

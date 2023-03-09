@@ -132,9 +132,14 @@ export default function Searchbar() {
         }
         return false;
       });
+      const joinFilter = newFilters.join('&');
+      if (text) {
+        dispatch(setFiltered(joinFilter));
+      } else {
+        dispatch(setFiltered(null));
+      }
       dispatch(setSort(sortBy));
     }
-    // console.log({ project_name, client_name, project_status, track_name, sort });
   };
 
   const handleSearch = () => {
@@ -185,9 +190,6 @@ export default function Searchbar() {
     }
     dispatch(setSort(sortBy));
   };
-
-  // console.log('FILTER REDUX', filtered);
-  // console.log({ sort });
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSortBy((event.target as HTMLInputElement).value);
