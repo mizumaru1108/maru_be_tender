@@ -311,6 +311,13 @@ export class TenderClientRepository {
         where: {
           ...query,
         },
+        include: {
+          user: {
+            select: {
+              employee_name: true,
+            },
+          },
+        },
         skip: offset,
         take: limit,
         orderBy: order_by,
