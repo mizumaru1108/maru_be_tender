@@ -34,8 +34,7 @@ cache:
     - if: $CI_MERGE_REQUEST_IID
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
-# FIXME: re-enable when sonarqube.tmra.io DB migration is fixed
-.sonarqube-check:
+sonarqube-check:
   stage: build
   image:
     name: sonarsource/sonar-scanner-cli:latest
