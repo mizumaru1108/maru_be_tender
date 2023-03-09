@@ -25,7 +25,8 @@ cache:
 
 # Semgrep - https://www.notion.so/hendyirawan/How-To-Add-Semgrep-To-A-GitLab-Project-0c98345d99c24d64876eb53ae6ed27e9
 # Hendy's note: disable Semgrep temporarily due to js dangerouslyset bug
-semgrep:
+# FIXME: re-enable when semgrep is fixed
+.semgrep:
   image: returntocorp/semgrep-agent:v1
   script: semgrep-agent
   variables: {}
@@ -33,7 +34,8 @@ semgrep:
     - if: $CI_MERGE_REQUEST_IID
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
-sonarqube-check:
+# FIXME: re-enable when sonarqube.tmra.io DB migration is fixed
+.sonarqube-check:
   stage: build
   image:
     name: sonarsource/sonar-scanner-cli:latest

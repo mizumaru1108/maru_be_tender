@@ -2,7 +2,7 @@
 
 `force-build-test`
 
-.
+..
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## 1.Install
@@ -46,7 +46,7 @@ Your app is ready to be deployed.
 
 First, you **must** commit and push to `main` branch.
 
-To deploy to `dev` namespace in our Kubernetes cluster:  ( https://app-dev.tmra.io/ )
+To deploy to `dev` namespace in our Kubernetes cluster: ( https://app-dev.tmra.io/ )
 
 ```bash
 yarn push:dev
