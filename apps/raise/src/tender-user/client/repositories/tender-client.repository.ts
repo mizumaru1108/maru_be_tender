@@ -307,6 +307,7 @@ export class TenderClientRepository {
     }
 
     try {
+      this.logger.log('info', 'finding porposal');
       const response = await this.prismaService.proposal.findMany({
         where: {
           ...query,
