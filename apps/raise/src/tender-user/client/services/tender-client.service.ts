@@ -526,6 +526,7 @@ export class TenderClientService {
             employee_name: res.employee_name,
             mobile_number: res.mobile_number,
             email: res.email,
+            governorate: res.governorate,
             proposal_count: Number(res.proposal_count),
           };
         }),

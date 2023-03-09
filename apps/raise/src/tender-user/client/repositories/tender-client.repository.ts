@@ -355,7 +355,7 @@ export class TenderClientRepository {
 
     try {
       const response: any = await this.prismaService.$queryRaw`
-      SELECT "user".id, "user".employee_name, "user".mobile_number, "user".email, COUNT(proposal.id) AS proposal_count, COUNT(*) OVER() AS total_count
+      SELECT "user".id, "user".employee_name, "user".mobile_number, "user".email, client_data.governorate, COUNT(proposal.id) AS proposal_count, COUNT(*) OVER() AS total_count
       FROM client_data
       JOIN "user" ON client_data.user_id = "user".id
       LEFT JOIN proposal ON proposal.submitter_user_id = client_data.user_id AND proposal.step = 'ZERO'
