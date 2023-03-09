@@ -17,7 +17,6 @@ import { useSnackbar } from 'notistack';
 // ----------------------------------------------------------------------
 
 type FormValuesProps = {
-  old_password: string;
   new_password: string;
 };
 
@@ -29,24 +28,24 @@ export default function ForgotPasswordForm() {
   const { enqueueSnackbar } = useSnackbar();
 
   const ResetPasswordSchema = Yup.object().shape({
-    // old_password: Yup.string().required(translate('errors.reset_password.password.old_required')),
     new_password: Yup.string().required(translate('errors.reset_password.password.new_required')),
   });
 
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(ResetPasswordSchema),
-    defaultValues: { old_password: '', new_password: '' },
+    defaultValues: { new_password: '' },
   });
 
   const {
     handleSubmit,
     formState: { isSubmitting },
+    reset,
+    setError,
   } = methods;
 
   const handleOnSubmit = async (formData: FormValuesProps) => {
     const payload = {
       changePasswordId: params.id,
-      // oldPassword: formData.old_password,
       newPassword: formData.new_password,
     };
 
@@ -81,19 +80,15 @@ export default function ForgotPasswordForm() {
         });
       }
 
-      navigate('/auth/login');
+      // setError('new_password', { type: 'focus' }, { shouldFocus: true });
+
+      reset({ new_password: '' });
     }
   };
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(handleOnSubmit)}>
       <Stack spacing={3} sx={{ mb: 1 }}>
-        {/* <RHFTextField
-          name="old_password"
-          label={translate('old_password_label')}
-          placeholder={translate('placeholder_reset_password')}
-          size="small"
-        /> */}
         <RHFTextField
           name="new_password"
           label={translate('new_password_label')}

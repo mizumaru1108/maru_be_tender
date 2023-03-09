@@ -23,6 +23,7 @@ function ExchangePermission() {
       },
     },
   });
+
   const { data, fetching, error } = result;
   if (fetching) {
     return (

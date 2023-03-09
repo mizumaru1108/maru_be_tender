@@ -30,17 +30,17 @@ export default function ForgotPassword() {
   const { translate } = useLocales();
 
   return (
-    <Page title={translate('pages.auth.reset_password')}>
+    <Page title={translate('pages.auth.forgot_password')}>
       <LogoOnlyLayout />
 
       <Container>
         <ContentStyle sx={{ textAlign: 'center', px: 4 }}>
           <Typography variant="h3" paragraph>
-            {translate('pages.auth.reset_password')}
+            {translate('pages.auth.forgot_password')}
           </Typography>
 
           <Typography sx={{ color: 'text.secondary', mb: 5 }}>
-            {translate('reset_password_details')}
+            {translate('reset_password_details_2')}
           </Typography>
 
           <ForgotPasswordForm />

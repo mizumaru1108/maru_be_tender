@@ -65,6 +65,8 @@ const en = {
       login: 'Login Page',
       register: 'Register Page',
       new_password: 'New Password',
+      forgot_password: 'Forgot Password',
+      before_date_warning: 'Data only available before current date',
       reset_password: 'Reset Password',
       verify_code: 'Verify Code',
       email: 'Email address',
@@ -584,6 +586,8 @@ const en = {
     'Please enter the email address associated with your account and We will email you a link to reset your password.',
   reset_password_details:
     'Please enter old and new password for your account associated with this application',
+  reset_password_details_2:
+    'Please enter new password for your account associated with this application',
   login: 'Login',
   create_new_account: 'Create a new account',
   the_login_message: 'Please enter your email address to login.',

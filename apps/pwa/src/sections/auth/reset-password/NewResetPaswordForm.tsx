@@ -41,6 +41,7 @@ export default function ResetPasswordForm() {
   const {
     handleSubmit,
     formState: { isSubmitting },
+    reset,
   } = methods;
 
   const handleOnSubmit = async (formData: FormValuesProps) => {
@@ -81,7 +82,10 @@ export default function ResetPasswordForm() {
         });
       }
 
-      navigate('/auth/login');
+      reset({
+        new_password: '',
+        old_password: '',
+      });
     }
   };
 

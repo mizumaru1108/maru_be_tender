@@ -1,4 +1,4 @@
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Button, Container, Typography } from '@mui/material';
@@ -28,6 +28,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 export default function ResetPassword() {
   const { translate } = useLocales();
+  const location = useLocation();
 
   return (
     // <Page title="Reset Password">
@@ -46,7 +47,13 @@ export default function ResetPassword() {
 
           <ResetPasswordForm />
 
-          <Button fullWidth size="large" component={RouterLink} to={PATH_AUTH.login} sx={{ mt: 1 }}>
+          <Button
+            fullWidth
+            size="medium"
+            component={RouterLink}
+            to={PATH_AUTH.login}
+            sx={{ mt: 1 }}
+          >
             {translate('going_back_one_step')}
           </Button>
         </ContentStyle>

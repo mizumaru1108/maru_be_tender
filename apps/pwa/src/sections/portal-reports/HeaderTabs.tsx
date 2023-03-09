@@ -23,9 +23,10 @@ import CardBudgetInfoTracks from './CardBudgetInfoTracks';
 import PartnersInformation from './PartnersInformation';
 import ProjectsInformation from './ProjectsInformation';
 import AchievementEffectiveness from './AchievementEffectiveness';
-// utils
+//
 import axiosInstance from 'utils/axios';
 import useAuth from 'hooks/useAuth';
+import { useSnackbar } from 'notistack';
 // types
 import {
   TabPanelProps,
@@ -76,6 +77,7 @@ export default function HeaderTabs() {
   const { translate } = useLocales();
   const [valueTab, setValueTab] = useState(0);
   const { activeRole } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
 
   //
   const [valueStartDate, setValueStartDate] = useState<Dayjs | null>(null);
@@ -86,7 +88,31 @@ export default function HeaderTabs() {
   };
 
   const handleEndDate = (newValue: Dayjs | null) => {
-    setValueEndDate(newValue);
+    const isSameNow = dayjs().isSame(newValue, 'day');
+    const isAfter = dayjs(newValue).isAfter(dayjs(), 'day');
+    const nowSubDay = dayjs().subtract(1, 'day').endOf('days');
+
+    if (isSameNow) {
+      setValueEndDate(nowSubDay);
+
+      enqueueSnackbar(translate('pages.auth.before_date_warning'), {
+        variant: 'warning',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+    } else {
+      if (isAfter) {
+        setValueEndDate(nowSubDay);
+
+        enqueueSnackbar(translate('pages.auth.before_date_warning'), {
+          variant: 'warning',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+      } else {
+        setValueEndDate(newValue);
+      }
+    }
   };
 
   // Report Data
