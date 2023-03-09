@@ -537,7 +537,9 @@ export default function MessageContent() {
                                       fontSize: theme.spacing(1.35),
                                       fontStyle: 'italic',
                                       color:
-                                        el.messages!.length === index + 1 && sentStatus === 'failed'
+                                        el.group_created.toString() === 'Today' &&
+                                        el.messages!.length === index + 1 &&
+                                        sentStatus === 'failed'
                                           ? 'red'
                                           : theme.palette.grey[500],
                                       display: 'flex',
@@ -548,7 +550,9 @@ export default function MessageContent() {
                                     }}
                                   >
                                     {/* {moment(v.created_at).format('LT')}.{' '} */}
-                                    {el.messages!.length === index + 1 && sentStatus === 'failed'
+                                    {el.group_created.toString() === 'Today' &&
+                                    el.messages!.length === index + 1 &&
+                                    sentStatus === 'failed'
                                       ? translate('message_sent_failed')
                                       : moment(v.created_at).format('LT')}
                                     {/* <Iconify
@@ -562,7 +566,8 @@ export default function MessageContent() {
                                         ml: 0.25,
                                       }}
                                     /> */}
-                                    {el.messages!.length === index + 1 &&
+                                    {el.group_created.toString() === 'Today' &&
+                                    el.messages!.length === index + 1 &&
                                     sentStatus === 'pending' ? (
                                       <Iconify
                                         icon="quill:checkmark"
@@ -575,7 +580,8 @@ export default function MessageContent() {
                                           ml: 0.25,
                                         }}
                                       />
-                                    ) : el.messages!.length === index + 1 &&
+                                    ) : el.group_created.toString() === 'Today' &&
+                                      el.messages!.length === index + 1 &&
                                       sentStatus === 'failed' ? (
                                       <Iconify
                                         icon="mdi:warning-circle-outline"
