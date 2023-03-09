@@ -45,7 +45,7 @@ export const ListItemStyle = styled(ListItemButton, {
   ...(active &&
     depth !== 1 && {
       color: theme.palette.text.primary,
-      backgroundColor: 'transparent',
+      // backgroundColor: 'transparent',
     }),
   // Sub item
   ...(depth && {

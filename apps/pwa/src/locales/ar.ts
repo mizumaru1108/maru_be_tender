@@ -980,6 +980,7 @@ const ar = {
   system_messages: 'رسائل النظام',
   system_configuration: 'إعدادات النظام',
   users_and_permissions: 'المستخدمين والصلاحيات',
+  customization_for_dropdown: 'تخصيص القوائم المنسدلة',
   authority: 'الجهة المشرفة',
   entity_area: 'مجال الجهة',
   regions_project_location: 'المناطق - مكان المشروع',

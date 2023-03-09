@@ -45,7 +45,10 @@ function IncomingFundingRequests() {
               },
             ]}
             baseFilters={{
-              filter1: { inner_status: { _eq: 'ACCEPTED_AND_NEED_CONSULTANT' } },
+              filter1: {
+                inner_status: { _eq: 'ACCEPTED_AND_NEED_CONSULTANT' },
+                outter_status: { _nin: ['ASKED_FOR_AMANDEMENT', 'ON_REVISION'] },
+              },
             }}
             destination={'incoming-funding-requests'}
           />

@@ -976,6 +976,7 @@ const en = {
   system_messages: 'System Messages',
   system_configuration: 'System Configuration',
   users_and_permissions: 'Users and Permissions',
+  customization_for_dropdown: 'Customization for Dropdowns',
   authority: 'Authority',
   entity_area: 'Entity Area',
   regions_project_location: 'Regions Project Location',

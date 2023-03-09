@@ -127,6 +127,7 @@ const ICONS = {
     beneficiaries: getIcon('beneficiaries'),
     portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
+    customization_for_dropdown: getIcon('drop-down-white'),
   },
 };
 
@@ -533,35 +534,72 @@ const navConfig = {
           icon: ICONS.tender_admin.users_and_permissions,
         },
         {
-          title: 'authority',
-          path: PATH_ADMIN.authority,
-          icon: ICONS.tender_admin.authority,
+          title: 'customization_for_dropdown',
+          path: '',
+          icon: ICONS.tender_admin.customization_for_dropdown,
+          children: [
+            {
+              title: 'authority',
+              path: PATH_ADMIN.authority,
+              icon: ICONS.tender_admin.authority,
+            },
+            {
+              title: 'entity_area',
+              path: PATH_ADMIN.entity_area,
+              icon: ICONS.tender_admin.entity_area,
+            },
+            {
+              title: 'regions_project_location',
+              path: PATH_ADMIN.regions_project_location,
+              icon: ICONS.tender_admin.regions_project_location,
+            },
+            {
+              title: 'entity_classification',
+              path: PATH_ADMIN.entity_classification,
+              icon: ICONS.tender_admin.entity_classification,
+            },
+            {
+              title: 'bank_name',
+              path: PATH_ADMIN.bank_name,
+              icon: ICONS.tender_admin.bank_name,
+            },
+            {
+              title: 'beneficiaries',
+              path: PATH_ADMIN.beneficiaries,
+              icon: ICONS.tender_admin.beneficiaries,
+            },
+          ],
         },
-        {
-          title: 'entity_area',
-          path: PATH_ADMIN.entity_area,
-          icon: ICONS.tender_admin.entity_area,
-        },
-        {
-          title: 'regions_project_location',
-          path: PATH_ADMIN.regions_project_location,
-          icon: ICONS.tender_admin.regions_project_location,
-        },
-        {
-          title: 'entity_classification',
-          path: PATH_ADMIN.entity_classification,
-          icon: ICONS.tender_admin.entity_classification,
-        },
-        {
-          title: 'bank_name',
-          path: PATH_ADMIN.bank_name,
-          icon: ICONS.tender_admin.bank_name,
-        },
-        {
-          title: 'beneficiaries',
-          path: PATH_ADMIN.beneficiaries,
-          icon: ICONS.tender_admin.beneficiaries,
-        },
+        // {
+        //   title: 'authority',
+        //   path: PATH_ADMIN.authority,
+        //   icon: ICONS.tender_admin.authority,
+        // },
+        // {
+        //   title: 'entity_area',
+        //   path: PATH_ADMIN.entity_area,
+        //   icon: ICONS.tender_admin.entity_area,
+        // },
+        // {
+        //   title: 'regions_project_location',
+        //   path: PATH_ADMIN.regions_project_location,
+        //   icon: ICONS.tender_admin.regions_project_location,
+        // },
+        // {
+        //   title: 'entity_classification',
+        //   path: PATH_ADMIN.entity_classification,
+        //   icon: ICONS.tender_admin.entity_classification,
+        // },
+        // {
+        //   title: 'bank_name',
+        //   path: PATH_ADMIN.bank_name,
+        //   icon: ICONS.tender_admin.bank_name,
+        // },
+        // {
+        //   title: 'beneficiaries',
+        //   path: PATH_ADMIN.beneficiaries,
+        //   icon: ICONS.tender_admin.beneficiaries,
+        // },
         {
           title: 'portal_reports',
           path: PATH_ADMIN.portal_reports,
