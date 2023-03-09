@@ -62,7 +62,7 @@ function MainPage() {
         });
       }
     } catch (err) {
-      console.error("currnetly, this proposal doesn't have any amandemen", err);
+      console.debug("currnetly, this proposal doesn't have any amandemen", err);
       // enqueueSnackbar(err.message, {
       //   variant: 'error',
       //   preventDuplicate: true,

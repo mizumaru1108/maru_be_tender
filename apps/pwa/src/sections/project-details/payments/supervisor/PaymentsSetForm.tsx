@@ -65,6 +65,7 @@ function PaymentsSetForm() {
 
   const handleOnSubmit = async (data: any) => {
     setIsSubmitting(true);
+
     for (let i = 1; i < data?.payments.length; i++) {
       const previousDate = moment(data?.payments[i - 1].payment_date);
       const currentDate = moment(data?.payments[i].payment_date);
@@ -90,51 +91,50 @@ function PaymentsSetForm() {
 
         reset({ payments: newValuePayments });
         setIsSubmitting(false);
-        break;
-      } else {
-        try {
-          await dispatch(
-            insertPaymentsBySupervisor({
-              payments: data?.payments.map((item: any, index: any) => ({
-                payment_amount: item.payment_amount,
-                payment_date: item.payment_date,
-                proposal_id,
-                order: index + 1,
-              })),
-              proposal_id,
-              role: activeRole!,
-            })
-          ).then((res) => {
-            if (res.statusCode === 201) {
-              setIsSubmitting(false);
-              enqueueSnackbar('تم إنشاء الدفعات بنجاح', { variant: 'success' });
-              window.location.reload();
-            }
-          });
-        } catch (error) {
-          if (typeof error.message === 'object') {
-            error.message.forEach((el: any) => {
-              enqueueSnackbar(el, {
-                variant: 'error',
-                preventDuplicate: true,
-                autoHideDuration: 3000,
-              });
-            });
 
-            setIsSubmitting(false);
-          } else {
-            enqueueSnackbar(error.message, {
-              variant: 'error',
-              preventDuplicate: true,
-              autoHideDuration: 3000,
-            });
-
-            setIsSubmitting(false);
-          }
-
-          // window.location.reload();
-        }
+        return;
       }
+    }
+
+    try {
+      await dispatch(
+        insertPaymentsBySupervisor({
+          payments: data?.payments.map((item: any, index: any) => ({
+            payment_amount: item.payment_amount,
+            payment_date: item.payment_date,
+            proposal_id,
+            order: index + 1,
+          })),
+          proposal_id,
+          role: activeRole!,
+        })
+      ).then((res) => {
+        if (res.statusCode === 201) {
+          setIsSubmitting(false);
+          enqueueSnackbar('تم إنشاء الدفعات بنجاح', { variant: 'success' });
+          window.location.reload();
+        }
+      });
+    } catch (error) {
+      setIsSubmitting(false);
+
+      if (typeof error.message === 'object') {
+        error.message.forEach((el: any) => {
+          enqueueSnackbar(el, {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          });
+        });
+      } else {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+      }
+
+      // window.location.reload();
     }
 
     // try {
