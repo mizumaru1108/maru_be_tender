@@ -26,6 +26,7 @@ import { SearchMessageFilterRequest } from '../dtos/requests/search-message-filt
 import { IIncomingMessageSummary } from '../interfaces/incomming-message';
 import { createMessageMapper } from '../mappers/create-message.mapper';
 import { TenderMessagesRepository } from '../repositories/tender-messages.repository';
+import { generateFileName } from '../../../tender-commons/utils/generate-filename';
 
 @Injectable()
 export class TenderMessagesService {
@@ -197,11 +198,10 @@ export class TenderMessagesService {
         allowedType.push(FileMimeTypeEnum.PPTX);
       }
 
-      const fileName =
-        attachment.fullName +
-        new Date().getTime() +
-        '.' +
-        attachment.fileExtension.split('/')[1];
+      const fileName = generateFileName(
+        attachment.fullName,
+        attachment.fileExtension as FileMimeTypeEnum,
+      );
 
       const path = `tmra/${this.appEnv}/organization/tender-management/room-chat-attachment/${roomChat.id}/${fileName}`;
 
@@ -256,7 +256,7 @@ export class TenderMessagesService {
       logTime: moment(new Date().getTime()).format('llll'),
       clientSubject: 'New Messages!',
       clientId: [partner.id],
-      clientEmail: [partner.id],
+      clientEmail: [partner.email],
       clientMobileNumber: [partner.mobile_number || ''],
       clientEmailTemplatePath: `tender/${
         request.selectLang || 'ar'
