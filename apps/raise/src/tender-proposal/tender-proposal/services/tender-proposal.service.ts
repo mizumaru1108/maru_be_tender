@@ -148,6 +148,12 @@ export class TenderProposalService {
     }
   }
 
+  async fetchProposalById(id: string){
+    const proposal = await this.proposalRepo.fetchProposalById(id);
+    if(!proposal) throw new NotFoundException("Proposal not found!");
+    return proposal;
+  }
+
   async create(userId: string, request: ProposalCreateDto) {
     const proposalCreatePayload: Prisma.proposalUncheckedCreateInput =
       CreateProposalMapper(userId, request);

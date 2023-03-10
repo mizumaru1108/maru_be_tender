@@ -8,7 +8,12 @@ import {
   TenderAppRole,
   TenderAppRoleEnum,
 } from '../../../tender-commons/types';
+import {
+  InnerStatusEnum,
+  OutterStatusEnum,
+} from '../../../tender-commons/types/proposal';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
+import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import { InsertPaymentNotifMapper } from '../mappers/insert-payment-notif.mapper';
 import { UpdatePaymentNotifMapper } from '../mappers/update-payment-notif.mapper';
 
@@ -169,23 +174,34 @@ export class TenderProposalPaymentRepository {
     }
   }
 
-  // async createManyPayment(createManyPayload: Prisma.paymentCreateManyArgs) {
-  //   this.logger.debug(`creating many payment...`);
-  //   try {
-  //     const result = await this.prismaService.payment.createMany(
-  //       createManyPayload,
-  //     );
-  //     return result;
-  //   } catch (error) {
-  //     const theError = prismaErrorThrower(
-  //       error,
-  //       TenderProposalPaymentRepository.name,
-  //       'createManyPayment error details: ',
-  //       'creating payment!',
-  //     );
-  //     throw theError;
-  //   }
-  // }
+  async findPaymentsByProposalId(proposal_id: string, only_completed: boolean) {
+    this.logger.debug(
+      `finding all proposal payment with proposal id of ${proposal_id}...`,
+    );
+
+    let whereClause: Prisma.paymentWhereInput = { proposal_id };
+
+    if (only_completed) {
+      whereClause = {
+        ...whereClause,
+        status: 'DONE',
+      };
+    }
+
+    try {
+      return await this.prismaService.payment.findMany({
+        where: { proposal_id },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalPaymentRepository.name,
+        'Finding Payments error details: ',
+        'Finding Payments!',
+      );
+      throw theError;
+    }
+  }
 
   async updatePayment(
     paymentId: string,
@@ -329,6 +345,145 @@ export class TenderProposalPaymentRepository {
         TenderProposalPaymentRepository.name,
         'createManyPayment error details: ',
         'updating payment status!',
+      );
+      throw theError;
+    }
+  }
+
+  async completePayment(currentUser: TenderCurrentUser, proposal_id: string) {
+    try {
+      return await this.prismaService.$transaction(
+        async (prisma) => {
+          this.logger.log(
+            'info',
+            `updating proposal ${proposal_id} status to DONE_BY_CASHIER`,
+          );
+
+          const updatedProposal = await prisma.proposal.update({
+            where: { id: proposal_id },
+            data: {
+              inner_status: InnerStatusEnum.DONE_BY_CASHIER,
+            },
+          });
+
+          const lastLog = await prisma.proposal_log.findFirst({
+            where: { proposal_id },
+            select: {
+              created_at: true,
+            },
+            orderBy: {
+              created_at: 'desc',
+            },
+            take: 1,
+          });
+
+          this.logger.log('info', `Creating Proposal Log`);
+          await prisma.proposal_log.create({
+            data: {
+              id: nanoid(),
+              proposal_id: proposal_id,
+              action: 'complete_payment',
+              reviewer_id: currentUser.id,
+              state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
+              user_role: TenderAppRoleEnum.CASHIER,
+              response_time: lastLog
+                ? Math.round(
+                    (new Date().getTime() - lastLog.created_at.getTime()) /
+                      60000,
+                  )
+                : null,
+            },
+          });
+
+          return updatedProposal;
+        },
+        { maxWait: 50000, timeout: 150000 },
+      );
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalPaymentRepository.name,
+        'complete payment error details: ',
+        'compliting payment!',
+      );
+      throw theError;
+    }
+  }
+
+  async sendClosingReport(
+    currentUser: TenderCurrentUser,
+    proposal_id: string,
+    send: boolean,
+  ) {
+    try {
+      return await this.prismaService.$transaction(
+        async (prisma) => {
+          this.logger.log(
+            'info',
+            `updating proposal ${proposal_id} status to ${
+              send ? 'REQUESTING_CLOSING_FORM' : 'COMPLETE'
+            } `,
+          );
+
+          let proposalUpdateInput: Prisma.proposalUncheckedUpdateInput = {
+            inner_status: send
+              ? InnerStatusEnum.REQUESTING_CLOSING_FORM
+              : InnerStatusEnum.PROJECT_COMPLETED,
+          };
+
+          if (!send) {
+            proposalUpdateInput = {
+              ...proposalUpdateInput,
+              outter_status: OutterStatusEnum.COMPLETED,
+            };
+          }
+
+          const updatedProposal = await prisma.proposal.update({
+            where: { id: proposal_id },
+            data: proposalUpdateInput,
+          });
+
+          const lastLog = await prisma.proposal_log.findFirst({
+            where: { proposal_id },
+            select: {
+              created_at: true,
+            },
+            orderBy: {
+              created_at: 'desc',
+            },
+            take: 1,
+          });
+
+          this.logger.log('info', `Creating Proposal Log`);
+          await prisma.proposal_log.create({
+            data: {
+              id: nanoid(),
+              proposal_id: proposal_id,
+              action: send ? 'sending_closing_report' : 'complete',
+              reviewer_id: currentUser.id,
+              state: send
+                ? TenderAppRoleEnum.PROJECT_SUPERVISOR
+                : TenderAppRoleEnum.CLIENT,
+              user_role: TenderAppRoleEnum.PROJECT_SUPERVISOR,
+              response_time: lastLog
+                ? Math.round(
+                    (new Date().getTime() - lastLog.created_at.getTime()) /
+                      60000,
+                  )
+                : null,
+            },
+          });
+
+          return updatedProposal;
+        },
+        { maxWait: 50000, timeout: 150000 },
+      );
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalPaymentRepository.name,
+        'complete payment error details: ',
+        'compliting payment!',
       );
       throw theError;
     }

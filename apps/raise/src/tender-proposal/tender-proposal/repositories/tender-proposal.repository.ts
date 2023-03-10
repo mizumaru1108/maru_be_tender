@@ -1059,6 +1059,15 @@ export class TenderProposalRepository {
         where: {
           id: proposalId,
         },
+        include: {
+          user: {
+            include: {
+              roles: true,
+              client_data: true,
+            },
+          },
+          bank_information: true,
+        },
       });
     } catch (error) {
       const theError = prismaErrorThrower(

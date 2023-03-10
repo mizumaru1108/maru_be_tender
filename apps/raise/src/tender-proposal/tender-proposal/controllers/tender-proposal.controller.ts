@@ -115,6 +115,19 @@ export class TenderProposalController {
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_ceo', 'tender_admin', 'tender_project_manager')
+  @Get('fetch-by-id')
+  async fetchById(@Query() payload: GetByIdDto) {
+    const result = await this.proposalService.fetchProposalById(payload.id);
+
+    return baseResponseHelper(
+      result,
+      HttpStatus.OK,
+      'Proposal fetched successfully',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_project_supervisor', 'tender_client')
   @Get('amandement-lists')
   async fetchAmandementList(

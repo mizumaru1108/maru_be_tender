@@ -6,16 +6,17 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { Prisma, proposal } from '@prisma/client';
+import { proposal } from '@prisma/client';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../../commons/dtos/base-response';
+import { GetByIdDto } from '../../../commons/dtos/get-by-id.dto';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
 import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
 import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
-import { TenderProposalFollowUpService } from '../../tender-proposal-follow-up/services/tender-proposal-follow-up.service';
 import { CreateProposalPaymentDto } from '../dtos/requests/create-payment.dto';
+import { SendClosingReportDto } from '../dtos/requests/send-closing-report.dto';
 import { UpdatePaymentDto } from '../dtos/requests/update-payment.dto';
 import { UpdatePaymentResponseDto } from '../dtos/responses/update-payment-response.dto';
 import { TenderProposalPaymentService } from '../services/tender-proposal-payment.service';
@@ -66,6 +67,46 @@ export class TenderProposalPaymentController {
       updatedPayment,
       HttpStatus.OK,
       'Payment updated successfully',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_cashier')
+  @Patch('complete-payment')
+  async completePayment(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() request: GetByIdDto,
+  ): Promise<any> {
+    const updatedPayment =
+      await this.tenderProposalPaymentService.completePayment(
+        currentUser,
+        request.id,
+      );
+
+    return baseResponseHelper(
+      updatedPayment,
+      HttpStatus.OK,
+      'Payment completed successfully',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_project_supervisor')
+  @Patch('send-closing-report')
+  async sendClosingReport(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() request: SendClosingReportDto,
+  ): Promise<any> {
+    const updatedPayment =
+      await this.tenderProposalPaymentService.sendClosingReport(
+        currentUser,
+        request,
+      );
+
+    return baseResponseHelper(
+      updatedPayment,
+      HttpStatus.OK,
+      'Closing report successfully done',
     );
   }
 }

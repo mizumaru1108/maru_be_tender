@@ -33,6 +33,7 @@ import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-
 import { TenderProposalLogRepository } from '../../tender-proposal-log/repositories/tender-proposal-log.repository';
 import { TenderProposalRepository } from '../../tender-proposal/repositories/tender-proposal.repository';
 import { CreateProposalPaymentDto } from '../dtos/requests/create-payment.dto';
+import { SendClosingReportDto } from '../dtos/requests/send-closing-report.dto';
 import { UpdatePaymentDto } from '../dtos/requests/update-payment.dto';
 import { CreateChequeMapper } from '../mappers/create-cheque.mapper';
 import { CreateManyPaymentMapper } from '../mappers/create-many-payment.mapper';
@@ -48,12 +49,10 @@ export class TenderProposalPaymentService {
   constructor(
     private readonly configService: ConfigService,
     private readonly bunnyService: BunnyService,
-    // private readonly emailService: EmailService,
-    // private readonly twilioService: TwilioService,
     private readonly notificationService: TenderNotificationService,
     private readonly tenderProposalRepository: TenderProposalRepository,
     private readonly tenderProposalLogRepository: TenderProposalLogRepository,
-    private readonly tenderProposalPaymentRepository: TenderProposalPaymentRepository,
+    private readonly paymentRepo: TenderProposalPaymentRepository,
   ) {
     const environment = this.configService.get('APP_ENV');
     if (!environment) envLoadErrorHelper('APP_ENV');
@@ -116,14 +115,13 @@ export class TenderProposalPaymentService {
     };
 
     // create the payment
-    const insertResult =
-      await this.tenderProposalPaymentRepository.insertPayment(
-        proposal_id,
-        currentUserId,
-        proposalUpdatePayload,
-        createPaymentPayload,
-        lastLog,
-      );
+    const insertResult = await this.paymentRepo.insertPayment(
+      proposal_id,
+      currentUserId,
+      proposalUpdatePayload,
+      createPaymentPayload,
+      lastLog,
+    );
 
     this.notificationService.sendSmsAndEmail(insertResult.insertNotif);
 
@@ -139,8 +137,7 @@ export class TenderProposalPaymentService {
       const { id: userId, choosenRole } = currentUser;
       const { payment_id, action, cheque } = request;
 
-      const payment =
-        await this.tenderProposalPaymentRepository.findPaymentById(payment_id);
+      const payment = await this.paymentRepo.findPaymentById(payment_id);
       if (!payment) throw new NotFoundException('Payment not found');
 
       const proposal = await this.tenderProposalRepository.fetchProposalById(
@@ -229,7 +226,7 @@ export class TenderProposalPaymentService {
         chequeCreatePayload = CreateChequeMapper(request, chequeObj);
       }
 
-      const response = await this.tenderProposalPaymentRepository.updatePayment(
+      const response = await this.paymentRepo.updatePayment(
         payment_id,
         status,
         action,
@@ -315,58 +312,43 @@ export class TenderProposalPaymentService {
     }
   }
 
-  // sendPaymentNotif(notifPayload: CommonNotifMapperResponse) {
-  //   const {
-  //     subject,
-  //     clientContent,
-  //     clientEmail,
-  //     clientMobileNumber,
-  //     reviewerContent,
-  //     reviewerEmail,
-  //     reviewerMobileNumber,
-  //   } = notifPayload;
+  async sendClosingReport(
+    currentUser: TenderCurrentUser,
+    request: SendClosingReportDto,
+  ) {
+    const { id, send } = request;
+    const proposal = await this.tenderProposalRepository.fetchProposalById(id);
+    if (!proposal) {
+      throw new NotFoundException('No proposal data found on this payment');
+    }
 
-  //   const baseSendEmail: Omit<SendEmailDto, 'to'> = {
-  //     mailType: 'plain',
-  //     from: 'no-reply@hcharity.org',
-  //   };
+    await this.paymentRepo.sendClosingReport(currentUser, id, send);
+  }
 
-  //   const clientEmailNotif: SendEmailDto = {
-  //     ...baseSendEmail,
-  //     to: clientEmail,
-  //     subject: subject,
-  //     content: clientContent,
-  //   };
-  //   this.emailService.sendMail(clientEmailNotif);
+  async completePayment(currentUser: TenderCurrentUser, proposal_id: string) {
+    const proposal = await this.tenderProposalRepository.fetchProposalById(
+      proposal_id,
+    );
+    if (!proposal) {
+      throw new NotFoundException('No proposal data found on this payment');
+    }
 
-  //   const clientPhone = isExistAndValidPhone(clientMobileNumber);
-  //   if (clientPhone) {
-  //     this.twilioService.sendSMS({
-  //       to: clientPhone,
-  //       body: subject + ', ' + clientContent,
-  //     });
-  //   }
+    const totalPayment = await this.paymentRepo.findPaymentsByProposalId(
+      proposal_id,
+      false,
+    );
 
-  //   if (reviewerContent) {
-  //     if (reviewerEmail && reviewerEmail !== '') {
-  //       const reviewerEmailNotif: SendEmailDto = {
-  //         ...baseSendEmail,
-  //         to: reviewerEmail,
-  //         subject: subject,
-  //         content: reviewerContent,
-  //       };
-  //       this.emailService.sendMail(reviewerEmailNotif);
-  //     }
+    const completedPayment = await this.paymentRepo.findPaymentsByProposalId(
+      proposal_id,
+      false,
+    );
 
-  //     if (reviewerMobileNumber && reviewerMobileNumber !== '') {
-  //       const reviewerPhone = isExistAndValidPhone(reviewerMobileNumber);
-  //       if (reviewerPhone) {
-  //         this.twilioService.sendSMS({
-  //           to: reviewerPhone,
-  //           body: subject + ', ' + reviewerContent,
-  //         });
-  //       }
-  //     }
-  //   }
-  // }
+    if (totalPayment.length !== completedPayment.length) {
+      throw new BadRequestException(
+        "There's still unpaid payment on this project!",
+      );
+    }
+
+    return await this.paymentRepo.completePayment(currentUser, proposal_id);
+  }
 }
