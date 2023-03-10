@@ -62,38 +62,41 @@ export class TenderMessagesRepository {
     let uploadedFileUrl = ''; // temporary variable to store the uploaded file url (for revert if transaction failed)
 
     try {
-      return await this.prismaService.$transaction(async (prisma) => {
-        const imageUrl = await this.bunnyService.uploadFileBase64(
-          attachment.fullName,
-          buffer,
-          path,
-          'Tender send message with attachment',
-        );
-        if (imageUrl) {
-          uploadedFileUrl = imageUrl;
-          payload.attachment = {
-            url: imageUrl,
-            type: attachment.fileExtension,
-            size: buffer.length,
-          };
-        }
-
-        if (!imageUrl) {
-          throw new BadRequestException(
-            `Failed to uploading file (${attachment.fullName}) to our server!`,
+      return await this.prismaService.$transaction(
+        async (prisma) => {
+          const imageUrl = await this.bunnyService.uploadFileBase64(
+            attachment.fullName,
+            buffer,
+            path,
+            'Tender send message with attachment',
           );
-        }
+          if (imageUrl) {
+            uploadedFileUrl = imageUrl;
+            payload.attachment = {
+              url: imageUrl,
+              type: attachment.fileExtension,
+              size: buffer.length,
+            };
+          }
 
-        const message = await prisma.message.create({
-          data: payload,
-          include: {
-            sender: true,
-            receiver: true,
-          },
-        });
+          if (!imageUrl) {
+            throw new BadRequestException(
+              `Failed to uploading file (${attachment.fullName}) to our server!`,
+            );
+          }
 
-        return message;
-      });
+          const message = await prisma.message.create({
+            data: payload,
+            include: {
+              sender: true,
+              receiver: true,
+            },
+          });
+
+          return message;
+        },
+        { maxWait: 500000, timeout: 1500000 },
+      );
     } catch (error) {
       // deleting the uploaded file if the message data was failed to store to the prisma, but the file was uploaded
       if (

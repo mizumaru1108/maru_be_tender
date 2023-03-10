@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   Prisma,
   proposal,
@@ -35,6 +36,7 @@ export class TenderProposalRepository {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly bunnyService: BunnyService,
+    private readonly configService: ConfigService,
   ) {}
 
   async validateOwnBankAccount(user_id: string, bank_id: string) {
@@ -472,6 +474,7 @@ export class TenderProposalRepository {
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
     createProposalEditRequestPayload: Prisma.proposal_edit_requestUncheckedCreateInput,
     notes: string,
+    selectLang?: 'ar' | 'en',
   ) {
     try {
       return await this.prismaService.$transaction(
@@ -573,7 +576,11 @@ export class TenderProposalRepository {
             },
           });
 
-          const sendAmandementNotif = NewAmandementNotifMapper(createdLog);
+          const sendAmandementNotif = NewAmandementNotifMapper(
+            createdLog,
+            this.configService.get('tenderAppConfig.baseUrl') as string,
+            selectLang,
+          );
           if (
             sendAmandementNotif.createManyWebNotifPayload &&
             sendAmandementNotif.createManyWebNotifPayload.length > 0

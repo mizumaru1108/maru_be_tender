@@ -636,9 +636,10 @@ export class TenderProposalService {
       proposalUpdatePayload,
       createProposalEditRequestPayload,
       request.notes,
+      request.selectLang,
     );
 
-    this.notificationService.sendSmsAndEmail(
+    this.notificationService.sendSmsAndEmailBatch(
       sendAmandementResult.sendAmandementNotif,
     );
 

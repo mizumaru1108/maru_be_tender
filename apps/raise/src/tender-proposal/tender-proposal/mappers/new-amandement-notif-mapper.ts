@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { CommonNotifMapperResponse } from '../../../tender-commons/dto/common-notif-mapper-response.dto';
+import { CommonNotificationMapperResponse } from '../../../tender-commons/dto/common-notification-mapper-response.dto';
 import { CommonProposalLogNotifResponse } from '../../../tender-commons/dto/common-proposal-log-notif-response.dto';
 import { CreateManyNotificationDto } from '../../../tender-notification/dtos/requests/create-many-notification.dto';
 import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
@@ -7,7 +7,9 @@ import { createManyNotificationMapper } from '../../../tender-notification/mappe
 
 export const NewAmandementNotifMapper = (
   logs: CommonProposalLogNotifResponse['data'],
-): CommonNotifMapperResponse => {
+  notifLink: string,
+  selectLang?: 'ar' | 'en',
+): CommonNotificationMapperResponse => {
   const { proposal, reviewer, created_at } = logs;
 
   const logTime = moment(created_at).format('llll');
@@ -25,6 +27,7 @@ export const NewAmandementNotifMapper = (
   const clientWebNotifPayload: CreateNotificationDto = {
     user_id: proposal.user.id,
     type: 'PROPOSAL',
+    specific_type: 'NEW_AMANDEMENT_REQUEST_FROM_SUPERVISOR',
     subject: subject,
     content: clientContent,
   };
@@ -49,16 +52,24 @@ export const NewAmandementNotifMapper = (
 
   return {
     logTime,
-    subject,
-    clientId: proposal.user.id,
-    clientEmail: proposal.user.email,
-    clientMobileNumber: proposal.user.mobile_number || '',
+    clientSubject: subject,
+    clientId: [proposal.user.id],
+    clientEmail: [proposal.user.email],
+    clientMobileNumber: [proposal.user.mobile_number || ''],
     clientContent,
     createManyWebNotifPayload,
-    reviewerId: reviewer ? reviewer.id : '',
-    reviewerEmail: reviewer ? reviewer.email : '',
-    reviewerMobileNumber:
+    clientEmailTemplatePath: `tender/${selectLang || 'ar'}/account/new_message`,
+    clientEmailTemplateContext: [
+      {
+        clientUsername: `${proposal.user.employee_name}`,
+        projectPageLink: `${notifLink}/client/dashboard/previous-funding-requests`,
+      },
+    ],
+    reviewerId: [reviewer ? reviewer.id : ''],
+    reviewerEmail: [reviewer ? reviewer.email : ''],
+    reviewerMobileNumber: [
       reviewer && reviewer.mobile_number ? reviewer.mobile_number : '',
+    ],
     reviewerContent,
   };
 };
