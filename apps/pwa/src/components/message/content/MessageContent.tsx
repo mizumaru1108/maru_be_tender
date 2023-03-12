@@ -41,6 +41,7 @@ import { type } from 'os';
 import ButtonDownloadFiles from '../../button/ButtonDownloadFiles';
 import { UploadFilesJsonbDto } from '../../../@types/commons';
 import { fData } from '../../../utils/formatNumber';
+import { removeEmptyKey } from '../../../utils/remove-empty-key';
 
 export default function MessageContent() {
   const theme = useTheme();
@@ -72,6 +73,9 @@ export default function MessageContent() {
     roles: string;
   } | null>(null);
   const [sentStatus, setSentStatus] = useState<'sent' | 'pending' | 'failed'>('sent');
+  const [idErrorSent, setIdErrorSent] = useState<string[] | null>(['']);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  // const [indexErrorSent, setIndexErrorSent] = useState<number[]>([-1]);
 
   // urql + subscription
   const [resultMessages] = useSubscription({
@@ -111,32 +115,55 @@ export default function MessageContent() {
     attachment?: FileProp | null;
     selectLang: string;
     content_title?: string | null;
+    handle_id: string;
   }) => {
+    setIsLoading(true);
     setSentStatus('pending');
+    // const lastIndexTodayGroup = getMessageGrouped[getMessageGrouped.length - 1].messages.findIndex(
+    //   (message, index) =>
+    //     index === getMessageGrouped[getMessageGrouped.length - 1].messages.length - 1
+    // );
+    // console.log('lastIndexTodayGroup', lastIndexTodayGroup + 1);
     let getPayload = payload;
 
     getPayload.partner_selected_role !== 'tender_client'
       ? (getPayload.correspondence_type_id = 'INTERNAL')
       : (getPayload.correspondence_type_id = 'EXTERNAL');
 
+    payload = removeEmptyKey(getPayload);
+
+    // console.log('testid:', messageGrouped![messageGrouped!.length - 1]);
     await axiosInstance
       .post('/tender/messages/send', getPayload, {
         headers: { 'x-hasura-role': activeRole! },
+        maxBodyLength: Infinity,
+        maxContentLength: Infinity,
       })
       .then((res) => {
         dispatch(setActiveConversationId(res.data.data.roomChatId));
         setAttachmentFile(null);
         setAttachmentType('text');
         setSentStatus('sent');
+        // setIndexErrorSent([-1]);
+        setIdErrorSent(null);
+        setIsLoading(false);
       })
       .catch((err) => {
         console.log('err', err.message);
         setAttachmentFile(null);
         setAttachmentType('text');
         setSentStatus('failed');
+        // setIndexErrorSent([...indexErrorSent!, lastIndexTodayGroup + 1]);
+        setIdErrorSent([...idErrorSent!, getPayload.handle_id]);
+        setIsLoading(false);
+        // setIdErrorSent([
+        //   ...idErrorSent!,
+        //   messageGrouped
+        //     ? messageGrouped[messageGrouped.length - 1]?.messages[lastIndexTodayGroup + 1]?.id!
+        //     : '',
+        // ]);
       });
   };
-
   const initilizeGroupingMessage = (type: 'TEXT' | 'IMAGE' | 'FILE', file?: FileProp | null) => {
     let listMessageGrouped: IMassageGrouped[] = getMessageGrouped;
     let findTodayMsg = listMessageGrouped.find((el) => el.group_created === 'Today');
@@ -174,7 +201,7 @@ export default function MessageContent() {
       );
 
       listMessageGrouped = concatValue;
-      console.log('receiver:', valuesMessage.receiver_role_as);
+      // console.log('receiver:', valuesMessage.receiver_role_as);
 
       postMessage({
         correspondence_type_id: corespondenceType,
@@ -187,6 +214,7 @@ export default function MessageContent() {
         attachment: valuesMessage.attachment,
         content_title: valuesMessage.content_title,
         selectLang: currentLang.value,
+        handle_id: valuesMessage.id!,
       });
     } else {
       const values: IMassageGrouped = {
@@ -230,6 +258,7 @@ export default function MessageContent() {
         attachment: values.messages[0].attachment,
         content_title: values.messages[0].content_title,
         selectLang: currentLang.value,
+        handle_id: values.messages[0].id!,
       });
     }
 
@@ -352,6 +381,7 @@ export default function MessageContent() {
   }, [getMessageGrouped, activeConversationId]);
 
   // console.log('getMessageGrouped', getMessageGrouped);
+  // console.log('IndexErrorSent', indexErrorSent);
 
   return (
     <>
@@ -437,7 +467,7 @@ export default function MessageContent() {
                   overflowY: 'scroll',
                   whiteSpace: 'nowrap',
                   width: '100%',
-                  mb: 3,
+                  mb: { xs: 13, md: 3 },
                 }}
               >
                 {!getMessageGrouped.length
@@ -472,7 +502,7 @@ export default function MessageContent() {
                                         user?.id === v.owner_id
                                           ? ' rgba(147, 163, 176, 0.24)'
                                           : '#0E8478',
-                                      color: user?.id === v.owner_id ? '#000000' : '#ffffff',
+                                      color: user?.id === v.owner_id ? '#000000' : '#000000',
                                       borderRadius: '8px',
                                       p: 1.25,
                                     }}
@@ -524,6 +554,7 @@ export default function MessageContent() {
                                             <ButtonDownloadFiles
                                               files={v.attachment as UploadFilesJsonbDto}
                                               border={undefined}
+                                              isMessageAttachment={true}
                                             />
                                           </>
                                         )}
@@ -538,8 +569,9 @@ export default function MessageContent() {
                                       fontStyle: 'italic',
                                       color:
                                         el.group_created.toString() === 'Today' &&
-                                        el.messages!.length === index + 1 &&
-                                        sentStatus === 'failed'
+                                        // indexErrorSent.includes(index)
+                                        idErrorSent &&
+                                        idErrorSent.includes(v.id!)
                                           ? 'red'
                                           : theme.palette.grey[500],
                                       display: 'flex',
@@ -551,8 +583,9 @@ export default function MessageContent() {
                                   >
                                     {/* {moment(v.created_at).format('LT')}.{' '} */}
                                     {el.group_created.toString() === 'Today' &&
-                                    el.messages!.length === index + 1 &&
-                                    sentStatus === 'failed'
+                                    // indexErrorSent.includes(index)
+                                    idErrorSent &&
+                                    idErrorSent.includes(v.id!)
                                       ? translate('message_sent_failed')
                                       : moment(v.created_at).format('LT')}
                                     {/* <Iconify
@@ -581,8 +614,9 @@ export default function MessageContent() {
                                         }}
                                       />
                                     ) : el.group_created.toString() === 'Today' &&
-                                      el.messages!.length === index + 1 &&
-                                      sentStatus === 'failed' ? (
+                                      // indexErrorSent.includes(index)
+                                      idErrorSent &&
+                                      idErrorSent.includes(v.id!) ? (
                                       <Iconify
                                         icon="mdi:warning-circle-outline"
                                         width={17}
@@ -591,6 +625,7 @@ export default function MessageContent() {
                                           color: 'red',
                                           ml: 0.25,
                                         }}
+                                        // v.id.includes(idErrorSent!)
                                       />
                                     ) : (
                                       <Iconify
@@ -638,31 +673,51 @@ export default function MessageContent() {
                       </Grid>
                     ))}
               </Box>
-              <Stack
-                direction="row"
-                spacing={2}
-                alignItems="center"
-                justifyContent="space-between"
-                component="div"
-                sx={{
-                  bgcolor: theme.palette.common.white,
-                  position: 'absolute',
-                  width: '100%',
-                  bottom: 0,
-                  right: 0,
-                  left: 0,
-                  margin: 'auto',
-                }}
-              >
-                <IconButton onClick={handleClickSendMessage}>
-                  <Image
-                    src="/assets/icons/send-message-icon.svg"
-                    alt="logo"
-                    width={16}
-                    height={16}
-                  />
-                </IconButton>
-                {/* <TextField
+              {isLoading ? (
+                // <>Loading...</>
+                <Stack
+                  // spacing={2}
+                  alignItems="center"
+                  justifyContent="center"
+                  // component="div"
+                  sx={{
+                    bgcolor: theme.palette.common.white,
+                    position: 'absolute',
+                    width: '100%',
+                    bottom: 0,
+                    right: 0,
+                    left: 0,
+                    margin: 'auto',
+                  }}
+                >
+                  <CircularProgress sx={{ width: 20, height: 20 }} />
+                </Stack>
+              ) : (
+                <Stack
+                  direction={{ xs: 'column', md: 'row' }}
+                  spacing={2}
+                  alignItems="center"
+                  justifyContent="space-between"
+                  component="div"
+                  sx={{
+                    bgcolor: theme.palette.common.white,
+                    position: 'absolute',
+                    width: '100%',
+                    bottom: 0,
+                    right: 0,
+                    left: 0,
+                    margin: 'auto',
+                  }}
+                >
+                  <IconButton onClick={handleClickSendMessage}>
+                    <Image
+                      src="/assets/icons/send-message-icon.svg"
+                      alt="logo"
+                      width={16}
+                      height={16}
+                    />
+                  </IconButton>
+                  {/* <TextField
                   size="small"
                   placeholder="write something"
                   // sx={{ width: '80%' }}
@@ -674,127 +729,127 @@ export default function MessageContent() {
                   value={messageValue}
                   autoFocus
                 /> */}
-                {!attachmentFile ? (
-                  <TextField
-                    size="small"
-                    placeholder="write something"
-                    // sx={{ width: '80%' }}
-                    onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => handleKeyupMsg(e)}
-                    onChange={(e) => {
-                      setMessageValue(e.target.value);
-                    }}
-                    fullWidth
-                    value={messageValue}
-                    autoFocus
-                  />
-                ) : (
-                  <>
-                    {/* <Stack direction={'row'} justifyContent="center" alignItems="center"> */}
-                    <Grid container spacing={1} alignItems="center">
-                      <Grid item xs={12}>
-                        {attachmentType === 'image' && (
-                          <Box
-                            sx={{
-                              p: 0,
-                              m: 0.5,
-                              width: 80,
-                              height: 80,
-                              borderRadius: 1.25,
-                              overflow: 'hidden',
-                              position: 'relative',
-                              display: 'inline-flex',
-                              border: (theme) => `solid 1px ${theme.palette.divider}`,
-                            }}
-                          >
-                            <Image
-                              disabledEffect
-                              visibleByDefault
-                              alt="empty content"
-                              src={
-                                attachmentFile.url ||
-                                '/assets/illustrations/illustration_empty_content.svg'
-                              }
-                              // sx={{ height: 100 }}
-                            />
-                            <IconButton
-                              size="small"
-                              // onClick={() => onRemove(file)}
-                              onClick={() => {
-                                setAttachmentFile(null);
-                                setAttachmentType('text');
-                              }}
+                  {!attachmentFile ? (
+                    <TextField
+                      size="small"
+                      placeholder="write something"
+                      // sx={{ width: '80%' }}
+                      onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => handleKeyupMsg(e)}
+                      onChange={(e) => {
+                        setMessageValue(e.target.value);
+                      }}
+                      fullWidth
+                      value={messageValue}
+                      autoFocus
+                    />
+                  ) : (
+                    <>
+                      {/* <Stack direction={'row'} justifyContent="center" alignItems="center"> */}
+                      <Grid container spacing={1} alignItems="center">
+                        <Grid item xs={12}>
+                          {attachmentType === 'image' && (
+                            <Box
                               sx={{
-                                top: 6,
-                                p: '2px',
-                                right: 6,
-                                position: 'absolute',
-                                color: 'common.white',
-                                bgcolor: (theme) => alpha(theme.palette.grey[900], 0.72),
-                                '&:hover': {
-                                  bgcolor: (theme) => alpha(theme.palette.grey[900], 0.48),
-                                },
+                                p: 0,
+                                m: 0.5,
+                                width: 80,
+                                height: 80,
+                                borderRadius: 1.25,
+                                overflow: 'hidden',
+                                position: 'relative',
+                                display: 'inline-flex',
+                                border: (theme) => `solid 1px ${theme.palette.divider}`,
                               }}
                             >
-                              <Iconify icon={'eva:close-fill'} />
-                            </IconButton>
-                          </Box>
-                        )}
-                        {attachmentType === 'file' && (
-                          <Box
-                            sx={{
-                              my: 1,
-                              px: 2,
-                              py: 0.75,
-                              borderRadius: 0.75,
-                              border: (theme) => `solid 1px ${theme.palette.divider}`,
-                            }}
-                          >
-                            <Iconify
-                              icon={'eva:file-fill'}
-                              sx={{ width: 28, height: 28, color: 'text.secondary', mr: 2 }}
-                            />
+                              <Image
+                                disabledEffect
+                                visibleByDefault
+                                alt="empty content"
+                                src={
+                                  attachmentFile.url ||
+                                  '/assets/illustrations/illustration_empty_content.svg'
+                                }
+                                // sx={{ height: 100 }}
+                              />
+                              <IconButton
+                                size="small"
+                                // onClick={() => onRemove(file)}
+                                onClick={() => {
+                                  setAttachmentFile(null);
+                                  setAttachmentType('text');
+                                }}
+                                sx={{
+                                  top: 6,
+                                  p: '2px',
+                                  right: 6,
+                                  position: 'absolute',
+                                  color: 'common.white',
+                                  bgcolor: (theme) => alpha(theme.palette.grey[900], 0.72),
+                                  '&:hover': {
+                                    bgcolor: (theme) => alpha(theme.palette.grey[900], 0.48),
+                                  },
+                                }}
+                              >
+                                <Iconify icon={'eva:close-fill'} />
+                              </IconButton>
+                            </Box>
+                          )}
+                          {attachmentType === 'file' && (
+                            <Box
+                              sx={{
+                                my: 1,
+                                px: 2,
+                                py: 0.75,
+                                borderRadius: 0.75,
+                                border: (theme) => `solid 1px ${theme.palette.divider}`,
+                              }}
+                            >
+                              <Iconify
+                                icon={'eva:file-fill'}
+                                sx={{ width: 28, height: 28, color: 'text.secondary', mr: 2 }}
+                              />
 
-                            <ListItemText
-                              primary={
-                                typeof attachmentFile === 'string'
-                                  ? attachmentFile
-                                  : attachmentFile.fullName
-                              }
-                              secondary={
-                                typeof attachmentFile === 'string'
-                                  ? ''
-                                  : fData(attachmentFile.size || 0)
-                              }
-                              primaryTypographyProps={{ variant: 'subtitle2' }}
-                              secondaryTypographyProps={{ variant: 'caption' }}
-                            />
-                            <IconButton
-                              size="small"
-                              // onClick={() => onRemove(file)}
-                              onClick={() => {
-                                setAttachmentFile(null);
-                                setAttachmentType('text');
-                              }}
-                              sx={{
-                                top: 24,
-                                p: '2px',
-                                right: 6,
-                                position: 'absolute',
-                                color: 'common.white',
-                                bgcolor: (theme) => alpha(theme.palette.grey[900], 0.72),
-                                '&:hover': {
-                                  bgcolor: (theme) => alpha(theme.palette.grey[900], 0.48),
-                                },
-                              }}
-                            >
-                              <Iconify icon={'eva:close-fill'} />
-                            </IconButton>
-                          </Box>
-                        )}
+                              <ListItemText
+                                primary={
+                                  typeof attachmentFile === 'string'
+                                    ? attachmentFile
+                                    : attachmentFile.fullName
+                                }
+                                secondary={
+                                  typeof attachmentFile === 'string'
+                                    ? ''
+                                    : fData(attachmentFile.size || 0)
+                                }
+                                primaryTypographyProps={{ variant: 'subtitle2' }}
+                                secondaryTypographyProps={{ variant: 'caption' }}
+                              />
+                              <IconButton
+                                size="small"
+                                // onClick={() => onRemove(file)}
+                                onClick={() => {
+                                  setAttachmentFile(null);
+                                  setAttachmentType('text');
+                                }}
+                                sx={{
+                                  top: 24,
+                                  p: '2px',
+                                  right: 6,
+                                  position: 'absolute',
+                                  color: 'common.white',
+                                  bgcolor: (theme) => alpha(theme.palette.grey[900], 0.72),
+                                  '&:hover': {
+                                    bgcolor: (theme) => alpha(theme.palette.grey[900], 0.48),
+                                  },
+                                }}
+                              >
+                                <Iconify icon={'eva:close-fill'} />
+                              </IconButton>
+                            </Box>
+                          )}
+                        </Grid>
                       </Grid>
-                    </Grid>
 
-                    {/* <ButtonDownloadFiles
+                      {/* <ButtonDownloadFiles
                       files={attachmentFile as UploadFilesJsonbDto}
                       border={undefined}
                     />
@@ -813,50 +868,69 @@ export default function MessageContent() {
                     >
                       حذف
                     </Button> */}
-                  </>
-                )}
-                {attachmentFile ? null : (
-                  <>
-                    <Box sx={{ justifyContent: 'flex-end', display: 'flex', direction: 'row' }}>
-                      <Box
-                        onClick={() => {
-                          setOpenAttachment(!openAttachment);
-                          setAttachmentType('file');
-                          // alert('upload attachment')
-                        }}
-                        sx={{
-                          '&:hover': {
-                            cursor: 'pointer',
-                          },
-                        }}
-                      >
-                        <Image src="/assets/icons/upload-attachment-icon.svg" alt="logo" />
-                      </Box>
-                      <Box
-                        onClick={() => {
-                          setOpenAttachment(!openAttachment);
-                          setAttachmentType('image');
-                          // alert('upload image')
-                        }}
-                        sx={{
-                          '&:hover': {
-                            cursor: 'pointer',
-                          },
-                        }}
-                      >
-                        <Image src="/assets/icons/upload-image-icon.svg" alt="logo" />
-                      </Box>
-                    </Box>
-                  </>
-                )}
-              </Stack>
+                    </>
+                  )}
+                  {attachmentFile ? null : (
+                    <>
+                      {/* <Box
+                      sx={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        display: 'flex',
+                        direction: 'row',
+                      }}
+                    > */}
+                      <Stack alignItems={'center'} direction={'row'}>
+                        <Box
+                          onClick={() => {
+                            setOpenAttachment(!openAttachment);
+                            setAttachmentType('file');
+                            // alert('upload attachment')
+                          }}
+                          sx={{
+                            '&:hover': {
+                              cursor: 'pointer',
+                            },
+                            mx: 1,
+                          }}
+                        >
+                          {/* <Image src="/assets/icons/upload-attachment-icon.svg" alt="logo" /> */}
+                          <Iconify icon={'et:attachments'} width={15} height={15} color={'#000'} />
+                        </Box>
+                        <Box
+                          onClick={() => {
+                            setOpenAttachment(!openAttachment);
+                            setAttachmentType('image');
+                            // alert('upload image')
+                          }}
+                          sx={{
+                            '&:hover': {
+                              cursor: 'pointer',
+                            },
+                            mx: 1,
+                          }}
+                        >
+                          {/* <Image src="/assets/icons/upload-image-icon.svg" alt="logo" /> */}
+                          <Iconify
+                            icon={'material-symbols:image-outline'}
+                            width={15}
+                            height={15}
+                            color={'#000'}
+                          />
+                        </Box>
+                      </Stack>
+                      {/* </Box> */}
+                    </>
+                  )}
+                </Stack>
+              )}
             </>
           )}
           <ModalNewAttachment
             open={openAttachment}
             handleClose={() => setOpenAttachment(!openAttachment)}
             attachment_type={attachmentType}
-            header_title={attachmentType === 'file' ? 'Upload File' : 'Upload Image'}
+            header_title={attachmentType === 'file' ? 'upload_a_new_file' : 'upload_a_new_image'}
             onSubmit={(data: FileProp) => {
               // console.log({ data });
               setAttachmentFile(data ?? null);

@@ -125,7 +125,7 @@ export default function MessageMenuItem({ data, activeRole }: IPropsMessageItem)
                         ? `${item.messages[0].content.slice(0, 50)} ...`
                         : item.messages[0].content
                       : ''
-                    : 'New Image Message'
+                    : 'New Attecment Message'
                   : 'No message yet.'}
               </Typography>
 

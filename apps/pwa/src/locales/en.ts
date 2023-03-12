@@ -1585,6 +1585,7 @@ const en = {
   project_attachment_file: 'Project attachment file',
   add_action: 'Add action',
   upload_a_new_file: 'Upload a new file',
+  upload_a_new_image: 'Upload a new image',
   upload_select_drop: 'Select or drop your file here',
   state: 'State',
   status: 'Status',
