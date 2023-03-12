@@ -335,7 +335,7 @@ export default function NewMessageModalForm({
             <Typography>{translate('new_message_modal.form.label.search_employee')}</Typography>
             <TextField
               autoFocus
-              placeholder="ex. Mohammad Zayin"
+              placeholder={translate('search_component.placeholder')}
               size="small"
               onChange={handleChangeSearch}
               InputProps={{
@@ -382,7 +382,7 @@ export default function NewMessageModalForm({
                 <Typography>{translate('new_message_modal.form.label.search_employee')}</Typography>
                 <TextField
                   autoFocus
-                  placeholder="ex. Mohammad Zayin"
+                  placeholder={translate('search_component.placeholder')}
                   size="small"
                   onChange={handleChangeSearch}
                   // onKeyUp={(e) => {}}

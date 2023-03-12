@@ -27,6 +27,7 @@ import { role_url_map } from '../../../@types/commons';
 import useLocales from '../../../hooks/useLocales';
 import { useDispatch, useSelector } from 'redux/store';
 import { setSort, setFiltered } from 'redux/slices/searching';
+import axiosInstance from 'utils/axios';
 // ----------------------------------------------------------------------
 const APPBAR_MOBILE = 64;
 const APPBAR_DESKTOP = 92;
@@ -67,11 +68,38 @@ export default function Searchbar() {
   const [sortBy, setSortBy] = React.useState('asc');
   const [text, setText] = React.useState('');
   const [state, setState] = React.useState({
-    project: false,
-    client: false,
-    status: false,
-    track: false,
+    project: true,
+    client: true,
+    status: true,
+    track: true,
   });
+  const [stateAccManager, setStateAccManager] = React.useState({
+    client_name: true,
+    account_status: true,
+  });
+  // State Account Manager
+  const { client_name, account_status } = stateAccManager;
+  const filteredAccManager = Object.fromEntries(
+    Object.entries({ client_name, account_status }).filter(([_, v]) => v)
+  );
+  const errorAccManager = Object.keys(filteredAccManager).length !== 1;
+
+  const onChangeAccManager = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setStateAccManager({
+      ...stateAccManager,
+      [event.target.name]: event.target.checked,
+    });
+  };
+
+  // State Except Account Manager
+  const { project, client, status, track } = state;
+  const filteredState = Object.fromEntries(
+    Object.entries({ project, client, status, track }).filter(([_, v]) => v)
+  );
+
+  const error = Object.keys(filteredState).length !== 1;
+  // const keys = Object.keys(filteredState);
+  // const error = [project, client, status, track].filter((v) => v).length !== 1;
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setState({
@@ -80,66 +108,8 @@ export default function Searchbar() {
     });
   };
 
-  const { project, client, status, track } = state;
-  const filteredState = Object.fromEntries(
-    Object.entries({ project, client, status, track }).filter(([_, v]) => v)
-  );
-  const error = Object.keys(filteredState).length !== 1;
-  // const keys = Object.keys(filteredState);
-  // const error = [project, client, status, track].filter((v) => v).length !== 1;
   const handleClick = () => {
     setShow(!show);
-  };
-
-  const handleKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      navigate(`/${role_url_map[`${role}`]}/searching`);
-      setShow(false);
-      // Object.keys(filteredState).forEach((key) => {
-      //   switch (key) {
-      //     case 'project':
-      //       // console.log('ada dari project');
-      //       dispatch(setProjectName(`project_name=${text}`));
-      //       break;
-      //     case 'client':
-      //       // console.log('ada dari client');
-      //       dispatch(setClientName(`client_name=${text}`));
-      //       break;
-      //     case 'status':
-      //       // console.log('ada dari status');
-      //       dispatch(setProjectStatus(`project_status=${text}`));
-      //       break;
-      //     case 'track':
-      //       // console.log('ada dari track');
-      //       dispatch(setTrackName(`project_track=${text}`));
-      //       break;
-      //     default:
-      //       break;
-      //   }
-
-      // });
-
-      const filters = Object.keys(filteredState);
-      const newFilters = filters.map((filter) => {
-        if (filter === 'project') {
-          return `project_name=${text}`;
-        } else if (filter === 'client') {
-          return `client_name=${text}`;
-        } else if (filter === 'status') {
-          return `project_status=${text}`;
-        } else if (filter === 'track') {
-          return `project_track=${text}`;
-        }
-        return false;
-      });
-      const joinFilter = newFilters.join('&');
-      if (text) {
-        dispatch(setFiltered(joinFilter));
-      } else {
-        dispatch(setFiltered(null));
-      }
-      dispatch(setSort(sortBy));
-    }
   };
 
   const handleSearch = () => {
@@ -189,6 +159,34 @@ export default function Searchbar() {
       dispatch(setFiltered(null));
     }
     dispatch(setSort(sortBy));
+  };
+
+  const handleSearchAccManager = async () => {
+    navigate(`/${role_url_map[`${role}`]}/searching`);
+    setShow(false);
+    if (text) {
+      dispatch(setFiltered(text));
+    } else {
+      dispatch(setFiltered(null));
+    }
+    dispatch(setSort(sortBy));
+    // const res = await axiosInstance.get('/tender-user/find-users', {
+    //   params: { employee_name: 'yayan' },
+    //   headers: { 'x-hasura-role': activeRole! },
+    // });
+    // if (res.data.statusCode === 200) {
+    //   console.log(res.data);
+    // }
+  };
+
+  const handleKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      if (role === 'tender_accounts_manager') {
+        handleSearchAccManager();
+      } else {
+        handleSearch();
+      }
+    }
   };
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -282,29 +280,66 @@ export default function Searchbar() {
               <FormControlLabel value="client" control={<Checkbox />} label="Name of Client" />
               <FormControlLabel value="status" control={<Checkbox />} label="Project Status" />
               <FormControlLabel value="track" control={<Checkbox />} label="Name of Track" /> */}
-                <FormControl required error={error} component="fieldset" variant="standard">
-                  <FormGroup>
-                    <FormControlLabel
-                      control={
-                        <Checkbox checked={project} onChange={handleChange} name="project" />
-                      }
-                      label={translate('search_component.by_project_name')}
-                    />
-                    <FormControlLabel
-                      control={<Checkbox checked={client} onChange={handleChange} name="client" />}
-                      label={translate('search_component.by_client_name')}
-                    />
-                    <FormControlLabel
-                      control={<Checkbox checked={status} onChange={handleChange} name="status" />}
-                      label={translate('search_component.by_project_status')}
-                    />
-                    <FormControlLabel
-                      control={<Checkbox checked={track} onChange={handleChange} name="track" />}
-                      label={translate('search_component.by_track_name')}
-                    />
-                  </FormGroup>
-                  {/* <FormHelperText>You can display an error</FormHelperText> */}
-                </FormControl>
+                {role === 'tender_accounts_manager' ? (
+                  <FormControl
+                    required
+                    error={errorAccManager}
+                    component="fieldset"
+                    variant="standard"
+                  >
+                    <FormGroup>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={client_name}
+                            onChange={onChangeAccManager}
+                            name="client"
+                          />
+                        }
+                        label={translate('search_component.by_client_name')}
+                      />
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={account_status}
+                            onChange={onChangeAccManager}
+                            name="status"
+                          />
+                        }
+                        label={translate('search_component.by_account_status')}
+                      />
+                    </FormGroup>
+                    {/* <FormHelperText>You can display an error</FormHelperText> */}
+                  </FormControl>
+                ) : (
+                  <FormControl required error={error} component="fieldset" variant="standard">
+                    <FormGroup>
+                      <FormControlLabel
+                        control={
+                          <Checkbox checked={project} onChange={handleChange} name="project" />
+                        }
+                        label={translate('search_component.by_project_name')}
+                      />
+                      <FormControlLabel
+                        control={
+                          <Checkbox checked={client} onChange={handleChange} name="client" />
+                        }
+                        label={translate('search_component.by_client_name')}
+                      />
+                      <FormControlLabel
+                        control={
+                          <Checkbox checked={status} onChange={handleChange} name="status" />
+                        }
+                        label={translate('search_component.by_project_status')}
+                      />
+                      <FormControlLabel
+                        control={<Checkbox checked={track} onChange={handleChange} name="track" />}
+                        label={translate('search_component.by_track_name')}
+                      />
+                    </FormGroup>
+                    {/* <FormHelperText>You can display an error</FormHelperText> */}
+                  </FormControl>
+                )}
                 <Typography sx={{ mt: 1, color: '#0E8478', fontWeight: 600 }}>
                   {translate('search_component.type_order')}
                 </Typography>
@@ -330,7 +365,15 @@ export default function Searchbar() {
               </Stack>
 
               <Stack direction="row" justifyContent="flex-end">
-                <Button sx={{ my: 2 }} variant="contained" onClick={() => handleSearch()}>
+                <Button
+                  sx={{ my: 2 }}
+                  variant="contained"
+                  onClick={
+                    role === 'tender_accounts_manager'
+                      ? () => handleSearchAccManager()
+                      : () => handleSearch()
+                  }
+                >
                   {translate('search_component.search')}
                 </Button>
               </Stack>

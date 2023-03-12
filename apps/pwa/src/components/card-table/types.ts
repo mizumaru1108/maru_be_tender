@@ -14,6 +14,17 @@ type CardTitle = {
     | 'asked_for_amandement';
 };
 
+type CardStatus = {
+  id?: string;
+  statusId?:
+    | 'WAITING_FOR_ACTIVATION'
+    | 'SUSPENDED_ACCOUNT'
+    | 'CANCELED_ACCOUNT'
+    | 'ACTIVE_ACCOUNT'
+    | 'REVISED_ACCOUNT'
+    | 'WAITING_FOR_EDITING_APPROVAL';
+};
+
 type CardContentComp = {
   projectName: string;
   organizationName?: string;
@@ -28,6 +39,30 @@ export type ProjectCardProps = {
   title: CardTitle;
   content: CardContentComp;
   footer: CardFooter;
+  cardFooterButtonAction:
+    | 'show-project' // Without the action bar at the end of the page.
+    | 'show-details' // With the action bar at the end if the page.
+    | 'completing-exchange-permission' // With the action bar at the end if the page.
+    | 'draft'; // Without the action bar at the end of the page, but with the ability to continue or remove the project.
+  destination?:
+    | 'previous-funding-requests'
+    | 'incoming-funding-requests'
+    | 'requests-in-process'
+    | 'incoming-exchange-permission-requests'
+    | 'current-project'
+    | 'payment-adjustment'
+    | 'exchange-permission'; // it refers to the url that I came from and the url that I have to go to
+};
+
+export type NewProjectCardProps = {
+  title: CardStatus;
+  createdAt: Date;
+  email?: string;
+  employeeName?: string;
+  id?: string;
+  statusId?: string;
+  updatedAt?: Date;
+  footer?: CardFooter;
   cardFooterButtonAction:
     | 'show-project' // Without the action bar at the end of the page.
     | 'show-details' // With the action bar at the end if the page.

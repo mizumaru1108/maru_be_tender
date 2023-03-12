@@ -41,18 +41,20 @@ function CardSearching({
 
   const getData = async () => {
     try {
-      setLoading(true);
-      const res = await axiosInstance.get(
-        `tender-proposal/list?limit=${params.limit}&page=${page}&sort=${sort}&${filtered}`,
-        {
-          headers: { 'x-hasura-role': activeRole! },
+      if (filtered !== null) {
+        setLoading(true);
+        const res = await axiosInstance.get(
+          `tender-proposal/list?limit=${params.limit}&page=${page}&sort=${sort}&${filtered}`,
+          {
+            headers: { 'x-hasura-role': activeRole! },
+          }
+        );
+        if (res.data.statusCode === 200) {
+          setData(res.data);
         }
-      );
-      if (res.data.statusCode === 200) {
-        setData(res.data);
+        setLoading(false);
+        // return res.data;
       }
-      setLoading(false);
-      return res.data;
     } catch (error) {
       throw error;
     }

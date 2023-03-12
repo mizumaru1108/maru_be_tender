@@ -9,6 +9,7 @@ import { CardTableSearching } from '../components/card-table';
 import useLocales from '../hooks/useLocales';
 import { useSelector } from 'redux/store';
 import CardSearching from 'components/card-table/searching/CardSearching';
+import NewCardTable from 'components/card-table/NewCardTable';
 
 function PreviousSupportRequests() {
   const { translate } = useLocales();
@@ -26,22 +27,37 @@ function PreviousSupportRequests() {
     gap: 20,
   }));
 
+  const DATA_URL = '/tender-user/find-users';
+
+  const HEADERS = { 'x-hasura-role': activeRole! };
+
+  // const { data } = await axiosInstance.get('/tender-user/find-users', {
+  //   params: {
+  //     employee_name: 'Marumaru',
+  //   },
+  //   headers: { 'x-hasura-role': activeRole! },
+  // });
+  // if (data.statusCode === 200) {
+  //   console.log({ data });
+  // }
+
   return (
-    // <Page title="Searching Page">
     <Page title={translate('pages.common.search')}>
       <Container>
         <ContentStyle>
-          {/* <CardTableSearching
-            data={supportRequests} // For testing, later on we will send the query to it
-            title="نتيجة البحث"
-            // dateFilter={true}
-            // taps={['كل المشاريع', 'مشاريع منتهية', 'مشاريع معلقة']}
-            cardFooterButtonAction="show-project"
-          /> */}
-          <CardSearching
-            title={translate('pages.common.search')}
-            cardFooterButtonAction="show-project"
-          />
+          {activeRole !== 'tender_accounts_manager' ? (
+            <CardSearching
+              title={translate('pages.common.search')}
+              cardFooterButtonAction="show-project"
+            />
+          ) : (
+            <NewCardTable
+              title={translate('pages.common.search')}
+              cardFooterButtonAction="show-project"
+              url={DATA_URL}
+              headersProps={HEADERS}
+            />
+          )}
         </ContentStyle>
       </Container>
     </Page>

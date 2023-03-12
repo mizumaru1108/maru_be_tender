@@ -13,6 +13,7 @@ import axiosInstance from 'utils/axios';
 import useAuth from 'hooks/useAuth';
 import { useSelector } from 'redux/store';
 import ProjectCard from './ProjectCard';
+import NewProjectCard from './NewProjectCard';
 
 function NewCardTable({
   title,
@@ -44,14 +45,29 @@ function NewCardTable({
   const getData = async () => {
     try {
       setLoading(true);
-      const res = await axiosInstance.get(url, {
-        headers: headersProps,
-      });
-      if (res.data.statusCode === 200) {
-        setData(res.data);
+      if (activeRole === 'tender_accounts_manager') {
+        if (filtered !== null) {
+          const res = await axiosInstance.get(url, {
+            params: { limit: params.limit, page: page, employee_name: filtered },
+            headers: headersProps,
+          });
+          if (res.data.statusCode === 200) {
+            setData(res.data);
+          }
+          // setLoading(false);
+        }
+        // return res.data;
+      } else {
+        const res = await axiosInstance.get(url, {
+          params: { limit: params.limit, page: page },
+          headers: headersProps,
+        });
+        if (res.data.statusCode === 200) {
+          setData(res.data);
+        }
+        // return res.data;
       }
       setLoading(false);
-      return res.data;
     } catch (error) {
       throw error;
     }
@@ -84,6 +100,8 @@ function NewCardTable({
 
   useEffect(() => {}, [data]);
 
+  // console.log(data, 'DATA');
+
   return (
     <Grid container rowSpacing={3} columnSpacing={2}>
       <Grid item md={12} xs={12}>
@@ -94,21 +112,33 @@ function NewCardTable({
       {data && !loading ? (
         data?.data.map((item: any, index: any) => (
           <Grid item key={index} md={6} xs={12}>
-            <ProjectCard
-              title={{ id: item.id, inquiryStatus: item.outter_status.toLowerCase() }}
-              content={{
-                projectName: item.project_name,
-                organizationName: item.user.employee_name,
-                sentSection: item.state,
-                employee: item.user.employee_name,
-                createdAtClient: new Date(item.created_at),
-              }}
-              footer={{
-                createdAt: new Date(item.updated_at),
-              }}
-              cardFooterButtonAction={cardFooterButtonAction}
-              destination="current-project"
-            />
+            {activeRole !== 'tender_accounts_manager' ? (
+              <ProjectCard
+                title={{ id: item.id, inquiryStatus: item.outter_status.toLowerCase() }}
+                content={{
+                  projectName: item.project_name,
+                  organizationName: item.user.employee_name,
+                  sentSection: item.state,
+                  employee: item.user.employee_name,
+                  createdAtClient: new Date(item.created_at),
+                  projectStatus: item.outter_status,
+                }}
+                footer={{
+                  createdAt: new Date(item.updated_at),
+                }}
+                cardFooterButtonAction={cardFooterButtonAction}
+                destination="current-project"
+              />
+            ) : (
+              <NewProjectCard
+                id={item.id}
+                title={{ statusId: item.status_id }}
+                email={item.email}
+                employeeName={item.employee_name}
+                createdAt={new Date(item.created_at)}
+                cardFooterButtonAction="show-project"
+              />
+            )}
           </Grid>
         ))
       ) : (
