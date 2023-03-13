@@ -25,6 +25,12 @@ export class SearchUserFilterRequest extends BaseFilterRequest {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
+  account_status?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   @IsIn(['main', 'sub'], {
     message: 'client_field must be either main or sub!',
   })

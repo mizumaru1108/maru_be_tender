@@ -316,8 +316,14 @@ export class TenderClientRepository {
           user: {
             select: {
               employee_name: true,
+              client_data: true,
+              roles: true,
             },
           },
+          follow_ups: true,
+          proposal_item_budgets: true,
+          proposal_logs: true,
+          payments: true,
         },
         skip: offset,
         take: limit,

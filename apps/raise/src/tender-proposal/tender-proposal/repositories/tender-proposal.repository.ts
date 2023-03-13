@@ -649,7 +649,7 @@ export class TenderProposalRepository {
               pm_email: true,
               region: true,
               governorate: true,
-              proposal_item_budget: true,
+              proposal_item_budgets: true,
             },
           },
         },

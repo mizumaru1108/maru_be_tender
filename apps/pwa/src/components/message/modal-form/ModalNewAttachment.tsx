@@ -137,7 +137,8 @@ function ModalNewAttachment({ open, handleClose, attachment_type, header_title, 
         <Stack display="flex">
           <Typography variant="h6" fontWeight="bold" color="#000000">
             {/* إضافة تعليق */}
-            {header_title}
+            {/* {header_title} */}
+            {translate(`${header_title}`)}
           </Typography>
         </Stack>
       }

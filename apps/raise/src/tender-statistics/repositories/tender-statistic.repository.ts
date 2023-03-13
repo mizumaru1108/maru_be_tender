@@ -150,7 +150,7 @@ export class TenderStatisticsRepository {
       number_of_payments_by_supervisor: Prisma.Decimal | null;
       whole_budget: Prisma.Decimal | null;
       project_track: string | null;
-      proposal_item_budget: {
+      proposal_item_budgets: {
         id: string;
         amount: Prisma.Decimal | null;
         created_at: Date | null;
@@ -190,7 +190,7 @@ export class TenderStatisticsRepository {
           number_of_payments_by_supervisor: true,
           whole_budget: true,
           project_track: true,
-          proposal_item_budget: {
+          proposal_item_budgets: {
             select: {
               id: true,
               amount: true,

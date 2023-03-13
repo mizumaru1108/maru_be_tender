@@ -1619,6 +1619,7 @@ const ar = {
   project_attachment_file: 'ملف مرفقات المشروع',
   add_action: 'إضافة إجراء',
   upload_a_new_file: 'رفع ملف جديد',
+  upload_a_new_image: 'رفع صورة جديدة',
   state: 'ولاية',
   status: 'حالة',
   project_owner_details: {
@@ -1696,6 +1697,7 @@ const ar = {
   },
   copy_of_the_bank_account_card: 'صورة بطاقة الحساب البنكي',
   message_is_empty: 'الرسالة فارغة',
+  message_sent_failed: 'إرسال رسالة بنجاح',
   you_can_create_new_message_for_new_conversation: 'يمكنك إنشاء رسالة جديدة لمحادثة جديدة.',
   page_not_found: 'عذرا، لم يتم العثور على الصفحة',
   desc_page_not_found:

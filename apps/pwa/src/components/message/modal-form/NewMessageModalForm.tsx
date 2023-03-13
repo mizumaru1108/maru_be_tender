@@ -205,11 +205,55 @@ export default function NewMessageModalForm({
 
   const findUserInternal = async () => {
     setLoadingUser(true);
+    const hide_internal = corespondence === 'external' ? 1 : 0;
+    const hide_external = corespondence === 'internal' ? 1 : 0;
+
+    const cLevel = [
+      'tender_project_manager',
+      'tender_consultant',
+      'tender_ceo',
+      'tender_finance',
+      'tender_cashier',
+    ].includes(activeRole);
+
+    let params = {};
+
+    if (cLevel) {
+      params = {
+        hide_external: 1,
+        page: 1,
+        limit: 6,
+      };
+    } else {
+      if (corespondence === 'external') {
+        params = {
+          hide_internal,
+          page: 1,
+          limit: 6,
+        };
+      } else {
+        params = {
+          employee_path: selectedTrack,
+          hide_internal,
+          hide_external,
+          page: 1,
+          limit: 6,
+        };
+      }
+    }
+    if (searchValue !== '') {
+      params = {
+        ...params,
+        employee_name: searchValue,
+      };
+    }
+
     const { data } = await axiosInstance.get('/tender-user/find-users', {
       params: {
-        employee_path: selectedTrack,
-        hide_external: 1,
-        limit: 6,
+        // employee_path: selectedTrack,
+        // hide_external: 1,
+        // limit: 6,
+        ...params,
       },
       headers: { 'x-hasura-role': activeRole! },
     });
@@ -226,23 +270,64 @@ export default function NewMessageModalForm({
       setLoadingUser(false);
     }
   };
-
   const findUserByName = async () => {
+    // const hide_internal = corespondence === 'external' ? 1 : 0;
+    // const hide_external = corespondence === 'internal' ? 1 : 0;
+    // let params = {};
+    // if (corespondence === 'external') {
+    //   params = {
+    //     hide_internal,
+    //     limit: 6,
+    //   };
+    // } else {
+    //   params = {
+    //     employee_path: selectedTrack,
+    //     hide_internal,
+    //     hide_external,
+    //     limit: 6,
+    //   };
+    // }
+    // if (searchValue !== '') {
+    //   params = {
+    //     ...params,
+    //     employee_name: searchValue,
+    //   };
+    // }
     const hide_internal = corespondence === 'external' ? 1 : 0;
     const hide_external = corespondence === 'internal' ? 1 : 0;
+
+    const cLevel = [
+      'tender_project_manager',
+      'tender_consultant',
+      'tender_ceo',
+      'tender_finance',
+      'tender_cashier',
+    ].includes(activeRole);
+
     let params = {};
-    if (corespondence === 'external') {
+
+    if (cLevel) {
       params = {
-        hide_internal,
+        hide_external: 1,
+        page: 1,
         limit: 6,
       };
     } else {
-      params = {
-        employee_path: selectedTrack,
-        hide_internal,
-        hide_external,
-        limit: 6,
-      };
+      if (corespondence === 'external') {
+        params = {
+          hide_internal,
+          page: 1,
+          limit: 6,
+        };
+      } else {
+        params = {
+          employee_path: selectedTrack,
+          hide_internal,
+          hide_external,
+          page: 1,
+          limit: 6,
+        };
+      }
     }
     if (searchValue !== '') {
       params = {
@@ -338,6 +423,11 @@ export default function NewMessageModalForm({
               placeholder={translate('search_component.placeholder')}
               size="small"
               onChange={handleChangeSearch}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  findUserByName();
+                }
+              }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="start">

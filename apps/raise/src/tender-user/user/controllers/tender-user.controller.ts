@@ -56,6 +56,7 @@ export class TenderUserController {
     'tender_moderator',
     'tender_project_manager',
     'tender_project_supervisor',
+    'tender_consultant',
   )
   @Get('find-users')
   async findUsers(
