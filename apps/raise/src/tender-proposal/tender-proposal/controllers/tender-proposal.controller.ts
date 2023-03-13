@@ -13,7 +13,6 @@ import { BaseResponse } from '../../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
 import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
 import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
-import { ChangeProposalStateDto } from '../dtos/requests/change-proposal-state.dto';
 
 import { BaseFilterRequest } from '../../../commons/dtos/base-filter-request.dto';
 import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
@@ -21,15 +20,18 @@ import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-p
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 
 import { GetByIdDto } from '../../../commons/dtos/get-by-id.dto';
-import { FetchAmandementFilterRequest } from '../dtos/requests/fetch-amandement-filter-request.dto';
-import { ProposalCreateDto } from '../dtos/requests/proposal-create.dto';
-import { ProposalDeleteDraftDto } from '../dtos/requests/proposal-delete-draft';
-import { ProposalSaveDraftDto } from '../dtos/requests/proposal-save-draft';
-import { SendAmandementDto } from '../dtos/requests/send-amandement.dto';
-import { SendRevisionDto } from '../dtos/requests/send-revision.dto';
+import {
+  AskAmandementRequestDto,
+  ChangeProposalStateDto,
+  FetchAmandementFilterRequest,
+  FetchProposalFilterRequest,
+  ProposalCreateDto,
+  ProposalDeleteDraftDto,
+  ProposalSaveDraftDto,
+  SendAmandementDto,
+  SendRevisionDto,
+} from '../dtos/requests';
 import { TenderProposalService } from '../services/tender-proposal.service';
-import { AskAmandementRequestDto } from '../dtos/requests/ask-amandement-request.dto';
-import { FetchProposalFilterRequest } from '../dtos/requests/fetch-proposal-filter-request.dto';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(private readonly proposalService: TenderProposalService) {}

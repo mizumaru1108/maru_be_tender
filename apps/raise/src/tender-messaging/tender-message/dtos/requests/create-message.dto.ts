@@ -17,7 +17,7 @@ export class CreateMessageDto {
   @IsString()
   @IsNotEmpty()
   selectLang?: 'ar' | 'en';
-  
+
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

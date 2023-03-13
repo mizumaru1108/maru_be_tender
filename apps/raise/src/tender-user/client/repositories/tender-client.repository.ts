@@ -356,7 +356,7 @@ export class TenderClientRepository {
 
     const offset = (page - 1) * limit;
     let whereClause: Sql;
-    let query: Prisma.client_dataWhereInput = {};
+    const query: Prisma.client_dataWhereInput = {};
 
     const order_by: Prisma.client_dataOrderByWithRelationInput = {};
     const field =

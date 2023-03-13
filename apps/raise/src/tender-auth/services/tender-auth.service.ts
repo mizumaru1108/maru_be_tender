@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LoginRequestDto } from '../../auth/dtos';
-import { logUtil } from '../../commons/utils/log-util';
 import { EmailService } from '../../libs/email/email.service';
 import { FusionAuthService } from '../../libs/fusionauth/services/fusion-auth.service';
 import { TenderClientRepository } from '../../tender-user/client/repositories/tender-client.repository';

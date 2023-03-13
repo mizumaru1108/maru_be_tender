@@ -267,7 +267,7 @@ export class TenderClientService {
     );
 
     const accountManagerSubject = "There's new Account Created!";
-    const accountManagerContent: string = `There's new Account Created!, account name: ${createdUser.employee_name}`;
+    const accountManagerContent = `There's new Account Created!, account name: ${createdUser.employee_name}`;
     const accountManagerIds: string[] = [];
     const accountMangerEmails: string[] = [];
     const accountManagerMobileNumbers: string[] = [];

@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateSchedulePayload } from '../requests/create-schedule-request.dto';
 
 export class CreateScheduleResponseDto {
   @ApiProperty()

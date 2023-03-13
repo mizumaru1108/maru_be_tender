@@ -148,9 +148,9 @@ export class TenderProposalService {
     }
   }
 
-  async fetchProposalById(id: string){
+  async fetchProposalById(id: string) {
     const proposal = await this.proposalRepo.fetchProposalById(id);
-    if(!proposal) throw new NotFoundException("Proposal not found!");
+    if (!proposal) throw new NotFoundException('Proposal not found!');
     return proposal;
   }
 
@@ -439,7 +439,7 @@ export class TenderProposalService {
     if (!!sendRevisionPayload) {
       try {
         if (Object.keys(updateProposalPayload).length > 0) {
-          let restOfPayload = SendRevisionMapper(sendRevisionPayload);
+          const restOfPayload = SendRevisionMapper(sendRevisionPayload);
           updateProposalPayload = {
             ...updateProposalPayload,
             ...restOfPayload,
@@ -462,7 +462,7 @@ export class TenderProposalService {
         const keySet = new Set(allowedKeys);
         // console.log({ allowedKeys });
         // console.log('update proposal key', Object.keys(updateProposalPayload));
-        for (let key of Object.keys(updateProposalPayload)) {
+        for (const key of Object.keys(updateProposalPayload)) {
           if (!keySet.has(key)) {
             throw new BadRequestException(
               'You are just allowed to change what defined by the supervisor!',
