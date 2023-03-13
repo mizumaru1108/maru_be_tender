@@ -107,7 +107,7 @@ export class TenderUserRepository {
       throw theError;
     }
   }
-  
+
   async findByRole(role: TenderAppRole) {
     try {
       return await this.prismaService.user.findMany({
@@ -202,6 +202,7 @@ export class TenderUserRepository {
       association_name,
       client_field,
       single_role,
+      account_status,
       include_schedule = '0',
       hide_external = '0',
       hide_internal = '0',
@@ -215,6 +216,16 @@ export class TenderUserRepository {
       query = {
         ...query,
         employee_name: {
+          contains: employee_name,
+          mode: 'insensitive',
+        },
+      };
+    }
+
+    if (account_status) {
+      query = {
+        ...query,
+        status_id: {
           contains: employee_name,
           mode: 'insensitive',
         },

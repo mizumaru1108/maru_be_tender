@@ -212,14 +212,14 @@ model proposal {
   track                               track?                           @relation(fields: [track_id], references: [id], onUpdate: NoAction)
   bank_informations                   bank_information[]
   notification                        notification[]
-  payment                             payment[]
+  payments                            payment[]
   proposal_asked_edit_request         proposal_asked_edit_request[]
   proposal_assign                     proposal_assign[]
   proposal_comment                    proposal_comment[]
   proposal_edit_request               proposal_edit_request?
-  proposal_follow_up                  proposal_follow_up[]
-  proposal_item_budget                proposal_item_budget[]
-  proposal_log                        proposal_log[]
+  follow_ups                          proposal_follow_up[]
+  proposal_item_budgets               proposal_item_budget[]
+  proposal_logs                       proposal_log[]
   propsal_bank_informations           propsal_bank_information[]
   recommended_support_consultant      recommended_support_consultant[]
   payment_configuration               supervisor[]

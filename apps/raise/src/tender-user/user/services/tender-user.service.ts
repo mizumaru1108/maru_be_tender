@@ -278,7 +278,7 @@ export class TenderUserService {
       association_name,
       client_field,
       employee_path,
-      single_role,
+      single_role,      
     } = filter;
     if (
       sorting_field &&

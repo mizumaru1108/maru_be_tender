@@ -620,14 +620,14 @@ export class TenderStatisticsService {
           existingGroup.total_budget += Number(
             proposal.amount_required_fsupport,
           );
-          existingGroup.spended_budget += proposal.proposal_item_budget.reduce(
+          existingGroup.spended_budget += proposal.proposal_item_budgets.reduce(
             (sum, item) => sum + Number(item.amount),
             0,
           );
           // get last week spended budget if proposal.proposal_item_budget.created_at is in last week
           // then add it to existingGroup.spended_budget_last_week if not then add 0
           existingGroup.spended_budget_last_week +=
-            proposal.proposal_item_budget.reduce((sum, item) => {
+            proposal.proposal_item_budgets.reduce((sum, item) => {
               // get the last week from the request.end_date if exist,
               // if not get from request.start,
               // if both not exist, get from date now
@@ -655,11 +655,11 @@ export class TenderStatisticsService {
           previousData.push({
             project_track: proposal.project_track,
             total_budget: Number(proposal.amount_required_fsupport),
-            spended_budget: proposal.proposal_item_budget.reduce(
+            spended_budget: proposal.proposal_item_budgets.reduce(
               (sum, item) => sum + Number(item.amount),
               0,
             ),
-            spended_budget_last_week: proposal.proposal_item_budget.reduce(
+            spended_budget_last_week: proposal.proposal_item_budgets.reduce(
               (sum, item) => {
                 //   const date = new Date(item.created_at!);
                 //   const lastWeek = new Date();
@@ -693,13 +693,13 @@ export class TenderStatisticsService {
             ),
             reserved_budget:
               0 -
-              proposal.proposal_item_budget.reduce(
+              proposal.proposal_item_budgets.reduce(
                 (sum, item) => sum + Number(item.amount),
                 0,
               ),
             reserved_budget_last_week:
               0 -
-              proposal.proposal_item_budget.reduce((sum, item) => {
+              proposal.proposal_item_budgets.reduce((sum, item) => {
                 // const date = new Date(item.created_at!);
                 // const lastWeek = new Date();
                 // lastWeek.setDate(lastWeek.getDate() - 7);
