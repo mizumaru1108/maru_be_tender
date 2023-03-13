@@ -280,7 +280,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
               ...{
                 amount_required_fsupport: tmpValues?.data.amount_required_fsupport,
                 detail_project_budgets: {
-                  data: tmpValues?.data.proposal_item_budget.map((item: any, index: any) => ({
+                  data: tmpValues?.data.proposal_item_budgets.map((item: any, index: any) => ({
                     amount: item.amount,
                     clause: item.clause.trim(),
                     explanation: item.explanation.trim(),

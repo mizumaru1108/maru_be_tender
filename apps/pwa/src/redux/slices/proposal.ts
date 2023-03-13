@@ -261,7 +261,7 @@ export const getProposal = (id: string, role: string) => async () => {
           },
         }
       );
-      console.log(res.data.data.proposal);
+      // console.log(res.data.data.proposal);
       dispatch(slice.actions.setProposal(res.data.data.proposal));
     }
 

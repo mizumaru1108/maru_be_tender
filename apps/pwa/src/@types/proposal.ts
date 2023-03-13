@@ -178,7 +178,7 @@ export interface AmandmentRequestForm extends AmandementProposal {
   pm_email: string;
   region: string;
   governorate: string;
-  proposal_item_budget: ItemBudget[];
+  proposal_item_budgets: ItemBudget[];
 }
 
 export type AmandementProposalList = {
@@ -230,28 +230,68 @@ type Role =
   | 'FINANCE'
   | 'CASHIER';
 
-export type Log = {
-  message: string;
+export type PropsalLog = {
+  clasification_field: string;
+  clause: string;
+  closing_report: boolean;
+  does_an_agreement: boolean;
+  inclu_or_exclu: boolean;
+  number_of_payments_by_supervisor: number;
+  fsupport_by_supervisor: string;
+  support_outputs: string;
+  support_type: boolean;
+  support_goal_id: string;
+  need_picture: boolean;
+  vat: boolean;
+  vat_percentage: number;
+  created_at: any;
+  updated_at: any;
+  state: string;
+  project_track: string;
+};
+
+export type PropsalLogGrants = {
   notes: string;
-  action: 'accept' | 'reject' | 'pending' | 'accept_and_need_consultant' | 'one_step_back';
-  created_at: Date;
-  user_role: Role;
+  updated_at: any;
   proposal: {
+    accreditation_type_id: string;
+    added_value: string;
+    been_made_before: boolean;
+    been_supported_before: boolean;
+    chairman_of_board_of_directors: string;
     clasification_field: string;
     clause: string;
     closing_report: boolean;
     does_an_agreement: boolean;
-    inclu_or_exclu: boolean;
+    fsupport_by_supervisor: number;
+    inclu_or_exclu: string;
+    need_picture: boolean;
     number_of_payments_by_supervisor: number;
-    fsupport_by_supervisor: string;
+    reasons_to_accept: string;
+    remote_or_insite: string;
+    support_goal_id: string;
     support_outputs: string;
     support_type: boolean;
-    support_goal_id: string;
-    need_picture: boolean;
+    target_group_age: number;
+    target_group_num: number;
+    target_group_type: string;
     vat: boolean;
     vat_percentage: number;
-    created_at: any;
-    updated_at: any;
-    state: string;
   };
+};
+
+export type Log = {
+  message: string;
+  notes: string;
+  action:
+    | 'accept'
+    | 'reject'
+    | 'pending'
+    | 'accept_and_need_consultant'
+    | 'one_step_back'
+    | 'step_back'
+    | 'send_back_for_revision';
+  created_at: Date;
+  user_role: Role;
+  proposal: PropsalLog;
 };
