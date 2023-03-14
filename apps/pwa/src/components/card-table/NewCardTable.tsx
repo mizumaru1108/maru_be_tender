@@ -13,7 +13,7 @@ import axiosInstance from 'utils/axios';
 import useAuth from 'hooks/useAuth';
 import { useSelector } from 'redux/store';
 import ProjectCard from './ProjectCard';
-import NewProjectCard from './NewProjectCard';
+import ClientCard from './ClientCard';
 
 function NewCardTable({
   title,
@@ -48,7 +48,7 @@ function NewCardTable({
       if (activeRole === 'tender_accounts_manager') {
         if (filtered !== null) {
           const res = await axiosInstance.get(url, {
-            params: { limit: params.limit, page: page, employee_name: filtered },
+            params: { limit: params.limit, page: page, employee_name: filtered, account_status:filtered },
             headers: headersProps,
           });
           if (res.data.statusCode === 200) {
@@ -130,7 +130,7 @@ function NewCardTable({
                 destination="current-project"
               />
             ) : (
-              <NewProjectCard
+              <ClientCard
                 id={item.id}
                 title={{ statusId: item.status_id }}
                 email={item.email}

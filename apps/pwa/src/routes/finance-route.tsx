@@ -27,6 +27,9 @@ const NonClientProfileEdit = Loadable(
   lazy(() => import('sections/non-client-profile/NonClientProfileEdit'))
 );
 const Searching = Loadable(lazy(() => import('pages/searching')));
+const PreviousFundingRequestsFinance = Loadable(
+  lazy(() => import('pages/finance/PreviousFundingRequests'))
+);
 
 export const financeRoute = {
   path: 'finance',
@@ -85,6 +88,20 @@ export const financeRoute = {
           path: 'requests-in-process',
           children: [
             { path: '', element: <RequestsInProcessFinance /> },
+            {
+              path: ':id/amandementRequest',
+              element: <AmandementRequest />,
+            },
+            {
+              path: ':id/:actionType',
+              element: <ProjectDetails />,
+            },
+          ],
+        },
+        {
+          path: 'previous-funding-requests',
+          children: [
+            { path: '', element: <PreviousFundingRequestsFinance /> },
             {
               path: ':id/amandementRequest',
               element: <AmandementRequest />,

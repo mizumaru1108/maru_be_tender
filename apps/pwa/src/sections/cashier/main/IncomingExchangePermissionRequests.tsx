@@ -15,7 +15,7 @@ function IncomingExchangePermissionRequests() {
       limit: 4,
       where: {
         cashier_id: { _is_null: true },
-        _and: { inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' } },
+        _and: { inner_status: { _eq: 'ACCEPTED_BY_FINACE' } },
       },
     },
   });

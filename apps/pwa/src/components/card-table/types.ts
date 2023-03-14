@@ -54,7 +54,7 @@ export type ProjectCardProps = {
     | 'exchange-permission'; // it refers to the url that I came from and the url that I have to go to
 };
 
-export type NewProjectCardProps = {
+export type ClientCardProps = {
   title: CardStatus;
   createdAt: Date;
   email?: string;

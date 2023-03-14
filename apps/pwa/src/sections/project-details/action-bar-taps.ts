@@ -135,6 +135,10 @@ export const Taps = {
         title: 'project_details.actions.follow_ups',
         value: 'follow-ups',
       },
+      {
+        title: 'project_details.actions.payments',
+        value: 'payments',
+      },
     ],
     'completing-exchange-permission': [
       {

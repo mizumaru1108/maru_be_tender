@@ -69,6 +69,7 @@ export const PATH_FINANCE = {
     '/dashboard/incoming-exchange-permission-requests'
   ),
   requests_in_process: path(ROOTS_FINANCE, '/dashboard/requests-in-process'),
+  previous_funding_requests: path(ROOTS_FINANCE, '/dashboard/previous-funding-requests'),
   portal_reports: path(ROOTS_FINANCE, '/dashboard/portal-reports'),
   messages: path(ROOTS_FINANCE, '/dashboard/messages'),
 };
@@ -81,6 +82,7 @@ export const PATH_CASHIER = {
     '/dashboard/incoming-exchange-permission-requests'
   ),
   requests_in_process: path(ROOTS_CASHIER, '/dashboard/requests-in-process'),
+  previous_funding_requests: path(ROOTS_CASHIER, '/dashboard/previous-funding-requests'),
   portal_reports: path(ROOTS_CASHIER, '/dashboard/portal-reports'),
   messages: path(ROOTS_CASHIER, '/dashboard/messages'),
 };

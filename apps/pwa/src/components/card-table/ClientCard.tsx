@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 import { useLocation, useNavigate } from 'react-router';
-import { ProjectCardProps, NewProjectCardProps } from './types';
+import { ClientCardProps } from './types';
 import moment from 'moment';
 import useAuth from 'hooks/useAuth';
 import { asignProposalToAUser } from 'queries/commons/asignProposalToAUser';
@@ -58,7 +58,7 @@ const RolesMap = {
   tender_consultant: '',
   tender_moderator: '',
 };
-const NewProjectCard = ({
+const ClientCard = ({
   title,
   createdAt,
   email,
@@ -69,7 +69,7 @@ const NewProjectCard = ({
   footer,
   cardFooterButtonAction,
   destination, // it refers to the url that I came from and the url that I have to go to
-}: NewProjectCardProps) => {
+}: ClientCardProps) => {
   const { user, activeRole } = useAuth();
   const role = activeRole!;
   const navigate = useNavigate();
@@ -241,4 +241,4 @@ const NewProjectCard = ({
   );
 };
 
-export default NewProjectCard;
+export default ClientCard;

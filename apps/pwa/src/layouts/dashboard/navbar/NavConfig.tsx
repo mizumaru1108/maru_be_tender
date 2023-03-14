@@ -57,6 +57,7 @@ const ICONS = {
     main: getIcon('main'),
     incoming_exchange_permission_requests: getIcon('incoming-exchange-permission-requests'),
     requests_in_process: getIcon('requests-in-process'),
+    previous_funding_requests: getIcon('previous-request'),
     portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
   },
@@ -64,6 +65,7 @@ const ICONS = {
     main: getIcon('main'),
     Incoming_exchange_permission_requests: getIcon('incoming-exchange-permission-requests'),
     requests_in_process: getIcon('requests-in-process'),
+    previous_funding_requests: getIcon('previous-request'),
     portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
   },
@@ -223,6 +225,11 @@ const navConfig = {
           icon: ICONS.tender_finance.requests_in_process,
         },
         {
+          title: 'previous_funding_requests',
+          path: PATH_FINANCE.previous_funding_requests,
+          icon: ICONS.tender_finance.previous_funding_requests,
+        },
+        {
           title: 'portal_reports',
           path: PATH_FINANCE.portal_reports,
           icon: ICONS.tender_finance.portal_reports,
@@ -253,6 +260,11 @@ const navConfig = {
           title: 'requests_in_process',
           path: PATH_CASHIER.requests_in_process,
           icon: ICONS.tender_cashier.requests_in_process,
+        },
+        {
+          title: 'previous_funding_requests',
+          path: PATH_CASHIER.previous_funding_requests,
+          icon: ICONS.tender_cashier.previous_funding_requests,
         },
         {
           title: 'portal_reports',

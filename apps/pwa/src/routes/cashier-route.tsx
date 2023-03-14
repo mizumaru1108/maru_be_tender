@@ -27,6 +27,9 @@ const Searching = Loadable(lazy(() => import('pages/searching')));
 const AmandementRequest = Loadable(
   lazy(() => import('pages/amandement-request/AmandementRequest'))
 );
+const PreviousFundingRequestsCashier = Loadable(
+  lazy(() => import('pages/cashier/PreviousFundingRequests'))
+);
 
 export const cashierRoute = {
   path: 'cashier',
@@ -85,6 +88,20 @@ export const cashierRoute = {
           path: 'requests-in-process',
           children: [
             { path: '', element: <RequestsInProcessCashier /> },
+            {
+              path: ':id/:actionType',
+              element: <ProjectDetails />,
+            },
+          ],
+        },
+        {
+          path: 'previous-funding-requests',
+          children: [
+            { path: '', element: <PreviousFundingRequestsCashier /> },
+            {
+              path: ':id/amandementRequest',
+              element: <AmandementRequest />,
+            },
             {
               path: ':id/:actionType',
               element: <ProjectDetails />,
