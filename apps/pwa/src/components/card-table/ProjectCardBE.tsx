@@ -444,6 +444,8 @@ const ProjectCardBE = ({
                 >
                   {destination === 'requests-in-process'
                     ? translate('continue_studying_the_project')
+                    : role === 'tender_client'
+                    ? translate('show_clients_project_detail')
                     : translate(cardFooterButtonActionLocal[`${cardFooterButtonAction}`])}
                 </Button>
               )}

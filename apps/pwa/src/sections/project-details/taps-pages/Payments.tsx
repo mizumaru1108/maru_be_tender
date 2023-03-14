@@ -4,6 +4,7 @@ import { CachierPaymentsTable } from '../payments/cachier';
 import FinancePaymentsPage from '../payments/finance';
 import { ManagerPaymentsPage } from '../payments/project-manager';
 import SupervisorPaymentsPage from '../payments/supervisor';
+import ClientPaymentsPage from '../payments/client/ClientPaymentsPage';
 import useLocales from 'hooks/useLocales';
 
 function Payments() {
@@ -20,6 +21,7 @@ function Payments() {
     activeRole === 'tender_project_supervisor'!
   )
     return <SupervisorPaymentsPage />;
+
   if (
     ['ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR', 'DONE_BY_CASHIER'].includes(proposal.inner_status)
   ) {
@@ -32,6 +34,11 @@ function Payments() {
       </div>
     );
   }
+
+  if (['REQUESTING_CLOSING_FORM'].includes(proposal.inner_status)) {
+    return <ClientPaymentsPage />;
+  }
+
   return <>{translate('nothing_payment')}</>;
 }
 

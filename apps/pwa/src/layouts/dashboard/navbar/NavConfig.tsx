@@ -160,7 +160,7 @@ const navConfig = {
           icon: ICONS.tender_client.previous_funding_requests,
         },
         {
-          title: 'pages.common.close_report.text.heading_spv',
+          title: 'pages.common.close_report.text.project_report',
           path: PATH_CLIENT.incoming_close_reports,
           icon: ICONS.tender_project_supervisor.payment_adjustment,
         },
@@ -408,7 +408,7 @@ const navConfig = {
           icon: ICONS.tender_project_supervisor.payment_adjustment,
         },
         {
-          title: 'pages.common.close_report.text.heading_spv',
+          title: 'pages.common.close_report.text.project_report',
           path: PATH_PROJECT_SUPERVISOR.incoming_close_reports,
           icon: ICONS.tender_project_supervisor.payment_adjustment,
         },

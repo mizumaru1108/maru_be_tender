@@ -8,6 +8,7 @@ import { useSelector } from 'redux/store';
 import ConsultantFloatingActionBar from './consultant';
 import RejectProjectsActionBar from './reject-project';
 import FloatingCloseReportSPV from '../floating-close-report/FloatingSpv';
+import FloatingClientSubmit from '../floating-close-report/FloatingClientSubmit';
 
 function FloatinActonBar() {
   const { actionType } = useParams();
@@ -57,10 +58,17 @@ function FloatinActonBar() {
 
       {activeTap &&
         ['main'].includes(activeTap) &&
-        actionType === 'show-project' &&
+        actionType === 'show-details' &&
         pathName &&
-        pathName[3] === 'incoming-close-reports' &&
+        pathName[3] === 'project-report' &&
         proposal.inner_status === 'DONE_BY_CASHIER' && <FloatingCloseReportSPV />}
+
+      {activeTap &&
+        ['follow-ups'].includes(activeTap) &&
+        actionType === 'show-details' &&
+        pathName &&
+        pathName[3] === 'project-report' &&
+        proposal.inner_status === 'REQUESTING_CLOSING_FORM' && <FloatingClientSubmit />}
     </>
   );
 }

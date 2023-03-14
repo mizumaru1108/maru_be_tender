@@ -23,13 +23,13 @@ function IncomingCloseReports() {
   }));
 
   return (
-    <Page title={translate('pages.common.close_report.text.heading_spv')}>
+    <Page title={translate('pages.common.close_report.text.project_report')}>
       <Container>
         <ContentStyle>
           <CardTableBE
             resource={gettingPaymentAdjustment}
-            title={translate('pages.common.close_report.text.heading_spv')}
-            cardFooterButtonAction="show-project"
+            title={translate('pages.common.close_report.text.project_report')}
+            cardFooterButtonAction="show-details"
             alphabeticalOrder={true}
             filters={[
               {
@@ -56,7 +56,7 @@ function IncomingCloseReports() {
                 },
               },
             }}
-            destination={'incoming-close-reports'}
+            destination={'project-report'}
           />
         </ContentStyle>
       </Container>

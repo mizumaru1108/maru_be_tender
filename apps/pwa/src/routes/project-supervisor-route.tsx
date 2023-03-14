@@ -97,7 +97,7 @@ export const projectSupervisorRoute = {
           ],
         },
         {
-          path: 'incoming-close-reports',
+          path: 'project-report',
           children: [
             { path: '', element: <IncomingCloseReports /> },
             {

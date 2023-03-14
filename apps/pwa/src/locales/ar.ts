@@ -32,6 +32,9 @@ const ar = {
         text: {
           sidebar: 'تقرير ختامي',
           heading_spv: 'تقرير إغلاق وارد',
+          project_report: 'تقرير المشروع',
+          finished: 'انتهى',
+          main_information: 'المعلومات الرئيسية',
         },
         btn: {
           accept_exchange_permission: 'قبول إذن الصرف',

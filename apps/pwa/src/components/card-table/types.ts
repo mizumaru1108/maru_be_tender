@@ -52,7 +52,7 @@ export type ProjectCardProps = {
     | 'current-project'
     | 'payment-adjustment'
     | 'exchange-permission' // it refers to the url that I came from and the url that I have to go to
-    | 'incoming-close-reports';
+    | 'project-report';
 };
 
 export type ClientCardProps = {
@@ -77,7 +77,7 @@ export type ClientCardProps = {
     | 'current-project'
     | 'payment-adjustment'
     | 'exchange-permission' // it refers to the url that I came from and the url that I have to go to
-    | 'incoming-close-reports';
+    | 'project-report';
 };
 
 export type ProjectCardPropsBE = {
@@ -149,7 +149,7 @@ export type CardTablePropsBE = {
     | 'current-project'
     | 'payment-adjustment'
     | 'exchange-permission' // it refers to the url that I came from and the url that I have to go to
-    | 'incoming-close-reports';
+    | 'project-report';
   staticFilters?: any;
   baseFilters?: any;
 };

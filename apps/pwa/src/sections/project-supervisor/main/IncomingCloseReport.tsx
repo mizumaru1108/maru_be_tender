@@ -47,7 +47,7 @@ export default function IncomingCloseReport() {
     <Grid item md={12}>
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="h4" sx={{ mb: '20px' }}>
-          {translate('pages.common.close_report.text.heading_spv')}
+          {translate('pages.common.close_report.text.project_report')}
         </Typography>
         <Button
           sx={{
@@ -59,7 +59,7 @@ export default function IncomingCloseReport() {
             },
           }}
           onClick={() => {
-            navigate('/project-supervisor/dashboard/incoming-close-reports');
+            navigate('/project-supervisor/dashboard/project-report');
           }}
         >
           {translate('view_all')}
@@ -85,8 +85,8 @@ export default function IncomingCloseReport() {
               footer={{
                 createdAt: new Date(item.updated_at),
               }}
-              cardFooterButtonAction="show-project"
-              destination="incoming-close-reports"
+              cardFooterButtonAction="show-details"
+              destination="project-report"
             />
           </Grid>
         ))}

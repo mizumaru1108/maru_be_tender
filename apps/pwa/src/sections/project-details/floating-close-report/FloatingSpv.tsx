@@ -50,7 +50,7 @@ export default function FloatingCloseReport() {
           autoHideDuration: 3000,
         });
 
-        navigate('/project-supervisor/dashboard/incoming-close-reports');
+        navigate('/project-supervisor/dashboard/project-report');
       }
     } catch (err) {
       if (typeof err.message === 'object') {

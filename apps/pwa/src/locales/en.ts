@@ -33,6 +33,9 @@ const en = {
         text: {
           sidebar: 'Closing Report',
           heading_spv: 'Incoming Close Report',
+          project_report: 'Project Report',
+          finished: 'finished',
+          main_information: 'Main Information',
         },
         btn: {
           accept_exchange_permission: 'Acceptance exchange permission',
