@@ -118,24 +118,24 @@ export class TenderMessagesService {
         throw new BadRequestException("You can't start a new message!");
       }
 
-      if (
-        (correspondanceType === 'INTERNAL' &&
-          partnerRole.indexOf('CLIENT') > -1) ||
-        (correspondanceType === 'INTERNAL' &&
-          partnerSelectedRole === 'tender_client') ||
-        (correspondanceType === 'EXTERNAL' &&
-          partnerRole.indexOf('CLIENT') === -1) ||
-        (correspondanceType === 'EXTERNAL' &&
-          partnerSelectedRole !== 'tender_client')
-      ) {
-        throw new BadRequestException(
-          `Your partner is not ${
-            correspondanceType === 'INTERNAL'
-              ? 'an administrative account!'
-              : 'a client!'
-          }`,
-        );
-      }
+      // if (
+      //   (correspondanceType === 'INTERNAL' &&
+      //     partnerRole.indexOf('CLIENT') > -1) ||
+      //   (correspondanceType === 'INTERNAL' &&
+      //     partnerSelectedRole === 'tender_client') ||
+      //   (correspondanceType === 'EXTERNAL' &&
+      //     partnerRole.indexOf('CLIENT') === -1) ||
+      //   (correspondanceType === 'EXTERNAL' &&
+      //     partnerSelectedRole !== 'tender_client')
+      // ) {
+      //   throw new BadRequestException(
+      //     `Your partner is not ${
+      //       correspondanceType === 'INTERNAL'
+      //         ? 'an administrative account!'
+      //         : 'a client!'
+      //     }`,
+      //   );
+      // }
 
       const newRoomChat = await this.tenderRoomChatRepository.createRoomChat(
         senderId,
