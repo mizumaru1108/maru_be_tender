@@ -26,16 +26,21 @@ import {
 } from '../../../tender-commons/types/proposal';
 import { actionValidator } from '../../../tender-commons/utils/action-validator';
 import { generateFileName } from '../../../tender-commons/utils/generate-filename';
+import { isTenderFilePayload } from '../../../tender-commons/utils/is-tender-file-payload';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { ownershipErrorThrow } from '../../../tender-commons/utils/proposal-ownership-error-thrower';
+import { TenderFileManagerService } from '../../../tender-file-manager/services/tender-file-manager.service';
 import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import { TenderProposalLogRepository } from '../../tender-proposal-log/repositories/tender-proposal-log.repository';
 import { TenderProposalRepository } from '../../tender-proposal/repositories/tender-proposal.repository';
-import { CreateProposalPaymentDto } from '../dtos/requests/create-payment.dto';
-import { SendClosingReportDto } from '../dtos/requests/send-closing-report.dto';
-import { UpdatePaymentDto } from '../dtos/requests/update-payment.dto';
-import { CreateChequeMapper } from '../mappers/create-cheque.mapper';
+import {
+  CreateProposalPaymentDto,
+  UpdatePaymentDto,
+  SendClosingReportDto,
+  AskClosingReportDto,
+} from '../dtos/requests';
+import { CreateChequeMapper, CreateClosingReportMapper } from '../mappers';
 import { CreateManyPaymentMapper } from '../mappers/create-many-payment.mapper';
 import { TenderProposalPaymentRepository } from '../repositories/tender-proposal-payment.repository';
 
@@ -53,6 +58,7 @@ export class TenderProposalPaymentService {
     private readonly tenderProposalRepository: TenderProposalRepository,
     private readonly tenderProposalLogRepository: TenderProposalLogRepository,
     private readonly paymentRepo: TenderProposalPaymentRepository,
+    private readonly fileManagerService: TenderFileManagerService,
   ) {
     const environment = this.configService.get('APP_ENV');
     if (!environment) envLoadErrorHelper('APP_ENV');
@@ -350,5 +356,115 @@ export class TenderProposalPaymentService {
     }
 
     return await this.paymentRepo.completePayment(currentUser, proposal_id);
+  }
+
+  async submitClosingReport(
+    currentUser: TenderCurrentUser,
+    request: AskClosingReportDto,
+  ) {
+    const mappedRequest = CreateClosingReportMapper(request);
+    const tmpObj: Record<string, any> = {};
+    let uploadedFilePath: string[] = [];
+    try {
+      const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
+        [];
+
+      const maxSize: number = 1024 * 1024 * 6; // 6 MB
+      const allowedType: FileMimeTypeEnum[] = [
+        FileMimeTypeEnum.JPG,
+        FileMimeTypeEnum.JPEG,
+        FileMimeTypeEnum.PNG,
+        FileMimeTypeEnum.PDF,
+      ];
+
+      for (let i = 0; i < request.attacments.length; i++) {
+        const attachment = request.attacments[i];
+        if (isTenderFilePayload(attachment)) {
+          const uploadResult = await this.fileManagerService.uploadProposalFile(
+            currentUser.id,
+            request.proposal_id,
+            'uploading closing report attacments',
+            attachment,
+            'closing-form/attachment',
+            allowedType,
+            maxSize,
+            uploadedFilePath,
+          );
+          uploadedFilePath = uploadResult.uploadedFilePath;
+          // tmpObj.attachments = uploadResult.fileObj;
+          if (tmpObj.attachments !== undefined) {
+            tmpObj.attachments.push(uploadResult.fileObj);
+          } else {
+            tmpObj.attachments = [uploadResult.fileObj];
+          }
+
+          const payload: Prisma.file_managerUncheckedCreateInput = {
+            id: uuidv4(),
+            user_id: currentUser.id,
+            name: uploadResult.fileObj.url.split('/').pop() as string,
+            url: uploadResult.fileObj.url,
+            mimetype: uploadResult.fileObj.type,
+            size: uploadResult.fileObj.size,
+            column_name: 'attachments',
+            table_name: 'closing_report_request',
+            proposal_id: request.proposal_id,
+          };
+          fileManagerCreateManyPayload.push(payload);
+        }
+      }
+
+      for (let i = 0; i < request.images.length; i++) {
+        const images = request.images[i];
+        if (isTenderFilePayload(images)) {
+          const uploadResult = await this.fileManagerService.uploadProposalFile(
+            currentUser.id,
+            request.proposal_id,
+            'uploading closing report images',
+            images,
+            'closing-form/images',
+            allowedType,
+            maxSize,
+            uploadedFilePath,
+          );
+          uploadedFilePath = uploadResult.uploadedFilePath;
+          if (tmpObj.images !== undefined) {
+            tmpObj.images.push(uploadResult.fileObj);
+          } else {
+            tmpObj.images = [uploadResult.fileObj];
+          }
+
+          const payload: Prisma.file_managerUncheckedCreateInput = {
+            id: uuidv4(),
+            user_id: currentUser.id,
+            name: uploadResult.fileObj.url.split('/').pop() as string,
+            url: uploadResult.fileObj.url,
+            mimetype: uploadResult.fileObj.type,
+            size: uploadResult.fileObj.size,
+            column_name: 'images',
+            table_name: 'closing_report_request',
+            proposal_id: request.proposal_id,
+          };
+          fileManagerCreateManyPayload.push(payload);
+        }
+      }
+
+      const closingReportRequestPayload: Prisma.proposal_closing_reportUncheckedCreateInput =
+        {
+          ...mappedRequest,
+          attachments: tmpObj.attachments,
+          images: tmpObj.images,
+        };
+
+      const result = await this.paymentRepo.submitClosingReport(
+        request.proposal_id,
+        closingReportRequestPayload,
+        fileManagerCreateManyPayload,
+        uploadedFilePath,
+      );
+
+      return result;
+    } catch (err) {
+      throw err;
+    }
   }
 }

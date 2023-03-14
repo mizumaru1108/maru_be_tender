@@ -46,13 +46,11 @@ import { UserClientDataMapper } from '../mappers/user-client-data.mapper';
 import { TenderClientRepository } from '../repositories/tender-client.repository';
 
 import { logUtil } from '../../../commons/utils/log-util';
-import { finalUploadFileJson } from '../../../tender-commons/dto/final-upload-file-jsonb.dto';
 import { CommonNotificationMapperResponse } from '../../../tender-commons/dto/common-notification-mapper-response.dto';
+import { finalUploadFileJson } from '../../../tender-commons/dto/final-upload-file-jsonb.dto';
 import { TenderNotificationRepository } from '../../../tender-notification/repository/tender-notification.repository';
 import { SearchClientProposalFilter } from '../dtos/requests/search-client-proposal-filter-request.dto';
 import { SearchSpecificClientProposalFilter } from '../dtos/requests/search-specific-client-proposal-filter-request.dto';
-import { TenderCurrentUser } from '../../user/interfaces/current-user.interface';
-import { AskClosingReportDto } from '../dtos/requests';
 @Injectable()
 export class TenderClientService {
   private readonly appEnv: string;
@@ -93,11 +91,6 @@ export class TenderClientService {
       throw new InternalServerErrorException(error);
     }
   }
-
-  async askClosingReport(
-    currentUser: TenderCurrentUser,
-    request: AskClosingReportDto,
-  ) {}
 
   // create user and it's relation to client_data table by user_id in client_data table
   async createUserAndClient(

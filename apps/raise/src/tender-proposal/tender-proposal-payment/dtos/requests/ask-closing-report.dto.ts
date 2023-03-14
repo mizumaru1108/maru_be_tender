@@ -1,7 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { TenderFilePayload } from '../../../../tender-commons/dto/tender-file-payload.dto';
 
 export class AskClosingReportDto {
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  proposal_id: string;
+
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
@@ -41,4 +54,18 @@ export class AskClosingReportDto {
   @IsNumber()
   @IsNotEmpty()
   number_of_staff: number;
+
+  @ApiProperty()
+  @IsArray()
+  @IsNotEmpty({ each: true })
+  @ValidateNested({ each: true })
+  @Type(() => TenderFilePayload)
+  attacments: TenderFilePayload[];
+
+  @ApiProperty()
+  @IsArray()
+  @IsNotEmpty({ each: true })
+  @ValidateNested({ each: true })
+  @Type(() => TenderFilePayload)
+  images: TenderFilePayload[];
 }

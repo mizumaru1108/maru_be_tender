@@ -1,13 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  Prisma,
-  proposal,
-  proposal_edit_request,
-  proposal_item_budget,
-} from '@prisma/client';
+import { Prisma, proposal, proposal_item_budget } from '@prisma/client';
 import { nanoid } from 'nanoid';
-import { UserDefinedMessageList } from 'twilio/lib/rest/api/v2010/account/call/userDefinedMessage';
 import { logUtil } from '../../../commons/utils/log-util';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';

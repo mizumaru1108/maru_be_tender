@@ -1,16 +1,17 @@
 export const isTenderFilePayload = (payload: any): boolean => {
   if (
-    payload.hasOwnProperty('base64Data') &&
+    payload !== undefined &&
+    payload['base64Data'] !== undefined &&
     typeof payload.base64Data === 'string' &&
     !!payload.base64Data &&
-    payload.hasOwnProperty('fullName') &&
+    payload['fullName'] !== undefined &&
     typeof payload.fullName === 'string' &&
     !!payload.fullName &&
-    payload.hasOwnProperty('fileExtension') &&
+    payload['fileExtension'] !== undefined &&
     typeof payload.fileExtension === 'string' &&
     !!payload.fileExtension &&
     payload.fileExtension.match(/^([a-z]+\/[a-z]+)(;[a-z]+=[a-z]+)*$/i) &&
-    payload.hasOwnProperty('size') &&
+    payload['size'] !== undefined &&
     typeof payload.size === 'number'
   ) {
     return true;

@@ -17,14 +17,14 @@ import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard
 import { ManualPaginatedResponse } from '../../../tender-commons/helpers/manual-paginated-response.dto';
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import { ICurrentUser } from '../../../user/interfaces/current-user.interface';
-import { TenderCurrentUser } from '../../user/interfaces/current-user.interface';
-import { AskClosingReportDto } from '../dtos/requests';
-import { ClientEditRequestFieldDto } from '../dtos/requests/client-edit-request-field.dto';
-import { EditRequestByIdDto } from '../dtos/requests/edit-request-by-id.dto';
-import { RejectEditRequestDto } from '../dtos/requests/reject-edit-request.dto';
-import { SearchClientProposalFilter } from '../dtos/requests/search-client-proposal-filter-request.dto';
-import { SearchEditRequestFilter } from '../dtos/requests/search-edit-request-filter-request.dto';
-import { SearchSpecificClientProposalFilter } from '../dtos/requests/search-specific-client-proposal-filter-request.dto';
+import {
+  ClientEditRequestFieldDto,
+  EditRequestByIdDto,
+  RejectEditRequestDto,
+  SearchClientProposalFilter,
+  SearchEditRequestFilter,
+  SearchSpecificClientProposalFilter,
+} from '../dtos/requests';
 import { TenderClientService } from '../services/tender-client.service';
 
 @Controller('tender/client')
@@ -41,25 +41,6 @@ export class TenderClientController {
     const response = await this.tenderClientService.createEditRequest(
       user,
       editRequest,
-    );
-
-    return baseResponseHelper(
-      response,
-      HttpStatus.OK,
-      'Asking for changes successfully applied!, please wait untill account manager responded to your request',
-    );
-  }
-
-  @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_client')
-  @Post('ask-closing-report')
-  async askClosingReport(
-    @CurrentUser() user: TenderCurrentUser,
-    @Body() request: AskClosingReportDto,
-  ): Promise<BaseResponse<any>> {
-    const response = await this.tenderClientService.askClosingReport(
-      user,
-      request,
     );
 
     return baseResponseHelper(

@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { cheque, payment, Prisma } from '@prisma/client';
 import { nanoid } from 'nanoid';
 import { logUtil } from '../../../commons/utils/log-util';
+import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import {
@@ -22,7 +23,10 @@ export class TenderProposalPaymentRepository {
   private readonly logger = ROOT_LOGGER.child({
     logger: TenderProposalPaymentRepository.name,
   });
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly bunnyService: BunnyService,
+  ) {}
 
   async findPaymentById(id: string): Promise<payment | null> {
     this.logger.debug(`finding payment by id of ${id}... `);
@@ -486,6 +490,84 @@ export class TenderProposalPaymentRepository {
         TenderProposalPaymentRepository.name,
         'complete payment error details: ',
         'compliting payment!',
+      );
+      throw theError;
+    }
+  }
+
+  async submitClosingReport(
+    proposal_id: string,
+    closingReportPayload: Prisma.proposal_closing_reportUncheckedCreateInput,
+    fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
+    uploadedFilePath: string[],
+  ) {
+    try {
+      return await this.prismaService.$transaction(async (prisma) => {
+        this.logger.log(
+          'info',
+          `updating proposal ${proposal_id}, inner and outter to be completed`,
+        );
+        await prisma.proposal.update({
+          where: {
+            id: proposal_id,
+          },
+          data: {
+            inner_status: InnerStatusEnum.PROJECT_COMPLETED,
+            outter_status: OutterStatusEnum.COMPLETED,
+          },
+        });
+
+        this.logger.log(
+          'info',
+          `creating closing report with paylaod of \n${logUtil(
+            closingReportPayload,
+          )}`,
+        );
+        await prisma.proposal_closing_report.create({
+          data: closingReportPayload,
+        });
+
+        this.logger.log(
+          'info',
+          `creating new file manager with paylaod of \n${logUtil(
+            fileManagerCreateManyPayload,
+          )}`,
+        );
+        await prisma.file_manager.createMany({
+          data: fileManagerCreateManyPayload,
+        });
+
+        this.logger.log('info', `creating new proposal log`);
+        await prisma.proposal_log.create({
+          data: {
+            id: nanoid(),
+            proposal_id,
+            action: 'Project Completed',
+            state: TenderAppRoleEnum.CLIENT,
+            user_role: TenderAppRoleEnum.CLIENT,
+          },
+        });
+
+        await prisma.file_manager.createMany({
+          data: fileManagerCreateManyPayload,
+        });
+      });
+    } catch (err) {
+      if (uploadedFilePath.length > 0) {
+        this.logger.log(
+          'info',
+          `error occured during submitting closing report, deleting all previous uploaded files`,
+        );
+        uploadedFilePath.forEach(async (path) => {
+          await this.bunnyService.deleteMedia(path, true);
+        });
+      }
+
+      const theError = prismaErrorThrower(
+        err,
+        TenderProposalPaymentRepository.name,
+        'Send Amandement error details: ',
+        'Sending Amandement!',
       );
       throw theError;
     }

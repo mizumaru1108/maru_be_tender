@@ -15,17 +15,18 @@ import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decora
 import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
-import { CreateProposalPaymentDto } from '../dtos/requests/create-payment.dto';
-import { SendClosingReportDto } from '../dtos/requests/send-closing-report.dto';
-import { UpdatePaymentDto } from '../dtos/requests/update-payment.dto';
-import { UpdatePaymentResponseDto } from '../dtos/responses/update-payment-response.dto';
+import {
+  CreateProposalPaymentDto,
+  AskClosingReportDto,
+  UpdatePaymentDto,
+  SendClosingReportDto,
+} from '../dtos/requests';
+import { UpdatePaymentResponseDto } from '../dtos/responses';
 import { TenderProposalPaymentService } from '../services/tender-proposal-payment.service';
 
 @Controller('tender/proposal/payment')
 export class TenderProposalPaymentController {
-  constructor(
-    private readonly tenderProposalPaymentService: TenderProposalPaymentService,
-  ) {}
+  constructor(private readonly paymentService: TenderProposalPaymentService) {}
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_project_supervisor')
@@ -34,15 +35,33 @@ export class TenderProposalPaymentController {
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: CreateProposalPaymentDto,
   ): Promise<BaseResponse<proposal>> {
-    const createdPayment =
-      await this.tenderProposalPaymentService.insertPayment(
-        currentUser.id,
-        request,
-      );
+    const createdPayment = await this.paymentService.insertPayment(
+      currentUser.id,
+      request,
+    );
     return baseResponseHelper(
       createdPayment,
       HttpStatus.CREATED,
       'Payment created successfully',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_client')
+  @Post('submit-closing-report')
+  async askClosingReport(
+    @CurrentUser() user: TenderCurrentUser,
+    @Body() request: AskClosingReportDto,
+  ): Promise<BaseResponse<any>> {
+    const response = await this.paymentService.submitClosingReport(
+      user,
+      request,
+    );
+
+    return baseResponseHelper(
+      response,
+      HttpStatus.OK,
+      'Asking for changes successfully applied!, please wait untill account manager responded to your request',
     );
   }
 
@@ -58,11 +77,10 @@ export class TenderProposalPaymentController {
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: UpdatePaymentDto,
   ): Promise<BaseResponse<UpdatePaymentResponseDto>> {
-    const updatedPayment =
-      await this.tenderProposalPaymentService.updatePayment(
-        currentUser,
-        request,
-      );
+    const updatedPayment = await this.paymentService.updatePayment(
+      currentUser,
+      request,
+    );
     return baseResponseHelper(
       updatedPayment,
       HttpStatus.OK,
@@ -77,11 +95,10 @@ export class TenderProposalPaymentController {
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: GetByIdDto,
   ): Promise<any> {
-    const updatedPayment =
-      await this.tenderProposalPaymentService.completePayment(
-        currentUser,
-        request.id,
-      );
+    const updatedPayment = await this.paymentService.completePayment(
+      currentUser,
+      request.id,
+    );
 
     return baseResponseHelper(
       updatedPayment,
@@ -97,11 +114,10 @@ export class TenderProposalPaymentController {
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: SendClosingReportDto,
   ): Promise<any> {
-    const updatedPayment =
-      await this.tenderProposalPaymentService.sendClosingReport(
-        currentUser,
-        request,
-      );
+    const updatedPayment = await this.paymentService.sendClosingReport(
+      currentUser,
+      request,
+    );
 
     return baseResponseHelper(
       updatedPayment,
