@@ -61,6 +61,8 @@ export default function MessageMenuItem({ data, activeRole }: IPropsMessageItem)
     );
   };
 
+  // console.log({ data });
+
   return (
     <>
       {data.map((item, index) => (
@@ -94,54 +96,56 @@ export default function MessageMenuItem({ data, activeRole }: IPropsMessageItem)
           }}
           onClick={() => handleFocusItem(item.id!)}
         >
-          <Stack component="div" spacing={2} direction="row" alignItems="flex-start">
-            <Iconify icon={'codicon:account'} color="#000" width={28} height={28} />
-            <Stack component="div" direction="column">
-              <Typography
-                variant="subtitle2"
-                sx={{
-                  ...(item.unread_message! > 0 && {
-                    fontWeight: 700,
-                  }),
-                }}
-              >
-                {item.messages[0].owner_id === user?.id
-                  ? item.messages[0].receiver?.employee_name
-                  : item.messages[0].sender?.employee_name}
-              </Typography>
-              <Typography
-                sx={{
-                  fontSize: '12px',
-                  lineHeight: '24px',
-                  ...(item.unread_message! > 0 && {
-                    fontWeight: 700,
-                  }),
-                }}
-              >
-                {item.messages.length
-                  ? item.messages[0].content_type_id === 'TEXT'
-                    ? item.messages[0].content
-                      ? item.messages[0].content.length > 50
-                        ? `${item.messages[0].content.slice(0, 50)} ...`
-                        : item.messages[0].content
-                      : ''
-                    : 'New Attecment Message'
-                  : 'No message yet.'}
-              </Typography>
+          {!item.messages[0] ? null : (
+            <Stack component="div" spacing={2} direction="row" alignItems="flex-start">
+              <Iconify icon={'codicon:account'} color="#000" width={28} height={28} />
+              <Stack component="div" direction="column">
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    ...(item.unread_message! > 0 && {
+                      fontWeight: 700,
+                    }),
+                  }}
+                >
+                  {item.messages[0].owner_id === user?.id
+                    ? item.messages[0].receiver?.employee_name
+                    : item.messages[0].sender?.employee_name}
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: '12px',
+                    lineHeight: '24px',
+                    ...(item.unread_message! > 0 && {
+                      fontWeight: 700,
+                    }),
+                  }}
+                >
+                  {item.messages.length
+                    ? item.messages[0].content_type_id === 'TEXT'
+                      ? item.messages[0].content
+                        ? item.messages[0].content.length > 50
+                          ? `${item.messages[0].content.slice(0, 50)} ...`
+                          : item.messages[0].content
+                        : ''
+                      : 'New Attecment Message'
+                    : 'No message yet.'}
+                </Typography>
 
-              <Typography
-                sx={{
-                  fontSize: '10px',
-                  color: '#8E8E8E',
-                  ...(item.unread_message! > 0 && {
-                    fontWeight: 700,
-                  }),
-                }}
-              >
-                {moment(item.messages[0].created_at).format('LLL')}
-              </Typography>
+                <Typography
+                  sx={{
+                    fontSize: '10px',
+                    color: '#8E8E8E',
+                    ...(item.unread_message! > 0 && {
+                      fontWeight: 700,
+                    }),
+                  }}
+                >
+                  {moment(item.messages[0].created_at).format('LLL')}
+                </Typography>
+              </Stack>
             </Stack>
-          </Stack>
+          )}
           {item.unread_message! > 0 ? <Label color="primary">{item.unread_message}</Label> : null}
         </Stack>
       ))}

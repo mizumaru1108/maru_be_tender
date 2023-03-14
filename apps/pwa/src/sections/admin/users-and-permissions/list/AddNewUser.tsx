@@ -2,7 +2,7 @@ import { Box, Button, Container, Grid, IconButton, Stack, Typography } from '@mu
 import BaseField from 'components/hook-form/BaseField';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import * as Yup from 'yup';
 import { FormProvider } from 'components/hook-form';
 import * as React from 'react';
@@ -14,13 +14,16 @@ import { LoadingButton } from '@mui/lab';
 import { PERMISSIONS } from '_mock/permissions';
 import { translateRect } from '@fullcalendar/common';
 import useLocales from 'hooks/useLocales';
+import { getOneEmployee } from '../../../../queries/admin/getAllTheEmployees';
+import { useQuery } from 'urql';
+import { removeEmptyKey } from '../../../../utils/remove-empty-key';
 
 type FormValuesProps = {
   employee_name: string;
   email: string;
   mobile_number: string;
   password: string;
-  user_roles: string;
+  user_roles: string[];
   employee_path: string;
   activate_user: boolean;
 };
@@ -37,6 +40,14 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props,
 
 function AddNewUser() {
   const { translate, currentLang } = useLocales();
+  const navigate = useNavigate();
+  const params = useParams();
+
+  const [result] = useQuery({
+    query: getOneEmployee,
+    variables: { id: params.userId },
+  });
+  const { data, fetching, error } = result;
 
   const { activeRole } = useAuth();
 
@@ -47,7 +58,23 @@ function AddNewUser() {
     message: '',
     severity: 'success',
   });
-
+  const reqPassword = Yup.string().required('password is required');
+  const unReqPassword = Yup.string()
+    .notRequired()
+    .nullable()
+    // .test('len', translate('password at least 8 characters'), (val) => {
+    //   const isLength = val?.length === 8;
+    //   return isLength;
+    // });
+    .test('len', translate('password at least 8 characters'), (val) => {
+      if (val === undefined) {
+        return true;
+      } else {
+        return val!.length === 0 || val!.length === 9;
+      }
+    });
+  // .min(8, 'password must be at least 8 characters');
+  // .test
   const NewEmployeeSchema = Yup.object().shape({
     employee_name: Yup.string().required('Employee Name required'),
     email: Yup.string().required('Email is required'),
@@ -60,7 +87,7 @@ function AddNewUser() {
 
         return val.length === 0 || val!.length === 9;
       }),
-    password: Yup.string().required('password is required'),
+    password: !params.userId ? reqPassword : unReqPassword,
     user_roles: Yup.array().required('User Roles is required'),
     employee_path: Yup.string().required('Employee Path is required'),
     activate_user: Yup.boolean().required('Activate User is required'),
@@ -71,7 +98,7 @@ function AddNewUser() {
     email: '',
     mobile_number: '',
     password: '',
-    user_roles: '',
+    user_roles: [],
     employee_path: '',
     activate_user: false,
   };
@@ -83,10 +110,13 @@ function AddNewUser() {
 
   const {
     handleSubmit,
+    reset,
     formState: { isSubmitting },
   } = methods;
 
   const onSubmit = async (data: FormValuesProps) => {
+    // console.log({ data });
+    // console.log('submit: ', data);
     try {
       setIsLoading(true);
       await axiosInstance.post(
@@ -105,6 +135,32 @@ function AddNewUser() {
     }
   };
 
+  const onUpdate = async (data: FormValuesProps) => {
+    let payload = {
+      ...data,
+      id: params.userId,
+    };
+    payload = removeEmptyKey(payload);
+    console.log('update: ', payload);
+    alert('under construction');
+    // try {
+    //   setIsLoading(true);
+    //   await axiosInstance.post(
+    //     '/tender-user/create',
+    //     {
+    //       ...data,
+    //     },
+    //     { headers: { 'x-hasura-role': activeRole! } }
+    //   );
+    //   setIsLoading(false);
+    //   setOpenSnackBar({ open: true, message: 'تم إنشاء الحساب', severity: 'success' });
+    //   navigate('/admin/dashboard/users-and-permissions');
+    // } catch (error) {
+    //   setIsLoading(false);
+    //   setOpenSnackBar({ open: true, message: error.message, severity: 'error' });
+    // }
+  };
+
   const handleCloseSnackBar = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
@@ -112,7 +168,30 @@ function AddNewUser() {
     setOpenSnackBar({ open: false, message: '', severity: 'success' });
   };
 
-  const navigate = useNavigate();
+  React.useEffect(() => {
+    if (params.userId) {
+      if (!fetching && !error && data) {
+        // console.log({ data });
+        const userRole: string[] =
+          data.data.user_role.length > 0 ? data.data.user_role.map((role: any) => role.role) : [];
+        const tmpMobileNumber =
+          data.data.mobile_number.substring(0, 3) === '+62'
+            ? data.data.mobile_number.replace('+62', '')
+            : data.data.mobile_number.replace('+966', '');
+        // console.log({ tmpMobileNumber });
+        reset({
+          activate_user: true,
+          email: data.data.email,
+          password: '',
+          employee_name: data.data.employee_name,
+          employee_path: data.data.employee_path ?? 'GENERAL',
+          mobile_number: tmpMobileNumber,
+          user_roles: [...userRole],
+        });
+      }
+    }
+  }, [params, fetching, error, data, reset]);
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Snackbar
@@ -158,7 +237,10 @@ function AddNewUser() {
       </IconButton>
       <Typography variant="h4">اضافة موظف جديد</Typography>
       <Container>
-        <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+        <FormProvider
+          methods={methods}
+          onSubmit={handleSubmit(!params.userId ? onSubmit : onUpdate)}
+        >
           <Grid container rowSpacing={3} columnSpacing={4}>
             <Grid item md={6} xs={12}>
               <BaseField
@@ -181,7 +263,10 @@ function AddNewUser() {
                 type="password"
                 name="password"
                 label="كلمة المرور*"
-                placeholder="الرجاء كتابة كلمة المرور"
+                // placeholder="الرجاء كتابة كلمة المرور"
+                placeholder={
+                  params.userId ? 'اكتب كلمة مرور جديدة لتغييرها' : 'الرجاء كتابة كلمة المرور'
+                }
               />
             </Grid>
             <Grid item md={6} xs={12}>

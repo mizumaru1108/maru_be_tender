@@ -20,6 +20,7 @@ const SystemMessages = Loadable(lazy(() => import('pages/admin/SystemMessages'))
 const SystemConfiguration = Loadable(lazy(() => import('pages/admin/SystemConfiguration')));
 const UsersAndPermissions = Loadable(lazy(() => import('pages/admin/UsersAndPermissions')));
 const UsersAndPermissionsAdd = Loadable(lazy(() => import('pages/admin/UsersAndPermissionsAdd')));
+const UsersAndPermissionsEdit = Loadable(lazy(() => import('pages/admin/UsersAndPermissionsAdd')));
 const Authority = Loadable(lazy(() => import('pages/admin/Authority')));
 const EntityArea = Loadable(lazy(() => import('pages/admin/EntityArea')));
 const RegionsProjectLocation = Loadable(lazy(() => import('pages/admin/RegionsProjectLocation')));
@@ -116,6 +117,7 @@ export const adminRoute = {
           children: [
             { path: '', element: <UsersAndPermissions /> },
             { path: 'add', element: <UsersAndPermissionsAdd /> },
+            { path: 'edit/:userId', element: <UsersAndPermissionsEdit /> },
           ],
         },
         { path: 'authority', element: <Authority /> },

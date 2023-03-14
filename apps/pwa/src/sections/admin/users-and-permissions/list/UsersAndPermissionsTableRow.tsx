@@ -21,6 +21,7 @@ export default function UsersAndPermissionsTableRow({
   selected,
   onSelectRow,
   onDeleteRow,
+  onEditRow,
   isDeleting,
 }: Props) {
   const { name, email, activation, permissions } = row;
@@ -84,7 +85,8 @@ export default function UsersAndPermissionsTableRow({
               height: '45px',
               fontSize: '12px',
             }}
-            onClick={() => console.log('asdlamsdkl')}
+            // onClick={() => console.log('asdlamsdkl')}
+            onClick={onEditRow}
           >
             تعديل
           </LoadingButton>

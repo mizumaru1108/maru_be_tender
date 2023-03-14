@@ -294,16 +294,18 @@ export default function MessageContent() {
 
       if (findConversation) {
         setCorespondenceType(findConversation.correspondance_category_id);
-        setPartner({
-          partner_name:
-            findConversation.messages[0].owner_id === user?.id
-              ? findConversation.messages[0].receiver?.employee_name!
-              : findConversation.messages[0].sender?.employee_name!,
-          roles:
-            findConversation.messages[0].owner_id === user?.id
-              ? findConversation.messages[0].receiver_role_as!
-              : findConversation.messages[0].sender_role_as!,
-        });
+        if (findConversation.messages[0]) {
+          setPartner({
+            partner_name:
+              findConversation.messages[0].owner_id === user?.id
+                ? findConversation.messages[0].receiver?.employee_name!
+                : findConversation.messages[0].sender?.employee_name!,
+            roles:
+              findConversation.messages[0].owner_id === user?.id
+                ? findConversation.messages[0].receiver_role_as!
+                : findConversation.messages[0].sender_role_as!,
+          });
+        }
       }
       const messageContents = data.message;
       let grouped: IMassageGrouped[] = [];
@@ -335,16 +337,18 @@ export default function MessageContent() {
       )!;
       if (findConversation) {
         setCorespondenceType(findConversation.correspondance_category_id);
-        setPartner({
-          partner_name:
-            findConversation.messages[0].owner_id === user?.id
-              ? findConversation.messages[0].receiver?.employee_name!
-              : findConversation.messages[0].sender?.employee_name!,
-          roles:
-            findConversation.messages[0].owner_id === user?.id
-              ? findConversation.messages[0].receiver_role_as!
-              : findConversation.messages[0].sender_role_as!,
-        });
+        if (findConversation.messages[0]) {
+          setPartner({
+            partner_name:
+              findConversation.messages[0].owner_id === user?.id
+                ? findConversation.messages[0].receiver?.employee_name!
+                : findConversation.messages[0].sender?.employee_name!,
+            roles:
+              findConversation.messages[0].owner_id === user?.id
+                ? findConversation.messages[0].receiver_role_as!
+                : findConversation.messages[0].sender_role_as!,
+          });
+        }
 
         const messageContents = findConversation.messages;
         let groupedAlter: IMassageGrouped[] = [];

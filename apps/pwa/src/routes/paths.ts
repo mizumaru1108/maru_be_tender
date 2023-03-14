@@ -32,6 +32,8 @@ export const PATH_ADMIN = {
   system_messages: path(ROOTS_ADMIN, '/dashboard/system-messages'),
   system_configuration: path(ROOTS_ADMIN, '/dashboard/system-configuration'),
   users_and_permissions: path(ROOTS_ADMIN, '/dashboard/users-and-permissions'),
+  users_and_permissions_edit: (partnerId: string) =>
+    path(ROOTS_ADMIN, `/dashboard/users-and-permissions/edit/${partnerId}`),
   authority: path(ROOTS_ADMIN, '/dashboard/authority'),
   entity_area: path(ROOTS_ADMIN, '/dashboard/entity-area'),
   regions_project_location: path(ROOTS_ADMIN, '/dashboard/regions-project-location'),

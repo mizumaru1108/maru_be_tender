@@ -19,7 +19,7 @@ import {
   Alert,
 } from '@mui/material';
 // routes
-import { PATH_DASHBOARD } from '../../../routes/paths';
+import { PATH_ADMIN, PATH_DASHBOARD } from '../../../routes/paths';
 import useTable, { emptyRows, getComparator } from 'hooks/useTable';
 import useSettings from 'hooks/useSettings';
 import Iconify from 'components/Iconify';
@@ -143,7 +143,9 @@ export default function UsersAndPermissionsTable() {
   };
 
   const handleEditRow = (id: string) => {
-    navigate(PATH_DASHBOARD.user.edit(paramCase(id)));
+    // navigate(PATH_ADMIN.user.edit(paramCase(id)));
+    console.log('masukedit');
+    navigate(PATH_ADMIN.users_and_permissions_edit(paramCase(id)));
   };
 
   const dataFiltered = applySortFilter({
@@ -259,7 +261,7 @@ export default function UsersAndPermissionsTable() {
                       selected={selected.includes(row.id)}
                       onSelectRow={() => onSelectRow(row.id)}
                       onDeleteRow={() => handleDeleteRow(row.id)}
-                      onEditRow={() => handleEditRow(row.name)}
+                      onEditRow={() => handleEditRow(row.id)}
                       isDeleting={isDeleting}
                     />
                   ))}
