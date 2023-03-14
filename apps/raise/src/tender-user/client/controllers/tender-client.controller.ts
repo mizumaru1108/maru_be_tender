@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../../commons/dtos/base-response';
-import { GetByUUIDQueryParamDto } from '../../../commons/dtos/get-by-uuid-query-param.dto';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
 import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
 import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
@@ -18,6 +17,8 @@ import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard
 import { ManualPaginatedResponse } from '../../../tender-commons/helpers/manual-paginated-response.dto';
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import { ICurrentUser } from '../../../user/interfaces/current-user.interface';
+import { TenderCurrentUser } from '../../user/interfaces/current-user.interface';
+import { AskClosingReportDto } from '../dtos/requests';
 import { ClientEditRequestFieldDto } from '../dtos/requests/client-edit-request-field.dto';
 import { EditRequestByIdDto } from '../dtos/requests/edit-request-by-id.dto';
 import { RejectEditRequestDto } from '../dtos/requests/reject-edit-request.dto';
@@ -40,6 +41,25 @@ export class TenderClientController {
     const response = await this.tenderClientService.createEditRequest(
       user,
       editRequest,
+    );
+
+    return baseResponseHelper(
+      response,
+      HttpStatus.OK,
+      'Asking for changes successfully applied!, please wait untill account manager responded to your request',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_client')
+  @Post('ask-closing-report')
+  async askClosingReport(
+    @CurrentUser() user: TenderCurrentUser,
+    @Body() request: AskClosingReportDto,
+  ): Promise<BaseResponse<any>> {
+    const response = await this.tenderClientService.askClosingReport(
+      user,
+      request,
     );
 
     return baseResponseHelper(

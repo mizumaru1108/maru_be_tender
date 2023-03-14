@@ -1061,11 +1061,16 @@ export class TenderProposalRepository {
         },
         include: {
           user: {
-            include: {
-              roles: true,
+            select: {
+              employee_name: true,
               client_data: true,
+              roles: true,
             },
           },
+          follow_ups: true,
+          proposal_item_budgets: true,
+          proposal_logs: true,
+          payments: true,
           bank_information: true,
         },
       });

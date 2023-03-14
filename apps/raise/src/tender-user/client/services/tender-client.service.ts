@@ -51,6 +51,8 @@ import { CommonNotificationMapperResponse } from '../../../tender-commons/dto/co
 import { TenderNotificationRepository } from '../../../tender-notification/repository/tender-notification.repository';
 import { SearchClientProposalFilter } from '../dtos/requests/search-client-proposal-filter-request.dto';
 import { SearchSpecificClientProposalFilter } from '../dtos/requests/search-specific-client-proposal-filter-request.dto';
+import { TenderCurrentUser } from '../../user/interfaces/current-user.interface';
+import { AskClosingReportDto } from '../dtos/requests';
 @Injectable()
 export class TenderClientService {
   private readonly appEnv: string;
@@ -91,6 +93,11 @@ export class TenderClientService {
       throw new InternalServerErrorException(error);
     }
   }
+
+  async askClosingReport(
+    currentUser: TenderCurrentUser,
+    request: AskClosingReportDto,
+  ) {}
 
   // create user and it's relation to client_data table by user_id in client_data table
   async createUserAndClient(

@@ -226,7 +226,7 @@ export class TenderUserRepository {
       query = {
         ...query,
         status_id: {
-          contains: employee_name,
+          contains: account_status,
           mode: 'insensitive',
         },
       };
