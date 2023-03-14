@@ -29,6 +29,21 @@ const en = {
       page_not_found: '404 Page Not Found',
       internal_server_error: '500 Internal Server Error',
       search: 'Search',
+      close_report: {
+        text: {
+          sidebar: 'Closing Report',
+          heading_spv: 'Incoming Close Report',
+        },
+        btn: {
+          accept_exchange_permission: 'Acceptance exchange permission',
+          request_project_close_report: 'Request project closing report',
+          end_project: 'End project without closing report',
+        },
+        notification: {
+          success_accept_exchange: 'Payment made in full, View status changed successfully!',
+          succes_send: 'Closing report has been succesfully create!',
+        },
+      },
     },
     account_manager: {
       update_request: 'Information Update Request',

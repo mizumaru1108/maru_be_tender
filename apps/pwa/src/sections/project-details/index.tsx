@@ -35,7 +35,7 @@ function ProjectDetailsMainPage() {
   if (isLoading) return <>... Loading</>;
 
   if (error) return <>{error}</>;
-  // console.log('proposal', proposal.outter_status);
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Stack direction="row" justifyContent="space-between" alignItems="center">

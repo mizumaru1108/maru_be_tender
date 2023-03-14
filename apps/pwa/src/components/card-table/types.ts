@@ -51,7 +51,8 @@ export type ProjectCardProps = {
     | 'incoming-exchange-permission-requests'
     | 'current-project'
     | 'payment-adjustment'
-    | 'exchange-permission'; // it refers to the url that I came from and the url that I have to go to
+    | 'exchange-permission' // it refers to the url that I came from and the url that I have to go to
+    | 'incoming-close-reports';
 };
 
 export type ClientCardProps = {
@@ -75,7 +76,8 @@ export type ClientCardProps = {
     | 'incoming-exchange-permission-requests'
     | 'current-project'
     | 'payment-adjustment'
-    | 'exchange-permission'; // it refers to the url that I came from and the url that I have to go to
+    | 'exchange-permission' // it refers to the url that I came from and the url that I have to go to
+    | 'incoming-close-reports';
 };
 
 export type ProjectCardPropsBE = {
@@ -146,7 +148,8 @@ export type CardTablePropsBE = {
     | 'incoming-exchange-permission-requests'
     | 'current-project'
     | 'payment-adjustment'
-    | 'exchange-permission'; // it refers to the url that I came from and the url that I have to go to
+    | 'exchange-permission' // it refers to the url that I came from and the url that I have to go to
+    | 'incoming-close-reports';
   staticFilters?: any;
   baseFilters?: any;
 };

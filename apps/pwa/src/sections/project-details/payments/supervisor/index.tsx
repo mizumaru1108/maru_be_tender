@@ -1,6 +1,6 @@
 import { Box, Container, Grid, Typography } from '@mui/material';
 import { getTheSpentBudgetForSpecificProposal } from 'queries/project-supervisor/getTheSpentBudgetForSpecificProposal';
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router';
 import { useSelector } from 'redux/store';
 import { useQuery } from 'urql';

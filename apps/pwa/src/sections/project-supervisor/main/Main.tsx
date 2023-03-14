@@ -6,6 +6,7 @@ import PaymentAdjustment from './PaymentAdjustment';
 import ProposalOnAmandement from './ProposalOnAmandement';
 import RequestsInProcess from './RequestsInProcess';
 import TrackBudget from './TrackBudget';
+import IncomingCloseReport from './IncomingCloseReport';
 
 function Main() {
   return (
@@ -19,6 +20,7 @@ function Main() {
       <RequestsInProcess />
       <IncomingFundingRequests />
       <PaymentAdjustment />
+      <IncomingCloseReport />
       <ProposalOnAmandement />
       <IncomingAmandementRequest />
     </Grid>

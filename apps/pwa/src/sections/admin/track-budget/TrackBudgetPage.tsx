@@ -20,7 +20,8 @@ function TrackBudgetPage() {
   const { data, fetching, error } = result;
 
   const handleOpen = () => {
-    setOpen(true);
+    // setOpen(true);
+    console.log(data.track);
   };
   const handleOnClose = () => {
     setOpen(false);
@@ -34,7 +35,7 @@ function TrackBudgetPage() {
         isOpen={open}
         maxWidth="md"
         title="اضافة ميزانية جديدة"
-        content={<AddNewBudget data={data.track} />}
+        content={<AddNewBudget />}
         onClose={handleOnClose}
       />
       <Grid item md={6} xs={6}>
@@ -52,7 +53,7 @@ function TrackBudgetPage() {
               color: '#fff',
               ':hover': { backgroundColor: '#13B2A2' },
             }}
-            // onClick={handleOpen}
+            onClick={handleOpen}
           >
             اضافة ميزانية
           </Button>

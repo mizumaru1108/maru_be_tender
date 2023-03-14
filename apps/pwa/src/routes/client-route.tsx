@@ -6,6 +6,7 @@ import RoleBasedGuard from 'guards/RoleBasedGuard';
 import { Loadable } from './Loadable';
 
 const FundingProjectRequest = Loadable(lazy(() => import('pages/client/FundingProjectRequest')));
+const IncomingCloseReports = Loadable(lazy(() => import('pages/client/IncomingClientCloseReport')));
 const AmandementProject = Loadable(lazy(() => import('pages/client/AmandementRequest')));
 const DraftFundingRequests = Loadable(lazy(() => import('pages/client/draft-funding-requests')));
 const PreviousFundingRequests = Loadable(
@@ -62,6 +63,16 @@ export const clientRoute = {
         {
           path: 'funding-project-request',
           element: <FundingProjectRequest />,
+        },
+        {
+          path: 'incoming-close-reports',
+          children: [
+            { path: '', element: <IncomingCloseReports /> },
+            {
+              path: ':id/:actionType',
+              element: <ProjectDetails />,
+            },
+          ],
         },
         {
           path: 'amandement_projects',

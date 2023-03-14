@@ -1,5 +1,5 @@
 import useAuth from 'hooks/useAuth';
-import { useParams } from 'react-router';
+import { useLocation, useParams } from 'react-router';
 import ProjectManagerFloatingActionBar from './project-manager';
 import SupervisorFloatingActionBar from './supervisor';
 import CeoFloatingActionBar from './ceo';
@@ -7,15 +7,20 @@ import ModeratorActionBar from './moderator';
 import { useSelector } from 'redux/store';
 import ConsultantFloatingActionBar from './consultant';
 import RejectProjectsActionBar from './reject-project';
+import FloatingCloseReportSPV from '../floating-close-report/FloatingSpv';
 
 function FloatinActonBar() {
   const { actionType } = useParams();
 
-  const { activeTap } = useSelector((state) => state.proposal);
+  const location = useLocation();
+
+  const { activeTap, proposal } = useSelector((state) => state.proposal);
 
   const { activeRole } = useAuth();
 
   const role = activeRole!;
+
+  const pathName = location.pathname.split('/');
 
   return (
     <>
@@ -49,6 +54,13 @@ function FloatinActonBar() {
       {activeTap &&
         actionType === 'reject-project' &&
         ['tender_ceo', 'tender_project_manager'].includes(role) && <RejectProjectsActionBar />}
+
+      {activeTap &&
+        ['main'].includes(activeTap) &&
+        actionType === 'show-project' &&
+        pathName &&
+        pathName[3] === 'incoming-close-reports' &&
+        proposal.inner_status === 'DONE_BY_CASHIER' && <FloatingCloseReportSPV />}
     </>
   );
 }

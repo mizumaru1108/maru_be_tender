@@ -3,11 +3,29 @@ import { useSelector } from 'redux/store';
 import PaymentsTable from './PaymentsTable';
 import { fCurrencyNumber } from 'utils/formatNumber';
 import useLocales from 'hooks/useLocales';
+//
+import FloatingCloseReport from '../../floating-close-report/index';
+import { useEffect, useState } from 'react';
 
 function CashierPaymentsPage() {
   const { translate } = useLocales();
   const theme = useTheme();
   const { proposal } = useSelector((state) => state.proposal);
+
+  const [paymentDone, setPayementDone] = useState<boolean>(false);
+
+  useEffect(() => {
+    const acc_payments = proposal.number_of_payments_by_supervisor;
+    const payment_actual_done = proposal.payments.filter(
+      (el: { status: string }) => el.status === 'DONE'
+    ).length;
+
+    if (payment_actual_done === acc_payments && proposal.inner_status !== 'DONE_BY_CASHIER') {
+      setPayementDone(true);
+    } else {
+      setPayementDone(false);
+    }
+  }, [proposal]);
 
   return (
     <>
@@ -78,6 +96,8 @@ function CashierPaymentsPage() {
           </Typography>
         </Grid>
         <PaymentsTable />
+
+        {paymentDone ? <FloatingCloseReport /> : null}
       </Grid>
     </>
   );

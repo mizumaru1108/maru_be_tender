@@ -362,6 +362,7 @@ export class TenderProposalPaymentRepository {
           const updatedProposal = await prisma.proposal.update({
             where: { id: proposal_id },
             data: {
+              state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
               inner_status: InnerStatusEnum.DONE_BY_CASHIER,
             },
           });
@@ -426,6 +427,7 @@ export class TenderProposalPaymentRepository {
           );
 
           let proposalUpdateInput: Prisma.proposalUncheckedUpdateInput = {
+            state: TenderAppRoleEnum.CLIENT,
             inner_status: send
               ? InnerStatusEnum.REQUESTING_CLOSING_FORM
               : InnerStatusEnum.PROJECT_COMPLETED,

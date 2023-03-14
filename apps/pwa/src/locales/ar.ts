@@ -28,6 +28,21 @@ const ar = {
       page_not_found: '404 الصفحة غير موجودة',
       internal_server_error: '500 خطأ في الخادم الداخلي',
       search: 'بحث',
+      close_report: {
+        text: {
+          sidebar: 'تقرير ختامي',
+          heading_spv: 'تقرير إغلاق وارد',
+        },
+        btn: {
+          accept_exchange_permission: 'قبول إذن الصرف',
+          request_project_close_report: 'طلب تقرير إغلاق المشروع',
+          end_project: 'إنهاء المشروع دون التقرير الختامي',
+        },
+        notification: {
+          success_accept_exchange: 'تم الدفع بالكامل ، تم تغيير حالة العرض بنجاح',
+          succes_send: 'تم إنشاء تقرير الإغلاق بنجاح',
+        },
+      },
     },
     account_manager: {
       update_request: 'طلب تحديث المعلومات',
