@@ -69,7 +69,7 @@ export default function ProjectReports() {
           autoHideDuration: 3000,
         });
 
-        navigate('/project-supervisor/dashboard/project-report');
+        navigate('/client/dashboard/project-report');
       }
     } catch (err) {
       if (typeof err.message === 'object') {
@@ -102,7 +102,7 @@ export default function ProjectReports() {
     project_repeated: '',
     number_of_staff: 0,
     number_of_volunteer: 0,
-    attacments: [],
+    attachments: [],
     images: [],
   };
 

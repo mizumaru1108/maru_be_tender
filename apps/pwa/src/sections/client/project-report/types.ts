@@ -18,6 +18,6 @@ export interface CloseReportForm {
   project_repeated: string;
   number_of_volunteer: number;
   number_of_staff: number;
-  attacments: FileProp | FileProp[] | any;
+  attachments: FileProp | FileProp[] | any;
   images: FileProp | FileProp[] | any;
 }

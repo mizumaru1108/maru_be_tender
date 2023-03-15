@@ -51,7 +51,7 @@ export default function SubmitProjectReportForm({
       .integer()
       .min(1, translate('Number of staff must be at least 1'))
       .required('Number of staff is required'),
-    attacments: Yup.array().min(1, translate('Attachments is required')),
+    attachments: Yup.array().min(1, translate('Attachments is required')),
     images: Yup.array().min(1, translate('Images is required')),
   });
 
@@ -207,7 +207,7 @@ export default function SubmitProjectReportForm({
           <Typography variant="body1" component="p" sx={{ mb: 1.5 }}>
             {translate('pages.common.close_report.text.form.attachments.label')}
           </Typography>
-          <BaseField type="uploadMulti" name="attacments" />
+          <BaseField type="uploadMulti" name="attachments" />
         </Grid>
         <Grid item xs={12} md={6}>
           <Typography variant="body1" component="p" sx={{ mb: 1.5 }}>
@@ -227,6 +227,7 @@ export default function SubmitProjectReportForm({
           width: '100%',
           bottom: 24,
           border: `1px solid ${theme.palette.grey[400]}`,
+          zIndex: 10,
         }}
       >
         <Stack
