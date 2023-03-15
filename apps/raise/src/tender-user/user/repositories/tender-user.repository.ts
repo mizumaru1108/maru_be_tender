@@ -711,11 +711,21 @@ export class TenderUserRepository {
     try {
       return await this.prismaService.$transaction(
         async (prisma) => {
-          if (createRolesData) {
+          if (createRolesData && createRolesData.length > 0) {
+            this.logger.log(
+              'info',
+              `Deleteing all previous roles on user ${userId}`,
+            );
             await prisma.user_role.deleteMany({
               where: { user_id: userId },
             });
 
+            this.logger.log(
+              'info',
+              `Creating new roles for ${userId}, with payload of \n ${logUtil(
+                createRolesData,
+              )}`,
+            );
             await prisma.user_role.createMany({
               data: createRolesData,
             });

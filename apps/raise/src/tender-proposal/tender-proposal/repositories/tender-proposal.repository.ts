@@ -1061,7 +1061,15 @@ export class TenderProposalRepository {
               roles: true,
             },
           },
-          follow_ups: true,
+          follow_ups: {
+            include: {
+              user: {
+                include: {
+                  roles: true,
+                },
+              },
+            },
+          },
           proposal_item_budgets: true,
           proposal_logs: true,
           payments: true,
