@@ -377,13 +377,13 @@ export class TenderProposalPaymentService {
         FileMimeTypeEnum.PDF,
       ];
 
-      for (let i = 0; i < request.attacments.length; i++) {
-        const attachment = request.attacments[i];
+      for (let i = 0; i < request.attachments.length; i++) {
+        const attachment = request.attachments[i];
         if (isTenderFilePayload(attachment)) {
           const uploadResult = await this.fileManagerService.uploadProposalFile(
             currentUser.id,
             request.proposal_id,
-            'uploading closing report attacments',
+            'uploading closing report attachments',
             attachment,
             'closing-form/attachment',
             allowedType,

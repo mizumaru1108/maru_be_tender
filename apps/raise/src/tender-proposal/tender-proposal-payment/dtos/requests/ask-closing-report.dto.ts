@@ -60,7 +60,7 @@ export class AskClosingReportDto {
   @IsNotEmpty({ each: true })
   @ValidateNested({ each: true })
   @Type(() => TenderFilePayload)
-  attacments: TenderFilePayload[];
+  attachments: TenderFilePayload[];
 
   @ApiProperty()
   @IsArray()

@@ -1,5 +1,6 @@
 // react
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
 // @mui
 import { Container, Box, Stack, Button, styled, Typography } from '@mui/material';
 // components
@@ -10,8 +11,9 @@ import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { getProposal } from 'redux/slices/proposal';
 import { useDispatch, useSelector } from 'redux/store';
+import axiosInstance from 'utils/axios';
+import { useSnackbar } from 'notistack';
 //
-import { useNavigate, useParams } from 'react-router';
 import ProjectStatus from 'sections/project-details/ProjectStatus';
 import AmandementProposalDialog from 'sections/client/funding-project-request/AmandementProposalDialog';
 import SubmitProjectReportForm from 'sections/client/project-report/forms/SubmitProjectReportForm';
@@ -21,6 +23,8 @@ import { CloseReportForm } from 'sections/client/project-report/types';
 export default function ProjectReports() {
   const { user } = useAuth();
   const { id, actionType } = useParams();
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
@@ -42,8 +46,50 @@ export default function ProjectReports() {
 
   const navigate = useNavigate();
 
-  const handleSubmitForm = (data: CloseReportForm) => {
-    console.log(data);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmitForm = async (formValues: CloseReportForm) => {
+    setIsSubmitting(true);
+
+    try {
+      const { status, data } = await axiosInstance.post(
+        '/tender/proposal/payment/submit-closing-report',
+        formValues,
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
+
+      if (status === 200) {
+        setIsSubmitting(false);
+
+        enqueueSnackbar(translate('pages.common.close_report.notification.succes_send'), {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+
+        navigate('/client/dashboard/project-report');
+      }
+    } catch (err) {
+      if (typeof err.message === 'object') {
+        err.message.forEach((el: any) => {
+          enqueueSnackbar(el, {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          });
+        });
+      } else {
+        enqueueSnackbar(err.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+      }
+
+      setIsSubmitting(false);
+    }
   };
 
   const initialValue: CloseReportForm = {
@@ -51,6 +97,13 @@ export default function ProjectReports() {
     execution_place: '',
     target_beneficiaries: '',
     number_of_beneficiaries: 0,
+    gender: undefined,
+    project_duration: '',
+    project_repeated: '',
+    number_of_staff: 0,
+    number_of_volunteer: 0,
+    attachments: [],
+    images: [],
   };
 
   useEffect(() => {
@@ -110,7 +163,11 @@ export default function ProjectReports() {
               </Typography>
             </Stack>
 
-            <SubmitProjectReportForm onSubmit={handleSubmitForm} defaultValues={initialValue} />
+            <SubmitProjectReportForm
+              onSubmit={handleSubmitForm}
+              defaultValues={initialValue}
+              loading={isSubmitting}
+            />
           </Stack>
         </ContentStyle>
       </Container>

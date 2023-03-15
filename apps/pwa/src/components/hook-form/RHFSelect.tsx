@@ -38,6 +38,10 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
             'accreditation_type_id',
             'path',
             'supervisors',
+            'target_beneficiaries',
+            'execution_place',
+            'project_duration',
+            'project_repeated',
           ].includes(name) ? (
             <TextField
               {...field}

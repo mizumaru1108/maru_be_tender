@@ -245,7 +245,6 @@ export const getProposal = (id: string, role: string) => async () => {
         headers: { 'x-hasura-role': role },
       });
       if (response.data.statusCode === 200) {
-        console.log(response.data);
         dispatch(slice.actions.setProposal(response.data.data));
       }
     } else {
@@ -261,7 +260,6 @@ export const getProposal = (id: string, role: string) => async () => {
           },
         }
       );
-      console.log(res.data.data.proposal);
       dispatch(slice.actions.setProposal(res.data.data.proposal));
     }
 

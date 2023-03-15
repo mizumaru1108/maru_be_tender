@@ -36,11 +36,69 @@ const en = {
           project_report: 'Project Report',
           finished: 'finished',
           main_information: 'Main Information',
+          about_project: 'About the Project',
+          form: {
+            number_of_beneficiaries: {
+              label: 'Number of Beneficiers*',
+              placeholder: 'Number of Beneficiaries',
+            },
+            target_beneficiaries: {
+              label: 'Target Beneficiers*',
+              placeholder: 'Please select all target beneficiers for the Project',
+            },
+            execution_place: {
+              label: 'Execution Place*',
+              placeholder: 'Please select places for the Project',
+            },
+            gender: {
+              label: 'Gender of the Beneficiers*',
+              placeholder: 'Gender of the Beneficiers*',
+            },
+            project_duration: {
+              label: 'Project Duration*',
+              placeholder: 'Please select the duration of the Project',
+            },
+            project_repeated: {
+              label: 'Project Repeated*',
+              placeholder: 'Please select the duration if the Project is repeated',
+            },
+            number_of_volunteer: {
+              label: 'Number of Volunteer*',
+              placeholder: 'Number of Volunteer',
+            },
+            number_of_staff: {
+              label: 'Number of Staff*',
+              placeholder: 'Number of Staff',
+            },
+            attachments: {
+              label: 'Add Attachment (file,pdf, etc)*',
+              placeholder: 'Add Attachment (file,pdf, etc)',
+            },
+            images: {
+              label: 'Add Image (photos, etc)*',
+              placeholder: 'Add Image (photos, etc)',
+            },
+          },
+          option: {
+            children: 'Children',
+            general_students: 'General Students',
+            university_students: 'University Students',
+            residents: 'Residents',
+            village: 'Village',
+            district: 'District',
+            regency: 'Regency',
+            province: 'Province',
+            years: 'Years',
+            annual: 'Annual',
+            months: 'Months',
+            monthly: 'Monthly',
+          },
         },
         btn: {
           accept_exchange_permission: 'Acceptance exchange permission',
           request_project_close_report: 'Request project closing report',
           end_project: 'End project without closing report',
+          send_submit_form: 'Send form Report Project',
         },
         notification: {
           success_accept_exchange: 'Payment made in full, View status changed successfully!',
