@@ -592,4 +592,55 @@ export class FusionAuthService {
       return false;
     }
   }
+
+  async fusionAuthUpdateUserRegistration(
+    userId: string,
+    updateRequest: UpdateFusionAuthUserDto,
+  ) {
+    const user: IFusionAuthUser = {
+      firstName: updateRequest.firstName,
+      password: updateRequest.password,
+      email: updateRequest.email,
+      mobilePhone: updateRequest.mobilePhone,
+    };
+
+    let roles: string[] = [];
+    if (updateRequest.roles) {
+      const tmpRoles: string[] = updateRequest.roles.map(
+        (role) => appRoleToFusionAuthRoles[role as TenderAppRole],
+      );
+      roles = [...tmpRoles];
+    }
+
+    const registration: IFusionAuthUserRegistration = {
+      applicationId: this.fusionAuthAppId,
+    };
+
+    if (roles.length > 0) {
+      registration.roles = roles;
+    }
+
+    const registrationRequest: IFusionAuthRegistrationRequest = {
+      user,
+      registration,
+    };
+
+    this.logger.log(
+      'info',
+      `updating user (${userId}) on FusionAuth, with payload : ${logUtil(
+        user,
+      )}`,
+    );
+
+    try {
+      await this.fusionAuthAdminClient.patchRegistration(
+        userId,
+        registrationRequest,
+      );
+      return true;
+    } catch (err) {
+      this.logger.error('Fusion Auth Update User Error: ', err);
+      return false;
+    }
+  }
 }

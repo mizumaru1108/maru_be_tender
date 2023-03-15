@@ -743,25 +743,31 @@ export class TenderUserRepository {
           });
 
           const fusionResult =
-            await this.fusionAuthService.fusionAuthUpdateUser(userId, {
-              firstName:
-                request.employee_name && !!request.employee_name
-                  ? (request.employee_name as string)
-                  : undefined,
-              email:
-                request.email && !!request.email
-                  ? (request.email as string)
-                  : undefined,
-              mobilePhone:
-                request.mobile_number && !!request.mobile_number
-                  ? (request.mobile_number as string)
-                  : undefined,
-              address:
-                request.address && !!request.address
-                  ? (request.address as string)
-                  : undefined,
-              password: request.password,
-            });
+            await this.fusionAuthService.fusionAuthUpdateUserRegistration(
+              userId,
+              {
+                firstName:
+                  request.employee_name && !!request.employee_name
+                    ? (request.employee_name as string)
+                    : undefined,
+                email:
+                  request.email && !!request.email
+                    ? (request.email as string)
+                    : undefined,
+                mobilePhone:
+                  request.mobile_number && !!request.mobile_number
+                    ? (request.mobile_number as string)
+                    : undefined,
+                address:
+                  request.address && !!request.address
+                    ? (request.address as string)
+                    : undefined,
+                password: request.password,
+                roles: createRolesData
+                  ? createRolesData.map((role) => role.user_type_id)
+                  : [],
+              },
+            );
           return { prismaResult, fusionResult };
         },
         { maxWait: 500000, timeout: 1500000 },
