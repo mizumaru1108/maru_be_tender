@@ -100,7 +100,7 @@ function PaymentsTable() {
             ) : null}
             {item.status === 'DONE' ? (
               <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
-                {item.cheques.length ? (
+                {item.cheques && item.cheques.length ? (
                   <Button
                     component={Link}
                     href={

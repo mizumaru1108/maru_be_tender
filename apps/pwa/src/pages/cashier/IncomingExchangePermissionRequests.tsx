@@ -220,7 +220,7 @@ function IncomingExchangePermissionRequests() {
           <CardTableBE
             resource={getProposals}
             title="طلبات إذن الصرف الواردة"
-            destination="requests-in-process"
+            destination="incoming-exchange-permission-requests"
             alphabeticalOrder={true}
             filters={[
               {
@@ -240,7 +240,8 @@ function IncomingExchangePermissionRequests() {
               },
             ]}
             baseFilters={{
-              inner_status: { inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' } },
+              // inner_status: { inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' } },
+              payments: { payments: { status: { _eq: 'ACCEPTED_BY_FINANCE' } } },
               cashier_id: { cashier_id: { _is_null: true } },
             }}
             cardFooterButtonAction="completing-exchange-permission"

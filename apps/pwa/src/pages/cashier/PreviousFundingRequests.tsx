@@ -58,7 +58,8 @@ function PreviousFundingRequests() {
             ]}
             destination={'previous-funding-requests'}
             baseFilters={{
-              outter_status: { outter_status: { _neq: 'ONGOING' } },
+              // inner_status: { inner_status: { _eq: 'DONE_BY_CASHIER' } },
+              payments: { payments: { status: { _in: ['DONE'] } } },
             }}
           />
         </ContentStyle>

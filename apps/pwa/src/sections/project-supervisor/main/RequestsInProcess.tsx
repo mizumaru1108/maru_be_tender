@@ -16,7 +16,8 @@ export default function RequestsInProcess() {
       limit: 4,
       order_by: { updated_at: 'desc' },
       where: {
-        supervisor_id: { _eq: user?.id },
+        // supervisor_id: { _eq: user?.id },
+        clasification_field: { _is_null: false },
         _and: {
           inner_status: { _eq: 'ACCEPTED_BY_MODERATOR' },
           outter_status: { _neq: 'ON_REVISION' },

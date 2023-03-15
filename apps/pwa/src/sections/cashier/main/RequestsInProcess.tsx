@@ -16,7 +16,8 @@ function RequestsInProcess() {
       limit: 10,
       order_by: { updated_at: 'desc' },
       where: {
-        inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' },
+        // inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' },
+        payments: { status: { _eq: 'ACCEPTED_BY_FINANCE' } },
         _and: { cashier_id: { _eq: user?.id } },
       },
     },

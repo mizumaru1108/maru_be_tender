@@ -92,12 +92,25 @@ const ProjectCard = ({
   };
 
   const handleOnClick = async () => {
+    if (['tender_project_supervisor'].includes(role) && destination !== 'requests-in-process') {
+      await updateAsigning({
+        _set: {
+          clasification_field: '-',
+        },
+        where: {
+          id: {
+            _eq: title.id,
+          },
+        },
+      });
+    }
+
     if (
       [
         'tender_finance',
         'tender_cashier',
         'tender_project_manager',
-        'tender_project_supervisor',
+        // 'tender_project_supervisor',
       ].includes(role) &&
       destination !== 'requests-in-process'
     ) {

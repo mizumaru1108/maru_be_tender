@@ -46,7 +46,8 @@ function RequestsInProcess() {
               },
             ]}
             baseFilters={{
-              inner_status: { inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' } },
+              // inner_status: { inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' } },
+              payments: { payments: { status: { _eq: 'ACCEPTED_BY_PROJECT_MANAGER' } } },
               finance_id: { finance_id: { _eq: user?.id } },
             }}
             cardFooterButtonAction="completing-exchange-permission"

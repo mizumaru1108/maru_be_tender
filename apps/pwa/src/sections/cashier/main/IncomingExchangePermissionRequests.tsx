@@ -14,7 +14,8 @@ function IncomingExchangePermissionRequests() {
       order_by: { updated_at: 'desc' },
       limit: 4,
       where: {
-        inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' },
+        // inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' },
+        payments: { status: { _eq: 'ACCEPTED_BY_FINANCE' } },
         _and: { cashier_id: { _is_null: true } },
       },
     },
@@ -71,7 +72,7 @@ function IncomingExchangePermissionRequests() {
                 payments: item.payments,
               }}
               cardFooterButtonAction="completing-exchange-permission"
-              destination="requests-in-process"
+              destination="incoming-exchange-permission-requests"
             />
           </Grid>
         ))}

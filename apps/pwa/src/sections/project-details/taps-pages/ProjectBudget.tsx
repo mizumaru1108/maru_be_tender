@@ -26,8 +26,6 @@ function ProjectBudget() {
     // valueSummary = proposal.proposal_item_budgets_aggregate.aggregate.sum.amount;
     valueSummary = totalAmount;
 
-    console.log({ valueSummary });
-
     setItemBudgetValue(valueToItem);
     setSummaryAmount(valueSummary);
 

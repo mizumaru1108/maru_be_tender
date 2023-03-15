@@ -221,22 +221,6 @@ export default slice.reducer;
 export const { setProposal, setActiveTap, setCheckedItems, setTracks, setEmployeeOnly } =
   slice.actions;
 
-// export const getProposal = (id: string, headers: any) => async () => {
-//   try {
-//     dispatch(slice.actions.startLoading);
-//     const res = await graphQlAxiosInstance.post('', {
-//       query: getOneProposal,
-//       variables: { id },
-//       headers: headers,
-//     });
-
-//     dispatch(slice.actions.setProposal(res.data.data.proposal));
-//     dispatch(slice.actions.endLoading);
-//   } catch (error) {
-//     dispatch(slice.actions.hasError(error));
-//   }
-// };
-
 export const getProposal = (id: string, role: string) => async () => {
   try {
     dispatch(slice.actions.startLoading);

@@ -19,7 +19,7 @@ interface FormProps {
 
 interface ProposalModeratorApprovePayload {
   path: string;
-  supervisors: string;
+  // supervisors: string;
   notes: string;
 }
 
@@ -28,13 +28,13 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
 
   const validationSchema = Yup.object().shape({
     path: Yup.string().required('Path is required!'),
-    supervisors: Yup.string().required('Supervisors is required!'),
+    // supervisors: Yup.string().required('Supervisors is required!'),
     notes: Yup.string(),
   });
 
   const defaultValues = {
     path: '',
-    supervisors: '',
+    // supervisors: '',
     notes: '',
   };
 
@@ -65,9 +65,9 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
 
   const { data, fetching, error } = result;
 
-  useEffect(() => {
-    resetField('supervisors');
-  }, [resetField]);
+  // useEffect(() => {
+  //   resetField('supervisors');
+  // }, [resetField]);
 
   return (
     <FormProvider methods={methods}>

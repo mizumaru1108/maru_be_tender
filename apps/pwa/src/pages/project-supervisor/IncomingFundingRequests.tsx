@@ -4,8 +4,10 @@ import { styled } from '@mui/material/styles';
 import CardTableBE from 'components/card-table/CardTableBE';
 import { gettingIncomingRequests } from 'queries/project-supervisor/gettingIncomingRequests';
 import useLocales from '../../hooks/useLocales';
+import useAuth from 'hooks/useAuth';
 
 function IncomingFundingRequests() {
+  const { user } = useAuth();
   const { translate } = useLocales();
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
@@ -42,8 +44,22 @@ function IncomingFundingRequests() {
                 }),
               },
             ]}
+            // baseFilters={{
+            //   inner_status: { inner_status: { _eq: 'ACCEPTED_BY_MODERATOR' } },
+            //   clasification_field: { clasification_field: { _is_null: true } },
+            // }}
             baseFilters={{
-              filter1: { supervisor_id: { _is_null: true } },
+              filter1: {
+                // supervisor_id: { _is_null: true },
+                clasification_field: { _is_null: true },
+                inner_status: {
+                  _nin: [
+                    'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
+                    'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
+                  ],
+                },
+                outter_status: { _neq: 'ON_REVISION' },
+              },
             }}
             destination={'incoming-funding-requests'}
           />
