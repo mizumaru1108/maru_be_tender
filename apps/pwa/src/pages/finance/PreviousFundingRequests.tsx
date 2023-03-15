@@ -2,6 +2,7 @@ import { Container } from '@mui/material';
 import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
 import CardTableBE from 'components/card-table/CardTableBE';
+import { gettingPreviousRequests } from 'queries/project-supervisor/gettingPreviousRequests';
 import { getProposals } from 'queries/commons/getProposal';
 import useLocales from '../../hooks/useLocales';
 
@@ -21,10 +22,9 @@ function PreviousFundingRequests() {
       <Container>
         <ContentStyle>
           <CardTableBE
-            resource={getProposals}
-            title={translate('content.client.main_page.process_request')}
+            resource={gettingPreviousRequests}
+            title="طلبات الدعم سابقة"
             cardFooterButtonAction="show-project"
-            destination="previous-funding-requests"
             dateFilter={true}
             filters={[
               {
@@ -56,10 +56,9 @@ function PreviousFundingRequests() {
                 }),
               },
             ]}
+            destination={'previous-funding-requests'}
             baseFilters={{
-              filter1: {
-                finance_id: { _is_null: true },
-              },
+              outter_status: { outter_status: { _neq: 'ONGOING' } },
             }}
           />
         </ContentStyle>

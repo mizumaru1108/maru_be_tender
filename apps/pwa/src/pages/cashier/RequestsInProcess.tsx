@@ -290,7 +290,7 @@ function RequestsInProcess() {
               },
             ]}
             baseFilters={{
-              inner_status: { inner_status: { _eq: 'ACCEPTED_BY_FINACE' } },
+              inner_status: { inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' } },
               cashier_id: { cashier_id: { _eq: user?.id } },
             }}
             cardFooterButtonAction="completing-exchange-permission"

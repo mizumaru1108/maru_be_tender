@@ -1,6 +1,5 @@
 export const whereFilterGenerator = (values: any[]) => {
   let where = {};
-
   function whereGenerator(values: any[]) {
     if (values.length === 0) return {};
     where = {

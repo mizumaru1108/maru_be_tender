@@ -293,7 +293,7 @@ export default function Searchbar() {
                           <Checkbox
                             checked={client_name}
                             onChange={onChangeAccManager}
-                            name="client"
+                            name="client_name"
                           />
                         }
                         label={translate('search_component.by_client_name')}
@@ -303,7 +303,7 @@ export default function Searchbar() {
                           <Checkbox
                             checked={account_status}
                             onChange={onChangeAccManager}
-                            name="status"
+                            name="account_status"
                           />
                         }
                         label={translate('search_component.by_account_status')}

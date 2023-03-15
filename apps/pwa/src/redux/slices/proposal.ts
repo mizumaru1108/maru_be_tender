@@ -240,30 +240,30 @@ export const { setProposal, setActiveTap, setCheckedItems, setTracks, setEmploye
 export const getProposal = (id: string, role: string) => async () => {
   try {
     dispatch(slice.actions.startLoading);
-    // if (role === 'tender_admin' || role === 'tender_ceo' || role === 'tender_project_manager') {
-    //   const response = await axiosInstance.get(`tender-proposal/fetch-by-id?id=${id}`, {
-    //     headers: { 'x-hasura-role': role },
-    //   });
-    //   if (response.data.statusCode === 200) {
-    //     console.log(response.data);
-    //     dispatch(slice.actions.setProposal(response.data.data));
-    //   }
-    // } else {
-    const res = await graphQlAxiosInstance.post(
-      '',
-      {
-        query: getOneProposal,
-        variables: { id },
-      },
-      {
-        headers: {
-          'x-hasura-role': `${role}`,
-        },
+    if (role === 'tender_admin' || role === 'tender_ceo' || role === 'tender_project_manager') {
+      const response = await axiosInstance.get(`tender-proposal/fetch-by-id?id=${id}`, {
+        headers: { 'x-hasura-role': role },
+      });
+      if (response.data.statusCode === 200) {
+        console.log(response.data);
+        dispatch(slice.actions.setProposal(response.data.data));
       }
-    );
-    // console.log(res.data.data.proposal);
-    dispatch(slice.actions.setProposal(res.data.data.proposal));
-    // }
+    } else {
+      const res = await graphQlAxiosInstance.post(
+        '',
+        {
+          query: getOneProposal,
+          variables: { id },
+        },
+        {
+          headers: {
+            'x-hasura-role': `${role}`,
+          },
+        }
+      );
+      console.log(res.data.data.proposal);
+      dispatch(slice.actions.setProposal(res.data.data.proposal));
+    }
 
     dispatch(slice.actions.endLoading);
   } catch (error) {

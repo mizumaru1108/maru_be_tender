@@ -220,23 +220,25 @@ function ProjectPath() {
                             followUps.log[followUps.log.length]
                           )}
                         >
-                          <Stack direction="row" gap={2} sx={{ mt: 1 }}>
-                            <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
-                            <Typography
-                              sx={{
-                                fontSize: followUps.log.length === activeStep ? '17px' : '12px',
-                                fontWeight: followUps.log.length === activeStep ? 800 : 400,
-                                color: '#000',
-                                alignSelf: 'center',
-                              }}
-                            >
-                              {translate(
-                                `permissions.${
-                                  followUps.log[followUps.log.length - 1].proposal.state
-                                }`
-                              )}
-                            </Typography>
-                          </Stack>
+                          {followUps.log[followUps.log.length - 1].proposal && (
+                            <Stack direction="row" gap={2} sx={{ mt: 1 }}>
+                              <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
+                              <Typography
+                                sx={{
+                                  fontSize: followUps.log.length === activeStep ? '17px' : '12px',
+                                  fontWeight: followUps.log.length === activeStep ? 800 : 400,
+                                  color: '#000',
+                                  alignSelf: 'center',
+                                }}
+                              >
+                                {translate(
+                                  `permissions.${
+                                    followUps.log[followUps.log.length - 1].proposal.state
+                                  }`
+                                )}
+                              </Typography>
+                            </Stack>
+                          )}
                         </Button>
                       </Stack>
                     </Step>

@@ -17,8 +17,16 @@ function ProjectBudget() {
     const projectTrack = proposal.project_track;
     let valueToItem: ItemBudget[], valueSummary: number;
 
+    const totalAmount = proposal.proposal_item_budgets.reduce(
+      (acc, cur) => acc + Number(cur.amount),
+      0
+    );
+
     valueToItem = proposal.proposal_item_budgets;
-    valueSummary = proposal.proposal_item_budgets_aggregate.aggregate.sum.amount;
+    // valueSummary = proposal.proposal_item_budgets_aggregate.aggregate.sum.amount;
+    valueSummary = totalAmount;
+
+    console.log({ valueSummary });
 
     setItemBudgetValue(valueToItem);
     setSummaryAmount(valueSummary);

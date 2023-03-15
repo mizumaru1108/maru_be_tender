@@ -48,7 +48,12 @@ function NewCardTable({
       if (activeRole === 'tender_accounts_manager') {
         if (filtered !== null) {
           const res = await axiosInstance.get(url, {
-            params: { limit: params.limit, page: page, employee_name: filtered, account_status:filtered },
+            params: {
+              limit: params.limit,
+              page: page,
+              employee_name: filtered,
+              account_status: filtered,
+            },
             headers: headersProps,
           });
           if (res.data.statusCode === 200) {

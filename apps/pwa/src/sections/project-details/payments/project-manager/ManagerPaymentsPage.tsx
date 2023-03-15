@@ -47,7 +47,9 @@ function ManagerPaymentsPage() {
                 color: theme.palette.primary.main,
               }}
             >
-              {proposal.user.bank_informations[0].bank_account_number}
+              {proposal.user && proposal.user.bank_informations
+                ? proposal.user.bank_informations[0].bank_account_number
+                : proposal.bank_information?.bank_account_number}
             </Typography>
           </Typography>
         </Stack>

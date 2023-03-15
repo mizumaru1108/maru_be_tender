@@ -22,10 +22,9 @@ function PreviousFundingRequests() {
       <Container>
         <ContentStyle>
           <CardTableBE
-            resource={getProposals}
-            title={translate('content.client.main_page.process_request')}
+            resource={gettingPreviousRequests}
+            title="طلبات الدعم سابقة"
             cardFooterButtonAction="show-project"
-            destination="previous-funding-requests"
             dateFilter={true}
             filters={[
               {
@@ -57,10 +56,9 @@ function PreviousFundingRequests() {
                 }),
               },
             ]}
+            destination={'previous-funding-requests'}
             baseFilters={{
-              filter1: {
-                cashier_id: { _is_null: true },
-              },
+              outter_status: { outter_status: { _neq: 'ONGOING' } },
             }}
           />
         </ContentStyle>
