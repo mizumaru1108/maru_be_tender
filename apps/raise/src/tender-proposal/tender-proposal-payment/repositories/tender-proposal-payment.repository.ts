@@ -547,10 +547,6 @@ export class TenderProposalPaymentRepository {
             user_role: TenderAppRoleEnum.CLIENT,
           },
         });
-
-        await prisma.file_manager.createMany({
-          data: fileManagerCreateManyPayload,
-        });
       });
     } catch (err) {
       if (uploadedFilePath.length > 0) {

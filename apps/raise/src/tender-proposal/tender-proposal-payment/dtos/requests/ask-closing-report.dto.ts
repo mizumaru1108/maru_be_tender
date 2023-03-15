@@ -11,7 +11,7 @@ import { TenderFilePayload } from '../../../../tender-commons/dto/tender-file-pa
 
 export class AskClosingReportDto {
   @ApiProperty()
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
   proposal_id: string;
 

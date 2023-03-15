@@ -1,40 +1,67 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsEmail, IsOptional, IsNotEmpty } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
+import { GetByUUIDQueryParamDto } from '../../../../commons/dtos/get-by-uuid-query-param.dto';
+import { ValidateKsaPhoneNumber966 } from '../../../../tender-commons/decorators/validate-ksa-phone-number-966.decorator';
+import { TenderAppRoleEnum } from '../../../../tender-commons/types';
 
-export class UpdateUserDto {
+export class UpdateUserDto extends GetByUUIDQueryParamDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  employee_name?: string;
+  selectLang?: 'ar' | 'en';
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
+  @ApiProperty()
+  @IsBoolean()
+  @IsNotEmpty()
+  activate_user: boolean;
+
+  @ApiProperty()
   @IsEmail()
+  @IsString()
   @IsNotEmpty()
-  email?: string;
+  email: string;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  address?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  mobile_number?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  new_password?: string;
+  @MinLength(8, {
+    message: `Please insert at least 8 character`,
+  })
+  password: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  current_password: string;
+  employee_name: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  employee_path: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @ValidateKsaPhoneNumber966()
+  mobile_number: string;
+
+  @ApiProperty()
+  @IsArray()
+  @IsEnum(TenderAppRoleEnum, {
+    message: `Status must be one of ${Object.values(TenderAppRoleEnum).join(
+      ', ',
+    )}`,
+    each: true,
+  })
+  user_roles: TenderAppRoleEnum[];
 }

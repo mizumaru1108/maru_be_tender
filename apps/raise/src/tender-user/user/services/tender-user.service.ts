@@ -12,19 +12,27 @@ import { EmailService } from '../../../libs/email/email.service';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { TwilioService } from '../../../libs/twilio/services/twilio.service';
+import {
+  TenderAppRoleEnum,
+  TenderFusionAuthRolesEnum,
+} from '../../../tender-commons/types';
 import { getTimeGap } from '../../../tender-commons/utils/get-time-gap';
 import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
 import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
-import { TenderCreateUserDto } from '../dtos/requests/create-user.dto';
-import { SearchUserFilterRequest } from '../dtos/requests/search-user-filter-request.dto';
-import { UpdateUserDto } from '../dtos/requests/update-user.dto';
-import { UserStatusUpdateDto } from '../dtos/requests/user-status-update.dto';
+import {
+  TenderCreateUserDto,
+  UpdateProfileDto,
+  UpdateUserDto,
+  SearchUserFilterRequest,
+  UserStatusUpdateDto,
+} from '../dtos/requests';
 import { CreateUserResponseDto } from '../dtos/responses/create-user-response.dto';
 import { FindUserResponse } from '../dtos/responses/find-user-response.dto';
 import { IUserStatusLogResponseDto } from '../dtos/responses/user-status-log-response.dto';
 import { TenderCurrentUser } from '../interfaces/current-user.interface';
 import { UpdateUserPayload } from '../interfaces/update-user-payload.interface';
-import { updateUserMapper } from '../mappers/update-user.mapper';
+import { UpdateProfileMapper, UpdateUserMapper } from '../mappers';
+
 import { TenderUserRepository } from '../repositories/tender-user.repository';
 import { UserStatusEnum } from '../types/user_status';
 
@@ -39,7 +47,7 @@ export class TenderUserService {
     private readonly tenderNotificationService: TenderNotificationService,
     private readonly emailService: EmailService,
     private readonly twilioService: TwilioService,
-    private tenderUserRepository: TenderUserRepository,
+    private readonly userRepo: TenderUserRepository,
   ) {}
 
   async createUser(
@@ -62,7 +70,7 @@ export class TenderUserService {
       throw new BadRequestException('Roles is Forbidden to create!');
     }
 
-    const track = await this.tenderUserRepository.validateTrack(employee_path);
+    const track = await this.userRepo.validateTrack(employee_path);
     if (!track) {
       throw new BadRequestException(
         'Invalid employee path!, Path is not found!',
@@ -70,9 +78,7 @@ export class TenderUserService {
     }
 
     for (let i = 0; i < user_roles.length; i++) {
-      const availableRoles = await this.tenderUserRepository.validateRoles(
-        user_roles[i],
-      );
+      const availableRoles = await this.userRepo.validateRoles(user_roles[i]);
       if (!availableRoles) {
         throw new BadRequestException(
           `Invalid user roles!, Roles [${user_roles[i]}] is not found!`,
@@ -89,7 +95,7 @@ export class TenderUserService {
     //     )
     //   ) {
     //     // count user with same roles if more than 1 throw error
-    //     const count = await this.tenderUserRepository.countExistingRoles(
+    //     const count = await this.userRepo.countExistingRoles(
     //       user_roles,
     //     );
     //     if (count > 0) {
@@ -98,7 +104,7 @@ export class TenderUserService {
     //   }
     // }
 
-    const emailExist = await this.tenderUserRepository.findUser({
+    const emailExist = await this.userRepo.findUser({
       email,
     });
     if (emailExist) {
@@ -111,7 +117,7 @@ export class TenderUserService {
       }
     }
 
-    const phoneExist = await this.tenderUserRepository.findUser({
+    const phoneExist = await this.userRepo.findUser({
       mobile_number,
     });
     if (phoneExist) {
@@ -177,7 +183,7 @@ export class TenderUserService {
       });
     }
 
-    const createdUser = await this.tenderUserRepository.createUser(
+    const createdUser = await this.userRepo.createUser(
       createUserPayload,
       createStatusLogPayload,
       createRolesData,
@@ -196,9 +202,7 @@ export class TenderUserService {
   }
 
   async deleteUserWFusionAuth(id: string) {
-    const deleteResult = await this.tenderUserRepository.deleteUserWFusionAuth(
-      id,
-    );
+    const deleteResult = await this.userRepo.deleteUserWFusionAuth(id);
     let logs = '';
     let deletedUser: user | null = null;
     console.log('delete result', deleteResult);
@@ -219,10 +223,11 @@ export class TenderUserService {
     };
   }
 
-  async updateProfile(currentUser: TenderCurrentUser, request: UpdateUserDto) {
-    const existingUserData = await this.tenderUserRepository.findUserById(
-      currentUser.id,
-    );
+  async updateProfile(
+    currentUser: TenderCurrentUser,
+    request: UpdateProfileDto,
+  ) {
+    const existingUserData = await this.userRepo.findUserById(currentUser.id);
     if (!existingUserData) throw new NotFoundException("User doesn't exist!");
 
     const valid = await this.fusionAuthService.login(
@@ -233,15 +238,113 @@ export class TenderUserService {
 
     let updateUserPayload: UpdateUserPayload = {};
 
-    updateUserPayload = updateUserMapper(
+    updateUserPayload = UpdateProfileMapper(
       existingUserData,
       request,
       currentUser,
     );
 
-    const queryResult = await this.tenderUserRepository.updateUserWFusionAuth(
+    const queryResult = await this.userRepo.updateUserWFusionAuth(
       currentUser.id,
       updateUserPayload,
+    );
+
+    let logs = '';
+    let updatedUser: user | null = null;
+
+    logs = queryResult.prismaResult
+      ? 'User profile updated on our app!'
+      : 'Something went wrong when updating user profile on our app!';
+    logs =
+      queryResult.fusionResult === true
+        ? (logs += ', User profile updated on our cloud app!')
+        : (logs +=
+            ', User update performed successfully but user didnt updated on coud app!');
+
+    if (typeof queryResult.prismaResult === 'object') {
+      updatedUser = queryResult.prismaResult;
+    }
+
+    return {
+      updatedUser: updatedUser,
+      logs,
+    };
+  }
+
+  async updateUserData(request: UpdateUserDto) {
+    const { user_roles, selectLang, id, employee_path } = request;
+    user_roles.forEach((role: TenderAppRoleEnum) => {
+      if (role === TenderAppRoleEnum.CLIENT) {
+        throw new BadRequestException(
+          'You are note allowed to change user to Client!',
+        );
+      }
+    });
+
+    const isUserExist = await this.userRepo.findUserById(id);
+    if (!isUserExist) throw new NotFoundException('User Not Found!');
+    if (!!isUserExist.client_data) {
+      throw new BadRequestException(
+        'You can only edit employee data not a client!',
+      );
+    }
+
+    const createRolesData: Prisma.user_roleUncheckedCreateInput[] = [];
+
+    for (let i = 0; i < user_roles.length; i++) {
+      const availableRoles = await this.userRepo.validateRoles(user_roles[i]);
+      if (!availableRoles) {
+        throw new BadRequestException(
+          `Invalid user roles!, Roles [${user_roles[i]}] is not found!`,
+        );
+      }
+
+      if (availableRoles) {
+        createRolesData.push({
+          id: uuidv4(),
+          user_id: id,
+          user_type_id: user_roles[i],
+        });
+      }
+    }
+
+    const track = await this.userRepo.validateTrack(employee_path);
+    if (!track) {
+      throw new BadRequestException(
+        'Invalid employee path!, Path is not found!',
+      );
+    }
+
+    const mappedRequest = UpdateUserMapper(isUserExist, request);
+
+    if (!!mappedRequest.email) {
+      const emailExist = await this.userRepo.findUser({
+        email: mappedRequest.email as string,
+      });
+      if (emailExist) {
+        if (selectLang === 'en') {
+          throw new ConflictException('Email already exist in our app!');
+        } else {
+          throw new ConflictException(
+            'البريد الإلكتروني مُسجل بالفعل في تطبيقنا!',
+          );
+        }
+      }
+    }
+
+    if (!!mappedRequest.mobile_number) {
+      const phoneExist = await this.userRepo.findUser({
+        mobile_number: mappedRequest.mobile_number as string,
+      });
+      if (phoneExist) {
+        throw new ConflictException('Phone already exist in our app!');
+      }
+    }
+
+    const queryResult = await this.userRepo.updateUserWFusionAuth(
+      id,
+      mappedRequest,
+      createRolesData,
     );
 
     let logs = '';
@@ -350,10 +453,7 @@ export class TenderUserService {
     const findOnlyActive =
       currentUser.choosenRole === 'tender_accounts_manager' ? false : true;
 
-    const response = await this.tenderUserRepository.findUsers(
-      filter,
-      findOnlyActive,
-    );
+    const response = await this.userRepo.findUsers(filter, findOnlyActive);
 
     let finalResult: FindUserResponse['data'] = [];
 
@@ -400,12 +500,12 @@ export class TenderUserService {
   }
 
   async findById(id: string): Promise<user | null> {
-    return await this.tenderUserRepository.findUserById(id);
+    return await this.userRepo.findUserById(id);
   }
 
   async updateUserStatus(accManagerId: string, request: UserStatusUpdateDto) {
     if (request.status === UserStatusEnum.SUSPENDED_ACCOUNT) {
-      const haveProposal = await this.tenderUserRepository.isUserHasProposal(
+      const haveProposal = await this.userRepo.isUserHasProposal(
         request.user_id,
       );
 
@@ -415,7 +515,7 @@ export class TenderUserService {
         );
       }
     }
-    const response = await this.tenderUserRepository.changeUserStatus(
+    const response = await this.userRepo.changeUserStatus(
       request.user_id,
       request.status,
       accManagerId,

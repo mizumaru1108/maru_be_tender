@@ -702,44 +702,60 @@ export class TenderUserRepository {
     }
   }
 
-  async updateUserWFusionAuth(userId: string, request: UpdateUserPayload) {
+  async updateUserWFusionAuth(
+    userId: string,
+    request: UpdateUserPayload,
+    createRolesData?: Prisma.user_roleUncheckedCreateInput[],
+  ) {
     this.logger.debug(`Updating user with id: ${userId}`);
     try {
-      return await this.prismaService.$transaction(async (prisma) => {
-        const prismaResult = await prisma.user.update({
-          where: { id: userId },
-          data: {
-            employee_name: request.employee_name,
-            email: request.email,
-            address: request.address,
-            mobile_number: request.mobile_number,
-          },
-        });
+      return await this.prismaService.$transaction(
+        async (prisma) => {
+          if (createRolesData) {
+            await prisma.user_role.deleteMany({
+              where: { user_id: userId },
+            });
 
-        const fusionResult = await this.fusionAuthService.fusionAuthUpdateUser(
-          userId,
-          {
-            firstName:
-              request.employee_name && !!request.employee_name
-                ? (request.employee_name as string)
-                : undefined,
-            email:
-              request.email && !!request.email
-                ? (request.email as string)
-                : undefined,
-            mobilePhone:
-              request.mobile_number && !!request.mobile_number
-                ? (request.mobile_number as string)
-                : undefined,
-            address:
-              request.address && !!request.address
-                ? (request.address as string)
-                : undefined,
-            password: request.password,
-          },
-        );
-        return { prismaResult, fusionResult };
-      });
+            await prisma.user_role.createMany({
+              data: createRolesData,
+            });
+          }
+
+          const exclude = ['password'];
+          const updateUserPayload: Prisma.userUncheckedUpdateInput =
+            Object.fromEntries(
+              Object.entries(request).filter(([k]) => !exclude.includes(k)),
+            );
+
+          const prismaResult = await prisma.user.update({
+            where: { id: userId },
+            data: updateUserPayload,
+          });
+
+          const fusionResult =
+            await this.fusionAuthService.fusionAuthUpdateUser(userId, {
+              firstName:
+                request.employee_name && !!request.employee_name
+                  ? (request.employee_name as string)
+                  : undefined,
+              email:
+                request.email && !!request.email
+                  ? (request.email as string)
+                  : undefined,
+              mobilePhone:
+                request.mobile_number && !!request.mobile_number
+                  ? (request.mobile_number as string)
+                  : undefined,
+              address:
+                request.address && !!request.address
+                  ? (request.address as string)
+                  : undefined,
+              password: request.password,
+            });
+          return { prismaResult, fusionResult };
+        },
+        { maxWait: 500000, timeout: 1500000 },
+      );
     } catch (error) {
       const theError = prismaErrorThrower(
         error,

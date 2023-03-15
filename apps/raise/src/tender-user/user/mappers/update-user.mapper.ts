@@ -1,15 +1,13 @@
-import { client_data, user, user_role } from '@prisma/client';
-import { UpdateUserDto } from '../dtos/requests/update-user.dto';
-import { TenderCurrentUser } from '../interfaces/current-user.interface';
+import { user, client_data, user_role } from '@prisma/client';
+import { UpdateUserDto } from '../dtos/requests';
 import { UpdateUserPayload } from '../interfaces/update-user-payload.interface';
-
-export const updateUserMapper = (
+import { UserStatusEnum } from '../types/user_status';
+export const UpdateUserMapper = (
   existingData: user & {
     client_data: client_data | null;
     roles: user_role[];
   },
   request: UpdateUserDto,
-  currentUser: TenderCurrentUser,
 ) => {
   const updateUserPayload: UpdateUserPayload = {};
 
@@ -24,35 +22,37 @@ export const updateUserMapper = (
     updateUserPayload.email = request.email;
   }
 
-  if (request.address && request.address !== existingData.address) {
-    updateUserPayload.address = request.address;
+  if (
+    request.mobile_number &&
+    request.mobile_number !== existingData.mobile_number
+  ) {
+    updateUserPayload.mobile_number = request.mobile_number;
   }
 
-  if (currentUser.choosenRole !== 'tender_client') {
-    if (
-      request.mobile_number &&
-      request.mobile_number !== existingData.mobile_number
-    ) {
-      updateUserPayload.mobile_number = request.mobile_number;
-    }
-  } else {
-    if (
-      request.mobile_number &&
-      existingData.client_data?.entity_mobile &&
-      request.mobile_number !== existingData.client_data.entity_mobile
-    ) {
-      updateUserPayload.mobile_number = request.mobile_number;
-      updateUserPayload.client_data = {
-        update: {
-          entity_mobile: {
-            set: request.mobile_number,
-          },
-        },
-      };
-    }
+  if (request.password) {
+    updateUserPayload.password = request.password;
   }
 
-  if (request.new_password) updateUserPayload.password = request.new_password;
+  if (
+    existingData.status_id === UserStatusEnum.ACTIVE_ACCOUNT &&
+    !request.activate_user
+  ) {
+    updateUserPayload.status_id = UserStatusEnum.SUSPENDED_ACCOUNT;
+  }
+
+  if (
+    existingData.status_id !== UserStatusEnum.ACTIVE_ACCOUNT &&
+    request.activate_user
+  ) {
+    updateUserPayload.status_id = UserStatusEnum.ACTIVE_ACCOUNT;
+  }
+
+  if (
+    request.employee_path &&
+    request.employee_path !== existingData.employee_path
+  ) {
+    updateUserPayload.employee_path = request.employee_path;
+  }
 
   return updateUserPayload;
 };

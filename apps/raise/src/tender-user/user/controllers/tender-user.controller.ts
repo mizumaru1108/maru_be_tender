@@ -16,14 +16,17 @@ import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
 import { ManualPaginatedResponse } from '../../../tender-commons/helpers/manual-paginated-response.dto';
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
-import { TenderCreateUserDto } from '../dtos/requests/create-user.dto';
-
-import { TenderDeleteUserDto } from '../dtos/requests/delete-user.dto';
-import { SearchUserFilterRequest } from '../dtos/requests/search-user-filter-request.dto';
-import { UpdateUserDto } from '../dtos/requests/update-user.dto';
-import { UserStatusUpdateDto } from '../dtos/requests/user-status-update.dto';
+import {
+  TenderCreateUserDto,
+  SearchUserFilterRequest,
+  TenderDeleteUserDto,
+  UpdateUserDto,
+  UserStatusUpdateDto,
+  UpdateProfileDto,
+} from '../dtos/requests';
 import { CreateUserResponseDto } from '../dtos/responses/create-user-response.dto';
 import { FindUserResponse } from '../dtos/responses/find-user-response.dto';
+
 import { TenderCurrentUser } from '../interfaces/current-user.interface';
 import { TenderUserService } from '../services/tender-user.service';
 
@@ -99,7 +102,7 @@ export class TenderUserController {
   @Patch('update-profile')
   async updateProfile(
     @CurrentUser() currentUser: TenderCurrentUser,
-    @Body() request: UpdateUserDto,
+    @Body() request: UpdateProfileDto,
   ): Promise<BaseResponse<any>> {
     const updateResult = await this.tenderUserService.updateProfile(
       currentUser,
@@ -123,6 +126,18 @@ export class TenderUserController {
       currentUser.id,
       request,
     );
+    return baseResponseHelper(
+      status,
+      HttpStatus.CREATED,
+      'User updated successfully!',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Patch('update-user')
+  async updateUser(@Body() request: UpdateUserDto): Promise<BaseResponse<any>> {
+    const status = await this.tenderUserService.updateUserData(request);
     return baseResponseHelper(
       status,
       HttpStatus.CREATED,

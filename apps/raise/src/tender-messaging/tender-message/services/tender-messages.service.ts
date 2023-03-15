@@ -95,10 +95,29 @@ export class TenderMessagesService {
     }
 
     if (
+      (correspondanceType === 'INTERNAL' &&
+        partnerRole.indexOf('CLIENT') > -1) ||
+      (correspondanceType === 'INTERNAL' &&
+        partnerSelectedRole === 'tender_client') ||
+      (correspondanceType === 'EXTERNAL' &&
+        partnerRole.indexOf('CLIENT') === -1) ||
+      (correspondanceType === 'EXTERNAL' &&
+        partnerSelectedRole !== 'tender_client')
+    ) {
+      throw new BadRequestException(
+        `Your partner is not ${
+          correspondanceType === 'INTERNAL'
+            ? 'an administrative account!'
+            : 'a client!'
+        }`,
+      );
+    }
+
+    if (
       [
-        'tender_project_manager',
-        'tender_consultant',
-        'tender_ceo',
+        // 'tender_project_manager',
+        // 'tender_consultant',
+        // 'tender_ceo',
         'tender_finance',
       ].indexOf(userRole) > -1 &&
       correspondanceType === 'EXTERNAL'
@@ -117,25 +136,6 @@ export class TenderMessagesService {
       if (userRole === 'tender_client') {
         throw new BadRequestException("You can't start a new message!");
       }
-
-      // if (
-      //   (correspondanceType === 'INTERNAL' &&
-      //     partnerRole.indexOf('CLIENT') > -1) ||
-      //   (correspondanceType === 'INTERNAL' &&
-      //     partnerSelectedRole === 'tender_client') ||
-      //   (correspondanceType === 'EXTERNAL' &&
-      //     partnerRole.indexOf('CLIENT') === -1) ||
-      //   (correspondanceType === 'EXTERNAL' &&
-      //     partnerSelectedRole !== 'tender_client')
-      // ) {
-      //   throw new BadRequestException(
-      //     `Your partner is not ${
-      //       correspondanceType === 'INTERNAL'
-      //         ? 'an administrative account!'
-      //         : 'a client!'
-      //     }`,
-      //   );
-      // }
 
       const newRoomChat = await this.tenderRoomChatRepository.createRoomChat(
         senderId,
