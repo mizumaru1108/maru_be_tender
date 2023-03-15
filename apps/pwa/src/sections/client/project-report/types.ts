@@ -5,6 +5,7 @@ export interface IPropFromProjectReport {
   onSubmit: (data: any) => void;
   defaultValues: CloseReportForm;
   isEdit?: boolean;
+  loading?: boolean;
 }
 
 export interface CloseReportForm {
@@ -12,11 +13,11 @@ export interface CloseReportForm {
   number_of_beneficiaries: number;
   target_beneficiaries: string;
   execution_place: string;
-  // gender: string;
-  // project_duration: string;
-  // project_repeated: string;
-  // number_of_volunteer: number;
-  // number_of_staff: number;
-  // attacments: FileProp[];
-  // images: FileProp[];
+  gender: string | undefined;
+  project_duration: string;
+  project_repeated: string;
+  number_of_volunteer: number;
+  number_of_staff: number;
+  attacments: FileProp | FileProp[] | any;
+  images: FileProp | FileProp[] | any;
 }

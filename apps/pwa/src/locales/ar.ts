@@ -35,11 +35,69 @@ const ar = {
           project_report: 'تقرير المشروع',
           finished: 'انتهى',
           main_information: 'المعلومات الرئيسية',
+          about_project: 'حول المشروع',
+          form: {
+            number_of_beneficiaries: {
+              label: '*عدد المستفيدين',
+              placeholder: 'عدد المستفيدين',
+            },
+            target_beneficiaries: {
+              label: '*المستفيدون المستهدفون',
+              placeholder: 'يرجى تحديد جميع المستفيدين المستهدفين من المشروع',
+            },
+            execution_place: {
+              label: '*مكان التنفيذ',
+              placeholder: 'الرجاء تحديد أماكن للمشروع',
+            },
+            gender: {
+              label: '*جنس المستفيدين',
+              placeholder: 'جنس المستفيدين',
+            },
+            project_duration: {
+              label: '*مدة المشروع',
+              placeholder: 'الرجاء تحديد مدة المشروع',
+            },
+            project_repeated: {
+              label: '*مشروع متكرر',
+              placeholder: 'يرجى تحديد المدة في حالة تكرار المشروع',
+            },
+            number_of_volunteer: {
+              label: '*عدد المتطوعين',
+              placeholder: 'عدد المتطوعين',
+            },
+            number_of_staff: {
+              label: '*عدد الموظفين',
+              placeholder: 'عدد الموظفين',
+            },
+            attachments: {
+              label: '*إضافة مرفق (ملف ، pdf ، إلخ)',
+              placeholder: 'إضافة مرفق (ملف ، pdf ، إلخ)',
+            },
+            images: {
+              label: '*إضافة صورة (صور ، إلخ)',
+              placeholder: 'إضافة صورة (صور ، إلخ)',
+            },
+          },
+          option: {
+            children: 'أطفال',
+            general_students: 'طلاب عامة',
+            university_students: 'طلاب الجامعة',
+            residents: 'سكان',
+            village: 'قرية',
+            district: 'يصرف',
+            regency: 'ريجنسي',
+            province: 'مقاطعة',
+            years: 'سنين',
+            annual: 'سنوي',
+            months: 'شهور',
+            monthly: 'شهريا',
+          },
         },
         btn: {
           accept_exchange_permission: 'قبول إذن الصرف',
           request_project_close_report: 'طلب تقرير إغلاق المشروع',
           end_project: 'إنهاء المشروع دون التقرير الختامي',
+          send_submit_form: 'إرسال نموذج تقرير المشروع',
         },
         notification: {
           success_accept_exchange: 'تم الدفع بالكامل ، تم تغيير حالة العرض بنجاح',
