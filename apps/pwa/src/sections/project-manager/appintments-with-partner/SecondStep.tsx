@@ -1,9 +1,12 @@
-import { Box, Button, Grid, IconButton, Stack, Typography } from '@mui/material';
-import { CalendarPicker } from '@mui/x-date-pickers';
+import { Box, Button, Grid, IconButton, Stack, TextField, Typography } from '@mui/material';
+import { CalendarPicker, LocalizationProvider, StaticDatePicker } from '@mui/x-date-pickers';
 import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import { styled } from '@mui/material/styles';
 import dayjs, { Dayjs } from 'dayjs';
 import * as React from 'react';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { isWeekend } from 'date-fns';
 
 interface CustomPickerDayProps extends PickersDayProps<Dayjs> {
   available: boolean;
@@ -12,6 +15,15 @@ interface CustomPickerDayProps extends PickersDayProps<Dayjs> {
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const availableDays = ['Sunday', 'Monday', 'Tuesday'];
 type DAYS_EN = 'Su' | 'Mo' | 'Tu' | 'We' | 'Th' | 'Fr' | 'Sa';
+const DAY_EN = {
+  Su: 'Sunday',
+  Mo: 'Monday',
+  Tu: 'Tuesday',
+  We: 'Wednesday',
+  Th: 'Thursday',
+  Fr: 'Friday',
+  Sa: 'Saturday',
+};
 const DAYS_EN_AR = {
   Su: 'الأحد',
   Mo: 'الإثنين',
@@ -21,6 +33,8 @@ const DAYS_EN_AR = {
   Fr: 'الجمعة',
   Sa: 'السبت',
 };
+
+const sxProps = {};
 
 const CustomPickersDay = styled(PickersDay, {
   shouldForwardProp: (prop) => prop !== 'available' && prop !== 'isToday',
@@ -52,6 +66,8 @@ const CustomPickersDay = styled(PickersDay, {
 })) as React.ComponentType<CustomPickerDayProps>;
 
 function SecondStep({ setUserId }: any) {
+  const [value, setValue] = React.useState<Date | number | null>(new Date());
+
   const [date, setDate] = React.useState<Dayjs | null>(null);
 
   const renderWeekPickerDay = (
@@ -120,13 +136,32 @@ function SecondStep({ setUserId }: any) {
           <CalendarPicker
             date={date}
             onChange={(newDate) => setDate(newDate)}
-            renderDay={renderWeekPickerDay}
-            shouldDisableDate={disableUnAvailableDays}
-            dayOfWeekFormatter={(day) => DAYS_EN_AR[`${day as DAYS_EN}`]}
+            // renderDay={renderWeekPickerDay}
+            // shouldDisableDate={disableUnAvailableDays}
+            dayOfWeekFormatter={(day) => DAY_EN[`${day as DAYS_EN}`]}
+            views={['day']}
+            showDaysOutsideCurrentMonth
           />
+          {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <StaticDatePicker
+              displayStaticWrapperAs="desktop"
+              orientation="landscape"
+              // openTo="day"
+              value={value}
+              shouldDisableDate={isWeekend}
+              views={['day']}
+              onChange={(newValue) => {
+                setValue(newValue);
+              }}
+              showToolbar={false}
+              showDaysOutsideCurrentMonth
+              renderInput={(params) => <TextField {...params} />}
+            />
+          </LocalizationProvider> */}
         </Box>
       </Grid>
 
+      {/* for select time */}
       {date && (
         <Grid item md={5} xs={12}>
           <Stack direction="column" gap={'10px'}>

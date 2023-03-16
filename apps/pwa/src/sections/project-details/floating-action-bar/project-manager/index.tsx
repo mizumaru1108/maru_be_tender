@@ -316,7 +316,8 @@ function FloatingActionBar() {
   };
 
   const handleMessage = () => {
-    const proposalSubmitter = proposal.user;
+    const proposalSubmitter: any = proposal.user;
+    console.log('proposalSubmitter', proposalSubmitter);
     const proposalStateRole = proposal.state;
     const x = location.pathname.split('/');
     const urlToMessage = `/${x[1]}/${x[2]}/messages`;
@@ -330,9 +331,9 @@ function FloatingActionBar() {
           attachment: null,
           content_title: null,
           content_type_id: 'TEXT',
-          receiver_id: proposalSubmitter.id,
+          receiver_id: proposalSubmitter.client_data.user_id,
           owner_id: user?.id,
-          receiver_role_as: `tender_${proposalSubmitter.roles[0].role.id.toLowerCase()}`,
+          receiver_role_as: `tender_${proposalSubmitter.roles[0].user_type_id.toLowerCase()}`,
           sender_role_as: `tender_${proposalStateRole.toLowerCase()}`,
           created_at: moment().toISOString(),
           updated_at: moment().toISOString(),
