@@ -29,7 +29,7 @@ function ButtonDownloadFiles({ files, border, isMessageAttachment }: Props) {
       sx={{
         flex: 1,
         '&:hover': { backgroundColor: '#00000014' },
-        backgroundColor: '#93A3B014',
+        backgroundColor: '#DFE4E8',
         border: 3,
         borderColor: files && files.color ? files.color : !!border ? border : 'transparent',
       }}
@@ -60,16 +60,10 @@ function ButtonDownloadFiles({ files, border, isMessageAttachment }: Props) {
           />
         </Stack>
         <Stack direction="column">
-          <Typography
-            gutterBottom
-            sx={{ fontSize: '13px', color: isMessageAttachment ? '#fff' : 'primary' }}
-          >
+          <Typography gutterBottom sx={{ fontSize: '13px' }}>
             {`${fileName.substring(0, 7)}... .${fileType}` ?? '-'}
           </Typography>
-          <Typography
-            gutterBottom
-            sx={{ fontSize: '13px', color: isMessageAttachment ? '#fff' : 'primary' }}
-          >
+          <Typography gutterBottom sx={{ fontSize: '13px' }}>
             {files.size !== undefined ? `${fileSize}` : '126KB'}
           </Typography>
         </Stack>

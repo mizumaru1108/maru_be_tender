@@ -558,7 +558,7 @@ export default function MessageContent() {
                                             <ButtonDownloadFiles
                                               files={v.attachment as UploadFilesJsonbDto}
                                               border={undefined}
-                                              isMessageAttachment={true}
+                                              // isMessageAttachment={true}
                                             />
                                           </>
                                         )}

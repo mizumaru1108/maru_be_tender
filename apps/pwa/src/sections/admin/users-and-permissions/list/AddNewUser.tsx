@@ -70,7 +70,7 @@ function AddNewUser() {
       if (val === undefined) {
         return true;
       } else {
-        return val!.length === 0 || val!.length === 9;
+        return val!.length === 0 || val!.length > 7;
       }
     });
   // .min(8, 'password must be at least 8 characters');
@@ -140,25 +140,27 @@ function AddNewUser() {
       ...data,
       id: params.userId,
     };
+    payload.mobile_number =
+      data.mobile_number.split('')[4] === '+966' ? data.mobile_number : `+966${data.mobile_number}`;
     payload = removeEmptyKey(payload);
-    console.log('update: ', payload);
-    alert('under construction');
-    // try {
-    //   setIsLoading(true);
-    //   await axiosInstance.post(
-    //     '/tender-user/create',
-    //     {
-    //       ...data,
-    //     },
-    //     { headers: { 'x-hasura-role': activeRole! } }
-    //   );
-    //   setIsLoading(false);
-    //   setOpenSnackBar({ open: true, message: 'تم إنشاء الحساب', severity: 'success' });
-    //   navigate('/admin/dashboard/users-and-permissions');
-    // } catch (error) {
-    //   setIsLoading(false);
-    //   setOpenSnackBar({ open: true, message: error.message, severity: 'error' });
-    // }
+    // console.log('update: ', payload);
+    // alert('under construction');
+    try {
+      setIsLoading(true);
+      await axiosInstance.patch(
+        'tender-user/update-user',
+        {
+          ...payload,
+        },
+        { headers: { 'x-hasura-role': activeRole! } }
+      );
+      setIsLoading(false);
+      setOpenSnackBar({ open: true, message: 'تم إنشاء الحساب', severity: 'success' });
+      navigate('/admin/dashboard/users-and-permissions');
+    } catch (error) {
+      setIsLoading(false);
+      setOpenSnackBar({ open: true, message: error.message, severity: 'error' });
+    }
   };
 
   const handleCloseSnackBar = (event?: React.SyntheticEvent | Event, reason?: string) => {
