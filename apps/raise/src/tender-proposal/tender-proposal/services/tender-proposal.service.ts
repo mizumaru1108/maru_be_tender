@@ -1334,27 +1334,32 @@ export class TenderProposalService {
     this.emailService.sendMail(clientEmailNotifPayload);
 
     // create web app notification
-    if (log.data.reviewer_id) {
-      const employeeWebNotifPayload: CreateNotificationDto = {
+    if (
+      actions !== 'accept' ||
+      (actions === 'accept' && log.data.user_role === TenderAppRoleEnum.CEO)
+    ) {
+      if (log.data.reviewer_id) {
+        const employeeWebNotifPayload: CreateNotificationDto = {
+          type: 'PROPOSAL',
+          specific_type: `PROJECT_${actions.toUpperCase()}ED`,
+          user_id: log.data.reviewer_id,
+          proposal_id: log.data.proposal_id,
+          subject,
+          content: employeeContent,
+        };
+        await this.notifService.create(employeeWebNotifPayload);
+      }
+
+      const clientWebNotifPayload: CreateNotificationDto = {
         type: 'PROPOSAL',
         specific_type: `PROJECT_${actions.toUpperCase()}ED`,
-        user_id: log.data.reviewer_id,
+        user_id: log.data.proposal.submitter_user_id,
         proposal_id: log.data.proposal_id,
         subject,
-        content: employeeContent,
+        content: clientContent,
       };
-      await this.notifService.create(employeeWebNotifPayload);
+      await this.notifService.create(clientWebNotifPayload);
     }
-
-    const clientWebNotifPayload: CreateNotificationDto = {
-      type: 'PROPOSAL',
-      specific_type: `PROJECT_${actions.toUpperCase()}ED`,
-      user_id: log.data.proposal.submitter_user_id,
-      proposal_id: log.data.proposal_id,
-      subject,
-      content: clientContent,
-    };
-    await this.notifService.create(clientWebNotifPayload);
 
     const clientPhone = isExistAndValidPhone(
       log.data.proposal.user.mobile_number,

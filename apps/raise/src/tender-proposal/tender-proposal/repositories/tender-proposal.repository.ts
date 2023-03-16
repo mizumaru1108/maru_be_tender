@@ -1072,7 +1072,11 @@ export class TenderProposalRepository {
           },
           proposal_item_budgets: true,
           proposal_logs: true,
-          payments: true,
+          payments: {
+            include: {
+              cheques: true,
+            },
+          },
           bank_information: true,
         },
       });

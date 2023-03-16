@@ -126,7 +126,7 @@ model payment {
   updated_at         DateTime?       @default(now()) @db.Timestamptz(6)
   proposal           proposal        @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
   payment_status     payment_status? @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  cheque             cheque[]
+  cheques            cheque[]
 }
 
 model proposal {
@@ -442,9 +442,11 @@ model edit_request_status {
 }
 
 model project_tracks {
-  id       String     @id(map: "project_kind_pkey") @unique(map: "project_kind_id_key")
-  proposal proposal[]
-  user     user[]
+  id            String          @id(map: "project_kind_pkey") @unique(map: "project_kind_id_key")
+  proposal      proposal[]
+  track         track[]
+  track_section track_section[]
+  user          user[]
 }
 
 model room_chat {
@@ -543,22 +545,22 @@ model recommended_support_consultant {
 }
 
 model track {
-  name          String          @unique @db.VarChar
-  budget        Float           @db.Real
-  id            String          @id @db.VarChar
-  proposal      proposal[]
-  track_section track_section[]
+  budget         Float           @db.Real
+  id             String          @id @db.VarChar
+  name           String?
+  project_tracks project_tracks? @relation(fields: [name], references: [id], onDelete: Cascade)
+  proposal       proposal[]
 }
 
 model track_section {
   id                  String          @id @db.VarChar
   name                String          @unique @db.VarChar
   budget              Float           @db.Real
-  track_id            String          @db.VarChar
   section_id          String?         @db.VarChar
   is_leaf             Boolean?        @default(false)
+  track               String
   track_section       track_section?  @relation("track_sectionTotrack_section", fields: [section_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
-  track               track           @relation(fields: [track_id], references: [id], onUpdate: Restrict)
+  project_tracks      project_tracks  @relation(fields: [track], references: [id], onDelete: Cascade)
   other_track_section track_section[] @relation("track_sectionTotrack_section")
 }
 

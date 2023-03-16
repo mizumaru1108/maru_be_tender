@@ -15,6 +15,7 @@ import {
 } from '../../../tender-commons/types/proposal';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
+import { CloseReportNotifMapper } from '../mappers';
 import { InsertPaymentNotifMapper } from '../mappers/insert-payment-notif.mapper';
 import { UpdatePaymentNotifMapper } from '../mappers/update-payment-notif.mapper';
 
@@ -461,7 +462,7 @@ export class TenderProposalPaymentRepository {
           });
 
           this.logger.log('info', `Creating Proposal Log`);
-          await prisma.proposal_log.create({
+          const logs = await prisma.proposal_log.create({
             data: {
               id: nanoid(),
               proposal_id: proposal_id,
@@ -478,9 +479,51 @@ export class TenderProposalPaymentRepository {
                   )
                 : null,
             },
+            select: {
+              action: true,
+              created_at: true,
+              reviewer: {
+                select: {
+                  id: true,
+                  employee_name: true,
+                  email: true,
+                  mobile_number: true,
+                },
+              },
+              proposal: {
+                select: {
+                  project_name: true,
+                  user: {
+                    select: {
+                      id: true,
+                      employee_name: true,
+                      email: true,
+                      mobile_number: true,
+                    },
+                  },
+                },
+              },
+            },
           });
 
-          return updatedProposal;
+          const closeReportNotif = CloseReportNotifMapper(logs);
+          if (
+            closeReportNotif.createManyWebNotifPayload &&
+            closeReportNotif.createManyWebNotifPayload.length > 0
+          ) {
+            this.logger.log(
+              'log',
+              `Creating new notification with payload of \n${closeReportNotif.createManyWebNotifPayload}`,
+            );
+            prisma.notification.createMany({
+              data: closeReportNotif.createManyWebNotifPayload,
+            });
+          }
+
+          return {
+            updatedProposal,
+            closeReportNotif,
+          };
         },
         { maxWait: 50000, timeout: 150000 },
       );

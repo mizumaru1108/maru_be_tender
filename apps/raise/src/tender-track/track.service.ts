@@ -9,59 +9,59 @@ import { UpdateTrackSection } from './dto/updateTrackSection.dto';
 export class TenderTrackService {
   constructor(private readonly tenderTrackRepository: TenderTrackRepository) {}
 
-  @UseGuards(JwtAuthGuard)
-  async createTrackSection(request: TracSectionkDto): Promise<track_section> {
-    const { id, name, budget, track_id, section_id, is_leaf } = request;
+  // @UseGuards(JwtAuthGuard)
+  // async createTrackSection(request: TracSectionkDto): Promise<track_section> {
+  //   const { id, name, budget, track_id, section_id, is_leaf } = request;
 
-    const trackRecordPayload: Prisma.track_sectionCreateArgs = {
-      data: {
-        id,
-        name,
-        budget,
-        track_id,
-        section_id,
-        is_leaf,
-      },
-    };
+  //   const trackRecordPayload: Prisma.track_sectionCreateArgs = {
+  //     data: {
+  //       id,
+  //       name,
+  //       budget,
+  //       track_id,
+  //       section_id,
+  //       is_leaf,
+  //     },
+  //   };
 
-    const createdRecord = await this.tenderTrackRepository.createTrackSection(
-      trackRecordPayload,
-    );
-    return createdRecord;
-  }
+  //   const createdRecord = await this.tenderTrackRepository.createTrackSection(
+  //     trackRecordPayload,
+  //   );
+  //   return createdRecord;
+  // }
 
-  @UseGuards(JwtAuthGuard)
-  async updateTrackSection(
-    request: UpdateTrackSection,
-    id: string,
-  ): Promise<track_section> {
-    const { name, budget, track_id, section_id, is_leaf } = request;
+  // @UseGuards(JwtAuthGuard)
+  // async updateTrackSection(
+  //   request: UpdateTrackSection,
+  //   id: string,
+  // ): Promise<track_section> {
+  //   const { name, budget, track_id, section_id, is_leaf } = request;
 
-    const updateTrackSectionRecordPayload: Prisma.track_sectionUpdateArgs = {
-      data: {
-        id,
-        name,
-        budget,
-        track_id,
-        section_id,
-        is_leaf,
-      },
-      where: {},
-    };
+  //   const updateTrackSectionRecordPayload: Prisma.track_sectionUpdateArgs = {
+  //     data: {
+  //       id,
+  //       name,
+  //       budget,
+  //       track_id,
+  //       section_id,
+  //       is_leaf,
+  //     },
+  //     where: {},
+  //   };
 
-    const updatedRecord = await this.tenderTrackRepository.updateTrackSection(
-      updateTrackSectionRecordPayload,
-    );
-    return updatedRecord;
-  }
+  //   const updatedRecord = await this.tenderTrackRepository.updateTrackSection(
+  //     updateTrackSectionRecordPayload,
+  //   );
+  //   return updatedRecord;
+  // }
 
-  @UseGuards(JwtAuthGuard)
-  async deleteTrackSection(id: string) {
-    return await this.tenderTrackRepository.deleteTrackSection(id);
-  }
+  // @UseGuards(JwtAuthGuard)
+  // async deleteTrackSection(id: string) {
+  //   return await this.tenderTrackRepository.deleteTrackSection(id);
+  // }
 
-  @UseGuards(JwtAuthGuard)
-  async getAllTrackSections(track_id: string) {
-    return await this.tenderTrackRepository.getAllTrackSections(track_id);
-  }
+  // @UseGuards(JwtAuthGuard)
+  // async getAllTrackSections(track_id: string) {
+  //   return await this.tenderTrackRepository.getAllTrackSections(track_id);
+  // }
 }

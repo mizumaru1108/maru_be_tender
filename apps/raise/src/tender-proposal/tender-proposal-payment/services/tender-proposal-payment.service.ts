@@ -328,7 +328,17 @@ export class TenderProposalPaymentService {
       throw new NotFoundException('No proposal data found on this payment');
     }
 
-    await this.paymentRepo.sendClosingReport(currentUser, id, send);
+    const response = await this.paymentRepo.sendClosingReport(
+      currentUser,
+      id,
+      send,
+    );
+
+    if (send) {
+      this.notificationService.sendSmsAndEmailBatch(response.closeReportNotif);
+    }
+
+    return response.updatedProposal;
   }
 
   async completePayment(currentUser: TenderCurrentUser, proposal_id: string) {
