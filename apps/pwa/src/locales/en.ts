@@ -1804,6 +1804,7 @@ const en = {
     subject_payment: 'congratulations, your project fund have been sent!',
     content_payment: 'Please check your account and proof of funds below',
     proof_of_funds: 'Proof of Funds',
+    error_exceeds_amount: 'total project budgets exceeds the support amount provided',
   },
   button: {
     btn_final_save_as_draft: 'Send',

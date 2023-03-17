@@ -45,15 +45,25 @@ function RequestsInProcess() {
                 }),
               },
             ]}
+            // baseFilters={{
+            //   filter1: {
+            //     // supervisor_id: { _eq: user?.id },
+            //     clasification_field: { _is_null: false },
+            //     inner_status: {
+            //       _nin: [
+            //         'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
+            //         'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
+            //       ],
+            //     },
+            //     outter_status: { _neq: 'ON_REVISION' },
+            //   },
+            // }}
             baseFilters={{
               filter1: {
                 // supervisor_id: { _eq: user?.id },
                 clasification_field: { _is_null: false },
                 inner_status: {
-                  _nin: [
-                    'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
-                    'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
-                  ],
+                  _eq: 'ACCEPTED_BY_MODERATOR',
                 },
                 outter_status: { _neq: 'ON_REVISION' },
               },

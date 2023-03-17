@@ -1835,6 +1835,7 @@ const ar = {
     subject_payment: 'تهانينا ، لقد تم إرسال صندوق مشروعك!',
     content_payment: 'يرجى التحقق من حسابك وإثبات الأموال أدناه',
     proof_of_funds: 'الدليل على الأموال',
+    error_exceeds_amount: 'إجمالي ميزانيات المشروع يتجاوز مبلغ الدعم المقدم',
   },
   button: {
     btn_final_save_as_draft: ' انهاء',

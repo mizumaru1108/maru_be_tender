@@ -86,7 +86,20 @@ function FifthForm({ children, onSubmit }: any) {
 
       data.deleted_proposal_budget = tempDeletedBudget;
 
-      onSubmit(data);
+      const totalAmount = data.updated_proposal_budget.reduce(
+        (acc, cur) => acc + Number(cur.amount),
+        0
+      );
+
+      if (totalAmount <= step1.fsupport_by_supervisor!) {
+        onSubmit(data);
+      } else {
+        enqueueSnackbar(translate('notification.error_exceeds_amount'), {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+      }
     } else {
       enqueueSnackbar(translate('notification.proposal_item_budget_empty'), {
         variant: 'error',
@@ -111,7 +124,19 @@ function FifthForm({ children, onSubmit }: any) {
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
-      <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
+      <Grid sx={{ mt: '10px', mb: 2, maxWidth: '83%' }}>
+        <TextField
+          fullWidth
+          placeholder="test"
+          size="small"
+          label="support amount"
+          value={step1.fsupport_by_supervisor}
+          InputLabelProps={{ shrink: true }}
+          type="number"
+          disabled={true}
+        />
+      </Grid>
+      <Grid container rowSpacing={4} columnSpacing={7}>
         {/* <FormGenerator data={FifthFormData} /> */}
         <Grid item xs={12}>
           {recommendedSupportItems.map((v, i) => (
