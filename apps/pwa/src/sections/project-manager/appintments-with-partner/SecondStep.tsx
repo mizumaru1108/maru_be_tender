@@ -1,4 +1,4 @@
-import { Box, Button, Grid, IconButton, Stack, TextField, Typography } from '@mui/material';
+import { Badge, Box, Button, Grid, IconButton, Stack, TextField, Typography } from '@mui/material';
 import { CalendarPicker, LocalizationProvider, StaticDatePicker } from '@mui/x-date-pickers';
 import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import { styled } from '@mui/material/styles';
@@ -13,7 +13,9 @@ interface CustomPickerDayProps extends PickersDayProps<Dayjs> {
   isToday: boolean;
 }
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const availableDays = ['Sunday', 'Monday', 'Tuesday'];
+// const availableDays = ['Sunday', 'Monday', 'Tuesday'];
+const availableDays = ['1', '3', '10'];
+const haveAppoinments = ['5', '9', '20'];
 type DAYS_EN = 'Su' | 'Mo' | 'Tu' | 'We' | 'Th' | 'Fr' | 'Sa';
 const DAY_EN = {
   Su: 'Sunday',
@@ -34,14 +36,13 @@ const DAYS_EN_AR = {
   Sa: 'السبت',
 };
 
-const sxProps = {};
-
 const CustomPickersDay = styled(PickersDay, {
   shouldForwardProp: (prop) => prop !== 'available' && prop !== 'isToday',
 })<CustomPickerDayProps>(({ theme, available, isToday }) => ({
   ...(available && {
     borderRadius: '50%',
-    backgroundColor: '#0E847852',
+    // backgroundColor: '#red !important',
+    backgroundColor: '#0E8478',
     color: '#000',
     '&:hover, &:focus': {
       backgroundColor: theme.palette.primary.dark,
@@ -50,7 +51,7 @@ const CustomPickersDay = styled(PickersDay, {
   }),
   ...(!available && {
     borderRadius: '50%',
-    backgroundColor: '#93A3B029',
+    backgroundColor: '#EEF0F2',
     color: '#000',
     '&:hover, &:focus': {
       backgroundColor: theme.palette.primary.dark,
@@ -60,13 +61,16 @@ const CustomPickersDay = styled(PickersDay, {
   ...(isToday && {
     borderRadius: '50%',
     backgroundColor: 'red',
-    borderColor: '#93A3B029',
+    borderColor: '#EEF0F2',
     border: '1px !important',
   }),
 })) as React.ComponentType<CustomPickerDayProps>;
 
 function SecondStep({ setUserId }: any) {
   const [value, setValue] = React.useState<Date | number | null>(new Date());
+
+  const badgeRef = React.useRef<HTMLInputElement>(null);
+  const [position, setPosition] = React.useState(0);
 
   const [date, setDate] = React.useState<Dayjs | null>(null);
 
@@ -76,16 +80,73 @@ function SecondStep({ setUserId }: any) {
     pickersDayProps: PickersDayProps<Dayjs>
   ) => {
     const isToday = date.isSame(dayjs(), 'day');
+    if (haveAppoinments.includes(date.get('date').toString())) {
+      return (
+        <Badge
+          color="secondary"
+          variant="dot"
+          ref={badgeRef}
+          sx={{
+            '& .MuiBadge-badge': {
+              right: `${position}px`,
+              top: `${position + 10}px`,
+              backgroundColor: '#0E8478',
+              width: '7px',
+              height: '7px',
+            },
+          }}
+        >
+          <PickersDay
+            sx={{
+              borderRadius: '50%',
+              backgroundColor: '#EEF0F2',
+              // borderColor: '#EEF0F2',
+              // border: '1px !important',
+            }}
+            {...pickersDayProps}
+          />
+        </Badge>
+      );
+    }
     return (
       <CustomPickersDay
         {...pickersDayProps}
-        available={availableDays.includes(DAYS[date.get('day')])}
+        // available={availableDays.includes(DAYS[date.get('day')])}
+        available={availableDays.includes(date.get('date').toString())}
         isToday={isToday}
       />
     );
+    // return (
+    //   <Badge
+    //     color="secondary"
+    //     variant="dot"
+    //     ref={badgeRef}
+    //     sx={{
+    //       '& .MuiBadge-badge': {
+    //         right: `${position}px`,
+    //         top: `${position + 10}px`,
+    //       },
+    //     }}
+    //   >
+    //     <PickersDay
+    //       sx={{
+    //         borderRadius: '50%',
+    //         backgroundColor: 'red',
+    //         borderColor: '#93A3B029',
+    //         border: '1px !important',
+    //       }}
+    //       {...pickersDayProps}
+    //     />
+    //   </Badge>
+    // );
   };
   const disableUnAvailableDays = (date: Dayjs) =>
     !availableDays.includes(DAYS[date.get('day')]) || date.isBefore(dayjs(), 'day');
+  console.log({ position });
+
+  React.useEffect(() => {
+    setPosition(badgeRef.current ? badgeRef.current.getBoundingClientRect().width / 2 : 0);
+  }, [badgeRef]);
   return (
     <>
       <Grid item md={12} xs={12}>
@@ -136,9 +197,10 @@ function SecondStep({ setUserId }: any) {
           <CalendarPicker
             date={date}
             onChange={(newDate) => setDate(newDate)}
-            // renderDay={renderWeekPickerDay}
+            renderDay={renderWeekPickerDay}
             // shouldDisableDate={disableUnAvailableDays}
             dayOfWeekFormatter={(day) => DAY_EN[`${day as DAYS_EN}`]}
+            // disablePast
             views={['day']}
             showDaysOutsideCurrentMonth
           />

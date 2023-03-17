@@ -520,31 +520,31 @@ const navConfig = {
           icon: ICONS.tender_admin.tracks_budget,
         },
 
-        {
-          title: 'gregorian_year',
-          path: PATH_ADMIN.gregorian_year,
-          icon: ICONS.tender_admin.gregorian_year,
-        },
-        {
-          title: 'application_and_admission_settings',
-          path: PATH_ADMIN.application_and_admission_settings,
-          icon: ICONS.tender_admin.application_and_admission_settings,
-        },
-        {
-          title: 'mobile_settings',
-          path: PATH_ADMIN.mobile_settings,
-          icon: ICONS.tender_admin.mobile_settings,
-        },
+        // {
+        //   title: 'gregorian_year',
+        //   path: PATH_ADMIN.gregorian_year,
+        //   icon: ICONS.tender_admin.gregorian_year,
+        // },
+        // {
+        //   title: 'application_and_admission_settings',
+        //   path: PATH_ADMIN.application_and_admission_settings,
+        //   icon: ICONS.tender_admin.application_and_admission_settings,
+        // },
+        // {
+        //   title: 'mobile_settings',
+        //   path: PATH_ADMIN.mobile_settings,
+        //   icon: ICONS.tender_admin.mobile_settings,
+        // },
         {
           title: 'system_messages',
           path: PATH_ADMIN.system_messages,
           icon: ICONS.tender_admin.system_messages,
         },
-        {
-          title: 'system_configuration',
-          path: PATH_ADMIN.system_configuration,
-          icon: ICONS.tender_admin.system_configuration,
-        },
+        // {
+        //   title: 'system_configuration',
+        //   path: PATH_ADMIN.system_configuration,
+        //   icon: ICONS.tender_admin.system_configuration,
+        // },
         {
           title: 'client_list',
           path: PATH_ADMIN.client_list,
