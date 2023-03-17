@@ -109,6 +109,8 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
           ...restStep1,
           fsupport_by_supervisor: totalFSupport,
           number_of_payments_by_supervisor: lenghtOfNumberOfPayments,
+          accreditation_type_id: null,
+          support_goal_id: null,
           // split 1
           chairman_of_board_of_directors: step2.chairman_of_board_of_directors,
           been_supported_before: step2.been_supported_before,
@@ -131,7 +133,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
         },
       };
 
-      console.log('acceptSupervisorGrant', payload);
+      // console.log('acceptSupervisorGrant', payload);
 
       await axiosInstance
         .patch('/tender-proposal/change-state', payload, {

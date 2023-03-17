@@ -31,8 +31,8 @@ function FirstForm({ children, onSubmit }: any) {
       .integer()
       .min(1, translate('errors.cre_proposal.vat_percentage.greater_than_0')),
     inclu_or_exclu: Yup.boolean(),
-    accreditation_type_id: Yup.string().required('Procedures is required!'),
-    support_goal_id: Yup.string().required('Procedures is required!'),
+    // accreditation_type_id: Yup.string().required('Procedures is required!'),
+    // support_goal_id: Yup.string().required('Procedures is required!'),
   });
 
   const { step1 } = useSelector((state) => state.supervisorAcceptingForm);
@@ -202,7 +202,7 @@ function FirstForm({ children, onSubmit }: any) {
             placeholder="1"
           />
         </Grid> */}
-        <Grid item md={6} xs={12}>
+        {/* <Grid item md={6} xs={12}>
           <RHFSelect
             name="accreditation_type_id"
             label="نوع الاعتماد*"
@@ -229,7 +229,7 @@ function FirstForm({ children, onSubmit }: any) {
               )
             )}
           </RHFSelect>
-        </Grid>
+        </Grid> */}
         <Grid item md={12} xs={12}>
           <BaseField
             type="textArea"
