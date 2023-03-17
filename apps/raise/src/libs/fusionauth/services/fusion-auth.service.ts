@@ -625,18 +625,29 @@ export class FusionAuthService {
       registration,
     };
 
-    this.logger.log(
-      'info',
-      `updating user (${userId}) on FusionAuth, with payload : ${logUtil(
-        user,
-      )}`,
-    );
-
     try {
-      await this.fusionAuthAdminClient.patchRegistration(
-        userId,
-        registrationRequest,
+      this.logger.log(
+        'info',
+        `updating user (${userId}) on FusionAuth, with payload : ${logUtil(
+          user,
+        )}`,
       );
+      await this.fusionAuthAdminClient.patchUser(userId, {
+        user,
+      });
+
+      if (roles.length > 0) {
+        this.logger.log(
+          'info',
+          `Roles is defined, updating user  roles (${userId}) on FusionAuth, with payload : ${logUtil(
+            registrationRequest,
+          )}`,
+        );
+        await this.fusionAuthAdminClient.patchRegistration(
+          userId,
+          registrationRequest,
+        );
+      }
       return true;
     } catch (err) {
       this.logger.error('Fusion Auth Update User Error: ', err);
