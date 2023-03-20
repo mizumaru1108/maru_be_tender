@@ -63,7 +63,7 @@ function PreviousFundingRequests() {
             // }}
             baseFilters={{
               filter1: {
-                support_type: { _is_null: false },
+                support_outputs: { _is_null: false },
                 // inner_status: {
                 //   _in: [
                 //     'ACCEPT_BY_SUPERVISOR',

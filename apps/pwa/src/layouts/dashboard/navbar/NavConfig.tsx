@@ -350,11 +350,11 @@ const navConfig = {
           path: PATH_PROJECT_MANAGER.client_list,
           icon: ICONS.tender_ceo.client_list,
         },
-        {
-          title: 'rejection_list',
-          path: PATH_PROJECT_MANAGER.rejection_list,
-          icon: ICONS.tender_ceo.rejection_list,
-        },
+        // {
+        //   title: 'rejection_list',
+        //   path: PATH_PROJECT_MANAGER.rejection_list,
+        //   icon: ICONS.tender_ceo.rejection_list,
+        // },
         {
           title: 'exchange_permission',
           path: PATH_PROJECT_MANAGER.exchange_permission,

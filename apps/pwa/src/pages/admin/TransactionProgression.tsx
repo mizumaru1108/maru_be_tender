@@ -2,6 +2,7 @@ import { Container, styled } from '@mui/material';
 import React from 'react';
 import Page from '../../components/Page';
 import useLocales from '../../hooks/useLocales';
+import { TransactionProgressionPage } from 'sections/admin/transaction-progression';
 
 function TransactionProgression() {
   const { translate } = useLocales();
@@ -17,7 +18,9 @@ function TransactionProgression() {
   return (
     <Page title={translate('pages.admin.transaction_progression')}>
       <Container>
-        <ContentStyle>TransactionProgression</ContentStyle>
+        <ContentStyle>
+          <TransactionProgressionPage />
+        </ContentStyle>
       </Container>
     </Page>
   );
