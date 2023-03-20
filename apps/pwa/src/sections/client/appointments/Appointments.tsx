@@ -51,26 +51,27 @@ function Appointments() {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
-  if (error) return <>Ooops, some errors have been occured</>;
-  if (fetching) return <>...Loading</>;
-  console.log(data);
+  // if (error) return <>Ooops, some errors have been occured</>;
+  // if (fetching) return <>...Loading</>;
+  // console.log(data);
   return (
     <Grid container spacing={5}>
       <Grid item md={12} xs={12}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="h4">{translate('appointments_with_organization')}</Typography>
-          {value === 0 && data?.schedule?.length === 0 && (
-            <Button
-              sx={{ color: '#fff', backgroundColor: 'background.paper', py: '15px', px: '25px' }}
-              onClick={() => {
-                console.log('asdlkasmdlk');
-                navigate('/client/dashboard/appointments/adjust-your-time');
-              }}
-            >
-              {translate('adding_the_available_time')}
-            </Button>
+          <Button
+            sx={{ color: '#fff', backgroundColor: 'background.paper', py: '15px', px: '25px' }}
+            onClick={() => {
+              console.log('asdlkasmdlk');
+              navigate('/client/dashboard/appointments/adjust-your-time');
+            }}
+          >
+            {translate('adding_the_available_time')}
+          </Button>
+          {/* {value === 0 && (
+            
           )}
-          {(value === 1 || data.schedule?.length !== 0) && (
+          {value === 1 && data && data.schedule && data.schedule?.length !== 0 && (
             <Button
               sx={{
                 color: '#fff',
@@ -87,7 +88,7 @@ function Appointments() {
             >
               {translate('edeting_the_available_time')}
             </Button>
-          )}
+          )} */}
         </Stack>
       </Grid>
       <Grid item md={12} xs={12}>
@@ -107,9 +108,9 @@ function Appointments() {
               label={
                 <Grid container>
                   <Grid item md={10} xs={12}>
-                    <Typography>{translate('appointments')}</Typography>
+                    <Typography>{translate('appointments')} </Typography>
                   </Grid>
-                  <Grid item md={2} xs={12}>
+                  {/* <Grid item md={2} xs={12}>
                     <Box
                       sx={{
                         ...(value === 0 && {
@@ -121,7 +122,7 @@ function Appointments() {
                     >
                       3
                     </Box>
-                  </Grid>
+                  </Grid> */}
                 </Grid>
               }
               sx={{
@@ -141,9 +142,9 @@ function Appointments() {
               label={
                 <Grid container>
                   <Grid item md={10} xs={12}>
-                    <Typography>{translate('requests_for_meeting')}</Typography>
+                    <Typography>{translate('requests_for_meeting') + ' (4)'} </Typography>
                   </Grid>
-                  <Grid item md={2} xs={12}>
+                  {/* <Grid item md={2} xs={12}>
                     <Box
                       sx={{
                         ...(value === 1 && {
@@ -155,7 +156,7 @@ function Appointments() {
                     >
                       4
                     </Box>
-                  </Grid>
+                  </Grid> */}
                 </Grid>
               }
               sx={{

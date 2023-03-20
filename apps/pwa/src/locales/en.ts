@@ -1547,7 +1547,7 @@ const en = {
   todays_meetings: "Today's Meetings",
   upcoming_meetings: 'Upcoming Meetings',
   appointments_with_organization: 'Appointments With Organization',
-  adding_the_available_time: 'Adding The Available Time',
+  adding_the_available_time: 'Set Available Time',
   edeting_the_available_time: 'Edeting The Available Time',
   appointments: 'Appointments',
   requests_for_meeting: 'Requested Meetings',

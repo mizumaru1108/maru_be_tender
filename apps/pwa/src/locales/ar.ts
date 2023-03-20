@@ -1583,7 +1583,7 @@ const ar = {
   todays_meetings: 'اجتماعات اليوم',
   upcoming_meetings: 'اجتماعات قادمة',
   appointments_with_organization: 'المواعيد مع المؤسسة',
-  adding_the_available_time: 'اضافة مواعيد تواجدك',
+  adding_the_available_time: 'إضافة وقت تواجدك',
   edeting_the_available_time: 'تعديل مواعيد تواجدك',
   appointments: 'الاجتماعات',
   requests_for_meeting: 'طلبات للاجتماع',

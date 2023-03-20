@@ -14,6 +14,7 @@ function ConfirmationModal({ open, handleClose, onSumbit, message }: Props) {
   const { translate } = useLocales();
   const handleAccepted = async () => {
     onSumbit();
+    handleClose();
   };
 
   return (
