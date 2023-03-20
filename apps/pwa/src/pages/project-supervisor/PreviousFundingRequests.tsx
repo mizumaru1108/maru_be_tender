@@ -4,8 +4,10 @@ import { styled } from '@mui/material/styles';
 import CardTableBE from 'components/card-table/CardTableBE';
 import { gettingPreviousRequests } from 'queries/project-supervisor/gettingPreviousRequests';
 import useLocales from '../../hooks/useLocales';
+import useAuth from 'hooks/useAuth';
 
 function PreviousFundingRequests() {
+  const { user } = useAuth();
   const { translate } = useLocales();
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
@@ -56,8 +58,34 @@ function PreviousFundingRequests() {
               },
             ]}
             destination={'previous-funding-requests'}
+            // baseFilters={{
+            //   outter_status: { outter_status: { _neq: 'ONGOING' } },
+            // }}
             baseFilters={{
-              outter_status: { outter_status: { _neq: 'ONGOING' } },
+              filter1: {
+                support_type: { _is_null: false },
+                // inner_status: {
+                //   _in: [
+                //     'ACCEPT_BY_SUPERVISOR',
+                //     'ACCEPTED_BY_PROJECT_MANAGER',
+                //     'ACCEPTED_BY_CEO',
+                //     'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
+                //     'ACCEPTED_BY_FINACE',
+                //     'DONE_BY_CASHIER',
+                //     'ACCEPTED_AND_NEED_CONSULTANT',
+                //   ],
+                // },
+                outter_status: {
+                  _in: [
+                    'ON_REVISION',
+                    'ASKED_FOR_AMANDEMENT',
+                    'ONGOING',
+                    'PENDING',
+                    'CANCELED',
+                    'COMPLETED',
+                  ],
+                },
+              },
             }}
           />
         </ContentStyle>
