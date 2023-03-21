@@ -27,9 +27,13 @@ export interface ClosingReportData {
   proposal_id: string | null;
   attachments:
     | {
-        url: string | null;
-        size: number;
-        type: string | null;
+        url?: string | '' | null;
+        size?: number | undefined;
+        type?: string;
+        base64Data?: string;
+        fullName?: string;
+        fileExtension?: string;
+        color?: string;
       }[]
     | [];
   created_at: string | Date | null;
@@ -38,9 +42,13 @@ export interface ClosingReportData {
   gender: string | null;
   images:
     | {
-        url: string | null;
-        size: number;
-        type: string | null;
+        url?: string | '' | null;
+        size?: number | undefined;
+        type?: string;
+        base64Data?: string;
+        fullName?: string;
+        fileExtension?: string;
+        color?: string;
       }[]
     | [];
   number_of_beneficiaries: number;

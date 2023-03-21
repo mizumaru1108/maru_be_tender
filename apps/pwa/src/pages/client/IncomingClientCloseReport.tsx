@@ -52,7 +52,7 @@ function IncomingCloseReports() {
               filter1: {
                 submitter_user_id: { _eq: user?.id },
                 inner_status: {
-                  _in: ['REQUESTING_CLOSING_FORM', 'PROJECT_COMPLETED'],
+                  _in: ['REQUESTING_CLOSING_FORM'],
                 },
               },
             }}

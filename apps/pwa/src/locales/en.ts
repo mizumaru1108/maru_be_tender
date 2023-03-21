@@ -160,7 +160,32 @@ const en = {
       regions_project_location_table: 'Regions Project Location | Table',
       system_configuration: 'System Configuration',
       system_messages: 'System Messages',
-      tracks_budget: 'Tracks Budget',
+      tracks_budget: {
+        heading: {
+          main: 'Tracks Budget',
+          add_new_budget: 'Add a new budget',
+          full_budget: 'full budget',
+          category: 'Category',
+        },
+        btn: {
+          add_budget: 'Add track budget',
+          back: 'Back',
+          construction: 'Construction',
+          review: 'Review',
+          amandment: 'Amandment',
+          delete: 'Delete',
+        },
+        form: {
+          name: {
+            label: 'Name',
+            placeholder: 'Please write the name',
+          },
+          amount: {
+            label: 'Allocated amount',
+            placeholder: 'Please write down the allocated amount',
+          },
+        },
+      },
       transaction_progression: 'Transaction Progression',
       users_permissions_table: 'Users And Permissions | Table',
       add_new_employee: 'Add New Employee | Admin',

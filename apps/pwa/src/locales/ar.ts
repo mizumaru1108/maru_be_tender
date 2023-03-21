@@ -159,7 +159,32 @@ const ar = {
       regions_project_location_table: 'المناطق - مكان المشروع | الجدول',
       system_configuration: 'إعدادات النظام',
       system_messages: 'رسائل النظام',
-      tracks_budget: 'ميزانية المسارات',
+      tracks_budget: {
+        heading: {
+          main: 'ميزانية المسارات',
+          add_new_budget: 'اضافة ميزانية جديدة',
+          full_budget: 'الميزانية الكاملة',
+          category: 'التصنيف',
+        },
+        btn: {
+          add_budget: 'إضافة تتبع الميزانية',
+          back: 'رجوع',
+          construction: 'إنشاء',
+          review: 'استعراض',
+          amandment: 'تعديل',
+          delete: 'حذف',
+        },
+        form: {
+          name: {
+            label: 'الاسم',
+            placeholder: 'الرجاء كتابة الاسم',
+          },
+          amount: {
+            label: 'المبلغ المخصص',
+            placeholder: 'الرجاء كتابة المبلغ المخصص',
+          },
+        },
+      },
       transaction_progression: 'سير المعاملات',
       users_permissions_table: 'المستخدمين والأذونات | الجدول',
       add_new_employee: 'إضافة موظف جديد | المشرف',

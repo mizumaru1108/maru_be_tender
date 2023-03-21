@@ -2,7 +2,7 @@
 import { useParams, useNavigate } from 'react-router';
 // @mui + component
 import { Grid, Typography, Box, Stack, useTheme } from '@mui/material';
-import Image from 'components/Image';
+import ButtonDownloadFiles from 'components/button/ButtonDownloadFiles';
 // hooks
 import useLocales from 'hooks/useLocales';
 // types
@@ -155,11 +155,17 @@ export default function InfoClosingReport({ data }: IPropsInfoClosing) {
             >
               {translate('pages.common.close_report.text.details.images.label')}:
             </Typography>
-            <Image
-              src={data?.images[0].url!}
-              alt="Images File"
-              sx={{ mt: 2, borderRadius: 1.5, maxWidth: 300 }}
-            />
+            <Grid container spacing={2}>
+              {!data?.images.length
+                ? null
+                : data.images.map((el, i) => (
+                    <Grid item xs={6} key={i}>
+                      <Box sx={{ mt: 2 }}>
+                        <ButtonDownloadFiles files={el} />
+                      </Box>
+                    </Grid>
+                  ))}
+            </Grid>
           </Grid>
           <Grid item xs={6}>
             <Typography
@@ -171,11 +177,17 @@ export default function InfoClosingReport({ data }: IPropsInfoClosing) {
             >
               {translate('pages.common.close_report.text.details.attachments.label')}:
             </Typography>
-            <Image
-              src={data?.attachments[0].url!}
-              alt="Attachments File"
-              sx={{ mt: 2, borderRadius: 1.5, maxWidth: 300 }}
-            />
+            <Grid container spacing={2}>
+              {!data?.attachments.length
+                ? null
+                : data.attachments.map((el, i) => (
+                    <Grid item xs={6} key={i}>
+                      <Box sx={{ mt: 2 }}>
+                        <ButtonDownloadFiles files={el} />
+                      </Box>
+                    </Grid>
+                  ))}
+            </Grid>
           </Grid>
         </Grid>
       </Box>

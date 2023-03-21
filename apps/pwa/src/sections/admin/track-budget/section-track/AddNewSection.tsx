@@ -120,7 +120,7 @@ function AddNewSection({ sections, track, onClose, mutate }: any) {
       <Grid item md={12} xs={12}>
         <Typography sx={{ color: 'rgba(147, 163, 176, 0.8)' }}>التصنيف</Typography>
       </Grid>
-      <Grid item md={12} xs={12}>
+      {/* <Grid item md={12} xs={12}>
         {[
           {
             id: '',
@@ -132,7 +132,7 @@ function AddNewSection({ sections, track, onClose, mutate }: any) {
         ].map((item, index) => (
           <CheckBoxSection key={index} item={item} state={formState} setState={setFormState} />
         ))}
-      </Grid>
+      </Grid> */}
       <Grid item md={4} xs={4}>
         {''}
       </Grid>

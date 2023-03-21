@@ -4,6 +4,9 @@ import { useNavigate, useParams } from 'react-router';
 import { Box, useTheme, Typography, Button } from '@mui/material';
 // hooks
 import useLocales from 'hooks/useLocales';
+import useAuth from 'hooks/useAuth';
+//
+import { role_url_map } from '../../../@types/commons';
 
 // ------------------------------------------------------------------------------------------
 
@@ -12,6 +15,7 @@ export default function FloatingClientSubmit() {
   const { id, actionType } = useParams();
   const navigate = useNavigate();
   const { translate } = useLocales();
+  const { activeRole } = useAuth();
 
   return (
     <Box
@@ -29,7 +33,9 @@ export default function FloatingClientSubmit() {
         variant="outlined"
         color="primary"
         onClick={() => {
-          navigate(`/client/dashboard/project-report/${id}/${actionType}/finished`);
+          navigate(
+            `/${role_url_map[activeRole!]}/dashboard/project-report/${id}/${actionType}/finished`
+          );
         }}
       >
         <Typography variant="button" component="span">

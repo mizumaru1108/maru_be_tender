@@ -1,49 +1,75 @@
-import { Grid, Stack, TextField, Typography, Button, Snackbar } from '@mui/material';
-import axios from 'axios';
-import { TMRA_RAISE_URL } from 'config';
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router';
-import uuidv4 from 'utils/uuidv4';
-import { LoadingButton } from '@mui/lab';
+// @mui
+import { Grid, Stack, TextField, Typography, Button, Snackbar } from '@mui/material';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import { LoadingButton } from '@mui/lab';
+// components
+import CheckBoxSection from './section-track/CheckBoxSection';
+// utils
+import useLocales from 'hooks/useLocales';
+// config
+import { IDataTracks } from './TrackBudgetPage';
 
-type FormData = {
+// ------------------------------------------------------------------------------------------
+
+interface IPropsNewBudget {
+  onClose: () => void;
+  tracks: IDataTracks[] | [];
+}
+
+interface FormData {
   name: string;
   budget: number | undefined;
-  section_id: string;
-  track_id: string;
-};
+  track_ids?: string[] | [];
+}
 
-type CreateSectionSnackBar = {
+interface CreateSectionSnackBar {
   open: boolean;
   message: string;
   severity: 'success' | 'error';
-};
+}
+
+// ------------------------------------------------------------------------------------------
+
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-function AddNewBudget({ sections, track, onClose, mutate }: any) {
-  const [loading, setloading] = React.useState(false);
+export default function AddNewBudget({ onClose, tracks }: IPropsNewBudget) {
+  const { translate } = useLocales();
+  const [loading, setloading] = useState(false);
+
+  // Snackbar
   const [openSnackBar, setOpenSnackBar] = React.useState<CreateSectionSnackBar>({
     open: false,
     message: '',
     severity: 'success',
   });
+
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }
     setOpenSnackBar({ open: false, message: '', severity: 'success' });
   };
+
   const defaultValues = {
     name: '',
     budget: 0,
-    section_id: '',
-    track_id: '',
   };
-  const [formState, setFormState] = React.useState<FormData>(defaultValues);
+
+  const [formState, setFormState] = useState<FormData>(defaultValues);
+
+  // const [valueSubmit, setValueSubmit] = useState<{
+  //   name: '';
+  //   budget: 0;
+  //   track_ids: string[];
+  // } | null>(null);
+
   const onSubmit = async () => {
+    console.log(formState);
+
     // try {
     //   setloading(true);
     //   await axios.post(`${TMRA_RAISE_URL}/track/track-section`, {
@@ -62,8 +88,9 @@ function AddNewBudget({ sections, track, onClose, mutate }: any) {
     //   setOpenSnackBar({ open: true, message: error.message, severity: 'error' });
     // }
   };
+
   return (
-    <Grid container spacing={2} sx={{ mt: '10px' }}>
+    <Grid container spacing={3} sx={{ mt: 1 }}>
       <Snackbar
         open={openSnackBar.open}
         autoHideDuration={6000}
@@ -74,10 +101,11 @@ function AddNewBudget({ sections, track, onClose, mutate }: any) {
           {openSnackBar.message}
         </Alert>
       </Snackbar>
+
       <Grid item md={6} xs={12}>
         <TextField
-          placeholder="الرجاء كتابة الاسم"
-          label="الاسم"
+          label={translate('pages.admin.tracks_budget.form.name.label')}
+          placeholder={translate('pages.admin.tracks_budget.form.name.placeholder')}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             setFormState((prevValue: FormData) => ({
               ...prevValue,
@@ -86,12 +114,13 @@ function AddNewBudget({ sections, track, onClose, mutate }: any) {
           }}
           InputLabelProps={{ shrink: true }}
           fullWidth
+          size="small"
         />
       </Grid>
       <Grid item md={6} xs={12}>
         <TextField
-          placeholder="الرجاء كتابة المبلغ المخصص"
-          label="المبلغ المخصص"
+          label={translate('pages.admin.tracks_budget.form.amount.label')}
+          placeholder={translate('pages.admin.tracks_budget.form.amount.placeholder')}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             const re = /^[0-9\b]+$/;
             if (e.target.value === '' || re.test(e.target.value)) {
@@ -103,54 +132,36 @@ function AddNewBudget({ sections, track, onClose, mutate }: any) {
           }}
           InputLabelProps={{ shrink: true }}
           fullWidth
+          size="small"
+          type="number"
         />
       </Grid>
       <Grid item md={12} xs={12}>
-        <Typography sx={{ color: 'rgba(147, 163, 176, 0.8)' }}>التصنيف</Typography>
+        <Typography sx={{ color: 'rgba(147, 163, 176, 0.8)' }}>
+          {translate('pages.admin.tracks_budget.heading.category')}
+        </Typography>
       </Grid>
       <Grid item md={12} xs={12}>
-        {[
-          {
-            id: '',
-            name: track.name,
-            budget: track.budget,
-            section_id: '',
-            children: sections,
-          },
-        ].map((item, index) => (
-          <></>
-          // <CheckBoxSection key={index} item={item} state={formState} setState={setFormState} />
+        {tracks.map((item, index) => (
+          <CheckBoxSection key={index} item={item} state={formState} setState={setFormState} />
         ))}
       </Grid>
-      <Grid item md={4} xs={4}>
-        {''}
-      </Grid>
-      <Grid item md={4} xs={4}>
-        <Stack direction="row" justifyContent={'space-between'}>
-          <Button
-            sx={{ backgroundColor: '#fff', color: '#000', ':hover': { backgroundColor: '#fff' } }}
-            onClick={onClose}
-          >
-            رجوع
-          </Button>
-          <LoadingButton
-            loading={loading}
-            sx={{
-              backgroundColor: '#0E8478',
-              color: '#fff',
-              ':hover': { backgroundColor: '#13B2A2' },
-            }}
-            onClick={onSubmit}
-          >
-            إنشاء
+      <Grid item xs={12}>
+        <Stack
+          direction="row"
+          spacing={3}
+          justifyContent="center"
+          alignItems="center"
+          sx={{ pt: 4, pb: 2 }}
+        >
+          <LoadingButton loading={loading} variant="contained" onClick={onSubmit}>
+            {translate('pages.admin.tracks_budget.btn.construction')}
           </LoadingButton>
+          <Button variant="outlined" onClick={onClose}>
+            {translate('pages.admin.tracks_budget.btn.back')}
+          </Button>
         </Stack>
-      </Grid>
-      <Grid item md={4} xs={4}>
-        {''}
       </Grid>
     </Grid>
   );
 }
-
-export default AddNewBudget;

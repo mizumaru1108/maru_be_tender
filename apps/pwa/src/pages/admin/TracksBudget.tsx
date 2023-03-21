@@ -15,8 +15,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 function TracksBudget() {
   const { translate } = useLocales();
   return (
-    // <Page title="Tracks Budget | Page">
-    <Page title={translate('pages.admin.tracks_budget')}>
+    <Page title={translate('pages.admin.tracks_budget.heading.main')}>
       <Container>
         <ContentStyle>
           <TrackBudgetPage />

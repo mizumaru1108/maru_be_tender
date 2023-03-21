@@ -43,6 +43,9 @@ function DashboardPage() {
             </Grid>
           ) : null}
           <Grid item md={12} xs={12}>
+            <IncomingClientCloseReport />
+          </Grid>
+          <Grid item md={12} xs={12}>
             <PreviousFundingInqueries
               completed_client_projects={data.completed_client_projects}
               pending_client_projects={data.pending_client_projects}
@@ -51,9 +54,6 @@ function DashboardPage() {
           </Grid>
         </>
       )}
-      <Grid item md={12} xs={12}>
-        <IncomingClientCloseReport />
-      </Grid>
     </Grid>
   );
 }

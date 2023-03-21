@@ -1,9 +1,15 @@
-import { Button, Stack, Typography } from '@mui/material';
-import { Box } from '@mui/system';
 import React from 'react';
 import { useNavigate } from 'react-router';
+// @mui
+import { Button, Stack, Typography, Box } from '@mui/material';
+//
+import useLocales from 'hooks/useLocales';
+import { fCurrencyNumber } from 'utils/formatNumber';
+
+// ------------------------------------------------------------------------------------------
 
 function Track({ id, name, budget }: any) {
+  const { translate } = useLocales();
   const navigate = useNavigate();
   const handleShow = () => {
     navigate(`/admin/dashboard/tracks-budget/${id}/show`);
@@ -13,8 +19,7 @@ function Track({ id, name, budget }: any) {
   return (
     <Box
       sx={{
-        px: '25px',
-        py: '10px',
+        p: 2,
         width: '100%',
         height: '100%',
         backgroundColor: '#fff',
@@ -26,26 +31,21 @@ function Track({ id, name, budget }: any) {
       }}
     >
       <Typography variant="h6" flex={1}>
-        {name}
+        {translate(`${name}`)}
       </Typography>
       <Stack direction="row" gap={0.7} flex={1} sx={{ alignSelf: 'center' }}>
         <Typography sx={{ fontSize: '17px' }} color={'#93A3B0'}>
-          الميزانية الكاملة
+          {translate('pages.admin.tracks_budget.heading.full_budget')}
         </Typography>
-        <Typography
-          sx={{ fontSize: '17px', fontWeight: 700 }}
-          color="#0E8478"
-        >{`${budget}.000 ريال`}</Typography>
+        <Typography sx={{ fontSize: '17px', fontWeight: 700 }} color="#0E8478">
+          {fCurrencyNumber(budget)}
+        </Typography>
       </Stack>
 
       <Stack direction="row" justifyContent="space-around" flex={1}>
         <Button
-          sx={{
-            backgroundColor: '#fff',
-            color: '#000',
-            border: '1px #000 solid',
-            ':hover': { backgroundColor: '#fff' },
-          }}
+          variant="outlined"
+          color="inherit"
           startIcon={
             <svg
               width="17"
@@ -72,10 +72,12 @@ function Track({ id, name, budget }: any) {
             </svg>
           }
           onClick={handleShow}
+          size="small"
         >
-          استعراض
+          {translate('pages.admin.tracks_budget.btn.review')}
         </Button>
         <Button
+          variant="contained"
           sx={{
             backgroundColor: '#0169DE',
             color: '#fff',
@@ -103,10 +105,12 @@ function Track({ id, name, budget }: any) {
             </svg>
           }
           onClick={handleEdit}
+          size="small"
         >
-          تعديل
+          {translate('pages.admin.tracks_budget.btn.amandment')}
         </Button>
         <Button
+          variant="contained"
           sx={{
             backgroundColor: '#FF4842',
             color: '#fff',
@@ -142,8 +146,9 @@ function Track({ id, name, budget }: any) {
             </svg>
           }
           onClick={handleDelete}
+          size="small"
         >
-          حذف
+          {translate('pages.admin.tracks_budget.btn.delete')}
         </Button>
       </Stack>
     </Box>
