@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 // @mui
-import { Container, Box, Stack, Button, styled, Typography } from '@mui/material';
+import { Container, Stack, Button, styled, Typography } from '@mui/material';
 // components
 import Page from 'components/Page';
 import Iconify from 'components/Iconify';
@@ -17,8 +17,15 @@ import { useSnackbar } from 'notistack';
 import ProjectStatus from 'sections/project-details/ProjectStatus';
 import AmandementProposalDialog from 'sections/client/funding-project-request/AmandementProposalDialog';
 import SubmitProjectReportForm from 'sections/client/project-report/forms/SubmitProjectReportForm';
+import InfoClosingReport from 'sections/client/project-report/InfoClosingReport';
 // types
 import { CloseReportForm } from 'sections/client/project-report/types';
+
+//
+import { useQuery } from 'urql';
+import { getProposalClosingReport } from 'queries/client/getProposalClosingReport';
+
+// ------------------------------------------------------------------------------------------
 
 export default function ProjectReports() {
   const { user } = useAuth();
@@ -44,6 +51,15 @@ export default function ProjectReports() {
 
   const { proposal, isLoading, error } = useSelector((state) => state.proposal);
 
+  const [result] = useQuery({
+    query: getProposalClosingReport,
+    variables: {
+      proposal_id: id,
+    },
+  });
+
+  const { data, fetching, error: errorGetProposal } = result;
+
   const navigate = useNavigate();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,7 +68,7 @@ export default function ProjectReports() {
     setIsSubmitting(true);
 
     try {
-      const { status, data } = await axiosInstance.post(
+      const { status } = await axiosInstance.post(
         '/tender/proposal/payment/submit-closing-report',
         formValues,
         {
@@ -60,15 +76,14 @@ export default function ProjectReports() {
         }
       );
 
-      if (status === 200) {
-        setIsSubmitting(false);
-
+      if (status === 201) {
         enqueueSnackbar(translate('pages.common.close_report.notification.succes_send'), {
           variant: 'success',
           preventDuplicate: true,
           autoHideDuration: 3000,
         });
 
+        setIsSubmitting(false);
         navigate('/client/dashboard/project-report');
       }
     } catch (err) {
@@ -110,9 +125,9 @@ export default function ProjectReports() {
     dispatch(getProposal(id as string, role as string));
   }, [dispatch, id, role]);
 
-  if (isLoading) return <>... Loading</>;
+  if (fetching || isLoading) return <>Loading ...</>;
 
-  if (error) return <>{error}</>;
+  if (error || errorGetProposal) return <>{error ? error : errorGetProposal}</>;
 
   return (
     <Page title={translate('pages.common.close_report.text.project_report')}>
@@ -162,12 +177,15 @@ export default function ProjectReports() {
                 } - ${new Date(proposal.created_at).toLocaleString()}`}
               </Typography>
             </Stack>
-
-            <SubmitProjectReportForm
-              onSubmit={handleSubmitForm}
-              defaultValues={initialValue}
-              loading={isSubmitting}
-            />
+            {data && data.proposal_closing_report.length === 0 ? (
+              <SubmitProjectReportForm
+                onSubmit={handleSubmitForm}
+                defaultValues={initialValue}
+                loading={isSubmitting}
+              />
+            ) : (
+              <InfoClosingReport data={data.proposal_closing_report[0]} />
+            )}
           </Stack>
         </ContentStyle>
       </Container>

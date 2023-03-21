@@ -35,7 +35,7 @@ function Payments() {
     );
   }
 
-  if (['REQUESTING_CLOSING_FORM'].includes(proposal.inner_status)) {
+  if (['REQUESTING_CLOSING_FORM', 'PROJECT_COMPLETED'].includes(proposal.inner_status)) {
     return <ClientPaymentsPage />;
   }
 

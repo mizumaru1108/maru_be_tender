@@ -36,9 +36,9 @@ export default function FloatingClientSubmit() {
           {translate('pages.common.close_report.text.project_report')}
         </Typography>
         &nbsp;
-        <Typography variant="button" component="span">
+        {/* <Typography variant="button" component="span">
           {`(${translate('pages.common.close_report.text.finished')})`}
-        </Typography>
+        </Typography> */}
       </Button>
     </Box>
   );

@@ -79,6 +79,38 @@ const en = {
               placeholder: 'Add Image (photos, etc)',
             },
           },
+          details: {
+            number_of_beneficiaries: {
+              label: 'Number of Beneficiers',
+            },
+            target_beneficiaries: {
+              label: 'Target beneficiers',
+            },
+            execution_place: {
+              label: 'Execution place',
+            },
+            gender: {
+              label: 'Gender of the beneficiers',
+            },
+            project_duration: {
+              label: 'Project duration',
+            },
+            project_repeated: {
+              label: 'Project repeated',
+            },
+            number_of_volunteer: {
+              label: 'Number of volunteer',
+            },
+            number_of_staff: {
+              label: 'Number of staff',
+            },
+            attachments: {
+              label: 'Attachment',
+            },
+            images: {
+              label: 'Images',
+            },
+          },
           option: {
             children: 'Children',
             general_students: 'General Students',
@@ -95,7 +127,7 @@ const en = {
           },
         },
         btn: {
-          accept_exchange_permission: 'Acceptance exchange permission',
+          accept_exchange_permission: 'Confirm the completion of payments',
           request_project_close_report: 'Request project closing report',
           end_project: 'End project without closing report',
           send_submit_form: 'Send form Report Project',
@@ -1781,6 +1813,7 @@ const en = {
     ceo: 'CEO',
     consultant: 'Consultant',
     cashier: 'Cashier',
+    client: 'Client',
   },
   nothing_payment: 'The Payments haven’t been set yet',
   notification: {

@@ -78,6 +78,38 @@ const ar = {
               placeholder: 'إضافة صورة (صور ، إلخ)',
             },
           },
+          details: {
+            number_of_beneficiaries: {
+              label: 'عدد المستفيدين',
+            },
+            target_beneficiaries: {
+              label: 'المستفيدون المستهدفون',
+            },
+            execution_place: {
+              label: 'مكان التنفيذ',
+            },
+            gender: {
+              label: 'جنس المستفيدين',
+            },
+            project_duration: {
+              label: 'مدة المشروع',
+            },
+            project_repeated: {
+              label: 'مشروع متكرر',
+            },
+            number_of_volunteer: {
+              label: 'عدد المتطوعين',
+            },
+            number_of_staff: {
+              label: 'عدد الموظفين',
+            },
+            attachments: {
+              label: 'المرفقات',
+            },
+            images: {
+              label: 'الصور',
+            },
+          },
           option: {
             children: 'أطفال',
             general_students: 'طلاب عامة',
@@ -94,7 +126,7 @@ const ar = {
           },
         },
         btn: {
-          accept_exchange_permission: 'قبول إذن الصرف',
+          accept_exchange_permission: 'تاكيد اكمال الدفعات',
           request_project_close_report: 'طلب تقرير إغلاق المشروع',
           end_project: 'إنهاء المشروع دون التقرير الختامي',
           send_submit_form: 'إرسال نموذج تقرير المشروع',
@@ -1812,6 +1844,7 @@ const ar = {
     ceo: 'المدير التنفيذي',
     consultant: 'مستشار',
     cashier: 'أمين الصندوق',
+    client: 'عميل',
   },
   nothing_payment: 'لم يتم تعيين المدفوعات حتى الآن',
   notification: {

@@ -34,7 +34,8 @@ function FloatinActonBar() {
       {activeTap &&
         ['main', 'project-budget'].includes(activeTap) &&
         actionType === 'show-details' &&
-        role === 'tender_project_supervisor' && <SupervisorFloatingActionBar />}
+        role === 'tender_project_supervisor' &&
+        proposal.inner_status !== 'DONE_BY_CASHIER' && <SupervisorFloatingActionBar />}
       {/* Projectmanager is done */}
       {activeTap &&
         ['main', 'project-budget'].includes(activeTap) &&
@@ -65,10 +66,13 @@ function FloatinActonBar() {
 
       {activeTap &&
         ['follow-ups'].includes(activeTap) &&
-        actionType === 'show-details' &&
+        (actionType === 'show-details' || actionType === 'show-project') &&
         pathName &&
-        pathName[3] === 'project-report' &&
-        proposal.inner_status === 'REQUESTING_CLOSING_FORM' && <FloatingClientSubmit />}
+        (pathName[3] === 'project-report' || pathName[3] === 'previous-funding-requests') &&
+        (role === 'tender_project_supervisor' || role === 'tender_client') &&
+        ['PROJECT_COMPLETED', 'REQUESTING_CLOSING_FORM'].includes(proposal.inner_status) && (
+          <FloatingClientSubmit />
+        )}
     </>
   );
 }

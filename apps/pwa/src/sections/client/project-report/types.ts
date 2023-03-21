@@ -21,3 +21,32 @@ export interface CloseReportForm {
   attachments: FileProp | FileProp[] | any;
   images: FileProp | FileProp[] | any;
 }
+
+export interface ClosingReportData {
+  id: string | null;
+  proposal_id: string | null;
+  attachments:
+    | {
+        url: string | null;
+        size: number;
+        type: string | null;
+      }[]
+    | [];
+  created_at: string | Date | null;
+  updated_at: string | Date | null;
+  execution_place: string | null;
+  gender: string | null;
+  images:
+    | {
+        url: string | null;
+        size: number;
+        type: string | null;
+      }[]
+    | [];
+  number_of_beneficiaries: number;
+  number_of_staff: number;
+  number_of_volunteer: number;
+  project_duration: string | null;
+  project_repeated: string | null;
+  target_beneficiaries: string | null;
+}

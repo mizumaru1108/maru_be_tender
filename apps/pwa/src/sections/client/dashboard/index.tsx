@@ -9,6 +9,7 @@ import ListAmandementRequest from './ListAmandementRequest';
 import LoadingPage from './LoadingPage';
 import PreviousFundingInqueries from './PreviousFundingInqueries';
 import Statistic from './Statistic';
+import IncomingClientCloseReport from './IncomingClientCloseReport';
 
 function DashboardPage() {
   const [result, mutate] = useQuery({
@@ -38,7 +39,6 @@ function DashboardPage() {
           ) : null}
           {data.amandement_proposal.length ? (
             <Grid item md={12} xs={12}>
-              {/* <CurrentProjects current_projects={data.amandement_proposal} /> */}
               <ListAmandementRequest />
             </Grid>
           ) : null}
@@ -51,6 +51,9 @@ function DashboardPage() {
           </Grid>
         </>
       )}
+      <Grid item md={12} xs={12}>
+        <IncomingClientCloseReport />
+      </Grid>
     </Grid>
   );
 }
