@@ -1712,6 +1712,7 @@ const ar = {
       SUSTAINABILITY_INITIATIVES: 'مبادرات الاستدامة',
       EMPLOYMENT_INITIATIVES: 'مبادرات التوظيف',
       OTHER_INITIATIVES: 'المبادرات الأخرى',
+      DEVELOPING_THE_NONPROFIT_SECTOR: 'تنمية القطاع غير الربحي',
     },
     action: {
       accept: 'يقبل',

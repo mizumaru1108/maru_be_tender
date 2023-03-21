@@ -1678,6 +1678,7 @@ const en = {
       SUSTAINABILITY_INITIATIVES: 'Sustainability initiatives',
       EMPLOYMENT_INITIATIVES: 'Employment initiatives',
       OTHER_INITIATIVES: 'Other Initiatives',
+      DEVELOPING_THE_NONPROFIT_SECTOR: 'Developing the non-profit sector',
     },
     action: {
       accept: 'ACCEPT',

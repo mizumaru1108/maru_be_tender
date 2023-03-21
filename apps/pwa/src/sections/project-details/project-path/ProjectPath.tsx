@@ -91,9 +91,9 @@ function ProjectPath() {
 
     return formattedDate;
   };
-  if (!fetching) {
-    console.log({ followUps });
-  }
+  // if (!fetching) {
+  //   console.log({ followUps });
+  // }
   return (
     <Grid container spacing={2}>
       <Grid item md={8} xs={8} sx={{ backgroundColor: 'transparent', px: 6 }}>

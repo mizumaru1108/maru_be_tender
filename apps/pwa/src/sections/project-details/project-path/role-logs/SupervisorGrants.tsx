@@ -10,8 +10,9 @@ interface Props {
 }
 
 function SupervisorGrants({ stepGransLog }: Props) {
-  const { proposal } = useSelector((state) => state.proposal);
+  // const { proposal } = useSelector((state) => state.proposal);
   const { translate, currentLang } = useLocales();
+  // console.log({ stepGransLog });
 
   return (
     <React.Fragment>
@@ -24,9 +25,6 @@ function SupervisorGrants({ stepGransLog }: Props) {
         </Stack>
         {Object.entries(stepGransLog.proposal!).map(([key, value]) => {
           // console.log({ stepGransLog });
-          if (key === 'created_at' || key === 'updated_at') {
-            return null; // Exclude these properties from rendering
-          }
           // if (!value) {
           //   return null;
           // }
@@ -43,7 +41,77 @@ function SupervisorGrants({ stepGransLog }: Props) {
                   }
                 </Typography>
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                  <Typography>{translate(`review.support_goals.${String(value)}`)}</Typography>
+                  <Typography>
+                    {value ? translate(`review.support_goals.${String(value)}`) : '-'}
+                  </Typography>
+                </Stack>
+              </Grid>
+            );
+          }
+          if (key === 'been_supported_before') {
+            return (
+              <Grid item xs={6} key={key}>
+                <Typography variant="h6">
+                  {
+                    // key
+                    translate(`review.${key}`)
+                  }
+                </Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Typography>
+                    {value ? translate('review.yes') : translate('review.no')}
+                  </Typography>
+                </Stack>
+              </Grid>
+            );
+          }
+          if (key === 'been_made_before') {
+            return (
+              <Grid item xs={6} key={key}>
+                <Typography variant="h6">
+                  {
+                    // key
+                    translate(`review.${key}`)
+                  }
+                </Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Typography>
+                    {value ? translate('review.yes') : translate('review.no')}
+                  </Typography>
+                </Stack>
+              </Grid>
+            );
+          }
+          if (key === 'does_an_agreement') {
+            return (
+              <Grid item xs={6} key={key}>
+                <Typography variant="h6">
+                  {
+                    // key
+                    translate(`review.${key}`)
+                  }
+                </Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Typography>
+                    {value === true ? translate('review.yes') : translate('review.no')}
+                  </Typography>
+                </Stack>
+              </Grid>
+            );
+          }
+          if (key === 'fsupport_by_supervisor') {
+            return (
+              <Grid item xs={6} key={key}>
+                <Typography variant="h6">
+                  {
+                    // key
+                    translate(`review.${key}`)
+                  }
+                </Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Typography>
+                    {value ? `${String(value) + ' ' + translate('review.sar')}` : '-'}
+                  </Typography>
                 </Stack>
               </Grid>
             );
