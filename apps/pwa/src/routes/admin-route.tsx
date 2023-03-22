@@ -7,6 +7,8 @@ import { Loadable } from './Loadable';
 import CeoClientListPage from 'pages/ceo/CeoClientListPage';
 import ProjectOwnerDetails from 'pages/project-details/ProjectOwnerDetails';
 import ProjectDetails from 'pages/project-details/ProjectDetails';
+import ListTrack from 'sections/admin/transaction-progression/ListTrack';
+import ReviewOperationTrack from 'sections/admin/transaction-progression/ReviewOperationTrack';
 
 const Main = Loadable(lazy(() => import('pages/admin/MainPage')));
 const TransactionProgression = Loadable(lazy(() => import('pages/admin/TransactionProgression')));
@@ -75,7 +77,15 @@ export const adminRoute = {
       children: [
         { element: <Navigate to="/cashier/dashboard/app" replace />, index: true },
         { path: 'app', element: <Main /> },
-        { path: 'transaction-progression', element: <TransactionProgression /> },
+        {
+          path: 'transaction-progression',
+          children: [
+            { path: '', element: <TransactionProgression /> },
+            { path: 'add', element: <ListTrack /> },
+            { path: 'edit/:id', element: <ListTrack /> },
+            { path: 'review/:id', element: <ReviewOperationTrack /> },
+          ],
+        },
         {
           path: 'tracks-budget',
           children: [

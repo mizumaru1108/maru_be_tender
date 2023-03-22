@@ -1,12 +1,13 @@
 import React from 'react';
 import { Grid, Typography, Card, Box, Button, Stack } from '@mui/material';
-import BaseField from 'components/hook-form/BaseField';
-import { RHFUploadSingleFileBe } from 'components/hook-form/RHFUploadBe';
 import useLocales from 'hooks/useLocales';
 import ContentTrackCard from './ContentTrackCard';
+import ModalDialog from 'components/modal-dialog';
+import AddNewTrack from './AddNewTrack';
 
 const TransactionProgressionPage = () => {
   const { translate } = useLocales();
+  const [open, setOpen] = React.useState<boolean>(false);
 
   // const TRACKS = [
   //   { id: 1, track: 'Concessional Grant Track' },
@@ -22,8 +23,35 @@ const TransactionProgressionPage = () => {
     'Initiatives Track',
   ];
 
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleOnClose = () => {
+    setOpen(false);
+  };
+
   return (
     <Grid>
+      <ModalDialog
+        styleContent={{ padding: '1em', backgroundColor: '#fff' }}
+        isOpen={open}
+        maxWidth="md"
+        // title="اضافة ميزانية جديدة"
+        content={
+          <AddNewTrack
+            // loading={isSubmittingStepback}
+            onClose={handleOnClose}
+            // onSubmit={handleSubmit}
+            // action={{
+            //   actionLabel: 'إرجاع',
+            //   backgroundColor: '#0169DE',
+            //   hoverColor: '#1482FE',
+            // }}
+          />
+        }
+        onClose={handleOnClose}
+      />
       <Grid sx={{ display: 'flex', justifyContent: 'space-between', mt: 6, mb: 3 }}>
         <Typography variant="h4" gutterBottom sx={{ fontFamily: 'Cairo', fontStyle: 'Bold' }}>
           Transaction Progress
@@ -64,6 +92,7 @@ const TransactionProgressionPage = () => {
                 bgcolor: 'transparent',
                 mt: 0.5,
               }}
+              onClick={handleOpen}
             >
               <img src={`/icons/uploading-field/second-field-icon.svg`} alt="" />
             </Button>

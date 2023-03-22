@@ -5,16 +5,17 @@ import { useNavigate } from 'react-router';
 
 function ContentTrackCard({ id, name }: any) {
   const navigate = useNavigate();
-  const handleShow = () => {
-    // navigate(`/admin/dashboard/tracks-budget/${id}/show`);
+  const handleReview = () => {
+    navigate(`/admin/dashboard/transaction-progression/review/1`);
   };
-  const handleEdit = () => {};
+  const handleEdit = () => {
+    navigate('/admin/dashboard/transaction-progression/edit/1');
+  };
   const handleDelete = () => {};
   return (
     <Stack direction="column" justifyContent="center" alignItems="center">
       <img src={`/icons/hug-icon.svg`} alt="" />
       <Typography sx={{ fontWeight: 'bold', mb: 5, mt: 1 }}>{name}</Typography>
-
       <Box>
         <Stack direction="row" justifyContent="space-around" flex={1} gap={2}>
           <Button
@@ -119,7 +120,7 @@ function ContentTrackCard({ id, name }: any) {
                 </defs>
               </svg>
             }
-            onClick={handleShow}
+            onClick={handleReview}
           >
             استعراض
           </Button>
