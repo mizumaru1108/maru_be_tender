@@ -169,6 +169,7 @@ const en = {
         },
         btn: {
           add_budget: 'Add track budget',
+          add_section: 'Add a section',
           back: 'Back',
           construction: 'Construction',
           review: 'Review',
@@ -184,6 +185,9 @@ const en = {
             label: 'Allocated amount',
             placeholder: 'Please write down the allocated amount',
           },
+        },
+        notification: {
+          empty_selected_track: 'You must select the track!',
         },
       },
       transaction_progression: 'Transaction Progression',

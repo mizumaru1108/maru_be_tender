@@ -19,9 +19,10 @@ interface IPropsCheckbox {
 
 // ------------------------------------------------------------------------------------------
 
-export default function CheckBoxSection({ item, setState }: IPropsCheckbox) {
+export default function CheckBoxSection({ item, state, setState }: IPropsCheckbox) {
   const { translate } = useLocales();
   const [expand, setExpand] = useState<boolean>(false);
+  // const [checkedItems, setCheckedItems] = useState<string[] | []>([]);
 
   const handleExpand = () => {
     setExpand(expand ? false : true);
@@ -35,10 +36,16 @@ export default function CheckBoxSection({ item, setState }: IPropsCheckbox) {
     if (checked) {
       setState((prevValue: { name: string; budget: number; track_ids: string[] | [] }) => ({
         ...prevValue,
-        track_ids: [item.id],
+        track_ids: [...state.track_ids, item.name!],
+      }));
+    } else {
+      setState((prevValue: { name: string; budget: number; track_ids: string[] | [] }) => ({
+        ...prevValue,
+        track_ids: state.track_ids.filter((v: any) => v !== item.name!),
       }));
     }
   };
+
   return (
     <Grid container spacing={2}>
       <Grid item md={6} xs={12}>
@@ -50,10 +57,7 @@ export default function CheckBoxSection({ item, setState }: IPropsCheckbox) {
           component="div"
         >
           <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-            <Checkbox
-              // checked={expand}
-              onChange={handleOnChange}
-            />
+            <Checkbox checked={expand} onChange={handleOnChange} />
             <Typography variant="body1" sx={{ alignSelf: 'center' }}>
               {translate(`${item.name}`)}
             </Typography>
@@ -66,13 +70,14 @@ export default function CheckBoxSection({ item, setState }: IPropsCheckbox) {
             )}
           </IconButton>
         </Stack>
-        {expand && item.sections.length
-          ? item.sections.map((v, i) => (
-              <Typography key={i} sx={{ px: 1, py: 0.5, ml: 3.5 }} variant="body2">
-                {v.name}
-              </Typography>
-            ))
-          : null}
+        {expand &&
+          (item.sections.length
+            ? item.sections.map((v, i) => (
+                <Stack direction="row" key={i} spacing={2.5} component="div" sx={{ pb: 1, ml: 5 }}>
+                  <Typography variant="caption">{v.name}</Typography>
+                </Stack>
+              ))
+            : null)}
       </Grid>
     </Grid>
   );

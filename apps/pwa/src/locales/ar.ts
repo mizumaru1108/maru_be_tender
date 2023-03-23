@@ -168,6 +168,7 @@ const ar = {
         },
         btn: {
           add_budget: 'إضافة تتبع الميزانية',
+          add_section: 'أضف قسمًا',
           back: 'رجوع',
           construction: 'إنشاء',
           review: 'استعراض',
@@ -183,6 +184,9 @@ const ar = {
             label: 'المبلغ المخصص',
             placeholder: 'الرجاء كتابة المبلغ المخصص',
           },
+        },
+        notification: {
+          empty_selected_track: 'يجب عليك تحديد المسار',
         },
       },
       transaction_progression: 'سير المعاملات',
