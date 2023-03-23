@@ -63,6 +63,7 @@ import { gapiConfig } from './commons/configs/gapi-config';
 import { twilioConfig } from './commons/configs/twilio-config';
 import { TenderFileManagerModule } from './tender-file-manager/tender-file-manager.module';
 import { tenderAppConfig } from './commons/configs/tender-app-config';
+import { mseGatConfig } from './commons/configs/msegat-config';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -100,6 +101,7 @@ import { tenderAppConfig } from './commons/configs/tender-app-config';
         gapiConfig,
         twilioConfig,
         tenderAppConfig,
+        mseGatConfig,
       ],
       isGlobal: true,
     }),

@@ -72,4 +72,13 @@ export class TenderController {
   ) {
     return await this.tenderService.test(phoneNumber, message);
   }
+
+  @UseGuards(TenderJwtGuard)
+  @Post('msegat-test')
+  async msegatTest(
+    @Body('phone_number') phoneNumber: string[],
+    @Body('message') message: string,
+  ) {
+    return await this.tenderService.testMsegat(phoneNumber, message);
+  }
 }

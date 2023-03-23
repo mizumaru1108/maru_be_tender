@@ -8,7 +8,7 @@ import { StripeModule } from '../libs/stripe/stripe.module';
 import { GoogleCalendarModule } from '../libs/google-calendar/google-calendar.module';
 import { GoogleOAuth2Module } from '../libs/google-oauth2/google-oauth2.module';
 import { TwilioModule } from '../libs/twilio/twilio.module';
-// import { EventsModule } from '../tender-events-gateway/tender-events.module';
+import { MsegatModule } from '../libs/msegat/msegat.module';
 
 @Module({
   imports: [
@@ -21,6 +21,7 @@ import { TwilioModule } from '../libs/twilio/twilio.module';
     GoogleCalendarModule,
     GoogleOAuth2Module,
     TwilioModule,
+    MsegatModule,
     // EventsModule, // socket io for real time events (tender)
   ],
 })

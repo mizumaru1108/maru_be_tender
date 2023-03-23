@@ -4,10 +4,12 @@ import {
   Get,
   HttpStatus,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../../commons/dtos/base-response';
+import { GetByUUIDQueryParamDto } from '../../../commons/dtos/get-by-uuid-query-param.dto';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
 import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
 import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
@@ -31,6 +33,20 @@ export class TenderScheduleController {
     const schedules = await this.tenderScheduleService.getMySchedules(
       currentUser.id,
     );
+    return baseResponseHelper(
+      schedules,
+      HttpStatus.OK,
+      'Schedule created successfully',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_project_supervisor')
+  @Get('client')
+  async getClientSchedules(
+    @Query() query: GetByUUIDQueryParamDto,
+  ): Promise<BaseResponse<GetMyScheduleResponse['schedule']>> {
+    const schedules = await this.tenderScheduleService.getMySchedules(query.id);
     return baseResponseHelper(
       schedules,
       HttpStatus.OK,

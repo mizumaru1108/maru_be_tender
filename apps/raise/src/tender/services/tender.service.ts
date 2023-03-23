@@ -9,7 +9,9 @@ import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfac
 import { FileMimeTypeEnum } from '../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../commons/helpers/env-loaderror-helper';
 import { BaseHashuraWebhookPayload } from '../../commons/interfaces/base-hashura-webhook-payload';
+import { isExistAndValidPhone } from '../../commons/utils/is-exist-and-valid-phone';
 import { BunnyService } from '../../libs/bunny/services/bunny.service';
+import { MsegatService } from '../../libs/msegat/services/msegat.service';
 import { TwilioService } from '../../libs/twilio/services/twilio.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UploadFilesDto } from '../../tender-commons/dto/upload-files.dto';
@@ -23,6 +25,7 @@ export class TenderService {
     private readonly prismaService: PrismaService,
     private readonly configService: ConfigService,
     private readonly twilioService: TwilioService,
+    private readonly msegatService: MsegatService,
     private tenderRepository: TenderRepository,
   ) {
     const environment = this.configService.get('APP_ENV');
@@ -153,11 +156,31 @@ export class TenderService {
     }
     // for each and send to all in phoneNumber array
     phoneNumber.forEach(async (number) => {
-      const twilioResponse = await this.twilioService.sendSMSAsync({
-        to: number,
-        body: message,
-      });
-      console.log('twilioResponse', twilioResponse);
+      const valid = isExistAndValidPhone(number);
+      if (valid) {
+        const twilioResponse = await this.twilioService.sendSMSAsync({
+          to: number,
+          body: valid,
+        });
+        console.log('twilioResponse', twilioResponse);
+      }
+    });
+    return true;
+  }
+
+  async testMsegat(phoneNumber: string[], message: string) {
+    if (!phoneNumber || !message) {
+      throw new BadRequestException('Phone number and message are required');
+    }
+    // for each and send to all in phoneNumber array
+    phoneNumber.forEach(async (number) => {
+      const valid = isExistAndValidPhone(number);
+      if (valid) {
+        await this.msegatService.sendSMS({
+          numbers: number.substring(1),
+          msg: message,
+        });
+      }
     });
     return true;
   }
