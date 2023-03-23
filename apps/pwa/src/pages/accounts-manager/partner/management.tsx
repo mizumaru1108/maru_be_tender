@@ -46,8 +46,12 @@ function PartnerManagementPage() {
     if (!fetchingAllClientRequest && resultAllClientRequest) {
       const resultAllClientData = resultAllClientRequest?.user.map((v: any) => ({
         id: v.id,
-        partner_name: v.client_data.entity,
-        createdAt: v.client_data.updated_at,
+        partner_name:
+          v && v.client_data && v.client_data.entity ? v.client_data.entity : v.employee_name,
+        createdAt:
+          v && v.client_data && v.client_data && v.client_data.updated_at
+            ? v.client_data.updated_at
+            : v.created_at,
         account_status: v.status_id,
         events: v.id,
         email: v.email,

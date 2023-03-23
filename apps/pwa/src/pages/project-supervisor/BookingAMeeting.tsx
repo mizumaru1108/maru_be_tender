@@ -1,7 +1,7 @@
 import { Container } from '@mui/material';
 import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
-import BookingAMeetingWothClient from 'sections/project-manager/appintments-with-partner/BookingAMeetingWothClient';
+import BookingAMeetingWothClient from 'sections/project-supervisor/appintments-with-partner/BookingAMeetingWothClient';
 import useLocales from '../../hooks/useLocales';
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',

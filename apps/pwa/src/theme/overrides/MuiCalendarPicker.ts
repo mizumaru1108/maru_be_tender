@@ -12,7 +12,7 @@ export default function MuiCalendarPicker(theme: Theme) {
           '& .css-1cnkspq>*': {
             position: 'relative',
           },
-          overflow: 'hidden',
+          overflow: 'auto',
           maxHeight: 'unset !important',
           '& .css-1lx7ma4-MuiButtonBase-root-MuiPickersDay-root:not(.Mui-selected)': {
             border: '1.5px solid #0E8478',
@@ -45,7 +45,7 @@ export default function MuiCalendarPicker(theme: Theme) {
             color: '#000 !important',
           },
           '& .Mui-selected, & .Mui-selected:focus, & .Mui-selected:hover': {
-            color: '#000 !important',
+            color: '#fff !important',
             backgroundColor: `#0E8478 !important`,
             // marginBottom: '4px',
           },

@@ -68,7 +68,8 @@ const CustomPickersDay = styled(PickersDay, {
 })) as React.ComponentType<CustomPickerDayProps>;
 
 function BookingAMeetingWothClient() {
-  const [userId, setUserId] = useState<string>('13f85a9f-fd78-4d9d-9767-e8aa84164a28');
+  // const [userId, setUserId] = useState<string>('13f85a9f-fd78-4d9d-9767-e8aa84164a28');
+  const [userId, setUserId] = useState<string>('');
   const shouldPause = userId === '';
   const [result, mutate] = useQuery({
     query: getScheduleByUser,
@@ -91,7 +92,7 @@ function BookingAMeetingWothClient() {
       {userId === '' && (
         <StepOne handleOnOpen={handleOnOpen} handleSetId={handleSetId} open={open} />
       )}
-      {userId !== '' && <SecondStep setUserId={setUserId} />}
+      {userId !== '' && <SecondStep setUserId={userId} />}
       {/* <SecondStep setUserId={setUserId} /> */}
     </Grid>
   );

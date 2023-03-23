@@ -7,6 +7,8 @@ import * as React from 'react';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { isWeekend } from 'date-fns';
+import moment from 'moment';
+import useResponsive from '../../../hooks/useResponsive';
 
 interface CustomPickerDayProps extends PickersDayProps<Dayjs> {
   available: boolean;
@@ -14,10 +16,96 @@ interface CustomPickerDayProps extends PickersDayProps<Dayjs> {
 }
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 // const availableDays = ['Sunday', 'Monday', 'Tuesday'];
-const availableDays = ['1', '3', '10'];
-const haveAppoinments = ['5', '9', '20'];
+const availableDays = {
+  days: ['Sunday', 'Monday', 'Tuesday'],
+  time: [
+    {
+      day: 'Sunday',
+      time_gap: [
+        '09:00 AM',
+        '09:15 AM',
+        '09:30 AM',
+        '09:45 AM',
+        '10:00 AM',
+        '10:15 AM',
+        '10:30 AM',
+        '10:45 AM',
+        '11:00 AM',
+        '11:15 AM',
+        '11:30 AM',
+        '11:45 AM',
+        '12:00 PM',
+        '12:15 PM',
+        '12:30 PM',
+        '12:45 PM',
+        '01:00 PM',
+        '01:15 PM',
+        '01:30 PM',
+        '01:45 PM',
+        '02:00 PM',
+        '02:15 PM',
+        '02:30 PM',
+        '02:45 PM',
+        '03:00 PM',
+        '03:15 PM',
+        '03:30 PM',
+        '03:45 PM',
+        '04:00 PM',
+        '04:15 PM',
+        '04:30 PM',
+        '04:45 PM',
+        '05:00 PM',
+      ],
+    },
+    {
+      day: 'Monday',
+      time_gap: [
+        '02:00 PM',
+        '02:15 PM',
+        '02:30 PM',
+        '02:45 PM',
+        '03:00 PM',
+        '03:15 PM',
+        '03:30 PM',
+        '03:45 PM',
+        '04:00 PM',
+        '04:15 PM',
+        '04:30 PM',
+        '04:45 PM',
+        '05:00 PM',
+      ],
+    },
+    {
+      day: 'Tuesday',
+      time_gap: [
+        '09:00 AM',
+        '09:15 AM',
+        '09:30 AM',
+        '09:45 AM',
+        '10:00 AM',
+        '10:15 AM',
+        '10:30 AM',
+        '10:45 AM',
+        '11:00 AM',
+        '11:15 AM',
+      ],
+    },
+  ],
+};
+// const availableDays = ['1', '3', '10'];
+// const haveAppoinments = ['5', '9', '20'];
+// const haveAppoinments = ['Sunday'];
+const haveAppoinments = {
+  days: ['Sunday'],
+  time: [
+    {
+      day: 'Sunday',
+      start: ['09:00 AM', '10:15 AM'],
+    },
+  ],
+};
 type DAYS_EN = 'Su' | 'Mo' | 'Tu' | 'We' | 'Th' | 'Fr' | 'Sa';
-const DAY_EN = {
+const DAY_EN_DESKTOP = {
   Su: 'Sunday',
   Mo: 'Monday',
   Tu: 'Tuesday',
@@ -25,6 +113,15 @@ const DAY_EN = {
   Th: 'Thursday',
   Fr: 'Friday',
   Sa: 'Saturday',
+};
+const DAY_EN_MOBILE = {
+  Su: 'Su',
+  Mo: 'Mo',
+  Tu: 'Tu',
+  We: 'We',
+  Th: 'Th',
+  Fr: 'Fr',
+  Sa: 'Sa',
 };
 const DAYS_EN_AR = {
   Su: 'الأحد',
@@ -60,19 +157,24 @@ const CustomPickersDay = styled(PickersDay, {
   }),
   ...(isToday && {
     borderRadius: '50%',
-    backgroundColor: 'red',
-    borderColor: '#EEF0F2',
-    border: '1px !important',
+    backgroundColor: '#EEF0F2',
+    // borderColor: '#EEF0F2',
+    border: '2px solid #0E8478',
   }),
 })) as React.ComponentType<CustomPickerDayProps>;
 
 function SecondStep({ setUserId }: any) {
   const [value, setValue] = React.useState<Date | number | null>(new Date());
+  const isMobile = useResponsive('down', 'sm');
+  console.log('isMobile', isMobile);
 
   const badgeRef = React.useRef<HTMLInputElement>(null);
   const [position, setPosition] = React.useState(0);
 
   const [date, setDate] = React.useState<Dayjs | null>(null);
+  const [selectedDay, setSelectedDay] = React.useState<string | null>(null);
+  const [selectedTime, setSelectedTime] = React.useState<string>('');
+  const [selectedDate, setSelectedDate] = React.useState<string>('');
 
   const renderWeekPickerDay = (
     date: Dayjs,
@@ -80,7 +182,7 @@ function SecondStep({ setUserId }: any) {
     pickersDayProps: PickersDayProps<Dayjs>
   ) => {
     const isToday = date.isSame(dayjs(), 'day');
-    if (haveAppoinments.includes(date.get('date').toString())) {
+    if (haveAppoinments.days.includes(DAYS[date.get('day')])) {
       return (
         <Badge
           color="secondary"
@@ -98,6 +200,8 @@ function SecondStep({ setUserId }: any) {
         >
           <PickersDay
             sx={{
+              width: { md: '56px !important', xs: '36px !important' },
+              height: { md: '56px !important', xs: '36px !important' },
               borderRadius: '50%',
               backgroundColor: '#EEF0F2',
               // borderColor: '#EEF0F2',
@@ -109,12 +213,20 @@ function SecondStep({ setUserId }: any) {
       );
     }
     return (
-      <CustomPickersDay
-        {...pickersDayProps}
-        // available={availableDays.includes(DAYS[date.get('day')])}
-        available={availableDays.includes(date.get('date').toString())}
-        isToday={isToday}
-      />
+      <Box>
+        <CustomPickersDay
+          sx={{
+            width: { md: '56px !important', xs: '36px !important' },
+            height: { md: '56px !important', xs: '36px !important' },
+          }}
+          {...pickersDayProps}
+          available={
+            availableDays.days.includes(DAYS[date.get('day')]) && date.isAfter(dayjs(), 'day')
+          }
+          // available={availableDays.includes(date.get('date').toString())}
+          isToday={isToday}
+        />
+      </Box>
     );
     // return (
     //   <Badge
@@ -141,8 +253,8 @@ function SecondStep({ setUserId }: any) {
     // );
   };
   const disableUnAvailableDays = (date: Dayjs) =>
-    !availableDays.includes(DAYS[date.get('day')]) || date.isBefore(dayjs(), 'day');
-  console.log({ position });
+    !availableDays.days.includes(DAYS[date.get('day')]) || date.isBefore(dayjs(), 'day');
+  // console.log({ position });
 
   React.useEffect(() => {
     setPosition(badgeRef.current ? badgeRef.current.getBoundingClientRect().width / 2 : 0);
@@ -196,10 +308,18 @@ function SecondStep({ setUserId }: any) {
         >
           <CalendarPicker
             date={date}
-            onChange={(newDate) => setDate(newDate)}
+            // onChange={(newDate) => setDate(newDate)}
+            onChange={(newDate) => {
+              // const tmpDay = moment(newDate?.toISOString()).format('dddd');
+              // console.log('newDate', tmpDay);
+              setSelectedDate(newDate!.toISOString());
+              setSelectedDay(moment(newDate?.toISOString()).format('dddd'));
+            }}
             renderDay={renderWeekPickerDay}
-            // shouldDisableDate={disableUnAvailableDays}
-            dayOfWeekFormatter={(day) => DAY_EN[`${day as DAYS_EN}`]}
+            shouldDisableDate={disableUnAvailableDays}
+            dayOfWeekFormatter={(day) =>
+              !isMobile ? DAY_EN_DESKTOP[`${day as DAYS_EN}`] : DAY_EN_MOBILE[`${day as DAYS_EN}`]
+            }
             // disablePast
             views={['day']}
             showDaysOutsideCurrentMonth
@@ -224,6 +344,52 @@ function SecondStep({ setUserId }: any) {
       </Grid>
 
       {/* for select time */}
+      <Grid item md={5} xs={12} maxHeight={350} overflow={'auto'}>
+        <Stack direction="column" gap={'10px'}>
+          {selectedDay &&
+            availableDays &&
+            availableDays.time.length > 0 &&
+            availableDays.time.map((time, index) => {
+              const { time_gap, day } = time;
+              if (selectedDay === day) {
+                const idxMeetingDay = haveAppoinments.time.findIndex(
+                  (item) => item.day === selectedDay
+                );
+                // console.log('time_gap', time_gap);
+                return time_gap.map((gap, idx) => (
+                  <Button
+                    key={idx}
+                    disabled={
+                      idxMeetingDay > -1 && haveAppoinments.time[idxMeetingDay].start.includes(gap)
+                        ? true
+                        : false
+                    }
+                    onClick={() => {
+                      setSelectedTime(gap);
+                    }}
+                    sx={{
+                      backgroundColor: selectedTime === gap ? '#0E8478' : '#fff',
+                      color:
+                        idxMeetingDay > -1 &&
+                        haveAppoinments.time[idxMeetingDay].start.includes(gap)
+                          ? '#000'
+                          : selectedTime === gap
+                          ? '#fff'
+                          : '#0E8478',
+                      padding: '10px',
+                      display: 'flex',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography>{gap}</Typography>
+                  </Button>
+                ));
+              } else {
+                return <></>;
+              }
+            })}
+        </Stack>
+      </Grid>
       {date && (
         <Grid item md={5} xs={12}>
           <Stack direction="column" gap={'10px'}>

@@ -95,6 +95,7 @@ const ICONS = {
     payment_adjustment: getIcon('payment-adjustment'),
     portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
+    appointments_with_partners: getIcon('appointments-with-partners'),
   },
   tender_moderator: {
     main: getIcon('main'),
@@ -370,11 +371,11 @@ const navConfig = {
           path: PATH_PROJECT_MANAGER.messages,
           icon: ICONS.tender_project_manager.messages,
         },
-        {
-          title: 'appointments_with_partners',
-          path: PATH_PROJECT_MANAGER.appointments_with_partners,
-          icon: ICONS.tender_project_manager.appointments_with_partners,
-        },
+        // {
+        //   title: 'appointments_with_partners',
+        //   path: PATH_PROJECT_MANAGER.appointments_with_partners,
+        //   icon: ICONS.tender_project_manager.appointments_with_partners,
+        // },
       ],
     },
   ],
@@ -421,6 +422,11 @@ const navConfig = {
           title: 'messages',
           path: PATH_PROJECT_SUPERVISOR.messages,
           icon: ICONS.tender_project_supervisor.messages,
+        },
+        {
+          title: 'appointments_with_partners',
+          path: PATH_PROJECT_SUPERVISOR.appointments_with_partners,
+          icon: ICONS.tender_project_supervisor.appointments_with_partners,
         },
       ],
     },

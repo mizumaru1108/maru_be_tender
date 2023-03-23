@@ -1,7 +1,7 @@
 import { Container } from '@mui/material';
 import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
-import Appointments from 'sections/project-manager/appintments-with-partner';
+import Appointments from 'sections/project-supervisor/appintments-with-partner';
 import useLocales from '../../hooks/useLocales';
 
 function AppointmentsWithPartners() {

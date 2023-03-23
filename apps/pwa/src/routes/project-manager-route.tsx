@@ -25,9 +25,6 @@ const ProjectDetails = Loadable(lazy(() => import('pages/project-details/Project
 const ProjectOwnerDetails = Loadable(
   lazy(() => import('pages/project-details/ProjectOwnerDetails'))
 );
-const AppointmentsWithPartners = Loadable(
-  lazy(() => import('pages/project-manager/AppointmentsWithPartners'))
-);
 const AmandementRequest = Loadable(
   lazy(() => import('pages/amandement-request/AmandementRequest'))
 );
@@ -39,7 +36,6 @@ const NonClientProfileEdit = Loadable(
   lazy(() => import('sections/non-client-profile/NonClientProfileEdit'))
 );
 const Searching = Loadable(lazy(() => import('pages/searching')));
-const BookingAMeeting = Loadable(lazy(() => import('pages/project-manager/BookingAMeeting')));
 
 const CeoRejectionListPage = Loadable(lazy(() => import('pages/project-manager/RejectionList')));
 
@@ -167,13 +163,13 @@ export const projectManagerRoute = {
         },
         { path: 'portal-reports', element: <PortalReportsProjectManager /> },
         { path: 'messages', element: <MessagesProjectManager /> },
-        {
-          path: 'appointments-with-partners',
-          children: [
-            { path: '', element: <AppointmentsWithPartners /> },
-            { path: 'booking', element: <BookingAMeeting /> },
-          ],
-        },
+        // {
+        //   path: 'appointments-with-partners',
+        //   children: [
+        //     { path: '', element: <AppointmentsWithPartners /> },
+        //     { path: 'booking', element: <BookingAMeeting /> },
+        //   ],
+        // },
       ],
     },
   ],

@@ -109,7 +109,7 @@ export const PATH_PROJECT_MANAGER = {
   exchange_permission: path(ROOTS_PROJECT_MANAGER, '/dashboard/exchange-permission'),
   portal_reports: path(ROOTS_PROJECT_MANAGER, '/dashboard/portal-reports'),
   messages: path(ROOTS_PROJECT_MANAGER, '/dashboard/messages'),
-  appointments_with_partners: path(ROOTS_PROJECT_MANAGER, '/dashboard/appointments-with-partners'),
+  // appointments_with_partners: path(ROOTS_PROJECT_MANAGER, '/dashboard/appointments-with-partners'),
   rejection_list: path(ROOTS_PROJECT_MANAGER, '/dashboard/rejection-list'),
   client_list: path(ROOTS_PROJECT_MANAGER, '/dashboard/client-list'),
 };
@@ -133,6 +133,10 @@ export const PATH_PROJECT_SUPERVISOR = {
   payment_adjustment: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/payment-adjustment'),
   portal_reports: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/portal-reports'),
   messages: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/messages'),
+  appointments_with_partners: path(
+    ROOTS_PROJECT_SUPERVISOR,
+    '/dashboard/appointments-with-partners'
+  ),
 };
 
 export const PATH_ACCOUNTS_MANAGER = {

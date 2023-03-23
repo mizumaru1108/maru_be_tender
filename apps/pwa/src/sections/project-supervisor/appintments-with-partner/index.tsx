@@ -20,7 +20,7 @@ function Appointments() {
             py: '10px',
           }}
           onClick={() => {
-            navigate('/project-manager/dashboard/appointments-with-partners/booking');
+            navigate('/project-supervisor/dashboard/appointments-with-partners/booking');
           }}
         >
           {translate('booking_for_a_meeting')}

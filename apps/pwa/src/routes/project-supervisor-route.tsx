@@ -42,6 +42,10 @@ const NonClientProfileEdit = Loadable(
   lazy(() => import('sections/non-client-profile/NonClientProfileEdit'))
 );
 const Searching = Loadable(lazy(() => import('pages/searching')));
+const AppointmentsWithPartners = Loadable(
+  lazy(() => import('pages/project-supervisor/AppointmentsWithPartners'))
+);
+const BookingAMeeting = Loadable(lazy(() => import('pages/project-supervisor/BookingAMeeting')));
 
 export const projectSupervisorRoute = {
   path: 'project-supervisor',
@@ -143,6 +147,13 @@ export const projectSupervisorRoute = {
         },
         { path: 'portal-reports', element: <PortalReportsProjectSupervisor /> },
         { path: 'messages', element: <MessagesProjectSupervisor /> },
+        {
+          path: 'appointments-with-partners',
+          children: [
+            { path: '', element: <AppointmentsWithPartners /> },
+            { path: 'booking', element: <BookingAMeeting /> },
+          ],
+        },
       ],
     },
   ],
