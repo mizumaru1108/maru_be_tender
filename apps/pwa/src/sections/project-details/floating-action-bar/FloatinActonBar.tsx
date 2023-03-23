@@ -1,3 +1,4 @@
+import React from 'react';
 import useAuth from 'hooks/useAuth';
 import { useLocation, useParams } from 'react-router';
 import ProjectManagerFloatingActionBar from './project-manager';
@@ -9,6 +10,12 @@ import ConsultantFloatingActionBar from './consultant';
 import RejectProjectsActionBar from './reject-project';
 import FloatingCloseReportSPV from '../floating-close-report/FloatingSpv';
 import FloatingClientSubmit from '../floating-close-report/FloatingClientSubmit';
+
+//
+import { useQuery } from 'urql';
+import { getProposalClosingReport } from 'queries/client/getProposalClosingReport';
+
+//
 
 function FloatinActonBar() {
   const { actionType } = useParams();
@@ -22,6 +29,15 @@ function FloatinActonBar() {
   const role = activeRole!;
 
   const pathName = location.pathname.split('/');
+
+  const [result] = useQuery({
+    query: getProposalClosingReport,
+    variables: {
+      proposal_id: proposal.id,
+    },
+  });
+
+  const { data, fetching, error: errorGetProposal } = result;
 
   return (
     <>
@@ -68,11 +84,25 @@ function FloatinActonBar() {
         ['follow-ups'].includes(activeTap) &&
         (actionType === 'show-details' || actionType === 'show-project') &&
         pathName &&
-        (pathName[3] === 'project-report' || pathName[3] === 'previous-funding-requests') &&
+        pathName[3] === 'project-report' &&
         (role === 'tender_project_supervisor' || role === 'tender_client') &&
         ['PROJECT_COMPLETED', 'REQUESTING_CLOSING_FORM'].includes(proposal.inner_status) && (
           <FloatingClientSubmit />
         )}
+
+      {!fetching &&
+        data &&
+        (data.proposal_closing_report.length ? (
+          <React.Fragment>
+            {activeTap &&
+              ['follow-ups'].includes(activeTap) &&
+              (actionType === 'show-details' || actionType === 'show-project') &&
+              pathName &&
+              pathName[3] === 'previous-funding-requests' &&
+              (role === 'tender_project_supervisor' || role === 'tender_client') &&
+              ['PROJECT_COMPLETED'].includes(proposal.inner_status) && <FloatingClientSubmit />}
+          </React.Fragment>
+        ) : null)}
     </>
   );
 }
