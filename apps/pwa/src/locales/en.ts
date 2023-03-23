@@ -1667,7 +1667,6 @@ const en = {
     yes: 'Yes',
     no: 'No',
     sar: 'SAR',
-    // new translations
     does_an_agreement: 'Does an Agreement',
     clasification_field: 'Clasification Field',
     clause: 'Clause',
@@ -1712,6 +1711,7 @@ const en = {
       send_back_for_revision: 'SEND BACK FOR REVISION',
       study_again: 'STUDY AGAIN',
       ask_for_amandement_request: 'ASK FOR AMENDMENT REQUEST',
+      sending_closing_report: 'SENDING CLOSING REPORT',
     },
   },
   project_already_reviewed_by_supervisor: 'This project already reviewed by Supervisor',
@@ -1922,6 +1922,17 @@ const en = {
     project_type: 'Project`s Type',
     type_order: 'Type',
     search: 'Search',
+  },
+  //Appointment table
+  appointments_headercell: {
+    employee: 'Employee',
+    meeting_time: 'Meeting Time',
+    action: 'Action',
+    project_number: 'Project Id',
+  },
+  appointment_table: {
+    today_headline: 'Today Appointments',
+    upcoming_headline: 'Upcoming Appointments',
   },
 };
 

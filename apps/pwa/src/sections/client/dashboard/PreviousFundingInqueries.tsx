@@ -4,7 +4,11 @@ import { ProjectCard } from 'components/card-table';
 import { useNavigate } from 'react-router';
 import useLocales from 'hooks/useLocales';
 
-function PreviousFundingInqueries({ completed_client_projects, pending_client_projects }: any) {
+function PreviousFundingInqueries({
+  all_client_projects,
+  completed_client_projects,
+  pending_client_projects,
+}: any) {
   const navigate = useNavigate();
 
   const { translate } = useLocales();
@@ -37,10 +41,10 @@ function PreviousFundingInqueries({ completed_client_projects, pending_client_pr
         ? pending_client_projects
         : tap === 'completed_projects'
         ? completed_client_projects
-        : pending_client_projects.concat(completed_client_projects)
+        : all_client_projects
     );
     setPreviousInq(filterdData);
-  }, [completed_client_projects, pending_client_projects, tap]);
+  }, [completed_client_projects, pending_client_projects, all_client_projects, tap]);
 
   return (
     <>

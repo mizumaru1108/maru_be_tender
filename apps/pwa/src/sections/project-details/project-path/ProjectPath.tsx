@@ -153,7 +153,8 @@ function ProjectPath() {
           stepGeneralLog?.user_role === 'PROJECT_SUPERVISOR' &&
           stepGeneralLog.proposal.project_track !== 'CONCESSIONAL_GRANTS' &&
           stepGeneralLog.action !== 'send_back_for_revision' &&
-          stepGeneralLog.action !== 'step_back' ? (
+          stepGeneralLog.action !== 'step_back' &&
+          stepGeneralLog.action !== 'sending_closing_report' ? (
             <SupervisorGeneral stepGeneralLog={stepGeneralLog} />
           ) : null}
           {stepGransLog &&
@@ -161,7 +162,8 @@ function ProjectPath() {
           stepGeneralLog?.user_role === 'PROJECT_SUPERVISOR' &&
           stepGeneralLog.proposal.project_track === 'CONCESSIONAL_GRANTS' &&
           stepGeneralLog.action !== 'send_back_for_revision' &&
-          stepGeneralLog.action !== 'step_back' ? (
+          stepGeneralLog.action !== 'step_back' &&
+          stepGeneralLog.action !== 'sending_closing_report' ? (
             <SupervisorGrants stepGransLog={stepGransLog} />
           ) : null}
         </Stack>

@@ -36,6 +36,13 @@ query clientMainPage {
     project_idea
     outter_status
   }
+  all_client_projects:proposal(where: {step: {_eq: ZERO}}, order_by: {created_at: desc}, limit: 10) {
+    id
+    project_name
+    created_at
+    project_idea
+    outter_status
+  }
     amandement_proposal:proposal(where: {outter_status: {_eq: ON_REVISION}, _and: {step: {_eq: ZERO}}}, order_by: {created_at: desc}, limit: 10) {
     id
   }

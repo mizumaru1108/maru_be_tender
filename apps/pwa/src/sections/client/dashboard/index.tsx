@@ -50,6 +50,7 @@ function DashboardPage() {
               completed_client_projects={data.completed_client_projects}
               pending_client_projects={data.pending_client_projects}
               amandement_proposal={data.amandement_proposal}
+              all_client_projects={data.all_client_projects}
             />
           </Grid>
         </>

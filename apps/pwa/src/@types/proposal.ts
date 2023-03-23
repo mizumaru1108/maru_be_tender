@@ -290,7 +290,8 @@ export type Log = {
     | 'accept_and_need_consultant'
     | 'one_step_back'
     | 'step_back'
-    | 'send_back_for_revision';
+    | 'send_back_for_revision'
+    | 'sending_closing_report';
   created_at: Date;
   user_role: Role;
   proposal: PropsalLog;

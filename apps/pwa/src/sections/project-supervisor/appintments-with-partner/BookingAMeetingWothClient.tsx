@@ -89,10 +89,8 @@ function BookingAMeetingWothClient() {
   // if (error) return <>Oooops.. something went wrong</>;
   return (
     <Grid container spacing={5}>
-      {userId === '' && (
-        <StepOne handleOnOpen={handleOnOpen} handleSetId={handleSetId} open={open} />
-      )}
-      {userId !== '' && <SecondStep setUserId={userId} />}
+      {userId === '' && <StepOne handleOnOpen={handleOnOpen} handleSetId={handleSetId} />}
+      {userId !== '' && <SecondStep userId={userId} setUserId={handleSetId} />}
       {/* <SecondStep setUserId={setUserId} /> */}
     </Grid>
   );

@@ -1746,6 +1746,7 @@ const ar = {
       send_back_for_revision: 'أرسل مرة أخرى للمراجعة',
       study_again: 'ادرس مجددا',
       ask_for_amandement_request: 'طلب تعديل',
+      sending_closing_report: 'إرسال تقرير ختامي',
     },
   },
   project_already_reviewed_by_supervisor: 'تمت مراجعة هذا المشروع بالفعل من قبل المشرف',
@@ -1954,6 +1955,17 @@ const ar = {
     project_type: 'نوع المشروع',
     type_order: 'يكتب',
     search: 'يبحث',
+  },
+  //Appointment table
+  appointments_headercell: {
+    employee: 'موظف',
+    meeting_time: 'وقت الاجتماع',
+    action: 'الإجراء',
+    project_number: 'رقم المشروع',
+  },
+  appointment_table: {
+    today_headline: 'الحضور اليوم',
+    upcoming_headline: 'الحضور المتبقية',
   },
 };
 

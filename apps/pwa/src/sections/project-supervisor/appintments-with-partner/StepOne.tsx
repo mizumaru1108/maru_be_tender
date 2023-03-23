@@ -5,6 +5,7 @@ import {
   Grid,
   IconButton,
   InputAdornment,
+  Pagination,
   Stack,
   TextField,
   Typography,
@@ -14,23 +15,32 @@ import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useNavigate } from 'react-router';
+import EmptyContent from '../../../components/EmptyContent';
 import useAuth from '../../../hooks/useAuth';
 import axiosInstance from '../../../utils/axios';
 
+interface IClients {
+  employee_name: string;
+  id: string;
+}
+
 type Props = {
   handleOnOpen: () => void;
-  open: boolean;
+  // open: boolean;
   handleSetId: (id: string) => void;
 };
-function StepOne({ handleOnOpen, open, handleSetId }: Props) {
+function StepOne({ handleOnOpen, handleSetId }: Props) {
   const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const { translate } = useLocales();
   const navigate = useNavigate();
 
+  const [open, setOpen] = React.useState(false);
+
   const [isLoading, setIsLoading] = React.useState(false);
-  const [clientField, setClientField] = React.useState<string>('');
+  const [clientField, setClientField] = React.useState<string>('main');
   const [clientName, setClientName] = React.useState<string>('');
+  const [clients, setClients] = React.useState<IClients[]>([]);
 
   //pagination
   const [count, setCount] = React.useState(0);
@@ -38,50 +48,24 @@ function StepOne({ handleOnOpen, open, handleSetId }: Props) {
 
   const handleKeyupMsg = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
+      setPage(1);
+      setCount(0);
       fetchingClients();
     }
   };
+
   const fetchingClients = async () => {
-    // console.log('fetching clients');
-    // const testMathCeil = Math.ceil(0);
-    // console.log({ testMathCeil });
+    setClients([]);
     setIsLoading(true);
-    // setIsLoad(true);
-    //   try {
-    //     const res = await axiosInstance.post(
-    //       '/tender-proposal/ask-amandement-request',
-    //       {
-    //         proposal_id: id,
-    //         notes: tmpValues.notes,
-    //       },
-    //       {
-    //         headers: { 'x-hasura-role': activeRole! },
-    //       }
-    //     );
-    //     enqueueSnackbar('Amandement request has been sent', {
-    //       variant: 'success',
-    //       preventDuplicate: true,
-    //       autoHideDuration: 3000,
-    //     });
-    //     navigate(dashboardUrl);
-    //   } catch (error) {
-    //     enqueueSnackbar(error.message, { variant: 'error' });
-    //   } finally {
-    //     setIsLoad(false);
-    //   }
     try {
-      const apiFindClients = `/tender-user/find-users?client_field=${clientField}&hide_internal=1`;
-      const apiFindClient = `/tender-user/find-users?employee_name=${clientName}&client_field=${clientField}&hide_internal=1`;
+      const apiFindClients = `/tender-user/find-users?page=${page}&client_field=${clientField}&hide_internal=1`;
+      const apiFindClient = `/tender-user/find-users?page=${page}&employee_name=${clientName}&client_field=${clientField}&hide_internal=1`;
       const res = await axiosInstance.get(clientName ? apiFindClient : apiFindClients, {
         headers: { 'x-hasura-role': activeRole! },
       });
-      enqueueSnackbar('Amandement request has been sent', {
-        variant: 'success',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-      });
-      console.log(res.data);
+      // console.log(res.data);
       setCount(res.data.total ? Math.ceil(res.data.total / 10) : 0);
+      setClients(res.data.data);
       // navigate('/');
     } catch (error) {
       enqueueSnackbar(error.message, { variant: 'error' });
@@ -89,6 +73,14 @@ function StepOne({ handleOnOpen, open, handleSetId }: Props) {
       setIsLoading(false);
     }
   };
+  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
+  React.useEffect(() => {
+    fetchingClients();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
+  // console.log({ clients });
   return (
     <>
       <Grid item md={12} xs={12}>
@@ -103,7 +95,17 @@ function StepOne({ handleOnOpen, open, handleSetId }: Props) {
                 select
                 fullWidth
                 SelectProps={{ native: true }}
-                onChange={(e) => setClientField(e.target.value)}
+                defaultValue={clientField}
+                onChange={(e) => {
+                  if (open && clientField) {
+                    setPage(1);
+                    setCount(0);
+                    setClients([]);
+                    setClientName('');
+                    setOpen(!open);
+                  }
+                  setClientField(e.target.value);
+                }}
               >
                 <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
                   {translate('please_choose_entity_field')}
@@ -148,7 +150,15 @@ function StepOne({ handleOnOpen, open, handleSetId }: Props) {
                         </svg>
                       </>
                     }
-                    onClick={handleOnOpen}
+                    onClick={() => {
+                      handleOnOpen();
+                      if (!open) {
+                        setPage(1);
+                        setCount(0);
+                        fetchingClients();
+                        setOpen(!open);
+                      }
+                    }}
                   >
                     {translate('please_choose_the_name_of_the_client')}
                   </Button>
@@ -166,6 +176,7 @@ function StepOne({ handleOnOpen, open, handleSetId }: Props) {
                       }}
                     >
                       <TextField
+                        value={clientName}
                         InputProps={{
                           endAdornment: (
                             <InputAdornment position="end">
@@ -181,7 +192,7 @@ function StepOne({ handleOnOpen, open, handleSetId }: Props) {
                             </InputAdornment>
                           ),
                         }}
-                        sx={{ width: '100%' }}
+                        sx={{ width: '100%', mb: 2 }}
                         onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => handleKeyupMsg(e)}
                         onChange={(e) => {
                           // console.log(e.target.value);
@@ -204,15 +215,20 @@ function StepOne({ handleOnOpen, open, handleSetId }: Props) {
                           <CircularProgress />
                         </Box>
                       )}
-                      {!isLoading && (
+                      {!isLoading && clients.length > 0 && (
                         <>
-                          {['اسم الشريك الأول', 'اسم الشريك الثاني', 'اسم الشريك الثالث'].map(
-                            (item, index) => (
-                              <Stack direction="row" justifyContent="space-between" key={index}>
+                          <Stack spacing={2} justifyContent={'center'} alignItems={'center'}>
+                            {clients.map((item, index) => (
+                              <Stack
+                                direction="row"
+                                justifyContent="space-between"
+                                key={index}
+                                sx={{ width: '100%' }}
+                              >
                                 <Typography
-                                  sx={{ fontWeight: 1000, fontSize: '15px', alignSelf: 'center' }}
+                                  sx={{ fontWeight: 500, fontSize: '15px', alignSelf: 'center' }}
                                 >
-                                  {item}
+                                  {item.employee_name}
                                 </Typography>
                                 <Button
                                   sx={{
@@ -243,15 +259,29 @@ function StepOne({ handleOnOpen, open, handleSetId }: Props) {
                                     </div>
                                   }
                                   onClick={() => {
-                                    handleSetId('13f85a9f-fd78-4d9d-9767-e8aa84164a28');
+                                    handleSetId(item.id);
                                   }}
                                 >
                                   {translate('booking_an_appointment')}
                                 </Button>
                               </Stack>
-                            )
-                          )}
+                            ))}
+                            <Pagination
+                              count={count}
+                              page={page}
+                              color="primary"
+                              onChange={handleChange}
+                            />
+                          </Stack>
                         </>
+                      )}
+                      {!isLoading && clients.length === 0 && (
+                        <EmptyContent
+                          title="No Data"
+                          sx={{
+                            '& span.MuiBox-root': { height: 160 },
+                          }}
+                        />
                       )}
                     </Box>
                   )}

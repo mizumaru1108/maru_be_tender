@@ -171,7 +171,7 @@ function AdjustClentAvailableTime() {
         }
       );
       if (rest) {
-        enqueueSnackbar('Edit request has been approved', {
+        enqueueSnackbar('Successfully', {
           variant: 'success',
           preventDuplicate: true,
           autoHideDuration: 3000,

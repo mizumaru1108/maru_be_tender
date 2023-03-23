@@ -9,6 +9,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { isWeekend } from 'date-fns';
 import moment from 'moment';
 import useResponsive from '../../../hooks/useResponsive';
+import { useNavigate } from 'react-router';
 
 interface CustomPickerDayProps extends PickersDayProps<Dayjs> {
   available: boolean;
@@ -163,10 +164,11 @@ const CustomPickersDay = styled(PickersDay, {
   }),
 })) as React.ComponentType<CustomPickerDayProps>;
 
-function SecondStep({ setUserId }: any) {
+function SecondStep({ userId, setUserId }: any) {
   const [value, setValue] = React.useState<Date | number | null>(new Date());
+  const navigate = useNavigate();
   const isMobile = useResponsive('down', 'sm');
-  console.log('isMobile', isMobile);
+  console.log('userId : ', userId);
 
   const badgeRef = React.useRef<HTMLInputElement>(null);
   const [position, setPosition] = React.useState(0);
@@ -265,6 +267,7 @@ function SecondStep({ setUserId }: any) {
         <IconButton
           onClick={() => {
             setUserId('');
+            // navigate(-1);
           }}
         >
           <svg
