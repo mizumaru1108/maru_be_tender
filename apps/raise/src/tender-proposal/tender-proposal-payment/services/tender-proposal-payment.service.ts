@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Prisma, proposal } from '@prisma/client';
+import { Prisma, proposal, track_section } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
@@ -39,9 +39,11 @@ import {
   UpdatePaymentDto,
   SendClosingReportDto,
   AskClosingReportDto,
+  CreateTrackBudgetDto,
 } from '../dtos/requests';
 import { CreateChequeMapper, CreateClosingReportMapper } from '../mappers';
 import { CreateManyPaymentMapper } from '../mappers/create-many-payment.mapper';
+import { CreateTrackBudgetMapper } from '../mappers/create-track-section-budget-mapper';
 import { TenderProposalPaymentRepository } from '../repositories/tender-proposal-payment.repository';
 
 @Injectable()
@@ -132,6 +134,13 @@ export class TenderProposalPaymentService {
     this.notificationService.sendSmsAndEmail(insertResult.insertNotif);
 
     return insertResult.updatedProposal;
+  }
+
+  async addTrackBudget(request: CreateTrackBudgetDto) {
+    const createPayload: Prisma.track_sectionCreateManyInput[] =
+      CreateTrackBudgetMapper(request);
+
+    return await this.paymentRepo.createManyTrackSection(createPayload);
   }
 
   async updatePayment(

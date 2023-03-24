@@ -20,6 +20,7 @@ import {
   AskClosingReportDto,
   UpdatePaymentDto,
   SendClosingReportDto,
+  CreateTrackBudgetDto,
 } from '../dtos/requests';
 import { UpdatePaymentResponseDto } from '../dtos/responses';
 import { TenderProposalPaymentService } from '../services/tender-proposal-payment.service';
@@ -43,6 +44,20 @@ export class TenderProposalPaymentController {
       createdPayment,
       HttpStatus.CREATED,
       'Payment created successfully',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Post('add-track-budget')
+  async addBudget(
+    @Body() request: CreateTrackBudgetDto,
+  ): Promise<BaseResponse<any>> {
+    const createdPayment = await this.paymentService.addTrackBudget(request);
+    return baseResponseHelper(
+      createdPayment,
+      HttpStatus.CREATED,
+      'Track Budgets added successfully',
     );
   }
 

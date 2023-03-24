@@ -1136,7 +1136,7 @@ export class TenderProposalService {
       proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdatePayload.state = TenderAppRoleEnum.MODERATOR;
       proposalUpdatePayload.project_manager_id = null;
-      proposalUpdatePayload.supervisor_id = null;
+      // proposalUpdatePayload.supervisor_id = null;
 
       /* log */
       proposalLogCreateInput.action = ProposalAction.STUDY_AGAIN;
@@ -1211,8 +1211,8 @@ export class TenderProposalService {
       proposalUpdatePayload.inner_status = InnerStatusEnum.CREATED_BY_CLIENT;
       proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdatePayload.state = TenderAppRoleEnum.MODERATOR;
-      proposalUpdatePayload.project_manager_id = null;
-      proposalUpdatePayload.supervisor_id = null;
+      // proposalUpdatePayload.project_manager_id = null;
+      // proposalUpdatePayload.supervisor_id = null;
       /* log */
       proposalLogCreateInput.action = ProposalAction.STUDY_AGAIN;
       proposalLogCreateInput.state = TenderAppRoleEnum.CEO;

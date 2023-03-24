@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { appointment, Prisma } from '@prisma/client';
+import moment from 'moment';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { FindManyResult } from '../../../tender-commons/dto/find-many-result.dto';
 import { TenderFusionAuthRoles } from '../../../tender-commons/types';
@@ -89,7 +90,7 @@ export class TenderAppointmentRepository {
     }
   }
 
-  async findAppointments(
+  async findMyAppointments(
     userId: string,
     userRole: TenderFusionAuthRoles,
     filter: AppointmentFilterRequest,
@@ -116,6 +117,104 @@ export class TenderAppointmentRepository {
         ...query,
         employee_id: userId,
       };
+    }
+
+    if (status) {
+      query = {
+        ...query,
+        status: {
+          equals: status,
+          mode: 'insensitive',
+        },
+      };
+    }
+
+    const order_by: Prisma.appointmentOrderByWithRelationInput = {};
+    const field =
+      sorting_field as keyof Prisma.appointmentOrderByWithRelationInput;
+    if (sorting_field) {
+      order_by[field] = sort;
+    } else {
+      order_by.updated_at = sort;
+    }
+
+    try {
+      const appointments = await this.prismaService.appointment.findMany({
+        where: {
+          ...query,
+        },
+        skip: offset,
+        take: limit,
+        orderBy: order_by,
+      });
+
+      const count = await this.prismaService.appointment.count({
+        where: {
+          ...query,
+        },
+      });
+
+      return {
+        data: appointments,
+        total: count,
+      };
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderAppointmentRepository.name,
+        'findUsers Error:',
+        `finding users!`,
+      );
+      throw theError;
+    }
+  }
+
+  async findAppointments(
+    filter: AppointmentFilterRequest,
+  ): Promise<FindManyResult<appointment[]>> {
+    const {
+      page = 1,
+      limit = 10,
+      sort = 'desc',
+      sorting_field,
+      status,
+      user_id,
+      employee_id,
+      month,
+      year,
+    } = filter;
+    const offset = (page - 1) * limit;
+
+    let query: Prisma.appointmentWhereInput = {};
+
+    if (month && year) {
+      const monthString = month < 10 ? `0${month}` : `${month}`;
+      const firstDayOfMonth = moment(`${year}-${monthString}-01`);
+      const lastDayOfMonth = moment(firstDayOfMonth).endOf('month');
+
+      query = {
+        ...query,
+        date: {
+          gte: firstDayOfMonth.toDate(),
+          lt: lastDayOfMonth.toDate(),
+        },
+      };
+    }
+
+    if (user_id) {
+      query = {
+        ...query,
+        user_id,
+      };
+    }
+
+    if (employee_id) {
+      {
+        query = {
+          ...query,
+          employee_id,
+        };
+      }
     }
 
     if (status) {

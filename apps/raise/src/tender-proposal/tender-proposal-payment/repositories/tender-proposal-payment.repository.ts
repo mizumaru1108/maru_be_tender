@@ -468,9 +468,7 @@ export class TenderProposalPaymentRepository {
               proposal_id: proposal_id,
               action: send ? 'sending_closing_report' : 'complete',
               reviewer_id: currentUser.id,
-              state: send
-                ? TenderAppRoleEnum.PROJECT_SUPERVISOR
-                : TenderAppRoleEnum.CLIENT,
+              state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
               user_role: TenderAppRoleEnum.PROJECT_SUPERVISOR,
               response_time: lastLog
                 ? Math.round(
@@ -607,6 +605,27 @@ export class TenderProposalPaymentRepository {
         TenderProposalPaymentRepository.name,
         'Send Amandement error details: ',
         'Sending Amandement!',
+      );
+      throw theError;
+    }
+  }
+
+  async createManyTrackSection(
+    createPayload: Prisma.track_sectionCreateManyInput[],
+  ) {
+    this.logger.debug(
+      `Create new track section with payload of \n ${logUtil(createPayload)}`,
+    );
+    try {
+      return await this.prismaService.track_section.createMany({
+        data: createPayload,
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalPaymentRepository.name,
+        'create new track section error details: ',
+        'create new track section!',
       );
       throw theError;
     }

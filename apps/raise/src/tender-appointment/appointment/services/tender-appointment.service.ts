@@ -367,11 +367,17 @@ export class TenderAppointmentService {
     filter: AppointmentFilterRequest,
   ): Promise<any> {
     const appointments =
-      await this.tenderAppointmentRepository.findAppointments(
+      await this.tenderAppointmentRepository.findMyAppointments(
         currentUser.id,
         currentUser.choosenRole,
         filter,
       );
+    return appointments;
+  }
+
+  async fetchAppointments(filter: AppointmentFilterRequest): Promise<any> {
+    const appointments =
+      await this.tenderAppointmentRepository.findAppointments(filter);
     return appointments;
   }
 }

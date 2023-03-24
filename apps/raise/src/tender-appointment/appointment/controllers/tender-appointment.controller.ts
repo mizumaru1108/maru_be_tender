@@ -82,6 +82,25 @@ export class TenderAppointmentController {
     );
   }
 
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_project_supervisor')
+  @Get('fetch')
+  async fetchAppointment(@Query() filter: AppointmentFilterRequest) {
+    console.log({ filter });
+    const result = await this.tenderAppointmentService.fetchAppointments(
+      filter,
+    );
+
+    return manualPaginationHelper(
+      result.data,
+      result.total,
+      filter.page || 1,
+      filter.limit || 10,
+      HttpStatus.OK,
+      'Success',
+    );
+  }
+
   @Get('google-callback')
   async googleCallback(@Query() query: any, @Res() res: FastifyReply) {
     console.log('query', query);

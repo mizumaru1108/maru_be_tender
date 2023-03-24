@@ -545,7 +545,7 @@ model recommended_support_consultant {
 }
 
 model track {
-  budget         Float           @db.Real
+  budget         Float?          @db.Real
   id             String          @id @db.VarChar
   name           String?
   project_tracks project_tracks? @relation(fields: [name], references: [id], onDelete: Cascade)
@@ -553,10 +553,10 @@ model track {
 }
 
 model track_section {
-  id                  String          @id @db.VarChar
-  name                String          @unique @db.VarChar
+  id                  String          @id
+  name                String          @db.VarChar
   budget              Float           @db.Real
-  section_id          String?         @db.VarChar
+  section_id          String?
   is_leaf             Boolean?        @default(false)
   track               String
   track_section       track_section?  @relation("track_sectionTotrack_section", fields: [section_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
