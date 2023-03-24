@@ -46,7 +46,7 @@ export default function EmptyContent({ title, description, img, actionButton, ..
         sx={{ color: theme.palette.grey[600], fontStyle: 'italic' }}
         gutterBottom
       >
-        {translate('errors.empty_data')}
+        {title ? title : translate('errors.empty_data')}
       </Typography>
 
       {description && (

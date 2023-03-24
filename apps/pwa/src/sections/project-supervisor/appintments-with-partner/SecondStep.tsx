@@ -1,4 +1,14 @@
-import { Badge, Box, Button, Grid, IconButton, Stack, TextField, Typography } from '@mui/material';
+import {
+  Badge,
+  Box,
+  Button,
+  CircularProgress,
+  Grid,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { CalendarPicker, LocalizationProvider, StaticDatePicker } from '@mui/x-date-pickers';
 import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import { styled } from '@mui/material/styles';
@@ -10,6 +20,11 @@ import { isWeekend } from 'date-fns';
 import moment from 'moment';
 import useResponsive from '../../../hooks/useResponsive';
 import { useNavigate } from 'react-router';
+import { useSnackbar } from 'notistack';
+import axiosInstance from '../../../utils/axios';
+import useAuth from '../../../hooks/useAuth';
+import EmptyContent from '../../../components/EmptyContent';
+import useLocales from '../../../hooks/useLocales';
 
 interface CustomPickerDayProps extends PickersDayProps<Dayjs> {
   available: boolean;
@@ -164,11 +179,25 @@ const CustomPickersDay = styled(PickersDay, {
   }),
 })) as React.ComponentType<CustomPickerDayProps>;
 
-function SecondStep({ userId, setUserId }: any) {
+interface IAvailableTime {
+  day: string;
+  time_gap: string[];
+}
+interface IAvailableDay {
+  days: string[];
+  time: IAvailableTime[];
+}
+
+function SecondStep({ userId, setUserId, partnerName }: any) {
   const [value, setValue] = React.useState<Date | number | null>(new Date());
   const navigate = useNavigate();
   const isMobile = useResponsive('down', 'sm');
-  console.log('userId : ', userId);
+  const { enqueueSnackbar } = useSnackbar();
+  const { activeRole } = useAuth();
+  const { translate } = useLocales();
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  // console.log('userId : ', userId);
 
   const badgeRef = React.useRef<HTMLInputElement>(null);
   const [position, setPosition] = React.useState(0);
@@ -177,6 +206,9 @@ function SecondStep({ userId, setUserId }: any) {
   const [selectedDay, setSelectedDay] = React.useState<string | null>(null);
   const [selectedTime, setSelectedTime] = React.useState<string>('');
   const [selectedDate, setSelectedDate] = React.useState<string>('');
+
+  const [availableSchedule, setAvailableSchedule] = React.useState<IAvailableDay>();
+  // console.log({ availableSchedule });
 
   const renderWeekPickerDay = (
     date: Dayjs,
@@ -222,9 +254,7 @@ function SecondStep({ userId, setUserId }: any) {
             height: { md: '56px !important', xs: '36px !important' },
           }}
           {...pickersDayProps}
-          available={
-            availableDays.days.includes(DAYS[date.get('day')]) && date.isAfter(dayjs(), 'day')
-          }
+          available={availableSchedule!.days.includes(DAYS[date.get('day')]) ?? false}
           // available={availableDays.includes(date.get('date').toString())}
           isToday={isToday}
         />
@@ -255,12 +285,69 @@ function SecondStep({ userId, setUserId }: any) {
     // );
   };
   const disableUnAvailableDays = (date: Dayjs) =>
-    !availableDays.days.includes(DAYS[date.get('day')]) || date.isBefore(dayjs(), 'day');
+    !availableSchedule!.days.includes(DAYS[date.get('day')]) || date.isBefore(dayjs(), 'day');
   // console.log({ position });
 
   React.useEffect(() => {
-    setPosition(badgeRef.current ? badgeRef.current.getBoundingClientRect().width / 2 : 0);
-  }, [badgeRef]);
+    if (!isLoading) {
+      setPosition(badgeRef.current ? badgeRef.current.getBoundingClientRect().width / 2 : 0);
+    }
+  }, [badgeRef, isLoading]);
+
+  const fetchingData = React.useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const rest = await axiosInstance.get(`/tender/schedules/client?id=${userId as string}`, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
+      // console.log('rest', rest.data.data);
+      if (rest) {
+        const tmpValue = rest.data.data;
+        const tmpAvailableArray: IAvailableTime[] = tmpValue
+          .filter((item: any) => item.start_time)
+          .map((item: any) => {
+            const { day, time_gap } = item;
+            return {
+              day: day,
+              time_gap: time_gap,
+            };
+          });
+        const tmpAvailableDay: string[] = tmpValue
+          .filter((item: any) => item.start_time)
+          .map((item: any) => {
+            const { day } = item;
+            console.log({ day });
+            return {
+              day,
+            };
+          });
+        const tmpDays = tmpAvailableDay.map((item: any) => item.day);
+        setAvailableSchedule({
+          days: [...tmpDays],
+          time: [...tmpAvailableArray],
+        });
+        // console.log({ tmpAvailableArray, tmpDays });
+        // setAvailableTime(tmpAvailable);
+      }
+    } catch (err) {
+      console.log('err', err);
+      enqueueSnackbar(err.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [activeRole, userId, enqueueSnackbar]);
+
+  React.useEffect(() => {
+    fetchingData();
+  }, [fetchingData]);
   return (
     <>
       <Grid item md={12} xs={12}>
@@ -293,107 +380,138 @@ function SecondStep({ userId, setUserId }: any) {
         </IconButton>
       </Grid>
       <Grid item md={12} xs={12}>
-        <Typography variant="h4">المواعيدالمتوافرة للشريك ( اسم الشريك)</Typography>
+        <Typography variant="h4">
+          {partnerName
+            ? translate('appointment.meeting_schedule_header') + ` (${partnerName})`
+            : translate('appointment.meeting_schedule_header')}
+        </Typography>
       </Grid>
       <Grid item md={12} xs={12}>
-        <Typography>الرجاء اختيار اليوم والوقت المناسب</Typography>
+        {translate('appointment.meeting_schedule_sub_header')}
       </Grid>
-      <Grid item md={7} xs={12}>
+      {isLoading && (
         <Box
           sx={{
             width: '100%',
-            backgroundColor: '#fff',
-            borderRadius: 5,
-            padding: '20px',
-            height: '500px',
-            ':first-child': { height: '100%', maxHeight: 'unset !important' },
+            mt: 2,
+            // height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
           }}
         >
-          <CalendarPicker
-            date={date}
-            // onChange={(newDate) => setDate(newDate)}
-            onChange={(newDate) => {
-              // const tmpDay = moment(newDate?.toISOString()).format('dddd');
-              // console.log('newDate', tmpDay);
-              setSelectedDate(newDate!.toISOString());
-              setSelectedDay(moment(newDate?.toISOString()).format('dddd'));
-            }}
-            renderDay={renderWeekPickerDay}
-            shouldDisableDate={disableUnAvailableDays}
-            dayOfWeekFormatter={(day) =>
-              !isMobile ? DAY_EN_DESKTOP[`${day as DAYS_EN}`] : DAY_EN_MOBILE[`${day as DAYS_EN}`]
-            }
-            // disablePast
-            views={['day']}
-            showDaysOutsideCurrentMonth
-          />
-          {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <StaticDatePicker
-              displayStaticWrapperAs="desktop"
-              orientation="landscape"
-              // openTo="day"
-              value={value}
-              shouldDisableDate={isWeekend}
-              views={['day']}
-              onChange={(newValue) => {
-                setValue(newValue);
-              }}
-              showToolbar={false}
-              showDaysOutsideCurrentMonth
-              renderInput={(params) => <TextField {...params} />}
-            />
-          </LocalizationProvider> */}
+          <CircularProgress />
         </Box>
-      </Grid>
+      )}
+      {!isLoading && availableSchedule?.days.length === 0 && (
+        <Grid
+          item
+          md={12}
+          xs={12}
+          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        >
+          <EmptyContent
+            title="There is no available day for this client"
+            sx={{
+              '& span.MuiBox-root': { height: 160 },
+            }}
+          />
+        </Grid>
+      )}
+      {!isLoading &&
+        availableSchedule &&
+        availableSchedule.days &&
+        availableSchedule?.days?.length > 0 && (
+          <Grid item md={7} xs={12}>
+            <Box
+              sx={{
+                width: '100%',
+                backgroundColor: '#fff',
+                borderRadius: 5,
+                padding: '20px',
+                height: '500px',
+                ':first-child': { height: '100%', maxHeight: 'unset !important' },
+              }}
+            >
+              <CalendarPicker
+                date={date}
+                // onChange={(newDate) => setDate(newDate)}
+                onChange={(newDate) => {
+                  // const tmpDay = moment(newDate?.toISOString()).format('dddd');
+                  // console.log('newDate', tmpDay);
+                  setSelectedDate(newDate!.toISOString());
+                  setSelectedDay(moment(newDate?.toISOString()).format('dddd'));
+                }}
+                renderDay={renderWeekPickerDay}
+                shouldDisableDate={disableUnAvailableDays}
+                dayOfWeekFormatter={(day) =>
+                  !isMobile
+                    ? DAY_EN_DESKTOP[`${day as DAYS_EN}`]
+                    : DAY_EN_MOBILE[`${day as DAYS_EN}`]
+                }
+                // disablePast
+                views={['day']}
+                showDaysOutsideCurrentMonth
+              />
+            </Box>
+          </Grid>
+        )}
 
       {/* for select time */}
-      <Grid item md={5} xs={12} maxHeight={350} overflow={'auto'}>
-        <Stack direction="column" gap={'10px'}>
-          {selectedDay &&
-            availableDays &&
-            availableDays.time.length > 0 &&
-            availableDays.time.map((time, index) => {
-              const { time_gap, day } = time;
-              if (selectedDay === day) {
-                const idxMeetingDay = haveAppoinments.time.findIndex(
-                  (item) => item.day === selectedDay
-                );
-                // console.log('time_gap', time_gap);
-                return time_gap.map((gap, idx) => (
-                  <Button
-                    key={idx}
-                    disabled={
-                      idxMeetingDay > -1 && haveAppoinments.time[idxMeetingDay].start.includes(gap)
-                        ? true
-                        : false
-                    }
-                    onClick={() => {
-                      setSelectedTime(gap);
-                    }}
-                    sx={{
-                      backgroundColor: selectedTime === gap ? '#0E8478' : '#fff',
-                      color:
-                        idxMeetingDay > -1 &&
-                        haveAppoinments.time[idxMeetingDay].start.includes(gap)
-                          ? '#000'
-                          : selectedTime === gap
-                          ? '#fff'
-                          : '#0E8478',
-                      padding: '10px',
-                      display: 'flex',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Typography>{gap}</Typography>
-                  </Button>
-                ));
-              } else {
-                return <></>;
-              }
-            })}
-        </Stack>
-      </Grid>
-      {date && (
+      {!isLoading &&
+        availableSchedule &&
+        availableSchedule.days &&
+        availableSchedule?.days?.length > 0 && (
+          <Grid item md={5} xs={12} maxHeight={350} overflow={'auto'}>
+            <Stack direction="column" gap={'10px'}>
+              {selectedDay &&
+                availableSchedule &&
+                availableSchedule.time.length > 0 &&
+                availableSchedule.time.map((time, index) => {
+                  const { time_gap, day } = time;
+                  if (selectedDay === day) {
+                    const idxMeetingDay = haveAppoinments.time.findIndex(
+                      (item) => item.day === selectedDay
+                    );
+                    // console.log('time_gap', time_gap);
+                    return time_gap.map((gap, idx) => (
+                      <Button
+                        key={idx}
+                        disabled={
+                          idxMeetingDay > -1 &&
+                          haveAppoinments.time[idxMeetingDay].start.includes(gap)
+                            ? true
+                            : false
+                        }
+                        onClick={() => {
+                          setSelectedTime(gap);
+                        }}
+                        sx={{
+                          backgroundColor: selectedTime === gap ? '#0E8478' : '#fff',
+                          color:
+                            idxMeetingDay > -1 &&
+                            haveAppoinments.time[idxMeetingDay].start.includes(gap)
+                              ? '#000'
+                              : selectedTime === gap
+                              ? '#fff'
+                              : '#0E8478',
+                          padding: '10px',
+                          display: 'flex',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <Typography>{gap}</Typography>
+                      </Button>
+                    ));
+                  } else {
+                    return <></>;
+                  }
+                })}
+            </Stack>
+          </Grid>
+        )}
+      {/* {date && (
         <Grid item md={5} xs={12}>
           <Stack direction="column" gap={'10px'}>
             <Button
@@ -495,7 +613,7 @@ function SecondStep({ userId, setUserId }: any) {
             </Button>
           </Stack>
         </Grid>
-      )}
+      )} */}
     </>
   );
 }

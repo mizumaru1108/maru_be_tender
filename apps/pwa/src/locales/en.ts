@@ -1938,6 +1938,10 @@ const en = {
     today_headline: 'Today Appointments',
     upcoming_headline: 'Upcoming Appointments',
   },
+  appointment: {
+    meeting_schedule_header: 'Appointments available for the partner',
+    meeting_schedule_sub_header: 'Please choose the appropriate day and time',
+  },
 };
 
 export default en;

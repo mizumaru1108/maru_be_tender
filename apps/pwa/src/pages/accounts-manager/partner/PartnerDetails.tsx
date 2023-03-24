@@ -336,7 +336,10 @@ function AccountPartnerDetails() {
                   </Button>
                   <Box>
                     <Typography variant="h4">
-                      {partnerDetails?.client_data.entity ?? '-'}
+                      {(partnerDetails &&
+                        partnerDetails?.client_data &&
+                        partnerDetails?.client_data.entity) ??
+                        '- No Data -'}
                     </Typography>
                   </Box>
                 </Box>
@@ -379,7 +382,10 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.client_data.num_of_employed_facility ?? '-'}
+                        {(partnerDetails &&
+                          partnerDetails?.client_data &&
+                          partnerDetails?.client_data.num_of_employed_facility) ??
+                          '- No Data -'}
                       </Typography>
                     </Box>
                     <Box>
@@ -391,7 +397,10 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.client_data.num_of_beneficiaries ?? '-'}
+                        {(partnerDetails &&
+                          partnerDetails?.client_data &&
+                          partnerDetails?.client_data.num_of_beneficiaries) ??
+                          '- No Data -'}
                       </Typography>
                     </Box>
                     <Box>
@@ -403,7 +412,10 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.client_data.date_of_esthablistmen ?? '-'}
+                        {(partnerDetails &&
+                          partnerDetails?.client_data &&
+                          partnerDetails?.client_data.date_of_esthablistmen) ??
+                          '- No Data -'}
                       </Typography>
                     </Box>
                     <Box>
@@ -415,7 +427,10 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.client_data.headquarters ?? '-'}
+                        {(partnerDetails &&
+                          partnerDetails?.client_data &&
+                          partnerDetails?.client_data.headquarters) ??
+                          '- No Data -'}
                       </Typography>
                     </Box>
                   </Stack>
@@ -439,7 +454,10 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.client_data.license_number ?? '-'}
+                        {(partnerDetails &&
+                          partnerDetails?.client_data &&
+                          partnerDetails?.client_data.license_number) ??
+                          '- No Data -'}
                       </Typography>
                     </Box>
                     <Box>
@@ -451,7 +469,10 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.client_data.entity ?? '-'}
+                        {(partnerDetails &&
+                          partnerDetails?.client_data &&
+                          partnerDetails?.client_data.entity) ??
+                          '- No Data -'}
                       </Typography>
                     </Box>
                     <Box>
@@ -463,7 +484,10 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.client_data.license_expired ?? '-'}
+                        {(partnerDetails &&
+                          partnerDetails?.client_data &&
+                          partnerDetails?.client_data.license_expired) ??
+                          '- No Data -'}
                       </Typography>
                     </Box>
                     <Box>
@@ -475,7 +499,10 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.client_data.license_issue_date ?? '-'}
+                        {(partnerDetails &&
+                          partnerDetails?.client_data &&
+                          partnerDetails?.client_data.license_issue_date) ??
+                          '- No Data -'}
                       </Typography>
                     </Box>
                     <Box>
@@ -487,7 +514,9 @@ function AccountPartnerDetails() {
                         component="p"
                         sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                       >
-                        {partnerDetails?.client_data.license_file.url ? (
+                        {partnerDetails &&
+                        partnerDetails?.client_data &&
+                        partnerDetails?.client_data.license_file.url ? (
                           <a
                             target="_blank"
                             rel="noopener noreferrer"
@@ -496,7 +525,7 @@ function AccountPartnerDetails() {
                             {translate('commons.view_license_file')}
                           </a>
                         ) : (
-                          '-'
+                          '- No Data -'
                         )}
                       </Typography>
                     </Box>
@@ -519,9 +548,15 @@ function AccountPartnerDetails() {
                         )
                       ) : (
                         <Grid item xs={6} md={6}>
-                          <ButtonDownloadFiles
-                            files={partnerDetails?.client_data.board_ofdec_file}
-                          />
+                          {partnerDetails &&
+                          partnerDetails?.client_data &&
+                          partnerDetails?.client_data.board_ofdec_file ? (
+                            <ButtonDownloadFiles
+                              files={partnerDetails?.client_data.board_ofdec_file}
+                            />
+                          ) : (
+                            <> {'- No Data -'} </>
+                          )}
                         </Grid>
                       )}
                     </Grid>
@@ -546,7 +581,10 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.client_data.ceo_name}
+                          {(partnerDetails &&
+                            partnerDetails?.client_data &&
+                            partnerDetails?.client_data.ceo_name) ??
+                            '- No Data -'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -564,7 +602,10 @@ function AccountPartnerDetails() {
                             direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr',
                           }}
                         >
-                          {partnerDetails?.client_data.ceo_mobile}
+                          {(partnerDetails &&
+                            partnerDetails?.client_data &&
+                            partnerDetails?.client_data.ceo_mobile) ??
+                            '- No Data -'}
                         </Typography>
                       </Stack>
                     </Grid>
@@ -578,7 +619,10 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.client_data.chairman_name ?? '-'}
+                          {(partnerDetails &&
+                            partnerDetails?.client_data &&
+                            partnerDetails?.client_data.chairman_name) ??
+                            '- No Data -'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -596,7 +640,10 @@ function AccountPartnerDetails() {
                             direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr',
                           }}
                         >
-                          {partnerDetails?.client_data.chairman_mobile ?? '-'}
+                          {(partnerDetails &&
+                            partnerDetails?.client_data &&
+                            partnerDetails?.client_data.chairman_mobile) ??
+                            '- No Data -'}
                         </Typography>
                       </Stack>
                     </Grid>
@@ -610,7 +657,10 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.client_data.data_entry_name ?? '-'}
+                          {(partnerDetails &&
+                            partnerDetails?.client_data &&
+                            partnerDetails?.client_data.data_entry_name) ??
+                            '- No Data -'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -628,7 +678,10 @@ function AccountPartnerDetails() {
                             direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr',
                           }}
                         >
-                          {partnerDetails?.client_data?.data_entry_mobile ?? '-'}
+                          {(partnerDetails &&
+                            partnerDetails?.client_data &&
+                            partnerDetails?.client_data?.data_entry_mobile) ??
+                            '- No Data -'}
                         </Typography>
                       </Stack>
                     </Grid>
@@ -642,7 +695,10 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.client_data.data_entry_mail ?? '-'}
+                          {(partnerDetails &&
+                            partnerDetails?.client_data &&
+                            partnerDetails?.client_data.data_entry_mail) ??
+                            '- No Data -'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -666,7 +722,10 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.client_data.center_administration ?? '-'}
+                          {(partnerDetails &&
+                            partnerDetails?.client_data &&
+                            partnerDetails?.client_data.center_administration) ??
+                            '- No Data -'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -680,7 +739,10 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.client_data.governorate ?? '-'}
+                          {(partnerDetails &&
+                            partnerDetails?.client_data &&
+                            partnerDetails?.client_data.governorate) ??
+                            '- No Data -'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -694,7 +756,10 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.client_data?.region ?? '-'}
+                          {(partnerDetails &&
+                            partnerDetails?.client_data &&
+                            partnerDetails?.client_data?.region) ??
+                            '- No Data -'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -708,7 +773,10 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.email ?? '-'}
+                          {(partnerDetails &&
+                            partnerDetails?.client_data &&
+                            partnerDetails?.email) ??
+                            '- No Data -'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -722,7 +790,10 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.client_data?.twitter_acount ?? '-'}
+                          {(partnerDetails &&
+                            partnerDetails?.client_data &&
+                            partnerDetails?.client_data?.twitter_acount) ??
+                            '- No Data -'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -736,7 +807,10 @@ function AccountPartnerDetails() {
                           component="p"
                           sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
                         >
-                          {partnerDetails?.client_data?.website ?? '-'}
+                          {(partnerDetails &&
+                            partnerDetails?.client_data &&
+                            partnerDetails?.client_data?.website) ??
+                            '- No Data -'}
                         </Typography>
                       </Box>
                     </Grid>
@@ -755,7 +829,10 @@ function AccountPartnerDetails() {
                             direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr',
                           }}
                         >
-                          {partnerDetails?.client_data.phone ?? '-'}
+                          {(partnerDetails &&
+                            partnerDetails?.client_data &&
+                            partnerDetails?.client_data.phone) ??
+                            '- No Data -'}
                         </Typography>
                       </Stack>
                       {/* </Box> */}
@@ -788,7 +865,7 @@ function AccountPartnerDetails() {
                       ))
                     ) : (
                       <Grid item xs={12} md={6}>
-                        -
+                        - No Data -
                       </Grid>
                     )}
                   </Grid>

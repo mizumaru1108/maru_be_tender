@@ -70,6 +70,7 @@ const CustomPickersDay = styled(PickersDay, {
 function BookingAMeetingWothClient() {
   // const [userId, setUserId] = useState<string>('13f85a9f-fd78-4d9d-9767-e8aa84164a28');
   const [userId, setUserId] = useState<string>('');
+  const [partnerName, setPartnerName] = useState<string>('');
   const shouldPause = userId === '';
   const [result, mutate] = useQuery({
     query: getScheduleByUser,
@@ -85,12 +86,24 @@ function BookingAMeetingWothClient() {
     setUserId(data);
     window.scrollTo(0, 0);
   };
+  const handleSetPartnerName = (partnerName: string) => {
+    setPartnerName(partnerName);
+    window.scrollTo(0, 0);
+  };
   // if (fetching) return <>... Loading</>;
   // if (error) return <>Oooops.. something went wrong</>;
   return (
     <Grid container spacing={5}>
-      {userId === '' && <StepOne handleOnOpen={handleOnOpen} handleSetId={handleSetId} />}
-      {userId !== '' && <SecondStep userId={userId} setUserId={handleSetId} />}
+      {userId === '' && (
+        <StepOne
+          handleOnOpen={handleOnOpen}
+          handleSetId={handleSetId}
+          handleSetPartnerName={handleSetPartnerName}
+        />
+      )}
+      {userId !== '' && (
+        <SecondStep userId={userId} setUserId={handleSetId} partnerName={partnerName} />
+      )}
       {/* <SecondStep setUserId={setUserId} /> */}
     </Grid>
   );

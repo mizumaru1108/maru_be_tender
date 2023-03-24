@@ -28,8 +28,9 @@ type Props = {
   handleOnOpen: () => void;
   // open: boolean;
   handleSetId: (id: string) => void;
+  handleSetPartnerName: (partnerName: string) => void;
 };
-function StepOne({ handleOnOpen, handleSetId }: Props) {
+function StepOne({ handleOnOpen, handleSetId, handleSetPartnerName }: Props) {
   const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const { translate } = useLocales();
@@ -259,6 +260,7 @@ function StepOne({ handleOnOpen, handleSetId }: Props) {
                                     </div>
                                   }
                                   onClick={() => {
+                                    handleSetPartnerName(item.employee_name);
                                     handleSetId(item.id);
                                   }}
                                 >
