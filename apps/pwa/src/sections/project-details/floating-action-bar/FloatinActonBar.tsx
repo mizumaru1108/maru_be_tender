@@ -85,7 +85,7 @@ function FloatinActonBar() {
         (actionType === 'show-details' || actionType === 'show-project') &&
         pathName &&
         pathName[3] === 'project-report' &&
-        (role === 'tender_project_supervisor' || role === 'tender_client') &&
+        // (role === 'tender_project_supervisor' || role === 'tender_client') &&
         ['PROJECT_COMPLETED', 'REQUESTING_CLOSING_FORM'].includes(proposal.inner_status) && (
           <FloatingClientSubmit />
         )}
@@ -99,7 +99,7 @@ function FloatinActonBar() {
               (actionType === 'show-details' || actionType === 'show-project') &&
               pathName &&
               pathName[3] === 'previous-funding-requests' &&
-              (role === 'tender_project_supervisor' || role === 'tender_client') &&
+              // (role === 'tender_project_supervisor' || role === 'tender_client') &&
               ['PROJECT_COMPLETED'].includes(proposal.inner_status) && <FloatingClientSubmit />}
           </React.Fragment>
         ) : null)}

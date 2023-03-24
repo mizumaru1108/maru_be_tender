@@ -31,6 +31,8 @@ const PreviousFundingRequestsCashier = Loadable(
   lazy(() => import('pages/cashier/PreviousFundingRequests'))
 );
 
+const ProjectReportFinished = Loadable(lazy(() => import('pages/client/ProjectReportFinished')));
+
 export const cashierRoute = {
   path: 'cashier',
   element: (
@@ -105,6 +107,19 @@ export const cashierRoute = {
             {
               path: ':id/:actionType',
               element: <ProjectDetails />,
+            },
+          ],
+        },
+        {
+          path: 'project-report',
+          children: [
+            {
+              path: ':id/:actionType',
+              element: <ProjectDetails />,
+            },
+            {
+              path: ':id/:actionType/finished',
+              element: <ProjectReportFinished />,
             },
           ],
         },

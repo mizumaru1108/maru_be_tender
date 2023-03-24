@@ -33,6 +33,8 @@ const NonClientProfileEdit = Loadable(
   lazy(() => import('sections/non-client-profile/NonClientProfileEdit'))
 );
 
+const ProjectReportFinished = Loadable(lazy(() => import('pages/client/ProjectReportFinished')));
+
 export const moderatorRoute = {
   path: 'moderator',
   element: (
@@ -105,6 +107,19 @@ export const moderatorRoute = {
             {
               path: ':id/:actionType',
               element: <ProjectDetails />,
+            },
+          ],
+        },
+        {
+          path: 'project-report',
+          children: [
+            {
+              path: ':id/:actionType',
+              element: <ProjectDetails />,
+            },
+            {
+              path: ':id/:actionType/finished',
+              element: <ProjectReportFinished />,
             },
           ],
         },
