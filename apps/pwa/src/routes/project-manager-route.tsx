@@ -39,6 +39,8 @@ const Searching = Loadable(lazy(() => import('pages/searching')));
 
 const CeoRejectionListPage = Loadable(lazy(() => import('pages/project-manager/RejectionList')));
 
+const ProjectReportFinished = Loadable(lazy(() => import('pages/client/ProjectReportFinished')));
+
 export const projectManagerRoute = {
   path: 'project-manager',
   element: (
@@ -144,6 +146,19 @@ export const projectManagerRoute = {
             {
               path: ':id/:actionType',
               element: <ProjectDetails />,
+            },
+          ],
+        },
+        {
+          path: 'project-report',
+          children: [
+            {
+              path: ':id/:actionType',
+              element: <ProjectDetails />,
+            },
+            {
+              path: ':id/:actionType/finished',
+              element: <ProjectReportFinished />,
             },
           ],
         },
