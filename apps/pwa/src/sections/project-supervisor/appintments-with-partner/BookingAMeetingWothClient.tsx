@@ -69,7 +69,7 @@ const CustomPickersDay = styled(PickersDay, {
 
 function BookingAMeetingWothClient() {
   // const [userId, setUserId] = useState<string>('13f85a9f-fd78-4d9d-9767-e8aa84164a28');
-  const [userId, setUserId] = useState<string>('');
+  const [userId, setUserId] = useState<string>('0b7a7973-b7ac-4923-88b7-861e4630a34c');
   const [partnerName, setPartnerName] = useState<string>('');
   const shouldPause = userId === '';
   const [result, mutate] = useQuery({

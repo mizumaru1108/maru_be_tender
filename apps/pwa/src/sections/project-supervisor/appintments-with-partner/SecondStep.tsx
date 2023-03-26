@@ -33,94 +33,10 @@ interface CustomPickerDayProps extends PickersDayProps<Dayjs> {
 }
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 // const availableDays = ['Sunday', 'Monday', 'Tuesday'];
-const availableDays = {
-  days: ['Sunday', 'Monday', 'Tuesday'],
-  time: [
-    {
-      day: 'Sunday',
-      time_gap: [
-        '09:00 AM',
-        '09:15 AM',
-        '09:30 AM',
-        '09:45 AM',
-        '10:00 AM',
-        '10:15 AM',
-        '10:30 AM',
-        '10:45 AM',
-        '11:00 AM',
-        '11:15 AM',
-        '11:30 AM',
-        '11:45 AM',
-        '12:00 PM',
-        '12:15 PM',
-        '12:30 PM',
-        '12:45 PM',
-        '01:00 PM',
-        '01:15 PM',
-        '01:30 PM',
-        '01:45 PM',
-        '02:00 PM',
-        '02:15 PM',
-        '02:30 PM',
-        '02:45 PM',
-        '03:00 PM',
-        '03:15 PM',
-        '03:30 PM',
-        '03:45 PM',
-        '04:00 PM',
-        '04:15 PM',
-        '04:30 PM',
-        '04:45 PM',
-        '05:00 PM',
-      ],
-    },
-    {
-      day: 'Monday',
-      time_gap: [
-        '02:00 PM',
-        '02:15 PM',
-        '02:30 PM',
-        '02:45 PM',
-        '03:00 PM',
-        '03:15 PM',
-        '03:30 PM',
-        '03:45 PM',
-        '04:00 PM',
-        '04:15 PM',
-        '04:30 PM',
-        '04:45 PM',
-        '05:00 PM',
-      ],
-    },
-    {
-      day: 'Tuesday',
-      time_gap: [
-        '09:00 AM',
-        '09:15 AM',
-        '09:30 AM',
-        '09:45 AM',
-        '10:00 AM',
-        '10:15 AM',
-        '10:30 AM',
-        '10:45 AM',
-        '11:00 AM',
-        '11:15 AM',
-      ],
-    },
-  ],
-};
 // const availableDays = ['1', '3', '10'];
 // const haveAppoinments = ['5', '9', '20'];
 // const haveAppoinments = ['Sunday'];
-const haveAppoinments = {
-  days: ['Sunday'],
-  time: [
-    {
-      day: 'Sunday',
-      start: ['09:00 AM', '10:15 AM'],
-    },
-  ],
-};
+
 type DAYS_EN = 'Su' | 'Mo' | 'Tu' | 'We' | 'Th' | 'Fr' | 'Sa';
 const DAY_EN_DESKTOP = {
   Su: 'Sunday',
@@ -148,6 +64,15 @@ const DAYS_EN_AR = {
   Th: 'الخميس',
   Fr: 'الجمعة',
   Sa: 'السبت',
+};
+const haveAppoinments = {
+  days: ['12'],
+  time: [
+    {
+      day: 'Sunday',
+      start: ['09:00 AM', '10:15 AM'],
+    },
+  ],
 };
 
 const CustomPickersDay = styled(PickersDay, {
@@ -188,10 +113,36 @@ interface IAvailableDay {
   days: string[];
   time: IAvailableTime[];
 }
+
+interface IAppointmentsTime {
+  date: Date;
+  start_time: string;
+  end_time: string;
+}
+interface IAppointments {
+  days?: string[];
+  time?: IAppointmentsTime[];
+}
 interface ISelectedDate {
   day?: string;
   month?: string;
   year?: string;
+}
+interface IArrayAppointments {
+  id: string;
+  employee_id: string;
+  user_id: string;
+  meeting_url: string;
+  calendar_url: string;
+  date: Date;
+  start_time: string;
+  end_time: string;
+  reject_reason: string;
+  status: string;
+  day: string;
+  created_at: Date;
+  updated_at: Date;
+  calendar_event_id: string;
 }
 function SecondStep({ userId, setUserId, partnerName }: any) {
   const [value, setValue] = React.useState<Date | number | null>(new Date());
@@ -219,6 +170,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
   });
 
   const [availableSchedule, setAvailableSchedule] = React.useState<IAvailableDay>();
+  const [appointments, setAppointments] = React.useState<IAppointments>();
 
   const renderWeekPickerDay = (
     date: Dayjs,
@@ -226,7 +178,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
     pickersDayProps: PickersDayProps<Dayjs>
   ) => {
     const isToday = date.isSame(dayjs(), 'day');
-    if (haveAppoinments.days.includes(DAYS[date.get('day')])) {
+    if (haveAppoinments.days.includes(moment(date.toISOString()).format('DD'))) {
       return (
         <Badge
           color="secondary"
@@ -302,7 +254,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
     if (!isLoading) {
       setPosition(badgeRef.current ? badgeRef.current.getBoundingClientRect().width / 2 : 0);
     }
-  }, [badgeRef, isLoading]);
+  }, [badgeRef, isLoading, isMobile]);
   // /tender/appointments/fetch?month=3&year=2023
 
   const fetchingSchedule = React.useCallback(async () => {
@@ -364,8 +316,24 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
       );
       // console.log('rest', rest.data.data);
       if (rest) {
-        const tmpValue = rest.data.data;
-        console.log('tmpValue', tmpValue);
+        const tmpValue: IArrayAppointments[] = rest.data.data.length > 0 ? rest.data.data : [];
+        const tmpDates: string[] =
+          tmpValue.map((item: IArrayAppointments) => moment(item.date).format('DD')) ?? [];
+        const tmpTimes: IAppointmentsTime[] = tmpValue.map((item: IArrayAppointments) => {
+          const { start_time, end_time, date } = item;
+          return {
+            start_time,
+            end_time,
+            date,
+          };
+        });
+        // if (tmpValue.length > 0) {
+        //   setAppointments({
+        //     ...appointments,
+        //     days: [...tmpDates],
+        //   });
+        // }
+        console.log('tmpTimes', tmpTimes);
       }
     } catch (err) {
       console.log('err', err);
