@@ -1976,6 +1976,10 @@ const ar = {
     today_headline: 'الحضور اليوم',
     upcoming_headline: 'الحضور المتبقية',
   },
+  appointment: {
+    meeting_schedule_header: 'المواعيدالمتوافرة للشريك',
+    meeting_schedule_sub_header: 'الرجاء اختيار اليوم والوقت المناسب',
+  },
 };
 
 export default ar;
