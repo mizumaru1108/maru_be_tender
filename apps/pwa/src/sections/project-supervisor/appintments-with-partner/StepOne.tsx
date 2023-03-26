@@ -153,11 +153,14 @@ function StepOne({ handleOnOpen, handleSetId, handleSetPartnerName }: Props) {
                     }
                     onClick={() => {
                       handleOnOpen();
+                      setPage(1);
+                      setCount(0);
+                      setClientName('');
+                      fetchingClients();
                       if (!open) {
-                        setPage(1);
-                        setCount(0);
-                        fetchingClients();
-                        setOpen(!open);
+                        setOpen(true);
+                      } else {
+                        setOpen(false);
                       }
                     }}
                   >
@@ -178,6 +181,7 @@ function StepOne({ handleOnOpen, handleSetId, handleSetPartnerName }: Props) {
                     >
                       <TextField
                         value={clientName}
+                        autoFocus={open}
                         InputProps={{
                           endAdornment: (
                             <InputAdornment position="end">

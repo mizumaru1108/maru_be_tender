@@ -25,6 +25,7 @@ import axiosInstance from '../../../utils/axios';
 import useAuth from '../../../hooks/useAuth';
 import EmptyContent from '../../../components/EmptyContent';
 import useLocales from '../../../hooks/useLocales';
+import { yearPickerClasses } from '@mui/lab';
 
 interface CustomPickerDayProps extends PickersDayProps<Dayjs> {
   available: boolean;
@@ -156,7 +157,7 @@ const CustomPickersDay = styled(PickersDay, {
     borderRadius: '50%',
     // backgroundColor: '#red !important',
     backgroundColor: '#0E8478',
-    color: '#000',
+    color: '#fff',
     '&:hover, &:focus': {
       backgroundColor: theme.palette.primary.dark,
     },
@@ -187,7 +188,11 @@ interface IAvailableDay {
   days: string[];
   time: IAvailableTime[];
 }
-
+interface ISelectedDate {
+  day?: string;
+  month?: string;
+  year?: string;
+}
 function SecondStep({ userId, setUserId, partnerName }: any) {
   const [value, setValue] = React.useState<Date | number | null>(new Date());
   const navigate = useNavigate();
@@ -205,10 +210,15 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
   const [date, setDate] = React.useState<Dayjs | null>(null);
   const [selectedDay, setSelectedDay] = React.useState<string | null>(null);
   const [selectedTime, setSelectedTime] = React.useState<string>('');
-  const [selectedDate, setSelectedDate] = React.useState<string>('');
+  // month: moment(tmpDate).format('MM'),
+  //                   year: moment(tmpDate).format('YYYY'),
+  const [selectedDate, setSelectedDate] = React.useState<ISelectedDate>({
+    day: moment().format('DD'),
+    month: moment().format('MM'),
+    year: moment().format('YYYY'),
+  });
 
   const [availableSchedule, setAvailableSchedule] = React.useState<IAvailableDay>();
-  // console.log({ availableSchedule });
 
   const renderWeekPickerDay = (
     date: Dayjs,
@@ -293,8 +303,9 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
       setPosition(badgeRef.current ? badgeRef.current.getBoundingClientRect().width / 2 : 0);
     }
   }, [badgeRef, isLoading]);
+  // /tender/appointments/fetch?month=3&year=2023
 
-  const fetchingData = React.useCallback(async () => {
+  const fetchingSchedule = React.useCallback(async () => {
     setIsLoading(true);
     try {
       const rest = await axiosInstance.get(`/tender/schedules/client?id=${userId as string}`, {
@@ -316,7 +327,6 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
           .filter((item: any) => item.start_time)
           .map((item: any) => {
             const { day } = item;
-            console.log({ day });
             return {
               day,
             };
@@ -326,8 +336,6 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
           days: [...tmpDays],
           time: [...tmpAvailableArray],
         });
-        // console.log({ tmpAvailableArray, tmpDays });
-        // setAvailableTime(tmpAvailable);
       }
     } catch (err) {
       console.log('err', err);
@@ -345,9 +353,43 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
     }
   }, [activeRole, userId, enqueueSnackbar]);
 
+  const fetchingAppointment = React.useCallback(async () => {
+    // setIsLoading(true);
+    try {
+      const rest = await axiosInstance.get(
+        `/tender/appointments/fetch?month=${selectedDate?.month}&year=${selectedDate?.year}`,
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
+      // console.log('rest', rest.data.data);
+      if (rest) {
+        const tmpValue = rest.data.data;
+        console.log('tmpValue', tmpValue);
+      }
+    } catch (err) {
+      console.log('err', err);
+      enqueueSnackbar(err.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+      });
+    } finally {
+      // setIsLoading(false);
+    }
+  }, [activeRole, selectedDate?.month, selectedDate?.year, enqueueSnackbar]);
+
   React.useEffect(() => {
-    fetchingData();
-  }, [fetchingData]);
+    fetchingAppointment();
+  }, [fetchingAppointment]);
+
+  React.useEffect(() => {
+    fetchingSchedule();
+  }, [fetchingSchedule]);
   return (
     <>
       <Grid item md={12} xs={12}>
@@ -432,6 +474,9 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
                 padding: '20px',
                 height: '500px',
                 ':first-child': { height: '100%', maxHeight: 'unset !important' },
+                // '& .MuiCalendarPicker-root': {
+                //   height: '500px',
+                // },
               }}
             >
               <CalendarPicker
@@ -440,7 +485,11 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
                 onChange={(newDate) => {
                   // const tmpDay = moment(newDate?.toISOString()).format('dddd');
                   // console.log('newDate', tmpDay);
-                  setSelectedDate(newDate!.toISOString());
+                  // setSelectedDate(newDate!.toISOString());
+                  setSelectedDate({
+                    ...selectedDate,
+                    day: moment(newDate?.toISOString()).format('DD'),
+                  });
                   setSelectedDay(moment(newDate?.toISOString()).format('dddd'));
                 }}
                 renderDay={renderWeekPickerDay}
@@ -453,6 +502,16 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
                 // disablePast
                 views={['day']}
                 showDaysOutsideCurrentMonth
+                onMonthChange={(newDate) => {
+                  const tmpDate = newDate.toISOString();
+                  setSelectedDate({
+                    ...selectedDate,
+                    month: moment(tmpDate).format('MM'),
+                    year: moment(tmpDate).format('YYYY'),
+                  });
+                  // console.log('newDate', moment(tmpDate).format('MM'));
+                  // console.log('newDate', moment(tmpDate).format('YYYY'));
+                }}
               />
             </Box>
           </Grid>

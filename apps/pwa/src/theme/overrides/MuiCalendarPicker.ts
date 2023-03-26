@@ -8,7 +8,6 @@ export default function MuiCalendarPicker(theme: Theme) {
       styleOverrides: {
         root: {
           width: '95%',
-          // height: ,
           '& .css-1cnkspq>*': {
             position: 'relative',
           },
@@ -26,6 +25,16 @@ export default function MuiCalendarPicker(theme: Theme) {
           // height: '100%',
           '& .MuiPickersArrowSwitcher-root .MuiButtonBase-root': {
             color: '#000 !important',
+            backGroundColor: '#fff !important',
+            '&:hover': {
+              backgroundColor: `#fff !important`,
+            },
+            '&:focus': {
+              backgroundColor: `#fff !important`,
+            },
+            '&:active': {
+              backgroundColor: `#fff !important`,
+            },
           },
           '& .MuiButtonBase-root': {
             // backgroundColor: '#EEF0F2 !important',
@@ -34,7 +43,15 @@ export default function MuiCalendarPicker(theme: Theme) {
             height: '56px',
             // fontSize:'14px',
             '&:hover': {
-              backgroundColor: `#0E8478 !important`,
+              backgroundColor: `#000 !important`,
+              color: '#fff',
+            },
+            '&:focus': {
+              backgroundColor: `#000 !important`,
+              color: '#fff',
+            },
+            '&:active': {
+              backgroundColor: `#666666 !important`,
               color: '#fff',
             },
           },
@@ -44,11 +61,11 @@ export default function MuiCalendarPicker(theme: Theme) {
           '& .rtl-3g297t .MuiButtonBase-root': {
             color: '#000 !important',
           },
-          '& .Mui-selected, & .Mui-selected:focus, & .Mui-selected:hover': {
-            color: '#fff !important',
-            backgroundColor: `#0E8478 !important`,
-            // marginBottom: '4px',
-          },
+          // '& .Mui-selected, & .Mui-selected:focus, & .Mui-selected:hover': {
+          //   color: '#fff !important',
+          //   backgroundColor: `#0E8478 !important`,
+          //   // marginBottom: '4px',
+          // },
           // '& .css-uer8rp-MuiButtonBase-root-MuiPickersDay-root': {
           //   backgroundColor: `#fff`,
           // },
