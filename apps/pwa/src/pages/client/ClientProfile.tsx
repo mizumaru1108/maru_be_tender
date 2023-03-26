@@ -1,5 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import { Button, Divider, Grid, Stack, Typography } from '@mui/material';
+import { Button, Divider, Grid, Stack, Typography, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Box, Container } from '@mui/system';
 import Page from 'components/Page';
@@ -14,6 +14,8 @@ import ButtonDownloadFiles from '../../components/button/ButtonDownloadFiles';
 import { FEATURE_EDIT_CLIENT_INFORMATION } from '../../config';
 import useLocales from '../../hooks/useLocales';
 import axiosInstance from '../../utils/axios';
+import ReactJoyride, { Step } from 'react-joyride';
+import CloseIcon from '@mui/icons-material/Close';
 
 const mockData = {
   project_name: 'اسم الشريك - جمعية الدعوة والإرشاد وتوعية الجاليات',
@@ -29,10 +31,47 @@ const mockData = {
   license_issue_date: '10 / 08 / 2022',
   license_file: 'image.',
 };
+
 function ClientProfile() {
   const { user, activeRole } = useAuth();
   const { currentLang, translate } = useLocales();
   const [newBoardOfDec, setNewBoardOfDec] = useState([]);
+  const [runTour, setRunTour] = useState(true);
+
+  // Step Joyride
+  const steps: Step[] = [
+    {
+      target: '#information',
+      hideFooter: true,
+      disableBeacon: true,
+      isFixed: true,
+      content: (
+        <Stack direction="row" alignItems="center" justifyContent="center">
+          <Typography>{translate('pages.client.tooltip_information')}</Typography>
+          <IconButton sx={{ color: '#A4A4A4' }} onClick={() => setRunTour(false)}>
+            <CloseIcon />
+          </IconButton>
+        </Stack>
+      ),
+      placement: 'bottom',
+      styles: {
+        options: {
+          width: 280,
+          zIndex: 10000,
+        },
+        tooltip: {
+          paddingRight: 2,
+          paddingLeft: 2,
+          paddingTop: 0,
+          paddingBottom: 0,
+          marginRight: currentLang.value === 'en' ? 100 : 0,
+          marginLeft: currentLang.value === 'en' ? 0 : 85,
+          borderRadius: '15px',
+        },
+      },
+    },
+  ];
+
   const [result, _] = useQuery({
     query: getProfileData,
     variables: { id: user?.id },
@@ -134,8 +173,8 @@ function ClientProfile() {
       aggregate: { count: completed_projects },
     },
   } = data!;
-  console.log({ board_ofdec_file });
-  console.log('type :', typeof board_ofdec_file);
+  // console.log({ board_ofdec_file });
+  // console.log('type :', typeof board_ofdec_file);
 
   return (
     // <Page title="My Profile">
@@ -190,7 +229,18 @@ function ClientProfile() {
                 {/* تعديل معلومات الحساب */}
                 {translate('pages.client.edit_user_information')}
               </Button>
+              <ReactJoyride
+                steps={steps}
+                run={runTour}
+                // callback={handleJoyrideCallback}
+                hideCloseButton
+                disableCloseOnEsc
+                disableScrollParentFix
+                disableScrolling
+                scrollToFirstStep
+              />
               <LoadingButton
+                id="information"
                 loading={loadingEditButton}
                 startIcon={
                   <div>

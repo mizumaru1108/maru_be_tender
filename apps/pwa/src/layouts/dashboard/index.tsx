@@ -143,7 +143,9 @@ export default function DashboardLayout() {
         {/* <CheakClientActivation>
           <Outlet />
         </CheakClientActivation> */}
-        {urlArr.includes('messages') ? (
+        {urlArr.includes('messages') ||
+        urlArr.includes('my-profile') ||
+        urlArr.includes('show-details') ? (
           <Outlet />
         ) : (
           <CheakClientActivation>

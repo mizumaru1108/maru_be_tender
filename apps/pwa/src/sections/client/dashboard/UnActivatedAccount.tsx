@@ -1,21 +1,70 @@
 import { Box, Container, Grid, Stack, Typography } from '@mui/material';
+import ModalDialog from 'components/modal-dialog';
 import Page from 'components/Page';
 import useAuth from 'hooks/useAuth';
 import useResponsive from 'hooks/useResponsive';
+import Page500 from 'pages/Page500';
+import React from 'react';
+import LoadingPage from './LoadingPage';
+import UpdateInformation from './UpdateInformation';
+import { clientMainPage } from 'queries/client/clientMainPage';
+import { useQuery } from 'urql';
+import PreviousFundingInqueries from './PreviousFundingInqueries';
+import { useLocation } from 'react-router-dom';
 
 function UnActivatedAccount() {
   const isMobile = useResponsive('down', 'sm');
   const { activeRole } = useAuth();
+  const location = useLocation();
+
+  const urlArr: string[] = location.pathname.split('/');
+  const getUrlArr = `${urlArr[1]}/${urlArr[2]}/${urlArr[3]}`;
+  // console.log('urlArr', getUrlArr);
+
+  const [open, setOpen] = React.useState<boolean>(true);
+
+  const [result, mutate] = useQuery({
+    query: clientMainPage,
+  });
+  const { data, fetching, error } = result;
+
+  if (fetching) return <LoadingPage />;
+  if (error) return <Page500 error={error.message} />;
+
+  console.log('data', data);
+
+  const showProposal =
+    getUrlArr === 'client/dashboard/app' &&
+    (data.completed_client_projects.length > 0 ??
+      data.pending_client_projects.length > 0 ??
+      data.amandement_proposal.length > 0 ??
+      data.all_client_projects.length > 0);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleOnClose = () => {
+    setOpen(false);
+  };
   return (
     <Page title="Un Activated Page">
+      <ModalDialog
+        styleContent={{ padding: '1em', backgroundColor: '#fff' }}
+        isOpen={open}
+        maxWidth="md"
+        content={<UpdateInformation onClose={handleOnClose} />}
+        onClose={handleOnClose}
+      />
       <Container sx={{ paddingTop: '20px' }}>
         <Grid
           container
           spacing={0}
           direction="column"
           alignItems="center"
-          justifyContent="center"
-          style={{ height: '70vh' }}
+          justifyContent={showProposal ? 'start' : 'center'}
+          position="relative"
+          style={{ height: showProposal ? '250vh' : '70vh' }}
         >
           <Box
             sx={{
@@ -119,7 +168,7 @@ function UnActivatedAccount() {
             ) : (
               <div
                 style={{
-                  position: 'absolute',
+                  position: getUrlArr === 'client/dashboard/app' ? 'relative' : 'absolute',
                   top: '30%',
                   width: '100%',
                 }}
@@ -143,6 +192,18 @@ function UnActivatedAccount() {
                     </Typography>
                   </Stack>
                 )}
+
+                {/* it showed when any proposal was created and showed only in dashboard */}
+                {showProposal ? (
+                  <Grid item md={12} xs={12} sx={{ my: 10, position: 'relative' }}>
+                    <PreviousFundingInqueries
+                      completed_client_projects={data.completed_client_projects}
+                      pending_client_projects={data.pending_client_projects}
+                      amandement_proposal={data.amandement_proposal}
+                      all_client_projects={data.all_client_projects}
+                    />
+                  </Grid>
+                ) : null}
               </div>
             )}
           </Box>

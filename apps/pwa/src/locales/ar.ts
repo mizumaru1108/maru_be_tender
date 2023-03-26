@@ -214,6 +214,11 @@ const ar = {
       main: ' الرئيسية | المدير التنفيذي',
     },
     client: {
+      information_content:
+        'عميلنا العزيز، يرجى تحديث معلومات الحساب وتفاصيل الجهة قبل إنشاء أي طلب دعم جديد.',
+      update_button_information: 'تحديث المعلومات ',
+      later_button_information: 'لاحقا',
+      tooltip_information: 'يمكنك تعديل معلوماتك من هنا',
       success: 'نجاح',
       edit_user_information: 'تعديل بيانات المستخدم',
       edit_association_information: 'تعديل بيانات الاشتراك',
@@ -1970,10 +1975,6 @@ const ar = {
   appointment_table: {
     today_headline: 'الحضور اليوم',
     upcoming_headline: 'الحضور المتبقية',
-  },
-  appointment: {
-    meeting_schedule_header: 'المواعيدالمتوافرة للشريك',
-    meeting_schedule_sub_header: 'الرجاء اختيار اليوم والوقت المناسب',
   },
 };
 

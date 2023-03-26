@@ -218,6 +218,11 @@ const en = {
       main: 'Dashboard | Ceo',
     },
     client: {
+      information_content:
+        'Dear User, please update your account information before you can use the account. Your account will deactivated until you update the information.',
+      update_button_information: 'Update the information',
+      later_button_information: 'Later',
+      tooltip_information: 'Edit your information here',
       success: 'Success',
       edit_user_information: 'Edit User Information',
       edit_association_information: 'Edit Association Information',
@@ -1937,10 +1942,6 @@ const en = {
   appointment_table: {
     today_headline: 'Today Appointments',
     upcoming_headline: 'Upcoming Appointments',
-  },
-  appointment: {
-    meeting_schedule_header: 'Appointments available for the partner',
-    meeting_schedule_sub_header: 'Please choose the appropriate day and time',
   },
 };
 
