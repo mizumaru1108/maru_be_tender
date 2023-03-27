@@ -1,5 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { cheque, payment, Prisma } from '@prisma/client';
+import { Sql } from '@prisma/client/runtime';
 import { nanoid } from 'nanoid';
 import { logUtil } from '../../../commons/utils/log-util';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
@@ -15,6 +16,7 @@ import {
 } from '../../../tender-commons/types/proposal';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
+import { FindTrackBudgetFilter } from '../dtos/requests';
 import { CloseReportNotifMapper } from '../mappers';
 import { InsertPaymentNotifMapper } from '../mappers/insert-payment-notif.mapper';
 import { UpdatePaymentNotifMapper } from '../mappers/update-payment-notif.mapper';
@@ -626,6 +628,69 @@ export class TenderProposalPaymentRepository {
         TenderProposalPaymentRepository.name,
         'create new track section error details: ',
         'create new track section!',
+      );
+      throw theError;
+    }
+  }
+
+  async deleteManyTrackBudget(ids: string[]) {
+    this.logger.debug(
+      `Create new track section with payload of \n ${logUtil(ids)}`,
+    );
+    try {
+      return await this.prismaService.track_section.deleteMany({
+        where: {
+          id: {
+            in: ids,
+          },
+        },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalPaymentRepository.name,
+        'create new track section error details: ',
+        'create new track section!',
+      );
+      throw theError;
+    }
+  }
+
+  async findTrackBudget(filter: FindTrackBudgetFilter) {
+    try {
+      const { limit = 10, page = 1 } = filter;
+      const offset = (page - 1) * limit;
+
+      const response: any = await this.prismaService.$queryRaw`
+      SELECT 
+        track.id as id,
+        track.name as name,
+        SUM(track_section.budget) as budget,
+        (
+          SELECT 
+            COALESCE(JSON_AGG(track_section), '[]'::json) 
+          FROM 
+            track_section 
+          WHERE 
+            track.name = track_section.track
+        ) as sections,
+        COUNT(*) over() as total
+      FROM 
+        track 
+        INNER JOIN track_section ON track.name = track_section.track
+      GROUP BY 
+        track.id, track.name
+        LIMIT ${limit}
+        OFFSET ${offset}
+      `;
+
+      return response;
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalPaymentRepository.name,
+        'findUsers Error:',
+        `finding users!`,
       );
       throw theError;
     }

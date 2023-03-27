@@ -1,9 +1,12 @@
 import {
   Body,
   Controller,
+  Get,
   HttpStatus,
   Patch,
   Post,
+  Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { proposal } from '@prisma/client';
@@ -14,6 +17,9 @@ import { baseResponseHelper } from '../../../commons/helpers/base-response-helpe
 import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
 import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
+import { ManualPaginatedResponse } from '../../../tender-commons/helpers/manual-paginated-response.dto';
+import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
+import { FindUserResponse } from '../../../tender-user/user/dtos/responses/find-user-response.dto';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import {
   CreateProposalPaymentDto,
@@ -21,6 +27,8 @@ import {
   UpdatePaymentDto,
   SendClosingReportDto,
   CreateTrackBudgetDto,
+  DeleteTrackBudgetDto,
+  FindTrackBudgetFilter,
 } from '../dtos/requests';
 import { UpdatePaymentResponseDto } from '../dtos/responses';
 import { TenderProposalPaymentService } from '../services/tender-proposal-payment.service';
@@ -81,6 +89,46 @@ export class TenderProposalPaymentController {
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Get('find-track-budget')
+  async findTrackBudgets(
+    @Query() filter: FindTrackBudgetFilter,
+  ): Promise<ManualPaginatedResponse<any>> {
+    const response = await this.paymentService.findTrackBudgets(filter);
+
+    return manualPaginationHelper(
+      response.data,
+      response.total,
+      filter.page || 1,
+      filter.limit || 10,
+      HttpStatus.OK,
+      'Success',
+    );
+  }
+
+  // @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  // @TenderRoles('tender_admin')
+  // @Get('find-section-budget')
+  // async findSectionBudgets(
+  //   @CurrentUser() currentUser: TenderCurrentUser,
+  //   @Query() filter: any, // keep itsimple refactor latter
+  // ): Promise<ManualPaginatedResponse<any>> {
+  //   const response = await this.paymentService.findSectionBudgets(
+  //     currentUser,
+  //     filter,
+  //   );
+
+  //   return manualPaginationHelper(
+  //     response.data,
+  //     response.total,
+  //     filter.page || 1,
+  //     filter.limit || 10,
+  //     HttpStatus.OK,
+  //     'Success',
+  //   );
+  // }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles(
     'tender_cashier',
     'tender_finance',
@@ -138,6 +186,20 @@ export class TenderProposalPaymentController {
       updatedPayment,
       HttpStatus.OK,
       'Closing report successfully done',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Put('delete-track-budget')
+  async deleteTrackBudget(
+    @Body() request: DeleteTrackBudgetDto,
+  ): Promise<BaseResponse<any>> {
+    const createdPayment = await this.paymentService.deleteTrackBudget(request);
+    return baseResponseHelper(
+      createdPayment,
+      HttpStatus.CREATED,
+      'Track Budgets added successfully',
     );
   }
 }

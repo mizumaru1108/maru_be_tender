@@ -40,6 +40,8 @@ import {
   SendClosingReportDto,
   AskClosingReportDto,
   CreateTrackBudgetDto,
+  DeleteTrackBudgetDto,
+  FindTrackBudgetFilter,
 } from '../dtos/requests';
 import { CreateChequeMapper, CreateClosingReportMapper } from '../mappers';
 import { CreateManyPaymentMapper } from '../mappers/create-many-payment.mapper';
@@ -141,6 +143,29 @@ export class TenderProposalPaymentService {
       CreateTrackBudgetMapper(request);
 
     return await this.paymentRepo.createManyTrackSection(createPayload);
+  }
+
+  async findTrackBudgets(request: FindTrackBudgetFilter) {
+    const response = await this.paymentRepo.findTrackBudget(request);
+
+    return {
+      data:
+        response.length > 0
+          ? response.map((res: any) => {
+              return {
+                id: res.id,
+                name: res.name,
+                budget: Number(res.budget),
+                sections: res.sections,
+              };
+            })
+          : [],
+      total: response.length > 0 ? Number(response[0].total) : 0,
+    };
+  }
+
+  async deleteTrackBudget(request: DeleteTrackBudgetDto) {
+    return await this.paymentRepo.deleteManyTrackBudget(request.ids);
   }
 
   async updatePayment(

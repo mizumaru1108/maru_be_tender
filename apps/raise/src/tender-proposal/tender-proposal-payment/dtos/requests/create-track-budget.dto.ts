@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsString,
+  IsArray,
   IsNotEmpty,
   IsNumber,
-  Min,
+  IsString,
   Max,
-  IsArray,
+  Min,
 } from 'class-validator';
 
 export class CreateTrackBudgetDto {
