@@ -1,21 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 // @mui
 import { Button, Stack, Typography, Box } from '@mui/material';
+// component
+import ModalDialog from 'components/modal-dialog';
 //
 import useLocales from 'hooks/useLocales';
 import { fCurrencyNumber } from 'utils/formatNumber';
+import { LoadingButton } from '@mui/lab';
 
 // ------------------------------------------------------------------------------------------
 
 function Track({ id, name, budget }: any) {
-  const { translate } = useLocales();
   const navigate = useNavigate();
+  const { translate } = useLocales();
+
+  // Delete Feature
+  const [loadingDelete, setLoadingDelete] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState<boolean>(false);
+
   const handleShow = () => {
     navigate(`/admin/dashboard/tracks-budget/${id}/show`);
   };
+
   const handleEdit = () => {};
-  const handleDelete = () => {};
+
+  const handleDelete = () => {
+    setLoadingDelete(true);
+    console.log({ id, name, budget });
+  };
+
   return (
     <Box
       sx={{
@@ -30,6 +44,61 @@ function Track({ id, name, budget }: any) {
         justifyContent: 'space-between',
       }}
     >
+      <ModalDialog
+        styleContent={{ p: 4, backgroundColor: '#fff' }}
+        isOpen={openConfirm}
+        maxWidth="sm"
+        content={
+          <Stack
+            direction="column"
+            spacing={3}
+            alignItems="center"
+            justifyContent="center"
+            component="div"
+          >
+            <Typography variant="h6">
+              <Typography variant="h6" component="span" sx={{ fontWeight: 700 }}>
+                {translate('pages.admin.tracks_budget.notification.confirm_delete')}&nbsp;
+              </Typography>
+              <Typography variant="h6" component="span" sx={{ fontWeight: 700 }}>
+                "{translate(`${name}`)}"?
+              </Typography>
+            </Typography>
+            <Box
+              sx={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <LoadingButton
+                loading={loadingDelete}
+                variant="contained"
+                color="primary"
+                sx={{ mr: 2 }}
+                onClick={handleDelete}
+              >
+                {translate('review.yes')}
+              </LoadingButton>
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  setOpenConfirm(false);
+                  setLoadingDelete(false);
+                }}
+                color="primary"
+              >
+                {translate('review.no')}
+              </Button>
+            </Box>
+          </Stack>
+        }
+        onClose={() => {
+          setOpenConfirm(false);
+          setLoadingDelete(false);
+        }}
+      />
       <Typography variant="h6" flex={1}>
         {translate(`${name}`)}
       </Typography>
@@ -42,7 +111,7 @@ function Track({ id, name, budget }: any) {
         </Typography>
       </Stack>
 
-      <Stack direction="row" justifyContent="space-around" flex={1}>
+      <Stack direction="row" spacing={1.5} justifyContent="flex-end">
         <Button
           variant="outlined"
           color="inherit"
@@ -72,11 +141,11 @@ function Track({ id, name, budget }: any) {
             </svg>
           }
           onClick={handleShow}
-          size="small"
+          size="medium"
         >
           {translate('pages.admin.tracks_budget.btn.review')}
         </Button>
-        <Button
+        {/* <Button
           variant="contained"
           sx={{
             backgroundColor: '#0169DE',
@@ -105,10 +174,10 @@ function Track({ id, name, budget }: any) {
             </svg>
           }
           onClick={handleEdit}
-          size="small"
+          size="medium"
         >
           {translate('pages.admin.tracks_budget.btn.amandment')}
-        </Button>
+        </Button> */}
         <Button
           variant="contained"
           sx={{
@@ -116,6 +185,7 @@ function Track({ id, name, budget }: any) {
             color: '#fff',
             ':hover': { backgroundColor: '#FF170F' },
           }}
+          // disabled={loadingDelete}
           startIcon={
             <svg
               width="17"
@@ -145,8 +215,8 @@ function Track({ id, name, budget }: any) {
               </defs>
             </svg>
           }
-          onClick={handleDelete}
-          size="small"
+          onClick={() => setOpenConfirm(true)}
+          size="medium"
         >
           {translate('pages.admin.tracks_budget.btn.delete')}
         </Button>

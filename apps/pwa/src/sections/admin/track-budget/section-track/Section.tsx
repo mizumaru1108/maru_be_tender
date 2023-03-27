@@ -1,14 +1,18 @@
 // react
-import React from 'react';
+import { useState } from 'react';
+import { useParams } from 'react-router';
 // @mui + material
-import { Button, Grid, IconButton, Stack, Typography } from '@mui/material';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
+import { Button, Grid, Stack, Typography, Box } from '@mui/material';
 // component
+import ModalDialog from 'components/modal-dialog';
 import { LoadingButton } from '@mui/lab';
-//
+import EditSection from './EditSection';
+// utils
+import axiosInstance from 'utils/axios';
 import { fCurrencyNumber } from 'utils/formatNumber';
 import useLocales from 'hooks/useLocales';
+//
+import { useSnackbar } from 'notistack';
 
 // ------------------------------------------------------------------------------------------
 
@@ -22,41 +26,97 @@ interface IPropsSection {
 
 // ------------------------------------------------------------------------------------------
 
-// const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
-//   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-// });
-
 export default function Section({ item }: IPropsSection) {
+  const params = useParams();
   const { translate } = useLocales();
-  const [expand, setExpand] = React.useState<boolean>(false);
-  // const [open, setOpen] = React.useState<boolean>(false);
+  const { enqueueSnackbar } = useSnackbar();
+  const [openDelete, setOpenDelete] = useState<boolean>(false);
+  const [openEditSection, setOpenEditSection] = useState<boolean>(false);
+  const [loadingDelete, setLoadingDelete] = useState(false);
 
-  // const handleExpnad = () => {
-  //   setExpand(expand ? false : true);
-  // };
   const handleEdit = () => {};
 
-  const handleDelete = () => {};
-
-  // const handleClose = () => {
-  //   setOpen(false);
-  // };
+  const handleDelete = () => {
+    setLoadingDelete(true);
+    console.log({ track_id: params.id, ...item });
+  };
 
   return (
-    <Grid container spacing={2}>
-      {/* <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-          لا يمكن حذف بند لديه بنود متعلقة به, رجاءً فرد شجرة البند والبدء بالحذف من الأسفل إلى
-          الأعلى
-        </Alert>
-      </Snackbar> */}
+    <Grid container spacing={2} alignItems="center">
+      <ModalDialog
+        styleContent={{ p: 4, backgroundColor: '#fff' }}
+        isOpen={openDelete}
+        maxWidth="sm"
+        content={
+          <Stack
+            direction="column"
+            spacing={3}
+            alignItems="center"
+            justifyContent="center"
+            component="div"
+          >
+            <Typography variant="h6">
+              <Typography variant="h6" component="span" sx={{ fontWeight: 700 }}>
+                {translate('pages.admin.tracks_budget.notification.confirm_delete')}&nbsp;
+              </Typography>
+              <Typography variant="h6" component="span" sx={{ fontWeight: 700 }}>
+                "{translate(`${item.name}`)}" {translate('project_management_headercell.section')}
+                &nbsp;?
+              </Typography>
+            </Typography>
+            <Box
+              sx={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <LoadingButton
+                loading={loadingDelete}
+                variant="contained"
+                color="primary"
+                sx={{ mr: 2 }}
+                onClick={handleDelete}
+              >
+                {translate('review.yes')}
+              </LoadingButton>
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  setOpenDelete(false);
+                  setLoadingDelete(false);
+                }}
+                color="primary"
+              >
+                {translate('review.no')}
+              </Button>
+            </Box>
+          </Stack>
+        }
+        onClose={() => {
+          setOpenDelete(false);
+          setLoadingDelete(false);
+        }}
+      />
+
+      <ModalDialog
+        styleContent={{ p: 4, backgroundColor: '#fff' }}
+        isOpen={openEditSection}
+        maxWidth="sm"
+        content={<EditSection tracks={item} onClose={() => setOpenEditSection(false)} />}
+        onClose={() => {
+          setOpenEditSection(false);
+        }}
+      />
       <Grid item md={12} xs={12}>
-        <Grid container spacing={2} direction="row" justifyContent="space-between">
+        <Grid
+          container
+          spacing={2}
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <Grid item xs={3}>
             <Typography variant="h6" sx={{ alignSelf: 'center' }}>
               {item.name}
@@ -102,8 +162,8 @@ export default function Section({ item }: IPropsSection) {
                     </defs>
                   </svg>
                 }
-                onClick={handleEdit}
-                size="small"
+                onClick={() => setOpenEditSection(true)}
+                size="medium"
               >
                 {translate('pages.admin.tracks_budget.btn.amandment')}
               </Button>
@@ -143,8 +203,8 @@ export default function Section({ item }: IPropsSection) {
                     </defs>
                   </svg>
                 }
-                onClick={handleDelete}
-                size="small"
+                onClick={() => setOpenDelete(true)}
+                size="medium"
               >
                 {translate('pages.admin.tracks_budget.btn.delete')}
               </Button>

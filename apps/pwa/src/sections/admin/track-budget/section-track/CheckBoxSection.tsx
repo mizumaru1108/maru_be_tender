@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
 // @mui
 import { Checkbox, Grid, IconButton, Stack, Typography, Box, Button } from '@mui/material';
 // components
 import Iconify from 'components/Iconify';
 // utils
 import useLocales from 'hooks/useLocales';
-import { useQuery } from 'urql';
+import { fCurrencyNumber } from 'utils/formatNumber';
 //
 import { IDataTracks } from 'sections/admin/track-budget/TrackBudgetPage';
 
@@ -21,8 +22,8 @@ interface IPropsCheckbox {
 
 export default function CheckBoxSection({ item, state, setState }: IPropsCheckbox) {
   const { translate } = useLocales();
+  const params = useParams();
   const [expand, setExpand] = useState<boolean>(false);
-  // const [checkedItems, setCheckedItems] = useState<string[] | []>([]);
 
   const handleExpand = () => {
     setExpand(expand ? false : true);
@@ -45,6 +46,14 @@ export default function CheckBoxSection({ item, state, setState }: IPropsCheckbo
       }));
     }
   };
+
+  useEffect(() => {
+    if (item.name === 'INITIATIVES' || item.id === params.id) {
+      setExpand(expand ? false : true);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item]);
 
   return (
     <Grid container spacing={2}>
@@ -73,8 +82,19 @@ export default function CheckBoxSection({ item, state, setState }: IPropsCheckbo
         {expand &&
           (item.sections.length
             ? item.sections.map((v, i) => (
-                <Stack direction="row" key={i} spacing={2.5} component="div" sx={{ pb: 1, ml: 5 }}>
-                  <Typography variant="caption">{v.name}</Typography>
+                <Stack
+                  direction="row"
+                  key={i}
+                  spacing={2.5}
+                  alignItems="center"
+                  justifyContent="space-between"
+                  component="div"
+                  sx={{ pb: 1, ml: 5, mr: 2 }}
+                >
+                  <Typography variant="body2">{v.name}</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 700 }} color="#0E8478">
+                    {fCurrencyNumber(v.budget)}
+                  </Typography>
                 </Stack>
               ))
             : null)}

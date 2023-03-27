@@ -740,21 +740,6 @@ model proposal_asked_edit_request {
   supervisor    user?    @relation("proposal_asked_edit_request_supervisor_idTouser", fields: [supervisor_id], references: [id], onDelete: Cascade)
 }
 
-model user2 {
-  id             String    @id
-  employee_name  String?   @db.VarChar
-  mobile_number  String?   @db.VarChar
-  email          String    @db.VarChar
-  updated_at     DateTime? @default(dbgenerated("'2023-03-06 11:19:58.365921+00'::timestamp with time zone")) @db.Timestamptz(6)
-  created_at     DateTime? @default(dbgenerated("'2023-03-06 11:19:58.365921+00'::timestamp with time zone")) @db.Timestamptz(6)
-  employee_path  String?   @db.VarChar
-  last_login     DateTime? @default(dbgenerated("'2023-03-06 11:19:58.365921+00'::timestamp with time zone")) @db.Timestamptz(6)
-  status_id      String
-  address        String?
-  google_session Json?
-  is_online      Boolean?
-}
-
 model proposal_closing_report {
   id                      String    @id(map: "closing_report_request_pkey")
   proposal_id             String
@@ -771,4 +756,20 @@ model proposal_closing_report {
   created_at              DateTime? @default(now()) @db.Timestamptz(6)
   updated_at              DateTime? @default(now()) @db.Timestamptz(6)
   proposal                proposal  @relation(fields: [proposal_id], references: [id], onDelete: Cascade, map: "closing_report_request_proposal_id_fkey")
+}
+
+model user3 {
+  id             String    @id
+  employee_name  String?   @db.VarChar
+  mobile_number  String?   @db.VarChar
+  email          String    @db.VarChar
+  updated_at     DateTime? @db.Date
+  created_at     DateTime? @db.Date
+  employee_path  String?   @db.VarChar
+  last_login     DateTime? @db.Date
+  status_id      String
+  address        String?
+  google_session String?
+  is_online      String?
+  fusionauth_id  String?
 }

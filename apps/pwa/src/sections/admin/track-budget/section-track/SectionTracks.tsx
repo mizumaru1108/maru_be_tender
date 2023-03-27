@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 // @mui
 import { Box, Button, Grid, Stack, Typography, styled, Container } from '@mui/material';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import { LoadingButton } from '@mui/lab';
 // components
 import ModalDialog from 'components/modal-dialog';
 import Iconify from 'components/Iconify';
@@ -11,13 +11,7 @@ import AddNewSection from './AddNewSection';
 import Section from './Section';
 // hooks
 import useLocales from 'hooks/useLocales';
-import { useSnackbar } from 'notistack';
-// utils
-import axios from 'axios';
-import axiosInstance from 'utils/axios';
 import { useQuery } from 'urql';
-// config
-import { TMRA_RAISE_URL } from 'config';
 
 // ------------------------------------------------------------------------------------------
 
@@ -39,16 +33,9 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // ------------------------------------------------------------------------------------------
 
 export default function SectionTracks() {
-  const { currentLang, translate } = useLocales();
   const navigate = useNavigate();
+  const { currentLang, translate } = useLocales();
   const [open, setOpen] = useState<boolean>(false);
-  const { enqueueSnackbar } = useSnackbar();
-
-  //
-  const [isDeleting, setIsDeleting] = useState<{ isLoading: boolean; id: string }>({
-    isLoading: false,
-    id: '',
-  });
 
   //
   const { id: track_id } = useParams();
@@ -79,42 +66,22 @@ export default function SectionTracks() {
     setOpen(false);
   };
 
-  //
-  const handleDelete = async (id: string) => {
-    try {
-      setIsDeleting({ isLoading: true, id });
-      await axios.delete(`${TMRA_RAISE_URL}/track/track-section/${id}`);
-      setIsDeleting({ isLoading: false, id: 'success' });
-      // setOpenSnackBar({ open: true, message: 'لقد تم حذف القسم بنجاح', severity: 'success' });
-      mutate();
-    } catch (error) {
-      setIsDeleting({ isLoading: false, id: 'success' });
-      // setOpenSnackBar({ open: true, message: error.message, severity: 'error' });
-    }
-  };
-
-  if (fetching) return <>... Loading</>;
-  if (error) return <>... Opps, something went wrong</>;
+  if (fetching) return <>Loading ...</>;
+  if (error) return <>Opps, something went wrong ...</>;
 
   return (
     <Container>
       <ContentStyle>
         <Grid container spacing={4}>
-          {/* <ModalDialog
-        styleContent={{ padding: '1em', backgroundColor: '#fff' }}
-        isOpen={open}
-        maxWidth="md"
-        title="اضافة قسم جديد"
-        content={
-          <AddNewSection
-            sections={sections}
-            track={data.track}
+          <ModalDialog
+            styleContent={{ padding: '1em', backgroundColor: '#fff' }}
+            isOpen={open}
+            maxWidth="md"
+            title={translate('pages.admin.tracks_budget.heading.add_new_section')}
+            content={<AddNewSection tracks={data.track} onClose={handleClose} />}
             onClose={handleClose}
-            mutate={mutate}
           />
-        }
-        onClose={handleClose}
-      /> */}
+
           <Grid item md={12} xs={12}>
             <Button
               color="inherit"

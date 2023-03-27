@@ -19,9 +19,13 @@ import { useSnackbar } from 'notistack';
 
 // ------------------------------------------------------------------------------------------
 
-interface IPropsNewBudget {
+interface IPropsEditSection {
   onClose: () => void;
-  tracks: IDataTracks;
+  tracks: {
+    id: string | null;
+    name: string | null;
+    budget: number;
+  };
 }
 
 interface FormData {
@@ -32,7 +36,7 @@ interface FormData {
 
 // ------------------------------------------------------------------------------------------
 
-export default function AddNewSection({ onClose, tracks }: IPropsNewBudget) {
+export default function EditSection({ onClose, tracks }: IPropsEditSection) {
   const { translate } = useLocales();
   const [loading, setLoading] = useState(false);
   const { activeRole } = useAuth();
@@ -48,8 +52,8 @@ export default function AddNewSection({ onClose, tracks }: IPropsNewBudget) {
   });
 
   const defaultValues = {
-    name: '',
-    budget: 0,
+    name: tracks.name || '',
+    budget: tracks.budget || 0,
     track_ids: [],
   };
 
@@ -73,55 +77,7 @@ export default function AddNewSection({ onClose, tracks }: IPropsNewBudget) {
   };
 
   const onSubmitForm = async (formValue: FormData) => {
-    if (!formState.track_ids.length) {
-      enqueueSnackbar(translate('pages.admin.tracks_budget.notification.empty_selected_track'), {
-        variant: 'error',
-        autoHideDuration: 3000,
-      });
-    } else {
-      setLoading(true);
-
-      try {
-        const { status } = await axiosInstance.post(
-          '/tender/proposal/payment/add-track-budget',
-          { ...formValue, track_ids: formState.track_ids },
-          {
-            headers: { 'x-hasura-role': activeRole! },
-          }
-        );
-
-        if (status === 201) {
-          enqueueSnackbar(translate('pages.admin.tracks_budget.notification.success_add_section'), {
-            variant: 'success',
-            preventDuplicate: true,
-            autoHideDuration: 3000,
-          });
-
-          setLoading(false);
-          onClose();
-          window.location.reload();
-        }
-      } catch (err) {
-        if (typeof err.message === 'object') {
-          err.message.forEach((el: any) => {
-            enqueueSnackbar(el, {
-              variant: 'error',
-              preventDuplicate: true,
-              autoHideDuration: 3000,
-            });
-          });
-        } else {
-          enqueueSnackbar(err.message, {
-            variant: 'error',
-            preventDuplicate: true,
-            autoHideDuration: 3000,
-          });
-        }
-
-        setLoading(false);
-        onClose();
-      }
-    }
+    console.log(formValue);
   };
 
   return (
@@ -145,15 +101,15 @@ export default function AddNewSection({ onClose, tracks }: IPropsNewBudget) {
             placeholder={translate('pages.admin.tracks_budget.form.amount.placeholder')}
           />
         </Grid>
-        <Grid item md={12} xs={12}>
+        {/* <Grid item md={12} xs={12}>
           <Typography sx={{ color: 'rgba(147, 163, 176, 0.8)' }}>
             {translate('pages.admin.tracks_budget.heading.category')}
           </Typography>
-        </Grid>
+        </Grid> */}
 
-        <Grid item md={12} xs={12}>
+        {/* <Grid item md={12} xs={12}>
           <CheckBoxSection item={tracks} state={formState} setState={setFormState} />
-        </Grid>
+        </Grid> */}
 
         <Grid item xs={12}>
           <Stack

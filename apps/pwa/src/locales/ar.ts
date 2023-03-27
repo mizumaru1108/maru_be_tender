@@ -163,11 +163,12 @@ const ar = {
         heading: {
           main: 'ميزانية المسارات',
           add_new_budget: 'اضافة ميزانية جديدة',
+          add_new_section: 'اضافة قسم جديد',
           full_budget: 'الميزانية الكاملة',
           category: 'التصنيف',
         },
         btn: {
-          add_budget: 'إضافة تتبع الميزانية',
+          add_budget: 'أضف ميزانية',
           add_section: 'أضف قسمًا',
           back: 'رجوع',
           construction: 'إنشاء',
@@ -187,6 +188,8 @@ const ar = {
         },
         notification: {
           empty_selected_track: 'يجب عليك تحديد المسار',
+          success_add_section: 'تم إنشاء الميزانية بنجاح',
+          confirm_delete: 'هل أنت متأكد أنك تريد حذف هذا',
         },
       },
       transaction_progression: 'سير المعاملات',

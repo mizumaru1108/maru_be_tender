@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from 'react';
-import { useParams } from 'react-router';
 // @mui
-import { Grid, Stack, TextField, Typography, Button } from '@mui/material';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import { Grid, Stack, Typography, Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import CheckBoxSection from './section-track/CheckBoxSection';
 // utils
+import axiosInstance from 'utils/axios';
 import useLocales from 'hooks/useLocales';
+import useAuth from 'hooks/useAuth';
 // config
 import { IDataTracks } from './TrackBudgetPage';
 //
@@ -32,14 +32,11 @@ interface FormData {
 
 // ------------------------------------------------------------------------------------------
 
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
-
 export default function AddNewBudget({ onClose, tracks }: IPropsNewBudget) {
   const { translate } = useLocales();
-  const [loading, setloading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+  const { activeRole } = useAuth();
 
   const SubmitFormSchema = Yup.object().shape({
     budget: Yup.number()
@@ -48,7 +45,6 @@ export default function AddNewBudget({ onClose, tracks }: IPropsNewBudget) {
       .min(1, translate('Budget must be at least 1'))
       .required('Budget is required'),
     name: Yup.string().required('Name is required'),
-    // track_ids: Yup.array().min(1, translate('Track is required')),
   });
 
   const defaultValues = {
@@ -83,7 +79,51 @@ export default function AddNewBudget({ onClose, tracks }: IPropsNewBudget) {
         autoHideDuration: 3000,
       });
     } else {
-      console.log({ ...formValue, track_ids: formState.track_ids });
+      setLoading(true);
+
+      try {
+        const { status } = await axiosInstance.post(
+          '/tender/proposal/payment/add-track-budget',
+          { ...formValue, track_ids: formState.track_ids },
+          {
+            headers: { 'x-hasura-role': activeRole! },
+          }
+        );
+
+        if (status === 201) {
+          enqueueSnackbar(translate('pages.admin.tracks_budget.notification.success_add_section'), {
+            variant: 'success',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          });
+
+          setLoading(false);
+
+          onClose();
+
+          window.location.reload();
+        }
+      } catch (err) {
+        if (typeof err.message === 'object') {
+          err.message.forEach((el: any) => {
+            enqueueSnackbar(el, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
+          });
+        } else {
+          enqueueSnackbar(err.message, {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          });
+        }
+
+        setLoading(false);
+
+        onClose();
+      }
     }
   };
 
