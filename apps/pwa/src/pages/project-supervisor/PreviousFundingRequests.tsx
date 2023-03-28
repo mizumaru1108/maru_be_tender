@@ -63,28 +63,46 @@ function PreviousFundingRequests() {
             // }}
             baseFilters={{
               filter1: {
-                support_outputs: { _is_null: false },
+                // support_outputs: { _is_null: false },
+                supervisor_id: { _eq: user?.id },
+                _not: {
+                  inner_status: {
+                    _in: [
+                      'CREATED_BY_CLIENT',
+                      'ACCEPTED_BY_MODERATOR',
+                      'REJECTED_BY_MODERATOR',
+                      'DONE_BY_CASHIER',
+                      'ASKING_SUPERVISOR_CHANGES',
+                      'ASKING_PROJECT_SUPERVISOR_CHANGES',
+                      'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
+                    ],
+                  },
+                },
+                _or: {
+                  _not: {
+                    payments: { status: { _in: ['SET_BY_SUPERVISOR'] } },
+                  },
+                },
+                // payments: { status: { _in: ['ACCEPTED_BY_SUPERVISOR','ACCEPTED_BY_PROJECT_MANAGER','ACCEPTED_BY_FINANCE'] } },
                 // inner_status: {
                 //   _in: [
                 //     'ACCEPT_BY_SUPERVISOR',
                 //     'ACCEPTED_BY_PROJECT_MANAGER',
                 //     'ACCEPTED_BY_CEO',
-                //     'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
-                //     'ACCEPTED_BY_FINACE',
                 //     'DONE_BY_CASHIER',
                 //     'ACCEPTED_AND_NEED_CONSULTANT',
                 //   ],
                 // },
-                outter_status: {
-                  _in: [
-                    'ON_REVISION',
-                    'ASKED_FOR_AMANDEMENT',
-                    'ONGOING',
-                    'PENDING',
-                    'CANCELED',
-                    'COMPLETED',
-                  ],
-                },
+                // outter_status: {
+                //   _in: [
+                //     'ON_REVISION',
+                //     'ASKED_FOR_AMANDEMENT',
+                //     'ONGOING',
+                //     'PENDING',
+                //     'CANCELED',
+                //     'COMPLETED',
+                //   ],
+                // },
               },
             }}
           />

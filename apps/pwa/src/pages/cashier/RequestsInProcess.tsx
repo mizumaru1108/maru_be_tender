@@ -289,10 +289,45 @@ function RequestsInProcess() {
                 }),
               },
             ]}
+            // baseFilters={{
+            //   // inner_status: { inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' } },
+            //   payments: { payments: { status: { _in: ['ACCEPTED_BY_FINANCE', 'DONE'] } } },
+            //   outter_status: { outter_status: { _eq: 'ONGOING' } },
+            //   cashier_id: { cashier_id: { _eq: user?.id } },
+            // }}
             baseFilters={{
-              // inner_status: { inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' } },
-              payments: { payments: { status: { _eq: 'ACCEPTED_BY_FINANCE' } } },
-              cashier_id: { cashier_id: { _eq: user?.id } },
+              filter1: {
+                cashier_id: { _eq: user?.id },
+                _or: [
+                  {
+                    inner_status: {
+                      _in: ['ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR'],
+                    },
+                    payments: { status: { _in: ['ACCEPTED_BY_FINANCE'] } },
+                  },
+                  {
+                    payments: { status: { _in: ['ACCEPTED_BY_FINANCE', 'DONE'] } },
+                    _not: {
+                      payments: {
+                        status: {
+                          _in: [
+                            'SET_BY_SUPERVISOR',
+                            'ISSUED_BY_SUPERVISOR',
+                            'ACCEPTED_BY_PROJECT_MANAGER',
+                          ],
+                        },
+                      },
+                    },
+                    _and: [
+                      {
+                        inner_status: {
+                          _nin: ['DONE_BY_CASHIER', 'PROJECT_COMPLETED', 'REQUESTING_CLOSING_FORM'],
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
             }}
             cardFooterButtonAction="completing-exchange-permission"
           />

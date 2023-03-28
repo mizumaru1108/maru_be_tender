@@ -5,8 +5,10 @@ import CardTableBE from 'components/card-table/CardTableBE';
 import { gettingPreviousRequests } from 'queries/project-supervisor/gettingPreviousRequests';
 import { getProposals } from 'queries/commons/getProposal';
 import useLocales from '../../hooks/useLocales';
+import useAuth from 'hooks/useAuth';
 
 function PreviousFundingRequests() {
+  const { user } = useAuth();
   const { translate } = useLocales();
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
@@ -57,8 +59,15 @@ function PreviousFundingRequests() {
               },
             ]}
             destination={'previous-funding-requests'}
+            // baseFilters={{
+            //   payments: { payments: { status: { _in: ['ACCEPTED_BY_FINANCE', 'DONE'] } } },
+            // }}
             baseFilters={{
-              payments: { payments: { status: { _in: ['ACCEPTED_BY_FINANCE', 'DONE'] } } },
+              filter1: {
+                finance_id: { _eq: user?.id },
+                _and: [{ payments: { status: { _in: ['ACCEPTED_BY_FINANCE', 'DONE'] } } }],
+                _not: { payments: { status: { _in: ['ACCEPTED_BY_PROJECT_MANAGER'] } } },
+              },
             }}
           />
         </ContentStyle>

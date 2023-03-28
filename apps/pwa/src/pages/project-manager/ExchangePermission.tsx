@@ -51,7 +51,9 @@ function ExchangePermission() {
             baseFilters={{
               filter1: {
                 project_manager_id: { _eq: user?.id },
-                _and: { inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' } },
+                _and: {
+                  payments: { status: { _in: ['ACCEPTED_BY_SUPERVISOR', 'ISSUED_BY_SUPERVISOR'] } },
+                },
               },
             }}
             destination={'exchange-permission'}

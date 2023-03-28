@@ -4,8 +4,10 @@ import { styled } from '@mui/material/styles';
 import CardTableBE from 'components/card-table/CardTableBE';
 import { getProposals } from 'queries/commons/getProposal';
 import useLocales from 'hooks/useLocales';
+import useAuth from 'hooks/useAuth';
 
 function PreviousFundingRequests() {
+  const { user } = useAuth();
   const { translate } = useLocales();
 
   const INNER_STATUS_FILTER = [
@@ -90,10 +92,30 @@ function PreviousFundingRequests() {
             // }}
             baseFilters={{
               filter1: {
-                inner_status: {
-                  _in: INNER_STATUS_FILTER,
+                project_manager_id: { _eq: user?.id },
+                _not: {
+                  inner_status: {
+                    _in: [
+                      'CREATED_BY_CLIENT',
+                      'ACCEPTED_BY_MODERATOR',
+                      'REJECTED_BY_MODERATOR',
+                      'ACCEPTED_BY_SUPERVISOR',
+                      'REJECTED_BY_SUPERVISOR',
+                      'ASKING_PROJECT_MANAGER_CHANGES',
+                      'REVISED_BY_PROJECT_MANAGER',
+                      'ASKING_PROJECT_MANAGER_CHANGES',
+                    ],
+                  },
                 },
-                outter_status: { _in: OUTTER_STATUS_FILTER },
+                _or: {
+                  _not: {
+                    payments: { status: { _in: ['ISSUED_BY_SUPERVISOR'] } },
+                  },
+                },
+                // inner_status: {
+                //   _in: INNER_STATUS_FILTER,
+                // },
+                // outter_status: { _in: OUTTER_STATUS_FILTER },
                 // payments: { status: { _in: PAYMENTS_FILTER } },
               },
             }}

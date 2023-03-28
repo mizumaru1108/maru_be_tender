@@ -5,8 +5,10 @@ import CardTableBE from 'components/card-table/CardTableBE';
 import { gettingPreviousRequests } from 'queries/project-supervisor/gettingPreviousRequests';
 import { getProposals } from 'queries/commons/getProposal';
 import useLocales from '../../hooks/useLocales';
+import useAuth from 'hooks/useAuth';
 
 function PreviousFundingRequests() {
+  const { user } = useAuth();
   const { translate } = useLocales();
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
@@ -57,9 +59,54 @@ function PreviousFundingRequests() {
               },
             ]}
             destination={'previous-funding-requests'}
+            // baseFilters={{
+            //   inner_status: {
+            //     inner_status: {
+            //       _in: ['DONE_BY_CASHIER', 'PROJECT_COMPLETED', 'REQUESTING_CLOSING_FORM'],
+            //     },
+            //   },
+            //   _and: {
+            //     _not: {
+            //       payments: { payments: { status: { _in: ['ACCEPTED_BY_FINANCE'] } } },
+            //     },
+            //   },
+            //   outter_status: { outter_status: { _in: ['COMPLETED', 'ONGOING'] } },
+            // }}
             baseFilters={{
-              // inner_status: { inner_status: { _eq: 'DONE_BY_CASHIER' } },
-              payments: { payments: { status: { _in: ['DONE'] } } },
+              filter1: {
+                cashier_id: { _eq: user?.id },
+                _or: [
+                  {
+                    inner_status: {
+                      _in: ['ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR'],
+                    },
+                    _not: {
+                      payments: { status: { _eq: 'ACCEPTED_BY_FINANCE' } },
+                    },
+                  },
+                  {
+                    inner_status: {
+                      _in: ['DONE_BY_CASHIER', 'PROJECT_COMPLETED', 'REQUESTING_CLOSING_FORM'],
+                    },
+                    payments: { status: { _in: ['DONE'] } },
+                  },
+                ],
+                // _or: [
+                //   {
+                //     inner_status: {
+                //       _in: [
+                //         // 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
+                //         'DONE_BY_CASHIER',
+                //         'PROJECT_COMPLETED',
+                //         'REQUESTING_CLOSING_FORM',
+                //       ],
+                //     },
+                //   },
+                //   // { outter_status: { _in: ['COMPLETED', 'ONGOING'] } },
+                //   // { payments: { status: { _in: ['DONE'] } } },
+                // ],
+                // _not: { state: { _in: ['PROJECT_MANAGER', 'CASHIER'] } },
+              },
             }}
           />
         </ContentStyle>

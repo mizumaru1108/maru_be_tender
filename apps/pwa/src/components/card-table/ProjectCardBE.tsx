@@ -62,9 +62,20 @@ const ProjectCardBE = ({
   //   (new Date().getTime() - created_at.getTime()) / (1000 * 3600 * 24)
   // );
 
+  const { user: userAuth, activeRole } = useAuth();
+  const role = activeRole!;
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { translate } = useLocales();
+  const [, updateAsigning] = useMutation(asignProposalToAUser);
+  const [, deleteDrPro] = useMutation(deleteDraftProposal);
+  const [loading, setLoading] = React.useState(false);
+
+  const urlArr: string[] = location.pathname.split('/');
+
   function daysSinceCreated() {
     let getCreatedAt = new Date();
-    if (updated_at) {
+    if (updated_at && !urlArr.includes('previous-funding-requests')) {
       getCreatedAt = new Date(updated_at);
     } else {
       getCreatedAt = new Date(created_at);
@@ -74,15 +85,6 @@ const ProjectCardBE = ({
     );
     return daysSince;
   }
-
-  const { user: userAuth, activeRole } = useAuth();
-  const role = activeRole!;
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { translate } = useLocales();
-  const [, updateAsigning] = useMutation(asignProposalToAUser);
-  const [, deleteDrPro] = useMutation(deleteDraftProposal);
-  const [loading, setLoading] = React.useState(false);
 
   const inquiryStatusStyle = {
     CANCELED: { color: '#FF4842', backgroundColor: '#FF484229', title: 'commons.chip_canceled' },
