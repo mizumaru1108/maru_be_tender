@@ -133,7 +133,12 @@ function ClientProfileEditForm() {
     setStep(newValue);
   };
   useEffect(() => {
-    if (data?.user_by_pk) {
+    if (
+      data?.user_by_pk?.bank_informations.length > 0 &&
+      data?.user_by_pk?.client_data &&
+      data?.user_by_pk?.email
+    ) {
+      console.log('data?.user_by_pk:', data?.user_by_pk);
       const { client_data: client, bank_informations } = data?.user_by_pk;
       const {
         client_field,
@@ -195,11 +200,6 @@ function ClientProfileEditForm() {
           phone,
           twitter_acount,
           website,
-          // email: email.trim(),
-          // password,
-          // new_password: '',
-          // confirm_password: '',
-          // old_password: '',
         },
         form3: {
           ...prevState.form3,
@@ -207,7 +207,6 @@ function ClientProfileEditForm() {
           license_issue_date,
           license_expired,
           license_file: {
-            // size: undefined, url: license_file, type: 'application/pdf'
             ...license_file,
           },
           board_ofdec_file: newval,

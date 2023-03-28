@@ -11,6 +11,7 @@ import { accoutsManagerRoute } from './accounts-manager-route';
 import { ceoRoute } from './ceo-route';
 import { mainRoute } from './main-route';
 import { adminRoute } from './admin-route';
+import { getAuthCode } from './get-auth-code';
 
 // ----------------------------------------------------------------------
 
@@ -28,6 +29,7 @@ export default function Router() {
     ceoRoute,
     mainRoute,
     adminRoute,
+    getAuthCode,
     {
       path: '/',
       element: <Navigate to="/auth/login" replace />,

@@ -9,6 +9,7 @@ const ar = {
   pages: {
     options_btn: 'أكثر',
     common: {
+      get_auth_code_google: 'أدخل رمز التأكيد الخاص بك',
       loading: 'تحميل…',
       messages: 'الرسائل',
       portal_reports: 'تقارير البوابة',

@@ -9,6 +9,7 @@ const en = {
   pages: {
     options_btn: 'More',
     common: {
+      get_auth_code_google: 'Get Auth Code',
       loading: 'Loading...',
       messages: 'Messages',
       portal_reports: 'Portal Reports',

@@ -148,7 +148,7 @@ function AdjustClentAvailableTime() {
         day: Object.keys(DAYS)[index],
       };
     });
-    console.log({ setAvailableTimePayload });
+    // console.log({ setAvailableTimePayload });
     setAvailableTimePayload = setAvailableTimePayload
       .filter((item: any) => item.flag !== false)
       .map((item: any) => {

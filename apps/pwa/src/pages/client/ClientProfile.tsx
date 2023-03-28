@@ -16,6 +16,8 @@ import useLocales from '../../hooks/useLocales';
 import axiosInstance from '../../utils/axios';
 import ReactJoyride, { Step } from 'react-joyride';
 import CloseIcon from '@mui/icons-material/Close';
+import { bank_information } from '../../@types/commons';
+import { IEditedValues } from '../../@types/client_data';
 
 const mockData = {
   project_name: 'اسم الشريك - جمعية الدعوة والإرشاد وتوعية الجاليات',
@@ -32,11 +34,19 @@ const mockData = {
   license_file: 'image.',
 };
 
+interface ClientProfiles {
+  bank_informations: bank_information[];
+  client_data: IEditedValues;
+  email: string;
+  count: number;
+}
+
 function ClientProfile() {
   const { user, activeRole } = useAuth();
   const { currentLang, translate } = useLocales();
   const [newBoardOfDec, setNewBoardOfDec] = useState([]);
   const [runTour, setRunTour] = useState(true);
+  const [clientProfiles, setClientProfiles] = useState<ClientProfiles>();
 
   // Step Joyride
   const steps: Step[] = [
@@ -113,67 +123,58 @@ function ClientProfile() {
   };
   useEffect(() => {
     fetchingEditRequest();
-    // const {
-    //   user_by_pk: {
-    //     client_data: { board_ofdec_file },
-    //   },
-    // } = data!;
-    // // console.log({ board_ofdec_file });
-    // let newDect: any = [];
-    // if (board_ofdec_file && typeof board_ofdec_file !== 'string' && board_ofdec_file.length > 0) {
-    //   newDect = board_ofdec_file.map((item: any) => ({
-    //     ...item,
-    //     url: item.file,
-    //     name: item.file_name,
-    //   }));
-    // } else {
-    //   newDect.push(board_ofdec_file);
-    // }
-    // setNewBoardOfDec(newDect);
+    if (data) {
+      setClientProfiles({
+        bank_informations: data.user_by_pk.bank_informations,
+        client_data: data.user_by_pk.client_data,
+        email: data.user_by_pk.email,
+        count: data.proposal_aggregate.aggregate.count as number,
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [data]);
+
   if (fetching) return <>Loading ....</>;
 
   if (error) return <>{error.message}</>;
 
-  const {
-    user_by_pk: {
-      client_data: {
-        headquarters,
-        authority,
-        center_administration,
-        ceo_mobile,
-        ceo_name,
-        data_entry_mail,
-        data_entry_mobile,
-        data_entry_name,
-        date_of_esthablistmen,
-        // email,
-        entity,
-        governorate,
-        license_expired,
-        license_file,
-        license_issue_date,
-        license_number,
-        num_of_beneficiaries,
-        num_of_employed_facility,
-        phone,
-        region,
-        twitter_acount,
-        website,
-        chairman_name,
-        chairman_mobile,
-        entity_mobile,
-        board_ofdec_file,
-      },
-      email,
-      bank_informations,
-    },
-    proposal_aggregate: {
-      aggregate: { count: completed_projects },
-    },
-  } = data!;
-  // console.log({ board_ofdec_file });
+  // const {
+  //   user_by_pk: {
+  //     client_data: {
+  //       headquarters,
+  //       authority,
+  //       center_administration,
+  //       ceo_mobile,
+  //       ceo_name,
+  //       data_entry_mail,
+  //       data_entry_mobile,
+  //       data_entry_name,
+  //       date_of_esthablistmen,
+  //       entity,
+  //       governorate,
+  //       license_expired,
+  //       license_file,
+  //       license_issue_date,
+  //       license_number,
+  //       num_of_beneficiaries,
+  //       num_of_employed_facility,
+  //       phone,
+  //       region,
+  //       twitter_acount,
+  //       website,
+  //       chairman_name,
+  //       chairman_mobile,
+  //       entity_mobile,
+  //       board_ofdec_file,
+  //     },
+  //     email,
+  //     bank_informations,
+  //   },
+  //   proposal_aggregate: {
+  //     aggregate: { count: completed_projects },
+  //   },
+  // } = data;
+  console.log({ clientProfiles, data });
   // console.log('type :', typeof board_ofdec_file);
 
   return (
@@ -183,9 +184,9 @@ function ClientProfile() {
         <ContentStyle>
           <Stack direction="row" justifyContent="space-between">
             <Stack direction="column" sx={{ mb: '5px' }}>
-              <Typography variant="h5">{entity}</Typography>
+              <Typography variant="h5">{clientProfiles?.client_data?.entity}</Typography>
               <Typography variant="h6" sx={{ color: '#1E1E1E' }}>
-                {authority}
+                {clientProfiles?.client_data?.authority ?? '- No Data -'}
               </Typography>
             </Stack>
             <Stack direction="row" spacing={3}>
@@ -292,17 +293,25 @@ function ClientProfile() {
               <Stack direction="row" gap={3} justifyContent="space-between" sx={{ mb: '15px' }}>
                 <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>عدد المستفيدين من خدمات الجهة:</Typography>
-                  <Typography sx={{ mb: '15px' }}>{num_of_beneficiaries}</Typography>
+                  <Typography sx={{ mb: '15px' }}>
+                    {clientProfiles?.client_data?.num_of_beneficiaries ?? '- No Data -'}
+                  </Typography>
                   <Typography sx={{ fontSize: '12px' }}>المقر</Typography>
-                  <Typography>{headquarters}</Typography>
+                  <Typography>
+                    {clientProfiles?.client_data?.headquarters ?? '- No Data -'}
+                  </Typography>
                 </Stack>
 
                 <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>عدد موظفين بدوام كلي للمنشأة:</Typography>
-                  <Typography sx={{ mb: '15px' }}>{num_of_employed_facility}</Typography>
-                  <Typography>{mockData.number_of_beni}</Typography>
+                  <Typography sx={{ mb: '15px' }}>
+                    {clientProfiles?.client_data?.num_of_employed_facility ?? '- No Data -'}
+                  </Typography>
+                  {/* <Typography>{mockData.number_of_beni ?? '- No Data -'}</Typography> */}
                   <Typography sx={{ fontSize: '12px' }}>تاريخ التأسيس:</Typography>
-                  <Typography>{date_of_esthablistmen}</Typography>
+                  <Typography>
+                    {clientProfiles?.client_data?.date_of_esthablistmen ?? '- No Data -'}
+                  </Typography>
                 </Stack>
               </Stack>
               <Typography variant="h6" sx={{ color: '#1E1E1E', mb: '15px' }}>
@@ -311,36 +320,48 @@ function ClientProfile() {
               <Stack direction="row" gap={3} justifyContent="space-between" sx={{ mb: '15px' }}>
                 <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>المنطقة:</Typography>
-                  <Typography sx={{ mb: '15px' }}>{region}</Typography>
+                  <Typography sx={{ mb: '15px' }}>
+                    {clientProfiles?.client_data?.region ?? '- No Data -'}
+                  </Typography>
                   <Typography sx={{ fontSize: '12px' }}>الموقع الإلكتروني:</Typography>
-                  <Typography sx={{ mb: '15px' }}>{website}</Typography>
-                  <Typography sx={{ fontSize: '12px' }}>القرية (الهجرة):</Typography>
-                  <Typography sx={{ mb: '15px' }}>القرية (الهجرة)</Typography>
+                  <Typography sx={{ mb: '15px' }}>
+                    {clientProfiles?.client_data?.website ?? '- No Data -'}
+                  </Typography>
+                  {/* <Typography sx={{ fontSize: '12px' }}>القرية (الهجرة):</Typography>
+                  <Typography sx={{ mb: '15px' }}>القرية (الهجرة)</Typography> */}
                 </Stack>
 
                 <Stack direction="column" alignItems="start">
                   <Typography sx={{ fontSize: '12px' }}>المحافظة:</Typography>
-                  <Typography sx={{ mb: '15px' }}>{governorate}</Typography>
+                  <Typography sx={{ mb: '15px' }}>
+                    {clientProfiles?.client_data?.governorate ?? '- No Data -'}
+                  </Typography>
                   <Typography sx={{ fontSize: '12px' }}>حساب تويتر:</Typography>
-                  <Typography sx={{ mb: '15px' }}>{twitter_acount}</Typography>
+                  <Typography sx={{ mb: '15px' }}>
+                    {clientProfiles?.client_data?.twitter_acount ?? '- No Data -'}
+                  </Typography>
                   <Typography sx={{ fontSize: '12px' }}>كيان المحمول</Typography>
                   <Typography
                     sx={{ mb: '15px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
                   >
-                    {entity_mobile}
+                    {clientProfiles?.client_data?.entity_mobile ?? '- No Data -'}
                   </Typography>
                 </Stack>
 
                 <Stack direction="column" alignItems="start">
                   <Typography sx={{ fontSize: '12px' }}>المركز (الإدارة):</Typography>
-                  <Typography sx={{ mb: '15px' }}>{center_administration}</Typography>
+                  <Typography sx={{ mb: '15px' }}>
+                    {clientProfiles?.client_data?.center_administration ?? '- No Data -'}
+                  </Typography>
                   <Typography sx={{ fontSize: '12px' }}>البريد الإلكتروني:</Typography>
-                  <Typography sx={{ mb: '15px' }}>{email}</Typography>
+                  <Typography sx={{ mb: '15px' }}>
+                    {clientProfiles?.email ?? '- No Data -'}
+                  </Typography>
                   <Typography sx={{ fontSize: '12px' }}>الجوال</Typography>
                   <Typography
                     sx={{ mb: '15px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
                   >
-                    {phone}
+                    {clientProfiles?.client_data?.phone ?? '- No Data -'}
                   </Typography>
                 </Stack>
               </Stack>
@@ -353,31 +374,39 @@ function ClientProfile() {
                   <Typography
                     sx={{ mb: '15px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
                   >
-                    {ceo_mobile}
+                    {clientProfiles?.client_data?.ceo_mobile ?? '- No Data -'}
                   </Typography>
                   <Typography sx={{ fontSize: '12px' }}>جوال رئيس مجلس الإدارة:</Typography>
                   <Typography
                     sx={{ mb: '15px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
                   >
-                    {chairman_mobile ?? '-'}
+                    {clientProfiles?.client_data?.chairman_mobile ?? '- No Data -'}
                   </Typography>
                   <Typography sx={{ fontSize: '12px' }}>جوال مدخل البيانات:</Typography>
                   <Typography
                     sx={{ mb: '15px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
                   >
-                    {data_entry_mobile}
+                    {clientProfiles?.client_data?.data_entry_mobile ?? '- No Data -'}
                   </Typography>
                   <Typography sx={{ fontSize: '12px' }}>بريد مدخل البيانات:</Typography>
-                  <Typography sx={{ mb: '15px' }}>{data_entry_mail}</Typography>
+                  <Typography sx={{ mb: '15px' }}>
+                    {clientProfiles?.client_data?.data_entry_mail ?? '- No Data -'}
+                  </Typography>
                 </Stack>
 
                 <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>اسم المدير التنفيذي:</Typography>
-                  <Typography sx={{ mb: '15px' }}>{ceo_name}</Typography>
+                  <Typography sx={{ mb: '15px' }}>
+                    {clientProfiles?.client_data?.ceo_name ?? '- No Data -'}
+                  </Typography>
                   <Typography sx={{ fontSize: '12px' }}>اسم رئيس مجلس الإدارة:</Typography>
-                  <Typography sx={{ mb: '15px' }}>{chairman_name ?? '-'}</Typography>
+                  <Typography sx={{ mb: '15px' }}>
+                    {clientProfiles?.client_data?.chairman_name ?? '- No Data -'}
+                  </Typography>
                   <Typography sx={{ fontSize: '12px' }}>اسم مدخل البيانات:</Typography>
-                  <Typography sx={{ mb: '15px' }}>{data_entry_name}</Typography>
+                  <Typography sx={{ mb: '15px' }}>
+                    {clientProfiles?.client_data?.data_entry_name ?? '- No Data -'}
+                  </Typography>
                 </Stack>
               </Stack>
 
@@ -385,20 +414,28 @@ function ClientProfile() {
                 المعلومات البنكية
               </Typography>
               <Grid container spacing={5}>
-                {bank_informations.map((item: any, index: any) => (
-                  <Grid item key={index} md={6} xs={12}>
-                    <BankImageComp
-                      enableButton={true}
-                      imageUrl={item.card_image.url ?? '#'}
-                      bankName={item.bank_name}
-                      accountNumber={item.bank_account_number}
-                      bankAccountName={item.bank_account_name}
-                      size={item?.card_image?.size ?? 0}
-                      type={item?.card_image?.type ?? ''}
-                      borderColor={item?.color ?? 'transparent'}
-                    />
+                {clientProfiles &&
+                clientProfiles?.bank_informations &&
+                clientProfiles?.bank_informations.length > 0 ? (
+                  clientProfiles?.bank_informations.map((item: any, index: any) => (
+                    <Grid item key={index} md={6} xs={12}>
+                      <BankImageComp
+                        enableButton={true}
+                        imageUrl={item.card_image.url ?? '#'}
+                        bankName={item.bank_name}
+                        accountNumber={item.bank_account_number}
+                        bankAccountName={item.bank_account_name}
+                        size={item?.card_image?.size ?? 0}
+                        type={item?.card_image?.type ?? ''}
+                        borderColor={item?.color ?? 'transparent'}
+                      />
+                    </Grid>
+                  ))
+                ) : (
+                  <Grid item md={6} xs={12}>
+                    <Typography sx={{ mb: '15px' }}>{'- No Data -'}</Typography>
                   </Grid>
-                ))}
+                )}
               </Grid>
             </Grid>
             <Grid item md={5}>
@@ -423,7 +460,7 @@ function ClientProfile() {
                 >
                   <Typography sx={{ textAlign: 'center' }}>المشاريع المنجزة</Typography>
                   <Typography variant="h6" sx={{ textAlign: 'center', color: 'text.tertiary' }}>
-                    {completed_projects}
+                    {clientProfiles?.count ?? 0}
                   </Typography>
                 </Box>
 
@@ -445,22 +482,39 @@ function ClientProfile() {
 
                   <Stack direction="column" gap={1} justifyContent="start" sx={{ mb: '10px' }}>
                     <Typography sx={{ color: '#93A3B0' }}>رقم الترخيص:</Typography>
-                    <Typography>{license_number}</Typography>
+                    <Typography>
+                      {clientProfiles?.client_data?.license_number ?? '- No Data -'}
+                    </Typography>
                   </Stack>
                   <Stack direction="column" gap={1} justifyContent="start" sx={{ mb: '10px' }}>
                     <Typography sx={{ color: '#93A3B0' }}>تاريخ انتهاء الترخيص:</Typography>
-                    <Typography>{license_expired}</Typography>
+                    <Typography>
+                      {clientProfiles?.client_data?.license_expired ?? '- No Data -'}
+                    </Typography>
                   </Stack>
                   <Stack direction="column" gap={1} justifyContent="start" sx={{ mb: '10px' }}>
                     <Typography sx={{ color: '#93A3B0' }}>تاريخ اصدار الترخيص:</Typography>
-                    <Typography>{license_issue_date}</Typography>
+                    <Typography>
+                      {clientProfiles?.client_data?.license_issue_date ?? '- No Data -'}
+                    </Typography>
                   </Stack>
                   <Stack direction="column" gap={1} justifyContent="start" sx={{ mb: '10px' }}>
                     <Typography sx={{ color: '#93A3B0' }}>ملف الترخيص:</Typography>
                     <Typography>
-                      <a target="_blank" rel="noopener noreferrer" href={license_file.url ?? '#'}>
-                        اضغط هنا لرؤية ملف الترخيص
-                      </a>
+                      {clientProfiles &&
+                      clientProfiles?.client_data &&
+                      clientProfiles?.client_data?.license_file &&
+                      clientProfiles?.client_data?.license_file.url ? (
+                        <a
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          href={clientProfiles?.client_data?.license_file.url}
+                        >
+                          اضغط هنا لرؤية ملف الترخيص
+                        </a>
+                      ) : (
+                        '- No Data -'
+                      )}
                     </Typography>
                   </Stack>
                 </Box>
@@ -483,16 +537,26 @@ function ClientProfile() {
                     )}
                   </Grid> */}
                   <Grid container spacing={2}>
-                    {board_ofdec_file &&
-                    typeof board_ofdec_file !== 'string' &&
-                    board_ofdec_file.length > 0 ? (
-                      board_ofdec_file.map((item: any, index: any) => (
+                    {clientProfiles?.client_data?.board_ofdec_file &&
+                      typeof clientProfiles?.client_data?.board_ofdec_file !== 'string' &&
+                      clientProfiles?.client_data?.board_ofdec_file.length > 0 &&
+                      clientProfiles?.client_data?.board_ofdec_file.map((item: any, index: any) => (
                         <Grid item xs={6} md={6} key={index}>
                           <ButtonDownloadFiles files={item} />
                         </Grid>
-                      ))
-                    ) : (
-                      <ButtonDownloadFiles files={board_ofdec_file} />
+                      ))}
+                    {clientProfiles?.client_data?.board_ofdec_file &&
+                      typeof clientProfiles?.client_data?.board_ofdec_file === 'string' && (
+                        <Grid item xs={6} md={6}>
+                          <ButtonDownloadFiles
+                            files={clientProfiles?.client_data?.board_ofdec_file}
+                          />
+                        </Grid>
+                      )}
+                    {!clientProfiles?.client_data?.board_ofdec_file && (
+                      <Grid item xs={6} md={6}>
+                        {'- No Data -'}
+                      </Grid>
                     )}
                   </Grid>
                 </Stack>

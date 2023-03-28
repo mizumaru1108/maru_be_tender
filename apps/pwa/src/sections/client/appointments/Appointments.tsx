@@ -62,7 +62,7 @@ function Appointments() {
           <Button
             sx={{ color: '#fff', backgroundColor: 'background.paper', py: '15px', px: '25px' }}
             onClick={() => {
-              console.log('asdlkasmdlk');
+              // console.log('asdlkasmdlk');
               navigate('/client/dashboard/appointments/adjust-your-time');
             }}
           >

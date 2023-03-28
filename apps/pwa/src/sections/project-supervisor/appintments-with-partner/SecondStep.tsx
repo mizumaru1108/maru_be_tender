@@ -26,10 +26,12 @@ import useAuth from '../../../hooks/useAuth';
 import EmptyContent from '../../../components/EmptyContent';
 import useLocales from '../../../hooks/useLocales';
 import { yearPickerClasses } from '@mui/lab';
+import CheckIcon from '@mui/icons-material/Check';
 
 interface CustomPickerDayProps extends PickersDayProps<Dayjs> {
   available: boolean;
   isToday: boolean;
+  isMonth: boolean;
 }
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 // const availableDays = ['Sunday', 'Monday', 'Tuesday'];
@@ -76,13 +78,13 @@ const haveAppoinments = {
 };
 
 const CustomPickersDay = styled(PickersDay, {
-  shouldForwardProp: (prop) => prop !== 'available' && prop !== 'isToday',
-})<CustomPickerDayProps>(({ theme, available, isToday }) => ({
+  shouldForwardProp: (prop) => prop !== 'available' && prop !== 'isToday' && prop !== 'isMonth',
+})<CustomPickerDayProps>(({ theme, available, isToday, isMonth }) => ({
   ...(available && {
     borderRadius: '50%',
     // backgroundColor: '#red !important',
     backgroundColor: '#0E8478',
-    color: '#fff',
+    color: isMonth ? '#fff' : '#919EAB',
     '&:hover, &:focus': {
       backgroundColor: theme.palette.primary.dark,
     },
@@ -100,6 +102,7 @@ const CustomPickersDay = styled(PickersDay, {
   ...(isToday && {
     borderRadius: '50%',
     backgroundColor: '#EEF0F2',
+    color: '#000',
     // borderColor: '#EEF0F2',
     border: '2px solid #0E8478',
   }),
@@ -115,7 +118,8 @@ interface IAvailableDay {
 }
 
 interface IAppointmentsTime {
-  date: Date;
+  date: string;
+  day: string;
   start_time: string;
   end_time: string;
 }
@@ -124,6 +128,7 @@ interface IAppointments {
   time?: IAppointmentsTime[];
 }
 interface ISelectedDate {
+  date?: string;
   day?: string;
   month?: string;
   year?: string;
@@ -145,15 +150,19 @@ interface IArrayAppointments {
   calendar_event_id: string;
 }
 function SecondStep({ userId, setUserId, partnerName }: any) {
-  const [value, setValue] = React.useState<Date | number | null>(new Date());
+  // const [value, setValue] = React.useState<Date | number | null>(new Date());
   const navigate = useNavigate();
   const isMobile = useResponsive('down', 'sm');
+  const todayDate = moment().format('YYYY MM DD');
+  const newestTime = moment().format('hh:mm A');
+  // const newestTime = '9:00 AM';
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
   const { translate } = useLocales();
   const [isLoading, setIsLoading] = React.useState(false);
 
   // console.log('userId : ', userId);
+  // const { authCode } = useSelector((state) => state.appointments);
 
   const badgeRef = React.useRef<HTMLInputElement>(null);
   const [position, setPosition] = React.useState(0);
@@ -167,6 +176,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
     day: moment().format('DD'),
     month: moment().format('MM'),
     year: moment().format('YYYY'),
+    date: moment().format('YYYY-MM-DD'),
   });
 
   const [availableSchedule, setAvailableSchedule] = React.useState<IAvailableDay>();
@@ -178,7 +188,11 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
     pickersDayProps: PickersDayProps<Dayjs>
   ) => {
     const isToday = date.isSame(dayjs(), 'day');
-    if (haveAppoinments.days.includes(moment(date.toISOString()).format('DD'))) {
+    const isMonth = selectedDate.month === date.format('MM') ?? false;
+    if (
+      appointments?.days!.includes(moment(date.toISOString()).format('DD')) &&
+      selectedDate.month === date.format('MM')
+    ) {
       return (
         <Badge
           color="secondary"
@@ -219,6 +233,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
           available={availableSchedule!.days.includes(DAYS[date.get('day')]) ?? false}
           // available={availableDays.includes(date.get('date').toString())}
           isToday={isToday}
+          isMonth={isMonth}
         />
       </Box>
     );
@@ -246,15 +261,17 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
     //   </Badge>
     // );
   };
+
   const disableUnAvailableDays = (date: Dayjs) =>
-    !availableSchedule!.days.includes(DAYS[date.get('day')]) || date.isBefore(dayjs(), 'day');
-  // console.log({ position });
+    !availableSchedule!.days.includes(DAYS[date.get('day')]) ||
+    date.isBefore(dayjs(), 'day') ||
+    moment(date?.toISOString()).format('YYYY MM DD') === todayDate;
 
   React.useEffect(() => {
     if (!isLoading) {
       setPosition(badgeRef.current ? badgeRef.current.getBoundingClientRect().width / 2 : 0);
     }
-  }, [badgeRef, isLoading, isMobile]);
+  }, [badgeRef, isLoading, isMobile, appointments, selectedDate]);
   // /tender/appointments/fetch?month=3&year=2023
 
   const fetchingSchedule = React.useCallback(async () => {
@@ -305,8 +322,9 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
     }
   }, [activeRole, userId, enqueueSnackbar]);
 
+  // console.log('appointments', appointments);
+
   const fetchingAppointment = React.useCallback(async () => {
-    // setIsLoading(true);
     try {
       const rest = await axiosInstance.get(
         `/tender/appointments/fetch?month=${selectedDate?.month}&year=${selectedDate?.year}`,
@@ -317,23 +335,53 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
       // console.log('rest', rest.data.data);
       if (rest) {
         const tmpValue: IArrayAppointments[] = rest.data.data.length > 0 ? rest.data.data : [];
+        // const tmpDates: string[] =
+        //   tmpValue.map((item: IArrayAppointments) => moment(item.date).format('DD')) ?? [];
         const tmpDates: string[] =
-          tmpValue.map((item: IArrayAppointments) => moment(item.date).format('DD')) ?? [];
-        const tmpTimes: IAppointmentsTime[] = tmpValue.map((item: IArrayAppointments) => {
-          const { start_time, end_time, date } = item;
-          return {
-            start_time,
-            end_time,
-            date,
-          };
-        });
-        // if (tmpValue.length > 0) {
-        //   setAppointments({
-        //     ...appointments,
-        //     days: [...tmpDates],
-        //   });
-        // }
-        console.log('tmpTimes', tmpTimes);
+          tmpValue
+            .filter(
+              (item: IArrayAppointments) =>
+                item.status !== 'tentative' && item.status !== 'declined'
+            )
+            .map((item: IArrayAppointments) => moment(item.date).format('DD')) ?? [];
+        // const tmpTimes: IAppointmentsTime[] = tmpValue.map((item: IArrayAppointments) => {
+        //   const { start_time, end_time, date } = item;
+        //   const tmpDate = moment(date).format('DD');
+        //   const tmpDay = moment(date).format('dddd');
+        //   return {
+        //     start_time,
+        //     end_time,
+        //     date: tmpDate,
+        //     day: tmpDay,
+        //   };
+        // });
+        const tmpTimes: IAppointmentsTime[] = tmpValue
+          .filter(
+            (item: IArrayAppointments) => item.status !== 'tentative' && item.status !== 'declined'
+          )
+          .map((item: IArrayAppointments) => {
+            const { start_time, end_time, date } = item;
+            const tmpDate = moment(date).format('DD');
+            const tmpDay = moment(date).format('dddd');
+            return {
+              start_time,
+              end_time,
+              date: tmpDate,
+              day: tmpDay,
+            };
+          });
+        if (tmpValue.length > 0) {
+          setAppointments({
+            days: [...tmpDates],
+            time: [...tmpTimes],
+          });
+        } else {
+          setAppointments({
+            days: [],
+            time: [],
+          });
+        }
+        // console.log('tmpTimes', tmpTimes);
       }
     } catch (err) {
       console.log('err', err);
@@ -346,8 +394,6 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
           horizontal: 'center',
         },
       });
-    } finally {
-      // setIsLoading(false);
     }
   }, [activeRole, selectedDate?.month, selectedDate?.year, enqueueSnackbar]);
 
@@ -358,6 +404,73 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
   React.useEffect(() => {
     fetchingSchedule();
   }, [fetchingSchedule]);
+
+  // console.log({ authCode });
+
+  const handleSubmit = async () => {
+    // setIsLoading(true);
+    localStorage.setItem('partnerMeetingId', userId);
+
+    const start_moment = moment(selectedTime, 'hh:mm A');
+    const end_moment = start_moment.add(1, 'hours');
+    const end_time = end_moment.format('hh:mm A');
+    // console.log({ end_time });
+
+    const tmpValues = {
+      authCode: localStorage.getItem('authCodeMeeting') as string,
+      client_id: userId,
+      start_time: moment(selectedTime, 'hh:mm A').format('hh:mm A'),
+      end_time,
+      date: selectedDate.date,
+    };
+    try {
+      const rest = await axiosInstance.post(
+        'tender/appointments/create-appointment',
+        {
+          ...tmpValues,
+        },
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
+      if (rest) {
+        enqueueSnackbar('Meeting has been created', {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+        navigate('/dashboard/appointments-with-partners');
+        localStorage.setItem('authCodeMeeting', '');
+        localStorage.setItem('partnerMeetingId', '');
+        // setIsLoad(false);
+      }
+    } catch (err) {
+      // setIsLoad(false);
+      // console.log('err.message', err.message);
+      if (err.statusCode === 401) {
+        const messages = err.message;
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const url = messages.match(urlRegex)[0];
+        if (url) {
+          window.open(url, '_self');
+        }
+      }
+      if (err.statusCode !== 401) {
+        enqueueSnackbar(
+          `${err.statusCode < 500 && err.message ? err.message : 'something went wrong!'}`,
+          {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          }
+        );
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // console.log('chek', !moment('3:00 PM', 'h:mm A').isAfter(moment(newestTime, 'h:mm A')));
   return (
     <>
       <Grid item md={12} xs={12}>
@@ -457,6 +570,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
                   setSelectedDate({
                     ...selectedDate,
                     day: moment(newDate?.toISOString()).format('DD'),
+                    date: moment(newDate?.toISOString()).format('YYYY-MM-DD'),
                   });
                   setSelectedDay(moment(newDate?.toISOString()).format('dddd'));
                 }}
@@ -472,6 +586,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
                 showDaysOutsideCurrentMonth
                 onMonthChange={(newDate) => {
                   const tmpDate = newDate.toISOString();
+                  setSelectedDay('');
                   setSelectedDate({
                     ...selectedDate,
                     month: moment(tmpDate).format('MM'),
@@ -498,18 +613,22 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
                 availableSchedule.time.map((time, index) => {
                   const { time_gap, day } = time;
                   if (selectedDay === day) {
-                    const idxMeetingDay = haveAppoinments.time.findIndex(
-                      (item) => item.day === selectedDay
-                    );
+                    const idxMeetingDay =
+                      appointments?.time!.findIndex((item) => item.day === selectedDay) ?? -1;
                     // console.log('time_gap', time_gap);
                     return time_gap.map((gap, idx) => (
                       <Button
+                        // newestTime
                         key={idx}
                         disabled={
                           idxMeetingDay > -1 &&
-                          haveAppoinments.time[idxMeetingDay].start.includes(gap)
+                          appointments?.time![idxMeetingDay].start_time.includes(gap)
                             ? true
-                            : false
+                            : false ||
+                              (!moment(todayDate, 'YYYY-MM-DD').isBefore(
+                                moment(selectedDate.date, 'YYYY-MM-DD')
+                              ) &&
+                                !moment(gap, 'h:mm A').isAfter(moment(newestTime, 'h:mm A')))
                         }
                         onClick={() => {
                           setSelectedTime(gap);
@@ -518,7 +637,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
                           backgroundColor: selectedTime === gap ? '#0E8478' : '#fff',
                           color:
                             idxMeetingDay > -1 &&
-                            haveAppoinments.time[idxMeetingDay].start.includes(gap)
+                            appointments?.time![idxMeetingDay].start_time.includes(gap)
                               ? '#000'
                               : selectedTime === gap
                               ? '#fff'
@@ -538,6 +657,51 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
             </Stack>
           </Grid>
         )}
+      <Grid
+        item
+        md={12}
+        xs={12}
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
+        <Box
+          sx={{
+            backgroundColor: 'background.default',
+            padding: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '50%',
+            gap: 5,
+            flexDirection: { md: 'row', xs: 'column' },
+          }}
+        >
+          <Button
+            disabled={isLoading}
+            onClick={() => {
+              setUserId('');
+            }}
+            sx={{
+              color: '#000',
+              ':hover': { backgroundColor: '#fff' },
+              padding: '10px 20px 10px 20px',
+            }}
+          >
+            رجوع
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={isLoading || !selectedTime}
+            sx={{
+              color: '#fff',
+              backgroundColor: 'background.paper',
+              padding: '10px 20px 10px 20px',
+            }}
+            startIcon={<CheckIcon />}
+          >
+            حفظ المواعيد
+          </Button>
+        </Box>
+      </Grid>
       {/* {date && (
         <Grid item md={5} xs={12}>
           <Stack direction="column" gap={'10px'}>
