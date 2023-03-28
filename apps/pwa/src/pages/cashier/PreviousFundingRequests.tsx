@@ -6,10 +6,17 @@ import { gettingPreviousRequests } from 'queries/project-supervisor/gettingPrevi
 import { getProposals } from 'queries/commons/getProposal';
 import useLocales from '../../hooks/useLocales';
 import useAuth from 'hooks/useAuth';
+import { useSelector } from 'redux/store';
+import { useEffect, useState } from 'react';
 
 function PreviousFundingRequests() {
   const { user } = useAuth();
   const { translate } = useLocales();
+
+  const { proposal } = useSelector((state) => state.proposal);
+
+  const [paymentFilter, setPayementFilter] = useState<any>([]);
+
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -18,6 +25,20 @@ function PreviousFundingRequests() {
     flexDirection: 'column',
     gap: 20,
   }));
+
+  useEffect(() => {
+    const acc_payments = proposal.number_of_payments_by_supervisor;
+    const payment_actual_done = proposal.payments.filter(
+      (el: { status: string }) => el.status === 'DONE'
+    ).length;
+
+    if (payment_actual_done === acc_payments && proposal.inner_status !== 'DONE_BY_CASHIER') {
+      setPayementFilter(['ACCEPTED_BY_FINANCE', 'DONE']);
+    } else {
+      setPayementFilter(['ACCEPTED_BY_FINANCE']);
+    }
+  }, [proposal]);
+
   return (
     // <Page title="طلبات الدعم سابقة">
     <Page title={translate('pages.common.previous_funding_requests')}>
@@ -81,7 +102,7 @@ function PreviousFundingRequests() {
                       _in: ['ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR'],
                     },
                     _not: {
-                      payments: { status: { _eq: 'ACCEPTED_BY_FINANCE' } },
+                      payments: { status: { _in: paymentFilter } },
                     },
                   },
                   {
@@ -91,21 +112,6 @@ function PreviousFundingRequests() {
                     payments: { status: { _in: ['DONE'] } },
                   },
                 ],
-                // _or: [
-                //   {
-                //     inner_status: {
-                //       _in: [
-                //         // 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
-                //         'DONE_BY_CASHIER',
-                //         'PROJECT_COMPLETED',
-                //         'REQUESTING_CLOSING_FORM',
-                //       ],
-                //     },
-                //   },
-                //   // { outter_status: { _in: ['COMPLETED', 'ONGOING'] } },
-                //   // { payments: { status: { _in: ['DONE'] } } },
-                // ],
-                // _not: { state: { _in: ['PROJECT_MANAGER', 'CASHIER'] } },
               },
             }}
           />

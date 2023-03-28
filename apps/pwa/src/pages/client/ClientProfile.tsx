@@ -44,9 +44,10 @@ interface ClientProfiles {
 function ClientProfile() {
   const { user, activeRole } = useAuth();
   const { currentLang, translate } = useLocales();
+
   const [newBoardOfDec, setNewBoardOfDec] = useState([]);
-  const [runTour, setRunTour] = useState(true);
   const [clientProfiles, setClientProfiles] = useState<ClientProfiles>();
+  const [runTour, setRunTour] = useState(false);
 
   // Step Joyride
   const steps: Step[] = [
@@ -121,6 +122,7 @@ function ClientProfile() {
       console.log(err);
     }
   };
+
   useEffect(() => {
     fetchingEditRequest();
     if (data && data.user_by_pk) {
@@ -130,6 +132,8 @@ function ClientProfile() {
         email: data.user_by_pk.email,
         count: data.proposal_aggregate.aggregate.count as number,
       });
+
+      ValidateDataClient();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
@@ -137,6 +141,59 @@ function ClientProfile() {
   if (fetching) return <>Loading ....</>;
 
   if (error) return <>{error.message}</>;
+
+  function ValidateDataClient() {
+    const {
+      authority,
+      date_of_esthablistmen,
+      headquarters,
+      num_of_employed_facility,
+      num_of_beneficiaries,
+      entity_mobile,
+      license_number,
+      license_issue_date,
+      license_expired,
+      license_file,
+      board_ofdec_file,
+      ceo_name,
+      chairman_mobile,
+      ceo_mobile,
+      chairman_name,
+      data_entry_name,
+      data_entry_mobile,
+      data_entry_mail,
+    } = data.user_by_pk.client_data;
+
+    if (
+      !Object.values({
+        authority,
+        date_of_esthablistmen,
+        headquarters,
+        num_of_employed_facility,
+        num_of_beneficiaries,
+        entity_mobile,
+        license_number,
+        license_issue_date,
+        license_expired,
+        license_file,
+        board_ofdec_file,
+        ceo_name,
+        chairman_mobile,
+        ceo_mobile,
+        chairman_name,
+        data_entry_name,
+        data_entry_mobile,
+        data_entry_mail,
+      }).some((val) => !val) &&
+      data.user_by_pk.bank_informations.length !== 0
+    ) {
+      console.log('semua terisi');
+      setRunTour(false);
+    } else {
+      console.log('ada yang belum terisi');
+      setRunTour(true);
+    }
+  }
 
   // const {
   //   user_by_pk: {
@@ -189,7 +246,7 @@ function ClientProfile() {
                 {clientProfiles?.client_data?.authority ?? '- No Data -'}
               </Typography>
             </Stack>
-            <Stack direction="row" spacing={3}>
+            <Stack direction="row" spacing={2}>
               <Button
                 startIcon={
                   <div>

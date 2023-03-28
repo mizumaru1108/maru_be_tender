@@ -4,34 +4,99 @@ import Page from 'components/Page';
 import useAuth from 'hooks/useAuth';
 import useResponsive from 'hooks/useResponsive';
 import Page500 from 'pages/Page500';
-import React from 'react';
+import React, { useEffect } from 'react';
 import LoadingPage from './LoadingPage';
 import UpdateInformation from './UpdateInformation';
 import { clientMainPage } from 'queries/client/clientMainPage';
 import { useQuery } from 'urql';
 import PreviousFundingInqueries from './PreviousFundingInqueries';
 import { useLocation } from 'react-router-dom';
+import { getProfileData } from 'queries/client/getProfileData';
 
 function UnActivatedAccount() {
   const isMobile = useResponsive('down', 'sm');
-  const { activeRole } = useAuth();
+  const { user, activeRole } = useAuth();
   const location = useLocation();
 
   const urlArr: string[] = location.pathname.split('/');
   const getUrlArr = `${urlArr[1]}/${urlArr[2]}/${urlArr[3]}`;
-  // console.log('urlArr', getUrlArr);
 
-  const [open, setOpen] = React.useState<boolean>(true);
+  const [open, setOpen] = React.useState<boolean>(false);
 
   const [result, mutate] = useQuery({
     query: clientMainPage,
   });
   const { data, fetching, error } = result;
 
+  const [clientProfile, _] = useQuery({
+    query: getProfileData,
+    variables: { id: user?.id },
+  });
+  const { data: clientData, fetching: fetchingData, error: eror } = clientProfile;
+
+  useEffect(() => {
+    if (clientData && clientData.user_by_pk) {
+      ValidateDataClient();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clientData]);
+
   if (fetching) return <LoadingPage />;
+  if (fetchingData) return <LoadingPage />;
   if (error) return <Page500 error={error.message} />;
 
-  console.log('data', data);
+  function ValidateDataClient() {
+    const {
+      authority,
+      date_of_esthablistmen,
+      headquarters,
+      num_of_employed_facility,
+      num_of_beneficiaries,
+      entity_mobile,
+      license_number,
+      license_issue_date,
+      license_expired,
+      license_file,
+      board_ofdec_file,
+      ceo_name,
+      chairman_mobile,
+      ceo_mobile,
+      chairman_name,
+      data_entry_name,
+      data_entry_mobile,
+      data_entry_mail,
+    } = clientData.user_by_pk.client_data;
+
+    if (
+      !Object.values({
+        authority,
+        date_of_esthablistmen,
+        headquarters,
+        num_of_employed_facility,
+        num_of_beneficiaries,
+        entity_mobile,
+        license_number,
+        license_issue_date,
+        license_expired,
+        license_file,
+        board_ofdec_file,
+        ceo_name,
+        chairman_mobile,
+        ceo_mobile,
+        chairman_name,
+        data_entry_name,
+        data_entry_mobile,
+        data_entry_mail,
+      }).some((val) => !val) &&
+      clientData.user_by_pk.bank_informations.length !== 0
+    ) {
+      console.log('semua terisi');
+      setOpen(false);
+    } else {
+      console.log('ada yang belum terisi');
+      setOpen(true);
+    }
+  }
 
   const showProposal =
     getUrlArr === 'client/dashboard/app' &&
