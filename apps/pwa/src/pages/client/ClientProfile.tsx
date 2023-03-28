@@ -123,9 +123,9 @@ function ClientProfile() {
   };
   useEffect(() => {
     fetchingEditRequest();
-    if (data) {
+    if (data && data.user_by_pk) {
       setClientProfiles({
-        bank_informations: data.user_by_pk.bank_informations,
+        bank_informations: data.user_by_pk.bank_informations ?? [],
         client_data: data.user_by_pk.client_data,
         email: data.user_by_pk.email,
         count: data.proposal_aggregate.aggregate.count as number,
@@ -230,16 +230,18 @@ function ClientProfile() {
                 {/* تعديل معلومات الحساب */}
                 {translate('pages.client.edit_user_information')}
               </Button>
-              <ReactJoyride
-                steps={steps}
-                run={runTour}
-                // callback={handleJoyrideCallback}
-                hideCloseButton
-                disableCloseOnEsc
-                disableScrollParentFix
-                disableScrolling
-                scrollToFirstStep
-              />
+              {!fetching && !loadingEditButton && (
+                <ReactJoyride
+                  steps={steps}
+                  run={runTour}
+                  // callback={handleJoyrideCallback}
+                  hideCloseButton
+                  disableCloseOnEsc
+                  disableScrollParentFix
+                  disableScrolling
+                  scrollToFirstStep
+                />
+              )}
               <LoadingButton
                 id="information"
                 loading={loadingEditButton}
