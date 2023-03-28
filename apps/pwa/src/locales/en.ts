@@ -305,6 +305,8 @@ const en = {
           proposalStatistic: 'Project Statistic',
           totalProposal: 'Total projects',
           totalBudget: 'Total budgets',
+          totalReservedBudget: 'Total reserved budget',
+          totalSpendBudget: 'Total spend budget',
           totalAcceptingBudget: 'Total accepting budgets',
         },
       },

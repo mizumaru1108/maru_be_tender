@@ -1,44 +1,54 @@
+import React, { useEffect, useState } from 'react';
 // component
-import { Box, Grid, Stack, Typography, useTheme } from '@mui/material';
-import Label from 'components/Label';
-import Image from 'components/Image';
+import { Grid, Typography } from '@mui/material';
+import TrackCardBudget from './TrackCardBudget';
 // hooks
-import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 // urql + query
 import { useQuery } from 'urql';
-import { getDailyTrackBudget } from 'queries/project-supervisor/getTrackBudget';
+import { getTrackBudgetAdmin } from 'queries/project-supervisor/getTrackBudget';
 //
-import moment from 'moment';
-import { fCurrencyNumber } from 'utils/formatNumber';
-import React from 'react';
-// config
 import { FEATURE_DAILY_STATUS } from 'config';
 
-function TrackBudget() {
-  const theme = useTheme();
-  const { translate } = useLocales();
-  const { user } = useAuth();
+// ------------------------------------------------------------------------------------------
 
-  const [result] = useQuery({
-    query: getDailyTrackBudget,
-    variables: {
-      // first_date: moment().startOf('day').toISOString(),
-      // first_date: '2022-01-01T17:00:00.000Z',
-      // second_date: moment().endOf('day').toISOString(),
-    },
+export interface ITrackList {
+  name: string;
+  total_budget: number;
+  total_spend_budget: number;
+  total_reserved_budget: number;
+}
+
+// ------------------------------------------------------------------------------------------
+
+export default function TrackBudget() {
+  const { translate } = useLocales();
+  const [trackList, setTrackList] = useState<ITrackList[] | []>([]);
+
+  const [{ data, fetching, error }] = useQuery({
+    query: getTrackBudgetAdmin,
   });
 
-  const { data, fetching, error } = result;
+  useEffect(() => {
+    if (data) {
+      const newData = data.track.map((el: any) => ({
+        name: el.name,
+        total_budget: el.totalBudget.aggregate.sum.budget,
+        total_spend_budget: el.totalSpendBudget.aggregate.sum.fsupport_by_supervisor,
+        total_reserved_budget:
+          el.totalBudget.aggregate.sum.budget -
+          el.totalSpendBudget.aggregate.sum.fsupport_by_supervisor,
+      }));
+
+      setTrackList(newData);
+    }
+  }, [data]);
 
   if (fetching) return <>{translate('pages.common.loading')}</>;
   if (error) return <>{error.message}</>;
 
   return (
-    <Grid container spacing={2} sx={{ mt: '1px' }}>
-      <Grid item md={12}>
-        <Typography variant="h4">{translate('content.client.main_page.track_budget')}</Typography>
-      </Grid>
+    <Grid container columnSpacing={2} rowSpacing={4} sx={{ mt: '1px' }}>
       {!FEATURE_DAILY_STATUS ? (
         <Grid item md={12} sx={{ mb: 0 }}>
           <Typography variant="inherit" sx={{ fontStyle: 'italic' }}>
@@ -49,50 +59,9 @@ function TrackBudget() {
         <React.Fragment>
           {!fetching && data ? (
             <React.Fragment>
-              <Grid item md={2} xs={12}>
-                <Box
-                  sx={{
-                    borderRadius: 1,
-                    backgroundColor: '#fff',
-                    p: 2,
-                  }}
-                >
-                  <Image
-                    src={`/icons/rial-currency.svg`}
-                    alt="icon_riyals"
-                    sx={{ display: 'inline-flex' }}
-                  />
-                  <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
-                    {translate('content.administrative.statistic.heading.totalBudget')}
-                  </Typography>
-                  <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                    {fCurrencyNumber(data.totalBudget.aggregate.sum.amount_required_fsupport)}
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item md={2} xs={12}>
-                <Box
-                  sx={{
-                    borderRadius: 1,
-                    backgroundColor: '#fff',
-                    p: 2,
-                  }}
-                >
-                  <Image
-                    src={`/icons/rial-currency.svg`}
-                    alt="icon_riyals"
-                    sx={{ display: 'inline-flex' }}
-                  />
-                  <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
-                    {translate('content.administrative.statistic.heading.totalAcceptingBudget')}
-                  </Typography>
-                  <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                    {fCurrencyNumber(
-                      data.totalAcceptingBudget.aggregate.sum.fsupport_by_supervisor
-                    )}
-                  </Typography>
-                </Box>
-              </Grid>
+              {trackList.map((el, i) => (
+                <TrackCardBudget data={el} key={i} />
+              ))}
             </React.Fragment>
           ) : null}
         </React.Fragment>
@@ -100,5 +69,3 @@ function TrackBudget() {
     </Grid>
   );
 }
-
-export default TrackBudget;
