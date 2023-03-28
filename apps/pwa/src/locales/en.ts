@@ -1942,14 +1942,21 @@ const en = {
     meeting_time: 'Meeting Time',
     action: 'Action',
     project_number: 'Project Id',
+    status_id: 'Status',
   },
   appointment_table: {
     today_headline: 'Today Appointments',
     upcoming_headline: 'Upcoming Appointments',
+    form: {
+      reject_reason: 'Reject Reason',
+    },
   },
   appointment: {
     meeting_schedule_header: 'Appointments available for the partner',
     meeting_schedule_sub_header: 'Please choose the appropriate day and time',
+    no_data: 'No data available',
+    no_schedule: 'No schedule available for this partner',
+    no_appointment: 'There is no available appointments',
   },
 };
 

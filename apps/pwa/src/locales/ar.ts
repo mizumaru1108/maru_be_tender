@@ -1975,14 +1975,21 @@ const ar = {
     meeting_time: 'وقت الاجتماع',
     action: 'الإجراء',
     project_number: 'رقم المشروع',
+    status_id: 'الحالة',
   },
   appointment_table: {
     today_headline: 'الحضور اليوم',
     upcoming_headline: 'الحضور المتبقية',
+    form: {
+      reject_reason: 'السبب الرفض',
+    },
   },
   appointment: {
     meeting_schedule_header: 'المواعيدالمتوافرة للشريك',
     meeting_schedule_sub_header: 'الرجاء اختيار اليوم والوقت المناسب',
+    no_data: 'لا توجد تقديمات',
+    no_schedule: 'لا توجد تقديمات',
+    no_appointment: 'لا توجد تقديمات',
   },
 };
 
