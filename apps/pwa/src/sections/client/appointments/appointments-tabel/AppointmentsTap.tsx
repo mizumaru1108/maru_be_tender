@@ -1,5 +1,7 @@
 import { Box, Stack } from '@mui/material';
+import moment from 'moment';
 import React from 'react';
+import { IArrayAppointments } from '../../../../@types/appointment';
 import {
   Appointments,
   AppointmentsTableHeader,
@@ -7,7 +9,6 @@ import {
 import AppointmentsTable from '../../../../components/table/appointment/client/AppointmentsTable';
 import useLocales from '../../../../hooks/useLocales';
 import TodaysAppointments from './TodaysAppointments';
-import UpcomingAppointments from './UpcomingAppointments';
 const mock_data: Appointments[] = [
   {
     id: '1',
@@ -18,30 +19,72 @@ const mock_data: Appointments[] = [
   },
 ];
 
-function AppointmentsTap() {
+interface Props {
+  defaultValues: IArrayAppointments[];
+}
+
+function AppointmentsTap({ defaultValues }: Props) {
   const { translate, currentLang } = useLocales();
   const [isLoading, setIsLoading] = React.useState(false);
   const [appointments, setAppointments] = React.useState<Appointments[]>([]);
+  const [todayAppointments, setTodayAppointments] = React.useState<Appointments[]>([]);
+  const [upcomingAppointments, setUpcomingAppointments] = React.useState<Appointments[]>([]);
+
+  // !moment(gap, 'h:mm A').isAfter(moment(newestTime, 'h:mm A')))
 
   React.useEffect(() => {
     if (mock_data) {
-      setAppointments(
-        mock_data.map((appointment: Appointments) => ({
-          id: appointment.id,
-          meetingId: appointment.meetingId,
-          meetingTime: appointment.meetingTime,
-          employee: appointment.employee,
-          appointmentLink: appointment.appointmentLink,
-        }))
-      );
+      const todayDate = moment().format('DD-MM-YYYY');
+      const tmpTodayValues = defaultValues
+        .filter(
+          (item: IArrayAppointments) =>
+            item.status === 'confirmed' &&
+            moment(item.date, 'DD-MM-YYYY').isSame(moment(todayDate, 'DD-MM-YYYY'))
+        )
+        .map((item: IArrayAppointments) => ({
+          id: item.status.charAt(0).toUpperCase() + item.status.slice(1),
+          meetingId: item.id,
+          meetingTime: `${moment(item.date).format('DD-MM-YYYY')} ${item.start_time} - ${
+            item.end_time
+          }`,
+          employee: item.employee_name ?? 'Un Provide',
+          appointmentLink: item.meeting_url,
+        }));
+      const tmpUpcomingValues = defaultValues
+        .filter(
+          (item: IArrayAppointments) =>
+            item.status === 'confirmed' &&
+            moment(item.date, 'DD-MM-YYYY').isAfter(moment(todayDate, 'DD-MM-YYYY'))
+        )
+        .map((item: IArrayAppointments) => ({
+          id: item.status.charAt(0).toUpperCase() + item.status.slice(1),
+          meetingId: item.id,
+          meetingTime: `${moment(item.date).format('DD-MM-YYYY')} ${item.start_time} - ${
+            item.end_time
+          }`,
+          employee: item.employee_name ?? 'Un Provide',
+          appointmentLink: item.meeting_url,
+        }));
+      // console.log({ tmpTodayValues, tmpUpcomingValues });
+      setTodayAppointments(tmpTodayValues);
+      setUpcomingAppointments(tmpUpcomingValues);
+      // setAppointments(
+      //   mock_data.map((appointment: Appointments) => ({
+      //     id: appointment.id,
+      //     meetingId: appointment.meetingId,
+      //     meetingTime: appointment.meetingTime,
+      //     employee: appointment.employee,
+      //     appointmentLink: appointment.appointmentLink,
+      //   }))
+      // );
     }
     // eslint-disable-next-line
   }, [currentLang]);
 
   const headerCells: AppointmentsTableHeader[] = [
     {
-      id: 'projectNumber',
-      label: translate('appointments_headercell.project_number'),
+      id: 'statusId',
+      label: translate('appointments_headercell.status_id'),
       align: 'left',
     },
     { id: 'meetingTime', label: translate('appointments_headercell.meeting_time'), align: 'left' },
@@ -53,7 +96,7 @@ function AppointmentsTap() {
     {
       id: 'action',
       label: translate('appointments_headercell.action'),
-      align: 'left',
+      align: 'center',
     },
   ];
 
@@ -72,14 +115,14 @@ function AppointmentsTap() {
           headline={translate('appointment_table.today_headline')}
           isLoading={isLoading}
           headerCell={headerCells}
-          data={appointments ?? []}
+          data={todayAppointments ?? []}
           isRequest={false}
         />
         <AppointmentsTable
           headline={translate('appointment_table.upcoming_headline')}
           isLoading={isLoading}
           headerCell={headerCells}
-          data={appointments ?? []}
+          data={upcomingAppointments ?? []}
           isRequest={false}
         />
       </Stack>

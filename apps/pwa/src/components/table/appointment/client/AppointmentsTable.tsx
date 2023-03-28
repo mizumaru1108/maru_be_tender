@@ -29,6 +29,7 @@ import { useDispatch, useSelector } from 'redux/store';
 import Scrollbar from 'components/Scrollbar';
 import { Appointments, AppointmentsManagementTableProps } from './appointments';
 import AppointmentsTableRow from './AppointmentsRow';
+import EmptyContent from '../../../EmptyContent';
 
 export default function AppointmentsTable({
   data,
@@ -106,8 +107,20 @@ export default function AppointmentsTable({
 
   useEffect(() => {
     setTableData(data);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [data]);
+
+  const handleAccept = (id: string) => {
+    // console.log({ id });
+    if (!!id) {
+      onAccept!(id);
+    }
+  };
+  const handleReject = (data: any) => {
+    // console.log({ data });
+    if (!!data) {
+      onReject!(data);
+    }
+  };
 
   return (
     <>
@@ -124,7 +137,16 @@ export default function AppointmentsTable({
           </Typography>
         </Box>
       )}
-      {!isLoading && (
+
+      {!isLoading && tableData.length === 0 && (
+        <EmptyContent
+          title={translate('appointment.no_appointment')}
+          sx={{
+            '& span.MuiBox-root': { height: 100 },
+          }}
+        />
+      )}
+      {!isLoading && tableData.length > 0 && (
         <Scrollbar>
           <TableContainer sx={{ minWidth: 800, position: 'relative' }}>
             <Table
@@ -157,6 +179,16 @@ export default function AppointmentsTable({
                         key={appointment.id}
                         row={appointment}
                         isRequest={isRequest}
+                        onAccept={(id: string) => {
+                          if (!!id) {
+                            handleAccept(id);
+                          }
+                        }}
+                        onReject={(data: any) => {
+                          if (!!data) {
+                            handleReject(data);
+                          }
+                        }}
                       />
                     ))}
               </TableBody>

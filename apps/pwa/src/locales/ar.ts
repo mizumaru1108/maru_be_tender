@@ -1982,8 +1982,17 @@ const ar = {
   appointment_table: {
     today_headline: 'الحضور اليوم',
     upcoming_headline: 'الحضور المتبقية',
+    requested_headline: 'الطلبات المطلوبة',
     form: {
-      reject_reason: 'السبب الرفض',
+      reject_reason: {
+        title: 'السبب الرفض',
+        placeholder: 'الرجاء إدخال السبب الرفض',
+      },
+    },
+    button: {
+      accep: 'تأكيد',
+      reject: 'رفض',
+      start_meeting: 'إبدأ الاجتماع',
     },
   },
   appointment: {

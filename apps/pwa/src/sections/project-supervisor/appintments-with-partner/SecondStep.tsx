@@ -1,3 +1,4 @@
+import CheckIcon from '@mui/icons-material/Check';
 import {
   Badge,
   Box,
@@ -6,27 +7,29 @@ import {
   Grid,
   IconButton,
   Stack,
-  TextField,
   Typography,
 } from '@mui/material';
-import { CalendarPicker, LocalizationProvider, StaticDatePicker } from '@mui/x-date-pickers';
-import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import { styled } from '@mui/material/styles';
+import { CalendarPicker } from '@mui/x-date-pickers';
+import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import dayjs, { Dayjs } from 'dayjs';
-import * as React from 'react';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { isWeekend } from 'date-fns';
 import moment from 'moment';
-import useResponsive from '../../../hooks/useResponsive';
-import { useNavigate } from 'react-router';
 import { useSnackbar } from 'notistack';
-import axiosInstance from '../../../utils/axios';
-import useAuth from '../../../hooks/useAuth';
+import * as React from 'react';
+import { useNavigate } from 'react-router';
+import {
+  IAppointments,
+  IAppointmentsTime,
+  IArrayAppointments,
+  IAvailableDay,
+  IAvailableTime,
+  ISelectedDate,
+} from '../../../@types/appointment';
 import EmptyContent from '../../../components/EmptyContent';
+import useAuth from '../../../hooks/useAuth';
 import useLocales from '../../../hooks/useLocales';
-import { yearPickerClasses } from '@mui/lab';
-import CheckIcon from '@mui/icons-material/Check';
+import useResponsive from '../../../hooks/useResponsive';
+import axiosInstance from '../../../utils/axios';
 
 interface CustomPickerDayProps extends PickersDayProps<Dayjs> {
   available: boolean;
@@ -108,47 +111,6 @@ const CustomPickersDay = styled(PickersDay, {
   }),
 })) as React.ComponentType<CustomPickerDayProps>;
 
-interface IAvailableTime {
-  day: string;
-  time_gap: string[];
-}
-interface IAvailableDay {
-  days: string[];
-  time: IAvailableTime[];
-}
-
-interface IAppointmentsTime {
-  date: string;
-  day: string;
-  start_time: string;
-  end_time: string;
-}
-interface IAppointments {
-  days?: string[];
-  time?: IAppointmentsTime[];
-}
-interface ISelectedDate {
-  date?: string;
-  day?: string;
-  month?: string;
-  year?: string;
-}
-interface IArrayAppointments {
-  id: string;
-  employee_id: string;
-  user_id: string;
-  meeting_url: string;
-  calendar_url: string;
-  date: Date;
-  start_time: string;
-  end_time: string;
-  reject_reason: string;
-  status: string;
-  day: string;
-  created_at: Date;
-  updated_at: Date;
-  calendar_event_id: string;
-}
 function SecondStep({ userId, setUserId, partnerName }: any) {
   // const [value, setValue] = React.useState<Date | number | null>(new Date());
   const navigate = useNavigate();
@@ -263,9 +225,9 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
   };
 
   const disableUnAvailableDays = (date: Dayjs) =>
-    !availableSchedule!.days.includes(DAYS[date.get('day')]) ||
-    date.isBefore(dayjs(), 'day') ||
-    moment(date?.toISOString()).format('YYYY MM DD') === todayDate;
+    !availableSchedule!.days.includes(DAYS[date.get('day')]) || date.isBefore(dayjs(), 'day');
+  // moment(date.toISOString(), 'DD-MM-YYYY').isBefore(todayDate) ||
+  // moment(date?.toISOString()).format('YYYY MM DD') === todayDate;
 
   React.useEffect(() => {
     if (!isLoading) {
@@ -332,11 +294,8 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
           headers: { 'x-hasura-role': activeRole! },
         }
       );
-      // console.log('rest', rest.data.data);
       if (rest) {
         const tmpValue: IArrayAppointments[] = rest.data.data.length > 0 ? rest.data.data : [];
-        // const tmpDates: string[] =
-        //   tmpValue.map((item: IArrayAppointments) => moment(item.date).format('DD')) ?? [];
         const tmpDates: string[] =
           tmpValue
             .filter(
@@ -344,17 +303,6 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
                 item.status !== 'tentative' && item.status !== 'declined'
             )
             .map((item: IArrayAppointments) => moment(item.date).format('DD')) ?? [];
-        // const tmpTimes: IAppointmentsTime[] = tmpValue.map((item: IArrayAppointments) => {
-        //   const { start_time, end_time, date } = item;
-        //   const tmpDate = moment(date).format('DD');
-        //   const tmpDay = moment(date).format('dddd');
-        //   return {
-        //     start_time,
-        //     end_time,
-        //     date: tmpDate,
-        //     day: tmpDay,
-        //   };
-        // });
         const tmpTimes: IAppointmentsTime[] = tmpValue
           .filter(
             (item: IArrayAppointments) => item.status !== 'tentative' && item.status !== 'declined'
@@ -381,7 +329,6 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
             time: [],
           });
         }
-        // console.log('tmpTimes', tmpTimes);
       }
     } catch (err) {
       console.log('err', err);
@@ -408,13 +355,12 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
   // console.log({ authCode });
 
   const handleSubmit = async () => {
-    // setIsLoading(true);
+    setIsLoading(true);
     localStorage.setItem('partnerMeetingId', userId);
 
     const start_moment = moment(selectedTime, 'hh:mm A');
     const end_moment = start_moment.add(1, 'hours');
     const end_time = end_moment.format('hh:mm A');
-    // console.log({ end_time });
 
     const tmpValues = {
       authCode: localStorage.getItem('authCodeMeeting') as string,
@@ -442,11 +388,8 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
         navigate('/dashboard/appointments-with-partners');
         localStorage.setItem('authCodeMeeting', '');
         localStorage.setItem('partnerMeetingId', '');
-        // setIsLoad(false);
       }
     } catch (err) {
-      // setIsLoad(false);
-      // console.log('err.message', err.message);
       if (err.statusCode === 401) {
         const messages = err.message;
         const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -456,14 +399,6 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
         }
       }
       if (err.statusCode !== 401) {
-        enqueueSnackbar(
-          `${err.statusCode < 500 && err.message ? err.message : 'something went wrong!'}`,
-          {
-            variant: 'error',
-            preventDuplicate: true,
-            autoHideDuration: 3000,
-          }
-        );
       }
     } finally {
       setIsLoading(false);
@@ -535,7 +470,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
           sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         >
           <EmptyContent
-            title="There is no available day for this client"
+            title={translate('appointment.no_schedule')}
             sx={{
               '& span.MuiBox-root': { height: 160 },
             }}

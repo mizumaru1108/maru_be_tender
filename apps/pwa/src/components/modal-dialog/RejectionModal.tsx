@@ -42,11 +42,18 @@ function RejectionModal({ open, handleClose, onReject, message }: Props) {
     formState: { isSubmitting },
   } = methods;
   const onSubmitForm = async (data: any) => {
-    onReject(data);
+    onReject(data.reject_reason);
     handleClose();
     reset({
       reject_reason: '',
     });
+  };
+
+  const closeModal = () => {
+    reset({
+      reject_reason: '',
+    });
+    handleClose();
   };
 
   return (
@@ -65,8 +72,8 @@ function RejectionModal({ open, handleClose, onReject, message }: Props) {
             <Grid item md={12} xs={12}>
               <RHFTextArea
                 name="reject_reason"
-                label="reject_reason"
-                placeholder="state your reject reason"
+                label={translate('appointment_table.form.reject_reason.title')}
+                placeholder={translate('appointment_table.form.reject_reason.placeholder')}
               />
             </Grid>
           </Grid>
@@ -110,7 +117,7 @@ function RejectionModal({ open, handleClose, onReject, message }: Props) {
           </Stack>
         }
         isOpen={open}
-        onClose={handleClose}
+        onClose={closeModal}
         styleContent={{ padding: '1em', backgroundColor: '#fff' }}
       />
     </FormProvider>

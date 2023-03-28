@@ -17,6 +17,8 @@ export interface AppointmentsTableHeader {
 export interface AppointmentsTableColumn {
   row: Appointments;
   isRequest: boolean;
+  onReject: (data: any) => void;
+  onAccept: (id: string) => void;
   // selected?: boolean;
   // onSelectRow?: VoidFunction;
   // destination?: string;

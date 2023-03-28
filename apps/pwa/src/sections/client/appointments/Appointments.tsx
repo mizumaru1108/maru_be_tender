@@ -1,5 +1,16 @@
-import { Tabs, Tab, Button, Grid, Stack, Typography, Box, styled } from '@mui/material';
-import { useState } from 'react';
+import {
+  Tabs,
+  Tab,
+  Button,
+  Grid,
+  Stack,
+  Typography,
+  Box,
+  styled,
+  Skeleton,
+  CircularProgress,
+} from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import AppointmentsTap from './appointments-tabel/AppointmentsTap';
 import AppointmentsRequests from './appointments-requests/AppointmentsRequests';
@@ -9,6 +20,9 @@ import { query } from 'firebase/firestore';
 import { getScheduleByUser } from 'queries/client/getScheduleByUser';
 import { useQuery } from 'urql';
 import useLocales from 'hooks/useLocales';
+import { useSnackbar } from 'notistack';
+import axiosInstance from '../../../utils/axios';
+import { IArrayAppointments } from '../../../@types/appointment';
 interface TabPanelProps {
   children?: React.ReactNode;
   dir?: string;
@@ -41,16 +55,53 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 function Appointments() {
   const { translate } = useLocales();
-  const { user } = useAuth();
-  const id = user?.id;
-  const [result, mutate] = useQuery({ query: getScheduleByUser, variables: { id } });
-  const { data, fetching, error } = result;
+  const { user, activeRole } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
+  // const id = user?.id;
+  // const [result, mutate] = useQuery({ query: getScheduleByUser, variables: { id } });
+  // const { data, fetching, error } = result;
   const theme = useTheme();
   const navigate = useNavigate();
   const [value, setValue] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [fetching, setFetching] = useState(false);
+
+  const [appointments, setAppointments] = useState<IArrayAppointments[]>();
+
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
+  const fetchingSchedule = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const rest = await axiosInstance.get(`/tender/appointments/mine`, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
+      if (rest) {
+        // console.log('rest', rest.data.data);
+        setAppointments(rest.data.data);
+      }
+    } catch (err) {
+      console.log('err', err);
+      enqueueSnackbar(err.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [activeRole, enqueueSnackbar]);
+
+  useEffect(() => {
+    fetchingSchedule();
+  }, [fetchingSchedule, fetching]);
+
   // if (error) return <>Ooops, some errors have been occured</>;
   // if (fetching) return <>...Loading</>;
   // console.log(data);
@@ -101,7 +152,7 @@ function Appointments() {
             sx={{
               bgcolor: '#93A3B029',
               borderRadius: 2,
-              flex: 0.3,
+              // flex: 0.3,
             }}
           >
             <Tab
@@ -142,7 +193,14 @@ function Appointments() {
               label={
                 <Grid container>
                   <Grid item md={10} xs={12}>
-                    <Typography>{translate('requests_for_meeting') + ' (4)'} </Typography>
+                    <Typography>
+                      {translate('requests_for_meeting') +
+                        ` (${
+                          appointments?.filter(
+                            (item: IArrayAppointments) => item.status === 'tentative'
+                          ).length ?? 0
+                        })`}
+                    </Typography>
                   </Grid>
                   {/* <Grid item md={2} xs={12}>
                     <Box
@@ -178,7 +236,14 @@ function Appointments() {
           <TabPanel value={value} index={0} dir={theme.direction}>
             <ContentStyle sx={{ mt: 3 }}>
               <Typography variant="h4">
-                <AppointmentsTap />
+                {!isLoading ? (
+                  <AppointmentsTap defaultValues={appointments ?? []} />
+                ) : (
+                  <Skeleton variant="rounded" height={160} />
+                  // <Stack justifyContent={'center'} alignItems={'center'}>
+                  //   <CircularProgress />
+                  // </Stack>
+                )}
               </Typography>
             </ContentStyle>
           </TabPanel>
@@ -187,7 +252,19 @@ function Appointments() {
           <TabPanel value={value} index={1} dir={theme.direction}>
             <ContentStyle sx={{ mt: 3 }}>
               <Typography variant="h4">
-                <AppointmentsRequests />
+                {!isLoading ? (
+                  <AppointmentsRequests
+                    defaultValues={appointments ?? []}
+                    refetch={() => {
+                      setFetching(!fetching);
+                    }}
+                  />
+                ) : (
+                  // <Stack justifyContent={'center'} alignItems={'center'}>
+                  //   <CircularProgress />
+                  // </Stack>
+                  <Skeleton variant="rounded" height={160} />
+                )}
               </Typography>
             </ContentStyle>
           </TabPanel>

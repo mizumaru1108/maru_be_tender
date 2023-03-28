@@ -1949,8 +1949,17 @@ const en = {
   appointment_table: {
     today_headline: 'Today Appointments',
     upcoming_headline: 'Upcoming Appointments',
+    requested_headline: 'Requested Appointments',
     form: {
-      reject_reason: 'Reject Reason',
+      reject_reason: {
+        title: 'Reject Reason',
+        placeholder: 'Please enter reject reason',
+      },
+    },
+    button: {
+      accept: 'Accept',
+      reject: 'Reject',
+      start_meeting: 'Start Meeting',
     },
   },
   appointment: {

@@ -312,7 +312,7 @@ function StepOne({ handleOnOpen, handleSetId, handleSetPartnerName }: Props) {
                       )}
                       {!isLoading && clients.length === 0 && (
                         <EmptyContent
-                          title="No Data"
+                          title={translate('appointment.no_data')}
                           sx={{
                             '& span.MuiBox-root': { height: 160 },
                           }}

@@ -7,6 +7,11 @@ import {
 import React from 'react';
 import useLocales from '../../../../hooks/useLocales';
 import AppointmentsTable from '../../../../components/table/appointment/client/AppointmentsTable';
+import { IArrayAppointments } from '../../../../@types/appointment';
+import moment from 'moment';
+import { useSnackbar } from 'notistack';
+import useAuth from '../../../../hooks/useAuth';
+import axiosInstance from '../../../../utils/axios';
 
 const mock_data: Appointments[] = [
   {
@@ -17,30 +22,40 @@ const mock_data: Appointments[] = [
     appointmentLink: 'https://google.com',
   },
 ];
-function AppointmentsRequests() {
+
+interface Props {
+  defaultValues: IArrayAppointments[];
+  refetch: () => void;
+}
+
+function AppointmentsRequests({ defaultValues, refetch }: Props) {
   const { translate, currentLang } = useLocales();
   const [isLoading, setIsLoading] = React.useState(false);
   const [appointments, setAppointments] = React.useState<Appointments[]>([]);
+  const { enqueueSnackbar } = useSnackbar();
+  const { activeRole } = useAuth();
 
   React.useEffect(() => {
-    if (mock_data) {
-      setAppointments(
-        mock_data.map((appointment: Appointments) => ({
-          id: appointment.id,
-          meetingId: appointment.meetingId,
-          meetingTime: appointment.meetingTime,
-          employee: appointment.employee,
-          appointmentLink: appointment.appointmentLink,
-        }))
-      );
+    if (defaultValues.length > 0) {
+      const tmpValues = defaultValues
+        .filter((item: IArrayAppointments) => item.status === 'tentative')
+        .map((item: IArrayAppointments) => ({
+          id: item.status.charAt(0).toUpperCase() + item.status.slice(1),
+          meetingId: item.id,
+          meetingTime: `${moment(item.date).format('DD-MM-YYYY')} ${item.start_time} - ${
+            item.end_time
+          }`,
+          employee: item.employee_name ?? 'Un Provide',
+          appointmentLink: item.meeting_url,
+        }));
+      setAppointments(tmpValues);
     }
-    // eslint-disable-next-line
-  }, [currentLang]);
+  }, [currentLang, defaultValues]);
 
   const headerCells: AppointmentsTableHeader[] = [
     {
-      id: 'projectNumber',
-      label: translate('appointments_headercell.project_number'),
+      id: 'statusId',
+      label: translate('appointments_headercell.status_id'),
       align: 'left',
     },
     { id: 'meetingTime', label: translate('appointments_headercell.meeting_time'), align: 'left' },
@@ -52,18 +67,95 @@ function AppointmentsRequests() {
     {
       id: 'action',
       label: translate('appointments_headercell.action'),
-      align: 'left',
+      align: 'center',
     },
   ];
+
+  const handleAccept = async (id: string) => {
+    // console.log({ id });
+    setIsLoading(true);
+    try {
+      const rest = await axiosInstance.patch(
+        'tender/appointments/response-invitation',
+        {
+          appointmentId: id,
+          response: 'confirmed',
+        },
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
+      if (rest) {
+        enqueueSnackbar('Meeting has been accepted', {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+        refetch();
+      }
+    } catch (err) {
+      enqueueSnackbar(
+        `${err.statusCode < 500 && err.message ? err.message : 'something went wrong!'}`,
+        {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        }
+      );
+      refetch();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleReject = async (data: any) => {
+    // console.log({ data });
+    setIsLoading(true);
+    try {
+      const rest = await axiosInstance.patch(
+        'tender/appointments/response-invitation',
+        {
+          appointmentId: data.id,
+          reject_reason: data.reject_reason,
+          response: 'declined',
+        },
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
+      if (rest) {
+        enqueueSnackbar('Meeting has been rejected', {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+        refetch();
+      }
+    } catch (err) {
+      enqueueSnackbar(
+        `${err.statusCode < 500 && err.message ? err.message : 'something went wrong!'}`,
+        {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        }
+      );
+      refetch();
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Stack direction="column" gap={3}>
       <AppointmentsTable
-        headline={translate('appointment_table.today_headline')}
+        headline={translate('appointment_table.requested_headline')}
         isLoading={isLoading}
         headerCell={headerCells}
         data={appointments ?? []}
         isRequest={true}
+        onAccept={handleAccept}
+        onReject={handleReject}
       />
       {/* <Box
         sx={{
