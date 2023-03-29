@@ -92,6 +92,7 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
           display: 'inline-block',
         }}
         onClick={() => {
+          localStorage.setItem('partnerMeetingId', '');
           dispatch(setActiveConversationId(null));
           dispatch(setConversation([]));
           dispatch(setMessageGrouped([]));

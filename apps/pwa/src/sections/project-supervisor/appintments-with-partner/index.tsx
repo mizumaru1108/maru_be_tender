@@ -130,6 +130,7 @@ function AppointmentsEmployee() {
             py: '10px',
           }}
           onClick={() => {
+            localStorage.setItem('partnerMeetingId', '');
             navigate('/project-supervisor/dashboard/appointments-with-partners/booking');
           }}
         >
