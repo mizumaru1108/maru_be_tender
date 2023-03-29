@@ -644,6 +644,7 @@ const en = {
       concessional_grants: 'Concessional Grants Track',
     },
     filter_button_label: 'Filter',
+    chip_ongoing: 'The request is ongoing',
     chip_canceled: 'The request is canceled',
     chip_completed: 'The request is complete',
     chip_pending: 'The request is pending',

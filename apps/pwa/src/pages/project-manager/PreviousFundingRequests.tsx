@@ -51,7 +51,7 @@ function PreviousFundingRequests() {
         <ContentStyle>
           <CardTableBE
             resource={getProposals}
-            title={translate('content.client.main_page.process_request')}
+            title={translate('pages.common.previous_funding_requests')}
             cardFooterButtonAction="show-project"
             destination="previous-funding-requests"
             dateFilter={true}

@@ -71,11 +71,12 @@ const ProjectCardBE = ({
   const [, deleteDrPro] = useMutation(deleteDraftProposal);
   const [loading, setLoading] = React.useState(false);
 
-  const urlArr: string[] = location.pathname.split('/');
+  // const urlArr: string[] = location.pathname.split('/');
 
   function daysSinceCreated() {
     let getCreatedAt = new Date();
-    if (updated_at && !urlArr.includes('previous-funding-requests')) {
+    // if (updated_at && !urlArr.includes('previous-funding-requests')) {
+    if (updated_at) {
       getCreatedAt = new Date(updated_at);
     } else {
       getCreatedAt = new Date(created_at);
@@ -99,6 +100,11 @@ const ProjectCardBE = ({
       color: '#FFC107',
       backgroundColor: '#FFC10729',
       title: 'commons.chip_asked_for_amandement',
+    },
+    ONGOING: {
+      color: '#0E8478',
+      backgroundColor: '#0E847829',
+      title: 'commons.chip_ongoing',
     },
   };
 
@@ -131,7 +137,11 @@ const ProjectCardBE = ({
   };
 
   const handleOnClick = async () => {
-    if (['tender_project_supervisor'].includes(role) && destination !== 'requests-in-process') {
+    if (
+      ['tender_project_supervisor'].includes(role) &&
+      destination !== 'requests-in-process' &&
+      destination !== 'previous-funding-requests'
+    ) {
       await updateAsigning({
         _set: {
           clasification_field: '-',
@@ -151,7 +161,8 @@ const ProjectCardBE = ({
         'tender_project_manager',
         // 'tender_project_supervisor',
       ].includes(role) &&
-      destination !== 'requests-in-process'
+      destination !== 'requests-in-process' &&
+      destination !== 'previous-funding-requests'
     ) {
       await updateAsigning({
         _set: {

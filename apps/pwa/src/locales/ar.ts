@@ -650,6 +650,7 @@ const ar = {
       concessional_grants: 'مسار المنح الميسرة',
     },
     filter_button_label: 'تصفية',
+    chip_ongoing: 'الطلب مستمر',
     chip_canceled: 'تم إلغاء الطلب',
     chip_completed: 'الطلب كامل',
     chip_pending: 'الطلب معلق',
