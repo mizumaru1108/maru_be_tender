@@ -1727,6 +1727,8 @@ const en = {
       study_again: 'STUDY AGAIN',
       ask_for_amandement_request: 'ASK FOR AMENDMENT REQUEST',
       sending_closing_report: 'SENDING CLOSING REPORT',
+      complete_payment: 'COMPLETE PAYMENT',
+      complete: 'COMPLETE',
     },
   },
   project_already_reviewed_by_supervisor: 'This project already reviewed by Supervisor',

@@ -1,28 +1,14 @@
-import {
-  Tabs,
-  Tab,
-  Button,
-  Grid,
-  Stack,
-  Typography,
-  Box,
-  styled,
-  Skeleton,
-  CircularProgress,
-} from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { Button, Grid, Skeleton, Stack, styled, Tab, Tabs, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import AppointmentsTap from './appointments-tabel/AppointmentsTap';
-import AppointmentsRequests from './appointments-requests/AppointmentsRequests';
-import { useNavigate } from 'react-router';
 import useAuth from 'hooks/useAuth';
-import { query } from 'firebase/firestore';
-import { getScheduleByUser } from 'queries/client/getScheduleByUser';
-import { useQuery } from 'urql';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
-import axiosInstance from '../../../utils/axios';
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { IArrayAppointments } from '../../../@types/appointment';
+import axiosInstance from '../../../utils/axios';
+import AppointmentsRequests from './appointments-requests/AppointmentsRequests';
+import AppointmentsTap from './appointments-tabel/AppointmentsTap';
 interface TabPanelProps {
   children?: React.ReactNode;
   dir?: string;
@@ -240,9 +226,6 @@ function Appointments() {
                   <AppointmentsTap defaultValues={appointments ?? []} />
                 ) : (
                   <Skeleton variant="rounded" height={160} />
-                  // <Stack justifyContent={'center'} alignItems={'center'}>
-                  //   <CircularProgress />
-                  // </Stack>
                 )}
               </Typography>
             </ContentStyle>
@@ -260,9 +243,6 @@ function Appointments() {
                     }}
                   />
                 ) : (
-                  // <Stack justifyContent={'center'} alignItems={'center'}>
-                  //   <CircularProgress />
-                  // </Stack>
                   <Skeleton variant="rounded" height={160} />
                 )}
               </Typography>

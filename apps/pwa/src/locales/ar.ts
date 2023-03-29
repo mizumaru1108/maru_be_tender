@@ -1762,6 +1762,8 @@ const ar = {
       study_again: 'ادرس مجددا',
       ask_for_amandement_request: 'طلب تعديل',
       sending_closing_report: 'إرسال تقرير ختامي',
+      complete_payment: 'تم إنشاء الدفع',
+      complete: 'تم',
     },
   },
   project_already_reviewed_by_supervisor: 'تمت مراجعة هذا المشروع بالفعل من قبل المشرف',

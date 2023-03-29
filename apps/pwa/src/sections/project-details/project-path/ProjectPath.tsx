@@ -14,11 +14,12 @@ import useAuth from 'hooks/useAuth';
 import { Log, PropsalLog, PropsalLogGrants } from '../../../@types/proposal';
 import SupervisorGrants from './role-logs/SupervisorGrants';
 import SupervisorGeneral from './role-logs/SupervisorGeneral';
+import PanoramaFishEyeTwoToneIcon from '@mui/icons-material/PanoramaFishEyeTwoTone';
 
 function ProjectPath() {
   const { translate, currentLang } = useLocales();
   const { activeRole } = useAuth();
-  const [activeStep, setActiveStep] = React.useState(0);
+  const [activeStep, setActiveStep] = React.useState(-1);
   const [stepOn, setStepOn] = React.useState(1);
   const [stepUserRole, setStepUserRole] = React.useState('');
   const [stepActionType, setStepActionType] = React.useState('');
@@ -70,14 +71,16 @@ function ProjectPath() {
   const lastLog = followUps?.log && followUps?.log[followUps?.log.length - 1];
   const hasNonRejectAction = lastLog?.action && lastLog?.action !== 'reject';
   const hasRejectAction = lastLog?.action && lastLog?.action === 'reject';
+  const isCompleted = lastLog?.action && lastLog?.action === 'complete';
+  // console.log({ hasNonRejectAction, hasRejectAction, isCompleted, activeStep });
 
-  React.useEffect(() => {
-    if (hasNonRejectAction) {
-      setActiveStep(followUps.log.length);
-    } else if (hasRejectAction) {
-      setActiveStep(followUps.log.length - 1);
-    }
-  }, [followUps, hasNonRejectAction, hasRejectAction]);
+  // React.useEffect(() => {
+  //   if (hasNonRejectAction) {
+  //     setActiveStep(followUps.log.length);
+  //   } else if (hasRejectAction) {
+  //     setActiveStep(followUps.log.length - 1);
+  //   }
+  // }, [followUps, hasNonRejectAction, hasRejectAction]);
 
   if (fetching) return <>.. Loading</>;
   if (error) return <Page500 error={error.message} />;
@@ -98,8 +101,15 @@ function ProjectPath() {
     <Grid container spacing={2}>
       <Grid item md={8} xs={8} sx={{ backgroundColor: 'transparent', px: 6 }}>
         <Stack direction="column" gap={2} justifyContent="start">
-          <Typography variant="h6">{translate(`review.order_status`)}</Typography>
-          {followUps.log.length !== activeStep ? (
+          {/* <Typography variant="h6">
+            {!isCompleted ? translate(`review.order_status`) : ''}
+          </Typography> */}
+          {isCompleted && activeStep === -1 ? (
+            <Typography variant="h6">{translate(`review.complete`)}</Typography>
+          ) : (
+            <Typography variant="h6">{translate(`review.order_status`)}</Typography>
+          )}
+          {activeStep !== -1 && followUps.log.length !== activeStep ? (
             followUps.log.map((item: Log, index: number) => (
               <React.Fragment key={index}>
                 {index === activeStep && (
@@ -112,12 +122,17 @@ function ProjectPath() {
               </React.Fragment>
             ))
           ) : (
-            <Typography>{translate('review.waiting')}</Typography>
+            <Typography>
+              {isCompleted && activeStep === -1 ? null : translate('review.waiting')}
+            </Typography>
           )}
           {stepGeneralLog?.user_role !== 'PROJECT_SUPERVISOR' && (
             <React.Fragment>
-              <Typography variant="h6">{translate(`review.notes`)}</Typography>
-              {followUps.log.length !== activeStep ? (
+              {/* <Typography variant="h6">{!isCompleted ? translate(`review.notes`) : ''}</Typography> */}
+              {isCompleted && activeStep === -1 ? null : (
+                <Typography variant="h6">{translate(`review.notes`)}</Typography>
+              )}
+              {activeStep !== -1 && followUps.log.length !== activeStep ? (
                 followUps.log.map((item: Log, index: number) => (
                   <React.Fragment key={index}>
                     {index === activeStep && (
@@ -128,7 +143,9 @@ function ProjectPath() {
                   </React.Fragment>
                 ))
               ) : (
-                <Typography>{translate('review.waiting')}</Typography>
+                <Typography>
+                  {isCompleted && activeStep === -1 ? null : translate('review.waiting')}
+                </Typography>
               )}
             </React.Fragment>
           )}
@@ -148,8 +165,9 @@ function ProjectPath() {
                   ))}
               </React.Fragment>
             )}
-          <Divider />
-          {stepGeneralLog &&
+          {isCompleted && activeStep === -1 ? null : <Divider />}
+          {activeStep !== followUps.log.length &&
+          stepGeneralLog &&
           stepGeneralLog?.user_role === 'PROJECT_SUPERVISOR' &&
           stepGeneralLog.proposal.project_track !== 'CONCESSIONAL_GRANTS' &&
           stepGeneralLog.action !== 'send_back_for_revision' &&
@@ -157,7 +175,8 @@ function ProjectPath() {
           stepGeneralLog.action !== 'sending_closing_report' ? (
             <SupervisorGeneral stepGeneralLog={stepGeneralLog} />
           ) : null}
-          {stepGransLog &&
+          {activeStep !== followUps.log.length &&
+          stepGransLog &&
           stepGransLog.proposal &&
           stepGeneralLog?.user_role === 'PROJECT_SUPERVISOR' &&
           stepGeneralLog.proposal.project_track === 'CONCESSIONAL_GRANTS' &&
@@ -185,7 +204,13 @@ function ProjectPath() {
                       onClick={handleStep(index, item)}
                     >
                       <Stack direction="row" gap={2}>
-                        <PanoramaFishEyeIcon sx={{ color: '#000', alignSelf: 'center' }} />
+                        <PanoramaFishEyeTwoToneIcon
+                          color={activeStep === index ? 'primary' : 'disabled'}
+                          sx={{
+                            // color: activeStep === index ? '#0E8478' : '#000',
+                            alignSelf: 'center',
+                          }}
+                        />
                         <Stack>
                           <Typography
                             sx={{
@@ -206,7 +231,7 @@ function ProjectPath() {
                   </Stack>
                 </Step>
               ))}
-              {(activeRole! === 'tender_moderator' || hasNonRejectAction) && (
+              {(activeRole! === 'tender_moderator' || hasNonRejectAction) && !isCompleted && (
                 <>
                   {followUps.log.length ? (
                     <Step>

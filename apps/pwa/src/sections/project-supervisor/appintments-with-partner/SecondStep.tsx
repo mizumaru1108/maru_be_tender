@@ -120,7 +120,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
   // const newestTime = '9:00 AM';
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
   const [isLoading, setIsLoading] = React.useState(false);
 
   // console.log('userId : ', userId);
@@ -131,7 +131,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
 
   const [date, setDate] = React.useState<Dayjs | null>(null);
   const [selectedDay, setSelectedDay] = React.useState<string | null>(null);
-  const [selectedTime, setSelectedTime] = React.useState<string>('');
+  const [selectedTime, setSelectedTime] = React.useState<string>(moment().format('hh:mm A'));
   // month: moment(tmpDate).format('MM'),
   //                   year: moment(tmpDate).format('YYYY'),
   const [selectedDate, setSelectedDate] = React.useState<ISelectedDate>({
@@ -541,6 +541,12 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
         availableSchedule.days &&
         availableSchedule?.days?.length > 0 && (
           <Grid item md={5} xs={12} maxHeight={350} overflow={'auto'}>
+            <Typography variant="h6" sx={{ fontStyle: 'italic' }} gutterBottom>
+              {/* {title ? title : translate('errors.empty_data')} */}
+              {moment(selectedDate.date).format('dddd, MMMM Do YYYY') +
+                ' - ' +
+                moment(selectedTime, 'hh:mm A').format('hh:mm A')}
+            </Typography>
             <Stack direction="column" gap={'10px'}>
               {selectedDay &&
                 availableSchedule &&

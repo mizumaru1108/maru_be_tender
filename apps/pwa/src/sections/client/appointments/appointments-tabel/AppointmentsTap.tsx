@@ -26,14 +26,12 @@ interface Props {
 function AppointmentsTap({ defaultValues }: Props) {
   const { translate, currentLang } = useLocales();
   const [isLoading, setIsLoading] = React.useState(false);
-  const [appointments, setAppointments] = React.useState<Appointments[]>([]);
+  // const [appointments, setAppointments] = React.useState<Appointments[]>([]);
   const [todayAppointments, setTodayAppointments] = React.useState<Appointments[]>([]);
   const [upcomingAppointments, setUpcomingAppointments] = React.useState<Appointments[]>([]);
 
-  // !moment(gap, 'h:mm A').isAfter(moment(newestTime, 'h:mm A')))
-
   React.useEffect(() => {
-    if (mock_data) {
+    if (defaultValues) {
       const todayDate = moment().format('DD-MM-YYYY');
       const tmpTodayValues = defaultValues
         .filter(
@@ -68,15 +66,6 @@ function AppointmentsTap({ defaultValues }: Props) {
       // console.log({ tmpTodayValues, tmpUpcomingValues });
       setTodayAppointments(tmpTodayValues);
       setUpcomingAppointments(tmpUpcomingValues);
-      // setAppointments(
-      //   mock_data.map((appointment: Appointments) => ({
-      //     id: appointment.id,
-      //     meetingId: appointment.meetingId,
-      //     meetingTime: appointment.meetingTime,
-      //     employee: appointment.employee,
-      //     appointmentLink: appointment.appointmentLink,
-      //   }))
-      // );
     }
     // eslint-disable-next-line
   }, [currentLang]);
@@ -102,14 +91,6 @@ function AppointmentsTap({ defaultValues }: Props) {
 
   return (
     <Box sx={{ display: 'flex', gap: 3, flexDirection: 'column' }}>
-      {/* <TodaysAppointments />
-      <UpcomingAppointments /> */}
-      {/* <ProjectManagementTable
-      headline={translate('project_management_table.headline')}
-      isLoading={fetching}
-      headerCell={headerCells}
-      data={projectManagementData ?? []}
-    /> */}
       <Stack direction={'column'} gap={2}>
         <AppointmentsTable
           headline={translate('appointment_table.today_headline')}
