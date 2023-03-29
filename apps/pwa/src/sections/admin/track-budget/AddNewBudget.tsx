@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 // @mui
 import { Grid, Stack, Typography, Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
@@ -50,7 +50,7 @@ export default function AddNewBudget({ onClose, tracks }: IPropsNewBudget) {
   const defaultValues = {
     name: '',
     budget: 0,
-    track_ids: [],
+    track_ids: ['INITIATIVES'],
   };
 
   const [formState, setFormState] = useState<FormData>(defaultValues);
@@ -62,7 +62,7 @@ export default function AddNewBudget({ onClose, tracks }: IPropsNewBudget) {
 
   const { handleSubmit, reset } = methods;
 
-  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+  const handleClose = () => {
     reset({
       name: '',
       budget: 0,
@@ -98,9 +98,7 @@ export default function AddNewBudget({ onClose, tracks }: IPropsNewBudget) {
           });
 
           setLoading(false);
-
           onClose();
-
           window.location.reload();
         }
       } catch (err) {
@@ -121,7 +119,6 @@ export default function AddNewBudget({ onClose, tracks }: IPropsNewBudget) {
         }
 
         setLoading(false);
-
         onClose();
       }
     }

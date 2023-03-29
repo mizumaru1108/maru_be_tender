@@ -14,7 +14,7 @@ import { useSnackbar } from 'notistack';
 
 // ------------------------------------------------------------------------------------------
 
-export default function FloatingCloseReport() {
+export default function FloatingSpv() {
   const theme = useTheme();
   const navigate = useNavigate();
   const { activeRole } = useAuth();

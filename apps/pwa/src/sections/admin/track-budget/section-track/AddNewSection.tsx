@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 // @mui
 import { Grid, Stack, Typography, Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
@@ -34,9 +34,9 @@ interface FormData {
 
 export default function AddNewSection({ onClose, tracks }: IPropsNewBudget) {
   const { translate } = useLocales();
-  const [loading, setLoading] = useState(false);
   const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
+  const [loading, setLoading] = useState(false);
 
   const SubmitFormSchema = Yup.object().shape({
     budget: Yup.number()
@@ -50,7 +50,7 @@ export default function AddNewSection({ onClose, tracks }: IPropsNewBudget) {
   const defaultValues = {
     name: '',
     budget: 0,
-    track_ids: [],
+    track_ids: [`${tracks.name}`],
   };
 
   const [formState, setFormState] = useState<FormData>(defaultValues);
@@ -89,14 +89,12 @@ export default function AddNewSection({ onClose, tracks }: IPropsNewBudget) {
             headers: { 'x-hasura-role': activeRole! },
           }
         );
-
         if (status === 201) {
           enqueueSnackbar(translate('pages.admin.tracks_budget.notification.success_add_section'), {
             variant: 'success',
             preventDuplicate: true,
             autoHideDuration: 3000,
           });
-
           setLoading(false);
           onClose();
           window.location.reload();
@@ -117,7 +115,6 @@ export default function AddNewSection({ onClose, tracks }: IPropsNewBudget) {
             autoHideDuration: 3000,
           });
         }
-
         setLoading(false);
         onClose();
       }

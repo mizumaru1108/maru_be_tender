@@ -21,8 +21,8 @@ interface IPropsCheckbox {
 // ------------------------------------------------------------------------------------------
 
 export default function CheckBoxSection({ item, state, setState }: IPropsCheckbox) {
-  const { translate } = useLocales();
   const params = useParams();
+  const { translate } = useLocales();
   const [expand, setExpand] = useState<boolean>(false);
 
   const handleExpand = () => {
