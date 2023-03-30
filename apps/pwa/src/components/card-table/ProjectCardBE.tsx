@@ -145,6 +145,7 @@ const ProjectCardBE = ({
       await updateAsigning({
         _set: {
           clasification_field: '-',
+          [`${RolesMap[role]!}`]: userAuth?.id,
         },
         where: {
           id: {
