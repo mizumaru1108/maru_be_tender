@@ -123,55 +123,30 @@ function ClientProfile() {
     }
   };
 
-  function ValidateDataClient(data: ClientProfiles) {
-    const {
-      authority,
-      date_of_esthablistmen,
-      headquarters,
-      num_of_employed_facility,
-      num_of_beneficiaries,
-      entity_mobile,
-      license_number,
-      license_issue_date,
-      license_expired,
-      license_file,
-      board_ofdec_file,
-      ceo_name,
-      chairman_mobile,
-      ceo_mobile,
-      chairman_name,
-      data_entry_name,
-      data_entry_mobile,
-      data_entry_mail,
-    } = data.client_data;
-
+  function ValidateDataClient(clientData: ClientProfiles) {
     if (
-      !Object.values({
-        authority,
-        date_of_esthablistmen,
-        headquarters,
-        num_of_employed_facility,
-        num_of_beneficiaries,
-        entity_mobile,
-        license_number,
-        license_issue_date,
-        license_expired,
-        license_file,
-        board_ofdec_file,
-        ceo_name,
-        chairman_mobile,
-        ceo_mobile,
-        chairman_name,
-        data_entry_name,
-        data_entry_mobile,
-        data_entry_mail,
-      }).some((val) => !val)
-      //  &&data.user_by_pk.bank_informations.length !== 0
+      clientData &&
+      clientData.bank_informations &&
+      clientData.client_data &&
+      clientData.email
+      //  && data.user_by_pk.bank_informations.length !== 0
     ) {
-      console.log('semua terisi');
-      setRunTour(false);
+      const { bank_informations, client_data, email } = clientData;
+      if (
+        !Object.values({
+          bank_informations,
+          client_data,
+          email,
+        }).some((val) => !val)
+      ) {
+        console.log('all data complete');
+        setRunTour(false);
+      } else {
+        console.log('please complete your profile data');
+        setRunTour(true);
+      }
     } else {
-      console.log('ada yang belum terisi');
+      console.log('please complete your profile data');
       setRunTour(true);
     }
   }
@@ -191,12 +166,13 @@ function ClientProfile() {
   }, [data]);
 
   useEffect(() => {
-    if (clientProfiles !== undefined) {
+    if (clientProfiles !== undefined && !loadingEditButton) {
       ValidateDataClient(clientProfiles);
     } else {
+      console.log('please complete your profile data');
       setRunTour(true);
     }
-  }, [clientProfiles]);
+  }, [clientProfiles, loadingEditButton]);
 
   if (fetching) return <>Loading ....</>;
 
@@ -240,7 +216,7 @@ function ClientProfile() {
   //     aggregate: { count: completed_projects },
   //   },
   // } = data;
-  console.log({ clientProfiles, data });
+  // console.log({ clientProfiles, data });
   // console.log('type :', typeof board_ofdec_file);
 
   return (
