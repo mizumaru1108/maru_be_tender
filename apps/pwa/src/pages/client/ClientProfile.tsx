@@ -123,26 +123,7 @@ function ClientProfile() {
     }
   };
 
-  useEffect(() => {
-    fetchingEditRequest();
-    if (data && data.user_by_pk) {
-      setClientProfiles({
-        bank_informations: data.user_by_pk.bank_informations ?? [],
-        client_data: data.user_by_pk.client_data,
-        email: data.user_by_pk.email,
-        count: data.proposal_aggregate.aggregate.count as number,
-      });
-
-      ValidateDataClient();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
-
-  if (fetching) return <>Loading ....</>;
-
-  if (error) return <>{error.message}</>;
-
-  function ValidateDataClient() {
+  function ValidateDataClient(data: ClientProfiles) {
     const {
       authority,
       date_of_esthablistmen,
@@ -162,7 +143,7 @@ function ClientProfile() {
       data_entry_name,
       data_entry_mobile,
       data_entry_mail,
-    } = data.user_by_pk.client_data;
+    } = data.client_data;
 
     if (
       !Object.values({
@@ -184,8 +165,8 @@ function ClientProfile() {
         data_entry_name,
         data_entry_mobile,
         data_entry_mail,
-      }).some((val) => !val) &&
-      data.user_by_pk.bank_informations.length !== 0
+      }).some((val) => !val)
+      //  &&data.user_by_pk.bank_informations.length !== 0
     ) {
       console.log('semua terisi');
       setRunTour(false);
@@ -194,6 +175,34 @@ function ClientProfile() {
       setRunTour(true);
     }
   }
+
+  useEffect(() => {
+    fetchingEditRequest();
+    if (data && data.user_by_pk) {
+      setClientProfiles({
+        bank_informations: data.user_by_pk.bank_informations ?? [],
+        client_data: data.user_by_pk.client_data,
+        email: data.user_by_pk.email,
+        count: data.proposal_aggregate.aggregate.count as number,
+      });
+      // ValidateDataClient();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
+  useEffect(() => {
+    if (clientProfiles !== undefined) {
+      ValidateDataClient(clientProfiles);
+    } else {
+      setRunTour(true);
+    }
+  }, [clientProfiles]);
+
+  if (fetching) return <>Loading ....</>;
+
+  if (error) return <>{error.message}</>;
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
 
   // const {
   //   user_by_pk: {
@@ -297,6 +306,8 @@ function ClientProfile() {
                   disableScrollParentFix
                   disableScrolling
                   scrollToFirstStep
+                  disableOverlayClose
+                  spotlightClicks
                 />
               )}
               <LoadingButton
