@@ -60,6 +60,22 @@ export class TenderAuthController {
     );
   }
 
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_accounts_manager')
+  @Post('ask-forgot-password-url')
+  async askForgotPasswordUrl(
+    @Body() request: ForgotPasswordRequestDto,
+  ): Promise<BaseResponse<string>> {
+    const url = await this.tenderAuthService.askForgotPasswordUrl(
+      request.email,
+    );
+    return baseResponseHelper(
+      url,
+      HttpStatus.CREATED,
+      'Forgot password url already asked!',
+    );
+  }
+
   @Post('forgot-password-request')
   async forgotPasswordRequest(
     @Body() request: ForgotPasswordRequestDto,

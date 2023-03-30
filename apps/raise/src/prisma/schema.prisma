@@ -696,9 +696,9 @@ model client_data2 {
   phone                    String?   @db.VarChar
   website                  String?   @db.VarChar
   password                 String?   @db.VarChar
-  license_number           String    @db.VarChar
+  license_number           String?   @db.VarChar
   license_expired          DateTime? @db.Date
-  license_issue_date       DateTime? @db.Date
+  license_issue_date       String?
   ceo_mobile               String?   @db.VarChar
   ceo_name                 String?   @db.VarChar
   data_entry_mobile        String?   @db.VarChar
@@ -772,4 +772,121 @@ model user3 {
   google_session String?
   is_online      String?
   fusionauth_id  String?
+}
+
+model client_data3 {
+  id                       String    @id
+  entity                   String?   @db.VarChar
+  authority                String?   @db.VarChar
+  headquarters             String?   @db.VarChar
+  date_of_esthablistmen    DateTime? @db.Date
+  num_of_beneficiaries     Int?
+  num_of_employed_facility Int?
+  governorate              String?
+  region                   String?   @db.VarChar
+  entity_mobile            String?   @db.VarChar
+  center_administration    String?   @db.VarChar
+  twitter_acount           String?   @db.VarChar
+  phone                    String?   @db.VarChar
+  website                  String?   @db.VarChar
+  password                 String?   @db.VarChar
+  license_number           String?   @db.VarChar
+  license_expired          DateTime? @db.Date
+  license_issue_date       String?
+  ceo_mobile               String?   @db.VarChar
+  ceo_name                 String?   @db.VarChar
+  data_entry_mobile        String?   @db.VarChar
+  data_entry_name          String?   @db.VarChar
+  data_entry_mail          String?   @db.VarChar
+  created_at               DateTime? @db.Timestamp(6)
+  updated_at               DateTime? @db.Timestamp(6)
+  client_field             String?   @db.VarChar
+  user_id                  String
+  license_file             String?
+  board_ofdec_file         String?
+  chairman_name            String?   @db.VarChar
+  chairman_mobile          String?   @db.VarChar
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model users_trf {
+  uid              Int?
+  name             String? @db.VarChar(50)
+  pass             String? @db.VarChar(50)
+  mail             String? @db.VarChar(50)
+  mode             Int?
+  sort             Int?
+  threshold        Int?
+  theme            String? @db.VarChar(50)
+  signature        String? @db.VarChar(50)
+  signature_format Int?
+  created          BigInt?
+  access           BigInt?
+  login            BigInt?
+  status           Int?
+  timezone         String? @db.VarChar(50)
+  language         String? @db.VarChar(50)
+  picture          String? @db.VarChar(50)
+  init             String? @db.VarChar(50)
+  data             String? @db.VarChar(128)
+  kind             Int?
+  mob              BigInt?
+  fid              Int?
+  tmra_id          String? @db.VarChar(50)
+  fusionauth_id    String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model tmp_client_proper {
+  uid                   Int
+  name                  String? @db.VarChar(60)
+  pass                  String? @db.VarChar(32)
+  mail                  String? @db.VarChar(64)
+  mode                  Int
+  sort                  Int?
+  threshold             Int?
+  theme                 String? @db.VarChar(255)
+  signature             String? @db.VarChar(255)
+  signature_format      Int     @db.SmallInt
+  created               Int
+  access                Int
+  login                 Int
+  status                Int
+  timezone              String? @db.VarChar(8)
+  language              String? @db.VarChar(12)
+  picture               String? @db.VarChar(255)
+  init                  String? @db.VarChar(64)
+  data                  String?
+  kind                  Int
+  mob                   BigInt
+  fid                   Int
+  qid                   Int?
+  nid                   Int?
+  random                String? @db.VarChar(255)
+  reg_name              String? @db.VarChar(255)
+  reg_tax_1             Int?
+  reg_tax_2             Int?
+  reg_tel               BigInt?
+  reg_fax               BigInt?
+  reg_box               Int?
+  reg_postal            Int?
+  reg_site              String? @db.VarChar(255)
+  reg_email             String? @db.VarChar(255)
+  reg_bank_name         Int?
+  reg_bank_account_name String? @db.VarChar(255)
+  reg_bank_account_num  String? @db.VarChar(255)
+  reg_bank_account_type Int?
+  reg_area              Int?
+  reg_city              Int?
+  reg_center            Int?
+  reg_center2           String? @db.VarChar(255)
+  reg_twit              String?
+  reg_face              String?
+  reg_mob               BigInt?
+  cont_mang_name        String? @db.VarChar(255)
+  tmra_id               String? @db.VarChar(60)
+
+  @@ignore
 }

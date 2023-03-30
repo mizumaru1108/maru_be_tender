@@ -17,9 +17,9 @@ export class GoogleOAuth2Service {
 
   constructor(private readonly configService: ConfigService) {
     this.oauth2Client = new OAuth2Client(
-      this.configService.get<string>('GAPI_CLIENT_ID'), // will use tender gapi config
-      this.configService.get<string>('GAPI_CLIENT_SECRET'), // will use tender gapi config
-      'http://localhost:3000/tender-appointment/google-callback',
+      this.configService.get('gapiConfig.clientId') as string, // will use tender gapi config
+      this.configService.get('gapiConfig.clientSecret') as string, // will use tender gapi config
+      this.configService.get('tenderAppConfig.baseUrl') as string,
     );
   }
 
@@ -36,9 +36,9 @@ export class GoogleOAuth2Service {
       ));
     } else {
       return (this.oauth2Client = new OAuth2Client(
-        this.configService.get<string>('GAPI_CLIENT_ID'),
-        this.configService.get<string>('GAPI_CLIENT_SECRET'),
-        'http://localhost:3000/tender-appointment/google-callback',
+        this.configService.get('gapiConfig.clientId') as string, // will use tender gapi config
+        this.configService.get('gapiConfig.clientSecret') as string, // will use tender gapi config
+        this.configService.get('tenderAppConfig.baseUrl') as string,
       ));
     }
   }

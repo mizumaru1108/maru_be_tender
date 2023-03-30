@@ -18,7 +18,7 @@ export class GoogleCalendarService {
     this.oauth2Client = new OAuth2Client(
       this.configService.get<string>('GAPI_CLIENT_ID'),
       this.configService.get<string>('GAPI_CLIENT_SECRET'),
-      'http://localhost:3000/tender-appointment/google-callback',
+      this.configService.get<string>('')
     );
 
     this.gCalendar = google.calendar({

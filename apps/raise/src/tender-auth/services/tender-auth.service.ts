@@ -145,6 +145,17 @@ export class TenderAuthService {
     return result;
   }
 
+  async askForgotPasswordUrl(email: string) {
+    const user = await this.tenderUserRepository.findByEmail(email);
+    if (!user) throw new BadRequestException('User not found!');
+
+    const response = await this.fusionAuthService.forgotPasswordRequest(email);
+
+    return `${this.configService.get<string>(
+      'tenderAppConfig.baseUrl',
+    )}/auth/forgot-password/${response}`;
+  }
+
   async changePasswordRequest(
     email: string,
     forgotPassword: boolean,
