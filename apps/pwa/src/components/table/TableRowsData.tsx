@@ -313,6 +313,22 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
                     {translate('account_manager.table.td.label_reset_password')}
                   </Typography>
                 </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setAction('RESET_PASSWORD_LINK');
+                    handleClose();
+                  }}
+                >
+                  <Iconify
+                    icon={'mdi:link-box-variant-outline'}
+                    width={18}
+                    height={18}
+                    sx={{ mr: 1 }}
+                  />
+                  <Typography variant="subtitle2">
+                    {translate('account_manager.table.td.label_link_reset_password')}
+                  </Typography>
+                </MenuItem>
                 <MenuItem onClick={() => handleChangeStatus(id as string, 'ACTIVE_ACCOUNT')}>
                   <Iconify
                     icon={'eva:checkmark-circle-outline'}
@@ -354,6 +370,16 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
           <ConfirmationModals
             type="RESET_PASSWORD"
             onSubmit={() => handleResetPassword(email!)}
+            onClose={handleCloseModal}
+            partner_name={partner_name!}
+            loading={isSubmittingReset}
+          />
+        )}
+
+        {action === 'RESET_PASSWORD_LINK' && (
+          <ConfirmationModals
+            type="RESET_PASSWORD_LINK"
+            onSubmit={() => console.log('asdkasd')}
             onClose={handleCloseModal}
             partner_name={partner_name!}
             loading={isSubmittingReset}

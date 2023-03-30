@@ -131,12 +131,46 @@ function ClientProfile() {
       clientData.email
       //  && data.user_by_pk.bank_informations.length !== 0
     ) {
-      const { bank_informations, client_data, email } = clientData;
+      const {
+        authority,
+        date_of_esthablistmen,
+        headquarters,
+        num_of_employed_facility,
+        num_of_beneficiaries,
+        entity_mobile,
+        license_number,
+        license_issue_date,
+        license_expired,
+        license_file,
+        board_ofdec_file,
+        ceo_name,
+        chairman_mobile,
+        ceo_mobile,
+        chairman_name,
+        data_entry_name,
+        data_entry_mobile,
+        data_entry_mail,
+      } = clientData.client_data;
       if (
         !Object.values({
-          bank_informations,
-          client_data,
-          email,
+          authority,
+          date_of_esthablistmen,
+          headquarters,
+          num_of_employed_facility,
+          num_of_beneficiaries,
+          entity_mobile,
+          license_number,
+          license_issue_date,
+          license_expired,
+          license_file,
+          board_ofdec_file,
+          ceo_name,
+          chairman_mobile,
+          ceo_mobile,
+          chairman_name,
+          data_entry_name,
+          data_entry_mobile,
+          data_entry_mail,
         }).some((val) => !val)
       ) {
         console.log('all data complete');

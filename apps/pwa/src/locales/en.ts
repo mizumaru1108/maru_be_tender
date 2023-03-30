@@ -1345,6 +1345,10 @@ const en = {
         label_btn_acc_deactivate_account: 'Yes, Deactivated Account',
         label_btn_acc_information: 'Back to Dashboard',
         label_cancel: 'Cancel',
+        //new
+        label_header_reset_password_link: 'Copy link below to reset the password',
+        label_link_reset_password: 'Reset Password Link',
+        label_copy: 'Copy',
       },
     },
     accept_project: 'Accept Project',
