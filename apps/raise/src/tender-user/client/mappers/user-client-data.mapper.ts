@@ -17,11 +17,6 @@ export function UserClientDataMapper(
       id: nanoid(),
       license_number: request.data.license_number,
       authority: request.data.authority,
-      // board_ofdec_file: {
-      //   url: request.data.board_ofdec_file.url,
-      //   type: request.data.board_ofdec_file.type,
-      //   size: request.data.board_ofdec_file.size,
-      // },
       board_ofdec_file: ofdecObj && (ofdecObj as any),
       center_administration: request.data.center_administration || null,
       ceo_mobile: request.data.ceo_mobile,
@@ -39,11 +34,6 @@ export function UserClientDataMapper(
       license_file: lisceneFileObj && {
         ...lisceneFileObj,
       },
-      // license_file: {
-      //   url: request.data.license_file.url,
-      //   type: request.data.license_file.type,
-      //   size: request.data.license_file.size,
-      // },
       date_of_esthablistmen: request.data.date_of_esthablistmen,
       license_expired: request.data.license_expired,
       license_issue_date: request.data.license_issue_date,
