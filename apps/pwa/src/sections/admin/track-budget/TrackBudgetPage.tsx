@@ -9,6 +9,8 @@ import Track from './Track';
 import useLocales from 'hooks/useLocales';
 import useAuth from 'hooks/useAuth';
 import axiosInstance from 'utils/axios';
+import { useQuery } from 'urql';
+//
 import { useSnackbar } from 'notistack';
 
 // ------------------------------------------------------------------------------------------
@@ -35,10 +37,11 @@ export default function TrackBudgetPage() {
 
   const [open, setOpen] = useState<boolean>(false);
   const [tracksValue, setTrackValues] = useState<IDataTracks[] | []>([]);
+  const [tracksTempValue, setTrackTempValues] = useState<IDataTracks[] | []>([]);
   const [loadingPage, setLoadingPage] = useState<boolean>(false);
 
   const getTrackDatas = async () => {
-    setLoadingPage(true);
+    // setLoadingPage(true);
 
     try {
       const { status, data } = await axiosInstance.get(
@@ -49,8 +52,8 @@ export default function TrackBudgetPage() {
       );
 
       if (status === 200) {
-        setTrackValues(data.data);
-        setLoadingPage(false);
+        setTrackTempValues(data.data);
+        // setLoadingPage(false);
       }
     } catch (err) {
       if (typeof err.message === 'object') {
@@ -69,9 +72,26 @@ export default function TrackBudgetPage() {
         });
       }
 
-      setLoadingPage(false);
+      // setLoadingPage(false);
     }
   };
+
+  const [{ data, fetching, error }] = useQuery({
+    query: `
+      query getListTrack {
+        track {
+          id
+          name
+          budget
+          sections{
+            id
+            name
+            budget
+          }
+        }
+      }
+    `,
+  });
 
   const handleOpen = () => {
     setOpen(true);
@@ -83,20 +103,45 @@ export default function TrackBudgetPage() {
 
   useEffect(() => {
     getTrackDatas();
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    const firstArray = tracksTempValue;
+    const combinedArray: IDataTracks[] = [];
+
+    if (data) {
+      for (const item of data.track) {
+        const matchingItem = firstArray.find((i) => i.name === item.name);
+        if (matchingItem) {
+          matchingItem.budget = item.budget ?? matchingItem.budget ?? 0;
+          combinedArray.push(matchingItem);
+        } else {
+          combinedArray.push({
+            ...item,
+            budget: item.budget ?? 0,
+          });
+        }
+      }
+    }
+
+    setTrackValues(combinedArray);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tracksTempValue, data]);
+
+  if (error) return <>Opss. somthing went wrong</>;
+
   return (
     <React.Fragment>
-      {!loadingPage ? (
+      {!loadingPage && !fetching && data ? (
         <Grid container spacing={3}>
           <ModalDialog
             styleContent={{ p: 4, backgroundColor: '#fff' }}
             isOpen={open}
             maxWidth="md"
             title={translate('pages.admin.tracks_budget.heading.add_new_budget')}
-            content={<AddNewBudget onClose={handleOnClose} tracks={tracksValue} />}
+            content={<AddNewBudget onClose={handleOnClose} tracks={data.track} />}
             onClose={handleOnClose}
           />
           <Grid item xs={12}>

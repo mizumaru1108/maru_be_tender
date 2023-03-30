@@ -665,7 +665,7 @@ export class TenderProposalPaymentRepository {
       SELECT 
         track.id as id,
         track.name as name,
-        SUM(track_section.budget) as budget,
+        COALESCE(SUM(track_section.budget), 0) as budget,
         (
           SELECT 
             COALESCE(JSON_AGG(track_section), '[]'::json) 
@@ -683,7 +683,6 @@ export class TenderProposalPaymentRepository {
         LIMIT ${limit}
         OFFSET ${offset}
       `;
-
       return response;
     } catch (error) {
       const theError = prismaErrorThrower(
