@@ -29,6 +29,7 @@ import {
   CreateTrackBudgetDto,
   DeleteTrackBudgetDto,
   FindTrackBudgetFilter,
+  UpdateTrackBudgetDto,
 } from '../dtos/requests';
 import { UpdatePaymentResponseDto } from '../dtos/responses';
 import { TenderProposalPaymentService } from '../services/tender-proposal-payment.service';
@@ -200,6 +201,20 @@ export class TenderProposalPaymentController {
       createdPayment,
       HttpStatus.CREATED,
       'Track Budgets added successfully',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Patch('update-track-budget')
+  async updateTrackBudget(
+    @Body() request: UpdateTrackBudgetDto,
+  ): Promise<BaseResponse<any>> {
+    const createdPayment = await this.paymentService.updateTrackBudget(request);
+    return baseResponseHelper(
+      createdPayment,
+      HttpStatus.CREATED,
+      'Track Budgets updated successfully',
     );
   }
 }

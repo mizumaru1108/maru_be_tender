@@ -1,33 +1,35 @@
 // component
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Grid, Typography, useTheme } from '@mui/material';
 import Image from 'components/Image';
 // hooks
-import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 // urql + query
 import { useQuery } from 'urql';
-import { getDailyTrackBudget } from 'queries/project-supervisor/getTrackBudget';
+import { getOneTrackBudget } from 'queries/project-supervisor/getTrackBudget';
 //
-import moment from 'moment';
 import { fCurrencyNumber } from 'utils/formatNumber';
 import React from 'react';
 // config
 import { FEATURE_DAILY_STATUS } from 'config';
 
-export default function TrackBudget() {
-  const { translate } = useLocales();
-  const { user } = useAuth();
+// ------------------------------------------------------------------------------------------
 
-  const [result] = useQuery({
-    query: getDailyTrackBudget,
+interface IPropTrackBudgets {
+  path?: string;
+}
+
+// ------------------------------------------------------------------------------------------
+
+export default function TrackBudget({ path }: IPropTrackBudgets) {
+  const { translate } = useLocales();
+  const theme = useTheme();
+
+  const [{ data, fetching, error }] = useQuery({
+    query: getOneTrackBudget,
     variables: {
-      // first_date: moment().startOf('day').toISOString(),
-      // first_date: '2022-01-01T17:00:00.000Z',
-      // second_date: moment().endOf('day').toISOString(),
+      track_id: path,
     },
   });
-
-  const { data, fetching, error } = result;
 
   if (fetching) return <>{translate('pages.common.loading')}</>;
   if (error) return <>{error.message}</>;
@@ -61,10 +63,23 @@ export default function TrackBudget() {
                     sx={{ display: 'inline-flex' }}
                   />
                   <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
-                    {translate('content.administrative.statistic.heading.totalBudget')}
+                    {translate('content.administrative.statistic.heading.totalReservedBudget')}
                   </Typography>
-                  <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                    {fCurrencyNumber(data.totalBudget.aggregate.sum.amount_required_fsupport)}
+                  <Typography
+                    sx={{
+                      color:
+                        data.track[0].totalBudget.aggregate.sum.budget -
+                          data.track[0].totalSpendBudget.aggregate.sum.fsupport_by_supervisor <
+                        0
+                          ? theme.palette.error.main
+                          : 'text.tertiary',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {fCurrencyNumber(
+                      data.track[0].totalBudget.aggregate.sum.budget -
+                        data.track[0].totalSpendBudget.aggregate.sum.fsupport_by_supervisor
+                    )}
                   </Typography>
                 </Box>
               </Grid>
@@ -82,12 +97,33 @@ export default function TrackBudget() {
                     sx={{ display: 'inline-flex' }}
                   />
                   <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
-                    {translate('content.administrative.statistic.heading.totalAcceptingBudget')}
+                    {translate('content.administrative.statistic.heading.totalSpendBudget')}
                   </Typography>
                   <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
                     {fCurrencyNumber(
-                      data.totalAcceptingBudget.aggregate.sum.fsupport_by_supervisor
+                      data.track[0].totalSpendBudget.aggregate.sum.fsupport_by_supervisor
                     )}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item md={2} xs={12}>
+                <Box
+                  sx={{
+                    borderRadius: 1,
+                    backgroundColor: '#fff',
+                    p: 2,
+                  }}
+                >
+                  <Image
+                    src={`/icons/rial-currency.svg`}
+                    alt="icon_riyals"
+                    sx={{ display: 'inline-flex' }}
+                  />
+                  <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
+                    {translate('content.administrative.statistic.heading.totalBudget')}
+                  </Typography>
+                  <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                    {fCurrencyNumber(data.track[0].totalBudget.aggregate.sum.budget)}
                   </Typography>
                 </Box>
               </Grid>

@@ -42,6 +42,7 @@ import {
   CreateTrackBudgetDto,
   DeleteTrackBudgetDto,
   FindTrackBudgetFilter,
+  UpdateTrackBudgetDto,
 } from '../dtos/requests';
 import { CreateChequeMapper, CreateClosingReportMapper } from '../mappers';
 import { CreateManyPaymentMapper } from '../mappers/create-many-payment.mapper';
@@ -165,7 +166,15 @@ export class TenderProposalPaymentService {
   }
 
   async deleteTrackBudget(request: DeleteTrackBudgetDto) {
-    return await this.paymentRepo.deleteManyTrackBudget(request.ids);
+    return await this.paymentRepo.deleteTrackBudget(request.id);
+  }
+
+  async updateTrackBudget(request: UpdateTrackBudgetDto) {
+    return await this.paymentRepo.updateTrackBudget(
+      request.id,
+      request.name,
+      request.budget,
+    );
   }
 
   async updatePayment(

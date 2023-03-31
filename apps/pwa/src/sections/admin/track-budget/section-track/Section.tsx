@@ -10,6 +10,7 @@ import EditSection from './EditSection';
 // utils
 import axiosInstance from 'utils/axios';
 import { fCurrencyNumber } from 'utils/formatNumber';
+import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 //
 import { useSnackbar } from 'notistack';
@@ -29,16 +30,57 @@ interface IPropsSection {
 export default function Section({ item }: IPropsSection) {
   const params = useParams();
   const { translate } = useLocales();
+  const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const [openDelete, setOpenDelete] = useState<boolean>(false);
   const [openEditSection, setOpenEditSection] = useState<boolean>(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
 
-  const handleEdit = () => {};
-
-  const handleDelete = () => {
+  const handleDelete = async () => {
     setLoadingDelete(true);
-    console.log({ track_id: params.id, ...item });
+
+    try {
+      const { status } = await axiosInstance.put(
+        '/tender/proposal/payment/delete-track-budget',
+        { id: item.id },
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
+
+      if (status === 200) {
+        enqueueSnackbar(
+          translate('pages.admin.tracks_budget.notification.success_delete_section'),
+          {
+            variant: 'success',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          }
+        );
+
+        setOpenDelete(false);
+        setLoadingDelete(false);
+        window.location.reload();
+      }
+    } catch (err) {
+      if (typeof err.message === 'object') {
+        err.message.forEach((el: any) => {
+          enqueueSnackbar(el, {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          });
+        });
+      } else {
+        enqueueSnackbar(err.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+      }
+
+      setLoadingDelete(false);
+    }
   };
 
   return (
@@ -103,6 +145,7 @@ export default function Section({ item }: IPropsSection) {
       <ModalDialog
         styleContent={{ p: 4, backgroundColor: '#fff' }}
         isOpen={openEditSection}
+        title={`${translate('pages.admin.tracks_budget.heading.edit_section')} "${item.name}"`}
         maxWidth="sm"
         content={<EditSection tracks={item} onClose={() => setOpenEditSection(false)} />}
         onClose={() => {

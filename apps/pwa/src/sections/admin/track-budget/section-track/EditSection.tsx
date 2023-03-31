@@ -31,7 +31,6 @@ interface IPropsEditSection {
 interface FormData {
   name: string;
   budget: number | undefined;
-  track_ids: string[] | [];
 }
 
 // ------------------------------------------------------------------------------------------
@@ -54,7 +53,6 @@ export default function EditSection({ onClose, tracks }: IPropsEditSection) {
   const defaultValues = {
     name: tracks.name || '',
     budget: tracks.budget || 0,
-    track_ids: [],
   };
 
   const [formState, setFormState] = useState<FormData>(defaultValues);
@@ -70,14 +68,56 @@ export default function EditSection({ onClose, tracks }: IPropsEditSection) {
     reset({
       name: '',
       budget: 0,
-      track_ids: [],
     });
 
     onClose();
   };
 
   const onSubmitForm = async (formValue: FormData) => {
-    console.log(formValue);
+    setLoading(true);
+
+    try {
+      const { status } = await axiosInstance.patch(
+        '/tender/proposal/payment/update-track-budget',
+        { id: tracks.id, ...formValue },
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
+
+      if (status === 200) {
+        enqueueSnackbar(
+          translate('pages.admin.tracks_budget.notification.success_update_section'),
+          {
+            variant: 'success',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          }
+        );
+
+        setLoading(false);
+        onClose();
+        window.location.reload();
+      }
+    } catch (err) {
+      if (typeof err.message === 'object') {
+        err.message.forEach((el: any) => {
+          enqueueSnackbar(el, {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          });
+        });
+      } else {
+        enqueueSnackbar(err.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+      }
+
+      setLoading(false);
+    }
   };
 
   return (

@@ -42,6 +42,7 @@ function Track({ id, name, budget }: any) {
         flexDirection: 'row',
         gap: 4,
         justifyContent: 'space-between',
+        alignItems: 'center',
       }}
     >
       <ModalDialog
@@ -141,7 +142,7 @@ function Track({ id, name, budget }: any) {
             </svg>
           }
           onClick={handleShow}
-          size="medium"
+          size="large"
         >
           {translate('pages.admin.tracks_budget.btn.review')}
         </Button>
@@ -178,7 +179,7 @@ function Track({ id, name, budget }: any) {
         >
           {translate('pages.admin.tracks_budget.btn.amandment')}
         </Button> */}
-        <Button
+        {/* <Button
           variant="contained"
           sx={{
             backgroundColor: '#FF4842',
@@ -219,7 +220,7 @@ function Track({ id, name, budget }: any) {
           size="medium"
         >
           {translate('pages.admin.tracks_budget.btn.delete')}
-        </Button>
+        </Button> */}
       </Stack>
     </Box>
   );

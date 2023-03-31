@@ -166,6 +166,7 @@ const en = {
           main: 'Tracks Budget',
           add_new_budget: 'Add a new budget',
           add_new_section: 'Add a new section',
+          edit_section: 'Edit section',
           full_budget: 'full budget',
           category: 'Category',
         },
@@ -191,6 +192,8 @@ const en = {
         notification: {
           empty_selected_track: 'You must select the track!',
           success_add_section: 'The budget has been created successfully!',
+          success_delete_section: 'The budget has been deleted successfully!',
+          success_update_section: 'The budget has been updated successfully!',
           confirm_delete: 'Are you sure you want to delete this',
         },
       },

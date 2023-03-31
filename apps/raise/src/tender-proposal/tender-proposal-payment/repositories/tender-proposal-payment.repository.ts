@@ -633,16 +633,14 @@ export class TenderProposalPaymentRepository {
     }
   }
 
-  async deleteManyTrackBudget(ids: string[]) {
+  async deleteTrackBudget(id: string) {
     this.logger.debug(
-      `Create new track section with payload of \n ${logUtil(ids)}`,
+      `Create new track section with payload of \n ${logUtil(id)}`,
     );
     try {
-      return await this.prismaService.track_section.deleteMany({
+      return await this.prismaService.track_section.delete({
         where: {
-          id: {
-            in: ids,
-          },
+          id,
         },
       });
     } catch (error) {
@@ -651,6 +649,25 @@ export class TenderProposalPaymentRepository {
         TenderProposalPaymentRepository.name,
         'create new track section error details: ',
         'create new track section!',
+      );
+      throw theError;
+    }
+  }
+
+  async updateTrackBudget(id: string, name: string, budget: number) {
+    this.logger.debug(`Update track section with payload of \n ${logUtil(id)}`);
+
+    try {
+      return await this.prismaService.track_section.update({
+        where: { id },
+        data: { name, budget },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalPaymentRepository.name,
+        'update track section error details: ',
+        'update track section!',
       );
       throw theError;
     }
