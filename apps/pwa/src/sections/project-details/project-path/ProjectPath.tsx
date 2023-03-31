@@ -15,10 +15,13 @@ import { Log, PropsalLog, PropsalLogGrants } from '../../../@types/proposal';
 import SupervisorGrants from './role-logs/SupervisorGrants';
 import SupervisorGeneral from './role-logs/SupervisorGeneral';
 import PanoramaFishEyeTwoToneIcon from '@mui/icons-material/PanoramaFishEyeTwoTone';
+import { useSelector } from '../../../redux/store';
 
 function ProjectPath() {
   const { translate, currentLang } = useLocales();
   const { activeRole } = useAuth();
+  const { proposal } = useSelector((state) => state.proposal);
+
   const [activeStep, setActiveStep] = React.useState(-1);
   const [stepOn, setStepOn] = React.useState(1);
   const [stepUserRole, setStepUserRole] = React.useState('');
@@ -258,11 +261,14 @@ function ProjectPath() {
                                   alignSelf: 'center',
                                 }}
                               >
-                                {translate(
+                                {/* {translate(
                                   `permissions.${
                                     followUps.log[followUps.log.length - 1].proposal.state
                                   }`
-                                )}
+                                )} */}
+                                {proposal.outter_status !== 'ASKED_FOR_AMANDEMENT'
+                                  ? translate(`permissions.${proposal.state}`)
+                                  : translate(`permissions.PROJECT_SUPERVISOR`)}
                               </Typography>
                             </Stack>
                           )}

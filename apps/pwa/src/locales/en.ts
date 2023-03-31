@@ -545,13 +545,13 @@ const en = {
       letter_ofsupport_req: {
         message: '',
         required: 'The letter of support is required',
-        fileSize: 'The file size must be less than 30 MB',
+        fileSize: 'The file size must be less than 200 MB',
         fileExtension: 'The file extension must be one of the following: pdf',
       },
       project_attachments: {
         message: '',
         required: 'Project attachments are required',
-        fileSize: 'The file size must be less than 30 MB',
+        fileSize: 'The file size must be less than 200 MB',
         fileExtension: 'The file extension must be one of the following: pdf',
       },
       project_beneficiaries_specific_type: {
@@ -1349,6 +1349,7 @@ const en = {
         label_header_reset_password_link: 'Copy link below to reset the password',
         label_link_reset_password: 'Reset Password Link',
         label_copy: 'Copy',
+        label_copied: 'Copied',
       },
     },
     accept_project: 'Accept Project',

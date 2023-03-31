@@ -1,7 +1,7 @@
 // react
 import React from 'react';
 // material
-import { Typography, Stack, Grid, Button, Box } from '@mui/material';
+import { Typography, Stack, Grid, Button, Box, CircularProgress } from '@mui/material';
 // component
 import ModalDialog from 'components/modal-dialog';
 import Image from 'components/Image';
@@ -17,6 +17,8 @@ interface IPropsConfirmationModal {
   onSubmit: () => void;
   onClose: () => void;
   loading?: boolean;
+  isCopy?: boolean;
+  resetPasswordLink?: string;
 }
 
 // ----------------------------------------------------------------------
@@ -27,6 +29,8 @@ export default function ConfirmationModals({
   onSubmit,
   onClose,
   loading,
+  isCopy,
+  resetPasswordLink,
 }: IPropsConfirmationModal) {
   const { translate } = useLocales();
 
@@ -109,47 +113,49 @@ export default function ConfirmationModals({
                   {translate('account_manager.table.td.label_header_reset_password_link')}
                 </Typography>
               </Grid>
-              <Grid item xs={12} md={12} sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    backgroundColor: '#93A3B029',
-                    // opacity: 0.16,
-                    borderRadius: 4,
-                    width: '80%',
-                    height: 45,
-                    // p: 1,
-                  }}
-                >
-                  <Typography variant="subtitle2" textAlign={'center'} sx={{ p: 3 }}>
-                    Link for Redirect
-                  </Typography>
+              {loading ? (
+                <CircularProgress sx={{ mt: 3 }} />
+              ) : (
+                <Grid item xs={12} md={12} sx={{ display: 'flex', justifyContent: 'center' }}>
                   <Box
                     sx={{
                       display: 'flex',
-                      justifyContent: 'center',
+                      justifyContent: 'space-between',
                       alignItems: 'center',
-                      backgroundColor: '#0E8478',
-                      borderRadius: 5,
-                      width: 120,
-                      height: '70%',
-                      m: 1,
-                      color: '#fff',
-                      cursor: 'pointer',
-                      '& :hover': {
-                        backgroundColor: '#0E8478',
-                      },
+                      backgroundColor: '#93A3B029',
+                      // opacity: 0.16,
+                      borderRadius: 4,
+                      width: '80%',
+                      // height: 45,
+                      // p: 1,
                     }}
                   >
-                    {/* tst */}
-                    <Typography variant="button" textAlign={'center'}>
-                      {translate('account_manager.table.td.label_copy')}
+                    <Typography
+                      variant="body1"
+                      textAlign={'left'}
+                      sx={{ p: 3, width: '80%', overflow: 'hidden' }}
+                    >
+                      {resetPasswordLink ? resetPasswordLink : '-'}
                     </Typography>
+                    <Button
+                      variant="contained"
+                      disabled={isCopy}
+                      onClick={onSubmit}
+                      sx={{
+                        m: 1,
+                        boxShadow: 'none',
+                        borderRadius: 4,
+                      }}
+                    >
+                      <Typography variant="button" textAlign={'center'}>
+                        {!isCopy
+                          ? translate('account_manager.table.td.label_copy')
+                          : translate('account_manager.table.td.label_copied')}
+                      </Typography>
+                    </Button>
                   </Box>
-                </Box>
-              </Grid>
+                </Grid>
+              )}
             </>
           )}
         </Grid>

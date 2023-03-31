@@ -39,7 +39,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
 
   const methods = useForm<ConnectingValuesProps>({
     resolver: yupResolver(RegisterSchema),
-    defaultValues: useMemo(() => defaultValues, [defaultValues]),
+    // defaultValues: useMemo(() => defaultValues, [defaultValues]),
   });
 
   const {
@@ -68,7 +68,9 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
     let newValues = { ...defaultValues };
     const newPhone = defaultValues.phone?.replace('+966', '');
     const newEntityMobile = defaultValues.entity_mobile?.replace('+966', '');
-    newValues = { ...newValues, phone: newPhone, entity_mobile: newEntityMobile };
+    // console.log('type of region : ', Object.keys(REGION).includes(newValues.region));
+    const region = Object.keys(REGION).includes(newValues.region) ? newValues.region : '';
+    newValues = { ...newValues, phone: newPhone, entity_mobile: newEntityMobile, region };
     // console.log({ newValues });
     reset(newValues);
   }, [defaultValues, reset]);

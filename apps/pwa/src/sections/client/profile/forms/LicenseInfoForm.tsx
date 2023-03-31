@@ -135,6 +135,7 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProp
         });
       }
       newValues = { ...newValues, board_ofdec_file: [...newLetters] };
+      // console.log('newValues', newValues);
       reset(newValues);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

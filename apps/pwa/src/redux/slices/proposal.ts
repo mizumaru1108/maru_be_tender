@@ -35,6 +35,7 @@ const initialState: ProposalItme = {
     project_implement_date: new Date('10-10-2022'),
     project_location: 'test',
     project_track: 'test',
+    submitter_user_id: 'test',
     user: {
       id: 'test',
       employee_name: 'test',

@@ -134,11 +134,11 @@ function ClientProfileEditForm() {
   };
   useEffect(() => {
     if (
-      data?.user_by_pk?.bank_informations.length > 0 &&
+      // data?.user_by_pk?.bank_informations.length > 0 &&
       data?.user_by_pk?.client_data &&
       data?.user_by_pk?.email
     ) {
-      console.log('data?.user_by_pk:', data?.user_by_pk);
+      // console.log('data?.user_by_pk:', data?.user_by_pk);
       const { client_data: client, bank_informations } = data?.user_by_pk;
       const {
         client_field,

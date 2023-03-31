@@ -27,6 +27,7 @@ import { PATH_ACCOUNTS_MANAGER } from 'routes/paths';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import axiosInstance from 'utils/axios';
+import { async } from '@firebase/util';
 
 // ----------------------------------------------------------------------
 
@@ -73,6 +74,10 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
   const openMenuItem = Boolean(anchorEl);
   const [isSubmitting, setIsSubimitting] = useState<boolean>(false);
   const [isSubmittingReset, setIsSubimittingReset] = useState<boolean>(false);
+  const [loadingResetLink, setLoadingResetLink] = useState<boolean>(false);
+  const [isCopy, setIsCopy] = useState<boolean>(false);
+
+  const [linkForgotPassword, setLinkForgotPassword] = useState<string>('');
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -84,6 +89,8 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
 
   const handleCloseModal = () => {
     setAction('');
+    setIsCopy(false);
+    setLinkForgotPassword('');
   };
 
   const handleChangeStatus = async (
@@ -137,9 +144,48 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
     }
   };
 
+  const handleGetLinkForgetPassword = async () => {
+    setLoadingResetLink(true);
+    try {
+      const rest = await axiosInstance.post(
+        '/tender-auth/ask-forgot-password-url',
+        {
+          email: row.email,
+          selectLang: currentLang.value,
+        },
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
+      console.log({ rest });
+      setLinkForgotPassword(rest.data.data);
+      // window.location.reload();
+    } catch (err) {
+      enqueueSnackbar(
+        `${err.statusCode < 500 && err.message ? err.message : 'something went wrong!'}`,
+        {
+          variant: 'error',
+        }
+      );
+      console.log(err);
+    } finally {
+      setLoadingResetLink(false);
+    }
+  };
+
+  const hanldeCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(linkForgotPassword);
+      // console.log('Content copied to clipboard');
+      setIsCopy(true);
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+      setIsCopy(false);
+    }
+  };
+
   const handleResetPassword = async (email: string) => {
     setIsSubimittingReset(true);
-
     try {
       const res = await axiosInstance.post(
         '/tender-auth/reset-password-request',
@@ -315,6 +361,7 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
+                    handleGetLinkForgetPassword();
                     setAction('RESET_PASSWORD_LINK');
                     handleClose();
                   }}
@@ -379,10 +426,12 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
         {action === 'RESET_PASSWORD_LINK' && (
           <ConfirmationModals
             type="RESET_PASSWORD_LINK"
-            onSubmit={() => console.log('asdkasd')}
+            onSubmit={hanldeCopyLink}
             onClose={handleCloseModal}
             partner_name={partner_name!}
-            loading={isSubmittingReset}
+            isCopy={isCopy}
+            resetPasswordLink={linkForgotPassword}
+            loading={loadingResetLink}
           />
         )}
 

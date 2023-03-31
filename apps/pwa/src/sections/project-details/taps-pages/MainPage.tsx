@@ -47,6 +47,7 @@ function MainPage() {
     support_type,
     proposal_item_budgets_aggregate,
     outter_status,
+    submitter_user_id,
   } = proposal;
 
   const fetchingData = React.useCallback(async () => {
@@ -81,7 +82,7 @@ function MainPage() {
     }
   }, [activeRole, outter_status, fetchingData]);
   const handleOpenProjectOwnerDetails = () => {
-    const submiterId = proposal.user.id;
+    const submiterId = submitter_user_id;
     const url = location.pathname.split('/').slice(0, 3).join('/');
     // const destination = location.pathname.split('/').slice(3, 4).join('/');
     // const url = location.pathname;

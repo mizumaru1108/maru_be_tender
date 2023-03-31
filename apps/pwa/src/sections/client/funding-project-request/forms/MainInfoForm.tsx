@@ -55,7 +55,7 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
       .test('size', translate('errors.cre_proposal.letter_ofsupport_req.fileSize'), (value) => {
         if (value) {
           // const trueSize = value.size * 28;
-          if (value.size > 1024 * 1024 * 3) {
+          if (value.size > 1024 * 1024 * 200) {
             return false;
           }
         }
@@ -67,7 +67,7 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
         (value) => {
           if (value) {
             if (
-              value.type !== 'application/pdf'
+              value.fileExtension !== 'application/pdf'
               // value.type !== 'image/png' &&
               // value.type !== 'image/jpeg' &&
               // value.type !== 'image/jpg'
@@ -81,7 +81,7 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
     project_attachments: Yup.mixed()
       .test('size', translate('errors.cre_proposal.project_attachments.fileSize'), (value) => {
         if (value) {
-          if (value.size > 1024 * 1024 * 3) {
+          if (value.size > 1024 * 1024 * 200) {
             return false;
           }
         }
@@ -93,7 +93,7 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
         (value) => {
           if (value) {
             if (
-              value.type !== 'application/pdf'
+              value.fileExtension !== 'application/pdf'
               // value.type !== 'image/png' &&
               // value.type !== 'image/jpeg' &&
               // value.type !== 'image/jpg'

@@ -6,6 +6,7 @@ query getOneProposal($id: String!) {
     project_implement_date
     project_location
     project_track
+    submitter_user_id
     support_type
     number_of_payments_by_supervisor
     user {

@@ -57,6 +57,7 @@ export interface Proposal {
   project_implement_date: Date;
   project_location: string; // Orign
   project_track: string; // Tracks
+  submitter_user_id: string;
   user: {
     id: string;
     employee_name: string;
