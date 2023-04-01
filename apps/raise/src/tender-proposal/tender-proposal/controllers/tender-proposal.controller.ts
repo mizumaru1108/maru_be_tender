@@ -6,7 +6,9 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../../commons/dtos/base-response';
@@ -19,10 +21,16 @@ import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 
+import {
+  AnyFilesInterceptor,
+  FileFieldsInterceptor,
+} from '@webundsoehne/nest-fastify-file-upload';
+import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
 import { GetByIdDto } from '../../../commons/dtos/get-by-id.dto';
 import {
   AskAmandementRequestDto,
   ChangeProposalStateDto,
+  CreateProposalInterceptorDto,
   FetchAmandementFilterRequest,
   FetchProposalFilterRequest,
   ProposalCreateDto,
@@ -32,6 +40,8 @@ import {
   SendRevisionDto,
 } from '../dtos/requests';
 import { TenderProposalService } from '../services/tender-proposal.service';
+import { logUtil } from '../../../commons/utils/log-util';
+import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(private readonly proposalService: TenderProposalService) {}
@@ -49,6 +59,53 @@ export class TenderProposalController {
     );
     return baseResponseHelper(
       createdProposal,
+      HttpStatus.CREATED,
+      'Proposal created successfully',
+    );
+  }
+
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'letter_ofsupport_req', maxCount: 1 },
+        { name: 'project_attachments', maxCount: 1 },
+      ],
+      // {
+      //   limits: { fileSize: 200000000 },
+      //   fileFilter(req, file, callback) {
+      //     file.mimetype === FileMimeTypeEnum.PDF ? true : false;
+      //   },
+      // },
+    ),
+  )
+  @Post('interceptor-create')
+  async createProposal(
+    @Body() request: CreateProposalInterceptorDto,
+    @UploadedFiles()
+    files: {
+      letter_ofsupport_req?: Express.Multer.File[];
+      project_attachments?: Express.Multer.File[];
+    },
+  ) {
+    if (files.letter_ofsupport_req) {
+      console.log(
+        'letter of support name: ',
+        files.letter_ofsupport_req[0].originalname,
+        ', letter of support size: ',
+        files.letter_ofsupport_req[0].size,
+      );
+    }
+    if (files.project_attachments) {
+      console.log(
+        'project_attachments name: ',
+        files.project_attachments[0].originalname,
+        ', project_attachments size: ',
+        files.project_attachments[0].size,
+      );
+    }
+    console.log(request);
+    return baseResponseHelper(
+      'testing uploads',
       HttpStatus.CREATED,
       'Proposal created successfully',
     );

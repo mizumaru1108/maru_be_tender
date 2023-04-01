@@ -61,6 +61,7 @@ import { logUtil } from '../../../commons/utils/log-util';
 import { AskAmandementRequestDto } from '../dtos/requests/ask-amandement-request.dto';
 import { CreateProposalAskedEditRequestMapper } from '../mappers/create-proposal-asked-edit-request.mapper';
 import { FetchProposalFilterRequest } from '../dtos/requests/fetch-proposal-filter-request.dto';
+import { MsegatService } from '../../../libs/msegat/services/msegat.service';
 
 @Injectable()
 export class TenderProposalService {
@@ -71,7 +72,7 @@ export class TenderProposalService {
 
   constructor(
     private readonly emailService: EmailService,
-    private readonly twilioService: TwilioService,
+    private readonly msegatService: MsegatService,
     private readonly configService: ConfigService,
     private readonly bunnyService: BunnyService,
     private readonly notificationService: TenderNotificationService,
@@ -1365,9 +1366,9 @@ export class TenderProposalService {
       log.data.proposal.user.mobile_number,
     );
     if (clientPhone) {
-      this.twilioService.sendSMS({
-        to: clientPhone,
-        body: subject + ',' + clientContent,
+      this.msegatService.sendSMS({
+        numbers: clientPhone,
+        msg: subject + ',' + clientContent,
       });
     }
 
@@ -1375,9 +1376,9 @@ export class TenderProposalService {
       log.data.proposal.user.mobile_number,
     );
     if (reviewerPhone) {
-      this.twilioService.sendSMS({
-        to: reviewerPhone,
-        body: subject + ',' + employeeContent,
+      this.msegatService.sendSMS({
+        numbers: reviewerPhone,
+        msg: subject + ',' + clientContent,
       });
     }
   }

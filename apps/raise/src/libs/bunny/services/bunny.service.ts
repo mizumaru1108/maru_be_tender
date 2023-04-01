@@ -235,6 +235,47 @@ export class BunnyService {
     }
   }
 
+  public async uploadFileMulter(
+    file: MulterFile,
+    path: string,
+    serviceName: string,
+  ): Promise<string> {
+    const storageUrlMedia = this.storageUrlMedia + '/' + path;
+    const cdnUrl = this.cdnUrl + '/' + path;
+
+    const options: AxiosRequestConfig<any> = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/octet-stream',
+        AccessKey: this.storageAccessKey,
+      },
+      maxBodyLength: Infinity,
+      maxContentLength: Infinity,
+      data: file.buffer,
+      url: storageUrlMedia,
+    };
+
+    try {
+      this.logger.log(
+        `Uploading [${file.filename}] (${file.size} bytes) to Bunny ${this.storageUrlMedia} ...`,
+      );
+      const response = await axios(options);
+      this.logger.log(
+        `${file.filename} has been Uploaded!, uploaded Url: ${cdnUrl}`,
+        JSON.stringify(response.data, null, 2),
+      );
+      return cdnUrl;
+    } catch (error) {
+      this.logger.error(
+        `Error uploading image file to Bunny ${storageUrlMedia} (${file.size} bytes) while creating ${serviceName}`,
+        error,
+      );
+      throw new InternalServerErrorException(
+        `Error uploading image file to Bunny ${storageUrlMedia} (${file.size} bytes) while creating ${serviceName}`,
+      );
+    }
+  }
+
   public async uploadFileBase64(
     fileName: string,
     fileBuffer: Buffer,
