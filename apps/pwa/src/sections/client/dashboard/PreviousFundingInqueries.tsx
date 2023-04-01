@@ -3,6 +3,7 @@ import { Container, Typography, Box, Grid, Stack, Button, Tabs, Tab } from '@mui
 import { ProjectCard } from 'components/card-table';
 import { useNavigate } from 'react-router';
 import useLocales from 'hooks/useLocales';
+import { generateHeader } from '../../../utils/generateProposalNumber';
 
 function PreviousFundingInqueries({
   all_client_projects,
@@ -24,7 +25,7 @@ function PreviousFundingInqueries({
   const processData = (data: any) =>
     data.map((item: any) => ({
       title: {
-        id: item.id,
+        id: generateHeader(item.project_number),
       },
       content: {
         projectName: item.project_name,

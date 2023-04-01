@@ -130,7 +130,8 @@ function AppointmentsEmployee() {
             py: '10px',
           }}
           onClick={() => {
-            localStorage.setItem('partnerMeetingId', '');
+            localStorage.removeItem('authCodeMeeting');
+            localStorage.removeItem('partnerMeetingId');
             navigate('/project-supervisor/dashboard/appointments-with-partners/booking');
           }}
         >

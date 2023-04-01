@@ -438,8 +438,8 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
           autoHideDuration: 3000,
         });
         navigate('/dashboard/appointments-with-partners');
-        localStorage.setItem('authCodeMeeting', '');
-        localStorage.setItem('partnerMeetingId', '');
+        localStorage.removeItem('authCodeMeeting');
+        localStorage.removeItem('partnerMeetingId');
         // setReSubmit(false);
       }
     } catch (err) {
@@ -452,7 +452,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
         }
       }
       if (err.statusCode !== 401) {
-        localStorage.setItem('authCodeMeeting', '');
+        localStorage.removeItem('authCodeMeeting');
         setReSubmit(true);
       }
     } finally {

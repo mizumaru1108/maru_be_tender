@@ -19,6 +19,7 @@ import { useMutation } from 'urql';
 import { AmandementProposalList } from '../../../@types/proposal';
 import useAuth from '../../../hooks/useAuth';
 import axiosInstance from '../../../utils/axios';
+import { generateHeader } from '../../../utils/generateProposalNumber';
 
 function ListAmandementRequest() {
   const { translate, currentLang } = useLocales();
@@ -81,7 +82,8 @@ function ListAmandementRequest() {
                       gutterBottom
                       sx={{ fontSize: '15px !important' }}
                     >
-                      {item.proposal.id}
+                      {/* {item.proposal.id} */}
+                      {generateHeader(item.proposal.project_number)}
                     </Typography>
                   </Stack>
 

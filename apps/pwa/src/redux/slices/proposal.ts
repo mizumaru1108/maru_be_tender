@@ -36,6 +36,7 @@ const initialState: ProposalItme = {
     project_location: 'test',
     project_track: 'test',
     submitter_user_id: 'test',
+    project_number: 0,
     user: {
       id: 'test',
       employee_name: 'test',

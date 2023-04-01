@@ -5,6 +5,7 @@ import useLocales from 'hooks/useLocales';
 import { useNavigate } from 'react-router';
 //
 import { fCurrencyNumber } from 'utils/formatNumber';
+import { generateHeader } from '../../../utils/generateProposalNumber';
 
 function CurrentProjects({ current_projects }: any) {
   const navigate = useNavigate();
@@ -58,7 +59,8 @@ function CurrentProjects({ current_projects }: any) {
           <Grid item xs={12} md={6} key={index}>
             <ProjectCard
               destination="current-project"
-              title={{ id: `${item.id}` }}
+              // title={{ id: `${item.id}` }}
+              title={{ id: `${generateHeader(item.project_number)}` }}
               content={{
                 projectName: item.project_name,
                 projectStatus: item.outter_status,

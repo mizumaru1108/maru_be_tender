@@ -9,6 +9,7 @@ query getOneProposal($id: String!) {
     submitter_user_id
     support_type
     number_of_payments_by_supervisor
+    project_number
     user {
       id
       employee_name

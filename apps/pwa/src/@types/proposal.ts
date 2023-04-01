@@ -58,6 +58,7 @@ export interface Proposal {
   project_location: string; // Orign
   project_track: string; // Tracks
   submitter_user_id: string;
+  project_number: number;
   user: {
     id: string;
     employee_name: string;
@@ -191,6 +192,7 @@ export type AmandementProposalList = {
     employee_name: string;
   };
   proposal: {
+    project_number: number;
     project_name: string;
     id: string;
   };

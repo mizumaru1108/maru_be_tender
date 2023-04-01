@@ -93,7 +93,8 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
           display: 'inline-block',
         }}
         onClick={() => {
-          localStorage.setItem('partnerMeetingId', '');
+          localStorage.removeItem('partnerMeetingId');
+          localStorage.removeItem('authCodeMeeting');
           dispatch(setActiveConversationId(null));
           dispatch(setConversation([]));
           dispatch(setMessageGrouped([]));

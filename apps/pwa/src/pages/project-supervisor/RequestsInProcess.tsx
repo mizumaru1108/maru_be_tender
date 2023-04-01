@@ -65,7 +65,7 @@ function RequestsInProcess() {
                 inner_status: {
                   _eq: 'ACCEPTED_BY_MODERATOR',
                 },
-                outter_status: { _neq: 'ON_REVISION' },
+                outter_status: { _nin: ['ON_REVISION', 'ASKED_FOR_AMANDEMENT', 'CANCELED'] },
               },
             }}
             destination={'requests-in-process'}

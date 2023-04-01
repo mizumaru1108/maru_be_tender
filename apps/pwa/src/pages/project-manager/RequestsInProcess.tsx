@@ -51,7 +51,7 @@ function RequestsInProcess() {
                 project_manager_id: { _eq: user?.id },
                 _and: {
                   inner_status: { _eq: 'ACCEPTED_BY_SUPERVISOR' },
-                  outter_status: { _neq: 'ASKED_FOR_AMANDEMENT' },
+                  outter_status: { _nin: ['ON_REVISION', 'ASKED_FOR_AMANDEMENT', 'CANCELED'] },
                 },
               },
             }}
