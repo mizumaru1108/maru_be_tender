@@ -9,6 +9,7 @@ import {
   appRoleMappers,
   TenderAppRole,
   TenderAppRoleEnum,
+  TenderFusionAuthRoles,
 } from '../../../tender-commons/types';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 
@@ -62,6 +63,7 @@ import { AskAmandementRequestDto } from '../dtos/requests/ask-amandement-request
 import { CreateProposalAskedEditRequestMapper } from '../mappers/create-proposal-asked-edit-request.mapper';
 import { FetchProposalFilterRequest } from '../dtos/requests/fetch-proposal-filter-request.dto';
 import { MsegatService } from '../../../libs/msegat/services/msegat.service';
+import moment from 'moment';
 
 @Injectable()
 export class TenderProposalService {
@@ -84,6 +86,10 @@ export class TenderProposalService {
     if (!environment) envLoadErrorHelper('APP_ENV');
     this.appEnv = environment;
   }
+
+  // async seq() {
+  //   return await this.proposalRepo.findMany();
+  // }
 
   async uploadProposalFile(
     userId: string,
@@ -1069,7 +1075,7 @@ export class TenderProposalService {
         ProposalAction.ACCEPT,
         ProposalAction.REJECT,
         ProposalAction.STEP_BACK,
-        ProposalAction.ACCEPT_AND_ASK_FOR_CONSULTION,
+        ProposalAction.ACCEPT_AND_ASK_FOR_CONSULTATION,
         ProposalAction.STUDY_AGAIN,
       ].indexOf(request.action) < 0
     ) {
@@ -1091,7 +1097,7 @@ export class TenderProposalService {
       proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
     }
 
-    if (request.action === ProposalAction.ACCEPT_AND_ASK_FOR_CONSULTION) {
+    if (request.action === ProposalAction.ACCEPT_AND_ASK_FOR_CONSULTATION) {
       /* proposal */
       proposalUpdatePayload.inner_status =
         InnerStatusEnum.ACCEPTED_AND_NEED_CONSULTANT;
@@ -1099,7 +1105,8 @@ export class TenderProposalService {
       proposalUpdatePayload.state = TenderAppRoleEnum.CONSULTANT;
 
       /* log */
-      proposalLogCreateInput.action = ProposalAction.ACCEPT;
+      proposalLogCreateInput.action =
+        ProposalAction.ACCEPT_AND_ASK_FOR_CONSULTATION;
       proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_MANAGER;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
     }
@@ -1291,7 +1298,7 @@ export class TenderProposalService {
 
   async sendChangeStateNotification(
     log: IProposalLogsResponse,
-    reviewerRole: string,
+    reviewerRole: TenderFusionAuthRoles,
     selected_language?: 'ar' | 'en',
   ) {
     const actions =
@@ -1306,16 +1313,18 @@ export class TenderProposalService {
     }
     const employeeContent = `Your review has been submitted for proposal (${log.data.proposal.project_name}) at (${log.data.created_at}), and already been notified to the user ${log.data.proposal.user.employee_name} (${log.data.proposal.user.email})`;
 
-    // email notification
+    /* EMAIL NOTIF */
     if (log.data.reviewer) {
-      const employeeEmailNotifPayload: SendEmailDto = {
-        mailType: 'plain',
-        to: log.data.reviewer.email,
-        from: 'no-reply@hcharity.org',
-        subject,
-        content: employeeContent,
-      };
-      this.emailService.sendMail(employeeEmailNotifPayload);
+      // const employeeEmailNotifPayload: SendEmailDto = {
+      //   mailType: 'plain',
+      //   to: log.data.reviewer.email,
+      //   from: 'no-reply@hcharity.org',
+      //   subject,
+      //   content: employeeContent,
+      // };
+      // if (actions === ProposalAction.ACCEPT) {
+      //   // if its accepted, send notif
+      // }
     }
 
     const clientEmailNotifPayload: SendEmailDto = {
@@ -1332,55 +1341,78 @@ export class TenderProposalService {
       },
     };
 
-    this.emailService.sendMail(clientEmailNotifPayload);
-
-    // create web app notification
-    if (
-      actions !== 'accept' ||
-      (actions === 'accept' && log.data.user_role === TenderAppRoleEnum.CEO)
-    ) {
-      if (log.data.reviewer_id) {
-        const employeeWebNotifPayload: CreateNotificationDto = {
-          type: 'PROPOSAL',
-          specific_type: `PROJECT_${actions.toUpperCase()}ED`,
-          user_id: log.data.reviewer_id,
-          proposal_id: log.data.proposal_id,
-          subject,
-          content: employeeContent,
-        };
-        await this.notifService.create(employeeWebNotifPayload);
-      }
-
-      const clientWebNotifPayload: CreateNotificationDto = {
-        type: 'PROPOSAL',
-        specific_type: `PROJECT_${actions.toUpperCase()}ED`,
-        user_id: log.data.proposal.submitter_user_id,
-        proposal_id: log.data.proposal_id,
-        subject,
-        content: clientContent,
-      };
-      await this.notifService.create(clientWebNotifPayload);
+    if (actions === ProposalAction.ACCEPT) {
+      if (reviewerRole === 'tender_ceo')
+        this.emailService.sendMail(clientEmailNotifPayload);
     }
 
+    if (actions === ProposalAction.REJECT) {
+      this.emailService.sendMail(clientEmailNotifPayload);
+    }
+
+    /* EMAIL NOTIF */
+
+    /* WEB NOTIF */
+    // if (log.data.reviewer_id) {
+    // const employeeWebNotifPayload: CreateNotificationDto = {
+    //   type: 'PROPOSAL',
+    //   specific_type: `PROJECT_${actions.toUpperCase()}ED`,
+    //   user_id: log.data.reviewer_id,
+    //   proposal_id: log.data.proposal_id,
+    //   subject,
+    //   content: employeeContent,
+    // };
+    // }
+
+    const clientWebNotifPayload: CreateNotificationDto = {
+      type: 'PROPOSAL',
+      specific_type: `PROJECT_${actions.toUpperCase()}ED`,
+      user_id: log.data.proposal.submitter_user_id,
+      proposal_id: log.data.proposal_id,
+      subject,
+      content: clientContent,
+    };
+
+    if (actions === ProposalAction.ACCEPT) {
+      if (reviewerRole === 'tender_ceo') {
+        await this.notifService.create(clientWebNotifPayload);
+      }
+    }
+
+    if (actions === ProposalAction.REJECT) {
+      await this.notifService.create(clientWebNotifPayload);
+    }
+    /* WEB NOTIF */
+
+    /* SMS NOTIF */
     const clientPhone = isExistAndValidPhone(
       log.data.proposal.user.mobile_number,
     );
     if (clientPhone) {
-      this.msegatService.sendSMS({
+      const sendClientNotif = this.msegatService.sendSMS({
         numbers: clientPhone,
         msg: subject + ',' + clientContent,
       });
+
+      if (actions === ProposalAction.ACCEPT) {
+        if (reviewerRole === 'tender_ceo') sendClientNotif;
+      }
+
+      if (actions === ProposalAction.REJECT) {
+        sendClientNotif;
+      }
     }
 
-    const reviewerPhone = isExistAndValidPhone(
-      log.data.proposal.user.mobile_number,
-    );
-    if (reviewerPhone) {
-      this.msegatService.sendSMS({
-        numbers: reviewerPhone,
-        msg: subject + ',' + clientContent,
-      });
-    }
+    // const reviewerPhone = isExistAndValidPhone(
+    //   log.data.proposal.user.mobile_number,
+    // );
+    // if (reviewerPhone) {
+    //   this.msegatService.sendSMS({
+    //     numbers: reviewerPhone,
+    //     msg: subject + ',' + clientContent,
+    //   });
+    // }
+    /* SMS NOTIF */
   }
 
   async fetchTrack(limit: number, page: number) {

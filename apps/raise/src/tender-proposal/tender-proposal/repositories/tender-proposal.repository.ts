@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma, proposal, proposal_item_budget } from '@prisma/client';
+import moment from 'moment';
 import { nanoid } from 'nanoid';
 import { logUtil } from '../../../commons/utils/log-util';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
@@ -52,6 +53,33 @@ export class TenderProposalRepository {
       throw theError;
     }
   }
+
+  // async seq() {
+  //   const proposal = await this.prismaService.proposal.findMany({
+  //     orderBy: {
+  //       created_at: 'asc',
+  //     },
+  //   });
+
+  //   if (proposal.length > 0) {
+  //     for (let i = 0; i < proposal.length; i++) {
+  //       const proposal_id = proposal[i].id;
+  //       const proposal_name = proposal[i].project_name;
+  //       const proposal_number = proposal[i].project_number;
+  //       const created_at = moment(proposal[i].created_at).format('lll');
+  //       console.log(
+  //         `numb: ${proposal_number}`,
+  //         `proposal_id: ${proposal_id}`,
+  //         `name: ${proposal_name}`,
+  //         `created: ${created_at}\n`,
+  //       );
+  //       // await this.prismaService.proposal.update({
+  //       //   where: { id: proposal_id },
+  //       //   data: { project_number: i + 1 },
+  //       // });
+  //     }
+  //   }
+  // }
 
   async create(
     createProposalPayload: Prisma.proposalUncheckedCreateInput,

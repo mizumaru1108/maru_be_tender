@@ -390,7 +390,7 @@ export class TenderProposalPaymentRepository {
             data: {
               id: nanoid(),
               proposal_id: proposal_id,
-              action: 'complete_payment',
+              action: 'COMPLETE_PAYMENT',
               reviewer_id: currentUser.id,
               state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
               user_role: TenderAppRoleEnum.CASHIER,
@@ -468,7 +468,7 @@ export class TenderProposalPaymentRepository {
             data: {
               id: nanoid(),
               proposal_id: proposal_id,
-              action: send ? 'sending_closing_report' : 'complete',
+              action: send ? 'SENDING_CLOSING_REPORT' : 'COMPLETE',
               reviewer_id: currentUser.id,
               state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
               user_role: TenderAppRoleEnum.PROJECT_SUPERVISOR,

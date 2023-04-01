@@ -65,14 +65,14 @@ export class CreateProposalInterceptorDto {
   @IsNotEmpty()
   project_implement_date: string;
 
-  // @ApiProperty()
-  // @IsNumber(
-  //   { allowNaN: false, allowInfinity: false },
-  //   { message: 'Execution Time must be a number!' },
-  // )
-  // @Min(1)
-  // @Max(999999999999)
-  // execution_time: number;
+  @ApiProperty()
+  @IsNumber(
+    { allowNaN: false, allowInfinity: false },
+    { message: 'Execution Time must be a number!' },
+  )
+  @Min(1)
+  @Max(999999999999)
+  execution_time: number;
 
   @ApiProperty()
   @IsString()

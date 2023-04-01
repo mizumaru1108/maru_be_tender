@@ -46,6 +46,11 @@ import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 export class TenderProposalController {
   constructor(private readonly proposalService: TenderProposalService) {}
 
+  // @Post('seq')
+  // async seq() {
+  //   return await this.proposalService.seq();
+  // }
+
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_client')
   @Post('create')
