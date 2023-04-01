@@ -122,6 +122,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
   const { activeRole } = useAuth();
   const { translate, currentLang } = useLocales();
   const [isLoading, setIsLoading] = React.useState(false);
+  const [reSubmit, setReSubmit] = React.useState(false);
 
   // console.log('userId : ', userId);
   // const { authCode } = useSelector((state) => state.appointments);
@@ -354,14 +355,65 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
 
   // console.log({ authCode });
 
-  const handleSubmit = async () => {
-    setIsLoading(true);
-    localStorage.setItem('partnerMeetingId', userId);
+  // const handleSubmit = async () => {
+  //   setIsLoading(true);
+  //   localStorage.setItem('partnerMeetingId', userId);
 
+  //   const start_moment = moment(selectedTime, 'hh:mm A');
+  //   const end_moment = start_moment.add(1, 'hours');
+  //   const end_time = end_moment.format('hh:mm A');
+
+  //   const tmpValues = {
+  //     authCode: localStorage.getItem('authCodeMeeting') as string,
+  //     client_id: userId,
+  //     start_time: moment(selectedTime, 'hh:mm A').format('hh:mm A'),
+  //     end_time,
+  //     date: selectedDate.date,
+  //   };
+  //   try {
+  //     const rest = await axiosInstance.post(
+  //       'tender/appointments/create-appointment',
+  //       {
+  //         ...tmpValues,
+  //       },
+  //       {
+  //         headers: { 'x-hasura-role': activeRole! },
+  //       }
+  //     );
+  //     if (rest) {
+  //       enqueueSnackbar('Meeting has been created', {
+  //         variant: 'success',
+  //         preventDuplicate: true,
+  //         autoHideDuration: 3000,
+  //       });
+  //       navigate('/dashboard/appointments-with-partners');
+  //       localStorage.setItem('authCodeMeeting', '');
+  //       localStorage.setItem('partnerMeetingId', '');
+  //       // setReSubmit(false);
+  //     }
+  //   } catch (err) {
+  //     if (err.statusCode === 401) {
+  //       const messages = err.message;
+  //       const urlRegex = /(https?:\/\/[^\s]+)/g;
+  //       const url = messages.match(urlRegex)[0];
+  //       if (url) {
+  //         window.open(url, '_self');
+  //       }
+  //     }
+  //     if (err.statusCode !== 401) {
+  //       localStorage.setItem('authCodeMeeting', '');
+  //       setReSubmit(true);
+  //     }
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  const handleSubmit = React.useCallback(async () => {
+    setIsLoading(true);
     const start_moment = moment(selectedTime, 'hh:mm A');
     const end_moment = start_moment.add(1, 'hours');
     const end_time = end_moment.format('hh:mm A');
-
     const tmpValues = {
       authCode: localStorage.getItem('authCodeMeeting') as string,
       client_id: userId,
@@ -388,6 +440,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
         navigate('/dashboard/appointments-with-partners');
         localStorage.setItem('authCodeMeeting', '');
         localStorage.setItem('partnerMeetingId', '');
+        // setReSubmit(false);
       }
     } catch (err) {
       if (err.statusCode === 401) {
@@ -399,11 +452,19 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
         }
       }
       if (err.statusCode !== 401) {
+        localStorage.setItem('authCodeMeeting', '');
+        setReSubmit(true);
       }
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [activeRole, enqueueSnackbar, navigate, userId, selectedTime, selectedDate.date]);
+
+  React.useEffect(() => {
+    if (reSubmit) {
+      handleSubmit();
+    }
+  }, [handleSubmit, reSubmit]);
 
   // console.log('chek', !moment('3:00 PM', 'h:mm A').isAfter(moment(newestTime, 'h:mm A')));
   return (

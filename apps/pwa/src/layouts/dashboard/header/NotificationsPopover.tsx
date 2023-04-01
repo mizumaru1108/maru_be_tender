@@ -503,6 +503,10 @@ function NotificationItem({
   tabValue: any;
   onClose: () => void;
 }) {
+  // console.log({ notification });
+  // const difference = moment().diff(moment(notification.created_at), 'millisecond', true);
+  // console.log('time: ', difference);
+
   // const { description } = renderContent(notification);
   const { translate, currentLang } = useLocales();
 
@@ -523,7 +527,9 @@ function NotificationItem({
   // const createdAtMeeting = new Date(data?.appointment?.created_at);
   // const getTimeMeeting = Date.now() - createdAtMeeting.getTime();
 
-  const getTimeMeeting = (createdAtMeeting: any) => Date.now() - createdAtMeeting.getTime();
+  const getTimeMeeting = (createdAtMeeting: any) =>
+    // createdAtMeeting ? Date.now() - createdAtMeeting.getTime() : 'null';
+    moment().diff(moment(createdAtMeeting), 'millisecond', true);
 
   const handleNavigateProject = async (
     proposalId: string,
@@ -669,49 +675,52 @@ function NotificationItem({
           )}
           {/* ---------------------------End Project Today Item--------------------------- */}
           {/* ---------------------------Appointment Today Item--------------------------- */}
-          {notification?.appointment && getTimeMeeting(notification?.created_at) <= fiveMinSoon && (
-            <ListItemButton
-              sx={{
-                py: 1.5,
-                px: 2.5,
-                mt: '1px',
-              }}
-            >
-              <ListItemText
-                primary={translate(`notification.subject_five_min_appointment`)}
-                secondary={
-                  <Stack direction="column">
-                    <Typography>
-                      {translate(`notification.content_five_min_appointment`)}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        mt: 0.5,
-                        display: 'flex',
-                        alignItems: 'center',
-                        color: 'text.disabled',
-                      }}
-                    >
-                      {moment(notification.created_at).locale(`${currentLang.value}`).fromNow()}
-                    </Typography>
-                    {notification.type === 'PROPOSAL' && (
-                      <Stack direction="row" justifyContent="start">
-                        <Button
-                          style={{ textAlign: 'start', color: 'green' }}
-                          href={notification.appointment.meeting_url}
-                          rel="noopened noreferrer"
-                          target="_blank"
-                        >
-                          {translate('notification.join_now')}
-                        </Button>
-                      </Stack>
-                    )}
-                  </Stack>
-                }
-              />
-            </ListItemButton>
-          )}
+          {notification &&
+            notification?.appointment &&
+            notification?.created_at &&
+            getTimeMeeting(notification?.created_at) <= fiveMinSoon && (
+              <ListItemButton
+                sx={{
+                  py: 1.5,
+                  px: 2.5,
+                  mt: '1px',
+                }}
+              >
+                <ListItemText
+                  primary={translate(`notification.subject_five_min_appointment`)}
+                  secondary={
+                    <Stack direction="column">
+                      <Typography>
+                        {translate(`notification.content_five_min_appointment`)}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          mt: 0.5,
+                          display: 'flex',
+                          alignItems: 'center',
+                          color: 'text.disabled',
+                        }}
+                      >
+                        {moment(notification.created_at).locale(`${currentLang.value}`).fromNow()}
+                      </Typography>
+                      {notification.type === 'PROPOSAL' && (
+                        <Stack direction="row" justifyContent="start">
+                          <Button
+                            style={{ textAlign: 'start', color: 'green' }}
+                            href={notification.appointment.meeting_url}
+                            rel="noopened noreferrer"
+                            target="_blank"
+                          >
+                            {translate('notification.join_now')}
+                          </Button>
+                        </Stack>
+                      )}
+                    </Stack>
+                  }
+                />
+              </ListItemButton>
+            )}
           {/* ---------------------------End Appointment Today Item--------------------------- */}
           {/* ---------------------------Payment Today Item--------------------------- */}
           {notification?.proposal && notification.proposal.payments && (
