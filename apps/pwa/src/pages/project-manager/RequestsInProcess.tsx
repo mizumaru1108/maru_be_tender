@@ -51,8 +51,19 @@ function RequestsInProcess() {
                 project_manager_id: { _eq: user?.id },
                 _and: {
                   inner_status: { _eq: 'ACCEPTED_BY_SUPERVISOR' },
-                  outter_status: { _nin: ['ON_REVISION', 'ASKED_FOR_AMANDEMENT', 'CANCELED'] },
+                  // outter_status: { _nin: ['ON_REVISION', 'ASKED_FOR_AMANDEMENT', 'CANCELED'] },
                 },
+
+                // _or: [
+                //   {
+                //     project_manager_id: { _eq: user?.id },
+                //     _and: { inner_status: { _eq: 'ACCEPTED_BY_SUPERVISOR' } },
+                //   },
+                //   {
+                //     supervisor_id: { _is_null: false },
+                //     _and: { inner_status: { _eq: 'REJECTED_BY_SUPERVISOR' } },
+                //   },
+                // ],
               },
             }}
             destination={'incoming-funding-requests'}

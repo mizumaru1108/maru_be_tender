@@ -16,6 +16,9 @@ const ProjectDetails = Loadable(lazy(() => import('pages/project-details/Project
 const ProjectOwnerDetails = Loadable(
   lazy(() => import('pages/project-details/ProjectOwnerDetails'))
 );
+const PreviousFundingRequestsCeo = Loadable(
+  lazy(() => import('pages/ceo/PreviousFundingRequests'))
+);
 
 const AmandementRequest = Loadable(
   lazy(() => import('pages/amandement-request/AmandementRequest'))
@@ -131,6 +134,20 @@ export const ceoRoute = {
             {
               path: 'owner/:submiterId',
               element: <ProjectOwnerDetails />,
+            },
+            {
+              path: ':id/:actionType',
+              element: <ProjectDetails />,
+            },
+          ],
+        },
+        {
+          path: 'previous-funding-requests',
+          children: [
+            { path: '', element: <PreviousFundingRequestsCeo /> },
+            {
+              path: ':id/amandementRequest',
+              element: <AmandementRequest />,
             },
             {
               path: ':id/:actionType',

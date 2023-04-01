@@ -74,6 +74,7 @@ const ICONS = {
     project_management: getIcon('project-management'),
     rejection_list: getIcon('rejection-list'),
     client_list: getIcon('users-and-permissions'),
+    previous_funding_requests: getIcon('previous-funding-requests'),
     portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
   },
@@ -310,6 +311,11 @@ const navConfig = {
           icon: ICONS.tender_ceo.client_list,
         },
         {
+          title: 'previous_funding_requests',
+          path: PATH_CEO.previous_funding_requests,
+          icon: ICONS.tender_ceo.previous_funding_requests,
+        },
+        {
           title: 'portal_reports',
           path: PATH_CEO.portal_reports,
           icon: ICONS.tender_ceo.portal_reports,
@@ -351,11 +357,11 @@ const navConfig = {
           path: PATH_PROJECT_MANAGER.client_list,
           icon: ICONS.tender_ceo.client_list,
         },
-        // {
-        //   title: 'rejection_list',
-        //   path: PATH_PROJECT_MANAGER.rejection_list,
-        //   icon: ICONS.tender_ceo.rejection_list,
-        // },
+        {
+          title: 'rejection_list',
+          path: PATH_PROJECT_MANAGER.rejection_list,
+          icon: ICONS.tender_ceo.rejection_list,
+        },
         {
           title: 'exchange_permission',
           path: PATH_PROJECT_MANAGER.exchange_permission,

@@ -10,6 +10,32 @@ function PreviousFundingRequests() {
   const { user } = useAuth();
   const { translate } = useLocales();
 
+  const INNER_STATUS_FILTER = [
+    'ACCEPTED_BY_PROJECT_MANAGER',
+    'REJECTED_BY_PROJECT_MANAGER',
+    'REVISED_BY_PROJECT_MANAGER',
+    'ASKING_PROJECT_MANAGER_CHANGES',
+    'ACCEPTED_BY_CEO',
+    'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
+    'REJECTED_BY_CEO',
+    'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
+    'ACCEPTED_BY_FINACE',
+    'DONE_BY_CASHIER',
+    'ACCEPTED_AND_NEED_CONSULTANT',
+    'REJECTED_BY_CONSULTANT',
+    'PROJECT_COMPLETED',
+  ];
+
+  const OUTTER_STATUS_FILTER = [
+    'ON_REVISION',
+    'ASKED_FOR_AMANDEMENT',
+    'ONGOING',
+    'CANCELED',
+    'COMPLETED',
+  ];
+
+  // const PAYMENTS_FILTER = ['ACCEPTED_BY_PROJECT_MANAGER', 'ACCEPTED_BY_FINANCE', 'DONE'];
+
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',
@@ -86,11 +112,6 @@ function PreviousFundingRequests() {
                     payments: { status: { _in: ['ISSUED_BY_SUPERVISOR'] } },
                   },
                 },
-                // inner_status: {
-                //   _in: INNER_STATUS_FILTER,
-                // },
-                // outter_status: { _in: OUTTER_STATUS_FILTER },
-                // payments: { status: { _in: PAYMENTS_FILTER } },
               },
             }}
           />

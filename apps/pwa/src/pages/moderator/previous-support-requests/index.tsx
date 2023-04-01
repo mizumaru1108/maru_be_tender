@@ -58,8 +58,13 @@ function PreviousSupportRequests() {
                 }),
               },
             ]}
+            // baseFilters={{
+            //   outter_status: { outter_status: { _neq: 'ONGOING' } },
+            // }}
             baseFilters={{
-              outter_status: { outter_status: { _neq: 'ONGOING' } },
+              filter1: {
+                inner_status: { _nin: ['CREATED_BY_CLIENT'] },
+              },
             }}
           />
         </ContentStyle>

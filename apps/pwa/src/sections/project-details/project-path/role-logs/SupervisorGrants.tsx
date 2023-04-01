@@ -129,6 +129,23 @@ function SupervisorGrants({ stepGransLog }: Props) {
                 </Grid>
               );
             }
+            if (key === 'closing_report') {
+              return (
+                <Grid item xs={6} key={key}>
+                  <Typography variant="h6">
+                    {
+                      // key
+                      translate(`review.${key}`)
+                    }
+                  </Typography>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>
+                      {value === true ? translate('review.yes') : translate('review.no')}
+                    </Typography>
+                  </Stack>
+                </Grid>
+              );
+            }
             if (key === 'fsupport_by_supervisor') {
               return (
                 <Grid item xs={6} key={key}>

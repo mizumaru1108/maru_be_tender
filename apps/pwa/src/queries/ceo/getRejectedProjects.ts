@@ -10,7 +10,7 @@ export const getRejectedProjects = `query getRejectedProjects($limit: Int = 10, 
     project_track
     created_at
   }
-  total: proposal_aggregate(where: {outter_status: {_eq: CANCELED}}) {
+  total: proposal_aggregate(where: $where) {
     aggregate {
       count
     }

@@ -20,6 +20,7 @@ import { RejectedProjects } from './types';
 import RejectionListRow from './RejectionListRow';
 import { getRejectedProjects } from 'queries/ceo/getRejectedProjects';
 import TableSkeleton from '../../TableSkeleton';
+import useAuth from 'hooks/useAuth';
 
 const TABLE_HEAD = [
   { id: 'id', label: 'project_management_headercell.project_number' },
@@ -61,6 +62,22 @@ export default function UsersAndPermissionsTable() {
   } = useTable();
 
   const { translate } = useLocales();
+  const { user, activeRole } = useAuth();
+  const [rejectFilter, setRejectFilter] = useState<any>({});
+
+  useEffect(() => {
+    if (activeRole! === 'tender_project_manager') {
+      setRejectFilter({
+        supervisor_id: { _is_null: false },
+        _and: { inner_status: { _in: ['REJECTED_BY_SUPERVISOR', 'REJECTED_BY_PROJECT_MANAGER'] } },
+      });
+    } else {
+      setRejectFilter({
+        project_manager_id: { _is_null: false },
+        _and: { inner_status: { _in: ['REJECTED_BY_PROJECT_MANAGER', 'REJECTED_BY_CEO'] } },
+      });
+    }
+  }, [activeRole]);
 
   const [{ data, fetching, error }, mutate] = useQuery({
     query: getRejectedProjects,
@@ -68,7 +85,7 @@ export default function UsersAndPermissionsTable() {
       limit: rowsPerPage,
       offset: page * rowsPerPage,
       // order_by: orderBy,
-      where: { outter_status: { _eq: 'CANCELED' } },
+      where: rejectFilter,
     },
   });
 
@@ -125,6 +142,7 @@ export default function UsersAndPermissionsTable() {
 
   if (error) return <>...Opss, something went wrong</>;
 
+  console.log('reject filter', rejectFilter);
   return (
     <Box>
       <Typography variant="h3" gutterBottom sx={{ marginBottom: '50px' }}>

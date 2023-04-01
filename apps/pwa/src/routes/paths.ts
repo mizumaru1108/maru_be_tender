@@ -96,6 +96,7 @@ export const PATH_CEO = {
   project_management: path(ROOTS_CEO, '/dashboard/project-management'),
   rejection_list: path(ROOTS_CEO, '/dashboard/rejection-list'),
   client_list: path(ROOTS_CEO, '/dashboard/client-list'),
+  previous_funding_requests: path(ROOTS_CEO, '/dashboard/previous-funding-requests'),
   portal_reports: path(ROOTS_CEO, '/dashboard/portal-reports'),
   messages: path(ROOTS_CEO, '/dashboard/messages'),
 };
