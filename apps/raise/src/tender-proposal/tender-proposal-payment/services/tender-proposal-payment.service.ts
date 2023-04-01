@@ -23,6 +23,7 @@ import {
 import {
   InnerStatusEnum,
   OutterStatusEnum,
+  ProposalAction,
 } from '../../../tender-commons/types/proposal';
 import { actionValidator } from '../../../tender-commons/utils/action-validator';
 import { generateFileName } from '../../../tender-commons/utils/generate-filename';
@@ -201,12 +202,19 @@ export class TenderProposalPaymentService {
           proposal.id,
         );
 
+      // let status:
+      //   | 'SET_BY_SUPERVISOR'
+      //   | 'ISSUED_BY_SUPERVISOR'
+      //   | 'ACCEPTED_BY_PROJECT_MANAGER'
+      //   | 'ACCEPTED_BY_FINANCE'
+      //   | 'DONE'
+      //   | null = null;
       let status:
-        | 'SET_BY_SUPERVISOR'
-        | 'ISSUED_BY_SUPERVISOR'
-        | 'ACCEPTED_BY_PROJECT_MANAGER'
-        | 'ACCEPTED_BY_FINANCE'
-        | 'DONE'
+        | ProposalAction.SET_BY_SUPERVISOR
+        | ProposalAction.ISSUED_BY_SUPERVISOR
+        | ProposalAction.ACCEPTED_BY_PROJECT_MANAGER
+        | ProposalAction.ACCEPTED_BY_FINANCE
+        | ProposalAction.DONE
         | null = null;
 
       let chequeObj: UploadFilesJsonbDto | undefined = undefined;
@@ -219,21 +227,22 @@ export class TenderProposalPaymentService {
       if (choosenRole === 'tender_project_manager') {
         if (proposal.project_manager_id !== userId) ownershipErrorThrow();
         actionValidator(['accept', 'reject'], action);
-        if (action === 'accept') status = 'ACCEPTED_BY_PROJECT_MANAGER';
-        if (action === 'reject') status = 'SET_BY_SUPERVISOR';
+        if (action === 'accept')
+          status = ProposalAction.ACCEPTED_BY_PROJECT_MANAGER;
+        if (action === 'reject') status = ProposalAction.SET_BY_SUPERVISOR;
       }
 
       if (choosenRole === 'tender_finance') {
         actionValidator(['accept'], action);
         proposalUpdateInput.finance_id = userId;
-        if (action === 'accept') status = 'ACCEPTED_BY_FINANCE';
+        if (action === 'accept') status = ProposalAction.ACCEPTED_BY_FINANCE;
         // !TODO: if (action is edit) do something, still abmigous, need to discuss.
       }
 
       if (choosenRole === 'tender_project_supervisor') {
         if (proposal.supervisor_id !== userId) ownershipErrorThrow();
         actionValidator(['issue'], action);
-        if (action === 'issue') status = 'ISSUED_BY_SUPERVISOR';
+        if (action === 'issue') status = ProposalAction.ISSUED_BY_SUPERVISOR;
       }
 
       if (choosenRole === 'tender_cashier') {
@@ -241,7 +250,7 @@ export class TenderProposalPaymentService {
         actionValidator(['upload_receipt'], action);
         if (!cheque) throw new BadRequestException('Cheque data is required!');
         proposalUpdateInput.cashier_id = userId;
-        if (action === 'upload_receipt') status = 'DONE';
+        if (action === 'upload_receipt') status = ProposalAction.DONE;
         const uploadResult = await this.uploadPaymentFileFile(
           proposal.id,
           `Uploading cheque for payment ${payment_id}`,

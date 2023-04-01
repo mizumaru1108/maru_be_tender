@@ -13,6 +13,7 @@ import {
 import {
   InnerStatusEnum,
   OutterStatusEnum,
+  ProposalAction,
 } from '../../../tender-commons/types/proposal';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
@@ -390,7 +391,7 @@ export class TenderProposalPaymentRepository {
             data: {
               id: nanoid(),
               proposal_id: proposal_id,
-              action: 'COMPLETE_PAYMENT',
+              action: ProposalAction.COMPLETE_PAYMENT,
               reviewer_id: currentUser.id,
               state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
               user_role: TenderAppRoleEnum.CASHIER,
@@ -429,7 +430,9 @@ export class TenderProposalPaymentRepository {
           this.logger.log(
             'info',
             `updating proposal ${proposal_id} status to ${
-              send ? 'REQUESTING_CLOSING_FORM' : 'COMPLETE'
+              send
+                ? 'REQUESTING_CLOSING_FORM'
+                : ProposalAction.PROJECT_COMPLETED
             } `,
           );
 
@@ -468,7 +471,9 @@ export class TenderProposalPaymentRepository {
             data: {
               id: nanoid(),
               proposal_id: proposal_id,
-              action: send ? 'SENDING_CLOSING_REPORT' : 'COMPLETE',
+              action: send
+                ? ProposalAction.SENDING_CLOSING_REPORT
+                : ProposalAction.PROJECT_COMPLETED,
               reviewer_id: currentUser.id,
               state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
               user_role: TenderAppRoleEnum.PROJECT_SUPERVISOR,
