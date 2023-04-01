@@ -6,7 +6,7 @@ import { Box, Stack, Link, Container, Typography } from '@mui/material';
 import { PATH_AUTH } from '../../routes/paths';
 // components
 import Page from '../../components/Page';
-import { ReactComponent as Logo } from '../../assets/logo.svg';
+import { ReactComponent as Logo } from '../../assets/new_logo.svg';
 // sections
 import { LoginForm } from '../../sections/auth/login';
 import useLocales from 'hooks/useLocales';

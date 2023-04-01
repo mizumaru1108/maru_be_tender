@@ -13,7 +13,8 @@ import { NAVBAR } from '../../../config';
 // components
 import Scrollbar from '../../../components/Scrollbar';
 import { NavSectionVertical } from '../../../components/nav-section';
-import { ReactComponent as Logo } from '../../../assets/logo.svg';
+// import { ReactComponent as Logo } from '../../../assets/logo.svg';
+import { ReactComponent as Logo } from '../../../assets/new_logo.svg';
 //
 import navConfig from './NavConfig';
 import useAuth from 'hooks/useAuth';

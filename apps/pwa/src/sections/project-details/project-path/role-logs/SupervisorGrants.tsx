@@ -13,6 +13,17 @@ function SupervisorGrants({ stepGransLog }: Props) {
   // const { proposal } = useSelector((state) => state.proposal);
   const { translate, currentLang } = useLocales();
   // console.log({ stepGransLog });
+  // const [isVat, setIsVat] = React.useState(false);
+  const isVat = Object.entries(stepGransLog.proposal!)
+    .filter(([key]) => key === 'vat')
+    .map(([key, value]) => {
+      if (value && value === true) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+  console.log(isVat, 'isVat');
 
   return (
     <React.Fragment>
@@ -24,7 +35,7 @@ function SupervisorGrants({ stepGransLog }: Props) {
           </Typography>
         </Stack>
         {Object.entries(stepGransLog.proposal!)
-          .filter(([key]) => key !== 'vat' && key !== 'inclu_or_exclu' && key !== 'vat_percentage')
+          .filter(([key]) => key !== 'inclu_or_exclu' && key !== 'vat' && key !== 'vat_percentage')
           .map(([key, value]) => {
             // console.log({ stepGransLog });
             // if (!value) {
@@ -45,6 +56,23 @@ function SupervisorGrants({ stepGransLog }: Props) {
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
                       {value ? translate(`review.support_goals.${String(value)}`) : '-'}
+                    </Typography>
+                  </Stack>
+                </Grid>
+              );
+            }
+            if (key === 'accreditation_type_id') {
+              return (
+                <Grid item xs={6} key={key}>
+                  <Typography variant="h6">
+                    {
+                      // key
+                      translate(`review.${key}`)
+                    }
+                  </Typography>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>
+                      {value ? translate(`review.accreditation_type.${String(value)}`) : '-'}
                     </Typography>
                   </Stack>
                 </Grid>
@@ -118,19 +146,91 @@ function SupervisorGrants({ stepGransLog }: Props) {
                 </Grid>
               );
             }
-            return (
-              <Grid item xs={6} key={key}>
-                <Typography variant="h6">
-                  {
-                    // key
-                    translate(`review.${key}`)
-                  }
-                </Typography>
-                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                  <Typography>{value ? String(value) : '-'}</Typography>
-                </Stack>
-              </Grid>
-            );
+            if (key === 'support_type') {
+              return (
+                <Grid item xs={6} key={key}>
+                  <Typography variant="h6">
+                    {
+                      // key
+                      translate(`review.${key}`)
+                    }
+                  </Typography>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>
+                      {value === true ? translate('full_support') : translate('partial_support')}
+                    </Typography>
+                  </Stack>
+                </Grid>
+              );
+            }
+            if (key !== 'clasification_field' && key !== 'clause') {
+              return (
+                <Grid item xs={6} key={key}>
+                  <Typography variant="h6">{translate(`review.${key}`)}</Typography>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>{value ? String(value) : '-'}</Typography>
+                  </Stack>
+                </Grid>
+              );
+            } else {
+              return null;
+            }
+          })}
+        {Object.entries(stepGransLog.proposal!)
+          .filter(([key]) => key === 'inclu_or_exclu' || key === 'vat' || key === 'vat_percentage')
+          .map(([key, value]) => {
+            if (key === 'inclu_or_exclu' && isVat[0] === true) {
+              return (
+                <Grid item xs={6} key={key}>
+                  <Typography variant="h6">
+                    {
+                      // key
+                      translate(`review.${key}`)
+                    }
+                  </Typography>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>
+                      {value ? translate('review.yes') : translate('review.no')}
+                    </Typography>
+                  </Stack>
+                </Grid>
+              );
+            }
+            if (key === 'vat_percentage' && isVat[0] === true) {
+              return (
+                <Grid item xs={6} key={key}>
+                  <Typography variant="h6">
+                    {
+                      // key
+                      translate(`review.${key}`)
+                    }
+                  </Typography>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>
+                      <Typography>{value ? String(value) : '-'}</Typography>
+                    </Typography>
+                  </Stack>
+                </Grid>
+              );
+            }
+            if (key === 'vat') {
+              return (
+                <Grid item xs={6} key={key}>
+                  <Typography variant="h6">
+                    {
+                      // key
+                      translate(`review.${key}`)
+                    }
+                  </Typography>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>
+                      {value ? translate('review.yes') : translate('review.no')}
+                    </Typography>
+                  </Stack>
+                </Grid>
+              );
+            }
+            return null;
           })}
         <Grid item xs={6}>
           <Typography variant="h6">

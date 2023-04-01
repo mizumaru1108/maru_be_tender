@@ -109,6 +109,8 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
           ...restStep1,
           fsupport_by_supervisor: totalFSupport,
           number_of_payments_by_supervisor: lenghtOfNumberOfPayments,
+          clause: null,
+          clasification_field: null,
           accreditation_type_id: null,
           support_goal_id: null,
           // split 1

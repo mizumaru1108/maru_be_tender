@@ -15,7 +15,7 @@ function IncomingFundingRequests() {
       order_by: { updated_at: 'desc' },
       where: {
         // supervisor_id: { _is_null: true },
-        clasification_field: { _is_null: true },
+        support_outputs: { _is_null: true },
         _and: { inner_status: { _eq: 'ACCEPTED_BY_MODERATOR' } },
       },
     },

@@ -16,8 +16,8 @@ function FirstForm({ children, onSubmit }: any) {
   const { translate } = useLocales();
 
   const validationSchema = Yup.object().shape({
-    clause: Yup.string().required('Procedures is required!'),
-    clasification_field: Yup.string().required('Procedures is required!'),
+    // clause: Yup.string().required('Procedures is required!'),
+    // clasification_field: Yup.string().required('Procedures is required!'),
     support_type: Yup.boolean().required('Procedures is required!'),
     closing_report: Yup.boolean().required('Procedures is required!'),
     need_picture: Yup.boolean().required('Procedures is required!'),
@@ -71,7 +71,7 @@ function FirstForm({ children, onSubmit }: any) {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
-        <Grid item md={6} xs={12}>
+        {/* <Grid item md={6} xs={12}>
           <RHFSelect
             name="clause"
             size="small"
@@ -83,8 +83,8 @@ function FirstForm({ children, onSubmit }: any) {
             <MenuItem value="مشروع يخص المبادرات">مشروع يخص المبادرات</MenuItem>
             <MenuItem value="مشروع يخص تعميدات">مشروع يخص تعميدات</MenuItem>
           </RHFSelect>
-        </Grid>
-        <Grid item md={6} xs={12}>
+        </Grid> */}
+        {/* <Grid item md={6} xs={12}>
           <RHFSelect
             name="clasification_field"
             label="مجال التصنيف*"
@@ -93,7 +93,7 @@ function FirstForm({ children, onSubmit }: any) {
           >
             <MenuItem value="عام">عام</MenuItem>
           </RHFSelect>
-        </Grid>
+        </Grid> */}
 
         <Grid item md={6} xs={12}>
           <BaseField

@@ -1713,6 +1713,10 @@ const en = {
     target_group_age: 'Target Group Age',
     target_group_num: 'Target Group Number',
     target_group_type: 'Target Group Type',
+    accreditation_type: {
+      PLAN: 'Plan',
+      INCOMING: 'Incoming',
+    },
     support_goals: {
       DEVELOPING_AND_MEETING_THE_NEEDS_OF_THE_NEEDIEST_GROUPS:
         'Developing and meeting the needs of the neediest groups',

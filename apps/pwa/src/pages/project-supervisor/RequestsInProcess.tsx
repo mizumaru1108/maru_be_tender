@@ -61,7 +61,7 @@ function RequestsInProcess() {
             baseFilters={{
               filter1: {
                 // supervisor_id: { _eq: user?.id },
-                clasification_field: { _is_null: false },
+                support_outputs: { _is_null: false },
                 inner_status: {
                   _eq: 'ACCEPTED_BY_MODERATOR',
                 },

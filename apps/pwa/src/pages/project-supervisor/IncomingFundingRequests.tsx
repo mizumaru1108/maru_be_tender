@@ -64,7 +64,7 @@ function IncomingFundingRequests() {
             baseFilters={{
               filter1: {
                 // supervisor_id: { _eq: user?.id },
-                clasification_field: { _is_null: true },
+                support_outputs: { _is_null: true },
                 inner_status: {
                   _eq: 'ACCEPTED_BY_MODERATOR',
                 },
