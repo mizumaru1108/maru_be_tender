@@ -70,18 +70,21 @@ function TrackBudget({ path }: IPropTrackBudgets) {
                   <Typography
                     sx={{
                       color:
+                        data.track.length > 0 &&
                         data.track[0].totalBudget.aggregate.sum.budget -
                           data.track[0].totalSpendBudget.aggregate.sum.fsupport_by_supervisor <
-                        0
+                          0
                           ? theme.palette.error.main
                           : 'text.tertiary',
                       fontWeight: 700,
                     }}
                   >
-                    {fCurrencyNumber(
-                      data.track[0].totalBudget.aggregate.sum.budget -
-                        data.track[0].totalSpendBudget.aggregate.sum.fsupport_by_supervisor
-                    )}
+                    {data.track.length > 0
+                      ? fCurrencyNumber(
+                          data.track[0].totalBudget.aggregate.sum.budget -
+                            data.track[0].totalSpendBudget.aggregate.sum.fsupport_by_supervisor
+                        )
+                      : fCurrencyNumber(0)}
                   </Typography>
                 </Box>
               </Grid>
@@ -102,9 +105,11 @@ function TrackBudget({ path }: IPropTrackBudgets) {
                     {translate('content.administrative.statistic.heading.totalSpendBudget')}
                   </Typography>
                   <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                    {fCurrencyNumber(
-                      data.track[0].totalSpendBudget.aggregate.sum.fsupport_by_supervisor
-                    )}
+                    {data.track.length > 0
+                      ? fCurrencyNumber(
+                          data.track[0].totalSpendBudget.aggregate.sum.fsupport_by_supervisor
+                        )
+                      : fCurrencyNumber(0)}
                   </Typography>
                 </Box>
               </Grid>
@@ -125,7 +130,9 @@ function TrackBudget({ path }: IPropTrackBudgets) {
                     {translate('content.administrative.statistic.heading.totalBudget')}
                   </Typography>
                   <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                    {fCurrencyNumber(data.track[0].totalBudget.aggregate.sum.budget)}
+                    {data.track.length > 0
+                      ? fCurrencyNumber(data.track[0].totalBudget.aggregate.sum.budget)
+                      : fCurrencyNumber(0)}
                   </Typography>
                 </Box>
               </Grid>
