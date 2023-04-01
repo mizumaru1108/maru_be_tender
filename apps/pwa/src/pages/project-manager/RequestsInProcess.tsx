@@ -49,7 +49,10 @@ function RequestsInProcess() {
             baseFilters={{
               filter1: {
                 project_manager_id: { _eq: user?.id },
-                _and: { inner_status: { _eq: 'ACCEPTED_BY_SUPERVISOR' } },
+                _and: {
+                  inner_status: { _eq: 'ACCEPTED_BY_SUPERVISOR' },
+                  outter_status: { _neq: 'ASKED_FOR_AMANDEMENT' },
+                },
               },
             }}
             destination={'incoming-funding-requests'}
