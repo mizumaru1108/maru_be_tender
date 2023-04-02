@@ -158,7 +158,9 @@ function MainManagerPage() {
       console.log('masuk resultNewRequest');
       const resultDataNR = resultNewRequest?.user.map((v: any) => ({
         id: v.id,
-        partner_name: (v.client_data.entity && v.client_data.entity) ?? '-No Data-',
+        // partner_name: (v.client_data.entity && v.client_data.entity) ?? '-No Data-',
+        partner_name:
+          v && v.client_data && v.client_data.entity ? v.client_data.entity : '-No Data-',
         createdAt: v.client_data.created_at,
         account_status: 'WAITING_FOR_ACTIVATION',
         events: v.id,
@@ -185,17 +187,19 @@ function MainManagerPage() {
 
     //   setInfoUpdateRequest(resultDataInfoUpdate);
     // }
-    if (
-      resultInfoUpdate &&
-      resultInfoUpdate?.edit_requests &&
-      resultInfoUpdate?.edit_requests.length > 0
-    ) {
+    if (resultInfoUpdate) {
       console.log('masuk resultInfoUpdate');
       const newEditRequestList = resultInfoUpdate?.edit_requests.map((item: any) => {
         const vcd = item;
+        let tmpName = '';
+        if (vcd && vcd.user && vcd.user.client_data && !!vcd.user.client_data.entity) {
+          tmpName = vcd.user.client_data.entity;
+        } else {
+          tmpName = '-No Data-';
+        }
         return {
           id: vcd.id,
-          partner_name: (vcd.user.client_data.entity && vcd.user.client_data.entity) ?? '-No Data-',
+          partner_name: tmpName,
           createdAt: vcd.created_at,
           status_id: vcd.status_id,
         };
