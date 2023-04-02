@@ -10,17 +10,15 @@ datasource db {
 
 model bank_information {
   user_id                                              String
-  bank_account_name                                    String?                    @db.VarChar
-  bank_account_number                                  String?                    @db.VarChar
-  bank_name                                            String?                    @db.VarChar
+  bank_account_name                                    String?    @db.VarChar
+  bank_account_number                                  String?    @db.VarChar
+  bank_name                                            String?    @db.VarChar
   proposal_id                                          String?
-  id                                                   String                     @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                                                   String     @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   card_image                                           Json?
-  is_deleted                                           Boolean?                   @default(false)
-  proposal                                             proposal?                  @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
-  user                                                 user                       @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  proposal_bank_informationToproposal_proposal_bank_id proposal[]                 @relation("bank_informationToproposal_proposal_bank_id")
-  propsal_bank_information                             propsal_bank_information[]
+  is_deleted                                           Boolean?   @default(false)
+  user                                                 user       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  proposal_bank_informationToproposal_proposal_bank_id proposal[] @relation("bank_informationToproposal_proposal_bank_id")
 }
 
 model client_data {
@@ -212,7 +210,6 @@ model proposal {
   supervisor                          user?                            @relation("proposal_supervisor_idTouser", fields: [supervisor_id], references: [id], onDelete: Cascade)
   support_goal                        support_goal?                    @relation(fields: [support_goal_id], references: [id])
   track                               track?                           @relation(fields: [track_id], references: [id], onUpdate: NoAction)
-  bank_informations                   bank_information[]
   notification                        notification[]
   payments                            payment[]
   proposal_asked_edit_request         proposal_asked_edit_request[]
@@ -223,7 +220,6 @@ model proposal {
   follow_ups                          proposal_follow_up[]
   proposal_item_budgets               proposal_item_budget[]
   proposal_logs                       proposal_log[]
-  propsal_bank_informations           propsal_bank_information[]
   recommended_support_consultant      recommended_support_consultant[]
   payment_configuration               supervisor[]
 }
@@ -423,14 +419,6 @@ model cheque {
 model payment_status {
   id      String    @id
   payment payment[]
-}
-
-model propsal_bank_information {
-  id                  String           @id
-  bank_information_id String           @db.Uuid
-  proposal_id         String
-  bank_information    bank_information @relation(fields: [bank_information_id], references: [id], onDelete: Cascade)
-  proposal            proposal         @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
 }
 
 model correspondance_category {
