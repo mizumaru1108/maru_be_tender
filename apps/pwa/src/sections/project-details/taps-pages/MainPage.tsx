@@ -107,7 +107,9 @@ function MainPage() {
           >
             {translate('number_of_beneficiaries_of_the_project')}
           </Typography>
-          <Typography sx={{ mb: '20px' }}>{num_ofproject_binicficiaries}</Typography>
+          <Typography sx={{ mb: '20px' }}>
+            {(num_ofproject_binicficiaries && num_ofproject_binicficiaries) ?? '-No Data-'}
+          </Typography>
           <Typography
             sx={{
               color: '#93A3B0',
@@ -117,7 +119,7 @@ function MainPage() {
           >
             {translate('implementation_period')}
           </Typography>
-          <Typography>{execution_time}</Typography>
+          <Typography>{(execution_time && execution_time) ?? '-No Data-'}</Typography>
         </Stack>
         <Stack direction="column">
           <Typography
@@ -129,7 +131,9 @@ function MainPage() {
           >
             {translate('where_to_implement_the_project')}
           </Typography>
-          <Typography sx={{ mb: '20px' }}>{project_location}</Typography>
+          <Typography sx={{ mb: '20px' }}>
+            {(project_location && project_location) ?? '-No Data-'}
+          </Typography>
           <Typography
             sx={{
               color: tmpValues?.revised?.project_beneficiaries !== undefined ? 'green' : '#93A3B0',
@@ -140,9 +144,11 @@ function MainPage() {
             {translate('target_group_type')}
           </Typography>
           <Typography>
-            {translate(
-              `section_portal_reports.heading.gender.${project_beneficiaries.toLowerCase()}`
-            )}
+            {(project_beneficiaries &&
+              translate(
+                `section_portal_reports.heading.gender.${project_beneficiaries.toLowerCase()}`
+              )) ??
+              '- No Data -'}
           </Typography>
         </Stack>
         <Stack direction="column">
@@ -156,7 +162,9 @@ function MainPage() {
             {translate('project_implementation_date')}
           </Typography>
           <Typography sx={{ mb: '20px' }}>
-            {new Date(project_implement_date).toISOString().substring(0, 10)}
+            {(project_implement_date &&
+              new Date(project_implement_date).toISOString().substring(0, 10)) ??
+              '-No Data-'}
           </Typography>
           <Typography
             sx={{
@@ -175,7 +183,9 @@ function MainPage() {
               {fCurrencyNumber(proposal_item_budgets_aggregate.aggregate.sum.amount)}&nbsp;
             </Typography> */}
             <Typography component="span" sx={{ fontWeight: 'bold' }}>
-              {fCurrencyNumber(amount_required_fsupport)}&nbsp;
+              {(amount_required_fsupport && fCurrencyNumber(amount_required_fsupport)) ??
+                '-No Data-'}
+              &nbsp;
             </Typography>
             {/* <Typography component="span">{translate('amount')}&nbsp;</Typography> */}
           </Typography>
@@ -193,7 +203,9 @@ function MainPage() {
             >
               {translate('project_idea')}
             </Typography>
-            <Typography sx={{ mb: '10px' }}>{project_idea}</Typography>
+            <Typography sx={{ mb: '10px' }}>
+              {(project_idea && project_idea) ?? '-No Data'}
+            </Typography>
             <Typography
               sx={{
                 color: tmpValues?.revised?.project_goals !== undefined ? 'green' : '#93A3B0',
@@ -202,7 +214,9 @@ function MainPage() {
             >
               {translate('project_goals')}
             </Typography>
-            <Typography sx={{ mb: '10px' }}>{project_goals}</Typography>
+            <Typography sx={{ mb: '10px' }}>
+              {(project_goals && project_goals) ?? '-No Data-'}
+            </Typography>
             <Typography
               sx={{
                 color: tmpValues?.revised?.project_outputs !== undefined ? 'green' : '#93A3B0',
@@ -211,7 +225,9 @@ function MainPage() {
             >
               {translate('project_outputs')}
             </Typography>
-            <Typography sx={{ mb: '10px' }}>{project_outputs}</Typography>
+            <Typography sx={{ mb: '10px' }}>
+              {(project_outputs && project_outputs) ?? '-No Data-'}
+            </Typography>
             <Typography
               sx={{
                 color: tmpValues?.revised?.project_strengths !== undefined ? 'green' : '#93A3B0',
@@ -220,7 +236,9 @@ function MainPage() {
             >
               {translate('project_strengths')}
             </Typography>
-            <Typography sx={{ mb: '10px' }}>{project_strengths}</Typography>
+            <Typography sx={{ mb: '10px' }}>
+              {(project_strengths && project_strengths) ?? '-No Data-'}
+            </Typography>
             <Typography
               sx={{
                 color: tmpValues?.revised?.project_risks !== undefined ? 'green' : '#93A3B0',
@@ -229,17 +247,25 @@ function MainPage() {
             >
               {translate('project_risks')}
             </Typography>
-            <Typography sx={{ mb: '10px' }}>{project_risks}</Typography>
+            <Typography sx={{ mb: '10px' }}>
+              {(project_risks && project_risks) ?? '-No Data-'}
+            </Typography>
           </Stack>
           <Stack direction="row" justifyContent="space-between" gap={3}>
-            <ButtonDownloadFiles
-              files={letter_ofsupport_req}
-              border={tmpValues?.revised.letter_ofsupport_req !== undefined ? 'green' : undefined}
-            />
-            <ButtonDownloadFiles
-              files={project_attachments}
-              border={tmpValues?.revised.project_attachments !== undefined ? 'green' : undefined}
-            />
+            {(letter_ofsupport_req && (
+              <ButtonDownloadFiles
+                files={letter_ofsupport_req}
+                border={tmpValues?.revised.letter_ofsupport_req !== undefined ? 'green' : undefined}
+              />
+            )) ??
+              null}
+            {(project_attachments && (
+              <ButtonDownloadFiles
+                files={project_attachments}
+                border={tmpValues?.revised.project_attachments !== undefined ? 'green' : undefined}
+              />
+            )) ??
+              null}
             {/* <Button
               component={Link}
               href={letter_ofsupport_req.url}
@@ -349,38 +375,44 @@ function MainPage() {
               <Typography
                 sx={{ mb: '15px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
               >
-                {mobile_number}
+                {(mobile_number && mobile_number) ?? '-No Data-'}
               </Typography>
             </Stack>
             <Stack direction="column">
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                 {translate('governorate')}
               </Typography>
-              <Typography sx={{ mb: '15px' }}>{client_data.governorate}</Typography>
+              <Typography sx={{ mb: '15px' }}>
+                {(client_data && client_data.governorate && client_data.governorate) ?? '-No Data-'}
+              </Typography>
             </Stack>
-            <Box sx={{ backgroundColor: '#fff', py: '30px', pl: '10px', mb: '15px' }}>
-              <Stack direction="column">
-                <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
-                  {translate('project_owner_details.card_title')}
-                </Typography>
-                <Typography sx={{ color: '#0E8478', fontSize: '12px', mb: '5px', fontWeight: 700 }}>
-                  {/* {translate('project_owner_details.card_content')} */}
-                  {proposal.user.employee_name}
-                </Typography>
-                <Typography
-                  sx={{
-                    color: '#1E1E1E',
-                    fontSize: '12px',
-                    mb: '5px',
-                    textDecoration: 'underline',
-                    cursor: 'pointer',
-                  }}
-                  onClick={FEATURE_PROJECT_DETAILS ? handleOpenProjectOwnerDetails : undefined}
-                >
-                  {translate('project_owner_details.card_href')}
-                </Typography>
-              </Stack>
-            </Box>
+            {activeRole !== 'tender_client' && (
+              <Box sx={{ backgroundColor: '#fff', py: '30px', pl: '10px', mb: '15px' }}>
+                <Stack direction="column">
+                  <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
+                    {translate('project_owner_details.card_title')}
+                  </Typography>
+                  <Typography
+                    sx={{ color: '#0E8478', fontSize: '12px', mb: '5px', fontWeight: 700 }}
+                  >
+                    {(proposal && proposal.user.employee_name && proposal.user.employee_name) ??
+                      '-No Data-'}
+                  </Typography>
+                  <Typography
+                    sx={{
+                      color: '#1E1E1E',
+                      fontSize: '12px',
+                      mb: '5px',
+                      textDecoration: 'underline',
+                      cursor: 'pointer',
+                    }}
+                    onClick={FEATURE_PROJECT_DETAILS ? handleOpenProjectOwnerDetails : undefined}
+                  >
+                    {translate('project_owner_details.card_href')}
+                  </Typography>
+                </Stack>
+              </Box>
+            )}
             <Box
               sx={{
                 backgroundColor: '#fff',
@@ -407,23 +439,33 @@ function MainPage() {
                 >
                   {translate('amount_required_for_support')}
                 </Typography>
-                <Typography>{fCurrencyNumber(amount_required_fsupport)}</Typography>
+                <Typography>
+                  {(amount_required_fsupport && fCurrencyNumber(amount_required_fsupport)) ??
+                    '-No Data-'}
+                </Typography>
               </Stack>
             </Box>
             <Stack>
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                 {translate('selected_bank')}
               </Typography>
-              <BankImageComp
-                enableButton={true}
-                bankName={bank_information?.bank_name}
-                accountNumber={bank_information?.bank_account_number}
-                bankAccountName={bank_information?.bank_account_name}
-                imageUrl={bank_information?.card_image.url}
-                size={bank_information?.card_image.size}
-                type={bank_information?.card_image.type}
-                borderColor={bank_information?.card_image.border_color ?? 'transparent'}
-              />
+              {(bank_information && (
+                <BankImageComp
+                  enableButton={true}
+                  bankName={bank_information?.bank_name}
+                  accountNumber={bank_information?.bank_account_number}
+                  bankAccountName={bank_information?.bank_account_name}
+                  imageUrl={bank_information?.card_image.url}
+                  size={bank_information?.card_image.size}
+                  type={bank_information?.card_image.type}
+                  borderColor={bank_information?.card_image.border_color ?? 'transparent'}
+                />
+              )) ?? (
+                <Typography sx={{ mb: '15px' }}>
+                  {/* {(client_data && client_data.governorate && client_data.governorate) ?? '-No Data-'} */}
+                  -No Bank Information-
+                </Typography>
+              )}
             </Stack>
           </Stack>
         </Grid>
