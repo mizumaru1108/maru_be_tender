@@ -39,8 +39,10 @@ function NewJoinRequestPage() {
     error: errorNewRequest,
   } = resultNewRequestQuery;
 
+  // console.log({ resultNewRequest });
+
   useEffect(() => {
-    if (resultNewRequest) {
+    if (resultNewRequest && resultNewRequest?.user && resultNewRequest?.user.length > 0) {
       const resultDataNR = resultNewRequest?.user.map((v: any) => ({
         id: v.id,
         partner_name: v.client_data.entity,

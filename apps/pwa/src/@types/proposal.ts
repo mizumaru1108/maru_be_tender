@@ -97,6 +97,9 @@ export interface Proposal {
   fsupport_by_supervisor: number;
   letter_ofsupport_req: { url: string; size: number | undefined; type: string };
   project_attachments: { url: string; size: number | undefined; type: string };
+  pm_email: string;
+  pm_name: String;
+  pm_mobile: string;
   project_beneficiaries: string;
   inner_status: InnerStatus; // outter_status
   outter_status: OutterStatus; // Outter_status

@@ -951,7 +951,7 @@ const ar = {
     },
     applying_duration: {
       label: 'مدة التنفيذ*',
-      placeholder: 'الرجاء تحديد مدة التنفيذ (بالساعات)',
+      placeholder: 'الرجاء تحديد مدة التنفيذ (بالأشهر)',
     },
     target_group_type: {
       label: 'نوع الفئة المستهدفة*',
@@ -1798,6 +1798,8 @@ const ar = {
   project_risks: 'مخاطر المشروع:',
   email: 'البريد الإلكتروني:',
   mobile_number: 'رقم الجوال:',
+  pm_email: 'بريد مدير المشروع:',
+  pm_mobile: 'جوال مدير المشروع:',
   governorate: 'المحافظة:',
   amount_required_for_support: 'المبلغ المطلوب للدعم:',
   amount_required_for_support2: 'المبلغ المطلوب للدعم',

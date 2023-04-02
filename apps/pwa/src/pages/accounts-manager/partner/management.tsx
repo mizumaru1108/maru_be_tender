@@ -43,7 +43,12 @@ function PartnerManagementPage() {
   } = resultAllClient;
 
   useEffect(() => {
-    if (!fetchingAllClientRequest && resultAllClientRequest) {
+    if (
+      !fetchingAllClientRequest &&
+      resultAllClientRequest &&
+      resultAllClientRequest?.user &&
+      resultAllClientRequest?.user.lenght > 0
+    ) {
       const resultAllClientData = resultAllClientRequest?.user.map((v: any) => ({
         id: v.id,
         partner_name:

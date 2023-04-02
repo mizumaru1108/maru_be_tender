@@ -949,7 +949,7 @@ const en = {
     },
     applying_duration: {
       label: 'Execution time*',
-      placeholder: 'Please specify the execution period (in hour)',
+      placeholder: 'Please specify the execution period (in mounth)',
     },
     target_group_type: {
       label: 'Target group type*',
@@ -1764,6 +1764,8 @@ const en = {
   project_risks: 'Project risks:',
   email: 'E-mail:',
   mobile_number: 'Mobile number:',
+  pm_email: 'Project Management E-mail:',
+  pm_mobile: 'Project Management Mobile number:',
   governorate: 'Governorate:',
   amount_required_for_support: 'Amount required for support:',
   amount_required_for_support2: 'المبلغ المطلوب للدعم',
