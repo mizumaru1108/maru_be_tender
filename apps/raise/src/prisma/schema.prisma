@@ -672,7 +672,7 @@ model file_manager {
 }
 
 model bank_information2 {
-  user_id             String
+  user_id             String?
   bank_account_name   String?  @db.VarChar
   bank_account_number String?  @db.VarChar
   bank_name           String?  @db.VarChar
@@ -893,6 +893,17 @@ model client_data4 {
   chairman_name            String?   @db.VarChar
   chairman_mobile          String?   @db.VarChar
   qid                      Int?
+}
+
+model bank_information3 {
+  user_id             String
+  bank_account_name   String?  @db.VarChar
+  bank_account_number String?  @db.VarChar
+  bank_name           String?  @db.VarChar
+  proposal_id         String?
+  id                  String   @id @default("")
+  card_image          String?
+  is_deleted          Boolean? @default(false)
 }
 
 model dept_1 {
