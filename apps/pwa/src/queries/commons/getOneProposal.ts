@@ -10,6 +10,9 @@ query getOneProposal($id: String!) {
     support_type
     number_of_payments_by_supervisor
     project_number
+    pm_name
+    pm_email
+    pm_mobile
     user {
       id
       employee_name

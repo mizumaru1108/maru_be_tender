@@ -48,6 +48,8 @@ function MainPage() {
     proposal_item_budgets_aggregate,
     outter_status,
     submitter_user_id,
+    pm_email,
+    pm_mobile,
   } = proposal;
 
   const fetchingData = React.useCallback(async () => {
@@ -364,18 +366,18 @@ function MainPage() {
           <Stack direction="column">
             <Stack direction="column">
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
-                {translate('email')}
+                {translate('pm_email')}
               </Typography>
-              <Typography sx={{ mb: '15px' }}>{email}</Typography>
+              <Typography sx={{ mb: '15px' }}>{(pm_email && pm_email) ?? '-No Data-'}</Typography>
             </Stack>
             <Stack direction="column" alignItems="start">
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
-                {translate('mobile_number')}
+                {translate('pm_mobile')}
               </Typography>
               <Typography
                 sx={{ mb: '15px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
               >
-                {(mobile_number && mobile_number) ?? '-No Data-'}
+                {(pm_mobile && pm_mobile) ?? '-No Data-'}
               </Typography>
             </Stack>
             <Stack direction="column">
