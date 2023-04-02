@@ -10,6 +10,7 @@ import { moderatorStatistics } from '../../queries/Moderator/stactic';
 
 //
 import moment from 'moment';
+import { generateHeader } from '../../utils/generateProposalNumber';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -90,7 +91,10 @@ function MainManagerPage() {
                 {incomingData.data.map((item: any, index: any) => (
                   <Grid item md={6} xs={12} key={index}>
                     <ProjectCard
-                      title={{ id: item.id }}
+                      title={{
+                        id: item.id,
+                        project_number: generateHeader(item.project_number),
+                      }}
                       content={{
                         projectName: item.project_name,
                         organizationName: item.user.client_data.entity ?? '-',

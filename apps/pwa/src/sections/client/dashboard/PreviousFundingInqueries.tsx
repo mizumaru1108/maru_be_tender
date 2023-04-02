@@ -25,7 +25,9 @@ function PreviousFundingInqueries({
   const processData = (data: any) =>
     data.map((item: any) => ({
       title: {
-        id: generateHeader(item.project_number),
+        // id: generateHeader(item.project_number),
+        id: item.id,
+        project_number: generateHeader(item.project_number),
       },
       content: {
         projectName: item.project_name,

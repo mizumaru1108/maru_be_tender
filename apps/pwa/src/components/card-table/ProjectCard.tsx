@@ -144,7 +144,8 @@ const ProjectCard = ({
             gutterBottom
             sx={{ fontSize: '15px !important' }}
           >
-            {title.id}
+            {/* {title.id} */}
+            {title.project_number ?? title.id}
           </Typography>
           {title.inquiryStatus && (
             <Box

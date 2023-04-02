@@ -21,6 +21,7 @@ import { deleteDraftProposal } from 'queries/client/deleteDraftProposal';
 import axiosInstance from '../../utils/axios';
 import { LoadingButton } from '@mui/lab';
 import { FEATURE_PROJECT_SAVE_DRAFT } from '../../config';
+import { generateHeader } from '../../utils/generateProposalNumber';
 
 const cardFooterButtonActionLocal = {
   'show-project': 'show_project',
@@ -46,6 +47,7 @@ const ProjectCardBE = ({
   id,
   inquiryStatus,
   project_name,
+  project_number,
   updated_at,
   created_at,
   project_idea,
@@ -206,7 +208,7 @@ const ProjectCardBE = ({
             gutterBottom
             sx={{ fontSize: '15px !important' }}
           >
-            {id}
+            {(project_number && generateHeader(project_number)) ?? id}
           </Typography>
           {cardFooterButtonAction === 'draft' && (
             <Chip

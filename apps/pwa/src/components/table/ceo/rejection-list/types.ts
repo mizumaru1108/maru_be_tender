@@ -4,6 +4,7 @@ export type RejectedProjects = {
   entity: string;
   project_track: string;
   created_at: Date;
+  project_number?: string;
 };
 
 export interface RejectedProjectsRow {

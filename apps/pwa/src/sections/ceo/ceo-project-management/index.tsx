@@ -10,6 +10,7 @@ import { GetProjectList } from '../../../queries/ceo/get-project-list';
 import { formatDistance } from 'date-fns';
 import { useDispatch, useSelector } from 'redux/store';
 import { setTracks } from 'redux/slices/proposal';
+import { generateHeader } from '../../../utils/generateProposalNumber';
 
 function CeoProjectManagement() {
   const { translate, currentLang } = useLocales();
@@ -66,8 +67,9 @@ function CeoProjectManagement() {
     if (projectDatas) {
       setProjectManagementData(
         projectDatas.proposal.map((project: any) => ({
-          id: (project.projectNumber as string) || '',
-          projectNumber: (project.projectNumber as string) || '',
+          id: (project.projectId as string) || '',
+          // projectNumber: (project.projectNumber as string) || '',
+          projectNumber: generateHeader(project.projectNumber) || '',
           projectName: (project.projectName as string) || '',
           projectSection: project.projectSection || '',
           associationName: (project.associationName.client_data.entity as string) || '',

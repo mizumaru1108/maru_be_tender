@@ -16,7 +16,8 @@ export default function RejectionListTableRow({ row, selected, onSelectRow }: Re
       </TableCell>
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
         <Typography variant="subtitle2" noWrap>
-          {row.id}
+          {/* {row.id} */}
+          {row.project_number ?? row.id}
         </Typography>
       </TableCell>
       <TableCell align="left">

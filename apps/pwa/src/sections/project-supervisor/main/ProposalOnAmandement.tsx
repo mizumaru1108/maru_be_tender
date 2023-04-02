@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router';
 import { useQuery } from 'urql';
 import useLocales from 'hooks/useLocales';
 import useAuth from '../../../hooks/useAuth';
+import { generateHeader } from '../../../utils/generateProposalNumber';
 
 function ProposalOnAmandement() {
   const navigate = useNavigate();
@@ -61,7 +62,7 @@ function ProposalOnAmandement() {
         {props.map((item: any, index: any) => (
           <Grid item md={6} key={index}>
             <ProjectCard
-              title={{ id: item.id }}
+              title={{ id: item.id, project_number: generateHeader(item.project_number) }}
               content={{
                 projectName: item.project_name,
                 organizationName: item.user.client_data.entity ?? '-',

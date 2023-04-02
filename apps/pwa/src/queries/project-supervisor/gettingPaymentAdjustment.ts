@@ -22,6 +22,7 @@ export const gettingPaymentAdjustment = `query MyQuery($where: proposal_bool_exp
     created_at
     project_name
     state
+    project_number
     user {
       employee_name
       client_data{

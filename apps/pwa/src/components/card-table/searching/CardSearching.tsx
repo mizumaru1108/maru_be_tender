@@ -13,6 +13,7 @@ import axiosInstance from 'utils/axios';
 import useAuth from 'hooks/useAuth';
 import { useSelector } from 'redux/store';
 import ProjectCard from '../ProjectCard';
+import { generateHeader } from '../../../utils/generateProposalNumber';
 
 function CardSearching({
   title,
@@ -100,7 +101,11 @@ function CardSearching({
         data?.data.map((item: any, index: any) => (
           <Grid item key={index} md={6} xs={12}>
             <ProjectCard
-              title={{ id: item.id, inquiryStatus: item.outter_status.toLowerCase() }}
+              title={{
+                id: item.id,
+                project_number: generateHeader(item.project_number),
+                inquiryStatus: item.outter_status.toLowerCase(),
+              }}
               content={{
                 projectName: item.project_name,
                 organizationName: item.user.employee_name,

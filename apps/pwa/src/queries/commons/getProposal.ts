@@ -24,6 +24,7 @@ query getProposals($limit: Int = 4, $offset: Int = 0, $order_by: [proposal_order
     amount_required_fsupport
     state
     outter_status
+    project_number
     user {
       employee_name
       client_data {

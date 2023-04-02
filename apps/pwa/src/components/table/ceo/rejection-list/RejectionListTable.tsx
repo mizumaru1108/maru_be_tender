@@ -21,6 +21,7 @@ import RejectionListRow from './RejectionListRow';
 import { getRejectedProjects } from 'queries/ceo/getRejectedProjects';
 import TableSkeleton from '../../TableSkeleton';
 import useAuth from 'hooks/useAuth';
+import { generateHeader } from '../../../../utils/generateProposalNumber';
 
 const TABLE_HEAD = [
   { id: 'id', label: 'project_management_headercell.project_number' },
@@ -126,6 +127,7 @@ export default function UsersAndPermissionsTable() {
       setTableData(
         data.data.map((item: any, index: any) => ({
           id: item.id,
+          project_number: generateHeader(item.project_number),
           project_name: item.project_name,
           entity: item.user.client_data.entity,
           project_track: item.project_track,

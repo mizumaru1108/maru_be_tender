@@ -21,6 +21,7 @@ export const gettingIncomingRequests = `query MyQuery($limit: Int = 10, $order_b
     project_idea
     state
     project_name
+    project_number
     user {
       employee_name
       client_data{

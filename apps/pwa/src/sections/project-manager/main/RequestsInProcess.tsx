@@ -4,6 +4,7 @@ import useAuth from 'hooks/useAuth';
 import { getProposals } from 'queries/commons/getProposal';
 import { useQuery } from 'urql';
 import useLocales from 'hooks/useLocales';
+import { generateHeader } from '../../../utils/generateProposalNumber';
 
 function RequestsInProcess() {
   const { translate } = useLocales();
@@ -41,7 +42,7 @@ function RequestsInProcess() {
         {props?.map((item: any, index: any) => (
           <Grid item md={6} key={index}>
             <ProjectCard
-              title={{ id: item.id }}
+              title={{ id: item.id, project_number: generateHeader(item.project_number) }}
               content={{
                 projectName: item.project_name,
                 organizationName: item.user.client_data.entity,

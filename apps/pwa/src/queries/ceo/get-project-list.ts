@@ -1,7 +1,8 @@
 export const GetProjectList = `
 query GetProjectList ($track: [project_tracks_enum!]) {
   proposal(where: {state: {_eq: CEO}, inner_status: {_in: [ACCEPTED_BY_PROJECT_MANAGER, ACCEPTED_BY_CONSULTANT]},outter_status:{_in:[ONGOING]}, project_track: {_in: $track}}) {
-    projectNumber: id
+    projectId: id
+    projectNumber: project_number
     projectName: project_name
     projectSection: project_track
     associationName: user {

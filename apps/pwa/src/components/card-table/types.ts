@@ -12,6 +12,7 @@ type CardTitle = {
     | 'on_revision'
     | 'ongoing'
     | 'asked_for_amandement';
+  project_number?: string;
 };
 
 type CardStatus = {
@@ -84,6 +85,7 @@ export type ProjectCardPropsBE = {
   id: string;
   inquiryStatus?: 'canceled' | 'completed' | 'pending';
   project_name?: string;
+  project_number?: number;
   updated_at: Date;
   created_at: Date;
   project_idea?: string;

@@ -60,7 +60,7 @@ function CurrentProjects({ current_projects }: any) {
             <ProjectCard
               destination="current-project"
               // title={{ id: `${item.id}` }}
-              title={{ id: `${generateHeader(item.project_number)}` }}
+              title={{ id: item.id, project_number: generateHeader(item.project_number) }}
               content={{
                 projectName: item.project_name,
                 projectStatus: item.outter_status,

@@ -2,6 +2,7 @@ export const getRejectedProjects = `query getRejectedProjects($limit: Int = 10, 
   data: proposal(limit: $limit, offset: $offset, order_by: $order_by, where: $where) {
     id
     project_name
+    project_number
     user {
       client_data {
         entity
