@@ -150,7 +150,7 @@ function MainManagerPage() {
       setCardInsightData(newDataInsight);
     }
 
-    if (resultNewRequest) {
+    if (resultNewRequest && resultNewRequest?.user && resultNewRequest?.user.lenght > 0) {
       const resultDataNR = resultNewRequest?.user.map((v: any) => ({
         id: v.id,
         partner_name: v.client_data.entity,
@@ -162,6 +162,7 @@ function MainManagerPage() {
 
       setNewJoinRequestData(resultDataNR);
     }
+    // console.log({ resultNewRequest });
 
     // if (resultInfoUpdate) {
     //   const resultDataInfoUpdate = resultInfoUpdate?.user?.map((vcl: any) => {
@@ -179,7 +180,11 @@ function MainManagerPage() {
 
     //   setInfoUpdateRequest(resultDataInfoUpdate);
     // }
-    if (resultInfoUpdate) {
+    if (
+      resultInfoUpdate &&
+      resultInfoUpdate?.edit_requests &&
+      resultInfoUpdate?.edit_requests.length > 0
+    ) {
       const newEditRequestList = resultInfoUpdate?.edit_requests.map((item: any) => {
         const vcd = item;
         return {

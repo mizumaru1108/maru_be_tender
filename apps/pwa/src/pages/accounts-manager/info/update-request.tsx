@@ -67,7 +67,11 @@ function InfoUpdateRequestPage() {
   useEffect(() => {
     setLoading(true);
     // fetchingEditRequestList();
-    if (resultInfoUpdate) {
+    if (
+      resultInfoUpdate &&
+      resultInfoUpdate?.edit_requests &&
+      resultInfoUpdate?.edit_requests.length > 0
+    ) {
       const newEditRequestList = resultInfoUpdate?.edit_requests.map((item: any) => {
         const vcd = item;
         return {
