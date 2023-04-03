@@ -25,7 +25,7 @@ export const getDraftProposal = `query MyQuery($id: String = "") {
       clause
       explanation
     }
-    bank_informations {
+    bank_information {
       bank_account_name
       bank_account_number
       bank_name

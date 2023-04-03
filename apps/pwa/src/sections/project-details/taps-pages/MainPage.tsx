@@ -85,10 +85,13 @@ function MainPage() {
   }, [activeRole, outter_status, fetchingData]);
   const handleOpenProjectOwnerDetails = () => {
     const submiterId = submitter_user_id;
+    const urls = location.pathname.split('/');
     const url = location.pathname.split('/').slice(0, 3).join('/');
+    // console.log({ urls, url });
     // const destination = location.pathname.split('/').slice(3, 4).join('/');
     // const url = location.pathname;
-    navigate(`${url}/current-project/owner/${submiterId}`);
+    // navigate(`${url}/current-project/owner/${submiterId}`);
+    navigate(`/${urls[1]}/dashboard/current-project/owner/${submiterId}`);
     // console.log({ url, destination });
   };
   // console.log('tmpValues', tmpValues);

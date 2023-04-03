@@ -64,13 +64,15 @@ export default function ProjectManagementTableRow({
       <TableCell align="left">
         <Button
           onClick={() => {
+            const x = location.pathname.split('/');
+            const url = `/${x[1]}/${x[2]}/project-management/${row.id}/show-details`;
+            // console.log({ url });
+            // navigate(`/${x[1]}/${x[2]}/project-management/${row.id}/show-details`);
             if (destination) {
-              const x = location.pathname.split('/');
-              navigate(
-                `/${x[1] + '/' + x[2] + '/' + destination}/${row.projectNumber}/show-details`
-              );
+              navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${row.id}/show-details`);
             } else {
-              navigate(`${location.pathname}/${row.projectNumber}/show-details`);
+              // navigate(`${location.pathname}/${row.id}/show-details`);
+              navigate(url);
             }
           }}
           size="small"
