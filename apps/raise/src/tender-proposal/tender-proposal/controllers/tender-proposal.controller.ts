@@ -256,6 +256,27 @@ export class TenderProposalController {
     );
   }
 
+  @UseGuards(TenderJwtGuard)
+  @Get('/old/list')
+  async fetchOldProposalList(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Query() filter: FetchProposalFilterRequest,
+  ) {
+    const result = await this.proposalService.fetchOldProposalList(
+      currentUser,
+      filter,
+    );
+
+    return manualPaginationHelper(
+      result.data,
+      result.total,
+      filter.page || 1,
+      filter.limit || 10,
+      HttpStatus.OK,
+      'Success',
+    );
+  }
+
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_project_supervisor', 'tender_client')
   @Get('amandement')
