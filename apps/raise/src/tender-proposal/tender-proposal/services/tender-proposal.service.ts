@@ -686,6 +686,13 @@ export class TenderProposalService {
     return await this.proposalRepo.fetchProposalList(currentUser, filter);
   }
 
+  async fetchOldProposalList(
+    currentUser: TenderCurrentUser,
+    filter: FetchProposalFilterRequest,
+  ) {
+    return await this.proposalRepo.fetchOldProposalList(currentUser, filter);
+  }
+
   async fetchAmandementRequestList(
     currentUser: TenderCurrentUser,
     filter: FetchAmandementFilterRequest,

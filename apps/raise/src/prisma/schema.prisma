@@ -197,6 +197,7 @@ model proposal {
   accreditation_type_id               String?
   execution_time                      Decimal?                         @db.Decimal
   project_number                      Int                              @default(autoincrement())
+  oid                                 Int?
   accreditation_type                  accreditation_type?              @relation(fields: [accreditation_type_id], references: [id])
   proposal_beneficiaries              proposal_beneficiaries?          @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
   project_tracks                      project_tracks?                  @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
@@ -1209,7 +1210,7 @@ model proj_track {
 }
 
 model proposal2 {
-  id                                  String  @id
+  id                                  String  @id(map: "proposal2_pkey1")
   project_name                        String
   submitter_user_id                   String
   created_at                          String
@@ -1276,4 +1277,132 @@ model proposal2 {
   support_goal_id                     String?
   accreditation_type_id               String?
   execution_time                      String?
+  project_number                      Int?
+  oid                                 Int?
+}
+
+model proposal3 {
+  id                                  String  @id(map: "proposal2_pkey")
+  project_name                        String
+  submitter_user_id                   String
+  created_at                          String
+  project_track                       String?
+  project_idea                        String?
+  project_implement_date              String?
+  project_location                    String?
+  num_ofproject_binicficiaries        String?
+  project_goals                       String?
+  project_outputs                     String?
+  project_strengths                   String?
+  project_risks                       String?
+  pm_name                             String?
+  pm_email                            String?
+  pm_mobile                           String?
+  governorate                         String?
+  region                              String?
+  amount_required_fsupport            String?
+  need_consultant                     String? @default("false")
+  step                                String? @default("ZERO")
+  whole_budget                        String?
+  state                               String? @default("MODERATOR")
+  inner_status                        String? @default("CREATED_BY_CLIENT")
+  previously_add_bank                 String?
+  outter_status                       String? @default("ONGOING")
+  project_beneficiaries               String?
+  number_of_payments                  String?
+  finance_id                          String?
+  cashier_id                          String?
+  project_manager_id                  String?
+  supervisor_id                       String?
+  project_attachments                 String?
+  letter_ofsupport_req                String?
+  on_revision                         String? @default("false")
+  on_consulting                       String? @default("false")
+  proposal_bank_id                    String?
+  partial_support_amount              String?
+  project_beneficiaries_specific_type String?
+  track_id                            String?
+  updated_at                          String? @default("now()")
+  clasification_field                 String?
+  closing_report                      String?
+  support_type                        String?
+  does_an_agreement                   String?
+  need_picture                        String?
+  support_outputs                     String?
+  clause                              String?
+  vat                                 String?
+  vat_percentage                      String?
+  inclu_or_exclu                      String?
+  fsupport_by_supervisor              String?
+  number_of_payments_by_supervisor    String?
+  chairman_of_board_of_directors      String?
+  been_supported_before               String?
+  most_clents_projects                String?
+  added_value                         String?
+  reasons_to_accept                   String?
+  target_group_num                    String?
+  target_group_type                   String?
+  target_group_age                    String?
+  been_made_before                    String?
+  remote_or_insite                    String?
+  old_inner_status                    String?
+  support_goal_id                     String?
+  accreditation_type_id               String?
+  execution_time                      String?
+  project_number                      Int?
+  oid                                 Int?
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model type_reg {
+  nid              Int?
+  cont_mang_name   String? @db.VarChar
+  cont_mang_mob    BigInt?
+  cont_mang_mail   String? @db.VarChar
+  cont_client_name String? @db.VarChar
+  cont_client_mob  BigInt?
+  cont_client_mail String? @db.VarChar
+  cont_state       Int?
+  cont_proj_result Int?
+  cont_notes       String? @db.VarChar
+  cont_employ_uid  Int?
+  cont_given_uid   Int?
+  cont_mang_name2  String? @db.VarChar
+  cont_mang_mob2   BigInt?
+
+  @@ignore
+}
+
+model type_reg_cont {
+  nid              String  @id
+  cont_mang_name   String?
+  cont_mang_mob    String?
+  cont_mang_mail   String?
+  cont_client_name String?
+  cont_client_mob  String?
+  cont_client_mail String?
+  cont_state       String?
+  cont_proj_result String?
+  cont_notes       String?
+  cont_employ_uid  String?
+  cont_given_uid   String?
+  cont_mang_name2  String?
+  cont_mang_mob2   String?
+}
+
+model user4 {
+  id             String    @id
+  employee_name  String?   @db.VarChar
+  mobile_number  String?   @db.VarChar
+  email          String    @db.VarChar
+  updated_at     DateTime? @db.Date
+  created_at     DateTime? @db.Date
+  employee_path  String?   @db.VarChar
+  last_login     DateTime? @db.Date
+  status_id      String
+  address        String?
+  google_session String?
+  is_online      String?
+  fusionauth_id  String?
+  entity         String?
 }
