@@ -150,10 +150,12 @@ function MainManagerPage() {
       setCardInsightData(newDataInsight);
     }
 
-    if (resultNewRequest) {
+    if (resultNewRequest && resultNewRequest?.user && resultNewRequest?.user.lenght > 0) {
       const resultDataNR = resultNewRequest?.user.map((v: any) => ({
         id: v.id,
-        partner_name: v.client_data.entity,
+        // partner_name: (v.client_data.entity && v.client_data.entity) ?? '-No Data-',
+        partner_name:
+          v && v.client_data && v.client_data.entity ? v.client_data.entity : '-No Data-',
         createdAt: v.client_data.created_at,
         account_status: 'WAITING_FOR_ACTIVATION',
         events: v.id,
@@ -162,6 +164,7 @@ function MainManagerPage() {
 
       setNewJoinRequestData(resultDataNR);
     }
+    // console.log({ resultNewRequest });
 
     // if (resultInfoUpdate) {
     //   const resultDataInfoUpdate = resultInfoUpdate?.user?.map((vcl: any) => {
@@ -182,9 +185,15 @@ function MainManagerPage() {
     if (resultInfoUpdate) {
       const newEditRequestList = resultInfoUpdate?.edit_requests.map((item: any) => {
         const vcd = item;
+        let tmpName = '';
+        if (vcd && vcd.user && vcd.user.client_data && !!vcd.user.client_data.entity) {
+          tmpName = vcd.user.client_data.entity;
+        } else {
+          tmpName = '-No Data-';
+        }
         return {
           id: vcd.id,
-          partner_name: vcd.user.client_data.entity,
+          partner_name: tmpName,
           createdAt: vcd.created_at,
           status_id: vcd.status_id,
         };

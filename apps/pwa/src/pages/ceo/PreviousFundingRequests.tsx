@@ -92,25 +92,16 @@ function PreviousFundingRequests() {
             // }}
             baseFilters={{
               filter1: {
-                project_manager_id: { _eq: user?.id },
-                _not: {
-                  inner_status: {
-                    _in: [
-                      'CREATED_BY_CLIENT',
-                      'ACCEPTED_BY_MODERATOR',
-                      'REJECTED_BY_MODERATOR',
-                      'ACCEPTED_BY_SUPERVISOR',
-                      'REJECTED_BY_SUPERVISOR',
-                      'ASKING_PROJECT_MANAGER_CHANGES',
-                      'REVISED_BY_PROJECT_MANAGER',
-                      'ASKING_PROJECT_MANAGER_CHANGES',
-                    ],
-                  },
-                },
-                _or: {
-                  _not: {
-                    payments: { status: { _in: ['ISSUED_BY_SUPERVISOR'] } },
-                  },
+                inner_status: {
+                  _in: [
+                    'ACCEPTED_BY_CEO',
+                    'REJECTED_BY_CEO',
+                    'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
+                    'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
+                    'DONE_BY_CASHIER',
+                    'REQUESTING_CLOSING_FORM',
+                    'PROJECT_COMPLETED',
+                  ],
                 },
               },
             }}

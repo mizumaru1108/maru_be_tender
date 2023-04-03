@@ -43,7 +43,7 @@ function PartnerManagementPage() {
   } = resultAllClient;
 
   useEffect(() => {
-    if (!fetchingAllClientRequest && resultAllClientRequest) {
+    if (!fetchingAllClientRequest && resultAllClientRequest && resultAllClientRequest?.user) {
       const resultAllClientData = resultAllClientRequest?.user.map((v: any) => ({
         id: v.id,
         partner_name:
@@ -59,6 +59,7 @@ function PartnerManagementPage() {
       setClientData(resultAllClientData);
     }
   }, [fetchingAllClientRequest, resultAllClientRequest, activeButton]);
+  console.log({ clientData });
 
   if (fetchingAllClientRequest)
     return <Skeleton variant="rectangular" sx={{ height: 250, borderRadius: 2 }} />;

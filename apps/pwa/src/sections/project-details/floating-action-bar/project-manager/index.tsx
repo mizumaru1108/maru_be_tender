@@ -407,7 +407,7 @@ function FloatingActionBar() {
           border: `1px solid ${theme.palette.grey[400]}`,
         }}
       >
-        <Grid container rowSpacing={5} alignItems="center" justifyContent="space-between">
+        <Grid container rowSpacing={5} alignItems="start" justifyContent="space-between">
           {/* disabled other than accept reject button */}
           <Grid item md={2} xs={12}>
             <LoadingButton
@@ -502,18 +502,22 @@ function FloatingActionBar() {
                 {translate('reject_project')}
               </LoadingButton>
               {/* disabled other than accept reject button */}
-              {data.user.track === 'CONCESSIONAL_GRANTS' && (
-                <Button
-                  variant="outlined"
-                  color="inherit"
-                  endIcon={<Iconify icon="eva:message-circle-outline" />}
-                  onClick={() => setAction('ACCEPT_CONSULTANT')}
-                  sx={{ flex: 2 }}
-                >
-                  عرض المشروع على المستشارين
-                </Button>
-              )}
             </Stack>
+            {data.user.track === 'CONCESSIONAL_GRANTS' && (
+              <Stack direction="row" justifyContent="flex-end">
+                <Grid item md={5} xs={12}>
+                  <Button
+                    variant="outlined"
+                    color="inherit"
+                    endIcon={<Iconify icon="eva:message-circle-outline" />}
+                    onClick={() => setAction('ACCEPT_CONSULTANT')}
+                    sx={{ flex: 2, mt: 2 }}
+                  >
+                    عرض المشروع على المستشارين
+                  </Button>
+                </Grid>
+              </Stack>
+            )}
           </Grid>
         </Grid>
       </Box>

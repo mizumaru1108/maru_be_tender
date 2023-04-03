@@ -67,12 +67,19 @@ function InfoUpdateRequestPage() {
   useEffect(() => {
     setLoading(true);
     // fetchingEditRequestList();
-    if (resultInfoUpdate) {
+    if (
+      resultInfoUpdate &&
+      resultInfoUpdate?.edit_requests &&
+      resultInfoUpdate?.edit_requests.length > 0
+    ) {
       const newEditRequestList = resultInfoUpdate?.edit_requests.map((item: any) => {
         const vcd = item;
         return {
           id: vcd.id,
-          partner_name: vcd.user.client_data.entity,
+          partner_name:
+            vcd && vcd.user && vcd.user.client_data && vcd.user.client_data.entity
+              ? vcd.user.client_data.entity
+              : '-No Data-',
           createdAt: vcd.created_at,
           status_id: vcd.status_id,
         };

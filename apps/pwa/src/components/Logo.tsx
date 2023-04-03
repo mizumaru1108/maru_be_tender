@@ -30,7 +30,7 @@ export default function Logo({ disabledLink = false, sx }: Props) {
 
   const logo = (
     <Box sx={{ width: 40, height: 40, ...sx }}>
-      <img src="/favicon/logo.jpg" alt="" />
+      <img src="/favicon/tender_newlogo.jpg" alt="" />
     </Box>
   );
 

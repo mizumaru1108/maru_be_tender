@@ -5,7 +5,8 @@ query numberOfRequests {
       count(columns: created_at)
     }
   }
-}`;
+}
+`;
 
 export const activePartners = `
 query activePartners {

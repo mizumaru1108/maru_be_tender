@@ -986,6 +986,122 @@ export class TenderProposalRepository {
     }
   }
 
+  async fetchOldProposalList(
+    currentUser: TenderCurrentUser,
+    filter: FetchProposalFilterRequest,
+  ) {
+    try {
+      const {
+        project_track,
+        employee_name,
+        project_name,
+        outter_status,
+        page = 1,
+        limit = 10,
+        sort,
+      } = filter;
+
+      const offset = (page - 1) * limit;
+
+      let whereClause: Prisma.proposalWhereInput = {
+        oid: {
+          not: null,
+        },
+      };
+      const orClauses: Prisma.proposalWhereInput[] = [];
+
+      /* filter whereClause based on existing permissions on hasura */
+      if (currentUser.choosenRole === 'tender_client') {
+        whereClause = {
+          ...whereClause,
+          submitter_user_id: currentUser.id,
+        };
+      } else {
+        whereClause = {
+          ...whereClause,
+          step: 'ZERO',
+        };
+      }
+
+      if (employee_name) {
+        orClauses.push({
+          user: {
+            employee_name: {
+              contains: employee_name,
+              mode: 'insensitive',
+            },
+          },
+        });
+      }
+
+      if (project_name) {
+        orClauses.push({
+          project_name: {
+            contains: project_name,
+            mode: 'insensitive',
+          },
+        });
+      }
+
+      if (project_track) {
+        orClauses.push({
+          project_track: {
+            contains: project_track,
+            mode: 'insensitive',
+          },
+        });
+      }
+
+      if (outter_status) {
+        const outterFilter: string = outter_status
+          .replace(/[^\w\s]|_/g, '')
+          .toLowerCase();
+        orClauses.push({
+          outter_status: {
+            contains: outterFilter,
+            mode: 'insensitive',
+          },
+        });
+      }
+
+      // console.log(logUtil(orClauses));
+
+      const data = await this.prismaService.proposal.findMany({
+        where: {
+          AND: [whereClause, { OR: [...orClauses] }],
+        },
+        take: limit,
+        skip: offset,
+        include: {
+          user: true,
+        },
+        orderBy: {
+          project_name: sort,
+        },
+      });
+
+      const total = await this.prismaService.proposal.count({
+        where: {
+          AND: [whereClause, { OR: [...orClauses] }],
+          // OR: [...orClauses],
+        },
+      });
+
+      return {
+        data,
+        total,
+      };
+    } catch (err) {
+      const theError = prismaErrorThrower(
+        err,
+        TenderProposalRepository.name,
+        'updateProposal error details: ',
+        'updating proposal!',
+      );
+      throw theError;
+    }
+  }
+
   async fetchAmandementRequestList(
     currentUser: TenderCurrentUser,
     filter: FetchAmandementFilterRequest,
