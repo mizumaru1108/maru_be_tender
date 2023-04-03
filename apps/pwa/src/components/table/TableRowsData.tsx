@@ -97,6 +97,7 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
     id: string,
     status: 'ACTIVE_ACCOUNT' | 'SUSPENDED_ACCOUNT' | 'CANCELED_ACCOUNT'
   ) => {
+    // console.log({ id, status });
     setIsSubimitting(true);
 
     try {

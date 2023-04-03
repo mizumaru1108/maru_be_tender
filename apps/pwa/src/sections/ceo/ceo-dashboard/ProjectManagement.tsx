@@ -12,6 +12,7 @@ import { GetProjectList } from '../../../queries/ceo/get-project-list';
 import useLocales from '../../../hooks/useLocales';
 import { useDispatch, useSelector } from 'redux/store';
 import { setTracks } from 'redux/slices/proposal';
+import { generateHeader } from '../../../utils/generateProposalNumber';
 
 function DashboardProjectManagement() {
   const { translate, currentLang } = useLocales();
@@ -68,8 +69,8 @@ function DashboardProjectManagement() {
     if (projectDatas) {
       setProjectManagementData(
         projectDatas.proposal.map((project: any) => ({
-          id: (project.projectNumber as string) || '',
-          projectNumber: (project.projectNumber as string) || '',
+          id: (project.projectId as string) || '',
+          projectNumber: (generateHeader(project.projectNumber) as string) || '',
           projectName: (project.projectName as string) || '',
           projectSection: project.projectSection || '',
           associationName: (project.associationName.client_data.entity as string) || '',
@@ -80,6 +81,8 @@ function DashboardProjectManagement() {
     }
     // eslint-disable-next-line
   }, [projectDatas, currentLang]);
+
+  console.log({ projectManagementData });
 
   useEffect(() => {
     dispatch(setTracks(filteredTrack));

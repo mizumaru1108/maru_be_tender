@@ -69,12 +69,16 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
         translate('errors.cre_proposal.letter_ofsupport_req.fileExtension'),
         (value) => {
           if (value) {
+            // console.log('fileExtension:', value);
             if (
+              value.fileExtension &&
               value.fileExtension !== 'application/pdf'
               // value.type !== 'image/png' &&
               // value.type !== 'image/jpeg' &&
               // value.type !== 'image/jpg'
             ) {
+              return false;
+            } else if (value.type && value.type !== 'application/pdf') {
               return false;
             }
           }
@@ -95,12 +99,16 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
         translate('errors.cre_proposal.project_attachments.fileExtension'),
         (value) => {
           if (value) {
+            // console.log({ value });
             if (
+              value.fileExtension &&
               value.fileExtension !== 'application/pdf'
               // value.type !== 'image/png' &&
               // value.type !== 'image/jpeg' &&
               // value.type !== 'image/jpg'
             ) {
+              return false;
+            } else if (value.type && value.type !== 'application/pdf') {
               return false;
             }
           }
