@@ -14,6 +14,7 @@ import proposal from './slices/proposal';
 import supervisorAcceptingForm from './slices/supervisorAcceptingForm';
 import notification from './slices/notification';
 import searching from './slices/searching';
+import clientData from './slices/clientData';
 
 // ----------------------------------------------------------------------
 
@@ -43,6 +44,7 @@ const rootReducer = combineReducers({
   proposal: proposal,
   notification: notification,
   searching: searching,
+  clientData: clientData,
   supervisorAcceptingForm: supervisorAcceptingForm,
 });
 

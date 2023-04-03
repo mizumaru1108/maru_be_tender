@@ -35,6 +35,7 @@ query MyQuery($id: String = "") {
       card_image
     }
     email
+    status_id
   }
   proposal_aggregate(where: {submitter_user_id: {_eq: $id}, _and: {outter_status: {_eq: COMPLETED}}}) {
     aggregate {

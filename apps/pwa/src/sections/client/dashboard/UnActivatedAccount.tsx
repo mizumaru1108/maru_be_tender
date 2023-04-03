@@ -12,11 +12,15 @@ import { useQuery } from 'urql';
 import PreviousFundingInqueries from './PreviousFundingInqueries';
 import { useLocation } from 'react-router-dom';
 import { getProfileData } from 'queries/client/getProfileData';
+import { getClientData } from 'redux/slices/clientData';
+import { useDispatch, useSelector } from 'redux/store';
 
 function UnActivatedAccount() {
   const isMobile = useResponsive('down', 'sm');
   const { user, activeRole } = useAuth();
   const location = useLocation();
+  const dispatch = useDispatch();
+  const { clientData: dataClient, fillUpData } = useSelector((state) => state.clientData);
 
   const urlArr: string[] = location.pathname.split('/');
   const getUrlArr = `${urlArr[1]}/${urlArr[2]}/${urlArr[3]}`;
@@ -28,81 +32,26 @@ function UnActivatedAccount() {
   });
   const { data, fetching, error } = result;
 
-  const [clientProfile, _] = useQuery({
-    query: getProfileData,
-    variables: { id: user?.id },
-  });
-  const { data: clientData, fetching: fetchingData, error: eror } = clientProfile;
-
   useEffect(() => {
-    if (clientData && clientData.user_by_pk) {
-      ValidateDataClient();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clientData]);
-
-  if (fetching) return <LoadingPage />;
-  if (fetchingData) return <LoadingPage />;
-  if (error) return <Page500 error={error.message} />;
-
-  function ValidateDataClient() {
-    const {
-      authority,
-      date_of_esthablistmen,
-      headquarters,
-      num_of_employed_facility,
-      num_of_beneficiaries,
-      entity_mobile,
-      license_number,
-      license_issue_date,
-      license_expired,
-      license_file,
-      board_ofdec_file,
-      ceo_name,
-      chairman_mobile,
-      ceo_mobile,
-      chairman_name,
-      data_entry_name,
-      data_entry_mobile,
-      data_entry_mail,
-    } = clientData.user_by_pk.client_data;
-
-    if (
-      !Object.values({
-        authority,
-        date_of_esthablistmen,
-        headquarters,
-        num_of_employed_facility,
-        num_of_beneficiaries,
-        entity_mobile,
-        license_number,
-        license_issue_date,
-        license_expired,
-        license_file,
-        board_ofdec_file,
-        ceo_name,
-        chairman_mobile,
-        ceo_mobile,
-        chairman_name,
-        data_entry_name,
-        data_entry_mobile,
-        data_entry_mail,
-      }).some((val) => !val) &&
-      clientData.user_by_pk.bank_informations.length !== 0
-    ) {
-      console.log('semua terisi');
+    dispatch(getClientData(user?.id));
+    if (fillUpData) {
       setOpen(false);
     } else {
-      console.log('ada yang belum terisi');
       setOpen(true);
     }
-  }
+  }, [dispatch, fillUpData, user?.id]);
+
+  useEffect(() => {}, [dataClient]);
+
+  if (fetching) return <LoadingPage />;
+  if (error) return <Page500 error={error.message} />;
 
   const showProposal =
     getUrlArr === 'client/dashboard/app' &&
-    (data.completed_client_projects.length > 0 ??
-      data.pending_client_projects.length > 0 ??
-      data.amandement_proposal.length > 0 ??
+    !fillUpData &&
+    (data.completed_client_projects.length > 0 ||
+      data.pending_client_projects.length > 0 ||
+      data.amandement_proposal.length > 0 ||
       data.all_client_projects.length > 0);
 
   const handleOpen = () => {
@@ -112,6 +61,7 @@ function UnActivatedAccount() {
   const handleOnClose = () => {
     setOpen(false);
   };
+
   return (
     <Page title="Un Activated Page">
       <ModalDialog
@@ -127,9 +77,9 @@ function UnActivatedAccount() {
           spacing={0}
           direction="column"
           alignItems="center"
-          justifyContent={showProposal ? 'start' : 'center'}
+          justifyContent={showProposal && !fillUpData ? 'start' : 'center'}
           position="relative"
-          style={{ height: showProposal ? '250vh' : '70vh' }}
+          style={{ height: showProposal && !fillUpData ? '250vh' : '70vh' }}
         >
           <Box
             sx={{

@@ -3,14 +3,24 @@ import { useQuery } from 'urql';
 import useAuth from 'hooks/useAuth';
 import { checkClientStatus } from 'queries/client/checkClientStatus';
 import UnActivatedAccount from 'sections/client/dashboard/UnActivatedAccount';
+import { useDispatch, useSelector } from 'redux/store';
+import { getClientData } from 'redux/slices/clientData';
 
 type CheakClientActivationProp = {
   children: React.ReactNode;
 };
 
 function CheakClientActivation({ children }: CheakClientActivationProp) {
-  const { user } = useAuth();
+  const { user, activeRole } = useAuth();
   const id = user?.id;
+  const dispatch = useDispatch();
+
+  const { fillUpData } = useSelector((state) => state.clientData);
+
+  React.useEffect(() => {
+    dispatch(getClientData(user?.id));
+  }, [dispatch, user?.id]);
+
   const [result] = useQuery({
     query: checkClientStatus,
     variables: { id },
@@ -18,7 +28,10 @@ function CheakClientActivation({ children }: CheakClientActivationProp) {
   const { data, fetching, error } = result;
   if (fetching) return <p>Loading...</p>;
   if (error) return <p>Oh no...{error.message}</p>;
-  if (data?.user?.status !== 'ACTIVE_ACCOUNT') return <UnActivatedAccount />;
+  if (activeRole === 'tender_client' && (data?.user?.status !== 'ACTIVE_ACCOUNT' || !fillUpData))
+    return <UnActivatedAccount />;
+  if (activeRole !== 'tender_client' && data?.user?.status !== 'ACTIVE_ACCOUNT')
+    return <UnActivatedAccount />;
   return <div>{children}</div>;
 }
 
