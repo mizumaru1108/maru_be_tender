@@ -76,7 +76,10 @@ function InfoUpdateRequestPage() {
         const vcd = item;
         return {
           id: vcd.id,
-          partner_name: vcd.user.client_data.entity,
+          partner_name:
+            vcd && vcd.user && vcd.user.client_data && vcd.user.client_data.entity
+              ? vcd.user.client_data.entity
+              : '-No Data-',
           createdAt: vcd.created_at,
           status_id: vcd.status_id,
         };
