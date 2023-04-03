@@ -9,6 +9,7 @@ const ar = {
   pages: {
     options_btn: 'أكثر',
     common: {
+      old_proposal: 'المشاريع السابقة',
       get_auth_code_google: 'أدخل رمز التأكيد الخاص بك',
       loading: 'تحميل…',
       messages: 'الرسائل',
@@ -2020,6 +2021,14 @@ const ar = {
     no_data: 'لا توجد تقديمات',
     no_schedule: 'لا توجد تقديمات',
     no_appointment: 'لا توجد تقديمات',
+  },
+  old_proposal: {
+    title: 'المشاريع السابقة',
+    headercell: {
+      project_name: 'اسم المشروع',
+      project_number: 'رقم المشروع',
+      employee_name: 'اسم الموظف',
+    },
   },
 };
 

@@ -52,7 +52,7 @@ function AppointmentsTap({ defaultValues }: Props) {
         .filter(
           (item: IArrayAppointments) =>
             item.status === 'confirmed' &&
-            moment(item.date, 'DD-MM-YYYY').isAfter(moment(todayDate, 'DD-MM-YYYY'))
+            moment(item.date, 'DD-MM-YYYY').isBefore(moment(todayDate, 'DD-MM-YYYY'))
         )
         .map((item: IArrayAppointments) => ({
           id: item.status.charAt(0).toUpperCase() + item.status.slice(1),

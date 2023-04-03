@@ -46,6 +46,7 @@ const ICONS = {
     messages: getIcon('message-bar'),
     support: getIcon('contact-us'),
     client_appointments: getIcon('client_appointments'),
+    old_proposal: getIcon('previous-request'),
   },
   tender_consultant: {
     main: getIcon('main'),
@@ -160,6 +161,11 @@ const navConfig = {
           title: 'previous_funding_requests',
           path: PATH_CLIENT.previous_funding_requests,
           icon: ICONS.tender_client.previous_funding_requests,
+        },
+        {
+          title: 'old_proposal.title',
+          path: PATH_CLIENT.old_proposal,
+          icon: ICONS.tender_client.old_proposal,
         },
         {
           title: 'pages.common.close_report.text.project_report',

@@ -54,6 +54,7 @@ export const PATH_CLIENT = {
   messages: path(ROOTS_CLIENT, '/dashboard/messages'),
   contact_support: path(ROOTS_CLIENT, '/dashboard/contact-support'),
   client_appointments: path(ROOTS_CLIENT, '/dashboard/appointments'),
+  old_proposal: path(ROOTS_CLIENT, '/dashboard/old-proposal'),
 };
 
 export const PATH_CONSULTANT = {

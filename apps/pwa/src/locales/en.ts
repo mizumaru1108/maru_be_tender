@@ -9,6 +9,7 @@ const en = {
   pages: {
     options_btn: 'More',
     common: {
+      old_proposal: 'Old Proposal',
       get_auth_code_google: 'Get Auth Code',
       loading: 'Loading...',
       messages: 'Messages',
@@ -1988,6 +1989,15 @@ const en = {
     no_data: 'No data available',
     no_schedule: 'No schedule available for this partner',
     no_appointment: 'There is no available appointments',
+  },
+  //old proposal Table
+  old_proposal: {
+    title: 'Old Proposal',
+    headercell: {
+      project_name: 'Project Name',
+      project_number: 'Project Number',
+      employee_name: 'Partner Name',
+    },
   },
 };
 
