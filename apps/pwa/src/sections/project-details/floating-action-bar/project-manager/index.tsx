@@ -146,7 +146,7 @@ function FloatingActionBar() {
     try {
       const payload = {
         proposal_id: proposal_id,
-        action: 'accept_and_ask_for_consultaion',
+        action: 'accept_and_ask_for_consultation',
         message: 'تم قبول المشروع من قبل مدير المشاريع وإحالته إلى قسم الاستشاريين ',
         notes: values.notes,
         selectLang: currentLang.value,
@@ -407,7 +407,7 @@ function FloatingActionBar() {
           border: `1px solid ${theme.palette.grey[400]}`,
         }}
       >
-        <Grid container rowSpacing={5} alignItems="start" justifyContent="space-between">
+        <Grid container rowSpacing={10} alignItems="center" justifyContent="space-between">
           {/* disabled other than accept reject button */}
           <Grid item md={2} xs={12}>
             <LoadingButton
@@ -461,14 +461,8 @@ function FloatingActionBar() {
               </MenuItem>
             </Menu>
           </Grid>
-          {data.user.track !== 'CONCESSIONAL_GRANTS' && (
-            <Grid item md={3} xs={4}>
-              {''}
-            </Grid>
-          )}
-          {/* <Grid item md={data.user.track === 'CONCESSIONAL_GRANTS' ? 7 : 4} xs={12}> */}
-          <Grid item md={7} xs={12}>
-            <Stack direction="row" gap={2} justifyContent="flex-start">
+          <Grid item md={data.user.track === 'CONCESSIONAL_GRANTS' ? 10 : 8} xs={12}>
+            <Stack direction="row" spacing={2} justifyContent="flex-start">
               <LoadingButton
                 onClick={() => setAction('ACCEPT')}
                 variant="contained"
@@ -501,23 +495,19 @@ function FloatingActionBar() {
               >
                 {translate('reject_project')}
               </LoadingButton>
+              {data.user.track === 'CONCESSIONAL_GRANTS' ? (
+                <Button
+                  variant="outlined"
+                  color="inherit"
+                  endIcon={<Iconify icon="eva:message-circle-outline" />}
+                  onClick={() => setAction('ACCEPT_CONSULTANT')}
+                  sx={{ mt: 2.5, display: 'inline-flex' }}
+                >
+                  عرض المشروع على المستشارين
+                </Button>
+              ) : null}
               {/* disabled other than accept reject button */}
             </Stack>
-            {data.user.track === 'CONCESSIONAL_GRANTS' && (
-              <Stack direction="row" justifyContent="flex-end">
-                <Grid item md={5} xs={12}>
-                  <Button
-                    variant="outlined"
-                    color="inherit"
-                    endIcon={<Iconify icon="eva:message-circle-outline" />}
-                    onClick={() => setAction('ACCEPT_CONSULTANT')}
-                    sx={{ flex: 2, mt: 2 }}
-                  >
-                    عرض المشروع على المستشارين
-                  </Button>
-                </Grid>
-              </Stack>
-            )}
           </Grid>
         </Grid>
       </Box>

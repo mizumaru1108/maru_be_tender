@@ -9,10 +9,10 @@ export const Taps = {
         title: 'project_details.actions.project_budget',
         value: 'project-budget',
       },
-      {
-        title: 'project_details.actions.project_timeline',
-        value: 'project-timeline',
-      },
+      // {
+      //   title: 'project_details.actions.project_timeline',
+      //   value: 'project-timeline',
+      // },
       {
         title: 'project_details.actions.follow_ups',
         value: 'follow-ups',
@@ -73,10 +73,10 @@ export const Taps = {
         title: 'project_details.actions.project_path',
         value: 'project-path',
       },
-      {
-        title: 'project_details.actions.project_timeline',
-        value: 'project-timeline',
-      },
+      // {
+      //   title: 'project_details.actions.project_timeline',
+      //   value: 'project-timeline',
+      // },
       {
         title: 'project_details.actions.follow_ups',
         value: 'follow-ups',
@@ -99,10 +99,10 @@ export const Taps = {
         title: 'project_details.actions.project_path',
         value: 'project-path',
       },
-      {
-        title: 'project_details.actions.project_timeline',
-        value: 'project-timeline',
-      },
+      // {
+      //   title: 'project_details.actions.project_timeline',
+      //   value: 'project-timeline',
+      // },
       {
         title: 'project_details.actions.follow_ups',
         value: 'follow-ups',
@@ -127,10 +127,10 @@ export const Taps = {
         title: 'project_details.actions.project_path',
         value: 'project-path',
       },
-      {
-        title: 'project_details.actions.project_timeline',
-        value: 'project-timeline',
-      },
+      // {
+      //   title: 'project_details.actions.project_timeline',
+      //   value: 'project-timeline',
+      // },
       {
         title: 'project_details.actions.follow_ups',
         value: 'follow-ups',
@@ -153,10 +153,10 @@ export const Taps = {
         title: 'project_details.actions.project_path',
         value: 'project-path',
       },
-      {
-        title: 'project_details.actions.project_timeline',
-        value: 'project-timeline',
-      },
+      // {
+      //   title: 'project_details.actions.project_timeline',
+      //   value: 'project-timeline',
+      // },
       {
         title: 'project_details.actions.follow_ups',
         value: 'follow-ups',
@@ -181,10 +181,10 @@ export const Taps = {
         title: 'project_details.actions.project_path',
         value: 'project-path',
       },
-      {
-        title: 'project_details.actions.project_timeline',
-        value: 'project-timeline',
-      },
+      // {
+      //   title: 'project_details.actions.project_timeline',
+      //   value: 'project-timeline',
+      // },
       {
         title: 'project_details.actions.follow_ups',
         value: 'follow-ups',
@@ -207,10 +207,10 @@ export const Taps = {
         title: 'project_details.actions.project_path',
         value: 'project-path',
       },
-      {
-        title: 'project_details.actions.project_timeline',
-        value: 'project-timeline',
-      },
+      // {
+      //   title: 'project_details.actions.project_timeline',
+      //   value: 'project-timeline',
+      // },
       {
         title: 'project_details.actions.follow_ups',
         value: 'follow-ups',
@@ -235,10 +235,10 @@ export const Taps = {
         title: 'project_details.actions.project_path',
         value: 'project-path',
       },
-      {
-        title: 'project_details.actions.project_timeline',
-        value: 'project-timeline',
-      },
+      // {
+      //   title: 'project_details.actions.project_timeline',
+      //   value: 'project-timeline',
+      // },
       {
         title: 'project_details.actions.follow_ups',
         value: 'follow-ups',
@@ -261,10 +261,10 @@ export const Taps = {
         title: 'project_details.actions.project_path',
         value: 'project-path',
       },
-      {
-        title: 'project_details.actions.project_timeline',
-        value: 'project-timeline',
-      },
+      // {
+      //   title: 'project_details.actions.project_timeline',
+      //   value: 'project-timeline',
+      // },
       {
         title: 'project_details.actions.follow_ups',
         value: 'follow-ups',
@@ -289,16 +289,16 @@ export const Taps = {
         title: 'project_details.actions.project_path',
         value: 'project-path',
       },
-      {
-        title: 'project_details.actions.project_timeline',
-        value: 'project-timeline',
-      },
+      // {
+      //   title: 'project_details.actions.project_timeline',
+      //   value: 'project-timeline',
+      // },
       {
         title: 'project_details.actions.follow_ups',
         value: 'follow-ups',
       },
       {
-        title: 'مراجعات المشرف',
+        title: 'project_details.actions.supervisor_reviews',
         value: 'supervisor-revision',
       },
     ],
@@ -317,10 +317,10 @@ export const Taps = {
       //   title: 'project_details.actions.project_path',
       //   value: 'project-path',
       // },
-      {
-        title: 'project_details.actions.project_timeline',
-        value: 'project-timeline',
-      },
+      // {
+      //   title: 'project_details.actions.project_timeline',
+      //   value: 'project-timeline',
+      // },
       {
         title: 'project_details.actions.follow_ups',
         value: 'follow-ups',
@@ -341,10 +341,10 @@ export const Taps = {
         title: 'project_details.actions.project_path',
         value: 'project-path',
       },
-      {
-        title: 'project_details.actions.project_timeline',
-        value: 'project-timeline',
-      },
+      // {
+      //   title: 'project_details.actions.project_timeline',
+      //   value: 'project-timeline',
+      // },
       {
         title: 'project_details.actions.follow_ups',
         value: 'follow-ups',
