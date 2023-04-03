@@ -116,7 +116,6 @@ function MainManagerPage() {
 
     // done
     if (numberOfRequestData) {
-      console.log('masuk numberOfRequestData');
       newDataInsight.data.push({
         title: 'account_manager.card.number_of_request',
         value: numberOfRequestData?.user_aggregate?.aggregate?.count,
@@ -125,7 +124,6 @@ function MainManagerPage() {
 
     // done
     if (activePartnerData) {
-      console.log('masuk activePartnerData');
       newDataInsight.data.push({
         title: 'account_manager.card.active_partners',
         value: activePartnerData?.user_aggregate?.aggregate?.count,
@@ -134,7 +132,6 @@ function MainManagerPage() {
 
     // done
     if (rejectedPartnerData) {
-      console.log('masuk rejectedPartnerData');
       newDataInsight.data.push({
         title: 'account_manager.card.rejected_partners',
         value: rejectedPartnerData?.user_aggregate?.aggregate?.count,
@@ -143,7 +140,6 @@ function MainManagerPage() {
 
     // done
     if (suspendedPartnerData) {
-      console.log('masuk suspendedPartnerData');
       newDataInsight.data.push({
         title: 'account_manager.card.suspended_partners',
         value: suspendedPartnerData?.user_aggregate?.aggregate?.count,
@@ -155,7 +151,6 @@ function MainManagerPage() {
     }
 
     if (resultNewRequest && resultNewRequest?.user && resultNewRequest?.user.lenght > 0) {
-      console.log('masuk resultNewRequest');
       const resultDataNR = resultNewRequest?.user.map((v: any) => ({
         id: v.id,
         // partner_name: (v.client_data.entity && v.client_data.entity) ?? '-No Data-',
@@ -188,7 +183,6 @@ function MainManagerPage() {
     //   setInfoUpdateRequest(resultDataInfoUpdate);
     // }
     if (resultInfoUpdate) {
-      console.log('masuk resultInfoUpdate');
       const newEditRequestList = resultInfoUpdate?.edit_requests.map((item: any) => {
         const vcd = item;
         let tmpName = '';
