@@ -78,7 +78,7 @@ export class TenderClientController {
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_ceo', 'tender_project_manager', 'tender_admin')
+  @TenderRoles('tender_ceo', 'tender_project_manager', 'tender_admin', 'tender_accounts_manager')
   @Get('proposal/list')
   async findProposalList(
     @Query() filter: SearchClientProposalFilter,

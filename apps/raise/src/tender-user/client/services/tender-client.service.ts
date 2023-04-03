@@ -369,7 +369,7 @@ export class TenderClientService {
       const imageUrl = await this.bunnyService.uploadFileBase64(
         file.fullName,
         fileBuffer,
-        filePath,
+      filePath,
         `${uploadMessage} ${userId}`,
       );
 
@@ -527,6 +527,7 @@ export class TenderClientService {
             mobile_number: res.mobile_number,
             email: res.email,
             governorate: res.governorate,
+            status_id: res.status_id,
             proposal_count: Number(res.proposal_count),
           };
         }),
