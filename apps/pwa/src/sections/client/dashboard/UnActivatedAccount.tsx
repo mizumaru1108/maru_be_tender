@@ -48,7 +48,6 @@ function UnActivatedAccount() {
 
   const showProposal =
     getUrlArr === 'client/dashboard/app' &&
-    !fillUpData &&
     (data.completed_client_projects.length > 0 ||
       data.pending_client_projects.length > 0 ||
       data.amandement_proposal.length > 0 ||
@@ -77,9 +76,9 @@ function UnActivatedAccount() {
           spacing={0}
           direction="column"
           alignItems="center"
-          justifyContent={showProposal && !fillUpData ? 'start' : 'center'}
+          justifyContent={showProposal ? 'start' : 'center'}
           position="relative"
-          style={{ height: showProposal && !fillUpData ? '250vh' : '70vh' }}
+          style={{ height: showProposal ? '250vh' : '70vh' }}
         >
           <Box
             sx={{
