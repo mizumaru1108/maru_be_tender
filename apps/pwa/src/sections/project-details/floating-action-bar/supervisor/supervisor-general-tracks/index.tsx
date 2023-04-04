@@ -39,10 +39,6 @@ function FloatingActionBar() {
 
   const location = useLocation();
 
-  const [, accept] = useMutation(ProposalAcceptBySupervisor);
-
-  const [, reject] = useMutation(ProposalRejectBySupervisor);
-
   const { translate, currentLang } = useLocales();
 
   const theme = useTheme();

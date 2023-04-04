@@ -17,7 +17,7 @@ export default function ClientListTableRow({ row, selected, onSelectRow }: Clien
       </TableCell> */}
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
-          {row.client_name}
+          {row.client_name ?? '-'}
         </Typography>
       </TableCell>
       <TableCell align="left">
@@ -26,22 +26,22 @@ export default function ClientListTableRow({ row, selected, onSelectRow }: Clien
           noWrap
           sx={{ direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
         >
-          {row.number_phone}
+          {row.number_phone ?? '-'}
         </Typography>
       </TableCell>
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
-          {row.email}
+          {row.email ?? '-'}
         </Typography>
       </TableCell>
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
-          {row.governorate}
+          {row.governorate ?? '-'}
         </Typography>
       </TableCell>
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
-          {row.total_proposal}
+          {row.total_proposal ?? 0}
         </Typography>
       </TableCell>
       <TableCell align="left">

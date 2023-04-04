@@ -33,11 +33,18 @@ export default function TrackBudget() {
     if (data) {
       const newData = data.track.map((el: any) => ({
         name: el.name,
-        total_budget: el.totalBudget.aggregate.sum.budget,
-        total_spend_budget: el.totalSpendBudget.aggregate.sum.fsupport_by_supervisor,
-        total_reserved_budget:
-          el.totalBudget.aggregate.sum.budget -
-          el.totalSpendBudget.aggregate.sum.fsupport_by_supervisor,
+        total_budget: el.totalBudget.aggregate.sum.budget ?? 0,
+        total_reserved_budget: el.totalReservedBudget.aggregate.sum.fsupport_by_supervisor ?? 0,
+        total_spend_budget: el.totalSpendBudget.reduce(
+          (
+            acc: any,
+            curr: { payments_aggregate: { aggregate: { sum: { payment_amount: any } } } }
+          ) => {
+            const paymentAmount = curr.payments_aggregate.aggregate.sum.payment_amount;
+            return acc + (paymentAmount ? paymentAmount : 0);
+          },
+          0
+        ),
       }));
 
       setTrackList(newData);

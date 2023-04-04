@@ -82,8 +82,6 @@ function DashboardProjectManagement() {
     // eslint-disable-next-line
   }, [projectDatas, currentLang]);
 
-  console.log({ projectManagementData });
-
   useEffect(() => {
     dispatch(setTracks(filteredTrack));
   }, [dispatch, filteredTrack]);

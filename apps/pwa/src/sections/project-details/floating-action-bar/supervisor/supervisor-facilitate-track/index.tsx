@@ -3,7 +3,7 @@ import Iconify from 'components/Iconify';
 import useLocales from 'hooks/useLocales';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { nanoid } from 'nanoid';
 import { useMutation } from 'urql';
 import { useLocation, useNavigate, useParams } from 'react-router';
@@ -23,6 +23,8 @@ import uuidv4 from 'utils/uuidv4';
 import { addConversation, setActiveConversationId, setMessageGrouped } from 'redux/slices/wschat';
 import moment from 'moment';
 import { Conversation } from '../../../../../@types/wschat';
+
+import { LoadingButton } from '@mui/lab';
 
 function FloatinActionBar() {
   const dispatch = useDispatch();
@@ -50,8 +52,9 @@ function FloatinActionBar() {
 
   const [, reject] = useMutation(ProposalRejectBySupervisorFacilitateGrant);
 
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [isSubmittingStepback, setIsSubmittingStepback] = React.useState<boolean>(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [isSubmittingStepback, setIsSubmittingStepback] = useState<boolean>(false);
+  const [isSubmittingRejected, setIsSubmittingRejected] = useState<boolean>(false);
 
   const open = Boolean(anchorEl);
 
@@ -160,38 +163,93 @@ function FloatinActionBar() {
     }
   };
 
-  const handleRejected = (values: any) => {
-    reject({
-      proposal_id,
-      new_values: {
-        inner_status: 'REJECTED_BY_SUPERVISOR',
-        outter_status: 'CANCELED',
-        state: 'PROJECT_SUPERVISOR',
-      },
-      log: {
-        id: nanoid(),
+  const handleRejected = async (values: any) => {
+    // reject({
+    //   proposal_id,
+    //   new_values: {
+    //     inner_status: 'REJECTED_BY_SUPERVISOR',
+    //     outter_status: 'CANCELED',
+    //     state: 'PROJECT_SUPERVISOR',
+    //   },
+    //   log: {
+    //     id: nanoid(),
+    //     proposal_id,
+    //     reviewer_id: user?.id!,
+    //     action: 'reject',
+    //     message: 'تم رفض المشروع من قبل مشرف المشاريع',
+    //     notes: values.notes,
+    //     user_role: 'PROJECT_SUPERVISOR',
+    //     state: 'PROJECT_SUPERVISOR',
+    //   },
+    // }).then((res) => {
+    //   if (res.error) {
+    //     enqueueSnackbar(res.error.message, {
+    //       variant: 'error',
+    //       preventDuplicate: true,
+    //       autoHideDuration: 3000,
+    //     });
+    //   } else {
+    //     enqueueSnackbar(translate('proposal_accept'), {
+    //       variant: 'success',
+    //     });
+    //     navigate(`/project-supervisor/dashboard/app`);
+    //   }
+    // });
+
+    setIsSubmittingRejected(true);
+
+    try {
+      const payload = {
         proposal_id,
-        reviewer_id: user?.id!,
         action: 'reject',
         message: 'تم رفض المشروع من قبل مشرف المشاريع',
         notes: values.notes,
-        user_role: 'PROJECT_SUPERVISOR',
-        state: 'PROJECT_SUPERVISOR',
-      },
-    }).then((res) => {
-      if (res.error) {
-        enqueueSnackbar(res.error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
+        reject_reason: values.reject_reason,
+        selectLang: currentLang.value,
+      };
+
+      await axiosInstance
+        .patch('/tender-proposal/change-state', payload, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            enqueueSnackbar(translate('proposal_rejected'), {
+              variant: 'success',
+            });
+          }
+
+          setIsSubmittingRejected(false);
+          navigate(`/project-supervisor/dashboard/app`);
+        })
+        .catch((err) => {
+          if (typeof err.message === 'object') {
+            err.message.forEach((el: any) => {
+              enqueueSnackbar(el, {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            });
+          } else {
+            enqueueSnackbar(err.message, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
+          }
+
+          setIsSubmittingRejected(false);
         });
-      } else {
-        enqueueSnackbar(translate('proposal_accept'), {
-          variant: 'success',
-        });
-        navigate(`/project-supervisor/dashboard/app`);
-      }
-    });
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+
+      setIsSubmittingRejected(true);
+    }
   };
 
   const pendingProposal = (data: PendingRequest) => {
@@ -303,7 +361,7 @@ function FloatinActionBar() {
               >
                 {translate('account_manager.accept_project')}
               </Button>
-              <Button
+              <LoadingButton
                 sx={{
                   flex: 1,
                   backgroundColor: '#FF4842',
@@ -312,9 +370,10 @@ function FloatinActionBar() {
                 variant="contained"
                 onClick={() => setAction('REJECT')}
                 endIcon={<ClearIcon />}
+                loading={isSubmittingRejected}
               >
                 {translate('account_manager.reject_project')}
-              </Button>
+              </LoadingButton>
             </Stack>
           </Grid>
           <Grid item md={2}>
@@ -410,6 +469,7 @@ function FloatinActionBar() {
             backgroundColor: '#FF0000',
             hoverColor: '#FF4842',
           }}
+          loading={isSubmittingRejected}
         />
       )}
       {action === 'ACCEPT' && <FacilitateSupervisorAcceptingForm onClose={handleCloseModal} />}
