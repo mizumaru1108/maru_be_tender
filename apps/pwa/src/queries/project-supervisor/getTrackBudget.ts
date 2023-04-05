@@ -36,7 +36,7 @@ query getTrackBudgetAdmin {
       }
     }
     totalSpendBudget: proposals {
-      payments_aggregate(where: {status:{_eq: DONE}}) {
+      payments_aggregate(where: {status:{_eq: done}}) {
         aggregate {
           sum {
             payment_amount

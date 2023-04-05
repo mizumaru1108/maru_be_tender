@@ -60,13 +60,13 @@ function PreviousFundingRequests() {
             ]}
             destination={'previous-funding-requests'}
             // baseFilters={{
-            //   payments: { payments: { status: { _in: ['ACCEPTED_BY_FINANCE', 'DONE'] } } },
+            //   payments: { payments: { status: { _in: ['accepted_by_finance', 'done'] } } },
             // }}
             baseFilters={{
               filter1: {
                 finance_id: { _eq: user?.id },
-                _and: [{ payments: { status: { _in: ['ACCEPTED_BY_FINANCE', 'DONE'] } } }],
-                _not: { payments: { status: { _in: ['ACCEPTED_BY_PROJECT_MANAGER'] } } },
+                _and: [{ payments: { status: { _in: ['accepted_by_finance', 'done'] } } }],
+                _not: { payments: { status: { _in: ['accepted_by_project_manager'] } } },
               },
             }}
           />

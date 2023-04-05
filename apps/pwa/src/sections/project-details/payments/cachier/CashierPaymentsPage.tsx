@@ -17,7 +17,7 @@ function CashierPaymentsPage() {
   useEffect(() => {
     const acc_payments = proposal.number_of_payments_by_supervisor;
     const payment_actual_done = proposal.payments.filter(
-      (el: { status: string }) => el.status === 'DONE'
+      (el: { status: string }) => el.status === 'done'
     ).length;
 
     if (payment_actual_done === acc_payments && proposal.inner_status !== 'DONE_BY_CASHIER') {

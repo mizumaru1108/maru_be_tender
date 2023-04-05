@@ -83,7 +83,7 @@ function PreviousFundingRequests() {
                 },
                 _or: {
                   _not: {
-                    payments: { status: { _in: ['ISSUED_BY_SUPERVISOR'] } },
+                    payments: { status: { _in: ['issued_by_supervisor'] } },
                   },
                 },
                 // inner_status: {

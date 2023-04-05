@@ -57,7 +57,7 @@ function PaymentsTable() {
                 </Typography>
               </Stack>
             </Grid>
-            {item.status !== 'SET_BY_SUPERVISOR' && (
+            {item.status !== 'set_by_supervisor' && (
               <Grid item md={3}>
                 <Typography
                   sx={{
@@ -70,7 +70,7 @@ function PaymentsTable() {
                 </Typography>
               </Grid>
             )}
-            {item.status === 'ACCEPTED_BY_FINANCE' && activeRole === 'tender_cashier' ? (
+            {item.status === 'accepted_by_finance' && activeRole === 'tender_cashier' ? (
               <Grid item md={3} sx={{ textAlign: '-webkit-center' }}>
                 <Button
                   sx={{
@@ -91,7 +91,7 @@ function PaymentsTable() {
                   {translate('finance_pages.button.upload_receipt')}
                 </Button>
               </Grid>
-            ) : item.status === 'DONE' ? (
+            ) : item.status === 'done' ? (
               <Grid item md={3} sx={{ textAlign: '-webkit-center' }}>
                 {item.cheques.length ? (
                   <Button

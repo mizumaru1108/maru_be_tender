@@ -52,7 +52,7 @@ function ExchangePermission() {
               filter1: {
                 project_manager_id: { _eq: user?.id },
                 _and: {
-                  payments: { status: { _in: ['ACCEPTED_BY_SUPERVISOR', 'ISSUED_BY_SUPERVISOR'] } },
+                  payments: { status: { _in: ['accepted_by_supervisor', 'issued_by_supervisor'] } },
                 },
               },
             }}

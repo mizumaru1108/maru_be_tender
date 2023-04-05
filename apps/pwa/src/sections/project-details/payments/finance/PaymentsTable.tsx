@@ -84,8 +84,8 @@ function PaymentsTable() {
                 </Typography>
               </Stack>
             </Grid>
-            {item.status !== 'SET_BY_SUPERVISOR' &&
-            item.status !== 'ACCEPTED_BY_PROJECT_MANAGER' ? (
+            {item.status !== 'set_by_supervisor' &&
+            item.status !== 'accepted_by_project_manager' ? (
               <Grid item md={2}>
                 <Typography
                   sx={{
@@ -98,7 +98,7 @@ function PaymentsTable() {
                 </Typography>
               </Grid>
             ) : null}
-            {item.status === 'DONE' ? (
+            {item.status === 'done' ? (
               <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                 {item.cheques && item.cheques.length ? (
                   <Button
@@ -130,7 +130,7 @@ function PaymentsTable() {
                 )}
               </Grid>
             ) : null}
-            {item.status === 'ACCEPTED_BY_PROJECT_MANAGER' && (
+            {item.status === 'accepted_by_project_manager' && (
               <>
                 {/* <Grid item md={2}>
                   <Button

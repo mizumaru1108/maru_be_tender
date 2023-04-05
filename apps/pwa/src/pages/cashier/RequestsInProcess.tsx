@@ -291,7 +291,7 @@ function RequestsInProcess() {
             ]}
             // baseFilters={{
             //   // inner_status: { inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' } },
-            //   payments: { payments: { status: { _in: ['ACCEPTED_BY_FINANCE', 'DONE'] } } },
+            //   payments: { payments: { status: { _in: ['accepted_by_finance', 'done'] } } },
             //   outter_status: { outter_status: { _eq: 'ONGOING' } },
             //   cashier_id: { cashier_id: { _eq: user?.id } },
             // }}
@@ -303,17 +303,17 @@ function RequestsInProcess() {
                     inner_status: {
                       _in: ['ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR'],
                     },
-                    payments: { status: { _in: ['ACCEPTED_BY_FINANCE'] } },
+                    payments: { status: { _in: ['accepted_by_finance'] } },
                   },
                   {
-                    payments: { status: { _in: ['ACCEPTED_BY_FINANCE', 'DONE'] } },
+                    payments: { status: { _in: ['accepted_by_finance', 'done'] } },
                     _not: {
                       payments: {
                         status: {
                           _in: [
-                            'SET_BY_SUPERVISOR',
-                            'ISSUED_BY_SUPERVISOR',
-                            'ACCEPTED_BY_PROJECT_MANAGER',
+                            'set_by_supervisor',
+                            'issued_by_supervisor',
+                            'accepted_by_project_manager',
                           ],
                         },
                       },

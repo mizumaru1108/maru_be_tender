@@ -30,11 +30,11 @@ export interface ItemBudget {
 }
 
 export type PaymentStatus =
-  | 'SET_BY_SUPERVISOR'
-  | 'ISSUED_BY_SUPERVISOR'
-  | 'ACCEPTED_BY_PROJECT_MANAGER'
-  | 'ACCEPTED_BY_FINANCE'
-  | 'DONE';
+  | 'set_by_supervisor'
+  | 'issued_by_supervisor'
+  | 'accepted_by_project_manager'
+  | 'accepted_by_finance'
+  | 'done';
 
 export interface FollowUps {
   id: string;

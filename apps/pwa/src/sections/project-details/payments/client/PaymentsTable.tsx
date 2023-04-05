@@ -10,7 +10,7 @@ import { useMutation } from 'urql';
  *    payment_date: string
       payment_amount: number
       id: nanoid
-      status: SET_BY_SUPERVISOR | ISSUED_BY_SUPERVISOR | ACCEPTED_BY_PROJECT_MANAGER | ACCEPTED_BY_FINANCE | DONE
+      status: set_by_supervisor | issued_by_supervisor | accepted_by_project_manager | accepted_by_finance | done
  *  }
  * ]
  */
@@ -28,18 +28,18 @@ type PaymentProps = {
   payment_amount: number;
   id: string;
   status:
-    | 'SET_BY_SUPERVISOR'
-    | 'ISSUED_BY_SUPERVISOR'
-    | 'ACCEPTED_BY_PROJECT_MANAGER'
-    | 'ACCEPTED_BY_FINANCE'
-    | 'DONE';
+    | 'set_by_supervisor'
+    | 'issued_by_supervisor'
+    | 'accepted_by_project_manager'
+    | 'accepted_by_finance'
+    | 'done';
 };
 function PaymentsTable({ payments, children }: { payments: PaymentProps[]; children?: any }) {
   const [currentIssuedPayament, setCurrentIssuedPayament] = useState(0);
   const [beenIssued, setBeenIssued] = useState(false);
   const [_, updatePay] = useMutation(updatePayment);
   const handleIssuePayment = (data: PaymentProps) => {
-    const payload = { id: data.id, newState: { status: 'ISSUED_BY_SUPERVISOR' } };
+    const payload = { id: data.id, newState: { status: 'issued_by_supervisor' } };
     updatePay(payload).then((result) => {
       if (!result.error) {
         alert('The payment has been issued');
@@ -53,7 +53,7 @@ function PaymentsTable({ payments, children }: { payments: PaymentProps[]; child
   useEffect(() => {
     console.log(payments);
     for (var i = 0; i < payments.length; i++) {
-      if (payments[i].status === 'SET_BY_SUPERVISOR') {
+      if (payments[i].status === 'set_by_supervisor') {
         console.log(i);
         setCurrentIssuedPayament(i);
         break;
@@ -84,7 +84,7 @@ function PaymentsTable({ payments, children }: { payments: PaymentProps[]; child
                 </Typography>
               </Stack>
             </Grid>
-            {item.status === 'DONE' ? (
+            {item.status === 'done' ? (
               <Grid item md={6} sx={{ textAlign: '-webkit-center' }}>
                 <Button
                   component={Link}

@@ -29,13 +29,13 @@ function PreviousFundingRequests() {
   useEffect(() => {
     const acc_payments = proposal.number_of_payments_by_supervisor;
     const payment_actual_done = proposal.payments.filter(
-      (el: { status: string }) => el.status === 'DONE'
+      (el: { status: string }) => el.status === 'done'
     ).length;
 
     if (payment_actual_done === acc_payments && proposal.inner_status !== 'DONE_BY_CASHIER') {
-      setPayementFilter(['ACCEPTED_BY_FINANCE', 'DONE']);
+      setPayementFilter(['accepted_by_finance', 'done']);
     } else {
-      setPayementFilter(['ACCEPTED_BY_FINANCE']);
+      setPayementFilter(['accepted_by_finance']);
     }
   }, [proposal]);
 
@@ -88,7 +88,7 @@ function PreviousFundingRequests() {
             //   },
             //   _and: {
             //     _not: {
-            //       payments: { payments: { status: { _in: ['ACCEPTED_BY_FINANCE'] } } },
+            //       payments: { payments: { status: { _in: ['accepted_by_finance'] } } },
             //     },
             //   },
             //   outter_status: { outter_status: { _in: ['COMPLETED', 'ONGOING'] } },
@@ -109,7 +109,7 @@ function PreviousFundingRequests() {
                     inner_status: {
                       _in: ['DONE_BY_CASHIER', 'PROJECT_COMPLETED', 'REQUESTING_CLOSING_FORM'],
                     },
-                    payments: { status: { _in: ['DONE'] } },
+                    payments: { status: { _in: ['done'] } },
                   },
                 ],
               },

@@ -22,7 +22,7 @@ function PaymentsTable() {
       await dispatch(
         // updatePaymentBySupervisorAndManagerAndFinance({
         //   id: data.id,
-        //   status: 'ISSUED_BY_SUPERVISOR',
+        //   status: 'issued_by_supervisor',
         // })
         updatePaymentBySupervisorAndManagerAndFinance({
           id: data.id,
@@ -59,7 +59,7 @@ function PaymentsTable() {
 
   useEffect(() => {
     for (var i = 0; i < proposal.payments.length; i++) {
-      if (proposal.payments[i].status === 'SET_BY_SUPERVISOR') {
+      if (proposal.payments[i].status === 'set_by_supervisor') {
         setCurrentIssuedPayament(i);
         break;
       }
@@ -99,7 +99,7 @@ function PaymentsTable() {
                 </Typography>
               </Stack>
             </Grid>
-            {item.status !== 'SET_BY_SUPERVISOR' ? (
+            {item.status !== 'set_by_supervisor' ? (
               <Grid item md={3}>
                 <Typography variant="h6" sx={{ color: '#0E8478' }}>
                   {translate(
@@ -127,7 +127,7 @@ function PaymentsTable() {
                 </Button>
               </Grid>
             )}
-            {item.status === 'DONE' ? (
+            {item.status === 'done' ? (
               <Grid item md={2}>
                 {item.cheques.length ? (
                   <Button

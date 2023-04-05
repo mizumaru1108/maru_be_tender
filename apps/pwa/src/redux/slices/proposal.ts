@@ -114,7 +114,7 @@ const initialState: ProposalItme = {
         id: 'test',
         payment_amount: 0,
         payment_date: new Date('10-10-2022'),
-        status: 'SET_BY_SUPERVISOR',
+        status: 'set_by_supervisor',
         order: 0,
         cheques: [
           {
@@ -210,7 +210,7 @@ const slice = createSlice({
         (payment) => payment.id === payment_id
       );
       state.proposal.payments[payment_index].cheques.push(cheque);
-      state.proposal.payments[payment_index].status = 'DONE';
+      state.proposal.payments[payment_index].status = 'done';
     },
     // INSERT FOLLOWUPS
     insertFollowUp(stat, action) {
@@ -287,7 +287,7 @@ export const insertPaymentsBySupervisor = (data: any) => async () => {
         slice.actions.setPayments({
           payments: data.payments.map((v: any) => ({
             ...v,
-            status: 'SET_BY_SUPERVISOR',
+            status: 'set_by_supervisor',
           })),
           // updatedData: res.data.data.update_proposal.returning[0],
           updatedData: res.data.data,
@@ -350,7 +350,7 @@ export const insertChequeByCashier = (data: any) => async () => {
     //   variables: {
     //     cheque: data.cheque,
     //     paymentId: data.paymentId,
-    //     newState: { status: 'DONE' },
+    //     newState: { status: 'done' },
     //   },
     // });
 

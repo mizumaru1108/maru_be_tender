@@ -20,7 +20,7 @@ function ExchangePermission() {
         _and: {
           // inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' },
           // outter_status: { _nin: ['ON_REVISION', 'ASKED_FOR_AMANDEMENT'] },
-          payments: { status: { _in: ['ACCEPTED_BY_SUPERVISOR', 'ISSUED_BY_SUPERVISOR'] } },
+          payments: { status: { _in: ['accepted_by_supervisor', 'issued_by_supervisor'] } },
         },
       },
     },

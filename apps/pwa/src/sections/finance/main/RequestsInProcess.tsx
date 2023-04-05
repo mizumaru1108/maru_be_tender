@@ -18,7 +18,7 @@ function RequestsInProcess() {
       order_by: { updated_at: 'desc' },
       where: {
         // inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' },
-        payments: { status: { _eq: 'ACCEPTED_BY_PROJECT_MANAGER' } },
+        payments: { status: { _eq: 'accepted_by_project_manager' } },
         _and: { finance_id: { _eq: user?.id } },
       },
     },

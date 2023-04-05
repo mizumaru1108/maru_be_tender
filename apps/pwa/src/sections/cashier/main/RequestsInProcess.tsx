@@ -18,7 +18,7 @@ function RequestsInProcess() {
       order_by: { updated_at: 'desc' },
       where: {
         // inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' },
-        // payments: { status: { _eq: 'ACCEPTED_BY_FINANCE' } },
+        // payments: { status: { _eq: 'accepted_by_finance' } },
         // _and: { cashier_id: { _eq: user?.id } },
         cashier_id: { _eq: user?.id },
         _or: [
@@ -26,14 +26,14 @@ function RequestsInProcess() {
             inner_status: {
               _in: ['ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR'],
             },
-            payments: { status: { _in: ['ACCEPTED_BY_FINANCE'] } },
+            payments: { status: { _in: ['accepted_by_finance'] } },
           },
           {
-            payments: { status: { _in: ['ACCEPTED_BY_FINANCE', 'DONE'] } },
+            payments: { status: { _in: ['accepted_by_finance', 'done'] } },
             _not: {
               payments: {
                 status: {
-                  _in: ['SET_BY_SUPERVISOR', 'ISSUED_BY_SUPERVISOR', 'ACCEPTED_BY_PROJECT_MANAGER'],
+                  _in: ['set_by_supervisor', 'issued_by_supervisor', 'accepted_by_project_manager'],
                 },
               },
             },

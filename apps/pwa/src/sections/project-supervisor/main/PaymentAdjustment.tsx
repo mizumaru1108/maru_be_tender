@@ -24,7 +24,7 @@ function PaymentAdjustment() {
               _in: ['ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION'],
             },
           },
-          { payments: { status: { _eq: 'SET_BY_SUPERVISOR' } } },
+          { payments: { status: { _eq: 'set_by_supervisor' } } },
         ],
       },
     },

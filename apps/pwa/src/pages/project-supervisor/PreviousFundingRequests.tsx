@@ -80,14 +80,14 @@ function PreviousFundingRequests() {
                 },
                 _or: {
                   _not: {
-                    payments: { status: { _in: ['SET_BY_SUPERVISOR'] } },
+                    payments: { status: { _in: ['set_by_supervisor'] } },
                   },
                 },
-                // payments: { status: { _in: ['ACCEPTED_BY_SUPERVISOR','ACCEPTED_BY_PROJECT_MANAGER','ACCEPTED_BY_FINANCE'] } },
+                // payments: { status: { _in: ['ACCEPTED_BY_SUPERVISOR','accepted_by_project_manager','accepted_by_finance'] } },
                 // inner_status: {
                 //   _in: [
                 //     'ACCEPT_BY_SUPERVISOR',
-                //     'ACCEPTED_BY_PROJECT_MANAGER',
+                //     'accepted_by_project_manager',
                 //     'ACCEPTED_BY_CEO',
                 //     'DONE_BY_CASHIER',
                 //     'ACCEPTED_AND_NEED_CONSULTANT',
