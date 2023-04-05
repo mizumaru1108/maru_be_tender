@@ -764,7 +764,9 @@ export class TenderProposalRepository {
           id: true,
           user: { select: { employee_name: true } },
           reviewer: { select: { employee_name: true } },
-          proposal: { select: { id: true, project_name: true } },
+          proposal: {
+            select: { project_number: true, id: true, project_name: true },
+          },
           created_at: true,
         },
         take: limit,

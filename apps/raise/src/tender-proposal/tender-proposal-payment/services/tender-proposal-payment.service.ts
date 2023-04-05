@@ -201,14 +201,7 @@ export class TenderProposalPaymentService {
         await this.tenderProposalLogRepository.findLastLogCreateAtByProposalId(
           proposal.id,
         );
-
-      // let status:
-      //   | 'SET_BY_SUPERVISOR'
-      //   | 'ISSUED_BY_SUPERVISOR'
-      //   | 'ACCEPTED_BY_PROJECT_MANAGER'
-      //   | 'ACCEPTED_BY_FINANCE'
-      //   | 'DONE'
-      //   | null = null;
+        
       let status:
         | ProposalAction.SET_BY_SUPERVISOR
         | ProposalAction.ISSUED_BY_SUPERVISOR
