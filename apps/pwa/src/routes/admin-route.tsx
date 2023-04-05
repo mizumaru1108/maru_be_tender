@@ -44,6 +44,8 @@ const SectionTracks = Loadable(
 );
 const Searching = Loadable(lazy(() => import('pages/searching')));
 
+const OldProposal = Loadable(lazy(() => import('pages/admin/OldProposal')));
+
 export const adminRoute = {
   path: 'admin',
   element: (
@@ -138,6 +140,10 @@ export const adminRoute = {
         { path: 'beneficiaries', element: <Beneficiaries /> },
         { path: 'portal-reports', element: <PortalReports /> },
         { path: 'messages', element: <Messages /> },
+        {
+          path: 'old-proposal',
+          element: <OldProposal />,
+        },
       ],
     },
   ],

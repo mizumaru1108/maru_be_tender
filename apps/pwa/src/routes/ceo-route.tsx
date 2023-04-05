@@ -13,6 +13,7 @@ const CeoRejectionListPage = Loadable(lazy(() => import('pages/ceo/CeoRejectionL
 const CeoClientListPage = Loadable(lazy(() => import('pages/ceo/CeoClientListPage')));
 const CeoPortalReportPage = Loadable(lazy(() => import('pages/PortalReports')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
+const OldProposal = Loadable(lazy(() => import('pages/ceo/OldProposal')));
 const ProjectOwnerDetails = Loadable(
   lazy(() => import('pages/project-details/ProjectOwnerDetails'))
 );
@@ -158,6 +159,10 @@ export const ceoRoute = {
         // { path: 'client-list', element: <CeoClientListPage /> },
         { path: 'portal-reports', element: <CeoPortalReportPage /> },
         { path: 'messages', element: <CeoMessagePage /> },
+        {
+          path: 'old-proposal',
+          element: <OldProposal />,
+        },
       ],
     },
   ],

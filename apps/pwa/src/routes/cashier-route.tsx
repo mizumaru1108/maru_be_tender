@@ -32,6 +32,7 @@ const PreviousFundingRequestsCashier = Loadable(
 );
 
 const ProjectReportFinished = Loadable(lazy(() => import('pages/client/ProjectReportFinished')));
+const OldProposal = Loadable(lazy(() => import('pages/cashier/OldProposal')));
 
 export const cashierRoute = {
   path: 'cashier',
@@ -125,6 +126,10 @@ export const cashierRoute = {
         },
         { path: 'portal-reports', element: <PortalReportsCashier /> },
         { path: 'messages', element: <MessagesCashier /> },
+        {
+          path: 'old-proposal',
+          element: <OldProposal />,
+        },
       ],
     },
   ],

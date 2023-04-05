@@ -27,7 +27,9 @@ function PreviousFundingInqueries({
       title: {
         // id: generateHeader(item.project_number),
         id: item.id,
-        project_number: generateHeader(item.project_number),
+        project_number: generateHeader(
+          item && item.project_number && item.project_number ? item.project_number : item.id
+        ),
       },
       content: {
         projectName: item.project_name,

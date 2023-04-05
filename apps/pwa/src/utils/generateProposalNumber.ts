@@ -1,4 +1,4 @@
-export function generateHeader(id: number) {
+export function generateHeader(id: any) {
   const headerValue = `#${id.toString().padStart(9, '0')}`;
   const maxLength = 10;
 

@@ -70,7 +70,12 @@ function DashboardProjectManagement() {
       setProjectManagementData(
         projectDatas.proposal.map((project: any) => ({
           id: (project.projectId as string) || '',
-          projectNumber: (generateHeader(project.projectNumber) as string) || '',
+          projectNumber:
+            (generateHeader(
+              project && project.projectNumber && project.projectNumber
+                ? project.projectNumber
+                : project.projectId
+            ) as string) || '',
           projectName: (project.projectName as string) || '',
           projectSection: project.projectSection || '',
           associationName: (project.associationName.client_data.entity as string) || '',

@@ -9,6 +9,7 @@ const MainModeratorPage = Loadable(lazy(() => import('pages/moderator/MainModera
 const ModeratorProfile = Loadable(lazy(() => import('pages/moderator/ModeratorProfile')));
 // const ModeratorProfileEdit = Loadable(lazy(() => import('pages/moderator/ModeratorProfileEdit')));
 const ModeratorMessages = Loadable(lazy(() => import('pages/moderator/ModeratorMessages')));
+const OldProposal = Loadable(lazy(() => import('pages/moderator/OldProposal')));
 const IncomingSupportRequests = Loadable(
   lazy(() => import('pages/moderator/incoming-support-requests'))
 );
@@ -126,6 +127,10 @@ export const moderatorRoute = {
 
         { path: 'portal-reports', element: <PortalReports /> },
         { path: 'messages', element: <ModeratorMessages /> },
+        {
+          path: 'old-proposal',
+          element: <OldProposal />,
+        },
       ],
     },
   ],

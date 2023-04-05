@@ -1993,6 +1993,7 @@ const en = {
   },
   //old proposal Table
   old_proposal: {
+    page_title: 'Old Proposal List',
     title: 'Old Proposal',
     headercell: {
       project_name: 'Project Name',

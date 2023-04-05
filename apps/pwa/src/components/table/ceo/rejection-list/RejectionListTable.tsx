@@ -127,7 +127,9 @@ export default function UsersAndPermissionsTable() {
       setTableData(
         data.data.map((item: any, index: any) => ({
           id: item.id,
-          project_number: generateHeader(item.project_number),
+          project_number: generateHeader(
+            item && item.project_number && item.project_number ? item.project_number : item.id
+          ),
           project_name: item.project_name,
           entity: item.user.client_data.entity,
           project_track: item.project_track,
