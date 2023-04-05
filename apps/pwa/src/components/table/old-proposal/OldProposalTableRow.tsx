@@ -31,6 +31,15 @@ export default function OldProposalTableRow({ row, selected, onSelectRow }: OldP
         </Typography>
       </TableCell>
       {/* <TableCell align="left">
+        <Typography
+          variant="subtitle2"
+          noWrap
+          sx={{ direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+        >
+          {row.employee_name}
+        </Typography>
+      </TableCell> */}
+      {/* <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
           {row.email}
         </Typography>

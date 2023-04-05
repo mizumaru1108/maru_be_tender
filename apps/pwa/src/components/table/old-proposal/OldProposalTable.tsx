@@ -33,11 +33,11 @@ const TABLE_HEAD = [
     label: 'old_proposal.headercell.project_name',
     align: 'left',
   },
-  {
-    id: 'employee_name',
-    label: 'old_proposal.headercell.employee_name',
-    align: 'left',
-  },
+  // {
+  //   id: 'employee_name',
+  //   label: 'old_proposal.headercell.employee_name',
+  //   align: 'left',
+  // },
   { id: 'events', label: 'client_list_headercell.events', align: 'left' },
 ];
 
@@ -130,9 +130,11 @@ export default function OldProposalTable() {
         setTableData(
           response.data.data.map((item: any, index: any) => ({
             id: item.id,
-            project_name: item.project_name,
-            project_number: generateHeader(item.project_number as number),
-            employee_name: item.user.employee_name,
+            project_name: item.project_name ?? 'No Record',
+            project_number: generateHeader(
+              item && item.project_number && item.project_number ? item.project_number : item.id
+            ),
+            employee_name: item.user.employee_name ?? 'No Record',
             // client_name: item.employee_name,
             // email: item.email,
             // number_phone: item.mobile_number,
@@ -200,7 +202,7 @@ export default function OldProposalTable() {
   return (
     <Box>
       <Typography variant="h3" gutterBottom sx={{ marginBottom: '50px' }}>
-        {translate('client_list_table.headline')}
+        {translate('old_proposal.page_title')}
       </Typography>
       <Box>
         {/* <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2}>

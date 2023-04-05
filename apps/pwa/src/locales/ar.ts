@@ -2024,6 +2024,7 @@ const ar = {
     no_appointment: 'لا توجد تقديمات',
   },
   old_proposal: {
+    page_title: 'قائمة الاقتراح القديمة',
     title: 'المشاريع السابقة',
     headercell: {
       project_name: 'اسم المشروع',

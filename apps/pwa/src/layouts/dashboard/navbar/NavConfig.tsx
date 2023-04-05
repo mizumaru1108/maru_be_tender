@@ -53,6 +53,7 @@ const ICONS = {
     incoming_funding_requests: getIcon('incoming-funding-requests'),
     portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
+    old_proposal: getIcon('previous-request'),
   },
   tender_finance: {
     main: getIcon('main'),
@@ -61,6 +62,7 @@ const ICONS = {
     previous_funding_requests: getIcon('previous-request'),
     portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
+    old_proposal: getIcon('previous-request'),
   },
   tender_cashier: {
     main: getIcon('main'),
@@ -69,6 +71,7 @@ const ICONS = {
     previous_funding_requests: getIcon('previous-request'),
     portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
+    old_proposal: getIcon('previous-request'),
   },
   tender_ceo: {
     main: getIcon('main'),
@@ -78,6 +81,7 @@ const ICONS = {
     previous_funding_requests: getIcon('previous-funding-requests'),
     portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
+    old_proposal: getIcon('previous-request'),
   },
   tender_project_manager: {
     main: getIcon('main'),
@@ -88,6 +92,7 @@ const ICONS = {
     portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
     appointments_with_partners: getIcon('appointments-with-partners'),
+    old_proposal: getIcon('previous-request'),
   },
   tender_project_supervisor: {
     main: getIcon('main'),
@@ -98,6 +103,7 @@ const ICONS = {
     portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
     appointments_with_partners: getIcon('appointments-with-partners'),
+    old_proposal: getIcon('previous-request'),
   },
   tender_moderator: {
     main: getIcon('main'),
@@ -105,6 +111,7 @@ const ICONS = {
     previous_support_requests: getIcon('draft-request'),
     portal_reports: getIcon('request-for-project'),
     messages: getIcon('message-bar'),
+    old_proposal: getIcon('previous-request'),
   },
   tender_accounts_manager: {
     main: getIcon('main'),
@@ -113,6 +120,7 @@ const ICONS = {
     partnerManagement: getIcon('users-and-permissions'),
     portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
+    old_proposal: getIcon('previous-request'),
   },
   tender_admin: {
     main: getIcon('main'),
@@ -133,6 +141,7 @@ const ICONS = {
     portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
     customization_for_dropdown: getIcon('drop-down-white'),
+    old_proposal: getIcon('previous-request'),
   },
 };
 
@@ -204,7 +213,11 @@ const navConfig = {
           path: PATH_CONSULTANT.incoming_funding_requests,
           icon: ICONS.tender_consultant.incoming_funding_requests,
         },
-
+        {
+          title: 'old_proposal.title',
+          path: PATH_CONSULTANT.old_proposal,
+          icon: ICONS.tender_consultant.old_proposal,
+        },
         {
           title: 'portal_reports',
           path: PATH_CONSULTANT.portal_reports,
@@ -243,6 +256,11 @@ const navConfig = {
           icon: ICONS.tender_finance.previous_funding_requests,
         },
         {
+          title: 'old_proposal.title',
+          path: PATH_FINANCE.old_proposal,
+          icon: ICONS.tender_finance.old_proposal,
+        },
+        {
           title: 'portal_reports',
           path: PATH_FINANCE.portal_reports,
           icon: ICONS.tender_finance.portal_reports,
@@ -278,6 +296,11 @@ const navConfig = {
           title: 'previous_funding_requests',
           path: PATH_CASHIER.previous_funding_requests,
           icon: ICONS.tender_cashier.previous_funding_requests,
+        },
+        {
+          title: 'old_proposal.title',
+          path: PATH_CASHIER.old_proposal,
+          icon: ICONS.tender_cashier.old_proposal,
         },
         {
           title: 'portal_reports',
@@ -322,6 +345,11 @@ const navConfig = {
           icon: ICONS.tender_ceo.previous_funding_requests,
         },
         {
+          title: 'old_proposal.title',
+          path: PATH_CEO.old_proposal,
+          icon: ICONS.tender_ceo.old_proposal,
+        },
+        {
           title: 'portal_reports',
           path: PATH_CEO.portal_reports,
           icon: ICONS.tender_ceo.portal_reports,
@@ -357,6 +385,11 @@ const navConfig = {
           title: 'previous_funding_requests',
           path: PATH_PROJECT_MANAGER.previous_funding_requests,
           icon: ICONS.tender_project_manager.previous_funding_requests,
+        },
+        {
+          title: 'old_proposal.title',
+          path: PATH_PROJECT_MANAGER.old_proposal,
+          icon: ICONS.tender_project_manager.old_proposal,
         },
         {
           title: 'client_list',
@@ -414,6 +447,11 @@ const navConfig = {
           title: 'previous_funding_requests',
           path: PATH_PROJECT_SUPERVISOR.previous_funding_requests,
           icon: ICONS.tender_project_supervisor.previous_funding_requests,
+        },
+        {
+          title: 'old_proposal.title',
+          path: PATH_PROJECT_SUPERVISOR.old_proposal,
+          icon: ICONS.tender_project_supervisor.old_proposal,
         },
         {
           title: 'payment_adjustment',
@@ -503,7 +541,11 @@ const navConfig = {
           path: PATH_MODERATOR.previous_support_requests,
           icon: ICONS.tender_moderator.previous_support_requests,
         },
-
+        {
+          title: 'old_proposal.title',
+          path: PATH_MODERATOR.old_proposal,
+          icon: ICONS.tender_moderator.old_proposal,
+        },
         {
           title: 'portal_reports',
           path: PATH_MODERATOR.portal_reports,
@@ -640,6 +682,11 @@ const navConfig = {
         //   path: PATH_ADMIN.beneficiaries,
         //   icon: ICONS.tender_admin.beneficiaries,
         // },
+        {
+          title: 'old_proposal.title',
+          path: PATH_ADMIN.old_proposal,
+          icon: ICONS.tender_admin.old_proposal,
+        },
         {
           title: 'portal_reports',
           path: PATH_ADMIN.portal_reports,

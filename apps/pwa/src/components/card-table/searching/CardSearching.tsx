@@ -103,7 +103,9 @@ function CardSearching({
             <ProjectCard
               title={{
                 id: item.id,
-                project_number: generateHeader(item.project_number),
+                project_number: generateHeader(
+                  item && item.project_number && item.project_number ? item.project_number : item.id
+                ),
                 inquiryStatus: item.outter_status.toLowerCase(),
               }}
               content={{

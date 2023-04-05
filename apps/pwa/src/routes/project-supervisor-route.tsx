@@ -22,6 +22,7 @@ const PreviousFundingRequestsProjectSupervisor = Loadable(
 const PaymentAdjustmenProjectSupervisor = Loadable(
   lazy(() => import('pages/project-supervisor/PaymentAdjustment'))
 );
+const OldProposal = Loadable(lazy(() => import('pages/project-supervisor/OldProposal')));
 const PortalReportsProjectSupervisor = Loadable(lazy(() => import('pages/PortalReports')));
 const MessagesProjectSupervisor = Loadable(lazy(() => import('pages/project-supervisor/Messages')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
@@ -153,6 +154,10 @@ export const projectSupervisorRoute = {
             { path: '', element: <AppointmentsWithPartners /> },
             { path: 'booking', element: <BookingAMeeting /> },
           ],
+        },
+        {
+          path: 'old-proposal',
+          element: <OldProposal />,
         },
       ],
     },

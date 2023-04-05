@@ -43,6 +43,7 @@ export const PATH_ADMIN = {
   portal_reports: path(ROOTS_ADMIN, '/dashboard/portal-reports'),
   messages: path(ROOTS_ADMIN, '/dashboard/messages'),
   client_list: path(ROOTS_ADMIN, '/dashboard/client-list'),
+  old_proposal: path(ROOTS_ADMIN, '/dashboard/old-proposal'),
 };
 export const PATH_CLIENT = {
   root: ROOTS_CLIENT,
@@ -63,6 +64,7 @@ export const PATH_CONSULTANT = {
   incoming_funding_requests: path(ROOTS_CONSULTANT, '/dashboard/incoming-funding-requests'),
   portal_reports: path(ROOTS_CONSULTANT, '/dashboard/portal-reports'),
   messages: path(ROOTS_CONSULTANT, '/dashboard/messages'),
+  old_proposal: path(ROOTS_CONSULTANT, '/dashboard/old-proposal'),
 };
 
 export const PATH_FINANCE = {
@@ -76,6 +78,7 @@ export const PATH_FINANCE = {
   previous_funding_requests: path(ROOTS_FINANCE, '/dashboard/previous-funding-requests'),
   portal_reports: path(ROOTS_FINANCE, '/dashboard/portal-reports'),
   messages: path(ROOTS_FINANCE, '/dashboard/messages'),
+  old_proposal: path(ROOTS_FINANCE, '/dashboard/old-proposal'),
 };
 
 export const PATH_CASHIER = {
@@ -89,6 +92,7 @@ export const PATH_CASHIER = {
   previous_funding_requests: path(ROOTS_CASHIER, '/dashboard/previous-funding-requests'),
   portal_reports: path(ROOTS_CASHIER, '/dashboard/portal-reports'),
   messages: path(ROOTS_CASHIER, '/dashboard/messages'),
+  old_proposal: path(ROOTS_CASHIER, '/dashboard/old-proposal'),
 };
 
 export const PATH_CEO = {
@@ -100,6 +104,7 @@ export const PATH_CEO = {
   previous_funding_requests: path(ROOTS_CEO, '/dashboard/previous-funding-requests'),
   portal_reports: path(ROOTS_CEO, '/dashboard/portal-reports'),
   messages: path(ROOTS_CEO, '/dashboard/messages'),
+  old_proposal: path(ROOTS_CEO, '/dashboard/old-proposal'),
 };
 
 export const PATH_PROJECT_MANAGER = {
@@ -114,6 +119,7 @@ export const PATH_PROJECT_MANAGER = {
   // appointments_with_partners: path(ROOTS_PROJECT_MANAGER, '/dashboard/appointments-with-partners'),
   rejection_list: path(ROOTS_PROJECT_MANAGER, '/dashboard/rejection-list'),
   client_list: path(ROOTS_PROJECT_MANAGER, '/dashboard/client-list'),
+  old_proposal: path(ROOTS_PROJECT_MANAGER, '/dashboard/old-proposal'),
 };
 
 export const PATH_MODERATOR = {
@@ -123,6 +129,7 @@ export const PATH_MODERATOR = {
   previous_support_requests: path(ROOTS_MODERATOR, '/dashboard/previous-funding-requests'),
   portal_reports: path(ROOTS_MODERATOR, '/dashboard/portal-reports'),
   messages: path(ROOTS_MODERATOR, '/dashboard/messages'),
+  old_proposal: path(ROOTS_MODERATOR, '/dashboard/old-proposal'),
 };
 
 export const PATH_PROJECT_SUPERVISOR = {
@@ -139,6 +146,7 @@ export const PATH_PROJECT_SUPERVISOR = {
     ROOTS_PROJECT_SUPERVISOR,
     '/dashboard/appointments-with-partners'
   ),
+  old_proposal: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/old-proposal'),
 };
 
 export const PATH_ACCOUNTS_MANAGER = {

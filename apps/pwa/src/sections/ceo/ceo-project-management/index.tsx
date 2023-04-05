@@ -69,7 +69,12 @@ function CeoProjectManagement() {
         projectDatas.proposal.map((project: any) => ({
           id: (project.projectId as string) || '',
           // projectNumber: (project.projectNumber as string) || '',
-          projectNumber: generateHeader(project.projectNumber) || '',
+          projectNumber:
+            generateHeader(
+              project && project.projectNumber && project.projectNumber
+                ? project.projectNumber
+                : project.projectId
+            ) || '',
           projectName: (project.projectName as string) || '',
           projectSection: project.projectSection || '',
           associationName: (project.associationName.client_data.entity as string) || '',

@@ -21,6 +21,7 @@ const MessagesProjectManager = Loadable(lazy(() => import('pages/project-manager
 const ExchangePermissionProjectManager = Loadable(
   lazy(() => import('pages/project-manager/ExchangePermission'))
 );
+const OldProposal = Loadable(lazy(() => import('pages/project-manager/OldProposal')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
 const ProjectOwnerDetails = Loadable(
   lazy(() => import('pages/project-details/ProjectOwnerDetails'))
@@ -178,6 +179,10 @@ export const projectManagerRoute = {
         },
         { path: 'portal-reports', element: <PortalReportsProjectManager /> },
         { path: 'messages', element: <MessagesProjectManager /> },
+        {
+          path: 'old-proposal',
+          element: <OldProposal />,
+        },
         // {
         //   path: 'appointments-with-partners',
         //   children: [
