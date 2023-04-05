@@ -92,21 +92,21 @@ export enum OutterStatusEnum {
 export enum ProposalAction {
   ACCEPT = 'accept',
   ACCEPT_AND_ASK_FOR_CONSULTATION = 'accept_and_ask_for_consultation', //is there any ?
-  ACCEPTED_BY_FINANCE = 'accepted_by_finance',
-  ACCEPTED_BY_PROJECT_MANAGER = 'accepted_by_project_manager',
   ASK_FOR_AMANDEMENT_REQUEST = 'ask_for_amandement_request',
   COMPLETE = 'complete',
   COMPLETE_PAYMENT = 'complete_payment',
-  DONE = 'done',
-  ISSUED_BY_SUPERVISOR = 'issued_by_supervisor',
   PROJECT_COMPLETED = 'project_completed',
   REJECT = 'reject',
   SEND_BACK_FOR_REVISION = 'send_back_for_revision',
   SENDING_CLOSING_REPORT = 'sending_closing_report',
   SEND_REVISED_VERSION = 'send_revised_version',
-  SET_BY_SUPERVISOR = 'set_by_supervisor',
   STEP_BACK = 'step_back',
   STUDY_AGAIN = 'study_again',
+  ISSUED_BY_SUPERVISOR = 'ISSUED_BY_SUPERVISOR',
+  ACCEPTED_BY_FINANCE = 'ACCEPTED_BY_FINANCE',
+  ACCEPTED_BY_PROJECT_MANAGER = 'ACCEPTED_BY_PROJECT_MANAGER',
+  SET_BY_SUPERVISOR = 'SET_BY_SUPERVISOR',
+  DONE = 'DONE',
 }
 
 export type ProposalItemBudget = {
