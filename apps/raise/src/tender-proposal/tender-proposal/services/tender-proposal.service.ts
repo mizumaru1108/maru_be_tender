@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { Prisma, proposal } from '@prisma/client';
 import { nanoid } from 'nanoid';
@@ -1149,7 +1150,7 @@ export class TenderProposalService {
       /* proposal */
       proposalUpdatePayload.inner_status = InnerStatusEnum.CREATED_BY_CLIENT;
       proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
-      proposalUpdatePayload.state = TenderAppRoleEnum.MODERATOR;
+      proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
       proposalUpdatePayload.project_manager_id = null;
       // proposalUpdatePayload.supervisor_id = null;
 
@@ -1222,15 +1223,31 @@ export class TenderProposalService {
     }
 
     if (request.action === ProposalAction.STUDY_AGAIN) {
+      // pilih choose roles between defined value
+      if (!request.ceo_payload) {
+        throw new BadRequestException('no ceo payload defined!');
+      }
+
+      if (!request.ceo_payload.step_back_to) {
+        throw new UnprocessableEntityException(
+          'You must select between moderator, project manager and supervisor!',
+        );
+      }
+
+      const choosenState = request.ceo_payload
+        .step_back_to as TenderAppRoleEnum;
+
       /* proposal */
       proposalUpdatePayload.inner_status = InnerStatusEnum.CREATED_BY_CLIENT;
       proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
-      proposalUpdatePayload.state = TenderAppRoleEnum.MODERATOR;
+      proposalUpdatePayload.state = choosenState;
+      // proposalUpdatePayload.state = TenderAppRoleEnum.MODERATOR;
       // proposalUpdatePayload.project_manager_id = null;
       // proposalUpdatePayload.supervisor_id = null;
+
       /* log */
       proposalLogCreateInput.action = ProposalAction.STUDY_AGAIN;
-      proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
+      proposalLogCreateInput.state = choosenState;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.CEO;
     }
 
