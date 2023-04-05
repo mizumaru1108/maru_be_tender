@@ -1769,6 +1769,7 @@ const ar = {
       EMPLOYMENT_INITIATIVES: 'مبادرات التوظيف',
       OTHER_INITIATIVES: 'المبادرات الأخرى',
       DEVELOPING_THE_NONPROFIT_SECTOR: 'تنمية القطاع غير الربحي',
+      GENERAL_INCOMING: 'غير الربحي',
     },
     action: {
       accept: 'تم قبول المشروع',

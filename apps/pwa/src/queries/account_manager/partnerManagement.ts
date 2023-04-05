@@ -13,6 +13,19 @@
 // }
 // `;
 
+// export const getAllClient = `
+// query getAllClient {
+//   user(where: {roles: {user_type_id: {_eq: CLIENT}}}) {
+//     id
+//     email
+//     status_id
+//     created_at
+//     employee_name
+//     updated_at
+//   }
+// }
+// `;
+
 export const getAllClient = `
 query getAllClient {
   user(where: {roles: {user_type_id: {_eq: CLIENT}}}) {
@@ -22,6 +35,11 @@ query getAllClient {
     created_at
     employee_name
     updated_at
+    client_data {
+      entity
+      entity_mobile
+    }
   }
 }
+
 `;

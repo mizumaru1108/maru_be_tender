@@ -83,7 +83,9 @@ function ListAmandementRequest() {
                       sx={{ fontSize: '15px !important' }}
                     >
                       {/* {item.proposal.id} */}
-                      {generateHeader(item.proposal.project_number)}
+                      {item && item.proposal && item.proposal.project_number
+                        ? generateHeader(item.proposal.project_number)
+                        : '-'}
                     </Typography>
                   </Stack>
 

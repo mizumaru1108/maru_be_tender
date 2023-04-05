@@ -1735,6 +1735,7 @@ const en = {
       EMPLOYMENT_INITIATIVES: 'Employment initiatives',
       OTHER_INITIATIVES: 'Other Initiatives',
       DEVELOPING_THE_NONPROFIT_SECTOR: 'Developing the non-profit sector',
+      GENERAL_INCOMING: 'General Incoming',
     },
     action: {
       accept: 'ACCEPT',

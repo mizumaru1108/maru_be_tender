@@ -130,7 +130,7 @@ export default function OldProposalTable() {
         setTableData(
           response.data.data.map((item: any, index: any) => ({
             id: item.id,
-            project_name: item.project_number,
+            project_name: item.project_name,
             project_number: generateHeader(item.project_number as number),
             employee_name: item.user.employee_name,
             // client_name: item.employee_name,

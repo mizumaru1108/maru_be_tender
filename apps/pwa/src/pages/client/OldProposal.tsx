@@ -21,8 +21,8 @@ function OldProposalPage() {
     <Page title={translate('pages.common.old_proposal')}>
       <Container>
         <ContentStyle>
-          {/* <OldProposalTable /> */}
-          Under constraction ...
+          <OldProposalTable />
+          {/* Under constraction ... */}
         </ContentStyle>
       </Container>
     </Page>
