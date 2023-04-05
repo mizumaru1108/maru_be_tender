@@ -102,11 +102,11 @@ export enum ProposalAction {
   SEND_REVISED_VERSION = 'send_revised_version',
   STEP_BACK = 'step_back',
   STUDY_AGAIN = 'study_again',
-  ISSUED_BY_SUPERVISOR = 'ISSUED_BY_SUPERVISOR',
-  ACCEPTED_BY_FINANCE = 'ACCEPTED_BY_FINANCE',
-  ACCEPTED_BY_PROJECT_MANAGER = 'ACCEPTED_BY_PROJECT_MANAGER',
-  SET_BY_SUPERVISOR = 'SET_BY_SUPERVISOR',
-  DONE = 'DONE',
+  ISSUED_BY_SUPERVISOR = 'issued_by_supervisor',
+  ACCEPTED_BY_FINANCE = 'accepted_by_finance',
+  ACCEPTED_BY_PROJECT_MANAGER = 'accepted_by_project_manager',
+  SET_BY_SUPERVISOR = 'set_by_supervisor',
+  DONE = 'done',
 }
 
 export type ProposalItemBudget = {

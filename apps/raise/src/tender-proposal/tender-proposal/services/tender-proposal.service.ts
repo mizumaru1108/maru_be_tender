@@ -1142,7 +1142,7 @@ export class TenderProposalService {
 
       /* log */
       proposalLogCreateInput.action = ProposalAction.STEP_BACK;
-      proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_MANAGER;
+      proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
     }
 

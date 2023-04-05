@@ -369,7 +369,7 @@ export class TenderClientService {
       const imageUrl = await this.bunnyService.uploadFileBase64(
         file.fullName,
         fileBuffer,
-      filePath,
+        filePath,
         `${uploadMessage} ${userId}`,
       );
 
@@ -514,6 +514,7 @@ export class TenderClientService {
     );
     return proposals;
   }
+
   async findClientProposals(request: SearchClientProposalFilter) {
     const response = await this.tenderClientRepository.findClientProposals(
       request,
