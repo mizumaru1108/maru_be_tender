@@ -8,6 +8,7 @@ import * as Yup from 'yup';
 import useLocales from 'hooks/useLocales';
 //
 import useAuth from 'hooks/useAuth';
+import RHFSelectNoGenerator from 'components/hook-form/RHFSelectNoGen';
 
 interface ActionPropos {
   backgroundColor: string;
@@ -27,6 +28,7 @@ interface Propos {
 interface FormInput {
   reject_reason: string;
   notes: string;
+  state: string;
 }
 
 function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
@@ -46,12 +48,13 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
         'tender_ceo',
       ].includes(activeRole!) && {
         notes: Yup.string().required(translate('errors.notes')),
+        state: Yup.string().required('error state'),
       }),
   });
 
   const defaultValues = {
     ...(action.actionType === 'REJECT' && { reject_reason: '' }),
-    ...(action.actionType === 'STEP_BACK' && { notes: '' }),
+    ...(action.actionType === 'STEP_BACK' && { notes: '', state: '' }),
   };
 
   const methods = useForm<FormInput>({
@@ -113,6 +116,29 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
                   <MenuItem value="المشروع ينقصه موافقة رسمية">المشروع ينقصه موافقة رسمية</MenuItem>
                   <MenuItem value="أخرى">أخرى</MenuItem>
                 </RHFSelect>
+              </Grid>
+            ) : null}
+            {action.actionType &&
+            action.actionType === 'STUDY_AGAIN' &&
+            activeRole! === 'tender_ceo' ? (
+              <Grid item md={12} xs={12}>
+                <RHFSelectNoGenerator
+                  name="state"
+                  size="small"
+                  label="إرجاع المعاملة للدراسة*"
+                  placeholder="الدور المختار"
+                  InputLabelProps={{ shrink: true }}
+                >
+                  <option value="MODERATOR" style={{ backgroundColor: '#fff' }}>
+                    {translate('permissions.MODERATOR')}
+                  </option>
+                  <option value="PROJECT_SUPERVISOR" style={{ backgroundColor: '#fff' }}>
+                    {translate('permissions.PROJECT_SUPERVISOR')}
+                  </option>
+                  <option value="PROJECT_MANAGER" style={{ backgroundColor: '#fff' }}>
+                    {translate('permissions.PROJECT_MANAGER')}
+                  </option>
+                </RHFSelectNoGenerator>
               </Grid>
             ) : null}
             <Grid item md={12} xs={12}>

@@ -14,6 +14,8 @@ import { useLocation } from 'react-router-dom';
 import { getProfileData } from 'queries/client/getProfileData';
 import { getClientData } from 'redux/slices/clientData';
 import { useDispatch, useSelector } from 'redux/store';
+import OldProposalPage from 'pages/client/OldProposal';
+import axiosInstance from 'utils/axios';
 
 function UnActivatedAccount() {
   const isMobile = useResponsive('down', 'sm');
@@ -26,6 +28,21 @@ function UnActivatedAccount() {
   const getUrlArr = `${urlArr[1]}/${urlArr[2]}/${urlArr[3]}`;
 
   const [open, setOpen] = React.useState<boolean>(false);
+  const [oldProposal, setOldProposal] = React.useState([]);
+
+  const getDataClient = async () => {
+    try {
+      const response = await axiosInstance.get(`tender-proposal/old/list`, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
+      if (response.data.statusCode === 200) {
+        setOldProposal(response.data.data);
+      }
+      return response.data;
+    } catch (error) {
+      return <>...Opss, something went wrong</>;
+    }
+  };
 
   const [result, mutate] = useQuery({
     query: clientMainPage,
@@ -33,15 +50,17 @@ function UnActivatedAccount() {
   const { data, fetching, error } = result;
 
   useEffect(() => {
+    getDataClient();
     dispatch(getClientData(user?.id));
     if (fillUpData) {
       setOpen(false);
     } else {
       setOpen(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, fillUpData, user?.id]);
 
-  useEffect(() => {}, [dataClient]);
+  useEffect(() => {}, [dataClient, oldProposal]);
 
   if (fetching) return <LoadingPage />;
   if (error) return <Page500 error={error.message} />;
@@ -53,6 +72,8 @@ function UnActivatedAccount() {
       data.amandement_proposal.length > 0 ||
       data.all_client_projects.length > 0);
 
+  const showOldProposal = getUrlArr === 'client/dashboard/old-proposal' && oldProposal.length > 0;
+
   const handleOpen = () => {
     setOpen(true);
   };
@@ -60,6 +81,7 @@ function UnActivatedAccount() {
   const handleOnClose = () => {
     setOpen(false);
   };
+  console.log({ fillUpData });
 
   return (
     <Page title="Un Activated Page">
@@ -76,9 +98,9 @@ function UnActivatedAccount() {
           spacing={0}
           direction="column"
           alignItems="center"
-          justifyContent={showProposal ? 'start' : 'center'}
+          justifyContent={showProposal || showOldProposal ? 'start' : 'center'}
           position="relative"
-          style={{ height: showProposal ? '250vh' : '70vh' }}
+          style={{ height: showProposal || showOldProposal ? '250vh' : '70vh' }}
         >
           <Box
             sx={{
@@ -182,7 +204,10 @@ function UnActivatedAccount() {
             ) : (
               <div
                 style={{
-                  position: getUrlArr === 'client/dashboard/app' ? 'relative' : 'absolute',
+                  position:
+                    getUrlArr === 'client/dashboard/app' || showOldProposal
+                      ? 'relative'
+                      : 'absolute',
                   top: '30%',
                   width: '100%',
                 }}
@@ -216,6 +241,11 @@ function UnActivatedAccount() {
                       amandement_proposal={data.amandement_proposal}
                       all_client_projects={data.all_client_projects}
                     />
+                  </Grid>
+                ) : null}
+                {showOldProposal ? (
+                  <Grid item md={12} xs={12} sx={{ my: 10, position: 'relative' }}>
+                    <OldProposalPage />
                   </Grid>
                 ) : null}
               </div>

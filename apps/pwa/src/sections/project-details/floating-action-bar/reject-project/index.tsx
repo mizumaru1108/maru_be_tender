@@ -42,6 +42,9 @@ function RejectProject() {
         message: 'تم إرجاع المشروع للدراسة من جديد',
         notes: data.notes,
         selectLang: currentLang.value,
+        ceo_payload: {
+          step_back_to: data.state,
+        },
       };
 
       await axiosInstance

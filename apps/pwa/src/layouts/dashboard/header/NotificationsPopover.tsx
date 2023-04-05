@@ -555,7 +555,7 @@ function NotificationItem({
     let footer_action = '';
     let request_action = '';
     if (activeRole === 'tender_ceo') {
-      footer_action = 'show-details';
+      footer_action = 'show-project';
       request_action = 'project-management';
     } else if (
       activeRole !== 'tender_client' &&
