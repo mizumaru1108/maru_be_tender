@@ -50,6 +50,7 @@ const initialState: ProposalItme = {
         num_of_beneficiaries: 0,
         chairman_name: 'test',
         ceo_name: 'test',
+        entity: 'test',
       },
       bank_informations: [
         {

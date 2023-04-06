@@ -79,6 +79,7 @@ export interface Proposal {
       num_of_beneficiaries: number;
       ceo_name: string;
       chairman_name: string;
+      entity: string;
     };
     bank_informations: BankInformation[];
   };

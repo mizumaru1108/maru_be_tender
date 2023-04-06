@@ -30,6 +30,7 @@ query getOneProposal($id: String!) {
         num_of_beneficiaries
         ceo_name
         chairman_name
+        entity
       }
       bank_informations {
         id

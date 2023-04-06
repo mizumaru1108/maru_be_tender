@@ -170,6 +170,7 @@ export default function AmandementRequest() {
                   justifyContent="flex-start"
                   spacing={2}
                   component="div"
+                  sx={{ mt: 2 }}
                 >
                   <LoadingButton
                     type="submit"

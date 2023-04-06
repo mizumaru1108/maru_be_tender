@@ -95,7 +95,7 @@ function MainPage() {
     // console.log({ url, destination });
   };
   // console.log('tmpValues', tmpValues);
-  // console.log({ project_beneficiaries });
+  console.log({ client_data });
   return (
     <Box sx={{ display: 'flex', gap: 3, flexDirection: 'column' }}>
       <Stack direction="row" gap={6}>
@@ -400,8 +400,7 @@ function MainPage() {
                   <Typography
                     sx={{ color: '#0E8478', fontSize: '12px', mb: '5px', fontWeight: 700 }}
                   >
-                    {(proposal && proposal.user.employee_name && proposal.user.employee_name) ??
-                      '-No Data-'}
+                    {(client_data && client_data.entity && client_data.entity) ?? '-No Data-'}
                   </Typography>
                   <Typography
                     sx={{

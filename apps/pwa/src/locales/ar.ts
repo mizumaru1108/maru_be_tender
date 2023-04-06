@@ -1616,8 +1616,7 @@ const ar = {
     tender_project_manager: {
       page_name: 'مدير الإدارة - تعديلات الطلبات',
       headline: 'إرسال طلب تعديل لمشرف المشاريع',
-      sub_headline:
-        'اختر الحقول التي تريد تعديلها واكتب الملاحظات المناسبة لإبلاغ الشريك بالأشياء المطلوبة منه',
+      sub_headline: 'يرجى توضيح النقاط التي تحتاج إلى تعديل ليتم إرسالها إلى المشرف',
     },
     tender_finance: {
       page_name: 'المالية - تعديلات الطلبات',
@@ -1745,7 +1744,7 @@ const ar = {
     state: 'الحالة',
     project_track: 'تتبع المشروع',
     accreditation_type_id: 'نوع الدعم',
-    added_value: 'ضريبة القيمة المضافة',
+    added_value: 'القيمة المضافة في المشروع',
     been_made_before: 'هل سبق إقامة المشروع؟',
     been_supported_before: 'هل دعمت سابقا؟',
     chairman_of_board_of_directors: 'رئيس مجلس الإدارة',
