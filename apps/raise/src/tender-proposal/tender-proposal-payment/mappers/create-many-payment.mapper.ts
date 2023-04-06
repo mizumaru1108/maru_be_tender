@@ -15,7 +15,7 @@ export const CreateManyPaymentMapper = (request: CreateProposalPaymentDto) => {
       payment_amount: payload.payment_amount,
       payment_date: new Date(payload.payment_date),
       proposal_id: request.proposal_id,
-      status: 'SET_BY_SUPERVISOR',
+      status: 'set_by_supervisor',
     };
     totalAmount += payload.payment_amount;
     return payment;
