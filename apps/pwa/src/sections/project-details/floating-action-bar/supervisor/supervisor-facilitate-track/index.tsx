@@ -335,7 +335,7 @@ function FloatinActionBar() {
   useEffect(() => {
     dispatch(setStepsData(proposal));
   }, [dispatch, proposal]);
-  // console.log('receiver: ', `tender_${proposal.user.roles[activeRoleIndex].role.id.toLowerCase()}`);
+
   return (
     <>
       <Box
@@ -349,9 +349,9 @@ function FloatinActionBar() {
           border: `1px solid ${theme.palette.grey[400]}`,
         }}
       >
-        <Grid container rowSpacing={5} alignItems="center" justifyContent="space-around">
-          <Grid item md={5} xs={12}>
-            <Stack direction="row" gap={2} justifyContent="space-around">
+        <Grid container rowSpacing={5} alignItems="center" justifyContent="space-between">
+          <Grid item md={4} xs={12}>
+            <Stack direction="row" gap={2} justifyContent="space-between">
               <Button
                 onClick={() => setAction('ACCEPT')}
                 variant="contained"
@@ -376,23 +376,16 @@ function FloatinActionBar() {
               </LoadingButton>
             </Stack>
           </Grid>
-          <Grid item md={2}>
-            <Box>{''}</Box>
-          </Grid>
-          <Grid item md={5}>
-            <Box>{''}</Box>
-            {/* disabled other than accept reject button */}
+          <Grid item md={5} xs={12}>
             <Stack direction="row" gap={2} justifyContent="space-around">
               <Button
                 variant="outlined"
                 color="inherit"
                 endIcon={<Iconify icon="eva:message-circle-outline" />}
-                // onClick={() => setAction('SEND_CLIENT_MESSAGE')}
                 onClick={handleMessage}
                 sx={{ flex: 1 }}
-                // disabled={true}
               >
-                {translate('partner_details.send_messages')}
+                {translate('account_manager.partner_details.send_messages')}
               </Button>
               <Button
                 id="demo-positioned-button"
@@ -408,7 +401,7 @@ function FloatinActionBar() {
                   ':hover': { backgroundColor: '#1482FE' },
                 }}
               >
-                {translate('partner_details.submit_amendment_request')}
+                {translate('account_manager.partner_details.submit_amendment_request')}
               </Button>
               <Menu
                 id="demo-positioned-menu"
@@ -433,11 +426,10 @@ function FloatinActionBar() {
                     );
                   }}
                 >
-                  ارسال طلب تعديل الى الشريك
+                  {translate('account_manager.partner_details.amendment_request_to_client')}
                 </MenuItem>
-                <MenuItem>ارسال طلب تعديل الى المشرف</MenuItem>
                 <MenuItem onClick={() => setAction('STEP_BACK')}>
-                  ارجاع المعاملة الى مسؤول الفرز
+                  {translate('account_manager.partner_details.amendment_return_to_moderator')}
                 </MenuItem>
               </Menu>
             </Stack>

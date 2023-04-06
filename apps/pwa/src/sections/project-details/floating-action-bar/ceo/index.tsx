@@ -322,12 +322,17 @@ function FloatingActionBar() {
           border: `1px solid ${theme.palette.grey[400]}`,
         }}
       >
-        <Stack direction={{ sm: 'column', md: 'row' }} justifyContent="space-between">
-          <Stack flexDirection={{ sm: 'column', md: 'row' }}>
+        <Stack
+          direction={{ sm: 'column', md: 'row' }}
+          spacing={3}
+          justifyContent="space-between"
+          alignItems="center"
+          component="div"
+        >
+          <Stack spacing={2} direction="row" alignItems="center">
             <LoadingButton
               variant="contained"
               color="primary"
-              sx={{ mr: { md: '1em' } }}
               onClick={() => setAction('ACCEPT')}
               loading={isSubmitting}
             >
@@ -336,8 +341,6 @@ function FloatingActionBar() {
             <LoadingButton
               variant="contained"
               sx={{
-                my: { xs: '1.3em', md: '0' },
-                mr: { md: '1em' },
                 backgroundColor: '#FF4842',
                 ':hover': { backgroundColor: '#FF170F' },
               }}
@@ -346,19 +349,17 @@ function FloatingActionBar() {
             >
               {translate('project_rejected')}
             </LoadingButton>
+          </Stack>
+          <Stack spacing={2} direction="row" alignItems="center">
             <LoadingButton
               variant="outlined"
               color="inherit"
               endIcon={<Iconify icon="eva:message-circle-outline" />}
-              // onClick={() => setAction('SEND_CLIENT_MESSAGE')}
               onClick={handleMessage}
-              sx={{ flex: 1 }}
               loading={isSubmitting || isSubmittingRejected}
-              // disabled={true}
             >
               {translate('partner_details.send_messages')}
             </LoadingButton>
-            {/* disabled other than accept reject button */}
             <LoadingButton
               variant="contained"
               onClick={handleClick}

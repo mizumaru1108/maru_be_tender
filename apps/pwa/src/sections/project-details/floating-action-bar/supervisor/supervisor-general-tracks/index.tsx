@@ -461,13 +461,13 @@ function FloatingActionBar() {
                     navigate(`/project-supervisor/dashboard/proposal-amandment-request/${pid}`);
                   }}
                 >
-                  ارسال طلب تعديل الى الشريك
+                  {translate('account_manager.partner_details.amendment_request_to_client')}
                 </MenuItem>
                 <MenuItem onClick={() => setAction('STEP_BACK')}>
-                  ارجاع المعاملة الى مسؤول الفرز
+                  {translate('account_manager.partner_details.amendment_return_to_moderator')}
                 </MenuItem>
                 <MenuItem onClick={() => setAction('PENDING_REQUEST')}>
-                  اعادة المشروع للشريك لرفعه في وقت اخر
+                  {translate('account_manager.partner_details.amendment_cancel_proposal')}
                 </MenuItem>
               </Menu>
             </Stack>
