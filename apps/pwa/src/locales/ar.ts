@@ -1753,6 +1753,7 @@ const ar = {
     target_group_age: 'عمر الفئة المستهدفة',
     target_group_num: 'عدد الفئة المستهدفة',
     target_group_type: 'نوع الفئة المستهدفة',
+    most_clents_projects: 'أبرز أعمال الجهة',
     accreditation_type: {
       PLAN: 'Plan',
       INCOMING: 'Incoming',
@@ -1793,7 +1794,7 @@ const ar = {
   implementation_period: 'مدة التنفيذ:',
   target_group_type: 'نوع الفئة المستهدفة:',
   support_type: 'مبلغ الدعم:',
-  full_support: 'دعم كامل',
+  total_support: 'الدعم الكامل',
   partial_support: 'دعم جزئي',
   with: 'مع',
   amount: 'مقدار',

@@ -23,7 +23,7 @@ function SupervisorGrants({ stepGransLog }: Props) {
         return false;
       }
     });
-  console.log(isVat, 'isVat');
+  console.log(stepGransLog.proposal, 'proposal grant');
 
   return (
     <React.Fragment>
@@ -123,7 +123,7 @@ function SupervisorGrants({ stepGransLog }: Props) {
                   </Typography>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
-                      {value === true ? translate('review.yes') : translate('review.no')}
+                      {value ? translate('review.yes') : translate('review.no')}
                     </Typography>
                   </Stack>
                 </Grid>
@@ -140,7 +140,24 @@ function SupervisorGrants({ stepGransLog }: Props) {
                   </Typography>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
-                      {value === true ? translate('review.yes') : translate('review.no')}
+                      {value ? translate('review.yes') : translate('review.no')}
+                    </Typography>
+                  </Stack>
+                </Grid>
+              );
+            }
+            if (key === 'need_picture') {
+              return (
+                <Grid item xs={6} key={key}>
+                  <Typography variant="h6">
+                    {
+                      // key
+                      translate(`review.${key}`)
+                    }
+                  </Typography>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>
+                      {value ? translate('review.yes') : translate('review.no')}
                     </Typography>
                   </Stack>
                 </Grid>
@@ -163,6 +180,27 @@ function SupervisorGrants({ stepGransLog }: Props) {
                 </Grid>
               );
             }
+            if (key === 'remote_or_insite') {
+              return (
+                <Grid item xs={6} key={key}>
+                  <Typography variant="h6">
+                    {
+                      // key
+                      translate(`review.${key}`)
+                    }
+                  </Typography>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>
+                      {value && value === 'both'
+                        ? translate('remote_or_insite.both')
+                        : value === 'online'
+                        ? translate('remote_or_insite.remote')
+                        : translate('remote_or_insite.insite')}
+                    </Typography>
+                  </Stack>
+                </Grid>
+              );
+            }
             if (key === 'support_type') {
               return (
                 <Grid item xs={6} key={key}>
@@ -174,7 +212,7 @@ function SupervisorGrants({ stepGransLog }: Props) {
                   </Typography>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
-                      {value === true ? translate('full_support') : translate('partial_support')}
+                      {value === true ? translate('partial_support') : translate('total_support')}
                     </Typography>
                   </Stack>
                 </Grid>

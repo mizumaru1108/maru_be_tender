@@ -95,7 +95,7 @@ function MainPage() {
     // console.log({ url, destination });
   };
   // console.log('tmpValues', tmpValues);
-  console.log({ client_data });
+  // console.log({ client_data });
   return (
     <Box sx={{ display: 'flex', gap: 3, flexDirection: 'column' }}>
       <Stack direction="row" gap={6}>

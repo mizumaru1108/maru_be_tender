@@ -56,6 +56,7 @@ query getProposalLog($proposal_id: String = "") {
   target_group_type
   vat
   vat_percentage
+  most_clents_projects
   }
 }
 `;
