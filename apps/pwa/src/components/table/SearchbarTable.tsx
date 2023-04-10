@@ -1,11 +1,12 @@
 // import { useState } from 'react';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Input } from '@mui/material';
+import { Input, InputAdornment } from '@mui/material';
 // utils
 import cssStyles from '../../utils/cssStyles';
-import { ChangeEvent } from 'react';
+import React, { ChangeEvent } from 'react';
 import useLocales from 'hooks/useLocales';
+import SearchIcon from '@mui/icons-material/Search';
 
 // ----------------------------------------------------------------------
 
@@ -20,12 +21,27 @@ const SearchbarStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function SearchbarTable({
-  func,
-}: {
-  func?: (e: ChangeEvent<HTMLInputElement>) => void;
-}) {
+interface IProps {
+  onSearch: (data: string) => void;
+}
+
+export default function SearchbarTable({ onSearch }: IProps) {
   const { translate } = useLocales();
+
+  const [value, setValue] = React.useState('');
+
+  const handleKeyupMsg = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      onSearch(value);
+      // initilizeGroupingMessage('TEXT');
+    }
+  };
+
+  const handleClick = () => {
+    onSearch(value);
+    // if (value) {
+    // }
+  };
 
   return (
     <SearchbarStyle>
@@ -34,7 +50,16 @@ export default function SearchbarTable({
         fullWidth
         disableUnderline
         placeholder={translate('account_manager.search_bar')}
-        onChange={func}
+        endAdornment={
+          <SearchIcon sx={{ cursor: 'pointer' }} onClick={handleClick} />
+          // <InputAdornment position="end">
+          //   {/* test */}
+          // </InputAdornment>
+        }
+        onChange={(e) => {
+          setValue(e.target.value);
+        }}
+        onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => handleKeyupMsg(e)}
         sx={{
           mr: 1,
           fontWeight: 400,

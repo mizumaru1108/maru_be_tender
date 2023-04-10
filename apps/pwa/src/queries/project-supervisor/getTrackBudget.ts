@@ -17,6 +17,19 @@ query getDailyTrackTotalBudget {
 }
 `;
 
+/**
+ * Old track budget totalSpend
+ * totalSpendBudget: proposals {
+      payments_aggregate(where: {status:{_eq: done}}) {
+        aggregate {
+          sum {
+            payment_amount
+          }
+        }
+      }
+    }
+ */
+
 export const getTrackBudgetAdmin = `
 query getTrackBudgetAdmin {
   track {
@@ -28,7 +41,7 @@ query getTrackBudgetAdmin {
         }
       }
     }
-    totalReservedBudget: proposals_aggregate {
+    totalReservedBudget: proposals_aggregate(where: {inner_status: {_nin: [ACCEPTED_BY_MODERATOR,PROJECT_COMPLETED,REJECTED,REJECTED_BY_SUPERVISOR]}}) {
       aggregate {
         sum {
           fsupport_by_supervisor
@@ -47,27 +60,6 @@ query getTrackBudgetAdmin {
   }
 }
 `;
-// export const getTrackBudgetAdmin = `
-// query getTrackBudgetAdmin {
-//   track {
-//     name
-//     totalBudget: sections_aggregate{
-//       aggregate{
-//         sum{
-//           budget
-//         }
-//       }
-//     }
-//     totalSpendBudget: proposals_aggregate(where: {inner_status: {_in: PROJECT_COMPLETED}}) {
-//       aggregate {
-//         sum {
-//           fsupport_by_supervisor
-//         }
-//       }
-//     }
-//   }
-// }
-// `;
 
 export const getOneTrackBudget = `
 query getOneTrackBudget($track_id: project_tracks_enum) {
@@ -81,21 +73,22 @@ query getOneTrackBudget($track_id: project_tracks_enum) {
         }
       }
     }
-    totalSpendBudget: proposals_aggregate(where: {inner_status: {_in: PROJECT_COMPLETED}}) {
+    totalReservedBudget: proposals_aggregate(where: {inner_status: {_nin: [ACCEPTED_BY_MODERATOR,PROJECT_COMPLETED,REJECTED,REJECTED_BY_SUPERVISOR]}}) {
       aggregate {
         sum {
           fsupport_by_supervisor
         }
       }
     }
+    totalSpendBudget: proposals(where: {inner_status: {_nin: [ACCEPTED_BY_MODERATOR,REJECTED,REJECTED_BY_SUPERVISOR]}}) {
+      payments_aggregate(where: {status:{_eq: done}}) {
+        aggregate {
+          sum {
+            payment_amount
+          }
+        }
+      }
+    }
   }
 }
 `;
-
-// `
-// query getDailyTrackTotalBudget($first_date: timestamptz = "", $second_date: timestamptz = "") {
-//   totalBudget: proposal(where: { _and: {updated_at: {_gte: $first_date}, _and: {updated_at: {_lt: $second_date}}}}, distinct_on: id) {
-//     amount_required_fsupport
-//   }
-// }
-// `;

@@ -9,11 +9,6 @@ export const moderatorStatistics = `query moderatorStatistics($start_date: times
       count
     }
   }
-  pendingRequest: proposal_aggregate(where: {_and: {updated_at: {_gte: $start_date}, _and: {updated_at: {_lt: $end_date}}}, state: {_eq: PROJECT_SUPERVISOR}, inner_status: {_eq: ACCEPTED_BY_MODERATOR}}) {
-    aggregate {
-      count
-    }
-  }
   incomingNewRequest: proposal_aggregate(where: { _and: {updated_at: {_gte: $start_date}, _and: {updated_at: {_lt: $end_date}}}, project_track: {_is_null: true}}) {
     aggregate {
       count
@@ -25,3 +20,9 @@ export const moderatorStatistics = `query moderatorStatistics($start_date: times
     }
   }
 }`;
+
+// pendingRequest: proposal_aggregate(where: {_and: {updated_at: {_gte: $start_date}, _and: {updated_at: {_lt: $end_date}}}, state: {_eq: PROJECT_SUPERVISOR}, inner_status: {_eq: ACCEPTED_BY_MODERATOR}}) {
+//   aggregate {
+//     count
+//   }
+// }

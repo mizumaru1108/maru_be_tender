@@ -39,7 +39,8 @@
 //   }
 // }`;
 
-export const subNotification = `subscription subNotification ($user_id: String = "") {
+export const subNotification = `
+subscription subNotification ($user_id: String = "") {
   notification (where: {user_id: {_eq: $user_id}, shown: {_eq: true}}, order_by: {created_at: desc}){
     id
     proposal_id
@@ -50,6 +51,7 @@ export const subNotification = `subscription subNotification ($user_id: String =
     shown
     created_at
     type
+    specific_type
     message {
       id
       content_type_id
@@ -79,7 +81,8 @@ export const subNotification = `subscription subNotification ($user_id: String =
       }
     }
   }
-}`;
+}
+`;
 
 export const subNotificationClient = `subscription subNotificationClient ($user_id: String = "") {
   notification (where: {user_id: {_eq: $user_id}, shown: {_eq: true}}, order_by: {created_at: desc}){
@@ -92,6 +95,7 @@ export const subNotificationClient = `subscription subNotificationClient ($user_
     shown
     created_at
     type
+    specific_type
     message {
       id
       content_type_id
@@ -148,6 +152,7 @@ export const notifAccManager = `subscription notifAccManager ($user_id: String =
     shown
     created_at
     type
+    specific_type
     message {
       id
       content_type_id

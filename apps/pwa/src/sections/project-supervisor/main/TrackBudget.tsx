@@ -8,9 +8,10 @@ import { useQuery } from 'urql';
 import { getOneTrackBudget } from 'queries/project-supervisor/getTrackBudget';
 //
 import { fCurrencyNumber } from 'utils/formatNumber';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 // config
 import { FEATURE_DAILY_STATUS } from 'config';
+import { ITrackList } from 'sections/ceo/ceo-dashboard/TrackBudget';
 
 // ------------------------------------------------------------------------------------------
 
@@ -23,6 +24,7 @@ interface IPropTrackBudgets {
 export default function TrackBudget({ path }: IPropTrackBudgets) {
   const { translate } = useLocales();
   const theme = useTheme();
+  const [trackList, setTrackList] = useState<ITrackList | null>(null);
 
   const [{ data, fetching, error }] = useQuery({
     query: getOneTrackBudget,
@@ -30,6 +32,28 @@ export default function TrackBudget({ path }: IPropTrackBudgets) {
       track_id: path,
     },
   });
+
+  useEffect(() => {
+    if (data) {
+      const newData = data.track.map((el: any) => ({
+        name: el.name,
+        total_budget: el.totalBudget.aggregate.sum.budget ?? 0,
+        total_reserved_budget: el.totalReservedBudget.aggregate.sum.fsupport_by_supervisor ?? 0,
+        total_spend_budget: el.totalSpendBudget.reduce(
+          (
+            acc: any,
+            curr: { payments_aggregate: { aggregate: { sum: { payment_amount: any } } } }
+          ) => {
+            const paymentAmount = curr.payments_aggregate.aggregate.sum.payment_amount;
+            return acc + (paymentAmount ? paymentAmount : 0);
+          },
+          0
+        ),
+      }));
+
+      setTrackList(newData[0]);
+    }
+  }, [data]);
 
   if (fetching) return <>{translate('pages.common.loading')}</>;
   if (error) return <>{error.message}</>;
@@ -67,21 +91,19 @@ export default function TrackBudget({ path }: IPropTrackBudgets) {
                   </Typography>
                   <Typography
                     sx={{
-                      color:
-                        data.track.length > 0 &&
-                        data.track[0].totalBudget.aggregate.sum.budget -
-                          data.track[0].totalSpendBudget.aggregate.sum.fsupport_by_supervisor <
-                          0
-                          ? theme.palette.error.main
-                          : 'text.tertiary',
+                      // color:
+                      //   data.track.length > 0 &&
+                      //   data.track[0].totalBudget.aggregate.sum.budget -
+                      //     data.track[0].totalSpendBudget.aggregate.sum.fsupport_by_supervisor <
+                      //     0
+                      //     ? theme.palette.error.main
+                      //     : 'text.tertiary',
+                      color: 'text.tertiary',
                       fontWeight: 700,
                     }}
                   >
-                    {data.track.length > 0
-                      ? fCurrencyNumber(
-                          data.track[0].totalBudget.aggregate.sum.budget -
-                            data.track[0].totalSpendBudget.aggregate.sum.fsupport_by_supervisor
-                        )
+                    {trackList
+                      ? fCurrencyNumber(trackList.total_reserved_budget)
                       : fCurrencyNumber(0)}
                   </Typography>
                 </Box>
@@ -103,11 +125,7 @@ export default function TrackBudget({ path }: IPropTrackBudgets) {
                     {translate('content.administrative.statistic.heading.totalSpendBudget')}
                   </Typography>
                   <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                    {data.track.length > 0
-                      ? fCurrencyNumber(
-                          data.track[0].totalSpendBudget.aggregate.sum.fsupport_by_supervisor
-                        )
-                      : fCurrencyNumber(0)}
+                    {trackList ? fCurrencyNumber(trackList.total_spend_budget) : fCurrencyNumber(0)}
                   </Typography>
                 </Box>
               </Grid>

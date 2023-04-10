@@ -40,6 +40,11 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
       ['tender_project_manager', 'tender_project_supervisor'].includes(activeRole!) && {
         reject_reason: Yup.string().required(),
       }),
+    ...(action.actionType === 'STUDY_AGAIN' &&
+      !['tender_ceo'].includes(activeRole!) && {
+        notes: Yup.string().required(translate('errors.notes')),
+        state: Yup.string().required('error state'),
+      }),
     ...(action.actionType === 'STEP_BACK' &&
       [
         'tender_project_manager',
@@ -48,7 +53,6 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
         'tender_ceo',
       ].includes(activeRole!) && {
         notes: Yup.string().required(translate('errors.notes')),
-        state: Yup.string().required('error state'),
       }),
   });
 
