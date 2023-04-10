@@ -356,6 +356,7 @@ const en = {
     },
   },
   errors: {
+    role: 'Choose one of these roles',
     notes: 'Note is required',
     empty_data: 'No data found.',
     login: {

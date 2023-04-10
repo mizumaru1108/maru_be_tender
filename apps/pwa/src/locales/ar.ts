@@ -352,6 +352,7 @@ const ar = {
     },
   },
   errors: {
+    role: 'اختر أحد هذه الأدوار',
     notes: 'ملاحظة مطلوبة',
     empty_data: 'لاتوجد بيانات',
     login: {

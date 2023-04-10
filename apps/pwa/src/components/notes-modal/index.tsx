@@ -41,9 +41,9 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
         reject_reason: Yup.string().required(),
       }),
     ...(action.actionType === 'STUDY_AGAIN' &&
-      !['tender_ceo'].includes(activeRole!) && {
-        notes: Yup.string().required(translate('errors.notes')),
-        state: Yup.string().required('error state'),
+      ['tender_ceo'].includes(activeRole!) && {
+        // notes: Yup.string().required(translate('errors.notes')),
+        state: Yup.string().required(translate('errors.role')),
       }),
     ...(action.actionType === 'STEP_BACK' &&
       [
