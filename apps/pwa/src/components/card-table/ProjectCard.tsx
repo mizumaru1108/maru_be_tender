@@ -95,7 +95,7 @@ const ProjectCard = ({
     if (['tender_project_supervisor'].includes(role) && destination !== 'requests-in-process') {
       await updateAsigning({
         _set: {
-          clasification_field: '-',
+          support_outputs: '-',
         },
         where: {
           id: {
