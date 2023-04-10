@@ -43,6 +43,7 @@ import { messageNotificationCount } from '../../../queries/commons/subMessageNot
 import { useDispatch, useSelector } from '../../../redux/store';
 import { setMessageNotifyCount } from '../../../redux/slices/notification';
 import moment from 'moment';
+import axiosInstance from '../../../utils/axios';
 
 // ----------------------------------------------------------------------
 const _messages = [...Array(2)].map((_, index) => ({
@@ -188,12 +189,13 @@ export default function MessagePopover() {
     setOpen(null);
   };
 
-  const handleMarkAllAsRead = () => {
-    setMessages(
-      messages.map((message) => ({
-        ...message,
-        isUnRead: false,
-      }))
+  const handleMarkAllAsRead = async () => {
+    await axiosInstance.patch(
+      'tender/notification/read-mine',
+      {},
+      {
+        headers: { 'x-hasura-role': activeRole! },
+      }
     );
   };
 
@@ -201,7 +203,16 @@ export default function MessagePopover() {
     setActiveTap(newValue);
   };
 
-  const handleClearAll = () => {};
+  // const handleClearAll = () => {};
+  const handleClearAll = async () => {
+    await axiosInstance.patch(
+      'tender/notification/delete-all-mine',
+      {},
+      {
+        headers: { 'x-hasura-role': activeRole! },
+      }
+    );
+  };
 
   // if (fetching) return <>.. Loading</>;
 
@@ -432,7 +443,7 @@ export default function MessagePopover() {
                 alignItems: 'end',
               }}
             >
-              {messageNotifyCount && messageNotifyCount > 0 && (
+              {messageNotifyCount > 0 && (
                 <React.Fragment>
                   {/* <Tooltip title=" Mark all as read"> */}
                   <Button variant="text" color="primary" onClick={handleMarkAllAsRead}>
