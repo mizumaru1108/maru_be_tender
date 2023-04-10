@@ -1148,7 +1148,8 @@ export class TenderProposalService {
 
     if (request.action === ProposalAction.STUDY_AGAIN) {
       /* proposal */
-      proposalUpdatePayload.inner_status = InnerStatusEnum.CREATED_BY_CLIENT;
+      proposalUpdatePayload.inner_status =
+        InnerStatusEnum.ACCEPTED_BY_MODERATOR;
       proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
       proposalUpdatePayload.project_manager_id = null;
@@ -1237,8 +1238,20 @@ export class TenderProposalService {
       const choosenState = request.ceo_payload
         .step_back_to as TenderAppRoleEnum;
 
+      let inner: InnerStatusEnum = InnerStatusEnum.CREATED_BY_CLIENT;
+
+      if (choosenState === TenderAppRoleEnum.CLIENT) {
+        inner = InnerStatusEnum.CREATED_BY_CLIENT;
+      }
+      if (choosenState === TenderAppRoleEnum.PROJECT_SUPERVISOR) {
+        inner = InnerStatusEnum.ACCEPTED_BY_MODERATOR;
+      }
+      if (choosenState === TenderAppRoleEnum.PROJECT_MANAGER) {
+        inner = InnerStatusEnum.ACCEPTED_BY_SUPERVISOR;
+      }
+
       /* proposal */
-      proposalUpdatePayload.inner_status = InnerStatusEnum.CREATED_BY_CLIENT;
+      proposalUpdatePayload.inner_status = inner;
       proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdatePayload.state = choosenState;
       // proposalUpdatePayload.state = TenderAppRoleEnum.MODERATOR;

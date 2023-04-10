@@ -342,6 +342,45 @@ export class TenderUserRepository {
       order_by.updated_at = sort;
     }
 
+    if (findOnlyActive === false) {
+      if (employee_name) {
+        query = {
+          employee_name: {
+            contains: employee_name,
+            mode: 'insensitive',
+          },
+        };
+      }
+
+      if (account_status) {
+        query = {
+          status_id: {
+            contains: account_status,
+            mode: 'insensitive',
+          },
+        };
+      }
+
+      if (employee_name && account_status) {
+        query = {
+          OR: [
+            {
+              status_id: {
+                contains: account_status,
+                mode: 'insensitive',
+              },
+            },
+            {
+              employee_name: {
+                contains: employee_name,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        };
+      }
+    }
+
     try {
       const users: FindUserResponse['data'] =
         await this.prismaService.user.findMany({

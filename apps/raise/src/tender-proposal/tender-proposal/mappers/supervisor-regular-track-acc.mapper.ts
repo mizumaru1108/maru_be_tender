@@ -8,7 +8,7 @@ export const SupervisorRegularTrackAccMapper = (
   const newMappedUpdatePayload: Prisma.proposalUncheckedUpdateInput =
     prevUpdatePayload;
 
-  if (request.inclu_or_exclu) {
+  if (request.inclu_or_exclu !== undefined) {
     newMappedUpdatePayload.inclu_or_exclu = request.inclu_or_exclu;
   }
 
@@ -20,7 +20,7 @@ export const SupervisorRegularTrackAccMapper = (
     newMappedUpdatePayload.support_goal_id = request.support_goal_id;
   }
 
-  if (request.vat) {
+  if (request.vat !== undefined) {
     newMappedUpdatePayload.vat = request.vat;
   }
 
@@ -38,19 +38,19 @@ export const SupervisorRegularTrackAccMapper = (
       request.fsupport_by_supervisor;
   }
 
-  if (request.does_an_agreement) {
+  if (request.does_an_agreement !== undefined) {
     newMappedUpdatePayload.does_an_agreement = request.does_an_agreement;
   }
 
-  if (request.need_picture) {
+  if (request.need_picture !== undefined) {
     newMappedUpdatePayload.need_picture = request.need_picture;
   }
 
-  if (request.closing_report) {
+  if (request.closing_report !== undefined) {
     newMappedUpdatePayload.closing_report = request.closing_report;
   }
 
-  if (request.support_type) {
+  if (request.support_type !== undefined) {
     newMappedUpdatePayload.support_type = request.support_type;
   }
 

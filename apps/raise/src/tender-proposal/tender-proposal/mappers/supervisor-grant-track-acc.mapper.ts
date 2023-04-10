@@ -22,7 +22,7 @@ export const SupervisorGrantTrackAccMapper = (
     newMappedUpdatePayload.most_clents_projects = request.most_clents_projects;
   }
 
-  if (request.been_supported_before) {
+  if (request.been_supported_before !== undefined) {
     newMappedUpdatePayload.been_supported_before =
       request.been_supported_before;
   }
@@ -47,7 +47,7 @@ export const SupervisorGrantTrackAccMapper = (
     newMappedUpdatePayload.target_group_age = request.target_group_age;
   }
 
-  if (request.been_made_before) {
+  if (request.been_made_before !== undefined) {
     newMappedUpdatePayload.been_made_before = request.been_made_before;
   }
 
