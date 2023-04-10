@@ -218,12 +218,22 @@ function ProjectPath() {
                           <Typography
                             sx={{
                               fontSize: index === activeStep ? '17px' : '12px',
-                              fontWeight: index === activeStep ? 800 : 400,
+                              fontWeight: index === activeStep ? 800 : 600,
                               color: '#000',
                               alignSelf: 'start',
                             }}
                           >
                             {translate(`permissions.${item.user_role}`)}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontSize: index === activeStep ? '17px' : '12px',
+                              fontWeight: index === activeStep ? 800 : 600,
+                              color: '#000',
+                              alignSelf: 'start',
+                            }}
+                          >
+                            {item.reviewer.employee_name}
                           </Typography>
                           <Typography sx={{ fontSize: '12px', color: '#000', alignSelf: 'start' }}>
                             {formattedDateTime(item.created_at)}
@@ -261,11 +271,6 @@ function ProjectPath() {
                                   alignSelf: 'center',
                                 }}
                               >
-                                {/* {translate(
-                                  `permissions.${
-                                    followUps.log[followUps.log.length - 1].proposal.state
-                                  }`
-                                )} */}
                                 {proposal.outter_status !== 'ASKED_FOR_AMANDEMENT'
                                   ? translate(`permissions.${proposal.state}`)
                                   : translate(`permissions.PROJECT_SUPERVISOR`)}

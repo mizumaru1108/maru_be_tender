@@ -301,5 +301,8 @@ export type Log = {
     | 'sending_closing_report';
   created_at: Date;
   user_role: Role;
+  reviewer: {
+    employee_name: string;
+  };
   proposal: PropsalLog;
 };

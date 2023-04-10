@@ -65,21 +65,30 @@ export default function Statistics() {
                         borderRadius: '8px',
                         backgroundColor: '#fff',
                         p: 2,
+                        minHeight: '100px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
                       }}
                     >
                       {budgetType ? (
                         <Image
                           src={`/icons/rial-currency.svg`}
                           alt="icon_riyals"
-                          sx={{ display: 'inline-flex' }}
+                          sx={{
+                            mb: 0.5,
+                            '.lazy-load-image-background.blur.lazy-load-image-loaded > img': {
+                              width: 'auto !important',
+                            },
+                          }}
                         />
                       ) : null}
-                      <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
+                      <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                         {title}
                       </Typography>
                       <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
                         <Typography component="span" sx={{ fontWeight: 700 }}>
-                          {budgetType ? fCurrencyNumber(value) : value} &nbsp;
+                          {budgetType ? fCurrencyNumber(value) : value || 0} &nbsp;
                         </Typography>
                         {!budgetType ? (
                           <Typography component="span" sx={{ fontWeight: 700 }}>

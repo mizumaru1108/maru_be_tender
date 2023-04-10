@@ -10,10 +10,10 @@ function Main() {
         <DailyStatistics />
       </Grid>
       <Grid item md={12}>
-        <RequestsInProcess />
+        <IncomingExchangePermissionRequests />
       </Grid>
       <Grid item md={12}>
-        <IncomingExchangePermissionRequests />
+        <RequestsInProcess />
       </Grid>
     </Grid>
   );
