@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 // material
 import {
   Link,
@@ -101,32 +101,52 @@ export default function TableAMCustom({
     });
 
     tableData = stabilizedThis.map((el) => el[0]);
-
+    console.log({ tableData, filterName });
     if (filterName) {
       tableData = tableData.filter(
         (item: Record<string, any>) =>
-          item.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+          item.partner_name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
       );
     }
 
     return tableData;
   };
+  const [dataTable, setDataTable] = useState<IPropsTablesList[]>(
+    applySortFilter({
+      tableData,
+      comparator: getComparator(order, orderBy),
+      filterName: '',
+    })
+  );
+  const [query, setQuery] = useState('');
 
-  const dataFiltered = applySortFilter({
-    tableData,
-    comparator: getComparator(order, orderBy),
-    filterName: '',
-  });
+  // const dataFiltered = applySortFilter({
+  //   tableData,
+  //   comparator: getComparator(order, orderBy),
+  //   filterName: '',
+  // });
+
+  useEffect(() => {
+    const dataFiltered = applySortFilter({
+      tableData,
+      comparator: getComparator(order, orderBy),
+      filterName: query,
+    });
+    setDataTable(dataFiltered);
+  }, [order, orderBy, tableData, query]);
 
   const deleteRowValue = () => {
     alert('data');
   };
 
   // Searchbar
-  const [query, setQuery] = useState('');
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
+  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setQuery(event.target.value);
+  // };
+  const handleChange = (name: string) => {
+    setQuery(name);
+    setPage(0);
   };
 
   useEffect(() => {
@@ -141,7 +161,8 @@ export default function TableAMCustom({
           {translate(`${headline}`)}
         </Typography>
         {!view_all ? (
-          <SearchbarTable func={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)} />
+          // <SearchbarTable func={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)} />
+          <SearchbarTable onSearch={(data: string) => handleChange(data)} />
         ) : (
           <Link component={RouterLink} to={view_all} variant="caption">
             <Typography variant="subtitle2" noWrap>
@@ -154,9 +175,9 @@ export default function TableAMCustom({
         {selected.length > 0 && (
           <TableSelectedActions
             numSelected={selected.length}
-            rowCount={tableData.length}
+            rowCount={dataTable.length}
             onSelectAllRows={(checked) =>
-              onSelectAllRows(checked, tableData.map((row) => row?.id) as string[])
+              onSelectAllRows(checked, dataTable.map((row) => row?.id) as string[])
             }
             actions={
               <Tooltip title="Delete">
@@ -193,24 +214,24 @@ export default function TableAMCustom({
             editRequest={editRequest}
           />
           <TableBody>
-            {dataFiltered.length > 0 &&
-              dataFiltered
+            {dataTable.length > 0 &&
+              dataTable
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .filter((v) => {
-                  if (editRequest) {
-                    if (query === '') {
-                      return v;
-                    } else if (v.partner_name?.toLowerCase().includes(query.toLowerCase())) {
-                      return v;
-                    }
-                  } else {
-                    if (query === '') {
-                      return v;
-                    } else if (v.partner_name?.toLowerCase().includes(query.toLowerCase())) {
-                      return v;
-                    }
-                  }
-                })
+                // .filter((v) => {
+                //   if (editRequest) {
+                //     if (query === '') {
+                //       return v;
+                //     } else if (v.partner_name?.toLowerCase().includes(query.toLowerCase())) {
+                //       return v;
+                //     }
+                //   } else {
+                //     if (query === '') {
+                //       return v;
+                //     } else if (v.partner_name?.toLowerCase().includes(query.toLowerCase())) {
+                //       return v;
+                //     }
+                //   }
+                // })
                 .map((x, key) => (
                   <TableRowsData
                     key={key}
@@ -225,7 +246,7 @@ export default function TableAMCustom({
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={dataFiltered.length}
+          count={dataTable.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={onChangePage}

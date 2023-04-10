@@ -39,6 +39,10 @@ import useAuth from 'hooks/useAuth';
 import { useSubscription } from 'urql';
 import Page500 from 'pages/Page500';
 import { FEATURE_NOTIFICATION_SYSTEM } from 'config';
+import { messageNotificationCount } from '../../../queries/commons/subMessageNotificationCount';
+import { useDispatch, useSelector } from '../../../redux/store';
+import { setMessageNotifyCount } from '../../../redux/slices/notification';
+import moment from 'moment';
 
 // ----------------------------------------------------------------------
 const _messages = [...Array(2)].map((_, index) => ({
@@ -58,6 +62,7 @@ type NotificationItemProps = {
   content: string;
   read_status: boolean;
   created_at: Date;
+  specific_type: string;
   message: {
     id: string;
     content_type_id: number;
@@ -92,6 +97,10 @@ type NotificationItemProps = {
 };
 
 export default function MessagePopover() {
+  const dispatch = useDispatch();
+
+  const { messageNotifyCount } = useSelector((state) => state.notification);
+
   const { translate } = useLocales();
   const [messages, setMessages] = useState(_messages);
 
@@ -133,18 +142,39 @@ export default function MessagePopover() {
     currentSubcription = empNotifications;
   }
 
+  const [notifCount] = useSubscription({
+    query: messageNotificationCount,
+    variables: { user_id: user?.id },
+  });
+
   const [result] = useSubscription(currentSubcription);
 
   const { data, fetching, error } = result;
+  const { data: dataNotifCount, fetching: fetchingNotifCount, error: NotifCountError } = notifCount;
 
   const memoResult = React.useMemo(() => data, [data]);
   const memoResultError = React.useMemo(() => error, [error]);
+  const memoNotifCount = React.useMemo(() => dataNotifCount, [dataNotifCount]);
+  // console.log({ data, memoResult });
 
   // console.log(memoResult, 'RESULT');
 
   useEffect(() => {
     if (FEATURE_NOTIFICATION_SYSTEM) {
+      if (!fetching && memoNotifCount) {
+        dispatch(setMessageNotifyCount(memoNotifCount.notification_aggregate.aggregate.count));
+      }
+      // dispatch(setNotifyCount(memoNotifCount.notification_aggregate.aggregate.count));
+
       if (!fetching && memoResult) {
+        const filteredData = memoResult.notification
+          .filter((item: NotificationItemProps) => item.specific_type === 'NEW_MESSAGE')
+          .map((item: NotificationItemProps) => item);
+        // console.log({ filteredData });
+        // if(filteredData){
+        //   setCurrentData(filteredData);
+        // }
+        // console.log({ filteredData });
         setCurrentData(memoResult.notification);
       }
 
@@ -152,7 +182,7 @@ export default function MessagePopover() {
       //   setOpenAlert(true);
       // }
     }
-  }, [data, currentData, fetching, memoResult, memoResultError]);
+  }, [dispatch, data, currentData, fetching, memoResult, memoNotifCount, memoResultError]);
 
   const handleClose = () => {
     setOpen(null);
@@ -193,57 +223,83 @@ export default function MessagePopover() {
   }, [currentData]);
 
   const totalUnReadToday = React.useMemo(() => {
-    if (!currentData) return 0;
+    const filteredData = currentData
+      .filter((item: NotificationItemProps) => item.specific_type === 'NEW_MESSAGE')
+      .map((item: NotificationItemProps) => item);
+    if (!filteredData) return 0;
 
-    return currentData?.filter((item: any) => {
-      const createdAt = new Date(item?.message?.created_at);
-
+    return filteredData.filter((item: any) => {
+      const createdAt = new Date(item.created_at);
       if (createdAt.getTime() >= oneDayAgo) {
-        return item?.message?.read_status === false;
+        return item.read_status === false;
       }
       return false;
     }).length;
   }, [currentData, oneDayAgo]);
 
   const totalUnReadPrevious = React.useMemo(() => {
-    if (!currentData) return 0;
+    const filteredData = currentData
+      .filter((item: NotificationItemProps) => item.specific_type === 'NEW_MESSAGE')
+      .map((item: NotificationItemProps) => item);
+    if (!filteredData) return 0;
 
-    return currentData?.filter((item: any) => {
-      const createdAt = new Date(item?.message?.created_at);
-
+    return filteredData.filter((item: any) => {
+      const createdAt = new Date(item.created_at);
       if (createdAt.getTime() < oneDayAgo) {
-        return item?.message?.read_status === false;
+        return item.read_status === false;
       }
-
       return false;
     }).length;
   }, [currentData, oneDayAgo]);
 
+  // const totalToday = React.useMemo(
+  //   () =>
+  //     currentData?.filter((item: any) => {
+  //       const createdAt = new Date(item?.created_at);
+
+  //       if (createdAt.getTime() >= oneDayAgo) {
+  //         return item?.message;
+  //       }
+  //       return false;
+  //     }),
+  //   [currentData, oneDayAgo]
+  // );
+
+  // const totalPrevious = React.useMemo(
+  //   () =>
+  //     currentData?.filter((item: any) => {
+  //       const createdAt = new Date(item?.created_at);
+
+  //       if (createdAt.getTime() < oneDayAgo) {
+  //         return item?.message;
+  //       }
+  //       return false;
+  //     }),
+  //   [currentData, oneDayAgo]
+  // );
   const totalToday = React.useMemo(
     () =>
       currentData?.filter((item: any) => {
-        const createdAt = new Date(item?.message?.created_at);
-
+        const createdAt = new Date(item.created_at);
         if (createdAt.getTime() >= oneDayAgo) {
-          return item?.message;
+          return item;
         }
         return false;
       }),
     [currentData, oneDayAgo]
   );
 
-  const totalPrevious = React.useMemo(
-    () =>
-      currentData?.filter((item: any) => {
-        const createdAt = new Date(item?.message?.created_at);
+  const totalPrevious = React.useMemo(() => {
+    if (!currentData) return [];
 
-        if (createdAt.getTime() < oneDayAgo) {
-          return item?.message;
-        }
-        return false;
-      }),
-    [currentData, oneDayAgo]
-  );
+    return currentData?.filter((item: any) => {
+      const createdAt = new Date(item.created_at);
+      if (createdAt.getTime() < oneDayAgo) {
+        return item;
+      }
+      return false;
+    });
+  }, [currentData, oneDayAgo]);
 
   // console.log('totalUnRead', totalUnRead);
   // console.log('totalUnReadToday', totalUnReadToday);
@@ -268,8 +324,8 @@ export default function MessagePopover() {
         onClick={handleOpen}
         sx={{ width: 40, height: 40 }}
       >
-        {totalUnRead > 0 ? (
-          <Badge badgeContent={totalUnRead} color="primary">
+        {messageNotifyCount && messageNotifyCount > 0 ? (
+          <Badge badgeContent={messageNotifyCount} color="primary">
             <SvgIconStyle
               src={`/assets/icons/dashboard-header/message-bar.svg`}
               sx={{ width: 25, height: 25, color: '#000' }}
@@ -376,7 +432,7 @@ export default function MessagePopover() {
                 alignItems: 'end',
               }}
             >
-              {totalUnRead > 0 && (
+              {messageNotifyCount && messageNotifyCount > 0 && (
                 <React.Fragment>
                   {/* <Tooltip title=" Mark all as read"> */}
                   <Button variant="text" color="primary" onClick={handleMarkAllAsRead}>
@@ -401,9 +457,11 @@ export default function MessagePopover() {
                   {currentData && totalToday?.length > 0 ? (
                     <React.Fragment>
                       {currentData &&
-                        currentData.map((item: NotificationItemProps, index: any) => (
-                          <NotificationItem key={index} message={item} tabValue={activeTap} />
-                        ))}
+                        currentData
+                          .filter((item) => item.specific_type === 'NEW_MESSAGE')
+                          .map((item: NotificationItemProps, index: any) => (
+                            <NotificationItem key={index} message={item} tabValue={activeTap} />
+                          ))}
                     </React.Fragment>
                   ) : (
                     <ListItemButton
@@ -435,9 +493,11 @@ export default function MessagePopover() {
                   {currentData && totalPrevious?.length > 0 ? (
                     <React.Fragment>
                       {currentData &&
-                        currentData.map((item: NotificationItemProps, index: any) => (
-                          <NotificationItem key={index} message={item} tabValue={activeTap} />
-                        ))}
+                        currentData
+                          .filter((item) => item.specific_type === 'NEW_MESSAGE')
+                          .map((item: NotificationItemProps, index: any) => (
+                            <NotificationItem key={index} message={item} tabValue={activeTap} />
+                          ))}
                     </React.Fragment>
                   ) : (
                     <ListItemButton
@@ -486,11 +546,29 @@ function NotificationItem({
   tabValue: any;
 }) {
   // const { description } = renderContent(message);
+  const { translate, currentLang } = useLocales();
 
   const oneDay = 24 * 60 * 60 * 1000;
   const oneDayAgo = Date.now() - oneDay;
 
-  const createdAt = new Date(message.message.created_at);
+  const createdAt = new Date(message.created_at);
+
+  const subject = (value: any) => {
+    let tempSubject = '';
+    if (value === 'Proposal accepted Notification') {
+      tempSubject = 'notification.proposal_accepted';
+    } else if (value === 'Proposal rejected Notification') {
+      tempSubject = 'notification.proposal_rejected';
+    } else if (value === 'Proposal reviewed Notification') {
+      tempSubject = 'notification.proposal_reviewed';
+    } else if (value === "Tender's New Appointment") {
+      tempSubject = 'notification.tender_appointment';
+    } else {
+      tempSubject = value;
+    }
+    return tempSubject;
+  };
+
   return (
     <React.Fragment>
       {tabValue === '1' ? (
@@ -501,7 +579,7 @@ function NotificationItem({
                 py: 1.5,
                 px: 2.5,
                 mt: '1px',
-                ...(message.message.read_status && {
+                ...(message.read_status && {
                   bgcolor: 'action.selected',
                 }),
               }}
@@ -510,10 +588,12 @@ function NotificationItem({
                 <Avatar sx={{ bgcolor: 'background.neutral' }}>{avatar}</Avatar>
               </ListItemAvatar> */}
               <ListItemText
-                primary={message.message.sender.email}
+                primary={translate(`${subject(message.subject)}`)}
                 secondary={
                   <Stack direction="column">
-                    <Typography>{message.message.content}</Typography>
+                    <Typography>
+                      {(message && message.message && message.message.content) ?? message.content}
+                    </Typography>
                     <Typography
                       variant="caption"
                       sx={{
@@ -523,7 +603,8 @@ function NotificationItem({
                         color: 'text.disabled',
                       }}
                     >
-                      {fToNow(message.message.created_at)}
+                      {/* {fToNow(message.message.created_at)} */}
+                      {moment(message.created_at).locale(`${currentLang.value}`).fromNow()}
                     </Typography>
                   </Stack>
                 }
@@ -539,7 +620,7 @@ function NotificationItem({
               py: 1.5,
               px: 2.5,
               mt: '1px',
-              ...(message.message.read_status && {
+              ...(message.read_status && {
                 bgcolor: 'action.selected',
               }),
             }}
@@ -548,10 +629,12 @@ function NotificationItem({
               <Avatar sx={{ bgcolor: 'background.neutral' }}>{avatar}</Avatar>
             </ListItemAvatar> */}
             <ListItemText
-              primary={message.message.sender.email}
+              primary={translate(`${subject(message.subject)}`)}
               secondary={
                 <Stack direction="column">
-                  <Typography>{message.message.content}</Typography>
+                  <Typography>
+                    {(message && message.message && message.message.content) ?? message.content}
+                  </Typography>
                   <Typography
                     variant="caption"
                     sx={{
@@ -561,7 +644,7 @@ function NotificationItem({
                       color: 'text.disabled',
                     }}
                   >
-                    {fToNow(message.message.created_at)}
+                    {moment(message.created_at).locale(`${currentLang.value}`).fromNow()}
                   </Typography>
                 </Stack>
               }

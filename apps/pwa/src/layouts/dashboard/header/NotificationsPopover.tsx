@@ -70,6 +70,7 @@ type NotificationItemProps = {
   read_status: boolean;
   created_at: Date;
   type: string;
+  specific_type: string;
   proposal: {
     id: string;
     inner_status: string;
@@ -163,6 +164,7 @@ export default function NotificationsPopover() {
 
   const { data, fetching, error } = result;
   const { data: dataNotifCount, fetching: fetchingNotifCount, error: NotifCountError } = notifCount;
+  // console.log({ data, dataNotifCount });
 
   const memoResult = React.useMemo(() => data, [data]);
   const memoResultError = React.useMemo(() => error, [error]);
@@ -176,6 +178,7 @@ export default function NotificationsPopover() {
 
       if (!fetching && memoResult) {
         // console.log(data.notification);
+
         setCurrentData(memoResult.notification);
       }
 
@@ -202,9 +205,12 @@ export default function NotificationsPopover() {
   //   setTotalUnRead(totalUnRead1);
   //   console.log(totalUnRead1, 'TOTAL UN READ');
   const totalUnReadToday = React.useMemo(() => {
-    if (!currentData) return 0;
+    const filteredData = currentData
+      .filter((item: NotificationItemProps) => item.specific_type !== 'NEW_MESSAGE')
+      .map((item: NotificationItemProps) => item);
+    if (!filteredData) return 0;
 
-    return currentData.filter((item: any) => {
+    return filteredData.filter((item: any) => {
       const createdAt = new Date(item.created_at);
       if (createdAt.getTime() >= oneDayAgo) {
         return item.read_status === false;
@@ -214,9 +220,12 @@ export default function NotificationsPopover() {
   }, [currentData, oneDayAgo]);
 
   const totalUnReadPrevious = React.useMemo(() => {
-    if (!currentData) return 0;
+    const filteredData = currentData
+      .filter((item: NotificationItemProps) => item.specific_type !== 'NEW_MESSAGE')
+      .map((item: NotificationItemProps) => item);
+    if (!filteredData) return 0;
 
-    return currentData.filter((item: any) => {
+    return filteredData.filter((item: any) => {
       const createdAt = new Date(item.created_at);
       if (createdAt.getTime() < oneDayAgo) {
         return item.read_status === false;
@@ -306,8 +315,8 @@ export default function NotificationsPopover() {
         onClick={handleOpen}
         sx={{ width: 40, height: 40 }}
       >
-        {notifyCount && notifyCount > 0 ? (
-          <Badge badgeContent={notifyCount} color="primary">
+        {totalUnReadToday + totalUnReadPrevious > 0 ? (
+          <Badge badgeContent={totalUnReadToday + totalUnReadPrevious} color="primary">
             <SvgIconStyle
               src={`/assets/icons/dashboard-header/notification-bar.svg`}
               sx={{ width: 25, height: 25, color: '#000' }}
@@ -429,14 +438,16 @@ export default function NotificationsPopover() {
                   {currentData && totalToday?.length > 0 ? (
                     <React.Fragment>
                       {currentData &&
-                        currentData.map((item: NotificationItemProps, index: any) => (
-                          <NotificationItem
-                            key={index}
-                            notification={item}
-                            tabValue={activeTap}
-                            onClose={handleClose}
-                          />
-                        ))}
+                        currentData
+                          .filter((item) => item.specific_type !== 'NEW_MESSAGE')
+                          .map((item: NotificationItemProps, index: any) => (
+                            <NotificationItem
+                              key={index}
+                              notification={item}
+                              tabValue={activeTap}
+                              onClose={handleClose}
+                            />
+                          ))}
                     </React.Fragment>
                   ) : (
                     <ListItemButton
@@ -462,14 +473,16 @@ export default function NotificationsPopover() {
                   {currentData && totalPrevious.length > 0 ? (
                     <React.Fragment>
                       {currentData &&
-                        currentData.map((item: NotificationItemProps, index: any) => (
-                          <NotificationItem
-                            key={index}
-                            notification={item}
-                            tabValue={activeTap}
-                            onClose={handleClose}
-                          />
-                        ))}
+                        currentData
+                          .filter((item) => item.specific_type !== 'NEW_MESSAGE')
+                          .map((item: NotificationItemProps, index: any) => (
+                            <NotificationItem
+                              key={index}
+                              notification={item}
+                              tabValue={activeTap}
+                              onClose={handleClose}
+                            />
+                          ))}
                     </React.Fragment>
                   ) : (
                     <ListItemButton

@@ -59,7 +59,7 @@ function PartnerManagementPage() {
       setClientData(resultAllClientData);
     }
   }, [fetchingAllClientRequest, resultAllClientRequest, activeButton]);
-  console.log({ clientData });
+  // console.log({ clientData });
 
   if (fetchingAllClientRequest)
     return <Skeleton variant="rectangular" sx={{ height: 250, borderRadius: 2 }} />;

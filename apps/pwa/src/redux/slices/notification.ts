@@ -10,6 +10,7 @@ interface NotificationItem {
   isLoading: boolean;
   error: Error | string | null;
   notifyCount: number;
+  messageNotifyCount: number;
   notifications: Notifications;
 }
 
@@ -17,6 +18,7 @@ const initialState: NotificationItem = {
   isLoading: false,
   error: null,
   notifyCount: 0,
+  messageNotifyCount: 0,
   notifications: {
     id: '',
     appointment_id: '',
@@ -75,6 +77,10 @@ const slice = createSlice({
     setNotifyCount(state, action) {
       state.notifyCount = action.payload;
     },
+    // SET MESSAGE NOTIFICATION COUNT
+    setMessageNotifyCount(state, action) {
+      state.messageNotifyCount = action.payload;
+    },
   },
 });
 
@@ -82,4 +88,4 @@ const slice = createSlice({
 export default slice.reducer;
 
 // Actions
-export const { setNotifications, setNotifyCount } = slice.actions;
+export const { setNotifications, setNotifyCount, setMessageNotifyCount } = slice.actions;

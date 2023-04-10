@@ -111,8 +111,11 @@ export default function TableEmployee({ data }: { data: IPropsAvgEmployeeEfectiv
   // Searchbar
   const [query, setQuery] = useState('');
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
+  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setQuery(event.target.value);
+  // };
+  const handleChange = (name: string) => {
+    setQuery(name);
   };
 
   useEffect(() => {
@@ -122,7 +125,8 @@ export default function TableEmployee({ data }: { data: IPropsAvgEmployeeEfectiv
 
   return (
     <React.Fragment>
-      <SearchbarTable func={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)} />
+      {/* <SearchbarTable func={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)} /> */}
+      <SearchbarTable onSearch={(data: string) => handleChange(data)} />
       <TableContainer sx={{ minWidth: 800, position: 'relative' }}>
         {selected.length > 0 && (
           <TableSelectedActions
