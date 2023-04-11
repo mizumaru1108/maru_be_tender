@@ -27,6 +27,7 @@ import TableSkeleton from '../../TableSkeleton';
 import Iconify from 'components/Iconify';
 import axiosInstance from 'utils/axios';
 import useAuth from 'hooks/useAuth';
+import SearchbarTable from 'components/table/SearchbarTable';
 
 const TABLE_HEAD = [
   { id: 'entity', label: 'client_list_headercell.client_name' },
@@ -201,6 +202,10 @@ export default function ClientListTable() {
     }
   };
 
+  const handleChange = (name: string) => {
+    console.log(name);
+  };
+
   // useEffect(() => {
   //   if (datas?.data) {
   //     setTableData(
@@ -267,6 +272,7 @@ export default function ClientListTable() {
               <Iconify icon="bx:bx-filter-alt" sx={{ ml: 1 }} />
             </Button>
           </Box>
+          <SearchbarTable onSearch={(data: string) => handleChange(data)} />
         </Stack>
       </Box>
       <Card sx={{ backgroundColor: '#fff', mt: 2 }}>
@@ -290,7 +296,9 @@ export default function ClientListTable() {
 
               <TableBody>
                 {isLoading
-                  ? [...Array(rowsPerPage)].map((item, index) => <TableSkeleton key={index} />)
+                  ? [...Array(rowsPerPage)].map((item, index) => (
+                      <TableSkeleton key={index} sx={{ bgcolor: '#d9d9d9' }} />
+                    ))
                   : dataFiltered.map((row) => (
                       <ClientListRow
                         key={row.user_id}
@@ -299,9 +307,8 @@ export default function ClientListTable() {
                         // onSelectRow={() => onSelectRow(row?.user_id)}
                       />
                     ))}
-
-                <TableEmptyRows height={denseHeight} emptyRows={0} />
-                <TableNoData isNotFound={isNotFound} />
+                {!isLoading && dataFiltered.length === 0 && <TableNoData isNotFound={isNotFound} />}
+                {/* <TableEmptyRows height={denseHeight} emptyRows={0} /> */}
               </TableBody>
             </Table>
           </TableContainer>

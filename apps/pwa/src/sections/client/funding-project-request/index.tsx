@@ -12,6 +12,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { useMutation, useQuery } from 'urql';
 import axiosInstance from 'utils/axios';
 import Toast from '../../../components/toast';
+import { logUtil } from '../../../utils/log-util';
 import {
   ConnectingInfoForm,
   MainInfoForm,
@@ -58,7 +59,7 @@ const FundingProjectRequestForm = () => {
       project_idea: '',
       project_location: '',
       project_implement_date: '',
-      execution_time: 0,
+      execution_time: '',
       project_beneficiaries: '',
       letter_ofsupport_req: {
         url: '',
@@ -67,6 +68,7 @@ const FundingProjectRequestForm = () => {
         base64Data: '',
         fileExtension: '',
         fullName: '',
+        file: undefined,
       },
       project_attachments: {
         url: '',
@@ -75,6 +77,7 @@ const FundingProjectRequestForm = () => {
         base64Data: '',
         fileExtension: '',
         fullName: '',
+        file: undefined,
       },
       project_beneficiaries_specific_type: '',
     },
@@ -208,7 +211,47 @@ const FundingProjectRequestForm = () => {
       submitter_user_id: user?.id,
       proposal_bank_information_id: data,
     };
-    // console.log({ createdProposel });
+
+    //<for formData>
+    // const datas = { ...createdProposel };
+    // let formData = new FormData();
+    // delete createdProposel.detail_project_budgets;
+    // delete createdProposel.project_attachments;
+    // delete createdProposel.letter_ofsupport_req;
+    // delete createdProposel.detail_project_budgets;
+    // const jsonData: any = {
+    //   ...createdProposel,
+    // };
+    // for (const key in jsonData) {
+    //   formData.append(key, jsonData[key]);
+    // }
+    // if (datas && datas?.detail_project_budgets && datas?.detail_project_budgets?.length > 0) {
+    //   for (let i = 0; i < datas?.detail_project_budgets?.length; i++) {
+    //     const budget = datas?.detail_project_budgets[i];
+    //     const index = i; // Get the index for appending to FormData
+
+    //     // Append the values for each object using template literals
+    //     formData.append(`detail_project_budgets[${index}].amount`, budget.amount as any);
+    //     formData.append(`detail_project_budgets[${index}].explanation`, budget.explanation);
+    //     formData.append(`detail_project_budgets[${index}].clause`, budget.clause);
+    //   }
+    // }
+    // if (datas && datas?.project_attachments && datas?.project_attachments?.file) {
+    //   formData.append('project_attachments', datas?.project_attachments?.file as any);
+    // } else {
+    //   formData.append('project_attachments.url', datas?.project_attachments?.url as string);
+    //   formData.append('project_attachments.type', datas?.project_attachments?.type as string);
+    //   formData.append('project_attachments.size', datas?.project_attachments?.size as any);
+    // }
+    // if (datas && datas?.letter_ofsupport_req && datas?.letter_ofsupport_req?.file) {
+    //   formData.append('letter_ofsupport_req', datas?.letter_ofsupport_req?.file as any);
+    // } else {
+    //   formData.append('letter_ofsupport_req.url', datas?.letter_ofsupport_req?.url as string);
+    //   formData.append('letter_ofsupport_req.type', datas?.letter_ofsupport_req?.type as string);
+    //   formData.append('letter_ofsupport_req.size', datas?.letter_ofsupport_req?.size as any);
+    // }
+    // console.log(formData.get('project_name'));
+
     try {
       const rest = await axiosInstance.post(
         'tender-proposal/create',
@@ -221,11 +264,8 @@ const FundingProjectRequestForm = () => {
           maxContentLength: Infinity,
         }
       );
-      // setIsLoading(false);
-      // console.log({ rest });
       if (rest) {
         const spreadUrl = location.pathname.split('/');
-        // history.push('/dashboard');
         enqueueSnackbar(translate('proposal_created'), {
           variant: 'success',
           preventDuplicate: true,
@@ -236,13 +276,6 @@ const FundingProjectRequestForm = () => {
           },
         });
         navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/app`);
-        // setToast({
-        //   open: true,
-        //   message: translate('proposal_created'),
-        // });
-        // setTimeout(() => {
-        //   navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/app`);
-        // }, 1000);
       } else {
         setIsLoading(false);
         alert('Something went wrong');
@@ -251,6 +284,38 @@ const FundingProjectRequestForm = () => {
       console.log(err);
       setIsLoading(false);
     }
+
+    // try {
+    //   const res = await axiosInstance.post('/tender-proposal/interceptor-create', formData, {
+    //     headers: { 'x-hasura-role': activeRole! },
+    //     maxBodyLength: Infinity,
+    //     maxContentLength: Infinity,
+    //   });
+    //   if (res) {
+    //     const spreadUrl = location.pathname.split('/');
+    //     enqueueSnackbar(translate('proposal_created'), {
+    //       variant: 'success',
+    //       preventDuplicate: true,
+    //       autoHideDuration: 3000,
+    //       anchorOrigin: {
+    //         vertical: 'bottom',
+    //         horizontal: 'center',
+    //       },
+    //     });
+    //     navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
+    //   }
+    // } catch (err) {
+    //   enqueueSnackbar(err.message, {
+    //     variant: 'error',
+    //     preventDuplicate: true,
+    //     autoHideDuration: 3000,
+    //     anchorOrigin: {
+    //       vertical: 'bottom',
+    //       horizontal: 'center',
+    //     },
+    //   });
+    //   setIsLoading(false);
+    // }
   };
 
   const onSavingDraft = async (data: any) => {
@@ -533,6 +598,102 @@ const FundingProjectRequestForm = () => {
       });
       setIsLoading(false);
     }
+
+    //using formData still develop
+    // const payload = {
+    //   ...(lastIndex >= 1 && { ...requestState.form2 }),
+    //   ...(lastIndex >= 2 && { ...requestState.form3 }),
+    //   ...(lastIndex >= 3 && {
+    //     amount_required_fsupport: requestState.form4.amount_required_fsupport,
+    //     detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
+    //   }),
+    //   ...(lastIndex < step && step >= 1 && { ...requestState.form1 }),
+    //   ...(lastIndex < step && step >= 2 && { ...requestState.form2 }),
+    //   ...(lastIndex < step && step >= 3 && { ...requestState.form3 }),
+    //   ...(lastIndex < step &&
+    //     step >= 4 && {
+    //       amount_required_fsupport: requestState.form4.amount_required_fsupport,
+    //       detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
+    //     }),
+    //   proposal_bank_information_id: step === 4 ? data : undefined,
+    //   proposal_id: id,
+    // };
+    // const datas = { ...payload };
+    // let formData = new FormData();
+    // delete payload.detail_project_budgets;
+    // delete payload.project_attachments;
+    // delete payload.letter_ofsupport_req;
+    // delete payload.detail_project_budgets;
+    // const jsonData: any = {
+    //   ...payload,
+    // };
+    // for (const key in jsonData) {
+    //   formData.append(key, jsonData[key]);
+    // }
+    // if (datas && datas?.detail_project_budgets && datas?.detail_project_budgets?.length > 0) {
+    //   for (let i = 0; i < datas?.detail_project_budgets?.length; i++) {
+    //     const budget = datas?.detail_project_budgets[i];
+    //     const index = i; // Get the index for appending to FormData
+
+    //     // Append the values for each object using template literals
+    //     formData.append(`detail_project_budgets[${index}].amount`, budget.amount as any);
+    //     formData.append(`detail_project_budgets[${index}].explanation`, budget.explanation);
+    //     formData.append(`detail_project_budgets[${index}].clause`, budget.clause);
+    //   }
+    // }
+    // if (datas && datas?.project_attachments && datas?.project_attachments?.file) {
+    //   formData.append('project_attachments', datas?.project_attachments?.file as any);
+    // } else {
+    //   formData.append('project_attachments.url', datas?.project_attachments?.url as string);
+    //   formData.append('project_attachments.type', datas?.project_attachments?.type as string);
+    //   formData.append('project_attachments.size', datas?.project_attachments?.size as any);
+    // }
+    // if (datas && datas?.letter_ofsupport_req && datas?.letter_ofsupport_req?.file) {
+    //   formData.append('letter_ofsupport_req', datas?.letter_ofsupport_req?.file as any);
+    // } else {
+    //   formData.append('letter_ofsupport_req.url', datas?.letter_ofsupport_req?.url as string);
+    //   formData.append('letter_ofsupport_req.type', datas?.letter_ofsupport_req?.type as string);
+    //   formData.append('letter_ofsupport_req.size', datas?.letter_ofsupport_req?.size as any);
+    // }
+
+    // console.log(formData.get('project_name'));
+    // console.log({ datas });
+
+    // // formData.forEach((value, key) => {
+    // //   console.log(key + ' - ' + value);
+    // // });
+
+    // try {
+    //   const res = await axiosInstance.post('/tender-proposal/interceptor-create', formData, {
+    //     headers: { 'x-hasura-role': activeRole! },
+    //     maxBodyLength: Infinity,
+    //     maxContentLength: Infinity,
+    //   });
+    //   if (res) {
+    //     const spreadUrl = location.pathname.split('/');
+    //     enqueueSnackbar(translate('proposal_created'), {
+    //       variant: 'success',
+    //       preventDuplicate: true,
+    //       autoHideDuration: 3000,
+    //       anchorOrigin: {
+    //         vertical: 'bottom',
+    //         horizontal: 'center',
+    //       },
+    //     });
+    //     navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
+    //   }
+    // } catch (err) {
+    //   enqueueSnackbar(err.message, {
+    //     variant: 'error',
+    //     preventDuplicate: true,
+    //     autoHideDuration: 3000,
+    //     anchorOrigin: {
+    //       vertical: 'bottom',
+    //       horizontal: 'center',
+    //     },
+    //   });
+    //   setIsLoading(false);
+    // }
   };
 
   // on return
