@@ -37,7 +37,7 @@ function AppointmentsTap({ defaultValues }: Props) {
         .filter(
           (item: IArrayAppointments) =>
             item.status === 'confirmed' &&
-            moment(moment(item.date).format('DD-MM-YYYY')).isSame(moment(todayDate)) !== false
+            moment(moment(item.date).format('DD-MM-YYYY')).isSame(moment(todayDate))
         )
         .map((item: IArrayAppointments) => ({
           id: item.status.charAt(0).toUpperCase() + item.status.slice(1),
@@ -52,7 +52,7 @@ function AppointmentsTap({ defaultValues }: Props) {
         .filter(
           (item: IArrayAppointments) =>
             item.status === 'confirmed' &&
-            moment(moment(item.date).format('DD-MM-YYYY')).isAfter(moment(todayDate)) !== false
+            moment(moment(item.date).format('DD-MM-YYYY')).isBefore(moment(todayDate))
         )
         .map((item: IArrayAppointments) => ({
           id: item.status.charAt(0).toUpperCase() + item.status.slice(1),

@@ -310,7 +310,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
           )
           .map((item: IArrayAppointments) => {
             const { start_time, end_time, date } = item;
-            const tmpDate = moment(date).format('DD');
+            const tmpDate = moment(date).format('YYYY-MM-DD');
             const tmpDay = moment(date).format('dddd');
             return {
               start_time,
@@ -618,12 +618,19 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
                     const idxMeetingDay =
                       appointments?.time!.findIndex((item) => item.day === selectedDay) ?? -1;
                     // console.log('time_gap', time_gap);
+                    // console.log(
+                    //   'appointments.date: ',
+                    //   appointments?.time![idxMeetingDay].date,
+                    //   'selectedDate date: ',
+                    //   selectedDate.date
+                    // );
                     return time_gap.map((gap, idx) => (
                       <Button
                         // newestTime
                         key={idx}
                         disabled={
                           idxMeetingDay > -1 &&
+                          appointments?.time![idxMeetingDay].date === selectedDate.date &&
                           appointments?.time![idxMeetingDay].start_time.includes(gap)
                             ? true
                             : false ||
@@ -639,6 +646,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
                           backgroundColor: selectedTime === gap ? '#0E8478' : '#fff',
                           color:
                             idxMeetingDay > -1 &&
+                            appointments?.time![idxMeetingDay].date === selectedDate.date &&
                             appointments?.time![idxMeetingDay].start_time.includes(gap)
                               ? '#000'
                               : selectedTime === gap

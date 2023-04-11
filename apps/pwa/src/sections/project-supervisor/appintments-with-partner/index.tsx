@@ -84,7 +84,7 @@ function AppointmentsEmployee() {
         .filter(
           (item: IArrayAppointments) =>
             item.status === 'confirmed' &&
-            moment(moment(item.date).format('DD-MM-YYYY')).isSame(moment(todayDate)) !== false
+            moment(moment(item.date).format('DD-MM-YYYY')).isSame(moment(todayDate))
         )
         .map((item: IArrayAppointments) => ({
           id: item.status.charAt(0).toUpperCase() + item.status.slice(1),
@@ -99,7 +99,7 @@ function AppointmentsEmployee() {
         .filter(
           (item: IArrayAppointments) =>
             item.status === 'confirmed' &&
-            moment(moment(item.date).format('DD-MM-YYYY')).isAfter(moment(todayDate)) !== false
+            moment(moment(item.date).format('DD-MM-YYYY')).isBefore(moment(todayDate))
         )
         .map((item: IArrayAppointments) => ({
           id: item.status.charAt(0).toUpperCase() + item.status.slice(1),
@@ -110,7 +110,7 @@ function AppointmentsEmployee() {
           employee: item.employee_name ?? 'Un Provide',
           appointmentLink: item.meeting_url,
         }));
-      // console.log({ tmpTodayValues, tmpUpcomingValues });
+      console.log({ tmpTodayValues, tmpUpcomingValues });
       setTodayAppointments(tmpTodayValues);
       setUpcomingAppointments(tmpUpcomingValues);
     }
@@ -156,7 +156,7 @@ function AppointmentsEmployee() {
         {!isLoading ? (
           // <AppointmentsTap defaultValues={appointments ?? []} />
           <AppointmentsTable
-            headline={translate('appointment_table.today_headline')}
+            headline={translate('appointment_table.upcoming_headline')}
             isLoading={isLoading}
             headerCell={headerCells}
             data={upcomingAppointments ?? []}
