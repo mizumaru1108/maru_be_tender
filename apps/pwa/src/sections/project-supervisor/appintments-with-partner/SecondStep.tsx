@@ -411,6 +411,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
 
   const handleSubmit = React.useCallback(async () => {
     setIsLoading(true);
+    localStorage.setItem('partnerMeetingId', userId);
     const start_moment = moment(selectedTime, 'hh:mm A');
     const end_moment = start_moment.add(1, 'hours');
     const end_time = end_moment.format('hh:mm A');
