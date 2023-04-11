@@ -40,6 +40,7 @@ export function RHFUploadSingleFileBe({ name, placeholder, disabled, ...other }:
         base64Data: fileBuffer,
         fullName: acceptedFiles[0].name,
         fileExtension: acceptedFiles[0].type,
+        file: acceptedFiles,
       });
     } else if (fileType === 'image') {
       const compressFile = compress(acceptedFiles[0], {
@@ -57,6 +58,7 @@ export function RHFUploadSingleFileBe({ name, placeholder, disabled, ...other }:
             base64Data: fileBuffer,
             fullName: acceptedFiles[0].name,
             fileExtension: acceptedFiles[0].type,
+            file: acceptedFiles,
           });
         })
         .catch((err) => {
@@ -90,7 +92,11 @@ export function RHFUploadSingleFileBe({ name, placeholder, disabled, ...other }:
     setValue(name, {
       url: '',
       type: '',
-      size: '',
+      size: undefined,
+      base64Data: '',
+      fullName: '',
+      fileExtension: '',
+      file: undefined,
     });
   };
   return (

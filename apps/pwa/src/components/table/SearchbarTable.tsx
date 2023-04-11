@@ -58,6 +58,9 @@ export default function SearchbarTable({ onSearch }: IProps) {
         }
         onChange={(e) => {
           setValue(e.target.value);
+          if (!e.target.value) {
+            onSearch(e.target.value);
+          }
         }}
         onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => handleKeyupMsg(e)}
         sx={{

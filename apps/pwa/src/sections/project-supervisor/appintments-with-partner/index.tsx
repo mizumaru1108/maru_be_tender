@@ -84,7 +84,7 @@ function AppointmentsEmployee() {
         .filter(
           (item: IArrayAppointments) =>
             item.status === 'confirmed' &&
-            moment(item.date, 'DD-MM-YYYY').isSame(moment(todayDate, 'DD-MM-YYYY'))
+            moment(moment(item.date).format('DD-MM-YYYY')).isSame(moment(todayDate)) !== false
         )
         .map((item: IArrayAppointments) => ({
           id: item.status.charAt(0).toUpperCase() + item.status.slice(1),
@@ -99,7 +99,7 @@ function AppointmentsEmployee() {
         .filter(
           (item: IArrayAppointments) =>
             item.status === 'confirmed' &&
-            moment(item.date, 'DD-MM-YYYY').isAfter(moment(todayDate, 'DD-MM-YYYY'))
+            moment(moment(item.date).format('DD-MM-YYYY')).isAfter(moment(todayDate)) !== false
         )
         .map((item: IArrayAppointments) => ({
           id: item.status.charAt(0).toUpperCase() + item.status.slice(1),

@@ -37,7 +37,7 @@ function AppointmentsTap({ defaultValues }: Props) {
         .filter(
           (item: IArrayAppointments) =>
             item.status === 'confirmed' &&
-            moment(item.date, 'DD-MM-YYYY').isSame(moment(todayDate, 'DD-MM-YYYY'))
+            moment(moment(item.date).format('DD-MM-YYYY')).isSame(moment(todayDate)) !== false
         )
         .map((item: IArrayAppointments) => ({
           id: item.status.charAt(0).toUpperCase() + item.status.slice(1),
@@ -52,7 +52,7 @@ function AppointmentsTap({ defaultValues }: Props) {
         .filter(
           (item: IArrayAppointments) =>
             item.status === 'confirmed' &&
-            moment(item.date, 'DD-MM-YYYY').isBefore(moment(todayDate, 'DD-MM-YYYY'))
+            moment(moment(item.date).format('DD-MM-YYYY')).isAfter(moment(todayDate)) !== false
         )
         .map((item: IArrayAppointments) => ({
           id: item.status.charAt(0).toUpperCase() + item.status.slice(1),
@@ -63,7 +63,6 @@ function AppointmentsTap({ defaultValues }: Props) {
           employee: item.employee_name ?? 'Un Provide',
           appointmentLink: item.meeting_url,
         }));
-      // console.log({ tmpTodayValues, tmpUpcomingValues });
       setTodayAppointments(tmpTodayValues);
       setUpcomingAppointments(tmpUpcomingValues);
     }
