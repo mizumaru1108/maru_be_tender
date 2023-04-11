@@ -847,7 +847,11 @@ export class TenderProposalRepository {
           if (reviewer.employee_path !== 'GENERAL') {
             whereClause = {
               ...whereClause,
-              project_track: reviewer.employee_path,
+              // project_track: reviewer.employee_path,
+              OR: [
+                { project_track: reviewer.employee_path },
+                { project_track: null },
+              ],
             };
           }
         }
@@ -909,11 +913,23 @@ export class TenderProposalRepository {
       }
 
       if (employee_name) {
+        // orClauses.push({
+        //   user: {
+        //     employee_name: {
+        //       contains: employee_name,
+        //       mode: 'insensitive',
+        //     },
+        //   },
+        // });
+
+        console.log(decodeURIComponent(employee_name));
         orClauses.push({
           user: {
-            employee_name: {
-              contains: employee_name,
-              mode: 'insensitive',
+            client_data: {
+              entity: {
+                contains: decodeURIComponent(employee_name),
+                mode: 'insensitive',
+              },
             },
           },
         });
@@ -949,7 +965,8 @@ export class TenderProposalRepository {
         });
       }
 
-      // console.log(logUtil(orClauses));
+      console.log(logUtil(orClauses));
+      console.log(logUtil(whereClause));
 
       const data = await this.prismaService.proposal.findMany({
         where: {
