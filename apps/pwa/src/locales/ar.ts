@@ -1780,8 +1780,8 @@ const ar = {
     target_group_type: 'نوع الفئة المستهدفة',
     most_clents_projects: 'أبرز أعمال الجهة',
     accreditation_type: {
-      PLAN: 'Plan',
-      INCOMING: 'Incoming',
+      PLAN: 'يخطط',
+      INCOMING: 'واردة',
     },
     support_goals: {
       DEVELOPING_AND_MEETING_THE_NEEDS_OF_THE_NEEDIEST_GROUPS:
@@ -1809,6 +1809,7 @@ const ar = {
       sending_closing_report: 'إرسال تقرير ختامي',
       complete_payment: 'تم إنشاء الدفع',
       complete: 'تم',
+      accept_and_ask_for_consultation: 'قبول وطلب الاستشارة',
     },
   },
   project_already_reviewed_by_supervisor: 'تمت مراجعة هذا المشروع بالفعل من قبل المشرف',
@@ -1819,7 +1820,7 @@ const ar = {
   implementation_period: 'مدة التنفيذ:',
   target_group_type: 'نوع الفئة المستهدفة:',
   support_type: 'مبلغ الدعم:',
-  total_support: 'الدعم الكامل',
+  full_support: 'دعم كلي',
   partial_support: 'دعم جزئي',
   with: 'مع',
   amount: 'مقدار',
