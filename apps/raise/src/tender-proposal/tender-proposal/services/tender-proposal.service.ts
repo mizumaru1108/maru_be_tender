@@ -861,21 +861,34 @@ export class TenderProposalService {
       );
     }
     /* if moderator_acc_payload is not exist  */
-    if (!request.moderator_payload) {
-      throw new BadRequestException('Moderator accept payload is required!');
-    }
+    // if (!request.moderator_payload) {
+    //   throw new BadRequestException('Moderator accept payload is required!');
+    // }
 
-    /* validate the sended track */
-    const track = await this.proposalRepo.findTrackById(
-      request.moderator_payload.project_track,
-    );
-    if (!track) {
-      throw new BadRequestException(
-        `Invalid Track (${request.moderator_payload.project_track})`,
-      );
-    }
+    // /* validate the sended track */
+    // const track = await this.proposalRepo.findTrackById(
+    //   request.moderator_payload.project_track,
+    // );
+    // if (!track) {
+    //   throw new BadRequestException(
+    //     `Invalid Track (${request.moderator_payload.project_track})`,
+    //   );
+    // }
 
     if (request.action === ProposalAction.ACCEPT) {
+      if (!request.moderator_payload) {
+        throw new BadRequestException('Moderator accept payload is required!');
+      }
+
+      /* validate the sended track */
+      const track = await this.proposalRepo.findTrackById(
+        request.moderator_payload.project_track,
+      );
+      if (!track) {
+        throw new BadRequestException(
+          `Invalid Track (${request.moderator_payload.project_track})`,
+        );
+      }
       /* proposal */
       proposalUpdatePayload.inner_status =
         InnerStatusEnum.ACCEPTED_BY_MODERATOR;
@@ -904,7 +917,6 @@ export class TenderProposalService {
         InnerStatusEnum.REJECTED_BY_MODERATOR;
       proposalUpdatePayload.outter_status = OutterStatusEnum.CANCELED;
       proposalUpdatePayload.state = TenderAppRoleEnum.MODERATOR;
-      proposalUpdatePayload.project_track = track.id;
 
       /* log */
       proposalLogCreateInput.action = ProposalAction.REJECT;
@@ -1375,12 +1387,25 @@ export class TenderProposalService {
       templateContext: {
         projectName: log.data.proposal.project_name,
         clientUsername: log.data.proposal.user.employee_name,
+        projectDetailUrl:
+          actions === ProposalAction.REJECT
+            ? `${this.configService.get<string>(
+                'tenderAppConfig.baseUrl',
+              )}/client/dashboard/previous-funding-requests/${
+                log.data.proposal.id
+              }/show-project`
+            : `${this.configService.get<string>(
+                'tenderAppConfig.baseUrl',
+              )}/client/dashboard/current-project/${
+                log.data.proposal.id
+              }/show-details`,
       },
     };
 
     if (actions === ProposalAction.ACCEPT) {
-      if (reviewerRole === 'tender_ceo')
+      if (reviewerRole === 'tender_ceo') {
         this.emailService.sendMail(clientEmailNotifPayload);
+      }
     }
 
     if (actions === ProposalAction.REJECT) {

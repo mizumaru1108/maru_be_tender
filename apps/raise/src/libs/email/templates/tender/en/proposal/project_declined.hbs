@@ -159,16 +159,16 @@
       <div class="card">
         <div class="cardHeader">
           <img
-            src="https://media.tmra.io/tender-assets/tender-logo.png"
+            src="https://media.tmra.io/tender-assets/tender-newlogo.png"
             alt="Logo Tmra Tender"
             style="margin-left: 36px"
           />
-          <nav>
+          {{!-- <nav>
             <ul class="navbar">
               <li>Home</li>
               <li>Support</li>
             </ul>
-          </nav>
+          </nav> --}}
         </div>
         <div class="cardBody">
           <div class="wrapper">
@@ -193,25 +193,28 @@
             </p>
             <p>Your friend,<br />Team Tender</p>
 
-            <button>Check Project</button>
+            <a target="_blank" href="{{projectDetailUrl}}">
+                <button style="width: 200px" type="button">Check Project</button>
+            </a>
+            {{!-- <button>Check Project</button> --}}
 
             <div style="margin-top: 32px">
-              <p>
+              {{!-- <p>
                 This email was sent to
                 <span>olivia@gs.com</span>. If you'd rather not receive this
                 kind of email, you can <span>unsubscribe</span> or
                 <span>manage your email preferences</span>.
-              </p>
-              <p style="color: gray">
+              </p> --}}
+              {{!-- <p style="color: gray">
                 © 2077 Tender , 100 Smith Street, Melbourne VIC 3000
-              </p>
+              </p> --}}
             </div>
           </div>
         </div>
         <div class="cardFooter">
           <div class="wrapperFooter">
             <img
-              src="https://media.tmra.io/tender-assets/tender-logo.png"
+              src="https://media.tmra.io/tender-assets/tender-newlogo.png"
               alt="Logo Tmra Tender"
               style="height: 6.3vh"
             />

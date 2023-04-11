@@ -170,7 +170,9 @@ export class TenderAuthService {
       mailType: 'template',
       to: email,
       from: 'no-reply@hcharity.org',
-      subject: 'Reset Your Password',
+      subject: forgotPassword
+        ? 'Forgot Password Request'
+        : 'Reset Password Request',
       templateContext: {
         name: user.employee_name,
         resetUrl: forgotPassword
@@ -181,9 +183,9 @@ export class TenderAuthService {
               'tenderAppConfig.baseUrl',
             )}/auth/reset-password/${response}`,
       },
-      templatePath: `tender/${
-        selected_language || 'ar'
-      }/account/forget_password`,
+      templatePath: `tender/${selected_language || 'ar'}/account/${
+        forgotPassword ? 'forget_password' : 'reset_password'
+      }`,
     });
     return response;
   }

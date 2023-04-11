@@ -16,9 +16,9 @@ export class GoogleCalendarService {
 
   constructor(private readonly configService: ConfigService) {
     this.oauth2Client = new OAuth2Client(
-      this.configService.get<string>('GAPI_CLIENT_ID'),
-      this.configService.get<string>('GAPI_CLIENT_SECRET'),
-      this.configService.get<string>('')
+      this.configService.get('gapiConfig.clientId') as string, // will use tender gapi config
+      this.configService.get('gapiConfig.clientSecret') as string, // will use tender gapi config
+      this.configService.get('tenderAppConfig.baseUrl') as string,
     );
 
     this.gCalendar = google.calendar({
@@ -29,6 +29,7 @@ export class GoogleCalendarService {
 
   async createEvent(
     creds: Credentials,
+    googleCalendarPrefixUrl: string,
     summary: string,
     description: string,
     start: string,
@@ -36,6 +37,20 @@ export class GoogleCalendarService {
     timeZone: string,
     attendees: string[],
   ) {
+    const callbackGoogleEndpoint =
+      (this.configService.get('tenderAppConfig.baseUrl') as string) +
+      googleCalendarPrefixUrl;
+
+    console.log({ callbackGoogleEndpoint });
+
+    this.oauth2Client = new OAuth2Client(
+      this.configService.get('gapiConfig.clientId') as string, // will use tender gapi config
+      this.configService.get('gapiConfig.clientSecret') as string, // will use tender gapi config
+      callbackGoogleEndpoint,
+    );
+
+    console.log(this.oauth2Client);
+
     this.oauth2Client.setCredentials(creds);
     this.gCalendar = google.calendar({
       version: 'v3',

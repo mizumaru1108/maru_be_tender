@@ -154,58 +154,61 @@
       }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Project Approved</title>
   </head>
   <body>
     <div class="container">
       <div class="card">
         <div class="cardHeader">
           <img
-            src="https://media.tmra.io/tender-assets/tender-logo.png"
+            src="https://media.tmra.io/tender-assets/tender-newlogo.png"
             alt="Logo Tmra Tender"
             style="margin-right: 60px"
           />
-          <nav>
+          <!-- <nav>
             <ul class="navbar">
               <li>الدعم</li>
               <li>مسكن</li>
             </ul>
-          </nav>
+          </nav> -->
         </div>
         <div class="cardBody">
           <div class="wrapper">
             <h1 style="font-size: 1.6em">
-              "المشروع:{{projectName}}" تمت الموافقة
+              "المشروع: {{projectName}}" تمت الموافقة
             </h1>
-            <p>مرحبًا أوليفيا {{clientUsername}}،</p>
+            <p>مرحبًا {{clientUsername}}،</p>
             <p>
               نعلمك أن مشروعك قد تم تأكيده والموافقة عليه. مشروع جديد لشركتك Tom
               and Sons Pvt. Ltd. أرسل لك تأكيدي. نحن متحمسون لهذا الاحتمال
               الجديد ونريد بدء العمل على هذا في أقرب وقت ممكن.
             </p>
             <p>شكرا جزيلا على توفير هذه الفرصة الذهبية لك. صديقك</p>
-            <p>صديقك فريق العطاء</p>
 
-            <button>تحقق من المشروع</button>
+            <p>فريق منصة غيث</p>
+
+            <a target="_blank" href="{{projectDetailUrl}}">
+                <button style="width: 200px" type="button">تحقق من المشروع</button>
+            </a>
 
             <div style="margin-top: 32px">
-              <p>
+              {{!-- <p>
                 تم إرسال هذا البريد الإلكتروني إلى <span>olivia@gs.com</span>.
                 إذا كنت تفضل عدم تلقي هذا النوع من البريد الإلكتروني ، فيمكنك
                 إلغاء الاشتراك أو إدارة تفضيلات البريد الإلكتروني الخاصة بك.
-              </p>
-              <p style="color: gray; direction: ltr; text-align: end">
+              </p> --}}
+              {{!-- <p style="color: gray; direction: ltr; text-align: end">
                 © 2077 Tender، 100 Smith Street، Melbourne VIC 3000
-              </p>
+              </p> --}}
             </div>
           </div>
         </div>
         <div class="cardFooter">
           <div class="wrapperFooter">
             <img
-              src="https://media.tmra.io/tender-assets/tender-logo.png"
+              src="https://media.tmra.io/tender-assets/tender-newlogo.png"
               alt="Logo Tmra Tender"
-              style="height: 6.3vh"
+              style="height: 4.3vh"
             />
             <div>
               <img

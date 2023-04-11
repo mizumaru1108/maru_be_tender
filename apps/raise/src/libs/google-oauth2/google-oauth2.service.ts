@@ -23,30 +23,58 @@ export class GoogleOAuth2Service {
     );
   }
 
-  async useTmraGAuthConfig() {
-    if (
-      this.configService.get<string>('TMRA_GAPI_CLIENT_ID') !== undefined &&
-      this.configService.get<string>('TMRA_GAPI_CLIENT_SECRET') !== undefined &&
-      this.configService.get<string>('TMRA_GAPI_REDIRECT_URL') !== undefined
-    ) {
-      return (this.oauth2Client = new OAuth2Client(
-        this.configService.get<string>('TMRA_GAPI_CLIENT_ID'),
-        this.configService.get<string>('TMRA_GAPI_CLIENT_SECRET'),
-        this.configService.get<string>('TMRA_GAPI_REDIRECT_URL'),
-      ));
-    } else {
-      return (this.oauth2Client = new OAuth2Client(
-        this.configService.get('gapiConfig.clientId') as string, // will use tender gapi config
-        this.configService.get('gapiConfig.clientSecret') as string, // will use tender gapi config
-        this.configService.get('tenderAppConfig.baseUrl') as string,
-      ));
+  async useGapiConfig(source: 'tmra' | 'tender', suffixUrl?: string) {
+    if (source === 'tmra') {
+      if (
+        this.configService.get<string>('TMRA_GAPI_CLIENT_ID') !== undefined &&
+        this.configService.get<string>('TMRA_GAPI_CLIENT_SECRET') !==
+          undefined &&
+        this.configService.get<string>('TMRA_GAPI_REDIRECT_URL') !== undefined
+      ) {
+        if (suffixUrl !== undefined && suffixUrl !== '') {
+          return (this.oauth2Client = new OAuth2Client(
+            this.configService.get('TMRA_GAPI_CLIENT_ID') as string,
+            this.configService.get('TMRA_GAPI_CLIENT_SECRET') as string,
+            (this.configService.get('TMRA_GAPI_REDIRECT_URL') as string) +
+              suffixUrl,
+          ));
+        } else {
+          return (this.oauth2Client = new OAuth2Client(
+            this.configService.get('TMRA_GAPI_CLIENT_ID') as string,
+            this.configService.get('TMRA_GAPI_CLIENT_SECRET') as string,
+            this.configService.get('TMRA_GAPI_REDIRECT_URL') as string,
+          ));
+        }
+      }
+    } else if (source === 'tender') {
+      if (suffixUrl !== undefined && suffixUrl !== '') {
+        return (this.oauth2Client = new OAuth2Client(
+          this.configService.get('gapiConfig.clientId') as string, // will use tender gapi config
+          this.configService.get('gapiConfig.clientSecret') as string, // will use tender gapi config
+          (this.configService.get('tenderAppConfig.baseUrl') as string) +
+            suffixUrl,
+        ));
+      } else {
+        return (this.oauth2Client = new OAuth2Client(
+          this.configService.get('gapiConfig.clientId') as string, // will use tender gapi config
+          this.configService.get('gapiConfig.clientSecret') as string, // will use tender gapi config
+          this.configService.get('tenderAppConfig.baseUrl') as string,
+        ));
+      }
     }
+
+    // else
+    return (this.oauth2Client = new OAuth2Client(
+      this.configService.get('gapiConfig.clientId') as string, // will use tender gapi config
+      this.configService.get('gapiConfig.clientSecret') as string, // will use tender gapi config
+      this.configService.get('tenderAppConfig.baseUrl') as string,
+    ));
   }
 
-  async tmraGetLoginUrl(scope: string[]): Promise<string> {
-    await this.useTmraGAuthConfig();
-    return await this.getLoginUrl(scope);
-  }
+  // async tmraGetLoginUrl(scope: string[]): Promise<string> {
+  //   await this.useTmraGAuthConfig();
+  //   return await this.getLoginUrl(scope);
+  // }
 
   // get user info from google (using credentials)
   async getUserInfo(
@@ -71,7 +99,13 @@ export class GoogleOAuth2Service {
     }
   }
 
-  async getLoginUrl(scope: string[]): Promise<string> {
+  async getLoginUrl(
+    scope: string[],
+    source: 'tmra' | 'tender',
+    suffixUrl?: string,
+  ): Promise<string> {
+    this.oauth2Client = await this.useGapiConfig(source, suffixUrl);
+
     const url = this.oauth2Client.generateAuthUrl({
       access_type: 'offline',
       prompt: 'consent',

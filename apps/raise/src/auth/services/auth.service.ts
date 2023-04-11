@@ -23,7 +23,10 @@ export class AuthService {
   ) {}
 
   async googleLogin() {
-    return await this.googleOAuth2Service.tmraGetLoginUrl(['profile', 'email']);
+    return await this.googleOAuth2Service.getLoginUrl(
+      ['profile', 'email'],
+      'tmra',
+    );
   }
 
   async handleGoogleCallback(code: string) {

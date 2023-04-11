@@ -88,6 +88,7 @@ export class TenderAppointmentService {
 
     const result = await this.googleCalendarService.createEvent(
       currentUser.googleSession as Credentials, // consider that is exist because the guard will not allowed if it's undefined
+      '/tender-appointment/google-callback',
       "Tender's Appointment",
       "Tender's Appointment",
       startTime,
