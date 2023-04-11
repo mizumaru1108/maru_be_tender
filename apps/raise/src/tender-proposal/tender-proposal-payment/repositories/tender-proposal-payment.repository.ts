@@ -19,8 +19,8 @@ import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-t
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import { FindTrackBudgetFilter } from '../dtos/requests';
 import { CloseReportNotifMapper } from '../mappers';
-import { InsertPaymentNotifMapper } from '../mappers/insert-payment-notif.mapper';
 import { UpdatePaymentNotifMapper } from '../mappers/update-payment-notif.mapper';
+import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
 
 @Injectable()
 export class TenderProposalPaymentRepository {
@@ -140,19 +140,20 @@ export class TenderProposalPaymentRepository {
             },
           });
 
-          const insertNotif = InsertPaymentNotifMapper(logs);
-          if (
-            insertNotif.createManyWebNotifPayload &&
-            insertNotif.createManyWebNotifPayload.length > 0
-          ) {
-            this.logger.log(
-              'info',
-              `Creating new notification with payload of \n${insertNotif.createManyWebNotifPayload}`,
-            );
-            prisma.notification.createMany({
-              data: insertNotif.createManyWebNotifPayload,
-            });
-          }
+          /* disable for a while  (set payment / insert payment)*/
+          // const insertNotif = InsertPaymentNotifMapper(logs);
+          // if (
+          //   insertNotif.createManyWebNotifPayload &&
+          //   insertNotif.createManyWebNotifPayload.length > 0
+          // ) {
+          //   this.logger.log(
+          //     'info',
+          //     `Creating new notification with payload of \n${insertNotif.createManyWebNotifPayload}`,
+          //   );
+          //   prisma.notification.createMany({
+          //     data: insertNotif.createManyWebNotifPayload,
+          //   });
+          // }
 
           this.logger.log(
             'info',
@@ -164,10 +165,11 @@ export class TenderProposalPaymentRepository {
             data: createManyPaymentPayload,
           });
 
-          return {
-            insertNotif,
-            updatedProposal,
-          };
+          // return {
+          //   insertNotif,
+          //   updatedProposal,
+          // };
+          return updatedProposal;
         },
         { maxWait: 50000, timeout: 150000 },
       );
@@ -311,6 +313,7 @@ export class TenderProposalPaymentRepository {
             logs,
             action,
             choosenRole,
+            cheque,
           );
           if (
             updateNotif.createManyWebNotifPayload &&

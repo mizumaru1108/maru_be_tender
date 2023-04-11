@@ -135,9 +135,10 @@ export class TenderProposalPaymentService {
       lastLog,
     );
 
-    this.notificationService.sendSmsAndEmail(insertResult.insertNotif);
+    // set payment / insert payment
+    // this.notificationService.sendSmsAndEmail(insertResult.insertNotif);
 
-    return insertResult.updatedProposal;
+    return insertResult;
   }
 
   async addTrackBudget(request: CreateTrackBudgetDto) {
@@ -201,7 +202,7 @@ export class TenderProposalPaymentService {
         await this.tenderProposalLogRepository.findLastLogCreateAtByProposalId(
           proposal.id,
         );
-        
+
       let status:
         | ProposalAction.SET_BY_SUPERVISOR
         | ProposalAction.ISSUED_BY_SUPERVISOR
@@ -289,7 +290,7 @@ export class TenderProposalPaymentService {
         proposalUpdateInput,
       );
 
-      this.notificationService.sendSmsAndEmail(response.updateNotif);
+      this.notificationService.sendSmsAndEmailBatch(response.updateNotif);
 
       return {
         updatedPayment: response.payment,

@@ -15,13 +15,14 @@ import { CreateNotificationDto } from '../dtos/requests/create-notification.dto'
 import { createManyNotificationMapper } from '../mappers/create-many-notification.mapper';
 import { createNotificationMapper } from '../mappers/create-notification.mapper';
 import { TenderNotificationRepository } from '../repository/tender-notification.repository';
+import { MsegatService } from '../../libs/msegat/services/msegat.service';
 
 @Injectable()
 export class TenderNotificationService {
   constructor(
     private readonly tenderNotificationRepository: TenderNotificationRepository,
-    private readonly twilioService: TwilioService,
     private readonly emailService: EmailService,
+    private readonly msegatService: MsegatService, // private readonly twilioService: TwilioService,
   ) {}
 
   async create(payload: CreateNotificationDto) {
@@ -234,6 +235,19 @@ export class TenderNotificationService {
     //     body: clientSubject + ', ' + clientContent,
     //   });
     // }
+    if (clientMobileNumber && clientMobileNumber.length > 0) {
+      clientMobileNumber.forEach((clientMobile) => {
+        if (clientMobile !== '') {
+          const clientPhone = isExistAndValidPhone(clientMobileNumber);
+          if (clientPhone) {
+            this.msegatService.sendSMS({
+              numbers: clientPhone.substring(1),
+              msg: clientSubject + ', ' + clientContent,
+            });
+          }
+        }
+      });
+    }
 
     if (reviewerContent) {
       if (reviewerEmail && reviewerEmail.length > 0) {
@@ -266,21 +280,27 @@ export class TenderNotificationService {
       }
 
       /* enable when msgat is already exist */
-      // if (reviewerMobileNumber && reviewerMobileNumber.length > 0) {
-      //   reviewerMobileNumber.forEach((reviewerMobile) => {
-      //     if (reviewerMobile !== '') {
-      //       const reviewerPhone = isExistAndValidPhone(reviewerMobile);
-      //       if (reviewerPhone) {
-      //         this.twilioService.sendSMS({
-      //           to: reviewerPhone,
-      //           body: reviwerSubject
-      //             ? reviwerSubject
-      //             : clientSubject + ', ' + reviewerContent,
-      //         });
-      //       }
-      //     }
-      //   });
-      // }
+      if (reviewerMobileNumber && reviewerMobileNumber.length > 0) {
+        reviewerMobileNumber.forEach((reviewerMobile) => {
+          if (reviewerMobile !== '') {
+            const reviewerPhone = isExistAndValidPhone(reviewerMobile);
+            // if (reviewerPhone) {
+            //   this.twilioService.sendSMS({
+            //     to: reviewerPhone,
+            //     body: reviwerSubject
+            //       ? reviwerSubject
+            //       : clientSubject + ', ' + reviewerContent,
+            //   });
+            // }
+            if (reviewerPhone) {
+              this.msegatService.sendSMS({
+                numbers: reviewerPhone.substring(1),
+                msg: clientSubject + ', ' + clientContent,
+              });
+            }
+          }
+        });
+      }
     }
   }
 }
