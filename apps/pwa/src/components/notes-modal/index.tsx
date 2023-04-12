@@ -40,9 +40,6 @@ interface FormInput {
 function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
   const { activeRole } = useAuth();
   const { translate } = useLocales();
-  const { proposal } = useSelector((state) => state.proposal);
-  const { id: pid } = useParams();
-  const [isEdit, setIsEdit] = useState(false);
 
   const validationSchema = Yup.object().shape({
     ...(action.actionType === 'REJECT' &&
@@ -63,10 +60,10 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
       ].includes(activeRole!) && {
         notes: Yup.string().required(translate('errors.notes')),
       }),
-    ...(action.actionType === 'ACCEPT' &&
-      ['tender_project_manager', 'tender_ceo'].includes(activeRole!) && {
-        reject_reason: Yup.string().required(),
-      }),
+    // ...(action.actionType === 'ACCEPT' &&
+    //   ['tender_project_manager', 'tender_ceo'].includes(activeRole!) && {
+    //     reject_reason: Yup.string().required(),
+    //   }),
   });
 
   const defaultValues = {
