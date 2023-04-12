@@ -29,6 +29,7 @@ const initialState: ProposalItme = {
   checkedItems: [],
   tracks: ['MOSQUES', 'CONCESSIONAL_GRANTS', 'INITIATIVES', 'BAPTISMS'],
   employeeOnly: false,
+
   proposal: {
     id: '-1',
     project_name: 'test',
@@ -37,6 +38,13 @@ const initialState: ProposalItme = {
     project_track: 'test',
     submitter_user_id: 'test',
     project_number: 0,
+    closing_report: false,
+    need_picture: false,
+    does_an_agreement: false,
+    vat: false,
+    vat_percentage: 0,
+    inclu_or_exclu: false,
+    support_goal_id: 'test',
     user: {
       id: 'test',
       employee_name: 'test',

@@ -13,6 +13,14 @@ query getOneProposal($id: String!) {
     pm_name
     pm_email
     pm_mobile
+    closing_report
+    need_picture
+    does_an_agreement
+    support_outputs
+    vat
+    vat_percentage
+    inclu_or_exclu
+    support_goal_id
     user {
       id
       employee_name

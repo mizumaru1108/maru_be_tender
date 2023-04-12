@@ -442,15 +442,14 @@ function FloatingActionBar() {
                 horizontal: 'right',
               }}
             >
-              <MenuItem
-                // disabled={true}
+              {/* <MenuItem
                 onClick={() => {
                   navigate(`/project-manager/dashboard/amandment-request/${proposal_id}`);
                   handleClose();
                 }}
               >
                 {translate('proposal_amandement.button_label')}
-              </MenuItem>
+              </MenuItem> */}
               <MenuItem
                 onClick={() => {
                   handleClose();
@@ -463,28 +462,27 @@ function FloatingActionBar() {
           </Grid>
           <Grid item md={data.user.track === 'CONCESSIONAL_GRANTS' ? 10 : 8} xs={12}>
             <Stack direction="row" spacing={2} justifyContent="flex-start">
-              <LoadingButton
-                onClick={() => setAction('ACCEPT')}
-                variant="contained"
-                color="primary"
-                endIcon={<CheckIcon />}
-                sx={{ flex: 1, '&:hover': { backgroundColor: '#13B2A2' } }}
-                loading={isSubmitting}
-              >
-                قبول المشروع
-              </LoadingButton>
-              <LoadingButton
+              {data.user.track === 'CONCESSIONAL_GRANTS' ? (
+                <Button
+                  variant="outlined"
+                  color="inherit"
+                  endIcon={<Iconify icon="eva:message-circle-outline" />}
+                  onClick={() => setAction('ACCEPT_CONSULTANT')}
+                  sx={{ display: 'inline-flex' }}
+                >
+                  عرض المشروع على المستشارين
+                </Button>
+              ) : null}
+              {/* <LoadingButton
                 variant="outlined"
                 color="inherit"
                 endIcon={<Iconify icon="eva:message-circle-outline" />}
-                // onClick={() => setAction('SEND_CLIENT_MESSAGE')}
                 onClick={handleMessage}
                 sx={{ flex: 1 }}
                 loading={isSubmitting}
-                // disabled={true}
               >
                 {translate('partner_details.send_messages')}
-              </LoadingButton>
+              </LoadingButton> */}
               <LoadingButton
                 sx={{ flex: 1, '&:hover': { backgroundColor: '#FF170F' } }}
                 variant="contained"
@@ -495,17 +493,17 @@ function FloatingActionBar() {
               >
                 {translate('reject_project')}
               </LoadingButton>
-              {data.user.track === 'CONCESSIONAL_GRANTS' ? (
-                <Button
-                  variant="outlined"
-                  color="inherit"
-                  endIcon={<Iconify icon="eva:message-circle-outline" />}
-                  onClick={() => setAction('ACCEPT_CONSULTANT')}
-                  sx={{ mt: 2.5, display: 'inline-flex' }}
-                >
-                  عرض المشروع على المستشارين
-                </Button>
-              ) : null}
+              <LoadingButton
+                onClick={() => setAction('ACCEPT')}
+                variant="contained"
+                color="primary"
+                endIcon={<CheckIcon />}
+                sx={{ flex: 1, '&:hover': { backgroundColor: '#13B2A2' } }}
+                loading={isSubmitting}
+              >
+                قبول المشروع
+              </LoadingButton>
+
               {/* disabled other than accept reject button */}
             </Stack>
           </Grid>

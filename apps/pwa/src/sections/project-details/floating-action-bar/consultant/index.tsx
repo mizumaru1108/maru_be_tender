@@ -367,7 +367,7 @@ function ConsultantFloatingActionBar() {
                 horizontal: 'right',
               }}
             >
-              <MenuItem
+              {/* <MenuItem
                 // disabled={true}
                 onClick={() => {
                   navigate(`/consultant/dashboard/amandment-request/${proposal_id}`);
@@ -375,7 +375,7 @@ function ConsultantFloatingActionBar() {
                 }}
               >
                 {translate('proposal_amandement.button_label')}
-              </MenuItem>
+              </MenuItem> */}
               <MenuItem
                 onClick={() => {
                   handleClose();
@@ -409,18 +409,16 @@ function ConsultantFloatingActionBar() {
             >
               {translate('project_acceptance')}
             </LoadingButton>
-            <LoadingButton
+            {/* <LoadingButton
               variant="outlined"
               color="inherit"
               endIcon={<Iconify icon="eva:message-circle-outline" />}
-              // onClick={() => setAction('SEND_CLIENT_MESSAGE')}
               onClick={handleMessage}
               sx={{ flex: 1 }}
-              // disabled={true}
               loading={isSubmitting}
             >
               {translate('partner_details.send_messages')}
-            </LoadingButton>
+            </LoadingButton> */}
           </Stack>
         </Stack>
       </Box>

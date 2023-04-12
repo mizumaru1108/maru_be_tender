@@ -386,7 +386,7 @@ function FloatingActionBar() {
               horizontal: 'left',
             }}
           >
-            <MenuItem
+            {/* <MenuItem
               // disabled={true}
               onClick={() => {
                 navigate(`/ceo/dashboard/amandment-request/${proposal_id}`);
@@ -394,7 +394,7 @@ function FloatingActionBar() {
               }}
             >
               {translate('proposal_amandement.button_label')}
-            </MenuItem>
+            </MenuItem> */}
             <MenuItem
               onClick={() => {
                 setAction('STEP_BACK');

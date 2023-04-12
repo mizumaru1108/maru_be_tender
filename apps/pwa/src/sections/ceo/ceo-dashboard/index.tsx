@@ -17,9 +17,9 @@ function CeoDashboard() {
         <Grid item md={12}>
           <DashboardProjectManagement />
         </Grid>
-        <Grid item md={12}>
+        {/* <Grid item md={12}>
           <ProposalOnAmandementTable />
-        </Grid>
+        </Grid> */}
       </Grid>
     </>
   );

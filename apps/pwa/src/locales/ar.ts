@@ -707,6 +707,7 @@ const ar = {
   user: `المستعمل`,
   list: `قائمة`,
   edit: `تعديل`,
+  editing: `التحرير`,
   shop: `متجر`,
   blog: `مقالات`,
   post: `بريد`,

@@ -9,6 +9,12 @@ import useLocales from 'hooks/useLocales';
 //
 import useAuth from 'hooks/useAuth';
 import RHFSelectNoGenerator from 'components/hook-form/RHFSelectNoGen';
+import { useState } from 'react';
+import { useSelector } from '../../redux/store';
+import { useParams } from 'react-router';
+import { useQuery } from 'urql';
+import { getOneProposal } from '../../queries/commons/getOneProposal';
+import AcceptedForm from '../../sections/project-details/floating-action-bar/supervisor/supervisor-general-tracks/AcceptedForm';
 
 interface ActionPropos {
   backgroundColor: string;
@@ -34,6 +40,9 @@ interface FormInput {
 function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
   const { activeRole } = useAuth();
   const { translate } = useLocales();
+  const { proposal } = useSelector((state) => state.proposal);
+  const { id: pid } = useParams();
+  const [isEdit, setIsEdit] = useState(false);
 
   const validationSchema = Yup.object().shape({
     ...(action.actionType === 'REJECT' &&
@@ -53,6 +62,10 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
         'tender_ceo',
       ].includes(activeRole!) && {
         notes: Yup.string().required(translate('errors.notes')),
+      }),
+    ...(action.actionType === 'ACCEPT' &&
+      ['tender_project_manager', 'tender_ceo'].includes(activeRole!) && {
+        reject_reason: Yup.string().required(),
       }),
   });
 
@@ -145,6 +158,16 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
                 </RHFSelectNoGenerator>
               </Grid>
             ) : null}
+            {/* {['tender_project_manager', 'tender_ceo'].includes(activeRole!) &&
+              proposal.project_track !== 'CONCESSIONAL_GRANTS' && (
+                <Grid item md={12} xs={12}>
+                  <AcceptedForm
+                    onSubmit={(data) => {
+                      console.log('data', data);
+                    }}
+                  />
+                </Grid>
+              )} */}
             <Grid item md={12} xs={12}>
               <RHFTextField
                 multiline

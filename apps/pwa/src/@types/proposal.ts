@@ -59,6 +59,13 @@ export interface Proposal {
   project_track: string; // Tracks
   submitter_user_id: string;
   project_number: number;
+  closing_report: boolean;
+  need_picture: boolean;
+  does_an_agreement: boolean;
+  vat: boolean;
+  vat_percentage: number;
+  inclu_or_exclu: boolean;
+  support_goal_id: string;
   user: {
     id: string;
     employee_name: string;

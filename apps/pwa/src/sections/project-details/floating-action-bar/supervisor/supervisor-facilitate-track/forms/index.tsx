@@ -30,7 +30,7 @@ const steps = [
   'معلومات الدعم',
   'معلومات الجهة',
   'تفاصيل المشروع',
-  'موازنة المشروع',
+  // 'موازنة المشروع',
   'التوصية بالدعم من المشرف',
 ];
 
@@ -73,11 +73,11 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
     setIsSubmitting(false);
   };
 
-  const handleSubmitForthForm = (data: any) => {
-    setIsSubmitting(true);
-    dispatch(setStepFour(data));
-    setIsSubmitting(false);
-  };
+  // const handleSubmitForthForm = (data: any) => {
+  //   setIsSubmitting(true);
+  //   dispatch(setStepFour(data));
+  //   setIsSubmitting(false);
+  // };
 
   const handleSubmitFifthForm = async (data: any) => {
     await dispatch(setStepFive(data));
@@ -125,9 +125,9 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
           been_made_before: step3.been_made_before,
           remote_or_insite: step3.remote_or_insite,
           // item budgets
-          created_proposal_budget: data.created_proposal_budget, // step4.created_proposal_budget,
-          updated_proposal_budget: data.updated_proposal_budget, // step4.updated_proposal_budget,
-          deleted_proposal_budget: data.deleted_proposal_budget, // step4.deleted_proposal_budget,
+          // created_proposal_budget: data.created_proposal_budget, // step4.created_proposal_budget,
+          // updated_proposal_budget: data.updated_proposal_budget, // step4.updated_proposal_budget,
+          // deleted_proposal_budget: data.deleted_proposal_budget, // step4.deleted_proposal_budget,
           // recommended_support
           created_recommended_support: [], // data.created_recommended_support
           updated_recommended_support: [], // data.updated_recommended_support
@@ -280,7 +280,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
               />
             </ThirdForm>
           )}
-          {activeStep === 3 && (
+          {/* {activeStep === 3 && (
             <ForthFrom onSubmit={handleSubmitForthForm}>
               <ActionBox
                 isLoading={isSubmitting}
@@ -289,8 +289,8 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
                 onBack={onBack}
               />
             </ForthFrom>
-          )}
-          {activeStep === 4 && (
+          )} */}
+          {activeStep === 3 && (
             <FifthForm onSubmit={handleSubmitFifthForm}>
               <ActionBox
                 isLoading={isSubmitting}

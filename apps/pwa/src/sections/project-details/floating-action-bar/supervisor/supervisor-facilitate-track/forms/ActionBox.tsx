@@ -50,7 +50,7 @@ function ActionBox({ isLoading, onClose, step, onBack }: Props) {
         }}
       >
         {/* {isLoading && <CircularProgress size={23} sx={{ color: 'white' }} thickness={10} />} */}
-        {step < 4 ? 'التالي' : 'تأكيد'}
+        {step < 3 ? 'التالي' : 'تأكيد'}
       </LoadingButton>
     </Stack>
   );

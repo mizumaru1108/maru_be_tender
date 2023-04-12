@@ -53,16 +53,10 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
   const { data: proposalData, fetching: fetchingProposal, error: errorProposal } = proposalResult;
 
   const validationSchema = Yup.object().shape({
-    clasification_field: Yup.string().required('clasification_field is required!'),
-    clause: Yup.string().required('clause is required!'),
     support_type: Yup.boolean().required('support_type is required!'),
     closing_report: Yup.boolean().required('closing_report is required!'),
     need_picture: Yup.boolean().required('need_picture is required!'),
     does_an_agreement: Yup.boolean().required('does_an_agreement is required!'),
-    // fsupport_by_supervisor: Yup.number().required('fsupport_by_supervisor is required!'),
-    // number_of_payments_by_supervisor: Yup.number().required(
-    //   'number_of_payments_by_supervisor is required!'
-    // ),
     detail_project_budgets: Yup.array().of(
       Yup.object().shape({
         clause: Yup.string().required(
@@ -88,8 +82,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
   });
 
   const defaultValues = {
-    clause: '',
-    clasification_field: '',
+    clasification_field: 'عام',
     support_type: true,
     closing_report: undefined,
     need_picture: undefined,
@@ -171,7 +164,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
         deleted_proposal_budget,
         ...data,
       };
-
+      console.log({ newData });
       onSubmit(newData);
     } else {
       enqueueSnackbar(translate('notification.proposal_item_budget_empty'), {
@@ -213,7 +206,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
               <>loading...</>
             ) : (
               <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: 0.5 }}>
-                <Grid item md={6} xs={12}>
+                {/* <Grid item md={6} xs={12}>
                   <RHFSelect
                     name="clause"
                     size="small"
@@ -225,8 +218,8 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                     <MenuItem value="مشروع يخص المبادرات">مشروع يخص المبادرات</MenuItem>
                     <MenuItem value="مشروع يخص تعميدات">مشروع يخص تعميدات</MenuItem>
                   </RHFSelect>
-                </Grid>
-                <Grid item md={6} xs={12}>
+                </Grid> */}
+                {/* <Grid item md={6} xs={12}>
                   <RHFSelect
                     name="clasification_field"
                     label="مجال التصنيف*"
@@ -235,7 +228,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                   >
                     <MenuItem value="عام">عام</MenuItem>
                   </RHFSelect>
-                </Grid>
+                </Grid> */}
                 <Grid item md={6} xs={12}>
                   <RHFRadioGroup
                     type="radioGroup"
