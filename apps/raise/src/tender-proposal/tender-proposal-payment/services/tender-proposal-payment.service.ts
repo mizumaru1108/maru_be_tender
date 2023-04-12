@@ -380,7 +380,7 @@ export class TenderProposalPaymentService {
       send,
     );
 
-    if (send) {
+    if (response.closeReportNotif && send) {
       this.notificationService.sendSmsAndEmailBatch(response.closeReportNotif);
     }
 

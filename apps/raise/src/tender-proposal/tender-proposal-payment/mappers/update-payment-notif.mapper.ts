@@ -1,15 +1,14 @@
 import { cheque, payment } from '@prisma/client';
 import moment from 'moment';
-import { CommonNotifMapperResponse } from '../../../tender-commons/dto/common-notif-mapper-response.dto';
+import { CommonNotificationMapperResponse } from '../../../tender-commons/dto/common-notification-mapper-response.dto';
 import { CommonProposalLogNotifResponse } from '../../../tender-commons/dto/common-proposal-log-notif-response.dto';
 import {
-  appRoleToReadable,
   TenderAppRole,
+  appRoleToReadable,
 } from '../../../tender-commons/types';
 import { CreateManyNotificationDto } from '../../../tender-notification/dtos/requests/create-many-notification.dto';
 import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
 import { createManyNotificationMapper } from '../../../tender-notification/mappers/create-many-notification.mapper';
-import { CommonNotificationMapperResponse } from '../../../tender-commons/dto/common-notification-mapper-response.dto';
 
 export const UpdatePaymentNotifMapper = (
   payment: payment,

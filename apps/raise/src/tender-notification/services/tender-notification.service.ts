@@ -209,6 +209,8 @@ export class TenderNotificationService {
       from: 'no-reply@hcharity.org',
     };
 
+    // console.log(logUtil(notifPayload));
+
     if (sendClientMail) {
       if (clientEmail && clientEmail.length > 0) {
         for (let i = 0; i < clientEmail.length; i++) {

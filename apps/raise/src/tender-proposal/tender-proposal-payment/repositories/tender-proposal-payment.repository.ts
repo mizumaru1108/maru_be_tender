@@ -21,6 +21,7 @@ import { FindTrackBudgetFilter } from '../dtos/requests';
 import { CloseReportNotifMapper } from '../mappers';
 import { UpdatePaymentNotifMapper } from '../mappers/update-payment-notif.mapper';
 import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TenderProposalPaymentRepository {
@@ -30,6 +31,7 @@ export class TenderProposalPaymentRepository {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly bunnyService: BunnyService,
+    private readonly configService: ConfigService,
   ) {}
 
   async findPaymentById(id: string): Promise<payment | null> {
@@ -514,13 +516,18 @@ export class TenderProposalPaymentRepository {
             },
           });
 
-          const closeReportNotif = CloseReportNotifMapper(logs);
+          const closeReportNotif = CloseReportNotifMapper(
+            logs,
+            proposal_id,
+            (this.configService.get('tenderAppConfig.baseUrl') as string) ||
+              undefined,
+          );
           if (
             closeReportNotif.createManyWebNotifPayload &&
             closeReportNotif.createManyWebNotifPayload.length > 0
           ) {
             this.logger.log(
-              'log',
+              'info',
               `Creating new notification with payload of \n${closeReportNotif.createManyWebNotifPayload}`,
             );
             prisma.notification.createMany({

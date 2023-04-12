@@ -7,16 +7,19 @@ import { createManyNotificationMapper } from '../../../tender-notification/mappe
 
 export const CloseReportNotifMapper = (
   logs: CommonProposalLogNotifResponse['data'],
+  proposal_id: string,
+  baseAppUrl: string | undefined,
+  selectLang?: 'ar' | 'en',
 ): CommonNotificationMapperResponse => {
-  const { proposal, reviewer, created_at } = logs;
+  const { proposal, created_at } = logs;
 
   const logTime = moment(created_at).format('llll');
 
   const subject = `Project Close Report`;
 
   const clientContent = `Your proposal ${proposal.project_name} is almost complete, one more step to getting close report!, you just need to submit project close report form \n${logTime}`;
-
-  const reviewerContent = `Your have asked ${proposal.user.employee_name} to fill close report form at ${logTime}`;
+  let clientEmailTemplatePath: string | undefined = undefined;
+  let clientEmailTemplateContext: Record<string, any>[] | undefined = undefined;
 
   const clientWebNotifPayload: CreateNotificationDto = {
     user_id: proposal.user.id,
@@ -30,15 +33,23 @@ export const CloseReportNotifMapper = (
     clientWebNotifPayload,
   ];
 
-  if (reviewer) {
-    const supervisorWebNotifPayload: CreateNotificationDto = {
-      user_id: reviewer.id,
-      type: 'PROPOSAL',
-      specific_type: 'CLOSE_REPORT_SEND_TO_CLIENT',
-      subject: subject + 'Sended',
-      content: reviewerContent,
-    };
-    createWebNotifPayload.push(supervisorWebNotifPayload);
+  if (clientEmailTemplatePath === undefined) {
+    clientEmailTemplatePath = `tender/${
+      selectLang || 'ar'
+    }/proposal/payment_finish`;
+  }
+
+  if (clientEmailTemplateContext === undefined) {
+    clientEmailTemplateContext = [
+      {
+        projectName: proposal.project_name,
+        clientUsername: proposal.user.employee_name,
+        paymentPageLink: baseAppUrl
+          ? baseAppUrl +
+            `/client/dashboard/project-report/${proposal_id}/show-details/finished`
+          : '#',
+      },
+    ];
   }
 
   const createManyWebNotifPayload = createManyNotificationMapper({
@@ -53,11 +64,7 @@ export const CloseReportNotifMapper = (
     clientMobileNumber: [proposal.user.mobile_number || ''],
     clientContent,
     createManyWebNotifPayload,
-    reviewerId: [reviewer ? reviewer.id : ''],
-    reviewerEmail: [reviewer ? reviewer.email : ''],
-    reviewerMobileNumber: [
-      reviewer && reviewer.mobile_number ? reviewer.mobile_number : '',
-    ],
-    reviewerContent,
+    clientEmailTemplatePath,
+    clientEmailTemplateContext,
   };
 };

@@ -26,7 +26,6 @@
         padding-top: 20px;
         background-color: #fff;
         width: 100%;
-        direction: rtl;
       }
       .cardHeader p {
         color: #931267;
@@ -42,9 +41,9 @@
         font-weight: 700;
         font-size: 1em;
         text-align: left;
+        margin: 0;
         list-style: none;
         cursor: pointer;
-        margin-right: 20px;
       }
 
       .cardHeader li:hover {
@@ -57,25 +56,25 @@
 
       .navbar {
         display: flex;
-        /* gap: 10px; */
+        gap: 30px;
       }
       .cardBody {
         background-color: #fff;
         width: 100%;
         display: flex;
         flex-direction: column;
+        /* padding-left: 10px;
+        padding-right: 10px; */
       }
       .icon {
         margin-right: 5px;
         margin-left: 5px;
-        cursor: pointer;
       }
       .wrapper {
         font-family: Inter, Helvetica, sans-serif;
         display: flex;
         flex-direction: column;
-        padding: 30px 60px;
-        direction: rtl;
+        padding: 30px;
       }
       .wrapper span {
         cursor: pointer;
@@ -93,7 +92,6 @@
         padding: 30px;
         justify-content: space-between;
         align-items: center;
-        direction: rtl;
       }
       .cardBody p {
         font-weight: 450;
@@ -101,7 +99,7 @@
         text-align: justify;
         margin-block-end: 10px;
         margin-block-start: 10px;
-        padding-left: 50px;
+        padding-right: 50px;
       }
       .cardBody img {
         width: 80%;
@@ -128,7 +126,6 @@
         align-items: center;
         background-color: #fff;
         height: 100px;
-        padding: 0 20px;
       }
       .cardFooter img {
         height: 3.3vh;
@@ -139,6 +136,7 @@
         text-align: center;
         color: #931267;
         margin: 0;
+        /* padding-top: 8px; */
       }
       .cardFooter a {
         color: #fff;
@@ -163,44 +161,44 @@
           <img
             src="https://media.tmra.io/tender-assets/tender-newlogo.png"
             alt="Logo Tmra Tender"
-            style="margin-right: 60px"
+            style="margin-left: 36px"
           />
-          <!-- <nav>
+          {{!-- <nav>
             <ul class="navbar">
-              <li>الدعم</li>
-              <li>مسكن</li>
+              <li>Home</li>
+              <li>Support</li>
             </ul>
-          </nav> -->
+          </nav> --}}
         </div>
         <div class="cardBody">
           <div class="wrapper">
-            <h1 style="font-size: 1.6em">
-              "المشروع: {{projectName}}" تم إرسال كافة الدفعات
+            <h1 style="font-size: 1.6em; padding-right: 50px">
+              "Project : {{projectName}}" payment has been sent
             </h1>
-            <p>مرحبًا {{clientUsername}}،</p>
+            <p>Hi {{clientUsername}},</p>
             <p>
-              تم تقديم أموال مشروعك وتم الانتهاء منها. يرجى ملء نموذج إغلاق
-              المشروع أدناه والرجاء التحقق من إثبات تحويل الأموال بعد ذلك.
+              Your project funds have been submitted and have been completed.
+              Please fill out the project closing form below and please check
+              the proof of transfer of funds afterwards.
             </p>
-
-            <p>فريق منصة غيث</p>
+            <p>Your friend,<br />Team Tender</p>
 
             <a
               href="{{paymentPageLink}}"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <button>نموذج إغلاق المشروع</button>
+              <button>Project Closing Form</button>
             </a>
-
             <div style="margin-top: 32px">
               {{!-- <p>
-                تم إرسال هذا البريد الإلكتروني إلى <span>olivia@gs.com</span>.
-                إذا كنت تفضل عدم تلقي هذا النوع من البريد الإلكتروني ، فيمكنك
-                إلغاء الاشتراك أو إدارة تفضيلات البريد الإلكتروني الخاصة بك.
+                This email was sent to
+                <span>olivia@gs.com</span>. If you'd rather not receive this
+                kind of email, you can <span>unsubscribe</span> or
+                <span>manage your email preferences</span>.
               </p> --}}
-              {{!-- <p style="color: gray; direction: ltr; text-align: end">
-                © 2077 Tender، 100 Smith Street، Melbourne VIC 3000
+              {{!-- <p style="color: gray">
+                © 2077 Tender , 100 Smith Street, Melbourne VIC 3000
               </p> --}}
             </div>
           </div>
@@ -210,7 +208,7 @@
             <img
               src="https://media.tmra.io/tender-assets/tender-newlogo.png"
               alt="Logo Tmra Tender"
-              style="height: 4.3vh"
+              style="height: 6.3vh"
             />
             <div>
               <img
