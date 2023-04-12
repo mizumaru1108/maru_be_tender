@@ -66,7 +66,7 @@ function RequestsInProcess() {
                 // ],
               },
             }}
-            destination={'incoming-funding-requests'}
+            destination={'requests-in-process'}
           />
         </ContentStyle>
       </Container>

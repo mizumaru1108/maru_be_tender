@@ -1025,7 +1025,7 @@ const ar = {
     // step: 'معلومات الاتصال',
     step: 'اسم مدير المشروع',
     project_manager_name: {
-      label: 'اسم مدير الإدارة*',
+      label: 'اسم مدير المشروع*',
       placeholder: 'الرجاء كتابة اسم مدير الإدارة',
     },
     mobile_number: {
@@ -1037,7 +1037,7 @@ const ar = {
       placeholder: 'الرجاء كتابة البريد الإلكتروني',
     },
     region: {
-      label: 'المنطقة*',
+      label: 'منطقة تنفيذ المشروع*',
       placeholder: 'الرجاء اختيار المنطقة',
     },
     city: {
@@ -2021,6 +2021,8 @@ const ar = {
     project_type: 'نوع المشروع',
     type_order: 'يكتب',
     search: 'يبحث',
+    advanced_options: 'خيارات متقدمة',
+    default_options: 'الخيارات الافتراضية',
   },
   //Appointment table
   appointments_headercell: {

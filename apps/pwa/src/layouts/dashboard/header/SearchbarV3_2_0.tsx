@@ -16,6 +16,7 @@ import {
   FormHelperText,
   Button,
   ClickAwayListener,
+  Link,
 } from '@mui/material';
 // utils
 import cssStyles from '../../../utils/cssStyles';
@@ -65,13 +66,26 @@ export default function Searchbar() {
   const dispatch = useDispatch();
   const { sort, filtered } = useSelector((state) => state.searching);
   const [show, setShow] = React.useState(false);
+  const [advancedOptions, setAdvancedOptions] = React.useState(false);
+  const [arrowStatus, setArrowStatus] = React.useState(false);
+  const [arrowTrack, setArrowTrack] = React.useState(false);
+
+  const [stateStatus, setStateStatus] = React.useState({
+    pending: true,
+    canceled: true,
+    completed: true,
+    ongoing: true,
+    revision: true,
+    amandament: true,
+  });
+
   const [sortBy, setSortBy] = React.useState('asc');
   const [text, setText] = React.useState('');
   const [state, setState] = React.useState({
     project: true,
     client: true,
-    status: true,
-    track: true,
+    status: false,
+    track: false,
   });
   const [stateAccManager, setStateAccManager] = React.useState({
     client_name: true,
@@ -108,8 +122,77 @@ export default function Searchbar() {
     });
   };
 
-  const handleClick = () => {
-    setShow(!show);
+  const { pending, canceled, completed, ongoing, revision, amandament } = stateStatus;
+
+  const optionsProjectStatus = [
+    {
+      name: 'pending',
+      checked: pending,
+      label: translate('outter_status.PENDING').toLowerCase(),
+    },
+    {
+      name: 'canceled',
+      checked: canceled,
+      label: translate('outter_status.CANCELED').toLowerCase(),
+    },
+    {
+      name: 'completed',
+      checked: completed,
+      label: translate('outter_status.COMPLETED').toLowerCase(),
+    },
+    {
+      name: 'ongoing',
+      checked: ongoing,
+      label: translate('outter_status.ONGOING').toLowerCase(),
+    },
+    {
+      name: 'revision',
+      checked: revision,
+      label: translate('outter_status.ON_REVISION').toLowerCase(),
+    },
+    {
+      name: 'amandament',
+      checked: amandament,
+      label: translate('outter_status.ASKED_FOR_AMANDEMENT').toLowerCase(),
+    },
+  ];
+
+  const handleChangeProjectStatus = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setStateStatus({
+      ...stateStatus,
+      [event.target.name]: event.target.checked,
+    });
+  };
+
+  const handleClick = (type: string) => {
+    if (type === 'input') {
+      setShow(!show);
+    }
+    // else if (type === 'project_status') {
+    //   setArrowStatus(!arrowStatus);
+    // } else {
+    //   setArrowTrack(!arrowTrack);
+    // }
+  };
+
+  const handleClearAll = () => {
+    setState({
+      project: true,
+      client: true,
+      status: false,
+      track: false,
+    });
+    setAdvancedOptions(false);
+    setArrowStatus(false);
+    setSortBy('asc');
+  };
+
+  const handleClickOptions = () => {
+    setAdvancedOptions(!advancedOptions);
+  };
+
+  const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSortBy((event.target as HTMLInputElement).value);
   };
 
   const handleSearch = () => {
@@ -189,9 +272,53 @@ export default function Searchbar() {
     }
   };
 
-  const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSortBy((event.target as HTMLInputElement).value);
-  };
+  function handleArrow(type: string, value: boolean) {
+    return (
+      <Box>
+        {currentLang.value === 'en' ? (
+          <Iconify
+            icon={'il:arrow-right'}
+            sx={{
+              alignItems: 'center',
+              color: 'text.disabled',
+              width: 20,
+              height: 20,
+              pt: '5px',
+              mx: '8px',
+              cursor: 'pointer',
+              transition: '0.3s',
+              transform: value ? 'rotate(90deg)' : 'rotate(0deg)',
+            }}
+            onClick={() => handleClick(type)}
+          />
+        ) : (
+          <Iconify
+            icon={'il:arrow-left'}
+            sx={{
+              alignItems: 'center',
+              color: 'text.disabled',
+              width: 20,
+              height: 20,
+              pt: '5px',
+              mx: '8px',
+              cursor: 'pointer',
+              transition: '0.3s',
+              transform: value ? 'rotate(-90deg)' : 'rotate(0deg)',
+            }}
+            onClick={() => handleClick(type)}
+          />
+        )}
+      </Box>
+    );
+  }
+
+  React.useEffect(() => {
+    if (status) {
+      setArrowStatus(true);
+    } else {
+      setArrowStatus(false);
+    }
+  }, [status]);
 
   return (
     <ClickAwayListener onClickAway={() => setShow(false)}>
@@ -207,7 +334,7 @@ export default function Searchbar() {
             fontSize: '14px',
             padding: '3px 12px',
             transition: '0.3s',
-            width: '250px',
+            width: '350px',
           }}
         >
           <Box
@@ -231,39 +358,7 @@ export default function Searchbar() {
               placeholder={translate('search_component.placeholder')}
               onKeyUp={handleKeyUp}
             />
-            {currentLang.value === 'en' ? (
-              <Iconify
-                icon={'il:arrow-right'}
-                sx={{
-                  alignItems: 'center',
-                  color: 'text.disabled',
-                  width: 20,
-                  height: 20,
-                  pt: '5px',
-                  mx: '8px',
-                  cursor: 'pointer',
-                  transition: '0.3s',
-                  transform: show ? 'rotate(90deg)' : 'rotate(0deg)',
-                }}
-                onClick={handleClick}
-              />
-            ) : (
-              <Iconify
-                icon={'il:arrow-left'}
-                sx={{
-                  alignItems: 'center',
-                  color: 'text.disabled',
-                  width: 20,
-                  height: 20,
-                  pt: '5px',
-                  mx: '8px',
-                  cursor: 'pointer',
-                  transition: '0.3s',
-                  transform: show ? 'rotate(-90deg)' : 'rotate(0deg)',
-                }}
-                onClick={handleClick}
-              />
-            )}
+            {handleArrow('input', show)}
           </Box>
           {show ? (
             <Box
@@ -272,14 +367,26 @@ export default function Searchbar() {
               }}
             >
               <Divider orientation="horizontal" flexItem />
-              <Stack direction="column">
-                <Typography sx={{ mt: 1, color: '#0E8478', fontWeight: 600 }}>
-                  {translate('search_component.project_type')}
-                </Typography>
-                {/* <FormControlLabel value="project" control={<Checkbox />} label="Name of Project" />
-              <FormControlLabel value="client" control={<Checkbox />} label="Name of Client" />
-              <FormControlLabel value="status" control={<Checkbox />} label="Project Status" />
-              <FormControlLabel value="track" control={<Checkbox />} label="Name of Track" /> */}
+              <Stack direction="column" sx={{ px: 2 }}>
+                <Stack direction="row" justifyContent="space-between">
+                  <Typography sx={{ mt: 1, color: '#0E8478', fontWeight: 600 }}>
+                    {translate('search_component.project_type')}
+                  </Typography>
+                  <Link
+                    component="button"
+                    variant="body2"
+                    onClick={handleClearAll}
+                    sx={{
+                      mt: 1,
+                      px: 2,
+                      color: 'red',
+                      fontWeight: 600,
+                      textDecoration: 'none',
+                    }}
+                  >
+                    {translate('notification.clear_all')}
+                  </Link>
+                </Stack>
                 {role === 'tender_accounts_manager' ? (
                   <FormControl
                     required
@@ -326,16 +433,46 @@ export default function Searchbar() {
                         }
                         label={translate('search_component.by_client_name')}
                       />
-                      <FormControlLabel
-                        control={
-                          <Checkbox checked={status} onChange={handleChange} name="status" />
-                        }
-                        label={translate('search_component.by_project_status')}
-                      />
-                      <FormControlLabel
-                        control={<Checkbox checked={track} onChange={handleChange} name="track" />}
-                        label={translate('search_component.by_track_name')}
-                      />
+                      {advancedOptions && (
+                        <Box>
+                          <Stack direction="row" alignItems="center">
+                            <FormControlLabel
+                              control={
+                                <Checkbox checked={status} onChange={handleChange} name="status" />
+                              }
+                              label={translate('search_component.by_project_status')}
+                            />
+
+                            {handleArrow('project_status', arrowStatus)}
+                          </Stack>
+                          {arrowStatus && (
+                            <Stack direction="column" sx={{ px: 2 }}>
+                              {optionsProjectStatus.map((item, index) => (
+                                <FormControlLabel
+                                  key={index}
+                                  control={
+                                    <Checkbox
+                                      checked={item.checked}
+                                      onChange={handleChangeProjectStatus}
+                                      name={item.name}
+                                    />
+                                  }
+                                  label={item.label}
+                                />
+                              ))}
+                            </Stack>
+                          )}
+                        </Box>
+                      )}
+                      {/* <Box display="flex" alignItems="center">
+                        <FormControlLabel
+                          control={
+                            <Checkbox checked={track} onChange={handleChange} name="track" />
+                          }
+                          label={translate('search_component.by_track_name')}
+                        />
+                        {handleArrow('track', arrowTrack)}
+                      </Box> */}
                     </FormGroup>
                     {/* <FormHelperText>You can display an error</FormHelperText> */}
                   </FormControl>
@@ -343,8 +480,6 @@ export default function Searchbar() {
                 <Typography sx={{ mt: 1, color: '#0E8478', fontWeight: 600 }}>
                   {translate('search_component.type_order')}
                 </Typography>
-                {/* <FormControlLabel control={<Checkbox />} label="Ascending" /> */}
-                {/* <FormControlLabel control={<Checkbox />} label="Descending" /> */}
                 <RadioGroup
                   aria-labelledby="type"
                   name="type"
@@ -363,10 +498,25 @@ export default function Searchbar() {
                   />
                 </RadioGroup>
               </Stack>
-
+              <Link
+                component="button"
+                variant="body2"
+                onClick={handleClickOptions}
+                sx={{
+                  mt: 1,
+                  px: 2,
+                  color: '#0E8478',
+                  fontWeight: 600,
+                  textDecoration: 'underline',
+                }}
+              >
+                {advancedOptions
+                  ? translate('search_component.default_options')
+                  : translate('search_component.advanced_options')}
+              </Link>
               <Stack direction="row" justifyContent="flex-end">
                 <Button
-                  sx={{ my: 2 }}
+                  sx={{ m: 2 }}
                   variant="contained"
                   onClick={
                     role === 'tender_accounts_manager'

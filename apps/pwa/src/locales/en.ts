@@ -1990,6 +1990,8 @@ const en = {
     project_type: 'Project`s Type',
     type_order: 'Type',
     search: 'Search',
+    advanced_options: 'Advanced Options',
+    default_options: 'Default Options',
   },
   //Appointment table
   appointments_headercell: {
