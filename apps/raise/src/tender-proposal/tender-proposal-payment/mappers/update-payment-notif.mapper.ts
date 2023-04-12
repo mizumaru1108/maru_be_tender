@@ -27,7 +27,7 @@ export const UpdatePaymentNotifMapper = (
   let clientContent = '';
   let clientEmailTemplatePath: string | undefined = undefined;
   let clientEmailTemplateContext: Record<string, any>[] | undefined = undefined;
-  let reviewerContent = '';
+  let reviewerContent: string | undefined = undefined;
   let reviewerEmailTemplatePath: string | undefined = undefined;
   let reviewerEmailTemplateContext: Record<string, any>[] | undefined =
     undefined;

@@ -16,6 +16,7 @@ import { createManyNotificationMapper } from '../mappers/create-many-notificatio
 import { createNotificationMapper } from '../mappers/create-notification.mapper';
 import { TenderNotificationRepository } from '../repository/tender-notification.repository';
 import { MsegatService } from '../../libs/msegat/services/msegat.service';
+import { logUtil } from '../../commons/utils/log-util';
 
 @Injectable()
 export class TenderNotificationService {
@@ -181,7 +182,13 @@ export class TenderNotificationService {
     }
   }
 
-  sendSmsAndEmailBatch(notifPayload: CommonNotificationMapperResponse) {
+  sendSmsAndEmailBatch(
+    notifPayload: CommonNotificationMapperResponse,
+    sendClientMail: boolean = true,
+    sendClientSms: boolean = true,
+    sendReviwerMail: boolean = true,
+    sendReviwerSms: boolean = true,
+  ) {
     const {
       clientSubject,
       clientContent,
@@ -202,31 +209,35 @@ export class TenderNotificationService {
       from: 'no-reply@hcharity.org',
     };
 
-    if (clientEmail && clientEmail.length > 0) {
-      for (let i = 0; i < clientEmail.length; i++) {
-        if (clientEmail[i] !== '') {
-          const clientEmailNotif: SendEmailDto = {
-            ...baseSendEmail,
-            mailType:
-              clientEmailTemplateContext && clientEmailTemplatePath
-                ? 'template'
-                : 'plain',
-            to: clientEmail[i],
-          };
+    if (sendClientMail) {
+      if (clientEmail && clientEmail.length > 0) {
+        for (let i = 0; i < clientEmail.length; i++) {
+          if (clientEmail[i] !== '') {
+            const clientEmailNotif: SendEmailDto = {
+              ...baseSendEmail,
+              mailType:
+                clientEmailTemplateContext && clientEmailTemplatePath
+                  ? 'template'
+                  : 'plain',
+              to: clientEmail[i],
+            };
 
-          if (clientEmailNotif.mailType === 'plain' && clientContent) {
-            clientEmailNotif.content = clientContent;
-          }
+            if (clientEmailNotif.mailType === 'plain') {
+              clientEmailNotif.content = clientContent;
+              if (clientEmailNotif.content !== '') {
+                this.emailService.sendMail(clientEmailNotif);
+              }
+            }
 
-          if (clientEmailTemplateContext && clientEmailTemplatePath) {
-            clientEmailNotif.templateContext = clientEmailTemplateContext[i];
-            clientEmailNotif.templatePath = clientEmailTemplatePath;
+            if (clientEmailTemplateContext && clientEmailTemplatePath) {
+              clientEmailNotif.templateContext = clientEmailTemplateContext[i];
+              clientEmailNotif.templatePath = clientEmailTemplatePath;
+              this.emailService.sendMail(clientEmailNotif);
+            }
           }
-          this.emailService.sendMail(clientEmailNotif);
         }
       }
     }
-
     /* enable when msgat is already exist */
     // const clientPhone = isExistAndValidPhone(clientMobileNumber);
     // if (clientPhone) {
@@ -235,71 +246,81 @@ export class TenderNotificationService {
     //     body: clientSubject + ', ' + clientContent,
     //   });
     // }
-    if (clientMobileNumber && clientMobileNumber.length > 0) {
-      clientMobileNumber.forEach((clientMobile) => {
-        if (clientMobile !== '') {
-          const clientPhone = isExistAndValidPhone(clientMobileNumber);
-          if (clientPhone) {
-            this.msegatService.sendSMS({
-              numbers: clientPhone.substring(1),
-              msg: clientSubject + ', ' + clientContent,
-            });
-          }
-        }
-      });
-    }
 
-    if (reviewerContent) {
-      if (reviewerEmail && reviewerEmail.length > 0) {
-        for (let i = 0; i < reviewerEmail.length; i++) {
-          if (reviewerEmail[i] !== '') {
-            const reviewerEmailNotif: SendEmailDto = {
-              ...baseSendEmail,
-              subject: reviwerSubject ? reviwerSubject : clientSubject,
-              mailType:
-                reviewerEmailTemplateContext && reviewerEmailTemplatePath
-                  ? 'template'
-                  : 'plain',
-              to: reviewerEmail[i],
-            };
-
-            if (reviewerEmailNotif.mailType === 'plain') {
-              reviewerEmailNotif.content = reviewerContent
-                ? reviewerContent
-                : clientContent;
-            }
-
-            if (reviewerEmailTemplateContext && reviewerEmailTemplatePath) {
-              reviewerEmailNotif.templateContext =
-                reviewerEmailTemplateContext[i];
-              reviewerEmailNotif.templatePath = reviewerEmailTemplatePath;
-            }
-            this.emailService.sendMail(reviewerEmailNotif);
-          }
-        }
-      }
-
-      /* enable when msgat is already exist */
-      if (reviewerMobileNumber && reviewerMobileNumber.length > 0) {
-        reviewerMobileNumber.forEach((reviewerMobile) => {
-          if (reviewerMobile !== '') {
-            const reviewerPhone = isExistAndValidPhone(reviewerMobile);
-            // if (reviewerPhone) {
-            //   this.twilioService.sendSMS({
-            //     to: reviewerPhone,
-            //     body: reviwerSubject
-            //       ? reviwerSubject
-            //       : clientSubject + ', ' + reviewerContent,
-            //   });
-            // }
-            if (reviewerPhone) {
+    if (sendClientSms) {
+      if (clientMobileNumber && clientMobileNumber.length > 0) {
+        clientMobileNumber.forEach((clientMobile) => {
+          if (clientMobile !== '' && clientContent !== '') {
+            const clientPhone = isExistAndValidPhone(clientMobileNumber);
+            if (clientPhone) {
               this.msegatService.sendSMS({
-                numbers: reviewerPhone.substring(1),
+                numbers: clientPhone.substring(1),
                 msg: clientSubject + ', ' + clientContent,
               });
             }
           }
         });
+      }
+    }
+
+    if (sendReviwerMail) {
+      if (reviewerContent && reviewerContent !== '') {
+        if (reviewerEmail && reviewerEmail.length > 0) {
+          for (let i = 0; i < reviewerEmail.length; i++) {
+            if (reviewerEmail[i] !== '') {
+              const reviewerEmailNotif: SendEmailDto = {
+                ...baseSendEmail,
+                subject: reviwerSubject ? reviwerSubject : clientSubject,
+                mailType:
+                  reviewerEmailTemplateContext && reviewerEmailTemplatePath
+                    ? 'template'
+                    : 'plain',
+                to: reviewerEmail[i],
+              };
+
+              if (reviewerEmailNotif.mailType === 'plain') {
+                reviewerEmailNotif.content = reviewerContent
+                  ? reviewerContent
+                  : clientContent;
+                if (reviewerContent !== '') {
+                  this.emailService.sendMail(reviewerEmailNotif);
+                }
+              }
+
+              if (reviewerEmailTemplateContext && reviewerEmailTemplatePath) {
+                reviewerEmailNotif.templateContext =
+                  reviewerEmailTemplateContext[i];
+                reviewerEmailNotif.templatePath = reviewerEmailTemplatePath;
+                this.emailService.sendMail(reviewerEmailNotif);
+              }
+            }
+          }
+        }
+      }
+
+      /* enable when msgat is already exist */
+      if (sendReviwerSms) {
+        if (reviewerMobileNumber && reviewerMobileNumber.length > 0) {
+          reviewerMobileNumber.forEach((reviewerMobile) => {
+            if (reviewerMobile !== '' && reviewerContent !== '') {
+              const reviewerPhone = isExistAndValidPhone(reviewerMobile);
+              // if (reviewerPhone) {
+              //   this.twilioService.sendSMS({
+              //     to: reviewerPhone,
+              //     body: reviwerSubject
+              //       ? reviwerSubject
+              //       : clientSubject + ', ' + reviewerContent,
+              //   });
+              // }
+              if (reviewerPhone) {
+                this.msegatService.sendSMS({
+                  numbers: reviewerPhone.substring(1),
+                  msg: reviwerSubject + ', ' + reviewerContent,
+                });
+              }
+            }
+          });
+        }
       }
     }
   }

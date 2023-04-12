@@ -352,11 +352,16 @@ export class TenderClientRepository {
   }
 
   async findClientProposals(filter: SearchClientProposalFilter) {
-    const { page = 1, limit = 10, sort = 'desc', sorting_field } = filter;
+    const {
+      page = 1,
+      limit = 10,
+      sort = 'desc',
+      sorting_field,
+      employee_name,
+    } = filter;
 
     const offset = (page - 1) * limit;
-    let whereClause: Sql;
-    const query: Prisma.client_dataWhereInput = {};
+    let whereClause: Sql = Prisma.sql``;
 
     const order_by: Prisma.client_dataOrderByWithRelationInput = {};
     const field =
@@ -367,6 +372,10 @@ export class TenderClientRepository {
       order_by.created_at = sort;
     }
 
+    if (employee_name && employee_name !== '') {
+      whereClause = Prisma.sql`client_data.entity LIKE '%' || ${employee_name} || '%'`;
+    }
+
     try {
       const response: any = await this.prismaService.$queryRaw`
         SELECT "user".id, "user".email, "user".status_id, client_data.entity as employee_name, client_data.entity_mobile as mobile_number,
@@ -374,26 +383,11 @@ export class TenderClientRepository {
         FROM client_data
         JOIN "user" ON client_data.user_id = "user".id
         LEFT JOIN proposal ON proposal.submitter_user_id = client_data.user_id AND proposal.step = 'ZERO'
+        WHERE ${whereClause}
         GROUP BY client_data.id, "user".id
         LIMIT ${limit} OFFSET ${offset};
       `;
 
-      //   const response: any = await this.prismaService.$queryRaw`
-      //   SELECT "user".id, "user".employee_name, "user".mobile_number, "user".email, client_data.governorate, COUNT(proposal.id) AS proposal_count, COUNT(*) OVER() AS total_count
-      //   FROM client_data
-      //   JOIN "user" ON client_data.user_id = "user".id
-      //   LEFT JOIN proposal ON proposal.submitter_user_id = client_data.user_id AND proposal.step = 'ZERO'
-      //   GROUP BY client_data.id, "user".id
-      //   UNION ALL
-      //   SELECT "user".id, "user".employee_name, "user".mobile_number, "user".email, client_data2.governorate, COUNT(proposal.id) AS proposal_count, COUNT(*) OVER() AS total_count
-      //   FROM client_data2
-      //   JOIN "user" ON client_data2.user_id = "user".id
-      //   LEFT JOIN proposal ON proposal.submitter_user_id = client_data2.user_id AND proposal.step = 'ZERO'
-      //   GROUP BY client_data2.id, "user".id
-      //   LIMIT ${limit} OFFSET ${offset};
-      // `;
-
-      // console.log(logUtil(response));
       return response;
     } catch (error) {
       const theError = prismaErrorThrower(
