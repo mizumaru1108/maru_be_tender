@@ -15,12 +15,9 @@ const ContentStyle = styled('div')(({ theme }) => ({
 function BankName() {
   const { translate } = useLocales();
   return (
-    // <Page title="Bank Name : Table">
     <Page title={translate('pages.admin.bank_new_table')}>
       <ContentStyle>
-        <Box sx={{ px: '30px' }}>
-          <BankNameTable />
-        </Box>
+        <BankNameTable />
       </ContentStyle>
     </Page>
   );

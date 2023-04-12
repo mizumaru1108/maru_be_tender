@@ -20,6 +20,7 @@ import {
 import { PATH_DASHBOARD } from '../../../routes/paths';
 import useTable, { emptyRows, getComparator } from 'hooks/useTable';
 import useSettings from 'hooks/useSettings';
+import useLocales from 'hooks/useLocales';
 import Iconify from 'components/Iconify';
 import { BankNameTableRow, BankNameTableToolbar } from './list';
 import Scrollbar from 'components/Scrollbar';
@@ -55,12 +56,19 @@ const mockData = [
     name: 'بنك الرياض',
   },
 ];
-const TABLE_HEAD = [
-  { id: 'name', label: 'الاسم', align: 'left' },
-  { id: 'permissions', label: 'سماحيات', align: 'left' },
-];
 
 export default function BankNameTable() {
+  const { translate } = useLocales();
+
+  const TABLE_HEAD = [
+    { id: 'name', label: translate('pages.admin.settings.label.table.name'), align: 'left' },
+    {
+      id: 'permissions',
+      label: translate('pages.admin.settings.label.table.permissions'),
+      align: 'left',
+    },
+  ];
+
   const {
     dense,
     page,
@@ -142,22 +150,24 @@ export default function BankNameTable() {
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
       <AddBankModal open={open} handleClose={handleCloseAddBeneficiare} />
-      <Stack direction="row" justifyContent="space-between" sx={{ mb: '40px' }}>
-        <Box sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
-          <Typography variant="h4" gutterBottom sx={{ fontFamily: 'Cairo', fontStyle: 'Bold' }}>
-            البنوك
-          </Typography>
-        </Box>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ mb: 5, mt: 1 }}
+      >
+        <Typography variant="h4" sx={{ fontFamily: 'Cairo', fontStyle: 'Bold' }}>
+          {translate('pages.admin.settings.label.bank_name')}
+        </Typography>
         <Button
           variant="contained"
           onClick={handleAddBeneficiare}
           sx={{ px: '50px', fontSize: '16px' }}
         >
-          اضافة بنك
+          {translate('pages.admin.settings.label.add_bank')}
         </Button>
       </Stack>
       <Card sx={{ backgroundColor: '#fff' }}>
-        {/* done */}
         <BankNameTableToolbar
           filterName={filterName}
           filterRole={filterRole}

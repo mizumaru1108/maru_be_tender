@@ -14,7 +14,7 @@ function ManagerPaymentsPage() {
   const [valuePayments, setValuePayments] = useState<number>(0);
 
   useEffect(() => {
-    const paymentList: number[] = proposal.payments.map((el) => el.payment_amount);
+    const paymentList: number[] = proposal.payments.map((el) => Number(el.payment_amount));
     const totalPayments = paymentList.reduce((acc: number, curr: number) => acc + (curr || 0), 0);
 
     setValuePayments(totalPayments);

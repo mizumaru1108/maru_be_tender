@@ -1,5 +1,18 @@
 export type ActiveStep = 'STEP1' | 'STEP2' | 'STEP3' | 'STEP4' | 'STEP5';
 
+export type BeneficiariesMap = {
+  [key: string]: string;
+};
+
+export const project_beneficiaries_map: BeneficiariesMap = {
+  KIDS: 'أطفال',
+  ELDERLY: 'كبار السن',
+  MIDDLE_AGED: 'منتصف العمر',
+  GENERAL: 'جنرال لواء',
+  MEN: 'رجال',
+  WOMEN: 'النساء',
+};
+
 export interface ItemBudget {
   id?: string;
   amount: number | undefined;

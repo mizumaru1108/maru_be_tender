@@ -212,7 +212,7 @@ function SupervisorGrants({ stepGransLog }: Props) {
                   </Typography>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
-                      {value === true ? translate('partial_support') : translate('total_support')}
+                      {value === true ? translate('partial_support') : translate('full_support')}
                     </Typography>
                   </Stack>
                 </Grid>
