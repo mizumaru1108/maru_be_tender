@@ -14,13 +14,7 @@ import {
 import { CreateProjectBudgetDto } from './create-proposal-item-budget.dto';
 import { ExistingProjectBudgetDto } from './existing-proposal-item-budget.dto';
 
-export class CeoChangeStatePayload {
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  step_back_to?: 'MODERATOR' | 'PROJECT_MANAGER' | 'PROJECT_SUPERVISOR';
-
+export class ProjectManagerChangeStatePayload {
   @ApiPropertyOptional()
   @IsOptional()
   @IsBoolean()

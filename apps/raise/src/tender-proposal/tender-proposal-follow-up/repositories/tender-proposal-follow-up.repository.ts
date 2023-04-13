@@ -4,6 +4,7 @@ import { logUtil } from '../../../commons/utils/log-util';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
+import { FollowUpNotifMapper } from '../mappers/follow-up-notif-mapper';
 
 @Injectable()
 export class TenderProposalFollowUpRepository {
@@ -15,6 +16,8 @@ export class TenderProposalFollowUpRepository {
   async create(
     followUpCreatePayload: Prisma.proposal_follow_upUncheckedCreateInput,
     fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
+    employee_only: boolean,
+    selected_lang?: 'ar' | 'en',
   ) {
     this.logger.log(
       'log',
@@ -45,7 +48,32 @@ export class TenderProposalFollowUpRepository {
             data: fileManagerCreateManyPayload,
           });
         }
-        return followUps;
+
+        const followupNotif = FollowUpNotifMapper(
+          followUps,
+          employee_only,
+          selected_lang,
+        );
+
+        if (
+          followupNotif.createManyWebNotifPayload &&
+          followupNotif.createManyWebNotifPayload.length > 0
+        ) {
+          this.logger.log(
+            'info',
+            `Creating new notification with payload of \n${logUtil(
+              followupNotif.createManyWebNotifPayload,
+            )}`,
+          );
+          prisma.notification.createMany({
+            data: followupNotif.createManyWebNotifPayload,
+          });
+        }
+
+        return {
+          followUps,
+          followupNotif,
+        };
       });
     } catch (error) {
       console.log('error', error);

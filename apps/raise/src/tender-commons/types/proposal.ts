@@ -91,6 +91,7 @@ export enum OutterStatusEnum {
 /* enum for proposal action and proposal_log action */
 export enum ProposalAction {
   ACCEPT = 'accept',
+  UPDATE = 'update',
   ACCEPT_AND_ASK_FOR_CONSULTATION = 'accept_and_ask_for_consultation', //is there any ?
   ASK_FOR_AMANDEMENT_REQUEST = 'ask_for_amandement_request',
   COMPLETE = 'complete',

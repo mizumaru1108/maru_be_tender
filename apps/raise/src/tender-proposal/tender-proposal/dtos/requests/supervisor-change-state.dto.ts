@@ -11,9 +11,11 @@ import {
   Max,
   Min,
   ValidateNested,
+  IsEnum,
 } from 'class-validator';
 import { CreateProjectBudgetDto } from './create-proposal-item-budget.dto';
 import { ExistingProjectBudgetDto } from './existing-proposal-item-budget.dto';
+import { TargetGroupAgeEnum } from '../../types';
 
 export class SupervisorChangeStatePayload {
   /* exist on regular track but can be exist on GRANT Track */
@@ -162,12 +164,20 @@ export class SupervisorChangeStatePayload {
   @IsNotEmpty()
   target_group_type?: string;
 
+  // @ApiPropertyOptional()
+  // @IsOptional()
+  // @IsNumber({ maxDecimalPlaces: 2 })
+  // @Min(0.01)
+  // @Max(999999999999999999.99)
+  // target_group_age?: number;
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNumber({ maxDecimalPlaces: 2 })
-  @Min(0.01)
-  @Max(999999999999999999.99)
-  target_group_age?: number;
+  @IsEnum(TargetGroupAgeEnum, {
+    message: `Status must be one of ${Object.values(TargetGroupAgeEnum).join(
+      ', ',
+    )}`,
+  })
+  target_group_age?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

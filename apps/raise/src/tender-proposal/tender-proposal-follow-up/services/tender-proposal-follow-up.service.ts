@@ -185,15 +185,19 @@ export class TenderProposalFollowUpService {
       const createdFolllowUp = await this.followUpRepo.create(
         createFollowUpPayload,
         fileManagerCreateManyPayload,
-      );
-
-      await this.sendFollowUpNotif(
-        createdFolllowUp,
         employee_only,
         payload.selectLang,
       );
 
-      return createdFolllowUp;
+      this.notifService.sendSmsAndEmailBatch(createdFolllowUp.followupNotif);
+
+      // await this.sendFollowUpNotif(
+      //   createdFolllowUp,
+      //   employee_only,
+      //   payload.selectLang,
+      // );
+
+      return createdFolllowUp.followUps;
     } catch (error) {
       this.logger.error('Error while uploading project attachment: ' + error);
       if (uploadedFilePath.length > 0) {
@@ -250,122 +254,122 @@ export class TenderProposalFollowUpService {
     }
   }
 
-  async sendFollowUpNotif(
-    createdFolllowUp: RawCreateFollowUpDto['data'],
-    employee_only: boolean,
-    selected_lang?: 'ar' | 'en',
-  ) {
-    const { subject, content, proposal, user } =
-      GenerateFollowUpMessageNotif(createdFolllowUp);
+  // async sendFollowUpNotif(
+  //   createdFolllowUp: RawCreateFollowUpDto['data'],
+  //   employee_only: boolean,
+  //   selected_lang?: 'ar' | 'en',
+  // ) {
+  //   const { subject, content, proposal, user } =
+  //     GenerateFollowUpMessageNotif(createdFolllowUp);
 
-    const baseTemplateContext = {
-      projectName: proposal.project_name,
-      followUpSender: user.employee_name,
-    };
+  //   const baseTemplateContext = {
+  //     projectName: proposal.project_name,
+  //     followUpSender: user.employee_name,
+  //   };
 
-    const baseSendEmail: Omit<SendEmailDto, 'to'> = {
-      mailType: 'template',
-      from: 'no-reply@hcharity.org',
-      subject,
-      templatePath: `tender/${selected_lang || 'ar'}/proposal/project_followup`,
-    };
+  //   const baseSendEmail: Omit<SendEmailDto, 'to'> = {
+  //     mailType: 'template',
+  //     from: 'no-reply@hcharity.org',
+  //     subject,
+  //     templatePath: `tender/${selected_lang || 'ar'}/proposal/project_followup`,
+  //   };
 
-    const baseWebNotif: Omit<CreateNotificationDto, 'user_id'> = {
-      type: 'PROPOSAL',
-      subject,
-      content,
-      proposal_id: proposal.id,
-    };
+  //   const baseWebNotif: Omit<CreateNotificationDto, 'user_id'> = {
+  //     type: 'PROPOSAL',
+  //     subject,
+  //     content,
+  //     proposal_id: proposal.id,
+  //   };
 
-    const baseSendSms = {
-      body: subject + ',' + content,
-    };
+  //   const baseSendSms = {
+  //     body: subject + ',' + content,
+  //   };
 
-    /* the client on this proposal ------------------------------------------------------------------------------------------------ */
-    if (employee_only === false) {
-      const clientEmailNotif: SendEmailDto = {
-        ...baseSendEmail,
-        to: proposal.user.email,
-        templateContext: {
-          ...baseTemplateContext,
-          receiverName: proposal.user.employee_name,
-        },
-      };
-      this.emailService.sendMail(clientEmailNotif);
+  //   /* the client on this proposal ------------------------------------------------------------------------------------------------ */
+  //   if (employee_only === false) {
+  //     const clientEmailNotif: SendEmailDto = {
+  //       ...baseSendEmail,
+  //       to: proposal.user.email,
+  //       templateContext: {
+  //         ...baseTemplateContext,
+  //         receiverName: proposal.user.employee_name,
+  //       },
+  //     };
+  //     this.emailService.sendMail(clientEmailNotif);
 
-      const clientWebNotifPayload: CreateNotificationDto = {
-        ...baseWebNotif,
-        user_id: proposal.submitter_user_id,
-      };
-      await this.notifService.create(clientWebNotifPayload);
+  //     const clientWebNotifPayload: CreateNotificationDto = {
+  //       ...baseWebNotif,
+  //       user_id: proposal.submitter_user_id,
+  //     };
+  //     await this.notifService.create(clientWebNotifPayload);
 
-      const clientPhone = isExistAndValidPhone(proposal.user.mobile_number);
-      if (clientPhone) {
-        this.twilioService.sendSMS({
-          ...baseSendSms,
-          to: clientPhone,
-        });
-      }
-    }
-    /* ----------------------------------------------------------------------------------------------------------------------------------- */
+  //     const clientPhone = isExistAndValidPhone(proposal.user.mobile_number);
+  //     if (clientPhone) {
+  //       this.twilioService.sendSMS({
+  //         ...baseSendSms,
+  //         to: clientPhone,
+  //       });
+  //     }
+  //   }
+  //   /* ----------------------------------------------------------------------------------------------------------------------------------- */
 
-    /* if theres project_manager on this proposal (proposal.project_manager_id is exist) ------------------------------------------------- */
-    if (proposal.project_manager) {
-      const projectManagerEmailNotif: SendEmailDto = {
-        ...baseSendEmail,
-        to: proposal.project_manager.email,
-        templateContext: {
-          ...baseTemplateContext,
-          receiverName: proposal.project_manager.employee_name,
-        },
-      };
-      this.emailService.sendMail(projectManagerEmailNotif);
+  //   /* if theres project_manager on this proposal (proposal.project_manager_id is exist) ------------------------------------------------- */
+  //   if (proposal.project_manager) {
+  //     const projectManagerEmailNotif: SendEmailDto = {
+  //       ...baseSendEmail,
+  //       to: proposal.project_manager.email,
+  //       templateContext: {
+  //         ...baseTemplateContext,
+  //         receiverName: proposal.project_manager.employee_name,
+  //       },
+  //     };
+  //     this.emailService.sendMail(projectManagerEmailNotif);
 
-      const projectManagerWebNotif: CreateNotificationDto = {
-        ...baseWebNotif,
-        user_id: proposal.project_manager.id,
-      };
-      await this.notifService.create(projectManagerWebNotif);
+  //     const projectManagerWebNotif: CreateNotificationDto = {
+  //       ...baseWebNotif,
+  //       user_id: proposal.project_manager.id,
+  //     };
+  //     await this.notifService.create(projectManagerWebNotif);
 
-      const pmPhone = isExistAndValidPhone(
-        proposal.project_manager.mobile_number,
-      );
-      if (pmPhone) {
-        this.twilioService.sendSMS({
-          ...baseSendSms,
-          to: pmPhone,
-        });
-      }
-    }
-    /* ----------------------------------------------------------------------------------------------------------------------------------- */
+  //     const pmPhone = isExistAndValidPhone(
+  //       proposal.project_manager.mobile_number,
+  //     );
+  //     if (pmPhone) {
+  //       this.twilioService.sendSMS({
+  //         ...baseSendSms,
+  //         to: pmPhone,
+  //       });
+  //     }
+  //   }
+  //   /* ----------------------------------------------------------------------------------------------------------------------------------- */
 
-    /* if theres supervisor on this proposal (proposal.project_supervisor_id is exist) */
-    if (proposal.supervisor) {
-      const supervisorEmailNotif: SendEmailDto = {
-        ...baseSendEmail,
-        to: proposal.supervisor.email,
-        templateContext: {
-          ...baseTemplateContext,
-          receiverName: proposal.supervisor.employee_name,
-        },
-      };
-      this.emailService.sendMail(supervisorEmailNotif);
+  //   /* if theres supervisor on this proposal (proposal.project_supervisor_id is exist) */
+  //   if (proposal.supervisor) {
+  //     const supervisorEmailNotif: SendEmailDto = {
+  //       ...baseSendEmail,
+  //       to: proposal.supervisor.email,
+  //       templateContext: {
+  //         ...baseTemplateContext,
+  //         receiverName: proposal.supervisor.employee_name,
+  //       },
+  //     };
+  //     this.emailService.sendMail(supervisorEmailNotif);
 
-      const supervisorWebNotif: CreateNotificationDto = {
-        ...baseWebNotif,
-        user_id: proposal.supervisor.id,
-      };
-      await this.notifService.create(supervisorWebNotif);
+  //     const supervisorWebNotif: CreateNotificationDto = {
+  //       ...baseWebNotif,
+  //       user_id: proposal.supervisor.id,
+  //     };
+  //     await this.notifService.create(supervisorWebNotif);
 
-      const supervisorPhone = isExistAndValidPhone(
-        proposal.supervisor.mobile_number,
-      );
-      if (supervisorPhone) {
-        this.twilioService.sendSMS({
-          ...baseSendSms,
-          to: supervisorPhone,
-        });
-      }
-    }
-  }
+  //     const supervisorPhone = isExistAndValidPhone(
+  //       proposal.supervisor.mobile_number,
+  //     );
+  //     if (supervisorPhone) {
+  //       this.twilioService.sendSMS({
+  //         ...baseSendSms,
+  //         to: supervisorPhone,
+  //       });
+  //     }
+  //   }
+  // }
 }

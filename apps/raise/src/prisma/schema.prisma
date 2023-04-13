@@ -124,7 +124,7 @@ model payment {
   created_at         DateTime?       @default(now()) @db.Timestamptz(6)
   updated_at         DateTime?       @default(now()) @db.Timestamptz(6)
   proposal           proposal        @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
-  payment_status     payment_status? @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  payment_status     payment_status? @relation(fields: [status], references: [id], onDelete: Cascade)
   cheques            cheque[]
 }
 
@@ -189,7 +189,7 @@ model proposal {
   reasons_to_accept                   String?
   target_group_num                    Int?
   target_group_type                   String?
-  target_group_age                    Int?
+  target_group_age                    String?
   been_made_before                    Boolean?
   remote_or_insite                    String?                          @db.VarChar
   old_inner_status                    String?                          @db.VarChar
@@ -1428,4 +1428,21 @@ model user_role2 {
   id           String @id @db.Uuid
   user_id      String
   user_type_id String
+}
+
+model file_manager3 {
+  id                  String   @id
+  name                String   @db.VarChar
+  size                Decimal  @db.Decimal
+  mimetype            String   @db.VarChar
+  url                 String?  @db.VarChar
+  table_name          String?  @db.VarChar
+  column_name         String?  @db.VarChar
+  user_id             String?
+  is_deleted          Boolean  @default(false)
+  created_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
+  updated_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
+  proposal_id         String?
+  bank_information_id String?
+  fid                 String?
 }

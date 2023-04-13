@@ -12,6 +12,7 @@ import { ProposalAction } from '../../../../tender-commons/types/proposal';
 import { ModeratorChangeStatePayload } from './moderator-change-state.dto';
 import { SupervisorChangeStatePayload } from './supervisor-change-state.dto';
 import { CeoChangeStatePayload } from './ceo-change-state.dto';
+import { ProjectManagerChangeStatePayload } from './project-manager-change-state-payload.dto';
 
 export class ChangeProposalStateDto {
   @ApiPropertyOptional()
@@ -42,6 +43,12 @@ export class ChangeProposalStateDto {
   @Type(() => SupervisorChangeStatePayload)
   @ValidateNested()
   supervisor_payload?: SupervisorChangeStatePayload;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => ProjectManagerChangeStatePayload)
+  @ValidateNested()
+  project_manager_payload?: ProjectManagerChangeStatePayload;
 
   @ApiPropertyOptional()
   @IsOptional()
