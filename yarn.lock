@@ -7881,6 +7881,7 @@ __metadata:
     react-router-dom: ^6.3.0
     react-scripts: ^5.0.0
     react-slick: ^0.29.0
+    react-to-print: ^2.14.12
     redux: ^4.2.0
     redux-persist: ^6.0.0
     rehype-raw: ^6.1.1
@@ -24466,6 +24467,18 @@ __metadata:
     react: ^0.14.0 || ^15.0.1 || ^16.0.0 || ^17.0.0 || ^18.0.0
     react-dom: ^0.14.0 || ^15.0.1 || ^16.0.0 || ^17.0.0 || ^18.0.0
   checksum: 67ce4981914da8a76c6efb4bc8ee7ab69e04c33bd4b3517419ab2165679a3c701dae781556149713fe2c542f84188b7ca101ea58883537be5c05756408f48c8b
+  languageName: node
+  linkType: hard
+
+"react-to-print@npm:^2.14.12":
+  version: 2.14.12
+  resolution: "react-to-print@npm:2.14.12"
+  dependencies:
+    prop-types: ^15.8.1
+  peerDependencies:
+    react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: d88e93121fc95ae95ca3ad9a8b2bc1b305d6270d1330f0222d4843527a7925182d6f1e96b7a1df0403d2d6820d116c85f4a7c122956fe2dbc81dbbb09970efe2
   languageName: node
   linkType: hard
 
