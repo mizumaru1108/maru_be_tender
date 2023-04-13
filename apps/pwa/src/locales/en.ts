@@ -2012,6 +2012,7 @@ const en = {
     by_client_name: 'Name of Client',
     by_project_status: 'Project Status',
     by_track_name: 'Name of Track',
+    by_project_number: 'Number of Project',
     by_account_status: 'Account Status',
     ascending: 'Ascending',
     descending: 'Descending',

@@ -2043,6 +2043,7 @@ const ar = {
     by_client_name: 'اسم العميل',
     by_project_status: 'حالة المشروع',
     by_track_name: 'اسم المسار',
+    by_project_number: 'رقم المشروع',
     by_account_status: 'حالة الحساب',
     ascending: 'تصاعدي',
     descending: 'تنازلي',
