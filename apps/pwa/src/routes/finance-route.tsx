@@ -33,6 +33,7 @@ const PreviousFundingRequestsFinance = Loadable(
 );
 
 const ProjectReportFinished = Loadable(lazy(() => import('pages/client/ProjectReportFinished')));
+const PreviewPayment = Loadable(lazy(() => import('sections/finance/payment/PreviewPayment')));
 
 export const financeRoute = {
   path: 'finance',
@@ -133,6 +134,10 @@ export const financeRoute = {
         {
           path: 'old-proposal',
           element: <OldProposal />,
+        },
+        {
+          path: 'generate/:id/payments/:paymentId',
+          element: <PreviewPayment />,
         },
       ],
     },

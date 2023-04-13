@@ -86,6 +86,7 @@ export default function Searchbar() {
     client: true,
     status: false,
     track: false,
+    number: true,
   });
   const [stateAccManager, setStateAccManager] = React.useState({
     client_name: true,
@@ -106,9 +107,9 @@ export default function Searchbar() {
   };
 
   // State Except Account Manager
-  const { project, client, status, track } = state;
+  const { project, client, status, track, number } = state;
   const filteredState = Object.fromEntries(
-    Object.entries({ project, client, status, track }).filter(([_, v]) => v)
+    Object.entries({ project, client, status, track, number }).filter(([_, v]) => v)
   );
 
   const error = Object.keys(filteredState).length !== 1;
@@ -123,7 +124,11 @@ export default function Searchbar() {
   };
 
   const { pending, canceled, completed, ongoing, revision, amandament } = stateStatus;
-
+  const filterStatus = Object.fromEntries(
+    Object.entries({ pending, canceled, completed, ongoing, revision, amandament }).filter(
+      ([_, v]) => v
+    )
+  );
   const optionsProjectStatus = [
     {
       name: 'pending',
@@ -181,6 +186,7 @@ export default function Searchbar() {
       client: true,
       status: false,
       track: false,
+      number: true,
     });
     setAdvancedOptions(false);
     setArrowStatus(false);
@@ -188,6 +194,10 @@ export default function Searchbar() {
   };
 
   const handleClickOptions = () => {
+    setState({
+      ...state,
+      status: false,
+    });
     setAdvancedOptions(!advancedOptions);
   };
 
@@ -227,11 +237,33 @@ export default function Searchbar() {
         return `project_name=${text}`;
       } else if (filter === 'client') {
         return `employee_name=${text}`;
-      } else if (filter === 'status') {
-        return `outter_status=${text}`;
       } else if (filter === 'track') {
         return `project_track=${text}`;
+      } else if (filter === 'number') {
+        return `project_number=${text}`;
+      } else if (filter === 'status') {
+        const currentStatus = Object.keys(filterStatus);
+        const newFilterStatus = currentStatus.map((status) => {
+          if (status === 'pending') {
+            return `PENDING`;
+          } else if (status === 'canceled') {
+            return `CANCELED`;
+          } else if (status === 'completed') {
+            return `COMPLETED`;
+          } else if (status === 'ongoing') {
+            return `ONGOING`;
+          } else if (status === 'revision') {
+            return `ON_REVISION`;
+          } else if (status === 'amandament') {
+            return `ASKED_FOR_AMANDEMENT`;
+          }
+          return false;
+        });
+        console.log({ currentStatus, newFilterStatus });
+        const joinFilterStatus = newFilterStatus.join('&');
+        return `project_status=${[joinFilterStatus]}`;
       }
+
       return false;
     });
 
@@ -242,6 +274,7 @@ export default function Searchbar() {
       dispatch(setFiltered(null));
     }
     dispatch(setSort(sortBy));
+    console.log({ joinFilter, filters, filteredState });
   };
 
   const handleSearchAccManager = async () => {
@@ -432,6 +465,12 @@ export default function Searchbar() {
                           <Checkbox checked={client} onChange={handleChange} name="client" />
                         }
                         label={translate('search_component.by_client_name')}
+                      />
+                      <FormControlLabel
+                        control={
+                          <Checkbox checked={number} onChange={handleChange} name="number" />
+                        }
+                        label={translate('search_component.by_project_number')}
                       />
                       {advancedOptions && (
                         <Box>

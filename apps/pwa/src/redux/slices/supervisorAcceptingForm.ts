@@ -8,6 +8,8 @@ import {
   SupervisorStep5,
   project_beneficiaries_map,
   BeneficiariesMap,
+  target_type_map,
+  target_age_map,
 } from '../../@types/supervisor-accepting-form';
 
 // ----------------------------------------------------------------------
@@ -65,7 +67,8 @@ const initialState: SupervisorAcceptingForm = {
     project_beneficiaries: '',
     target_group_num: undefined,
     target_group_type: '',
-    target_group_age: undefined,
+    // target_group_age: undefined,
+    target_group_age: '',
     project_implement_date: new Date(),
     execution_time: 0,
     project_location: '',
@@ -103,6 +106,22 @@ const slice = createSlice({
     },
     // SET STEPS DATA
     setStepsData(state, action) {
+      // step 1
+      state.step1.clause = action.payload.clause ?? '';
+      state.step1.clasification_field = action.payload.clasification_field ?? '';
+      state.step1.support_type = action.payload.support_type ?? undefined;
+      state.step1.closing_report = action.payload.closing_report ?? undefined;
+      state.step1.need_picture = action.payload.need_picture ?? undefined;
+      state.step1.does_an_agreement = action.payload.does_an_agreement ?? undefined;
+      state.step1.fsupport_by_supervisor = action.payload.fsupport_by_supervisor ?? undefined;
+      state.step1.notes = action.payload.notes ?? '';
+      state.step1.support_outputs = action.payload.support_outputs ?? '';
+      state.step1.vat = action.payload.vat ?? undefined;
+      state.step1.vat_percentage = action.payload.vat_percentage ?? undefined;
+      state.step1.inclu_or_exclu = action.payload.inclu_or_exclu ?? undefined;
+      state.step1.support_goal_id = action.payload.support_goal_id ?? '';
+      state.step1.accreditation_type_id = action.payload.accreditation_type_id ?? '';
+      //step 2
       state.step2.organizationName = action.payload.user.employee_name;
       state.step2.region = action.payload.user.client_data.region;
       state.step2.governorate = action.payload.user.client_data.governorate;
@@ -111,6 +130,8 @@ const slice = createSlice({
       state.step2.chairman_of_board_of_directors =
         action.payload.user.client_data.chairman_name || '';
       state.step2.ceo = action.payload.user.client_data.ceo_name;
+      state.step2.most_clents_projects = action.payload.most_clents_projects ?? '';
+      //step 3
       state.step2.been_supported_before = action.payload.been_supported_before || false;
       state.step3.project_name = action.payload.project_name;
       state.step3.project_idea = action.payload.project_idea;
@@ -122,6 +143,17 @@ const slice = createSlice({
       state.step3.execution_time = action.payload.execution_time;
       state.step3.project_location = action.payload.project_location;
       state.step3.been_made_before = action.payload.been_made_before || false;
+      state.step3.added_value = action.payload.added_value ?? '';
+      state.step3.target_group_age =
+        target_age_map[action.payload.target_group_type as keyof BeneficiariesMap] ?? '';
+      // state.step3.target_group_age = action.payload.target_group_type ?? undefined;
+      state.step3.target_group_type =
+        target_type_map[action.payload.target_group_type as keyof BeneficiariesMap] ?? '';
+      state.step3.target_group_num = action.payload.target_group_num ?? undefined;
+      state.step3.reasons_to_accept = action.payload.reasons_to_accept ?? '';
+      state.step3.been_made_before = action.payload.been_made_before ?? false;
+      state.step3.remote_or_insite = action.payload.remote_or_insite ?? 'both';
+      //step 4
       state.step4.proposal_item_budgets = action.payload.proposal_item_budgets;
     },
     // STEP ONE
@@ -162,6 +194,10 @@ const slice = createSlice({
     stepBackOne(state, action) {
       state.activeStep = state.activeStep - 1;
     },
+    // RESET ActiveStep
+    stepResetActive(state, action) {
+      state.activeStep = 0;
+    },
   },
 });
 
@@ -169,7 +205,7 @@ const slice = createSlice({
 export default slice.reducer;
 
 // Actions
-export const { stepBackOne } = slice.actions;
+export const { stepBackOne, stepResetActive } = slice.actions;
 
 export const setStepsData = (data: any) => async () => {
   dispatch(slice.actions.setStepsData(data));

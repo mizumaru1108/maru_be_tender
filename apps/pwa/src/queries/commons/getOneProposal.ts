@@ -21,6 +21,7 @@ query getOneProposal($id: String!) {
     vat_percentage
     inclu_or_exclu
     support_goal_id
+    accreditation_type_id
     user {
       id
       employee_name

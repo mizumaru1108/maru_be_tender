@@ -23,6 +23,8 @@ import moment from 'moment';
 //
 import axiosInstance from 'utils/axios';
 import { Conversation } from '../../../../@types/wschat';
+import FacilitateSupervisorAcceptingForm from '../supervisor/supervisor-facilitate-track/forms';
+import { setStepsData, stepResetActive } from '../../../../redux/slices/supervisorAcceptingForm';
 
 function FloatingActionBar() {
   const { id: proposal_id } = useParams();
@@ -80,6 +82,7 @@ function FloatingActionBar() {
 
   const handleCloseModal = () => {
     setAction('');
+    dispatch(stepResetActive({}));
   };
 
   const handleApproval = async (values: any) => {
@@ -390,6 +393,10 @@ function FloatingActionBar() {
     );
   };
 
+  React.useEffect(() => {
+    dispatch(setStepsData(proposal));
+  }, [proposal]);
+
   if (fetching) return <>... Loading</>;
 
   if (error) return <>... Ops somthing went wrong</>;
@@ -551,6 +558,25 @@ function FloatingActionBar() {
           loading={isSubmitting}
         />
       )}
+
+      {/* {action === 'ACCEPT' && data.user.track !== 'CONCESSIONAL_GRANTS' && (
+        <NotesModal
+          title="قبول المشروع"
+          onClose={handleCloseModal}
+          onSubmit={handleApproval}
+          action={{
+            actionType: action,
+            actionLabel: 'قبول',
+            backgroundColor: 'background.paper',
+            hoverColor: '#13B2A2',
+          }}
+          loading={isSubmitting}
+        />
+      )}
+      {action === 'ACCEPT' && data.user.track === 'CONCESSIONAL_GRANTS' && (
+        <FacilitateSupervisorAcceptingForm onClose={handleCloseModal} />
+      )} */}
+
       {action === 'ACCEPT_CONSULTANT' && (
         <NotesModal
           title="عرض المشروع على المستشارين"

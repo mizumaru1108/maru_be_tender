@@ -6,7 +6,7 @@ import useLocales from 'hooks/useLocales';
 import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import { updateProposalByCEO } from 'queries/ceo/updateProposalByCEO';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useMutation } from 'urql';
 import NotesModal from 'components/notes-modal';
@@ -18,6 +18,8 @@ import { addConversation, setActiveConversationId, setMessageGrouped } from 'red
 import { dispatch, useSelector } from 'redux/store';
 import moment from 'moment';
 import { Conversation } from '../../../../@types/wschat';
+import FacilitateSupervisorAcceptingForm from '../supervisor/supervisor-facilitate-track/forms';
+import { setStepsData } from '../../../../redux/slices/supervisorAcceptingForm';
 
 function FloatingActionBar() {
   const { user, activeRole } = useAuth();
@@ -309,6 +311,10 @@ function FloatingActionBar() {
     );
   };
 
+  React.useEffect(() => {
+    dispatch(setStepsData(proposal));
+  }, [proposal]);
+
   return (
     <>
       <Box
@@ -449,6 +455,24 @@ function FloatingActionBar() {
           loading={isSubmitting}
         />
       )}
+      {/* 
+      {action === 'ACCEPT' && proposal.project_track !== 'CONCESSIONAL_GRANTS' && (
+        <NotesModal
+          title="قبول المشروع"
+          onClose={handleCloseModal}
+          onSubmit={handleApproval}
+          action={{
+            actionType: action,
+            actionLabel: 'قبول',
+            backgroundColor: 'background.paper',
+            hoverColor: '#13B2A2',
+          }}
+          loading={isSubmitting}
+        />
+      )}
+      {action === 'ACCEPT' && proposal.project_track === 'CONCESSIONAL_GRANTS' && (
+        <FacilitateSupervisorAcceptingForm onClose={handleCloseModal} />
+      )} */}
     </>
   );
 }

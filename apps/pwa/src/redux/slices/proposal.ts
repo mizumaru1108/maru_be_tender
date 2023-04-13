@@ -3,7 +3,7 @@ import { getOneProposal } from 'queries/commons/getOneProposal';
 import { insertPayments } from 'queries/project-supervisor/insertPayments';
 import { dispatch } from 'redux/store';
 import graphQlAxiosInstance from 'utils/axisoGraphQlInstance';
-import { ActiveTap, Proposal } from '../../@types/proposal';
+import { ActiveTap, Proposal, UpdateStatus } from '../../@types/proposal';
 import { updatePayment } from 'queries/project-supervisor/updatePayment';
 import { insertChequeUpdatePayment } from 'queries/Cashier/insertChequeUpdatePayment';
 import { createNewFollowUp } from 'queries/commons/createNewFollowUp';
@@ -20,6 +20,7 @@ interface ProposalItme {
   tracks: string[];
   employeeOnly: boolean;
   proposal: Proposal;
+  updateStatus: UpdateStatus;
 }
 
 const initialState: ProposalItme = {
@@ -29,7 +30,7 @@ const initialState: ProposalItme = {
   checkedItems: [],
   tracks: ['MOSQUES', 'CONCESSIONAL_GRANTS', 'INITIATIVES', 'BAPTISMS'],
   employeeOnly: false,
-
+  updateStatus: 'no-change',
   proposal: {
     id: '-1',
     project_name: 'test',
@@ -45,6 +46,8 @@ const initialState: ProposalItme = {
     vat_percentage: 0,
     inclu_or_exclu: false,
     support_goal_id: 'test',
+    support_outputs: 'test',
+    accreditation_type_id: 'PLAIN',
     user: {
       id: 'test',
       employee_name: 'test',
@@ -86,7 +89,8 @@ const initialState: ProposalItme = {
       },
     ],
     remote_or_insite: 'both',
-    target_group_age: 0,
+    // target_group_age: 0,
+    target_group_age: '',
     target_group_num: 0,
     target_group_type: '',
     created_at: new Date('10-10-2022'),
@@ -225,6 +229,10 @@ const slice = createSlice({
     insertFollowUp(stat, action) {
       stat.proposal.follow_ups.push(action.payload.follow_up);
     },
+    // UPDATE STATUS ACCEPTED DATA BY SUPERVISOR
+    setUpdatedStatus(state, action) {
+      state.updateStatus = action.payload;
+    },
   },
 });
 
@@ -232,8 +240,14 @@ const slice = createSlice({
 export default slice.reducer;
 
 // Actions
-export const { setProposal, setActiveTap, setCheckedItems, setTracks, setEmployeeOnly } =
-  slice.actions;
+export const {
+  setProposal,
+  setActiveTap,
+  setCheckedItems,
+  setTracks,
+  setEmployeeOnly,
+  setUpdatedStatus,
+} = slice.actions;
 
 export const getProposal = (id: string, role: string) => async () => {
   try {
@@ -347,6 +361,38 @@ export const updatePaymentBySupervisorAndManagerAndFinance = (data: any) => asyn
     return res.data;
   } catch (error) {
     dispatch(slice.actions.endLoading);
+    throw error;
+  }
+};
+
+export const updateAcceptedDataProposalNonGrants = (data: any, activeRole: string) => async () => {
+  try {
+    dispatch(slice.actions.startLoading);
+    // const variables = {
+    //   proposal_id: data.proposal_id,
+    //   action: data.action,
+    //   message: data.message,
+    //   notes: data.notes,
+    //   supervisor_payload: {
+    //     ...data.supervisor_payload,
+    //   },
+    //   selectLang: data.selectLang,
+    // };
+
+    const res = await axiosInstance.patch('/tender-proposal/change-state', data, {
+      headers: { 'x-hasura-role': activeRole },
+    });
+
+    if (res.data.statusCode === 200) {
+      dispatch(slice.actions.setUpdatedStatus('updated'));
+    }
+
+    dispatch(slice.actions.endLoading);
+
+    // return res.data;
+  } catch (error) {
+    dispatch(slice.actions.endLoading);
+    dispatch(slice.actions.setUpdatedStatus('error'));
     throw error;
   }
 };

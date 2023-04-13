@@ -147,6 +147,7 @@ export const PATH_PROJECT_SUPERVISOR = {
     '/dashboard/appointments-with-partners'
   ),
   old_proposal: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/old-proposal'),
+  client_list: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/client-list'),
 };
 
 export const PATH_ACCOUNTS_MANAGER = {

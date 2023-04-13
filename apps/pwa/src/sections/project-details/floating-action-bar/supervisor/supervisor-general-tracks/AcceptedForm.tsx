@@ -14,16 +14,22 @@ import { ProposalApprovePayloadSupervisor } from '../../types';
 
 import { useSnackbar } from 'notistack';
 import { getOneProposal } from 'queries/commons/getOneProposal';
-import { useParams } from 'react-router';
+import { useLocation, useParams } from 'react-router';
 import { useQuery } from 'urql';
 import uuidv4 from 'utils/uuidv4';
-import { useSelector } from '../../../../../redux/store';
+import { dispatch, useSelector } from '../../../../../redux/store';
+import { updateAcceptedDataProposalNonGrants } from '../../../../../redux/slices/proposal';
+import useAuth from '../../../../../hooks/useAuth';
 
-function AcceptedForm({ onSubmit }: EditAccModalForm) {
-  const { translate } = useLocales();
+function AcceptedForm({ onEdit }: EditAccModalForm) {
+  const { translate, currentLang } = useLocales();
   const { proposal } = useSelector((state) => state.proposal);
+  const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
+  const location = useLocation();
   const { id: pid } = useParams();
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [save, setSave] = useState<boolean>(true);
   const [isVat, setIsVat] = useState<boolean>(proposal.vat);
   const [basedBudget, setBasedBudget] = useState<
@@ -88,7 +94,7 @@ function AcceptedForm({ onSubmit }: EditAccModalForm) {
         amount: undefined,
       },
     ],
-    support_outputs: '',
+    support_outputs: proposal.support_outputs,
     vat: proposal.vat,
     vat_percentage: proposal.vat_percentage ?? undefined,
     inclu_or_exclu: proposal.inclu_or_exclu ?? undefined,
@@ -124,6 +130,7 @@ function AcceptedForm({ onSubmit }: EditAccModalForm) {
   });
 
   const onSubmitForm = async (data: ProposalApprovePayloadSupervisor) => {
+    setIsLoading(true);
     if (data.detail_project_budgets.length) {
       const created_proposal_budget = data.detail_project_budgets
         .filter((item) => !basedBudget.find((i) => i.id === item.id))
@@ -156,9 +163,83 @@ function AcceptedForm({ onSubmit }: EditAccModalForm) {
         deleted_proposal_budget,
         ...data,
       };
-
-      onSubmit(newData);
+      const editedBy = location.pathname.split('/')[1];
+      let payload = {
+        proposal_id: pid,
+        action: 'update',
+        message: 'تم قبول المشروع من قبل مشرف المشاريع ',
+        selectLang: currentLang.value,
+      };
+      if (editedBy === 'project-manager') {
+        payload = {
+          ...payload,
+          project_manager_payload: {
+            ...newData,
+          },
+        };
+      } else {
+        payload = {
+          ...payload,
+          ceo_payload: {
+            ...newData,
+          },
+        };
+      }
+      console.log({ payload });
+      // onSubmit(newData);
+      try {
+        await dispatch(updateAcceptedDataProposalNonGrants(payload, activeRole!)).then(() => {
+          setSave(true);
+          onEdit();
+          enqueueSnackbar('تم إرسال الشيك بنجاح, بالإضافة إلى تعديل حالة الدفعة', {
+            variant: 'success',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'right',
+            },
+          });
+          setIsLoading(false);
+        });
+      } catch (error) {
+        setIsLoading(false);
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'right',
+          },
+        });
+        // if (typeof error.message === 'object') {
+        //   setIsLoading(false),
+        //     error.message.forEach((el: any) => {
+        //       enqueueSnackbar(el, {
+        //         variant: 'error',
+        //         preventDuplicate: true,
+        //         autoHideDuration: 3000,
+        //         anchorOrigin: {
+        //           vertical: 'bottom',
+        //           horizontal: 'right',
+        //         },
+        //       });
+        //     });
+        // } else {
+        //   enqueueSnackbar(error.message, {
+        //     variant: 'error',
+        //     preventDuplicate: true,
+        //     autoHideDuration: 3000,
+        //     anchorOrigin: {
+        //       vertical: 'bottom',
+        //       horizontal: 'right',
+        //     },
+        //   });
+        // }
+      }
       setSave(true);
+      onEdit();
     } else {
       enqueueSnackbar(translate('notification.proposal_item_budget_empty'), {
         variant: 'error',
@@ -172,7 +253,7 @@ function AcceptedForm({ onSubmit }: EditAccModalForm) {
 
   useEffect(() => {
     if (!fetchingProposal && proposalData && proposalData.proposal.proposal_item_budgets.length) {
-      console.log('data', proposalData.proposal);
+      // console.log('data', proposalData.proposal);
       setBasedBudget(proposalData.proposal.proposal_item_budgets);
       setValue('detail_project_budgets', proposalData.proposal.proposal_item_budgets);
     } else {
@@ -449,13 +530,24 @@ function AcceptedForm({ onSubmit }: EditAccModalForm) {
             sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
           >
             {!save ? (
-              <LoadingButton onClick={handleSubmit(onSubmitForm)} variant="outlined">
+              <LoadingButton
+                loading={isLoading}
+                onClick={handleSubmit(onSubmitForm)}
+                variant="outlined"
+              >
                 Save
               </LoadingButton>
             ) : (
-              <LoadingButton disabled={true} onClick={() => setSave(false)} variant="contained">
-                {/* Re-Edit */}
-                under construction...
+              <LoadingButton
+                loading={isLoading}
+                onClick={() => {
+                  onEdit();
+                  setSave(false);
+                }}
+                variant="contained"
+              >
+                Re-Edit
+                {/* under construction... */}
               </LoadingButton>
             )}
           </Grid>

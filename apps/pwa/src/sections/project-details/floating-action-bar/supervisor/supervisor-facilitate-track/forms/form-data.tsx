@@ -155,21 +155,66 @@ export const ThirdFormData = [
     md: 4,
     xs: 4,
   },
+  // {
+  //   type: 'textField',
+  //   name: 'target_group_type',
+  //   label: 'نوعهم *',
+  //   placeholder: 'الرجاء اختيار نوعهم ',
+  //   md: 4,
+  //   xs: 4,
+  // },
   {
-    type: 'textField',
+    type: 'selectWithoutGenerator',
     name: 'target_group_type',
     label: 'نوعهم *',
     placeholder: 'الرجاء اختيار نوعهم ',
     md: 4,
     xs: 4,
+    children: (
+      <>
+        <option value="MEN" style={{ backgroundColor: '#fff' }}>
+          رجال
+        </option>
+        <option value="WOMEN" style={{ backgroundColor: '#fff' }}>
+          نساء
+        </option>
+        <option value="GENERAL" style={{ backgroundColor: '#fff' }}>
+          عام
+        </option>
+      </>
+    ),
   },
+  // {
+  //   type: 'textField',
+  //   name: 'target_group_age',
+  //   label: 'أعمارهم*',
+  //   placeholder: 'الرجاء كتابة أعمارهم',
+  //   md: 4,
+  //   xs: 4,
+  // },
   {
-    type: 'textField',
+    type: 'selectWithoutGenerator',
     name: 'target_group_age',
     label: 'أعمارهم*',
     placeholder: 'الرجاء كتابة أعمارهم',
     md: 4,
     xs: 4,
+    children: (
+      <>
+        <option value="age_under_10th" style={{ backgroundColor: '#fff' }}>
+          {'<10'}
+        </option>
+        <option value="age_10th_to_20th" style={{ backgroundColor: '#fff' }}>
+          {'10-20'}
+        </option>
+        <option value="age_20th_to_40th" style={{ backgroundColor: '#fff' }}>
+          {'20-40'}
+        </option>
+        <option value="age_over_40th" style={{ backgroundColor: '#fff' }}>
+          {'40>'}
+        </option>
+      </>
+    ),
   },
   {
     type: 'textField',

@@ -1,10 +1,11 @@
+// @ts-nocheck
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Grid, MenuItem, Typography } from '@mui/material';
-import { FormProvider, RHFSelect } from 'components/hook-form';
+import { FormProvider, RHFRadioGroup, RHFSelect } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import BaseField from 'components/hook-form/BaseField';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { _supportGoals } from '_mock/_supportgoals';
 import { useSelector } from 'redux/store';
 import { SupervisorStep1 } from '../../../../../../@types/supervisor-accepting-form';
@@ -39,34 +40,46 @@ function FirstForm({ children, onSubmit }: any) {
 
   const { proposal } = useSelector((state) => state.proposal);
 
+  const [isVat, setIsVat] = useState<boolean>(step1.vat ?? false);
+
   const methods = useForm<SupervisorStep1>({
     resolver: yupResolver(validationSchema),
     defaultValues: useMemo(() => step1, [step1]),
   });
 
-  const { handleSubmit, watch, setValue, resetField } = methods;
+  const { handleSubmit, watch, setValue, resetField, reset } = methods;
 
   const vat = watch('vat');
   const support_type = watch('support_type');
   // const inclu_or_exclu = watch('inclu_or_exclu');
 
   const onSubmitForm = async (data: SupervisorStep1) => {
-    if (vat !== 'true') {
-      resetField('vat_percentage');
-      resetField('inclu_or_exclu');
+    // console.log('data', data);
+    // if (vat !== 'true') {
+    //   resetField('vat_percentage');
+    //   resetField('inclu_or_exclu');
 
-      delete data.vat_percentage;
-      delete data.inclu_or_exclu;
-    }
+    //   delete data.vat_percentage;
+    //   delete data.inclu_or_exclu;
+    // }
     onSubmit(data);
   };
 
   useEffect(() => {
     setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
+    if (proposal) {
+      setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
+      // reset({
+      //   fsupport_by_supervisor: proposal.amount_required_fsupport ?? 0,
+      //   accreditation_type_id: proposal.accreditation_type_id ?? '',
+      //   closing_report: proposal.closing_report ? proposal.closing_report.toString() : 'false',
+      //   does_an_agreement: proposal.does_an_agreement ?? false,
+      // });
+    }
     // if (support_type === 'true') resetField('fsupport_by_supervisor');
     // if (support_type === 'false')
     //   setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
-  }, [proposal.amount_required_fsupport, resetField, setValue, support_type]);
+  }, [proposal, setValue, reset]);
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
@@ -142,9 +155,28 @@ function FirstForm({ children, onSubmit }: any) {
         </Grid>
 
         <Grid item md={6} xs={12}>
-          <BaseField
+          {/* <BaseField
             type="radioGroup"
             name="vat"
+            label="هل يشمل المشروع ضريبة القيمة المضافة"
+            options={[
+              { label: 'نعم', value: true },
+              { label: 'لا', value: false },
+            ]}
+          /> */}
+          <RHFRadioGroup
+            type="radioGroup"
+            name="vat"
+            onClick={(e) => {
+              if (e && e.target.value) {
+                if (e.target.value === 'true') {
+                  setIsVat(true);
+                } else {
+                  setIsVat(false);
+                }
+              }
+              console.log('e.target.value', e.target.value);
+            }}
             label="هل يشمل المشروع ضريبة القيمة المضافة"
             options={[
               { label: 'نعم', value: true },
@@ -162,7 +194,7 @@ function FirstForm({ children, onSubmit }: any) {
           />
         </Grid>
 
-        {vat === 'true' && (
+        {isVat && (
           <Grid item md={6} xs={12}>
             <BaseField
               type="numberField"
@@ -172,7 +204,7 @@ function FirstForm({ children, onSubmit }: any) {
             />
           </Grid>
         )}
-        {vat === 'true' && (
+        {isVat && (
           <Grid item md={6} xs={12}>
             <BaseField
               type="radioGroup"

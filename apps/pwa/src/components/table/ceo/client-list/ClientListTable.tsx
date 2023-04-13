@@ -98,6 +98,8 @@ export default function ClientListTable() {
 
   const [sortValue, setSortValue] = useState<string>('employee_name asc');
 
+  const [employeeName, setEmployeeName] = useState('');
+
   const sortOptions = [
     {
       value: 'employee_name asc',
@@ -133,11 +135,14 @@ export default function ClientListTable() {
 
   const getDataClient = async () => {
     let currentPage = page + 1;
+    const url = employeeName
+      ? `tender/client/proposal/list?page=${currentPage}&limit=${rowsPerPage}&employee_name=${employeeName}`
+      : `tender/client/proposal/list?page=${currentPage}&limit=${rowsPerPage}`;
     try {
       setIsLoading(true);
       const response = await axiosInstance.get(
         // `tender/client/proposal/list?page=1&limit=5`,
-        `tender/client/proposal/list?page=${currentPage}&limit=${rowsPerPage}`,
+        url,
         {
           headers: { 'x-hasura-role': activeRole! },
         }
@@ -203,7 +208,9 @@ export default function ClientListTable() {
   };
 
   const handleChange = (name: string) => {
-    console.log(name);
+    // console.log(name);
+    setEmployeeName(name);
+    setPage(0);
   };
 
   // useEffect(() => {
@@ -227,7 +234,7 @@ export default function ClientListTable() {
     getDataClient();
     // mutate();
     // eslint-disable-next-line
-  }, [page, rowsPerPage, orderBy]);
+  }, [page, rowsPerPage, orderBy, employeeName]);
 
   // if (error) return <>...Opss, something went wrong</>;
 

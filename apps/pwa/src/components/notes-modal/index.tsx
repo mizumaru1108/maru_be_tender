@@ -40,6 +40,8 @@ interface FormInput {
 function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
   const { activeRole } = useAuth();
   const { translate } = useLocales();
+  const { proposal } = useSelector((state) => state.proposal);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
 
   const validationSchema = Yup.object().shape({
     ...(action.actionType === 'REJECT' &&
@@ -158,11 +160,7 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
             {/* {['tender_project_manager', 'tender_ceo'].includes(activeRole!) &&
               proposal.project_track !== 'CONCESSIONAL_GRANTS' && (
                 <Grid item md={12} xs={12}>
-                  <AcceptedForm
-                    onSubmit={(data) => {
-                      console.log('data', data);
-                    }}
-                  />
+                  <AcceptedForm onEdit={() => setIsEdit(!isEdit)} />
                 </Grid>
               )} */}
             <Grid item md={12} xs={12}>
@@ -200,6 +198,7 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
               onClick={handleSubmit(onSubmitForm)}
               variant="contained"
               fullWidth
+              disabled={isEdit}
               sx={{
                 backgroundColor: action.backgroundColor,
                 color: '#fff',

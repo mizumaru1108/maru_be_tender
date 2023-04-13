@@ -36,6 +36,8 @@ export type PaymentStatus =
   | 'accepted_by_finance'
   | 'done';
 
+export type AccreditationTypeId = 'PLAIN' | 'INCOMING';
+
 export interface FollowUps {
   id: string;
   submitter_role: string;
@@ -66,6 +68,8 @@ export interface Proposal {
   vat_percentage: number;
   inclu_or_exclu: boolean;
   support_goal_id: string;
+  support_outputs: string;
+  accreditation_type_id: AccreditationTypeId;
   user: {
     id: string;
     employee_name: string;
@@ -120,7 +124,8 @@ export interface Proposal {
   reasons_to_accept: string;
   // remote_or_insite: boolean;
   remote_or_insite: string;
-  target_group_age: number;
+  // target_group_age: number;
+  target_group_age: string;
   target_group_num: number;
   target_group_type: string;
   recommended_supports: ItemBudget[];
@@ -235,6 +240,8 @@ export type ActiveTap =
   | 'project-path'
   | 'supervisor-revision';
 
+export type UpdateStatus = 'no-change' | 'updating' | 'updated' | 'error';
+
 type Role =
   | 'CLIENT'
   | 'MODERATOR'
@@ -286,7 +293,8 @@ export type PropsalLogGrants = {
     support_goal_id: string;
     support_outputs: string;
     support_type: boolean;
-    target_group_age: number;
+    // target_group_age: number;
+    target_group_age: string;
     target_group_num: number;
     target_group_type: string;
     vat: boolean;

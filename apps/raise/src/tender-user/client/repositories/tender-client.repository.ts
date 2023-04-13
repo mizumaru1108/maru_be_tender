@@ -361,7 +361,10 @@ export class TenderClientRepository {
     } = filter;
 
     const offset = (page - 1) * limit;
-    let whereClause: Sql = Prisma.sql``;
+    // In this code, whereClause is a variable that stores a SQL expression that will be used
+    // in the WHERE clause of the SQL query. The initial value of 1 = 1 is a default value
+    // that is always true, meaning it doesn't filter anything out.
+    let whereClause: Sql = Prisma.sql`1 = 1`;
 
     const order_by: Prisma.client_dataOrderByWithRelationInput = {};
     const field =
@@ -373,6 +376,7 @@ export class TenderClientRepository {
     }
 
     if (employee_name && employee_name !== '') {
+      // || is equals to concat in sql (. operator in php, + operator in javascript)
       whereClause = Prisma.sql`client_data.entity LIKE '%' || ${employee_name} || '%'`;
     }
 
