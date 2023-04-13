@@ -15,6 +15,7 @@ import {
   setStepThree,
   setStepTwo,
   stepBackOne,
+  stepResetActive,
 } from 'redux/slices/supervisorAcceptingForm';
 import { useDispatch, useSelector } from 'redux/store';
 import { useMutation } from 'urql';
@@ -150,6 +151,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
 
           setIsSubmitting(false);
           navigate(`/project-supervisor/dashboard/app`);
+          dispatch(stepResetActive({}));
         })
         .catch((err) => {
           if (typeof err.message === 'object') {

@@ -464,6 +464,11 @@ const navConfig = {
           icon: ICONS.tender_project_supervisor.payment_adjustment,
         },
         {
+          title: 'client_list',
+          path: PATH_PROJECT_SUPERVISOR.client_list,
+          icon: ICONS.tender_ceo.client_list,
+        },
+        {
           title: 'portal_reports',
           path: PATH_PROJECT_SUPERVISOR.portal_reports,
           icon: ICONS.tender_project_supervisor.portal_reports,

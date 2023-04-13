@@ -13,6 +13,18 @@ export const project_beneficiaries_map: BeneficiariesMap = {
   WOMEN: 'النساء',
 };
 
+export const target_type_map: BeneficiariesMap = {
+  GENERAL: 'GENERAL',
+  MEN: 'MEN',
+  WOMEN: 'WOMEN',
+};
+export const target_age_map: BeneficiariesMap = {
+  age_under_10th: 'age_under_10th',
+  age_10th_to_20th: 'age_10th_to_20th',
+  age_20th_to_40th: 'age_20th_to_40th',
+  age_over_40th: 'age_over_40th',
+};
+
 export interface ItemBudget {
   id?: string;
   amount: number | undefined;
@@ -60,7 +72,8 @@ export interface SupervisorStep3 {
   project_beneficiaries: string;
   target_group_num: number | undefined;
   target_group_type: string;
-  target_group_age: number | undefined;
+  // target_group_age: number | undefined;
+  target_group_age: string;
   project_implement_date: Date;
   execution_time: number;
   project_location: string;

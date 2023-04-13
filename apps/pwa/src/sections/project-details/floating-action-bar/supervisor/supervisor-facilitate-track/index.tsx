@@ -15,7 +15,7 @@ import { UpdateAction, PendingRequest } from '../../../../../@types/project-deta
 import NotesModal from 'components/notes-modal';
 import FacilitateSupervisorAcceptingForm from './forms';
 import { useDispatch, useSelector } from 'redux/store';
-import { setStepsData } from 'redux/slices/supervisorAcceptingForm';
+import { setStepsData, stepResetActive } from 'redux/slices/supervisorAcceptingForm';
 import PendingProposalRequestSending from '../PendingProposalRequestSending';
 import { FEATURE_AMANDEMENT_PROPOSAL } from '../../../../../config';
 import axiosInstance from 'utils/axios';
@@ -68,6 +68,7 @@ function FloatinActionBar() {
 
   const handleCloseModal = () => {
     setAction('');
+    dispatch(stepResetActive({}));
   };
 
   // const stepBackProposal = () => {
