@@ -544,7 +544,7 @@ function FloatingActionBar() {
           loading={isSubmittingStepback}
         />
       )}
-      {action === 'ACCEPT' && (
+      {/* {action === 'ACCEPT' && (
         <NotesModal
           title="قبول المشروع"
           onClose={handleCloseModal}
@@ -557,9 +557,9 @@ function FloatingActionBar() {
           }}
           loading={isSubmitting}
         />
-      )}
+      )} */}
 
-      {/* {action === 'ACCEPT' && data.user.track !== 'CONCESSIONAL_GRANTS' && (
+      {action === 'ACCEPT' && data.user.track !== 'CONCESSIONAL_GRANTS' && (
         <NotesModal
           title="قبول المشروع"
           onClose={handleCloseModal}
@@ -575,7 +575,7 @@ function FloatingActionBar() {
       )}
       {action === 'ACCEPT' && data.user.track === 'CONCESSIONAL_GRANTS' && (
         <FacilitateSupervisorAcceptingForm onClose={handleCloseModal} />
-      )} */}
+      )}
 
       {action === 'ACCEPT_CONSULTANT' && (
         <NotesModal

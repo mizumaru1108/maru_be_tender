@@ -18,7 +18,7 @@ function RequestsInProcess() {
       where: {
         project_manager_id: { _eq: user?.id },
         _and: {
-          inner_status: { _in: ['ACCEPTED_BY_SUPERVISOR', 'REJECTED_BY_CONSULTANT'] },
+          inner_status: { _in: ['ACCEPTED_BY_SUPERVISOR'] },
           outter_status: { _nin: ['ON_REVISION', 'ASKED_FOR_AMANDEMENT'] },
         },
       },

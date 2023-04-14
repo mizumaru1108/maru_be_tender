@@ -333,9 +333,13 @@ function FloatinActionBar() {
     );
   };
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   dispatch(setStepsData(proposal));
+  // }, [dispatch, proposal]);
+
+  React.useEffect(() => {
     dispatch(setStepsData(proposal));
-  }, [dispatch, proposal]);
+  }, [proposal, dispatch]);
 
   return (
     <>

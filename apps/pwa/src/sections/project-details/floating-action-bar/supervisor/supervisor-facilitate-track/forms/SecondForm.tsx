@@ -23,7 +23,7 @@ function SecondForm({ children, onSubmit }: any) {
   });
 
   const { step2 } = useSelector((state) => state.supervisorAcceptingForm);
-
+  console.log({ step2 });
   const methods = useForm<SupervisorStep2>({
     resolver: yupResolver(validationSchema),
     defaultValues: useMemo(() => step2, [step2]),

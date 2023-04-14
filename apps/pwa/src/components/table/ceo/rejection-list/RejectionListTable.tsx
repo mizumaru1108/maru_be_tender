@@ -75,7 +75,11 @@ export default function UsersAndPermissionsTable() {
     } else {
       setRejectFilter({
         project_manager_id: { _is_null: false },
-        _and: { inner_status: { _in: ['REJECTED_BY_PROJECT_MANAGER', 'REJECTED_BY_CEO'] } },
+        _and: {
+          inner_status: {
+            _in: ['REJECTED_BY_PROJECT_MANAGER', 'REJECTED_BY_CEO', 'REJECTED_BY_CONSULTANT'],
+          },
+        },
       });
     }
   }, [activeRole]);

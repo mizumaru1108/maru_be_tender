@@ -214,7 +214,9 @@ const slice = createSlice({
       const payment_index = state.proposal.payments.findIndex(
         (payment) => payment.id === payment_id
       );
-      state.proposal.payments[payment_index].status = status;
+      if (!!status) {
+        state.proposal.payments[payment_index].status = status;
+      }
     },
     // INSERT CHEQUE
     insertCheque(state, action) {
@@ -322,6 +324,7 @@ export const insertPaymentsBySupervisor = (data: any) => async () => {
 
     return res.data;
   } catch (error) {
+    console.log(error);
     dispatch(slice.actions.endLoading);
     throw error;
   }
@@ -347,7 +350,13 @@ export const updatePaymentBySupervisorAndManagerAndFinance = (data: any) => asyn
     //   },
     // });
 
-    if (res.data.statusCode === 200) {
+    if (
+      res &&
+      res.data &&
+      res.data.statusCode === 200 &&
+      res.data.data &&
+      res.data.data.updatedPayment
+    ) {
       dispatch(
         slice.actions.editPayment({
           payment_id: data.id,

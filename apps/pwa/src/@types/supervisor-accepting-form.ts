@@ -14,15 +14,25 @@ export const project_beneficiaries_map: BeneficiariesMap = {
 };
 
 export const target_type_map: BeneficiariesMap = {
-  GENERAL: 'GENERAL',
-  MEN: 'MEN',
-  WOMEN: 'WOMEN',
+  YOUTHS: 'YOUTHS',
+  GIRLS: 'GIRLS',
+  CHILDREN: 'CHILDREN',
+  FAMILY: 'FAMILY',
+  PARENTS: 'PARENTS',
+  MOMS: 'MOMS',
+  EMPLOYEMENT: 'EMPLOYEMENT',
+  PUBLIC_BENEFIT: 'PUBLIC_BENEFIT',
+  CHARITABLE_ORGANIZATIONS: 'CHARITABLE_ORGANIZATIONS',
+  CHARITABLE_WORKERS: 'CHARITABLE_WORKERS',
 };
+
 export const target_age_map: BeneficiariesMap = {
-  age_under_10th: 'age_under_10th',
-  age_10th_to_20th: 'age_10th_to_20th',
-  age_20th_to_40th: 'age_20th_to_40th',
-  age_over_40th: 'age_over_40th',
+  AGE_1TH_TO_13TH: 'AGE_1TH_TO_13TH',
+  AGE_14TH_TO_30TH: 'AGE_14TH_TO_30TH',
+  AGE_31TH_TO_50TH: 'AGE_31TH_TO_50TH',
+  AGE_51TH_TO_60TH: 'AGE_51TH_TO_60TH',
+  AGE_OVER_60TH: 'AGE_OVER_60TH',
+  ALL_AGE: 'ALL_AGE',
 };
 
 export interface ItemBudget {

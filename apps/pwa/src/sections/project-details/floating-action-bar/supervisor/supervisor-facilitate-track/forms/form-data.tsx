@@ -172,7 +172,7 @@ export const ThirdFormData = [
     xs: 4,
     children: (
       <>
-        <option value="MEN" style={{ backgroundColor: '#fff' }}>
+        {/* <option value="MEN" style={{ backgroundColor: '#fff' }}>
           رجال
         </option>
         <option value="WOMEN" style={{ backgroundColor: '#fff' }}>
@@ -180,6 +180,36 @@ export const ThirdFormData = [
         </option>
         <option value="GENERAL" style={{ backgroundColor: '#fff' }}>
           عام
+        </option> */}
+        <option value="YOUTHS" style={{ backgroundColor: '#fff' }}>
+          شباب
+        </option>
+        <option value="GIRLS" style={{ backgroundColor: '#fff' }}>
+          فتيات
+        </option>
+        <option value="CHILDREN" style={{ backgroundColor: '#fff' }}>
+          أطفال
+        </option>
+        <option value="FAMILY" style={{ backgroundColor: '#fff' }}>
+          أسرة
+        </option>
+        <option value="PARENTS" style={{ backgroundColor: '#fff' }}>
+          أباء
+        </option>
+        <option value="MOMS" style={{ backgroundColor: '#fff' }}>
+          أمهات
+        </option>
+        <option value="EMPLOYEMENT" style={{ backgroundColor: '#fff' }}>
+          عمالة
+        </option>
+        <option value="PUBLIC_BENEFIT" style={{ backgroundColor: '#fff' }}>
+          نفع عام
+        </option>
+        <option value="CHARITABLE_ORGANIZATIONS" style={{ backgroundColor: '#fff' }}>
+          جهات خيرية
+        </option>
+        <option value="CHARITABLE_WORKERS" style={{ backgroundColor: '#fff' }}>
+          عاملين في الجهات الخيرية
         </option>
       </>
     ),
@@ -201,17 +231,23 @@ export const ThirdFormData = [
     xs: 4,
     children: (
       <>
-        <option value="age_under_10th" style={{ backgroundColor: '#fff' }}>
-          {'<10'}
+        <option value="AGE_1TH_TO_13TH" style={{ backgroundColor: '#fff' }}>
+          من 1 سنة إلى 13
         </option>
-        <option value="age_10th_to_20th" style={{ backgroundColor: '#fff' }}>
-          {'10-20'}
+        <option value="AGE_14TH_TO_30TH" style={{ backgroundColor: '#fff' }}>
+          من 14 سنة إلى 30
         </option>
-        <option value="age_20th_to_40th" style={{ backgroundColor: '#fff' }}>
-          {'20-40'}
+        <option value="AGE_31TH_TO_50TH" style={{ backgroundColor: '#fff' }}>
+          من 31 إلى 50
         </option>
-        <option value="age_over_40th" style={{ backgroundColor: '#fff' }}>
-          {'40>'}
+        <option value="AGE_51TH_TO_60TH" style={{ backgroundColor: '#fff' }}>
+          من 51 إلى 60
+        </option>
+        <option value="AGE_OVER_60TH" style={{ backgroundColor: '#fff' }}>
+          من 61 فأكثر
+        </option>
+        <option value="ALL_AGE" style={{ backgroundColor: '#fff' }}>
+          جميع الفئات العمرية
         </option>
       </>
     ),

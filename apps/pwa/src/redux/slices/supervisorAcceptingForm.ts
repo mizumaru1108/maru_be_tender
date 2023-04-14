@@ -106,6 +106,7 @@ const slice = createSlice({
     },
     // SET STEPS DATA
     setStepsData(state, action) {
+      console.log(action.payload);
       // step 1
       state.step1.clause = action.payload.clause ?? '';
       state.step1.clasification_field = action.payload.clasification_field ?? '';
@@ -122,14 +123,15 @@ const slice = createSlice({
       state.step1.support_goal_id = action.payload.support_goal_id ?? '';
       state.step1.accreditation_type_id = action.payload.accreditation_type_id ?? '';
       //step 2
-      state.step2.organizationName = action.payload.user.employee_name;
-      state.step2.region = action.payload.user.client_data.region;
-      state.step2.governorate = action.payload.user.client_data.governorate;
-      state.step2.date_of_esthablistmen = action.payload.user.client_data.date_of_esthablistmen;
-      state.step2.num_of_beneficiaries = action.payload.user.client_data.num_of_beneficiaries;
+      state.step2.organizationName = action.payload.user.employee_name ?? '';
+      state.step2.region = action.payload.user.client_data.region ?? '';
+      state.step2.governorate = action.payload.user.client_data.governorate ?? '';
+      state.step2.date_of_esthablistmen =
+        action.payload.user.client_data.date_of_esthablistmen ?? new Date();
+      state.step2.num_of_beneficiaries = action.payload.user.client_data.num_of_beneficiaries ?? 0;
       state.step2.chairman_of_board_of_directors =
         action.payload.user.client_data.chairman_name || '';
-      state.step2.ceo = action.payload.user.client_data.ceo_name;
+      state.step2.ceo = action.payload.user.client_data.ceo_name ?? '';
       state.step2.most_clents_projects = action.payload.most_clents_projects ?? '';
       //step 3
       state.step2.been_supported_before = action.payload.been_supported_before || false;
@@ -145,10 +147,18 @@ const slice = createSlice({
       state.step3.been_made_before = action.payload.been_made_before || false;
       state.step3.added_value = action.payload.added_value ?? '';
       state.step3.target_group_age =
-        target_age_map[action.payload.target_group_type as keyof BeneficiariesMap] ?? '';
+        (action.payload.target_group_age &&
+          target_age_map[
+            action.payload.target_group_age.toUpperCase() as keyof BeneficiariesMap
+          ]) ??
+        '';
       // state.step3.target_group_age = action.payload.target_group_type ?? undefined;
       state.step3.target_group_type =
-        target_type_map[action.payload.target_group_type as keyof BeneficiariesMap] ?? '';
+        (action.payload.target_group_type &&
+          target_type_map[
+            action.payload.target_group_type.toUpperCase() as keyof BeneficiariesMap
+          ]) ??
+        '';
       state.step3.target_group_num = action.payload.target_group_num ?? undefined;
       state.step3.reasons_to_accept = action.payload.reasons_to_accept ?? '';
       state.step3.been_made_before = action.payload.been_made_before ?? false;

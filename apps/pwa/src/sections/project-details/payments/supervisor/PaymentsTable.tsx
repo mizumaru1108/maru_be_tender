@@ -5,19 +5,32 @@ import { useDispatch, useSelector } from 'redux/store';
 import { updatePaymentBySupervisorAndManagerAndFinance } from 'redux/slices/proposal';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
+import { useQuery } from 'urql';
+import { getOnePayments } from '../../../../queries/commons/getOnePayments';
+import { useParams } from 'react-router';
 
 function PaymentsTable() {
   const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const { translate } = useLocales();
+  const params = useParams();
+  // const id = params.id;
+  const { id } = params;
 
   const dispatch = useDispatch();
 
   const { proposal } = useSelector((state) => state.proposal);
 
+  const [result, reExecute] = useQuery({
+    query: getOnePayments,
+    variables: { id },
+  });
+  const { data, fetching, error } = result;
+
   const [currentIssuedPayament, setCurrentIssuedPayament] = useState(0);
 
   const handleIssuePayment = async (data: any) => {
+    // console.log({ data });
     try {
       await dispatch(
         // updatePaymentBySupervisorAndManagerAndFinance({
@@ -45,15 +58,40 @@ function PaymentsTable() {
         }
       });
     } catch (error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
-      });
+      console.log({ error });
+      if (error.message !== "Cannot set properties of undefined (setting 'status')") {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'right',
+          },
+        });
+      }
+      if (error.message === "Cannot set properties of undefined (setting 'status')") {
+        enqueueSnackbar('تم إصدار أذن الصرف بنجاح', {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'right',
+          },
+        });
+      }
+      // enqueueSnackbar(error.message, {
+      //   variant: 'error',
+      //   preventDuplicate: true,
+      //   autoHideDuration: 3000,
+      //   anchorOrigin: {
+      //     vertical: 'bottom',
+      //     horizontal: 'right',
+      //   },
+      // });
+    } finally {
+      reExecute();
     }
   };
 
@@ -66,9 +104,16 @@ function PaymentsTable() {
     }
   }, [proposal]);
 
+  if (fetching) return <div>Loading...</div>;
+  if (error) return <div>Error</div>;
+
+  // console.log('payments L ', proposal.payments);
+  // if (!fetching) {
+  //   console.log('data payments L ', data.proposal_by_pk.payments);
+  // }
   return (
     <>
-      {proposal.payments.map((item, index) => (
+      {data.proposal_by_pk.payments.map((item: any, index: any) => (
         <Grid item md={12} key={index} sx={{ mb: '20px' }}>
           <Grid container direction="row" key={index} spacing={2} alignItems="center">
             <Grid item md={2}>
