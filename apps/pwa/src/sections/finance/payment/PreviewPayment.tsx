@@ -48,7 +48,6 @@ export default function PreviewPayment() {
   const params = useParams();
   const theme = useTheme();
 
-  const [proposalData, setProposalData] = useState<Proposal | null>(null);
   const componentRef = useRef<HTMLDivElement>(null);
 
   const [{ data, fetching, error }] = useQuery({
@@ -57,12 +56,6 @@ export default function PreviewPayment() {
       id: params?.id,
     },
   });
-
-  useEffect(() => {
-    if (data) {
-      setProposalData(data.proposal);
-    }
-  }, [data]);
 
   if (error) return <>Opss, something went wrong ...</>;
 
@@ -174,12 +167,22 @@ export default function PreviewPayment() {
                 />
               </Grid>
             </Grid>
-            <Grid container rowSpacing={2} columnSpacing={3} sx={{ mt: 1 }}>
-              <CardPayment proposalData={proposalData} />
-            </Grid>
-            <Grid container rowSpacing={2} columnSpacing={3} sx={{ mt: 1 }}>
-              <ProposalDetails proposalData={proposalData} loading={fetching} />
-            </Grid>
+            {!data && fetching ? (
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  Loading ...
+                </Grid>
+              </Grid>
+            ) : (
+              <>
+                <Grid container rowSpacing={2} columnSpacing={3} sx={{ mt: 1 }}>
+                  <CardPayment proposalData={data?.proposal} loading={fetching} />
+                </Grid>
+                <Grid container rowSpacing={2} columnSpacing={3} sx={{ mt: 1 }}>
+                  <ProposalDetails proposalData={data?.proposal} loading={fetching} />
+                </Grid>
+              </>
+            )}
           </Box>
         </ContentStyle>
       </Container>
