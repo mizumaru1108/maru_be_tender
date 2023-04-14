@@ -805,6 +805,7 @@ export class TenderProposalRepository {
         employee_name,
         project_name,
         outter_status,
+        project_number,
         page = 1,
         limit = 10,
         sort,
@@ -890,26 +891,26 @@ export class TenderProposalRepository {
         if (currentUser.choosenRole === 'tender_ceo') {
           whereClause = {
             ...whereClause,
-            OR: [
-              { outter_status: OutterStatusEnum.CANCELED },
-              {
-                inner_status: {
-                  in: [
-                    InnerStatusEnum.ACCEPTED_BY_CONSULTANT,
-                    InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER,
-                  ],
-                },
-              },
-            ],
+            // OR: [
+            //   { outter_status: OutterStatusEnum.CANCELED },
+            // {
+            inner_status: {
+              in: [
+                InnerStatusEnum.ACCEPTED_BY_CONSULTANT,
+                InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER,
+              ],
+            },
+            //   },
+            // ],
           };
         }
-      }
 
-      if (currentUser.choosenRole === 'tender_consultant') {
-        whereClause = {
-          ...whereClause,
-          inner_status: InnerStatusEnum.ACCEPTED_AND_NEED_CONSULTANT,
-        };
+        if (currentUser.choosenRole === 'tender_consultant') {
+          whereClause = {
+            ...whereClause,
+            inner_status: InnerStatusEnum.ACCEPTED_AND_NEED_CONSULTANT,
+          };
+        }
       }
 
       if (employee_name) {
@@ -922,7 +923,7 @@ export class TenderProposalRepository {
         //   },
         // });
 
-        console.log(decodeURIComponent(employee_name));
+        // console.log(decodeURIComponent(employee_name));
         orClauses.push({
           user: {
             client_data: {
@@ -954,19 +955,32 @@ export class TenderProposalRepository {
       }
 
       if (outter_status) {
-        const outterFilter: string = outter_status
-          .replace(/[^\w\s]|_/g, '')
-          .toLowerCase();
+        // const outterFilter: string = outter_status
+        //   .replace(/[^\w\s]|_/g, '')
+        //   .toLowerCase();
+
+        // const mappedOutter = outter_status.map((outter) =>
+        //   outter.replace(/[^\w\s]|_/g, '').toUpperCase(),
+        // );
+
+        // console.log(outter_status);
+
         orClauses.push({
           outter_status: {
-            contains: outterFilter,
+            in: outter_status,
             mode: 'insensitive',
           },
         });
       }
 
-      console.log(logUtil(orClauses));
-      console.log(logUtil(whereClause));
+      if (project_number) {
+        orClauses.push({
+          project_number,
+        });
+      }
+
+      // console.log(logUtil(orClauses));
+      // console.log(logUtil(whereClause));
 
       const data = await this.prismaService.proposal.findMany({
         where: {
@@ -1072,12 +1086,12 @@ export class TenderProposalRepository {
       }
 
       if (outter_status) {
-        const outterFilter: string = outter_status
-          .replace(/[^\w\s]|_/g, '')
-          .toLowerCase();
+        // const outterFilter: string = outter_status
+        //   .replace(/[^\w\s]|_/g, '')
+        //   .toLowerCase();
         orClauses.push({
           outter_status: {
-            contains: outterFilter,
+            in: outter_status,
             mode: 'insensitive',
           },
         });

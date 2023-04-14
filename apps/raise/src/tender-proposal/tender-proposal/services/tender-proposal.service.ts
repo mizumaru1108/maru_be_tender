@@ -1136,11 +1136,11 @@ export class TenderProposalService {
       proposalUpdatePayload.inner_status =
         InnerStatusEnum.REJECTED_BY_PROJECT_MANAGER;
       proposalUpdatePayload.outter_status = OutterStatusEnum.CANCELED;
-      proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_MANAGER;
+      proposalUpdatePayload.state = TenderAppRoleEnum.CEO;
 
       /* log */
       proposalLogCreateInput.action = ProposalAction.REJECT;
-      proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_MANAGER;
+      proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
     }
 

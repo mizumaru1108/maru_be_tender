@@ -50,51 +50,51 @@ export const FollowUpNotifMapper = (
     ];
   }
 
-  if (employee_only) {
-    if (proposal.supervisor) {
-      createWebNotifPayload.push({
-        ...baseWebNotif,
-        user_id: proposal.supervisor.id,
-      });
+  // if (employee_only) {
+  //   if (proposal.supervisor) {
+  //     createWebNotifPayload.push({
+  //       ...baseWebNotif,
+  //       user_id: proposal.supervisor.id,
+  //     });
 
-      reviewerId.push(proposal.supervisor.id);
-      reviewerEmail.push(proposal.supervisor.email);
+  //     reviewerId.push(proposal.supervisor.id);
+  //     reviewerEmail.push(proposal.supervisor.email);
 
-      reviewerEmailTemplatePath = `tender/${
-        selected_lang || 'ar'
-      }/proposal/project_followup`;
+  //     reviewerEmailTemplatePath = `tender/${
+  //       selected_lang || 'ar'
+  //     }/proposal/project_followup`;
 
-      reviewerEmailTemplateContext = [
-        {
-          projectName: proposal.project_name,
-          receiverName: proposal.supervisor.employee_name,
-          followUpSender: user.employee_name,
-        },
-      ];
-    }
+  //     reviewerEmailTemplateContext = [
+  //       {
+  //         projectName: proposal.project_name,
+  //         receiverName: proposal.supervisor.employee_name,
+  //         followUpSender: user.employee_name,
+  //       },
+  //     ];
+  //   }
 
-    if (proposal.project_manager) {
-      createWebNotifPayload.push({
-        ...baseWebNotif,
-        user_id: proposal.project_manager.id,
-      });
+  //   if (proposal.project_manager) {
+  //     createWebNotifPayload.push({
+  //       ...baseWebNotif,
+  //       user_id: proposal.project_manager.id,
+  //     });
 
-      reviewerId.push(proposal.project_manager.id);
-      reviewerEmail.push(proposal.project_manager.email);
+  //     reviewerId.push(proposal.project_manager.id);
+  //     reviewerEmail.push(proposal.project_manager.email);
 
-      reviewerEmailTemplatePath = `tender/${
-        selected_lang || 'ar'
-      }/proposal/project_followup`;
+  //     reviewerEmailTemplatePath = `tender/${
+  //       selected_lang || 'ar'
+  //     }/proposal/project_followup`;
 
-      reviewerEmailTemplateContext = [
-        {
-          projectName: proposal.project_name,
-          receiverName: proposal.project_manager.employee_name,
-          followUpSender: user.employee_name,
-        },
-      ];
-    }
-  }
+  //     reviewerEmailTemplateContext = [
+  //       {
+  //         projectName: proposal.project_name,
+  //         receiverName: proposal.project_manager.employee_name,
+  //         followUpSender: user.employee_name,
+  //       },
+  //     ];
+  //   }
+  // }
 
   const createManyWebNotifPayload = createManyNotificationMapper({
     payloads: createWebNotifPayload,
