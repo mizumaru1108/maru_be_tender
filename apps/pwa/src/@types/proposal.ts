@@ -150,6 +150,10 @@ export interface Proposal {
     };
   };
   follow_ups: FollowUps[];
+  supervisor_id?: string | null;
+  project_manager_id?: string | null;
+  cashier_id?: string | null;
+  finance_id?: string | null;
 }
 
 export type AmandementProposal = Omit<
