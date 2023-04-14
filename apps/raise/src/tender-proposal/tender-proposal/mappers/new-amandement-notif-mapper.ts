@@ -6,6 +6,7 @@ import { CreateNotificationDto } from '../../../tender-notification/dtos/request
 import { createManyNotificationMapper } from '../../../tender-notification/mappers/create-many-notification.mapper';
 
 export const NewAmandementNotifMapper = (
+  proposal_id: string,
   logs: CommonProposalLogNotifResponse['data'],
   notifLink: string,
   selectLang?: 'ar' | 'en',
@@ -22,7 +23,7 @@ export const NewAmandementNotifMapper = (
     reviewer ? 'Supervisor (' + reviewer.employee_name + ')' : 'Supervisor'
   } at ${logTime}`;
 
-  const reviewerContent = `Successfully send amandement request for project ${proposal.project_name} to ${proposal.user.employee_name} at ${logTime}`;
+  // const reviewerContent = `Successfully send amandement request for project ${proposal.project_name} to ${proposal.user.employee_name} at ${logTime}`;
 
   const clientWebNotifPayload: CreateNotificationDto = {
     user_id: proposal.user.id,
@@ -36,15 +37,15 @@ export const NewAmandementNotifMapper = (
     clientWebNotifPayload,
   ];
 
-  if (reviewer) {
-    const supervisorWebNotifPayload: CreateNotificationDto = {
-      user_id: reviewer.id,
-      type: 'PROPOSAL',
-      subject: subject + 'Sended',
-      content: reviewerContent,
-    };
-    createWebNotifPayload.push(supervisorWebNotifPayload);
-  }
+  // if (reviewer) {
+  //   const supervisorWebNotifPayload: CreateNotificationDto = {
+  //     user_id: reviewer.id,
+  //     type: 'PROPOSAL',
+  //     subject: subject + 'Sended',
+  //     content: reviewerContent,
+  //   };
+  //   createWebNotifPayload.push(supervisorWebNotifPayload);
+  // }
 
   const createManyWebNotifPayload = createManyNotificationMapper({
     payloads: createWebNotifPayload,
@@ -58,18 +59,14 @@ export const NewAmandementNotifMapper = (
     clientMobileNumber: [proposal.user.mobile_number || ''],
     clientContent,
     createManyWebNotifPayload,
-    clientEmailTemplatePath: `tender/${selectLang || 'ar'}/account/new_message`,
+    clientEmailTemplatePath: `tender/${
+      selectLang || 'ar'
+    }/proposal/project_new_amandement_request`,
     clientEmailTemplateContext: [
       {
         clientUsername: `${proposal.user.employee_name}`,
-        projectPageLink: `${notifLink}/client/dashboard/previous-funding-requests`,
+        projectPageLink: `${notifLink}/client/dashboard/previous-funding-requests/${proposal_id}/show-project`,
       },
     ],
-    reviewerId: [reviewer ? reviewer.id : ''],
-    reviewerEmail: [reviewer ? reviewer.email : ''],
-    reviewerMobileNumber: [
-      reviewer && reviewer.mobile_number ? reviewer.mobile_number : '',
-    ],
-    reviewerContent,
   };
 };

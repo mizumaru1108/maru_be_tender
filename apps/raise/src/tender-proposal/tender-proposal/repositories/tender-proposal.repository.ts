@@ -599,6 +599,7 @@ export class TenderProposalRepository {
           });
 
           const sendAmandementNotif = NewAmandementNotifMapper(
+            id,
             createdLog,
             this.configService.get('tenderAppConfig.baseUrl') as string,
             selectLang,
