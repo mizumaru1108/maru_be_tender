@@ -164,7 +164,7 @@ const ProjectCard = ({
                   mb: '0px',
                 }}
               >
-                {translate(`outter_status.${title.inquiryStatus.toUpperCase()}`)}
+                {translate(`commons.chip_${title.inquiryStatus}`)}
               </Typography>
             </Box>
           )}

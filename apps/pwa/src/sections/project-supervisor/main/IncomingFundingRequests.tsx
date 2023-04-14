@@ -64,6 +64,7 @@ function IncomingFundingRequests() {
                 project_number: generateHeader(
                   item && item.project_number && item.project_number ? item.project_number : item.id
                 ),
+                inquiryStatus: item.outter_status.toLowerCase(),
               }}
               content={{
                 projectName: item.project_name,

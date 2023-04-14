@@ -15,6 +15,7 @@ query clientMainPage {
   amount_required_fsupport
   fsupport_by_supervisor
   project_number
+  outter_status
 }
   draft_projects: proposal(where: { step: { _neq: ZERO } }, order_by: {created_at: desc}, limit: 4, offset: 0) {
     id

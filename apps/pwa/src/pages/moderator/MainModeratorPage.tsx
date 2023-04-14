@@ -98,6 +98,7 @@ function MainManagerPage() {
                             ? item.project_number
                             : item.id
                         ),
+                        inquiryStatus: item.outter_status.toLowerCase(),
                       }}
                       content={{
                         projectName: item.project_name,

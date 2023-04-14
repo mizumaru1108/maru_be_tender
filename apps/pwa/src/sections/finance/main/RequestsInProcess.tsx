@@ -20,6 +20,7 @@ function RequestsInProcess() {
         // inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' },
         payments: { status: { _eq: 'accepted_by_project_manager' } },
         _and: { finance_id: { _eq: user?.id } },
+        outter_status: { _in: ['ONGOING', 'PENDING', 'ON_REVISION'] },
       },
     },
   });
@@ -61,6 +62,7 @@ function RequestsInProcess() {
               project_number: generateHeader(
                 item && item.project_number && item.project_number ? item.project_number : item.id
               ),
+              inquiryStatus: item.outter_status.toLowerCase(),
             }}
             content={{
               projectName: item.project_name,

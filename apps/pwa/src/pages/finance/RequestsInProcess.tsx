@@ -49,6 +49,7 @@ function RequestsInProcess() {
               // inner_status: { inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' } },
               payments: { payments: { status: { _eq: 'accepted_by_project_manager' } } },
               finance_id: { finance_id: { _eq: user?.id } },
+              outter_status: { outter_status: { _in: ['ONGOING', 'PENDING', 'ON_REVISION'] } },
             }}
             cardFooterButtonAction="completing-exchange-permission"
           />
