@@ -106,7 +106,7 @@ const slice = createSlice({
     },
     // SET STEPS DATA
     setStepsData(state, action) {
-      console.log(action.payload);
+      // console.log(action.payload);
       // step 1
       state.step1.clause = action.payload.clause ?? '';
       state.step1.clasification_field = action.payload.clasification_field ?? '';

@@ -89,7 +89,7 @@ function PaymentsTable() {
     <>
       {proposal.payments.map((item, index) => (
         <Grid item md={12} key={index} sx={{ mb: '20px' }}>
-          <Grid container direction="row" key={index} spacing={2} alignItems="center">
+          <Grid container direction="row" key={item.order} spacing={2} alignItems="center">
             <Grid item md={2}>
               <Typography variant="h6">
                 <Typography component="span">

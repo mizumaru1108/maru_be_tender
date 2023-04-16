@@ -4,10 +4,13 @@ import React from 'react';
 import UploadingForm from './UploadingForm';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
+import { useNavigate } from 'react-router';
+import { role_url_map } from '../../../../@types/commons';
 
 function PaymentsTable() {
   const { proposal } = useSelector((state) => state.proposal);
   const { translate } = useLocales();
+  const navigate = useNavigate();
 
   const { activeRole } = useAuth();
 
@@ -28,7 +31,7 @@ function PaymentsTable() {
       )}
       {proposal.payments.map((item, index) => (
         <Grid item md={12} key={index} sx={{ mb: '20px' }}>
-          <Grid container direction="row" key={index} alignItems="center">
+          <Grid container direction="row" key={item.order} spacing={2} alignItems="center">
             <Grid item md={2} sx={{ alignSelf: 'center' }}>
               <Typography variant="h6">
                 <Typography component="span">
@@ -58,7 +61,7 @@ function PaymentsTable() {
               </Stack>
             </Grid>
             {item.status !== 'set_by_supervisor' && (
-              <Grid item md={3}>
+              <Grid item md={2}>
                 <Typography
                   sx={{
                     color: '#0E8478',
@@ -71,7 +74,7 @@ function PaymentsTable() {
               </Grid>
             )}
             {item.status === 'accepted_by_finance' && activeRole === 'tender_cashier' ? (
-              <Grid item md={3} sx={{ textAlign: '-webkit-center' }}>
+              <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                 <Button
                   sx={{
                     backgroundColor: 'transparent',
@@ -92,36 +95,56 @@ function PaymentsTable() {
                 </Button>
               </Grid>
             ) : item.status === 'done' ? (
-              <Grid item md={3} sx={{ textAlign: '-webkit-center' }}>
-                {item.cheques.length ? (
+              <>
+                <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
+                  {item.cheques.length ? (
+                    <Button
+                      component={Link}
+                      href={
+                        typeof item.cheques[0].transfer_receipt === 'string'
+                          ? item.cheques[0].transfer_receipt
+                          : item.cheques[0].transfer_receipt.url
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download="صورة بطاقة الحساب البنكي"
+                      sx={{
+                        backgroundColor: 'transparent',
+                        color: '#000',
+                        textDecorationLine: 'underline',
+                      }}
+                    >
+                      {translate(
+                        'content.administrative.project_details.payment.table.btn.review_transfer_receipt'
+                      )}
+                    </Button>
+                  ) : (
+                    <Typography color="error" sx={{ textAlign: 'start' }}>
+                      {translate(
+                        'content.administrative.project_details.payment.table.btn.not_found_cheques'
+                      )}
+                    </Typography>
+                  )}
+                </Grid>
+                <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                   <Button
-                    component={Link}
-                    href={
-                      typeof item.cheques[0].transfer_receipt === 'string'
-                        ? item.cheques[0].transfer_receipt
-                        : item.cheques[0].transfer_receipt.url
-                    }
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download="صورة بطاقة الحساب البنكي"
-                    sx={{
-                      backgroundColor: 'transparent',
-                      color: '#000',
-                      textDecorationLine: 'underline',
+                    variant="text"
+                    color="inherit"
+                    sx={{ '&:hover': { textDecorationLine: 'underline' } }}
+                    onClick={() => {
+                      navigate(
+                        `/${role_url_map[`${activeRole!}`]}/dashboard/generate/${
+                          proposal.id
+                        }/payments/${item.id}`
+                      );
                     }}
                   >
                     {translate(
-                      'content.administrative.project_details.payment.table.btn.review_transfer_receipt'
+                      'content.administrative.project_details.payment.table.btn.exchange_permit_generate_finance'
                     )}
                   </Button>
-                ) : (
-                  <Typography color="error" sx={{ textAlign: 'start' }}>
-                    {translate(
-                      'content.administrative.project_details.payment.table.btn.not_found_cheques'
-                    )}
-                  </Typography>
-                )}
-              </Grid>
+                </Grid>
+              </>
             ) : null}
           </Grid>
         </Grid>

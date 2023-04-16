@@ -256,7 +256,7 @@ function ModeratorActionBar() {
               sx={{ mr: { md: '1em' } }}
               onClick={() => setAction('accept')}
             >
-              {translate('project_acceptance')}
+              {translate('account_manager.accept_project')}
             </LoadingButton>
             <LoadingButton
               loading={isSubmittingRejected}
@@ -269,7 +269,7 @@ function ModeratorActionBar() {
               }}
               onClick={() => setAction('reject')}
             >
-              {translate('project_rejected')}
+              {translate('account_manager.reject_project')}
             </LoadingButton>
             {/* disabled other than accept reject button */}
             {/* <Button
@@ -289,7 +289,7 @@ function ModeratorActionBar() {
               sx={{ flex: 1 }}
               // disabled={true}
             >
-              {translate('partner_details.send_messages')}
+              {translate('send_message_to_partner')}
             </Button>
           </Stack>
 

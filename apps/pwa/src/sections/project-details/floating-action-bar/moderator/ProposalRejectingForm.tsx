@@ -54,44 +54,72 @@ function ProposalRejectingForm({ onSubmit, onClose, loading }: FormProps) {
         onClose={onClose}
         isOpen={true}
         showCloseIcon={true}
-        title={translate('reject_project')}
+        title={translate('account_manager.reject_project')}
         styleContent={{ padding: '1em', backgroundColor: '#fff' }}
         content={
           <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
             <Grid item md={12} xs={12}>
-              <RHFSelect type="select" name="path" label="المسار" placeholder="المسار" size="small">
-                <MenuItem value="MOSQUES">مشروع يخص المساجد</MenuItem>
-                <MenuItem value="CONCESSIONAL_GRANTS">مشروع يخص المنح الميسر</MenuItem>
-                <MenuItem value="INITIATIVES">مشروع يخص المبادرات</MenuItem>
-                <MenuItem value="BAPTISMS">مشروع يخص تعميدات</MenuItem>
+              <RHFSelect
+                type="select"
+                name="path"
+                label={translate('path')}
+                placeholder={translate('path')}
+                size="small"
+              >
+                <MenuItem value="MOSQUES">{translate('MOSQUES')}</MenuItem>
+                <MenuItem value="CONCESSIONAL_GRANTS">{translate('CONCESSIONAL_GRANTS')}</MenuItem>
+                <MenuItem value="INITIATIVES">{translate('INITIATIVES')}</MenuItem>
+                <MenuItem value="BAPTISMS">{translate('BAPTISMS')}</MenuItem>
               </RHFSelect>
             </Grid>
             <Grid item xs={12}>
               <RHFSelect
                 name="reject_reason"
                 size="small"
-                label="سبب الرفض *"
-                placeholder="الرجاء اختيار سبب المشروع المرفوض"
+                label={translate('reject_reason.moderator.label')}
+                placeholder={translate('reject_reason.moderator.select')}
               >
-                <MenuItem value="تكرار المشروع">تكرار المشروع</MenuItem>
-                <MenuItem value="للجهة مشروع آخر تحت الدراسة">للجهة مشروع آخر تحت الدراسة</MenuItem>
-                <MenuItem value="للجهة مشروع آخر مدعوم">للجهة مشروع آخر مدعوم</MenuItem>
-                <MenuItem value="عدم وجود تصريح">عدم وجود تصريح</MenuItem>
-                <MenuItem value="التصريح منتهي">التصريح منتهي</MenuItem>
-                <MenuItem value="لا يوجد خطاب طلب دعم">لا يوجد خطاب طلب دعم</MenuItem>
-                <MenuItem value="الخطاب موجه لجهة أخرى">الخطاب موجه لجهة أخرى</MenuItem>
-                <MenuItem value="لا يوجد مرفقات">لا يوجد مرفقات</MenuItem>
-                <MenuItem value="نواقص في المرفقات">نواقص في المرفقات</MenuItem>
-                <MenuItem value="الحساب البنكي غير صالح">الحساب البنكي غير صالح</MenuItem>
-                <MenuItem value="أخرى">أخرى</MenuItem>
+                <MenuItem value="تكرار المشروع">
+                  {translate('reject_reason.moderator.reason_list.project_iteration')}
+                </MenuItem>
+                <MenuItem value="للجهة مشروع آخر تحت الدراسة">
+                  {translate('reject_reason.moderator.reason_list.project_under_study')}
+                </MenuItem>
+                <MenuItem value="للجهة مشروع آخر مدعوم">
+                  {translate('reject_reason.moderator.reason_list.project_another_supported')}
+                </MenuItem>
+                <MenuItem value="عدم وجود تصريح">
+                  {translate('reject_reason.moderator.reason_list.project_no_permit')}
+                </MenuItem>
+                <MenuItem value="التصريح منتهي">
+                  {translate('reject_reason.moderator.reason_list.project_permit_expired')}
+                </MenuItem>
+                <MenuItem value="لا يوجد خطاب طلب دعم">
+                  {translate('reject_reason.moderator.reason_list.project_no_support_letter')}
+                </MenuItem>
+                <MenuItem value="الخطاب موجه لجهة أخرى">
+                  {translate('reject_reason.moderator.reason_list.project_letter_to_someone')}
+                </MenuItem>
+                <MenuItem value="لا يوجد مرفقات">
+                  {translate('reject_reason.moderator.reason_list.project_no_attachments')}
+                </MenuItem>
+                <MenuItem value="نواقص في المرفقات">
+                  {translate('reject_reason.moderator.reason_list.project_weakness_attachments')}
+                </MenuItem>
+                <MenuItem value="الحساب البنكي غير صالح">
+                  {translate('reject_reason.moderator.reason_list.project_bank_invalid')}
+                </MenuItem>
+                <MenuItem value="أخرى">
+                  {translate('reject_reason.moderator.reason_list.project_other_reason')}
+                </MenuItem>
               </RHFSelect>
             </Grid>
             <Grid item md={12} xs={12}>
               <BaseField
                 type="textArea"
                 name="notes"
-                label="الملاحظات"
-                placeholder="الرجاء كتابة الملاحظات"
+                label={translate('notes')}
+                placeholder={translate('notes_label')}
               />
             </Grid>
           </Grid>

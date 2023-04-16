@@ -14,7 +14,18 @@ function CashierPaymentsPage() {
 
   const [paymentDone, setPayementDone] = useState<boolean>(false);
 
+  const [valueSpending, setValueSpending] = useState<number>(0);
+
   useEffect(() => {
+    // paymnent done
+    const paymentList = proposal.payments
+      .filter((el) => el.status === 'done')
+      .map((el) => Number(el.payment_amount));
+    const totalPayments = paymentList.reduce((a, b) => a + b, 0);
+
+    setValueSpending(totalPayments);
+
+    // Closing Report
     const acc_payments = proposal.number_of_payments_by_supervisor;
     const payment_actual_done = proposal.payments.filter(
       (el: { status: string }) => el.status === 'done'
@@ -86,6 +97,23 @@ function CashierPaymentsPage() {
               >
                 {translate('project_details.actions.payments')}
               </Typography>
+            </Typography>
+          </Box>
+        </Grid>
+
+        <Grid item md={2} xs={12}>
+          <Box
+            sx={{
+              borderRadius: '8px',
+              backgroundColor: '#fff',
+              p: 2,
+            }}
+          >
+            <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
+              {translate('content.administrative.project_details.payment.heading.amount_spent')}
+            </Typography>
+            <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+              {fCurrencyNumber(valueSpending)}
             </Typography>
           </Box>
         </Grid>

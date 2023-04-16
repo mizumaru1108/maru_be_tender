@@ -81,15 +81,6 @@ function PaymentsTable() {
           },
         });
       }
-      // enqueueSnackbar(error.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'right',
-      //   },
-      // });
     } finally {
       reExecute();
     }
@@ -107,15 +98,11 @@ function PaymentsTable() {
   if (fetching) return <div>Loading...</div>;
   if (error) return <div>Error</div>;
 
-  // console.log('payments L ', proposal.payments);
-  // if (!fetching) {
-  //   console.log('data payments L ', data.proposal_by_pk.payments);
-  // }
   return (
     <>
       {data.proposal_by_pk.payments.map((item: any, index: any) => (
         <Grid item md={12} key={index} sx={{ mb: '20px' }}>
-          <Grid container direction="row" key={index} spacing={2} alignItems="center">
+          <Grid container direction="row" key={item.order} spacing={2} alignItems="center">
             <Grid item md={2}>
               <Typography variant="h6" sx={{ alignSelf: 'center' }}>
                 <Typography component="span">
@@ -178,9 +165,11 @@ function PaymentsTable() {
                   <Button
                     component={Link}
                     href={
-                      typeof item.cheques[0].transfer_receipt === 'string'
-                        ? item.cheques[0].transfer_receipt
-                        : item.cheques[0].transfer_receipt.url
+                      item.cheques[0].transfer_receipt
+                        ? typeof item.cheques[0].transfer_receipt === 'string'
+                          ? item.cheques[0].transfer_receipt
+                          : item.cheques[0].transfer_receipt.url
+                        : '#'
                     }
                     target="_blank"
                     rel="noopener noreferrer"

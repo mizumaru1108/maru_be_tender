@@ -298,6 +298,7 @@ const en = {
           bank_name: 'Bank Name',
           bank_account_name: 'Bank Account Name',
           iban_number: 'IBAN Number',
+          done: 'Paid',
         },
       },
     },
@@ -1242,6 +1243,28 @@ const en = {
     },
   },
 
+  // tender_moderator
+  acceptable_projects: 'Accepted projects',
+  incoming_new_projects: 'New projects received',
+  pending_projects: 'Pending projects',
+  total_number_of_projects: 'Total number of projects',
+  project_acceptance: 'Project acceptance',
+  project_rejected: 'Project rejected',
+  rejected_projects: 'Rejected projects',
+  send_message_to_partner: 'Send a message to the partner',
+  submit_amendment_request: 'Submit an amendment request',
+  accept: 'Accept',
+  reject: 'Reject',
+  close: 'Close',
+  supervisors: 'Supervisors',
+  select_supervisor: 'Please select a supervisor',
+  all_supervisor: 'All Supervisors',
+  notes: 'Notes',
+  notes_label: 'Please write notes',
+  path: 'Track',
+  procedures: 'Procedures',
+  supportOutputs: 'Supporting outputs',
+
   // TENDER_CEO PAGES
   rejection_list: 'Rejection List', // navigation
   client_list: 'Client List', // navigation
@@ -2003,7 +2026,22 @@ const en = {
   },
   reject_reason: {
     moderator: {
+      label: 'The reason of reject',
+      select: 'Please select a reason for the rejected project',
       required: 'You must provide a reject reason!',
+      reason_list: {
+        project_iteration: 'Project iteration',
+        project_under_study: 'The entity has another project under study',
+        project_another_supported: 'The entity has another supported project',
+        project_no_permit: 'No permit',
+        project_permit_expired: 'Permit expired',
+        project_no_support_letter: 'No support request letter',
+        project_letter_to_someone: 'The letter is directed to someone else',
+        project_no_attachments: 'There are no attachments',
+        project_weakness_attachments: 'Weaknesses in the attachments',
+        project_bank_invalid: 'The bank account is invalid',
+        project_other_reason: 'Other',
+      },
     },
   },
   search_component: {

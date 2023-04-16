@@ -132,7 +132,11 @@ function RenderingComponent({ proposalData }: { proposalData: Proposal }) {
                 </Grid>
                 <Grid item xs={12} md={7}>
                   <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                    {data.payment_details.status ?? '-'}
+                    {data.payment_details.status
+                      ? translate(
+                          `pages.finance.payment_generate.heading.${data.payment_details.status}`
+                        )
+                      : '-'}
                   </Typography>
                 </Grid>
 

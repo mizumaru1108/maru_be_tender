@@ -6,6 +6,8 @@ query MyQuery($id: String = "") {
         deposit_date
         id
         number
+        payment_id
+        transfer_receipt
       }
       id
       order

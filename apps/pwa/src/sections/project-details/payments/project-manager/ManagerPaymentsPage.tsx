@@ -14,8 +14,10 @@ function ManagerPaymentsPage() {
   const [valuePayments, setValuePayments] = useState<number>(0);
 
   useEffect(() => {
-    const paymentList: number[] = proposal.payments.map((el) => Number(el.payment_amount));
-    const totalPayments = paymentList.reduce((acc: number, curr: number) => acc + (curr || 0), 0);
+    const paymentList = proposal.payments
+      .filter((el) => el.status === 'done')
+      .map((el) => Number(el.payment_amount));
+    const totalPayments = paymentList.reduce((a, b) => a + b, 0);
 
     setValuePayments(totalPayments);
   }, [proposal]);
@@ -111,7 +113,7 @@ function ManagerPaymentsPage() {
             {translate('content.administrative.project_details.payment.heading.total_budget')}
           </Typography>
           <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-            {fCurrencyNumber(proposal.amount_required_fsupport)}
+            {fCurrencyNumber(proposal.fsupport_by_supervisor)}
           </Typography>
         </Box>
       </Grid>

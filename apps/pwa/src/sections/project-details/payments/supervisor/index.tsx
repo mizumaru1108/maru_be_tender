@@ -20,7 +20,7 @@ function SupervisorPaymentsPage() {
     variables: { proposal_id },
   });
 
-  React.useEffect(() => {}, [proposal.payments]);
+  React.useEffect(() => {}, [proposal]);
 
   if (fetching) return <>... Loading</>;
 
@@ -83,7 +83,7 @@ function SupervisorPaymentsPage() {
             {translate('content.administrative.project_details.payment.heading.total_budget')}
           </Typography>
           <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-            {fCurrencyNumber(proposal.amount_required_fsupport)}
+            {fCurrencyNumber(proposal.fsupport_by_supervisor)}
           </Typography>
         </Box>
       </Grid>

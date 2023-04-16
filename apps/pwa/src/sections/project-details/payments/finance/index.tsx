@@ -5,11 +5,23 @@ import PaymentsTable from './PaymentsTable';
 //
 import { fCurrencyNumber } from 'utils/formatNumber';
 import useLocales from 'hooks/useLocales';
+import { useEffect, useState } from 'react';
 
 function FinancePaymentsPage() {
   const { translate } = useLocales();
   const { proposal } = useSelector((state) => state.proposal);
   const theme = useTheme();
+
+  const [valueSpending, setValueSpending] = useState<number>(0);
+
+  useEffect(() => {
+    const paymentList = proposal.payments
+      .filter((el) => el.status === 'done')
+      .map((el) => Number(el.payment_amount));
+    const totalPayments = paymentList.reduce((a, b) => a + b, 0);
+
+    setValueSpending(totalPayments);
+  }, [proposal]);
 
   return (
     <Grid container spacing={3}>
@@ -67,6 +79,22 @@ function FinancePaymentsPage() {
             >
               {translate('project_details.actions.payments')}
             </Typography>
+          </Typography>
+        </Box>
+      </Grid>
+      <Grid item md={2} xs={12}>
+        <Box
+          sx={{
+            borderRadius: '8px',
+            backgroundColor: '#fff',
+            p: 2,
+          }}
+        >
+          <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
+            {translate('content.administrative.project_details.payment.heading.amount_spent')}
+          </Typography>
+          <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+            {fCurrencyNumber(valueSpending)}
           </Typography>
         </Box>
       </Grid>

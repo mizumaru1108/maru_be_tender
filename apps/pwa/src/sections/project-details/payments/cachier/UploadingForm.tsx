@@ -83,6 +83,7 @@ function UploadingForm({ paymentId, onClose }: any) {
         });
 
         onClose();
+        // window.location.reload();
       });
     } catch (error) {
       if (typeof error.message === 'object') {
