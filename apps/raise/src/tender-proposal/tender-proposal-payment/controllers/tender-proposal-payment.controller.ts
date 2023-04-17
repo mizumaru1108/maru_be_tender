@@ -44,7 +44,7 @@ export class TenderProposalPaymentController {
   async insertPayment(
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: CreateProposalPaymentDto,
-  ): Promise<BaseResponse<proposal>> {
+  ): Promise<BaseResponse<any>> {
     const createdPayment = await this.paymentService.insertPayment(
       currentUser.id,
       request,

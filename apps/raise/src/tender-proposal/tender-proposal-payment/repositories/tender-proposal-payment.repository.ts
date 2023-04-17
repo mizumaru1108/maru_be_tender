@@ -1,6 +1,5 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { cheque, payment, Prisma } from '@prisma/client';
-import { Sql } from '@prisma/client/runtime';
 import { nanoid } from 'nanoid';
 import { logUtil } from '../../../commons/utils/log-util';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
@@ -105,9 +104,10 @@ export class TenderProposalPaymentRepository {
             data: {
               id: nanoid(),
               proposal_id: proposal_id,
-              action: 'accept',
+              action: ProposalAction.INSERT_PAYMENT,
               reviewer_id,
               state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
+              user_role: TenderAppRoleEnum.PROJECT_SUPERVISOR,
               response_time: lastLog
                 ? Math.round(
                     (new Date().getTime() - lastLog.created_at.getTime()) /
@@ -171,7 +171,10 @@ export class TenderProposalPaymentRepository {
           //   insertNotif,
           //   updatedProposal,
           // };
-          return updatedProposal;
+          return {
+            proposal: updatedProposal,
+            proposal_log: logs,
+          };
         },
         { maxWait: 50000, timeout: 150000 },
       );

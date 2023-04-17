@@ -74,7 +74,7 @@ export class TenderProposalPaymentService {
   async insertPayment(
     currentUserId: string,
     request: CreateProposalPaymentDto,
-  ): Promise<proposal> {
+  ): Promise<any> {
     const { payments, proposal_id } = request;
 
     const proposal = await this.tenderProposalRepository.fetchProposalById(

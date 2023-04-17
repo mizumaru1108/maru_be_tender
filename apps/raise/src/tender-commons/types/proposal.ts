@@ -103,6 +103,7 @@ export enum ProposalAction {
   SEND_REVISED_VERSION = 'send_revised_version',
   STEP_BACK = 'step_back',
   STUDY_AGAIN = 'study_again',
+  INSERT_PAYMENT = 'insert_payment',
   ISSUED_BY_SUPERVISOR = 'issued_by_supervisor',
   ACCEPTED_BY_FINANCE = 'accepted_by_finance',
   ACCEPTED_BY_PROJECT_MANAGER = 'accepted_by_project_manager',

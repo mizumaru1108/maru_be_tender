@@ -1107,6 +1107,7 @@ export class TenderProposalService {
       [
         ProposalAction.ACCEPT,
         ProposalAction.REJECT,
+        ProposalAction.UPDATE,
         ProposalAction.STEP_BACK,
         ProposalAction.ACCEPT_AND_ASK_FOR_CONSULTATION,
         ProposalAction.STUDY_AGAIN,
@@ -1228,6 +1229,7 @@ export class TenderProposalService {
       [
         ProposalAction.ACCEPT,
         ProposalAction.REJECT,
+        ProposalAction.UPDATE,
         ProposalAction.STEP_BACK,
         ProposalAction.STUDY_AGAIN,
       ].indexOf(request.action) < 0
