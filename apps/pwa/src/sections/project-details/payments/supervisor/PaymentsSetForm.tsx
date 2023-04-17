@@ -25,7 +25,11 @@ type FormValuesProps = {
   }[];
 };
 
-function PaymentsSetForm() {
+interface Props {
+  refetch: () => void;
+}
+
+function PaymentsSetForm({ refetch }: Props) {
   const { id: proposal_id } = useParams();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -112,6 +116,7 @@ function PaymentsSetForm() {
         if (res.statusCode === 201) {
           setIsSubmitting(false);
           enqueueSnackbar('تم إنشاء الدفعات بنجاح', { variant: 'success' });
+          refetch();
           // window.location.reload();
         }
       });
@@ -133,8 +138,6 @@ function PaymentsSetForm() {
           autoHideDuration: 3000,
         });
       }
-
-      // window.location.reload();
     }
 
     // try {

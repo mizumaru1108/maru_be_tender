@@ -441,7 +441,7 @@ function FloatingActionBar() {
           loading={isSubmittingStepback}
         />
       )}
-      {action === 'ACCEPT' && (
+      {/* {action === 'ACCEPT' && (
         <NotesModal
           title="قبول المشروع"
           onClose={handleCloseModal}
@@ -454,8 +454,8 @@ function FloatingActionBar() {
           }}
           loading={isSubmitting}
         />
-      )}
-      {/* 
+      )} */}
+
       {action === 'ACCEPT' && proposal.project_track !== 'CONCESSIONAL_GRANTS' && (
         <NotesModal
           title="قبول المشروع"
@@ -472,7 +472,7 @@ function FloatingActionBar() {
       )}
       {action === 'ACCEPT' && proposal.project_track === 'CONCESSIONAL_GRANTS' && (
         <FacilitateSupervisorAcceptingForm onClose={handleCloseModal} />
-      )} */}
+      )}
     </>
   );
 }

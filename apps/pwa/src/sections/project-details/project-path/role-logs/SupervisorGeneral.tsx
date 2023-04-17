@@ -15,207 +15,240 @@ function SupervisorGeneral({ stepGeneralLog }: Props) {
 
   return (
     <React.Fragment>
-      <React.Fragment>
-        <Typography variant="h6">{translate(`review.review_by_supervisor`)}</Typography>
-        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+      {stepGeneralLog.action !== 'insert_payment' && (
+        <React.Fragment>
+          <Typography variant="h6">{translate(`review.review_by_supervisor`)}</Typography>
           <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-            <Typography>
-              {translate('project_already_reviewed_by_supervisor')}{' '}
-              {moment(stepGeneralLog.proposal.updated_at).locale(`${currentLang.value}`).fromNow()}
-            </Typography>
-          </Stack>
-          {/* {followUps.log.map((item: Log, index: number) => (
+            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+              <Typography>
+                {translate('project_already_reviewed_by_supervisor')}{' '}
+                {moment(stepGeneralLog.proposal.updated_at)
+                  .locale(`${currentLang.value}`)
+                  .fromNow()}
+              </Typography>
+            </Stack>
+            {/* {followUps.log.map((item: Log, index: number) => (
                   <React.Fragment key={index}>
                     {index === activeStep && (
                       
                     )}
                   </React.Fragment>
                 ))} */}
-        </Stack>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <Typography variant="h6">{translate(`review.closing_report`)}</Typography>
-            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+          </Stack>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <Typography variant="h6">{translate(`review.closing_report`)}</Typography>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Typography>
-                  {stepGeneralLog.proposal.closing_report
-                    ? `${translate('review.yes')}`
-                    : `${translate('review.no')}`}
-                </Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Typography>
+                    {stepGeneralLog.proposal.closing_report
+                      ? `${translate('review.yes')}`
+                      : `${translate('review.no')}`}
+                  </Typography>
+                </Stack>
               </Stack>
-            </Stack>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="h6">{translate(`review.closing_agreement`)}</Typography>
-            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-              {/* {followUps.log.map((item: Log, index: number) => (
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="h6">{translate(`review.closing_agreement`)}</Typography>
+              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                {/* {followUps.log.map((item: Log, index: number) => (
                       <React.Fragment key={index}>
                         {index === activeStep && (
                           
                         )}
                       </React.Fragment>
                     ))} */}
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Typography>
-                  {stepGeneralLog.proposal.does_an_agreement
-                    ? `${translate('review.yes')}`
-                    : `${translate('review.no')}`}
-                </Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Typography>
+                    {stepGeneralLog.proposal.does_an_agreement
+                      ? `${translate('review.yes')}`
+                      : `${translate('review.no')}`}
+                  </Typography>
+                </Stack>
               </Stack>
-            </Stack>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="h6">{translate(`review.vat_in_project`)}</Typography>
-            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-              {/* {followUps.log.map((item: Log, index: number) => (
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="h6">{translate(`review.vat_in_project`)}</Typography>
+              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                {/* {followUps.log.map((item: Log, index: number) => (
                       <React.Fragment key={index}>
                         {index === activeStep && (
                          
                         )}
                       </React.Fragment>
                     ))} */}
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Typography>
-                  {stepGeneralLog.proposal.vat
-                    ? `${translate('review.yes')}`
-                    : `${translate('review.no')}`}
-                </Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Typography>
+                    {stepGeneralLog.proposal.vat
+                      ? `${translate('review.yes')}`
+                      : `${translate('review.no')}`}
+                  </Typography>
+                </Stack>
               </Stack>
-            </Stack>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="h6">{translate(`review.vat`)}</Typography>
-            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-              {/* {followUps.log.map((item: Log, index: number) => (
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="h6">{translate(`review.vat`)}</Typography>
+              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                {/* {followUps.log.map((item: Log, index: number) => (
                       <React.Fragment key={index}>
                         {index === activeStep && (
                         
                         )}
                       </React.Fragment>
                     ))} */}
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Typography>{stepGeneralLog.proposal.vat_percentage ?? 0}</Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Typography>{stepGeneralLog.proposal.vat_percentage ?? 0}</Typography>
+                </Stack>
               </Stack>
-            </Stack>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="h6">{translate(`review.inclu_or_exclu`)}</Typography>
-            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-              {/* {followUps.log.map((item: Log, index: number) => (
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="h6">{translate(`review.inclu_or_exclu`)}</Typography>
+              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                {/* {followUps.log.map((item: Log, index: number) => (
                       <React.Fragment key={index}>
                         {index === activeStep && (
                          
                         )}
                       </React.Fragment>
                     ))} */}
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Typography>
-                  {stepGeneralLog.proposal.inclu_or_exclu
-                    ? `${translate('review.yes')}`
-                    : `${translate('review.no')}`}
-                </Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Typography>
+                    {stepGeneralLog.proposal.inclu_or_exclu
+                      ? `${translate('review.yes')}`
+                      : `${translate('review.no')}`}
+                  </Typography>
+                </Stack>
               </Stack>
-            </Stack>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="h6">{translate(`review.number_of_payment`)}</Typography>
-            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-              {/* {followUps.log.map((item: Log, index: number) => (
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="h6">{translate(`review.number_of_payment`)}</Typography>
+              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                {/* {followUps.log.map((item: Log, index: number) => (
                       <React.Fragment key={index}>
                         {index === activeStep && (
                          
                         )}
                       </React.Fragment>
                     ))} */}
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Typography>
-                  {stepGeneralLog.proposal.number_of_payments_by_supervisor}{' '}
-                  {translate('review.sar')}
-                </Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Typography>
+                    {stepGeneralLog.proposal.number_of_payments_by_supervisor}{' '}
+                    {translate('review.sar')}
+                  </Typography>
+                </Stack>
               </Stack>
-            </Stack>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="h6">{translate(`review.payment_support`)}</Typography>
-            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-              {/* {followUps.log.map((item: Log, index: number) => (
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="h6">{translate(`review.payment_support`)}</Typography>
+              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                {/* {followUps.log.map((item: Log, index: number) => (
                       <React.Fragment key={index}>
                         {index === activeStep && (
                         
                         )}
                       </React.Fragment>
                     ))} */}
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Typography>
-                  {stepGeneralLog.proposal.fsupport_by_supervisor} {translate('review.sar')}
-                </Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Typography>
+                    {stepGeneralLog.proposal.fsupport_by_supervisor} {translate('review.sar')}
+                  </Typography>
+                </Stack>
               </Stack>
-            </Stack>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="h6">{translate(`review.support_amount_inclu`)}</Typography>
-            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-              {/* {followUps.log.map((item: Log, index: number) => (
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="h6">{translate(`review.support_amount_inclu`)}</Typography>
+              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                {/* {followUps.log.map((item: Log, index: number) => (
                       <React.Fragment key={index}>
                         {index === activeStep && (
                         
                         )}
                       </React.Fragment>
                     ))} */}
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Typography>
-                  {stepGeneralLog.proposal.support_type
-                    ? `${translate('review.yes')}`
-                    : `${translate('review.no')}`}
-                </Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Typography>
+                    {stepGeneralLog.proposal.support_type
+                      ? `${translate('review.yes')}`
+                      : `${translate('review.no')}`}
+                  </Typography>
+                </Stack>
               </Stack>
-            </Stack>
+            </Grid>
           </Grid>
-        </Grid>
-        <Typography variant="h6">{translate(`review.procedure`)}</Typography>
-        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-          {/* {followUps.log.map((item: Log, index: number) => (
+          <Typography variant="h6">{translate(`review.procedure`)}</Typography>
+          <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+            {/* {followUps.log.map((item: Log, index: number) => (
                   <React.Fragment key={index}>
                     {index === activeStep && (
                      
                     )}
                   </React.Fragment>
                 ))} */}
-          <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-            <Typography>
-              {stepGeneralLog.proposal.support_goal_id
-                ? translate(`review.support_goals.${stepGeneralLog.proposal.support_goal_id}`)
-                : '-'}
-            </Typography>
+            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+              <Typography>
+                {stepGeneralLog.proposal.support_goal_id
+                  ? translate(`review.support_goals.${stepGeneralLog.proposal.support_goal_id}`)
+                  : '-'}
+              </Typography>
+            </Stack>
           </Stack>
-        </Stack>
-        <Typography variant="h6">{translate(`review.note_on_project`)}</Typography>
-        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-          {/* {followUps.log.map((item: Log, index: number) => (
+          <Typography variant="h6">{translate(`review.note_on_project`)}</Typography>
+          <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+            {/* {followUps.log.map((item: Log, index: number) => (
                   <React.Fragment key={index}>
                     {index === activeStep && (
                       
                     )}
                   </React.Fragment>
                 ))} */}
-          <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-            <Typography>{stepGeneralLog.notes ?? '-'}</Typography>
+            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+              <Typography>{stepGeneralLog.notes ?? '-'}</Typography>
+            </Stack>
           </Stack>
-        </Stack>
-        <Typography variant="h6">{translate(`review.support_output`)}</Typography>
-        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-          {/* {followUps.log.map((item: Log, index: number) => (
+          <Typography variant="h6">{translate(`review.support_output`)}</Typography>
+          <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+            {/* {followUps.log.map((item: Log, index: number) => (
                   <React.Fragment key={index}>
                     {index === activeStep && (
                       
                     )}
                   </React.Fragment>
                 ))} */}
-          <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-            <Typography>{stepGeneralLog.proposal.support_outputs ?? '-'}</Typography>
+            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+              <Typography>{stepGeneralLog.proposal.support_outputs ?? '-'}</Typography>
+            </Stack>
           </Stack>
-        </Stack>
-      </React.Fragment>
+        </React.Fragment>
+      )}
+      {stepGeneralLog.action === 'insert_payment' && (
+        <React.Fragment>
+          <Typography variant="h6">{translate(`review.payment_insert`)}</Typography>
+          {proposal &&
+            proposal.payments &&
+            proposal.payments.length > 0 &&
+            proposal.payments.map((payment, index) => (
+              <Grid container key={index} sx={{ mb: 4 }}>
+                <Grid item xs={3}>
+                  <Typography variant="subtitle1">
+                    {translate('review.Batch') + ' ' + payment.order}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="subtitle1">
+                    {moment(payment.payment_date).locale(`${currentLang.value}`).format('LLLL')}
+                  </Typography>
+                </Grid>
+                <Grid item xs={3}>
+                  <Typography variant="subtitle1">
+                    {payment.payment_amount
+                      ? `${String(payment.payment_amount) + ' ' + translate('review.sar')}`
+                      : '-'}
+                  </Typography>
+                </Grid>
+              </Grid>
+            ))}
+        </React.Fragment>
+      )}
     </React.Fragment>
   );
 }

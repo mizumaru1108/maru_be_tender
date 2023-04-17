@@ -7,7 +7,7 @@ import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import { updateProposalByFacilitatedSupervisor } from 'queries/project-supervisor/updateProposalByFacilitatedSupervisor';
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import {
   setStepFive,
   setStepFour,
@@ -54,6 +54,8 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
 
   const dispatch = useDispatch();
 
+  const location = useLocation();
+
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const handleSubmitFirstForm = (data: any) => {
@@ -91,6 +93,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
 
   const handleSubmit = async (data: any) => {
     const { notes, ...restStep1 } = step1;
+    const editedBy = location.pathname.split('/')[1];
 
     setIsSubmitting(true);
 
@@ -100,41 +103,57 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
         .map((el: { amount: any }) => Number(el.amount))
         .reduce((acc: any, curr: any) => acc + (curr || 0), 0);
 
-      const payload = {
+      let payload: any = {
         proposal_id,
         action: 'accept',
         message: 'تم قبول المشروع من قبل مشرف المشاريع',
         notes,
         selectLang: currentLang.value,
-        supervisor_payload: {
-          ...restStep1,
-          fsupport_by_supervisor: totalFSupport,
-          number_of_payments_by_supervisor: lenghtOfNumberOfPayments,
-          clause: null,
-          clasification_field: null,
-          accreditation_type_id: null,
-          support_goal_id: null,
-          // split 1
-          chairman_of_board_of_directors: step2.chairman_of_board_of_directors,
-          been_supported_before: step2.been_supported_before,
-          most_clents_projects: step2.most_clents_projects,
-          added_value: step3.added_value,
-          reasons_to_accept: step3.reasons_to_accept,
-          target_group_num: step3.target_group_num,
-          target_group_type: step3.target_group_type,
-          target_group_age: step3.target_group_age,
-          been_made_before: step3.been_made_before,
-          remote_or_insite: step3.remote_or_insite,
-          // item budgets
-          // created_proposal_budget: data.created_proposal_budget, // step4.created_proposal_budget,
-          // updated_proposal_budget: data.updated_proposal_budget, // step4.updated_proposal_budget,
-          // deleted_proposal_budget: data.deleted_proposal_budget, // step4.deleted_proposal_budget,
-          // recommended_support
-          created_recommended_support: [], // data.created_recommended_support
-          updated_recommended_support: [], // data.updated_recommended_support
-          deleted_recommended_support: [], // data.deleted_recommended_support
-        },
       };
+      const newData = {
+        ...restStep1,
+        fsupport_by_supervisor: totalFSupport,
+        number_of_payments_by_supervisor: lenghtOfNumberOfPayments,
+        clause: null,
+        clasification_field: null,
+        accreditation_type_id: null,
+        support_goal_id: null,
+        chairman_of_board_of_directors: step2.chairman_of_board_of_directors,
+        been_supported_before: step2.been_supported_before,
+        most_clents_projects: step2.most_clents_projects,
+        added_value: step3.added_value,
+        reasons_to_accept: step3.reasons_to_accept,
+        target_group_num: step3.target_group_num,
+        target_group_type: step3.target_group_type,
+        target_group_age: step3.target_group_age,
+        been_made_before: step3.been_made_before,
+        remote_or_insite: step3.remote_or_insite,
+        created_recommended_support: [], // data.created_recommended_support
+        updated_recommended_support: [], // data.updated_recommended_support
+        deleted_recommended_support: [], // data.deleted_recommended_support
+      };
+      if (editedBy === 'project-manager') {
+        payload = {
+          ...payload,
+          project_manager_payload: {
+            ...newData,
+          },
+        };
+      } else if (editedBy === 'ceo') {
+        payload = {
+          ...payload,
+          ceo_payload: {
+            ...newData,
+          },
+        };
+      } else {
+        payload = {
+          ...payload,
+          supervisor_payload: {
+            ...newData,
+          },
+        };
+      }
 
       // console.log('acceptSupervisorGrant', payload);
 
@@ -150,7 +169,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
           }
 
           setIsSubmitting(false);
-          navigate(`/project-supervisor/dashboard/app`);
+          navigate(`/${editedBy}/dashboard/app`);
           dispatch(stepResetActive({}));
         })
         .catch((err) => {

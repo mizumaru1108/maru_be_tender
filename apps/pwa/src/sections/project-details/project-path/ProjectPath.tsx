@@ -15,7 +15,8 @@ import { Log, PropsalLog, PropsalLogGrants } from '../../../@types/proposal';
 import SupervisorGrants from './role-logs/SupervisorGrants';
 import SupervisorGeneral from './role-logs/SupervisorGeneral';
 import PanoramaFishEyeTwoToneIcon from '@mui/icons-material/PanoramaFishEyeTwoTone';
-import { useSelector } from '../../../redux/store';
+import { dispatch, useSelector } from '../../../redux/store';
+import { getProposal } from '../../../redux/slices/proposal';
 
 function ProjectPath() {
   const { translate, currentLang } = useLocales();
@@ -48,7 +49,7 @@ function ProjectPath() {
     setStepOn(step);
     setActiveStep(step);
     // setStepUserRole(item.user_role);
-
+    console.log({ item });
     if (item !== undefined) {
       // setStepUserRole(item.user_role);
       // setStepActionType(item.action);
@@ -61,6 +62,7 @@ function ProjectPath() {
             ...logGrantsData,
             notes: item.notes,
             updated_at: item.proposal.updated_at,
+            action: item.action,
           });
         }
       }
@@ -84,6 +86,9 @@ function ProjectPath() {
   //     setActiveStep(followUps.log.length - 1);
   //   }
   // }, [followUps, hasNonRejectAction, hasRejectAction]);
+  React.useEffect(() => {
+    dispatch(getProposal(proposal_id as string, activeRole! as string));
+  }, [proposal_id, activeRole]);
 
   if (fetching) return <>.. Loading</>;
   if (error) return <Page500 error={error.message} />;
@@ -97,9 +102,9 @@ function ProjectPath() {
 
     return formattedDate;
   };
+
   // if (!fetching) {
   //   console.log({ followUps });
-  // }
   return (
     <Grid container spacing={2}>
       <Grid item md={8} xs={8} sx={{ backgroundColor: 'transparent', px: 6 }}>

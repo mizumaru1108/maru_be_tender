@@ -18,7 +18,10 @@ import { useLocation, useParams } from 'react-router';
 import { useQuery } from 'urql';
 import uuidv4 from 'utils/uuidv4';
 import { dispatch, useSelector } from '../../../../../redux/store';
-import { updateAcceptedDataProposalNonGrants } from '../../../../../redux/slices/proposal';
+import {
+  getProposal,
+  updateAcceptedDataProposalNonGrants,
+} from '../../../../../redux/slices/proposal';
 import useAuth from '../../../../../hooks/useAuth';
 
 function AcceptedForm({ onEdit }: EditAccModalForm) {
@@ -185,12 +188,14 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
           },
         };
       }
-      console.log({ payload });
+      // console.log({ payload });
       // onSubmit(newData);
       try {
+        console.log('masuksini');
         await dispatch(updateAcceptedDataProposalNonGrants(payload, activeRole!)).then(() => {
           setSave(true);
           onEdit();
+          dispatch(getProposal(pid as string, activeRole! as string));
           enqueueSnackbar('تم إرسال الشيك بنجاح, بالإضافة إلى تعديل حالة الدفعة', {
             variant: 'success',
             preventDuplicate: true,
@@ -204,6 +209,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
         });
       } catch (error) {
         setIsLoading(false);
+        reset(defaultValues);
         enqueueSnackbar(error.message, {
           variant: 'error',
           preventDuplicate: true,

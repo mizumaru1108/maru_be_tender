@@ -2,7 +2,7 @@ import { Box, Button, Grid, Link, Stack, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'redux/store';
-import { updatePaymentBySupervisorAndManagerAndFinance } from 'redux/slices/proposal';
+import { getProposal, updatePaymentBySupervisorAndManagerAndFinance } from 'redux/slices/proposal';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { useQuery } from 'urql';
@@ -19,7 +19,8 @@ function PaymentsTable() {
 
   const dispatch = useDispatch();
 
-  const { proposal } = useSelector((state) => state.proposal);
+  const { proposal, isLoading } = useSelector((state) => state.proposal);
+  const [trigger, setTrigger] = useState(false);
 
   const [result, reExecute] = useQuery({
     query: getOnePayments,
@@ -44,6 +45,7 @@ function PaymentsTable() {
         })
       ).then((res) => {
         if (res.statusCode === 200) {
+          reExecute();
           enqueueSnackbar('تم إصدار أذن الصرف بنجاح', {
             variant: 'success',
             preventDuplicate: true,
@@ -71,6 +73,7 @@ function PaymentsTable() {
         });
       }
       if (error.message === "Cannot set properties of undefined (setting 'status')") {
+        reExecute();
         enqueueSnackbar('تم إصدار أذن الصرف بنجاح', {
           variant: 'success',
           preventDuplicate: true,
@@ -81,20 +84,23 @@ function PaymentsTable() {
           },
         });
       }
-    } finally {
-      reExecute();
     }
   };
 
   useEffect(() => {
+    dispatch(getProposal(id as string, activeRole! as string));
+  }, [trigger, dispatch, id, activeRole]);
+
+  useEffect(() => {
+    console.log({ trigger });
     for (var i = 0; i < proposal.payments.length; i++) {
       if (proposal.payments[i].status === 'set_by_supervisor') {
         setCurrentIssuedPayament(i);
         break;
       }
     }
-  }, [proposal]);
-
+  }, [proposal, trigger]);
+  if (isLoading) return <div>Loading...</div>;
   if (fetching) return <div>Loading...</div>;
   if (error) return <div>Error</div>;
 
@@ -150,6 +156,7 @@ function PaymentsTable() {
                   }}
                   disabled={index !== currentIssuedPayament ? true : false}
                   onClick={() => {
+                    setTrigger(!trigger);
                     handleIssuePayment(item);
                   }}
                 >
