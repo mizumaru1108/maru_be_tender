@@ -813,6 +813,8 @@ export class TenderProposalRepository {
       const offset = (page - 1) * limit;
 
       let whereClause: Prisma.proposalWhereInput = {};
+      let outterClauses: Prisma.proposalWhereInput = {};
+
       const orClauses: Prisma.proposalWhereInput[] = [];
 
       /* filter whereClause based on existing permissions on hasura */
@@ -913,16 +915,6 @@ export class TenderProposalRepository {
       }
 
       if (employee_name) {
-        // orClauses.push({
-        //   user: {
-        //     employee_name: {
-        //       contains: employee_name,
-        //       mode: 'insensitive',
-        //     },
-        //   },
-        // });
-
-        // console.log(decodeURIComponent(employee_name));
         orClauses.push({
           user: {
             client_data: {
@@ -947,29 +939,19 @@ export class TenderProposalRepository {
       if (project_track) {
         orClauses.push({
           project_track: {
-            contains: project_track,
+            in: project_track,
             mode: 'insensitive',
           },
         });
       }
 
       if (outter_status) {
-        // const outterFilter: string = outter_status
-        //   .replace(/[^\w\s]|_/g, '')
-        //   .toLowerCase();
-
-        // const mappedOutter = outter_status.map((outter) =>
-        //   outter.replace(/[^\w\s]|_/g, '').toUpperCase(),
-        // );
-
-        // console.log(outter_status);
-
-        orClauses.push({
+        outterClauses = {
           outter_status: {
             in: outter_status,
             mode: 'insensitive',
           },
-        });
+        };
       }
 
       if (project_number) {
@@ -986,8 +968,7 @@ export class TenderProposalRepository {
 
       const data = await this.prismaService.proposal.findMany({
         where: {
-          // OR: [...orClauses],
-          AND: [whereClause, { OR: [...orClauses] }],
+          AND: [whereClause, { OR: [...orClauses] }, outterClauses],
         },
         take: limit,
         skip: offset,
@@ -1001,8 +982,7 @@ export class TenderProposalRepository {
 
       const total = await this.prismaService.proposal.count({
         where: {
-          AND: [whereClause, { OR: [...orClauses] }],
-          // OR: [...orClauses],
+          AND: [whereClause, { OR: [...orClauses] }, outterClauses],
         },
       });
 
@@ -1039,10 +1019,12 @@ export class TenderProposalRepository {
       const offset = (page - 1) * limit;
 
       let whereClause: Prisma.proposalWhereInput = {
-        oid: {
-          not: null,
-        },
+        // oid: {
+        //   not: null,
+        // },
       };
+
+      const andClauses: Prisma.proposalWhereInput[] = [];
       const orClauses: Prisma.proposalWhereInput[] = [];
 
       /* filter whereClause based on existing permissions on hasura */
@@ -1079,19 +1061,28 @@ export class TenderProposalRepository {
       }
 
       if (project_track) {
-        orClauses.push({
+        // orClauses.push({
+        //   project_track: {
+        //     in: project_track,
+        //     mode: 'insensitive',
+        //   },
+        // });
+        andClauses.push({
           project_track: {
-            contains: project_track,
+            in: project_track,
             mode: 'insensitive',
           },
         });
       }
 
       if (outter_status) {
-        // const outterFilter: string = outter_status
-        //   .replace(/[^\w\s]|_/g, '')
-        //   .toLowerCase();
-        orClauses.push({
+        // outterStatusClauses = {
+        //   outter_status: {
+        //     in: outter_status,
+        //     mode: 'insensitive',
+        //   },
+        // };
+        andClauses.push({
           outter_status: {
             in: outter_status,
             mode: 'insensitive',
@@ -1103,7 +1094,7 @@ export class TenderProposalRepository {
 
       const data = await this.prismaService.proposal.findMany({
         where: {
-          AND: [whereClause, { OR: [...orClauses] }],
+          AND: [whereClause, { OR: [...orClauses] }, ...andClauses],
         },
         take: limit,
         skip: offset,
@@ -1117,8 +1108,7 @@ export class TenderProposalRepository {
 
       const total = await this.prismaService.proposal.count({
         where: {
-          AND: [whereClause, { OR: [...orClauses] }],
-          // OR: [...orClauses],
+          AND: [whereClause, { OR: [...orClauses] }, ...andClauses],
         },
       });
 

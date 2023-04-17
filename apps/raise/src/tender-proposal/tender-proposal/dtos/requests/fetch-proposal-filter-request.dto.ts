@@ -48,7 +48,7 @@ export class FetchProposalFilterRequest extends BaseFilterRequest {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  project_track?: string;
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  project_track?: string[];
 }
