@@ -1383,6 +1383,10 @@ const ar = {
   },
   continue_studying_the_project: 'متابعة الداراسة',
   no_employee: 'لا يوجد',
+  analyze_project: 'تحليل المشروع',
+  set_payment: 'تعيين الدفع',
+  upload_receipt: 'تحميل الإيصال',
+  close_project: 'أغلق المشروع',
 
   // ACCOUNT_MANAGER PAGES
   account_manager: {
@@ -2129,7 +2133,7 @@ const ar = {
   },
   old_proposal: {
     page_title: 'قائمة الاقتراح القديمة',
-    title: 'المشاريع السابقة',
+    title: 'مشاريع المنصة',
     headercell: {
       project_name: 'اسم المشروع',
       project_number: 'رقم المشروع',

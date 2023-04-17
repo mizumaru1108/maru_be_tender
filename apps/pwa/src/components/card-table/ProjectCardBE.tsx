@@ -358,6 +358,27 @@ const ProjectCardBE = ({
               </Typography>
             </Stack>
           )}
+          {role !== 'tender_client' && destination !== 'previous-funding-requests' && (
+            <Stack>
+              <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+                {translate('appointments_headercell.action')}
+              </Typography>
+              <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
+                {/* {translate(`project_card.${content.sentSection.toLowerCase()}`)} */}
+                {(destination === 'requests-in-process' ||
+                  destination === 'incoming-funding-requests') &&
+                role !== 'tender_finance' &&
+                role !== 'tender_cashier'
+                  ? translate('analyze_project')
+                  : destination === 'payment-adjustment' ||
+                    destination === 'incoming-exchange-permission-requests' ||
+                    destination === 'exchange-permission' ||
+                    role === 'tender_finance'
+                  ? translate('set_payment')
+                  : role === 'tender_cashier' ? translate('upload_receipt') : translate('close_project')}
+              </Typography>
+            </Stack>
+          )}
         </Stack>
         <Divider sx={{ marginTop: '30px' }} />
       </CardContent>

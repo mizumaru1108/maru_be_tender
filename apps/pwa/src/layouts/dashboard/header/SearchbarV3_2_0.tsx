@@ -239,19 +239,11 @@ export default function Searchbar() {
         return `employee_name=${text}`;
       } else if (filter === 'track') {
         return `project_track=${text}`;
-        // } else if (filter === 'number') {
-        //   let projectNumber: number = parseInt(text, 10);
-        //   if (
-        //     typeof projectNumber === 'number' &&
-        //     projectNumber > 0.01 &&
-        //     projectNumber <= 1000000000000000000
-        //   ) {
-        //     console.error('udah masuk');
-        //     // code untuk melakukan request API dengan nilai project_number yang valid
-        //     return `project_number=${text}`;
-        //   } else {
-        //     console.error('ada yang salah');
-        //   }
+      } else if (filter === 'number') {
+        let projectNumber: number = parseInt(text, 10);
+        if (projectNumber) {
+          return `project_number=${parseInt(text, 10)}`;
+        } else return null;
       } else if (filter === 'status') {
         const currentStatus = Object.keys(filterStatus);
         const newFilterStatus = currentStatus.map((status) => {
@@ -270,9 +262,9 @@ export default function Searchbar() {
           }
           return false;
         });
-        // console.log({ currentStatus, newFilterStatus });
+        console.log({ currentStatus, newFilterStatus });
         // const joinFilterStatus = newFilterStatus.join('&');
-        const setNew = newFilterStatus.map((filterStatus: any) => `project_status=${filterStatus}`);
+        const setNew = newFilterStatus.map((filterStatus: any) => `outter_status=${filterStatus}`);
         const joinFilterStatus = setNew.join('&');
         return joinFilterStatus;
       }
