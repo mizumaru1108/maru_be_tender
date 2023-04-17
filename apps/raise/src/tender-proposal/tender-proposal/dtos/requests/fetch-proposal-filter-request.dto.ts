@@ -3,14 +3,14 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsArray,
   IsEnum,
-  IsNumber,
+  IsInt,
   Min,
   Max,
 } from 'class-validator';
 import { BaseFilterRequest } from '../../../../commons/dtos/base-filter-request.dto';
 import { OutterStatusEnum } from '../../../../tender-commons/types/proposal';
+import { Type } from 'class-transformer';
 
 export class FetchProposalFilterRequest extends BaseFilterRequest {
   @ApiPropertyOptional()
@@ -33,9 +33,11 @@ export class FetchProposalFilterRequest extends BaseFilterRequest {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNumber({ maxDecimalPlaces: 2 })
-  @Min(0.01)
-  @Max(999999999999999999.99)
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(999999999999999999)
+  @IsNotEmpty()
   project_number?: number;
 
   @ApiPropertyOptional()

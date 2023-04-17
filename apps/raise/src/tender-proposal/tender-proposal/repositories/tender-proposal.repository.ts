@@ -1,19 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma, proposal, proposal_item_budget } from '@prisma/client';
-import moment from 'moment';
 import { nanoid } from 'nanoid';
 import { logUtil } from '../../../commons/utils/log-util';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import {
-  appRoleMappers,
   TenderAppRoleEnum,
+  appRoleMappers,
 } from '../../../tender-commons/types';
 import {
   InnerStatusEnum,
-  OutterStatusEnum,
   ProposalAction,
 } from '../../../tender-commons/types/proposal';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
@@ -976,7 +974,10 @@ export class TenderProposalRepository {
 
       if (project_number) {
         orClauses.push({
-          project_number,
+          project_number: {
+            contains: project_number.toString(),
+            mode: 'insensitive',
+          },
         });
       }
 

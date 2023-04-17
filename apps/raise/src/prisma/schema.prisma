@@ -196,8 +196,8 @@ model proposal {
   support_goal_id                     String?
   accreditation_type_id               String?
   execution_time                      Decimal?                         @db.Decimal
-  project_number                      Int                              @default(autoincrement())
   oid                                 Int?
+  project_number                      String?                          @unique(map: "idx_project_number") @default(dbgenerated("(nextval('proposal_project_number_seq'::regclass))::text"))
   accreditation_type                  accreditation_type?              @relation(fields: [accreditation_type_id], references: [id])
   proposal_beneficiaries              proposal_beneficiaries?          @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
   project_tracks                      project_tracks?                  @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
@@ -1445,4 +1445,62 @@ model file_manager3 {
   proposal_id         String?
   bank_information_id String?
   fid                 String?
+}
+
+model file_manager4 {
+  id                  String   @id
+  name                String   @db.VarChar
+  size                Decimal  @db.Decimal
+  mimetype            String   @db.VarChar
+  url                 String?  @db.VarChar
+  table_name          String?  @db.VarChar
+  column_name         String?  @db.VarChar
+  user_id             String?
+  is_deleted          Boolean  @default(false)
+  created_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
+  updated_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
+  proposal_id         String?
+  bank_information_id String?
+  fid                 String?
+  source              String?
+}
+
+model file_manager5 {
+  id                  String   @id
+  name                String   @db.VarChar
+  size                Decimal  @db.Decimal
+  mimetype            String   @db.VarChar
+  url                 String?  @db.VarChar
+  table_name          String?  @db.VarChar
+  column_name         String?  @db.VarChar
+  user_id             String?
+  is_deleted          Boolean  @default(false)
+  created_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
+  updated_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
+  proposal_id         String?
+  bank_information_id String?
+  fid                 Int?
+  source              String?
+}
+
+model file_manager6 {
+  id                  String   @id
+  name                String   @db.VarChar
+  size                Decimal  @db.Decimal
+  mimetype            String   @db.VarChar
+  url                 String?  @db.VarChar
+  table_name          String?  @db.VarChar
+  column_name         String?  @db.VarChar
+  user_id             String?
+  is_deleted          Boolean  @default(false)
+  created_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
+  updated_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
+  proposal_id         String?
+  bank_information_id String?
+  fid                 Int?
+  source              String?
+  path1               String?
+  path2               String?
+  path3               String?
+  path4               String?
 }

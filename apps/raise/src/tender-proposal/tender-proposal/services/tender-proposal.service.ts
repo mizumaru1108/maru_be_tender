@@ -65,6 +65,9 @@ import { CreateProposalAskedEditRequestMapper } from '../mappers/create-proposal
 import { FetchProposalFilterRequest } from '../dtos/requests/fetch-proposal-filter-request.dto';
 import { MsegatService } from '../../../libs/msegat/services/msegat.service';
 import moment from 'moment';
+import { UpdateProposalTrackInfoMapper } from '../mappers/update-proposal-track-info.mapper';
+import { CeoChangeStatePayload } from '../dtos/requests/ceo-change-state.dto';
+import { ProjectManagerChangeStatePayload } from '../dtos/requests/project-manager-change-state-payload.dto';
 
 @Injectable()
 export class TenderProposalService {
@@ -188,12 +191,6 @@ export class TenderProposalService {
       FileMimeTypeEnum.PNG,
       FileMimeTypeEnum.GIF,
       FileMimeTypeEnum.PDF,
-      // FileMimeTypeEnum.DOC,
-      // FileMimeTypeEnum.DOCX,
-      // FileMimeTypeEnum.XLS,
-      // FileMimeTypeEnum.XLSX,
-      // FileMimeTypeEnum.PPT,
-      // FileMimeTypeEnum.PPTX,
     ];
 
     if (request.proposal_bank_information_id) {
@@ -798,9 +795,16 @@ export class TenderProposalService {
         proposalUpdatePayload,
         proposalLogCreateInput,
         request,
+        createdItemBudgetPayload,
+        updatedItemBudgetPayload,
+        deletedItemBudgetIds,
       );
+
       proposalUpdatePayload = { ...pm.proposalUpdatePayload };
       proposalLogCreateInput = { ...pm.proposalLogCreateInput };
+      createdItemBudgetPayload = [...pm.createdItemBudgetPayload];
+      updatedItemBudgetPayload = [...pm.updatedItemBudgetPayload];
+      deletedItemBudgetIds = [...pm.deletedItemBudgetIds];
     }
 
     if (currentUser.choosenRole === 'tender_consultant') {
@@ -818,9 +822,15 @@ export class TenderProposalService {
         proposalUpdatePayload,
         proposalLogCreateInput,
         request,
+        createdItemBudgetPayload,
+        updatedItemBudgetPayload,
+        deletedItemBudgetIds,
       );
       proposalUpdatePayload = { ...ceo.proposalUpdatePayload };
       proposalLogCreateInput = { ...ceo.proposalLogCreateInput };
+      createdItemBudgetPayload = [...ceo.createdItemBudgetPayload];
+      updatedItemBudgetPayload = [...ceo.updatedItemBudgetPayload];
+      deletedItemBudgetIds = [...ceo.deletedItemBudgetIds];
     }
 
     /* update proposal and create the logs */
@@ -1088,6 +1098,9 @@ export class TenderProposalService {
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
     proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
     request: ChangeProposalStateDto,
+    createdItemBudgetPayload: Prisma.proposal_item_budgetCreateManyInput[],
+    updatedItemBudgetPayload: Prisma.proposal_item_budgetUncheckedUpdateInput[],
+    deletedItemBudgetIds: string[],
   ) {
     /* Project manager only allowed to acc and reject and step back, and ask for consultation*/
     if (
@@ -1129,6 +1142,26 @@ export class TenderProposalService {
         ProposalAction.ACCEPT_AND_ASK_FOR_CONSULTATION;
       proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_MANAGER;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
+    }
+
+    if (request.action === ProposalAction.UPDATE) {
+      if (!request.project_manager_payload) {
+        throw new BadRequestException('Project Manager Payload is Required!');
+      }
+
+      const result = await this.handleUpdateProposalTrackInfo(
+        request.proposal_id,
+        proposalUpdatePayload,
+        request.project_manager_payload,
+        createdItemBudgetPayload,
+        updatedItemBudgetPayload,
+        deletedItemBudgetIds,
+      );
+
+      proposalUpdatePayload = { ...result.proposalUpdatePayload };
+      createdItemBudgetPayload = [...result.createdItemBudgetPayload];
+      updatedItemBudgetPayload = [...result.updatedItemBudgetPayload];
+      deletedItemBudgetIds = [...result.deletedItemBudgetIds];
     }
 
     if (request.action === ProposalAction.REJECT) {
@@ -1176,6 +1209,9 @@ export class TenderProposalService {
     return {
       proposalUpdatePayload,
       proposalLogCreateInput,
+      createdItemBudgetPayload,
+      updatedItemBudgetPayload,
+      deletedItemBudgetIds,
     };
   }
 
@@ -1183,6 +1219,9 @@ export class TenderProposalService {
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
     proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
     request: ChangeProposalStateDto,
+    createdItemBudgetPayload: Prisma.proposal_item_budgetCreateManyInput[],
+    updatedItemBudgetPayload: Prisma.proposal_item_budgetUncheckedUpdateInput[],
+    deletedItemBudgetIds: string[],
   ) {
     /* CEO only allowed to acc and reject and step back */
     if (
@@ -1221,6 +1260,26 @@ export class TenderProposalService {
       proposalLogCreateInput.action = ProposalAction.REJECT;
       proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.CEO;
+    }
+
+    if (request.action === ProposalAction.UPDATE) {
+      if (!request.ceo_payload) {
+        throw new BadRequestException('Project Manager Payload is Required!');
+      }
+
+      const result = await this.handleUpdateProposalTrackInfo(
+        request.proposal_id,
+        proposalUpdatePayload,
+        request.ceo_payload,
+        createdItemBudgetPayload,
+        updatedItemBudgetPayload,
+        deletedItemBudgetIds,
+      );
+
+      proposalUpdatePayload = { ...result.proposalUpdatePayload };
+      createdItemBudgetPayload = [...result.createdItemBudgetPayload];
+      updatedItemBudgetPayload = [...result.updatedItemBudgetPayload];
+      deletedItemBudgetIds = [...result.deletedItemBudgetIds];
     }
 
     if (request.action === ProposalAction.STEP_BACK) {
@@ -1279,6 +1338,9 @@ export class TenderProposalService {
     return {
       proposalUpdatePayload,
       proposalLogCreateInput,
+      createdItemBudgetPayload,
+      updatedItemBudgetPayload,
+      deletedItemBudgetIds,
     };
   }
 
@@ -1475,6 +1537,56 @@ export class TenderProposalService {
     //   });
     // }
     /* SMS NOTIF */
+  }
+
+  async handleUpdateProposalTrackInfo(
+    proposal_id: string,
+    proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
+    request: ProjectManagerChangeStatePayload | CeoChangeStatePayload,
+    createdItemBudgetPayload: Prisma.proposal_item_budgetCreateManyInput[],
+    updatedItemBudgetPayload: Prisma.proposal_item_budgetUncheckedUpdateInput[],
+    deletedItemBudgetIds: string[],
+  ) {
+    const {
+      created_proposal_budget,
+      updated_proposal_budget,
+      deleted_proposal_budget,
+    } = request;
+
+    proposalUpdatePayload = UpdateProposalTrackInfoMapper(
+      proposalUpdatePayload,
+      request,
+    );
+
+    createdItemBudgetPayload = SupervisorAccCreatedItemBudgetMapper(
+      proposal_id,
+      created_proposal_budget,
+      createdItemBudgetPayload,
+    );
+
+    if (updated_proposal_budget && updated_proposal_budget.length > 0) {
+      for (let i = 0; i < updated_proposal_budget.length; i++) {
+        updatedItemBudgetPayload.push({
+          id: updated_proposal_budget[i].id,
+          amount: updated_proposal_budget[i].amount,
+          clause: updated_proposal_budget[i].clause,
+          explanation: updated_proposal_budget[i].explanation,
+        });
+      }
+    }
+
+    if (deleted_proposal_budget && deleted_proposal_budget.length > 0) {
+      for (const itemBudget of deleted_proposal_budget) {
+        deletedItemBudgetIds.push(itemBudget.id);
+      }
+    }
+
+    return {
+      proposalUpdatePayload,
+      createdItemBudgetPayload,
+      updatedItemBudgetPayload,
+      deletedItemBudgetIds,
+    };
   }
 
   async fetchTrack(limit: number, page: number) {

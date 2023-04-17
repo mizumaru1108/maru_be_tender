@@ -1,6 +1,8 @@
 export enum TargetGroupAgeEnum {
-  AGE_UNDER_10TH = 'age_under_10th',
-  AGE_10TH_TO_20TH = 'age_10th_to_20th',
-  AGE_20th_TH_40TH = 'age_20th_to_40th',
-  AGE_OVER_40th = 'age_over_40th',
+  AGE_1TH_TO_13TH = 'AGE_1TH_TO_13TH',
+  AGE_14TH_TO_30TH = 'AGE_14TH_TO_30TH',
+  AGE_31TH_TO_50TH = 'AGE_31TH_TO_50TH',
+  AGE_51TH_TO_60TH = 'AGE_51TH_TO_60TH',
+  AGE_OVER_60TH = 'AGE_OVER_60TH',
+  ALL_AGE = 'ALL_AGE'
 }
