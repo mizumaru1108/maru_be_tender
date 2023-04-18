@@ -1383,10 +1383,11 @@ const ar = {
   },
   continue_studying_the_project: 'متابعة الداراسة',
   no_employee: 'لا يوجد',
-  analyze_project: 'تحليل المشروع',
-  set_payment: 'تعيين الدفع',
-  upload_receipt: 'تحميل الإيصال',
-  close_project: 'أغلق المشروع',
+  need_review: 'بانتظار الدراسة',
+  set_payment: 'الدفع',
+  set_payment_cashier: 'الدفع',
+  action_ongoing: 'قيد الإجراء ',
+  close_report: 'بانتظار تقرير الإغلاق',
 
   // ACCOUNT_MANAGER PAGES
   account_manager: {

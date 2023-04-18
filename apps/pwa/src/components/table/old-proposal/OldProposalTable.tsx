@@ -58,7 +58,14 @@ const TABLE_HEAD = [
 //   },
 // };
 
-const status = ['Pending', 'Canceled', 'Completed', 'Ongoing', 'On Revision', 'Ask for Amandament'];
+const status = [
+  'Pending',
+  'Canceled',
+  'Completed',
+  'Ongoing',
+  'On Revision',
+  'Asked for Amandement',
+];
 
 const tracks = ['Mosques', 'Concessional grants', 'Initiatives', 'Baptisms'];
 
@@ -176,7 +183,7 @@ export default function OldProposalTable() {
         return `ONGOING`;
       } else if (status === 'On Revision') {
         return `ON_REVISION`;
-      } else if (status === 'Ask for Amandament') {
+      } else if (status === 'Asked for Amandement') {
         return `ASKED_FOR_AMANDEMENT`;
       }
       return false;
@@ -343,40 +350,50 @@ export default function OldProposalTable() {
       </Box>
       <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2}>
         <FormControl size="small" sx={{ m: 1, width: 200 }}>
-          <InputLabel id="demo-multiple-checkbox-label">Project Status</InputLabel>
+          <InputLabel id="demo-multiple-checkbox-label">
+            {translate('search_component.by_project_status')}
+          </InputLabel>
           <Select
             labelId="demo-multiple-checkbox-label"
             id="demo-multiple-checkbox"
             multiple
             value={projectStatus}
             onChange={handleSelectedStatus}
-            input={<OutlinedInput label="Project Status" />}
+            input={<OutlinedInput label={translate('search_component.by_project_status')} />}
             renderValue={(selected) => selected.join(', ')}
           >
             {status.map((item) => (
               <MenuItem key={item} value={item}>
                 <Checkbox checked={projectStatus.indexOf(item) > -1} />
-                <ListItemText primary={item} />
+                <ListItemText
+                  primary={translate(
+                    `outter_status.${item.replace(/ /g, '_').toUpperCase()}`
+                  ).toLowerCase()}
+                />
               </MenuItem>
             ))}
           </Select>
         </FormControl>
 
         <FormControl size="small" sx={{ m: 1, width: 200 }}>
-          <InputLabel id="demo-multiple-checkbox-label">Project Track</InputLabel>
+          <InputLabel id="demo-multiple-checkbox-label">
+            {translate('search_component.by_track_name')}
+          </InputLabel>
           <Select
             labelId="demo-multiple-checkbox-label"
             id="demo-multiple-checkbox"
             multiple
             value={projectTrack}
             onChange={handleSelectedTrack}
-            input={<OutlinedInput label="Project Track" />}
+            input={<OutlinedInput label={translate('search_component.by_track_name')} />}
             renderValue={(selected) => selected.join(', ')}
           >
             {tracks.map((track) => (
               <MenuItem key={track} value={track}>
                 <Checkbox checked={projectTrack.indexOf(track) > -1} />
-                <ListItemText primary={track} />
+                <ListItemText
+                  primary={translate(`${track.replace(/ /g, '_').toUpperCase()}`).toLowerCase()}
+                />
               </MenuItem>
             ))}
           </Select>

@@ -1373,10 +1373,11 @@ const en = {
   },
   continue_studying_the_project: 'Continue Studying',
   no_employee: 'No Employee',
-  analyze_project: 'Analyze Project',
+  need_review: 'Need Review',
   set_payment: 'Set Payment',
-  upload_receipt: 'Upload Receipt',
-  close_project: 'Close Project',
+  set_payment_cashier: 'Set Payment',
+  action_ongoing: 'On Going',
+  close_report: 'Close Report',
 
   // ACCOUNT_MANAGER PAGES
   account_manager: {

@@ -119,7 +119,8 @@ export type ProjectCardPropsBE = {
     | 'incoming-exchange-permission-requests'
     | 'current-project'
     | 'payment-adjustment'
-    | 'exchange-permission'; // it refers to the url that I came from and the url that I have to go to
+    | 'exchange-permission'
+    | 'project-report'; // it refers to the url that I came from and the url that I have to go to
   mutate: () => void;
 };
 
