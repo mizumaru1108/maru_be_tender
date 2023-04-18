@@ -279,6 +279,8 @@ export class TenderProposalPaymentRepository {
               action: status,
               reviewer_id: reviewerId,
               state: choosenRole,
+              user_role: choosenRole,
+              message: `batch_${payment.order}`,
               response_time: lastLog
                 ? Math.round(
                     (new Date().getTime() - lastLog.created_at.getTime()) /
@@ -604,7 +606,7 @@ export class TenderProposalPaymentRepository {
           data: {
             id: nanoid(),
             proposal_id,
-            action: 'Project Completed',
+            action: ProposalAction.PROJECT_COMPLETED,
             state: TenderAppRoleEnum.CLIENT,
             user_role: TenderAppRoleEnum.CLIENT,
           },
