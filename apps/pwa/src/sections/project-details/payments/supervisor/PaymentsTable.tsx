@@ -92,7 +92,6 @@ function PaymentsTable() {
   }, [trigger, dispatch, id, activeRole]);
 
   useEffect(() => {
-    console.log({ trigger });
     for (var i = 0; i < proposal.payments.length; i++) {
       if (proposal.payments[i].status === 'set_by_supervisor') {
         setCurrentIssuedPayament(i);

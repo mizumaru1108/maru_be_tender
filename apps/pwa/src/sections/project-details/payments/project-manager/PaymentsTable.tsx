@@ -4,7 +4,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import { useSnackbar } from 'notistack';
 import { updatePaymentBySupervisorAndManagerAndFinance } from 'redux/slices/proposal';
-import React from 'react';
+import React, { useMemo } from 'react';
 import useLocales from 'hooks/useLocales';
 import { fCurrencyNumber } from 'utils/formatNumber';
 import useAuth from 'hooks/useAuth';
@@ -18,6 +18,15 @@ function PaymentsTable() {
   const { proposal } = useSelector((state) => state.proposal);
 
   const { translate } = useLocales();
+
+  const payments = useMemo(() => {
+    const paymentsHistory = proposal.payments.map((v) => ({
+      ...v,
+      order: Number(v.order),
+    }));
+
+    return paymentsHistory.sort((a, b) => a.order - b.order);
+  }, [proposal]);
 
   const handleApprovalPayment = async (id: string) => {
     try {
@@ -83,13 +92,11 @@ function PaymentsTable() {
     }
   };
 
-  React.useEffect(() => {}, [proposal]);
-
   return (
     <>
-      {proposal.payments.map((item, index) => (
+      {payments.map((item, index) => (
         <Grid item md={12} key={index} sx={{ mb: '20px' }}>
-          <Grid container direction="row" key={item.order} spacing={2} alignItems="center">
+          <Grid container direction="row" key={Number(item.order)} spacing={2} alignItems="center">
             <Grid item md={2}>
               <Typography variant="h6">
                 <Typography component="span">

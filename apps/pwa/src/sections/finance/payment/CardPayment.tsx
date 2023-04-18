@@ -44,6 +44,7 @@ function RenderingComponent({ proposalData }: { proposalData: Proposal }) {
         Loading ...
       </Grid>
     );
+
   if (error)
     return (
       <Grid item xs={12}>
@@ -169,7 +170,9 @@ function RenderingComponent({ proposalData }: { proposalData: Proposal }) {
                 </Grid>
                 <Grid item xs={12} md={7}>
                   <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                    {data.payment_details.payment_date ?? '-'}
+                    {data.payment_details.payment_number.length
+                      ? data.payment_details.payment_number[0].deposit_date
+                      : '-'}
                   </Typography>
                 </Grid>
               </Grid>
