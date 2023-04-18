@@ -320,15 +320,16 @@ export class TenderProposalPaymentRepository {
             choosenRole,
             cheque,
           );
+
           if (
             updateNotif.createManyWebNotifPayload &&
             updateNotif.createManyWebNotifPayload.length > 0
           ) {
             this.logger.log(
-              'log',
+              'info',
               `Creating new notification with payload of \n${updateNotif.createManyWebNotifPayload}`,
             );
-            prisma.notification.createMany({
+            await prisma.notification.createMany({
               data: updateNotif.createManyWebNotifPayload,
             });
           }
@@ -533,7 +534,7 @@ export class TenderProposalPaymentRepository {
               'info',
               `Creating new notification with payload of \n${closeReportNotif.createManyWebNotifPayload}`,
             );
-            prisma.notification.createMany({
+            await prisma.notification.createMany({
               data: closeReportNotif.createManyWebNotifPayload,
             });
           }

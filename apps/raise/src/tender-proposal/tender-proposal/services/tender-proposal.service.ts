@@ -505,10 +505,11 @@ export class TenderProposalService {
       deletedFileManagerUrls,
       uploadedFilePath,
       !!sendRevisionPayload ? true : false,
+      (this.configService.get('tenderAppConfig.baseUrl') as string) || '',
     );
 
     if (!!sendRevisionPayload && updatedProposal.notif)
-      this.notifService.sendSmsAndEmail(updatedProposal.notif);
+      this.notifService.sendSmsAndEmailBatch(updatedProposal.notif);
 
     return updatedProposal.proposal;
   }
@@ -1462,7 +1463,7 @@ export class TenderProposalService {
                 'tenderAppConfig.baseUrl',
               )}/client/dashboard/current-project/${
                 log.data.proposal.id
-              }/show-details`,
+              }/show-project`,
       },
     };
 

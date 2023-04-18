@@ -175,6 +175,7 @@ export class TenderProposalRepository {
     deletedFileManagerUrls: string[],
     uploadedFilePath: string[],
     createLog: boolean,
+    redirectUrl: string,
   ): Promise<UpdateMyProposalResponseDto> {
     try {
       return await this.prismaService.$transaction(
@@ -293,10 +294,14 @@ export class TenderProposalRepository {
               },
             });
 
-            const sendRevisionNotif = SendRevisionNotifMapper({
-              ...createdLog,
-              reviewer: createdLog.proposal.supervisor,
-            });
+            const sendRevisionNotif = SendRevisionNotifMapper(
+              proposal.id,
+              {
+                ...createdLog,
+                reviewer: createdLog.proposal.supervisor,
+              },
+              redirectUrl || '',
+            );
 
             if (
               sendRevisionNotif.createManyWebNotifPayload &&

@@ -186,6 +186,7 @@ export class TenderProposalFollowUpService {
         createFollowUpPayload,
         fileManagerCreateManyPayload,
         employee_only,
+        this.configService.get('tenderAppConfig.baseUrl') as string,
         payload.selectLang,
       );
 

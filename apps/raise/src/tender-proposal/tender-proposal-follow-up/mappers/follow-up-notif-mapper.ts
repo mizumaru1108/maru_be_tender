@@ -8,11 +8,12 @@ import { RawCreateFollowUpDto } from '../dtos/responses/raw-create-follow-up.dto
 export const FollowUpNotifMapper = (
   createdFolllowUp: RawCreateFollowUpDto['data'],
   employee_only: boolean,
+  redirectLink: string,
   selected_lang?: 'ar' | 'en',
 ): CommonNotificationMapperResponse => {
   const { proposal, user } = createdFolllowUp;
   const logTime = moment(new Date()).format('llll');
-  const subject = `Proposal Follow Up Nocontenttification`;
+  const subject = `Proposal Follow Up Notification`;
   const content = `There's a New Follow Up on Project ${proposal.project_name} from ${user.employee_name}`;
   let clientEmailTemplatePath: string | undefined = undefined;
   let clientEmailTemplateContext: Record<string, any>[] | undefined = undefined;
@@ -34,7 +35,7 @@ export const FollowUpNotifMapper = (
   if (!employee_only) {
     createWebNotifPayload.push({
       ...baseWebNotif,
-      user_id: user.id,
+      user_id: proposal.user.id,
     });
 
     clientEmailTemplatePath = `tender/${
@@ -46,6 +47,7 @@ export const FollowUpNotifMapper = (
         projectName: proposal.project_name,
         receiverName: proposal.user.employee_name,
         followUpSender: user.employee_name,
+        projectPageLink: `${redirectLink}/client/dashboard/current-project/${proposal.id}/show-details`,
       },
     ];
   }

@@ -17,11 +17,12 @@ export class TenderProposalFollowUpRepository {
     followUpCreatePayload: Prisma.proposal_follow_upUncheckedCreateInput,
     fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
     employee_only: boolean,
+    redirectLink: string,
     selected_lang?: 'ar' | 'en',
   ) {
     this.logger.log(
-      'log',
-      `Createing new follow up with payload of ${logUtil(
+      'info',
+      `Createing new follow up with payload of \n${logUtil(
         followUpCreatePayload,
       )}`,
     );
@@ -52,6 +53,7 @@ export class TenderProposalFollowUpRepository {
         const followupNotif = FollowUpNotifMapper(
           followUps,
           employee_only,
+          redirectLink,
           selected_lang,
         );
 
@@ -65,7 +67,8 @@ export class TenderProposalFollowUpRepository {
               followupNotif.createManyWebNotifPayload,
             )}`,
           );
-          prisma.notification.createMany({
+
+          await prisma.notification.createMany({
             data: followupNotif.createManyWebNotifPayload,
           });
         }

@@ -24,7 +24,7 @@ export const CloseReportNotifMapper = (
   const clientWebNotifPayload: CreateNotificationDto = {
     user_id: proposal.user.id,
     type: 'PROPOSAL',
-    specific_type: 'CLOSE_REPORT_SEND_TO_CLIENT',
+    specific_type: 'SEND_TO_CLIENT_FOR_FILLING_CLOSE_REPORT_FORM',
     subject: subject,
     content: clientContent,
   };
