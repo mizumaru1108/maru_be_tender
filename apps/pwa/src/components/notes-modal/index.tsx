@@ -158,7 +158,8 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
               </Grid>
             ) : null}
             {['tender_project_manager', 'tender_ceo'].includes(activeRole!) &&
-              proposal.project_track !== 'CONCESSIONAL_GRANTS' && (
+              proposal.project_track !== 'CONCESSIONAL_GRANTS' &&
+              action.actionType === 'ACCEPT' && (
                 <Grid item md={12} xs={12}>
                   <AcceptedForm onEdit={() => setIsEdit(!isEdit)} />
                 </Grid>

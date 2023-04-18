@@ -155,42 +155,42 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
         };
       }
 
-      // console.log('acceptSupervisorGrant', payload);
+      console.log('acceptSupervisorGrant', payload);
 
-      await axiosInstance
-        .patch('/tender-proposal/change-state', payload, {
-          headers: { 'x-hasura-role': activeRole! },
-        })
-        .then((res) => {
-          if (res.data.statusCode === 200) {
-            enqueueSnackbar(translate('proposal_approved'), {
-              variant: 'success',
-            });
-          }
+      // await axiosInstance
+      //   .patch('/tender-proposal/change-state', payload, {
+      //     headers: { 'x-hasura-role': activeRole! },
+      //   })
+      //   .then((res) => {
+      //     if (res.data.statusCode === 200) {
+      //       enqueueSnackbar(translate('proposal_approved'), {
+      //         variant: 'success',
+      //       });
+      //     }
 
-          setIsSubmitting(false);
-          navigate(`/${editedBy}/dashboard/app`);
-          dispatch(stepResetActive({}));
-        })
-        .catch((err) => {
-          if (typeof err.message === 'object') {
-            err.message.forEach((el: any) => {
-              enqueueSnackbar(el, {
-                variant: 'error',
-                preventDuplicate: true,
-                autoHideDuration: 3000,
-              });
-            });
-          } else {
-            enqueueSnackbar(err.message, {
-              variant: 'error',
-              preventDuplicate: true,
-              autoHideDuration: 3000,
-            });
-          }
+      //     setIsSubmitting(false);
+      //     navigate(`/${editedBy}/dashboard/app`);
+      //     dispatch(stepResetActive({}));
+      //   })
+      //   .catch((err) => {
+      //     if (typeof err.message === 'object') {
+      //       err.message.forEach((el: any) => {
+      //         enqueueSnackbar(el, {
+      //           variant: 'error',
+      //           preventDuplicate: true,
+      //           autoHideDuration: 3000,
+      //         });
+      //       });
+      //     } else {
+      //       enqueueSnackbar(err.message, {
+      //         variant: 'error',
+      //         preventDuplicate: true,
+      //         autoHideDuration: 3000,
+      //       });
+      //     }
 
-          setIsSubmitting(false);
-        });
+      //     setIsSubmitting(false);
+      //   });
     } catch (error) {
       enqueueSnackbar(error.message, {
         variant: 'error',
@@ -200,58 +200,6 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
 
       setIsSubmitting(false);
     }
-
-    // accept({
-    //   proposal_id,
-    //   log: {
-    //     id: nanoid(),
-    //     proposal_id,
-    //     reviewer_id: user?.id,
-    //     action: 'accept',
-    //     message: 'تم قبول المشروع من قبل مشرف المشاريع ',
-    //     notes: notes,
-    //     user_role: 'PROJECT_SUPERVISOR',
-    //     state: 'PROJECT_SUPERVISOR',
-    //   },
-    //   new_values: {
-    //     inner_status: 'ACCEPTED_BY_SUPERVISOR',
-    //     outter_status: 'ONGOING',
-    //     state: 'PROJECT_MANAGER',
-    //     ...restStep1,
-    //     chairman_of_board_of_directors: step2.chairman_of_board_of_directors,
-    //     been_supported_before: step2.been_supported_before,
-    //     most_clents_projects: step2.most_clents_projects,
-    //     added_value: step3.added_value,
-    //     reasons_to_accept: step3.reasons_to_accept,
-    //     target_group_num: step3.target_group_num,
-    //     target_group_type: step3.target_group_type,
-    //     target_group_age: step3.target_group_age,
-    //     been_made_before: step3.been_made_before,
-    //     remote_or_insite: step3.remote_or_insite,
-    //   },
-    //   recommended_support: [
-    //     ...data.recommended_support.map((item: any) => ({
-    //       proposal_id,
-    //       clause: item.clause,
-    //       amount: item.amount,
-    //       explanation: item.explanation,
-    //       id: nanoid(),
-    //     })),
-    //   ],
-    // }).then((res) => {
-    //   if (res.error) {
-    //     enqueueSnackbar(res.error.message, {
-    //       variant: 'error',
-    //       preventDuplicate: true,
-    //       autoHideDuration: 3000,
-    //     });
-    //   } else {
-    //     enqueueSnackbar(translate('proposal_accept'), {
-    //       variant: 'success',
-    //     });
-    //     navigate(`/project-supervisor/dashboard/app`);
-    //   }
-    // });
   };
 
   return (

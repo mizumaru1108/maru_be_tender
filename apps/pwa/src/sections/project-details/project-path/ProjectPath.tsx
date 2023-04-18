@@ -17,6 +17,10 @@ import SupervisorGeneral from './role-logs/SupervisorGeneral';
 import PanoramaFishEyeTwoToneIcon from '@mui/icons-material/PanoramaFishEyeTwoTone';
 import { dispatch, useSelector } from '../../../redux/store';
 import { getProposal } from '../../../redux/slices/proposal';
+import ProjectManager from './role-logs/ProjectManager';
+import FinancePaymentLog from './role-logs/FinancePaymentLog';
+import CashierPaymentLog from './role-logs/CashierPaymentLog';
+import ClientClosingReport from './role-logs/ClientClosingReport';
 
 function ProjectPath() {
   const { translate, currentLang } = useLocales();
@@ -49,7 +53,6 @@ function ProjectPath() {
     setStepOn(step);
     setActiveStep(step);
     // setStepUserRole(item.user_role);
-    console.log({ item });
     if (item !== undefined) {
       // setStepUserRole(item.user_role);
       // setStepActionType(item.action);
@@ -63,6 +66,7 @@ function ProjectPath() {
             notes: item.notes,
             updated_at: item.proposal.updated_at,
             action: item.action,
+            message: item.message,
           });
         }
       }
@@ -76,7 +80,7 @@ function ProjectPath() {
   const lastLog = followUps?.log && followUps?.log[followUps?.log.length - 1];
   const hasNonRejectAction = lastLog?.action && lastLog?.action !== 'reject';
   const hasRejectAction = lastLog?.action && lastLog?.action === 'reject';
-  const isCompleted = lastLog?.action && lastLog?.action === 'complete';
+  const isCompleted = lastLog?.action && lastLog?.action === 'project_completed';
   // console.log({ hasNonRejectAction, hasRejectAction, isCompleted, activeStep });
 
   // React.useEffect(() => {
@@ -102,9 +106,9 @@ function ProjectPath() {
 
     return formattedDate;
   };
+  if (fetching) return <>Loading...</>;
 
-  // if (!fetching) {
-  //   console.log({ followUps });
+  console.log({ followUps });
   return (
     <Grid container spacing={2}>
       <Grid item md={8} xs={8} sx={{ backgroundColor: 'transparent', px: 6 }}>
@@ -141,15 +145,23 @@ function ProjectPath() {
                 <Typography variant="h6">{translate(`review.notes`)}</Typography>
               )}
               {activeStep !== -1 && followUps.log.length !== activeStep ? (
-                followUps.log.map((item: Log, index: number) => (
-                  <React.Fragment key={index}>
-                    {index === activeStep && (
-                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                        <Typography>{item.notes ?? '-'}</Typography>
-                      </Stack>
-                    )}
-                  </React.Fragment>
-                ))
+                followUps.log
+                  .filter(
+                    (item: Log) =>
+                      item.action !== 'set_by_supervisor' &&
+                      item.action !== 'accepted_by_project_manager' &&
+                      item.action !== 'done'
+                  )
+                  .map((item: Log, index: number) => (
+                    <React.Fragment key={index}>
+                      {followUps.log[index].action !== 'set_by_supervisor' &&
+                      index === activeStep ? (
+                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                          <Typography>{item.notes ?? '-'}</Typography>
+                        </Stack>
+                      ) : null}
+                    </React.Fragment>
+                  ))
               ) : (
                 <Typography>
                   {isCompleted && activeStep === -1 ? null : translate('review.waiting')}
@@ -173,7 +185,39 @@ function ProjectPath() {
                   ))}
               </React.Fragment>
             )}
+          {/* CashierPaymentLog */}
           {isCompleted && activeStep === -1 ? null : <Divider />}
+          {activeStep !== followUps.log.length &&
+          stepGeneralLog &&
+          stepGeneralLog?.user_role === 'FINANCE' &&
+          // stepGeneralLog.proposal.project_track !== 'CONCESSIONAL_GRANTS' &&
+          stepGeneralLog.action !== 'send_back_for_revision' &&
+          stepGeneralLog.action !== 'step_back' &&
+          stepGeneralLog.action !== 'sending_closing_report' &&
+          stepGeneralLog.action === 'accepted_by_finance' ? (
+            <FinancePaymentLog stepGeneralLog={stepGeneralLog} />
+          ) : null}
+          {activeStep !== followUps.log.length &&
+          stepGeneralLog &&
+          stepGeneralLog?.user_role === 'CASHIER' &&
+          // stepGeneralLog.proposal.project_track !== 'CONCESSIONAL_GRANTS' &&
+          stepGeneralLog.action !== 'send_back_for_revision' &&
+          stepGeneralLog.action !== 'step_back' &&
+          stepGeneralLog.action !== 'sending_closing_report' &&
+          stepGeneralLog.action === 'done' ? (
+            <CashierPaymentLog stepGeneralLog={stepGeneralLog} />
+          ) : null}
+          {(activeStep !== followUps.log.length &&
+            stepGeneralLog &&
+            stepGeneralLog?.user_role === 'PROJECT_MANAGER' &&
+            // stepGeneralLog.proposal.project_track !== 'CONCESSIONAL_GRANTS' &&
+            stepGeneralLog.action !== 'send_back_for_revision' &&
+            stepGeneralLog.action !== 'step_back' &&
+            stepGeneralLog.action !== 'sending_closing_report' &&
+            stepGeneralLog.action === 'set_by_supervisor') ||
+          (stepGeneralLog && stepGeneralLog.action === 'accepted_by_project_manager') ? (
+            <ProjectManager stepGeneralLog={stepGeneralLog} />
+          ) : null}
           {activeStep !== followUps.log.length &&
           stepGeneralLog &&
           stepGeneralLog?.user_role === 'PROJECT_SUPERVISOR' &&
@@ -192,6 +236,16 @@ function ProjectPath() {
           stepGeneralLog.action !== 'step_back' &&
           stepGeneralLog.action !== 'sending_closing_report' ? (
             <SupervisorGrants stepGransLog={stepGransLog} />
+          ) : null}
+          {activeStep !== followUps.log.length &&
+          stepGransLog &&
+          stepGransLog.proposal &&
+          stepGeneralLog?.user_role === 'CLIENT' &&
+          // stepGeneralLog.proposal.project_track === 'CONCESSIONAL_GRANTS' &&
+          stepGeneralLog.action !== 'send_back_for_revision' &&
+          stepGeneralLog.action !== 'step_back' &&
+          stepGeneralLog.action === 'project_completed' ? (
+            <ClientClosingReport stepGransLog={stepGransLog} />
           ) : null}
         </Stack>
       </Grid>
@@ -238,7 +292,7 @@ function ProjectPath() {
                               alignSelf: 'start',
                             }}
                           >
-                            {item.reviewer.employee_name}
+                            {(item && item.reviewer && item.reviewer.employee_name) ?? 'CLIENT'}
                           </Typography>
                           <Typography sx={{ fontSize: '12px', color: '#000', alignSelf: 'start' }}>
                             {formattedDateTime(item.created_at)}

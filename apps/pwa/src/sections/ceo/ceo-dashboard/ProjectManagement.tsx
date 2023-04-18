@@ -81,6 +81,7 @@ function DashboardProjectManagement() {
           associationName: (project.associationName.client_data.entity as string) || '',
           createdAt: (project.createdAt as string) || '',
           projectDelay: getDelayProjects(project.createdAt) || '',
+          userId: project.associationName.client_data.user_id || '',
         }))
       );
     }

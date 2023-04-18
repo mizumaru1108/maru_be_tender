@@ -19,6 +19,10 @@ function SupervisorGrants({ stepGransLog }: Props) {
   const { translate, currentLang } = useLocales();
   // console.log({ stepGransLog });
   // const [isVat, setIsVat] = React.useState(false);
+  let batch: number = 0;
+  if (stepGransLog && stepGransLog.message) {
+    batch = Number(stepGransLog.message.split('_')[1]);
+  }
   const isVat = Object.entries(stepGransLog.proposal!)
     .filter(([key]) => key === 'vat')
     .map(([key, value]) => {
@@ -28,11 +32,11 @@ function SupervisorGrants({ stepGransLog }: Props) {
         return false;
       }
     });
-  console.log(proposal.payments, 'proposal grant');
+  // console.log(proposal.payments, 'proposal grant');
 
   return (
     <React.Fragment>
-      {stepGransLog.action !== 'insert_payment' && (
+      {stepGransLog.action !== 'insert_payment' && stepGransLog.action !== 'issued_by_supervisor' && (
         <Grid container spacing={2}>
           <Stack direction="column" gap={2} sx={{ pb: 2, px: 2 }}>
             <Typography>
@@ -377,6 +381,37 @@ function SupervisorGrants({ stepGransLog }: Props) {
                 </Grid>
               </Grid>
             ))}
+        </React.Fragment>
+      )}
+      {stepGransLog.action === 'issued_by_supervisor' && (
+        <React.Fragment>
+          <Typography variant="h6">{translate(`review.payment_insert`)}</Typography>
+          {proposal &&
+            proposal.payments &&
+            proposal.payments.length > 0 &&
+            proposal.payments
+              .filter((item) => Number(item.order) === batch)
+              .map((payment, index) => (
+                <Grid container key={index} sx={{ mb: 4 }}>
+                  <Grid item xs={3}>
+                    <Typography variant="subtitle1">
+                      {translate('review.Batch') + ' ' + payment.order}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="subtitle1">
+                      {moment(payment.payment_date).locale(`${currentLang.value}`).format('LLLL')}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Typography variant="subtitle1">
+                      {payment.payment_amount
+                        ? `${String(payment.payment_amount) + ' ' + translate('review.sar')}`
+                        : '-'}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              ))}
         </React.Fragment>
       )}
     </React.Fragment>

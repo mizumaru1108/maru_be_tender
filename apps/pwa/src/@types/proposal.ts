@@ -279,6 +279,7 @@ export type PropsalLogGrants = {
   notes: string;
   updated_at: any;
   action: string;
+  message: string;
   proposal: {
     accreditation_type_id: string;
     added_value: string;
@@ -319,7 +320,13 @@ export type Log = {
     | 'step_back'
     | 'send_back_for_revision'
     | 'sending_closing_report'
-    | 'insert_payment';
+    | 'insert_payment'
+    | 'issued_by_supervisor'
+    | 'set_by_supervisor'
+    | 'accepted_by_project_manager'
+    | 'accepted_by_finance'
+    | 'done'
+    | 'project_completed';
   created_at: Date;
   user_role: Role;
   reviewer: {

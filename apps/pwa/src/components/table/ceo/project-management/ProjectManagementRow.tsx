@@ -24,6 +24,24 @@ export default function ProjectManagementTableRow({
 
   const { translate } = useLocales();
 
+  // console.log({ row });
+
+  const handleOpenProposal = () => {
+    const x = location.pathname.split('/');
+    const url = `/${x[1]}/${x[2]}/project-management/${row.id}/show-details`;
+    if (destination) {
+      navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${row.id}/show-details`);
+    } else {
+      navigate(url);
+    }
+  };
+
+  const handleOpenUser = () => {
+    const x = location.pathname.split('/');
+    const url = `/${x[1]}/dashboard/client-list/owner/${row.userId}`;
+    navigate(url);
+  };
+
   return (
     <TableRow hover selected={selected}>
       <TableCell padding="checkbox">
@@ -36,12 +54,17 @@ export default function ProjectManagementTableRow({
         </Typography>
       </TableCell>
       <TableCell align="left">
-        <Typography variant="subtitle2" noWrap>
+        <Typography
+          variant="subtitle2"
+          noWrap
+          sx={{ cursor: 'pointer' }}
+          onClick={handleOpenProposal}
+        >
           {row.projectName ? stringTruncate(row.projectName, 23) : '-'}
         </Typography>
       </TableCell>
       <TableCell align="left">
-        <Typography variant="subtitle2" noWrap>
+        <Typography variant="subtitle2" noWrap sx={{ cursor: 'pointer' }} onClick={handleOpenUser}>
           {/* it should be the entity */}
           {row.associationName ? stringTruncate(row.associationName, 23) : '-'}
         </Typography>
@@ -63,18 +86,7 @@ export default function ProjectManagementTableRow({
       </TableCell>
       <TableCell align="left">
         <Button
-          onClick={() => {
-            const x = location.pathname.split('/');
-            const url = `/${x[1]}/${x[2]}/project-management/${row.id}/show-details`;
-            // console.log({ url });
-            // navigate(`/${x[1]}/${x[2]}/project-management/${row.id}/show-details`);
-            if (destination) {
-              navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${row.id}/show-details`);
-            } else {
-              // navigate(`${location.pathname}/${row.id}/show-details`);
-              navigate(url);
-            }
-          }}
+          onClick={handleOpenProposal}
           size="small"
           sx={{ backgroundColor: '#0E8478', color: 'white' }}
         >
