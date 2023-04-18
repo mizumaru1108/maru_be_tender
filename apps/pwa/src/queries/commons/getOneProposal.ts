@@ -183,6 +183,9 @@ query getInvoicePaymentData(
     payment_number: cheques {
       id
       number
+      payment_id
+      transfer_receipt
+      deposit_date
     }
   }
 }

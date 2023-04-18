@@ -10,16 +10,15 @@ datasource db {
 
 model bank_information {
   user_id                                              String
-  bank_account_name                                    String?                    @db.VarChar
-  bank_account_number                                  String?                    @db.VarChar
-  bank_name                                            String?                    @db.VarChar
+  bank_account_name                                    String?    @db.VarChar
+  bank_account_number                                  String?    @db.VarChar
+  bank_name                                            String?    @db.VarChar
   proposal_id                                          String?
-  id                                                   String                     @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                                                   String     @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   card_image                                           Json?
-  is_deleted                                           Boolean?                   @default(false)
-  user                                                 user                       @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  proposal_bank_informationToproposal_proposal_bank_id proposal[]                 @relation("bank_informationToproposal_proposal_bank_id")
-  propsal_bank_information                             propsal_bank_information[]
+  is_deleted                                           Boolean?   @default(false)
+  user                                                 user       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  proposal_bank_informationToproposal_proposal_bank_id proposal[] @relation("bank_informationToproposal_proposal_bank_id")
 }
 
 model client_data {
@@ -38,7 +37,7 @@ model client_data {
   phone                    String?      @db.VarChar
   website                  String?      @db.VarChar
   password                 String?      @db.VarChar
-  license_number           String?      @db.VarChar
+  license_number           String       @db.VarChar
   license_expired          DateTime?    @db.Date
   license_issue_date       DateTime?    @db.Date
   ceo_mobile               String?      @db.VarChar
@@ -119,7 +118,7 @@ model payment {
   payment_amount     Decimal?        @db.Decimal
   proposal_id        String
   payment_date       DateTime?       @db.Date
-  status             String?         @default("set_by_supervisor")
+  status             String?         @default("SET_BY_SUPERVISOR")
   number_of_payments Decimal?        @db.Decimal
   order              Decimal?        @db.Decimal
   created_at         DateTime?       @default(now()) @db.Timestamptz(6)
@@ -222,7 +221,6 @@ model proposal {
   follow_ups                          proposal_follow_up[]
   proposal_item_budgets               proposal_item_budget[]
   proposal_logs                       proposal_log[]
-  propsal_bank_information            propsal_bank_information[]
   recommended_support_consultant      recommended_support_consultant[]
   payment_configuration               supervisor[]
 }
@@ -283,13 +281,12 @@ model user {
   email                                                                       String                        @unique @db.VarChar
   updated_at                                                                  DateTime?                     @default(now()) @db.Timestamptz(6)
   created_at                                                                  DateTime?                     @default(now()) @db.Timestamptz(6)
-  employee_path                                                               String?
+  employee_path                                                               String?                       @db.VarChar
   last_login                                                                  DateTime?                     @default(now()) @db.Timestamptz(6)
   status_id                                                                   String
   address                                                                     String?
   google_session                                                              Json?
   is_online                                                                   Boolean?
-  uid                                                                         Int?
   employee_track                                                              project_tracks?               @relation(fields: [employee_path], references: [id], onDelete: NoAction, onUpdate: NoAction)
   status                                                                      user_status                   @relation(fields: [status_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_user_status_id_fkey")
   appointment_appointment_employee_idTouser                                   appointment[]                 @relation("appointment_employee_idTouser")
@@ -539,9 +536,9 @@ model recommended_support_consultant {
 }
 
 model track {
-  name           String?
   budget         Float?          @db.Real
   id             String          @id @db.VarChar
+  name           String?
   project_tracks project_tracks? @relation(fields: [name], references: [id], onDelete: Cascade)
   proposal       proposal[]
 }
@@ -652,15 +649,16 @@ model file_manager {
   size                Decimal  @db.Decimal
   mimetype            String   @db.VarChar
   url                 String   @unique @db.VarChar
-  table_name          String   @db.VarChar
-  column_name         String   @db.VarChar
-  user_id             String
+  table_name          String?  @db.VarChar
+  column_name         String?  @db.VarChar
+  user_id             String?
   is_deleted          Boolean  @default(false)
   created_at          DateTime @default(now()) @db.Timestamptz(6)
   updated_at          DateTime @default(now()) @db.Timestamptz(6)
   proposal_id         String?
   bank_information_id String?
-  user                user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  fid                 Int?
+  user                user?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model bank_information2 {
@@ -669,7 +667,7 @@ model bank_information2 {
   bank_account_number String?  @db.VarChar
   bank_name           String?  @db.VarChar
   proposal_id         String?
-  id                  String   @id(map: "bank_information2_pkey1") @default("")
+  id                  String   @id @default("")
   card_image          String?
   is_deleted          Boolean? @default(false)
 }
@@ -692,7 +690,7 @@ model client_data2 {
   password                 String?   @db.VarChar
   license_number           String?   @db.VarChar
   license_expired          DateTime? @db.Date
-  license_issue_date       String?
+  license_issue_date       DateTime? @db.Date
   ceo_mobile               String?   @db.VarChar
   ceo_name                 String?   @db.VarChar
   data_entry_mobile        String?   @db.VarChar
@@ -767,7 +765,6 @@ model user3 {
   google_session String?
   is_online      String?
   fusionauth_id  String?
-  uid            Int?
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
@@ -854,7 +851,7 @@ model tmp_client_proper {
 }
 
 model client_data4 {
-  id                       String    @id(map: "client_data3_pkey")
+  id                       String    @id
   entity                   String?   @db.VarChar
   authority                String?   @db.VarChar
   headquarters             String?   @db.VarChar
@@ -889,18 +886,18 @@ model client_data4 {
 }
 
 model bank_information3 {
-  user_id             String?
+  user_id             String
   bank_account_name   String?  @db.VarChar
   bank_account_number String?  @db.VarChar
   bank_name           String?  @db.VarChar
   proposal_id         String?
-  id                  String   @id(map: "bank_information2_pkey") @default("")
+  id                  String   @id @default("")
   card_image          String?
   is_deleted          Boolean? @default(false)
 }
 
 model proposal2 {
-  id                                  String  @id
+  id                                  String  @id(map: "proposal2_pkey1")
   project_name                        String
   submitter_user_id                   String
   created_at                          String
@@ -977,52 +974,6 @@ model user_role2 {
   user_type_id String
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
-model backup_client_data_latest {
-  id                       String?
-  entity                   String?   @db.VarChar
-  authority                String?   @db.VarChar
-  headquarters             String?   @db.VarChar
-  date_of_esthablistmen    DateTime? @db.Date
-  num_of_beneficiaries     Int?
-  num_of_employed_facility Int?
-  governorate              String?
-  region                   String?   @db.VarChar
-  entity_mobile            String?   @db.VarChar
-  center_administration    String?   @db.VarChar
-  twitter_acount           String?   @db.VarChar
-  phone                    String?   @db.VarChar
-  website                  String?   @db.VarChar
-  password                 String?   @db.VarChar
-  license_number           String?   @db.VarChar
-  license_expired          DateTime? @db.Date
-  license_issue_date       DateTime? @db.Date
-  ceo_mobile               String?   @db.VarChar
-  ceo_name                 String?   @db.VarChar
-  data_entry_mobile        String?   @db.VarChar
-  data_entry_name          String?   @db.VarChar
-  data_entry_mail          String?   @db.VarChar
-  created_at               DateTime? @db.Timestamp(6)
-  updated_at               DateTime? @db.Timestamp(6)
-  client_field             String?   @db.VarChar
-  user_id                  String?
-  license_file             Json?
-  board_ofdec_file         Json?
-  chairman_name            String?   @db.VarChar
-  chairman_mobile          String?   @db.VarChar
-  qid                      Int?
-
-  @@ignore
-}
-
-model propsal_bank_information {
-  id                  String           @id
-  bank_information_id String           @db.Uuid
-  proposal_id         String
-  bank_information    bank_information @relation(fields: [bank_information_id], references: [id], onDelete: Cascade)
-  proposal            proposal         @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
-}
-
 model file_manager4 {
   id                  String   @id
   name                String   @db.VarChar
@@ -1079,4 +1030,478 @@ model file_manager6 {
   path2               String?
   path3               String?
   path4               String?
+}
+
+model dept_1 {
+  id              String  @id
+  proj_id         String?
+  dept_1_path     String?
+  dept_1_tax_1    String?
+  dept_1_tax_2    String?
+  dept_1_tax_3    String?
+  dept_1_tax_4    String?
+  dept_1_tax_uid  String?
+  dept_1_tax_uid2 String?
+  dept_1_op       String?
+  dept_1_notes    String?
+}
+
+model dept_1001 {
+  id              String  @id
+  proj_id         String?
+  dept_1001_op    String?
+  dept_1001_notes String?
+}
+
+model dept_1002 {
+  id              String  @id
+  proj_id         String?
+  dept_1002_op    String?
+  dept_1002_notes String?
+}
+
+model dept_2 {
+  id               String  @id
+  proj_id          String?
+  dept_2_report    String?
+  dept_2_notify    String?
+  dept_2_agree     String?
+  dept_2_op        String?
+  dept_2_req       String?
+  dept_2_pay_times String?
+  dept_2_notes     String?
+  dept_2_tax_1     String?
+  dept_2_tax_2     String?
+  dept_2_tax_3     String?
+  dept_2_tax_4     String?
+  dept_2_reject_st String?
+  dept_2_notes1    String?
+  dept_2_notes2    String?
+  dept_2_notes3    String?
+}
+
+model dept_21 {
+  id                String  @id
+  proj_id           String?
+  dept_21_report    String?
+  dept_21_notify    String?
+  dept_21_agree     String?
+  dept_21_op        String?
+  dept_21_req       String?
+  dept_21_pay_times String?
+  dept_21_notes     String?
+  dept_21_tax_1     String?
+  dept_21_tax_2     String?
+  dept_21_tax_3     String?
+  dept_21_tax_4     String?
+  dept_21_reject_st String?
+  dept_21_notes1    String?
+  dept_21_notes2    String?
+  dept_21_notes3    String?
+}
+
+model dept_22 {
+  id                String  @id
+  proj_id           String?
+  dept_22_report    String?
+  dept_22_notify    String?
+  dept_22_agree     String?
+  dept_22_op        String?
+  dept_22_req       String?
+  dept_22_pay_times String?
+  dept_22_notes     String?
+  dept_22_tax_1     String?
+  dept_22_tax_2     String?
+  dept_22_tax_3     String?
+  dept_22_tax_4     String?
+  dept_22_reject_st String?
+  dept_22_notes1    String?
+  dept_22_notes2    String?
+  dept_22_notes3    String?
+}
+
+model dept_23 {
+  id                String  @id
+  proj_id           String?
+  dept_23_report    String?
+  dept_23_notify    String?
+  dept_23_agree     String?
+  dept_23_op        String?
+  dept_23_req       String?
+  dept_23_pay_times String?
+  dept_23_notes     String?
+  dept_23_tax_1     String?
+  dept_23_tax_2     String?
+  dept_23_tax_3     String?
+  dept_23_tax_4     String?
+  dept_23_reject_st String?
+  dept_23_notes1    String?
+  dept_23_notes2    String?
+  dept_23_notes3    String?
+}
+
+model dept_3 {
+  id               String  @id
+  proj_id          String?
+  dept_3_report    String?
+  dept_3_notify    String?
+  dept_3_agree     String?
+  dept_3_op        String?
+  dept_3_req       String?
+  dept_3_pay_times String?
+  dept_3_notes     String?
+  dept_3_notes3    String?
+}
+
+model dept_4 {
+  id               String  @id
+  proj_id          String?
+  dept_4_report    String?
+  dept_4_notify    String?
+  dept_4_agree     String?
+  dept_4_op        String?
+  dept_4_req       String?
+  dept_4_pay_times String?
+  dept_4_notes     String?
+  dept_4_notes3    String?
+}
+
+model dept_5 {
+  id               String  @id
+  proj_id          String?
+  dept_5_report    String?
+  dept_5_notify    String?
+  dept_5_agree     String?
+  dept_5_op        String?
+  dept_5_req       String?
+  dept_5_pay_times String?
+  dept_5_notes     String?
+}
+
+model dept_6 {
+  id               String  @id
+  proj_id          String?
+  dept_6_report    String?
+  dept_6_notify    String?
+  dept_6_agree     String?
+  dept_6_op        String?
+  dept_6_req       String?
+  dept_6_pay_times String?
+  dept_6_notes     String?
+}
+
+model dept_61 {
+  id              String  @id
+  proj_id         String?
+  dept_61_perm    String?
+  dept_61_created String?
+}
+
+model dept_7 {
+  id             String  @id
+  proj_id        String?
+  dept_7_perm    String?
+  dept_7_created String?
+}
+
+model dept_71 {
+  id          String  @id
+  proj_id     String?
+  dept_71_st  String?
+  dept_71_pay String?
+}
+
+model dept_72 {
+  id             String  @id
+  proj_id        String?
+  dept_72_st     String?
+  dept_72_st_fid String?
+  pay            String?
+}
+
+model dept_75 {
+  id            String  @id
+  proj_id       String?
+  dept_75_notes String?
+}
+
+model dept_8 {
+  id             String  @id
+  proj_id        String?
+  dept_8_perm    String?
+  dept_8_created String?
+}
+
+model dept_9 {
+  id             String  @id
+  proj_id        String?
+  dept_9_perm    String?
+  dept_9_created String?
+}
+
+model dept_91 {
+  id              String  @id
+  proj_id         String?
+  dept_91_num     String?
+  dept_91_num_fid String?
+  dept_91_date    String?
+  pay             String?
+}
+
+model file_manager2 {
+  id                  String   @id
+  name                String   @db.VarChar
+  size                Decimal  @db.Decimal
+  mimetype            String   @db.VarChar
+  url                 String?  @db.VarChar
+  table_name          String?  @db.VarChar
+  column_name         String?  @db.VarChar
+  user_id             String?
+  is_deleted          Boolean  @default(false)
+  created_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
+  updated_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
+  proposal_id         String?
+  bank_information_id String?
+  fid                 String?
+}
+
+model file_manager3 {
+  id                  String   @id
+  name                String   @db.VarChar
+  size                Decimal  @db.Decimal
+  mimetype            String   @db.VarChar
+  url                 String?  @db.VarChar
+  table_name          String?  @db.VarChar
+  column_name         String?  @db.VarChar
+  user_id             String?
+  is_deleted          Boolean  @default(false)
+  created_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
+  updated_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
+  proposal_id         String?
+  bank_information_id String?
+  fid                 String?
+}
+
+model files {
+  fid       String  @id
+  uid       String?
+  filename  String?
+  filepath  String?
+  filemime  String?
+  filesize  String?
+  status    String?
+  timestamp String?
+  length    String?
+  views     String?
+  downloads String?
+}
+
+model proj_attach {
+  id       String  @id
+  proj_id  String?
+  created  String?
+  name     String?
+  fid      String?
+  uid      String?
+  is_agree String?
+}
+
+model proj_money_paid {
+  id            String  @id
+  proj_id       String?
+  pay           String?
+  state         String?
+  money         String?
+  mdate         String?
+  report        String?
+  rdate         String?
+  perm          String?
+  paid          String?
+  paid_acc      String?
+  report_acc    String?
+  date_paid     String?
+  date_paid_acc String?
+  reportTxt     String?
+}
+
+model proj_owners {
+  id      String  @id
+  uid     String?
+  proj_id String?
+  state   String?
+  rate    String?
+  value1  String?
+  value2  String?
+  value3  String?
+}
+
+model proj_req {
+  id                           String  @id
+  uid                          String
+  year                         String
+  proj_req_state               String?
+  created                      String
+  proj_req_proj                String?
+  proj_req_tax_1               String
+  proj_req_tax_2               String
+  proj_req_tax_3               String
+  proj_req_tax_4               String
+  proj_req_teaser              String?
+  proj_req_time                String?
+  proj_req_output              String?
+  proj_req_place               String?
+  proj_req_date                String?
+  proj_req_target              String
+  proj_req_target2             String
+  proj_req_money_req           String
+  proj_req_money_req_fid       String
+  proj_req_money_req_fid2      String
+  proj_req_money_req_fid3      String
+  proj_req_proj_manger         String?
+  proj_req_proj_manger_mob     String?
+  proj_req_proj_manger_mail    String?
+  h_proj_req_bank              String?
+  h_proj_req_bank_name         String?
+  h_proj_req_bank_account_name String?
+  h_proj_req_bank_account_num  String?
+}
+
+model proj_track {
+  id      String  @id
+  proj_id String?
+  created String?
+  leaved  String?
+  sec_in  String?
+  sec_out String?
+  sec_uid String?
+  state   String?
+  ref_id  String?
+  notify  String?
+  notifyM String?
+}
+
+model proposal3 {
+  id                                  String  @id(map: "proposal2_pkey")
+  project_name                        String
+  submitter_user_id                   String
+  created_at                          String
+  project_track                       String?
+  project_idea                        String?
+  project_implement_date              String?
+  project_location                    String?
+  num_ofproject_binicficiaries        String?
+  project_goals                       String?
+  project_outputs                     String?
+  project_strengths                   String?
+  project_risks                       String?
+  pm_name                             String?
+  pm_email                            String?
+  pm_mobile                           String?
+  governorate                         String?
+  region                              String?
+  amount_required_fsupport            String?
+  need_consultant                     String? @default("false")
+  step                                String? @default("ZERO")
+  whole_budget                        String?
+  state                               String? @default("MODERATOR")
+  inner_status                        String? @default("CREATED_BY_CLIENT")
+  previously_add_bank                 String?
+  outter_status                       String? @default("ONGOING")
+  project_beneficiaries               String?
+  number_of_payments                  String?
+  finance_id                          String?
+  cashier_id                          String?
+  project_manager_id                  String?
+  supervisor_id                       String?
+  project_attachments                 String?
+  letter_ofsupport_req                String?
+  on_revision                         String? @default("false")
+  on_consulting                       String? @default("false")
+  proposal_bank_id                    String?
+  partial_support_amount              String?
+  project_beneficiaries_specific_type String?
+  track_id                            String?
+  updated_at                          String? @default("now()")
+  clasification_field                 String?
+  closing_report                      String?
+  support_type                        String?
+  does_an_agreement                   String?
+  need_picture                        String?
+  support_outputs                     String?
+  clause                              String?
+  vat                                 String?
+  vat_percentage                      String?
+  inclu_or_exclu                      String?
+  fsupport_by_supervisor              String?
+  number_of_payments_by_supervisor    String?
+  chairman_of_board_of_directors      String?
+  been_supported_before               String?
+  most_clents_projects                String?
+  added_value                         String?
+  reasons_to_accept                   String?
+  target_group_num                    String?
+  target_group_type                   String?
+  target_group_age                    String?
+  been_made_before                    String?
+  remote_or_insite                    String?
+  old_inner_status                    String?
+  support_goal_id                     String?
+  accreditation_type_id               String?
+  execution_time                      String?
+  project_number                      Int?
+  oid                                 Int?
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model type_reg {
+  nid              Int?
+  cont_mang_name   String? @db.VarChar
+  cont_mang_mob    BigInt?
+  cont_mang_mail   String? @db.VarChar
+  cont_client_name String? @db.VarChar
+  cont_client_mob  BigInt?
+  cont_client_mail String? @db.VarChar
+  cont_state       Int?
+  cont_proj_result Int?
+  cont_notes       String? @db.VarChar
+  cont_employ_uid  Int?
+  cont_given_uid   Int?
+  cont_mang_name2  String? @db.VarChar
+  cont_mang_mob2   BigInt?
+
+  @@ignore
+}
+
+model type_reg_cont {
+  nid              String  @id
+  cont_mang_name   String?
+  cont_mang_mob    String?
+  cont_mang_mail   String?
+  cont_client_name String?
+  cont_client_mob  String?
+  cont_client_mail String?
+  cont_state       String?
+  cont_proj_result String?
+  cont_notes       String?
+  cont_employ_uid  String?
+  cont_given_uid   String?
+  cont_mang_name2  String?
+  cont_mang_mob2   String?
+}
+
+model user4 {
+  id             String    @id
+  employee_name  String?   @db.VarChar
+  mobile_number  String?   @db.VarChar
+  email          String    @db.VarChar
+  updated_at     DateTime? @db.Date
+  created_at     DateTime? @db.Date
+  employee_path  String?   @db.VarChar
+  last_login     DateTime? @db.Date
+  status_id      String
+  address        String?
+  google_session String?
+  is_online      String?
+  fusionauth_id  String?
+  entity         String?
 }
