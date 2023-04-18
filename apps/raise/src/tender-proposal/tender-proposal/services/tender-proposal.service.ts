@@ -775,7 +775,6 @@ export class TenderProposalService {
 
       proposalUpdatePayload = { ...supervisorResult.proposalUpdatePayload };
       proposalLogCreateInput = { ...supervisorResult.proposalLogCreateInput };
-
       createdItemBudgetPayload = [...supervisorResult.createdItemBudgetPayload];
       updatedItemBudgetPayload = [...supervisorResult.updatedItemBudgetPayload];
       deletedItemBudgetIds = [...supervisorResult.deletedItemBudgetIds];
@@ -793,12 +792,16 @@ export class TenderProposalService {
 
     if (currentUser.choosenRole === 'tender_project_manager') {
       const pm = await this.projectManagerChangeState(
+        proposal,
         proposalUpdatePayload,
         proposalLogCreateInput,
         request,
         createdItemBudgetPayload,
         updatedItemBudgetPayload,
         deletedItemBudgetIds,
+        createdRecommendedSupportPayload,
+        updatedRecommendedSupportPayload,
+        deletedRecommendedSupportIds,
       );
 
       proposalUpdatePayload = { ...pm.proposalUpdatePayload };
@@ -806,6 +809,13 @@ export class TenderProposalService {
       createdItemBudgetPayload = [...pm.createdItemBudgetPayload];
       updatedItemBudgetPayload = [...pm.updatedItemBudgetPayload];
       deletedItemBudgetIds = [...pm.deletedItemBudgetIds];
+      createdRecommendedSupportPayload = [
+        ...pm.createdRecommendedSupportPayload,
+      ];
+      updatedRecommendedSupportPayload = [
+        ...pm.updatedRecommendedSupportPayload,
+      ];
+      deletedRecommendedSupportIds = [...pm.deletedRecommendedSupportIds];
     }
 
     if (currentUser.choosenRole === 'tender_consultant') {
@@ -820,18 +830,29 @@ export class TenderProposalService {
 
     if (currentUser.choosenRole === 'tender_ceo') {
       const ceo = await this.ceoChangeState(
+        proposal,
         proposalUpdatePayload,
         proposalLogCreateInput,
         request,
         createdItemBudgetPayload,
         updatedItemBudgetPayload,
         deletedItemBudgetIds,
+        createdRecommendedSupportPayload,
+        updatedRecommendedSupportPayload,
+        deletedRecommendedSupportIds,
       );
       proposalUpdatePayload = { ...ceo.proposalUpdatePayload };
       proposalLogCreateInput = { ...ceo.proposalLogCreateInput };
       createdItemBudgetPayload = [...ceo.createdItemBudgetPayload];
       updatedItemBudgetPayload = [...ceo.updatedItemBudgetPayload];
       deletedItemBudgetIds = [...ceo.deletedItemBudgetIds];
+      createdRecommendedSupportPayload = [
+        ...ceo.createdRecommendedSupportPayload,
+      ];
+      updatedRecommendedSupportPayload = [
+        ...ceo.updatedRecommendedSupportPayload,
+      ];
+      deletedRecommendedSupportIds = [...ceo.deletedRecommendedSupportIds];
     }
 
     /* update proposal and create the logs */
@@ -1096,12 +1117,16 @@ export class TenderProposalService {
   }
 
   async projectManagerChangeState(
+    proposal: proposal,
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
     proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
     request: ChangeProposalStateDto,
     createdItemBudgetPayload: Prisma.proposal_item_budgetCreateManyInput[],
     updatedItemBudgetPayload: Prisma.proposal_item_budgetUncheckedUpdateInput[],
     deletedItemBudgetIds: string[],
+    createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[],
+    updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[],
+    deletedRecommendedSupportIds: string[],
   ) {
     /* Project manager only allowed to acc and reject and step back, and ask for consultation*/
     if (
@@ -1152,12 +1177,16 @@ export class TenderProposalService {
       }
 
       const result = await this.handleUpdateProposalTrackInfo(
+        proposal,
         request.proposal_id,
         proposalUpdatePayload,
         request.project_manager_payload,
         createdItemBudgetPayload,
         updatedItemBudgetPayload,
         deletedItemBudgetIds,
+        createdRecommendedSupportPayload,
+        updatedRecommendedSupportPayload,
+        deletedRecommendedSupportIds,
       );
 
       proposalUpdatePayload = { ...result.proposalUpdatePayload };
@@ -1214,16 +1243,23 @@ export class TenderProposalService {
       createdItemBudgetPayload,
       updatedItemBudgetPayload,
       deletedItemBudgetIds,
+      createdRecommendedSupportPayload,
+      updatedRecommendedSupportPayload,
+      deletedRecommendedSupportIds,
     };
   }
 
   async ceoChangeState(
+    proposal: proposal,
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
     proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
     request: ChangeProposalStateDto,
     createdItemBudgetPayload: Prisma.proposal_item_budgetCreateManyInput[],
     updatedItemBudgetPayload: Prisma.proposal_item_budgetUncheckedUpdateInput[],
     deletedItemBudgetIds: string[],
+    createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[],
+    updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[],
+    deletedRecommendedSupportIds: string[],
   ) {
     /* CEO only allowed to acc and reject and step back */
     if (
@@ -1271,12 +1307,16 @@ export class TenderProposalService {
       }
 
       const result = await this.handleUpdateProposalTrackInfo(
+        proposal,
         request.proposal_id,
         proposalUpdatePayload,
         request.ceo_payload,
         createdItemBudgetPayload,
         updatedItemBudgetPayload,
         deletedItemBudgetIds,
+        createdRecommendedSupportPayload,
+        updatedRecommendedSupportPayload,
+        deletedRecommendedSupportIds,
       );
 
       proposalUpdatePayload = { ...result.proposalUpdatePayload };
@@ -1344,6 +1384,9 @@ export class TenderProposalService {
       createdItemBudgetPayload,
       updatedItemBudgetPayload,
       deletedItemBudgetIds,
+      createdRecommendedSupportPayload,
+      updatedRecommendedSupportPayload,
+      deletedRecommendedSupportIds,
     };
   }
 
@@ -1543,12 +1586,16 @@ export class TenderProposalService {
   }
 
   async handleUpdateProposalTrackInfo(
+    proposal: proposal,
     proposal_id: string,
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
     request: ProjectManagerChangeStatePayload | CeoChangeStatePayload,
     createdItemBudgetPayload: Prisma.proposal_item_budgetCreateManyInput[],
     updatedItemBudgetPayload: Prisma.proposal_item_budgetUncheckedUpdateInput[],
     deletedItemBudgetIds: string[],
+    createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[],
+    updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[],
+    deletedRecommendedSupportIds: string[],
   ) {
     const {
       created_proposal_budget,
@@ -1584,11 +1631,44 @@ export class TenderProposalService {
       }
     }
 
+    if (proposal.project_track === 'CONCESSIONAL_GRANTS') {
+      proposalUpdatePayload = SupervisorGrantTrackAccMapper(
+        proposalUpdatePayload,
+        request,
+      );
+
+      createdRecommendedSupportPayload =
+        SupervisorAccCreatedRecommendedSupportMapper(
+          proposal_id,
+          request.created_recommended_support,
+          createdRecommendedSupportPayload,
+        );
+
+      if (
+        request.updated_recommended_support &&
+        request.updated_recommended_support.length > 0
+      ) {
+        updatedRecommendedSupportPayload = request.updated_recommended_support;
+      }
+
+      if (
+        request.deleted_recommended_support &&
+        request.deleted_recommended_support.length > 0
+      ) {
+        for (const recommendSuppport of request.deleted_recommended_support) {
+          deletedRecommendedSupportIds.push(recommendSuppport.id);
+        }
+      }
+    }
+
     return {
       proposalUpdatePayload,
       createdItemBudgetPayload,
       updatedItemBudgetPayload,
       deletedItemBudgetIds,
+      createdRecommendedSupportPayload,
+      updatedRecommendedSupportPayload,
+      deletedRecommendedSupportIds,
     };
   }
 
