@@ -654,22 +654,23 @@ function NotificationItem({
                       {moment(notification.created_at).locale(`${currentLang.value}`).fromNow()}
                     </Typography>
                     <Stack direction="row" justifyContent="start">
-                      {notification.type === 'PROPOSAL' && (
-                        <Button
-                          style={{ textAlign: 'start', color: 'green' }}
-                          onClick={() =>
-                            handleNavigateProject(
-                              notification.proposal_id,
-                              notification.id,
-                              notification?.proposal?.inner_status,
-                              notification?.proposal?.outter_status,
-                              notification?.proposal?.state
-                            )
-                          }
-                        >
-                          {translate('notification.to_project')}
-                        </Button>
-                      )}
+                      {notification.type === 'PROPOSAL' &&
+                        notification.specific_type !== 'PAYMENT_RELEASE' && (
+                          <Button
+                            style={{ textAlign: 'start', color: 'green' }}
+                            onClick={() =>
+                              handleNavigateProject(
+                                notification.proposal_id,
+                                notification.id,
+                                notification?.proposal?.inner_status,
+                                notification?.proposal?.outter_status,
+                                notification?.proposal?.state
+                              )
+                            }
+                          >
+                            {translate('notification.to_project')}
+                          </Button>
+                        )}
                       {notification.type === 'APPOINTMENT' && (
                         <Button
                           style={{ textAlign: 'start', color: 'blue' }}
@@ -767,7 +768,7 @@ function NotificationItem({
                           <Stack direction="row" justifyContent="start" key={index}>
                             <Button
                               style={{ textAlign: 'start', color: 'blue' }}
-                              href={item.transfer_receipt}
+                              href={item.transfer_receipt.url}
                               rel="noopened noreferrer"
                               target="_blank"
                             >
@@ -922,7 +923,7 @@ function NotificationItem({
                           <Stack direction="row" justifyContent="start" key={index}>
                             <Button
                               style={{ textAlign: 'start', color: 'blue' }}
-                              href={item.transfer_receipt}
+                              href={item.transfer_receipt.url}
                               rel="noopened noreferrer"
                               target="_blank"
                             >
