@@ -42,6 +42,7 @@ import {
 import { TenderProposalService } from '../services/tender-proposal.service';
 import { logUtil } from '../../../commons/utils/log-util';
 import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
+import { file } from 'googleapis/build/src/apis/file';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(private readonly proposalService: TenderProposalService) {}
@@ -69,22 +70,17 @@ export class TenderProposalController {
     );
   }
 
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_client')
   @UseInterceptors(
-    FileFieldsInterceptor(
-      [
-        { name: 'letter_ofsupport_req', maxCount: 1 },
-        { name: 'project_attachments', maxCount: 1 },
-      ],
-      // {
-      //   limits: { fileSize: 200000000 },
-      //   fileFilter(req, file, callback) {
-      //     file.mimetype === FileMimeTypeEnum.PDF ? true : false;
-      //   },
-      // },
-    ),
+    FileFieldsInterceptor([
+      { name: 'letter_ofsupport_req', maxCount: 1 },
+      { name: 'project_attachments', maxCount: 1 },
+    ]),
   )
   @Post('interceptor-create')
   async createProposal(
+    @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: CreateProposalInterceptorDto,
     @UploadedFiles()
     files: {
@@ -92,25 +88,14 @@ export class TenderProposalController {
       project_attachments?: Express.Multer.File[];
     },
   ) {
-    if (files.letter_ofsupport_req) {
-      console.log(
-        'letter of support name: ',
-        files.letter_ofsupport_req[0].originalname,
-        ', letter of support size: ',
-        files.letter_ofsupport_req[0].size,
-      );
-    }
-    if (files.project_attachments) {
-      console.log(
-        'project_attachments name: ',
-        files.project_attachments[0].originalname,
-        ', project_attachments size: ',
-        files.project_attachments[0].size,
-      );
-    }
-    console.log(request);
+    const createdProposal = await this.proposalService.interceptorCreate(
+      currentUser.id,
+      request,
+      files.letter_ofsupport_req,
+      files.project_attachments,
+    );
     return baseResponseHelper(
-      'testing uploads',
+      createdProposal,
       HttpStatus.CREATED,
       'Proposal created successfully',
     );

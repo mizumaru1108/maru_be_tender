@@ -66,12 +66,14 @@ export class CreateProposalInterceptorDto {
   project_implement_date: string;
 
   @ApiProperty()
+  @Type(() => Number)
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
     { message: 'Execution Time must be a number!' },
   )
   @Min(1)
   @Max(999999999999)
+  @IsNotEmpty()
   execution_time: number;
 
   @ApiProperty()
@@ -83,12 +85,14 @@ export class CreateProposalInterceptorDto {
   /* second form ---------------------------------------------------- */
   @ApiPropertyOptional()
   @IsOptional()
+  @Type(() => Number)
   @IsNumber(
     { maxDecimalPlaces: 2, allowNaN: false, allowInfinity: false },
     { message: 'num_ofproject_binicficiaries must be a number!' },
   )
   @Min(0.01)
   @Max(999999999999999999.99)
+  @IsNotEmpty()
   num_ofproject_binicficiaries?: number;
 
   @ApiPropertyOptional()
@@ -151,12 +155,14 @@ export class CreateProposalInterceptorDto {
   /* fourth form ---------------------------------------------------- */
   @ApiPropertyOptional()
   @IsOptional()
+  @Type(() => Number)
   @IsNumber(
     { maxDecimalPlaces: 2, allowNaN: false, allowInfinity: false },
     { message: 'amount_required_fsupport must be a number!' },
   )
   @Min(0.01)
   @Max(999999999999999999.99)
+  @IsNotEmpty()
   amount_required_fsupport?: number;
 
   @ApiPropertyOptional()

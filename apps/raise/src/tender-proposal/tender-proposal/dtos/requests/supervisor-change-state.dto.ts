@@ -48,17 +48,21 @@ export class SupervisorChangeStatePayload {
   @IsNotEmpty()
   support_outputs?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNumber()
   @Min(1)
   @Max(999999999999999999.99)
-  number_of_payments_by_supervisor: number;
+  @IsNotEmpty()
+  number_of_payments_by_supervisor?: number;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0.01)
   @Max(999999999999999999.99)
-  fsupport_by_supervisor: number;
+  @IsNotEmpty()
+  fsupport_by_supervisor?: number;
 
   @ApiPropertyOptional()
   @IsOptional()

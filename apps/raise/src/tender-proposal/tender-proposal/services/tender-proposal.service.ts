@@ -68,6 +68,8 @@ import moment from 'moment';
 import { UpdateProposalTrackInfoMapper } from '../mappers/update-proposal-track-info.mapper';
 import { CeoChangeStatePayload } from '../dtos/requests/ceo-change-state.dto';
 import { ProjectManagerChangeStatePayload } from '../dtos/requests/project-manager-change-state-payload.dto';
+import { CreateProposalInterceptorDto } from '../dtos/requests';
+import { CreateProposalInterceptorMapper } from '../mappers';
 
 @Injectable()
 export class TenderProposalService {
@@ -132,6 +134,64 @@ export class TenderProposalService {
       const fileObj = {
         url: imageUrl,
         type: file.fileExtension,
+        size: file.size,
+      };
+
+      return {
+        uploadedFilePath,
+        fileObj,
+      };
+    } catch (error) {
+      if (uploadedFilePath.length > 0) {
+        this.logger.log(
+          'info',
+          `${uploadMessage} error, deleting all previous uploaded files: ${error}`,
+        );
+        uploadedFilePath.forEach(async (path) => {
+          await this.bunnyService.deleteMedia(path, true);
+        });
+      }
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalService.name,
+        `${uploadMessage}, error:`,
+        `${uploadMessage}`,
+      );
+      throw theError;
+    }
+  }
+
+  async uploadProposalFileIntercept(
+    userId: string,
+    proposalId: string,
+    uploadMessage: string,
+    file: Express.Multer.File,
+    folderName: string,
+    AllowedFileTypes: FileMimeTypeEnum[],
+    maxSize: number = 1024 * 1024 * 4,
+    uploadedFilePath: string[],
+  ) {
+    try {
+      const fileName = generateFileName(
+        file.originalname,
+        file.mimetype as FileMimeTypeEnum,
+      );
+
+      const filePath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposalId}/${userId}/${folderName}/${fileName}`;
+
+      validateAllowedExtension(file.mimetype, AllowedFileTypes);
+      validateFileSize(file.size, maxSize);
+
+      const imageUrl = await this.bunnyService.uploadFileMulter(
+        file,
+        filePath,
+        `${uploadMessage} ${userId}`,
+      );
+
+      uploadedFilePath.push(imageUrl);
+      const fileObj = {
+        url: imageUrl,
+        type: file.mimetype,
         size: file.size,
       };
 
@@ -277,6 +337,114 @@ export class TenderProposalService {
       uploadedFilePath,
     );
 
+    return createdProposal;
+  }
+
+  async interceptorCreate(
+    userId: string,
+    request: CreateProposalInterceptorDto,
+    letter_ofsupport_req?: Express.Multer.File[],
+    project_attachments?: Express.Multer.File[],
+  ) {
+    const proposalCreatePayload: Prisma.proposalUncheckedCreateInput =
+      CreateProposalInterceptorMapper(userId, request);
+    // this.logger.log('info', `request payload, ${logUtil(request)}`);
+    const proposal_id = nanoid();
+    proposalCreatePayload.id = proposal_id;
+    let uploadedFilePath: string[] = [];
+    let proposal_item_budgets:
+      | Prisma.proposal_item_budgetCreateManyInput[]
+      | undefined = undefined;
+    const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
+      [];
+    /* validate and create path */
+    const maxSize: number = 1024 * 1024 * 201;
+    const allowedType: FileMimeTypeEnum[] = [
+      FileMimeTypeEnum.JPG,
+      FileMimeTypeEnum.JPEG,
+      FileMimeTypeEnum.PNG,
+      FileMimeTypeEnum.GIF,
+      FileMimeTypeEnum.PDF,
+    ];
+    if (request.proposal_bank_information_id) {
+      const isMyOwnBank = await this.proposalRepo.validateOwnBankAccount(
+        userId,
+        request.proposal_bank_information_id,
+      );
+      if (!isMyOwnBank) {
+        throw new BadRequestException('Bank account is not yours!');
+      }
+      proposalCreatePayload.proposal_bank_id =
+        request.proposal_bank_information_id;
+    }
+    // upload the project_attachments to bunny cloud service
+    if (project_attachments && project_attachments[0]) {
+      const uploadResult = await this.uploadProposalFileIntercept(
+        userId,
+        proposalCreatePayload.id,
+        'uploading project attachments',
+        project_attachments[0],
+        'project-attachments',
+        allowedType,
+        maxSize,
+        uploadedFilePath,
+      );
+      uploadedFilePath = uploadResult.uploadedFilePath;
+      proposalCreatePayload.project_attachments = uploadResult.fileObj;
+      const payload: Prisma.file_managerUncheckedCreateInput = {
+        id: uuidv4(),
+        user_id: userId,
+        name: uploadResult.fileObj.url.split('/').pop() as string,
+        url: uploadResult.fileObj.url,
+        mimetype: uploadResult.fileObj.type,
+        size: uploadResult.fileObj.size,
+        column_name: 'project-attachments',
+        table_name: 'proposal',
+        proposal_id: proposalCreatePayload.id,
+      };
+      fileManagerCreateManyPayload.push(payload);
+    }
+
+    if (letter_ofsupport_req && letter_ofsupport_req[0]) {
+      const uploadResult = await this.uploadProposalFileIntercept(
+        userId,
+        proposalCreatePayload.id,
+        'uploading letter of support',
+        letter_ofsupport_req[0],
+        'letter-of-support-req',
+        allowedType,
+        maxSize,
+        uploadedFilePath,
+      );
+      uploadedFilePath = uploadResult.uploadedFilePath;
+      proposalCreatePayload.letter_ofsupport_req = uploadResult.fileObj;
+      const payload: Prisma.file_managerUncheckedCreateInput = {
+        id: uuidv4(),
+        user_id: userId,
+        name: uploadResult.fileObj.url.split('/').pop() as string,
+        url: uploadResult.fileObj.url,
+        mimetype: uploadResult.fileObj.type,
+        size: uploadResult.fileObj.size,
+        column_name: 'letter-of-support-req',
+        table_name: 'proposal',
+        proposal_id: proposalCreatePayload.id,
+      };
+      fileManagerCreateManyPayload.push(payload);
+    }
+    if (request.detail_project_budgets) {
+      proposal_item_budgets = CreateItemBudgetsMapper(
+        proposal_id,
+        request.detail_project_budgets,
+      );
+    }
+
+    // create proposal and the logs
+    const createdProposal = await this.proposalRepo.create(
+      proposalCreatePayload,
+      proposal_item_budgets,
+      fileManagerCreateManyPayload,
+      uploadedFilePath,
+    );
     return createdProposal;
   }
 

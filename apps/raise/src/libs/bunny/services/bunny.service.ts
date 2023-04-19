@@ -16,6 +16,7 @@ import { sanitizeString } from '../../../commons/utils/sanitize-string';
 import { uploadFileNameParser } from '../../../commons/utils/upload-filename-parser';
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
 import { validateFileSize } from '../../../commons/utils/validate-file-size';
+import { logUtil } from '../../../commons/utils/log-util';
 
 /**
  * Nest Bunny Module
@@ -257,12 +258,17 @@ export class BunnyService {
 
     try {
       this.logger.log(
+        'info',
         `Uploading [${file.filename}] (${file.size} bytes) to Bunny ${this.storageUrlMedia} ...`,
       );
       const response = await axios(options);
       this.logger.log(
-        `${file.filename} has been Uploaded!, uploaded Url: ${cdnUrl}`,
-        JSON.stringify(response.data, null, 2),
+        'info',
+        `${
+          file.filename
+        } has been Uploaded!, uploaded Url: ${cdnUrl}, response ${logUtil(
+          response.data,
+        )}`,
       );
       return cdnUrl;
     } catch (error) {
@@ -300,12 +306,17 @@ export class BunnyService {
 
     try {
       this.logger.log(
+        'info',
         `Uploading [${fileName}] (${fileBuffer.length} bytes) to Bunny ${this.storageUrlMedia} ...`,
       );
       const response = await axios(options);
       this.logger.log(
-        `${fileName} has been Uploaded!, uploaded Url: ${cdnUrl}`,
-        JSON.stringify(response.data, null, 2),
+        'info',
+        `${fileName} has been Uploaded!, uploaded Url: ${cdnUrl}, ${JSON.stringify(
+          response.data,
+          null,
+          2,
+        )}`,
       );
       return cdnUrl;
     } catch (error) {
