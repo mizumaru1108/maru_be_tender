@@ -311,7 +311,7 @@ export class TenderProposalRepository {
                 'info',
                 `Creating new notification for revision sent, with payload of \n${sendRevisionNotif.createManyWebNotifPayload}`,
               );
-              prisma.notification.createMany({
+              await prisma.notification.createMany({
                 data: sendRevisionNotif.createManyWebNotifPayload,
               });
             }
@@ -617,7 +617,7 @@ export class TenderProposalRepository {
                 sendAmandementNotif.createManyWebNotifPayload,
               )}`,
             );
-            prisma.notification.createMany({
+            await prisma.notification.createMany({
               data: sendAmandementNotif.createManyWebNotifPayload,
             });
           }

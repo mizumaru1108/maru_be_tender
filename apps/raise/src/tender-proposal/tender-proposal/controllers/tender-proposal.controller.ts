@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -88,6 +89,12 @@ export class TenderProposalController {
       project_attachments?: Express.Multer.File[];
     },
   ) {
+    if (files.letter_ofsupport_req === undefined) {
+      throw new BadRequestException('Letter of Support is Required!');
+    }
+    if (files.project_attachments === undefined) {
+      throw new BadRequestException('Project attachment is Required!');
+    }
     const createdProposal = await this.proposalService.interceptorCreate(
       currentUser.id,
       request,

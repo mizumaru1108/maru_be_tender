@@ -25,6 +25,7 @@ export const CloseReportNotifMapper = (
     user_id: proposal.user.id,
     type: 'PROPOSAL',
     specific_type: 'SEND_TO_CLIENT_FOR_FILLING_CLOSE_REPORT_FORM',
+    proposal_id,
     subject: subject,
     content: clientContent,
   };

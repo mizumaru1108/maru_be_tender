@@ -33,15 +33,6 @@ import { CreateProjectBudgetDto } from './create-proposal-item-budget.dto';
 //   @HasMimeType(['image/jpeg', 'image/png'])
 //   readonly project_attachments: MemoryStoredFile;
 // }
-export class testdto {
-  @IsString()
-  @IsNotEmpty()
-  test1: string;
-
-  @IsString()
-  @IsNotEmpty()
-  test2: string;
-}
 
 export class CreateProposalInterceptorDto {
   /* first form ---------------------------------------------------- */

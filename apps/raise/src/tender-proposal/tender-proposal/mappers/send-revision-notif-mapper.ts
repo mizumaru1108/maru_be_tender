@@ -33,6 +33,7 @@ export const SendRevisionNotifMapper = (
       user_id: reviewer.id,
       type: 'PROPOSAL',
       specific_type: 'REVISED_VERSION_SENT_BY_CLIENT',
+      proposal_id,
       subject: subject + 'Sended By Client',
       content: reviewerContent,
     };

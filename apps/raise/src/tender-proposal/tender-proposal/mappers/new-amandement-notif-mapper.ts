@@ -29,6 +29,7 @@ export const NewAmandementNotifMapper = (
     user_id: proposal.user.id,
     type: 'PROPOSAL',
     specific_type: 'NEW_AMANDEMENT_REQUEST_FROM_SUPERVISOR',
+    proposal_id: proposal_id,
     subject: subject,
     content: clientContent,
   };

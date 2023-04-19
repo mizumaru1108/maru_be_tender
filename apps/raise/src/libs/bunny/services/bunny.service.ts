@@ -259,13 +259,13 @@ export class BunnyService {
     try {
       this.logger.log(
         'info',
-        `Uploading [${file.filename}] (${file.size} bytes) to Bunny ${this.storageUrlMedia} ...`,
+        `Uploading [${file.originalname}] (${file.size} bytes) to Bunny ${this.storageUrlMedia} ...`,
       );
       const response = await axios(options);
       this.logger.log(
         'info',
         `${
-          file.filename
+          file.originalname
         } has been Uploaded!, uploaded Url: ${cdnUrl}, response ${logUtil(
           response.data,
         )}`,

@@ -343,11 +343,12 @@ export class TenderProposalService {
   async interceptorCreate(
     userId: string,
     request: CreateProposalInterceptorDto,
-    letter_ofsupport_req?: Express.Multer.File[],
-    project_attachments?: Express.Multer.File[],
+    letter_ofsupport_req: Express.Multer.File[],
+    project_attachments: Express.Multer.File[],
   ) {
     const proposalCreatePayload: Prisma.proposalUncheckedCreateInput =
       CreateProposalInterceptorMapper(userId, request);
+
     // this.logger.log('info', `request payload, ${logUtil(request)}`);
     const proposal_id = nanoid();
     proposalCreatePayload.id = proposal_id;
@@ -377,8 +378,8 @@ export class TenderProposalService {
       proposalCreatePayload.proposal_bank_id =
         request.proposal_bank_information_id;
     }
-    // upload the project_attachments to bunny cloud service
-    if (project_attachments && project_attachments[0]) {
+    // // upload the project_attachments to bunny cloud service
+    if (project_attachments[0]) {
       const uploadResult = await this.uploadProposalFileIntercept(
         userId,
         proposalCreatePayload.id,
@@ -405,7 +406,7 @@ export class TenderProposalService {
       fileManagerCreateManyPayload.push(payload);
     }
 
-    if (letter_ofsupport_req && letter_ofsupport_req[0]) {
+    if (letter_ofsupport_req[0]) {
       const uploadResult = await this.uploadProposalFileIntercept(
         userId,
         proposalCreatePayload.id,
