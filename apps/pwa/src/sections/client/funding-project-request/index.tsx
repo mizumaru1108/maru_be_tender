@@ -79,7 +79,7 @@ const FundingProjectRequestForm = () => {
         fullName: '',
         file: undefined,
       },
-      project_beneficiaries_specific_type: '',
+      // project_beneficiaries_specific_type: '',
     },
     form2: {
       num_ofproject_binicficiaries: undefined,
@@ -116,6 +116,7 @@ const FundingProjectRequestForm = () => {
   const [isDraft, setIsDraft] = useState(false);
   const [lastIndex, setLastIndex] = useState(0);
   const [tempValues, setTempValues] = useState({});
+  // console.log({ requestState });
 
   // on submit for the first step
   const onSubmitform1 = (data: any) => {
@@ -198,7 +199,7 @@ const FundingProjectRequestForm = () => {
   // on submit for creating a new project
   const onSubmit = async (data: any) => {
     // console.log({ data });
-    setIsLoading(true);
+    // setIsLoading(true);
     const createdProposel = {
       ...(step >= 1 && { ...requestState.form1 }),
       ...(step >= 2 && { ...requestState.form2 }),
@@ -237,21 +238,20 @@ const FundingProjectRequestForm = () => {
     //   }
     // }
     // if (datas && datas?.project_attachments && datas?.project_attachments?.file) {
-    //   formData.append('project_attachments', datas?.project_attachments?.file as any);
+    //   // console.log('datas?.project_attachments?.file', datas?.project_attachments?.file);
+    //   formData.append('project_attachments', datas?.project_attachments?.file[0] as Blob);
     // } else {
     //   formData.append('project_attachments.url', datas?.project_attachments?.url as string);
     //   formData.append('project_attachments.type', datas?.project_attachments?.type as string);
     //   formData.append('project_attachments.size', datas?.project_attachments?.size as any);
     // }
     // if (datas && datas?.letter_ofsupport_req && datas?.letter_ofsupport_req?.file) {
-    //   formData.append('letter_ofsupport_req', datas?.letter_ofsupport_req?.file as any);
+    //   formData.append('letter_ofsupport_req', datas?.letter_ofsupport_req?.file[0] as Blob);
     // } else {
     //   formData.append('letter_ofsupport_req.url', datas?.letter_ofsupport_req?.url as string);
     //   formData.append('letter_ofsupport_req.type', datas?.letter_ofsupport_req?.type as string);
     //   formData.append('letter_ofsupport_req.size', datas?.letter_ofsupport_req?.size as any);
     // }
-    // console.log(formData.get('project_name'));
-
     try {
       const rest = await axiosInstance.post(
         'tender-proposal/create',

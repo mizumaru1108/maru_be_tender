@@ -24,7 +24,7 @@ type FormValuesProps = {
   project_beneficiaries: string;
   letter_ofsupport_req: CustomFile | string | null;
   project_attachments: CustomFile | string | null;
-  project_beneficiaries_specific_type: string;
+  // project_beneficiaries_specific_type: string;
 };
 
 type Props = {
@@ -115,6 +115,12 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
           return true;
         }
       ),
+    // project_beneficiaries_specific_type: Yup.string().when('project_beneficiaries', {
+    //   is: 'GENERAL',
+    //   then: Yup.string().required(
+    //     translate('errors.cre_proposal.project_beneficiaries_specific_type.required')
+    //   ),
+    // }),
     project_beneficiaries_specific_type: Yup.string().when('project_beneficiaries', {
       is: 'GENERAL',
       then: Yup.string().required(
@@ -257,14 +263,14 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
             </>
           </RHFSelectNoGenerator>
         </Grid>
-        <Grid item md={12} xs={12}>
+        {/* <Grid item md={12} xs={12}>
           <RHFTextField
             disabled={!!revised && revised.hasOwnProperty('project_beneficiaries_specific_type')}
             name="project_beneficiaries_specific_type"
             label={translate('نوع الفئة المستهدفة الخارجية')}
             placeholder={translate('الرجاء كتابة نوع الفئة المستهدفة')}
           />
-        </Grid>
+        </Grid> */}
         <Grid item md={12} xs={12}>
           <BaseField
             type="uploadLabel"

@@ -22,6 +22,7 @@ import axiosInstance from '../../utils/axios';
 import { LoadingButton } from '@mui/lab';
 import { FEATURE_PROJECT_SAVE_DRAFT } from '../../config';
 import { generateHeader } from '../../utils/generateProposalNumber';
+import { useSnackbar } from 'notistack';
 
 const cardFooterButtonActionLocal = {
   'show-project': 'show_project',
@@ -72,6 +73,7 @@ const ProjectCardBE = ({
   const [, updateAsigning] = useMutation(asignProposalToAUser);
   const [, deleteDrPro] = useMutation(deleteDraftProposal);
   const [loading, setLoading] = React.useState(false);
+  const { enqueueSnackbar } = useSnackbar();
 
   // const urlArr: string[] = location.pathname.split('/');
 
@@ -125,12 +127,24 @@ const ProjectCardBE = ({
       );
       // console.log({ rest });
       if (rest) {
+        enqueueSnackbar('Draft has been created', {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
         mutate();
       } else {
         alert('Something went wrong');
       }
     } catch (err) {
+      enqueueSnackbar(`Something went wrong ${err.message}`, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -379,23 +393,27 @@ const ProjectCardBE = ({
                   ? translate('set_payment')
                   : role === 'tender_cashier'
                   ? translate('set_payment_cashier')
-                  :  destination === 'project-report' ? translate('close_report') : null}
+                  : destination === 'project-report'
+                  ? translate('close_report')
+                  : null}
               </Typography>
             </Stack>
           )}
-           {role === 'tender_client' && destination !== 'previous-funding-requests' && (
-                <Stack>
-                  <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
-                    {translate('appointments_headercell.action')}
-                  </Typography>
-                  <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
-                    {/* {translate(`project_card.${content.sentSection.toLowerCase()}`)} */}
-                    {destination === 'current-project'
-                      ? translate('action_ongoing')
-                      : destination === 'project-report' ? translate('close_report') : null}
-                  </Typography>
-                </Stack>
-              )}
+          {role === 'tender_client' && destination !== 'previous-funding-requests' && (
+            <Stack>
+              <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+                {translate('appointments_headercell.action')}
+              </Typography>
+              <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
+                {/* {translate(`project_card.${content.sentSection.toLowerCase()}`)} */}
+                {destination === 'current-project'
+                  ? translate('action_ongoing')
+                  : destination === 'project-report'
+                  ? translate('close_report')
+                  : null}
+              </Typography>
+            </Stack>
+          )}
         </Stack>
         <Divider sx={{ marginTop: '30px' }} />
       </CardContent>

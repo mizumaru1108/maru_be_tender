@@ -1,14 +1,27 @@
 import { TableRow, Checkbox, TableCell, Typography, Button } from '@mui/material';
 import useLocales from 'hooks/useLocales';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { RejectedProjectsRow } from './types';
 import useAuth from 'hooks/useAuth';
 
 export default function RejectionListTableRow({ row, selected, onSelectRow }: RejectedProjectsRow) {
   const { translate } = useLocales();
   const { activeRole } = useAuth();
-
+  const location = useLocation();
   const navigate = useNavigate();
+
+  const handleOpenProposal = () => {
+    const x = location.pathname.split('/');
+    const url = `/${x[1]}/${x[2]}/project-management/${row.id}/show-details`;
+    navigate(url);
+  };
+
+  const handleOpenUser = () => {
+    const x = location.pathname.split('/');
+    const url = `/${x[1]}/dashboard/client-list/owner/${row.user_id}`;
+    navigate(url);
+  };
+
   return (
     <TableRow hover selected={selected}>
       <TableCell padding="checkbox">
@@ -21,12 +34,17 @@ export default function RejectionListTableRow({ row, selected, onSelectRow }: Re
         </Typography>
       </TableCell>
       <TableCell align="left">
-        <Typography variant="subtitle2" noWrap>
+        <Typography
+          variant="subtitle2"
+          noWrap
+          sx={{ cursor: 'pointer' }}
+          onClick={handleOpenProposal}
+        >
           {row.project_name}
         </Typography>
       </TableCell>
       <TableCell align="left">
-        <Typography variant="subtitle2" noWrap>
+        <Typography variant="subtitle2" noWrap sx={{ cursor: 'pointer' }} onClick={handleOpenUser}>
           {row.entity}
         </Typography>
       </TableCell>
