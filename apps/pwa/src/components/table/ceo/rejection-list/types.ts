@@ -5,6 +5,7 @@ export type RejectedProjects = {
   project_track: string;
   created_at: Date;
   project_number?: string;
+  user_id?: string;
 };
 
 export interface RejectedProjectsRow {

@@ -6,6 +6,7 @@ export const getRejectedProjects = `query getRejectedProjects($limit: Int = 10, 
     user {
       client_data {
         entity
+        user_id
       }
     }
     project_track

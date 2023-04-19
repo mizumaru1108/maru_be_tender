@@ -138,6 +138,7 @@ export default function UsersAndPermissionsTable() {
           entity: item.user.client_data.entity,
           project_track: item.project_track,
           created_at: item.created_at,
+          user_id: item.user.client_data.user_id,
         }))
       );
       setTotal(data.total.aggregate.count as number);

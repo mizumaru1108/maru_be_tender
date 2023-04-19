@@ -34,6 +34,7 @@ function ProjectPath() {
   const [stepProposal, setStepProposal] = React.useState<PropsalLog | null>(null);
   const [stepGransLog, setGransLog] = React.useState<PropsalLogGrants | null>(null);
   const [stepGeneralLog, setGeneralLog] = React.useState<Log | null>(null);
+  const [isPayments, setIsPayments] = React.useState(false);
 
   // const [stepTrack, setStepTrack] = React.useState('');
   const { id: proposal_id } = useParams();
@@ -81,6 +82,7 @@ function ProjectPath() {
   const hasNonRejectAction = lastLog?.action && lastLog?.action !== 'reject';
   const hasRejectAction = lastLog?.action && lastLog?.action === 'reject';
   const isCompleted = lastLog?.action && lastLog?.action === 'project_completed';
+
   // console.log({ hasNonRejectAction, hasRejectAction, isCompleted, activeStep });
 
   // React.useEffect(() => {
@@ -90,6 +92,17 @@ function ProjectPath() {
   //     setActiveStep(followUps.log.length - 1);
   //   }
   // }, [followUps, hasNonRejectAction, hasRejectAction]);
+  React.useEffect(() => {
+    const chceckCeoAcc = followUps?.log
+      .filter((item: Log) => item.user_role === 'CEO' && item.action === 'accept')
+      .map((item: Log) => item);
+    if (chceckCeoAcc && chceckCeoAcc.length > 0) {
+      setActiveStep(0);
+      setIsPayments(true);
+    }
+  }, [followUps]);
+  console.log({ activeStep });
+
   React.useEffect(() => {
     dispatch(getProposal(proposal_id as string, activeRole! as string));
   }, [proposal_id, activeRole]);
@@ -108,7 +121,7 @@ function ProjectPath() {
   };
   if (fetching) return <>Loading...</>;
 
-  console.log({ followUps });
+  // console.log({ followUps });
   return (
     <Grid container spacing={2}>
       <Grid item md={8} xs={8} sx={{ backgroundColor: 'transparent', px: 6 }}>
@@ -127,7 +140,12 @@ function ProjectPath() {
                 {index === activeStep && (
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
-                      {item.action ? translate(`review.action.${item.action}`) : '-'}
+                      {stepGeneralLog?.user_role === 'PROJECT_MANAGER' &&
+                      item.action === 'set_by_supervisor'
+                        ? translate(`review.action.payment_rejected_by_pm`)
+                        : item.action
+                        ? translate(`review.action.${item.action}`)
+                        : '-'}
                     </Typography>
                   </Stack>
                 )}
@@ -319,7 +337,7 @@ function ProjectPath() {
                             followUps.log[followUps.log.length]
                           )}
                         >
-                          {followUps.log[followUps.log.length - 1].proposal && (
+                          {followUps.log[followUps.log.length - 1].proposal && !isPayments && (
                             <Stack direction="row" gap={2} sx={{ mt: 1 }}>
                               <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
                               <Typography
