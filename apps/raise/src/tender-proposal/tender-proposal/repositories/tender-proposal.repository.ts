@@ -1230,9 +1230,13 @@ export class TenderProposalRepository {
         include: {
           user: {
             select: {
+              id: true,
+              email: true,
+              mobile_number: true,
               employee_name: true,
               client_data: true,
               roles: true,
+              bank_information: true,
             },
           },
           follow_ups: {

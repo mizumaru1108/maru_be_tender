@@ -1193,6 +1193,7 @@ export class TenderProposalService {
         createdRecommendedSupportPayload,
         updatedRecommendedSupportPayload,
         deletedRecommendedSupportIds,
+        currentUser,
       );
 
       proposalUpdatePayload = { ...supervisorResult.proposalUpdatePayload };
@@ -1224,6 +1225,7 @@ export class TenderProposalService {
         createdRecommendedSupportPayload,
         updatedRecommendedSupportPayload,
         deletedRecommendedSupportIds,
+        currentUser,
       );
 
       proposalUpdatePayload = { ...pm.proposalUpdatePayload };
@@ -1396,6 +1398,7 @@ export class TenderProposalService {
     createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[],
     updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[],
     deletedRecommendedSupportIds: string[],
+    currentUser: TenderCurrentUser,
   ) {
     /* supervisor only allowed to acc and reject and step back */
     if (
@@ -1458,6 +1461,7 @@ export class TenderProposalService {
         InnerStatusEnum.ACCEPTED_BY_SUPERVISOR;
       proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_MANAGER;
+      proposalUpdatePayload.supervisor_id = currentUser.id;
 
       /* custom logic if there's special logic for regular track */
       if (proposal.project_track !== 'CONCESSIONAL_GRANTS') {
@@ -1506,6 +1510,7 @@ export class TenderProposalService {
       proposalUpdatePayload.inner_status = 'REJECTED_BY_SUPERVISOR';
       proposalUpdatePayload.outter_status = 'CANCELED';
       proposalUpdatePayload.state = 'PROJECT_SUPERVISOR';
+      proposalUpdatePayload.supervisor_id = currentUser.id;
 
       /* log */
       proposalLogCreateInput.action = ProposalAction.REJECT;
@@ -1549,6 +1554,7 @@ export class TenderProposalService {
     createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[],
     updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[],
     deletedRecommendedSupportIds: string[],
+    currentUser: TenderCurrentUser,
   ) {
     /* Project manager only allowed to acc and reject and step back, and ask for consultation*/
     if (
@@ -1572,6 +1578,7 @@ export class TenderProposalService {
         InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER;
       proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdatePayload.state = TenderAppRoleEnum.CEO;
+      proposalUpdatePayload.project_manager_id = currentUser.id;
 
       /* log */
       proposalLogCreateInput.action = ProposalAction.ACCEPT;
@@ -1585,6 +1592,7 @@ export class TenderProposalService {
         InnerStatusEnum.ACCEPTED_AND_NEED_CONSULTANT;
       proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdatePayload.state = TenderAppRoleEnum.CONSULTANT;
+      proposalUpdatePayload.project_manager_id = currentUser.id;
 
       /* log */
       proposalLogCreateInput.action =
@@ -1623,6 +1631,7 @@ export class TenderProposalService {
         InnerStatusEnum.REJECTED_BY_PROJECT_MANAGER;
       proposalUpdatePayload.outter_status = OutterStatusEnum.CANCELED;
       proposalUpdatePayload.state = TenderAppRoleEnum.CEO;
+      proposalUpdatePayload.project_manager_id = currentUser.id;
 
       /* log */
       proposalLogCreateInput.action = ProposalAction.REJECT;

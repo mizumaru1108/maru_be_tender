@@ -162,7 +162,12 @@ export class TenderProposalController {
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_ceo', 'tender_admin', 'tender_project_manager')
+  @TenderRoles(
+    'tender_ceo',
+    'tender_admin',
+    'tender_project_manager',
+    'tender_project_supervisor',
+  )
   @Get('fetch-by-id')
   async fetchById(@Query() payload: GetByIdDto) {
     const result = await this.proposalService.fetchProposalById(payload.id);

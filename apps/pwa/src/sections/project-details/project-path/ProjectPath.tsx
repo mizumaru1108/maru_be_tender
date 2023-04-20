@@ -101,7 +101,6 @@ function ProjectPath() {
       setIsPayments(true);
     }
   }, [followUps]);
-  console.log({ activeStep });
 
   React.useEffect(() => {
     dispatch(getProposal(proposal_id as string, activeRole! as string));

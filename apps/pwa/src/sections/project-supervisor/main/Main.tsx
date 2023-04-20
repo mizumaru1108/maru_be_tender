@@ -35,8 +35,8 @@ function Main() {
       <Grid item md={12}>
         <TrackBudget path={data.data.employee_path} />
       </Grid>
-      <RequestsInProcess />
       <IncomingFundingRequests />
+      <RequestsInProcess />
       <PaymentAdjustment />
       <IncomingCloseReport />
       <ProposalOnAmandement />

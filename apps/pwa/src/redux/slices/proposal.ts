@@ -254,7 +254,12 @@ export const {
 export const getProposal = (id: string, role: string) => async () => {
   try {
     dispatch(slice.actions.startLoading);
-    if (role === 'tender_admin' || role === 'tender_ceo' || role === 'tender_project_manager') {
+    if (
+      role === 'tender_admin' ||
+      role === 'tender_ceo' ||
+      role === 'tender_project_manager' ||
+      role === 'tender_project_supervisor'
+    ) {
       const response = await axiosInstance.get(`tender-proposal/fetch-by-id?id=${id}`, {
         headers: { 'x-hasura-role': role },
       });
