@@ -311,6 +311,7 @@ export type PropsalLogGrants = {
 export type Log = {
   message: string;
   notes: string;
+  state: string;
   action:
     | 'accept'
     | 'reject'

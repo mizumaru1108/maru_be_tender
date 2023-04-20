@@ -37,7 +37,7 @@
 // include user role client
 export const getProposalLog = `
 query getProposalLog($proposal_id: String = "") {
-  log: proposal_log(where: {proposal_id: {_eq: $proposal_id}, action: {_is_null: false}}, order_by: {created_at: asc}) {
+  log: proposal_log(where: {proposal_id: {_eq: $proposal_id}, action: {_is_null: false}, user_role: {_is_null: false}}, order_by: {created_at: asc}) {
     id
     action
     message
@@ -68,6 +68,7 @@ query getProposalLog($proposal_id: String = "") {
     }
   }
 }
+
 `;
 
 export const getProposalLogGrants = `

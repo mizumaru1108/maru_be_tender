@@ -105,7 +105,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
 
       let payload: any = {
         proposal_id,
-        action: 'accept',
+        action: editedBy === 'project-manager' || editedBy === 'ceo' ? 'update' : 'accept',
         message: 'تم قبول المشروع من قبل مشرف المشاريع',
         notes,
         selectLang: currentLang.value,

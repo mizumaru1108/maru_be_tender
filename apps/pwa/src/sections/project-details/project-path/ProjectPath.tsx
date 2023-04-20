@@ -93,10 +93,10 @@ function ProjectPath() {
   //   }
   // }, [followUps, hasNonRejectAction, hasRejectAction]);
   React.useEffect(() => {
-    const chceckCeoAcc = followUps?.log
-      .filter((item: Log) => item.user_role === 'CEO' && item.action === 'accept')
+    const insertPayment = followUps?.log
+      .filter((item: Log) => item.action === 'insert_payment')
       .map((item: Log) => item);
-    if (chceckCeoAcc && chceckCeoAcc.length > 0) {
+    if (insertPayment && insertPayment.length > 0) {
       setActiveStep(0);
       setIsPayments(true);
     }
