@@ -14,3 +14,4 @@ export * from './send-amandement.dto';
 export * from './send-revision.dto';
 export * from './supervisor-change-state.dto';
 export * from './update-proposal-fourth-step.dto';
+export * from './proposal-save-draft-interceptor';

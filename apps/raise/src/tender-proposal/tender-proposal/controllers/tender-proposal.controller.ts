@@ -22,11 +22,7 @@ import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 
-import {
-  AnyFilesInterceptor,
-  FileFieldsInterceptor,
-} from '@webundsoehne/nest-fastify-file-upload';
-import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
+import { FileFieldsInterceptor } from '@webundsoehne/nest-fastify-file-upload';
 import { GetByIdDto } from '../../../commons/dtos/get-by-id.dto';
 import {
   AskAmandementRequestDto,
@@ -37,21 +33,16 @@ import {
   ProposalCreateDto,
   ProposalDeleteDraftDto,
   ProposalSaveDraftDto,
+  ProposalSaveDraftInterceptorDto,
   SendAmandementDto,
   SendRevisionDto,
 } from '../dtos/requests';
 import { TenderProposalService } from '../services/tender-proposal.service';
-import { logUtil } from '../../../commons/utils/log-util';
-import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
-import { file } from 'googleapis/build/src/apis/file';
+import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
+import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(private readonly proposalService: TenderProposalService) {}
-
-  // @Post('seq')
-  // async seq() {
-  //   return await this.proposalService.seq();
-  // }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_client')
@@ -331,6 +322,8 @@ export class TenderProposalController {
     );
   }
 
+  // DEPRECATED USING INTERCEPTOR (interceptor-save-draft),
+  // changing upload with interceptor than base64
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_client')
   @Patch('save-draft')
@@ -347,6 +340,39 @@ export class TenderProposalController {
       updateResponse,
       HttpStatus.OK,
       'Proposal updated successfully',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_client')
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'letter_ofsupport_req', maxCount: 1 },
+      { name: 'project_attachments', maxCount: 1 },
+    ]),
+  )
+  @Patch('interceptor-save-draft')
+  async interceptorSaveDraft(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() request: ProposalSaveDraftInterceptorDto,
+    @UploadedFiles()
+    files: {
+      letter_ofsupport_req?: any;
+      project_attachments?: any;
+    },
+  ) {
+    const createdProposal =
+      await this.proposalService.clientUpdateProposalInterceptor(
+        currentUser.id,
+        request,
+        undefined,
+        files.letter_ofsupport_req,
+        files.project_attachments,
+      );
+    return baseResponseHelper(
+      createdProposal,
+      HttpStatus.CREATED,
+      'Proposal created successfully',
     );
   }
 
