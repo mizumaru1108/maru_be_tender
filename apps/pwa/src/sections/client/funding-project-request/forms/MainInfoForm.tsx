@@ -54,11 +54,11 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
     letter_ofsupport_req: Yup.mixed()
       .test('size', translate('errors.cre_proposal.letter_ofsupport_req.fileSize'), (value) => {
         if (value) {
-          const maxSize = 1024 * 1024 * 10;
+          const maxSize = 1024 * 1024 * 200;
           console.log('size:', value.size);
           console.log('maxSize: ', maxSize);
           // const trueSize = value.size * 28;
-          if (value.size > 1024 * 1024 * 10) {
+          if (value.size > 1024 * 1024 * 200) {
             return false;
           }
         }
@@ -88,7 +88,7 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
     project_attachments: Yup.mixed()
       .test('size', translate('errors.cre_proposal.project_attachments.fileSize'), (value) => {
         if (value) {
-          if (value.size > 1024 * 1024 * 10) {
+          if (value.size > 1024 * 1024 * 200) {
             return false;
           }
         }

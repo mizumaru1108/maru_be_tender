@@ -41,7 +41,7 @@ function FirstForm({ children, onSubmit }: any) {
   const { proposal } = useSelector((state) => state.proposal);
 
   const [isVat, setIsVat] = useState<boolean>(step1.vat ?? false);
-
+  const [isSupport, setIsSupport] = useState<boolean>(step1.support_type ?? false);
   const methods = useForm<SupervisorStep1>({
     resolver: yupResolver(validationSchema),
     defaultValues: useMemo(() => step1, [step1]),
@@ -54,14 +54,6 @@ function FirstForm({ children, onSubmit }: any) {
   // const inclu_or_exclu = watch('inclu_or_exclu');
 
   const onSubmitForm = async (data: SupervisorStep1) => {
-    // console.log('data', data);
-    // if (vat !== 'true') {
-    //   resetField('vat_percentage');
-    //   resetField('inclu_or_exclu');
-
-    //   delete data.vat_percentage;
-    //   delete data.inclu_or_exclu;
-    // }
     onSubmit(data);
   };
 
@@ -80,6 +72,7 @@ function FirstForm({ children, onSubmit }: any) {
     // if (support_type === 'false')
     //   setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
   }, [proposal, setValue, reset]);
+  console.log({ isSupport });
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
@@ -113,6 +106,15 @@ function FirstForm({ children, onSubmit }: any) {
             type="radioGroup"
             name="support_type"
             label="نوع الدعم"
+            onClick={(e) => {
+              if (e && e.target.value) {
+                if (e.target.value === 'true') {
+                  setIsSupport(true);
+                } else {
+                  setIsSupport(false);
+                }
+              }
+            }}
             options={[
               { label: 'دعم جزئي', value: true },
               { label: 'دعم كلي', value: false },
@@ -175,7 +177,7 @@ function FirstForm({ children, onSubmit }: any) {
                   setIsVat(false);
                 }
               }
-              console.log('e.target.value', e.target.value);
+              // console.log('e.target.value', e.target.value);
             }}
             label="هل يشمل المشروع ضريبة القيمة المضافة"
             options={[
@@ -190,7 +192,7 @@ function FirstForm({ children, onSubmit }: any) {
             name="fsupport_by_supervisor"
             label="مبلغ الدعم*"
             placeholder="مبلغ الدعم"
-            disabled={support_type === 'true' ? false : true}
+            disabled={isSupport ? false : true}
           />
         </Grid>
 
