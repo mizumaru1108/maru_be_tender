@@ -296,7 +296,7 @@ export default function NotificationsPopover() {
   //   setOpenAlert(true);
   // }
 
-  // console.log(currentData, 'Data');
+  console.log(currentData, 'Data');
 
   return (
     <React.Fragment>
@@ -549,7 +549,8 @@ function NotificationItem({
     notificationId: string,
     innerStatus: string,
     outterStatus: string,
-    state: string
+    state: string,
+    specificType: string
   ) => {
     await axiosInstance.patch(
       'tender/notification/read',
@@ -567,14 +568,27 @@ function NotificationItem({
 
     let footer_action = '';
     let request_action = '';
+    // if (activeRole === 'tender_ceo') {
+    //   footer_action = 'show-project';
+    //   request_action = 'project-management';
+    // } else if (
+    //   activeRole !== 'tender_client' &&
+    //   state === newActiveRole &&
+    //   outterStatus === 'ONGOING'
+    // ) {
+    //   footer_action = 'show-details';
+    //   request_action = 'requests-in-process';
+    // } else {
+    //   footer_action = 'show-project';
+    //   request_action = 'previous-funding-requests';
+    // }
     if (activeRole === 'tender_ceo') {
       footer_action = 'show-project';
       request_action = 'project-management';
-    } else if (
-      activeRole !== 'tender_client' &&
-      state === newActiveRole &&
-      outterStatus === 'ONGOING'
-    ) {
+    } else if (specificType === 'SEND_TO_CLIENT_FOR_FILLING_CLOSE_REPORT_FORM') {
+      footer_action = 'show-details';
+      request_action = 'project-report';
+    } else if (specificType === 'REVISED_VERSION_SENT_BY_CLIENT') {
       footer_action = 'show-details';
       request_action = 'requests-in-process';
     } else {
@@ -626,7 +640,7 @@ function NotificationItem({
       {tabValue === '1' ? (
         <React.Fragment>
           {/* ---------------------------Project Today Item--------------------------- */}
-          {createdAt.getTime() >= oneDayAgo && (
+          {createdAt.getTime() >= oneDayAgo && notification.specific_type !== 'PAYMENT_RELEASE' && (
             <ListItemButton
               sx={{
                 py: 1.5,
@@ -664,7 +678,8 @@ function NotificationItem({
                                 notification.id,
                                 notification?.proposal?.inner_status,
                                 notification?.proposal?.outter_status,
-                                notification?.proposal?.state
+                                notification?.proposal?.state,
+                                notification.specific_type
                               )
                             }
                           >
@@ -752,7 +767,9 @@ function NotificationItem({
                     primary={translate('notification.subject_payment')}
                     secondary={
                       <Stack direction="column">
-                        <Typography>{translate('notification.content_payment')}</Typography>
+                        <Typography>
+                          {translate('notification.content_payment') + ` ${cheque.payment_date}`}
+                        </Typography>
                         <Typography
                           variant="caption"
                           sx={{
@@ -787,64 +804,67 @@ function NotificationItem({
       ) : (
         <React.Fragment>
           {/* --------------------------- Project Previous Item--------------------------- */}
-          <ListItemButton
-            sx={{
-              py: 1.5,
-              px: 2.5,
-              mt: '1px',
-              ...(notification.read_status && {
-                bgcolor: 'action.selected',
-              }),
-            }}
-          >
-            <ListItemText
-              primary={translate(`${subject(notification.subject)}`)}
-              secondary={
-                <Stack direction="column">
-                  <Typography>{notification.content}</Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      mt: 0.5,
-                      display: 'flex',
-                      alignItems: 'center',
-                      color: 'text.disabled',
-                    }}
-                  >
-                    {moment(notification.created_at).locale(`${currentLang.value}`).fromNow()}
-                  </Typography>
-                  <Stack direction="row" justifyContent="start">
-                    {notification.type === 'PROPOSAL' && (
-                      <Button
-                        style={{ textAlign: 'start', color: 'green' }}
-                        onClick={() =>
-                          handleNavigateProject(
-                            notification.proposal_id,
-                            notification.id,
-                            notification?.proposal?.inner_status,
-                            notification?.proposal?.outter_status,
-                            notification?.proposal?.state
-                          )
-                        }
-                      >
-                        {translate('notification.to_project')}
-                      </Button>
-                    )}
-                    {notification.type === 'APPOINTMENT' && (
-                      <Button
-                        style={{ textAlign: 'start', color: 'blue' }}
-                        onClick={() =>
-                          handleNavigateAppointment(notification.appointment.id, notification.id)
-                        }
-                      >
-                        {translate('notification.appointment')}
-                      </Button>
-                    )}
+          {notification.specific_type !== 'PAYMENT_RELEASE' && (
+            <ListItemButton
+              sx={{
+                py: 1.5,
+                px: 2.5,
+                mt: '1px',
+                ...(notification.read_status && {
+                  bgcolor: 'action.selected',
+                }),
+              }}
+            >
+              <ListItemText
+                primary={translate(`${subject(notification.subject)}`)}
+                secondary={
+                  <Stack direction="column">
+                    <Typography>{notification.content}</Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        mt: 0.5,
+                        display: 'flex',
+                        alignItems: 'center',
+                        color: 'text.disabled',
+                      }}
+                    >
+                      {moment(notification.created_at).locale(`${currentLang.value}`).fromNow()}
+                    </Typography>
+                    <Stack direction="row" justifyContent="start">
+                      {notification.type === 'PROPOSAL' && (
+                        <Button
+                          style={{ textAlign: 'start', color: 'green' }}
+                          onClick={() =>
+                            handleNavigateProject(
+                              notification.proposal_id,
+                              notification.id,
+                              notification?.proposal?.inner_status,
+                              notification?.proposal?.outter_status,
+                              notification?.proposal?.state,
+                              notification.specific_type
+                            )
+                          }
+                        >
+                          {translate('notification.to_project')}
+                        </Button>
+                      )}
+                      {notification.type === 'APPOINTMENT' && (
+                        <Button
+                          style={{ textAlign: 'start', color: 'blue' }}
+                          onClick={() =>
+                            handleNavigateAppointment(notification.appointment.id, notification.id)
+                          }
+                        >
+                          {translate('notification.appointment')}
+                        </Button>
+                      )}
+                    </Stack>
                   </Stack>
-                </Stack>
-              }
-            />
-          </ListItemButton>
+                }
+              />
+            </ListItemButton>
+          )}
           {/* ---------------------------End Project Previous Item--------------------------- */}
           {/* ---------------------------Appointment Previous Item--------------------------- */}
           {notification?.appointment && (
@@ -907,7 +927,9 @@ function NotificationItem({
                     primary={translate('notification.subject_payment')}
                     secondary={
                       <Stack direction="column">
-                        <Typography>{translate('notification.content_payment')}</Typography>
+                        <Typography>
+                          {translate('notification.content_payment') + ` ${cheque.payment_date}`}
+                        </Typography>
                         <Typography
                           variant="caption"
                           sx={{

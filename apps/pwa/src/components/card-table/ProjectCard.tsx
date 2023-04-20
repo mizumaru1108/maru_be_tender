@@ -70,6 +70,7 @@ const ProjectCard = ({
   const location = useLocation();
   const { translate, currentLang } = useLocales();
   const [_, updateAsigning] = useMutation(asignProposalToAUser);
+  const [action, setAction] = React.useState('');
   // const valueLocale = localStorage.getItem('i18nextLng');
 
   let daysSinceCreated = 0;
@@ -132,6 +133,45 @@ const ProjectCard = ({
       navigate(`${location.pathname}/${title.id}/${cardFooterButtonAction}`);
     }
   };
+  React.useEffect(() => {
+    if (title.inquiryStatus) {
+      if (
+        (destination === 'incoming-funding-requests' || destination === 'requests-in-process') &&
+        role !== 'tender_finance' &&
+        role !== 'tender_cashier'
+      ) {
+        setAction(translate('need_review'));
+      } else if (destination === 'previous-funding-requests') {
+        if (title.inquiryStatus === 'ongoing') {
+          setAction(translate('action_ongoing'));
+        } else if (
+          title.inquiryStatus === 'asked_for_amandement' ||
+          title.inquiryStatus === 'on_revision'
+        ) {
+          setAction(translate('need_review'));
+        } else if (title.inquiryStatus === 'canceled') {
+          setAction(translate('account_manager.table.td.label_rejected'));
+        } else {
+          setAction(translate('action_completed'));
+        }
+      } else if (
+        (destination === 'incoming-funding-requests' && role === 'tender_finance') ||
+        (destination === 'requests-in-process' && role === 'tender_finance') ||
+        destination === 'payment-adjustment' ||
+        destination === 'incoming-exchange-permission-requests' ||
+        destination === 'exchange-permission'
+      ) {
+        setAction(translate('set_payment'));
+      } else if (
+        (destination === 'incoming-funding-requests' && role === 'tender_cashier') ||
+        (destination === 'requests-in-process' && role === 'tender_cashier')
+      ) {
+        setAction(translate('set_payment_cashier'));
+      } else if (destination === 'project-report') {
+        setAction(translate('close_report'));
+      }
+    }
+  }, [role, destination, translate, title.inquiryStatus]);
 
   return (
     <Card sx={{ backgroundColor: '#fff' }}>
@@ -263,27 +303,7 @@ const ProjectCard = ({
                   </Typography>
                   <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
                     {/* {translate(`project_card.${content.sentSection.toLowerCase()}`)} */}
-                    {(destination === 'requests-in-process' ||
-                      destination === 'incoming-funding-requests') &&
-                    role !== 'tender_finance' &&
-                    role !== 'tender_cashier' &&
-                    title.inquiryStatus === 'ongoing'
-                      ? translate('action_ongoing')
-                      : destination === 'payment-adjustment' ||
-                        destination === 'incoming-exchange-permission-requests' ||
-                        destination === 'exchange-permission' ||
-                        role === 'tender_finance'
-                      ? translate('set_payment')
-                      : role === 'tender_cashier'
-                      ? translate('set_payment_cashier')
-                      : destination === 'project-report'
-                      ? translate('close_report')
-                      : (destination === 'requests-in-process' ||
-                          destination === 'incoming-funding-requests') &&
-                        (title.inquiryStatus === 'asked_for_amandement' ||
-                          title.inquiryStatus === 'on_revision')
-                      ? translate('need_review')
-                      : null}
+                    {action}
                   </Typography>
                 </Stack>
               )}
@@ -336,7 +356,7 @@ const ProjectCard = ({
               </Typography>
             </Stack>
           )}
-          {role === 'tender_client' && destination !== 'previous-funding-requests' && (
+          {role === 'tender_client' && (
             <Stack>
               <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
                 {translate('appointments_headercell.action')}
@@ -347,7 +367,15 @@ const ProjectCard = ({
                   ? translate('action_ongoing')
                   : destination === 'project-report'
                   ? translate('close_report')
-                  : null}
+                  : destination === 'previous-funding-requests' && title.inquiryStatus === 'ongoing'
+                  ? translate('action_ongoing')
+                  : destination === 'previous-funding-requests' &&
+                    title.inquiryStatus === 'completed'
+                  ? translate('action_completed')
+                  : destination === 'previous-funding-requests' &&
+                    title.inquiryStatus === 'canceled'
+                  ? translate('account_manager.table.td.label_rejected')
+                  : translate('need_review')}
               </Typography>
             </Stack>
           )}

@@ -1388,6 +1388,7 @@ const ar = {
   set_payment_cashier: 'الدفع',
   action_ongoing: 'قيد الإجراء ',
   close_report: 'بانتظار تقرير الإغلاق',
+  action_completed: 'تم الانهاء ',
 
   // ACCOUNT_MANAGER PAGES
   account_manager: {
@@ -2042,8 +2043,8 @@ const ar = {
     tender_appointment: 'موعد العطاء الجديد',
     subject_five_min_appointment: 'موعدك سيبدأ قريبا!',
     content_five_min_appointment: 'سيستمر هذا الاجتماع 5 دقائق ، يمكنك الانضمام إلى الاجتماع الآن',
-    subject_payment: 'تهانينا ، لقد تم إرسال صندوق مشروعك!',
-    content_payment: 'يرجى التحقق من حسابك وإثبات الأموال أدناه',
+    subject_payment: 'إصدار دفع جديد',
+    content_payment: 'تم تحميل إيصال الدفع الخاص بك بواسطة أمين الصندوق في',
     proof_of_funds: 'الدليل على الأموال',
     error_exceeds_amount: 'إجمالي ميزانيات المشروع يتجاوز مبلغ الدعم المقدم',
   },
@@ -2156,7 +2157,7 @@ const ar = {
     no_appointment: 'لا توجد تقديمات',
   },
   old_proposal: {
-    page_title: 'قائمة الاقتراح القديمة',
+    page_title: 'مشاريع المنصة',
     title: 'مشاريع المنصة',
     headercell: {
       project_name: 'اسم المشروع',

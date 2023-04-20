@@ -1376,8 +1376,9 @@ const en = {
   need_review: 'Need Review',
   set_payment: 'Set Payment',
   set_payment_cashier: 'Set Payment',
-  action_ongoing: 'On Going',
+  action_ongoing: 'Ongoing',
   close_report: 'Close Report',
+  action_completed: 'Completed',
 
   // ACCOUNT_MANAGER PAGES
   account_manager: {
@@ -2030,8 +2031,8 @@ const en = {
     tender_appointment: 'Tender New Appointment',
     subject_five_min_appointment: 'Your appointment will starting soon!',
     content_five_min_appointment: 'This meeting will last 5 minutes, you can join the meeting now',
-    subject_payment: 'congratulations, your project fund have been sent!',
-    content_payment: 'Please check your account and proof of funds below',
+    subject_payment: 'New Payment Release',
+    content_payment: 'Your payment receipt has been uploaded by Cashier (Cashier) at',
     proof_of_funds: 'Proof of Funds',
     error_exceeds_amount: 'total project budgets exceeds the support amount provided',
   },
@@ -2144,8 +2145,8 @@ const en = {
   },
   //old proposal Table
   old_proposal: {
-    page_title: 'Old Proposal List',
-    title: 'Old Proposal',
+    page_title: 'Platform Projects',
+    title: 'Platform Projects',
     headercell: {
       project_name: 'Project Name',
       project_number: 'Project Number',

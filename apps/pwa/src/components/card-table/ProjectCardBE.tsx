@@ -374,7 +374,7 @@ const ProjectCardBE = ({
           )}
 
           {/* Action for employee */}
-          {role !== 'tender_client' && destination !== 'previous-funding-requests' && (
+          {role !== 'tender_client' && (
             <Stack>
               <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
                 {translate('appointments_headercell.action')}
@@ -389,17 +389,25 @@ const ProjectCardBE = ({
                   : destination === 'payment-adjustment' ||
                     destination === 'incoming-exchange-permission-requests' ||
                     destination === 'exchange-permission' ||
-                    role === 'tender_finance'
+                    (destination === 'incoming-funding-requests' && role === 'tender_finance') ||
+                    (destination === 'requests-in-process' && role === 'tender_finance')
                   ? translate('set_payment')
-                  : role === 'tender_cashier'
+                  : (destination === 'incoming-funding-requests' && role === 'tender_cashier') ||
+                    (destination === 'requests-in-process' && role === 'tender_cashier')
                   ? translate('set_payment_cashier')
                   : destination === 'project-report'
                   ? translate('close_report')
-                  : null}
+                  : destination === 'previous-funding-requests' && status === 'ONGOING'
+                  ? translate('action_ongoing')
+                  : destination === 'previous-funding-requests' && status === 'COMPLETED'
+                  ? translate('action_completed')
+                  : destination === 'previous-funding-requests' && status === 'CANCELED'
+                  ? translate('account_manager.table.td.label_rejected')
+                  : translate('need_review')}
               </Typography>
             </Stack>
           )}
-          {role === 'tender_client' && destination !== 'previous-funding-requests' && (
+          {role === 'tender_client' && (
             <Stack>
               <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
                 {translate('appointments_headercell.action')}
@@ -410,7 +418,13 @@ const ProjectCardBE = ({
                   ? translate('action_ongoing')
                   : destination === 'project-report'
                   ? translate('close_report')
-                  : null}
+                  : destination === 'previous-funding-requests' && status === 'ONGOING'
+                  ? translate('action_ongoing')
+                  : destination === 'previous-funding-requests' && status === 'COMPLETED'
+                  ? translate('action_completed')
+                  : destination === 'previous-funding-requests' && status === 'CANCELED'
+                  ? translate('account_manager.table.td.label_rejected')
+                  : translate('need_review')}
               </Typography>
             </Stack>
           )}

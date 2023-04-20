@@ -106,7 +106,13 @@ export type ProjectCardPropsBE = {
   ];
   state?: string;
   payments?: any;
-  outter_status?: 'CANCELED' | 'COMPLETED' | 'PENDING';
+  outter_status?:
+    | 'CANCELED'
+    | 'COMPLETED'
+    | 'PENDING'
+    | 'ON_REVISION'
+    | 'ASKED_FOR_AMANDEMENT'
+    | 'ONGOING';
   cardFooterButtonAction:
     | 'show-project' // Without the action bar at the end of the page.
     | 'show-details' // With the action bar at the end if the page.
