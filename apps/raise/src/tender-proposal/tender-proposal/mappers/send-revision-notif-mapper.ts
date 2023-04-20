@@ -18,7 +18,7 @@ export const SendRevisionNotifMapper = (
 
   // const clientContent = `Your proposal ${proposal.project_name} has been revised and successfully back to track to be reviewed (at ${logTime})`;
 
-  const reviewerContent = `Proposal ${proposal.project_name} has been revised by ${proposal.user.employee_name} at ${logTime}, click <a href='${redirectLink}/project-supervisor/dashboard/requests-in-process/${proposal_id}/show-project'>here</a> to view the proposal`;
+  const reviewerContent = `Proposal ${proposal.project_name} has been revised by ${proposal.user.employee_name} at ${logTime}`;
   // const clientWebNotifPayload: CreateNotificationDto = {
   //   user_id: proposal.user.id,
   //   type: 'PROPOSAL',
@@ -35,7 +35,9 @@ export const SendRevisionNotifMapper = (
       specific_type: 'REVISED_VERSION_SENT_BY_CLIENT',
       proposal_id,
       subject: subject + 'Sended By Client',
-      content: reviewerContent,
+      content:
+        reviewerContent +
+        `, click <a href='${redirectLink}/project-supervisor/dashboard/requests-in-process/${proposal_id}/show-project'>here</a> to view the proposal`,
     };
     createWebNotifPayload.push(supervisorWebNotifPayload);
   }

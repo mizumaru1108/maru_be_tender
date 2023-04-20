@@ -5,6 +5,7 @@ import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { FollowUpNotifMapper } from '../mappers/follow-up-notif-mapper';
+import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 
 @Injectable()
 export class TenderProposalFollowUpRepository {
@@ -16,6 +17,7 @@ export class TenderProposalFollowUpRepository {
   async create(
     followUpCreatePayload: Prisma.proposal_follow_upUncheckedCreateInput,
     fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
+    currentUser: TenderCurrentUser,
     employee_only: boolean,
     redirectLink: string,
     selected_lang?: 'ar' | 'en',
@@ -52,6 +54,7 @@ export class TenderProposalFollowUpRepository {
 
         const followupNotif = FollowUpNotifMapper(
           followUps,
+          currentUser,
           employee_only,
           redirectLink,
           selected_lang,

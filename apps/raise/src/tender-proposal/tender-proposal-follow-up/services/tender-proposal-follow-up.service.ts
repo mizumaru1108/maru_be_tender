@@ -61,6 +61,15 @@ export class TenderProposalFollowUpService {
     const uploadedFilePath: string[] = [];
     let tenderFileFollowUpObj: UploadFilesJsonbDto[] = [];
 
+    if (
+      currentUser.choosenRole === 'tender_client' &&
+      payload.employee_only === true
+    ) {
+      throw new BadRequestException(
+        'Client can only do follow up on client only section',
+      );
+    }
+
     try {
       const proposal = await this.tenderProposalRepository.fetchProposalById(
         payload.proposal_id,
@@ -185,6 +194,7 @@ export class TenderProposalFollowUpService {
       const createdFolllowUp = await this.followUpRepo.create(
         createFollowUpPayload,
         fileManagerCreateManyPayload,
+        currentUser,
         employee_only,
         this.configService.get('tenderAppConfig.baseUrl') as string,
         payload.selectLang,

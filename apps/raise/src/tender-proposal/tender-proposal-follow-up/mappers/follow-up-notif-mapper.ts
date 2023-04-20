@@ -4,9 +4,11 @@ import { CreateManyNotificationDto } from '../../../tender-notification/dtos/req
 import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
 import { createManyNotificationMapper } from '../../../tender-notification/mappers/create-many-notification.mapper';
 import { RawCreateFollowUpDto } from '../dtos/responses/raw-create-follow-up.dto';
+import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 
 export const FollowUpNotifMapper = (
   createdFolllowUp: RawCreateFollowUpDto['data'],
+  currentUser: TenderCurrentUser,
   employee_only: boolean,
   redirectLink: string,
   selected_lang?: 'ar' | 'en',
@@ -32,7 +34,7 @@ export const FollowUpNotifMapper = (
   };
   const createWebNotifPayload: CreateManyNotificationDto['payloads'] = [];
 
-  if (!employee_only) {
+  if (currentUser.choosenRole !== 'tender_client' && !employee_only) {
     createWebNotifPayload.push({
       ...baseWebNotif,
       user_id: proposal.user.id,
@@ -105,11 +107,18 @@ export const FollowUpNotifMapper = (
   return {
     logTime,
     clientSubject: subject,
-    clientId: employee_only ? [] : [proposal.user.id],
-    clientEmail: employee_only ? [] : [proposal.user.email],
-    clientMobileNumber: employee_only
-      ? []
-      : [proposal.user.mobile_number || ''],
+    clientId:
+      currentUser.choosenRole !== 'tender_client' && !employee_only
+        ? [proposal.user.id]
+        : [],
+    clientEmail:
+      currentUser.choosenRole !== 'tender_client' && !employee_only
+        ? [proposal.user.email]
+        : [],
+    clientMobileNumber:
+      currentUser.choosenRole !== 'tender_client' && !employee_only
+        ? [proposal.user.mobile_number || '']
+        : [],
     clientContent: content,
     clientEmailTemplatePath,
     clientEmailTemplateContext,
