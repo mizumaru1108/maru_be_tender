@@ -1,155 +1,107 @@
-import { paramCase } from 'change-case';
+import { useQuery } from 'urql';
+// react
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 // @mui
-import {
-  Box,
-  Card,
-  Table,
-  Button,
-  Tooltip,
-  TableBody,
-  Container,
-  IconButton,
-  TableContainer,
-  TablePagination,
-  Typography,
-  Stack,
-} from '@mui/material';
-// routes
-import { PATH_DASHBOARD } from '../../../routes/paths';
-import useTable, { emptyRows, getComparator } from 'hooks/useTable';
+import { Button, Container, Typography, Stack } from '@mui/material';
+// hooks
 import useSettings from 'hooks/useSettings';
 import useLocales from 'hooks/useLocales';
-import Iconify from 'components/Iconify';
-import { BankNameTableRow, BankNameTableToolbar } from './list';
-import Scrollbar from 'components/Scrollbar';
-import {
-  TableEmptyRows,
-  TableHeadCustom,
-  TableNoData,
-  TableSelectedActions,
-} from 'components/table';
-import useTabs from 'hooks/useTabs';
-import { AuthorityInterface } from './list/types';
-import AddBankModal from './list/AddBankModal';
+import useAuth from 'hooks/useAuth';
+// component
+import FormModalBank, { FormInput } from './list/FormModalBank';
+import BankNameTableContent from './list/BankNameTableContent';
+//
+import axiosInstance from 'utils/axios';
+import { useSnackbar } from 'notistack';
 
-const mockData = [
-  {
-    id: '1',
-    name: 'البنك الأهلي التجاري',
-  },
-  {
-    id: '2',
-    name: 'البنك السعودي للاستثمار',
-  },
-  {
-    id: '3',
-    name: 'البنك العربي الوطني',
-  },
-  {
-    id: '4',
-    name: 'بنك الجزيرة',
-  },
-  {
-    id: '5',
-    name: 'بنك الرياض',
-  },
-];
+// --------------------------------------------------------------------------------------------------
 
 export default function BankNameTable() {
   const { translate } = useLocales();
-
-  const TABLE_HEAD = [
-    { id: 'name', label: translate('pages.admin.settings.label.table.name'), align: 'left' },
-    {
-      id: 'permissions',
-      label: translate('pages.admin.settings.label.table.permissions'),
-      align: 'left',
-    },
-  ];
-
-  const {
-    dense,
-    page,
-    order,
-    orderBy,
-    rowsPerPage,
-    setPage,
-    //
-    selected,
-    setSelected,
-    onSelectRow,
-    onSelectAllRows,
-    //
-    onSort,
-    onChangePage,
-    onChangeRowsPerPage,
-  } = useTable();
-
   const { themeStretch } = useSettings();
+  const { activeRole } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
 
-  const navigate = useNavigate();
-
-  const [tableData, setTableData] = useState(mockData);
-
-  const [filterName, setFilterName] = useState('');
-
-  const [filterRole, setFilterRole] = useState('all');
-
-  const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } = useTabs('all');
-
-  const handleFilterName = (filterName: string) => {
-    setFilterName(filterName);
-    setPage(0);
-  };
-
-  const handleFilterRole = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilterRole(event.target.value);
-  };
-
-  const handleDeleteRow = (id: string) => {
-    const deleteRow = tableData.filter((row) => row.id !== id);
-    setSelected([]);
-    setTableData(deleteRow);
-  };
-
-  const handleDeleteRows = (selected: string[]) => {
-    const deleteRows = tableData.filter((row) => !selected.includes(row.id));
-    setSelected([]);
-    setTableData(deleteRows);
-  };
-
-  const handleEditRow = (id: string) => {
-    navigate(PATH_DASHBOARD.user.edit(paramCase(id)));
-  };
-
-  const dataFiltered = applySortFilter({
-    tableData,
-    comparator: getComparator(order, orderBy),
-    filterName,
-    filterRole,
-    filterStatus,
+  const [{ data, fetching, error }, reExecute] = useQuery({
+    query: `
+      query getBankList {
+        banks {
+          id
+          bank_name
+        }
+      }
+    `,
   });
 
   const [open, setOpen] = useState(false);
-  const handleAddBeneficiare = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleOpenAddBank = () => {
     setOpen(true);
   };
-  const handleCloseAddBeneficiare = () => {
+
+  const handleCloseAddBank = () => {
     setOpen(false);
   };
 
-  const denseHeight = dense ? 52 : 72;
+  const handleSubmitAddBank = async (formValue: FormInput) => {
+    setIsSubmitting(true);
 
-  const isNotFound =
-    (!dataFiltered.length && !!filterName) ||
-    (!dataFiltered.length && !!filterRole) ||
-    (!dataFiltered.length && !!filterStatus);
+    try {
+      const { status } = await axiosInstance.post(
+        '/tender/proposal/payment/add-bank-list',
+        { bank_name: formValue.bank_name },
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
+
+      if (status === 201) {
+        enqueueSnackbar(translate('pages.admin.settings.label.modal.success_add_new_bank'), {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+
+        setIsSubmitting(false);
+        setOpen(false);
+        reExecute();
+      }
+    } catch (err) {
+      if (typeof err.message === 'object') {
+        err.message.forEach((el: any) => {
+          enqueueSnackbar(el, {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          });
+        });
+      } else {
+        enqueueSnackbar(err.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+      }
+
+      setIsSubmitting(false);
+      setOpen(false);
+      reExecute();
+    }
+  };
+
+  if (fetching) return <>{translate('pages.common.loading')}</>;
+  if (error) return <>{error.message}</>;
 
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
-      <AddBankModal open={open} handleClose={handleCloseAddBeneficiare} />
+      <FormModalBank
+        type="add"
+        loading={isSubmitting}
+        open={open}
+        handleClose={handleCloseAddBank}
+        handleSubmitProps={handleSubmitAddBank}
+      />
       <Stack
         direction="row"
         justifyContent="space-between"
@@ -157,143 +109,17 @@ export default function BankNameTable() {
         sx={{ mb: 5, mt: 1 }}
       >
         <Typography variant="h4" sx={{ fontFamily: 'Cairo', fontStyle: 'Bold' }}>
-          {translate('pages.admin.settings.label.bank_name')}
+          {translate('pages.admin.settings.label.list_of_bank')}
         </Typography>
         <Button
           variant="contained"
-          onClick={handleAddBeneficiare}
+          onClick={handleOpenAddBank}
           sx={{ px: '50px', fontSize: '16px' }}
         >
           {translate('pages.admin.settings.label.add_bank')}
         </Button>
       </Stack>
-      <Card sx={{ backgroundColor: '#fff' }}>
-        <BankNameTableToolbar
-          filterName={filterName}
-          filterRole={filterRole}
-          onFilterName={handleFilterName}
-          onFilterRole={handleFilterRole}
-        />
-
-        <Scrollbar>
-          <TableContainer sx={{ minWidth: 800, position: 'relative' }}>
-            {selected.length > 0 && (
-              <TableSelectedActions
-                dense={dense}
-                numSelected={selected.length}
-                rowCount={tableData.length}
-                onSelectAllRows={(checked) =>
-                  onSelectAllRows(
-                    checked,
-                    tableData.map((row) => row.id)
-                  )
-                }
-                actions={
-                  <Tooltip title="Delete">
-                    <IconButton color="primary" onClick={() => handleDeleteRows(selected)}>
-                      <Iconify icon={'eva:trash-2-outline'} />
-                    </IconButton>
-                  </Tooltip>
-                }
-              />
-            )}
-
-            <Table size={dense ? 'small' : 'medium'}>
-              <TableHeadCustom
-                order={order}
-                orderBy={orderBy}
-                headLabel={TABLE_HEAD}
-                rowCount={tableData.length}
-                numSelected={selected.length}
-                onSort={onSort}
-                onSelectAllRows={(checked) =>
-                  onSelectAllRows(
-                    checked,
-                    tableData.map((row) => row.id)
-                  )
-                }
-              />
-
-              <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <BankNameTableRow
-                      key={row.id}
-                      row={row}
-                      selected={selected.includes(row.id)}
-                      onSelectRow={() => onSelectRow(row.id)}
-                      onDeleteRow={() => handleDeleteRow(row.id)}
-                      onEditRow={() => handleEditRow(row.name)}
-                    />
-                  ))}
-
-                <TableEmptyRows
-                  height={denseHeight}
-                  emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
-                />
-
-                <TableNoData isNotFound={isNotFound} />
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Scrollbar>
-
-        <Box sx={{ position: 'relative' }}>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={dataFiltered.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={onChangePage}
-            onRowsPerPageChange={onChangeRowsPerPage}
-          />
-        </Box>
-      </Card>
+      <BankNameTableContent data={!fetching && data ? data.banks : []} />
     </Container>
   );
-}
-
-// ----------------------------------------------------------------------
-
-function applySortFilter({
-  tableData,
-  comparator,
-  filterName,
-  filterStatus,
-  filterRole,
-}: {
-  tableData: AuthorityInterface[];
-  comparator: (a: any, b: any) => number;
-  filterName: string;
-  filterStatus: string;
-  filterRole: string;
-}) {
-  const stabilizedThis = tableData.map((el, index) => [el, index] as const);
-
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-
-  tableData = stabilizedThis.map((el) => el[0]);
-
-  if (filterName) {
-    tableData = tableData.filter(
-      (item: Record<string, any>) =>
-        item.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    );
-  }
-
-  if (filterStatus !== 'all') {
-    tableData = tableData.filter((item: Record<string, any>) => item.status === filterStatus);
-  }
-
-  if (filterRole !== 'all') {
-    tableData = tableData.filter((item: Record<string, any>) => item.role === filterRole);
-  }
-
-  return tableData;
 }

@@ -732,4 +732,44 @@ export class TenderProposalPaymentRepository {
       throw theError;
     }
   }
+
+  // Bank list
+  async createBankList(createPayload: Prisma.banksCreateInput) {
+    this.logger.debug(
+      `Create new bank with payload of \n ${logUtil(createPayload)}`,
+    );
+
+    try {
+      return await this.prismaService.banks.create({
+        data: createPayload,
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalPaymentRepository.name,
+        'create new bank error details: ',
+        'create new bank!',
+      );
+      throw theError;
+    }
+  }
+
+  async updateBankList(id: string, bank_name: string) {
+    this.logger.debug(`Update track section with payload of \n ${logUtil(id)}`);
+
+    try {
+      return await this.prismaService.banks.update({
+        where: { id },
+        data: { bank_name },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalPaymentRepository.name,
+        'update bank list error details: ',
+        'update bank list!',
+      );
+      throw theError;
+    }
+  }
 }

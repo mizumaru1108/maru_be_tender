@@ -4,32 +4,85 @@ import { Checkbox, TableRow, TableCell, Stack, Button } from '@mui/material';
 import Iconify from 'components/Iconify';
 import { AuthorityInterface } from './types';
 import useLocales from 'hooks/useLocales';
+import useAuth from 'hooks/useAuth';
+// component
+import FormModalBank from './FormModalBank';
+//
+import axiosInstance from 'utils/axios';
+import { useSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   row: AuthorityInterface;
   selected: boolean;
-  onEditRow: VoidFunction;
-  onSelectRow: VoidFunction;
-  onDeleteRow: VoidFunction;
+  onSelectRow: () => void;
 };
 
 export default function BankNameTableRow({ row, selected, onSelectRow }: Props) {
-  const { name } = row;
+  const { id, bank_name } = row;
   const { translate } = useLocales();
+  const { activeRole } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [openEditModal, setOpenEditModal] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleEditBank = async (formValues: any) => {
+    setIsSubmitting(true);
+
+    try {
+      const { status } = await axiosInstance.patch(
+        '/tender/proposal/payment/update-bank',
+        { id: formValues.id, bank_name: formValues.bank_name },
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
+
+      if (status === 200) {
+        enqueueSnackbar(translate('pages.admin.settings.label.modal.success_edit_bank'), {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+
+        setIsSubmitting(false);
+        window.location.reload();
+      }
+    } catch (err) {
+      if (typeof err.message === 'object') {
+        err.message.forEach((el: any) => {
+          enqueueSnackbar(el, {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          });
+        });
+      } else {
+        enqueueSnackbar(err.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+      }
+
+      setIsSubmitting(false);
+      window.location.reload();
+    }
+  };
 
   return (
-    <TableRow hover selected={selected}>
+    <TableRow key={id} hover selected={selected}>
       <TableCell padding="checkbox">
         <Checkbox checked={selected} onClick={onSelectRow} />
       </TableCell>
 
-      <TableCell align="left">{name}</TableCell>
+      <TableCell align="left">{bank_name}</TableCell>
       <TableCell align="left">
         <Stack direction="row" gap={2}>
           <Button
-            startIcon={<Iconify icon="eva:trash-2-outline" height={20} width={20} />}
+            startIcon={<Iconify icon="eva:edit-outline" height={20} width={20} />}
             color="info"
             variant="contained"
             size="medium"
@@ -37,12 +90,12 @@ export default function BankNameTableRow({ row, selected, onSelectRow }: Props) 
               backgroundColor: '#0169DE',
               '&:hover': { backgroundColor: '#1482FE' },
             }}
-            onClick={() => console.log('asdlamsdkl')}
+            onClick={() => setOpenEditModal(true)}
           >
-            {translate('pages.admin.settings.label.table.amendment')}
+            {translate('pages.admin.settings.label.table.modify')}
           </Button>
           <Button
-            startIcon={<Iconify icon="eva:edit-outline" height={20} width={20} />}
+            startIcon={<Iconify icon="eva:trash-2-outline" height={20} width={20} />}
             color="error"
             variant="contained"
             size="medium"
@@ -50,10 +103,23 @@ export default function BankNameTableRow({ row, selected, onSelectRow }: Props) 
               backgroundColor: '#FF4842',
               '&:hover': { backgroundColor: '#FF170F' },
             }}
-            onClick={() => console.log('asdlamsdkl')}
+            onClick={() => console.log('value', { id, bank_name })}
+            disabled
           >
             {translate('pages.admin.settings.label.table.delete')}
           </Button>
+
+          <FormModalBank
+            type="edit"
+            loading={isSubmitting}
+            open={openEditModal}
+            handleClose={() => {
+              setOpenEditModal(false);
+              setIsSubmitting(false);
+            }}
+            formDefaultValue={row}
+            handleSubmitProps={handleEditBank}
+          />
         </Stack>
       </TableCell>
     </TableRow>

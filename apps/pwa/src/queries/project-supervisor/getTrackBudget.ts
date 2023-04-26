@@ -62,7 +62,7 @@ query getTrackBudgetAdmin {
 `;
 
 export const getOneTrackBudget = `
-query getOneTrackBudget($track_id: project_tracks_enum) {
+query getOneTrackBudget($track_id: String!) {
   track(where: {name: {_eq: $track_id}}){
     id
     name

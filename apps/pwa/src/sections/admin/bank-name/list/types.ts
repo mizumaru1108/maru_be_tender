@@ -1,4 +1,4 @@
 export type AuthorityInterface = {
   id: string;
-  name: string;
+  bank_name: string;
 };
