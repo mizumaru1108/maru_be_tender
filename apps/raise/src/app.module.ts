@@ -44,7 +44,7 @@ import { TenderAppointmentModule } from './tender-appointment/tender-appointment
 import { TenderAuthModule } from './tender-auth/tender-auth.module';
 import { TenderEmailModule } from './tender-email/tender-email.module';
 import { TenderProposalModule } from './tender-proposal/tender-proposal.module';
-import { TenderTrackModule } from './tender-track/track.module';
+import { TenderTrackModule } from './tender-track/tender-track.module';
 import { TenderUserModule } from './tender-user/tender-user.module';
 import { TenderModule } from './tender/tender.module';
 import { WidgetBackendModule } from './widget-backend/widget-backend.module';
@@ -153,6 +153,9 @@ import { mseGatConfig } from './commons/configs/msegat-config';
     PermissionManagerModule,
     DonationModule,
     PrismaModule,
+    GsAuthModule,
+    GsUserModule,
+    /* Tender */
     TenderModule,
     TenderProposalModule,
     TenderAppointmentModule,
@@ -160,8 +163,6 @@ import { mseGatConfig } from './commons/configs/msegat-config';
     TenderUserModule,
     TenderEmailModule,
     TenderTrackModule,
-    GsAuthModule,
-    GsUserModule,
     TenderCommentsModule,
     TenderMessagesModule,
     TenderStatisticsModule,

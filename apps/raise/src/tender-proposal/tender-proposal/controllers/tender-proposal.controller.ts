@@ -38,8 +38,6 @@ import {
   SendRevisionDto,
 } from '../dtos/requests';
 import { TenderProposalService } from '../services/tender-proposal.service';
-import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
-import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(private readonly proposalService: TenderProposalService) {}

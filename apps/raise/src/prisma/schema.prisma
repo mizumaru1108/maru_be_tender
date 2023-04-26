@@ -435,7 +435,6 @@ model edit_request_status {
 model project_tracks {
   id            String          @id(map: "project_kind_pkey") @unique(map: "project_kind_id_key")
   proposal      proposal[]
-  track         track[]
   track_section track_section[]
   user          user[]
 }
@@ -517,8 +516,7 @@ model authority {
 }
 
 model banks {
-  id    String @id
-  title String @db.VarChar
+  id String @id
 }
 
 model beneficiaries {
@@ -536,11 +534,10 @@ model recommended_support_consultant {
 }
 
 model track {
-  budget         Float?          @db.Real
-  id             String          @id @db.VarChar
-  name           String?
-  project_tracks project_tracks? @relation(fields: [name], references: [id], onDelete: Cascade)
-  proposal       proposal[]
+  id                String     @id @db.VarChar
+  name              String?    @unique
+  with_consultation Boolean?   @default(false)
+  proposal          proposal[]
 }
 
 model track_section {

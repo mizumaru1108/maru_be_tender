@@ -1,20 +1,47 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
-import { track, track_section, Prisma } from '@prisma/client';
-import _ from 'lodash';
-import { ROOT_LOGGER } from '../libs/root-logger';
-import { PrismaService } from '../prisma/prisma.service';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ROOT_LOGGER } from '../../libs/root-logger';
+import { PrismaService } from '../../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
+import { logUtil } from '../../commons/utils/log-util';
 
 @Injectable()
 export class TenderTrackRepository {
-  // private readonly logger = ROOT_LOGGER.child({
-  //   'log.logger': TenderTrackRepository.name,
-  // });
-  // constructor(private readonly prismaService: PrismaService) {}
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': TenderTrackRepository.name,
+  });
+  constructor(private readonly prismaService: PrismaService) {}
+
+  async findByName(name: string) {
+    try {
+      this.logger.log('info', `finding track with name of ${name}`);
+      return await this.prismaService.track.findUnique({
+        where: { name },
+      });
+    } catch (err) {
+      console.trace(err);
+      throw new InternalServerErrorException(
+        'Something went wrong when finding track by name!',
+      );
+    }
+  }
+
+  async create(payload: Prisma.trackCreateInput) {
+    try {
+      this.logger.log(
+        'info',
+        `createing new track with payload of \n${logUtil(payload)}`,
+      );
+      return await this.prismaService.track.create({
+        data: payload,
+      });
+    } catch (error) {
+      console.trace(error);
+      throw new InternalServerErrorException(
+        'Something went wrong when createing a new track!',
+      );
+    }
+  }
+
   // /* save trackSection and increment Parents budget */
   // async createTrackSection(createPayload: Prisma.track_sectionCreateArgs) {
   //   this.logger.debug('create new track record...');

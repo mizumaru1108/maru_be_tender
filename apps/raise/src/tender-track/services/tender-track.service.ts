@@ -1,13 +1,22 @@
-import { Injectable, UseGuards } from '@nestjs/common';
-import { track, track_section, Prisma } from '@prisma/client';
-import { JwtAuthGuard } from '../auth/guards/jwt.guard';
-import { TracSectionkDto } from './dto/track.dto';
-import { TenderTrackRepository } from './track.repository';
-import { UpdateTrackSection } from './dto/updateTrackSection.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { TenderTrackRepository } from '../repositories/tender-track.repository';
+import { CreateTrackDto } from '../dto/requests';
+import { CreateTrackMapper } from '../mappers';
 
 @Injectable()
 export class TenderTrackService {
-  constructor(private readonly tenderTrackRepository: TenderTrackRepository) {}
+  constructor(private readonly trackRepo: TenderTrackRepository) {}
+
+  async create(request: CreateTrackDto) {
+    const track = await this.trackRepo.findByName(request.name);
+    if (track) {
+      throw new BadRequestException(
+        `Track with name of ${request.name} already exist!`,
+      );
+    }
+    const createPayload = CreateTrackMapper(request);
+    return await this.trackRepo.create(createPayload);
+  }
 
   // @UseGuards(JwtAuthGuard)
   // async createTrackSection(request: TracSectionkDto): Promise<track_section> {

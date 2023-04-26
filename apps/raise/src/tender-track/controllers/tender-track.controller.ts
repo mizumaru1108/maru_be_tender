@@ -1,24 +1,26 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpStatus,
-  Post,
-  Patch,
-  Delete,
-  Param,
-  Query,
-} from '@nestjs/common';
-import { TracSectionkDto } from './dto/track.dto';
-import { BaseResponse } from '../commons/dtos/base-response';
-import { baseResponseHelper } from '../commons/helpers/base-response-helper';
-import { TenderTrackService } from './track.service';
-import { track, track_section } from '@prisma/client';
-import { UpdateTrackSection } from './dto/updateTrackSection.dto';
+import { Body, Controller, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
+import { TenderTrackService } from '../services/tender-track.service';
+import { CreateTrackDto } from '../dto/requests';
+import { TenderRoles } from '../../tender-auth/decorators/tender-roles.decorator';
+import { TenderJwtGuard } from '../../tender-auth/guards/tender-jwt.guard';
+import { TenderRolesGuard } from '../../tender-auth/guards/tender-roles.guard';
 
-@Controller('track')
+@Controller('tender/track')
 export class TenderTrackController {
-  constructor(private readonly tenderTrackService: TenderTrackService) {}
+  constructor(private readonly trackService: TenderTrackService) {}
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Post('create')
+  async create(@Body() request: CreateTrackDto) {
+    const createdTrack = await this.trackService.create(request);
+    return baseResponseHelper(
+      createdTrack,
+      HttpStatus.CREATED,
+      'Track Created Successfully!',
+    );
+  }
 
   // @Post('track-section')
   // async createTrackSection(

@@ -1623,6 +1623,13 @@ export class TenderProposalService {
       createdItemBudgetPayload = [...result.createdItemBudgetPayload];
       updatedItemBudgetPayload = [...result.updatedItemBudgetPayload];
       deletedItemBudgetIds = [...result.deletedItemBudgetIds];
+
+      if (proposal.project_track === 'CONCESSIONAL_GRANTS') {
+        proposal.inner_status = InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER;
+        proposalLogCreateInput.action = ProposalAction.ACCEPT;
+        proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_MANAGER;
+        proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
+      }
     }
 
     if (request.action === ProposalAction.REJECT) {
@@ -1754,6 +1761,14 @@ export class TenderProposalService {
       createdItemBudgetPayload = [...result.createdItemBudgetPayload];
       updatedItemBudgetPayload = [...result.updatedItemBudgetPayload];
       deletedItemBudgetIds = [...result.deletedItemBudgetIds];
+
+      if (proposal.project_track === 'CONCESSIONAL_GRANTS') {
+        proposal.inner_status =
+          InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION;
+        proposalLogCreateInput.action = ProposalAction.ACCEPT;
+        proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
+        proposalLogCreateInput.user_role = TenderAppRoleEnum.CEO;
+      }
     }
 
     if (request.action === ProposalAction.STEP_BACK) {
