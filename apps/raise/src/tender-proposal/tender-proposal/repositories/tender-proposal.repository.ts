@@ -1,6 +1,15 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Prisma, proposal, proposal_item_budget } from '@prisma/client';
+import {
+  Prisma,
+  bank_information,
+  payment,
+  proposal,
+  proposal_follow_up,
+  proposal_item_budget,
+  proposal_log,
+  track,
+} from '@prisma/client';
 import { nanoid } from 'nanoid';
 import { logUtil } from '../../../commons/utils/log-util';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
@@ -21,6 +30,7 @@ import { FetchProposalFilterRequest } from '../dtos/requests/fetch-proposal-filt
 import { UpdateMyProposalResponseDto } from '../dtos/responses/update-my-proposal-response.dto';
 import { NewAmandementNotifMapper } from '../mappers/new-amandement-notif-mapper';
 import { SendRevisionNotifMapper } from '../mappers/send-revision-notif-mapper';
+import { FetchProposalByIdResponse } from '../dtos/responses/fetch-proposal-by-id.response.dto';
 @Injectable()
 export class TenderProposalRepository {
   private readonly logger = ROOT_LOGGER.child({
@@ -1220,10 +1230,12 @@ export class TenderProposalRepository {
     }
   }
 
-  async fetchProposalById(proposalId: string): Promise<proposal | null> {
+  async fetchProposalById(
+    proposalId: string,
+  ): Promise<FetchProposalByIdResponse['response']> {
     try {
       this.logger.log('info', `fetching proposal ${proposalId}`);
-      return await this.prismaService.proposal.findFirst({
+      const proposal = await this.prismaService.proposal.findFirst({
         where: {
           id: proposalId,
         },
@@ -1248,6 +1260,7 @@ export class TenderProposalRepository {
               },
             },
           },
+          track: true,
           proposal_item_budgets: true,
           proposal_logs: true,
           payments: {
@@ -1258,6 +1271,7 @@ export class TenderProposalRepository {
           bank_information: true,
         },
       });
+      return proposal;
     } catch (error) {
       const theError = prismaErrorThrower(
         error,

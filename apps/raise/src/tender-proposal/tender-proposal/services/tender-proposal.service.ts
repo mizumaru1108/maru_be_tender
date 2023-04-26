@@ -71,6 +71,7 @@ import { ProjectManagerChangeStatePayload } from '../dtos/requests/project-manag
 import { CreateProposalInterceptorDto } from '../dtos/requests';
 import { CreateProposalInterceptorMapper } from '../mappers';
 import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
+import { FetchProposalByIdResponse } from '../dtos/responses/fetch-proposal-by-id.response.dto';
 
 @Injectable()
 export class TenderProposalService {
@@ -1388,7 +1389,7 @@ export class TenderProposalService {
   }
 
   async supervisorChangeState(
-    proposal: proposal,
+    proposal: FetchProposalByIdResponse['response'],
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
     proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
     request: ChangeProposalStateDto,
@@ -1464,11 +1465,11 @@ export class TenderProposalService {
       proposalUpdatePayload.supervisor_id = currentUser.id;
 
       /* custom logic if there's special logic for regular track */
-      if (proposal.project_track !== 'CONCESSIONAL_GRANTS') {
-      }
+      // if (proposal?.track?.name !== 'CONCESSIONAL_GRANTS') {
+      // }
 
       /* custom logic if the track is CONCESSIONAL_GRANTS */
-      if (proposal.project_track === 'CONCESSIONAL_GRANTS') {
+      if (proposal?.track?.with_consultation === true) {
         proposalUpdatePayload = SupervisorGrantTrackAccMapper(
           proposalUpdatePayload,
           request.supervisor_payload,
@@ -1544,7 +1545,7 @@ export class TenderProposalService {
   }
 
   async projectManagerChangeState(
-    proposal: proposal,
+    proposal: FetchProposalByIdResponse['response'],
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
     proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
     request: ChangeProposalStateDto,
@@ -1624,8 +1625,9 @@ export class TenderProposalService {
       updatedItemBudgetPayload = [...result.updatedItemBudgetPayload];
       deletedItemBudgetIds = [...result.deletedItemBudgetIds];
 
-      if (proposal.project_track === 'CONCESSIONAL_GRANTS') {
-        proposal.inner_status = InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER;
+      if (proposal?.track?.with_consultation === true) {
+        proposalUpdatePayload.inner_status =
+          InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER;
         proposalLogCreateInput.action = ProposalAction.ACCEPT;
         proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_MANAGER;
         proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
@@ -1688,7 +1690,7 @@ export class TenderProposalService {
   }
 
   async ceoChangeState(
-    proposal: proposal,
+    proposal: FetchProposalByIdResponse['response'],
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
     proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
     request: ChangeProposalStateDto,
@@ -1762,8 +1764,8 @@ export class TenderProposalService {
       updatedItemBudgetPayload = [...result.updatedItemBudgetPayload];
       deletedItemBudgetIds = [...result.deletedItemBudgetIds];
 
-      if (proposal.project_track === 'CONCESSIONAL_GRANTS') {
-        proposal.inner_status =
+      if (proposal?.track?.with_consultation === true) {
+        proposalUpdatePayload.inner_status =
           InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION;
         proposalLogCreateInput.action = ProposalAction.ACCEPT;
         proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
@@ -2032,7 +2034,7 @@ export class TenderProposalService {
   }
 
   async handleUpdateProposalTrackInfo(
-    proposal: proposal,
+    proposal: FetchProposalByIdResponse['response'],
     proposal_id: string,
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
     request: ProjectManagerChangeStatePayload | CeoChangeStatePayload,
@@ -2077,7 +2079,7 @@ export class TenderProposalService {
       }
     }
 
-    if (proposal.project_track === 'CONCESSIONAL_GRANTS') {
+    if (proposal?.track?.with_consultation === true) {
       proposalUpdatePayload = SupervisorGrantTrackAccMapper(
         proposalUpdatePayload,
         request,
