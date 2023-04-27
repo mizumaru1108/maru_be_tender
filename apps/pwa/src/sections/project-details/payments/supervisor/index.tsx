@@ -13,7 +13,7 @@ function SupervisorPaymentsPage() {
   const { translate } = useLocales();
   const { id: proposal_id } = useParams();
 
-  const { proposal, isLoading, error } = useSelector((state) => state.proposal);
+  const { proposal } = useSelector((state) => state.proposal);
 
   const [{ data: spentBudget, fetching }, refetch] = useQuery({
     query: getTheSpentBudgetForSpecificProposal,
@@ -111,7 +111,11 @@ function SupervisorPaymentsPage() {
           {translate('content.administrative.project_details.payment.heading.split_payments')}
         </Typography>
       </Grid>
-      {proposal.payments.length === 0 ? <PaymentsSetForm refetch={refetch} /> : <PaymentsTable />}
+      {proposal.payments.length === 0 ? (
+        <PaymentsSetForm refetch={refetch} fetching={fetching} />
+      ) : (
+        <PaymentsTable />
+      )}
     </Grid>
   );
 }

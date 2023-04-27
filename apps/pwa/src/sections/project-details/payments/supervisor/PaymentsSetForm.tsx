@@ -15,7 +15,7 @@ import { useSnackbar } from 'notistack';
 //
 import uuidv4 from 'utils/uuidv4';
 import useAuth from 'hooks/useAuth';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import moment from 'moment';
 
 type FormValuesProps = {
@@ -26,20 +26,20 @@ type FormValuesProps = {
 };
 
 interface Props {
+  fetching: boolean;
   refetch: () => void;
 }
 
-function PaymentsSetForm({ refetch }: Props) {
+function PaymentsSetForm({ refetch, fetching }: Props) {
   const { id: proposal_id } = useParams();
+  const { proposal } = useSelector((state) => state.proposal);
 
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
 
   const dispatch = useDispatch();
 
-  const { proposal, isLoading } = useSelector((state) => state.proposal);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const PaymentsSchema = Yup.object().shape({
     payments: Yup.array().of(
       Yup.object().shape({
@@ -54,10 +54,12 @@ function PaymentsSetForm({ refetch }: Props) {
   });
 
   const defaultValues = {
-    payments: [...Array(proposal.number_of_payments_by_supervisor)].map(() => ({
-      payment_amount: 0,
-      payment_date: '',
-    })),
+    payments: [...Array(fetching ? 1 : Number(proposal.number_of_payments_by_supervisor))].map(
+      () => ({
+        payment_amount: 0,
+        payment_date: '',
+      })
+    ),
   };
 
   const methods = useForm<FormValuesProps>({
@@ -139,48 +141,9 @@ function PaymentsSetForm({ refetch }: Props) {
         });
       }
     }
-
-    // try {
-    //   await dispatch(
-    //     insertPaymentsBySupervisor({
-    //       payments: data?.payments.map((item: any, index: any) => ({
-    //         payment_amount: item.payment_amount,
-    //         payment_date: item.payment_date,
-    //         proposal_id,
-    //         order: index + 1,
-    //       })),
-    //       proposal_id,
-    //       role: activeRole!,
-    //     })
-    //   ).then((res) => {
-    //     if (res.statusCode === 201) {
-    //       setIsSubmitting(false);
-    //       enqueueSnackbar('تم إنشاء الدفعات بنجاح', { variant: 'success' });
-    //       window.location.reload();
-    //     }
-    //   });
-    // } catch (error) {
-    //   if (typeof error.message === 'object') {
-    //     error.message.forEach((el: any) => {
-    //       enqueueSnackbar(el, {
-    //         variant: 'error',
-    //         preventDuplicate: true,
-    //         autoHideDuration: 3000,
-    //       });
-    //     });
-
-    //     setIsSubmitting(false);
-    //   } else {
-    //     enqueueSnackbar(error.message, {
-    //       variant: 'error',
-    //       preventDuplicate: true,
-    //       autoHideDuration: 3000,
-    //     });
-
-    //     setIsSubmitting(false);
-    //   }
-    // }
   };
+
+  useEffect(() => {}, [proposal]);
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(handleOnSubmit)}>
