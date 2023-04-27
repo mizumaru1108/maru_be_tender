@@ -94,7 +94,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
   const handleSubmit = async (data: any) => {
     const { notes, ...restStep1 } = step1;
     const editedBy = location.pathname.split('/')[1];
-    console.log(data, 'data');
+    // console.log(data, 'data');
     setIsSubmitting(true);
 
     try {
@@ -131,7 +131,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
         // created_recommended_support: [], // data.created_recommended_support
         // updated_recommended_support: [], // data.updated_recommended_support
         // deleted_recommended_support: [], // data.deleted_recommended_support
-        created_recommended_support: data.created_proposal_support,
+        created_recommended_support: data.created_proposal_budget,
         updated_recommended_support: data.updated_proposal_budget,
         deleted_recommended_support: data.deleted_proposal_budget,
       };

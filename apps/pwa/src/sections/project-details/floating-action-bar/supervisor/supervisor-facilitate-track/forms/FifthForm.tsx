@@ -77,6 +77,8 @@ function FifthForm({ children, onSubmit }: any) {
           amount: Number(el.amount),
         }));
 
+      // console.log(data.created_proposal_budget, 'testa');
+
       data.updated_proposal_budget = data.proposal_item_budgets
         .filter((item) => basedBudget.find((i) => i.id === item.id))
         .map((el) => ({
@@ -234,7 +236,7 @@ function FifthForm({ children, onSubmit }: any) {
                         ...el,
                         amount: Number(el.amount),
                       }));
-                    console.log({ deleteValues });
+                    // console.log({ deleteValues });
                     const existingData = tempDeletedBudget.find((item) => item.id === idGetValues);
 
                     if (!existingData) {
