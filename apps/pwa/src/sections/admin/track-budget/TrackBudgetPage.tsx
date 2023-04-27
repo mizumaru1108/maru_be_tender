@@ -82,7 +82,6 @@ export default function TrackBudgetPage() {
         track {
           id
           name
-          budget
           sections{
             id
             name

@@ -6,3 +6,4 @@ export * from './update-track-budget.dto';
 export * from './find-track-budget-filter.dto';
 export * from './send-closing-report.dto';
 export * from './update-payment.dto';
+export * from './create-bank-list.dto';

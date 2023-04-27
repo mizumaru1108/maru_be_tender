@@ -1,6 +1,7 @@
 import { LoadingButton } from '@mui/lab';
 import { TextField, Grid, Typography, Button, Stack } from '@mui/material';
 import { FormProvider, RHFTextField } from 'components/hook-form';
+import useAuth from 'hooks/useAuth';
 import Iconify from 'components/Iconify';
 import useLocales from 'hooks/useLocales';
 import React from 'react';
@@ -8,6 +9,9 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router';
+import RHFSelectNoGenerator from 'components/hook-form/RHFSelectNoGen';
+import axiosInstance from 'utils/axios';
+import { useSnackbar } from 'notistack';
 
 // interface ActionProps {
 //   backgroundColor: string;
@@ -25,19 +29,24 @@ interface Props {
 
 interface FormInput {
   track_name: string;
+  consultant: string;
 }
 
 const AddNewTrack = ({ onClose, loading }: Props) => {
   const navigate = useNavigate();
   const { translate, currentLang } = useLocales();
   const [open, setOpen] = React.useState<boolean>(false);
+  const { enqueueSnackbar } = useSnackbar();
+  const { activeRole } = useAuth();
 
   const validationSchema = Yup.object().shape({
     track_name: Yup.string().required(),
+    consultant: Yup.string().required(),
   });
 
   const defaultValues = {
     track_name: '',
+    consultant: '',
   };
 
   const methods = useForm<FormInput>({
@@ -52,8 +61,43 @@ const AddNewTrack = ({ onClose, loading }: Props) => {
 
   const onSubmitForm = async (data: any) => {
     // onSubmit(data);
-    navigate('/admin/dashboard/transaction-progression/add');
-    console.log({ data });
+    // navigate('/admin/dashboard/transaction-progression/add');
+    let consultantValue: boolean = true;
+
+    if (data.consultant === 'with_consultant') {
+      consultantValue = true;
+    } else {
+      consultantValue = false;
+    }
+
+    const TEMP_TRACKNAME = data.track_name.replace(/ /g, '_').toUpperCase();
+    try {
+      const payload = {
+        name: TEMP_TRACKNAME,
+        with_consultation: consultantValue,
+      };
+      // console.log({ payload });
+
+      await axiosInstance
+        .post(`tender/track/create`, payload, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            enqueueSnackbar('Track was saved', {
+              variant: 'success',
+            });
+          }
+        });
+
+      onClose();
+    } catch (err) {
+      enqueueSnackbar(err.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+    }
   };
 
   return (
@@ -94,6 +138,22 @@ const AddNewTrack = ({ onClose, loading }: Props) => {
             label="Track name"
             placeholder="Please type the track name"
           />
+
+          <RHFSelectNoGenerator
+            name={`consultant`}
+            size="medium"
+            label="Consultant*"
+            placeholder="Chosen one"
+            InputLabelProps={{ shrink: true }}
+            sx={{ mt: 3 }}
+          >
+            <option value="with_consultant" style={{ backgroundColor: '#fff' }}>
+              With Consultant
+            </option>
+            <option value="no_consultant" style={{ backgroundColor: '#fff' }}>
+              No Consultant
+            </option>
+          </RHFSelectNoGenerator>
         </Grid>
         <Stack justifyContent="center" direction="row" gap={2}>
           <LoadingButton
@@ -109,7 +169,7 @@ const AddNewTrack = ({ onClose, loading }: Props) => {
               '&:hover': { backgroundColor: '#13B2A2' },
             }}
           >
-            Next Step
+            Save
           </LoadingButton>
           <Button
             onClick={onClose}

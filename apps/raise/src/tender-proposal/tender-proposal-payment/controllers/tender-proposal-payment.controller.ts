@@ -30,6 +30,7 @@ import {
   DeleteTrackBudgetDto,
   FindTrackBudgetFilter,
   UpdateTrackBudgetDto,
+  BankListCreateDto,
 } from '../dtos/requests';
 import { UpdatePaymentResponseDto } from '../dtos/responses';
 import { TenderProposalPaymentService } from '../services/tender-proposal-payment.service';
@@ -215,6 +216,37 @@ export class TenderProposalPaymentController {
       createdPayment,
       HttpStatus.CREATED,
       'Track Budgets updated successfully',
+    );
+  }
+
+  // Bank list
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Post('add-bank-list')
+  async addBanks(
+    @Body() request: BankListCreateDto,
+  ): Promise<BaseResponse<any>> {
+    const createdBank = await this.paymentService.addBankList(request);
+
+    return baseResponseHelper(
+      createdBank,
+      HttpStatus.CREATED,
+      'Bank list added successfully',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Patch('update-bank')
+  async updateBanks(
+    @Body() request: BankListCreateDto,
+  ): Promise<BaseResponse<any>> {
+    const updatedBank = await this.paymentService.updateBankList(request);
+
+    return baseResponseHelper(
+      updatedBank,
+      HttpStatus.OK,
+      'Bank list updated successfully',
     );
   }
 }

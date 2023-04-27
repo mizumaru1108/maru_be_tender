@@ -296,7 +296,7 @@ export default function NotificationsPopover() {
   //   setOpenAlert(true);
   // }
 
-  console.log(currentData, 'Data');
+  // console.log(currentData, 'Data');
 
   return (
     <React.Fragment>
@@ -591,6 +591,9 @@ function NotificationItem({
     } else if (specificType === 'REVISED_VERSION_SENT_BY_CLIENT') {
       footer_action = 'show-details';
       request_action = 'requests-in-process';
+    } else if (outterStatus === 'ONGOING') {
+      footer_action = 'show-details';
+      request_action = 'current-project';
     } else {
       footer_action = 'show-project';
       request_action = 'previous-funding-requests';

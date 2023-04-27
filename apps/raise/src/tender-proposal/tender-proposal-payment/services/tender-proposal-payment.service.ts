@@ -44,11 +44,13 @@ import {
   DeleteTrackBudgetDto,
   FindTrackBudgetFilter,
   UpdateTrackBudgetDto,
+  BankListCreateDto,
 } from '../dtos/requests';
 import { CreateChequeMapper, CreateClosingReportMapper } from '../mappers';
 import { CreateManyPaymentMapper } from '../mappers/create-many-payment.mapper';
 import { CreateTrackBudgetMapper } from '../mappers/create-track-section-budget-mapper';
 import { TenderProposalPaymentRepository } from '../repositories/tender-proposal-payment.repository';
+import { nanoid } from 'nanoid';
 
 @Injectable()
 export class TenderProposalPaymentService {
@@ -522,5 +524,24 @@ export class TenderProposalPaymentService {
     } catch (err) {
       throw err;
     }
+  }
+
+  // Banks list
+  async addBankList(request: BankListCreateDto) {
+    const bank_id = nanoid();
+
+    const createPayload: Prisma.banksCreateInput = {
+      id: bank_id,
+      bank_name: request.bank_name,
+    };
+
+    return await this.paymentRepo.createBankList(createPayload);
+  }
+
+  async updateBankList(request: BankListCreateDto) {
+    return await this.paymentRepo.updateBankList(
+      request.id!,
+      request.bank_name,
+    );
   }
 }
