@@ -1892,6 +1892,7 @@ const ar = {
       accepted_by_finance: 'تم قبول المشروع',
       done: 'تم الدفع عن طريق الصراف',
       project_completed: 'تم المشروع',
+      send_revised_version: 'إرسال النسخة المنقحة',
     },
     target_group_age_enum: {
       AGE_1TH_TO_13TH: 'من 1 سنة إلى 13',
@@ -2179,6 +2180,18 @@ const ar = {
       project_name: 'اسم المشروع',
       project_number: 'رقم المشروع',
       employee_name: 'اسم الموظف',
+    },
+  },
+  client_files: {
+    title: 'ملفات العميل',
+    administrative_data: 'البيانات الإدارية',
+    title_read_only: 'ملف مرفق الملف الشخصي (للقراءة فقط)',
+    btn_file_review: 'مراجعة الملف',
+    headercell: {
+      file_name: 'اسم الملف',
+      section_name: 'اسم القسم',
+      download: 'تحميل',
+      view: 'منظر',
     },
   },
 };

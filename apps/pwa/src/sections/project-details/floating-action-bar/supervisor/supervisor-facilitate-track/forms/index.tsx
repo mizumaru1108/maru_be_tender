@@ -83,7 +83,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
   // };
 
   const handleSubmitFifthForm = async (data: any) => {
-    await dispatch(setStepFive(data));
+    dispatch(setStepFive(data));
     await handleSubmit(data);
   };
 
@@ -94,7 +94,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
   const handleSubmit = async (data: any) => {
     const { notes, ...restStep1 } = step1;
     const editedBy = location.pathname.split('/')[1];
-
+    console.log(data, 'data');
     setIsSubmitting(true);
 
     try {
@@ -128,9 +128,12 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
         target_group_age: step3.target_group_age,
         been_made_before: step3.been_made_before,
         remote_or_insite: step3.remote_or_insite,
-        created_recommended_support: [], // data.created_recommended_support
-        updated_recommended_support: [], // data.updated_recommended_support
-        deleted_recommended_support: [], // data.deleted_recommended_support
+        // created_recommended_support: [], // data.created_recommended_support
+        // updated_recommended_support: [], // data.updated_recommended_support
+        // deleted_recommended_support: [], // data.deleted_recommended_support
+        created_recommended_support: data.created_proposal_support,
+        updated_recommended_support: data.updated_proposal_budget,
+        deleted_recommended_support: data.deleted_proposal_budget,
       };
       if (editedBy === 'project-manager') {
         payload = {

@@ -14,6 +14,7 @@ const CeoClientListPage = Loadable(lazy(() => import('pages/ceo/CeoClientListPag
 const CeoPortalReportPage = Loadable(lazy(() => import('pages/PortalReports')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
 const OldProposal = Loadable(lazy(() => import('pages/ceo/OldProposal')));
+const ClientFiles = Loadable(lazy(() => import('pages/client-files/ClientFiles')));
 const ProjectOwnerDetails = Loadable(
   lazy(() => import('pages/project-details/ProjectOwnerDetails'))
 );
@@ -162,6 +163,10 @@ export const ceoRoute = {
         {
           path: 'old-proposal',
           element: <OldProposal />,
+        },
+        {
+          path: 'client-files',
+          element: <ClientFiles />,
         },
       ],
     },

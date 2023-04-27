@@ -44,6 +44,7 @@ export const PATH_ADMIN = {
   messages: path(ROOTS_ADMIN, '/dashboard/messages'),
   client_list: path(ROOTS_ADMIN, '/dashboard/client-list'),
   old_proposal: path(ROOTS_ADMIN, '/dashboard/old-proposal'),
+  client_files: path(ROOTS_ADMIN, '/dashboard/client-files'),
 };
 export const PATH_CLIENT = {
   root: ROOTS_CLIENT,
@@ -56,6 +57,7 @@ export const PATH_CLIENT = {
   contact_support: path(ROOTS_CLIENT, '/dashboard/contact-support'),
   client_appointments: path(ROOTS_CLIENT, '/dashboard/appointments'),
   old_proposal: path(ROOTS_CLIENT, '/dashboard/old-proposal'),
+  client_files: path(ROOTS_CLIENT, '/dashboard/client-files'),
 };
 
 export const PATH_CONSULTANT = {
@@ -65,6 +67,7 @@ export const PATH_CONSULTANT = {
   portal_reports: path(ROOTS_CONSULTANT, '/dashboard/portal-reports'),
   messages: path(ROOTS_CONSULTANT, '/dashboard/messages'),
   old_proposal: path(ROOTS_CONSULTANT, '/dashboard/old-proposal'),
+  client_files: path(ROOTS_CONSULTANT, '/dashboard/client-files'),
 };
 
 export const PATH_FINANCE = {
@@ -79,6 +82,7 @@ export const PATH_FINANCE = {
   portal_reports: path(ROOTS_FINANCE, '/dashboard/portal-reports'),
   messages: path(ROOTS_FINANCE, '/dashboard/messages'),
   old_proposal: path(ROOTS_FINANCE, '/dashboard/old-proposal'),
+  client_files: path(ROOTS_FINANCE, '/dashboard/client-files'),
 };
 
 export const PATH_CASHIER = {
@@ -93,6 +97,7 @@ export const PATH_CASHIER = {
   portal_reports: path(ROOTS_CASHIER, '/dashboard/portal-reports'),
   messages: path(ROOTS_CASHIER, '/dashboard/messages'),
   old_proposal: path(ROOTS_CASHIER, '/dashboard/old-proposal'),
+  client_files: path(ROOTS_CASHIER, '/dashboard/client-files'),
 };
 
 export const PATH_CEO = {
@@ -105,6 +110,7 @@ export const PATH_CEO = {
   portal_reports: path(ROOTS_CEO, '/dashboard/portal-reports'),
   messages: path(ROOTS_CEO, '/dashboard/messages'),
   old_proposal: path(ROOTS_CEO, '/dashboard/old-proposal'),
+  client_files: path(ROOTS_CEO, '/dashboard/client-files'),
 };
 
 export const PATH_PROJECT_MANAGER = {
@@ -120,6 +126,7 @@ export const PATH_PROJECT_MANAGER = {
   rejection_list: path(ROOTS_PROJECT_MANAGER, '/dashboard/rejection-list'),
   client_list: path(ROOTS_PROJECT_MANAGER, '/dashboard/client-list'),
   old_proposal: path(ROOTS_PROJECT_MANAGER, '/dashboard/old-proposal'),
+  client_files: path(ROOTS_PROJECT_MANAGER, '/dashboard/client-files'),
 };
 
 export const PATH_MODERATOR = {
@@ -130,6 +137,7 @@ export const PATH_MODERATOR = {
   portal_reports: path(ROOTS_MODERATOR, '/dashboard/portal-reports'),
   messages: path(ROOTS_MODERATOR, '/dashboard/messages'),
   old_proposal: path(ROOTS_MODERATOR, '/dashboard/old-proposal'),
+  client_files: path(ROOTS_MODERATOR, '/dashboard/client-files'),
 };
 
 export const PATH_PROJECT_SUPERVISOR = {
@@ -148,6 +156,7 @@ export const PATH_PROJECT_SUPERVISOR = {
   ),
   old_proposal: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/old-proposal'),
   client_list: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/client-list'),
+  client_files: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/client-files'),
 };
 
 export const PATH_ACCOUNTS_MANAGER = {

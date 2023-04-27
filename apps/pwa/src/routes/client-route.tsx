@@ -27,6 +27,7 @@ const Searching = Loadable(lazy(() => import('pages/searching')));
 const Appointments = Loadable(lazy(() => import('pages/client/Appointments')));
 const AdjustYourTime = Loadable(lazy(() => import('pages/client/AdjustYourTime')));
 const OldProposal = Loadable(lazy(() => import('pages/client/OldProposal')));
+const ClientFiles = Loadable(lazy(() => import('pages/client-files/ClientFiles')));
 export const clientRoute = {
   path: 'client',
   element: (
@@ -133,6 +134,10 @@ export const clientRoute = {
         {
           path: 'old-proposal',
           element: <OldProposal />,
+        },
+        {
+          path: 'client-files',
+          element: <ClientFiles />,
         },
       ],
     },

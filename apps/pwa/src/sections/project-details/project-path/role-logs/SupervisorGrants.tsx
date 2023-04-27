@@ -32,7 +32,7 @@ function SupervisorGrants({ stepGransLog }: Props) {
         return false;
       }
     });
-  // console.log(proposal.payments, 'proposal grant');
+  console.log(target_age_map, 'tesat');
 
   return (
     <React.Fragment>
@@ -232,43 +232,75 @@ function SupervisorGrants({ stepGransLog }: Props) {
               }
               if (key === 'target_group_type') {
                 const tmpVal: string = value as string;
-                return (
-                  <Grid item xs={6} key={key}>
-                    <Typography variant="h6">
-                      {
-                        // key
-                        translate(`review.${key}`)
-                      }
-                    </Typography>
-                    <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                      <Typography>
-                        {target_type_map[tmpVal.toUpperCase() as keyof BeneficiariesMap]
-                          ? translate(`review.target_group_type_enum.${value}`)
-                          : value}
+                if (tmpVal) {
+                  return (
+                    <Grid item xs={6} key={key}>
+                      <Typography variant="h6">
+                        {
+                          // key
+                          translate(`review.${key}`)
+                        }
                       </Typography>
-                    </Stack>
-                  </Grid>
-                );
+                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                        <Typography>
+                          {target_type_map[tmpVal.toUpperCase() as keyof BeneficiariesMap]
+                            ? translate(`review.target_group_type_enum.${value}`)
+                            : value}
+                        </Typography>
+                      </Stack>
+                    </Grid>
+                  );
+                } else {
+                  return (
+                    <Grid item xs={6} key={key}>
+                      <Typography variant="h6">
+                        {
+                          // key
+                          translate(`review.${key}`)
+                        }
+                      </Typography>
+                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                        <Typography>{'-'}</Typography>
+                      </Stack>
+                    </Grid>
+                  );
+                }
               }
               if (key === 'target_group_age') {
                 const tmpVal: string = value as string;
-                return (
-                  <Grid item xs={6} key={key}>
-                    <Typography variant="h6">
-                      {
-                        // key
-                        translate(`review.${key}`)
-                      }
-                    </Typography>
-                    <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                      <Typography>
-                        {target_age_map[tmpVal.toUpperCase() as keyof BeneficiariesMap]
-                          ? translate(`review.target_group_age_enum.${value}`)
-                          : value}
+                if (tmpVal) {
+                  return (
+                    <Grid item xs={6} key={key}>
+                      <Typography variant="h6">
+                        {
+                          // key
+                          translate(`review.${key}`)
+                        }
                       </Typography>
-                    </Stack>
-                  </Grid>
-                );
+                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                        <Typography>
+                          {target_age_map[tmpVal.toUpperCase() as keyof BeneficiariesMap]
+                            ? translate(`review.target_group_age_enum.${value}`)
+                            : value}
+                        </Typography>
+                      </Stack>
+                    </Grid>
+                  );
+                } else {
+                  return (
+                    <Grid item xs={6} key={key}>
+                      <Typography variant="h6">
+                        {
+                          // key
+                          translate(`review.${key}`)
+                        }
+                      </Typography>
+                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                        <Typography>{'-'}</Typography>
+                      </Stack>
+                    </Grid>
+                  );
+                }
               }
               if (key !== 'clasification_field' && key !== 'clause') {
                 return (

@@ -12,6 +12,7 @@ const IncomingFundingRequestConsultant = Loadable(
 const PortalReportsConsultant = Loadable(lazy(() => import('pages/PortalReports')));
 const MessagesConsultant = Loadable(lazy(() => import('pages/consultant/Messages')));
 const OldProposal = Loadable(lazy(() => import('pages/consultant/OldProposal')));
+const ClientFiles = Loadable(lazy(() => import('pages/client-files/ClientFiles')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
 const ProjectOwnerDetails = Loadable(
   lazy(() => import('pages/project-details/ProjectOwnerDetails'))
@@ -89,6 +90,10 @@ export const consultantRoute = {
         {
           path: 'old-proposal',
           element: <OldProposal />,
+        },
+        {
+          path: 'client-files',
+          element: <ClientFiles />,
         },
       ],
     },

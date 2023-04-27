@@ -45,6 +45,7 @@ const SectionTracks = Loadable(
 const Searching = Loadable(lazy(() => import('pages/searching')));
 
 const OldProposal = Loadable(lazy(() => import('pages/admin/OldProposal')));
+const ClientFiles = Loadable(lazy(() => import('pages/client-files/ClientFiles')));
 
 export const adminRoute = {
   path: 'admin',
@@ -143,6 +144,10 @@ export const adminRoute = {
         {
           path: 'old-proposal',
           element: <OldProposal />,
+        },
+        {
+          path: 'client-files',
+          element: <ClientFiles />,
         },
       ],
     },

@@ -22,6 +22,7 @@ const ExchangePermissionProjectManager = Loadable(
   lazy(() => import('pages/project-manager/ExchangePermission'))
 );
 const OldProposal = Loadable(lazy(() => import('pages/project-manager/OldProposal')));
+const ClientFiles = Loadable(lazy(() => import('pages/client-files/ClientFiles')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
 const ProjectOwnerDetails = Loadable(
   lazy(() => import('pages/project-details/ProjectOwnerDetails'))
@@ -183,6 +184,11 @@ export const projectManagerRoute = {
           path: 'old-proposal',
           element: <OldProposal />,
         },
+        {
+          path: 'client-files',
+          element: <ClientFiles />,
+        },
+
         // {
         //   path: 'appointments-with-partners',
         //   children: [

@@ -13,6 +13,7 @@ const RequestsInProcessFinance = Loadable(lazy(() => import('pages/finance/Reque
 const PortalReportsFinance = Loadable(lazy(() => import('pages/PortalReports')));
 const MessagesFinance = Loadable(lazy(() => import('pages/finance/Messages')));
 const OldProposal = Loadable(lazy(() => import('pages/finance/OldProposal')));
+const ClientFiles = Loadable(lazy(() => import('pages/client-files/ClientFiles')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
 const ProjectOwnerDetails = Loadable(
   lazy(() => import('pages/project-details/ProjectOwnerDetails'))
@@ -134,6 +135,10 @@ export const financeRoute = {
         {
           path: 'old-proposal',
           element: <OldProposal />,
+        },
+        {
+          path: 'client-files',
+          element: <ClientFiles />,
         },
         {
           path: 'generate/:id/payments/:paymentId',

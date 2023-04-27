@@ -33,6 +33,7 @@ const PreviousFundingRequestsCashier = Loadable(
 
 const ProjectReportFinished = Loadable(lazy(() => import('pages/client/ProjectReportFinished')));
 const OldProposal = Loadable(lazy(() => import('pages/cashier/OldProposal')));
+const ClientFiles = Loadable(lazy(() => import('pages/client-files/ClientFiles')));
 const PreviewPayment = Loadable(lazy(() => import('sections/finance/payment/PreviewPayment')));
 
 export const cashierRoute = {
@@ -131,6 +132,11 @@ export const cashierRoute = {
           path: 'old-proposal',
           element: <OldProposal />,
         },
+        {
+          path: 'client-files',
+          element: <ClientFiles />,
+        },
+
         {
           path: 'generate/:id/payments/:paymentId',
           element: <PreviewPayment />,

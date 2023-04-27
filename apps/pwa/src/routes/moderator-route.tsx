@@ -10,6 +10,7 @@ const ModeratorProfile = Loadable(lazy(() => import('pages/moderator/ModeratorPr
 // const ModeratorProfileEdit = Loadable(lazy(() => import('pages/moderator/ModeratorProfileEdit')));
 const ModeratorMessages = Loadable(lazy(() => import('pages/moderator/ModeratorMessages')));
 const OldProposal = Loadable(lazy(() => import('pages/moderator/OldProposal')));
+const ClientFiles = Loadable(lazy(() => import('pages/client-files/ClientFiles')));
 const IncomingSupportRequests = Loadable(
   lazy(() => import('pages/moderator/incoming-support-requests'))
 );
@@ -130,6 +131,10 @@ export const moderatorRoute = {
         {
           path: 'old-proposal',
           element: <OldProposal />,
+        },
+        {
+          path: 'client-files',
+          element: <ClientFiles />,
         },
       ],
     },

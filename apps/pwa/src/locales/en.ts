@@ -1837,6 +1837,7 @@ const en = {
     attachment: 'Attachment',
     complete: 'Project Complete',
     number_of_volunteer: 'Number of Volunteer',
+
     accreditation_type: {
       PLAN: 'Plan',
       INCOMING: 'Incoming',
@@ -1876,6 +1877,7 @@ const en = {
       accepted_by_finance: 'PAYMENT ACCEPTED BY FINANCE',
       done: 'PAYMENT DONE BY CASHIER',
       project_completed: 'PROJECT COMPLETED',
+      send_revised_version: 'SEND REVISED VERSION',
     },
     target_group_age_enum: {
       AGE_1TH_TO_13TH: 'Age 1 to 13',
@@ -2166,6 +2168,18 @@ const en = {
       project_name: 'Project Name',
       project_number: 'Project Number',
       employee_name: 'Partner Name',
+    },
+  },
+  client_files: {
+    title: 'Client Files',
+    administrative_data: 'Administrative Data',
+    title_read_only: 'Project Attachment file (read only)',
+    btn_file_review: 'File Review',
+    headercell: {
+      file_name: 'File Name',
+      section_name: 'Section Name',
+      download: 'Download',
+      view: 'View',
     },
   },
 };

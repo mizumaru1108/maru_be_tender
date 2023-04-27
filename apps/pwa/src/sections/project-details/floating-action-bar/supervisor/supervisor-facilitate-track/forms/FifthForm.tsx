@@ -68,7 +68,7 @@ function FifthForm({ children, onSubmit }: any) {
     name: 'proposal_item_budgets',
   });
 
-  const onSubmitForm = async (data: SupervisorStep4) => {
+  const onSubmitForm = (data: SupervisorStep4) => {
     if (data.proposal_item_budgets.length) {
       data.created_proposal_budget = data.proposal_item_budgets
         .filter((item) => !basedBudget.find((i) => i.id === item.id))
@@ -221,8 +221,20 @@ function FifthForm({ children, onSubmit }: any) {
                   color="error"
                   onClick={() => {
                     const idGetValues = getValues(`proposal_item_budgets.${i}.id`);
-                    const deleteValues = basedBudget.filter((item) => item.id === idGetValues);
-
+                    // data.updated_proposal_budget = data.proposal_item_budgets
+                    // .filter((item) => basedBudget.find((i) => i.id === item.id))
+                    // .map((el) => ({
+                    //   ...el,
+                    //   amount: Number(el.amount),
+                    // }));
+                    // const deleteValues = basedBudget.filter((item) => item.id === idGetValues);
+                    const deleteValues = basedBudget
+                      .filter((item) => item.id === idGetValues)
+                      .map((el) => ({
+                        ...el,
+                        amount: Number(el.amount),
+                      }));
+                    console.log({ deleteValues });
                     const existingData = tempDeletedBudget.find((item) => item.id === idGetValues);
 
                     if (!existingData) {
