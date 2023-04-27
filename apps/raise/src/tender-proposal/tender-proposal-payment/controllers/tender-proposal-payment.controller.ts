@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Param,
   Patch,
   Post,
   Put,
@@ -31,6 +32,8 @@ import {
   FindTrackBudgetFilter,
   UpdateTrackBudgetDto,
   BankListCreateDto,
+  FindBankListFilter,
+  BankDetailsDto,
 } from '../dtos/requests';
 import { UpdatePaymentResponseDto } from '../dtos/responses';
 import { TenderProposalPaymentService } from '../services/tender-proposal-payment.service';
@@ -248,5 +251,30 @@ export class TenderProposalPaymentController {
       HttpStatus.OK,
       'Bank list updated successfully',
     );
+  }
+
+  @Get('find-bank-list')
+  async findBankList(
+    @Query() filter: FindBankListFilter,
+  ): Promise<ManualPaginatedResponse<any>> {
+    const response = await this.paymentService.findBankLists(filter);
+
+    return manualPaginationHelper(
+      response.data,
+      response.total,
+      filter.page || 1,
+      filter.limit || 10,
+      HttpStatus.OK,
+      'Success',
+    );
+  }
+
+  @Get('find-bank-details')
+  async findBankDetails(
+    @Query() request: BankDetailsDto,
+  ): Promise<BaseResponse<any>> {
+    const response = await this.paymentService.findBankDetails(request);
+
+    return baseResponseHelper(response, HttpStatus.OK, 'Bank details');
   }
 }

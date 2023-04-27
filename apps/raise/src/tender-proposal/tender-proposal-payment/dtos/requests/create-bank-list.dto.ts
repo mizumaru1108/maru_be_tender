@@ -12,3 +12,10 @@ export class BankListCreateDto {
   @IsNotEmpty()
   bank_name: string;
 }
+
+export class BankDetailsDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  id: string;
+}

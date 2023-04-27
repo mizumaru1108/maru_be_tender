@@ -34,6 +34,11 @@ export class bankData {
   @ValidateSaIBAN()
   bank_account_number: string;
 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  bank_id?: string;
+
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

@@ -81,7 +81,6 @@ function UnActivatedAccount() {
   const handleOnClose = () => {
     setOpen(false);
   };
-  console.log({ fillUpData });
 
   return (
     <Page title="Un Activated Page">

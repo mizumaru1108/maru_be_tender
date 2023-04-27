@@ -210,9 +210,23 @@ export class TenderClientService {
       uploadedFilePath = uploadResult.uploadedFilePath;
 
       bankCardObj = uploadResult.fileObj;
+
+      const getBankName = await this.prismaService.banks.findFirst({
+        where: {
+          id: request.data.bank_informations.bank_name,
+        },
+      });
+
+      const newBankInformations: RegisterTenderDto['data']['bank_informations'] =
+        {
+          ...request.data.bank_informations,
+          bank_name: getBankName?.bank_name!,
+          bank_id: getBankName?.id,
+        };
+
       bankCreatePayload = BankInformationsMapper(
         idFromFusionAuth,
-        request.data.bank_informations,
+        newBankInformations,
         bankCardObj,
       );
 

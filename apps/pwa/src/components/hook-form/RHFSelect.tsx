@@ -1,9 +1,13 @@
+import { useEffect, useState } from 'react';
 // form
 import { useFormContext, Controller } from 'react-hook-form';
 // @mui
 import { TextField, TextFieldProps, Typography, MenuItem, useTheme } from '@mui/material';
 //
-import { LIST_OF_BANK } from 'sections/auth/register/RegisterFormData';
+// import { LIST_OF_BANK } from 'sections/auth/register/RegisterFormData';
+import axios from 'axios';
+import { AuthorityInterface } from '../../sections/admin/bank-name/list/types';
+import { TMRA_RAISE_URL } from 'config';
 
 // ----------------------------------------------------------------------
 
@@ -17,6 +21,33 @@ type Props = IProps & TextFieldProps;
 export default function RHFSelect({ name, children, placeholder, ...other }: Props) {
   const { control } = useFormContext();
   const theme = useTheme();
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [bankValue, setBankValue] = useState<AuthorityInterface[] | []>([]);
+
+  const getBankList = async () => {
+    setLoading(true);
+
+    try {
+      const { status, data } = await axios.get(
+        `${TMRA_RAISE_URL}/tender/proposal/payment/find-bank-list`
+      );
+
+      if (status === 200) {
+        setBankValue(data.data);
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    getBankList();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Controller
@@ -125,13 +156,20 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
                 }),
               }}
             >
-              {!children &&
-                name === 'bank_name' &&
-                LIST_OF_BANK.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
+              {
+                !children && name === 'bank_name' && !loading && bankValue && bankValue.length
+                  ? bankValue.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.bank_name}
+                      </MenuItem>
+                    ))
+                  : null
+                // LIST_OF_BANK.map((option) => (
+                //   <MenuItem key={option} value={option}>
+                //     {option}
+                //   </MenuItem>
+                // ))}
+              }
               {children && children}
             </TextField>
           )}

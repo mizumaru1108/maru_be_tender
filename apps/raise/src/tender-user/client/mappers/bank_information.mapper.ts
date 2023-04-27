@@ -11,6 +11,7 @@ export const BankInformationsMapper = (
   const bankData: Prisma.bank_informationUncheckedCreateInput = {
     id: uuidv4(),
     user_id,
+    bank_id: request.bank_id,
     bank_name: request.bank_name,
     bank_account_number: request.bank_account_number,
     bank_account_name: request.bank_account_name,

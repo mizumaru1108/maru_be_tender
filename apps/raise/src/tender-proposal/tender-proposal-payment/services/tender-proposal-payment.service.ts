@@ -45,6 +45,8 @@ import {
   FindTrackBudgetFilter,
   UpdateTrackBudgetDto,
   BankListCreateDto,
+  FindBankListFilter,
+  BankDetailsDto,
 } from '../dtos/requests';
 import { CreateChequeMapper, CreateClosingReportMapper } from '../mappers';
 import { CreateManyPaymentMapper } from '../mappers/create-many-payment.mapper';
@@ -543,5 +545,18 @@ export class TenderProposalPaymentService {
       request.id!,
       request.bank_name,
     );
+  }
+
+  async findBankLists(request: FindBankListFilter) {
+    const response = await this.paymentRepo.findBankList(request);
+
+    return {
+      data: response,
+      total: response.length > 0 ? Number(response.total) : 0,
+    };
+  }
+
+  async findBankDetails(request: BankDetailsDto) {
+    return await this.paymentRepo.getBankDetails(request);
   }
 }

@@ -16,7 +16,11 @@ import {
 } from '../../../tender-commons/types/proposal';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
-import { FindTrackBudgetFilter } from '../dtos/requests';
+import {
+  FindTrackBudgetFilter,
+  FindBankListFilter,
+  BankDetailsDto,
+} from '../dtos/requests';
 import { CloseReportNotifMapper } from '../mappers';
 import { UpdatePaymentNotifMapper } from '../mappers/update-payment-notif.mapper';
 import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
@@ -768,6 +772,54 @@ export class TenderProposalPaymentRepository {
         TenderProposalPaymentRepository.name,
         'update bank list error details: ',
         'update bank list!',
+      );
+      throw theError;
+    }
+  }
+
+  async findBankList(filter: FindBankListFilter) {
+    try {
+      const { limit = 100, page = 1 } = filter;
+      const offset = (page - 1) * limit;
+
+      const response: any = await this.prismaService.banks.findMany({
+        select: {
+          id: true,
+          bank_name: true,
+        },
+        take: limit,
+        skip: offset,
+      });
+
+      return response;
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalPaymentRepository.name,
+        'Find Bank list Error:',
+        `Finding Bank List!`,
+      );
+      throw theError;
+    }
+  }
+
+  async getBankDetails(request: BankDetailsDto) {
+    try {
+      const response = await this.prismaService.banks.findFirst({
+        where: { id: request.id },
+        select: {
+          id: true,
+          bank_name: true,
+        },
+      });
+
+      return response;
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalPaymentRepository.name,
+        'Find Bank details Error:',
+        `Finding Bank Details!`,
       );
       throw theError;
     }

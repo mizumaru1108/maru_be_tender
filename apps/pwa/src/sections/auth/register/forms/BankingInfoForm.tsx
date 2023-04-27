@@ -72,8 +72,10 @@ const BankingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
       : (newBankAccNumber = getValues('bank_account_number'));
     newData = { ...newData, bank_account_number: newBankAccNumber };
     reset({ ...data });
+
     onSubmit(newData);
   };
+
   React.useEffect(() => {
     window.scrollTo(0, 0);
     let newValues = { ...defaultValues };
