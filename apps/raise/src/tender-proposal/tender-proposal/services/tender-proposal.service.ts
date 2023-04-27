@@ -2106,6 +2106,7 @@ export class TenderProposalService {
         request.updated_recommended_support.length > 0
       ) {
         updatedRecommendedSupportPayload = request.updated_recommended_support;
+        console.log({ updatedRecommendedSupportPayload });
       }
 
       if (

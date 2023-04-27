@@ -1345,6 +1345,12 @@ export class TenderProposalRepository {
     try {
       return await this.prismaService.$transaction(
         async (prismaTrans) => {
+          this.logger.log(
+            'info',
+            `updating proposal ${proposalId}, with payload of \n${logUtil(
+              proposalUpdatePayload,
+            )}`,
+          );
           const proposal = await prismaTrans.proposal.update({
             where: {
               id: proposalId,
@@ -1352,6 +1358,12 @@ export class TenderProposalRepository {
             data: proposalUpdatePayload,
           });
 
+          this.logger.log(
+            'info',
+            `creating proposal log, with payload of \n${logUtil(
+              proposalLogCreateInput,
+            )}`,
+          );
           const proposal_logs = await prismaTrans.proposal_log.create({
             data: {
               ...proposalLogCreateInput,
@@ -1390,6 +1402,12 @@ export class TenderProposalRepository {
 
           /* Crud item budget -------------------------------------------------------------------------- */
           if (createdItemBudgetPayload && createdItemBudgetPayload.length > 0) {
+            this.logger.log(
+              'info',
+              `creating item budget, with payload of \n${logUtil(
+                createdItemBudgetPayload,
+              )}`,
+            );
             await prismaTrans.proposal_item_budget.createMany({
               data: createdItemBudgetPayload,
             });
@@ -1397,6 +1415,12 @@ export class TenderProposalRepository {
 
           if (updatedItemBudgetPayload && updatedItemBudgetPayload.length > 0) {
             for (let i = 0; i < updatedItemBudgetPayload.length; i++) {
+              this.logger.log(
+                'info',
+                `updating item budget ${
+                  updatedItemBudgetPayload[i].id
+                }, with payload of \n${logUtil(updatedItemBudgetPayload[i])}`,
+              );
               const itemBudgetToUpdate =
                 await prismaTrans.proposal_item_budget.findUnique({
                   where: {
@@ -1421,6 +1445,12 @@ export class TenderProposalRepository {
           }
 
           if (deletedItemBudgetIds && deletedItemBudgetIds.length > 0) {
+            this.logger.log(
+              'info',
+              `deleting item budget with id of \n${logUtil(
+                deletedItemBudgetIds,
+              )}`,
+            );
             await prismaTrans.proposal_item_budget.deleteMany({
               where: {
                 id: {
@@ -1436,6 +1466,12 @@ export class TenderProposalRepository {
             createdRecommendedSupportPayload &&
             createdRecommendedSupportPayload.length > 0
           ) {
+            this.logger.log(
+              'info',
+              `creating recommended support with payload of \n${logUtil(
+                createdRecommendedSupportPayload,
+              )}`,
+            );
             await prismaTrans.recommended_support_consultant.createMany({
               data: createdRecommendedSupportPayload,
             });
@@ -1446,6 +1482,14 @@ export class TenderProposalRepository {
             updatedRecommendedSupportPayload.length > 0
           ) {
             for (let i = 0; i < updatedRecommendedSupportPayload.length; i++) {
+              this.logger.log(
+                'info',
+                `updating item budget ${
+                  updatedRecommendedSupportPayload[i].id
+                }, with payload of \n${logUtil(
+                  updatedRecommendedSupportPayload[i],
+                )}`,
+              );
               const itemBudgetToUpdate =
                 await prismaTrans.recommended_support_consultant.findUnique({
                   where: {
@@ -1473,6 +1517,12 @@ export class TenderProposalRepository {
             deletedRecommendedSupportIds &&
             deletedRecommendedSupportIds.length > 0
           ) {
+            this.logger.log(
+              'info',
+              `deleting recommend support with id of \n${logUtil(
+                deletedRecommendedSupportIds,
+              )}`,
+            );
             await prismaTrans.recommended_support_consultant.deleteMany({
               where: {
                 id: {
@@ -1482,6 +1532,8 @@ export class TenderProposalRepository {
             });
           }
           /* Crud recommend support payload ------------------------------------------------------------ */
+
+          // throw new BadRequestException('debug!');
 
           return {
             proposal,
