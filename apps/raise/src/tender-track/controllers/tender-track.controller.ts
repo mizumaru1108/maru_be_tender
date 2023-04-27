@@ -1,10 +1,24 @@
-import { Body, Controller, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
 import { TenderTrackService } from '../services/tender-track.service';
-import { CreateTrackDto } from '../dto/requests';
+import {
+  CreateTrackDto,
+  FetchTrackFilterRequest,
+  UpdateTrackDto,
+} from '../dto/requests';
 import { TenderRoles } from '../../tender-auth/decorators/tender-roles.decorator';
 import { TenderJwtGuard } from '../../tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../../tender-auth/guards/tender-roles.guard';
+import { manualPaginationHelper } from '../../tender-commons/helpers/manual-pagination-helper';
 
 @Controller('tender/track')
 export class TenderTrackController {
@@ -19,6 +33,33 @@ export class TenderTrackController {
       createdTrack,
       HttpStatus.CREATED,
       'Track Created Successfully!',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Patch('update')
+  async update(@Body() request: UpdateTrackDto) {
+    const updatedTrack = await this.trackService.update(request);
+    return baseResponseHelper(
+      updatedTrack,
+      HttpStatus.CREATED,
+      'Track Created Successfully!',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard)
+  @Get('fetch-all')
+  async fetchAll(@Query() payload: FetchTrackFilterRequest) {
+    const result = await this.trackService.fetchAll(payload);
+
+    return manualPaginationHelper(
+      result.data,
+      result.total,
+      payload.page || 1,
+      payload.limit || 10,
+      HttpStatus.OK,
+      'Success',
     );
   }
 

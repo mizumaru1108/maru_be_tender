@@ -3,6 +3,7 @@ import { ROOT_LOGGER } from '../../libs/root-logger';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { logUtil } from '../../commons/utils/log-util';
+import { FetchTrackFilterRequest } from '../dto/requests';
 
 @Injectable()
 export class TenderTrackRepository {
@@ -11,9 +12,36 @@ export class TenderTrackRepository {
   });
   constructor(private readonly prismaService: PrismaService) {}
 
-  async findByName(name: string) {
+  async findById(id: string) {
+    try {
+      this.logger.log('info', `finding track with id of ${id}`);
+      return await this.prismaService.track.findUnique({
+        where: { id },
+      });
+    } catch (err) {
+      console.trace(err);
+      throw new InternalServerErrorException(
+        'Something went wrong when finding track by id!',
+      );
+    }
+  }
+
+  async findByName(name: string, excludeId?: string) {
     try {
       this.logger.log('info', `finding track with name of ${name}`);
+      let whereClause: Prisma.trackWhereInput = {
+        name,
+      };
+
+      if (excludeId) {
+        whereClause = {
+          ...whereClause,
+          id: {
+            notIn: [excludeId],
+          },
+        };
+      }
+
       return await this.prismaService.track.findUnique({
         where: { name },
       });
@@ -38,6 +66,63 @@ export class TenderTrackRepository {
       console.trace(error);
       throw new InternalServerErrorException(
         'Something went wrong when createing a new track!',
+      );
+    }
+  }
+
+  async update(id: string, payload: Prisma.trackUpdateInput) {
+    try {
+      this.logger.log(
+        'info',
+        `updating track ${id}, with payload of \n${logUtil(payload)}`,
+      );
+      return await this.prismaService.track.update({
+        where: { id },
+        data: payload,
+      });
+    } catch (error) {
+      console.trace(error);
+      throw new InternalServerErrorException(
+        'Something went wrong when updating track!',
+      );
+    }
+  }
+
+  async fetchAll(filter: FetchTrackFilterRequest) {
+    try {
+      const { track_name, page = 1, limit = 10 } = filter;
+      const offset = (page - 1) * limit;
+
+      let whereClause: Prisma.trackWhereInput = {};
+
+      if (track_name) {
+        whereClause = {
+          ...whereClause,
+          name: {
+            contains: track_name,
+            mode: 'insensitive',
+          },
+        };
+      }
+
+      const data = await this.prismaService.track.findMany({
+        where: whereClause,
+        take: limit,
+        skip: offset,
+      });
+
+      const total = await this.prismaService.track.count({
+        where: whereClause,
+      });
+
+      return {
+        data,
+        total,
+      };
+    } catch (err) {
+      console.trace(err);
+      throw new InternalServerErrorException(
+        'Something went wrong when updating track!',
       );
     }
   }

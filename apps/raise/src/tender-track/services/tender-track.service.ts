@@ -1,7 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { TenderTrackRepository } from '../repositories/tender-track.repository';
-import { CreateTrackDto } from '../dto/requests';
-import { CreateTrackMapper } from '../mappers';
+import {
+  CreateTrackDto,
+  FetchTrackFilterRequest,
+  UpdateTrackDto,
+} from '../dto/requests';
+import { CreateTrackMapper, UpdateTrackMapper } from '../mappers';
 
 @Injectable()
 export class TenderTrackService {
@@ -16,6 +24,30 @@ export class TenderTrackService {
     }
     const createPayload = CreateTrackMapper(request);
     return await this.trackRepo.create(createPayload);
+  }
+
+  async update(request: UpdateTrackDto) {
+    const track = await this.trackRepo.findById(request.id);
+    if (!track) throw new NotFoundException('Track Not Found!');
+
+    if (request.name) {
+      const track = await this.trackRepo.findByName(request.name, request.id);
+      if (track) {
+        throw new BadRequestException(
+          `Track with name of ${request.name} already in use!`,
+        );
+      }
+    }
+
+    const updatePayload = UpdateTrackMapper(request);
+
+    return await this.trackRepo.update(request.id, updatePayload);
+  }
+
+  async fetchAll(
+    filter: FetchTrackFilterRequest,
+  ) {
+    return await this.trackRepo.fetchAll(filter);
   }
 
   // @UseGuards(JwtAuthGuard)

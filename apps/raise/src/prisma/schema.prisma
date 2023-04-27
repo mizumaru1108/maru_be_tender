@@ -17,6 +17,9 @@ model bank_information {
   id                                                   String     @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   card_image                                           Json?
   is_deleted                                           Boolean?   @default(false)
+  bank_id                                              String?    @db.VarChar
+  created_at                                           DateTime?  @default(now()) @db.Timestamptz(6)
+  updated_at                                           DateTime?  @default(now()) @db.Timestamptz(6)
   user                                                 user       @relation(fields: [user_id], references: [id], onDelete: Cascade)
   proposal_bank_informationToproposal_proposal_bank_id proposal[] @relation("bank_informationToproposal_proposal_bank_id")
 }
@@ -516,7 +519,10 @@ model authority {
 }
 
 model banks {
-  id String @id
+  id         String    @id
+  bank_name  String?
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
 }
 
 model beneficiaries {
@@ -537,6 +543,8 @@ model track {
   id                String     @id @db.VarChar
   name              String?    @unique
   with_consultation Boolean?   @default(false)
+  created_at        DateTime?  @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime?  @default(now()) @db.Timestamptz(6)
   proposal          proposal[]
 }
 
