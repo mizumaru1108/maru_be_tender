@@ -1519,6 +1519,7 @@ const en = {
   proposal_created: 'Success',
   proposal_revised: 'The project has been revised successfully',
   proposal_saving_draft: 'Success',
+  proposal_has_been_revised: 'Proposal has been revised',
   view_all: 'view all',
   // PORTAL REPORTS
   ceo_portal_reports: {

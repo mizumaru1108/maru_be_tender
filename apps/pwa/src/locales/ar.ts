@@ -1529,7 +1529,7 @@ const ar = {
   proposal_created: 'نجاح',
   proposal_revised: 'تم تعديل المشروع بنجاح',
   proposal_saving_draft: 'نجاح',
-
+  proposal_has_been_revised: 'تم تنقيح الاقتراح',
   // PORTAL REPORTS
   ceo_portal_reports: {
     bar_chart: {

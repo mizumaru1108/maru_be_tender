@@ -174,7 +174,11 @@ function ProjectPath() {
                       {followUps.log[index].action !== 'set_by_supervisor' &&
                       index === activeStep ? (
                         <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                          <Typography>{item.notes ?? '-'}</Typography>
+                          <Typography>
+                            {item.notes === 'Proposal has been revised'
+                              ? translate('proposal_has_been_revised')
+                              : item.notes ?? '-'}
+                          </Typography>
                         </Stack>
                       ) : null}
                     </React.Fragment>
