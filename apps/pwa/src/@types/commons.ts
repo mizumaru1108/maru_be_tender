@@ -146,3 +146,11 @@ export interface bank_information {
   is_deleted: boolean | null;
   color?: string | '';
 }
+
+export interface TrackProps {
+  id: string;
+  name: string;
+  with_consultation: boolean;
+  created_at: string;
+  updated_at: string;
+}

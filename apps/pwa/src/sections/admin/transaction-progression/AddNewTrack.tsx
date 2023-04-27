@@ -12,6 +12,8 @@ import { useNavigate } from 'react-router';
 import RHFSelectNoGenerator from 'components/hook-form/RHFSelectNoGen';
 import axiosInstance from 'utils/axios';
 import { useSnackbar } from 'notistack';
+import { dispatch } from 'redux/store';
+import { getTracks, updateTrack } from 'redux/slices/track';
 
 // interface ActionProps {
 //   backgroundColor: string;
@@ -20,11 +22,14 @@ import { useSnackbar } from 'notistack';
 //   actionType?: string;
 // }
 interface Props {
+  trackId?: string;
+  trackName?: string;
+  withConsultation?: boolean;
   // title: string;
   // onSubmit: (data: any) => void;
   onClose: () => void;
   // action: ActionProps;
-  loading?: boolean;
+  // loading?: boolean;
 }
 
 interface FormInput {
@@ -32,10 +37,11 @@ interface FormInput {
   consultant: string;
 }
 
-const AddNewTrack = ({ onClose, loading }: Props) => {
+const AddNewTrack = ({ onClose, trackId, trackName, withConsultation }: Props) => {
   const navigate = useNavigate();
   const { translate, currentLang } = useLocales();
   const [open, setOpen] = React.useState<boolean>(false);
+  const [loading, setLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
 
@@ -45,8 +51,13 @@ const AddNewTrack = ({ onClose, loading }: Props) => {
   });
 
   const defaultValues = {
-    track_name: '',
-    consultant: '',
+    track_name: trackName ? trackName : '',
+    consultant:
+      withConsultation === undefined
+        ? ''
+        : withConsultation === true
+        ? 'with_consultant'
+        : 'without_consultant',
   };
 
   const methods = useForm<FormInput>({
@@ -71,32 +82,51 @@ const AddNewTrack = ({ onClose, loading }: Props) => {
     }
 
     const TEMP_TRACKNAME = data.track_name.replace(/ /g, '_').toUpperCase();
-    try {
-      const payload = {
-        name: TEMP_TRACKNAME,
-        with_consultation: consultantValue,
-      };
-      // console.log({ payload });
 
-      await axiosInstance
-        .post(`tender/track/create`, payload, {
-          headers: { 'x-hasura-role': activeRole! },
-        })
-        .then((res) => {
-          if (res.data.statusCode === 200) {
-            enqueueSnackbar('Track was saved', {
-              variant: 'success',
-            });
-          }
+    if (trackId === undefined) {
+      try {
+        setLoading(true);
+        const payload = {
+          name: TEMP_TRACKNAME,
+          with_consultation: consultantValue,
+        };
+        // console.log({ payload });
+
+        await axiosInstance
+          .post(`tender/track/create`, payload, {
+            headers: { 'x-hasura-role': activeRole! },
+          })
+          .then((res) => {
+            if (res.data.statusCode === 200) {
+              enqueueSnackbar('Track was saved', {
+                variant: 'success',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            }
+          });
+
+        setLoading(false);
+        dispatch(getTracks(activeRole!));
+        onClose();
+      } catch (err) {
+        enqueueSnackbar(err.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
         });
+        setLoading(false);
+        onClose();
+      }
+    } else {
+      dispatch(
+        updateTrack(
+          { id: trackId, name: TEMP_TRACKNAME, with_consultation: consultantValue },
+          activeRole!
+        )
+      );
 
       onClose();
-    } catch (err) {
-      enqueueSnackbar(err.message, {
-        variant: 'error',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-      });
     }
   };
 
@@ -126,7 +156,7 @@ const AddNewTrack = ({ onClose, loading }: Props) => {
         >
           Add a new track
         </Typography>
-        <Grid item md={6} xs={12} sx={{ mb: 6 }}>
+        <Grid item md={12} xs={12} sx={{ mb: 6 }}>
           {/* <TextField
           placeholder="Please type the track name"
           label="Track name"
@@ -150,7 +180,7 @@ const AddNewTrack = ({ onClose, loading }: Props) => {
             <option value="with_consultant" style={{ backgroundColor: '#fff' }}>
               With Consultant
             </option>
-            <option value="no_consultant" style={{ backgroundColor: '#fff' }}>
+            <option value="without_consultant" style={{ backgroundColor: '#fff' }}>
               No Consultant
             </option>
           </RHFSelectNoGenerator>

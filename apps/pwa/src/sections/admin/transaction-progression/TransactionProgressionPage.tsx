@@ -4,24 +4,19 @@ import useLocales from 'hooks/useLocales';
 import ContentTrackCard from './ContentTrackCard';
 import ModalDialog from 'components/modal-dialog';
 import AddNewTrack from './AddNewTrack';
+import useAuth from 'hooks/useAuth';
+import { dispatch, useSelector } from 'redux/store';
+import { getTracks } from 'redux/slices/track';
+import axiosInstance from 'utils/axios';
+import { useSnackbar } from 'notistack';
 
 const TransactionProgressionPage = () => {
   const { translate } = useLocales();
+  const { enqueueSnackbar } = useSnackbar();
+  const { activeRole } = useAuth();
+  const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState<boolean>(false);
-
-  // const TRACKS = [
-  //   { id: 1, track: 'Concessional Grant Track' },
-  //   { id: 2, track: 'The tracks of the mosque' },
-  //   { id: 3, track: "The track of the Sheikh's baptisms" },
-  //   { id: 4, track: 'Initiatives Track' },
-  // ];
-
-  const TRACKS = [
-    'Concessional Grant Track',
-    'The tracks of the mosque',
-    "The track of the Sheikh's baptisms",
-    'Initiatives Track',
-  ];
+  const { tracks } = useSelector((state) => state.tracks);
 
   const handleOpen = () => {
     setOpen(true);
@@ -30,6 +25,14 @@ const TransactionProgressionPage = () => {
   const handleOnClose = () => {
     setOpen(false);
   };
+
+  const handleSubmit = async (data: any) => {};
+
+  React.useEffect(() => {
+    dispatch(getTracks(activeRole!));
+  }, [activeRole]);
+
+  React.useEffect(() => {}, [tracks]);
 
   return (
     <Grid>
@@ -40,7 +43,7 @@ const TransactionProgressionPage = () => {
         // title="اضافة ميزانية جديدة"
         content={
           <AddNewTrack
-            // loading={isSubmittingStepback}
+            // loading={loading}
             onClose={handleOnClose}
             // onSubmit={handleSubmit}
             // action={{
@@ -98,10 +101,14 @@ const TransactionProgressionPage = () => {
             </Button>
           </Stack>
         </Grid>
-        {TRACKS.map((track, index) => (
+        {tracks.map((track, index) => (
           <Grid item md={4} sm={6} xs={12} key={index}>
             <Card sx={{ py: 3, background: '#fff' }}>
-              <ContentTrackCard name={track} />
+              <ContentTrackCard
+                id={track.id}
+                name={track.name}
+                withConsultation={track.with_consultation}
+              />
             </Card>
           </Grid>
         ))}
