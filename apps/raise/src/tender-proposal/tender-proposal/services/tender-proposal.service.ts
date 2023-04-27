@@ -1628,6 +1628,10 @@ export class TenderProposalService {
       if (proposal?.track?.with_consultation === true) {
         proposalUpdatePayload.inner_status =
           InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER;
+        proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
+        proposalUpdatePayload.state = TenderAppRoleEnum.CEO;
+        proposalUpdatePayload.project_manager_id = currentUser.id;
+
         proposalLogCreateInput.action = ProposalAction.ACCEPT;
         proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_MANAGER;
         proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
@@ -1765,8 +1769,13 @@ export class TenderProposalService {
       deletedItemBudgetIds = [...result.deletedItemBudgetIds];
 
       if (proposal?.track?.with_consultation === true) {
+        /* proposal */
         proposalUpdatePayload.inner_status =
           InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION;
+        proposalUpdatePayload.outter_status = 'ONGOING';
+        proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+
+        /* log */
         proposalLogCreateInput.action = ProposalAction.ACCEPT;
         proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
         proposalLogCreateInput.user_role = TenderAppRoleEnum.CEO;
