@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { file_manager, Prisma } from '@prisma/client';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Prisma, file_manager } from '@prisma/client';
 import { logUtil } from '../../commons/utils/log-util';
 import { ROOT_LOGGER } from '../../libs/root-logger';
 import { PrismaService } from '../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
+import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
+import { FetchFileManagerFilter } from '../dtos/requests';
 
 @Injectable()
 export class TenderFileManagerRepository {
@@ -82,6 +84,71 @@ export class TenderFileManagerRepository {
         'finding file!',
       );
       throw theError;
+    }
+  }
+
+  async fetchAll(
+    currentUser: TenderCurrentUser,
+    filter: FetchFileManagerFilter,
+  ) {
+    try {
+      const {
+        file_name,
+        page = 1,
+        limit = 10,
+        sort = 'desc',
+        sorting_field,
+      } = filter;
+      const offset = (page - 1) * limit;
+
+      let whereClause: Prisma.file_managerWhereInput = {};
+
+      if (currentUser.choosenRole === 'tender_client') {
+        whereClause = {
+          ...whereClause,
+          user_id: currentUser.id,
+        };
+      }
+
+      if (file_name) {
+        whereClause = {
+          ...whereClause,
+          name: {
+            contains: file_name,
+            mode: 'insensitive',
+          },
+        };
+      }
+
+      const order_by: Prisma.file_managerOrderByWithRelationInput = {};
+      const field =
+        sorting_field as keyof Prisma.file_managerOrderByWithRelationInput;
+      if (sorting_field) {
+        order_by[field] = sort;
+      } else {
+        order_by.created_at = sort;
+      }
+
+      const data = await this.prismaService.file_manager.findMany({
+        where: whereClause,
+        take: limit,
+        skip: offset,
+        orderBy: order_by,
+      });
+
+      const total = await this.prismaService.file_manager.count({
+        where: whereClause,
+      });
+
+      return {
+        data,
+        total,
+      };
+    } catch (err) {
+      console.trace(err);
+      throw new InternalServerErrorException(
+        'Something went wrong when fetching file manager!',
+      );
     }
   }
 }

@@ -11,6 +11,8 @@ import { TenderFilePayload } from '../../tender-commons/dto/tender-file-payload.
 import { generateFileName } from '../../tender-commons/utils/generate-filename';
 import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
 import { TenderProposalService } from '../../tender-proposal/tender-proposal/services/tender-proposal.service';
+import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
+import { FetchFileManagerFilter } from '../dtos/requests';
 import { CreateNewFileHistoryDto } from '../dtos/requests/create-new-file-history.dto';
 import { CreateManyNewFileHistoryMapper } from '../mappers/create-many-new-file-history';
 import { CreateNewFileHistoryMapper } from '../mappers/create-new-file-history';
@@ -26,7 +28,7 @@ export class TenderFileManagerService {
   constructor(
     private readonly configService: ConfigService,
     private readonly bunnyService: BunnyService,
-    private readonly TenderFileManagerRepository: TenderFileManagerRepository,
+    private readonly fileManagerRepo: TenderFileManagerRepository,
   ) {
     const environment = this.configService.get('APP_ENV');
     if (!environment) envLoadErrorHelper('APP_ENV');
@@ -37,9 +39,7 @@ export class TenderFileManagerService {
     const createPayload: Prisma.file_managerUncheckedCreateInput =
       CreateNewFileHistoryMapper(userId, payload);
 
-    const createdFileManager = await this.TenderFileManagerRepository.create(
-      createPayload,
-    );
+    const createdFileManager = await this.fileManagerRepo.create(createPayload);
     return createdFileManager;
   }
 
@@ -47,15 +47,23 @@ export class TenderFileManagerService {
     const createPayloads: Prisma.file_managerCreateManyInput[] =
       CreateManyNewFileHistoryMapper(userId, payload);
 
-    const createdFileManagers =
-      await this.TenderFileManagerRepository.createMany(createPayloads);
+    const createdFileManagers = await this.fileManagerRepo.createMany(
+      createPayloads,
+    );
 
     return createdFileManagers;
   }
 
   async findByUrl(fileUrl: string): Promise<file_manager | null> {
-    const file = await this.TenderFileManagerRepository.findByUrl(fileUrl);
+    const file = await this.fileManagerRepo.findByUrl(fileUrl);
     return file;
+  }
+
+  async fetchAll(
+    currentUser: TenderCurrentUser,
+    filter: FetchFileManagerFilter,
+  ) {
+    return await this.fileManagerRepo.fetchAll(currentUser, filter);
   }
 
   async uploadProposalFile(
