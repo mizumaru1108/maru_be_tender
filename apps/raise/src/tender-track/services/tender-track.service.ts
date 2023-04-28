@@ -30,7 +30,7 @@ export class TenderTrackService {
     const track = await this.trackRepo.findById(request.id);
     if (!track) throw new NotFoundException('Track Not Found!');
 
-    if (request.name) {
+    if (request.name && request.name !== track.name) {
       const track = await this.trackRepo.findByName(request.name, request.id);
       if (track) {
         throw new BadRequestException(
@@ -39,14 +39,12 @@ export class TenderTrackService {
       }
     }
 
-    const updatePayload = UpdateTrackMapper(request);
+    const updatePayload = UpdateTrackMapper(track, request);
 
     return await this.trackRepo.update(request.id, updatePayload);
   }
 
-  async fetchAll(
-    filter: FetchTrackFilterRequest,
-  ) {
+  async fetchAll(filter: FetchTrackFilterRequest) {
     return await this.trackRepo.fetchAll(filter);
   }
 

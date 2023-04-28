@@ -1,11 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
-export class ModeratorChangeStatePayload {
+export class ModeratorChangeStatePayload {  
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  project_track: string;
+  track_id: string;
+
 
   @ApiPropertyOptional()
   @IsOptional()

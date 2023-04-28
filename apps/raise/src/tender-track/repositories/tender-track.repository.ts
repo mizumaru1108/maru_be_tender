@@ -90,7 +90,12 @@ export class TenderTrackRepository {
 
   async fetchAll(filter: FetchTrackFilterRequest) {
     try {
-      const { track_name, page = 1, limit = 10 } = filter;
+      const {
+        include_general = '0',
+        track_name,
+        page = 1,
+        limit = 10,
+      } = filter;
       const offset = (page - 1) * limit;
 
       let whereClause: Prisma.trackWhereInput = {};
@@ -101,6 +106,15 @@ export class TenderTrackRepository {
           name: {
             contains: track_name,
             mode: 'insensitive',
+          },
+        };
+      }
+
+      if (include_general === '0') {
+        whereClause = {
+          ...whereClause,
+          name: {
+            notIn: ['GENERAL'],
           },
         };
       }
@@ -122,7 +136,7 @@ export class TenderTrackRepository {
     } catch (err) {
       console.trace(err);
       throw new InternalServerErrorException(
-        'Something went wrong when updating track!',
+        'Something went wrong when finding track!',
       );
     }
   }

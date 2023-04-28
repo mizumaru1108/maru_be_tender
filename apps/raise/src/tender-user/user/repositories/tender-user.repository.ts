@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, project_tracks, user, user_type } from '@prisma/client';
+import { Prisma, project_tracks, track, user, user_type } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { logUtil } from '../../../commons/utils/log-util';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
@@ -31,6 +31,25 @@ export class TenderUserRepository {
     try {
       return await this.prismaService.project_tracks.findUnique({
         where: { id: trackName },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderUserRepository.name,
+        'validateTrack Error:',
+        `validating track!`,
+      );
+      throw theError;
+    }
+  }
+
+  async validateTracks(track_id: string): Promise<track | null> {
+    try {
+      return await this.prismaService.track.findFirst({
+        where: {
+          id: track_id,
+          name: { notIn: ['GENERAL'] },
+        },
       });
     } catch (error) {
       const theError = prismaErrorThrower(

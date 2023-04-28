@@ -1595,7 +1595,7 @@ export class TenderProposalRepository {
 
   async findTrackById(id: string) {
     try {
-      return await this.prismaService.project_tracks.findFirst({
+      return await this.prismaService.track.findFirst({
         where: {
           id,
         },

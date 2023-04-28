@@ -61,6 +61,7 @@ export class TenderUserService {
       mobile_number,
       activate_user,
       employee_path,
+      track_id,
       user_roles,
       selectLang,
     } = request;
@@ -68,6 +69,13 @@ export class TenderUserService {
     // admin only created by the system.
     if (user_roles.indexOf('ADMIN') > -1) {
       throw new BadRequestException('Roles is Forbidden to create!');
+    }
+
+    const tracks = await this.userRepo.validateTracks(track_id);
+    if (!tracks) {
+      throw new BadRequestException(
+        'Invalid employee track!, Path is not found!',
+      );
     }
 
     const track = await this.userRepo.validateTrack(employee_path);

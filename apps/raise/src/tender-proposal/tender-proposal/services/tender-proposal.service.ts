@@ -1339,11 +1339,11 @@ export class TenderProposalService {
 
       /* validate the sended track */
       const track = await this.proposalRepo.findTrackById(
-        request.moderator_payload.project_track,
+        request.moderator_payload.track_id,
       );
       if (!track) {
         throw new BadRequestException(
-          `Invalid Track (${request.moderator_payload.project_track})`,
+          `Invalid Track (${request.moderator_payload.track_id})`,
         );
       }
       /* proposal */

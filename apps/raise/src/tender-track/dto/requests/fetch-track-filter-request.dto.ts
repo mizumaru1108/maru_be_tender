@@ -7,4 +7,9 @@ export class FetchTrackFilterRequest extends BaseFilterRequest {
   @IsOptional()
   @IsString()
   track_name?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  include_general?: '1' | '0';
 }
