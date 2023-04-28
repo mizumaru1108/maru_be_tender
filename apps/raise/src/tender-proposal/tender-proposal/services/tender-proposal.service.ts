@@ -1351,7 +1351,7 @@ export class TenderProposalService {
         InnerStatusEnum.ACCEPTED_BY_MODERATOR;
       proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
-      proposalUpdatePayload.project_track = track.id;
+      proposalUpdatePayload.track_id = track.id;
 
       /* if track not ALL, only for supervisor in defined track */
       if (request.moderator_payload.supervisor_id) {
