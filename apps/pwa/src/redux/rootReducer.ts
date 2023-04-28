@@ -16,6 +16,7 @@ import notification from './slices/notification';
 import searching from './slices/searching';
 import tracks from './slices/track';
 import clientData from './slices/clientData';
+import banks from './slices/banks';
 
 // ----------------------------------------------------------------------
 
@@ -47,6 +48,7 @@ const rootReducer = combineReducers({
   searching: searching,
   tracks: tracks,
   clientData: clientData,
+  banks: banks,
   supervisorAcceptingForm: supervisorAcceptingForm,
 });
 

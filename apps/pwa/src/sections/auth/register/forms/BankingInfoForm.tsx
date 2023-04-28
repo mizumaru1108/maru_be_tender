@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { BankingValuesProps } from '../../../../@types/register';
 import useLocales from '../../../../hooks/useLocales';
+import { useSelector } from '../../../../redux/store';
 import { BankingInfoData } from '../RegisterFormData';
 
 type FormProps = {
@@ -17,6 +18,7 @@ type FormProps = {
 
 const BankingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
   const { translate } = useLocales();
+  const { banks } = useSelector((state) => state.banks);
 
   const RegisterSchema = Yup.object().shape({
     bank_account_number: Yup.string()
@@ -66,13 +68,16 @@ const BankingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
   const onSubmitForm = async (data: BankingValuesProps) => {
     let newData = { ...data };
     let newBankAccNumber = getValues('bank_account_number');
-
+    const bankId = getValues('bank_name');
+    // delete newData.bank_name;
+    newData.bank_name = banks.find((bank) => bank.id === bankId)?.bank_name;
+    newData.bank_id = bankId;
     newBankAccNumber.substring(0, 2) !== 'SA'
       ? (newBankAccNumber = 'SA'.concat(`${getValues('bank_account_number')}`).replace(/\s/g, ''))
       : (newBankAccNumber = getValues('bank_account_number'));
     newData = { ...newData, bank_account_number: newBankAccNumber };
     reset({ ...data });
-
+    // console.log({ newData });
     onSubmit(newData);
   };
 

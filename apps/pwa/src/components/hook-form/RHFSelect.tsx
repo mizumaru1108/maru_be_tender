@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 // form
-import { useFormContext, Controller } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 // @mui
-import { TextField, TextFieldProps, Typography, MenuItem, useTheme } from '@mui/material';
+import { MenuItem, TextField, TextFieldProps, Typography, useTheme } from '@mui/material';
 //
 // import { LIST_OF_BANK } from 'sections/auth/register/RegisterFormData';
 import axios from 'axios';
-import { AuthorityInterface } from '../../sections/admin/bank-name/list/types';
 import { TMRA_RAISE_URL } from 'config';
+import { useDispatch } from 'react-redux';
+import { setBankList } from '../../redux/slices/banks';
+import { AuthorityInterface } from '../../sections/admin/bank-name/list/types';
 
 // ----------------------------------------------------------------------
 
@@ -24,6 +26,7 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
 
   const [loading, setLoading] = useState<boolean>(false);
   const [bankValue, setBankValue] = useState<AuthorityInterface[] | []>([]);
+  const dispatch = useDispatch();
 
   const getBankList = async () => {
     setLoading(true);
@@ -35,6 +38,7 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
 
       if (status === 200) {
         setBankValue(data.data);
+        dispatch(setBankList(data.data));
         setLoading(false);
       }
     } catch (error) {

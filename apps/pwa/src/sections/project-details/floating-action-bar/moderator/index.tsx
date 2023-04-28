@@ -48,13 +48,15 @@ function ModeratorActionBar() {
 
   const handleApproval = async (data: any) => {
     setIsSubmitting(true);
+    console.log({ data });
 
     try {
       const payload = {
         proposal_id: id,
         action: 'accept',
         moderator_payload: {
-          project_track: data.path,
+          // project_track: data.path,
+          track_id: data.track_id,
           ...(data.supervisors !== 'all' && { supervisor_id: data.supervisors }),
         },
         message: 'تم قبول المشروع من قبل مسوؤل الفرز',

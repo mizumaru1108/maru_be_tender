@@ -69,7 +69,8 @@ function FinalPage({
       bank_informations: {
         bank_account_number: form5.bank_account_number,
         bank_account_name: form5.bank_account_name,
-        bank_name: form5.bank_name,
+        // bank_name: form5.bank_name,
+        bank_id: form5.bank_id,
         card_image: form5.card_image,
       },
       ...form1,

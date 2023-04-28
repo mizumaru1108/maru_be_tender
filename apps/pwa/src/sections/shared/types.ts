@@ -9,7 +9,8 @@ export type FormProps = {
 export type BankingValuesProps = {
   bank_account_number: string;
   bank_account_name: string;
-  bank_name: string;
+  bank_name?: string;
+  bank_id?: string;
   card_image: FileProp;
 };
 

@@ -260,11 +260,16 @@ export const getProposal = (id: string, role: string) => async () => {
       role === 'tender_project_manager' ||
       role === 'tender_project_supervisor'
     ) {
-      const response = await axiosInstance.get(`tender-proposal/fetch-by-id?id=${id}`, {
-        headers: { 'x-hasura-role': role },
-      });
-      if (response.data.statusCode === 200) {
-        dispatch(slice.actions.setProposal(response.data.data));
+      console.log('masuk sni');
+      try {
+        const response = await axiosInstance.get(`tender-proposal/fetch-by-id?id=${id}`, {
+          headers: { 'x-hasura-role': role },
+        });
+        if (response.data.statusCode === 200) {
+          dispatch(slice.actions.setProposal(response.data.data));
+        }
+      } catch (error) {
+        console.log(error);
       }
     } else {
       const res = await graphQlAxiosInstance.post(
