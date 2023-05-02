@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { cheque, payment, Prisma } from '@prisma/client';
 import { nanoid } from 'nanoid';
 import { logUtil } from '../../../commons/utils/log-util';
@@ -17,14 +18,12 @@ import {
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import {
-  FindTrackBudgetFilter,
-  FindBankListFilter,
   BankDetailsDto,
+  FindBankListFilter,
+  FindTrackBudgetFilter,
 } from '../dtos/requests';
 import { CloseReportNotifMapper } from '../mappers';
 import { UpdatePaymentNotifMapper } from '../mappers/update-payment-notif.mapper';
-import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TenderProposalPaymentRepository {
@@ -807,9 +806,66 @@ export class TenderProposalPaymentRepository {
     try {
       const response = await this.prismaService.banks.findFirst({
         where: { id: request.id },
-        select: {
-          id: true,
-          bank_name: true,
+      });
+
+      return response;
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalPaymentRepository.name,
+        'Find Bank details Error:',
+        `Finding Bank Details!`,
+      );
+      throw theError;
+    }
+  }
+
+  async softDeleteBank(
+    id: string,
+    userIds: string[],
+    userStatusLogPayload: Prisma.user_status_logCreateManyInput[],
+  ) {
+    try {
+      return await this.prismaService.$transaction(
+        async (prisma) => {
+          await prisma.banks.update({
+            where: { id },
+            data: { is_deleted: true },
+          });
+
+          if (userIds.length > 0 && userStatusLogPayload.length > 0) {
+            await prisma.user.updateMany({
+              where: { id: { in: userIds } },
+              data: { status_id: { set: 'SUSPENDED_ACCOUNT' } },
+            });
+
+            await prisma.user_status_log.createMany({
+              data: userStatusLogPayload,
+            });
+          }
+        },
+        { maxWait: 50000, timeout: 150000 },
+      );
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalPaymentRepository.name,
+        'Find Bank details Error:',
+        `Finding Bank Details!`,
+      );
+      throw theError;
+    }
+  }
+
+  async findUserByBankId(id: string) {
+    try {
+      const response = await this.prismaService.user.findMany({
+        where: {
+          bank_information: {
+            some: {
+              bank_id: id,
+            },
+          },
         },
       });
 

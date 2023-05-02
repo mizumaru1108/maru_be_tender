@@ -5,8 +5,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Prisma, proposal, track_section } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { nanoid } from 'nanoid';
 import { v4 as uuidv4 } from 'uuid';
+import { GetByIdDto } from '../../../commons/dtos/get-by-id.dto';
 import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
@@ -16,9 +18,9 @@ import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
 import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
 import {
-  appRoleMappers,
   TenderAppRole,
   TenderAppRoleEnum,
+  appRoleMappers,
 } from '../../../tender-commons/types';
 import {
   InnerStatusEnum,
@@ -36,23 +38,22 @@ import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-
 import { TenderProposalLogRepository } from '../../tender-proposal-log/repositories/tender-proposal-log.repository';
 import { TenderProposalRepository } from '../../tender-proposal/repositories/tender-proposal.repository';
 import {
-  CreateProposalPaymentDto,
-  UpdatePaymentDto,
-  SendClosingReportDto,
   AskClosingReportDto,
+  BankDetailsDto,
+  BankListCreateDto,
+  CreateProposalPaymentDto,
   CreateTrackBudgetDto,
   DeleteTrackBudgetDto,
-  FindTrackBudgetFilter,
-  UpdateTrackBudgetDto,
-  BankListCreateDto,
   FindBankListFilter,
-  BankDetailsDto,
+  FindTrackBudgetFilter,
+  SendClosingReportDto,
+  UpdatePaymentDto,
+  UpdateTrackBudgetDto,
 } from '../dtos/requests';
 import { CreateChequeMapper, CreateClosingReportMapper } from '../mappers';
 import { CreateManyPaymentMapper } from '../mappers/create-many-payment.mapper';
 import { CreateTrackBudgetMapper } from '../mappers/create-track-section-budget-mapper';
 import { TenderProposalPaymentRepository } from '../repositories/tender-proposal-payment.repository';
-import { nanoid } from 'nanoid';
 
 @Injectable()
 export class TenderProposalPaymentService {
@@ -558,5 +559,36 @@ export class TenderProposalPaymentService {
 
   async findBankDetails(request: BankDetailsDto) {
     return await this.paymentRepo.getBankDetails(request);
+  }
+
+  async softDeleteBank(request: GetByIdDto) {
+    const { id } = request;
+    try {
+      const userIds: string[] = [];
+      let userStatusLogPayload: Prisma.user_status_logCreateManyInput[] = [];
+      const bank = await this.paymentRepo.getBankDetails({ id });
+      if (!bank) throw new BadRequestException('Bank not found!');
+
+      const users = await this.paymentRepo.findUserByBankId(id);
+      if (users) {
+        users.forEach((user) => userIds.push(user.id));
+      }
+
+      if (userIds.length > 0 && users.length > 0) {
+        userStatusLogPayload = users.map((user) => {
+          const payload: Prisma.user_status_logCreateManyInput = {
+            id: uuidv4(),
+            status_id: 'SUSPENDED_ACCOUNT',
+            user_id: user.id,
+          };
+          return payload;
+        });
+      }
+
+      await this.paymentRepo.softDeleteBank(id, userIds, userStatusLogPayload);
+    } catch (error) {
+      this.logger.error(`error detail: ${error}`);
+      throw error;
+    }
   }
 }

@@ -3,14 +3,12 @@ import {
   Controller,
   Get,
   HttpStatus,
-  Param,
   Patch,
   Post,
   Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { proposal } from '@prisma/client';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../../commons/dtos/base-response';
 import { GetByIdDto } from '../../../commons/dtos/get-by-id.dto';
@@ -20,20 +18,19 @@ import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
 import { ManualPaginatedResponse } from '../../../tender-commons/helpers/manual-paginated-response.dto';
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
-import { FindUserResponse } from '../../../tender-user/user/dtos/responses/find-user-response.dto';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import {
-  CreateProposalPaymentDto,
   AskClosingReportDto,
-  UpdatePaymentDto,
-  SendClosingReportDto,
+  BankDetailsDto,
+  BankListCreateDto,
+  CreateProposalPaymentDto,
   CreateTrackBudgetDto,
   DeleteTrackBudgetDto,
-  FindTrackBudgetFilter,
-  UpdateTrackBudgetDto,
-  BankListCreateDto,
   FindBankListFilter,
-  BankDetailsDto,
+  FindTrackBudgetFilter,
+  SendClosingReportDto,
+  UpdatePaymentDto,
+  UpdateTrackBudgetDto,
 } from '../dtos/requests';
 import { UpdatePaymentResponseDto } from '../dtos/responses';
 import { TenderProposalPaymentService } from '../services/tender-proposal-payment.service';
@@ -251,6 +248,13 @@ export class TenderProposalPaymentController {
       HttpStatus.OK,
       'Bank list updated successfully',
     );
+  }
+
+  @Patch('bank/soft-delete')
+  async softDelete(@Body() request: GetByIdDto) {
+    const response = await this.paymentService.softDeleteBank(request);
+
+    return baseResponseHelper(response, HttpStatus.OK, 'Bank soft deleted');
   }
 
   @Get('find-bank-list')
