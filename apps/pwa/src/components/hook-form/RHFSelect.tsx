@@ -37,6 +37,10 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
       );
 
       if (status === 200) {
+        const test = data.data
+          .filter((bank: any) => bank.is_deleted === false)
+          .map((bank: any) => bank);
+        // console.log({ test });
         setBankValue(data.data);
         dispatch(setBankList(data.data));
         setLoading(false);

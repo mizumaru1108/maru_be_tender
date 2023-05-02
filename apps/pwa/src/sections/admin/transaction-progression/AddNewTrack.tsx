@@ -25,6 +25,7 @@ interface Props {
   trackId?: string;
   trackName?: string;
   withConsultation?: boolean;
+  isEdit?: boolean;
   // title: string;
   // onSubmit: (data: any) => void;
   onClose: () => void;
@@ -37,7 +38,7 @@ interface FormInput {
   consultant: string;
 }
 
-const AddNewTrack = ({ onClose, trackId, trackName, withConsultation }: Props) => {
+const AddNewTrack = ({ isEdit = false, onClose, trackId, trackName, withConsultation }: Props) => {
   const navigate = useNavigate();
   const { translate, currentLang } = useLocales();
   const [open, setOpen] = React.useState<boolean>(false);
@@ -154,19 +155,20 @@ const AddNewTrack = ({ onClose, trackId, trackName, withConsultation }: Props) =
           gutterBottom
           sx={{ fontFamily: 'Cairo', fontStyle: 'Bold', mb: 7, mt: 3 }}
         >
-          Add a new track
+          {isEdit ? 'Add a new track' : 'track'}
         </Typography>
         <Grid item md={12} xs={12} sx={{ mb: 6 }}>
           {/* <TextField
-          placeholder="Please type the track name"
-          label="Track name"
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-        /> */}
+            placeholder="Please type the track name"
+            label="Track name"
+            InputLabelProps={{ shrink: true }}
+            fullWidth
+          /> */}
           <RHFTextField
             name="track_name"
             label="Track name"
             placeholder="Please type the track name"
+            disabled={!isEdit}
           />
 
           <RHFSelectNoGenerator
@@ -176,6 +178,7 @@ const AddNewTrack = ({ onClose, trackId, trackName, withConsultation }: Props) =
             placeholder="Chosen one"
             InputLabelProps={{ shrink: true }}
             sx={{ mt: 3 }}
+            disabled={!isEdit}
           >
             <option value="with_consultant" style={{ backgroundColor: '#fff' }}>
               With Consultant
@@ -185,36 +188,38 @@ const AddNewTrack = ({ onClose, trackId, trackName, withConsultation }: Props) =
             </option>
           </RHFSelectNoGenerator>
         </Grid>
-        <Stack justifyContent="center" direction="row" gap={2}>
-          <LoadingButton
-            loading={loading}
-            onClick={handleSubmit(onSubmitForm)}
-            variant="contained"
-            fullWidth
-            sx={{
-              backgroundColor: 'background.paper',
-              color: '#fff',
-              width: { xs: '100%', sm: '170px' },
-              height: { xs: '100%', sm: '40px' },
-              '&:hover': { backgroundColor: '#13B2A2' },
-            }}
-          >
-            Save
-          </LoadingButton>
-          <Button
-            onClick={onClose}
-            sx={{
-              color: '#000',
-              size: 'large',
-              width: { xs: '100%', sm: '170px' },
-              hieght: { xs: '100%', sm: '40px' },
-              ':hover': { backgroundColor: '#efefef' },
-            }}
-          >
-            {/* إغلاق */}
-            Back
-          </Button>
-        </Stack>
+        {isEdit && (
+          <Stack justifyContent="center" direction="row" gap={2}>
+            <LoadingButton
+              loading={loading}
+              onClick={handleSubmit(onSubmitForm)}
+              variant="contained"
+              fullWidth
+              sx={{
+                backgroundColor: 'background.paper',
+                color: '#fff',
+                width: { xs: '100%', sm: '170px' },
+                height: { xs: '100%', sm: '40px' },
+                '&:hover': { backgroundColor: '#13B2A2' },
+              }}
+            >
+              Save
+            </LoadingButton>
+            <Button
+              onClick={onClose}
+              sx={{
+                color: '#000',
+                size: 'large',
+                width: { xs: '100%', sm: '170px' },
+                hieght: { xs: '100%', sm: '40px' },
+                ':hover': { backgroundColor: '#efefef' },
+              }}
+            >
+              {/* إغلاق */}
+              Back
+            </Button>
+          </Stack>
+        )}
       </Grid>
     </FormProvider>
   );

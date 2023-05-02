@@ -24,12 +24,12 @@ export default function BankNameTable() {
 
   const [{ data, fetching, error }, reExecute] = useQuery({
     query: `
-      query getBankList {
-        banks {
-          id
-          bank_name
-        }
+    query getBankList {
+      banks(where: {is_deleted: {_eq: false}}) {
+        id
+        bank_name
       }
+    }    
     `,
   });
 

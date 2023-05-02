@@ -13,6 +13,7 @@ import { addNewBankInformation } from 'queries/client/addNewBankInformation';
 import useAuth from 'hooks/useAuth';
 import { nanoid } from 'nanoid';
 import useLocales from '../../../../hooks/useLocales';
+import { useSelector } from '../../../../redux/store';
 const style = {
   position: 'absolute' as 'absolute',
   top: '50%',
@@ -28,6 +29,7 @@ type FormValuesProps = {
   bank_account_number: string;
   bank_account_name: string;
   bank_name: string;
+  bank_id?: string;
   card_image: FileProp;
   id: string;
 };
@@ -41,6 +43,7 @@ export default function AddBankModal({
 }: any) {
   const { translate } = useLocales();
   const rootRef = React.useRef<HTMLDivElement>(null);
+  const { banks } = useSelector((state) => state.banks);
   // const { user } = useAuth();
   // const id = user?.id;
   // addNewBankInformation
@@ -117,12 +120,18 @@ export default function AddBankModal({
   };
 
   const onSubmitForm = async (data: FormValuesProps) => {
+    const bankId = getValues('bank_name');
     let newData = { ...data };
     let newBankAccNumber = getValues('bank_account_number');
+    if (banks) {
+      newData.bank_name = banks.find((bank) => bank.id === bankId)?.bank_name ?? '';
+    }
+    newData.bank_id = bankId;
     newBankAccNumber.substring(0, 2) !== 'SA'
       ? (newBankAccNumber = 'SA'.concat(`${getValues('bank_account_number')}`).replace(/\s/g, ''))
       : (newBankAccNumber = getValues('bank_account_number'));
     newData = { ...newData, bank_account_number: newBankAccNumber };
+    console.log('newData', newData);
     setValue('bank_account_number', '');
     setValue('bank_account_name', '');
     setValue('bank_name', '');
@@ -145,19 +154,27 @@ export default function AddBankModal({
   React.useEffect(() => {
     if (!!initialValues) {
       let newValues = { ...initialValues };
-      const checkedBankName = listOfBank.find((bank: any) => {
-        // console.log('bank.value', bank);
-        const isCheck = bank === initialValues.bank_name;
+      const checkedBankNameById = listOfBank.find((bank: any) => {
+        const isCheck = bank === initialValues.bank_id;
         return isCheck;
-        // return bank === initialValues.bank_name;
       });
-      if (!checkedBankName) {
-        newValues = { ...newValues, bank_name: '' };
+      if (!checkedBankNameById) {
+        const checkBankNameByName = banks.filter((bank: any) => {
+          const isCheck = bank.bank_name === initialValues.bank_name;
+          return isCheck;
+        });
+        if (checkBankNameByName.length > 0) {
+          newValues = { ...newValues, bank_name: checkBankNameByName[0].id };
+        } else {
+          newValues = { ...newValues, bank_name: '' };
+        }
       } else {
-        newValues = { ...newValues, bank_name: checkedBankName };
+        newValues = { ...newValues, bank_name: checkedBankNameById };
       }
-
-      const newBankAccNumber = initialValues.bank_account_number.replace(/(.{4})/g, '$1 ');
+      const newBankAccNumber = initialValues.bank_account_number
+        .split('SA')[1]
+        .replace(/(.{4})/g, '$1 ');
+      // console.log('initialValues', initialValues);
       setValue('bank_account_number', newBankAccNumber);
       setValue('bank_account_name', initialValues.bank_account_name);
       setValue('bank_name', newValues.bank_name);
@@ -170,7 +187,7 @@ export default function AddBankModal({
         fullName: initialValues.card_image.fullName,
       });
     }
-  }, [initialValues, setValue, listOfBank]);
+  }, [initialValues, setValue, listOfBank, banks]);
   return (
     <Modal
       open={open}

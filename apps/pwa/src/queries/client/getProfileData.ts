@@ -33,6 +33,7 @@ query MyQuery($id: String = "") {
       bank_account_number
       bank_name
       card_image
+      is_deleted
     }
     email
     status_id

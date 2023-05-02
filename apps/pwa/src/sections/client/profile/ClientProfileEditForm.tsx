@@ -36,6 +36,14 @@ const taps = [
   'register_fifth_tap',
 ];
 
+interface editedTabs {
+  form1: string;
+  form2: string;
+  form3: string;
+  form4: string;
+  form5: string;
+}
+
 function ClientProfileEditForm() {
   const theme = useTheme();
   const { user, activeRole } = useAuth();
@@ -44,6 +52,13 @@ function ClientProfileEditForm() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [step, setStep] = useState(0);
+  const [editedTabs, setEditedTabs] = useState<editedTabs>({
+    form1: '',
+    form2: '',
+    form3: '',
+    form4: '',
+    form5: '',
+  });
   const { translate } = useLocales();
   const { data, fetching, error } = result;
   const initialValue = {
@@ -95,6 +110,7 @@ function ClientProfileEditForm() {
         bank_account_number: '',
         bank_account_name: '',
         bank_name: '',
+        bank_id: '',
         card_image: {
           url: '',
           size: undefined,
@@ -140,6 +156,17 @@ function ClientProfileEditForm() {
     ) {
       // console.log('data?.user_by_pk:', data?.user_by_pk);
       const { client_data: client, bank_informations } = data?.user_by_pk;
+      const checkedBanks = bank_informations.findIndex((bank: any) => bank.is_deleted);
+      if (checkedBanks > -1) {
+        // setEditedTabs({
+        //   ...editedTabs,
+        //   form5: 'register_fifth_tap',
+        // });
+        setEditedTabs((editedTabs) => ({
+          ...editedTabs,
+          form5: 'register_fifth_tap',
+        }));
+      }
       const {
         client_field,
         entity,
@@ -230,6 +257,7 @@ function ClientProfileEditForm() {
   }, [data]);
 
   // console.log({ startedValue });
+  // console.log('editedTabs', editedTabs.form5);
 
   const onSubmit1 = (data: MainValuesProps) => {
     window.scrollTo(0, 0);
@@ -587,23 +615,32 @@ function ClientProfileEditForm() {
         }}
       >
         setErrorState
-        {taps.map((label, index) => (
-          <Tab
-            key={index}
-            label={translate(label)}
-            sx={{
-              borderRadius: 0,
-              px: 3,
-              '&.MuiTab-root:not(:last-of-type)': {
-                marginRight: 0,
-              },
-              '&.Mui-selected': {
-                backgroundColor: theme.palette.primary.main,
-                color: theme.palette.primary.contrastText,
-              },
-            }}
-          />
-        ))}
+        {taps.map((label, index) => {
+          const checkIndexBank =
+            Object.values(editedTabs).findIndex((value) => value === label) === index;
+          // console.log('checkIndexBank', checkIndexBank);
+          // console.log('label', label);
+          // console.log('index', index);
+          return (
+            <Tab
+              key={index}
+              label={translate(label)}
+              sx={{
+                borderRadius: 0,
+                px: 3,
+                backgroundColor: checkIndexBank ? 'red' : '#E6E8EE',
+                color: checkIndexBank ? theme.palette.primary.contrastText : 'main',
+                '&.MuiTab-root:not(:last-of-type)': {
+                  marginRight: 0,
+                },
+                '&.Mui-selected': {
+                  backgroundColor: theme.palette.primary.main,
+                  color: theme.palette.primary.contrastText,
+                },
+              }}
+            />
+          );
+        })}
       </Tabs>
       {fetching && <>... Loading</>}
       {step === 0 && !fetching && (

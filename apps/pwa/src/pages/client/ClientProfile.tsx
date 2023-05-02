@@ -89,6 +89,8 @@ function ClientProfile() {
   });
   const { data, fetching, error } = result;
 
+  // console.log({ data });
+
   const navigate = useNavigate();
   const isMobile = useResponsive('down', 'sm');
   const ContentStyle = styled('div')(({ theme }) => ({
@@ -173,8 +175,15 @@ function ClientProfile() {
           data_entry_mail,
         }).some((val) => !val)
       ) {
-        console.log('all data complete');
-        setRunTour(false);
+        const checkDeletedBank = clientData.bank_informations.findIndex(
+          (bank: any) => bank.is_deleted === true
+        );
+        if (checkDeletedBank > -1) {
+          setRunTour(true);
+        } else {
+          console.log('all data complete');
+          setRunTour(false);
+        }
       } else {
         console.log('please complete your profile data');
         setRunTour(true);
@@ -187,6 +196,7 @@ function ClientProfile() {
 
   useEffect(() => {
     fetchingEditRequest();
+
     if (data && data.user_by_pk) {
       setClientProfiles({
         bank_informations: data.user_by_pk.bank_informations ?? [],

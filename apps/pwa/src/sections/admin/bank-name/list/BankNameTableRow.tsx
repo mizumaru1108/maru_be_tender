@@ -71,6 +71,38 @@ export default function BankNameTableRow({ row, selected, onSelectRow }: Props) 
       window.location.reload();
     }
   };
+  const handleDeleteBank = async () => {
+    setIsSubmitting(true);
+
+    try {
+      const { status } = await axiosInstance.patch(
+        'tender/proposal/payment/bank/soft-delete',
+        { id },
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
+
+      if (status === 200) {
+        enqueueSnackbar(translate('pages.admin.settings.label.modal.success_edit_bank'), {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+
+        setIsSubmitting(false);
+        window.location.reload();
+      }
+    } catch (err) {
+      enqueueSnackbar(err.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+      setIsSubmitting(false);
+      window.location.reload();
+    }
+  };
 
   return (
     <TableRow key={id} hover selected={selected}>
@@ -91,6 +123,7 @@ export default function BankNameTableRow({ row, selected, onSelectRow }: Props) 
               '&:hover': { backgroundColor: '#1482FE' },
             }}
             onClick={() => setOpenEditModal(true)}
+            disabled={isSubmitting}
           >
             {translate('pages.admin.settings.label.table.modify')}
           </Button>
@@ -103,8 +136,9 @@ export default function BankNameTableRow({ row, selected, onSelectRow }: Props) 
               backgroundColor: '#FF4842',
               '&:hover': { backgroundColor: '#FF170F' },
             }}
-            onClick={() => console.log('value', { id, bank_name })}
-            disabled
+            onClick={handleDeleteBank}
+            disabled={isSubmitting}
+            // disabled
           >
             {translate('pages.admin.settings.label.table.delete')}
           </Button>

@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router';
 function ContentTrackCard({ id, name, withConsultation }: any) {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState<boolean>(false);
+  const [isEdit, setIsEdit] = React.useState<boolean>(false);
 
   const tempName = name.toLowerCase();
   const resultName = tempName
@@ -19,10 +20,13 @@ function ContentTrackCard({ id, name, withConsultation }: any) {
   };
 
   const handleReview = () => {
+    setIsEdit(false);
+    setOpen(true);
     // navigate(`/admin/dashboard/transaction-progression/review/1`);
   };
   const handleEdit = () => {
     // navigate('/admin/dashboard/transaction-progression/edit/1');
+    setIsEdit(true);
     setOpen(true);
   };
   const handleDelete = () => {};
@@ -39,6 +43,7 @@ function ContentTrackCard({ id, name, withConsultation }: any) {
             trackId={id}
             trackName={name}
             withConsultation={withConsultation}
+            isEdit={isEdit}
             // loading={loading}
             onClose={handleOnClose}
             // onSubmit={handleSubmit}
@@ -56,7 +61,7 @@ function ContentTrackCard({ id, name, withConsultation }: any) {
         <Typography sx={{ fontWeight: 'bold', mb: 5, mt: 1 }}>{resultName}</Typography>
         <Box>
           <Stack direction="row" justifyContent="space-around" flex={1} gap={2}>
-            <Button
+            {/* <Button
               sx={{
                 backgroundColor: '#FF4842',
                 color: '#fff',
@@ -94,7 +99,7 @@ function ContentTrackCard({ id, name, withConsultation }: any) {
               onClick={handleDelete}
             >
               حذف
-            </Button>
+            </Button> */}
             <Button
               sx={{
                 backgroundColor: '#0169DE',
