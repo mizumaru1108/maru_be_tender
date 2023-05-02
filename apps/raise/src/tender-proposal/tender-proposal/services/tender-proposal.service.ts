@@ -7,10 +7,10 @@ import {
 import { Prisma, proposal } from '@prisma/client';
 import { nanoid } from 'nanoid';
 import {
-  appRoleMappers,
   TenderAppRole,
   TenderAppRoleEnum,
   TenderFusionAuthRoles,
+  appRoleMappers,
 } from '../../../tender-commons/types';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 
@@ -21,7 +21,6 @@ import { TenderProposalRepository } from '../repositories/tender-proposal.reposi
 import { SendEmailDto } from '../../../libs/email/dtos/requests/send-email.dto';
 import { EmailService } from '../../../libs/email/email.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
-import { TwilioService } from '../../../libs/twilio/services/twilio.service';
 import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
 import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
 
@@ -30,9 +29,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
+import { logUtil } from '../../../commons/utils/log-util';
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
 import { validateFileSize } from '../../../commons/utils/validate-file-size';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
+import { MsegatService } from '../../../libs/msegat/services/msegat.service';
 import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
 import {
   InnerStatusEnum,
@@ -45,33 +46,33 @@ import { isUploadFileJsonb } from '../../../tender-commons/utils/is-upload-file-
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { IProposalLogsResponse } from '../../tender-proposal-log/interfaces/proposal-logs-response';
 import { TenderProposalLogRepository } from '../../tender-proposal-log/repositories/tender-proposal-log.repository';
+import {
+  CreateProposalInterceptorDto,
+  PreviousProposalFilterRequest,
+  RequestInProcessFilterRequest,
+} from '../dtos/requests';
+import { AskAmandementRequestDto } from '../dtos/requests/ask-amandement-request.dto';
+import { CeoChangeStatePayload } from '../dtos/requests/ceo-change-state.dto';
 import { FetchAmandementFilterRequest } from '../dtos/requests/fetch-amandement-filter-request.dto';
+import { FetchProposalFilterRequest } from '../dtos/requests/fetch-proposal-filter-request.dto';
+import { ProjectManagerChangeStatePayload } from '../dtos/requests/project-manager-change-state-payload.dto';
 import { ProposalCreateDto } from '../dtos/requests/proposal-create.dto';
 import { ProposalSaveDraftDto } from '../dtos/requests/proposal-save-draft';
 import { SendAmandementDto } from '../dtos/requests/send-amandement.dto';
+import { SendRevisionDto } from '../dtos/requests/send-revision.dto';
+import { FetchProposalByIdResponse } from '../dtos/responses/fetch-proposal-by-id.response.dto';
+import { CreateProposalInterceptorMapper } from '../mappers';
 import { CreateItemBudgetsMapper } from '../mappers/create-item-budgets.mappers';
+import { CreateProposalAskedEditRequestMapper } from '../mappers/create-proposal-asked-edit-request.mapper';
 import { CreateProposalMapper } from '../mappers/create-proposal.mapper';
 import { ProposalUpdateRequestMapper } from '../mappers/proposal-update-request.mapper';
+import { SendRevisionMapper } from '../mappers/send-revision.mapper';
 import { SupervisorAccCreatedItemBudgetMapper } from '../mappers/supervisor-acc-created-item-budget-mapper';
 import { SupervisorAccCreatedRecommendedSupportMapper } from '../mappers/supervisor-acc-created-recommend-support-mapper';
 import { SupervisorGrantTrackAccMapper } from '../mappers/supervisor-grant-track-acc.mapper';
 import { SupervisorRegularTrackAccMapper } from '../mappers/supervisor-regular-track-acc.mapper';
-import { UpdateProposalMapper } from '../mappers/update-proposal.mapper';
-import { SendRevisionDto } from '../dtos/requests/send-revision.dto';
-import { SendRevisionMapper } from '../mappers/send-revision.mapper';
-import { logUtil } from '../../../commons/utils/log-util';
-import { AskAmandementRequestDto } from '../dtos/requests/ask-amandement-request.dto';
-import { CreateProposalAskedEditRequestMapper } from '../mappers/create-proposal-asked-edit-request.mapper';
-import { FetchProposalFilterRequest } from '../dtos/requests/fetch-proposal-filter-request.dto';
-import { MsegatService } from '../../../libs/msegat/services/msegat.service';
-import moment from 'moment';
 import { UpdateProposalTrackInfoMapper } from '../mappers/update-proposal-track-info.mapper';
-import { CeoChangeStatePayload } from '../dtos/requests/ceo-change-state.dto';
-import { ProjectManagerChangeStatePayload } from '../dtos/requests/project-manager-change-state-payload.dto';
-import { CreateProposalInterceptorDto } from '../dtos/requests';
-import { CreateProposalInterceptorMapper } from '../mappers';
-import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
-import { FetchProposalByIdResponse } from '../dtos/responses/fetch-proposal-by-id.response.dto';
+import { UpdateProposalMapper } from '../mappers/update-proposal.mapper';
 
 @Injectable()
 export class TenderProposalService {
@@ -225,6 +226,20 @@ export class TenderProposalService {
     const proposal = await this.proposalRepo.fetchProposalById(id);
     if (!proposal) throw new NotFoundException('Proposal not found!');
     return proposal;
+  }
+
+  async fetchRequestInProcess(
+    currentUser: TenderCurrentUser,
+    filter: RequestInProcessFilterRequest,
+  ) {
+    return await this.proposalRepo.fetchRequestInProcess(currentUser, filter);
+  }
+
+  async getPreviousProposal(
+    currentUser: TenderCurrentUser,
+    filter: PreviousProposalFilterRequest,
+  ) {
+    return await this.proposalRepo.getPreviousProposal(currentUser, filter);
   }
 
   async create(userId: string, request: ProposalCreateDto) {

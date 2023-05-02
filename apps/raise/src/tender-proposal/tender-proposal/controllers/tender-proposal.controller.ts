@@ -30,10 +30,12 @@ import {
   CreateProposalInterceptorDto,
   FetchAmandementFilterRequest,
   FetchProposalFilterRequest,
+  PreviousProposalFilterRequest,
   ProposalCreateDto,
   ProposalDeleteDraftDto,
   ProposalSaveDraftDto,
   ProposalSaveDraftInterceptorDto,
+  RequestInProcessFilterRequest,
   SendAmandementDto,
   SendRevisionDto,
 } from '../dtos/requests';
@@ -156,6 +158,48 @@ export class TenderProposalController {
       result,
       HttpStatus.OK,
       'Draft deleted successfully',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard)
+  @Get('request-in-process')
+  async requestInProcess(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Query() filter: RequestInProcessFilterRequest,
+  ) {
+    const result = await this.proposalService.fetchRequestInProcess(
+      currentUser,
+      filter,
+    );
+
+    return manualPaginationHelper(
+      result.data,
+      result.total,
+      filter.page || 1,
+      filter.limit || 10,
+      HttpStatus.OK,
+      'Success',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard)
+  @Get('previous')
+  async getPreviousProposal(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Query() filter: PreviousProposalFilterRequest,
+  ) {
+    const result = await this.proposalService.getPreviousProposal(
+      currentUser,
+      filter,
+    );
+
+    return manualPaginationHelper(
+      result.data,
+      result.total,
+      filter.page || 1,
+      filter.limit || 10,
+      HttpStatus.OK,
+      'Success',
     );
   }
 

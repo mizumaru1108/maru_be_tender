@@ -1,15 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  Prisma,
-  bank_information,
-  payment,
-  proposal,
-  proposal_follow_up,
-  proposal_item_budget,
-  proposal_log,
-  track,
-} from '@prisma/client';
+import { Prisma, proposal_item_budget } from '@prisma/client';
 import { nanoid } from 'nanoid';
 import { logUtil } from '../../../commons/utils/log-util';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
@@ -27,10 +18,14 @@ import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-t
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import { FetchAmandementFilterRequest } from '../dtos/requests/fetch-amandement-filter-request.dto';
 import { FetchProposalFilterRequest } from '../dtos/requests/fetch-proposal-filter-request.dto';
+import { FetchProposalByIdResponse } from '../dtos/responses/fetch-proposal-by-id.response.dto';
 import { UpdateMyProposalResponseDto } from '../dtos/responses/update-my-proposal-response.dto';
 import { NewAmandementNotifMapper } from '../mappers/new-amandement-notif-mapper';
 import { SendRevisionNotifMapper } from '../mappers/send-revision-notif-mapper';
-import { FetchProposalByIdResponse } from '../dtos/responses/fetch-proposal-by-id.response.dto';
+import {
+  PreviousProposalFilterRequest,
+  RequestInProcessFilterRequest,
+} from '../dtos/requests';
 @Injectable()
 export class TenderProposalRepository {
   private readonly logger = ROOT_LOGGER.child({
@@ -1125,6 +1120,339 @@ export class TenderProposalRepository {
         where: {
           AND: [whereClause, { OR: [...orClauses] }, ...andClauses],
         },
+      });
+
+      return {
+        data,
+        total,
+      };
+    } catch (err) {
+      const theError = prismaErrorThrower(
+        err,
+        TenderProposalRepository.name,
+        'updateProposal error details: ',
+        'updating proposal!',
+      );
+      throw theError;
+    }
+  }
+
+  async fetchRequestInProcess(
+    currentUser: TenderCurrentUser,
+    filter: RequestInProcessFilterRequest,
+  ) {
+    try {
+      const { page = 1, limit = 10, sort } = filter;
+
+      const offset = (page - 1) * limit;
+
+      let whereClause: Prisma.proposalWhereInput = {};
+
+      /* filter whereClause based on existing permissions on hasura */
+      if (currentUser.choosenRole === 'tender_client') {
+        whereClause = {
+          ...whereClause,
+          submitter_user_id: currentUser.id,
+        };
+      } else {
+        whereClause = {
+          ...whereClause,
+          step: 'ZERO',
+        };
+
+        if (
+          [
+            'tender_project_supervisor',
+            'tender_project_manager',
+            'tender_cashier',
+            'tender_finance',
+          ].indexOf(currentUser.choosenRole) > -1
+        ) {
+          const reviewer = await this.prismaService.user.findUnique({
+            where: { id: currentUser.id },
+            include: { track: true },
+          });
+          if (!reviewer || !reviewer.track) {
+            throw new BadRequestException('cant find track of this user');
+          }
+
+          if (reviewer.track.name !== 'GENERAL') {
+            whereClause = {
+              ...whereClause,
+              OR: [{ track_id: reviewer.track.id }, { track_id: null }],
+            };
+          }
+        }
+
+        if (currentUser.choosenRole === 'tender_project_supervisor') {
+          whereClause = {
+            ...whereClause,
+            OR: [{ supervisor_id: currentUser.id }, { supervisor_id: null }],
+          };
+        }
+
+        if (currentUser.choosenRole === 'tender_cashier') {
+          whereClause = {
+            ...whereClause,
+            OR: [{ cashier_id: currentUser.id }, { cashier_id: null }],
+          };
+        }
+
+        if (currentUser.choosenRole === 'tender_finance') {
+          whereClause = {
+            ...whereClause,
+            OR: [{ finance_id: currentUser.id }, { finance_id: null }],
+          };
+        }
+
+        if (currentUser.choosenRole === 'tender_project_manager') {
+          whereClause = {
+            ...whereClause,
+            OR: [
+              { project_manager_id: currentUser.id },
+              { project_manager_id: null },
+            ],
+          };
+        }
+
+        if (currentUser.choosenRole === 'tender_ceo') {
+          whereClause = {
+            ...whereClause,
+            inner_status: {
+              in: [
+                InnerStatusEnum.ACCEPTED_BY_CONSULTANT,
+                InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER,
+              ],
+            },
+          };
+        }
+
+        if (currentUser.choosenRole === 'tender_consultant') {
+          whereClause = {
+            ...whereClause,
+            inner_status: InnerStatusEnum.ACCEPTED_AND_NEED_CONSULTANT,
+          };
+        }
+      }
+
+      const data = await this.prismaService.proposal.findMany({
+        where: whereClause,
+        take: limit,
+        skip: offset,
+        include: {
+          user: true,
+        },
+        orderBy: {
+          project_name: sort,
+        },
+      });
+
+      const total = await this.prismaService.proposal.count({
+        where: whereClause,
+      });
+
+      return {
+        data,
+        total,
+      };
+    } catch (err) {
+      const theError = prismaErrorThrower(
+        err,
+        TenderProposalRepository.name,
+        'updateProposal error details: ',
+        'updating proposal!',
+      );
+      throw theError;
+    }
+  }
+
+  async getPreviousProposal(
+    currentUser: TenderCurrentUser,
+    filter: PreviousProposalFilterRequest,
+  ) {
+    try {
+      const { page = 1, limit = 10, sort } = filter;
+
+      const offset = (page - 1) * limit;
+
+      let whereClause: Prisma.proposalWhereInput = {};
+
+      /* filter whereClause based on existing permissions on hasura */
+      if (currentUser.choosenRole === 'tender_client') {
+        whereClause = {
+          ...whereClause,
+          submitter_user_id: currentUser.id,
+          step: 'ZERO',
+          outter_status: {
+            notIn: ['ONGOING'],
+          },
+        };
+      } else {
+        whereClause = {
+          ...whereClause,
+          step: 'ZERO',
+        };
+
+        if (
+          [
+            'tender_project_supervisor',
+            'tender_project_manager',
+            'tender_cashier',
+            'tender_finance',
+          ].indexOf(currentUser.choosenRole) > -1
+        ) {
+          const reviewer = await this.prismaService.user.findUnique({
+            where: { id: currentUser.id },
+            include: { track: true },
+          });
+          if (!reviewer || !reviewer.track) {
+            throw new BadRequestException('cant find track of this user');
+          }
+
+          if (reviewer.track.name !== 'GENERAL') {
+            whereClause = {
+              ...whereClause,
+              OR: [{ track_id: reviewer.track.id }, { track_id: null }],
+            };
+          }
+        }
+
+        if (currentUser.choosenRole === 'tender_moderator') {
+          whereClause = {
+            ...whereClause,
+            inner_status: { notIn: [InnerStatusEnum.CREATED_BY_CLIENT] },
+          };
+        }
+
+        if (currentUser.choosenRole === 'tender_project_supervisor') {
+          whereClause = {
+            ...whereClause,
+            OR: [{ supervisor_id: currentUser.id }, { supervisor_id: null }],
+            inner_status: {
+              notIn: [
+                InnerStatusEnum.CREATED_BY_CLIENT,
+                InnerStatusEnum.ACCEPTED_BY_MODERATOR,
+                InnerStatusEnum.REJECTED_BY_MODERATOR,
+                InnerStatusEnum.DONE_BY_CASHIER,
+                InnerStatusEnum.ASKING_SUPERVISOR_CHANGES,
+                InnerStatusEnum.ASKING_PROJECT_SUPERVISOR_CHANGES,
+                InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION,
+              ],
+            },
+            payments: {
+              some: {
+                status: {
+                  notIn: ['set_by_supervisor'],
+                },
+              },
+            },
+          };
+        }
+
+        if (currentUser.choosenRole === 'tender_cashier') {
+          whereClause = {
+            ...whereClause,
+            OR: [{ cashier_id: currentUser.id }, { cashier_id: null }],
+            inner_status: {
+              in: [
+                InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,
+                InnerStatusEnum.DONE_BY_CASHIER,
+                InnerStatusEnum.PROJECT_COMPLETED,
+                InnerStatusEnum.REQUESTING_CLOSING_FORM,
+              ],
+            },
+            payments: {
+              some: {
+                status: {
+                  in: ['done'],
+                },
+              },
+            },
+          };
+        }
+
+        if (currentUser.choosenRole === 'tender_finance') {
+          whereClause = {
+            ...whereClause,
+            OR: [{ finance_id: currentUser.id }, { finance_id: null }],
+            payments: {
+              some: {
+                status: {
+                  in: ['accepted_by_finance', 'done'],
+                },
+              },
+            },
+          };
+        }
+
+        if (currentUser.choosenRole === 'tender_project_manager') {
+          whereClause = {
+            ...whereClause,
+            OR: [
+              { project_manager_id: currentUser.id },
+              { project_manager_id: null },
+            ],
+            inner_status: {
+              notIn: [
+                InnerStatusEnum.CREATED_BY_CLIENT,
+                InnerStatusEnum.ACCEPTED_BY_MODERATOR,
+                InnerStatusEnum.REJECTED_BY_MODERATOR,
+                InnerStatusEnum.ACCEPTED_BY_SUPERVISOR,
+                InnerStatusEnum.REJECTED_BY_SUPERVISOR,
+                InnerStatusEnum.ASKING_PROJECT_MANAGER_CHANGES,
+                InnerStatusEnum.REVISED_BY_PROJECT_MANAGER,
+                InnerStatusEnum.ASKING_PROJECT_MANAGER_CHANGES,
+              ],
+            },
+            payments: {
+              some: {
+                status: {
+                  notIn: ['issued_by_supervisor'],
+                },
+              },
+            },
+          };
+        }
+
+        if (currentUser.choosenRole === 'tender_ceo') {
+          whereClause = {
+            ...whereClause,
+            inner_status: {
+              in: [
+                'ACCEPTED_BY_CEO',
+                'REJECTED_BY_CEO',
+                InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION,
+                InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,
+                InnerStatusEnum.DONE_BY_CASHIER,
+                InnerStatusEnum.REQUESTING_CLOSING_FORM,
+                InnerStatusEnum.PROJECT_COMPLETED,
+              ],
+            },
+          };
+        }
+
+        if (currentUser.choosenRole === 'tender_consultant') {
+          whereClause = {
+            ...whereClause,
+            inner_status: InnerStatusEnum.ACCEPTED_AND_NEED_CONSULTANT,
+          };
+        }
+      }
+
+      const data = await this.prismaService.proposal.findMany({
+        where: whereClause,
+        take: limit,
+        skip: offset,
+        include: {
+          user: true,
+        },
+        orderBy: {
+          project_name: sort,
+        },
+      });
+
+      const total = await this.prismaService.proposal.count({
+        where: whereClause,
       });
 
       return {
