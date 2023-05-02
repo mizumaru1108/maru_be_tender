@@ -16,6 +16,13 @@ export class ExistingClientBankInformation {
   @IsUUID()
   id: string;
 
+  /* For relation to banks (bank name) */
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  bank_id?: string;
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsNotEmpty()

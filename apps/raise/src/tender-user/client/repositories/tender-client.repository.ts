@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   bank_information,
+  banks,
   client_data,
   Prisma,
   user_status,
@@ -40,7 +41,23 @@ export class TenderClientRepository {
         error,
         TenderClientRepository.name,
         'validateStatus error details: ',
-        'find client and user!',
+        'validating user status!',
+      );
+      throw theError;
+    }
+  }
+
+  async validateBankId(id: string): Promise<banks | null> {
+    try {
+      return await this.prismaService.banks.findUnique({
+        where: { id },
+      });
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderClientRepository.name,
+        'validateBankId error details: ',
+        'validating bank id!',
       );
       throw theError;
     }
@@ -761,6 +778,7 @@ export class TenderClientRepository {
                 data: {
                   user_id: updated_bank[i].user_id,
                   bank_name: updated_bank[i].bank_name,
+                  bank_id: updated_bank[i].bank_id,
                   bank_account_name: updated_bank[i].bank_account_name,
                   bank_account_number: updated_bank[i].bank_account_number,
                   card_image: updated_bank[i].card_image,

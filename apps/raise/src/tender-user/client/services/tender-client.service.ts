@@ -616,6 +616,7 @@ export class TenderClientService {
           }
         }
       }
+
       const clientData =
         await this.tenderClientRepository.findClientDataByUserId(user.id);
       if (!clientData) throw new NotFoundException('Client data not found!');
@@ -717,6 +718,25 @@ export class TenderClientService {
               fileManagerCreateManyPayload.push(payload);
             }
 
+            // if bank_id changed (for bank name)
+            if (
+              !!updated_banks[i].bank_id &&
+              updated_banks[i].bank_id !== undefined &&
+              typeof updated_banks[i].bank_id === 'string' &&
+              updated_banks[i].bank_id !== '' &&
+              updated_banks[i].bank_id !== oldData.bank_id
+            ) {
+              const validBank =
+                await this.tenderClientRepository.validateBankId(
+                  updated_banks[i].bank_id!,
+                );
+              if (!validBank) {
+                throw new BadRequestException(
+                  `invalid bank id on updated_banks index ${i}`,
+                );
+              }
+            }
+
             const newData: Prisma.bank_informationUncheckedCreateInput = {
               id: oldData.id,
               user_id: user.id,
@@ -734,6 +754,10 @@ export class TenderClientService {
                   ? updated_banks[i].bank_name
                   : oldData.bank_name,
               card_image: cardImage,
+              bank_id:
+                updated_banks[i].bank_id !== oldData.bank_id
+                  ? updated_banks[i].bank_id
+                  : oldData.bank_id,
             };
 
             newBankInfo[idx] = newData as any;
@@ -775,6 +799,7 @@ export class TenderClientService {
             const newBank: ExistingClientBankInformation = {
               id: newBankId,
               user_id: user.id,
+              bank_id: created_banks[i].bank_id,
               bank_name: created_banks[i].bank_name,
               bank_account_name: created_banks[i].bank_account_name,
               bank_account_number: created_banks[i].bank_account_number,

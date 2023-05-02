@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsString, IsUUID, IsOptional } from 'class-validator';
 
 export class UpdateBankInformationDto {
   @ApiProperty()
@@ -7,6 +7,13 @@ export class UpdateBankInformationDto {
   @IsString()
   @IsUUID()
   id: string;
+
+  /* For relation to banks (bank name) */
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  bank_id?: string;
 
   @ApiProperty()
   @IsNotEmpty()

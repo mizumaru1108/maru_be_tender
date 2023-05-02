@@ -250,6 +250,8 @@ export class TenderProposalPaymentController {
     );
   }
 
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
   @Patch('bank/soft-delete')
   async softDelete(@Body() request: GetByIdDto) {
     const response = await this.paymentService.softDeleteBank(request);
@@ -257,6 +259,7 @@ export class TenderProposalPaymentController {
     return baseResponseHelper(response, HttpStatus.OK, 'Bank soft deleted');
   }
 
+  @UseGuards(TenderJwtGuard)
   @Get('find-bank-list')
   async findBankList(
     @Query() filter: FindBankListFilter,

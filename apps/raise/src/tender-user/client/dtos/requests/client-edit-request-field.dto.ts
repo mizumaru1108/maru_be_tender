@@ -158,7 +158,6 @@ export class ClientEditRequestFieldDto {
   @IsNotEmpty()
   @IsString()
   data_entry_mail?: string;
-
   @ApiPropertyOptional()
   @IsOptional()
   @IsNotEmpty()

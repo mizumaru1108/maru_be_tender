@@ -782,10 +782,6 @@ export class TenderProposalPaymentRepository {
       const offset = (page - 1) * limit;
 
       const response: any = await this.prismaService.banks.findMany({
-        select: {
-          id: true,
-          bank_name: true,
-        },
         take: limit,
         skip: offset,
       });

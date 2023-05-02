@@ -9,6 +9,12 @@ export class CreateBankInformationDto {
   @IsString()
   bank_name: string;
 
+  /* For relation to banks (bank name) */
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  bank_id: string;
+
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
