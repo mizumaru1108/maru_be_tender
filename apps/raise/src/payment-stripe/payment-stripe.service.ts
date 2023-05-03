@@ -53,6 +53,9 @@ import { ZakatLog, ZakatLogDocument } from '../zakat/schemas/zakat_log.schema';
 import { Anonymous, AnonymousDocument } from '../donor/schema/anonymous.schema';
 import { SendEmailDto } from '../libs/email/dtos/requests/send-email.dto';
 
+import { StripeService } from '../libs/stripe/services/stripe.service';
+import Stripe from 'stripe';
+
 @Injectable()
 export class PaymentStripeService {
   private readonly logger = ROOT_LOGGER.child({
@@ -60,6 +63,7 @@ export class PaymentStripeService {
   });
 
   constructor(
+    private stripeService: StripeService,
     @InjectModel(PaymentData.name)
     private paymentDataModel: mongoose.Model<PaymentDataDocument>,
     @InjectModel(PaymentGateway.name)
@@ -874,18 +878,39 @@ export class PaymentStripeService {
 
     if (payment.donorId) {
       if (!ObjectId.isValid(payment.donorId)) {
-        donor = await this.userModel.findOne({
-          _id: payment.donorId,
-        });
+        donor = await this.userModel
+          .findOne(
+            {
+              _id: payment.donorId,
+            },
+            {
+              _id: true,
+              email: true,
+              name: true,
+              firstname: true,
+              lastname: true,
+            },
+          )
+          .exec();
       } else {
-        donor = await this.donorModel.findOne({
-          _id: payment.donorId,
-        });
+        donor = await this.donorModel
+          .findOne(
+            {
+              _id: payment.donorId,
+            },
+            { _id: true, email: true, firstName: true, lastName: true },
+          )
+          .exec();
 
         if (!donor) {
-          donor = await this.anonymousModel.findOne({
-            _id: payment.donorId,
-          });
+          donor = await this.anonymousModel
+            .findOne(
+              {
+                _id: payment.donorId,
+              },
+              { _id: 0, email: true, firstName: true, lastName: true },
+            )
+            .exec();
 
           if (!donor) {
             throw new HttpException(
@@ -903,43 +928,37 @@ export class PaymentStripeService {
     const qty = totalAmounts.reduce((ac, obj) => {
       return ac + obj;
     }, 0);
-    const payQuantityToStripe = Math.round(parseFloat(qty)).toString();
 
-    // Axios to Stripe Webhook
-    const params = new URLSearchParams();
+    const payQuantityToStripe = qty * 100;
 
-    if (donor) params.append('customer_email', donor.email);
-
-    params.append('success_url', payment.success_url);
-    params.append('cancel_url', payment.cancel_url);
-    params.append('line_items[0][price]', payment.price);
-    params.append('line_items[0][quantity]', payQuantityToStripe);
-    params.append('mode', 'payment');
-    params.append('submit_type', 'donate'); //will enable button with label "donate"
-    this.logger.info('params', params);
-
-    const options: AxiosRequestConfig<any> = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: 'Bearer ' + getSecretKey['apiKey'] + '',
-      },
-      params,
-      url: 'https://api.stripe.com/v1/checkout/sessions',
+    // Customer Stripe
+    const paramsCustomer: Stripe.CustomerCreateParams = {
+      email: donor?.email,
     };
 
-    const data = await axios(options);
+    const resCustomer = await this.stripeService.createStripeCustomer(
+      paramsCustomer,
+      getSecretKey['apiKey']!,
+    );
 
-    if (!data)
-      throw new HttpException(
-        'Gateway Timeout or Stripe API down',
-        HttpStatus.GATEWAY_TIMEOUT,
-      );
+    // Payment Intent Stripe
+    const paramsPaymentIntent: Stripe.PaymentIntentCreateParams = {
+      amount: payQuantityToStripe,
+      currency: currency.toLowerCase(),
+      receipt_email: donor?.email || '',
+      customer: resCustomer.id,
+      description: `Donation from ${donor?.email}`,
+      automatic_payment_methods: { enabled: true },
+    };
+
+    const resPaymentIntent = await this.stripeService.createStripePaymentIntent(
+      paramsPaymentIntent,
+      getSecretKey['apiKey']!,
+    );
 
     // Insert Data to Donation Log
-    const amountStr = data['data']['amount_total'].toString();
-    const amount = amountStr.substring(0, amountStr.length - 2);
     const objectIdDonation = new ObjectId();
+    const amount = resPaymentIntent.amount / 100;
     const now: Date = new Date();
 
     const getDonationLog = await new this.donationLogsModel({
@@ -947,7 +966,7 @@ export class PaymentStripeService {
       nonprofitRealmId: ObjectId(payment.organizationId),
       donorUserId: payment.donorId,
       amount: Number(amount),
-      transactionId: data['data']['payment_intent'],
+      transactionId: resPaymentIntent.id,
       createdAt: now,
       updatedAt: now,
       currency: currency,
@@ -963,16 +982,13 @@ export class PaymentStripeService {
       );
     }
 
-    //Update Campaign Amount
+    // Update Campaign Amount
     if (getCampaign && getCampaign.length) {
       for (const elCampaign of getCampaign) {
         const oIdCampaignDonation = new ObjectId();
         const newAmount: any = campaigns.find(
           (el) => el._id == elCampaign._id,
         )?.amount;
-        const subtotal = (
-          Number(elCampaign.amountProgress.toString()) + Number(newAmount)
-        ).toString();
 
         // Create Donation Log Per Campaign
         const createDonationCampaign = await new this.donationLogsModel({
@@ -980,7 +996,7 @@ export class PaymentStripeService {
           nonprofitRealmId: ObjectId(payment.organizationId),
           donorUserId: payment.donorId,
           amount: Number(newAmount),
-          transactionId: data['data']['payment_intent'],
+          transactionId: resPaymentIntent.id,
           campaignId: elCampaign._id,
           createdAt: now,
           updatedAt: now,
@@ -1021,7 +1037,7 @@ export class PaymentStripeService {
       donationId: objectIdDonation,
       merchantId: '',
       payerId: '',
-      orderId: data.data['payment_intent'], //payment_intent ID
+      orderId: resPaymentIntent.id, //payment_intent ID
       cardType: '',
       cardScheme: '',
       paymentDescription: '',
@@ -1043,7 +1059,9 @@ export class PaymentStripeService {
       );
 
     return {
-      stripeResponse: data['data'],
+      stripeResponse: {
+        payment_intent: resPaymentIntent,
+      },
       message: 'Stripe request has been sent',
     };
   }
@@ -1551,11 +1569,7 @@ export class PaymentStripeService {
       };
 
       const data = await axios(options);
-      // console.log('Log Data =>', data);
-      // console.log('Log Id ==>', data['data']['id']);
-      // console.log('Log Currency =>', data['data']['currency']);
-      // console.log('Log Expired =>', data['data']['expires_at']);
-      // console.log('Log Data payIntent =>', data['data']['payment_intent']);
+
       if (!data) {
         throw new HttpException(
           'Gateway Timeout or Stripe API down',

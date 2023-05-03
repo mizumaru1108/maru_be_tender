@@ -1,8 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ROOT_LOGGER } from 'src/libs/root-logger';
 import Stripe from 'stripe';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
+import StripeErrors from '../stripe.errors';
 
 @Injectable()
 export class StripeService {
@@ -33,7 +38,7 @@ export class StripeService {
     });
     try {
       const stripe = new Stripe(apiKey, {
-        apiVersion: '2022-08-01',
+        apiVersion: '2022-11-15',
         typescript: true,
       });
 
@@ -55,35 +60,60 @@ export class StripeService {
     }
   }
 
+  async createStripeCustomer(
+    params: Stripe.CustomerCreateParams,
+    apiKey: string,
+  ): Promise<Stripe.Response<Stripe.Customer>> {
+    try {
+      const stripe = new Stripe(apiKey, {
+        apiVersion: '2022-11-15',
+        typescript: true,
+      });
+
+      this.logger.debug('creating customer request to stripe ...');
+      this.logger.debug('payload: ', JSON.stringify(params));
+
+      const customers = await stripe.customers.create({
+        name: params.name !== '' ? params.name : '-',
+        email: params.email,
+      });
+
+      return customers;
+    } catch (error) {
+      if (error.statusCode < 500)
+        throw new BadRequestException(
+          StripeErrors.createStripePaymentIntentError(),
+        );
+      throw new InternalServerErrorException(
+        StripeErrors.createStripePaymentIntentError(),
+      );
+    }
+  }
+
   async createStripePaymentIntent(
     params: Stripe.PaymentIntentCreateParams,
     apiKey: string,
   ): Promise<Stripe.Response<Stripe.PaymentIntent>> {
-    const tracer = trace.getTracer('tmra-raise');
-    const span = tracer.startSpan('Stripe Payment Trace ', {
-      attributes: { 'donor.firstName': '-' },
-    });
     try {
       const stripe = new Stripe(apiKey, {
-        apiVersion: '2022-08-01',
+        apiVersion: '2022-11-15',
         typescript: true,
       });
 
       this.logger.debug('creating payment intent request to stripe ...');
       this.logger.debug('payload: ', JSON.stringify(params));
+
       const paymentIntent = await stripe.paymentIntents.create(params);
-      span.setStatus({ code: SpanStatusCode.OK });
+
       return paymentIntent;
     } catch (err) {
-      // When we catch an error, we want to show that an error occurred
-      span.setStatus({
-        code: SpanStatusCode.ERROR,
-        message: err.message,
-      });
-      throw err;
-    } finally {
-      // Every span must be ended or it will not be exported
-      span.end();
+      if (err.statusCode < 500)
+        throw new BadRequestException(
+          StripeErrors.createStripePaymentIntentError(),
+        );
+      throw new InternalServerErrorException(
+        StripeErrors.createStripePaymentIntentError(),
+      );
     }
   }
 
@@ -97,7 +127,7 @@ export class StripeService {
     });
     try {
       const stripe = new Stripe(apiKey, {
-        apiVersion: '2022-08-01',
+        apiVersion: '2022-11-15',
         typescript: true,
       });
 
