@@ -25,7 +25,7 @@ export default function BankNameTable() {
   const [{ data, fetching, error }, reExecute] = useQuery({
     query: `
     query getBankList {
-      banks(where: {is_deleted: {_eq: false}}) {
+      banks {
         id
         bank_name
       }

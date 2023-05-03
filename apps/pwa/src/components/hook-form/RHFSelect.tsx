@@ -10,6 +10,8 @@ import { TMRA_RAISE_URL } from 'config';
 import { useDispatch } from 'react-redux';
 import { setBankList } from '../../redux/slices/banks';
 import { AuthorityInterface } from '../../sections/admin/bank-name/list/types';
+import useAuth from '../../hooks/useAuth';
+import axiosInstance from '../../utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -23,6 +25,7 @@ type Props = IProps & TextFieldProps;
 export default function RHFSelect({ name, children, placeholder, ...other }: Props) {
   const { control } = useFormContext();
   const theme = useTheme();
+  const { activeRole } = useAuth();
 
   const [loading, setLoading] = useState<boolean>(false);
   const [bankValue, setBankValue] = useState<AuthorityInterface[] | []>([]);
@@ -32,17 +35,19 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
     setLoading(true);
 
     try {
-      const { status, data } = await axios.get(
-        `${TMRA_RAISE_URL}/tender/proposal/payment/find-bank-list`
-      );
-
-      if (status === 200) {
-        const test = data.data
+      // const { status, data } = await axios.get(
+      //   `${TMRA_RAISE_URL}/tender/proposal/payment/find-bank-list`
+      // );
+      const rest = await axiosInstance.get(`/tender/proposal/payment/find-bank-list`, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
+      if (rest) {
+        const test = rest.data.data
           .filter((bank: any) => bank.is_deleted === false)
           .map((bank: any) => bank);
         // console.log({ test });
-        setBankValue(data.data);
-        dispatch(setBankList(data.data));
+        setBankValue(rest.data.data);
+        dispatch(setBankList(rest.data.data));
         setLoading(false);
       }
     } catch (error) {

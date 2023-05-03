@@ -60,7 +60,9 @@ export default function BankNameTableContent({ data }: { data: AuthorityInterfac
     onSort,
     onChangePage,
     onChangeRowsPerPage,
-  } = useTable();
+  } = useTable({
+    defaultRowsPerPage: 10,
+  });
 
   const navigate = useNavigate();
 
