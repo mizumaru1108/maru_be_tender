@@ -1149,7 +1149,7 @@ export class TenderProposalRepository {
 
       let whereClause: Prisma.proposalWhereInput = {
         oid: null,
-        state: appRolesMappers[currentUser.choosenRole],
+        state: appRoleMappers[currentUser.choosenRole],
       };
 
       const order_by: Prisma.proposalOrderByWithRelationInput = {};
@@ -1274,8 +1274,8 @@ export class TenderProposalRepository {
         };
       }
 
-      console.log(logUtil(whereClause));
-      console.log({ queryOptions });
+      // console.log(logUtil(whereClause));
+      // console.log({ queryOptions });
       const data = await this.prismaService.proposal.findMany(queryOptions);
 
       const total = await this.prismaService.proposal.count({
