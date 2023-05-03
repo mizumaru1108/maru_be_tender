@@ -1162,6 +1162,7 @@ export class TenderProposalRepository {
         whereClause = {
           ...whereClause,
           submitter_user_id: currentUser.id,
+          step: 'ZERO',
         };
       } else {
         whereClause = {
@@ -1197,6 +1198,7 @@ export class TenderProposalRepository {
           whereClause = {
             ...whereClause,
             OR: [{ supervisor_id: currentUser.id }, { supervisor_id: null }],
+            inner_status: InnerStatusEnum.ACCEPTED_BY_MODERATOR,
           };
         }
 
@@ -1204,6 +1206,8 @@ export class TenderProposalRepository {
           whereClause = {
             ...whereClause,
             OR: [{ cashier_id: currentUser.id }, { cashier_id: null }],
+            inner_status:
+              InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,
           };
         }
 
@@ -1211,6 +1215,11 @@ export class TenderProposalRepository {
           whereClause = {
             ...whereClause,
             OR: [{ finance_id: currentUser.id }, { finance_id: null }],
+            payments: {
+              some: {
+                status: InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER,
+              },
+            },
           };
         }
 
@@ -1221,6 +1230,7 @@ export class TenderProposalRepository {
               { project_manager_id: currentUser.id },
               { project_manager_id: null },
             ],
+            inner_status: InnerStatusEnum.ACCEPTED_BY_SUPERVISOR,
           };
         }
 
@@ -1260,6 +1270,8 @@ export class TenderProposalRepository {
         };
       }
 
+      console.log(logUtil(whereClause));
+      console.log({ queryOptions });
       const data = await this.prismaService.proposal.findMany(queryOptions);
 
       const total = await this.prismaService.proposal.count({
