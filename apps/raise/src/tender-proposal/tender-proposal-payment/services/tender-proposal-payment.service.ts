@@ -552,8 +552,8 @@ export class TenderProposalPaymentService {
     const response = await this.paymentRepo.findBankList(request);
 
     return {
-      data: response,
-      total: response.length > 0 ? Number(response.total) : 0,
+      data: response.data,
+      total: response.total > 0 ? Number(response.total) : 0,
     };
   }
 

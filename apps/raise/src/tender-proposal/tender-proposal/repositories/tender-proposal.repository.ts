@@ -1142,11 +1142,20 @@ export class TenderProposalRepository {
     filter: RequestInProcessFilterRequest,
   ) {
     try {
-      const { page = 1, limit = 10, sort } = filter;
+      const { page = 1, limit = 10, sort = 'desc', sorting_field } = filter;
 
       const offset = (page - 1) * limit;
 
-      let whereClause: Prisma.proposalWhereInput = {};
+      let whereClause: Prisma.proposalWhereInput = { oid: null };
+
+      const order_by: Prisma.proposalOrderByWithRelationInput = {};
+      const field =
+        sorting_field as keyof Prisma.proposalOrderByWithRelationInput;
+      if (sorting_field) {
+        order_by[field] = sort;
+      } else {
+        order_by.created_at = sort;
+      }
 
       /* filter whereClause based on existing permissions on hasura */
       if (currentUser.choosenRole === 'tender_client') {
@@ -1235,17 +1244,23 @@ export class TenderProposalRepository {
         }
       }
 
-      const data = await this.prismaService.proposal.findMany({
+      let queryOptions: Prisma.proposalFindManyArgs = {
         where: whereClause,
-        take: limit,
         skip: offset,
         include: {
           user: true,
         },
-        orderBy: {
-          project_name: sort,
-        },
-      });
+        orderBy: order_by,
+      };
+
+      if (limit > 0) {
+        queryOptions = {
+          ...queryOptions,
+          take: limit,
+        };
+      }
+
+      const data = await this.prismaService.proposal.findMany(queryOptions);
 
       const total = await this.prismaService.proposal.count({
         where: whereClause,
@@ -1271,11 +1286,22 @@ export class TenderProposalRepository {
     filter: PreviousProposalFilterRequest,
   ) {
     try {
-      const { page = 1, limit = 10, sort } = filter;
+      const { page = 1, limit = 10, sort = 'desc', sorting_field } = filter;
 
       const offset = (page - 1) * limit;
 
-      let whereClause: Prisma.proposalWhereInput = {};
+      let whereClause: Prisma.proposalWhereInput = {
+        oid: null,
+      };
+
+      const order_by: Prisma.proposalOrderByWithRelationInput = {};
+      const field =
+        sorting_field as keyof Prisma.proposalOrderByWithRelationInput;
+      if (sorting_field) {
+        order_by[field] = sort;
+      } else {
+        order_by.created_at = sort;
+      }
 
       /* filter whereClause based on existing permissions on hasura */
       if (currentUser.choosenRole === 'tender_client') {
@@ -1439,17 +1465,23 @@ export class TenderProposalRepository {
         }
       }
 
-      const data = await this.prismaService.proposal.findMany({
+      let queryOptions: Prisma.proposalFindManyArgs = {
         where: whereClause,
-        take: limit,
         skip: offset,
         include: {
           user: true,
         },
-        orderBy: {
-          project_name: sort,
-        },
-      });
+        orderBy: order_by,
+      };
+
+      if (limit > 0) {
+        queryOptions = {
+          ...queryOptions,
+          take: limit,
+        };
+      }
+
+      const data = await this.prismaService.proposal.findMany(queryOptions);
 
       const total = await this.prismaService.proposal.count({
         where: whereClause,

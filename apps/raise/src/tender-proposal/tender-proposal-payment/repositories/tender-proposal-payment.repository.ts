@@ -778,15 +778,42 @@ export class TenderProposalPaymentRepository {
 
   async findBankList(filter: FindBankListFilter) {
     try {
-      const { limit = 100, page = 1 } = filter;
+      const { limit = 10, page = 1, sort = 'desc', sorting_field } = filter;
       const offset = (page - 1) * limit;
 
-      const response: any = await this.prismaService.banks.findMany({
-        take: limit,
+      let whereClause: Prisma.banksWhereInput = {};
+
+      const order_by: Prisma.banksOrderByWithRelationInput = {};
+      const field = sorting_field as keyof Prisma.banksOrderByWithRelationInput;
+      if (sorting_field) {
+        order_by[field] = sort;
+      } else {
+        order_by.created_at = sort;
+      }
+
+      let queryOptions: Prisma.banksFindManyArgs = {
+        where: whereClause,
         skip: offset,
+        orderBy: order_by,
+      };
+
+      if (limit > 0) {
+        queryOptions = {
+          ...queryOptions,
+          take: limit,
+        };
+      }
+
+      const data = await this.prismaService.banks.findMany(queryOptions);
+
+      const total = await this.prismaService.banks.count({
+        where: whereClause,
       });
 
-      return response;
+      return {
+        data,
+        total,
+      };
     } catch (error) {
       const theError = prismaErrorThrower(
         error,

@@ -176,7 +176,7 @@ export class TenderProposalController {
       result.data,
       result.total,
       filter.page || 1,
-      filter.limit || 10,
+      filter.limit || 0,
       HttpStatus.OK,
       'Success',
     );
@@ -197,7 +197,7 @@ export class TenderProposalController {
       result.data,
       result.total,
       filter.page || 1,
-      filter.limit || 10,
+      filter.limit || 0,
       HttpStatus.OK,
       'Success',
     );
