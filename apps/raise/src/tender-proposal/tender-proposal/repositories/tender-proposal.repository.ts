@@ -9,6 +9,7 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import {
   TenderAppRoleEnum,
   appRoleMappers,
+  appRolesMappers,
 } from '../../../tender-commons/types';
 import {
   InnerStatusEnum,
@@ -1146,7 +1147,10 @@ export class TenderProposalRepository {
 
       const offset = (page - 1) * limit;
 
-      let whereClause: Prisma.proposalWhereInput = { oid: null };
+      let whereClause: Prisma.proposalWhereInput = {
+        oid: null,
+        state: appRolesMappers[currentUser.choosenRole],
+      };
 
       const order_by: Prisma.proposalOrderByWithRelationInput = {};
       const field =
