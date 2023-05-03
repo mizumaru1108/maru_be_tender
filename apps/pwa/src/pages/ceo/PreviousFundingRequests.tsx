@@ -5,6 +5,7 @@ import CardTableBE from 'components/card-table/CardTableBE';
 import { getProposals } from 'queries/commons/getProposal';
 import useLocales from 'hooks/useLocales';
 import useAuth from 'hooks/useAuth';
+import CardTableByBE from '../../components/card-table/CardTableByBE';
 
 function PreviousFundingRequests() {
   const { user } = useAuth();
@@ -49,7 +50,7 @@ function PreviousFundingRequests() {
     <Page title={translate('pages.common.previous_funding_requests')}>
       <Container>
         <ContentStyle>
-          <CardTableBE
+          {/* <CardTableBE
             resource={getProposals}
             title={translate('pages.common.previous_funding_requests')}
             cardFooterButtonAction="show-project"
@@ -105,6 +106,13 @@ function PreviousFundingRequests() {
                 },
               },
             }}
+          /> */}
+          <CardTableByBE
+            title={translate('previous_support_requests')}
+            endPoint="tender-proposal/previous"
+            destination="previous-funding-requests"
+            limitShowCard={6}
+            cardFooterButtonAction="show-project"
           />
         </ContentStyle>
       </Container>

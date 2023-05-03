@@ -38,7 +38,7 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
       // const { status, data } = await axios.get(
       //   `${TMRA_RAISE_URL}/tender/proposal/payment/find-bank-list`
       // );
-      const rest = await axiosInstance.get(`/tender/proposal/payment/find-bank-list`, {
+      const rest = await axiosInstance.get(`/tender/proposal/payment/find-bank-list?limit=0`, {
         headers: { 'x-hasura-role': activeRole! },
       });
       if (rest) {

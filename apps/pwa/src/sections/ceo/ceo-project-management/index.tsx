@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from 'urql';
 import {
   ProjectManagement,
@@ -11,6 +11,10 @@ import { formatDistance } from 'date-fns';
 import { useDispatch, useSelector } from 'redux/store';
 import { setTracks } from 'redux/slices/proposal';
 import { generateHeader } from '../../../utils/generateProposalNumber';
+import { useSnackbar } from 'notistack';
+import useAuth from '../../../hooks/useAuth';
+import axiosInstance from '../../../utils/axios';
+import { getDelayProjects } from '../../../utils/get-delay-projects';
 
 function CeoProjectManagement() {
   const { translate, currentLang } = useLocales();
@@ -31,61 +35,119 @@ function CeoProjectManagement() {
 
   const { data: projectDatas, fetching, error } = projectList;
 
+  //fetching using API
+
+  const [isLoading, setIsLoading] = React.useState(false);
+  const { enqueueSnackbar } = useSnackbar();
+  const { activeRole } = useAuth();
+  const [cardData, setCardData] = React.useState([]);
+
+  const fetchingIncoming = React.useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const rest = await axiosInstance.get(`tender-proposal/request-in-process?limit=0`, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
+      if (rest) {
+        const tmpDatas = rest.data.data
+          .filter((item: any) => item.state === 'CEO')
+          .map((item: any) => ({
+            ...item,
+          }));
+        if (tmpDatas) {
+          setProjectManagementData(
+            tmpDatas.map((project: any) => ({
+              id: (project.id as string) || '',
+              projectNumber:
+                (generateHeader(
+                  project && project.project_number ? project.project_number : project.id
+                ) as string) || '',
+              projectName: (project.project_name as string) || '',
+              projectSection: project.project_track || '',
+              associationName: (project.user.employee_name as string) || '',
+              createdAt: (project.created_at as string) || '',
+              projectDelay: getDelayProjects(project.created_at, currentLang.value) || '',
+              userId: project.user.id || '',
+            }))
+          );
+        }
+      }
+    } catch (err) {
+      console.log('err', err);
+      enqueueSnackbar(err.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [activeRole, enqueueSnackbar, currentLang]);
+
   if (error) {
     console.log(error);
   }
 
   // dispatch(setTracks(['MOSQUES', 'CONCESSIONAL_GRANTS', 'INITIATIVES', 'BAPTISMS']));
 
-  function getDelayProjects(getDate: any) {
-    const ignoredUnits = ['second', 'seconds', 'minute', 'minutes', 'hour', 'hours'];
-    const createdAt = new Date(getDate);
-    const formatter = new Intl.RelativeTimeFormat(currentLang.value);
-    const formattedCreatedAt = formatDistance(createdAt, new Date(), {
-      addSuffix: true,
-    });
+  // function getDelayProjects(getDate: any) {
+  //   const ignoredUnits = ['second', 'seconds', 'minute', 'minutes', 'hour', 'hours'];
+  //   const createdAt = new Date(getDate);
+  //   const formatter = new Intl.RelativeTimeFormat(currentLang.value);
+  //   const formattedCreatedAt = formatDistance(createdAt, new Date(), {
+  //     addSuffix: true,
+  //   });
 
-    const [value, unit] = formattedCreatedAt.split(' ');
+  //   const [value, unit] = formattedCreatedAt.split(' ');
 
-    if (ignoredUnits.includes(unit)) {
-      return null;
-    }
+  //   if (ignoredUnits.includes(unit)) {
+  //     return null;
+  //   }
 
-    const parsedValue = parseInt(value);
+  //   const parsedValue = parseInt(value);
 
-    if (isNaN(parsedValue)) {
-      return null;
-    }
+  //   if (isNaN(parsedValue)) {
+  //     return null;
+  //   }
 
-    const changeLangCreatedAt = formatter.format(-parsedValue, unit as Intl.RelativeTimeFormatUnit);
-    const formattedCreatedAtLate = changeLangCreatedAt.replace(' ago', ' late');
+  //   const changeLangCreatedAt = formatter.format(-parsedValue, unit as Intl.RelativeTimeFormatUnit);
+  //   const formattedCreatedAtLate = changeLangCreatedAt.replace(' ago', ' late');
 
-    return formattedCreatedAtLate;
-  }
+  //   return formattedCreatedAtLate;
+  // }
 
-  useEffect(() => {
-    if (projectDatas) {
-      setProjectManagementData(
-        projectDatas.proposal.map((project: any) => ({
-          id: (project.projectId as string) || '',
-          // projectNumber: (project.projectNumber as string) || '',
-          projectNumber:
-            generateHeader(
-              project && project.projectNumber && project.projectNumber
-                ? project.projectNumber
-                : project.projectId
-            ) || '',
-          projectName: (project.projectName as string) || '',
-          projectSection: project.projectSection || '',
-          associationName: (project.associationName.client_data.entity as string) || '',
-          createdAt: (project.createdAt as string) || '',
-          projectDelay: getDelayProjects(project.createdAt) || '',
-          userId: project.associationName.client_data.user_id || '',
-        }))
-      );
-    }
-    // eslint-disable-next-line
-  }, [projectDatas, currentLang]);
+  // useEffect(() => {
+  //   if (projectDatas) {
+  //     setProjectManagementData(
+  //       projectDatas.proposal.map((project: any) => ({
+  //         id: (project.projectId as string) || '',
+  //         // projectNumber: (project.projectNumber as string) || '',
+  //         projectNumber:
+  //           generateHeader(
+  //             project && project.projectNumber && project.projectNumber
+  //               ? project.projectNumber
+  //               : project.projectId
+  //           ) || '',
+  //         projectName: (project.projectName as string) || '',
+  //         projectSection: project.projectSection || '',
+  //         associationName: (project.associationName.client_data.entity as string) || '',
+  //         createdAt: (project.createdAt as string) || '',
+  //         projectDelay: getDelayProjects(project.createdAt) || '',
+  //         userId: project.associationName.client_data.user_id || '',
+  //       }))
+  //     );
+  //   }
+  //   // eslint-disable-next-line
+  // }, [projectDatas, currentLang]);
+
+  React.useEffect(() => {
+    fetchingIncoming();
+    // fetchingPrevious();
+  }, [fetchingIncoming]);
 
   useEffect(() => {
     dispatch(setTracks(filteredTrack));

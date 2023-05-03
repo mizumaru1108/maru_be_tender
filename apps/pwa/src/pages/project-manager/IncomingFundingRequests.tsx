@@ -5,6 +5,7 @@ import CardTableBE from 'components/card-table/CardTableBE';
 import { getProposals } from 'queries/commons/getProposal';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
+import CardTableByBE from '../../components/card-table/CardTableByBE';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -24,7 +25,7 @@ function IncomingFundingRequests() {
     <Page title={translate('pages.common.incoming_funding_requests')}>
       <Container>
         <ContentStyle>
-          <CardTableBE
+          {/* <CardTableBE
             resource={getProposals}
             title={translate('incoming_support_requests')}
             cardFooterButtonAction="show-details"
@@ -55,6 +56,13 @@ function IncomingFundingRequests() {
               },
             }}
             destination={'incoming-funding-requests'}
+          /> */}
+          <CardTableByBE
+            title={translate('incoming_support_requests')}
+            destination="requests-in-process"
+            endPoint="tender-proposal/request-in-process"
+            limitShowCard={6}
+            cardFooterButtonAction="show-details"
           />
         </ContentStyle>
       </Container>

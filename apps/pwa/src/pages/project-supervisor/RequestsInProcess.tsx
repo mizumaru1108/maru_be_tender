@@ -5,6 +5,7 @@ import CardTableBE from 'components/card-table/CardTableBE';
 import { gettingMyRequestedProcess } from 'queries/project-supervisor/gettingMyRequestedProcess';
 import useAuth from 'hooks/useAuth';
 import useLocales from '../../hooks/useLocales';
+import CardTableByBE from '../../components/card-table/CardTableByBE';
 
 function RequestsInProcess() {
   const { user } = useAuth();
@@ -23,7 +24,7 @@ function RequestsInProcess() {
     <Page title={translate('pages.common.request_in_process')}>
       <Container>
         <ContentStyle>
-          <CardTableBE
+          {/* <CardTableBE
             resource={gettingMyRequestedProcess}
             title="طلبات قيد الإجراء"
             cardFooterButtonAction="show-details"
@@ -69,6 +70,13 @@ function RequestsInProcess() {
               },
             }}
             destination={'requests-in-process'}
+          /> */}
+          <CardTableByBE
+            title={translate('incoming_support_requests')}
+            destination="requests-in-process"
+            endPoint="tender-proposal/request-in-process"
+            limitShowCard={6}
+            cardFooterButtonAction="show-details"
           />
         </ContentStyle>
       </Container>

@@ -11,6 +11,10 @@ import { moderatorStatistics } from '../../queries/Moderator/stactic';
 //
 import moment from 'moment';
 import { generateHeader } from '../../utils/generateProposalNumber';
+import { useSnackbar } from 'notistack';
+import useAuth from '../../hooks/useAuth';
+import React from 'react';
+import axiosInstance from '../../utils/axios';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -46,7 +50,48 @@ function MainManagerPage() {
   });
   const { data: incomingData, fetching: incomingFetching, error: incomingError } = incoming;
 
-  if (fetching || incomingFetching) return <>{translate('pages.common.loading')}</>;
+  // using API
+  const [isLoading, setIsLoading] = React.useState(false);
+  const { enqueueSnackbar } = useSnackbar();
+  const { activeRole } = useAuth();
+  const [cardData, setCardData] = React.useState([]);
+
+  const fetchingIncoming = React.useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const rest = await axiosInstance.get(`tender-proposal/request-in-process?limit=4`, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
+      if (rest) {
+        // console.log('rest total :', rest.data.total);
+        setCardData(
+          rest.data.data.map((item: any) => ({
+            ...item,
+          }))
+        );
+      }
+    } catch (err) {
+      console.log('err', err);
+      enqueueSnackbar(err.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [activeRole, enqueueSnackbar]);
+
+  React.useEffect(() => {
+    fetchingIncoming();
+    // fetchingPrevious();
+  }, [fetchingIncoming]);
+
+  if (fetching || incomingFetching || isLoading) return <>{translate('pages.common.loading')}</>;
 
   return (
     // <Page title="Moderator Dashboard">
@@ -88,7 +133,7 @@ function MainManagerPage() {
             </Grid>
             <Grid item md={12} xs={12}>
               <Grid container rowSpacing={3} columnSpacing={3}>
-                {incomingData.data.map((item: any, index: any) => (
+                {cardData.map((item: any, index: any) => (
                   <Grid item md={6} xs={12} key={index}>
                     <ProjectCard
                       title={{
@@ -102,7 +147,7 @@ function MainManagerPage() {
                       }}
                       content={{
                         projectName: item.project_name,
-                        organizationName: item.user.client_data.entity ?? '-',
+                        organizationName: (item && item.user && item.user.employee_name) ?? '-',
                         sentSection: item.state,
                         employee: item.user.employee_name,
                         createdAtClient: new Date(item.created_at),

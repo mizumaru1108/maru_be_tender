@@ -4,6 +4,7 @@ import CardTableBE from 'components/card-table/CardTableBE';
 import Page from 'components/Page';
 import useLocales from 'hooks/useLocales';
 import { gettingPreviousRequests } from 'queries/Moderator/gettingPreviousRequests';
+import CardTableByBE from '../../../components/card-table/CardTableByBE';
 
 function PreviousSupportRequests() {
   const { translate } = useLocales();
@@ -22,7 +23,7 @@ function PreviousSupportRequests() {
     <Page title={translate('pages.common.previous_funding_requests')}>
       <Container>
         <ContentStyle>
-          <CardTableBE
+          {/* <CardTableBE
             resource={gettingPreviousRequests}
             title={translate('previous_support_requests')}
             cardFooterButtonAction="show-project"
@@ -66,6 +67,13 @@ function PreviousSupportRequests() {
                 inner_status: { _nin: ['CREATED_BY_CLIENT'] },
               },
             }}
+          /> */}
+          <CardTableByBE
+            title={translate('previous_support_requests')}
+            endPoint="tender-proposal/previous"
+            destination="previous-funding-requests"
+            limitShowCard={6}
+            cardFooterButtonAction="show-project"
           />
         </ContentStyle>
       </Container>

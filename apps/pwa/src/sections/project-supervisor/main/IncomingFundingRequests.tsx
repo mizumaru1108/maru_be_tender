@@ -5,6 +5,10 @@ import { useNavigate } from 'react-router';
 import { useQuery } from 'urql';
 import useLocales from 'hooks/useLocales';
 import { generateHeader } from '../../../utils/generateProposalNumber';
+import React from 'react';
+import { useSnackbar } from 'notistack';
+import useAuth from '../../../hooks/useAuth';
+import axiosInstance from '../../../utils/axios';
 
 function IncomingFundingRequests() {
   const navigate = useNavigate();
@@ -23,15 +27,58 @@ function IncomingFundingRequests() {
     },
   });
   const { data, fetching, error } = result;
-  if (fetching) {
+
+  // fetching using API
+  const [isLoading, setIsLoading] = React.useState(false);
+  const { enqueueSnackbar } = useSnackbar();
+  const { activeRole } = useAuth();
+  const [cardData, setCardData] = React.useState([]);
+
+  const fetchingIncoming = React.useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const rest = await axiosInstance.get(`tender-proposal/request-in-process?limit=4`, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
+      if (rest) {
+        // console.log('rest total :', rest.data);
+        setCardData(
+          rest.data.data.map((item: any) => ({
+            ...item,
+          }))
+        );
+      }
+    } catch (err) {
+      console.log('err', err);
+      enqueueSnackbar(err.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [activeRole, enqueueSnackbar]);
+
+  React.useEffect(() => {
+    fetchingIncoming();
+    // fetchingPrevious();
+  }, [fetchingIncoming]);
+
+  if (fetching || isLoading) {
     return (
       <Grid item md={12}>
         {translate('pages.common.loading')}
       </Grid>
     );
   }
-  const props = data?.data ?? [];
-  if (!props || props.length === 0) return null;
+
+  // const props = data?.data ?? [];
+  // if (!props || props.length === 0) return null;
 
   return (
     <Grid item md={12}>
@@ -56,7 +103,7 @@ function IncomingFundingRequests() {
         </Button>
       </Stack>
       <Grid container spacing={2}>
-        {props.map((item: any, index: any) => (
+        {cardData.map((item: any, index: any) => (
           <Grid item md={6} key={index}>
             <ProjectCard
               title={{
@@ -68,7 +115,7 @@ function IncomingFundingRequests() {
               }}
               content={{
                 projectName: item.project_name,
-                organizationName: item.user.client_data.entity ?? '-',
+                organizationName: (item && item.user && item.user.employee_name) ?? '-',
                 sentSection: item.state,
                 // employee: item.user.employee_name,
                 employee:

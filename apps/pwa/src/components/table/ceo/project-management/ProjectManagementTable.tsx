@@ -63,7 +63,7 @@ export default function ProjectManagementTable({
   } = useTable({
     defaultOrderBy: 'createdAt',
     defaultOrder: 'asc',
-    defaultRowsPerPage: 5,
+    defaultRowsPerPage: 10,
     defaultCurrentPage: 0,
   });
 

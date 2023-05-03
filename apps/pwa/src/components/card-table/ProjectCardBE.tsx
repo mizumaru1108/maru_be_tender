@@ -295,7 +295,7 @@ const ProjectCardBE = ({
             </Typography>
           </>
         )}
-        {user.client_data.entity && (
+        {user && (
           <React.Fragment>
             <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
               {translate('project_management_headercell.clients_name')}
@@ -312,7 +312,7 @@ const ProjectCardBE = ({
                 fontSize: '14px !important',
               }}
             >
-              {user.client_data.entity}
+              {(user && user.client_data && user.client_data.entity) ?? user.employee_name}
             </Typography>
           </React.Fragment>
         )}

@@ -4,6 +4,7 @@ import CardTableBE from 'components/card-table/CardTableBE';
 import Page from 'components/Page';
 import { gettingIncomingRequests } from 'queries/Moderator/gettingIncomingRequests';
 import { useState } from 'react';
+import CardTableByBE from '../../../components/card-table/CardTableByBE';
 import { ProjectCardProps } from '../../../components/card-table/types';
 import useLocales from '../../../hooks/useLocales';
 
@@ -24,7 +25,7 @@ function IncomingSupportRequests() {
     <Page title={translate('pages.common.incoming_funding_requests')}>
       <Container>
         <ContentStyle>
-          <CardTableBE
+          {/* <CardTableBE
             resource={gettingIncomingRequests}
             title={translate('incoming_support_requests')}
             cardFooterButtonAction="show-details"
@@ -51,6 +52,13 @@ function IncomingSupportRequests() {
               project_state: { state: { _in: ['MODERATOR'] } },
               outter_status: { outter_status: { _in: ['PENDING', 'ONGOING'] } },
             }}
+          /> */}
+          <CardTableByBE
+            title={translate('incoming_support_requests')}
+            destination="requests-in-process"
+            endPoint="tender-proposal/request-in-process"
+            limitShowCard={6}
+            cardFooterButtonAction="show-details"
           />
         </ContentStyle>
       </Container>

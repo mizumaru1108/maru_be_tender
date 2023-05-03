@@ -5,6 +5,7 @@ import CardTableBE from 'components/card-table/CardTableBE';
 import { gettingIncomingRequests } from 'queries/project-supervisor/gettingIncomingRequests';
 import useLocales from '../../hooks/useLocales';
 import useAuth from 'hooks/useAuth';
+import CardTableByBE from '../../components/card-table/CardTableByBE';
 
 function IncomingFundingRequests() {
   const { user } = useAuth();
@@ -22,7 +23,7 @@ function IncomingFundingRequests() {
     <Page title={translate('pages.common.incoming_funding_requests')}>
       <Container>
         <ContentStyle>
-          <CardTableBE
+          {/* <CardTableBE
             resource={gettingIncomingRequests}
             title="طلبات الدعم الواردة"
             cardFooterButtonAction="show-details"
@@ -72,6 +73,13 @@ function IncomingFundingRequests() {
               },
             }}
             destination={'incoming-funding-requests'}
+          /> */}
+          <CardTableByBE
+            title={translate('incoming_support_requests')}
+            destination="requests-in-process"
+            endPoint="tender-proposal/request-in-process"
+            limitShowCard={6}
+            cardFooterButtonAction="show-details"
           />
         </ContentStyle>
       </Container>
