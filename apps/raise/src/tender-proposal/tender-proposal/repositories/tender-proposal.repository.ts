@@ -1149,7 +1149,6 @@ export class TenderProposalRepository {
 
       let whereClause: Prisma.proposalWhereInput = {
         oid: null,
-        state: appRoleMappers[currentUser.choosenRole],
       };
 
       const order_by: Prisma.proposalOrderByWithRelationInput = {};
@@ -1173,6 +1172,16 @@ export class TenderProposalRepository {
           ...whereClause,
           step: 'ZERO',
         };
+
+        if (
+          ['tender_cashier', 'tender_finance'].indexOf(
+            currentUser.choosenRole,
+          ) === -1
+        ) {
+          whereClause = {
+            state: appRoleMappers[currentUser.choosenRole],
+          };
+        }
 
         if (
           [
@@ -1212,6 +1221,13 @@ export class TenderProposalRepository {
             OR: [{ cashier_id: currentUser.id }, { cashier_id: null }],
             inner_status:
               InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,
+            payments: {
+              some: {
+                status: {
+                  in: ['accepted_by_project_manager', 'done'],
+                },
+              },
+            },
           };
         }
 
@@ -1221,9 +1237,12 @@ export class TenderProposalRepository {
             OR: [{ finance_id: currentUser.id }, { finance_id: null }],
             payments: {
               some: {
-                status: InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER,
+                status: {
+                  in: ['accepted_by_project_manager'],
+                },
               },
             },
+            outter_status: { in: ['ONGOING', 'PENDING', 'ON_REVISION'] },
           };
         }
 
@@ -1274,8 +1293,8 @@ export class TenderProposalRepository {
         };
       }
 
-      // console.log(logUtil(whereClause));
-      // console.log({ queryOptions });
+      console.log(logUtil(whereClause));
+      console.log({ queryOptions });
       const data = await this.prismaService.proposal.findMany(queryOptions);
 
       const total = await this.prismaService.proposal.count({
