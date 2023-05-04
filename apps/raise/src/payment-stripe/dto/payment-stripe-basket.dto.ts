@@ -2,6 +2,8 @@ import { IsString } from 'class-validator';
 import { IsArray } from 'class-validator';
 import { Types } from 'mongoose';
 
+import { IPaymentIntent } from 'src/tender-commons/types/stripe';
+
 export class PaymentRequestCartDto {
   @IsString()
   organizationId: Types.ObjectId;
@@ -22,4 +24,5 @@ export class PaymentRequestCartDto {
     organizationId: Types.ObjectId;
     amount: number;
   }[];
+  payment_intent?: IPaymentIntent | null;
 }

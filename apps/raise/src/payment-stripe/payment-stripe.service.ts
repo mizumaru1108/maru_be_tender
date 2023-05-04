@@ -831,11 +831,11 @@ export class PaymentStripeService {
     // Get Campaigns Data
     const campaigns = payment.data_basket;
     const campaignIds: any[] = [];
-    const totalAmounts: any[] = [];
+    const totalAmounts: { id: string; amount: number }[] = [];
 
     for (let i = 0; i < campaigns.length; i++) {
       campaignIds.push(campaigns[i]._id);
-      totalAmounts.push(campaigns[i].amount);
+      totalAmounts.push({ id: campaigns[i]._id, amount: campaigns[i].amount });
     }
 
     const getCampaign = await this.campaignModel
@@ -851,11 +851,12 @@ export class PaymentStripeService {
       );
     }
 
-    getCampaign.map((e, i) => {
-      if (
-        parseInt(e.amountProgress.toString()) + totalAmounts[i] >
-        parseInt(e.amountTarget.toString())
-      ) {
+    getCampaign.map((e) => {
+      const amount_to_pay = totalAmounts.find((el) => el.id === e.id)?.amount;
+      const amount_progress = parseInt(e.amountProgress.toString());
+      const amount_target = parseInt(e.amountTarget.toString());
+
+      if (amount_progress + amount_to_pay! > amount_target) {
         throw new HttpException(
           `Amount is larger than the limit the target of campaign ${e.id}`,
           HttpStatus.BAD_REQUEST,
@@ -925,8 +926,8 @@ export class PaymentStripeService {
     }
 
     // Total Quantity
-    const qty = totalAmounts.reduce((ac, obj) => {
-      return ac + obj;
+    const qty = totalAmounts.reduce((acc, curr) => {
+      return acc + curr.amount;
     }, 0);
 
     const payQuantityToStripe = qty * 100;
@@ -1066,6 +1067,210 @@ export class PaymentStripeService {
     };
   }
 
+  async stripeConfirmPaymentIntent(payment: PaymentRequestCartDto) {
+    const ObjectId = require('mongoose').Types.ObjectId;
+    const now: Date = new Date();
+    const order_id = payment.payment_intent?.id;
+    const payment_status =
+      payment.payment_intent?.status === 'succeeded' ? 'SUCCESS' : 'FAILED';
+    let anonymousData;
+
+    try {
+      if (!payment.organizationId) {
+        throw new HttpException(
+          'organizationId is Required',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const getOrganization = await this.organizationModel.findOne({
+        _id: ObjectId(payment.organizationId),
+      });
+
+      if (!getOrganization) {
+        throw new HttpException(
+          'Request rejected organizationId not found',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const getSecretKey = await this.paymentGatewayModel.findOne(
+        { organizationId: ObjectId(payment.organizationId) },
+        { _id: 0, apiKey: 1 },
+      );
+
+      if (!getSecretKey) {
+        throw new HttpException(
+          'organization can not use Stripe Payment Gateway',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const paymentData = await this.paymentDataModel.findOne({
+        orderId: order_id,
+      });
+
+      if (!paymentData) {
+        throw new HttpException('Payment data not found', HttpStatus.NOT_FOUND);
+      }
+
+      const donationId = paymentData.donationId;
+      const updateDonationLog = await this.donationLogsModel.updateOne(
+        { _id: donationId },
+        { donationStatus: payment_status },
+      );
+
+      if (!paymentData || !updateDonationLog) {
+        throw new HttpException('incorrect orderId', HttpStatus.BAD_REQUEST);
+      }
+
+      const getDonationLog = await this.donationLogsModel.findOne(
+        { _id: paymentData.donationId },
+        { _id: 0, campaignId: 1, currency: 2, amount: 3 },
+      );
+
+      if (!getDonationLog) {
+        throw new HttpException('incorrect orderId', HttpStatus.NOT_FOUND);
+      }
+
+      // Get Donor Data
+      const donor = await this.userModel.findOne(
+        { _id: donationId },
+        { _id: 0, firstName: 1, lastName: 2, email: 3 },
+      );
+
+      if (!donor) {
+        anonymousData = await this.anonymousModel.findOne(
+          { _id: donationId },
+          {
+            _id: 0,
+            isEmailChecklist: 1,
+            anonymous: 2,
+            email: 3,
+            firstName: 4,
+            lastName: 5,
+          },
+        );
+      }
+
+      const getDataBasket = await this.paymentDataModel.findOne(
+        {
+          orderId: order_id,
+        },
+        {
+          responseStatus: 1,
+        },
+      );
+
+      const campaignIds: any[] = [];
+      const totalAmounts: { id: string; amount: number }[] = [];
+
+      if (!!getDataBasket && payment.data_basket) {
+        const campaigns = payment.data_basket;
+
+        for (let i = 0; i < campaigns.length; i++) {
+          campaignIds.push(campaigns[i]._id);
+          totalAmounts.push({
+            id: campaigns[i]._id,
+            amount: campaigns[i].amount,
+          });
+
+          if (payment_status == 'SUCCESS') {
+            const getCampaign = await this.campaignModel.findOne(
+              { _id: campaigns[i]._id },
+              { _id: 1, amountProgress: 1, amountTarget: 1, title: 1 },
+            );
+
+            if (!getCampaign) {
+              throw new HttpException(
+                'Campaign not found',
+                HttpStatus.NOT_FOUND,
+              );
+            }
+
+            const amount_to_pay = totalAmounts.find(
+              (el) => el.id === campaigns[i]._id,
+            )?.amount;
+
+            const amount_progress = parseInt(
+              getCampaign.amountProgress.toString(),
+            );
+            const amount_target = parseInt(getCampaign.amountTarget.toString());
+
+            const lastAmount = (
+              Number(amount_progress) + Number(amount_to_pay)
+            ).toString();
+
+            const updateCampaign = await this.campaignModel.updateOne(
+              { _id: getCampaign._id },
+              {
+                amountProgress: Number(lastAmount),
+                updatedAt: now.toISOString(),
+              },
+            );
+
+            if (!updateCampaign) {
+              throw new HttpException(
+                'failed update campaign data',
+                HttpStatus.BAD_REQUEST,
+              );
+            } else if (
+              amount_target == Number(lastAmount) ||
+              Number(lastAmount) > amount_to_pay!
+            ) {
+              await this.campaignModel.updateOne(
+                { _id: getCampaign._id },
+                {
+                  isFinished: 'Y',
+                },
+              );
+            }
+
+            const getDonationLogCampaign =
+              await this.donationLogsModel.updateOne(
+                { transactionId: order_id, campaignId: getCampaign._id },
+                {
+                  donationStatus: payment_status,
+                },
+              );
+
+            if (!getDonationLogCampaign) {
+              throw new HttpException(
+                'failed inserting donation log data',
+                HttpStatus.BAD_REQUEST,
+              );
+            }
+
+            const updatePaymentData = await this.paymentDataModel.updateOne(
+              { orderId: order_id },
+              {
+                paymentStatus: payment_status,
+                responseMessage: payment_status,
+                transactionTime: now.toISOString(), //stripe have their own transactionTime
+                cardType: 'card',
+              },
+            );
+
+            if (!updatePaymentData) {
+              throw new HttpException(
+                'failed inserting transaction data',
+                HttpStatus.BAD_REQUEST,
+              );
+            }
+          }
+        }
+      }
+
+      return {
+        statusCode: 200,
+        message: 'Successful confirm payment intent from stripe',
+      };
+    } catch (err) {
+      throw new HttpException(err, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  // Don't use
   async stripeCallbackBasket(sessionId: string, organizationId: string) {
     const tracer = trace.getTracer('tmra-raise');
     const span = tracer.startSpan('stripe-request', {
