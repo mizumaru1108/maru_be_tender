@@ -6,6 +6,7 @@ import { IncomingConultationRequests } from 'pages/client/mock-data';
 import CardTableBE from 'components/card-table/CardTableBE';
 import { getProposals } from 'queries/commons/getProposal';
 import useLocales from '../../hooks/useLocales';
+import CardTableByBE from '../../components/card-table/CardTableByBE';
 
 function IncomingFundingRequests() {
   const { translate } = useLocales();
@@ -22,7 +23,7 @@ function IncomingFundingRequests() {
     <Page title={translate('pages.common.incoming_funding_requests')}>
       <Container>
         <ContentStyle>
-          <CardTableBE
+          {/* <CardTableBE
             resource={getProposals}
             title="طلبات الاستشارة الواردة"
             cardFooterButtonAction="show-details"
@@ -51,6 +52,13 @@ function IncomingFundingRequests() {
               },
             }}
             destination={'incoming-funding-requests'}
+          /> */}
+          <CardTableByBE
+            title={translate('incoming_support_requests')}
+            destination="requests-in-process"
+            endPoint="tender-proposal/request-in-process"
+            limitShowCard={6}
+            cardFooterButtonAction="show-details"
           />
         </ContentStyle>
       </Container>

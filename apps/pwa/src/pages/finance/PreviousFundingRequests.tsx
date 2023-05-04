@@ -6,6 +6,7 @@ import { gettingPreviousRequests } from 'queries/project-supervisor/gettingPrevi
 import { getProposals } from 'queries/commons/getProposal';
 import useLocales from '../../hooks/useLocales';
 import useAuth from 'hooks/useAuth';
+import CardTableByBE from '../../components/card-table/CardTableByBE';
 
 function PreviousFundingRequests() {
   const { user } = useAuth();
@@ -23,7 +24,7 @@ function PreviousFundingRequests() {
     <Page title={translate('pages.common.previous_funding_requests')}>
       <Container>
         <ContentStyle>
-          <CardTableBE
+          {/* <CardTableBE
             resource={gettingPreviousRequests}
             title="طلبات الدعم سابقة"
             cardFooterButtonAction="show-project"
@@ -69,6 +70,13 @@ function PreviousFundingRequests() {
                 _not: { payments: { status: { _in: ['accepted_by_project_manager'] } } },
               },
             }}
+          /> */}
+          <CardTableByBE
+            title={translate('previous_support_requests')}
+            endPoint="tender-proposal/previous"
+            destination="previous-funding-requests"
+            limitShowCard={6}
+            cardFooterButtonAction="show-project"
           />
         </ContentStyle>
       </Container>

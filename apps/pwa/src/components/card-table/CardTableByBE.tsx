@@ -14,6 +14,7 @@ import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import useAuth from '../../hooks/useAuth';
 import axiosInstance from '../../utils/axios';
+import CardTableLoading from './CardTableLoading';
 import CardTableNoData from './CardTableNoData';
 import LoadingPage from './LoadingPage';
 import ProjectTableBE from './ProjectCardBE';
@@ -153,8 +154,29 @@ function CardTableByBE({
           </Select>
         </FormControl>
       </Grid>
-      {isLoading && <LoadingPage />}
-      {!isLoading && cardData ? (
+      {isLoading && (
+        <Grid item md={12} xs={12}>
+          <CardTableLoading />
+        </Grid>
+      )}
+      {!isLoading &&
+        cardData.length > 0 &&
+        cardData.map((item: any, index: any) => (
+          <Grid item key={index} md={6} xs={12}>
+            <ProjectTableBE
+              {...item}
+              created_at={new Date(item.created_at)}
+              cardFooterButtonAction={cardFooterButtonAction}
+              destination={destination}
+            />
+          </Grid>
+        ))}
+      {!isLoading && !cardData && (
+        <Grid item md={12} xs={12}>
+          <CardTableNoData />
+        </Grid>
+      )}
+      {/* {!isLoading && cardData && cardData.length > 0 ? (
         cardData.map((item: any, index: any) => (
           <Grid item key={index} md={6} xs={12}>
             <ProjectTableBE
@@ -169,7 +191,7 @@ function CardTableByBE({
         <Grid item md={12} xs={12}>
           <CardTableNoData />
         </Grid>
-      )}
+      )} */}
       {!isLoading && cardData && (
         <>
           <Grid
