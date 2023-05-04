@@ -5,7 +5,7 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { ModalProposalType } from '../../../../../@types/project-details';
 import * as Yup from 'yup';
 import { ProposalApprovePayloadSupervisor } from '../../types';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ModalDialog from 'components/modal-dialog';
 import {
   Stack,
@@ -28,6 +28,9 @@ import uuidv4 from 'utils/uuidv4';
 import { getOneProposal } from 'queries/commons/getOneProposal';
 import { useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
+import useAuth from '../../../../../hooks/useAuth';
+import axiosInstance from '../../../../../utils/axios';
+import { _supportGoalsArr } from '../../../../../_mock/_supportGoalsArr';
 
 function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType) {
   const { translate } = useLocales();
@@ -43,14 +46,19 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
     | []
   >([]);
 
-  const [proposalResult] = useQuery({
-    query: getOneProposal,
-    variables: {
-      id: pid,
-    },
-  });
+  // const [proposalResult] = useQuery({
+  //   query: getOneProposal,
+  //   variables: {
+  //     id: pid,
+  //   },
+  // });
 
-  const { data: proposalData, fetching: fetchingProposal, error: errorProposal } = proposalResult;
+  // const { data: proposalData, fetching: fetchingProposal, error: errorProposal } = proposalResult;
+
+  // fetching using API proposal by id
+  const [isLoading, setIsLoading] = React.useState(false);
+  const { activeRole } = useAuth();
+  const [proposal, setProposal] = useState<any>();
 
   const validationSchema = Yup.object().shape({
     support_type: Yup.boolean().required('support_type is required!'),
@@ -177,17 +185,51 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
     }
   };
 
-  useEffect(() => {
-    if (!fetchingProposal && proposalData && proposalData.proposal.proposal_item_budgets.length) {
-      setBasedBudget(proposalData.proposal.proposal_item_budgets);
-      setValue('detail_project_budgets', proposalData.proposal.proposal_item_budgets);
-    } else {
+  const fetchingIncoming = React.useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const rest = await axiosInstance.get(`/tender-proposal/fetch-by-id?id=${pid}`, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
+      if (rest) {
+        console.log('rest total :', rest.data.data);
+        setProposal(rest.data.data);
+        setBasedBudget(rest.data.data.proposal_item_budgets);
+        setValue('detail_project_budgets', rest.data.data.proposal_item_budgets);
+      }
+    } catch (err) {
+      console.log('err', err);
+      enqueueSnackbar(err.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+      });
       resetField('detail_project_budgets');
+    } finally {
+      setIsLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [proposalData, fetchingProposal, setValue, resetField]);
+  }, [activeRole, enqueueSnackbar, pid, setValue, resetField]);
 
-  if (errorProposal) return <>Something when wrong on get proposal details</>;
+  // useEffect(() => {
+  //   if (!fetchingProposal && proposalData && proposalData.proposal.proposal_item_budgets.length) {
+  //     setBasedBudget(proposalData.proposal.proposal_item_budgets);
+  //     setValue('detail_project_budgets', proposalData.proposal.proposal_item_budgets);
+  //   } else {
+  //     resetField('detail_project_budgets');
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [proposalData, fetchingProposal, setValue, resetField]);
+
+  React.useEffect(() => {
+    fetchingIncoming();
+    // fetchingPrevious();
+  }, [fetchingIncoming]);
+
+  // if (isLoading) return <>loading...</>;
 
   return (
     <FormProvider methods={methods}>
@@ -202,7 +244,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
         }
         content={
           <>
-            {fetchingProposal && !proposalData ? (
+            {isLoading ? (
               <>loading...</>
             ) : (
               <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: 0.5 }}>
@@ -284,6 +326,25 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                     ]}
                   />
                 </Grid>
+                {/* <Grid item md={6} xs={12}>
+                  <RHFSelect
+                    type="select"
+                    size="small"
+                    name="support_goal_id"
+                    placeholder="الرجاء اختيار أهداف الدعم"
+                    label="اهداف الدعم*"
+                  >
+                    {!proposal
+                      ? null
+                      : _supportGoals[
+                          `${proposal.project_track as keyof typeof _supportGoals}`
+                        ].map((item) => (
+                          <MenuItem value={item.value} key={item.value}>
+                            {item.title}
+                          </MenuItem>
+                        ))}
+                  </RHFSelect>
+                </Grid> */}
                 <Grid item md={6} xs={12}>
                   <RHFSelect
                     type="select"
@@ -292,9 +353,17 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                     placeholder="الرجاء اختيار أهداف الدعم"
                     label="اهداف الدعم*"
                   >
-                    {_supportGoals[
-                      `${proposalData.proposal.project_track as keyof typeof _supportGoals}`
-                    ].map((item) => (
+                    {/* {!proposal
+                      ? null
+                      : _supportGoals[
+                          `${proposal.project_track as keyof typeof _supportGoals}`
+                        ].map((item) => (
+                          <MenuItem value={item.value} key={item.value}>
+                            {item.title}
+                          </MenuItem>
+                        ))} */}
+
+                    {_supportGoalsArr.map((item) => (
                       <MenuItem value={item.value} key={item.value}>
                         {item.title}
                       </MenuItem>
