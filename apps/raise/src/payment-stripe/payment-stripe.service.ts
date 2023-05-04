@@ -805,7 +805,7 @@ export class PaymentStripeService {
       !payment.price ||
       !payment.total_amount ||
       !payment.quantity ||
-      !payment.data_basket.length
+      !payment.data_basket?.length
     ) {
       throw new BadRequestException('Bad request is not match');
     }
@@ -978,8 +978,8 @@ export class PaymentStripeService {
 
     if (!getDonationLog) {
       throw new HttpException(
-        'Gateway Timeout or Stripe API down',
-        HttpStatus.GATEWAY_TIMEOUT,
+        `Cant't save donation log!`,
+        HttpStatus.BAD_REQUEST,
       );
     }
 
@@ -1106,32 +1106,23 @@ export class PaymentStripeService {
         );
       }
 
-      const paymentData = await this.paymentDataModel.findOne({
-        orderId: order_id,
-      });
+      const paymentData = await this.paymentDataModel.findOne(
+        {
+          orderId: order_id,
+        },
+        {
+          _id: 1,
+          orderId: 1,
+          responseStatus: 1,
+          donationId: 1,
+        },
+      );
 
       if (!paymentData) {
         throw new HttpException('Payment data not found', HttpStatus.NOT_FOUND);
       }
 
       const donationId = paymentData.donationId;
-      const updateDonationLog = await this.donationLogsModel.updateOne(
-        { _id: donationId },
-        { donationStatus: payment_status },
-      );
-
-      if (!paymentData || !updateDonationLog) {
-        throw new HttpException('incorrect orderId', HttpStatus.BAD_REQUEST);
-      }
-
-      const getDonationLog = await this.donationLogsModel.findOne(
-        { _id: paymentData.donationId },
-        { _id: 0, campaignId: 1, currency: 2, amount: 3 },
-      );
-
-      if (!getDonationLog) {
-        throw new HttpException('incorrect orderId', HttpStatus.NOT_FOUND);
-      }
 
       // Get Donor Data
       const donor = await this.userModel.findOne(
@@ -1153,20 +1144,122 @@ export class PaymentStripeService {
         );
       }
 
-      const getDataBasket = await this.paymentDataModel.findOne(
-        {
-          orderId: order_id,
-        },
-        {
-          responseStatus: 1,
-        },
-      );
+      if (payment.campaignId && payment.amount && payment.campaignTitle) {
+        let updateCampaignDonationLog;
 
-      const campaignIds: any[] = [];
-      const totalAmounts: { id: string; amount: number }[] = [];
+        const getCampaign = await this.campaignModel
+          .findOne({
+            _id: payment.campaignId,
+          })
+          .exec();
 
-      if (!!getDataBasket && payment.data_basket) {
+        if (!getCampaign) {
+          throw new HttpException(
+            `request rejected campaignId not found`,
+            HttpStatus.NOT_FOUND,
+          );
+        }
+
+        const amount_progress = Number(getCampaign.amountProgress.toString());
+        const amount_target = Number(getCampaign.amountTarget.toString());
+
+        const subtotalAmountCampaign = (
+          amount_progress + Number(payment.amount)
+        ).toString();
+
+        if (
+          getCampaign.campaignType &&
+          getCampaign.campaignType === 'zakat' &&
+          payment.zakatLogs
+        ) {
+          updateCampaignDonationLog = await this.donationLogsModel.updateOne(
+            {
+              _id: donationId,
+              transactionId: payment.payment_intent?.id,
+              donorUserId: payment.donorId,
+              campaignId: ObjectId(payment.campaignId),
+            },
+            { donationStatus: payment_status },
+          );
+        } else {
+          updateCampaignDonationLog = await this.donationLogModel.updateOne(
+            {
+              _id: donationId,
+              transactionId: payment.payment_intent?.id,
+              donorUserId: payment.donorId,
+              campaignId: ObjectId(payment.campaignId),
+            },
+            { donationStatus: payment_status },
+          );
+        }
+
+        if (!updateCampaignDonationLog) {
+          throw new BadRequestException(`donation failed update to mongodb`);
+        }
+
+        const updateCampaign = await this.campaignModel.updateOne(
+          { _id: getCampaign._id },
+          {
+            amountProgress: Number(subtotalAmountCampaign),
+            updatedAt: now.toISOString(),
+          },
+        );
+
+        if (!updateCampaign) {
+          throw new HttpException(
+            'failed update campaign data',
+            HttpStatus.BAD_REQUEST,
+          );
+        } else if (
+          amount_target == Number(subtotalAmountCampaign) ||
+          Number(subtotalAmountCampaign) > Number(payment.amount)
+        ) {
+          await this.campaignModel.updateOne(
+            { _id: getCampaign._id },
+            {
+              isFinished: 'Y',
+            },
+          );
+        }
+
+        const updatePaymentData = await this.paymentDataModel.updateOne(
+          { orderId: order_id },
+          {
+            paymentStatus: payment_status,
+            responseMessage: payment_status,
+            transactionTime: now.toISOString(), //stripe have their own transactionTime
+            cardType: 'card',
+          },
+        );
+
+        if (!updatePaymentData) {
+          throw new HttpException(
+            'failed inserting transaction data',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+      } else if (!!paymentData && payment.data_basket?.length) {
+        const campaignIds: any[] = [];
+        const totalAmounts: { id: string; amount: number }[] = [];
         const campaigns = payment.data_basket;
+
+        const updateDonationLog = await this.donationLogsModel.updateOne(
+          { _id: donationId },
+          { donationStatus: payment_status },
+        );
+
+        if (!updateDonationLog) {
+          throw new HttpException('incorrect orderId', HttpStatus.BAD_REQUEST);
+        }
+
+        const getDonationLog = await this.donationLogsModel.findOne(
+          { _id: donationId },
+          { _id: 0, campaignId: 1, currency: 2, amount: 3 },
+        );
+
+        if (!getDonationLog) {
+          throw new HttpException('incorrect orderId', HttpStatus.NOT_FOUND);
+        }
 
         for (let i = 0; i < campaigns.length; i++) {
           campaignIds.push(campaigns[i]._id);
@@ -1640,20 +1733,13 @@ export class PaymentStripeService {
   }
 
   async reqPayStripe(payment: PaymentRequestDto) {
-    const tracer = trace.getTracer('tmra-raise');
-    const span = tracer.startSpan('stripe-request', {
-      attributes: { 'donor.firstName': '-' },
-    });
+    const ObjectId = require('mongoose').Types.ObjectId;
+    const payQuantityToStripe = payment.amount * 100;
+    let isAnonymous = false;
+    let donor = null;
+    let currency = payment.currency;
+
     try {
-      // Do some work here
-      this.logger.debug('payStripeRequest...');
-      let txtMessage = '';
-      let stripeCallbackUrl = '';
-      let isAnonymous = false;
-      let donor = null;
-      let currency = payment.currency;
-      const ObjectId = require('mongoose').Types.ObjectId;
-      // console.log('Log Stripe Reg=>', payment);
       if (
         !payment.organizationId ||
         !payment.campaignId ||
@@ -1663,8 +1749,7 @@ export class PaymentStripeService {
         !payment.success_url ||
         !payment.cancel_url ||
         !payment.price ||
-        // !payment.amount
-        !payment.quantity
+        !payment.amount
       ) {
         throw new HttpException(`Bad Request`, HttpStatus.BAD_REQUEST);
       }
@@ -1679,7 +1764,7 @@ export class PaymentStripeService {
       const getOrganization = await this.organizationModel.findOne({
         _id: payment.organizationId,
       });
-      // console.log('currency', getOrganization?.defaultCurrency);
+
       if (!getOrganization) {
         throw new HttpException(
           `request rejected organizationId not found`,
@@ -1701,19 +1786,10 @@ export class PaymentStripeService {
           HttpStatus.NOT_FOUND,
         );
       }
-      // else if (
-      //   parseFloat(getCampaign.amountProgress.toString()) + payment.amount >
-      //   parseFloat(getCampaign.amountTarget.toString())
-      // ) {
-      //   throw new HttpException(
-      //     `Amount is larger than the limit of the target ${getCampaign.amountTarget}`,
-      //     HttpStatus.BAD_REQUEST,
-      //   );
-      // }
-      //console.log('debug', payment.organizationId);
+
       const getSecretKey = await this.paymentGatewayModel.findOne(
         { organizationId: ObjectId(payment.organizationId) },
-        { apiKey: 1, _id: 0 },
+        { apiKey: 1, _id: 1 },
       );
 
       if (!getSecretKey) {
@@ -1744,75 +1820,52 @@ export class PaymentStripeService {
               isAnonymous = true;
             }
           }
-          span.setAttribute('donor.firstName', donor?.firstName ?? '');
         }
       }
 
-      const payQuantityToStripe = Math.round(
-        parseFloat(payment.quantity),
-      ).toString();
-
-      const params = new URLSearchParams();
-      if (donor) {
-        params.append('customer_email', donor.email);
-      }
-      params.append('success_url', payment.success_url);
-      params.append('cancel_url', payment.cancel_url);
-      params.append('line_items[0][price]', payment.price);
-      params.append('line_items[0][quantity]', payQuantityToStripe);
-      params.append('mode', 'payment');
-      params.append('submit_type', 'donate'); //will enable button with label "donate"
-      console.log(params);
-      const options: AxiosRequestConfig<any> = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: 'Bearer ' + getSecretKey['apiKey'] + '',
-        },
-        params,
-        url: 'https://api.stripe.com/v1/checkout/sessions',
+      // Customer Stripe
+      const paramsCustomer: Stripe.CustomerCreateParams = {
+        email: donor?.email,
       };
 
-      const data = await axios(options);
+      const resCustomer = await this.stripeService.createStripeCustomer(
+        paramsCustomer,
+        getSecretKey['apiKey']!,
+      );
 
-      if (!data) {
-        throw new HttpException(
-          'Gateway Timeout or Stripe API down',
-          HttpStatus.GATEWAY_TIMEOUT,
+      // Payment Intent Stripe
+      const paramsPaymentIntent: Stripe.PaymentIntentCreateParams = {
+        amount: payQuantityToStripe,
+        currency: currency.toLowerCase(),
+        receipt_email: donor?.email || '',
+        customer: resCustomer.id,
+        description: `Donation from ${donor?.email}`,
+        automatic_payment_methods: { enabled: true },
+      };
+
+      const resPaymentIntent =
+        await this.stripeService.createStripePaymentIntent(
+          paramsPaymentIntent,
+          getSecretKey['apiKey']!,
         );
-      }
 
-      const amountStr = data['data']['amount_total'].toString();
-      const amount = amountStr.substring(0, amountStr.length - 2);
-
-      const cerrencyPayment = data['data']['currency'];
-      switch (cerrencyPayment) {
-        case 'usd':
-          currency = 'USD';
-          break;
-        case 'sar':
-          currency = 'SAR';
-          break;
-        default:
-          currency = 'GBP';
-          break;
-      }
-
-      const objectIdDonation = new ObjectId();
+      // Insert Data to Donation Log
+      const object_donation_id = new ObjectId();
+      const amount = resPaymentIntent.amount / 100;
       const now: Date = new Date();
       let getDonationLog;
+
       if (
         getCampaign.campaignType &&
         getCampaign.campaignType === 'zakat' &&
         payment.zakatLogs
       ) {
-        //insert data to donation_log for zakat transaction
         getDonationLog = await new this.donationLogsModel({
-          _id: objectIdDonation,
+          _id: object_donation_id,
           nonprofitRealmId: new ObjectId(payment.organizationId),
           donorUserId: payment.donorId,
           amount: Number(amount),
-          transactionId: data['data']['payment_intent'],
+          transactionId: resPaymentIntent.id,
           createdAt: now,
           updatedAt: now,
           campaignId: ObjectId(payment.campaignId),
@@ -1823,13 +1876,13 @@ export class PaymentStripeService {
         }).save();
 
         if (Array.isArray(payment.zakatLogs)) {
-          //insert data to zakatlogs
           for (let i = 0; i < payment.zakatLogs.length; i++) {
             const zakatLogs = payment.zakatLogs[i];
             const details = Array.isArray(zakatLogs.details) ? zakatLogs : [];
+
             await new this.zakatModel({
               _id: new ObjectId(),
-              donationLogId: objectIdDonation,
+              donationLogId: object_donation_id,
               type: zakatLogs.type,
               currency: zakatLogs.currency,
               totalAmount: Number(zakatLogs.totalAmount),
@@ -1840,15 +1893,15 @@ export class PaymentStripeService {
             }).save();
           }
         }
-        this.logger.info('Create LOG_');
+
+        this.logger.info(`Create LOG Zakat ${getDonationLog._id}`);
       } else {
-        //insert data to donationLog for campaign transaction
         getDonationLog = await new this.donationLogModel({
-          _id: objectIdDonation,
+          _id: object_donation_id,
           organizationId: payment.organizationId,
           donorId: payment.donorId,
           amount: Number(amount),
-          transactionId: data['data']['payment_intent'],
+          transactionId: resPaymentIntent.id,
           createdAt: now,
           updatedAt: now,
           campaignId: ObjectId(payment.campaignId),
@@ -1856,31 +1909,34 @@ export class PaymentStripeService {
           donationStatus: 'PENDING',
           type: DonationType.CAMPAIGN,
         }).save();
-        this.logger.info('Create LOG');
+
+        this.logger.info(`Create LOG Zakat ${getDonationLog._id}`);
       }
 
       if (!getDonationLog) {
         throw new BadRequestException(`donation failed to save in mongodb`);
       }
 
-      //insert data to paymentData
-      const objectIdPayment = new ObjectId();
       if (isAnonymous) {
         await this.anonymousModel.findOneAndUpdate(
           { _id: payment.donorId },
           {
-            donationLogId: objectIdDonation,
+            donationLogId: object_donation_id,
             isEmailChecklist: payment.isEmailChecklist,
             anonymous: payment.isAnonymous,
           },
         );
       }
+
+      //insert data to paymentData
+      const object_payment_data_id = new ObjectId();
+
       const insertPaymentData = await new this.paymentDataModel({
-        _id: objectIdPayment,
-        donationId: objectIdDonation,
+        _id: object_payment_data_id,
+        donationId: object_donation_id,
         merchantId: '',
         payerId: '',
-        orderId: data.data['payment_intent'], //payment_intent ID
+        orderId: resPaymentIntent.id,
         cardType: '',
         cardScheme: '',
         paymentDescription: '',
@@ -1899,27 +1955,14 @@ export class PaymentStripeService {
         throw new BadRequestException(`payment data failed to save in mongodb`);
       }
 
-      stripeCallbackUrl = data['data']['url'];
-      txtMessage = `stripe request has been sent`;
-
       return {
-        statusCode: 200,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
+        stripeResponse: {
+          payment_intent: resPaymentIntent,
         },
-        stripeResponse: data['data'],
-        message: txtMessage,
+        message: 'Stripe request has been sent',
       };
     } catch (err) {
-      // When we catch an error, we want to show that an error occurred
-      span.setStatus({
-        code: SpanStatusCode.ERROR,
-        message: err.message,
-      });
-      throw err;
-    } finally {
-      // Every span must be ended or it will not be exported
-      span.end();
+      throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }
   }
 
