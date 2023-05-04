@@ -46,6 +46,10 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
     | []
   >([]);
 
+  const [isLoading, setIsLoading] = React.useState(false);
+  const { activeRole } = useAuth();
+  const [proposal, setProposal] = useState<any>();
+
   // const [proposalResult] = useQuery({
   //   query: getOneProposal,
   //   variables: {
@@ -54,11 +58,6 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
   // });
 
   // const { data: proposalData, fetching: fetchingProposal, error: errorProposal } = proposalResult;
-
-  // fetching using API proposal by id
-  const [isLoading, setIsLoading] = React.useState(false);
-  const { activeRole } = useAuth();
-  const [proposal, setProposal] = useState<any>();
 
   const validationSchema = Yup.object().shape({
     support_type: Yup.boolean().required('support_type is required!'),

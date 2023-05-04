@@ -41,7 +41,7 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
   const { activeRole } = useAuth();
   const { translate } = useLocales();
   const { proposal } = useSelector((state) => state.proposal);
-  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [isEdit, setIsEdit] = useState<boolean>(true);
 
   const validationSchema = Yup.object().shape({
     ...(action.actionType === 'REJECT' &&
@@ -161,7 +161,7 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
               proposal.project_track !== 'CONCESSIONAL_GRANTS' &&
               action.actionType === 'ACCEPT' && (
                 <Grid item md={12} xs={12}>
-                  <AcceptedForm onEdit={() => setIsEdit(!isEdit)} />
+                  <AcceptedForm onEdit={(value) => setIsEdit(value)} />
                 </Grid>
               )}
             <Grid item md={12} xs={12}>

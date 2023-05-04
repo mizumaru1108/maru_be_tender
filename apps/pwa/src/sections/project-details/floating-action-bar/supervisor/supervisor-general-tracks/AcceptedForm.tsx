@@ -5,7 +5,7 @@ import { LoadingButton } from '@mui/lab';
 import { Button, Grid, IconButton, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import { FormProvider, RHFRadioGroup, RHFSelect, RHFTextField } from 'components/hook-form';
 import useLocales from 'hooks/useLocales';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { _supportGoals } from '_mock/_supportgoals';
@@ -23,14 +23,16 @@ import {
   updateAcceptedDataProposalNonGrants,
 } from '../../../../../redux/slices/proposal';
 import useAuth from '../../../../../hooks/useAuth';
+import { _supportGoalsArr } from '../../../../../_mock/_supportGoalsArr';
+import axiosInstance from '../../../../../utils/axios';
 
 function AcceptedForm({ onEdit }: EditAccModalForm) {
   const { translate, currentLang } = useLocales();
   const { proposal } = useSelector((state) => state.proposal);
   const { activeRole } = useAuth();
-  const { enqueueSnackbar } = useSnackbar();
   const location = useLocation();
   const { id: pid } = useParams();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [save, setSave] = useState<boolean>(true);
@@ -44,6 +46,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
     | []
   >([]);
 
+  const [oneProposal, setOneProposal] = useState<any>();
   const [proposalResult] = useQuery({
     query: getOneProposal,
     variables: {
@@ -194,7 +197,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
         console.log('masuksini');
         await dispatch(updateAcceptedDataProposalNonGrants(payload, activeRole!)).then(() => {
           setSave(true);
-          onEdit();
+          onEdit(false);
           dispatch(getProposal(pid as string, activeRole! as string));
           enqueueSnackbar('تم إرسال الشيك بنجاح, بالإضافة إلى تعديل حالة الدفعة', {
             variant: 'success',
@@ -219,33 +222,9 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
             horizontal: 'right',
           },
         });
-        // if (typeof error.message === 'object') {
-        //   setIsLoading(false),
-        //     error.message.forEach((el: any) => {
-        //       enqueueSnackbar(el, {
-        //         variant: 'error',
-        //         preventDuplicate: true,
-        //         autoHideDuration: 3000,
-        //         anchorOrigin: {
-        //           vertical: 'bottom',
-        //           horizontal: 'right',
-        //         },
-        //       });
-        //     });
-        // } else {
-        //   enqueueSnackbar(error.message, {
-        //     variant: 'error',
-        //     preventDuplicate: true,
-        //     autoHideDuration: 3000,
-        //     anchorOrigin: {
-        //       vertical: 'bottom',
-        //       horizontal: 'right',
-        //     },
-        //   });
-        // }
       }
       setSave(true);
-      onEdit();
+      onEdit(false);
     } else {
       enqueueSnackbar(translate('notification.proposal_item_budget_empty'), {
         variant: 'error',
@@ -257,16 +236,64 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
     }
   };
 
-  useEffect(() => {
-    if (!fetchingProposal && proposalData && proposalData.proposal.proposal_item_budgets.length) {
-      // console.log('data', proposalData.proposal);
-      setBasedBudget(proposalData.proposal.proposal_item_budgets);
-      setValue('detail_project_budgets', proposalData.proposal.proposal_item_budgets);
-    } else {
+  // useEffect(() => {
+  //   if (!fetchingProposal && proposalData && proposalData.proposal.proposal_item_budgets.length) {
+  //     // console.log('data', proposalData.proposal);
+  //     setBasedBudget(proposalData.proposal.proposal_item_budgets);
+  //     setValue('detail_project_budgets', proposalData.proposal.proposal_item_budgets);
+  //   } else {
+  //     resetField('detail_project_budgets');
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [proposalData, fetchingProposal, setValue, resetField, reset, proposal]);
+  const fetchingIncoming = React.useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const rest = await axiosInstance.get(`/tender-proposal/fetch-by-id?id=${pid}`, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
+      if (rest) {
+        console.log('rest total :', rest.data.data);
+        setOneProposal(rest.data.data);
+        setBasedBudget(rest.data.data.proposal_item_budgets);
+        setValue('detail_project_budgets', rest.data.data.proposal_item_budgets);
+      }
+    } catch (err) {
+      console.log('err', err);
+      enqueueSnackbar(err.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+      });
       resetField('detail_project_budgets');
+    } finally {
+      setIsLoading(false);
+      // onEdit(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [proposalData, fetchingProposal, setValue, resetField, reset, proposal]);
+  }, [activeRole, enqueueSnackbar, pid, setValue, resetField]);
+
+  // useEffect(() => {
+  //   if (!fetchingProposal && proposalData && proposalData.proposal.proposal_item_budgets.length) {
+  //     setBasedBudget(proposalData.proposal.proposal_item_budgets);
+  //     setValue('detail_project_budgets', proposalData.proposal.proposal_item_budgets);
+  //   } else {
+  //     resetField('detail_project_budgets');
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [proposalData, fetchingProposal, setValue, resetField]);
+
+  React.useEffect(() => {
+    fetchingIncoming();
+    // fetchingPrevious();
+  }, [fetchingIncoming]);
+
+  React.useEffect(() => {
+    if (oneProposal && save) onEdit(false);
+  }, [oneProposal, onEdit, save]);
 
   if (errorProposal) return <>Something when wrong on get proposal details</>;
 
@@ -353,9 +380,14 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
               placeholder="الرجاء اختيار أهداف الدعم"
               label="اهداف الدعم*"
             >
-              {_supportGoals[
+              {/* {_supportGoals[
                 `${proposalData.proposal.project_track as keyof typeof _supportGoals}`
               ].map((item) => (
+                <MenuItem value={item.value} key={item.value}>
+                  {item.title}
+                </MenuItem>
+              ))} */}
+              {_supportGoalsArr.map((item) => (
                 <MenuItem value={item.value} key={item.value}>
                   {item.title}
                 </MenuItem>
@@ -547,7 +579,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
               <LoadingButton
                 loading={isLoading}
                 onClick={() => {
-                  onEdit();
+                  onEdit(true);
                   setSave(false);
                 }}
                 variant="contained"

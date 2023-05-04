@@ -15,7 +15,7 @@ export type ModalProposalType = {
 };
 export type EditAccModalForm = {
   // onSubmit: (data: any) => void;
-  onEdit: () => void;
+  onEdit: (value: boolean) => void;
 };
 
 export type AcceptingModalProposalType = {
