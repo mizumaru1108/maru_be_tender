@@ -2,9 +2,12 @@ import { Typography, Grid, Stack, Button } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
+import { useSnackbar } from 'notistack';
 import { getProposals } from 'queries/commons/getProposal';
+import React from 'react';
 import { useNavigate } from 'react-router';
 import { useQuery } from 'urql';
+import axiosInstance from '../../../utils/axios';
 import { generateHeader } from '../../../utils/generateProposalNumber';
 
 function RequestsInProcess() {
@@ -51,8 +54,49 @@ function RequestsInProcess() {
       },
     },
   });
+
+  const [isLoading, setIsLoading] = React.useState(false);
+  const { enqueueSnackbar } = useSnackbar();
+  const { activeRole } = useAuth();
+  const [cardData, setCardData] = React.useState([]);
+
+  const fetchingIncoming = React.useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const rest = await axiosInstance.get(`tender-proposal/request-in-process?limit=4`, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
+      if (rest) {
+        // console.log('rest total :', rest.data.total);
+        setCardData(
+          rest.data.data.map((item: any) => ({
+            ...item,
+          }))
+        );
+      }
+    } catch (err) {
+      console.log('err', err);
+      enqueueSnackbar(err.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [activeRole, enqueueSnackbar]);
+
+  React.useEffect(() => {
+    fetchingIncoming();
+    // fetchingPrevious();
+  }, [fetchingIncoming]);
+
   const { data, fetching, error } = result;
-  if (fetching) {
+  if (fetching || isLoading) {
     return <>{translate('pages.common.loading')}</>;
   }
   const props = data?.data ?? [];
@@ -81,8 +125,8 @@ function RequestsInProcess() {
           </Button>
         </Stack>
       </Grid>
-      {props &&
-        props.map((item: any, index: any) => (
+      {!isLoading &&
+        cardData.map((item: any, index: any) => (
           <Grid item md={6} key={index}>
             <ProjectCard
               title={{
@@ -94,7 +138,7 @@ function RequestsInProcess() {
               }}
               content={{
                 projectName: item.project_name,
-                organizationName: item.user.client_data.entity,
+                organizationName: (item && item.user && item.user.employee_name) ?? '-',
                 sentSection: item.state,
                 employee:
                   item.proposal_logs &&

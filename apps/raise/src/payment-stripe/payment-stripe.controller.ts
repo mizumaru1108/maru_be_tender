@@ -27,6 +27,11 @@ export class PaymentStripeController {
     return await this.paymentStripeService.stripeRequestBasket(payment);
   }
 
+  @Post('/confirmPaymentIntent')
+  async callbackPaymentIntent(@Body() payment: PaymentRequestCartDto) {
+    return await this.paymentStripeService.stripeConfirmPaymentIntent(payment);
+  }
+
   @Get('/callbackCart/success')
   async callbackCart(
     @Query('session_id') session_id: string,

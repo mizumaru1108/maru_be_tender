@@ -5,6 +5,7 @@ export const gettingSavedProjects = `query GettingSavedProjects($limit: Int = 2,
     project_name
     created_at
     inner_status
+    project_number
     user {
       client_data{
         created_at

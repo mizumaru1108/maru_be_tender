@@ -7,6 +7,7 @@ import useLocales from '../../hooks/useLocales';
 import { getProposals } from 'queries/commons/getProposal';
 import CardTableBE from 'components/card-table/CardTableBE';
 import useAuth from 'hooks/useAuth';
+import CardTableByBE from '../../components/card-table/CardTableByBE';
 
 // const data = [
 //   {
@@ -267,7 +268,7 @@ function RequestsInProcess() {
     <Page title={translate('pages.cashier.requests_in_process')}>
       <Container>
         <ContentStyle>
-          <CardTableBE
+          {/* <CardTableBE
             resource={getProposals}
             title="طلبات إذن الصرف الواردة"
             destination="requests-in-process"
@@ -330,6 +331,13 @@ function RequestsInProcess() {
               },
             }}
             cardFooterButtonAction="completing-exchange-permission"
+          /> */}
+          <CardTableByBE
+            title={translate('incoming_support_requests')}
+            destination="requests-in-process"
+            endPoint="tender-proposal/request-in-process"
+            limitShowCard={6}
+            cardFooterButtonAction="show-details"
           />
         </ContentStyle>
       </Container>
