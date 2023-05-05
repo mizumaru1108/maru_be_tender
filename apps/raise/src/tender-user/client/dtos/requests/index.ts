@@ -1,4 +1,5 @@
 export * from './approve-edit-request.dto';
+export * from './client-bank-edit-request-field.dto';
 export * from './client-edit-request-field.dto';
 export * from './create-bank-information.dto';
 export * from './edit-request-by-id.dto';

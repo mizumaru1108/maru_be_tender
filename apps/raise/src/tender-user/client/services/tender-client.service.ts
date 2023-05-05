@@ -622,9 +622,15 @@ export class TenderClientService {
       if (!clientData) throw new NotFoundException('Client data not found!');
 
       if (clientData.user.status_id !== 'ACTIVE_ACCOUNT') {
-        throw new BadRequestException(
-          'User have to be ACTIVE to perform an edit request!',
-        );
+        if (
+          (!editRequest.updated_banks && editRequest.deleted_banks) ||
+          (editRequest.updated_banks && !editRequest.deleted_banks)
+        ) {
+        } else {
+          throw new BadRequestException(
+            'User have to be ACTIVE to perform an edit request!',
+          );
+        }
       }
 
       const pendingLogs = await this.tenderClientRepository.countMyPendingLogs(

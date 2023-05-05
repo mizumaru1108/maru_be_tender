@@ -60,7 +60,6 @@ export class TenderUserService {
       employee_name,
       mobile_number,
       activate_user,
-      employee_path,
       track_id,
       user_roles,
       selectLang,
@@ -75,13 +74,6 @@ export class TenderUserService {
     if (!tracks) {
       throw new BadRequestException(
         'Invalid employee track!, Path is not found!',
-      );
-    }
-
-    const track = await this.userRepo.validateTrack(employee_path);
-    if (!track) {
-      throw new BadRequestException(
-        'Invalid employee path!, Path is not found!',
       );
     }
 
@@ -158,9 +150,9 @@ export class TenderUserService {
           id: status,
         },
       },
-      employee_track: {
+      track: {
         connect: {
-          id: employee_path,
+          id: track_id,
         },
       },
     };

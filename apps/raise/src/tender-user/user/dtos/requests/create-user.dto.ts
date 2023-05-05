@@ -42,11 +42,6 @@ export class TenderCreateUserDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  employee_path: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
   track_id: string;
 
   @ApiProperty()

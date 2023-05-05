@@ -1206,9 +1206,6 @@ export class TenderProposalService {
         createdItemBudgetPayload,
         updatedItemBudgetPayload,
         deletedItemBudgetIds,
-        createdRecommendedSupportPayload,
-        updatedRecommendedSupportPayload,
-        deletedRecommendedSupportIds,
         currentUser,
       );
 
@@ -1217,16 +1214,6 @@ export class TenderProposalService {
       createdItemBudgetPayload = [...supervisorResult.createdItemBudgetPayload];
       updatedItemBudgetPayload = [...supervisorResult.updatedItemBudgetPayload];
       deletedItemBudgetIds = [...supervisorResult.deletedItemBudgetIds];
-
-      createdRecommendedSupportPayload = [
-        ...supervisorResult.createdRecommendedSupportPayload,
-      ];
-      updatedRecommendedSupportPayload = [
-        ...supervisorResult.updatedRecommendedSupportPayload,
-      ];
-      deletedRecommendedSupportIds = [
-        ...supervisorResult.deletedRecommendedSupportIds,
-      ];
     }
 
     if (currentUser.choosenRole === 'tender_project_manager') {
@@ -1238,24 +1225,24 @@ export class TenderProposalService {
         createdItemBudgetPayload,
         updatedItemBudgetPayload,
         deletedItemBudgetIds,
-        createdRecommendedSupportPayload,
-        updatedRecommendedSupportPayload,
-        deletedRecommendedSupportIds,
         currentUser,
       );
+      // createdRecommendedSupportPayload,
+      // updatedRecommendedSupportPayload,
+      // deletedRecommendedSupportIds,
 
       proposalUpdatePayload = { ...pm.proposalUpdatePayload };
       proposalLogCreateInput = { ...pm.proposalLogCreateInput };
       createdItemBudgetPayload = [...pm.createdItemBudgetPayload];
       updatedItemBudgetPayload = [...pm.updatedItemBudgetPayload];
       deletedItemBudgetIds = [...pm.deletedItemBudgetIds];
-      createdRecommendedSupportPayload = [
-        ...pm.createdRecommendedSupportPayload,
-      ];
-      updatedRecommendedSupportPayload = [
-        ...pm.updatedRecommendedSupportPayload,
-      ];
-      deletedRecommendedSupportIds = [...pm.deletedRecommendedSupportIds];
+      // createdRecommendedSupportPayload = [
+      //   ...pm.createdRecommendedSupportPayload,
+      // ];
+      // updatedRecommendedSupportPayload = [
+      //   ...pm.updatedRecommendedSupportPayload,
+      // ];
+      // deletedRecommendedSupportIds = [...pm.deletedRecommendedSupportIds];
     }
 
     if (currentUser.choosenRole === 'tender_consultant') {
@@ -1277,22 +1264,22 @@ export class TenderProposalService {
         createdItemBudgetPayload,
         updatedItemBudgetPayload,
         deletedItemBudgetIds,
-        createdRecommendedSupportPayload,
-        updatedRecommendedSupportPayload,
-        deletedRecommendedSupportIds,
       );
+      // createdRecommendedSupportPayload,
+      // updatedRecommendedSupportPayload,
+      // deletedRecommendedSupportIds,
       proposalUpdatePayload = { ...ceo.proposalUpdatePayload };
       proposalLogCreateInput = { ...ceo.proposalLogCreateInput };
       createdItemBudgetPayload = [...ceo.createdItemBudgetPayload];
       updatedItemBudgetPayload = [...ceo.updatedItemBudgetPayload];
       deletedItemBudgetIds = [...ceo.deletedItemBudgetIds];
-      createdRecommendedSupportPayload = [
-        ...ceo.createdRecommendedSupportPayload,
-      ];
-      updatedRecommendedSupportPayload = [
-        ...ceo.updatedRecommendedSupportPayload,
-      ];
-      deletedRecommendedSupportIds = [...ceo.deletedRecommendedSupportIds];
+      // createdRecommendedSupportPayload = [
+      //   ...ceo.createdRecommendedSupportPayload,
+      // ];
+      // updatedRecommendedSupportPayload = [
+      //   ...ceo.updatedRecommendedSupportPayload,
+      // ];
+      // deletedRecommendedSupportIds = [...ceo.deletedRecommendedSupportIds];
     }
 
     /* update proposal and create the logs */
@@ -1411,11 +1398,11 @@ export class TenderProposalService {
     createdItemBudgetPayload: Prisma.proposal_item_budgetCreateManyInput[],
     updatedItemBudgetPayload: Prisma.proposal_item_budgetUncheckedUpdateInput[],
     deletedItemBudgetIds: string[],
-    createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[],
-    updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[],
-    deletedRecommendedSupportIds: string[],
     currentUser: TenderCurrentUser,
   ) {
+    // createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[],
+    // updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[],
+    // deletedRecommendedSupportIds: string[],
     /* supervisor only allowed to acc and reject and step back */
     if (
       [
@@ -1439,9 +1426,9 @@ export class TenderProposalService {
         created_proposal_budget,
         deleted_proposal_budget,
         updated_proposal_budget,
-        created_recommended_support,
-        updated_recommended_support,
-        deleted_recommended_support,
+        // created_recommended_support,
+        // updated_recommended_support,
+        // deleted_recommended_support,
       } = request.supervisor_payload;
 
       proposalUpdatePayload = SupervisorRegularTrackAccMapper(
@@ -1490,28 +1477,28 @@ export class TenderProposalService {
           request.supervisor_payload,
         );
 
-        createdRecommendedSupportPayload =
-          SupervisorAccCreatedRecommendedSupportMapper(
-            request.proposal_id,
-            created_recommended_support,
-            createdRecommendedSupportPayload,
-          );
+        // createdRecommendedSupportPayload =
+        //   SupervisorAccCreatedRecommendedSupportMapper(
+        //     request.proposal_id,
+        //     created_recommended_support,
+        //     createdRecommendedSupportPayload,
+        //   );
 
-        if (
-          updated_recommended_support &&
-          updated_recommended_support.length > 0
-        ) {
-          updatedRecommendedSupportPayload = updated_recommended_support;
-        }
+        // if (
+        //   updated_recommended_support &&
+        //   updated_recommended_support.length > 0
+        // ) {
+        //   updatedRecommendedSupportPayload = updated_recommended_support;
+        // }
 
-        if (
-          deleted_recommended_support &&
-          deleted_recommended_support.length > 0
-        ) {
-          for (const recommendSuppport of deleted_recommended_support) {
-            deletedRecommendedSupportIds.push(recommendSuppport.id);
-          }
-        }
+        // if (
+        //   deleted_recommended_support &&
+        //   deleted_recommended_support.length > 0
+        // ) {
+        //   for (const recommendSuppport of deleted_recommended_support) {
+        //     deletedRecommendedSupportIds.push(recommendSuppport.id);
+        //   }
+        // }
       }
 
       /* accept supervisor logs */
@@ -1547,15 +1534,22 @@ export class TenderProposalService {
       proposalLogCreateInput.user_role = 'PROJECT_SUPERVISOR';
     }
 
+    // return {
+    //   proposalUpdatePayload,
+    //   proposalLogCreateInput,
+    //   createdItemBudgetPayload,
+    //   updatedItemBudgetPayload,
+    //   deletedItemBudgetIds,
+    //   createdRecommendedSupportPayload,
+    //   updatedRecommendedSupportPayload,
+    //   deletedRecommendedSupportIds,
+    // };
     return {
       proposalUpdatePayload,
       proposalLogCreateInput,
       createdItemBudgetPayload,
       updatedItemBudgetPayload,
       deletedItemBudgetIds,
-      createdRecommendedSupportPayload,
-      updatedRecommendedSupportPayload,
-      deletedRecommendedSupportIds,
     };
   }
 
@@ -1567,11 +1561,11 @@ export class TenderProposalService {
     createdItemBudgetPayload: Prisma.proposal_item_budgetCreateManyInput[],
     updatedItemBudgetPayload: Prisma.proposal_item_budgetUncheckedUpdateInput[],
     deletedItemBudgetIds: string[],
-    createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[],
-    updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[],
-    deletedRecommendedSupportIds: string[],
     currentUser: TenderCurrentUser,
   ) {
+    // createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[],
+    // updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[],
+    // deletedRecommendedSupportIds: string[],
     /* Project manager only allowed to acc and reject and step back, and ask for consultation*/
     if (
       [
@@ -1630,10 +1624,10 @@ export class TenderProposalService {
         createdItemBudgetPayload,
         updatedItemBudgetPayload,
         deletedItemBudgetIds,
-        createdRecommendedSupportPayload,
-        updatedRecommendedSupportPayload,
-        deletedRecommendedSupportIds,
       );
+      // createdRecommendedSupportPayload,
+      // updatedRecommendedSupportPayload,
+      // deletedRecommendedSupportIds,
 
       proposalUpdatePayload = { ...result.proposalUpdatePayload };
       createdItemBudgetPayload = [...result.createdItemBudgetPayload];
@@ -1696,15 +1690,15 @@ export class TenderProposalService {
       proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
     }
 
+    // createdRecommendedSupportPayload,
+    // updatedRecommendedSupportPayload,
+    // deletedRecommendedSupportIds,
     return {
       proposalUpdatePayload,
       proposalLogCreateInput,
       createdItemBudgetPayload,
       updatedItemBudgetPayload,
       deletedItemBudgetIds,
-      createdRecommendedSupportPayload,
-      updatedRecommendedSupportPayload,
-      deletedRecommendedSupportIds,
     };
   }
 
@@ -1716,10 +1710,10 @@ export class TenderProposalService {
     createdItemBudgetPayload: Prisma.proposal_item_budgetCreateManyInput[],
     updatedItemBudgetPayload: Prisma.proposal_item_budgetUncheckedUpdateInput[],
     deletedItemBudgetIds: string[],
-    createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[],
-    updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[],
-    deletedRecommendedSupportIds: string[],
   ) {
+    // createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[],
+    // updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[],
+    // deletedRecommendedSupportIds: string[],
     /* CEO only allowed to acc and reject and step back */
     if (
       [
@@ -1773,10 +1767,10 @@ export class TenderProposalService {
         createdItemBudgetPayload,
         updatedItemBudgetPayload,
         deletedItemBudgetIds,
-        createdRecommendedSupportPayload,
-        updatedRecommendedSupportPayload,
-        deletedRecommendedSupportIds,
       );
+      // createdRecommendedSupportPayload,
+      // updatedRecommendedSupportPayload,
+      // deletedRecommendedSupportIds,
 
       proposalUpdatePayload = { ...result.proposalUpdatePayload };
       createdItemBudgetPayload = [...result.createdItemBudgetPayload];
@@ -1850,15 +1844,15 @@ export class TenderProposalService {
       proposalLogCreateInput.user_role = TenderAppRoleEnum.CEO;
     }
 
+    // createdRecommendedSupportPayload,
+    // updatedRecommendedSupportPayload,
+    // deletedRecommendedSupportIds,
     return {
       proposalUpdatePayload,
       proposalLogCreateInput,
       createdItemBudgetPayload,
       updatedItemBudgetPayload,
       deletedItemBudgetIds,
-      createdRecommendedSupportPayload,
-      updatedRecommendedSupportPayload,
-      deletedRecommendedSupportIds,
     };
   }
 
@@ -2065,10 +2059,10 @@ export class TenderProposalService {
     createdItemBudgetPayload: Prisma.proposal_item_budgetCreateManyInput[],
     updatedItemBudgetPayload: Prisma.proposal_item_budgetUncheckedUpdateInput[],
     deletedItemBudgetIds: string[],
-    createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[],
-    updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[],
-    deletedRecommendedSupportIds: string[],
   ) {
+    // createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[],
+    // updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[],
+    // deletedRecommendedSupportIds: string[],
     const {
       created_proposal_budget,
       updated_proposal_budget,
@@ -2109,29 +2103,29 @@ export class TenderProposalService {
         request,
       );
 
-      createdRecommendedSupportPayload =
-        SupervisorAccCreatedRecommendedSupportMapper(
-          proposal_id,
-          request.created_recommended_support,
-          createdRecommendedSupportPayload,
-        );
+      // createdRecommendedSupportPayload =
+      //   SupervisorAccCreatedRecommendedSupportMapper(
+      //     proposal_id,
+      //     request.created_recommended_support,
+      //     createdRecommendedSupportPayload,
+      //   );
 
-      if (
-        request.updated_recommended_support &&
-        request.updated_recommended_support.length > 0
-      ) {
-        updatedRecommendedSupportPayload = request.updated_recommended_support;
-        console.log({ updatedRecommendedSupportPayload });
-      }
+      // if (
+      //   request.updated_recommended_support &&
+      //   request.updated_recommended_support.length > 0
+      // ) {
+      //   updatedRecommendedSupportPayload = request.updated_recommended_support;
+      //   console.log({ updatedRecommendedSupportPayload });
+      // }
 
-      if (
-        request.deleted_recommended_support &&
-        request.deleted_recommended_support.length > 0
-      ) {
-        for (const recommendSuppport of request.deleted_recommended_support) {
-          deletedRecommendedSupportIds.push(recommendSuppport.id);
-        }
-      }
+      // if (
+      //   request.deleted_recommended_support &&
+      //   request.deleted_recommended_support.length > 0
+      // ) {
+      //   for (const recommendSuppport of request.deleted_recommended_support) {
+      //     deletedRecommendedSupportIds.push(recommendSuppport.id);
+      //   }
+      // }
     }
 
     return {
@@ -2139,10 +2133,10 @@ export class TenderProposalService {
       createdItemBudgetPayload,
       updatedItemBudgetPayload,
       deletedItemBudgetIds,
-      createdRecommendedSupportPayload,
-      updatedRecommendedSupportPayload,
-      deletedRecommendedSupportIds,
     };
+    // createdRecommendedSupportPayload,
+    // updatedRecommendedSupportPayload,
+    // deletedRecommendedSupportIds,
   }
 
   async fetchTrack(limit: number, page: number) {

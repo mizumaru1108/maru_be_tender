@@ -259,7 +259,6 @@ export class TenderProposalPaymentController {
     return baseResponseHelper(response, HttpStatus.OK, 'Bank soft deleted');
   }
 
-  @UseGuards(TenderJwtGuard)
   @Get('find-bank-list')
   async findBankList(
     @Query() filter: FindBankListFilter,
