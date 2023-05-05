@@ -33,7 +33,7 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
 
   const getBankList = async () => {
     setLoading(true);
-
+    // console.log('test masuk');
     try {
       // const { status, data } = await axios.get(
       //   `${TMRA_RAISE_URL}/tender/proposal/payment/find-bank-list`
@@ -43,11 +43,12 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
       });
       if (rest) {
         const test = rest.data.data
-          .filter((bank: any) => bank.is_deleted === false)
+          .filter((bank: any) => bank.is_deleted === false || bank.is_deleted === null)
           .map((bank: any) => bank);
         // console.log({ test });
-        setBankValue(rest.data.data);
-        dispatch(setBankList(rest.data.data));
+        // console.log(rest.data.data);
+        setBankValue(test);
+        dispatch(setBankList(test));
         setLoading(false);
       }
     } catch (error) {
@@ -81,6 +82,7 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
             'reject_reason',
             'accreditation_type_id',
             'path',
+            'employee_path',
             'supervisors',
             'target_beneficiaries',
             'execution_place',

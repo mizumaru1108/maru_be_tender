@@ -131,9 +131,13 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
         // created_recommended_support: [], // data.created_recommended_support
         // updated_recommended_support: [], // data.updated_recommended_support
         // deleted_recommended_support: [], // data.deleted_recommended_support
-        created_recommended_support: data.created_proposal_budget,
-        updated_recommended_support: data.updated_proposal_budget,
-        deleted_recommended_support: data.deleted_proposal_budget,
+        // item_budget_support
+        // created_recommended_support: data.created_proposal_budget,
+        // updated_recommended_support: data.updated_proposal_budget,
+        // deleted_recommended_support: data.deleted_proposal_budget,
+        created_proposal_budget: data.created_proposal_budget,
+        updated_proposal_budget: data.updated_proposal_budget,
+        deleted_proposal_budget: data.deleted_proposal_budget,
       };
       if (editedBy === 'project-manager') {
         payload = {
@@ -161,7 +165,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
       // console.log('acceptSupervisorGrant', payload);
 
       await axiosInstance
-        .patch('/tender-proposal/change-state', payload, {
+        .patch('/tender-proposal/change-sasdtate', payload, {
           headers: { 'x-hasura-role': activeRole! },
         })
         .then((res) => {

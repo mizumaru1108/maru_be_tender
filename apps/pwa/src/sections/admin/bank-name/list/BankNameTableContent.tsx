@@ -1,6 +1,6 @@
 import { paramCase } from 'change-case';
 // react
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // @mui
 import {
@@ -34,7 +34,7 @@ import { AuthorityInterface } from './types';
 
 export default function BankNameTableContent({ data }: { data: AuthorityInterface[] | [] }) {
   const { translate } = useLocales();
-
+  // console.log({ data });
   const TABLE_HEAD = [
     { id: 'bank_name', label: translate('pages.admin.settings.label.table.name'), align: 'left' },
     {
@@ -66,7 +66,8 @@ export default function BankNameTableContent({ data }: { data: AuthorityInterfac
 
   const navigate = useNavigate();
 
-  const [tableData, setTableData] = useState<AuthorityInterface[] | []>(data);
+  const [tableData, setTableData] = useState<AuthorityInterface[] | []>(data.map((row) => row));
+  // console.log({ tableData });
 
   const [filterName, setFilterName] = useState('');
 
@@ -97,11 +98,19 @@ export default function BankNameTableContent({ data }: { data: AuthorityInterfac
     filterStatus,
   });
 
+  useEffect(() => {
+    if (data) {
+      setTableData(data.map((row) => row));
+    }
+  }, [data]);
+
   const denseHeight = dense ? 52 : 72;
   const isNotFound =
     (!dataFiltered.length && !!filterName) ||
     (!dataFiltered.length && !!filterRole) ||
     (!dataFiltered.length && !!filterStatus);
+
+  // console.log({ data, tableData });
 
   return (
     <Card sx={{ backgroundColor: '#fff' }}>

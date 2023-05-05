@@ -12,6 +12,9 @@ export type BankingValuesProps = {
   bank_name?: string;
   bank_id?: string;
   card_image: FileProp;
+  bank_list?: {
+    is_deleted: boolean;
+  };
   id?: string;
 };
 

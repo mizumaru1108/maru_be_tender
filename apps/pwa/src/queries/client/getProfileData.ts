@@ -34,6 +34,9 @@ query MyQuery($id: String = "") {
       bank_name
       card_image
       is_deleted
+      bank_list {
+        is_deleted
+      }
     }
     email
     status_id

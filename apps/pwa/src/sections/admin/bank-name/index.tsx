@@ -1,6 +1,6 @@
 import { useQuery } from 'urql';
 // react
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
 import { Button, Container, Typography, Stack } from '@mui/material';
 // hooks
@@ -13,6 +13,9 @@ import BankNameTableContent from './list/BankNameTableContent';
 //
 import axiosInstance from 'utils/axios';
 import { useSnackbar } from 'notistack';
+import { AuthorityInterface } from './list/types';
+import { useDispatch } from '../../../redux/store';
+import { setBankList } from '../../../redux/slices/banks';
 
 // --------------------------------------------------------------------------------------------------
 
@@ -21,6 +24,9 @@ export default function BankNameTable() {
   const { themeStretch } = useSettings();
   const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [bankValue, setBankValue] = useState<AuthorityInterface[] | []>([]);
+  const dispatch = useDispatch();
 
   const [{ data, fetching, error }, reExecute] = useQuery({
     query: `
@@ -42,6 +48,32 @@ export default function BankNameTable() {
 
   const handleCloseAddBank = () => {
     setOpen(false);
+  };
+
+  const getBankList = async () => {
+    setLoading(true);
+    // console.log('test masuk');
+    try {
+      // const { status, data } = await axios.get(
+      //   `${TMRA_RAISE_URL}/tender/proposal/payment/find-bank-list`
+      // );
+      const rest = await axiosInstance.get(`/tender/proposal/payment/find-bank-list?limit=0`, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
+      if (rest) {
+        const test = rest.data.data
+          .filter((bank: any) => bank.is_deleted === false || bank.is_deleted === null)
+          .map((bank: any) => bank);
+        console.log({ test });
+        // console.log(rest.data.data);
+        setBankValue(test);
+        dispatch(setBankList(test));
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error(error.message);
+    }
   };
 
   const handleSubmitAddBank = async (formValue: FormInput) => {
@@ -90,9 +122,14 @@ export default function BankNameTable() {
     }
   };
 
+  useEffect(() => {
+    getBankList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   if (fetching) return <>{translate('pages.common.loading')}</>;
   if (error) return <>{error.message}</>;
-
+  console.log({ bankValue });
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
       <FormModalBank
@@ -119,7 +156,7 @@ export default function BankNameTable() {
           {translate('pages.admin.settings.label.add_bank')}
         </Button>
       </Stack>
-      <BankNameTableContent data={!fetching && data ? data.banks : []} />
+      <BankNameTableContent data={!loading && bankValue ? bankValue : []} />
     </Container>
   );
 }

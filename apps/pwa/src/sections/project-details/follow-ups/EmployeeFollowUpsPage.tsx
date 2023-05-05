@@ -104,11 +104,11 @@ function EmployeeFollowUpsPage() {
 
   const followUpsPartner = proposal.follow_ups.filter((items) => {
     for (const item of items.user.roles) {
-      return item.role && items.employee_only === false;
+      return items.employee_only === false;
     }
     return false;
   });
-
+  // console.log('proposal.follow_ups', proposal.follow_ups);
   return (
     <Grid container spacing={3}>
       <Grid item md={12} xs={12} sx={{ alignSelf: 'center' }}>

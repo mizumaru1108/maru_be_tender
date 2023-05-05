@@ -154,7 +154,7 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
                 <MenuItem value="BAPTISMS">{translate('BAPTISMS')}</MenuItem> */}
                 {tracksData?.map((item: tracks, index: any) => (
                   <MenuItem key={index} value={item?.id}>
-                    {item.name}
+                    {item.name}proposal_budget
                   </MenuItem>
                 ))}
               </RHFSelect>

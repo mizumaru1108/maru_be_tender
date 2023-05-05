@@ -176,8 +176,9 @@ function ClientProfile() {
         }).some((val) => !val)
       ) {
         const checkDeletedBank = clientData.bank_informations.findIndex(
-          (bank: any) => bank.is_deleted === true
+          (bank: any) => bank && bank.bank_list && bank.bank_list.is_deleted === true
         );
+        console.log('clientData.bank_informations', clientData.bank_informations);
         if (checkDeletedBank > -1) {
           setRunTour(true);
         } else {

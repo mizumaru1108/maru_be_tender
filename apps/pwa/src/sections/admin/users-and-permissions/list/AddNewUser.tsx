@@ -1,10 +1,19 @@
-import { Box, Button, Container, Grid, IconButton, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+  IconButton,
+  MenuItem,
+  Stack,
+  Typography,
+} from '@mui/material';
 import BaseField from 'components/hook-form/BaseField';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigate, useParams } from 'react-router';
 import * as Yup from 'yup';
-import { FormProvider } from 'components/hook-form';
+import { FormProvider, RHFSelect } from 'components/hook-form';
 import * as React from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
@@ -17,6 +26,8 @@ import useLocales from 'hooks/useLocales';
 import { getOneEmployee } from '../../../../queries/admin/getAllTheEmployees';
 import { useQuery } from 'urql';
 import { removeEmptyKey } from '../../../../utils/remove-empty-key';
+import { TrackProps } from '../../../../@types/commons';
+import { useSnackbar } from 'notistack';
 
 type FormValuesProps = {
   employee_name: string;
@@ -24,7 +35,8 @@ type FormValuesProps = {
   mobile_number: string;
   password: string;
   user_roles: string[];
-  employee_path: string;
+  employee_path?: string;
+  track_id: string;
   activate_user: boolean;
 };
 
@@ -32,6 +44,12 @@ interface SnackBar {
   open: boolean;
   message: string;
   severity: 'success' | 'error';
+}
+
+interface tracks {
+  id: string;
+  name: string;
+  with_consultant?: boolean;
 }
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
@@ -51,7 +69,9 @@ function AddNewUser() {
 
   const { activeRole } = useAuth();
 
+  const { enqueueSnackbar } = useSnackbar();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [tracksData, setTracksData] = React.useState<TrackProps[]>([]);
 
   const [openSnackBar, setOpenSnackBar] = React.useState<SnackBar>({
     open: false,
@@ -117,12 +137,17 @@ function AddNewUser() {
   const onSubmit = async (data: FormValuesProps) => {
     // console.log({ data });
     // console.log('submit: ', data);
+    let payload = {
+      ...data,
+    };
+    payload.track_id = (data && data.employee_path) ?? '';
+    delete payload.employee_path;
     try {
       setIsLoading(true);
       await axiosInstance.post(
         '/tender-user/create',
         {
-          ...data,
+          ...payload,
         },
         { headers: { 'x-hasura-role': activeRole! } }
       );
@@ -140,6 +165,8 @@ function AddNewUser() {
       ...data,
       id: params.userId,
     };
+    payload.track_id = (data && data.employee_path) ?? '';
+    delete payload.employee_path;
     payload.mobile_number =
       data.mobile_number.split('')[4] === '+966' ? data.mobile_number : `+966${data.mobile_number}`;
     payload = removeEmptyKey(payload);
@@ -170,10 +197,48 @@ function AddNewUser() {
     setOpenSnackBar({ open: false, message: '', severity: 'success' });
   };
 
+  const fetchingTracks = React.useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const rest = await axiosInstance.get(`/tender/track/fetch-all?include_general=0`, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
+      // console.log(rest.data.data);
+      if (rest) {
+        setTracksData(
+          rest.data.data.map((item: tracks) => ({
+            id: item.id ?? '-',
+            name: item.name ?? 'No Record',
+            with_consultant: item.with_consultant ?? 'No Record',
+          }))
+        );
+      }
+      // console.log('rest', rest.data.data);
+    } catch (err) {
+      console.log('err', err);
+      enqueueSnackbar(err.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [activeRole, enqueueSnackbar]);
+
+  React.useEffect(() => {
+    fetchingTracks();
+  }, [fetchingTracks]);
+
   React.useEffect(() => {
     if (params.userId) {
-      if (!fetching && !error && data) {
+      if (!fetching && !error && data && tracksData) {
         // console.log({ data });
+        // console.log('test : ', tracksData.find((item) => item.id === data.data.track_id)?.id);
         const userRole: string[] =
           data.data.user_role.length > 0 ? data.data.user_role.map((role: any) => role.role) : [];
         const tmpMobileNumber =
@@ -186,13 +251,16 @@ function AddNewUser() {
           email: data.data.email,
           password: '',
           employee_name: data.data.employee_name,
-          employee_path: data.data.employee_path ?? 'GENERAL',
+          // employee_path: data.data.employee_path ?? 'GENERAL',
+          employee_path: tracksData.find((item) => item.id === data.data.track_id)?.id ?? '',
           mobile_number: tmpMobileNumber,
           user_roles: [...userRole],
         });
       }
     }
-  }, [params, fetching, error, data, reset]);
+  }, [params, fetching, error, data, reset, tracksData]);
+
+  if (isLoading) return <>Loading...</>;
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -281,7 +349,7 @@ function AddNewUser() {
               />
             </Grid>
             <Grid item md={6} xs={12}>
-              <BaseField
+              {/* <BaseField
                 type="select"
                 name="employee_path"
                 label="مسار للموظف*"
@@ -304,7 +372,21 @@ function AddNewUser() {
                     مسار التعميدات
                   </option>
                 </>
-              </BaseField>
+              </BaseField> */}
+              <RHFSelect
+                type="select"
+                name="employee_path"
+                label="مسار للموظف*"
+                placeholder="الرجاء اختيار اسم الجهة"
+                disabled={isLoading}
+                size="small"
+              >
+                {tracksData?.map((item: tracks, index: any) => (
+                  <MenuItem key={index} value={item?.id}>
+                    {item.name}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
             </Grid>
             <Grid item md={6} xs={12}>
               <BaseField

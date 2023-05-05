@@ -64,7 +64,7 @@ function ModeratorActionBar() {
         selectLang: currentLang.value,
       };
       await axiosInstance
-        .patch('/tender-proposal/change-state', payload, {
+        .patch('/tender-proposal/chasdange-state', payload, {
           headers: { 'x-hasura-role': activeRole! },
         })
         .then((res) => {

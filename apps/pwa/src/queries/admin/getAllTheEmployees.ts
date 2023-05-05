@@ -22,6 +22,8 @@ query getOneEmployee($id: String = "") {
     user_role: roles {
       role: user_type_id
     }
+    track_id
   }
 }
+
 `;

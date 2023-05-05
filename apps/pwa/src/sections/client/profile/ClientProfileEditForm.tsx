@@ -156,7 +156,10 @@ function ClientProfileEditForm() {
     ) {
       // console.log('data?.user_by_pk:', data?.user_by_pk);
       const { client_data: client, bank_informations } = data?.user_by_pk;
-      const checkedBanks = bank_informations.findIndex((bank: any) => bank.is_deleted);
+      // console.log({ bank_informations });
+      const checkedBanks = bank_informations.findIndex(
+        (bank: any) => bank && bank.bank_list && bank.bank_list.is_deleted
+      );
       if (checkedBanks > -1) {
         // setEditedTabs({
         //   ...editedTabs,
@@ -166,6 +169,7 @@ function ClientProfileEditForm() {
           ...editedTabs,
           form5: 'register_fifth_tap',
         }));
+        setStep(4);
       }
       const {
         client_field,
@@ -500,6 +504,9 @@ function ClientProfileEditForm() {
       };
     }
     // }
+    const updateBank = {
+      ...newBankInformation,
+    };
     const payload = {
       ...profileState.form1,
       ...profileState.form2,
@@ -514,12 +521,18 @@ function ClientProfileEditForm() {
     if (filteredObj.entity_mobile === startedValue.entity_mobile) {
       delete filteredObj.entity_mobile;
     }
+    const newPayload = editedTabs.form5 ? updateBank : filteredObj;
     // console.log({ filteredObj });
     try {
+      // const url = editedTabs.form5
+      //   ? 'tender/client/edit-request/create1'
+      //   : 'tender/client/edit-request/create1';
+      const url = 'tender/client/edit-request/create';
       const rest = await axiosInstance.post(
-        'tender/client/edit-request/create',
+        `${url}`,
         {
           // proposal_id: id,
+          // ...newPayload,
           ...filteredObj,
         },
         {
@@ -559,7 +572,7 @@ function ClientProfileEditForm() {
     // console.log({ newBankInformation });
     // console.log({ profileState });
   };
-  // console.log(profileState);
+  // console.log('profileState.form5', profileState.form5);
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Stack direction="row">
@@ -625,6 +638,7 @@ function ClientProfileEditForm() {
             <Tab
               key={index}
               label={translate(label)}
+              disabled={checkIndexBank ? true : !checkIndexBank && false}
               sx={{
                 borderRadius: 0,
                 px: 3,
@@ -690,7 +704,7 @@ function ClientProfileEditForm() {
           </AdministrativeInfoForm>
         </Box>
       )}
-      {step === 4 && (
+      {step === 4 && !fetching && (
         <Box sx={{ px: '100px', display: 'flex', flexDirection: 'column', gap: 4 }}>
           <Typography variant="h5">معلومات بنكية</Typography>
           <BankingInfoForm
@@ -698,6 +712,7 @@ function ClientProfileEditForm() {
             onSubmit={onSubmit5}
             initialValue={profileState.form5}
             isEdit={isEdit.form5}
+            updateBank={editedTabs.form5 ? true : false}
           />
           {/* <ActionsBox /> */}
           {/* <ActionsBox isEdit={isEdit.form5} /> */}

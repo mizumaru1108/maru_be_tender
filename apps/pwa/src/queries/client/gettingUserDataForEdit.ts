@@ -38,6 +38,9 @@ query MyQuery($id: String = "") {
       id
       is_deleted
       bank_id
+      bank_list {
+        is_deleted
+      }
     }
     email
   }
