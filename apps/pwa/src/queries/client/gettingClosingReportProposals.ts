@@ -10,6 +10,7 @@ query MyQuery($where: proposal_bool_exp = {}, $limit: Int = 10, $offset: Int = 0
     updated_at
     created_at
     project_name
+    project_number
     state
     user {
       employee_name
