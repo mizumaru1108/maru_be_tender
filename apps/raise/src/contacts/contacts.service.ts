@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -32,69 +32,79 @@ export class ContactsService {
   ) {}
 
   async sendMail(message: MessageDto) {
-    let txtMessage = 'Oops an error occurred, email failed to send';
-    let success = false;
-    let statusCode = 400;
-    const organizationId = message.organizationId;
-    if (organizationId) {
-      this.logger.debug('find organization...');
-      const filter = { _id: organizationId };
-      const organizationData = await this.organizationModel.findOne(filter, {});
-      //console.log(organizationData);
-      if (organizationData) {
-        const donorSendEmailParams: SendEmailDto = {
-          to: organizationData.contactEmail, // change to your email to test, ex: rdanang.dev@gmail.com, default value is registeredUser.email
-          subject: 'Donor has sent you an Email',
-          mailType: 'template',
-          templatePath: 'email',
-          templateContext: {
-            name: message.name,
-            email: message.email,
-            help_message: message.help_message,
-          },
-          attachments: [...message.files],
-          from: 'hello@tmra.io', // we can make it dynamic when new AWS SESW identity available
-        };
+    const ObjectId = require('mongoose').Types.ObjectId;
+    const organization_id = message.organizationId;
 
-        await this.emailService.sendMail(donorSendEmailParams);
-
-        const letUsKnowParams: SendEmailDto = {
-          to: message.email, // change to your email to test, ex: rdanang.dev@gmail.com, default value is registeredUser.email
-          subject: 'Thanks for letting us know',
-          mailType: 'template',
-          templatePath: 'donor',
-          templateContext: {
-            name: message.name,
-            email: message.email,
-            help_message: message.help_message,
-          },
-          attachments: [...message.files],
-          from: 'hello@tmra.io', // we can make it dynamic when new AWS SESW identity available
-        };
-
-        await this.emailService.sendMail(letUsKnowParams);
-
-        this.notificationsModel.create({
-          organizationId: new Types.ObjectId(organizationId),
-          type: 'general',
-          createdAt: new Date(),
-          title: 'Donor has sent you an Email!',
-          body: `Please check your inbox...`,
-          icon: 'message',
-          markAsRead: false,
-        });
-
-        success = true;
-        statusCode = 200;
-        txtMessage = 'Your email has been sent';
-      }
+    if (!organization_id) {
+      throw new HttpException(
+        'Request rejected organizationId is required!',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
-    return {
-      success: success,
-      status: statusCode,
-      message: txtMessage,
-      data: message,
-    };
+    try {
+      this.logger.debug('find organization...');
+      const getOrganization = await this.organizationModel.findOne({
+        _id: ObjectId(organization_id),
+      });
+
+      if (!getOrganization) {
+        throw new HttpException(
+          'Organization not found!',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const donorSendEmailParams: SendEmailDto = {
+        to: getOrganization.contactEmail,
+        subject: 'Donor has sent you an Email',
+        mailType: 'template',
+        templatePath: 'email',
+        templateContext: {
+          name: message.name,
+          email: message.email,
+          help_message: message.help_message,
+        },
+        attachments: message.files ? message.files : [],
+        from: 'hello@tmra.io',
+      };
+
+      const resEmailToOrg = await this.emailService.sendMail(
+        donorSendEmailParams,
+      );
+
+      const letUsKnowParams: SendEmailDto = {
+        to: message.email,
+        subject: 'Thanks for letting us know',
+        mailType: 'template',
+        templatePath: 'email',
+        templateContext: {
+          name: message.name,
+          email: message.email,
+          help_message: message.help_message,
+        },
+        attachments: message.files ? message.files : [],
+        from: getOrganization.contactEmail,
+      };
+
+      const resEmailToDonor = await this.emailService.sendMail(letUsKnowParams);
+
+      await this.notificationsModel.create({
+        organizationId: new Types.ObjectId(organization_id),
+        type: 'general',
+        createdAt: new Date().toISOString(),
+        title: 'Donor has sent you an Email!',
+        body: `Please check your inbox...`,
+        icon: 'message',
+        markAsRead: false,
+      });
+
+      return {
+        email_to_org: resEmailToOrg,
+        email_to_donor: resEmailToDonor,
+      };
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    }
   }
 }
