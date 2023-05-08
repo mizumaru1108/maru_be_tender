@@ -8,6 +8,7 @@ import React from 'react';
 import { useSnackbar } from 'notistack';
 import useAuth from '../../../hooks/useAuth';
 import axiosInstance from '../../../utils/axios';
+import EmptyContent from '../../../components/EmptyContent';
 
 function IncomingFundingRequests() {
   const { translate } = useLocales();
@@ -75,42 +76,56 @@ function IncomingFundingRequests() {
     );
   }
   // const props = data?.data ?? [];
-  if (!cardData || cardData.length === 0) return null;
+  // if (!cardData || cardData.length === 0) return null;
   return (
     <Grid item md={12}>
       <Typography variant="h4" sx={{ mb: '20px' }}>
         {translate('incoming_funding_requests_project_supervisor')}
       </Typography>
       <Grid container rowSpacing={3} columnSpacing={3}>
-        {cardData?.map((item: any, index: any) => (
-          <Grid item md={6} key={index}>
-            <ProjectCard
-              title={{
-                id: item.id,
-                project_number: generateHeader(
-                  item && item.project_number && item.project_number ? item.project_number : item.id
-                ),
-                inquiryStatus: item.outter_status.toLowerCase(),
+        {cardData.length > 0 ? (
+          cardData?.map((item: any, index: any) => (
+            <Grid item md={6} key={index}>
+              <ProjectCard
+                title={{
+                  id: item.id,
+                  project_number: generateHeader(
+                    item && item.project_number && item.project_number
+                      ? item.project_number
+                      : item.id
+                  ),
+                  inquiryStatus: item.outter_status.toLowerCase(),
+                }}
+                content={{
+                  projectName: item.project_name,
+                  organizationName: (item && item.user && item.user.employee_name) ?? '-',
+                  sentSection: item.state,
+                  employee:
+                    item.proposal_logs &&
+                    item.proposal_logs.length > 0 &&
+                    item.proposal_logs[item.proposal_logs.length - 1].reviewer &&
+                    item.proposal_logs[item.proposal_logs.length - 1].reviewer.employee_name,
+                  createdAtClient: new Date(item.created_at),
+                }}
+                footer={{
+                  createdAt: new Date(item.updated_at),
+                }}
+                cardFooterButtonAction="show-details"
+                destination="incoming-funding-requests"
+              />
+            </Grid>
+          ))
+        ) : (
+          <Grid item md={12}>
+            {/* {'test'} */}
+            <EmptyContent
+              title="No Data"
+              sx={{
+                '& span.MuiBox-root': { height: 160 },
               }}
-              content={{
-                projectName: item.project_name,
-                organizationName: (item && item.user && item.user.employee_name) ?? '-',
-                sentSection: item.state,
-                employee:
-                  item.proposal_logs &&
-                  item.proposal_logs.length > 0 &&
-                  item.proposal_logs[item.proposal_logs.length - 1].reviewer &&
-                  item.proposal_logs[item.proposal_logs.length - 1].reviewer.employee_name,
-                createdAtClient: new Date(item.created_at),
-              }}
-              footer={{
-                createdAt: new Date(item.updated_at),
-              }}
-              cardFooterButtonAction="show-details"
-              destination="incoming-funding-requests"
             />
           </Grid>
-        ))}
+        )}
       </Grid>
     </Grid>
   );
