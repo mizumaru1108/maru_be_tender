@@ -33,33 +33,41 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
 
   const getBankList = async () => {
     setLoading(true);
-    // console.log('test masuk');
     try {
       // const { status, data } = await axios.get(
       //   `${TMRA_RAISE_URL}/tender/proposal/payment/find-bank-list`
       // );
-      const rest = await axiosInstance.get(`/tender/proposal/payment/find-bank-list?limit=0`, {
-        headers: { 'x-hasura-role': activeRole! },
-      });
-      if (rest) {
-        const test = rest.data.data
+
+      let datas: AuthorityInterface[] = [];
+      if (activeRole) {
+        const rest = await axiosInstance.get(`/tender/proposal/payment/find-bank-list?limit=0`, {
+          headers: { 'x-hasura-role': activeRole! },
+        });
+        datas = rest.data.data;
+      } else {
+        const rest = await axios.get(
+          `${TMRA_RAISE_URL}/tender/proposal/payment/find-bank-list?limit=0`
+        );
+        datas = rest.data.data;
+      }
+      if (datas) {
+        const test = datas
           .filter((bank: any) => bank.is_deleted === false || bank.is_deleted === null)
           .map((bank: any) => bank);
         // console.log({ test });
-        // console.log(rest.data.data);
+        // console.log(datas);
         setBankValue(test);
         dispatch(setBankList(test));
         setLoading(false);
       }
     } catch (error) {
       setLoading(false);
-      console.error(error.message);
+      console.error(error);
     }
   };
 
   useEffect(() => {
     getBankList();
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
