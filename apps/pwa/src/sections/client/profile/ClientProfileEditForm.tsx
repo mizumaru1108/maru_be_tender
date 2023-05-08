@@ -42,6 +42,7 @@ interface editedTabs {
   form3: string;
   form4: string;
   form5: string;
+  numberOfUpdatedBanks?: number;
 }
 
 function ClientProfileEditForm() {
@@ -58,6 +59,7 @@ function ClientProfileEditForm() {
     form3: '',
     form4: '',
     form5: '',
+    numberOfUpdatedBanks: 0,
   });
   const { translate } = useLocales();
   const { data, fetching, error } = result;
@@ -160,6 +162,10 @@ function ClientProfileEditForm() {
       const checkedBanks = bank_informations.findIndex(
         (bank: any) => bank && bank.bank_list && bank.bank_list.is_deleted
       );
+      const numberOfBank = bank_informations.filter(
+        (bank: any) => bank && bank.bank_list && bank.bank_list.is_deleted
+      );
+      // console.log({ numberOfBank });
       if (checkedBanks > -1) {
         // setEditedTabs({
         //   ...editedTabs,
@@ -168,6 +174,7 @@ function ClientProfileEditForm() {
         setEditedTabs((editedTabs) => ({
           ...editedTabs,
           form5: 'register_fifth_tap',
+          numberOfUpdatedBanks: numberOfBank.length,
         }));
         setStep(4);
       }
@@ -713,6 +720,7 @@ function ClientProfileEditForm() {
             initialValue={profileState.form5}
             isEdit={isEdit.form5}
             updateBank={editedTabs.form5 ? true : false}
+            numberOfUpdate={(editedTabs && editedTabs.numberOfUpdatedBanks) ?? 0}
           />
           {/* <ActionsBox /> */}
           {/* <ActionsBox isEdit={isEdit.form5} /> */}

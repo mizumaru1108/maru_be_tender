@@ -31,6 +31,9 @@ type FormValuesProps = {
   bank_name: string;
   bank_id?: string;
   card_image: FileProp;
+  bank_list?: {
+    is_deleted: boolean;
+  };
   id: string;
 };
 
@@ -44,10 +47,6 @@ export default function AddBankModal({
   const { translate } = useLocales();
   const rootRef = React.useRef<HTMLDivElement>(null);
   const { banks } = useSelector((state) => state.banks);
-  // const { user } = useAuth();
-  // const id = user?.id;
-  // addNewBankInformation
-  // const [_, addingNewBankInfo] = useMutation(addNewBankInformation);
   const RegisterSchema = Yup.object().shape({
     bank_account_number: Yup.string()
       .min(27, translate('errors.register.bank_account_number.min'))
@@ -131,7 +130,7 @@ export default function AddBankModal({
       ? (newBankAccNumber = 'SA'.concat(`${getValues('bank_account_number')}`).replace(/\s/g, ''))
       : (newBankAccNumber = getValues('bank_account_number'));
     newData = { ...newData, bank_account_number: newBankAccNumber };
-    console.log('newData', newData);
+    // console.log('newData', newData);
     setValue('bank_account_number', '');
     setValue('bank_account_name', '');
     setValue('bank_name', '');
@@ -144,7 +143,7 @@ export default function AddBankModal({
       fullName: '',
     });
     if (initialValues && initialValues.id) {
-      newData = { ...newData, id: initialValues.id };
+      newData = { ...newData, id: initialValues.id, bank_list: { is_deleted: false } };
       onSubmit(newData);
     } else {
       onSubmit(newData);

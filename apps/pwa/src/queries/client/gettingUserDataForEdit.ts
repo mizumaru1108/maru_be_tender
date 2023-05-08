@@ -36,7 +36,6 @@ query MyQuery($id: String = "") {
       bank_name
       card_image
       id
-      is_deleted
       bank_id
       bank_list {
         is_deleted

@@ -8,6 +8,7 @@ import { dataAccount } from '../../../../pages/moderator/mock-data';
 import { nanoid } from 'nanoid';
 import { LIST_OF_BANK } from 'sections/auth/register/RegisterFormData';
 import { useSelector } from '../../../../redux/store';
+import { AuthorityInterface } from '../../../admin/bank-name/list/types';
 
 type FormProps = {
   children?: React.ReactNode;
@@ -16,6 +17,7 @@ type FormProps = {
   onDelete: (data: number) => void;
   isEdit?: boolean;
   updateBank?: boolean;
+  numberOfUpdate: number;
 };
 
 const BankingInfoForm = ({
@@ -25,6 +27,7 @@ const BankingInfoForm = ({
   onDelete,
   isEdit,
   updateBank,
+  numberOfUpdate,
 }: FormProps) => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -69,7 +72,9 @@ const BankingInfoForm = ({
     });
     if (data && data.id) {
       setTmpBank(updatedBankAccount);
+      console.log('masuk update');
     } else {
+      console.log('masuk create');
       setTmpBank([...tmpBank, newData]);
     }
   };
@@ -118,6 +123,8 @@ const BankingInfoForm = ({
       onSubmit(newData);
     }
   };
+  // console.log('test', tmpBank.findIndex((bank: any) => bank.bank_list.is_deleted) > -1);
+  console.log('test', tmpBank);
   return (
     <Grid container rowSpacing={4} columnSpacing={7}>
       {tmpBank &&
@@ -254,6 +261,7 @@ const BankingInfoForm = ({
         <Button
           // type="submit"
           onClick={onSubmitForm5}
+          disabled={tmpBank.findIndex((bank: any) => bank.bank_list.is_deleted) > -1}
           variant={isEdit ? 'outlined' : 'contained'}
           sx={{
             backgroundColor: isEdit ? '#fff' : 'background.paper',
