@@ -342,6 +342,13 @@ export class ZakatService {
               '$user.email',
             ],
           },
+          isAnonymous: {
+            $cond: [
+              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              '$anonymous.anonymous',
+              false,
+            ],
+          },
         },
       },
       {
@@ -352,6 +359,7 @@ export class ZakatService {
           amount: { $first: '$amount' },
           donorName: { $first: '$donorName' },
           email: { $first: '$email' },
+          is_anonymous: { $first: '$isAnonymous' },
         },
       },
       {
@@ -438,6 +446,13 @@ export class ZakatService {
               '$user.email',
             ],
           },
+          isAnonymous: {
+            $cond: [
+              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              '$anonymous.anonymous',
+              false,
+            ],
+          },
         },
       },
       {
@@ -448,6 +463,7 @@ export class ZakatService {
           amount: { $first: '$amount' },
           donorName: { $first: '$donorName' },
           email: { $first: '$email' },
+          is_anonymous: { $first: '$isAnonymous' },
         },
       },
       {

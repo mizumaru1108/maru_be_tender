@@ -1017,7 +1017,11 @@ export class PaymentStripeService {
         if (isAnonymous) {
           await this.anonymousModel.findOneAndUpdate(
             { _id: payment.donorId },
-            { donationLogId: createDonationCampaign._id },
+            {
+              donationLogId: createDonationCampaign._id,
+              isEmailChecklist: payment.isEmailChecklist,
+              anonymous: payment.isAnonymous,
+            },
           );
         }
       }
@@ -1144,7 +1148,7 @@ export class PaymentStripeService {
         );
       }
 
-      if (payment.campaignId && payment.amount && payment.campaignTitle) {
+      if (payment.campaignId && payment.amount) {
         let updateCampaignDonationLog;
 
         const getCampaign = await this.campaignModel

@@ -390,6 +390,13 @@ export class OrganizationService {
               '$user.email',
             ],
           },
+          isAnonymous: {
+            $cond: [
+              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              '$user_anonymous.anonymous',
+              false,
+            ],
+          },
         },
       },
       {
@@ -402,6 +409,7 @@ export class OrganizationService {
           country: { $first: '$user.country' },
           mobile: { $first: '$user.mobile' },
           totalAmount: { $sum: '$amount' },
+          is_anonymous: { $first: '$isAnonymous' },
           createdAt: { $first: '$createdAt' },
           updatedAt: { $first: '$updatedAt' },
         },
@@ -491,6 +499,13 @@ export class OrganizationService {
               '$user.email',
             ],
           },
+          isAnonymous: {
+            $cond: [
+              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
+              '$user_anonymous.anonymous',
+              false,
+            ],
+          },
         },
       },
       {
@@ -503,6 +518,7 @@ export class OrganizationService {
           country: { $first: '$user.country' },
           mobile: { $first: '$user.mobile' },
           totalAmount: { $sum: '$amount' },
+          is_anonymous: { $first: '$isAnonymous' },
           createdAt: { $first: '$createdAt' },
           updatedAt: { $first: '$updatedAt' },
         },
