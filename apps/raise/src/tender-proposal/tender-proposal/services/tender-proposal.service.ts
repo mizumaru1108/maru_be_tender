@@ -48,6 +48,7 @@ import { IProposalLogsResponse } from '../../tender-proposal-log/interfaces/prop
 import { TenderProposalLogRepository } from '../../tender-proposal-log/repositories/tender-proposal-log.repository';
 import {
   CreateProposalInterceptorDto,
+  PaymentAdjustmentFilterRequest,
   PreviousProposalFilterRequest,
   RequestInProcessFilterRequest,
 } from '../dtos/requests';
@@ -240,6 +241,13 @@ export class TenderProposalService {
     filter: PreviousProposalFilterRequest,
   ) {
     return await this.proposalRepo.getPreviousProposal(currentUser, filter);
+  }
+
+  async fetchPaymentAdjustment(
+    currentUser: TenderCurrentUser,
+    filter: PaymentAdjustmentFilterRequest,
+  ) {
+    return await this.proposalRepo.fetchPaymentAdjustment(currentUser, filter);
   }
 
   async create(userId: string, request: ProposalCreateDto) {

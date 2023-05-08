@@ -24,6 +24,7 @@ import { UpdateMyProposalResponseDto } from '../dtos/responses/update-my-proposa
 import { NewAmandementNotifMapper } from '../mappers/new-amandement-notif-mapper';
 import { SendRevisionNotifMapper } from '../mappers/send-revision-notif-mapper';
 import {
+  PaymentAdjustmentFilterRequest,
   PreviousProposalFilterRequest,
   RequestInProcessFilterRequest,
 } from '../dtos/requests';
@@ -1515,6 +1516,147 @@ export class TenderProposalRepository {
           take: limit,
         };
       }
+
+      const data = await this.prismaService.proposal.findMany(queryOptions);
+
+      const total = await this.prismaService.proposal.count({
+        where: whereClause,
+      });
+
+      return {
+        data,
+        total,
+      };
+    } catch (err) {
+      const theError = prismaErrorThrower(
+        err,
+        TenderProposalRepository.name,
+        'updateProposal error details: ',
+        'updating proposal!',
+      );
+      throw theError;
+    }
+  }
+
+  async fetchPaymentAdjustment(
+    currentUser: TenderCurrentUser,
+    filter: PaymentAdjustmentFilterRequest,
+  ) {
+    try {
+      const { page = 1, limit = 10, sort = 'desc', sorting_field } = filter;
+
+      const offset = (page - 1) * limit;
+
+      let whereClause: Prisma.proposalWhereInput = {
+        oid: null,
+      };
+
+      const order_by: Prisma.proposalOrderByWithRelationInput = {};
+      const field =
+        sorting_field as keyof Prisma.proposalOrderByWithRelationInput;
+      if (sorting_field) {
+        order_by[field] = sort;
+      } else {
+        order_by.created_at = sort;
+      }
+
+      /* filter whereClause based on existing permissions on hasura */
+
+      whereClause = {
+        ...whereClause,
+        step: 'ZERO',
+      };
+
+      if (
+        [
+          'tender_project_supervisor',
+          'tender_project_manager',
+          'tender_cashier',
+          'tender_finance',
+        ].indexOf(currentUser.choosenRole) > -1
+      ) {
+        const reviewer = await this.prismaService.user.findUnique({
+          where: { id: currentUser.id },
+          include: { track: true },
+        });
+        if (!reviewer || !reviewer.track) {
+          throw new BadRequestException('cant find track of this user');
+        }
+
+        if (reviewer.track.name !== 'GENERAL') {
+          whereClause = {
+            ...whereClause,
+            OR: [{ track_id: reviewer.track.id }, { track_id: null }],
+          };
+        }
+      }
+
+      if (currentUser.choosenRole === 'tender_project_supervisor') {
+        whereClause = {
+          ...whereClause,
+          supervisor_id: currentUser.id,
+          OR: [
+            {
+              inner_status:
+                InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION,
+            },
+            { payments: { some: { status: { in: ['set_by_supervisor'] } } } },
+          ],
+        };
+      }
+
+      if (currentUser.choosenRole === 'tender_project_manager') {
+        whereClause = {
+          ...whereClause,
+          OR: [
+            { project_manager_id: currentUser.id },
+            { project_manager_id: null },
+          ],
+          payments: {
+            some: {
+              status: {
+                in: ['issued_by_supervisor', 'set_by_supervisor'],
+              },
+            },
+          },
+        };
+      }
+
+      if (currentUser.choosenRole === 'tender_finance') {
+        whereClause = {
+          ...whereClause,
+          OR: [{ finance_id: currentUser.id }, { finance_id: null }],
+          payments: {
+            some: { status: { in: ['accepted_by_project_manager'] } },
+          },
+        };
+      }
+
+      if (currentUser.choosenRole === 'tender_cashier') {
+        whereClause = {
+          ...whereClause,
+          OR: [{ cashier_id: currentUser.id }, { cashier_id: null }],
+          payments: { some: { status: { in: ['accepted_by_finance'] } } },
+        };
+      }
+
+      let queryOptions: Prisma.proposalFindManyArgs = {
+        where: whereClause,
+        skip: offset,
+        include: {
+          user: true,
+        },
+        orderBy: order_by,
+      };
+
+      if (limit > 0) {
+        queryOptions = {
+          ...queryOptions,
+          take: limit,
+        };
+      }
+
+      console.log(logUtil(queryOptions));
 
       const data = await this.prismaService.proposal.findMany(queryOptions);
 

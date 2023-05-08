@@ -30,6 +30,7 @@ import {
   CreateProposalInterceptorDto,
   FetchAmandementFilterRequest,
   FetchProposalFilterRequest,
+  PaymentAdjustmentFilterRequest,
   PreviousProposalFilterRequest,
   ProposalCreateDto,
   ProposalDeleteDraftDto,
@@ -189,6 +190,33 @@ export class TenderProposalController {
     @Query() filter: PreviousProposalFilterRequest,
   ) {
     const result = await this.proposalService.getPreviousProposal(
+      currentUser,
+      filter,
+    );
+
+    return manualPaginationHelper(
+      result.data,
+      result.total,
+      filter.page || 1,
+      filter.limit || 0,
+      HttpStatus.OK,
+      'Success',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles(
+    'tender_project_manager',
+    'tender_project_supervisor',
+    'tender_finance',
+    'tender_cashier',
+  )
+  @Get('payment-adjustment')
+  async fetchPaymentAdjustment(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Query() filter: PaymentAdjustmentFilterRequest,
+  ) {
+    const result = await this.proposalService.fetchPaymentAdjustment(
       currentUser,
       filter,
     );

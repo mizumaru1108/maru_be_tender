@@ -7,6 +7,7 @@ export * from './existing-proposal-item-budget.dto';
 export * from './fetch-amandement-filter-request.dto';
 export * from './fetch-proposal-filter-request.dto';
 export * from './moderator-change-state.dto';
+export * from './payment-adjustment-filter-request.dto';
 export * from './previous-proposal-filter-request.dto';
 export * from './proposal-create.dto';
 export * from './proposal-delete-draft';

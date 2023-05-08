@@ -690,7 +690,7 @@ export class TenderClientRepository {
               'info',
               `updating client data with payload of ${logUtil(
                 updateUserPayload,
-              )}`,
+              )}, also re-active the user`,
             );
             await prisma.user.update({
               where: {
@@ -698,6 +698,7 @@ export class TenderClientRepository {
               },
               data: {
                 ...updateUserPayload,
+                status_id: 'ACTIVE_ACCOUNT',
               },
             });
 
