@@ -165,7 +165,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
       // console.log('acceptSupervisorGrant', payload);
 
       await axiosInstance
-        .patch('/tender-proposal/change-sasdtate', payload, {
+        .patch('/tender-proposal/change-state', payload, {
           headers: { 'x-hasura-role': activeRole! },
         })
         .then((res) => {
