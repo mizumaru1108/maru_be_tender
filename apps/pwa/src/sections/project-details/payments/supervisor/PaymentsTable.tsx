@@ -45,7 +45,8 @@ function PaymentsTable() {
         })
       ).then((res) => {
         if (res.statusCode === 200) {
-          reExecute();
+          // reExecute();
+          getProposal(id as string, activeRole! as string);
           enqueueSnackbar('تم إصدار أذن الصرف بنجاح', {
             variant: 'success',
             preventDuplicate: true,
@@ -73,7 +74,8 @@ function PaymentsTable() {
         });
       }
       if (error.message === "Cannot set properties of undefined (setting 'status')") {
-        reExecute();
+        // reExecute();
+        getProposal(id as string, activeRole! as string);
         enqueueSnackbar('تم إصدار أذن الصرف بنجاح', {
           variant: 'success',
           preventDuplicate: true,
@@ -105,105 +107,114 @@ function PaymentsTable() {
 
   return (
     <>
-      {data.proposal_by_pk.payments.map((item: any, index: any) => (
-        <Grid item md={12} key={index} sx={{ mb: '20px' }}>
-          <Grid container direction="row" key={item.order} spacing={2} alignItems="center">
-            <Grid item md={2}>
-              <Typography variant="h6" sx={{ alignSelf: 'center' }}>
-                <Typography component="span">
-                  {translate('content.administrative.project_details.payment.table.td.batch_no')}
-                </Typography>
-                <Typography component="span">&nbsp;{item.order}</Typography>
-              </Typography>
-            </Grid>
-            <Grid item md={2}>
-              <Stack direction="column">
-                <Typography sx={{ color: '#93A3B0' }}>
-                  {translate('content.administrative.project_details.payment.table.td.payment_no')}:
-                </Typography>
-                <Typography sx={{ color: '#1E1E1E' }} variant="h6">
-                  {item.payment_amount}
-                </Typography>
-              </Stack>
-            </Grid>
-            <Grid item md={2}>
-              <Stack direction="column">
-                <Typography sx={{ color: '#93A3B0' }}>
-                  {translate('content.administrative.project_details.payment.table.td.batch_date')}:
-                </Typography>
-                <Typography sx={{ color: '#1E1E1E' }} variant="h6">
-                  {new Date(item.payment_date).toISOString().substring(0, 10)}
-                </Typography>
-              </Stack>
-            </Grid>
-            {item.status !== 'set_by_supervisor' ? (
-              <Grid item md={3}>
-                <Typography variant="h6" sx={{ color: '#0E8478' }}>
-                  {translate(
-                    'content.administrative.project_details.payment.table.btn.exchange_permit_success'
-                  )}
-                </Typography>
-              </Grid>
-            ) : (
-              <Grid item md={3}>
-                <Button
-                  sx={{
-                    color: index !== currentIssuedPayament ? '#fff' : '#1E1E1E',
-                    backgroundColor: index === currentIssuedPayament ? '#0E8478' : '#93A3B03D',
-                    borderRadius: 1,
-                    width: '200px',
-                  }}
-                  disabled={index !== currentIssuedPayament ? true : false}
-                  onClick={() => {
-                    setTrigger(!trigger);
-                    handleIssuePayment(item);
-                  }}
-                >
-                  {translate(
-                    'content.administrative.project_details.payment.table.btn.exchange_permit_issued'
-                  )}
-                </Button>
-              </Grid>
-            )}
-            {item.status === 'done' ? (
+      {proposal &&
+        proposal &&
+        proposal.payments.length > 0 &&
+        proposal.payments.map((item: any, index: any) => (
+          <Grid item md={12} key={index} sx={{ mb: '20px' }}>
+            <Grid container direction="row" key={item.order} spacing={2} alignItems="center">
               <Grid item md={2}>
-                {item.cheques.length ? (
+                <Typography variant="h6" sx={{ alignSelf: 'center' }}>
+                  <Typography component="span">
+                    {translate('content.administrative.project_details.payment.table.td.batch_no')}
+                  </Typography>
+                  <Typography component="span">&nbsp;{item.order}</Typography>
+                </Typography>
+              </Grid>
+              <Grid item md={2}>
+                <Stack direction="column">
+                  <Typography sx={{ color: '#93A3B0' }}>
+                    {translate(
+                      'content.administrative.project_details.payment.table.td.payment_no'
+                    )}
+                    :
+                  </Typography>
+                  <Typography sx={{ color: '#1E1E1E' }} variant="h6">
+                    {item.payment_amount}
+                  </Typography>
+                </Stack>
+              </Grid>
+              <Grid item md={2}>
+                <Stack direction="column">
+                  <Typography sx={{ color: '#93A3B0' }}>
+                    {translate(
+                      'content.administrative.project_details.payment.table.td.batch_date'
+                    )}
+                    :
+                  </Typography>
+                  <Typography sx={{ color: '#1E1E1E' }} variant="h6">
+                    {new Date(item.payment_date).toISOString().substring(0, 10)}
+                  </Typography>
+                </Stack>
+              </Grid>
+              {item.status !== 'set_by_supervisor' ? (
+                <Grid item md={3}>
+                  <Typography variant="h6" sx={{ color: '#0E8478' }}>
+                    {translate(
+                      'content.administrative.project_details.payment.table.btn.exchange_permit_success'
+                    )}
+                  </Typography>
+                </Grid>
+              ) : (
+                <Grid item md={3}>
                   <Button
-                    component={Link}
-                    href={
-                      item.cheques[0].transfer_receipt
-                        ? typeof item.cheques[0].transfer_receipt === 'string'
-                          ? item.cheques[0].transfer_receipt
-                          : item.cheques[0].transfer_receipt.url
-                        : '#'
-                    }
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download="صورة بطاقة الحساب البنكي"
                     sx={{
-                      backgroundColor: 'transparent',
-                      color: '#000',
-                      textDecorationLine: 'underline',
+                      color: index !== currentIssuedPayament ? '#fff' : '#1E1E1E',
+                      backgroundColor: index === currentIssuedPayament ? '#0E8478' : '#93A3B03D',
+                      borderRadius: 1,
+                      width: '200px',
+                    }}
+                    disabled={index !== currentIssuedPayament ? true : false}
+                    onClick={() => {
+                      setTrigger(!trigger);
+                      handleIssuePayment(item);
                     }}
                   >
                     {translate(
-                      'content.administrative.project_details.payment.table.btn.review_transfer_receipt'
+                      'content.administrative.project_details.payment.table.btn.exchange_permit_issued'
                     )}
                   </Button>
-                ) : (
-                  <Typography color="error" sx={{ textAlign: 'start' }}>
-                    {translate(
-                      'content.administrative.project_details.payment.table.btn.not_found_cheques'
-                    )}
-                  </Typography>
-                )}
-              </Grid>
-            ) : (
-              <Grid item md={2}>
-                <Box>{''}</Box>
-              </Grid>
-            )}
-            {/* <Grid item md={1} sx={{ textAlignLast: 'end' }}>
+                </Grid>
+              )}
+              {item.status === 'done' ? (
+                <Grid item md={2}>
+                  {item.cheques.length ? (
+                    <Button
+                      component={Link}
+                      href={
+                        item.cheques[0].transfer_receipt
+                          ? typeof item.cheques[0].transfer_receipt === 'string'
+                            ? item.cheques[0].transfer_receipt
+                            : item.cheques[0].transfer_receipt.url
+                          : '#'
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download="صورة بطاقة الحساب البنكي"
+                      sx={{
+                        backgroundColor: 'transparent',
+                        color: '#000',
+                        textDecorationLine: 'underline',
+                      }}
+                    >
+                      {translate(
+                        'content.administrative.project_details.payment.table.btn.review_transfer_receipt'
+                      )}
+                    </Button>
+                  ) : (
+                    <Typography color="error" sx={{ textAlign: 'start' }}>
+                      {translate(
+                        'content.administrative.project_details.payment.table.btn.not_found_cheques'
+                      )}
+                    </Typography>
+                  )}
+                </Grid>
+              ) : (
+                <Grid item md={2}>
+                  <Box>{''}</Box>
+                </Grid>
+              )}
+              {/* <Grid item md={1} sx={{ textAlignLast: 'end' }}>
               <Button
                 sx={{
                   backgroundColor: '#0169DE',
@@ -231,9 +242,9 @@ function PaymentsTable() {
                 </svg>
               </Button>
             </Grid> */}
+            </Grid>
           </Grid>
-        </Grid>
-      ))}
+        ))}
     </>
   );
 }

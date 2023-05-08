@@ -5,6 +5,7 @@ import CardTableBE from 'components/card-table/CardTableBE';
 import { getProposals } from 'queries/commons/getProposal';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
+import CardTableByBE from '../../components/card-table/CardTableByBE';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -26,7 +27,7 @@ function ExchangePermission() {
     <Page title={translate('pages.common.exchange_permission')}>
       <Container>
         <ContentStyle>
-          <CardTableBE
+          {/* <CardTableBE
             resource={getProposals}
             title={translate('exchange_permission')}
             cardFooterButtonAction="completing-exchange-permission"
@@ -57,7 +58,7 @@ function ExchangePermission() {
               },
             }}
             destination={'exchange-permission'}
-          />
+          /> */}
           {/* <CardTable
             data={data2} // For testing, later on we will send the query to it
             title="إذن الصرف"
@@ -67,6 +68,13 @@ function ExchangePermission() {
               { name: 'اسم الجهة المشرفة*', options: [{ label: 'اسم الجهة المشرفة*', value: '' }] },
             ]}
           /> */}
+          <CardTableByBE
+            title={translate('previous_support_requests')}
+            endPoint="tender-proposal/payment-adjustment"
+            destination="payment-adjustment"
+            limitShowCard={6}
+            cardFooterButtonAction="completing-exchange-permission"
+          />
         </ContentStyle>
       </Container>
     </Page>

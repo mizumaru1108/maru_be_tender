@@ -5,6 +5,7 @@ import CardTableBE from 'components/card-table/CardTableBE';
 import { gettingPaymentAdjustment } from 'queries/project-supervisor/gettingPaymentAdjustment';
 import useAuth from 'hooks/useAuth';
 import useLocales from '../../hooks/useLocales';
+import CardTableByBE from '../../components/card-table/CardTableByBE';
 
 function PaymentAdjustment() {
   const { user } = useAuth();
@@ -22,7 +23,7 @@ function PaymentAdjustment() {
     <Page title={translate('pages.common.payment_adjustment')}>
       <Container>
         <ContentStyle>
-          <CardTableBE
+          {/* <CardTableBE
             resource={gettingPaymentAdjustment}
             title="ضبط الدفعات"
             cardFooterButtonAction="completing-exchange-permission"
@@ -54,11 +55,17 @@ function PaymentAdjustment() {
                     },
                   },
                   { payments: { status: { _eq: 'set_by_supervisor' } } },
-                  // },
                 ],
               },
             }}
             destination={'payment-adjustment'}
+          /> */}
+          <CardTableByBE
+            title={translate('previous_support_requests')}
+            endPoint="tender-proposal/payment-adjustment"
+            destination="payment-adjustment"
+            limitShowCard={6}
+            cardFooterButtonAction="completing-exchange-permission"
           />
         </ContentStyle>
       </Container>

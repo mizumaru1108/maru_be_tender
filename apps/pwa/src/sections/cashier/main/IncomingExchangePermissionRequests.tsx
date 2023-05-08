@@ -5,6 +5,11 @@ import { useNavigate } from 'react-router';
 import { useQuery } from 'urql';
 import useLocales from 'hooks/useLocales';
 import { generateHeader } from '../../../utils/generateProposalNumber';
+import React from 'react';
+import { useSnackbar } from 'notistack';
+import useAuth from '../../../hooks/useAuth';
+import axiosInstance from '../../../utils/axios';
+import EmptyContent from '../../../components/EmptyContent';
 
 function IncomingExchangePermissionRequests() {
   const { translate } = useLocales();
@@ -22,11 +27,51 @@ function IncomingExchangePermissionRequests() {
     },
   });
   const { data, fetching, error } = result;
-  if (fetching) {
+  // fetching by API
+  const [isLoading, setIsLoading] = React.useState(false);
+  const { enqueueSnackbar } = useSnackbar();
+  const { activeRole } = useAuth();
+  const [cardData, setCardData] = React.useState([]);
+
+  const fetchingIncoming = React.useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const rest = await axiosInstance.get(`tender-proposal/payment-adjustment?limit=4`, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
+      if (rest) {
+        // console.log('rest total :', rest.data);
+        setCardData(
+          rest.data.data.map((item: any) => ({
+            ...item,
+          }))
+        );
+      }
+    } catch (err) {
+      console.log('err', err);
+      enqueueSnackbar(`Something went wrong ${err.message}`, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [activeRole, enqueueSnackbar]);
+
+  React.useEffect(() => {
+    fetchingIncoming();
+    // fetchingPrevious();
+  }, [fetchingIncoming]);
+  if (fetching || isLoading) {
     return <>{translate('pages.common.loading')}</>;
   }
-  const props = data?.data ?? [];
-  if (props.length === 0) return <></>;
+  // const props = data?.data ?? [];
+  // if (props.length === 0) return <></>;
   return (
     <Grid container spacing={3}>
       <Grid item md={12} xs={12}>
@@ -51,8 +96,8 @@ function IncomingExchangePermissionRequests() {
           </Button>
         </Stack>
       </Grid>
-      {props &&
-        props.map((item: any, index: any) => (
+      {cardData.length > 0 ? (
+        cardData.map((item: any, index: any) => (
           <Grid item md={6} key={index}>
             <ProjectCard
               title={{
@@ -64,7 +109,7 @@ function IncomingExchangePermissionRequests() {
               }}
               content={{
                 projectName: item.project_name,
-                organizationName: item.user.client_data.entity,
+                organizationName: (item && item.user && item.user.employee_name) ?? '-',
                 sentSection: item.state,
                 employee:
                   item.proposal_logs &&
@@ -82,7 +127,17 @@ function IncomingExchangePermissionRequests() {
               destination="incoming-exchange-permission-requests"
             />
           </Grid>
-        ))}
+        ))
+      ) : (
+        <Grid item md={12}>
+          <EmptyContent
+            title="No Data"
+            sx={{
+              '& span.MuiBox-root': { height: 160 },
+            }}
+          />
+        </Grid>
+      )}
     </Grid>
   );
 }

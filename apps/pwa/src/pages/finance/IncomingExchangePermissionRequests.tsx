@@ -5,6 +5,7 @@ import { ProjectCardProps } from 'components/card-table/types';
 import CardTableBE from 'components/card-table/CardTableBE';
 import { getProposals } from 'queries/commons/getProposal';
 import useLocales from '../../hooks/useLocales';
+import CardTableByBE from '../../components/card-table/CardTableByBE';
 
 function IncomingExchangePermissionRequests() {
   const { translate } = useLocales();
@@ -21,7 +22,7 @@ function IncomingExchangePermissionRequests() {
     <Page title={translate('pages.finance.incoming_exchange')}>
       <Container>
         <ContentStyle>
-          <CardTableBE
+          {/* <CardTableBE
             resource={getProposals}
             title="طلبات إذن الصرف الواردة"
             destination="incoming-exchange-permission-requests"
@@ -48,6 +49,13 @@ function IncomingExchangePermissionRequests() {
               payments: { payments: { status: { _eq: 'accepted_by_project_manager' } } },
               finance_id: { finance_id: { _is_null: true } },
             }}
+            cardFooterButtonAction="completing-exchange-permission"
+          /> */}
+          <CardTableByBE
+            title={translate('previous_support_requests')}
+            endPoint="tender-proposal/payment-adjustment"
+            destination="incoming-exchange-permission-requests"
+            limitShowCard={6}
             cardFooterButtonAction="completing-exchange-permission"
           />
         </ContentStyle>
