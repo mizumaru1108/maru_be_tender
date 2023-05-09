@@ -18,10 +18,16 @@ import useAuth from '../../../hooks/useAuth';
 import axiosInstance from '../../../utils/axios';
 import { getDelayProjects } from '../../../utils/get-delay-projects';
 
+export interface tracks {
+  id: string;
+  name: string;
+  with_consultation: boolean;
+}
+
 function DashboardProjectManagement() {
   const { translate, currentLang } = useLocales();
   const dispatch = useDispatch();
-  const { tracks } = useSelector((state) => state.proposal);
+  const { tracks, track_list, isLoading } = useSelector((state) => state.proposal);
   const [projectManagementData, setProjectManagementData] = useState<ProjectManagement[]>([]);
   const [filteredTrack, setFilteredTrack] = useState([
     'MOSQUES',
@@ -37,7 +43,7 @@ function DashboardProjectManagement() {
 
   const { data: projectDatas, fetching, error } = projectList;
 
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isFetchingData, setIsLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
   const [cardData, setCardData] = React.useState([]);
@@ -48,6 +54,7 @@ function DashboardProjectManagement() {
       const rest = await axiosInstance.get(`tender-proposal/request-in-process?limit=0`, {
         headers: { 'x-hasura-role': activeRole! },
       });
+      // console.log('rest', rest.data.data);
       if (rest) {
         const tmpDatas = rest.data.data
           .filter((item: any) => item.state === 'CEO')
@@ -63,7 +70,14 @@ function DashboardProjectManagement() {
                   project && project.project_number ? project.project_number : project.id
                 ) as string) || '',
               projectName: (project.project_name as string) || '',
-              projectSection: project.project_track || '',
+              // projectSection: project.project_track || '',
+              projectSection:
+                (project &&
+                  project.track_id &&
+                  track_list &&
+                  track_list.length > 0 &&
+                  track_list.find((item: tracks) => item.id === project.track_id)!.name) ||
+                '',
               associationName: (project.user.employee_name as string) || '',
               createdAt: (project.created_at as string) || '',
               projectDelay: getDelayProjects(project.created_at, currentLang.value) || '',
@@ -86,7 +100,7 @@ function DashboardProjectManagement() {
     } finally {
       setIsLoading(false);
     }
-  }, [activeRole, enqueueSnackbar, currentLang]);
+  }, [activeRole, enqueueSnackbar, currentLang, track_list]);
 
   if (error) {
     console.log(error);
@@ -153,10 +167,10 @@ function DashboardProjectManagement() {
 
   return (
     <>
-      {!isLoading && (
+      {!isFetchingData && !isLoading && (
         <ProjectManagementTable
           headline={translate('project_management_table.headline')}
-          isLoading={fetching}
+          isLoading={isFetchingData}
           headerCell={headerCells}
           data={projectManagementData ?? []}
         />

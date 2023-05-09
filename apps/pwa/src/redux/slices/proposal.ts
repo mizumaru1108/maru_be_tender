@@ -3,7 +3,7 @@ import { getOneProposal } from 'queries/commons/getOneProposal';
 import { insertPayments } from 'queries/project-supervisor/insertPayments';
 import { dispatch } from 'redux/store';
 import graphQlAxiosInstance from 'utils/axisoGraphQlInstance';
-import { ActiveTap, Proposal, UpdateStatus } from '../../@types/proposal';
+import { ActiveTap, Proposal, tracks, UpdateStatus } from '../../@types/proposal';
 import { updatePayment } from 'queries/project-supervisor/updatePayment';
 import { insertChequeUpdatePayment } from 'queries/Cashier/insertChequeUpdatePayment';
 import { createNewFollowUp } from 'queries/commons/createNewFollowUp';
@@ -21,6 +21,7 @@ interface ProposalItme {
   employeeOnly: boolean;
   proposal: Proposal;
   updateStatus: UpdateStatus;
+  track_list: tracks[];
 }
 
 const initialState: ProposalItme = {
@@ -31,6 +32,7 @@ const initialState: ProposalItme = {
   tracks: ['MOSQUES', 'CONCESSIONAL_GRANTS', 'INITIATIVES', 'BAPTISMS'],
   employeeOnly: false,
   updateStatus: 'no-change',
+  track_list: [],
   proposal: {
     id: '-1',
     project_name: 'test',
@@ -48,6 +50,8 @@ const initialState: ProposalItme = {
     support_goal_id: 'test',
     support_outputs: 'test',
     accreditation_type_id: 'PLAIN',
+    governorate: 'test',
+    track_id: 'test',
     user: {
       id: 'test',
       employee_name: 'test',
@@ -199,6 +203,10 @@ const slice = createSlice({
     setTracks(state, action) {
       state.tracks = action.payload;
     },
+    // SET TRACKS FOR PROJECT MANAGEMENT
+    setTrackList(state, action) {
+      state.track_list = action.payload;
+    },
     // SET EMPLOYEE ONLY
     setEmployeeOnly(state, action) {
       state.employeeOnly = action.payload;
@@ -245,6 +253,7 @@ export default slice.reducer;
 export const {
   setProposal,
   setActiveTap,
+  setTrackList,
   setCheckedItems,
   setTracks,
   setEmployeeOnly,
@@ -286,6 +295,31 @@ export const getProposal = (id: string, role: string) => async () => {
         }
       );
       dispatch(slice.actions.setProposal(res.data.data.proposal));
+    }
+
+    dispatch(slice.actions.endLoading);
+  } catch (error) {
+    dispatch(slice.actions.hasError(error));
+  }
+};
+export const getTrackList = (isGeneral: number, role: string) => async () => {
+  try {
+    dispatch(slice.actions.startLoading);
+    let url = '';
+    if (isGeneral) {
+      url = '/tender/track/fetch-all?include_general=1';
+    } else {
+      url = '/tender/track/fetch-all?include_general=0';
+    }
+    try {
+      const response = await axiosInstance.get(url, {
+        headers: { 'x-hasura-role': role },
+      });
+      if (response.data.statusCode === 200) {
+        dispatch(slice.actions.setTrackList(response.data.data));
+      }
+    } catch (error) {
+      console.log(error);
     }
 
     dispatch(slice.actions.endLoading);

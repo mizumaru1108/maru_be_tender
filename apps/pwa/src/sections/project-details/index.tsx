@@ -7,7 +7,7 @@ import Iconify from 'components/Iconify';
 import useLocales from 'hooks/useLocales';
 import ProjectStatus from './ProjectStatus';
 import FloatinActonBar from './floating-action-bar/FloatinActonBar';
-import { getProposal } from 'redux/slices/proposal';
+import { getProposal, getTrackList } from 'redux/slices/proposal';
 import { useDispatch, useSelector } from 'redux/store';
 //
 import { FEATURE_PROJECT_DETAILS } from 'config';
@@ -30,6 +30,8 @@ function ProjectDetailsMainPage() {
 
   React.useEffect(() => {
     dispatch(getProposal(id as string, role as string));
+    // getTrackList
+    dispatch(getTrackList(0, role as string));
   }, [dispatch, id, role]);
 
   if (isLoading) return <>... Loading</>;

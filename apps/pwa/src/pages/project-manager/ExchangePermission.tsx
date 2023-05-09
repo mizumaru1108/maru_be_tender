@@ -71,7 +71,7 @@ function ExchangePermission() {
           <CardTableByBE
             title={translate('previous_support_requests')}
             endPoint="tender-proposal/payment-adjustment"
-            destination="payment-adjustment"
+            destination="exchange-permission"
             limitShowCard={6}
             cardFooterButtonAction="completing-exchange-permission"
           />

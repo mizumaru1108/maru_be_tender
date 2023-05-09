@@ -65,6 +65,7 @@ query getProposalLog($proposal_id: String = "") {
       created_at
       state
       project_track
+      track_id
     }
   }
 }

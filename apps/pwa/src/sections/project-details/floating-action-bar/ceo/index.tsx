@@ -28,7 +28,7 @@ function FloatingActionBar() {
 
   const theme = useTheme();
 
-  const { proposal } = useSelector((state) => state.proposal);
+  const { proposal, track_list } = useSelector((state) => state.proposal);
   const { conversations } = useSelector((state) => state.wschat);
   const location = useLocation();
   const activeRoleIndex: number = Number(localStorage.getItem('activeRoleIndex')) ?? 0;
@@ -315,6 +315,12 @@ function FloatingActionBar() {
     dispatch(setStepsData(proposal));
   }, [proposal]);
 
+  console.log({ track_list, proposal });
+  console.log(
+    'testq',
+    track_list.find((item: any) => item.id === proposal.track_id)?.with_consultation
+  );
+
   return (
     <>
       <Box
@@ -456,7 +462,7 @@ function FloatingActionBar() {
         />
       )} */}
 
-      {action === 'ACCEPT' && proposal.project_track !== 'CONCESSIONAL_GRANTS' && (
+      {/* {action === 'ACCEPT' && proposal.project_track !== 'CONCESSIONAL_GRANTS' && (
         <NotesModal
           title="قبول المشروع"
           onClose={handleCloseModal}
@@ -469,10 +475,29 @@ function FloatingActionBar() {
           }}
           loading={isSubmitting}
         />
-      )}
-      {action === 'ACCEPT' && proposal.project_track === 'CONCESSIONAL_GRANTS' && (
+      )} */}
+      {action === 'ACCEPT' &&
+        track_list.find((item: any) => item.id === proposal.track_id)?.with_consultation ===
+          false && (
+          <NotesModal
+            title="قبول المشروع"
+            onClose={handleCloseModal}
+            onSubmit={handleApproval}
+            action={{
+              actionType: action,
+              actionLabel: 'قبول',
+              backgroundColor: 'background.paper',
+              hoverColor: '#13B2A2',
+            }}
+            loading={isSubmitting}
+          />
+        )}
+      {/* {action === 'ACCEPT' && proposal.project_track === 'CONCESSIONAL_GRANTS' && (
         <FacilitateSupervisorAcceptingForm onClose={handleCloseModal} />
-      )}
+      )} */}
+      {action === 'ACCEPT' &&
+        track_list.find((item: any) => item.id === proposal.track_id)?.with_consultation ===
+          true && <FacilitateSupervisorAcceptingForm onClose={handleCloseModal} />}
     </>
   );
 }

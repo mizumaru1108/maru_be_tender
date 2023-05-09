@@ -39,6 +39,8 @@ export default function ProjectManagementTable({
   const { translate } = useLocales();
   const dispatch = useDispatch();
 
+  console.log({ data });
+
   const { tracks } = useSelector((state) => state.proposal);
   const [tableData, setTableData] = useState<ProjectManagement[]>([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);

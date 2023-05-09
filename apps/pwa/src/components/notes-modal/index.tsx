@@ -41,7 +41,9 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
   const { activeRole } = useAuth();
   const { translate } = useLocales();
   const { proposal } = useSelector((state) => state.proposal);
-  const [isEdit, setIsEdit] = useState<boolean>(true);
+  const [isEdit, setIsEdit] = useState<boolean>(
+    action.actionType === 'ACCEPT_CONSULTANT' || action.actionType === 'REJECT' ? false : true
+  );
 
   const validationSchema = Yup.object().shape({
     ...(action.actionType === 'REJECT' &&

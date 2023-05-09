@@ -21,6 +21,7 @@ import ProjectManager from './role-logs/ProjectManager';
 import FinancePaymentLog from './role-logs/FinancePaymentLog';
 import CashierPaymentLog from './role-logs/CashierPaymentLog';
 import ClientClosingReport from './role-logs/ClientClosingReport';
+import { getTracks } from 'queries/commons/getTracks';
 
 function ProjectPath() {
   const { translate, currentLang } = useLocales();
@@ -46,9 +47,14 @@ function ProjectPath() {
     query: getProposalLogGrants,
     variables: { proposal_id },
   });
+  const [tracks] = useQuery({
+    query: getTracks,
+    variables: {},
+  });
 
   const { data: followUps, fetching, error } = result;
   const { data: logGrantsData, fetching: fetchingGrants, error: errorGrants } = logGrants;
+  const { data: listTracks, fetching: fetchingTracks, error: errorTracks } = tracks;
   const handleStep = (step: number, item: Log) => () => {
     window.scrollTo(115, 115);
     setStepOn(step);
@@ -58,8 +64,10 @@ function ProjectPath() {
       // setStepUserRole(item.user_role);
       // setStepActionType(item.action);
       // setStepProposal(item.proposal);
+      // console.log('log :', item);
+      // console.log('listTracks.listTracks :', listTracks.track);
       setGeneralLog(item);
-      if (item.proposal.project_track === 'CONCESSIONAL_GRANTS') {
+      if (item && item.proposal && item.proposal.project_track === 'CONCESSIONAL_GRANTS') {
         if (!fetchingGrants && !errorGrants) {
           setGransLog(logGrantsData);
           setGransLog({
@@ -106,8 +114,7 @@ function ProjectPath() {
     dispatch(getProposal(proposal_id as string, activeRole! as string));
   }, [proposal_id, activeRole]);
 
-  if (fetching) return <>.. Loading</>;
-  if (error) return <Page500 error={error.message} />;
+  // if (fetching) return <>.. Loading</>;
 
   const formattedDateTime = (getDate: Date) => {
     const formattedDate = `${new Date(getDate).getDate()}.${
@@ -118,7 +125,29 @@ function ProjectPath() {
 
     return formattedDate;
   };
-  if (fetching) return <>Loading...</>;
+  if (fetching || fetchingTracks || fetchingGrants) return <>Loading...</>;
+  if (error || errorTracks || errorGrants) {
+    // return (
+    //   <Page500
+    //     error={
+    //       error.message
+    //         ? error.message
+    //         : errorGrants.message
+    //         ? errorGrants.message
+    //         : errorTracks.message
+    //     }
+    //   />
+    // );
+    if (error && error.message) {
+      return <Page500 error={error.message} />;
+    }
+    if (errorGrants && errorGrants.message) {
+      return <Page500 error={errorGrants.message} />;
+    }
+    if (errorTracks && errorTracks.message) {
+      return <Page500 error={errorTracks.message} />;
+    }
+  }
 
   // console.log({ followUps });
   return (
@@ -242,13 +271,13 @@ function ProjectPath() {
           {activeStep !== followUps.log.length &&
           stepGeneralLog &&
           stepGeneralLog?.user_role === 'PROJECT_SUPERVISOR' &&
-          stepGeneralLog.proposal.project_track !== 'CONCESSIONAL_GRANTS' &&
+          // stepGeneralLog.proposal.project_track !== 'CONCESSIONAL_GRANTS' &&
           stepGeneralLog.action !== 'send_back_for_revision' &&
           stepGeneralLog.action !== 'step_back' &&
           stepGeneralLog.action !== 'sending_closing_report' ? (
             <SupervisorGeneral stepGeneralLog={stepGeneralLog} />
           ) : null}
-          {activeStep !== followUps.log.length &&
+          {/* {activeStep !== followUps.log.length &&
           stepGransLog &&
           stepGransLog.proposal &&
           stepGeneralLog?.user_role === 'PROJECT_SUPERVISOR' &&
@@ -257,7 +286,7 @@ function ProjectPath() {
           stepGeneralLog.action !== 'step_back' &&
           stepGeneralLog.action !== 'sending_closing_report' ? (
             <SupervisorGrants stepGransLog={stepGransLog} />
-          ) : null}
+          ) : null} */}
           {activeStep !== followUps.log.length &&
           stepGransLog &&
           stepGransLog.proposal &&

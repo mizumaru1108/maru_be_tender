@@ -21,36 +21,36 @@ type ITmpValues = {
 function MainPage() {
   const { translate, currentLang } = useLocales();
   const { activeRole } = useAuth();
-  const { proposal } = useSelector((state) => state.proposal);
+  const { proposal, isLoading } = useSelector((state) => state.proposal);
   const { id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
   const location = useLocation();
   const navigate = useNavigate();
   const [tmpValues, setTmpValues] = React.useState<ITmpValues | null>(null);
 
-  const {
-    project_location,
-    project_implement_date,
-    user: { client_data, bank_informations, email, mobile_number },
-    num_ofproject_binicficiaries,
-    project_beneficiaries,
-    execution_time,
-    project_idea,
-    project_goals,
-    project_outputs,
-    project_strengths,
-    project_risks,
-    amount_required_fsupport,
-    letter_ofsupport_req,
-    project_attachments,
-    bank_information,
-    support_type,
-    proposal_item_budgets_aggregate,
-    outter_status,
-    submitter_user_id,
-    pm_email,
-    pm_mobile,
-  } = proposal;
+  // const {
+  //   project_location,
+  //   project_implement_date,
+  //   user: { client_data, bank_informations, email, mobile_number },
+  //   num_ofproject_binicficiaries,
+  //   project_beneficiaries,
+  //   execution_time,
+  //   project_idea,
+  //   project_goals,
+  //   project_outputs,
+  //   project_strengths,
+  //   project_risks,
+  //   amount_required_fsupport,
+  //   letter_ofsupport_req,
+  //   project_attachments,
+  //   bank_information,
+  //   support_type,
+  //   proposal_item_budgets_aggregate,
+  //   outter_status,
+  //   submitter_user_id,
+  //   pm_email,
+  //   pm_mobile,
+  // } = proposal;
 
   const fetchingData = React.useCallback(async () => {
     try {
@@ -79,12 +79,12 @@ function MainPage() {
   }, [activeRole, id]);
 
   React.useEffect(() => {
-    if (activeRole === 'tender_project_supervisor' && outter_status !== 'ON_REVISION') {
+    if (activeRole === 'tender_project_supervisor' && proposal.outter_status !== 'ON_REVISION') {
       fetchingData();
     }
-  }, [activeRole, outter_status, fetchingData]);
+  }, [activeRole, proposal.outter_status, fetchingData]);
   const handleOpenProjectOwnerDetails = () => {
-    const submiterId = submitter_user_id;
+    const submiterId = proposal.submitter_user_id;
     const urls = location.pathname.split('/');
     const url = location.pathname.split('/').slice(0, 3).join('/');
     // console.log({ urls, url });
@@ -96,6 +96,9 @@ function MainPage() {
   };
   // console.log('tmpValues', tmpValues);
   // console.log({ client_data });
+
+  if (isLoading) return <>Loading</>;
+
   return (
     <Box sx={{ display: 'flex', gap: 3, flexDirection: 'column' }}>
       <Stack direction="row" gap={6}>
@@ -113,7 +116,8 @@ function MainPage() {
             {translate('number_of_beneficiaries_of_the_project')}
           </Typography>
           <Typography sx={{ mb: '20px' }}>
-            {(num_ofproject_binicficiaries && num_ofproject_binicficiaries) ?? '-No Data-'}
+            {(proposal.num_ofproject_binicficiaries && proposal.num_ofproject_binicficiaries) ??
+              '-No Data-'}
           </Typography>
           <Typography
             sx={{
@@ -124,7 +128,9 @@ function MainPage() {
           >
             {translate('implementation_period')}
           </Typography>
-          <Typography>{(execution_time && execution_time) ?? '-No Data-'}</Typography>
+          <Typography>
+            {(proposal.execution_time && proposal.execution_time) ?? '-No Data-'}
+          </Typography>
         </Stack>
         <Stack direction="column">
           <Typography
@@ -137,7 +143,7 @@ function MainPage() {
             {translate('where_to_implement_the_project')}
           </Typography>
           <Typography sx={{ mb: '20px' }}>
-            {(project_location && project_location) ?? '-No Data-'}
+            {(proposal.project_location && proposal.project_location) ?? '-No Data-'}
           </Typography>
           <Typography
             sx={{
@@ -149,9 +155,9 @@ function MainPage() {
             {translate('target_group_type')}
           </Typography>
           <Typography>
-            {(project_beneficiaries &&
+            {(proposal.project_beneficiaries &&
               translate(
-                `section_portal_reports.heading.gender.${project_beneficiaries.toLowerCase()}`
+                `section_portal_reports.heading.gender.${proposal.project_beneficiaries.toLowerCase()}`
               )) ??
               '- No Data -'}
           </Typography>
@@ -167,8 +173,8 @@ function MainPage() {
             {translate('project_implementation_date')}
           </Typography>
           <Typography sx={{ mb: '20px' }}>
-            {(project_implement_date &&
-              new Date(project_implement_date).toISOString().substring(0, 10)) ??
+            {(proposal.project_implement_date &&
+              new Date(proposal.project_implement_date).toISOString().substring(0, 10)) ??
               '-No Data-'}
           </Typography>
           <Typography
@@ -188,7 +194,8 @@ function MainPage() {
               {fCurrencyNumber(proposal_item_budgets_aggregate.aggregate.sum.amount)}&nbsp;
             </Typography> */}
             <Typography component="span" sx={{ fontWeight: 'bold' }}>
-              {(amount_required_fsupport && fCurrencyNumber(amount_required_fsupport)) ??
+              {(proposal.amount_required_fsupport &&
+                fCurrencyNumber(proposal.amount_required_fsupport)) ??
                 '-No Data-'}
               &nbsp;
             </Typography>
@@ -209,7 +216,7 @@ function MainPage() {
               {translate('project_idea')}
             </Typography>
             <Typography sx={{ mb: '10px' }}>
-              {(project_idea && project_idea) ?? '-No Data'}
+              {(proposal.project_idea && proposal.project_idea) ?? '-No Data'}
             </Typography>
             <Typography
               sx={{
@@ -220,7 +227,7 @@ function MainPage() {
               {translate('project_goals')}
             </Typography>
             <Typography sx={{ mb: '10px' }}>
-              {(project_goals && project_goals) ?? '-No Data-'}
+              {(proposal.project_goals && proposal.project_goals) ?? '-No Data-'}
             </Typography>
             <Typography
               sx={{
@@ -231,7 +238,7 @@ function MainPage() {
               {translate('project_outputs')}
             </Typography>
             <Typography sx={{ mb: '10px' }}>
-              {(project_outputs && project_outputs) ?? '-No Data-'}
+              {(proposal.project_outputs && proposal.project_outputs) ?? '-No Data-'}
             </Typography>
             <Typography
               sx={{
@@ -242,7 +249,7 @@ function MainPage() {
               {translate('project_strengths')}
             </Typography>
             <Typography sx={{ mb: '10px' }}>
-              {(project_strengths && project_strengths) ?? '-No Data-'}
+              {(proposal.project_strengths && proposal.project_strengths) ?? '-No Data-'}
             </Typography>
             <Typography
               sx={{
@@ -253,20 +260,20 @@ function MainPage() {
               {translate('project_risks')}
             </Typography>
             <Typography sx={{ mb: '10px' }}>
-              {(project_risks && project_risks) ?? '-No Data-'}
+              {(proposal.project_risks && proposal.project_risks) ?? '-No Data-'}
             </Typography>
           </Stack>
           <Stack direction="row" justifyContent="space-between" gap={3}>
-            {(letter_ofsupport_req && (
+            {(proposal.letter_ofsupport_req && (
               <ButtonDownloadFiles
-                files={letter_ofsupport_req}
+                files={proposal.letter_ofsupport_req}
                 border={tmpValues?.revised.letter_ofsupport_req !== undefined ? 'green' : undefined}
               />
             )) ??
               null}
-            {(project_attachments && (
+            {(proposal.project_attachments && (
               <ButtonDownloadFiles
-                files={project_attachments}
+                files={proposal.project_attachments}
                 border={tmpValues?.revised.project_attachments !== undefined ? 'green' : undefined}
               />
             )) ??
@@ -371,7 +378,9 @@ function MainPage() {
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                 {translate('pm_email')}
               </Typography>
-              <Typography sx={{ mb: '15px' }}>{(pm_email && pm_email) ?? '-No Data-'}</Typography>
+              <Typography sx={{ mb: '15px' }}>
+                {(proposal.pm_email && proposal.pm_email) ?? '-No Data-'}
+              </Typography>
             </Stack>
             <Stack direction="column" alignItems="start">
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
@@ -380,7 +389,7 @@ function MainPage() {
               <Typography
                 sx={{ mb: '15px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
               >
-                {(pm_mobile && pm_mobile) ?? '-No Data-'}
+                {(proposal.pm_mobile && proposal.pm_mobile) ?? '-No Data-'}
               </Typography>
             </Stack>
             <Stack direction="column">
@@ -388,7 +397,7 @@ function MainPage() {
                 {translate('governorate')}
               </Typography>
               <Typography sx={{ mb: '15px' }}>
-                {(client_data && client_data.governorate && client_data.governorate) ?? '-No Data-'}
+                {(proposal && proposal.governorate) ?? '-No Data-'}
               </Typography>
             </Stack>
             {activeRole !== 'tender_client' && (
@@ -400,7 +409,7 @@ function MainPage() {
                   <Typography
                     sx={{ color: '#0E8478', fontSize: '12px', mb: '5px', fontWeight: 700 }}
                   >
-                    {(client_data && client_data.entity && client_data.entity) ?? '-No Data-'}
+                    {(proposal.user && proposal.user.employee_name) ?? '-No Data-'}
                   </Typography>
                   <Typography
                     sx={{
@@ -444,7 +453,8 @@ function MainPage() {
                   {translate('amount_required_for_support')}
                 </Typography>
                 <Typography>
-                  {(amount_required_fsupport && fCurrencyNumber(amount_required_fsupport)) ??
+                  {(proposal.amount_required_fsupport &&
+                    fCurrencyNumber(proposal.amount_required_fsupport)) ??
                     '-No Data-'}
                 </Typography>
               </Stack>
@@ -453,16 +463,16 @@ function MainPage() {
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                 {translate('selected_bank')}
               </Typography>
-              {(bank_information && (
+              {(proposal.bank_information && (
                 <BankImageComp
                   enableButton={true}
-                  bankName={bank_information?.bank_name}
-                  accountNumber={bank_information?.bank_account_number}
-                  bankAccountName={bank_information?.bank_account_name}
-                  imageUrl={bank_information?.card_image.url}
-                  size={bank_information?.card_image.size}
-                  type={bank_information?.card_image.type}
-                  borderColor={bank_information?.card_image.border_color ?? 'transparent'}
+                  bankName={proposal.bank_information?.bank_name}
+                  accountNumber={proposal.bank_information?.bank_account_number}
+                  bankAccountName={proposal.bank_information?.bank_account_name}
+                  imageUrl={proposal.bank_information?.card_image.url}
+                  size={proposal.bank_information?.card_image.size}
+                  type={proposal.bank_information?.card_image.type}
+                  borderColor={proposal.bank_information?.card_image.border_color ?? 'transparent'}
                 />
               )) ?? (
                 <Typography sx={{ mb: '15px' }}>

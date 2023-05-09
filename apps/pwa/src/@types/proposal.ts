@@ -53,6 +53,12 @@ export interface FollowUps {
   };
 }
 
+export interface tracks {
+  id: string;
+  name: string;
+  with_consultation: boolean;
+}
+
 export interface Proposal {
   id: string;
   project_name: string;
@@ -69,7 +75,9 @@ export interface Proposal {
   inclu_or_exclu: boolean;
   support_goal_id: string;
   support_outputs: string;
+  track_id: string;
   accreditation_type_id: AccreditationTypeId;
+  governorate: string;
   user: {
     id: string;
     employee_name: string;
@@ -273,6 +281,7 @@ export type PropsalLog = {
   updated_at: any;
   state: string;
   project_track: string;
+  track_id: string;
 };
 
 export type PropsalLogGrants = {
