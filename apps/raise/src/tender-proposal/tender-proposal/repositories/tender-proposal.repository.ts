@@ -1203,7 +1203,7 @@ export class TenderProposalRepository {
           if (reviewer.track.name !== 'GENERAL') {
             whereClause = {
               ...whereClause,
-              OR: [{ track_id: reviewer.track.id }, { track_id: null }],
+              track_id: reviewer.track.id,
             };
           }
         }
