@@ -39,7 +39,7 @@ export default function ProjectManagementTable({
   const { translate } = useLocales();
   const dispatch = useDispatch();
 
-  console.log({ data });
+  // console.log({ data });
 
   const { tracks } = useSelector((state) => state.proposal);
   const [tableData, setTableData] = useState<ProjectManagement[]>([]);

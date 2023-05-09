@@ -6,7 +6,7 @@ import useLocales from 'hooks/useLocales';
 import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import { updateProposalByModerator } from 'queries/Moderator/updateProposalByModerator';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useMutation } from 'urql';
 import ProposalAcceptingForm from './ProposalAcceptingForm';
@@ -17,12 +17,13 @@ import { addConversation, setActiveConversationId, setMessageGrouped } from 'red
 import { dispatch, useDispatch, useSelector } from 'redux/store';
 import moment from 'moment';
 import { Conversation } from '../../../../@types/wschat';
+import { getTrackList } from 'redux/slices/proposal';
 
 function ModeratorActionBar() {
   const { user, activeRole } = useAuth();
 
   const { id } = useParams();
-  const { proposal } = useSelector((state) => state.proposal);
+  const { proposal, isLoading } = useSelector((state) => state.proposal);
   const { conversations } = useSelector((state) => state.wschat);
   const location = useLocation();
   const activeRoleIndex: number = Number(localStorage.getItem('activeRoleIndex')) ?? 0;
@@ -113,7 +114,8 @@ function ModeratorActionBar() {
         proposal_id: id,
         action: 'reject',
         moderator_payload: {
-          project_track: data.path,
+          // project_track: data.path,
+          track_id: data.track_id,
         },
         message: 'تم رفض المشروع من قبل مسوؤل الفرز',
         notes: data.notes,
@@ -235,6 +237,12 @@ function ModeratorActionBar() {
       }
     );
   };
+
+  useEffect(() => {
+    dispatch(getTrackList(0, activeRole!));
+  }, [activeRole]);
+
+  if (isLoading) return null;
 
   return (
     <>

@@ -7,7 +7,7 @@ import useLocales from 'hooks/useLocales';
 import moment from 'moment';
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import { formatGrantText } from 'utils/formatCapitzlizeText';
+import { formatCapitzlizeText } from 'utils/formatCapitzlizeText';
 import { stringTruncate } from '../../../../utils/stringTruncate';
 import { ProjectManagementTableColumn } from './project-management';
 
@@ -73,8 +73,7 @@ export default function ProjectManagementTableRow({
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
           {/* {row.projectSection ? translate(row.projectSection) : '-'} */}
-          {/* formatGrantText */}
-          {row.projectSection ? formatGrantText(row.projectSection) : '-'}
+          {row.projectSection ? formatCapitzlizeText(row.projectSection) : '-'}
         </Typography>
       </TableCell>
       <TableCell align="left">

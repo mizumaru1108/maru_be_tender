@@ -3,6 +3,10 @@ import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
 import CeoProjectManagement from '../../sections/ceo/ceo-project-management';
 import useLocales from '../../hooks/useLocales';
+import { dispatch, useSelector } from 'redux/store';
+import useAuth from 'hooks/useAuth';
+import { useEffect } from 'react';
+import { getTrackList } from 'redux/slices/proposal';
 
 function CeoProjectManagementPage() {
   const { translate } = useLocales();

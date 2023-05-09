@@ -22,6 +22,8 @@ import { getRejectedProjects } from 'queries/ceo/getRejectedProjects';
 import TableSkeleton from '../../TableSkeleton';
 import useAuth from 'hooks/useAuth';
 import { generateHeader } from '../../../../utils/generateProposalNumber';
+import { dispatch, useSelector } from 'redux/store';
+import { getTrackList } from 'redux/slices/proposal';
 
 const TABLE_HEAD = [
   { id: 'id', label: 'project_management_headercell.project_number' },
@@ -44,6 +46,12 @@ const TABLE_HEAD = [
   { id: 'events', label: 'project_management_headercell.events', align: 'left' },
 ];
 
+export interface tracks {
+  id: string;
+  name: string;
+  with_consultation: boolean;
+}
+
 export default function UsersAndPermissionsTable() {
   const {
     dense,
@@ -65,6 +73,8 @@ export default function UsersAndPermissionsTable() {
   const { translate } = useLocales();
   const { user, activeRole } = useAuth();
   const [rejectFilter, setRejectFilter] = useState<any>({});
+
+  const { track_list, isLoading } = useSelector((state) => state.proposal);
 
   useEffect(() => {
     if (activeRole! === 'tender_project_manager') {
@@ -127,7 +137,7 @@ export default function UsersAndPermissionsTable() {
     (!dataFiltered.length && !!filterStatus);
 
   useEffect(() => {
-    if (data?.data) {
+    if (!isLoading && track_list && data?.data) {
       setTableData(
         data.data.map((item: any, index: any) => ({
           id: item.id,
@@ -136,22 +146,34 @@ export default function UsersAndPermissionsTable() {
           ),
           project_name: item.project_name,
           entity: item.user.client_data.entity,
-          project_track: item.project_track,
+          // project_track: item.project_track,
+          project_track:
+            (item &&
+              item.track_id &&
+              track_list &&
+              track_list.length > 0 &&
+              track_list.find((track: tracks) => track.id === item.track_id)!.name) ||
+            '',
           created_at: item.created_at,
           user_id: item.user.client_data.user_id,
         }))
       );
       setTotal(data.total.aggregate.count as number);
     }
-  }, [data, setTotal]);
+  }, [data, setTotal, isLoading, track_list]);
+
+  useEffect(() => {
+    dispatch(getTrackList(0, activeRole! as string));
+  }, [activeRole]);
 
   useEffect(() => {
     mutate();
   }, [mutate, page, rowsPerPage, orderBy]);
 
+  if (isLoading) return <>Loading</>;
   if (error) return <>...Opss, something went wrong</>;
 
-  console.log('reject filter', rejectFilter);
+  // console.log('reject filter', rejectFilter);
   return (
     <Box>
       <Typography variant="h3" gutterBottom sx={{ marginBottom: '50px' }}>

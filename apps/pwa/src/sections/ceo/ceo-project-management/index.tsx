@@ -9,17 +9,23 @@ import useLocales from '../../../hooks/useLocales';
 import { GetProjectList } from '../../../queries/ceo/get-project-list';
 import { formatDistance } from 'date-fns';
 import { useDispatch, useSelector } from 'redux/store';
-import { setTracks } from 'redux/slices/proposal';
+import { getTrackList, setTracks } from 'redux/slices/proposal';
 import { generateHeader } from '../../../utils/generateProposalNumber';
 import { useSnackbar } from 'notistack';
 import useAuth from '../../../hooks/useAuth';
 import axiosInstance from '../../../utils/axios';
 import { getDelayProjects } from '../../../utils/get-delay-projects';
 
+export interface tracks {
+  id: string;
+  name: string;
+  with_consultation: boolean;
+}
+
 function CeoProjectManagement() {
   const { translate, currentLang } = useLocales();
   const dispatch = useDispatch();
-  const { tracks } = useSelector((state) => state.proposal);
+  const { tracks, isLoading, track_list } = useSelector((state) => state.proposal);
   const [projectManagementData, setProjectManagementData] = useState<ProjectManagement[]>([]);
   const [filteredTrack, setFilteredTrack] = useState([
     'MOSQUES',
@@ -37,10 +43,10 @@ function CeoProjectManagement() {
 
   //fetching using API
 
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isFetching, setIsLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
-  const [cardData, setCardData] = React.useState([]);
+  // const [cardData, setCardData] = React.useState([]);
 
   const fetchingIncoming = React.useCallback(async () => {
     setIsLoading(true);
@@ -55,6 +61,7 @@ function CeoProjectManagement() {
             ...item,
           }));
         if (tmpDatas) {
+          console.log('track_list', track_list);
           setProjectManagementData(
             tmpDatas.map((project: any) => ({
               id: (project.id as string) || '',
@@ -63,7 +70,14 @@ function CeoProjectManagement() {
                   project && project.project_number ? project.project_number : project.id
                 ) as string) || '',
               projectName: (project.project_name as string) || '',
-              projectSection: project.project_track || '',
+              // projectSection: project.project_track || '',
+              projectSection:
+                (project &&
+                  project.track_id &&
+                  track_list &&
+                  track_list.length > 0 &&
+                  track_list.find((item: tracks) => item.id === project.track_id)!.name) ||
+                '',
               associationName: (project.user.employee_name as string) || '',
               createdAt: (project.created_at as string) || '',
               projectDelay: getDelayProjects(project.created_at, currentLang.value) || '',
@@ -86,7 +100,7 @@ function CeoProjectManagement() {
     } finally {
       setIsLoading(false);
     }
-  }, [activeRole, enqueueSnackbar, currentLang]);
+  }, [activeRole, enqueueSnackbar, currentLang, track_list]);
 
   if (error) {
     console.log(error);
@@ -145,13 +159,16 @@ function CeoProjectManagement() {
   // }, [projectDatas, currentLang]);
 
   React.useEffect(() => {
-    fetchingIncoming();
+    if (track_list && !isLoading) {
+      fetchingIncoming();
+    }
     // fetchingPrevious();
-  }, [fetchingIncoming]);
+  }, [fetchingIncoming, isLoading, track_list]);
 
   useEffect(() => {
     dispatch(setTracks(filteredTrack));
-  }, [dispatch, filteredTrack]);
+    dispatch(getTrackList(0, activeRole! as string));
+  }, [dispatch, filteredTrack, activeRole]);
 
   const headerCells: ProjectManagementTableHeader[] = [
     { id: 'projectNumber', label: translate('project_management_headercell.project_number') },
@@ -179,10 +196,12 @@ function CeoProjectManagement() {
     { id: 'events', label: translate('project_management_headercell.events'), align: 'left' },
   ];
 
+  if (isFetching && isLoading) return <>Loading</>;
+
   return (
     <ProjectManagementTable
       headline={translate('project_management_table.headline')}
-      isLoading={fetching}
+      isLoading={fetching || isLoading}
       headerCell={headerCells}
       data={projectManagementData ?? []}
     />

@@ -11,6 +11,7 @@ export const getRejectedProjects = `query getRejectedProjects($limit: Int = 10, 
     }
     project_track
     created_at
+    track_id
   }
   total: proposal_aggregate(where: $where) {
     aggregate {

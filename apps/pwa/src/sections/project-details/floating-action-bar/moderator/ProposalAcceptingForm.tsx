@@ -13,6 +13,8 @@ import { LoadingButton } from '@mui/lab';
 import { useSnackbar } from 'notistack';
 import useAuth from '../../../../hooks/useAuth';
 import axiosInstance from '../../../../utils/axios';
+import { useSelector } from 'redux/store';
+import { formatCapitzlizeText } from 'utils/formatCapitzlizeText';
 
 interface FormProps {
   onSubmit: (data: any) => void;
@@ -23,7 +25,7 @@ interface FormProps {
 interface tracks {
   id: string;
   name: string;
-  with_consultant: boolean;
+  with_consultation: boolean;
 }
 
 interface ProposalModeratorApprovePayload {
@@ -36,9 +38,8 @@ interface ProposalModeratorApprovePayload {
 function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
   const { translate } = useLocales();
   const { activeRole } = useAuth();
-
+  const { track_list, isLoading } = useSelector((state) => state.proposal);
   const { enqueueSnackbar } = useSnackbar();
-  const [isLoading, setIsLoading] = React.useState(false);
   const [tracksData, setTracksData] = React.useState<tracks[]>([]);
 
   const validationSchema = Yup.object().shape({
@@ -75,54 +76,59 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
     // console.log({ newData });
     onSubmit(newData);
   };
-  // const path = watch('path');
-  const path = tracksData.find((item) => item.id === watch('path'))?.name ?? '';
+  const path = watch('path');
+  // const path = track_list.find((item) => item.id === watch('path'))?.name ?? '';
 
   const shouldPause = path === '';
 
+  // const [result, mutate] = useQuery({
+  //   query: getAllSupervisorsForSpecificTrack,
+  //   variables: { employee_path: path },
+  //   pause: shouldPause,
+  // });
   const [result, mutate] = useQuery({
     query: getAllSupervisorsForSpecificTrack,
-    variables: { employee_path: path },
+    variables: { track_id: path },
     pause: shouldPause,
   });
 
   const { data, fetching, error } = result;
-  const fetchingTracks = React.useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const rest = await axiosInstance.get(`/tender/track/fetch-all?include_general=0`, {
-        headers: { 'x-hasura-role': activeRole! },
-      });
-      // console.log(rest.data.data);
-      if (rest) {
-        setTracksData(
-          rest.data.data.map((item: tracks) => ({
-            id: item.id ?? '-',
-            name: item.name ?? 'No Record',
-            with_consultant: item.with_consultant ?? 'No Record',
-          }))
-        );
-      }
-      // console.log('rest', rest.data.data);
-    } catch (err) {
-      console.log('err', err);
-      enqueueSnackbar(err.message, {
-        variant: 'error',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'center',
-        },
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [activeRole, enqueueSnackbar]);
+  // const fetchingTracks = React.useCallback(async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     const rest = await axiosInstance.get(`/tender/track/fetch-all?include_general=0`, {
+  //       headers: { 'x-hasura-role': activeRole! },
+  //     });
+  //     // console.log(rest.data.data);
+  //     if (rest) {
+  //       setTracksData(
+  //         rest.data.data.map((item: tracks) => ({
+  //           id: item.id ?? '-',
+  //           name: item.name ?? 'No Record',
+  //           with_consultant: item.with_consultation ?? 'No Record',
+  //         }))
+  //       );
+  //     }
+  //     // console.log('rest', rest.data.data);
+  //   } catch (err) {
+  //     console.log('err', err);
+  //     enqueueSnackbar(err.message, {
+  //       variant: 'error',
+  //       preventDuplicate: true,
+  //       autoHideDuration: 3000,
+  //       anchorOrigin: {
+  //         vertical: 'bottom',
+  //         horizontal: 'center',
+  //       },
+  //     });
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }, [activeRole, enqueueSnackbar]);
 
-  React.useEffect(() => {
-    fetchingTracks();
-  }, [fetchingTracks]);
+  // React.useEffect(() => {
+  //   fetchingTracks();
+  // }, [fetchingTracks]);
   // useEffect(() => {
   //   resetField('supervisors');
   // }, [resetField]);
@@ -152,11 +158,12 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
                 <MenuItem value="CONCESSIONAL_GRANTS">{translate('CONCESSIONAL_GRANTS')}</MenuItem>
                 <MenuItem value="INITIATIVES">{translate('INITIATIVES')}</MenuItem>
                 <MenuItem value="BAPTISMS">{translate('BAPTISMS')}</MenuItem> */}
-                {tracksData?.map((item: tracks, index: any) => (
-                  <MenuItem key={index} value={item?.id}>
-                    {item.name}proposal_budget
-                  </MenuItem>
-                ))}
+                {track_list &&
+                  track_list?.map((item: tracks, index: any) => (
+                    <MenuItem key={index} value={item?.id}>
+                      {formatCapitzlizeText(item.name)}
+                    </MenuItem>
+                  ))}
               </RHFSelect>
             </Grid>
             <Grid item md={6} xs={12}>

@@ -11,9 +11,9 @@ import useAuth from 'hooks/useAuth';
 import RHFSelectNoGenerator from 'components/hook-form/RHFSelectNoGen';
 import { useState } from 'react';
 import { useSelector } from '../../redux/store';
-import { useParams } from 'react-router';
-import { useQuery } from 'urql';
-import { getOneProposal } from '../../queries/commons/getOneProposal';
+// import { useParams } from 'react-router';
+// import { useQuery } from 'urql';
+// import { getOneProposal } from '../../queries/commons/getOneProposal';
 import AcceptedForm from '../../sections/project-details/floating-action-bar/supervisor/supervisor-general-tracks/AcceptedForm';
 
 interface ActionPropos {
@@ -42,7 +42,14 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
   const { translate } = useLocales();
   const { proposal } = useSelector((state) => state.proposal);
   const [isEdit, setIsEdit] = useState<boolean>(
-    action.actionType === 'ACCEPT_CONSULTANT' || action.actionType === 'REJECT' ? false : true
+    action.actionType === 'ACCEPT_CONSULTANT' || action.actionType === 'REJECT'
+      ? false
+      : action.actionType === 'ACCEPT' &&
+        (activeRole === 'tender_project_manager' ||
+          activeRole === 'tender_project_supervisor' ||
+          activeRole === 'tender_ceo')
+      ? true
+      : false
   );
 
   const validationSchema = Yup.object().shape({

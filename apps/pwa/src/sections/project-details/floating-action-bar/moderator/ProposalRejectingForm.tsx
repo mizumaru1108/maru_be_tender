@@ -6,12 +6,20 @@ import BaseField from 'components/hook-form/BaseField';
 import ModalDialog from 'components/modal-dialog';
 import useLocales from 'hooks/useLocales';
 import { useForm } from 'react-hook-form';
+import { useSelector } from 'redux/store';
+import { formatCapitzlizeText } from 'utils/formatCapitzlizeText';
 import * as Yup from 'yup';
 
 type FormData = {
   notes: string;
   path: string;
 };
+
+interface tracks {
+  id: string;
+  name: string;
+  with_consultation: boolean;
+}
 
 interface FormProps {
   onSubmit: (data: any) => void;
@@ -21,6 +29,8 @@ interface FormProps {
 
 function ProposalRejectingForm({ onSubmit, onClose, loading }: FormProps) {
   const { translate } = useLocales();
+
+  const { track_list } = useSelector((state) => state.proposal);
 
   const validationSchema = Yup.object().shape({
     notes: Yup.string(),
@@ -66,10 +76,16 @@ function ProposalRejectingForm({ onSubmit, onClose, loading }: FormProps) {
                 placeholder={translate('path')}
                 size="small"
               >
-                <MenuItem value="MOSQUES">{translate('MOSQUES')}</MenuItem>
+                {/* <MenuItem value="MOSQUES">{translate('MOSQUES')}</MenuItem>
                 <MenuItem value="CONCESSIONAL_GRANTS">{translate('CONCESSIONAL_GRANTS')}</MenuItem>
                 <MenuItem value="INITIATIVES">{translate('INITIATIVES')}</MenuItem>
-                <MenuItem value="BAPTISMS">{translate('BAPTISMS')}</MenuItem>
+                <MenuItem value="BAPTISMS">{translate('BAPTISMS')}</MenuItem> */}
+                {track_list &&
+                  track_list?.map((item: tracks, index: any) => (
+                    <MenuItem key={index} value={item?.id}>
+                      {formatCapitzlizeText(item.name)}
+                    </MenuItem>
+                  ))}
               </RHFSelect>
             </Grid>
             <Grid item xs={12}>
