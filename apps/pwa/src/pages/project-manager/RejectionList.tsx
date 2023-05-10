@@ -3,6 +3,7 @@ import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
 import CeoRejectionList from '../../sections/ceo/ceo-rejection-list';
 import useLocales from '../../hooks/useLocales';
+import CeoProjectRejects from 'sections/ceo/ceo-project-rejects';
 
 function RejectionList() {
   const { translate } = useLocales();
@@ -20,7 +21,8 @@ function RejectionList() {
     <Page title={translate('pages.common.rejection_list')}>
       <Container>
         <ContentStyle>
-          <CeoRejectionList />
+          {/* <CeoRejectionList /> */}
+          <CeoProjectRejects />
         </ContentStyle>
       </Container>
     </Page>

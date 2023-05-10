@@ -8,6 +8,7 @@ import useAuth from 'hooks/useAuth';
 import useLocales from '../../hooks/useLocales';
 // query
 import { gettingClosingReportProposals } from 'queries/client/gettingClosingReportProposals';
+import CardTableByBE from 'components/card-table/CardTableByBE';
 
 function IncomingCloseReports() {
   const { user } = useAuth();
@@ -26,7 +27,7 @@ function IncomingCloseReports() {
     <Page title={translate('pages.common.close_report.text.project_report')}>
       <Container>
         <ContentStyle>
-          <CardTableBE
+          {/* <CardTableBE
             resource={gettingClosingReportProposals}
             title={translate('pages.common.close_report.text.project_report')}
             cardFooterButtonAction="show-details"
@@ -57,6 +58,13 @@ function IncomingCloseReports() {
               },
             }}
             destination={'project-report'}
+          /> */}
+          <CardTableByBE
+            title={translate('pages.common.close_report.text.project_report')}
+            destination="project-report"
+            endPoint="tender-proposal/rejection-list"
+            limitShowCard={6}
+            cardFooterButtonAction="show-details"
           />
         </ContentStyle>
       </Container>

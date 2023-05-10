@@ -108,6 +108,7 @@ function ModeratorActionBar() {
 
   const handleRejected = async (data: any) => {
     setIsSubmittingRejected(true);
+    console.log({ data });
 
     try {
       const payload = {
@@ -115,7 +116,7 @@ function ModeratorActionBar() {
         action: 'reject',
         moderator_payload: {
           // project_track: data.path,
-          track_id: data.track_id,
+          track_id: data.path,
         },
         message: 'تم رفض المشروع من قبل مسوؤل الفرز',
         notes: data.notes,
