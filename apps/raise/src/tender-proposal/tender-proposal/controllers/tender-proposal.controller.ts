@@ -29,7 +29,9 @@ import {
   ChangeProposalStateDto,
   CreateProposalInterceptorDto,
   FetchAmandementFilterRequest,
+  FetchClosingReportListFilterRequest,
   FetchProposalFilterRequest,
+  FetchRejectionListFilterRequest,
   PaymentAdjustmentFilterRequest,
   PreviousProposalFilterRequest,
   ProposalCreateDto,
@@ -251,6 +253,50 @@ export class TenderProposalController {
     @Query() payload: FetchAmandementFilterRequest,
   ) {
     const result = await this.proposalService.fetchAmandementList(
+      currentUser,
+      payload,
+    );
+
+    return manualPaginationHelper(
+      result.data,
+      result.total,
+      payload.page || 1,
+      payload.limit || 10,
+      HttpStatus.OK,
+      'Success',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_project_manager', 'tender_ceo')
+  @Get('rejection-list')
+  async fetchRejectionList(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Query() payload: FetchRejectionListFilterRequest,
+  ) {
+    const result = await this.proposalService.fetchRejectionList(
+      currentUser,
+      payload,
+    );
+
+    return manualPaginationHelper(
+      result.data,
+      result.total,
+      payload.page || 1,
+      payload.limit || 10,
+      HttpStatus.OK,
+      'Success',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_project_manager', 'tender_ceo')
+  @Get('closing-report-list')
+  async fetchClosingReportList(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Query() payload: FetchClosingReportListFilterRequest,
+  ) {
+    const result = await this.proposalService.fetchClosingReportList(
       currentUser,
       payload,
     );

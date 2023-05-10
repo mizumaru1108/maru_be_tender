@@ -6,6 +6,8 @@ export * from './create-proposal-notification.dto';
 export * from './existing-proposal-item-budget.dto';
 export * from './fetch-amandement-filter-request.dto';
 export * from './fetch-proposal-filter-request.dto';
+export * from './fetch-closing-report-list-filter-request.dto';
+export * from './fetch-rejection-list-filter-request.dto';
 export * from './moderator-change-state.dto';
 export * from './payment-adjustment-filter-request.dto';
 export * from './previous-proposal-filter-request.dto';

@@ -272,7 +272,7 @@ export class TenderUserService {
   }
 
   async updateUserData(request: UpdateUserDto) {
-    const { user_roles, selectLang, id, employee_path } = request;
+    const { user_roles, selectLang, id, track_id } = request;
     user_roles.forEach((role: TenderAppRoleEnum) => {
       if (role === TenderAppRoleEnum.CLIENT) {
         throw new BadRequestException(
@@ -308,7 +308,7 @@ export class TenderUserService {
       }
     }
 
-    const track = await this.userRepo.validateTrack(employee_path);
+    const track = await this.userRepo.validateTracks(track_id);
     if (!track) {
       throw new BadRequestException(
         'Invalid employee path!, Path is not found!',

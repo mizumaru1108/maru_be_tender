@@ -47,7 +47,7 @@ export class UpdateUserDto extends GetByUUIDQueryParamDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  employee_path: string;
+  track_id: string;
 
   @ApiProperty()
   @IsString()

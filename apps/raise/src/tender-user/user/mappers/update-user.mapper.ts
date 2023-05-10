@@ -47,11 +47,8 @@ export const UpdateUserMapper = (
     updateUserPayload.status_id = UserStatusEnum.ACTIVE_ACCOUNT;
   }
 
-  if (
-    request.employee_path &&
-    request.employee_path !== existingData.employee_path
-  ) {
-    updateUserPayload.employee_path = request.employee_path;
+  if (request.track_id && request.track_id !== existingData.track_id) {
+    updateUserPayload.track_id = request.track_id;
   }
 
   return updateUserPayload;

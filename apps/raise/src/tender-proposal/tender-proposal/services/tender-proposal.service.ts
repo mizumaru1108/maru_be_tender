@@ -48,6 +48,8 @@ import { IProposalLogsResponse } from '../../tender-proposal-log/interfaces/prop
 import { TenderProposalLogRepository } from '../../tender-proposal-log/repositories/tender-proposal-log.repository';
 import {
   CreateProposalInterceptorDto,
+  FetchClosingReportListFilterRequest,
+  FetchRejectionListFilterRequest,
   PaymentAdjustmentFilterRequest,
   PreviousProposalFilterRequest,
   RequestInProcessFilterRequest,
@@ -1146,6 +1148,20 @@ export class TenderProposalService {
       currentUser,
       filter,
     );
+  }
+
+  async fetchRejectionList(
+    currentUser: TenderCurrentUser,
+    filter: FetchRejectionListFilterRequest,
+  ) {
+    return await this.proposalRepo.fetchRejectionList(currentUser, filter);
+  }
+
+  async fetchClosingReportList(
+    currentUser: TenderCurrentUser,
+    filter: FetchClosingReportListFilterRequest,
+  ) {
+    return await this.proposalRepo.fetchClosingReportList(currentUser, filter);
   }
 
   async changeProposalState(
