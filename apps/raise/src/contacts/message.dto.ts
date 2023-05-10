@@ -1,4 +1,4 @@
-class AttachmentFile {
+export class AttachmentFile {
   filename: string;
   path: string;
 }

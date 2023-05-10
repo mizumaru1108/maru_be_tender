@@ -202,11 +202,20 @@ export class TenderNotificationService {
       reviewerMobileNumber,
       reviewerEmailTemplateContext,
       reviewerEmailTemplatePath,
+      clientAttachmentFiles,
+      generalHostEmail,
     } = notifPayload;
 
     const baseSendEmail: Omit<SendEmailDto, 'to' | 'mailType'> = {
       subject: clientSubject,
-      from: 'no-reply@hcharity.org',
+      from:
+        generalHostEmail && generalHostEmail === 'tmra'
+          ? 'hello@tmra.io' // no-reply@tmra.io
+          : 'no-reply@hcharity.org',
+      attachments:
+        clientAttachmentFiles && clientAttachmentFiles.length
+          ? clientAttachmentFiles
+          : [],
     };
 
     // console.log(logUtil(notifPayload));

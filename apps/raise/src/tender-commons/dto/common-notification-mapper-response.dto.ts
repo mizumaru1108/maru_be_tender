@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
+import { AttachmentFile } from 'src/contacts/message.dto';
 
 export class CommonNotificationMapperResponse {
   @ApiProperty()
@@ -20,8 +21,12 @@ export class CommonNotificationMapperResponse {
   clientEmailTemplatePath?: string;
   @ApiProperty()
   clientEmailTemplateContext?: Record<string, any>[];
+  @ApiPropertyOptional()
+  clientAttachmentFiles?: AttachmentFile[];
+  @ApiPropertyOptional()
+  generalHostEmail?: string;
   @ApiProperty()
-  createManyWebNotifPayload: Prisma.notificationCreateManyInput[];
+  createManyWebNotifPayload: Prisma.notificationCreateManyInput[] | any[];
   @ApiPropertyOptional()
   reviewerId?: string[];
   @ApiPropertyOptional()

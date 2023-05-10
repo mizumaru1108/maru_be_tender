@@ -1,7 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { MailerService } from '@nestjs-modules/mailer';
+// import { MailerService } from '@nestjs-modules/mailer';
 import { MessageDto } from './message.dto';
 import { ROOT_LOGGER } from '../libs/root-logger';
 import { Types } from 'mongoose';
@@ -13,8 +13,9 @@ import {
   Notifications,
   NotificationsDocument,
 } from 'src/organization/schema/notifications.schema';
-import { EmailService } from '../libs/email/email.service';
-import { SendEmailDto } from '../libs/email/dtos/requests/send-email.dto';
+import { CommonNotificationMapperResponse } from 'src/tender-commons/dto/common-notification-mapper-response.dto';
+import moment from 'moment';
+import { TenderNotificationService } from 'src/tender-notification/services/tender-notification.service';
 
 @Injectable()
 export class ContactsService {
@@ -25,10 +26,10 @@ export class ContactsService {
   constructor(
     @InjectModel(Organization.name)
     private organizationModel: Model<OrganizationDocument>,
-    // private mailerService: MailerService,
-    private emailService: EmailService,
+    // private emailService: EmailService,
     @InjectModel(Notifications.name)
     private notificationsModel: Model<NotificationsDocument>,
+    private readonly notificationService: TenderNotificationService,
   ) {}
 
   async sendMail(message: MessageDto) {
@@ -55,41 +56,42 @@ export class ContactsService {
         );
       }
 
-      const donorSendEmailParams: SendEmailDto = {
-        to: getOrganization.contactEmail,
-        subject: 'Donor has sent you an Email',
-        mailType: 'template',
-        templatePath: 'email',
-        templateContext: {
-          name: message.name,
-          email: message.email,
-          help_message: message.help_message,
-        },
-        attachments: message.files ? message.files : [],
-        from: 'hello@tmra.io',
+      const notifPayload: CommonNotificationMapperResponse = {
+        logTime: moment(new Date().getTime()).format('llll'),
+        generalHostEmail: 'tmra',
+        clientSubject: 'Thanks for letting us know!',
+        clientId: [],
+        clientEmail: [message.email],
+        clientMobileNumber: [],
+        clientEmailTemplatePath: `gs/en/contact/submiter_contact_us`,
+        clientEmailTemplateContext: [
+          {
+            donor_email: message.email,
+            donor_name: message.name,
+          },
+        ],
+        clientContent: 'Thanks for letting us know',
+        reviewerId: [],
+        reviewerEmail: [getOrganization.contactEmail],
+        reviewerEmailTemplatePath: `gs/en/contact/receiver_contact_us`,
+        reviewerEmailTemplateContext: [
+          {
+            fullName: message.name,
+            email: message.email,
+            message: message.help_message,
+            emailHost: 'hello@tmra.io',
+          },
+        ],
+        reviewerContent: 'Donor has sent you an Email',
+        reviewerMobileNumber: [],
+        reviwerSubject:
+          'Donor has sent you an Email! Please check your inbox...`',
+        createManyWebNotifPayload: [],
       };
 
-      const resEmailToOrg = await this.emailService.sendMail(
-        donorSendEmailParams,
-      );
+      this.notificationService.sendSmsAndEmailBatch(notifPayload);
 
-      const letUsKnowParams: SendEmailDto = {
-        to: message.email,
-        subject: 'Thanks for letting us know',
-        mailType: 'template',
-        templatePath: 'email',
-        templateContext: {
-          name: message.name,
-          email: message.email,
-          help_message: message.help_message,
-        },
-        attachments: message.files ? message.files : [],
-        from: getOrganization.contactEmail,
-      };
-
-      const resEmailToDonor = await this.emailService.sendMail(letUsKnowParams);
-
-      await this.notificationsModel.create({
+      const createNotif = await this.notificationsModel.create({
         organizationId: new Types.ObjectId(organization_id),
         type: 'general',
         createdAt: new Date().toISOString(),
@@ -99,9 +101,17 @@ export class ContactsService {
         markAsRead: false,
       });
 
+      if (!createNotif) {
+        throw new HttpException(
+          'Error when creating notif to mongo',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
       return {
-        email_to_org: resEmailToOrg,
-        email_to_donor: resEmailToDonor,
+        organization_id: getOrganization._id,
+        submiter_email: message.email,
+        receiver_email: notifPayload.reviewerEmail,
       };
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
