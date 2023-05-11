@@ -193,22 +193,24 @@ export class ZakatService {
     if (!zakatCampaign)
       throw new HttpException('Campaign not found', HttpStatus.NOT_FOUND);
 
-    const donationList = await this.donationLogsModel.aggregate([
-      {
-        $match: {
-          nonprofitRealmId: new Types.ObjectId(organizationId),
-          donorUserId: { $ne: null },
-          campaignId: zakatCampaign._id,
+    const donationList = await this.donationLogsModel
+      .aggregate([
+        {
+          $match: {
+            nonprofitRealmId: new Types.ObjectId(organizationId),
+            campaignId: zakatCampaign._id,
+            type: 'zakat',
+          },
         },
-      },
-      {
-        $group: {
-          _id: { nonprofitRealmId: '$nonprofitRealmId' },
-          total: { $sum: '$amount' },
-          listDonationId: { $addToSet: '$_id' },
+        {
+          $group: {
+            _id: { nonprofitRealmId: '$nonprofitRealmId' },
+            total: { $sum: '$amount' },
+            listDonationId: { $addToSet: '$_id' },
+          },
         },
-      },
-    ]);
+      ])
+      .sort({ createdAt: -1 });
 
     const total_receive: number = donationList.length
       ? donationList[0].total
