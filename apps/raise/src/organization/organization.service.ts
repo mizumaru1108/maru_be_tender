@@ -314,232 +314,188 @@ export class OrganizationService {
 
   async getDonorList(organizationId: string) {
     this.logger.debug(`getDonorList organizationId=${organizationId}`);
-    const getDonationLog = await this.donationLogModel.aggregate([
-      {
-        $match: {
-          organizationId: organizationId,
-          donationStatus: 'SUCCESS',
-          donorId: { $ne: null },
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          donorId: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          amount: 1,
-        },
-      },
-      {
-        $lookup: {
-          from: 'donor',
-          localField: 'donorId',
-          foreignField: 'ownerUserId',
-          as: 'user',
-        },
-      },
-      {
-        $unwind: {
-          path: '$user',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
 
-      {
-        $lookup: {
-          from: 'anonymous',
-          localField: '_id',
-          foreignField: 'donationLogId',
-          as: 'user_anonymous',
-        },
-      },
-      {
-        $unwind: {
-          path: '$user_anonymous',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $addFields: {
-          userId: {
-            $cond: [
-              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
-              '$user_anonymous._id',
-              '$user._id',
-            ],
-          },
-          firstName: {
-            $cond: [
-              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
-              '$user_anonymous.firstName',
-              '$user.firstName',
-            ],
-          },
-          lastName: {
-            $cond: [
-              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
-              '$user_anonymous.lastName',
-              '$user.lastName',
-            ],
-          },
-          email: {
-            $cond: [
-              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
-              '$user_anonymous.email',
-              '$user.email',
-            ],
-          },
-          isAnonymous: {
-            $cond: [
-              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
-              '$user_anonymous.anonymous',
-              false,
-            ],
+    const getDonationLog = await this.donationLogModel
+      .aggregate([
+        {
+          $match: {
+            organizationId,
+            donationStatus: 'SUCCESS',
+            campaignId: { $ne: null },
           },
         },
-      },
-      {
-        $group: {
-          _id: '$userId',
-          donorId: { $first: '$user._id' },
-          firstName: { $first: '$firstName' },
-          lastName: { $first: '$lastName' },
-          email: { $first: '$email' },
-          country: { $first: '$user.country' },
-          mobile: { $first: '$user.mobile' },
-          totalAmount: { $sum: '$amount' },
-          is_anonymous: { $first: '$isAnonymous' },
-          createdAt: { $first: '$createdAt' },
-          updatedAt: { $first: '$updatedAt' },
+        {
+          $project: {
+            _id: 1,
+            donorId: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            amount: 1,
+          },
         },
-      },
-      {
-        $sort: { updatedAt: -1 },
-      },
-    ]);
+        {
+          $lookup: {
+            from: 'donor',
+            localField: 'donorId',
+            foreignField: 'ownerUserId',
+            as: 'user',
+          },
+        },
+        {
+          $unwind: {
+            path: '$user',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+
+        {
+          $lookup: {
+            from: 'anonymous',
+            localField: '_id',
+            foreignField: 'donationLogId',
+            as: 'user_anonymous',
+          },
+        },
+        {
+          $unwind: {
+            path: '$user_anonymous',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+      ])
+      .sort({ createdAt: -1 });
 
     if (!getDonationLog) {
       throw new NotFoundException('donor not found for this organizationId');
     }
 
-    const getDonationLogCarts = await this.donationLogsModel.aggregate([
-      {
-        $match: {
-          organizationId: organizationId,
-          type: 'cart',
-          donationStatus: 'SUCCESS',
-          donorUserId: { $ne: null },
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          donorUserId: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          amount: 1,
-        },
-      },
-      {
-        $lookup: {
-          from: 'donor',
-          localField: 'donorUserId',
-          foreignField: 'ownerUserId',
-          as: 'user',
-        },
-      },
-      {
-        $unwind: {
-          path: '$user',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $lookup: {
-          from: 'anonymous',
-          localField: '_id',
-          foreignField: 'donationLogId',
-          as: 'user_anonymous',
-        },
-      },
-      {
-        $unwind: {
-          path: '$user_anonymous',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $addFields: {
-          userId: {
-            $cond: [
-              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
-              '$user_anonymous._id',
-              '$user._id',
-            ],
-          },
-          firstName: {
-            $cond: [
-              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
-              '$user_anonymous.firstName',
-              '$user.firstName',
-            ],
-          },
-          lastName: {
-            $cond: [
-              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
-              '$user_anonymous.lastName',
-              '$user.lastName',
-            ],
-          },
-          email: {
-            $cond: [
-              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
-              '$user_anonymous.email',
-              '$user.email',
-            ],
-          },
-          isAnonymous: {
-            $cond: [
-              { $eq: [{ $ifNull: ['$user', 0] }, 0] },
-              '$user_anonymous.anonymous',
-              false,
-            ],
+    const getDonationLogCarts = await this.donationLogsModel
+      .aggregate([
+        {
+          $match: {
+            organizationId,
+            type: 'cart',
+            donationStatus: 'SUCCESS',
+            campaignId: { $ne: null },
           },
         },
-      },
-      {
-        $group: {
-          _id: '$userId',
-          donorId: { $first: '$user._id' },
-          firstName: { $first: '$firstName' },
-          lastName: { $first: '$lastName' },
-          email: { $first: '$email' },
-          country: { $first: '$user.country' },
-          mobile: { $first: '$user.mobile' },
-          totalAmount: { $sum: '$amount' },
-          is_anonymous: { $first: '$isAnonymous' },
-          createdAt: { $first: '$createdAt' },
-          updatedAt: { $first: '$updatedAt' },
+        {
+          $project: {
+            _id: 1,
+            donorUserId: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            amount: 1,
+          },
         },
-      },
-      {
-        $sort: { updatedAt: -1 },
-      },
-    ]);
+        {
+          $lookup: {
+            from: 'donor',
+            localField: 'donorUserId',
+            foreignField: 'ownerUserId',
+            as: 'user',
+          },
+        },
+        {
+          $unwind: {
+            path: '$user',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $lookup: {
+            from: 'anonymous',
+            localField: '_id',
+            foreignField: 'donationLogId',
+            as: 'user_anonymous',
+          },
+        },
+        {
+          $unwind: {
+            path: '$user_anonymous',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+      ])
+      .sort({ createdAt: -1 });
 
     if (!getDonationLogCarts) {
       throw new NotFoundException('donor not found for this organizationId');
     }
 
-    const filterDonorLog = getDonationLog.filter((el) => !!el._id);
-    const filterDonorLogCarts = getDonationLogCarts.filter((el) => !!el._id);
+    const filterDonorLog = getDonationLog.map((item) => {
+      const donorId = item.donorId;
+      let _id, user;
+
+      if (item.user) {
+        _id = item._id;
+        user = item.user;
+      } else if (item.user_anonymous) {
+        _id = item._id;
+        user = item.user_anonymous;
+      } else {
+        _id = item._id;
+        user = null;
+      }
+
+      return {
+        _id,
+        donorId,
+        firstName: user && user.firstName ? user.firstName : null,
+        lastName: user && user.lastName ? user.lastName : null,
+        email: user && user.email ? user.email : null,
+        country: user && user.country ? user.country : null,
+        mobile: user && user.mobile ? user.mobile : null,
+        totalAmount: item.amount,
+        is_anonymous: user && user.anonymous ? user.anonymous : false,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+      };
+    });
+
+    const filterDonorLogCarts = getDonationLogCarts.map(
+      (item, index, array) => {
+        const donorId = item.donorUserId;
+        let _id, user;
+
+        if (item.user) {
+          _id = item._id;
+          user = item.user;
+        } else if (item.user_anonymous) {
+          _id = item._id;
+          user = item.user_anonymous;
+        } else {
+          if (array[index + 1]) {
+            _id = item._id;
+            user = array[index + 1].user_anonymous;
+          } else {
+            _id = item._id;
+            user = null;
+          }
+        }
+
+        return {
+          _id,
+          donorId,
+          firstName: user && user.firstName ? user.firstName : null,
+          lastName: user && user.lastName ? user.lastName : null,
+          email: user && user.email ? user.email : null,
+          country: user && user.country ? user.country : null,
+          mobile: user && user.mobile ? user.mobile : null,
+          totalAmount: item.amount,
+          is_anonymous: user && user.anonymous ? user.anonymous : false,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+        };
+      },
+    );
+
     const allDonorUser = filterDonorLog
       .concat(filterDonorLogCarts)
       .sort(
         (objA, objB) =>
-          new Date(objB.updatedAt).valueOf() -
-          new Date(objA.updatedAt).valueOf(),
+          new Date(objB.createdAt).valueOf() -
+          new Date(objA.createdAt).valueOf(),
       );
 
     return allDonorUser;
@@ -728,10 +684,7 @@ export class OrganizationService {
     });
 
     if (!organization) {
-      return {
-        statusCode: 404,
-        message: 'Organization not found',
-      };
+      throw new HttpException('Organization not found', HttpStatus.NOT_FOUND);
     }
 
     const now: Date = new Date();
@@ -747,10 +700,10 @@ export class OrganizationService {
       );
 
     if (!paymentGatewayUpdate) {
-      return {
-        statusCode: 400,
-        message: 'Failed update Payment Gateway',
-      };
+      throw new HttpException(
+        'Failed update Payment Gateway',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     return {
@@ -942,7 +895,7 @@ export class OrganizationService {
         $match: {
           organizationId: organizationId,
           donationStatus: 'SUCCESS',
-          donorId: { $ne: null },
+          // donorId: { $ne: null },
           campaignId: { $ne: null },
           createdAt: getDateQuery(period),
         },
@@ -1003,7 +956,7 @@ export class OrganizationService {
           totalDonor: { $sum: 1 },
           totalAmount: { $sum: '$amount' },
           campaignId: { $first: '$campaign._id' },
-          campaignName: { $first: '$campaign.title' },
+          campaignName: { $first: '$campaign.campaignName' },
           campaignType: { $first: '$campaign.campaignType' },
           campaignProgress: { $first: '$campaign.amountProgress' },
           campaignTarget: { $first: '$campaign.amountTarget' },
@@ -1055,7 +1008,7 @@ export class OrganizationService {
         $match: {
           nonprofitRealmId: new Types.ObjectId(organizationId),
           donationStatus: 'SUCCESS',
-          donorUserId: { $ne: null },
+          // donorUserId: { $ne: null },
           campaignId: { $ne: null },
           type: 'cart',
           createdAt: getDateQuery(period),
@@ -1139,7 +1092,7 @@ export class OrganizationService {
           totalDonor: { $sum: 1 },
           totalAmount: { $sum: '$amount' },
           campaignId: { $first: '$campaign._id' },
-          campaignName: { $first: '$campaign.title' },
+          campaignName: { $first: '$campaign.campaignName' },
           campaignType: { $first: '$campaign.campaignType' },
           campaignProgress: { $first: '$campaign.amountProgress' },
           campaignTarget: { $first: '$campaign.amountTarget' },
@@ -1191,7 +1144,7 @@ export class OrganizationService {
       {
         $match: {
           donationStatus: 'SUCCESS',
-          donorUserId: { $ne: null },
+          // donorUserId: { $ne: null },
           campaignId: new Types.ObjectId('6299ed6a9f1ad428563563ed'),
           createdAt: getDateQuery(period),
         },

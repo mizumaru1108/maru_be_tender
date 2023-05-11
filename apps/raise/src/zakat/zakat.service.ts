@@ -402,6 +402,7 @@ export class ZakatService {
           nonprofitRealmId: new Types.ObjectId(organizationId),
           donorUserId: { $ne: null },
           campaignId: zakatCampaign._id,
+          donationStatus: 'SUCCESS',
         },
       },
       {

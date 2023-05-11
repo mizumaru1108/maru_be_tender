@@ -1,5 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsArray } from 'class-validator';
 export class OrganizationDto {
   organizationEmail: string;
   name: string;
@@ -22,10 +20,7 @@ export class OrganizationDto {
   currencyOptions: object;
   defaultLanguage: string;
   campaignLanguage: string;
-
-  @ApiProperty()
-  @IsArray()
-  @IsString({ each: true })
-  @IsNotEmpty({ each: true })
-  selectedLanguage: string[];
+  selectedLanguage: string[] | [];
+  zakatTransaction: boolean;
+  zakatCalculator: boolean;
 }

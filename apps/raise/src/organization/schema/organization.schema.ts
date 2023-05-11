@@ -61,6 +61,10 @@ export class Organization {
   campaignLanguage: string;
   @Prop({ default: [] })
   selectedLanguage: string[];
+  @Prop({ defaul: false })
+  zakatTransaction: boolean;
+  @Prop({ defaul: false })
+  zakatCalculator: boolean;
 }
 
 export const OrganizationSchema = SchemaFactory.createForClass(Organization);
