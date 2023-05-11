@@ -167,6 +167,8 @@ export type CardTablePropsByBE = {
   title: string;
   limitShowCard?: number;
   endPoint?: string;
+  // isIncoming?: boolean;
+  typeRequest?: 'incoming' | 'inprocess';
   // taps?: {
   //   key: string;
   //   options: Array<{

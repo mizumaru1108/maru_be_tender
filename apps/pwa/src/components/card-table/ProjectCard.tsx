@@ -111,7 +111,7 @@ const ProjectCard = ({
         'tender_finance',
         'tender_cashier',
         'tender_project_manager',
-        // 'tender_project_supervisor',
+        'tender_project_supervisor',
       ].includes(role) &&
       destination !== 'requests-in-process'
     ) {

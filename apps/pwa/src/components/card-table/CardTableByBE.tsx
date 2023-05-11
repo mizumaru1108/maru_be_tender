@@ -26,7 +26,9 @@ function CardTableByBE({
   limitShowCard = 6,
   cardFooterButtonAction,
   destination,
-}: CardTablePropsByBE) {
+  typeRequest,
+}: // isIncoming = false,
+CardTablePropsByBE) {
   // const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
@@ -40,13 +42,16 @@ function CardTableByBE({
 
   const fetchingPrevious = React.useCallback(async () => {
     setIsLoading(true);
+    let url = '';
+    if (!typeRequest) {
+      url = `${endPoint}?limit=${limit}&page=${page}${filterSorting}`;
+    } else {
+      url = `${endPoint}?limit=${limit}&page=${page}${filterSorting}&${typeRequest}`;
+    }
     try {
-      const rest = await axiosInstance.get(
-        `${endPoint}?limit=${limit}&page=${page}${filterSorting}`,
-        {
-          headers: { 'x-hasura-role': activeRole! },
-        }
-      );
+      const rest = await axiosInstance.get(`${url}`, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
       if (rest) {
         const tmpTotalPage = Math.ceil(rest.data.total / limit);
         setTotalPage(tmpTotalPage);
@@ -70,7 +75,7 @@ function CardTableByBE({
     } finally {
       setIsLoading(false);
     }
-  }, [activeRole, enqueueSnackbar, endPoint, limit, page, filterSorting]);
+  }, [activeRole, enqueueSnackbar, endPoint, limit, page, filterSorting, typeRequest]);
 
   const handleLimitChange = (event: any) => {
     setLimit(event.target.value as number);

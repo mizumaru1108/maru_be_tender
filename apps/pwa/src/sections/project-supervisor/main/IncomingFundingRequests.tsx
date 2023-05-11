@@ -38,9 +38,12 @@ function IncomingFundingRequests() {
   const fetchingIncoming = React.useCallback(async () => {
     setIsLoading(true);
     try {
-      const rest = await axiosInstance.get(`tender-proposal/request-in-process?limit=4`, {
-        headers: { 'x-hasura-role': activeRole! },
-      });
+      const rest = await axiosInstance.get(
+        `tender-proposal/request-in-process?limit=4&type=incoming`,
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
       if (rest) {
         // console.log('rest total :', rest.data);
         setCardData(
