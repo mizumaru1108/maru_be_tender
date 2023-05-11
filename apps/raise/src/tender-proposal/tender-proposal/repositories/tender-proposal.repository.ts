@@ -1426,25 +1426,25 @@ export class TenderProposalRepository {
         if (currentUser.choosenRole === 'tender_project_supervisor') {
           whereClause = {
             ...whereClause,
-            OR: [{ supervisor_id: currentUser.id }, { supervisor_id: null }],
+            supervisor_id: currentUser.id,
             inner_status: {
               notIn: [
                 InnerStatusEnum.CREATED_BY_CLIENT,
                 InnerStatusEnum.ACCEPTED_BY_MODERATOR,
-                InnerStatusEnum.REJECTED_BY_MODERATOR,
-                InnerStatusEnum.DONE_BY_CASHIER,
-                InnerStatusEnum.ASKING_SUPERVISOR_CHANGES,
-                InnerStatusEnum.ASKING_PROJECT_SUPERVISOR_CHANGES,
-                InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION,
+                // InnerStatusEnum.REJECTED_BY_MODERATOR,
+                // InnerStatusEnum.DONE_BY_CASHIER,
+                // InnerStatusEnum.ASKING_SUPERVISOR_CHANGES,
+                // InnerStatusEnum.ASKING_PROJECT_SUPERVISOR_CHANGES,
+                // InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION,
               ],
             },
-            payments: {
-              some: {
-                status: {
-                  notIn: ['set_by_supervisor'],
-                },
-              },
-            },
+            // payments: {
+            //   some: {
+            //     status: {
+            //       notIn: ['set_by_supervisor'],
+            //     },
+            //   },
+            // },
           };
         }
 
@@ -1554,6 +1554,8 @@ export class TenderProposalRepository {
         };
       }
 
+      console.log(logUtil(whereClause));
+      console.log(logUtil(queryOptions));
       const data = await this.prismaService.proposal.findMany(queryOptions);
 
       const total = await this.prismaService.proposal.count({
